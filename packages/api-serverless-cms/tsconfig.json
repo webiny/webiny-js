@@ -18,10 +18,17 @@
     { "path": "../handler-client" },
     { "path": "../handler-graphql" },
     { "path": "../api-admin-users" },
+    { "path": "../api-apw" },
+    { "path": "../api-audit-logs" },
+    { "path": "../api-headless-cms-aco" },
+    { "path": "../api-headless-cms-tasks" },
+    { "path": "../api-record-locking" },
     { "path": "../api-wcp" },
+    { "path": "../api-websockets" },
     { "path": "../handler" },
     { "path": "../handler-aws" },
-    { "path": "../plugins" }
+    { "path": "../plugins" },
+    { "path": "../tasks" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -62,14 +69,28 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/api-admin-users/*": ["../api-admin-users/src/*"],
       "@webiny/api-admin-users": ["../api-admin-users/src"],
+      "@webiny/api-apw/*": ["../api-apw/src/*"],
+      "@webiny/api-apw": ["../api-apw/src"],
+      "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
+      "@webiny/api-audit-logs": ["../api-audit-logs/src"],
+      "@webiny/api-headless-cms-aco/*": ["../api-headless-cms-aco/src/*"],
+      "@webiny/api-headless-cms-aco": ["../api-headless-cms-aco/src"],
+      "@webiny/api-headless-cms-tasks/*": ["../api-headless-cms-tasks/src/*"],
+      "@webiny/api-headless-cms-tasks": ["../api-headless-cms-tasks/src"],
+      "@webiny/api-record-locking/*": ["../api-record-locking/src/*"],
+      "@webiny/api-record-locking": ["../api-record-locking/src"],
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],
       "@webiny/api-wcp": ["../api-wcp/src"],
+      "@webiny/api-websockets/*": ["../api-websockets/src/*"],
+      "@webiny/api-websockets": ["../api-websockets/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/tasks/*": ["../tasks/src/*"],
+      "@webiny/tasks": ["../tasks/src"]
     },
     "baseUrl": "."
   }

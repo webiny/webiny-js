@@ -10,8 +10,7 @@ import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { enableBenchmarkOnEnvironmentVariable } from "./enableBenchmarkOnEnvironmentVariable";
 import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import { createTenancyAndSecurity, getDefaultTenant } from "./tenancySecurity";
-import { isCmsPath } from "./isCmsPath";
+import { createTenancyAndSecurity } from "./tenancySecurity";
 import { createPermissions, Permission } from "./permissions";
 import { PathType } from "../types";
 import { TenancyStorageOperations, Tenant } from "@webiny/api-tenancy/types";
@@ -25,15 +24,25 @@ import {
     createPageBuilderContext,
     createPageBuilderGraphQL
 } from "@webiny/api-page-builder/graphql";
+import { createWebsockets } from "@webiny/api-websockets";
+import { createRecordLocking } from "@webiny/api-record-locking";
 
 import { createFormBuilder } from "@webiny/api-form-builder";
 import { FormBuilderStorageOperations } from "@webiny/api-form-builder/types";
+import { createFileManagerContext } from "@webiny/api-file-manager";
+import { createAco } from "@webiny/api-aco";
+import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
+import { createAuditLogs } from "@webiny/api-audit-logs";
+import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
+import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
+import { createApwGraphQL, createApwPageBuilderContext } from "@webiny/api-apw";
+import { ApwScheduleActionStorageOperations } from "@webiny/api-apw/scheduler/types";
+import { createBackgroundTaskContext, createBackgroundTaskGraphQL } from "@webiny/tasks";
 
 export interface ICreateCoreParams {
     plugins?: Plugin[];
     path: PathType;
     permissions?: Permission[];
-    identity?: SecurityIdentity;
     tenant?: Pick<Tenant, "id" | "name" | "parent">;
 }
 
@@ -48,10 +57,11 @@ export interface ICreateCoreResult {
     tenancyStorage: TenancyStorageOperations;
     adminUsersStorage: AdminUsersStorageOperations;
     tenant: Pick<Tenant, "id" | "name" | "parent">;
+    login: (identity?: SecurityIdentity | null) => void;
 }
 
 export const createCore = (params: ICreateCoreParams): ICreateCoreResult => {
-    const { permissions, identity, tenant, plugins = [] } = params;
+    const { permissions, tenant, plugins = [] } = params;
 
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<I18NLocalesStorageOperations>("i18n");
@@ -61,6 +71,12 @@ export const createCore = (params: ICreateCoreParams): ICreateCoreResult => {
     const securityStorage = getStorageOps<SecurityStorageOperations>("security");
     const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
     const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const apwScheduleStorage = getStorageOps<ApwScheduleActionStorageOperations>("apwSchedule");
+
+    const security = createTenancyAndSecurity({
+        permissions: createPermissions(permissions),
+        tenant
+    });
 
     return {
         cmsStorage: cmsStorage.storageOperations,
@@ -71,7 +87,8 @@ export const createCore = (params: ICreateCoreParams): ICreateCoreResult => {
         securityStorage: securityStorage.storageOperations,
         tenancyStorage: tenancyStorage.storageOperations,
         adminUsersStorage: adminUsersStorage.storageOperations,
-        tenant: tenant || getDefaultTenant(),
+        tenant: security.tenant,
+        login: security.login,
         plugins: [
             enableBenchmarkOnEnvironmentVariable(),
             createWcpContext(),
@@ -82,12 +99,7 @@ export const createCore = (params: ICreateCoreParams): ICreateCoreResult => {
             ...securityStorage.plugins,
             ...tenancyStorage.plugins,
             ...adminUsersStorage.plugins,
-            createTenancyAndSecurity({
-                setupGraphQL: !isCmsPath(params),
-                permissions: createPermissions(permissions),
-                identity,
-                tenant
-            }),
+            ...security.plugins,
             createAdminUsersApp({
                 storageOperations: adminUsersStorage.storageOperations
             }),
@@ -109,9 +121,26 @@ export const createCore = (params: ICreateCoreParams): ICreateCoreResult => {
             createPageBuilderContext({
                 storageOperations: pageBuilderStorage.storageOperations
             }),
+            createAco(),
+            createAuditLogs(),
+            createAcoPageBuilderContext(),
             createPageBuilderGraphQL(),
+            createRecordLocking(),
+            createWebsockets(),
+            ...createBackgroundTaskContext(),
+            ...createBackgroundTaskGraphQL(),
+            createFileManagerContext({
+                storageOperations: fileManagerStorage.storageOperations
+            }),
             createFormBuilder({
                 storageOperations: formBuilderStorage.storageOperations
+            }),
+            createAcoPageBuilderContext(),
+            createAcoHcmsContext(),
+            createHcmsTasks(),
+            createApwGraphQL(),
+            createApwPageBuilderContext({
+                storageOperations: apwScheduleStorage.storageOperations
             }),
             plugins,
             graphQLHandlerPlugins()

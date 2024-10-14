@@ -3,32 +3,29 @@ import { Plugin } from "@webiny/plugins/Plugin";
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
 import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
 import {
-    ApiKey,
     SecurityIdentity,
     SecurityPermission,
     SecurityStorageOperations
 } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
-import { BeforeHandlerPlugin } from "@webiny/handler";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { TenancyStorageOperations, Tenant } from "@webiny/api-tenancy/types";
 
 interface IConfig {
-    setupGraphQL?: boolean;
     permissions: SecurityPermission[];
-    identity?: SecurityIdentity;
     tenant?: Pick<Tenant, "id" | "name">;
 }
 
-export const getDefaultIdentity = (): SecurityIdentity => {
+export const getDefaultIdentity = (permissions: SecurityPermission[]): SecurityIdentity => {
     return {
         id: "id-12345678",
         type: "admin",
-        displayName: "John Doe"
+        displayName: "John Doe",
+        permissions
     };
 };
 
-export const getDefaultTenant = (): Tenant => {
+export const getDefaultTenant = (tenant?: Partial<Tenant>): Tenant => {
     return {
         id: "root",
         name: "Root",
@@ -40,34 +37,46 @@ export const getDefaultTenant = (): Tenant => {
         tags: [],
         settings: {
             domains: []
-        }
+        },
+        ...tenant
     };
 };
 
-export const createTenancyAndSecurity = ({
-    setupGraphQL,
-    permissions,
-    identity,
-    tenant: inputTenant
-}: IConfig): Plugin[] => {
+export interface ILogin {
+    identity: SecurityIdentity | null;
+    setIdentity: (identity: SecurityIdentity | null) => void;
+    getIdentity: () => SecurityIdentity | null;
+}
+
+const login: ILogin = {
+    identity: null,
+    setIdentity: identity => {
+        login.identity = identity;
+    },
+    getIdentity: () => {
+        return login.identity;
+    }
+};
+
+export const createTenancyAndSecurity = ({ permissions, tenant }: IConfig) => {
     const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
     const securityStorage = getStorageOps<SecurityStorageOperations>("security");
 
-    const tenant = inputTenant || getDefaultTenant();
-
-    return [
+    const plugins = [
         createTenancyContext({ storageOperations: tenancyStorage.storageOperations }),
-        setupGraphQL ? createTenancyGraphQL() : null,
+        createTenancyGraphQL(),
         createSecurityContext({ storageOperations: securityStorage.storageOperations }),
-        setupGraphQL ? createSecurityGraphQL() : null,
+        createSecurityGraphQL(),
+        new ContextPlugin<Context>(async context => {
+            const identity = login.getIdentity();
+            if (!identity) {
+                return;
+            }
+            context.security.setIdentity(identity);
+        }),
         new ContextPlugin<Context>(context => {
-            context.tenancy.setCurrentTenant({
-                ...tenant,
-                webinyVersion: context.WEBINY_VERSION
-            } as unknown as Tenant);
-
             context.security.addAuthenticator(async () => {
-                return identity || getDefaultIdentity();
+                return login.getIdentity();
             });
 
             context.security.addAuthorizer(async () => {
@@ -76,45 +85,17 @@ export const createTenancyAndSecurity = ({
                     return null;
                 }
 
-                return permissions || [{ name: "*" }];
+                return login.getIdentity()?.permissions || null;
             });
-        }),
-        new BeforeHandlerPlugin<Context>(context => {
-            const { headers = {} } = context.request || {};
-            if (headers["authorization"]) {
-                return context.security.authenticate(headers["authorization"]);
-            }
-
-            return context.security.authenticate("");
-        }),
-        {
-            type: "context",
-            name: "context-security-tenant",
-            async apply(context) {
-                context.security.getApiKeyByToken = async (
-                    token: string
-                ): Promise<ApiKey | null> => {
-                    if (!token || token !== "aToken") {
-                        return null;
-                    }
-                    const apiKey = "a1234567890";
-                    return {
-                        id: apiKey,
-                        name: apiKey,
-                        tenant: tenant.id,
-                        permissions: identity?.permissions || [],
-                        token,
-                        createdBy: {
-                            id: "test",
-                            displayName: "test",
-                            type: "admin"
-                        },
-                        description: "test",
-                        createdOn: new Date().toISOString(),
-                        webinyVersion: context.WEBINY_VERSION
-                    };
-                };
-            }
-        } as ContextPlugin<Context>
+        })
     ].filter(Boolean) as Plugin[];
+    return {
+        plugins,
+        tenant: getDefaultTenant(tenant),
+        login: (identity?: SecurityIdentity | null) => {
+            login.setIdentity(
+                identity === null ? null : identity || getDefaultIdentity(permissions)
+            );
+        }
+    };
 };

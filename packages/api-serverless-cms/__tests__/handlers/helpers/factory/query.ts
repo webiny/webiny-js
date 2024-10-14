@@ -1,4 +1,4 @@
-import { ICreateQueryFactory } from "~tests/handlers/helpers/query/types";
+import { ICreateQueryFactory } from "./types";
 
 export const createQueryFactory: ICreateQueryFactory = ({ invoke }) => {
     return ({ query }) => {

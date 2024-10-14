@@ -6,7 +6,8 @@ import { createCore } from "./helpers/core";
 import { PathType } from "./types";
 import { getIntrospectionQuery } from "graphql";
 import { createGraphQl } from "./graphql";
-import { createQueryFactory } from "~tests/handlers/helpers/query/query";
+import { createQueryFactory } from "~tests/handlers/helpers/factory";
+import { createMutationFactory } from "~tests/handlers/helpers/factory/mutation";
 
 export interface IGraphQlHandlerParams {
     path: PathType;
@@ -32,6 +33,9 @@ export const useGraphQlHandler = (params: IGraphQlHandlerParams) => {
     const createQuery = createQueryFactory({
         invoke
     });
+    const createMutation = createMutationFactory({
+        invoke
+    });
 
     return {
         invoke,
@@ -49,6 +53,10 @@ export const useGraphQlHandler = (params: IGraphQlHandlerParams) => {
         fileManagerStorage: core.fileManagerStorage,
         securityStorage: core.securityStorage,
         tenancyStorage: core.tenancyStorage,
-        ...createGraphQl(createQuery)
+        login: core.login,
+        ...createGraphQl({
+            createQuery,
+            createMutation
+        })
     };
 };

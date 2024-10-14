@@ -1,8 +1,16 @@
 import { createInstallGraphQL } from "./install";
-import { ICreateQueryCb } from "~tests/handlers/helpers/query/types";
+import { ICreateMutationCb, ICreateQueryCb } from "~tests/handlers/helpers/factory/types";
+import { createMockLogIn } from "./login";
+// import { createMockLogIn } from "~tests/handlers/graphql/login";
 
-export const createGraphQl = (createQuery: ICreateQueryCb) => {
+export interface ICreateGraphQlParams {
+    createQuery: ICreateQueryCb;
+    createMutation: ICreateMutationCb;
+}
+
+export const createGraphQl = (params: ICreateGraphQlParams) => {
     return {
-        ...createInstallGraphQL(createQuery)
+        ...createInstallGraphQL(params),
+        ...createMockLogIn(params)
     };
 };

@@ -1,6 +1,9 @@
-import { ICreateQueryCb } from "../helpers/query/types";
+import { ICreateMutationCb, ICreateQueryCb, MutationBody } from "../helpers/factory/types";
 
-export const createIsSecurityInstalled = () => {
+/**
+ * Queries
+ */
+const createIsSecurityInstalled = () => {
     return `
         query IsSecurityInstalled {
             security {
@@ -9,7 +12,7 @@ export const createIsSecurityInstalled = () => {
         }
     `;
 };
-export const createIsTenancyInstalled = () => {
+const createIsTenancyInstalled = () => {
     return `
         query IsTenancyInstalled {
             tenancy {
@@ -19,7 +22,7 @@ export const createIsTenancyInstalled = () => {
     `;
 };
 
-export const createIsLocaleInstalled = () => {
+const createIsLocaleInstalled = () => {
     return `
         query IsLocaleInstalled {
             i18n {
@@ -29,7 +32,7 @@ export const createIsLocaleInstalled = () => {
     `;
 };
 
-export const createIsAdminUsersInstalled = () => {
+const createIsAdminUsersInstalled = () => {
     return `
         query IsAdminUsersInstalled {
             adminUsers {
@@ -39,7 +42,7 @@ export const createIsAdminUsersInstalled = () => {
     `;
 };
 
-export const createIsHeadlessCmsInstalled = () => {
+const createIsHeadlessCmsInstalled = () => {
     return `
         query IsHeadlessCmsInstalled {
             cms {
@@ -49,7 +52,7 @@ export const createIsHeadlessCmsInstalled = () => {
     `;
 };
 
-export const createIsPageBuilderInstalled = () => {
+const createIsPageBuilderInstalled = () => {
     return `
         query IsPageBuilderInstalled {
             pageBuilder {
@@ -59,7 +62,7 @@ export const createIsPageBuilderInstalled = () => {
     `;
 };
 
-export const createIsFormBuilderInstalled = () => {
+const createIsFormBuilderInstalled = () => {
     return `
         query IsFormBuilderInstalled {
             formBuilder {
@@ -69,8 +72,155 @@ export const createIsFormBuilderInstalled = () => {
     `;
 };
 
-export const createInstallGraphQL = (createQuery: ICreateQueryCb) => {
+/**
+ * Mutations
+ */
+
+const createInstallSecurityMutation = (): MutationBody => {
+    return `mutation InstallSecurity {
+            security {
+                install {
+                    data
+                    error {
+                        message
+                        code
+                        data
+                        stack
+                    }
+                }
+            }
+        }
+    `;
+};
+
+const createInstallTenancyMutation = (): MutationBody => {
+    return `mutation InstallTenancy {
+            tenancy {
+                install {
+                    data
+                    error {
+                        message
+                        code
+                        data
+                        stack
+                    }
+                }
+            }
+        }
+    `;
+};
+
+const createInstallAdminUsersMutation = (): MutationBody => {
+    return `mutation InstallAdminUsers {
+            adminUsers {
+                install {
+                    data
+                    error {
+                        message
+                        code
+                        data
+                        stack
+                    }
+                }
+            }
+        }
+    `;
+};
+
+export interface IInstallI18NVariables {
+    data: {
+        code: string;
+    };
+}
+
+const createInstallI18NMutation = (): MutationBody => {
+    return `mutation InstallLocale($data: I18NInstallInput!) {
+            i18n {
+                install(data: $data) {
+                    data
+                    error {
+                        message
+                        code
+                        data
+                        stack
+                    }
+                }
+            }
+        }
+    `;
+};
+
+const createInstallHeadlessCmsMutation = (): MutationBody => {
+    return `mutation InstallHeadlessCms {
+            cms {
+                install {
+                    data
+                    error {
+                        message
+                        code
+                        data
+                        stack
+                    }
+                }
+            }
+        }
+    `;
+};
+
+export interface IInstallPageBuilderVariables {
+    data: {
+        insertDemoData: boolean;
+        websiteUrl: string;
+        name: string;
+    };
+}
+
+const createInstallPageBuilderMutation = (): MutationBody => {
+    return `mutation InstallPageBuilder($data: PbInstallInput!) {
+            pageBuilder {
+                install(data: $data) {
+                    data
+                    error {
+                        message
+                        code
+                        data
+                        stack
+                    }
+                }
+            }
+        }
+    `;
+};
+
+const createInstallFormBuilderMutation = (): MutationBody => {
+    return `mutation InstallFormBuilder {
+            formBuilder {
+                install {
+                    data
+                    error {
+                        message
+                        code
+                        data
+                        stack
+                    }
+                }
+            }
+        }
+    `;
+};
+
+export interface ICreateInstallGraphQlParams {
+    createQuery: ICreateQueryCb;
+    createMutation: ICreateMutationCb;
+}
+
+export const createInstallGraphQL = (params: ICreateInstallGraphQlParams) => {
+    const { createQuery, createMutation } = params;
+
     return {
+        /**
+         * Is Installed Queries
+         */
         isSecurityInstalled: createQuery({
             query: createIsSecurityInstalled()
         }),
@@ -91,6 +241,30 @@ export const createInstallGraphQL = (createQuery: ICreateQueryCb) => {
         }),
         isFormBuilderInstalled: createQuery({
             query: createIsFormBuilderInstalled()
+        }),
+        /**
+         * Install Mutations
+         */
+        installSecurity: createMutation({
+            mutation: createInstallSecurityMutation()
+        }),
+        installTenancy: createMutation({
+            mutation: createInstallTenancyMutation()
+        }),
+        installAdminUsers: createMutation({
+            mutation: createInstallAdminUsersMutation()
+        }),
+        installI18N: createMutation<IInstallI18NVariables>({
+            mutation: createInstallI18NMutation()
+        }),
+        installHeadlessCms: createMutation({
+            mutation: createInstallHeadlessCmsMutation()
+        }),
+        installPageBuilder: createMutation<IInstallPageBuilderVariables>({
+            mutation: createInstallPageBuilderMutation()
+        }),
+        installFormBuilder: createMutation({
+            mutation: createInstallFormBuilderMutation()
         })
     };
 };

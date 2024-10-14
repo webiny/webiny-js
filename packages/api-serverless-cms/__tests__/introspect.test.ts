@@ -1,78 +1,21 @@
 import { useGraphQlHandler } from "./handlers/graphQlHandler";
+import { PathType } from "~tests/handlers/types";
 
 describe("introspect", () => {
-    it("should properly introspect the /graphql endpoint", async () => {
-        const { introspect } = useGraphQlHandler({
-            path: "/graphql"
-        });
+    const endpoints: PathType[] = [
+        "/graphql",
+        "/cms/manage/en-US",
+        "/cms/preview/en-US",
+        "/cms/read/en-US"
+    ];
 
-        const [response] = await introspect();
-        expect(response).toEqual({
-            data: {
-                __schema: {
-                    directives: expect.any(Array),
-                    mutationType: {
-                        name: "Mutation"
-                    },
-                    queryType: {
-                        name: "Query"
-                    },
-                    subscriptionType: null,
-                    types: expect.any(Array)
-                }
-            }
-        });
+    beforeEach(async () => {
+        process.env.S3_BUCKET = "a-mock-s3-bucket-which-does-not-exist";
     });
 
-    it("should properly introspect the /cms/en-US/manage endpoint", async () => {
+    it.each(endpoints)("should properly introspect the %s endpoint", async path => {
         const { introspect } = useGraphQlHandler({
-            path: "/cms/manage/en-US"
-        });
-
-        const [response] = await introspect();
-        expect(response).toEqual({
-            data: {
-                __schema: {
-                    directives: expect.any(Array),
-                    mutationType: {
-                        name: "Mutation"
-                    },
-                    queryType: {
-                        name: "Query"
-                    },
-                    subscriptionType: null,
-                    types: expect.any(Array)
-                }
-            }
-        });
-    });
-
-    it("should properly introspect the /cms/en-US/preview endpoint", async () => {
-        const { introspect } = useGraphQlHandler({
-            path: "/cms/preview/en-US"
-        });
-
-        const [response] = await introspect();
-        expect(response).toEqual({
-            data: {
-                __schema: {
-                    directives: expect.any(Array),
-                    mutationType: {
-                        name: "Mutation"
-                    },
-                    queryType: {
-                        name: "Query"
-                    },
-                    subscriptionType: null,
-                    types: expect.any(Array)
-                }
-            }
-        });
-    });
-
-    it("should properly introspect the /cms/en-US/read endpoint", async () => {
-        const { introspect } = useGraphQlHandler({
-            path: "/cms/read/en-US"
+            path
         });
 
         const [response] = await introspect();
