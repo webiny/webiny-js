@@ -78,11 +78,11 @@ export const Icon = ({ element }: IconProps) => {
     const { type: configType } = useIconType();
 
     const IconDecorator = IconRenderer.createDecorator(Original => {
-        return function IconRenderer(props) {
+        return function IconRenderer() {
             const { icon } = useIcon();
 
             if (icon.type !== configType) {
-                return <Original {...props} />;
+                return <Original />;
             }
 
             return element;

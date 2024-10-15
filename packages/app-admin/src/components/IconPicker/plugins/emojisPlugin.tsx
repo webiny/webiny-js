@@ -112,9 +112,7 @@ const SkinToneSelect = ({ icon, hasSkinToneSupport, onChange }: SkinToneSelectPr
                     ))}
                 </SkinTonesGrid>
             )}
-        >
-            <></>
-        </Menu>
+        />
     );
 };
 
