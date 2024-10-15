@@ -11327,7 +11327,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^6.55.0":
+"@pulumi/aws@npm:^6.48.0":
   version: 6.55.0
   resolution: "@pulumi/aws@npm:6.55.0"
   dependencies:
@@ -11385,7 +11385,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^3.136.1, @pulumi/pulumi@npm:^3.42.0":
+"@pulumi/pulumi@npm:^3.128.0, @pulumi/pulumi@npm:^3.42.0":
   version: 3.136.1
   resolution: "@pulumi/pulumi@npm:3.136.1"
   dependencies:
@@ -19569,8 +19569,8 @@ __metadata:
     "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.24.0
-    "@pulumi/aws": ^6.55.0
-    "@pulumi/pulumi": ^3.136.1
+    "@pulumi/aws": ^6.48.0
+    "@pulumi/pulumi": ^3.128.0
     "@pulumi/random": ^4.16.3
     "@webiny/api-page-builder": 0.0.0
     "@webiny/aws-layers": 0.0.0
@@ -19597,8 +19597,8 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
-    "@pulumi/aws": ^6.55.0
-    "@pulumi/pulumi": ^3.136.1
+    "@pulumi/aws": ^6.48.0
+    "@pulumi/pulumi": ^3.128.0
     "@types/lodash": ^4.14.190
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -19620,7 +19620,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
-    "@pulumi/pulumi": ^3.136.1
+    "@pulumi/pulumi": ^3.128.0
     "@types/lodash": ^4.14.190
     "@webiny/cli": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -19746,8 +19746,8 @@ __metadata:
     "@babel/preset-env": ^7.24.0
     "@babel/preset-typescript": ^7.23.3
     "@babel/runtime": ^7.24.0
-    "@pulumi/aws": ^6.55.0
-    "@pulumi/pulumi": ^3.136.1
+    "@pulumi/aws": ^6.48.0
+    "@pulumi/pulumi": ^3.128.0
     "@webiny/api-aco": 0.0.0
     "@webiny/api-apw": 0.0.0
     "@webiny/api-apw-scheduler-so-ddb": 0.0.0
