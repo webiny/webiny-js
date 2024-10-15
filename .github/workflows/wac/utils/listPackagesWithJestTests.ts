@@ -283,6 +283,13 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
                 storage: "ddb-os"
             }
         ];
+    },
+    "api-serverless-cms": () => {
+        return [
+            { cmd: "packages/api-serverless-cms --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/api-serverless-cms --storage=ddb-os,ddb", storage: "ddb-os" },
+            { cmd: "packages/api-serverless-cms --storage=ddb", storage: "ddb" }
+        ];
     }
 };
 
