@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - uses: actions/checkout@v4
       - name: Create global cache key
         id: global-cache-key
@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - uses: actions/checkout@v4
         with:
           path: dev
@@ -72,7 +72,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - uses: actions/checkout@v4
         with:
           path: dev
@@ -109,7 +109,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - uses: actions/checkout@v4
         with:
           path: dev
@@ -140,20 +140,19 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 20
+          - 18
         package: >-
           ${{
-          fromJson('[{"cmd":"packages/api","id":"api"},{"cmd":"packages/api-admin-settings","id":"api-admin-settings"},{"cmd":"packages/api-authentication","id":"api-authentication"},{"cmd":"packages/api-authentication-cognito","id":"api-authentication-cognito"},{"cmd":"packages/api-headless-cms-ddb","id":"api-headless-cms-ddb"},{"cmd":"packages/api-record-locking","id":"api-record-locking"},{"cmd":"packages/api-wcp","id":"api-wcp"},{"cmd":"packages/api-websockets","id":"api-websockets"},{"cmd":"packages/app-aco","id":"app-aco"},{"cmd":"packages/app-admin","id":"app-admin"},{"cmd":"packages/cwp-template-aws","id":"cwp-template-aws"},{"cmd":"packages/data-migration","id":"data-migration"},{"cmd":"packages/db-dynamodb","id":"db-dynamodb"},{"cmd":"packages/form","id":"form"},{"cmd":"packages/handler","id":"handler"},{"cmd":"packages/handler-aws","id":"handler-aws"},{"cmd":"packages/handler-graphql","id":"handler-graphql"},{"cmd":"packages/handler-logs","id":"handler-logs"},{"cmd":"packages/ioc","id":"ioc"},{"cmd":"packages/lexical-converter","id":"lexical-converter"},{"cmd":"packages/plugins","id":"plugins"},{"cmd":"packages/pubsub","id":"pubsub"},{"cmd":"packages/react-composition","id":"react-composition"},{"cmd":"packages/react-properties","id":"react-properties"},{"cmd":"packages/react-rich-text-lexical-renderer","id":"react-rich-text-lexical-renderer"},{"cmd":"packages/utils","id":"utils"},{"cmd":"packages/validation","id":"validation"}]')
+          fromJson('[{"cmd":"packages/api","id":"806497aaa729e8d39f59792bcfb12b26"},{"cmd":"packages/api-admin-settings","id":"31140e7ea9283c9db32ec5f905ce2a1e"},{"cmd":"packages/api-authentication","id":"0eaf9f853f122e4ab215bf49d39f3edc"},{"cmd":"packages/api-authentication-cognito","id":"dfb5e1fcea213538a9730314cb5e7d06"},{"cmd":"packages/api-headless-cms-ddb","id":"5333e1fe6c2b8f5bbcb101a446419c3e"},{"cmd":"packages/api-record-locking","id":"9340c019a5369ea1aa55f7ed28b09f48"},{"cmd":"packages/api-wcp","id":"77ff8a0a075e8d9f7e25001ea64c6c9e"},{"cmd":"packages/api-websockets","id":"fd704b97c31f78a886b342babd344d33"},{"cmd":"packages/app-aco","id":"dddb66beffe2e54804d5bdedd2b423cb"},{"cmd":"packages/app-admin","id":"53bbef747a26e831904585bcfdd845f7"},{"cmd":"packages/cwp-template-aws","id":"846572f41c9427974a577bb95257d019"},{"cmd":"packages/data-migration","id":"294257fffed0174f169b2c812e16258e"},{"cmd":"packages/db-dynamodb","id":"5cb733de265d7bbda981fce60f2a8962"},{"cmd":"packages/form","id":"5707e699d8a4d3b8ee1954c070a50617"},{"cmd":"packages/handler","id":"1dad17bbf61657b4308250e8293cb5dd"},{"cmd":"packages/handler-aws","id":"2a5bd44c5f2a4290c43f9021bbc705a5"},{"cmd":"packages/handler-graphql","id":"74884166fb2bf383da482fb78b18b704"},{"cmd":"packages/handler-logs","id":"ca9a7e2ed32de50aff66c839f0003352"},{"cmd":"packages/ioc","id":"af22b6d7d245321d64d4b714d03ef3e1"},{"cmd":"packages/lexical-converter","id":"52e3bb3ea633bd27d5bab8be976cd16f"},{"cmd":"packages/plugins","id":"c91537eaa40845d816d0d9f39e66018b"},{"cmd":"packages/pubsub","id":"fc14c28c51c537a7d9edd33d73ae29e2"},{"cmd":"packages/react-composition","id":"428b8a3187fe275cb76da6bad0ba3918"},{"cmd":"packages/react-properties","id":"7578e63dcaa1ac66fed4a8dd936a9285"},{"cmd":"packages/react-rich-text-lexical-renderer","id":"452451b34eb7e0134e99b0706e5eb076"},{"cmd":"packages/utils","id":"696ceb17e38e4a274d4a149d24513b78"},{"cmd":"packages/validation","id":"9c68da33792a1214ae45e040a2830cd7"}]')
           }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      AWS_REGION: eu-central-1
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - uses: actions/checkout@v4
         with:
           path: dev
@@ -185,39 +184,59 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 20
+          - 18
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
-          --storage=ddb","storage":"ddb","id":"api-aco_ddb"},{"cmd":"packages/api-apw
-          --storage=ddb","storage":"ddb","id":"api-apw_ddb"},{"cmd":"packages/api-audit-logs
-          --storage=ddb","storage":"ddb","id":"api-audit-logs_ddb"},{"cmd":"packages/api-file-manager
-          --storage=ddb","storage":"ddb","id":"api-file-manager_ddb"},{"cmd":"packages/api-form-builder
-          --storage=ddb","storage":"ddb","id":"api-form-builder_ddb"},{"cmd":"packages/api-headless-cms
-          --storage=ddb","storage":"ddb","id":"api-headless-cms_ddb"},{"cmd":"packages/api-headless-cms-aco
-          --storage=ddb","storage":"ddb","id":"api-headless-cms-aco_ddb"},{"cmd":"packages/api-headless-cms-bulk-actions
-          --storage=ddb","storage":"ddb","id":"api-headless-cms-bulk-actions_ddb"},{"cmd":"packages/api-headless-cms-import-export
-          --storage=ddb","storage":"ddb","id":"api-headless-cms-import-export_ddb"},{"cmd":"packages/api-i18n
-          --storage=ddb","storage":"ddb","id":"api-i18n_ddb"},{"cmd":"packages/api-mailer
-          --storage=ddb","storage":"ddb","id":"api-mailer_ddb"},{"cmd":"packages/api-page-builder
-          --storage=ddb","storage":"ddb","id":"api-page-builder_ddb"},{"cmd":"packages/api-page-builder-aco
-          --storage=ddb","storage":"ddb","id":"api-page-builder-aco_ddb"},{"cmd":"packages/api-page-builder-import-export
-          --storage=ddb","storage":"ddb","id":"api-page-builder-import-export_ddb"},{"cmd":"packages/api-prerendering-service
-          --storage=ddb","storage":"ddb","id":"api-prerendering-service_ddb"},{"cmd":"packages/api-security
-          --storage=ddb","storage":"ddb","id":"api-security_ddb"},{"cmd":"packages/api-security-cognito
-          --storage=ddb","storage":"ddb","id":"api-security-cognito_ddb"},{"cmd":"packages/api-serverless-cms
-          --storage=ddb","storage":"ddb","id":"api-serverless-cms_ddb"},{"cmd":"packages/api-tenancy
-          --storage=ddb","storage":"ddb","id":"api-tenancy_ddb"},{"cmd":"packages/api-tenant-manager
-          --storage=ddb","storage":"ddb","id":"api-tenant-manager_ddb"},{"cmd":"packages/tasks
-          --storage=ddb","storage":"ddb","id":"tasks_ddb"}]') }}
+          --storage=ddb","storage":"ddb","id":"5595b4f3460fb2a019066177bd6489f3"},{"cmd":"packages/api-apw
+          --storage=ddb","storage":"ddb","id":"04462239e1f3509b08f511de460971ec"},{"cmd":"packages/api-audit-logs
+          --storage=ddb","storage":"ddb","id":"47680aa68a1a3951f1117c736e150e45"},{"cmd":"packages/api-file-manager
+          --storage=ddb","storage":"ddb","id":"9b6eee1ff7cbf9a3d367818705cc4189"},{"cmd":"packages/api-form-builder
+          --storage=ddb","storage":"ddb","id":"980a9aebb5ec0cab057422364a60493b"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=1/6","storage":"ddb","id":"70476469f4407a455237133406a37a4b"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=2/6","storage":"ddb","id":"0eba11dcf36fd00e737a630f40567e85"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=3/6","storage":"ddb","id":"8c15e662d10ad6272ac557515e39d4cd"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=4/6","storage":"ddb","id":"3b14c43cd5971ad2945b1f0e87970e20"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=5/6","storage":"ddb","id":"a71716169299cfee9996f4344c84616f"},{"cmd":"packages/api-headless-cms
+          --storage=ddb
+          --shard=6/6","storage":"ddb","id":"26f0b825b771340ca981858d86bd1f42"},{"cmd":"packages/api-headless-cms-aco
+          --storage=ddb","storage":"ddb","id":"718c110b004c59ed7d13cbcc875a6b64"},{"cmd":"packages/api-headless-cms-tasks
+          --storage=ddb","storage":"ddb","id":"d2c31fa2375669d0c176d70c946a6108"},{"cmd":"packages/api-i18n
+          --storage=ddb","storage":"ddb","id":"943e15fe21c847b164f9413f8baf97b7"},{"cmd":"packages/api-mailer
+          --storage=ddb","storage":"ddb","id":"2cc1dc707a39e72f4e5d9a140677ca39"},{"cmd":"packages/api-page-builder
+          --storage=ddb
+          --shard=1/6","storage":"ddb","id":"b2a30dfaf230076ce7120c55eb581d32"},{"cmd":"packages/api-page-builder
+          --storage=ddb
+          --shard=2/6","storage":"ddb","id":"c58e2f120653e8bd68475c16de4434c5"},{"cmd":"packages/api-page-builder
+          --storage=ddb
+          --shard=3/6","storage":"ddb","id":"808cb2da8e70bf84a24de2ab7ed27c24"},{"cmd":"packages/api-page-builder
+          --storage=ddb
+          --shard=4/6","storage":"ddb","id":"6f95134a56bea87da59d4c7d56846d72"},{"cmd":"packages/api-page-builder
+          --storage=ddb
+          --shard=5/6","storage":"ddb","id":"918eb8cb9d4046da9d38962b12e8ace6"},{"cmd":"packages/api-page-builder
+          --storage=ddb
+          --shard=6/6","storage":"ddb","id":"45bc3d824b38bd2770f1d4ba357387f9"},{"cmd":"packages/api-page-builder-aco
+          --storage=ddb","storage":"ddb","id":"48281621c024ae9bbd0f79da5f6f4867"},{"cmd":"packages/api-page-builder-import-export
+          --storage=ddb","storage":"ddb","id":"8540085b59af85d1fd82b37b9e890704"},{"cmd":"packages/api-prerendering-service
+          --storage=ddb","storage":"ddb","id":"a2831c88465244dc03f188f4a40e4d63"},{"cmd":"packages/api-security
+          --storage=ddb","storage":"ddb","id":"0a065366763b713fb016c43ce21e77b9"},{"cmd":"packages/api-security-cognito
+          --storage=ddb","storage":"ddb","id":"0787967fe56689618106e6c64e784bff"},{"cmd":"packages/api-tenancy
+          --storage=ddb","storage":"ddb","id":"0c81e56d64e97e6b563965250f04ed34"},{"cmd":"packages/api-tenant-manager
+          --storage=ddb","storage":"ddb","id":"4b93a028b8055553c3443a45b38079e9"},{"cmd":"packages/tasks
+          --storage=ddb","storage":"ddb","id":"925ba761b5995e8a8b980c0789034b3c"}]')
+          }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      AWS_REGION: eu-central-1
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - uses: actions/checkout@v4
         with:
           path: dev
@@ -249,41 +268,60 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 20
+          - 18
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-aco_ddb-es_ddb"},{"cmd":"packages/api-audit-logs
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-audit-logs_ddb-es_ddb"},{"cmd":"packages/api-dynamodb-to-elasticsearch
-          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"api-dynamodb-to-elasticsearch_ddb-es_ddb"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-elasticsearch-tasks_ddb-es_ddb"},{"cmd":"packages/api-file-manager
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-file-manager_ddb-es_ddb"},{"cmd":"packages/api-form-builder
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder_ddb-es_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-form-builder-so-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-headless-cms
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-aco
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-aco_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-bulk-actions
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-bulk-actions_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-es-tasks
-          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"api-headless-cms-es-tasks_ddb-es_ddb"},{"cmd":"packages/api-headless-cms-import-export
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-headless-cms-import-export_ddb-es_ddb"},{"cmd":"packages/api-mailer
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-mailer_ddb-es_ddb"},{"cmd":"packages/api-page-builder
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder_ddb-es_ddb"},{"cmd":"packages/api-page-builder-aco
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder-aco_ddb-es_ddb"},{"cmd":"packages/api-page-builder-so-ddb-es
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-page-builder-so-ddb-es_ddb-es_ddb"},{"cmd":"packages/api-serverless-cms
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"api-serverless-cms_ddb-es_ddb"},{"cmd":"packages/migrations","storage":["ddb-es","ddb-os"],"id":"migrations"},{"cmd":"packages/tasks
-          --storage=ddb-es,ddb","storage":"ddb-es","id":"tasks_ddb-es_ddb"}]')
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"8f23ec33f547aa62236f5c71115688d6"},{"cmd":"packages/api-audit-logs
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"a292444cd9100f78d8fc196274393ea8"},{"cmd":"packages/api-dynamodb-to-elasticsearch
+          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"e2c325f0940ba5fb5a891a8cf74fca61"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"430874606aeb8e8041b325955f9330e3"},{"cmd":"packages/api-elasticsearch-tasks
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"d81ad1d024a8746cc440e2e548770f8f"},{"cmd":"packages/api-file-manager
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"d6f293add4a252b96cbd770ab6e80557"},{"cmd":"packages/api-form-builder
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"3753bde0144d808eb15c755b7176386c"},{"cmd":"packages/api-form-builder-so-ddb-es
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"be1748722ce53a7383696bdc9aecb36e"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=1/6","storage":"ddb-es","id":"c9e8cf197d213d99f54ae218b027db43"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=2/6","storage":"ddb-es","id":"0db69460c7bcc2bd54f21ae32c2436a0"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=3/6","storage":"ddb-es","id":"13763c404c6788aa580d8b9fa8f52239"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=4/6","storage":"ddb-es","id":"795fb79efa47ed2c7b14b1601b03db21"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=5/6","storage":"ddb-es","id":"775a20e72e2f9e3db4c119b08dca9858"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-es,ddb
+          --shard=6/6","storage":"ddb-es","id":"d9e94bb347222577c3a3c8ea3cc41e47"},{"cmd":"packages/api-headless-cms-aco
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"873cd623b92712713e58e7dc6ddbe5d9"},{"cmd":"packages/api-headless-cms-ddb-es
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"f64e01fd77d4d1c22803e1523560b07c"},{"cmd":"packages/api-headless-cms-es-tasks
+          --storage=ddb-es,ddb","storage":["ddb-es"],"id":"f857b5e4a7381a7f10eadef6ec83d9e0"},{"cmd":"packages/api-headless-cms-tasks
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"6a7091c172aaf229fbfae3c7d1756e8c"},{"cmd":"packages/api-mailer
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"ccc077215f734fbec817d90fdb04d423"},{"cmd":"packages/api-page-builder
+          --storage=ddb-es,ddb
+          --shard=1/6","storage":"ddb-es","id":"a9d5f7851f0b921677df8521ff899f86"},{"cmd":"packages/api-page-builder
+          --storage=ddb-es,ddb
+          --shard=2/6","storage":"ddb-es","id":"d6c00270cbcfa826dab79e8c703c9eb5"},{"cmd":"packages/api-page-builder
+          --storage=ddb-es,ddb
+          --shard=3/6","storage":"ddb-es","id":"b407ab6f87871e108480b0fa3bc17902"},{"cmd":"packages/api-page-builder
+          --storage=ddb-es,ddb
+          --shard=4/6","storage":"ddb-es","id":"9aa4fe8f6e30c49c501003a914b2ca5c"},{"cmd":"packages/api-page-builder
+          --storage=ddb-es,ddb
+          --shard=5/6","storage":"ddb-es","id":"a84a7bf736194196387f2959132abfdd"},{"cmd":"packages/api-page-builder
+          --storage=ddb-es,ddb
+          --shard=6/6","storage":"ddb-es","id":"02927f20dd60108bec8356b6dae55357"},{"cmd":"packages/api-page-builder-aco
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"d12985ec4dcdb80af419125d236a73d8"},{"cmd":"packages/api-page-builder-so-ddb-es
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"911289d4016adf351238298ce5b41ac8"},{"cmd":"packages/migrations","storage":["ddb-es","ddb-os"],"id":"bd6345274042973682dcf9af2706627d"},{"cmd":"packages/tasks
+          --storage=ddb-es,ddb","storage":"ddb-es","id":"0c5cd8395d241e54e3488ffcc1c81c26"}]')
           }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      AWS_REGION: eu-central-1
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -322,41 +360,60 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 20
+          - 18
         package: >-
           ${{ fromJson('[{"cmd":"packages/api-aco
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-aco_ddb-os_ddb"},{"cmd":"packages/api-audit-logs
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-audit-logs_ddb-os_ddb"},{"cmd":"packages/api-dynamodb-to-elasticsearch
-          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"api-dynamodb-to-elasticsearch_ddb-os_ddb"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"api-elasticsearch"},{"cmd":"packages/api-elasticsearch-tasks
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-elasticsearch-tasks_ddb-os_ddb"},{"cmd":"packages/api-file-manager
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-file-manager_ddb-os_ddb"},{"cmd":"packages/api-form-builder
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-form-builder_ddb-os_ddb"},{"cmd":"packages/api-form-builder-so-ddb-es
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-form-builder-so-ddb-es_ddb-os_ddb"},{"cmd":"packages/api-headless-cms
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-aco
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-aco_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-bulk-actions
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-bulk-actions_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-ddb-es
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-ddb-es_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-es-tasks
-          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"api-headless-cms-es-tasks_ddb-os_ddb"},{"cmd":"packages/api-headless-cms-import-export
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-headless-cms-import-export_ddb-os_ddb"},{"cmd":"packages/api-mailer
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-mailer_ddb-os_ddb"},{"cmd":"packages/api-page-builder
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-page-builder_ddb-os_ddb"},{"cmd":"packages/api-page-builder-aco
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-page-builder-aco_ddb-os_ddb"},{"cmd":"packages/api-page-builder-so-ddb-es
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-page-builder-so-ddb-es_ddb-os_ddb"},{"cmd":"packages/api-serverless-cms
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"api-serverless-cms_ddb-os_ddb"},{"cmd":"packages/migrations","storage":["ddb-es","ddb-os"],"id":"migrations"},{"cmd":"packages/tasks
-          --storage=ddb-os,ddb","storage":"ddb-os","id":"tasks_ddb-os_ddb"}]')
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"e4b1b5ebc172f2657485e41c35ad1cd7"},{"cmd":"packages/api-audit-logs
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"b36aac5f0e34dc4583e5422ae589f1ed"},{"cmd":"packages/api-dynamodb-to-elasticsearch
+          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"6e0b282c3d135703e52b2c55822d4fb0"},{"cmd":"packages/api-elasticsearch","storage":["ddb-es","ddb-os"],"id":"430874606aeb8e8041b325955f9330e3"},{"cmd":"packages/api-elasticsearch-tasks
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"580a9577fdbd4a241034a42e1a47dee5"},{"cmd":"packages/api-file-manager
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"346430a79981d3e214c87254a08e31b2"},{"cmd":"packages/api-form-builder
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"d386cddfd3c366ad9955193dcfe74363"},{"cmd":"packages/api-form-builder-so-ddb-es
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"6086ced9d7b4412cc438b9e1aefbb976"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=1/6","storage":"ddb-os","id":"f0851fe3b18a5f4130ae919506f9d68f"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=2/6","storage":"ddb-os","id":"627bf598869494740bdb3ee340398ed5"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=3/6","storage":"ddb-os","id":"49c59082ed1d7a79b742944965adff82"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=4/6","storage":"ddb-os","id":"37865d8ba2366687e25fa61967fe4db9"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=5/6","storage":"ddb-os","id":"19d0191a992c0a5145674dc0b37d96b6"},{"cmd":"packages/api-headless-cms
+          --storage=ddb-os,ddb
+          --shard=6/6","storage":"ddb-os","id":"2aade1f8261eacc7d93cc25fa3457fac"},{"cmd":"packages/api-headless-cms-aco
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"aa2c8429c2564549a680db23fe963347"},{"cmd":"packages/api-headless-cms-ddb-es
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"23bea783bb40390ae069dfa4985f97d2"},{"cmd":"packages/api-headless-cms-es-tasks
+          --storage=ddb-os,ddb","storage":["ddb-os"],"id":"ee446fd78ad6294bbfb3c0689ff2602e"},{"cmd":"packages/api-headless-cms-tasks
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"5326eafa76e67756c7f6e4e980cbf1da"},{"cmd":"packages/api-mailer
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"0ede859b604febdfa78018cdd1067a77"},{"cmd":"packages/api-page-builder
+          --storage=ddb-os,ddb
+          --shard=1/6","storage":"ddb-os","id":"691427cc9c5cb297c68cb2f90d7fcb89"},{"cmd":"packages/api-page-builder
+          --storage=ddb-os,ddb
+          --shard=2/6","storage":"ddb-os","id":"66b65733ec32b2010df792151240cca1"},{"cmd":"packages/api-page-builder
+          --storage=ddb-os,ddb
+          --shard=3/6","storage":"ddb-os","id":"8cdd1f181701f25f8cf9c3fe45b661bd"},{"cmd":"packages/api-page-builder
+          --storage=ddb-os,ddb
+          --shard=4/6","storage":"ddb-os","id":"0956377c7a7550c745e9402b51bdca85"},{"cmd":"packages/api-page-builder
+          --storage=ddb-os,ddb
+          --shard=5/6","storage":"ddb-os","id":"cc194759ab43627005bc21ee7c833a01"},{"cmd":"packages/api-page-builder
+          --storage=ddb-os,ddb
+          --shard=6/6","storage":"ddb-os","id":"b979f8aa837353847942b60e8f4bc057"},{"cmd":"packages/api-page-builder-aco
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"a1a7c90d43da1678f254bd4331cf4d55"},{"cmd":"packages/api-page-builder-so-ddb-es
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"e0236755edb31fc1a6005eb161941bf8"},{"cmd":"packages/migrations","storage":["ddb-es","ddb-os"],"id":"bd6345274042973682dcf9af2706627d"},{"cmd":"packages/tasks
+          --storage=ddb-os,ddb","storage":"ddb-os","id":"5eadfa5cc14ec4e8ba87ac3dfb112580"}]')
           }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      AWS_REGION: eu-central-1
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -394,7 +451,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - uses: actions/checkout@v4
       - name: List Cypress tests folders
         id: list-cypress-folders
@@ -429,7 +486,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -488,8 +545,8 @@ jobs:
           npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options
-          '{"region":"eu-central-1","storageOperations":"ddb"}'
+          --template-options '{"region":"${{ env.AWS_REGION
+          }}","storageOperations":"ddb"}'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -547,7 +604,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 20
+          - 18
         cypress-folder: ${{ fromJson(needs.e2eTestsDdb-constants.outputs.cypress-folders) }}
     environment: next
     env:
@@ -560,7 +617,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - uses: actions/checkout@v4
         with:
           path: dev
@@ -598,7 +655,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - uses: actions/checkout@v4
       - name: List Cypress tests folders
         id: list-cypress-folders
@@ -636,7 +693,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -695,8 +752,8 @@ jobs:
           npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options
-          '{"region":"eu-central-1","storageOperations":"ddb-es"}'
+          --template-options '{"region":"${{ env.AWS_REGION
+          }}","storageOperations":"ddb-es"}'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -754,7 +811,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 20
+          - 18
         cypress-folder: >-
           ${{ fromJson(needs.e2eTestsDdb-es-constants.outputs.cypress-folders)
           }}
@@ -772,7 +829,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - uses: actions/checkout@v4
         with:
           path: dev
@@ -810,7 +867,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - uses: actions/checkout@v4
       - name: List Cypress tests folders
         id: list-cypress-folders
@@ -848,7 +905,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -907,8 +964,8 @@ jobs:
           npx create-webiny-project@local-npm new-webiny-project --tag local-npm
           --no-interactive --assign-to-yarnrc
           '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options
-          '{"region":"eu-central-1","storageOperations":"ddb-os"}'
+          --template-options '{"region":"${{ env.AWS_REGION
+          }}","storageOperations":"ddb-os"}'
       - name: Print CLI version
         working-directory: new-webiny-project
         run: yarn webiny --version
@@ -966,7 +1023,7 @@ jobs:
         os:
           - ubuntu-latest
         node:
-          - 20
+          - 18
         cypress-folder: >-
           ${{ fromJson(needs.e2eTestsDdb-os-constants.outputs.cypress-folders)
           }}
@@ -984,7 +1041,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
       - uses: actions/checkout@v4
         with:
           path: dev
