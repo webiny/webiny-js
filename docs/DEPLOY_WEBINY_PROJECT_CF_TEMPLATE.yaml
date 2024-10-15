@@ -255,14 +255,14 @@ Resources:
               # AWS Step Functions
               - Effect: Allow
                 Action:
-                - states:CreateStateMachine
-                - states:DeleteStateMachine
-                - states:DescribeStateMachine
-                - states:ListTagsForResource
-                - states:TagResource
-                - states:UntagResource
-                - states:ListStateMachines
-                - states:UpdateStateMachine
+                  - states:CreateStateMachine
+                  - states:DeleteStateMachine
+                  - states:DescribeStateMachine
+                  - states:ListTagsForResource
+                  - states:TagResource
+                  - states:UntagResource
+                  - states:ListStateMachines
+                  - states:UpdateStateMachine
                 Resource: arn:aws:states:*:*:stateMachine:wby-*
 
               # AWS Lambda

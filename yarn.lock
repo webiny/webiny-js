@@ -11328,18 +11328,18 @@ __metadata:
   linkType: hard
 
 "@pulumi/aws@npm:^6.48.0":
-  version: 6.48.0
-  resolution: "@pulumi/aws@npm:6.48.0"
+  version: 6.55.0
+  resolution: "@pulumi/aws@npm:6.55.0"
   dependencies:
-    "@pulumi/pulumi": ^3.0.0
+    "@pulumi/pulumi": ^3.42.0
     builtin-modules: 3.0.0
     mime: ^2.0.0
     resolve: ^1.7.1
-  checksum: 49de98bac0310c98416e9ec90e9a46f58ade5a8d29da3724e0763a36cfc9ceec4e1790a04ce9ba65bc2f4164e3fbc908b235e2fe239c6210f34e88a3cd2ab805
+  checksum: 5e62483ebf656ec21985eca03516b9a00602e9dc93a1f850dd28e98baabe05a67c463b98223e0b9c4253e48c882b3f8d2918b36f50983388fdd198984e00381f
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^3.0.0, @pulumi/pulumi@npm:^3.128.0":
+"@pulumi/pulumi@npm:^3.0.0":
   version: 3.128.0
   resolution: "@pulumi/pulumi@npm:3.128.0"
   dependencies:
@@ -11382,6 +11382,52 @@ __metadata:
     typescript:
       optional: true
   checksum: a668f2fc9eaa523dea8773827668a872c561ebf047af60676a943b66d01e605191ddc7fded13cf02b7c7cf4683022905a41f4a7c5b06cabfa2f4cdf7be2f75c4
+  languageName: node
+  linkType: hard
+
+"@pulumi/pulumi@npm:^3.128.0, @pulumi/pulumi@npm:^3.42.0":
+  version: 3.136.1
+  resolution: "@pulumi/pulumi@npm:3.136.1"
+  dependencies:
+    "@grpc/grpc-js": ^1.10.1
+    "@logdna/tail-file": ^2.0.6
+    "@npmcli/arborist": ^7.3.1
+    "@opentelemetry/api": ^1.9
+    "@opentelemetry/exporter-zipkin": ^1.25
+    "@opentelemetry/instrumentation": ^0.52
+    "@opentelemetry/instrumentation-grpc": ^0.52
+    "@opentelemetry/resources": ^1.25
+    "@opentelemetry/sdk-trace-base": ^1.25
+    "@opentelemetry/sdk-trace-node": ^1.25
+    "@opentelemetry/semantic-conventions": ^1.25
+    "@pulumi/query": ^0.3.0
+    "@types/google-protobuf": ^3.15.5
+    "@types/semver": ^7.5.6
+    "@types/tmp": ^0.2.6
+    execa: ^5.1.0
+    fdir: ^6.1.1
+    google-protobuf: ^3.5.0
+    got: ^11.8.6
+    ini: ^2.0.0
+    js-yaml: ^3.14.0
+    minimist: ^1.2.6
+    normalize-package-data: ^6.0.0
+    picomatch: ^3.0.1
+    pkg-dir: ^7.0.0
+    require-from-string: ^2.0.1
+    semver: ^7.5.2
+    source-map-support: ^0.5.6
+    tmp: ^0.2.1
+    upath: ^1.1.0
+  peerDependencies:
+    ts-node: ">= 7.0.1 < 12"
+    typescript: ">= 3.8.3 < 6"
+  peerDependenciesMeta:
+    ts-node:
+      optional: true
+    typescript:
+      optional: true
+  checksum: 19692882f9ca97bd77c3b75780be0f83a5288918debace7d89418d1f9f8ab15517285645ee6041b2b87d654055ed440a0fdbee439e16ba9e32b9900a58c75b35
   languageName: node
   linkType: hard
 

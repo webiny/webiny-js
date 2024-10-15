@@ -2,10 +2,12 @@
  * Dictates how package tests will be executed. With this script, we achieve
  * parallelization of execution of Jest tests. Note: do not use any 3rd party
  * libraries because we need this script to be executed in our CI/CD, as fast as possible.
+ * Using 3rd party libraries would require `yarn install` to be run before this script is executed.
  */
 
 import fs from "fs";
 import path from "path";
+import crypto from "crypto";
 
 /**
  * Some packages require custom handling.
@@ -19,6 +21,18 @@ interface PackageWithTests {
 interface PackageWithTestsWithId extends PackageWithTests {
     id: string;
 }
+
+// Takes a PackageWithTests object and returns an array of commands, where each
+// command is just running a subset of tests. This is achieved by using the
+// Jest's `--shard` option.
+const shardPackageTestExecution = (pkg: PackageWithTests, shardsCount: number = 6) => {
+    const commands: PackageWithTests[] = [];
+    for (let currentShard = 1; currentShard <= shardsCount; currentShard++) {
+        commands.push({ ...pkg, cmd: pkg.cmd + ` --shard=${currentShard}/${shardsCount}` });
+    }
+
+    return commands;
+};
 
 const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     // Ignore "i18n" package.
@@ -84,9 +98,18 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
 
     "api-page-builder": () => {
         return [
-            { cmd: "packages/api-page-builder --storage=ddb-es,ddb", storage: "ddb-es" },
-            { cmd: "packages/api-page-builder --storage=ddb-os,ddb", storage: "ddb-os" },
-            { cmd: "packages/api-page-builder --storage=ddb", storage: "ddb" }
+            ...shardPackageTestExecution({
+                cmd: "packages/api-page-builder --storage=ddb-es,ddb",
+                storage: "ddb-es"
+            }),
+            ...shardPackageTestExecution({
+                cmd: "packages/api-page-builder --storage=ddb-os,ddb",
+                storage: "ddb-os"
+            }),
+            ...shardPackageTestExecution({
+                cmd: "packages/api-page-builder --storage=ddb",
+                storage: "ddb"
+            })
         ];
     },
     "api-page-builder-so-ddb-es": () => {
@@ -125,9 +148,18 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
 
     "api-headless-cms": () => {
         return [
-            { cmd: "packages/api-headless-cms --storage=ddb", storage: "ddb" },
-            { cmd: "packages/api-headless-cms --storage=ddb-es,ddb", storage: "ddb-es" },
-            { cmd: "packages/api-headless-cms --storage=ddb-os,ddb", storage: "ddb-os" }
+            ...shardPackageTestExecution({
+                cmd: "packages/api-headless-cms --storage=ddb",
+                storage: "ddb"
+            }),
+            ...shardPackageTestExecution({
+                cmd: "packages/api-headless-cms --storage=ddb-es,ddb",
+                storage: "ddb-es"
+            }),
+            ...shardPackageTestExecution({
+                cmd: "packages/api-headless-cms --storage=ddb-os,ddb",
+                storage: "ddb-os"
+            })
         ];
     },
     "api-headless-cms-ddb-es": () => {
@@ -270,12 +302,8 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
 const testFilePattern = /test\.j?t?sx?$/;
 
 const cmdToId = (cmd: string) => {
-    return cmd
-        .replace("packages/", "")
-        .replace("--storage=", "")
-        .replace(/[,\s]/g, "_")
-        .replace(/[\(\)\[\]]/g, "")
-        .toLowerCase();
+    // Just convert the command to kebab-case.
+    return crypto.createHash("md5").update(cmd).digest("hex");
 };
 
 /**
