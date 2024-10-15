@@ -34,6 +34,7 @@ export interface PageElementsProviderProps {
     beforeRenderer?: React.ComponentType | null;
     afterRenderer?: React.ComponentType | null;
     children?: React.ReactNode;
+    enableLoaderCache?: boolean;
 }
 
 export type AttributesObject = React.ComponentProps<any>;
@@ -162,5 +163,11 @@ declare global {
                 "data-value": string;
             };
         }
+    }
+}
+
+declare global {
+    interface Window {
+        __PE_LOADER_DATA_CACHE__?: Record<string, Record<string, any>>;
     }
 }

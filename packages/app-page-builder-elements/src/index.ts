@@ -2,6 +2,7 @@ export * from "@webiny/theme";
 
 export * from "./createRenderer";
 
+export * from "./hooks/useLoader";
 export * from "./hooks/usePage";
 export * from "./hooks/usePageElements";
 export * from "./hooks/useRenderer";

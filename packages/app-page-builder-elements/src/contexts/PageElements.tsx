@@ -31,7 +31,8 @@ export const PageElementsProvider = ({
     renderers = {},
     modifiers,
     beforeRenderer = null,
-    afterRenderer = null
+    afterRenderer = null,
+    enableLoaderCache
 }: PageElementsProviderProps) => {
     // Attributes-related callbacks.
     const getElementAttributes = useCallback<GetElementAttributes>(
@@ -122,7 +123,8 @@ export const PageElementsProvider = ({
         setElementStylesCallback,
         setStylesCallback,
         beforeRenderer,
-        afterRenderer
+        afterRenderer,
+        enableLoaderCache
     };
 
     return (

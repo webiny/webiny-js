@@ -1,76 +1,77 @@
 {
-  "name": "admin",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@editorjs/delimiter": "^1.2.0",
-    "@editorjs/list": "^1.6.0",
-    "@editorjs/quote": "^2.4.0",
-    "@editorjs/underline": "^1.0.0",
-    "@types/react": "18.2.79",
-    "@webiny/app-admin": "0.0.0",
-    "@webiny/app-admin-users-cognito": "0.0.0",
-    "@webiny/app-form-builder": "0.0.0",
-    "@webiny/app-headless-cms": "0.0.0",
-    "@webiny/app-page-builder": "0.0.0",
-    "@webiny/app-page-builder-editor": "0.0.0",
-    "@webiny/app-serverless-cms": "0.0.0",
-    "@webiny/cli": "0.0.0",
-    "@webiny/plugins": "0.0.0",
-    "@webiny/react-properties": "0.0.0",
-    "@webiny/serverless-cms-aws": "0.0.0",
-    "core-js": "^3.0.1",
-    "cross-fetch": "^3.0.4",
-    "prop-types": "^15.7.2",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "regenerator-runtime": "^0.13.5",
-    "theme": "^1.0.0",
-    "tslib": "^2.4.0"
-  },
-  "devDependencies": {
-    "cross-env": "^5.0.2"
-  },
-  "scripts": {
-    "analyze": "source-map-explorer build/static/js/main.*",
-    "watch": "yarn webiny run watch",
-    "build": "yarn webiny run build"
-  },
-  "browserslist": {
-    "development": [
-      "last 2 chrome versions",
-      "last 2 firefox versions",
-      "last 2 edge versions"
-    ],
-    "production": [
-      ">0.25%",
-      "not op_mini all",
-      "ie 11"
-    ]
-  },
-  "adio": {
-    "ignore": {
-      "dependencies": [
-        "theme",
-        "theme-1",
-        "@webiny/app-apw",
-        "@webiny/app-headless-cms",
-        "@webiny/cli",
-        "@webiny/react-properties",
-        "tslib"
-      ],
-      "src": [
-        "@okta/okta-signin-widget",
-        "@okta/okta-auth-js",
-        "@webiny/app-admin-okta",
-        "@webiny/app-admin-auth0",
-        "@webiny/app-file-manager",
-        "@webiny/app-tenant-manager",
-        "@webiny/app-theme-manager",
-        "@webiny/app-page-builder-elements",
-        "@webiny/form",
-        "@webiny/ui"
-      ]
-    }
-  }
+	"name": "admin",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"@editorjs/delimiter": "^1.2.0",
+		"@editorjs/list": "^1.6.0",
+		"@editorjs/quote": "^2.4.0",
+		"@editorjs/underline": "^1.0.0",
+		"@types/react": "18.2.79",
+		"@webiny/app-admin": "0.0.0",
+		"@webiny/app-admin-users-cognito": "0.0.0",
+		"@webiny/app-form-builder": "0.0.0",
+		"@webiny/app-headless-cms": "0.0.0",
+		"@webiny/app-page-builder": "0.0.0",
+		"@webiny/app-page-builder-editor": "0.0.0",
+		"@webiny/app-serverless-cms": "0.0.0",
+		"@webiny/cli": "0.0.0",
+		"@webiny/plugins": "0.0.0",
+		"@webiny/react-properties": "0.0.0",
+		"@webiny/serverless-cms-aws": "0.0.0",
+		"core-js": "^3.0.1",
+		"cross-fetch": "^3.0.4",
+		"page-elements": "1.0.0",
+		"prop-types": "^15.7.2",
+		"react": "18.2.0",
+		"react-dom": "18.2.0",
+		"regenerator-runtime": "^0.13.5",
+		"theme": "^1.0.0",
+		"tslib": "^2.4.0"
+	},
+	"devDependencies": {
+		"cross-env": "^5.0.2"
+	},
+	"scripts": {
+		"analyze": "source-map-explorer build/static/js/main.*",
+		"watch": "yarn webiny run watch",
+		"build": "yarn webiny run build"
+	},
+	"browserslist": {
+		"development": [
+			"last 2 chrome versions",
+			"last 2 firefox versions",
+			"last 2 edge versions"
+		],
+		"production": [
+			">0.25%",
+			"not op_mini all",
+			"ie 11"
+		]
+	},
+	"adio": {
+		"ignore": {
+			"dependencies": [
+				"theme",
+				"theme-1",
+				"@webiny/app-apw",
+				"@webiny/app-headless-cms",
+				"@webiny/cli",
+				"@webiny/react-properties",
+				"tslib"
+			],
+			"src": [
+				"@okta/okta-signin-widget",
+				"@okta/okta-auth-js",
+				"@webiny/app-admin-okta",
+				"@webiny/app-admin-auth0",
+				"@webiny/app-file-manager",
+				"@webiny/app-tenant-manager",
+				"@webiny/app-theme-manager",
+				"@webiny/app-page-builder-elements",
+				"@webiny/form",
+				"@webiny/ui"
+			]
+		}
+	}
 }

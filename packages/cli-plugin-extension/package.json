@@ -1,0 +1,53 @@
+{
+  "name": "@webiny/cli-plugin-extension",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/cli-plugin-extension"
+  },
+  "author": "Webiny Ltd.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>"
+  ],
+  "description": "A tool to bootstrap a Webiny project.",
+  "dependencies": {
+    "@babel/runtime": "^7.24.0",
+    "@webiny/cli-plugin-scaffold": "0.0.0",
+    "@webiny/cli-plugin-scaffold-extensions": "0.0.0",
+    "inquirer": "8.2.6",
+    "load-json-file": "^6.2.0",
+    "ora": "4.1.1",
+    "ts-morph": "^11.0.0",
+    "write-json-file": "^4.3.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.23.9",
+    "@babel/core": "^7.24.0",
+    "@babel/preset-env": "^7.24.0",
+    "@types/inquirer": "8.2.10",
+    "@webiny/cli": "0.0.0",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "chalk": "^4.1.0",
+    "execa": "^5.0.0",
+    "fast-glob": "^3.2.7",
+    "find-up": "^5.0.0",
+    "prettier": "^2.8.3",
+    "rimraf": "^5.0.5",
+    "typescript": "4.9.5"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "adio": {},
+  "gitHead": "2cd812f1b150c10df088a5b2f75a62c9e376c1a4",
+  "types": "dist/types.d.ts"
+}

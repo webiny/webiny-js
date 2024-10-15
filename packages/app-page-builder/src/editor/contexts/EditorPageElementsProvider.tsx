@@ -101,6 +101,7 @@ export const EditorPageElementsProvider = ({ children }: EditorPageElementsProvi
             theme={containerizedTheme!}
             renderers={renderers}
             modifiers={modifiers}
+            enableLoaderCache={false}
             beforeRenderer={ElementControls}
         >
             {children}

@@ -16864,6 +16864,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/cli-plugin-extension@workspace:packages/cli-plugin-extension":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cli-plugin-extension@workspace:packages/cli-plugin-extension"
+  dependencies:
+    "@babel/cli": ^7.23.9
+    "@babel/core": ^7.24.0
+    "@babel/preset-env": ^7.24.0
+    "@babel/runtime": ^7.24.0
+    "@types/inquirer": 8.2.10
+    "@webiny/cli": 0.0.0
+    "@webiny/cli-plugin-scaffold": 0.0.0
+    "@webiny/cli-plugin-scaffold-extensions": 0.0.0
+    "@webiny/plugins": 0.0.0
+    "@webiny/project-utils": 0.0.0
+    chalk: ^4.1.0
+    execa: ^5.0.0
+    fast-glob: ^3.2.7
+    find-up: ^5.0.0
+    inquirer: 8.2.6
+    load-json-file: ^6.2.0
+    ora: 4.1.1
+    prettier: ^2.8.3
+    rimraf: ^5.0.5
+    ts-morph: ^11.0.0
+    typescript: 4.9.5
+    write-json-file: ^4.3.0
+  languageName: unknown
+  linkType: soft
+
 "@webiny/cli-plugin-scaffold-admin-app-module@workspace:packages/cli-plugin-scaffold-admin-app-module":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold-admin-app-module@workspace:packages/cli-plugin-scaffold-admin-app-module"
@@ -16919,7 +16948,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli-plugin-scaffold-extensions@workspace:packages/cli-plugin-scaffold-extensions":
+"@webiny/cli-plugin-scaffold-extensions@0.0.0, @webiny/cli-plugin-scaffold-extensions@workspace:packages/cli-plugin-scaffold-extensions":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold-extensions@workspace:packages/cli-plugin-scaffold-extensions"
   dependencies:
@@ -18642,6 +18671,7 @@ __metadata:
     core-js: ^3.0.1
     cross-env: ^5.0.2
     cross-fetch: ^3.0.4
+    page-elements: 1.0.0
     prop-types: ^15.7.2
     react: 18.2.0
     react-dom: 18.2.0
@@ -33055,6 +33085,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"page-elements@1.0.0, page-elements@workspace:extensions/pageElements":
+  version: 0.0.0-use.local
+  resolution: "page-elements@workspace:extensions/pageElements"
+  dependencies:
+    "@webiny/app-page-builder-elements": 0.0.0
+    react: 18.2.0
+  languageName: unknown
+  linkType: soft
+
 "pako@npm:^0.2.5":
   version: 0.2.9
   resolution: "pako@npm:0.2.9"
@@ -40561,6 +40600,7 @@ __metadata:
     cross-env: ^5.0.2
     cross-fetch: ^3.0.4
     graphql: ^15.7.2
+    page-elements: 1.0.0
     react: 18.2.0
     react-dom: 18.2.0
     regenerator-runtime: ^0.13.5

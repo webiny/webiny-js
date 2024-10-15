@@ -150,9 +150,30 @@ const theme = createTheme({
         typography,
         elements: {
             document: {
+                fontFamily: fonts.font1,
                 a: { color: colors.color1 },
                 b: { fontWeight: "bold" },
-                i: { fontStyle: "italic" }
+                i: { fontStyle: "italic" },
+
+                ...typography.headings.reduce<Record<string,any>>((acc, item) => {
+                    acc[item.tag] = item.styles;
+                    return acc;
+                }, {}),
+
+                ...typography.paragraphs.reduce<Record<string,any>>((acc, item) => {
+                    acc[item.tag] = item.styles;
+                    return acc;
+                }, {}),
+
+                ...typography.quotes.reduce<Record<string,any>>((acc, item) => {
+                    acc[item.tag] = item.styles;
+                    return acc;
+                }, {}),
+
+                ...typography.lists.reduce<Record<string,any>>((acc, item) => {
+                    acc[item.tag] = item.styles;
+                    return acc;
+                }, {})
             },
             button: {
                 default: buttons({ background: colors.color5, color: colors.color3 }),
