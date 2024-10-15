@@ -44,6 +44,7 @@ export {
 } from "./components/SingleImageUpload";
 export { LexicalEditor } from "./components/LexicalEditor/LexicalEditor";
 export { Wcp } from "./components/Wcp";
+export * from "./components/IconPicker";
 
 export { FileManager, FileManagerRenderer } from "./base/ui/FileManager";
 export type {
