@@ -1,5 +1,9 @@
-import { createTaskDefinition, TaskDataStatus } from "@webiny/tasks";
-import { HcmsBulkActionsContext, IBulkActionOperationByModelInput } from "~/types";
+import { createPrivateTaskDefinition, TaskDataStatus } from "@webiny/tasks";
+import {
+    HcmsBulkActionsContext,
+    IBulkActionOperationByModelInput,
+    TrashBinCleanUpParams
+} from "~/types";
 import { ChildTasksCleanup } from "~/useCases/internals";
 
 const calculateDateTimeString = () => {
@@ -18,11 +22,9 @@ const calculateDateTimeString = () => {
     // Return the calculated date-time string in ISO 8601 format.
     return currentDate.toISOString();
 };
-// TODO fix
-const cleanup = async ({ context, task }: any) => {
-    /**
-     * We want to clean all child tasks and logs, which have no errors.
-     */
+
+const cleanup = async ({ context, task }: TrashBinCleanUpParams) => {
+    // We want to clean all child tasks and logs, which have no errors.
     const childTasksCleanup = new ChildTasksCleanup();
     try {
         await childTasksCleanup.execute({
@@ -30,14 +32,12 @@ const cleanup = async ({ context, task }: any) => {
             task
         });
     } catch (ex) {
-        console.error("Error while cleaning `EmptyTrashBins` child tasks.", ex);
+        console.error(`Error while cleaning "EmptyTrashBins" child tasks.`, ex);
     }
 };
 
 export const createEmptyTrashBinsTask = () => {
-    return createTaskDefinition<HcmsBulkActionsContext>({
-        // TODO put to true when done with testing
-        isPrivate: false,
+    return createPrivateTaskDefinition<HcmsBulkActionsContext>({
         id: "hcmsEntriesEmptyTrashBins",
         title: "Headless CMS - Empty all trash bins",
         description:
@@ -63,39 +63,43 @@ export const createEmptyTrashBinsTask = () => {
             if (input.triggered) {
                 const { items } = await context.tasks.listTasks({
                     where: {
-                        parentId: store.getTask().id
+                        parentId: store.getTask().id,
+                        taskStatus_in: [TaskDataStatus.RUNNING, TaskDataStatus.PENDING]
                     },
                     limit: 100000
                 });
+
+                if (items.length === 0) {
+                    return response.done(
+                        "Task done: emptying the trash bin for all registered models."
+                    );
+                }
+
                 for (const item of items) {
-                    if (
-                        item.taskStatus === TaskDataStatus.RUNNING ||
-                        item.taskStatus === TaskDataStatus.PENDING
-                    ) {
-                        const status = await context.tasks.fetchServiceInfo(item.id);
-                        if (status?.status === "FAILED" || status?.status === "TIMED_OUT") {
-                            await context.tasks.updateTask(item.id, {
-                                taskStatus: TaskDataStatus.FAILED
-                            });
-                            continue;
-                        } else if (status?.status === "ABORTED") {
-                            await context.tasks.updateTask(item.id, {
-                                taskStatus: TaskDataStatus.ABORTED
-                            });
-                            continue;
-                        }
-                        return response.continue(
-                            {
-                                ...input
-                            },
-                            {
-                                seconds: 3600
-                            }
-                        );
+                    const status = await context.tasks.fetchServiceInfo(item.id);
+
+                    if (status?.status === "FAILED" || status?.status === "TIMED_OUT") {
+                        await context.tasks.updateTask(item.id, {
+                            taskStatus: TaskDataStatus.FAILED
+                        });
+                        continue;
+                    }
+
+                    if (status?.status === "ABORTED") {
+                        await context.tasks.updateTask(item.id, {
+                            taskStatus: TaskDataStatus.ABORTED
+                        });
                     }
                 }
 
-                return response.done();
+                return response.continue(
+                    {
+                        ...input
+                    },
+                    {
+                        seconds: 3600
+                    }
+                );
             }
 
             try {
@@ -125,7 +129,7 @@ export const createEmptyTrashBinsTask = () => {
                         triggered: true
                     },
                     {
-                        seconds: 60
+                        seconds: 120
                     }
                 );
             } catch (ex) {
