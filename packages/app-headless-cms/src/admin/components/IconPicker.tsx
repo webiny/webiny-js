@@ -236,6 +236,7 @@ export const IconPicker = ({
                 onOpen={() => setMustRenderGrid(true)}
                 onClose={() => setMustRenderGrid(false)}
                 renderToPortal={true}
+                render={mustRenderGrid ? renderGrid : () => null}
                 handle={
                     <div className={MenuWrapper}>
                         <div className={pickIcon}>
@@ -243,17 +244,7 @@ export const IconPicker = ({
                         </div>
                     </div>
                 }
-            >
-                {
-                    /**
-                     * Unfortunately we need to cast for build to pass.
-                     *
-                     * real type is RenderableMenuChildren, but the TS is complaining.
-                     * @TODO bruno fix
-                     */
-                    mustRenderGrid && (renderGrid as unknown as React.ReactNode)
-                }
-            </Menu>
+            />
 
             {validationIsValid === false && (
                 <FormElementMessage error>{validationMessage}</FormElementMessage>
