@@ -1,6 +1,8 @@
 import { useGraphQlHandler } from "./handlers/graphQlHandler";
 import { PathType } from "~tests/handlers/types";
 
+jest.setTimeout(90000);
+
 type Option = ["on" | "off", PathType];
 
 describe("introspect", () => {

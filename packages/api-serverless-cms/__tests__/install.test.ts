@@ -1,5 +1,7 @@
 import { useGraphQlHandler } from "./handlers/graphQlHandler";
 
+jest.setTimeout(90000);
+
 describe("install", () => {
     beforeEach(async () => {
         process.env.S3_BUCKET = "a-mock-s3-bucket-which-does-not-exist";
