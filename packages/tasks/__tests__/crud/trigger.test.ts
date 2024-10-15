@@ -3,25 +3,6 @@ import { createMockTaskDefinitions } from "~tests/mocks/definition";
 import { createMockIdentity } from "~tests/mocks/identity";
 import { TaskDataStatus } from "~/types";
 
-jest.mock("@webiny/aws-sdk/client-eventbridge", () => {
-    return {
-        EventBridgeClient: class EventBridgeClient {
-            async send(cmd: any) {
-                return {
-                    input: cmd.input
-                };
-            }
-        },
-        PutEventsCommand: class PutEventsCommand {
-            public readonly input: any;
-
-            constructor(input: any) {
-                this.input = input;
-            }
-        }
-    };
-});
-
 describe("trigger crud", () => {
     const handler = useRawHandler({
         plugins: [...createMockTaskDefinitions()]

@@ -1,6 +1,11 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
 import { createJob } from "./jobs";
-import { NODE_VERSION, BUILD_PACKAGES_RUNNER, listPackagesWithJestTests } from "./utils";
+import {
+    NODE_VERSION,
+    BUILD_PACKAGES_RUNNER,
+    listPackagesWithJestTests,
+    AWS_REGION
+} from "./utils";
 import {
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
@@ -18,7 +23,7 @@ const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DI
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 
 const createJestTestsJob = (storage: string | null) => {
-    const env: Record<string, string> = {};
+    const env: Record<string, string> = { AWS_REGION };
 
     if (storage) {
         if (storage === "ddb-es") {
@@ -237,6 +242,7 @@ export const pullRequests = createWorkflow({
                     with: {
                         name: "verdaccio-files",
                         "retention-days": 1,
+                        "include-hidden-files": true,
                         path: [
                             DIR_WEBINY_JS + "/.verdaccio/",
                             DIR_WEBINY_JS + "/.verdaccio.yaml"
@@ -291,7 +297,7 @@ export const pullRequests = createWorkflow({
                 },
                 {
                     name: "Create a new Webiny project",
-                    run: 'npx create-webiny-project@local-npm test-project --tag local-npm --no-interactive --assign-to-yarnrc \'{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}\' --template-options \'{"region":"eu-central-1"}\'\n'
+                    run: `npx create-webiny-project@local-npm test-project --tag local-npm --no-interactive --assign-to-yarnrc \'{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}\' --template-options \'{"region":"${AWS_REGION}"}\'\n`
                 }
             ]
         })

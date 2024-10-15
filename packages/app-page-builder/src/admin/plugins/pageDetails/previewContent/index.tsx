@@ -7,7 +7,7 @@ import {
 import { Tab } from "@webiny/ui/Tabs";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
-import PagePreview from "./PagePreview";
+import { PagePreview } from "./PagePreview";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 const RenderBlock = styled("div")({

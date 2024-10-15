@@ -12,6 +12,8 @@ import { useContentEntryForm } from "./admin/components/ContentEntryForm/useCont
 import { useContentEntry } from "~/admin/views/contentEntries/hooks";
 import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
 import { ContentEntryEditorConfig as BaseContentEntryEditorConfig } from "./admin/config/contentEntries";
+import { SingletonContentEntry } from "~/admin/views/contentEntries/ContentEntry/SingletonContentEntry";
+import { useSingletonContentEntry } from "~/admin/views/contentEntries/hooks/useSingletonContentEntry";
 
 export const ContentEntryEditorConfig = Object.assign(BaseContentEntryEditorConfig, {
     ContentEntry: Object.assign(ContentEntry, {
@@ -20,6 +22,9 @@ export const ContentEntryEditorConfig = Object.assign(BaseContentEntryEditorConf
             useContentEntryForm
         }),
         ContentEntryFormPreview
+    }),
+    SingletonContentEntry: Object.assign(SingletonContentEntry, {
+        useSingletonContentEntry
     }),
     FieldRenderers: {
         DynamicZone: {

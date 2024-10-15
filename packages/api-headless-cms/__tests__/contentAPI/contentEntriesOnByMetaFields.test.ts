@@ -184,6 +184,8 @@ describe("Content entries - Entry Meta Fields", () => {
     test("deleting latest revision should cause the entry-level meta field values to be propagated to the new latest revision", async () => {
         let { data: revision1 } = await manageApiIdentityA.createTestEntry();
 
+        const { title, slug } = revision1;
+
         let { data: revision2 } = await manageApiIdentityA.createTestEntryFrom({
             revision: revision1.id
         });
@@ -215,6 +217,9 @@ describe("Content entries - Entry Meta Fields", () => {
         expect(revision2.savedOn).toBe(entriesList[0].savedOn);
         expect(revision2.savedBy).toEqual(entriesList[0].savedBy);
 
+        expect(revision2.title).toBe(title);
+        expect(revision2.slug).toBe(slug);
+
         // Delete revision 2 and ensure that revision 1's entry-level meta fields are propagated.
         await manageApiIdentityB.deleteTestEntry({
             revision: revision2.id
@@ -237,5 +242,8 @@ describe("Content entries - Entry Meta Fields", () => {
         expect(revision1.modifiedBy).toEqual(entriesList[0].modifiedBy);
         expect(revision1.savedOn).toBe(entriesList[0].savedOn);
         expect(revision1.savedBy).toEqual(entriesList[0].savedBy);
+
+        expect(revision1.title).toBe(title);
+        expect(revision1.slug).toBe(slug);
     });
 });

@@ -1,0 +1,13 @@
+diff --git a/observer-foundation.d.ts b/observer-foundation.d.ts
+index d546598c6444aae71b00efdba33c20a884058e6f..ea99264896922327a4e5e40e6037edabdd9557c6 100644
+--- a/observer-foundation.d.ts
++++ b/observer-foundation.d.ts
+@@ -22,7 +22,7 @@
+  */
+ import { MDCFoundation } from './foundation';
+ import { Observer, ObserverRecord } from './observer';
+-export declare class MDCObserverFoundation<Adapter> extends MDCFoundation<Adapter> {
++export declare class MDCObserverFoundation<Adapter extends {} = {}> extends MDCFoundation<Adapter> {
+     /** A set of cleanup functions to unobserve changes. */
+     protected unobserves: Set<Function>;
+     constructor(adapter: Adapter);

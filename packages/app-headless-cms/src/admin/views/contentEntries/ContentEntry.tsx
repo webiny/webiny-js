@@ -4,10 +4,12 @@ import styled from "@emotion/styled";
 import { Tab, Tabs } from "@webiny/ui/Tabs";
 import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { makeDecoratable } from "@webiny/app";
 import { RevisionsList } from "./ContentEntry/RevisionsList/RevisionsList";
 import { useContentEntry } from "./hooks/useContentEntry";
+import { Header } from "~/admin/components/ContentEntryForm/Header";
 import { ContentEntryForm } from "~/admin/components/ContentEntryForm/ContentEntryForm";
-import { makeDecoratable } from "@webiny/app";
+import { usePersistEntry } from "~/admin/hooks/usePersistEntry";
 
 const DetailsContainer = styled("div")({
     height: "calc(100% - 10px)",
@@ -44,6 +46,7 @@ declare global {
 
 export const ContentEntry = makeDecoratable("ContentEntry", () => {
     const { loading, entry, activeTab, setActiveTab } = useContentEntry();
+    const { persistEntry } = usePersistEntry({ addItemToListCache: true });
 
     return (
         <DetailsContainer>
@@ -57,7 +60,11 @@ export const ContentEntry = makeDecoratable("ContentEntry", () => {
                         <RenderBlock>
                             <Elevation z={2} className={elevationStyles}>
                                 {loading && <CircularProgress />}
-                                <ContentEntryForm entry={entry} addEntryToListCache={true} />
+                                <ContentEntryForm
+                                    entry={entry}
+                                    persistEntry={persistEntry}
+                                    header={<Header />}
+                                />
                             </Elevation>
                         </RenderBlock>
                     </Tab>

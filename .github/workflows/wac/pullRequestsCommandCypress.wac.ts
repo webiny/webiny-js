@@ -7,7 +7,7 @@ import {
     createGlobalBuildCacheSteps,
     createRunBuildCacheSteps
 } from "./steps";
-import { NODE_OPTIONS, NODE_VERSION, BUILD_PACKAGES_RUNNER } from "./utils";
+import { NODE_OPTIONS, NODE_VERSION, BUILD_PACKAGES_RUNNER, AWS_REGION } from "./utils";
 import { createJob, createValidateWorkflowsJob } from "./jobs";
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
@@ -112,6 +112,7 @@ const createCypressJobs = (dbSetup: string) => {
                 with: {
                     name: `verdaccio-files-${dbSetup}`,
                     "retention-days": 1,
+                    "include-hidden-files": true,
                     path: [DIR_WEBINY_JS + "/.verdaccio/", DIR_WEBINY_JS + "/.verdaccio.yaml"].join(
                         "\n"
                     )
@@ -137,6 +138,7 @@ const createCypressJobs = (dbSetup: string) => {
                 with: {
                     name: `project-files-${dbSetup}`,
                     "retention-days": 1,
+                    "include-hidden-files": true,
                     path: [
                         `${DIR_TEST_PROJECT}/`,
                         `!${DIR_TEST_PROJECT}/node_modules/**/*`,
@@ -210,7 +212,7 @@ export const pullRequestsCommandCypress = createWorkflow({
     on: "issue_comment",
     env: {
         NODE_OPTIONS,
-        AWS_REGION: "eu-central-1"
+        AWS_REGION
     },
     jobs: {
         checkComment: createJob({

@@ -16,7 +16,21 @@
     { "path": "../api-tenancy" },
     { "path": "../error" },
     { "path": "../handler-client" },
-    { "path": "../handler-graphql" }
+    { "path": "../handler-graphql" },
+    { "path": "../api-admin-users" },
+    { "path": "../api-apw" },
+    { "path": "../api-audit-logs" },
+    { "path": "../api-headless-cms-aco" },
+    { "path": "../api-headless-cms-tasks" },
+    { "path": "../api-page-builder-import-export" },
+    { "path": "../api-page-builder-import-export-so-ddb" },
+    { "path": "../api-record-locking" },
+    { "path": "../api-wcp" },
+    { "path": "../api-websockets" },
+    { "path": "../handler" },
+    { "path": "../handler-aws" },
+    { "path": "../plugins" },
+    { "path": "../tasks" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -54,7 +68,39 @@
       "@webiny/handler-client/*": ["../handler-client/src/*"],
       "@webiny/handler-client": ["../handler-client/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"]
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/api-admin-users/*": ["../api-admin-users/src/*"],
+      "@webiny/api-admin-users": ["../api-admin-users/src"],
+      "@webiny/api-apw/*": ["../api-apw/src/*"],
+      "@webiny/api-apw": ["../api-apw/src"],
+      "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
+      "@webiny/api-audit-logs": ["../api-audit-logs/src"],
+      "@webiny/api-headless-cms-aco/*": ["../api-headless-cms-aco/src/*"],
+      "@webiny/api-headless-cms-aco": ["../api-headless-cms-aco/src"],
+      "@webiny/api-headless-cms-tasks/*": ["../api-headless-cms-tasks/src/*"],
+      "@webiny/api-headless-cms-tasks": ["../api-headless-cms-tasks/src"],
+      "@webiny/api-page-builder-import-export/*": ["../api-page-builder-import-export/src/*"],
+      "@webiny/api-page-builder-import-export": ["../api-page-builder-import-export/src"],
+      "@webiny/api-page-builder-import-export-so-ddb/*": [
+        "../api-page-builder-import-export-so-ddb/src/*"
+      ],
+      "@webiny/api-page-builder-import-export-so-ddb": [
+        "../api-page-builder-import-export-so-ddb/src"
+      ],
+      "@webiny/api-record-locking/*": ["../api-record-locking/src/*"],
+      "@webiny/api-record-locking": ["../api-record-locking/src"],
+      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
+      "@webiny/api-wcp": ["../api-wcp/src"],
+      "@webiny/api-websockets/*": ["../api-websockets/src/*"],
+      "@webiny/api-websockets": ["../api-websockets/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/tasks/*": ["../tasks/src/*"],
+      "@webiny/tasks": ["../tasks/src"]
     },
     "baseUrl": "."
   }

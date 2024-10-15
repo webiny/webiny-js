@@ -16,12 +16,13 @@ export interface BindComponentRenderPropOnChange<T = any> {
 export interface FormValidationOptions {
     skipValidators?: string[];
 }
-export interface FormAPI<T extends GenericFormData = GenericFormData> {
+export interface FormAPI<T = GenericFormData> {
     data: T;
     submit: (
         event?: React.SyntheticEvent<any, any>,
         options?: FormValidationOptions
     ) => Promise<any>;
+    isPristine: boolean;
     setValue: FormSetValue;
     getValue: (name: string) => any;
     validate: () => Promise<boolean>;

@@ -34,6 +34,8 @@ export interface SecurityConfig {
     advancedAccessControlLayer?: ProjectPackageFeatures["advancedAccessControlLayer"];
     getTenant: GetTenant;
     storageOperations: SecurityStorageOperations;
+    groupsProvider?: () => Promise<SecurityRole[]>;
+    teamsProvider?: () => Promise<SecurityTeam[]>;
 }
 
 export interface ErrorEvent extends InstallEvent {
@@ -96,6 +98,7 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     isAuthorizationEnabled(): boolean;
 
     withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T>;
+
     withIdentity<T = any>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T>;
 
     addAuthorizer(authorizer: Authorizer): void;
@@ -279,17 +282,29 @@ export interface CreatedBy {
 }
 
 export interface Group {
-    tenant: string;
-    createdOn: string;
+    // Groups defined via plugins might not have `tenant` specified (meaning they are global).
+    tenant: string | null;
+
+    // Groups defined via plugins don't have `createdOn` and `createdBy` specified.
+    createdOn: string | null;
     createdBy: CreatedBy | null;
+
     id: string;
     name: string;
     slug: string;
     description: string;
     system: boolean;
     permissions: SecurityPermission[];
-    webinyVersion: string;
+
+    // Groups defined via plugins don't have `webinyVersion` specified.
+    webinyVersion: string | null;
+
+    // Set to `true` when a group is defined via a plugin.
+    plugin?: boolean;
 }
+
+export type SecurityRole = Group;
+export type SecurityTeam = Team;
 
 export type GroupInput = Pick<Group, "name" | "slug" | "description" | "permissions"> & {
     system?: boolean;
@@ -302,6 +317,7 @@ export interface GetGroupParams {
 export interface ListGroupsParams {
     where?: {
         id_in?: string[];
+        slug_in?: string[];
     };
     sort?: string[];
 }
@@ -324,16 +340,25 @@ export interface DeleteGroupParams {
 }
 
 export interface Team {
-    tenant: string;
-    createdOn: string;
+    // Teams defined via plugins might not have `tenant` specified (meaning they are global).
+    tenant: string | null;
+
+    // Teams defined via plugins don't have `createdOn` and `createdBy` specified.
+    createdOn: string | null;
     createdBy: CreatedBy | null;
+
     id: string;
     name: string;
     slug: string;
     description: string;
     system: boolean;
     groups: string[];
-    webinyVersion: string;
+
+    // Teams defined via plugins don't have `webinyVersion` specified.
+    webinyVersion: string | null;
+
+    // Set to `true` when a group is defined via a plugin.
+    plugin?: boolean;
 }
 
 export type TeamInput = Pick<Team, "name" | "slug" | "description" | "groups"> & {
@@ -347,6 +372,7 @@ export interface GetTeamParams {
 export interface ListTeamsParams {
     where?: {
         id_in?: string[];
+        slug_in?: string[];
     };
     sort?: string[];
 }
@@ -433,9 +459,19 @@ export interface TenantLink<TData = any> {
     webinyVersion: string;
 }
 
-export type PermissionsTenantLink = TenantLink<{
+export interface PermissionsTenantLinkGroup {
+    id: string;
+    permissions: SecurityPermission[];
+}
+
+export interface PermissionsTenantLinkTeam {
+    id: string;
     groups: Array<{ id: string; permissions: SecurityPermission[] }>;
-    teams: Array<{ id: string; groups: Array<{ id: string; permissions: SecurityPermission[] }> }>;
+}
+
+export type PermissionsTenantLink = TenantLink<{
+    groups: PermissionsTenantLinkGroup[];
+    teams: PermissionsTenantLinkTeam[];
 }>;
 
 export interface ApiKey {

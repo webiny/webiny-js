@@ -2,7 +2,6 @@ import { SecurityIdentity } from "@webiny/api-security/types";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage";
 import { getDate } from "~/utils/date";
 import { getIdentity } from "~/utils/identity";
-import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation";
 import { CmsContext, CmsEntry, CmsEntryStorageOperationsMoveToBinParams, CmsModel } from "~/types";
 
 export class TransformEntryRestoreFromBin {
@@ -28,14 +27,6 @@ export class TransformEntryRestoreFromBin {
     }
 
     private async createRestoreFromBinEntryData(model: CmsModel, originalEntry: CmsEntry) {
-        await validateModelEntryDataOrThrow({
-            context: this.context,
-            model,
-            data: originalEntry.values,
-            entry: originalEntry,
-            skipValidators: ["required"]
-        });
-
         const currentDateTime = new Date().toISOString();
         const currentIdentity = this.getIdentity();
 

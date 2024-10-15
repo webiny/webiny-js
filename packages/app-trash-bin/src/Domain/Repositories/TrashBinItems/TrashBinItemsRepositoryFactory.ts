@@ -1,6 +1,7 @@
 import { IMetaRepository } from "@webiny/app-utils";
 import { ITrashBinItemMapper } from "~/Domain";
 import {
+    ITrashBinBulkActionsGateway,
     ITrashBinDeleteItemGateway,
     ITrashBinListGateway,
     ITrashBinRestoreItemGateway
@@ -15,6 +16,7 @@ export class TrashBinItemsRepositoryFactory<TEntry extends Record<string, any>> 
         listGateway: ITrashBinListGateway<TEntry>,
         deleteGateway: ITrashBinDeleteItemGateway,
         restoreGateway: ITrashBinRestoreItemGateway<TEntry>,
+        bulkActionsGateway: ITrashBinBulkActionsGateway,
         itemMapper: ITrashBinItemMapper<TEntry>
     ) {
         const cacheKey = this.getCacheKey();
@@ -27,6 +29,7 @@ export class TrashBinItemsRepositoryFactory<TEntry extends Record<string, any>> 
                     listGateway,
                     deleteGateway,
                     restoreGateway,
+                    bulkActionsGateway,
                     itemMapper
                 )
             );

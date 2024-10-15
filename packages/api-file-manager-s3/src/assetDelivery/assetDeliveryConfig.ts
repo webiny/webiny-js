@@ -9,7 +9,13 @@ import { SharpTransform } from "~/assetDelivery/s3/SharpTransform";
 
 export type AssetDeliveryParams = Parameters<typeof createBaseAssetDelivery>[0] & {
     imageResizeWidths?: number[];
+    /**
+     * BE CAREFUL!
+     * Setting this to more than 1 hour may cause your URLs to still expire before the desired expiration time.
+     * @see https://repost.aws/knowledge-center/presigned-url-s3-bucket-expiration
+     */
     presignedUrlTtl?: number;
+    assetStreamingMaxSize?: number;
 };
 
 export const assetDeliveryConfig = (params: AssetDeliveryParams) => {
@@ -17,8 +23,14 @@ export const assetDeliveryConfig = (params: AssetDeliveryParams) => {
     const region = process.env.AWS_REGION as string;
 
     const {
-        presignedUrlTtl = 900,
+        // Presigned URLs last 1 hour
+        presignedUrlTtl = 3600,
         imageResizeWidths = [100, 300, 500, 750, 1000, 1500, 2500],
+        /**
+         * Even though Lambda's response payload limit is 6,291,556 bytes, we leave some room for the response envelope.
+         * We had situations where a 4.7MB file would cause the payload to go over the limit, so let's be on the safe side.
+         */
+        assetStreamingMaxSize = 4718592,
         ...baseParams
     } = params;
 
@@ -35,7 +47,7 @@ export const assetDeliveryConfig = (params: AssetDeliveryParams) => {
             });
 
             config.decorateAssetOutputStrategy(() => {
-                return new S3OutputStrategy(s3, bucket, presignedUrlTtl);
+                return new S3OutputStrategy(s3, bucket, presignedUrlTtl, assetStreamingMaxSize);
             });
 
             config.decorateAssetTransformationStrategy(() => {

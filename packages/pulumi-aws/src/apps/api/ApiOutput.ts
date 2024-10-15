@@ -19,6 +19,7 @@ export const ApiOutput = createAppModule({
             return {
                 apiDomain: output["apiDomain"] as string,
                 apiUrl: output["apiUrl"] as string,
+                graphqlLambdaRole: output["graphqlLambdaRole"] as string,
                 apwSchedulerEventRule: output["apwSchedulerEventRule"] as string | undefined,
                 apwSchedulerEventTargetId: output["apwSchedulerEventTargetId"] as
                     | string

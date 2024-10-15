@@ -6,13 +6,17 @@ export default (): CliCommandPlugin => ({
     name: "cli-command-scaffold",
     create({ yargs, context }) {
         yargs.command(
-            "scaffold [template-name]",
+            "scaffold [template-name] [template-args]",
             "Generate boilerplate code",
             (yargs: Record<string, any>) => {
                 yargs.example("$0 scaffold");
-                yargs.example("$0 scaffold new-extension --type admin --name customFilePreview");
+                yargs.example("$0 scaffold extension --type admin --name customFilePreview");
                 yargs.positional("templateName", {
-                    describe: `Name of the scaffold to run (useful when running in non-interactive mode).`,
+                    describe: `Name of the scaffold to run (used when running in non-interactive mode).`,
+                    type: "string"
+                });
+                yargs.positional("templateArgs", {
+                    describe: `Arguments for the scaffold to run (used when running in non-interactive mode).`,
                     type: "string"
                 });
             },

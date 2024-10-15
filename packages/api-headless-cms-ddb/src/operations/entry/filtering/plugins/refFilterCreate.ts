@@ -5,17 +5,23 @@ import {
 } from "~/plugins/CmsEntryFieldFilterPlugin";
 import { extractWhereParams } from "~/operations/entry/filtering/where";
 import { transformValue } from "~/operations/entry/filtering/transform";
+import { GenericRecord } from "@webiny/api/types";
 
 export const createRefFilterCreate = () => {
-    const plugin = new CmsEntryFieldFilterPlugin({
+    const plugin = new CmsEntryFieldFilterPlugin<GenericRecord | null | undefined>({
         fieldType: "ref",
         create: params => {
-            const { value, valueFilterPlugins, transformValuePlugins, field } = params;
+            const { valueFilterPlugins, transformValuePlugins, field } = params;
+            let value = params.value;
+            if (!value) {
+                value = {
+                    entryId: null
+                };
+            }
             const propertyFilters = Object.keys(value);
             if (propertyFilters.length === 0) {
                 return null;
             }
-
             const filters: CmsEntryFieldFilterPluginCreateResponse[] = [];
 
             for (const propertyFilter of propertyFilters) {

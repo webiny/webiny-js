@@ -130,9 +130,6 @@ export const defaultRenderUrlFunction = async (
 ): Promise<RenderResult> => {
     let browser!: Browser;
 
-    // NOTE: For the next upgrade (once we have a newer AWS layer for chromium), this issue contains some useful information:
-    // https://github.com/Sparticuz/chromium/issues/85
-
     try {
         browser = await puppeteer.launch({
             args: chromium.args,
@@ -227,10 +224,16 @@ export const defaultRenderUrlFunction = async (
                 await page.close();
             }
 
-            // Now we can attempt to close the browser.
-            console.log("Closing browser...");
-            await browser.close();
-            console.log("Browser closed!");
+            // This is fixing an issue where the `await browser.close()` would hang indefinitely.
+            // The "inspiration" for this fix came from the following issue:
+            // https://github.com/Sparticuz/chromium/issues/85
+            console.log("Killing browser process...");
+            const childProcess = browser.process();
+            if (childProcess) {
+                childProcess.kill(9);
+            }
+
+            console.log("Browser process killed.");
         }
     }
 

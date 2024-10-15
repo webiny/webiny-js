@@ -28,7 +28,6 @@ import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as CopyIcon } from "@material-design-icons/svg/outlined/content_copy.svg";
-import { featureFlags } from "@webiny/feature-flags";
 import { Group } from "~/types";
 
 const t = i18n.ns("app-security/admin/roles/form");
@@ -126,7 +125,9 @@ export const GroupsForm = () => {
 
     const data: Group = loading ? {} : get(getQuery, "data.security.group.data", {});
 
-    const systemGroup = data.slug === "full-access";
+    const systemGroup = data.slug === "full-access" || data.system;
+    const pluginGroup = data.plugin;
+    const canModifyGroup = !systemGroup && !pluginGroup;
 
     const showEmptyView = !newGroup && !loading && isEmpty(data);
     // Render "No content" selected view.
@@ -155,6 +156,26 @@ export const GroupsForm = () => {
                         {loading && <CircularProgress />}
                         <SimpleFormHeader title={data.name ? data.name : "Untitled"} />
                         <SimpleFormContent>
+                            {systemGroup && (
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Alert type={"info"} title={"Permissions are locked"}>
+                                            This is a protected system role and you can&apos;t
+                                            modify its permissions.
+                                        </Alert>
+                                    </Cell>
+                                </Grid>
+                            )}
+                            {pluginGroup && (
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Alert type={"info"} title={"Permissions are locked"}>
+                                            This role is registered via an extension, and cannot be
+                                            modified.
+                                        </Alert>
+                                    </Cell>
+                                </Grid>
+                            )}
                             <Grid>
                                 <Cell span={6}>
                                     <Bind
@@ -163,7 +184,7 @@ export const GroupsForm = () => {
                                     >
                                         <Input
                                             label={t`Name`}
-                                            disabled={systemGroup}
+                                            disabled={!canModifyGroup}
                                             data-testid="admin.am.group.new.name"
                                         />
                                     </Bind>
@@ -174,7 +195,7 @@ export const GroupsForm = () => {
                                         validators={validation.create("required,minLength:3")}
                                     >
                                         <Input
-                                            disabled={Boolean(data.id)}
+                                            disabled={!canModifyGroup || !newGroup}
                                             label={t`Slug`}
                                             data-testid="admin.am.group.new.slug"
                                         />
@@ -190,45 +211,30 @@ export const GroupsForm = () => {
                                         <Input
                                             label={t`Description`}
                                             rows={3}
-                                            disabled={systemGroup}
+                                            disabled={!canModifyGroup}
                                             data-testid="admin.am.group.new.description"
                                         />
                                     </Bind>
                                 </Cell>
                             </Grid>
-                            {systemGroup && (
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Alert type={"info"} title={"Permissions are locked"}>
-                                            This is a protected system role and you can&apos;t
-                                            modify its permissions.
-                                        </Alert>
-                                    </Cell>
-                                </Grid>
-                            )}
-                            {!systemGroup && (
+                            {canModifyGroup && (
                                 <Grid>
                                     <PermissionsTitleCell span={12}>
                                         <Typography use={"subtitle1"}>{t`Permissions`}</Typography>
-                                        {featureFlags.copyPermissionsButton && (
-                                            <Tooltip content="Copy as JSON" placement={"top"}>
-                                                <IconButton
-                                                    icon={<CopyIcon />}
-                                                    onClick={() => {
-                                                        navigator.clipboard.writeText(
-                                                            JSON.stringify(
-                                                                data.permissions,
-                                                                null,
-                                                                2
-                                                            )
-                                                        );
-                                                        showSnackbar(
-                                                            "JSON data copied to clipboard."
-                                                        );
-                                                    }}
-                                                />
-                                            </Tooltip>
-                                        )}
+                                        <Tooltip
+                                            content="Copy permissions as JSON"
+                                            placement={"top"}
+                                        >
+                                            <IconButton
+                                                icon={<CopyIcon />}
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(
+                                                        JSON.stringify(data.permissions, null, 2)
+                                                    );
+                                                    showSnackbar("JSON data copied to clipboard.");
+                                                }}
+                                            />
+                                        </Tooltip>
                                     </PermissionsTitleCell>
                                     <Cell span={12}>
                                         <Bind name={"permissions"} defaultValue={[]}>
@@ -240,7 +246,7 @@ export const GroupsForm = () => {
                                 </Grid>
                             )}
                         </SimpleFormContent>
-                        {systemGroup ? null : (
+                        {canModifyGroup && (
                             <SimpleFormFooter>
                                 <ButtonWrapper>
                                     <ButtonDefault

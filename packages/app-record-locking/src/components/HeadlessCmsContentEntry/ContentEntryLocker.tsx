@@ -1,4 +1,3 @@
-import { useContentEntriesList, useContentEntry } from "@webiny/app-headless-cms";
 import React, { useEffect, useRef } from "react";
 import { useRecordLocking } from "~/hooks";
 import { IIsRecordLockedParams, IRecordLockingIdentity, IRecordLockingLockRecord } from "~/types";
@@ -10,12 +9,16 @@ import {
 import { parseIdentifier } from "@webiny/utils";
 import { useDialogs } from "@webiny/app-admin";
 import styled from "@emotion/styled";
+import { CmsContentEntry, CmsModel } from "@webiny/app-headless-cms/types";
 
 const Bold = styled.span`
     font-weight: 600;
 `;
 
 export interface IContentEntryLockerProps {
+    entry: CmsContentEntry;
+    model: CmsModel;
+    onEntryUnlocked: () => void;
     onDisablePrompt: (flag: boolean) => void;
     children: React.ReactElement;
 }
@@ -39,12 +42,15 @@ const ForceUnlocked = ({ user }: IForceUnlockedProps) => {
     );
 };
 
-export const ContentEntryLocker = ({ onDisablePrompt, children }: IContentEntryLockerProps) => {
-    const { entry, contentModel: model } = useContentEntry();
+export const ContentEntryLocker = ({
+    onEntryUnlocked,
+    onDisablePrompt,
+    entry,
+    model,
+    children
+}: IContentEntryLockerProps) => {
     const { updateEntryLock, unlockEntry, fetchLockedEntryLockRecord, removeEntryLock } =
         useRecordLocking();
-
-    const { navigateTo } = useContentEntriesList();
 
     const subscription = useRef<IWebsocketsSubscription<any>>();
 
@@ -77,7 +83,7 @@ export const ContentEntryLocker = ({ onDisablePrompt, children }: IContentEntryL
                     onClose: undefined,
                     cancelLabel: undefined
                 });
-                navigateTo();
+                onEntryUnlocked();
             }
         );
 
@@ -87,7 +93,7 @@ export const ContentEntryLocker = ({ onDisablePrompt, children }: IContentEntryL
             }
             subscription.current.off();
         };
-    }, [entry.id, navigateTo, model.modelId]);
+    }, [entry.id, onEntryUnlocked, model.modelId]);
 
     useEffect(() => {
         if (!entry.id) {

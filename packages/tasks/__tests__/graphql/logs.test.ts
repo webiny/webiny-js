@@ -1,7 +1,7 @@
 import { useGraphQLHandler } from "~tests/helpers/useGraphQLHandler";
 import { createMockTaskDefinitions } from "~tests/mocks/definition";
 import { useRawHandler } from "~tests/helpers/useRawHandler";
-import { ITaskLogItemType } from "~/types";
+import { TaskLogItemType } from "~/types";
 import { createMockIdentity } from "~tests/mocks/identity";
 
 describe("graphql - logs", () => {
@@ -63,7 +63,7 @@ describe("graphql - logs", () => {
 
         const log2Item = {
             message: "Log 2 item message",
-            type: ITaskLogItemType.INFO,
+            type: TaskLogItemType.INFO,
             createdOn: new Date().toISOString()
         };
         const log2 = await context.tasks.updateLog(log1.id, {
@@ -72,7 +72,7 @@ describe("graphql - logs", () => {
 
         const log3Item = {
             message: "log 3 item message",
-            type: ITaskLogItemType.INFO,
+            type: TaskLogItemType.INFO,
             createdOn: new Date().toISOString()
         };
 
@@ -82,7 +82,7 @@ describe("graphql - logs", () => {
 
         const log4Item = {
             message: "log 4 item message",
-            type: ITaskLogItemType.ERROR,
+            type: TaskLogItemType.ERROR,
             createdOn: new Date().toISOString(),
             error: {
                 message: "log 4 item error message",

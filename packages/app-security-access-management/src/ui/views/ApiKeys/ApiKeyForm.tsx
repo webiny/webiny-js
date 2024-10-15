@@ -35,7 +35,6 @@ import { ReactComponent as CopyIcon } from "@material-design-icons/svg/outlined/
 import styled from "@emotion/styled";
 import { ApiKey } from "~/types";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { featureFlags } from "@webiny/feature-flags";
 
 const t = i18n.ns("app-security-admin-users/admin/api-keys/form");
 
@@ -212,25 +211,20 @@ export const ApiKeyForm = () => {
                                 <Cell span={12}>
                                     <PermissionsTitleCell span={12}>
                                         <Typography use={"subtitle1"}>{t`Permissions`}</Typography>
-                                        {featureFlags.copyPermissionsButton && (
-                                            <Tooltip content="Copy as JSON" placement={"top"}>
-                                                <IconButton
-                                                    icon={<CopyIcon />}
-                                                    onClick={() => {
-                                                        navigator.clipboard.writeText(
-                                                            JSON.stringify(
-                                                                data.permissions,
-                                                                null,
-                                                                2
-                                                            )
-                                                        );
-                                                        showSnackbar(
-                                                            "JSON data copied to clipboard."
-                                                        );
-                                                    }}
-                                                />
-                                            </Tooltip>
-                                        )}
+                                        <Tooltip
+                                            content="Copy permissions as JSON"
+                                            placement={"top"}
+                                        >
+                                            <IconButton
+                                                icon={<CopyIcon />}
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(
+                                                        JSON.stringify(data.permissions, null, 2)
+                                                    );
+                                                    showSnackbar("JSON data copied to clipboard.");
+                                                }}
+                                            />
+                                        </Tooltip>
                                     </PermissionsTitleCell>
                                 </Cell>
                                 <Cell span={12}>

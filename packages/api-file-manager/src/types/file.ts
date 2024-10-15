@@ -26,6 +26,7 @@ export interface File {
     createdBy: CreatedBy;
     modifiedBy: CreatedBy | null;
     savedBy: CreatedBy;
+    extensions?: Record<string, any>;
 
     /**
      * Added with new storage operations refactoring.

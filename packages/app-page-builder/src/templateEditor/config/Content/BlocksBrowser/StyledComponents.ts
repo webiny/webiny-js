@@ -15,16 +15,17 @@ export const List = styled("div")({
 export const Input = styled("div")({
     backgroundColor: "var(--mdc-theme-on-background)",
     position: "relative",
-    height: 30,
-    padding: 3,
+    height: 36,
     width: "100%",
     borderRadius: 2,
     "> input": {
         border: "none",
         fontSize: 16,
-        width: "calc(100% - 10px)",
-        height: "100%",
-        marginLeft: 50,
+        position: "absolute",
+        top: 0,
+        bottom: 0,
+        left: 36,
+        right: 0,
         backgroundColor: "transparent",
         outline: "none",
         color: "var(--mdc-theme-text-primary-on-background)"
@@ -37,14 +38,13 @@ export const searchIcon = css({
         position: "absolute",
         width: 24,
         height: 24,
-        left: 15,
-        top: 7
+        left: 8,
+        top: 6
     }
 });
 
 export const wrapper = css({
     height: "100vh",
-    //overflow: "scroll",
     backgroundColor: "var(--mdc-theme-background)"
 });
 

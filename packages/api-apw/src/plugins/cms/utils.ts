@@ -53,6 +53,7 @@ interface GetLatestEntryRevisionParams {
     model: CmsModel;
     entryId: string;
 }
+
 export const getLatestEntryRevision = async (
     params: GetLatestEntryRevisionParams
 ): Promise<CmsEntry> => {
@@ -74,6 +75,7 @@ interface UpdateEntryMetaParams {
     cms: HeadlessCms;
     model: CmsModel;
 }
+
 export const updateEntryMeta = async (params: UpdateEntryMetaParams): Promise<void> => {
     const { entryId, cms, model, meta } = params;
 
@@ -119,8 +121,9 @@ interface AssignWorkflowToEntryParams {
     entry: CmsEntry;
     model: CmsModel;
 }
+
 export const assignWorkflowToEntry = async (params: AssignWorkflowToEntryParams): Promise<void> => {
-    const { apw, entry, model } = params;
+    const { apw, entry } = params;
     /**
      * Lookup and assign "workflowId".
      */
@@ -133,8 +136,6 @@ export const assignWorkflowToEntry = async (params: AssignWorkflowToEntryParams)
                 app: ApwWorkflowApplications.CMS
             }
         });
-
-        console.log(`Found ${entries.length} workflow(s) for model ${model.modelId}.`);
 
         /*
          *  Re-order them based on workflow scope and pre-defined rule i.e.

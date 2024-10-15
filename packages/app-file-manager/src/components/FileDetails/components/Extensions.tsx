@@ -4,7 +4,7 @@ import { CompositionScope } from "@webiny/app-admin";
 import { CmsModel } from "@webiny/app-headless-cms/types";
 import { ModelProvider } from "@webiny/app-headless-cms/admin/components/ModelProvider";
 import { Fields } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/Fields";
-import { Bind, BindComponentProps } from "@webiny/form";
+import { Bind, BindPrefix } from "@webiny/form";
 
 const HideEmptyCells = styled.div`
     .mdc-layout-grid__cell:empty {
@@ -16,13 +16,6 @@ interface ExtensionsProps {
     model: CmsModel;
 }
 
-function BindWithPrefix(props: BindComponentProps) {
-    return (
-        <Bind {...props} name={`extensions.${props.name}`}>
-            {props.children}
-        </Bind>
-    );
-}
 export const Extensions = ({ model }: ExtensionsProps) => {
     const extensionsField = useMemo(() => {
         return model.fields.find(f => f.fieldId === "extensions");
@@ -42,15 +35,17 @@ export const Extensions = ({ model }: ExtensionsProps) => {
     return (
         <CompositionScope name={"fm.fileDetails.extensionFields"}>
             <ModelProvider model={model}>
-                <HideEmptyCells>
-                    <Fields
-                        contentModel={model}
-                        // @ts-expect-error
-                        Bind={BindWithPrefix}
-                        fields={fields}
-                        layout={layout}
-                    />
-                </HideEmptyCells>
+                <BindPrefix name={"extensions"}>
+                    <HideEmptyCells>
+                        <Fields
+                            contentModel={model}
+                            // @ts-expect-error
+                            Bind={Bind}
+                            fields={fields}
+                            layout={layout}
+                        />
+                    </HideEmptyCells>
+                </BindPrefix>
             </ModelProvider>
         </CompositionScope>
     );

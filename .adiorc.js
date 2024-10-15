@@ -36,6 +36,8 @@ module.exports = {
             "https",
             "inspector",
             "node:fs",
+            "node:timers",
+            "node:path",
             "os",
             "path",
             "readline",
