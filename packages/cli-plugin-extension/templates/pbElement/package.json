@@ -1,6 +1,9 @@
 {
   "name": "PACKAGE_NAME",
-  "main": "src/index.tsx",
+  "exports": {
+    "./admin": "./src/admin.tsx",
+    "./website": "./src/website.tsx"
+  },
   "version": "1.0.0",
   "keywords": [
     "webiny-extension",
