@@ -10,7 +10,8 @@ import { formatCode } from "@webiny/cli-plugin-scaffold/utils";
 
 export class PbElementExtension extends AbstractExtension {
     async generate() {
-        await this.addPluginToAdminApp();
+        await this.addPluginToApp('admin');
+        await this.addPluginToApp('website');
 
         // Update dependencies list in package.json.
         const packageJsonPath = path.join("apps", "admin", "package.json");
@@ -39,10 +40,10 @@ export class PbElementExtension extends AbstractExtension {
         ];
     }
 
-    private async addPluginToAdminApp() {
+    private async addPluginToApp(app: "admin" | "website") {
         const { name, packageName } = this.params;
 
-        const extensionsFilePath = path.join("apps", "admin", "src", "Extensions.tsx");
+        const extensionsFilePath = path.join("apps", app, "src", "Extensions.tsx");
 
         const ucFirstName = name.charAt(0).toUpperCase() + name.slice(1);
         const componentName = ucFirstName + "Extension";
@@ -72,7 +73,7 @@ export class PbElementExtension extends AbstractExtension {
 
         source.insertImportDeclaration(index, {
             defaultImport: importName,
-            moduleSpecifier: importPath
+            moduleSpecifier: importPath + "/" + app
         });
 
         const extensionsIdentifier = source.getFirstDescendant(node => {
