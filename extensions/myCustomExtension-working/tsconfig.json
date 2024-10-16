@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": [
+    "src"
+  ],
+  "compilerOptions": {
+    "composite": false,
+    "paths": {
+      "@webiny/app-page-builder/*": [
+        "../../packages/app-page-builder/src/*"
+      ],
+      "@webiny/app-page-builder": [
+        "../../packages/app-page-builder/src"
+      ]
+    },
+    "baseUrl": "."
+  }
+}
