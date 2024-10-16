@@ -3,7 +3,7 @@ import glob from "glob";
 import path from "path";
 import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
 
-export type ExtensionType = "api" | "admin" | undefined;
+export type ExtensionType = "api" | "admin" | "pb-element" | undefined;
 
 export type ExtensionWorkspace = {
     path: string;

@@ -1,11 +1,11 @@
 {
-  "name": "@webiny/cli-plugin-extension",
+  "name": "@webiny/cli-plugin-extensions",
   "version": "0.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/cli-plugin-extension"
+    "directory": "packages/cli-plugin-extensions"
   },
   "author": "Webiny Ltd.",
   "contributors": [
