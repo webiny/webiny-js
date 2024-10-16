@@ -1,20 +1,7 @@
 {
   "extends": "../../tsconfig",
   "include": ["src"],
-  "references": [
-    {
-//      "path": "../../../packages/api-aco/tsconfig.build.json"
-    },
-
-  ],
   "compilerOptions": {
-    "composite": false,
-    "paths": {
-      "~/*": ["./src/*"],
-//      "page-elements/*": ["../../extensions/pageElements/src/*"],
-//      "page-elements": ["../../extensions/pageElements/src"],
-
-    },
-    "baseUrl": "."
+    "composite": false
   }
 }
