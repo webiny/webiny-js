@@ -1,6 +1,7 @@
 import { AbstractExtension, ExtensionTypeConstructorParams } from "./AbstractExtension";
 import { AdminExtension } from "./AdminExtension";
 import { ApiExtension } from "./ApiExtension";
+import { PbElementExtension } from "./PbElementExtension";
 import { WorkspaceExtension } from "./WorkspaceExtension";
 import loadJson from "load-json-file";
 import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
@@ -21,6 +22,10 @@ export class Extension extends AbstractExtension {
             }
             case "api": {
                 this.extension = new ApiExtension(params);
+                break;
+            }
+            case "pbElement": {
+                this.extension = new PbElementExtension(params);
                 break;
             }
             case "workspace": {
