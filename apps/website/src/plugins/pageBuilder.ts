@@ -58,7 +58,7 @@ import textSetting from "@webiny/app-page-builder/render/plugins/elementSettings
 import property from "@webiny/app-page-builder/render/plugins/elementSettings/property";
 import accordionSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/accordion";
 import accordionItemSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/accordionItem";
-import { Extension as pageElementsExtension } from "page-elements/website";
+// import { Extension as pageElementsExtension } from "page-elements/website";
 
 /**
  * Responsive display mode plugins.
@@ -115,5 +115,5 @@ export default [
     accordionSettings,
     accordionItemSettings,
     responsiveMode(),
-    pageElementsExtension()
+    // pageElementsExtension()
 ];

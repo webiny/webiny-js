@@ -19,9 +19,7 @@
 			"apps/api/pageBuilder/export/*",
 			"extensions/theme",
 			"scripts/buildPackages",
-			"scripts/prepublishOnly",
-			"extensions/pageElements",
-			"extensions/myCustomExtension"
+			"scripts/prepublishOnly"
 		]
 	},
 	"author": "Webiny Ltd.",

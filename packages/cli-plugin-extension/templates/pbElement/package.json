@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "keywords": [
     "webiny-extension",
-    "webiny-extension-type:admin"
+    "webiny-extension-type:pb-element"
   ],
   "dependencies": {
     "react": "18.2.0"
