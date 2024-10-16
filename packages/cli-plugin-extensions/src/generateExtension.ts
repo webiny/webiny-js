@@ -21,6 +21,7 @@ import chalk from "chalk";
 import { Extension } from "~/extensions/Extension";
 import { CliContext } from "@webiny/cli/types";
 import { Ora } from "ora";
+import { updateDependencies } from "./utils";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
@@ -83,23 +84,20 @@ export const generateExtension = async ({ input, ora, context }: GenerateExtensi
 
         if (input.dependencies) {
             const packageJsonPath = path.join(location, "package.json");
-            const packageJson = await readJson<PackageJson>(packageJsonPath);
-            if (!packageJson.dependencies) {
-                packageJson.dependencies = {};
-            }
 
             const packages = input.dependencies.split(",");
+            const packageJsonUpdates: Record<string, string> = {};
             for (const packageName of packages) {
                 const isWebinyPackage = packageName.startsWith("@webiny/");
                 if (isWebinyPackage) {
-                    packageJson.dependencies[packageName] = context.version;
+                    packageJsonUpdates[packageName] = context.version;
                     continue;
                 }
 
                 try {
                     const { stdout } = await execa("npm", ["view", packageName, "version", "json"]);
 
-                    packageJson.dependencies[packageName] = `^${stdout}`;
+                    packageJsonUpdates[packageName] = `^${stdout}`;
                 } catch (e) {
                     throw new Error(
                         `Could not find ${log.error.hl(
@@ -110,7 +108,7 @@ export const generateExtension = async ({ input, ora, context }: GenerateExtensi
                 }
             }
 
-            await writeJson(packageJsonPath, packageJson);
+            await updateDependencies(packageJsonPath, packageJsonUpdates);
         }
 
         const extension = new Extension({
@@ -120,7 +118,7 @@ export const generateExtension = async ({ input, ora, context }: GenerateExtensi
             packageName
         });
 
-        await extension.generate();
+        await extension.link();
 
         // Add package to workspaces
         const rootPackageJsonPath = path.join(project.root, "package.json");

@@ -1,28 +1,25 @@
 import { AbstractExtension } from "./AbstractExtension";
 import path from "path";
-import readJson from "load-json-file";
-import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
-import writeJson from "write-json-file";
 import { EXTENSIONS_ROOT_FOLDER } from "~/utils/constants";
 import chalk from "chalk";
 import { JsxFragment, Node, Project } from "ts-morph";
 import { formatCode } from "@webiny/cli-plugin-scaffold/utils";
+import { updateDependencies } from "~/utils";
 
 export class PbElementExtension extends AbstractExtension {
-    async generate() {
-        await this.addPluginToApp('admin');
-        await this.addPluginToApp('website');
+    async link() {
+        await this.addPluginToApp("admin");
+        await this.addPluginToApp("website");
 
-        // Update dependencies list in package.json.
-        const packageJsonPath = path.join("apps", "admin", "package.json");
-        const packageJson = await readJson<PackageJson>(packageJsonPath);
-        if (!packageJson.dependencies) {
-            packageJson.dependencies = {};
-        }
+        const adminPackageJsonPath = path.join("apps", "admin", "package.json");
+        await updateDependencies(adminPackageJsonPath, {
+            [this.params.packageName]: "1.0.0"
+        });
 
-        packageJson.dependencies[this.params.packageName] = "1.0.0";
-
-        await writeJson(packageJsonPath, packageJson);
+        const websitePackageJsonPath = path.join("apps", "website", "package.json");
+        await updateDependencies(websitePackageJsonPath, {
+            [this.params.packageName]: "1.0.0"
+        });
     }
 
     getNextSteps(): string[] {
@@ -41,12 +38,12 @@ export class PbElementExtension extends AbstractExtension {
     }
 
     private async addPluginToApp(app: "admin" | "website") {
-        const { name, packageName } = this.params;
+        const { name: extensionName, packageName } = this.params;
 
         const extensionsFilePath = path.join("apps", app, "src", "Extensions.tsx");
 
-        const ucFirstName = name.charAt(0).toUpperCase() + name.slice(1);
-        const componentName = ucFirstName + "Extension";
+        const ucFirstExtName = extensionName.charAt(0).toUpperCase() + extensionName.slice(1);
+        const componentName = ucFirstExtName + "Extension";
 
         const importName = "{ Extension as " + componentName + " }";
         const importPath = packageName;
@@ -58,9 +55,7 @@ export class PbElementExtension extends AbstractExtension {
 
         const existingImportDeclaration = source.getImportDeclaration(importPath);
         if (existingImportDeclaration) {
-            throw new Error(
-                `Could not import  "${importPath}" in "${extensionsFilePath}" as it already exists.`
-            );
+            return;
         }
 
         let index = 1;

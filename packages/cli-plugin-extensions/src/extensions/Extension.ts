@@ -38,8 +38,8 @@ export class Extension extends AbstractExtension {
         }
     }
 
-    async generate() {
-        await this.extension.generate();
+    async link() {
+        await this.extension.link();
     }
 
     getNextSteps(): string[] {

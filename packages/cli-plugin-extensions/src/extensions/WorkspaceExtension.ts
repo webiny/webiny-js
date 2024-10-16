@@ -1,7 +1,7 @@
 import { AbstractExtension } from "./AbstractExtension";
 
 export class WorkspaceExtension extends AbstractExtension {
-    async generate() {
+    async link() {
         return Promise.resolve();
     }
 
