@@ -1,6 +1,7 @@
 import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
 import { downloadAndLinkExtension } from "@webiny/cli-plugin-extensions/downloadAndLinkExtension";
 import { promptQuestions } from "@webiny/cli-plugin-extensions/promptQuestions";
+import { generateExtension } from "@webiny/cli-plugin-extensions/generateExtension";
 
 export default () => [
     {

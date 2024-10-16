@@ -14,12 +14,22 @@
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
     "@babel/runtime": "^7.24.0",
-    "@webiny/cli-plugin-scaffold": "0.0.0",
-    "@webiny/cli-plugin-scaffold-extensions": "0.0.0",
     "inquirer": "8.2.6",
-    "load-json-file": "^6.2.0",
     "ora": "4.1.1",
+    "@webiny/aws-sdk": "0.0.0",
+    "@webiny/cli": "0.0.0",
+    "@webiny/cli-plugin-scaffold": "0.0.0",
+    "@webiny/error": "0.0.0",
+    "case": "^1.6.3",
+    "chalk": "^4.1.0",
+    "execa": "^5.0.0",
+    "fast-glob": "^3.2.7",
+    "glob": "^7.1.2",
+    "load-json-file": "^6.2.0",
+    "lodash": "^4.17.21",
+    "replace-in-path": "^1.1.0",
     "ts-morph": "^11.0.0",
+    "validate-npm-package-name": "^3.0.0",
     "write-json-file": "^4.3.0"
   },
   "devDependencies": {
@@ -47,7 +57,11 @@
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
   },
-  "adio": {},
+  "adio": {
+    "ignoreDirs": [
+      "template"
+    ]
+  },
   "gitHead": "2cd812f1b150c10df088a5b2f75a62c9e376c1a4",
   "types": "dist/types.d.ts"
 }

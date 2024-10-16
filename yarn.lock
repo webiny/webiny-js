@@ -16864,9 +16864,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli-plugin-extension@workspace:packages/cli-plugin-extension":
+"@webiny/cli-plugin-extensions@0.0.0, @webiny/cli-plugin-extensions@workspace:packages/cli-plugin-extensions":
   version: 0.0.0-use.local
-  resolution: "@webiny/cli-plugin-extension@workspace:packages/cli-plugin-extension"
+  resolution: "@webiny/cli-plugin-extensions@workspace:packages/cli-plugin-extensions"
   dependencies:
     "@babel/cli": ^7.23.9
     "@babel/core": ^7.24.0
@@ -16961,6 +16961,7 @@ __metadata:
     "@types/validate-npm-package-name": ^3.0.3
     "@webiny/aws-sdk": 0.0.0
     "@webiny/cli": 0.0.0
+    "@webiny/cli-plugin-extensions": 0.0.0
     "@webiny/cli-plugin-scaffold": 0.0.0
     "@webiny/error": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -18671,7 +18672,6 @@ __metadata:
     core-js: ^3.0.1
     cross-env: ^5.0.2
     cross-fetch: ^3.0.4
-    page-elements: 1.0.0
     prop-types: ^15.7.2
     react: 18.2.0
     react-dom: 18.2.0
@@ -19076,7 +19076,6 @@ __metadata:
     "@webiny/project-utils": 0.0.0
     "@webiny/tasks": 0.0.0
     graphql-request: ^3.4.0
-    my-custom-extension: 1.0.0
   languageName: unknown
   linkType: soft
 
@@ -31640,12 +31639,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"my-custom-extension@1.0.0, my-custom-extension@workspace:extensions/myCustomExtension":
-  version: 0.0.0-use.local
-  resolution: "my-custom-extension@workspace:extensions/myCustomExtension"
-  languageName: unknown
-  linkType: soft
-
 "nanoclone@npm:^0.2.1":
   version: 0.2.1
   resolution: "nanoclone@npm:0.2.1"
@@ -33091,15 +33084,6 @@ __metadata:
   checksum: 4fd5f5dc64a40d353fea4fb285fe379abf318931bdf92174775b6e31500814d494b560b53ad49648db9b0a74abd9f9693d9af587083e66800f119ba40838fee4
   languageName: node
   linkType: hard
-
-"page-elements@1.0.0, page-elements@workspace:extensions/pageElements":
-  version: 0.0.0-use.local
-  resolution: "page-elements@workspace:extensions/pageElements"
-  dependencies:
-    "@webiny/app-page-builder-elements": 0.0.0
-    react: 18.2.0
-  languageName: unknown
-  linkType: soft
 
 "pako@npm:^0.2.5":
   version: 0.2.9
@@ -40607,7 +40591,6 @@ __metadata:
     cross-env: ^5.0.2
     cross-fetch: ^3.0.4
     graphql: ^15.7.2
-    page-elements: 1.0.0
     react: 18.2.0
     react-dom: 18.2.0
     regenerator-runtime: ^0.13.5

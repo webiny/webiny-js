@@ -1,4 +1,3 @@
-import { newExtensionScaffold } from "@webiny/cli-plugin-scaffold-extensions";
 import { CliCommandPlugin } from "@webiny/cli-plugin-scaffold/types";
 import inquirer from "inquirer";
 import { downloadAndLinkExtension } from "~/downloadAndLinkExtension";
@@ -49,7 +48,7 @@ export default (): CliCommandPlugin[] => {
             create({ yargs, context }) {
                 yargs.command(
                     "extension [download-from]",
-                    newExtensionScaffold.description,
+                    'Create a new extension',
                     (yargs: Record<string, any>) => {
                         yargs.example("$0 extension");
                         yargs.example("$0 extension --type admin --name customFilePreview");
