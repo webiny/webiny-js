@@ -16965,6 +16965,7 @@ __metadata:
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
     "@types/validate-npm-package-name": ^3.0.3
+    "@webiny/cli": 0.0.0
     "@webiny/cli-plugin-extensions": 0.0.0
     "@webiny/cli-plugin-scaffold": 0.0.0
     "@webiny/project-utils": 0.0.0
@@ -18664,6 +18665,7 @@ __metadata:
     core-js: ^3.0.1
     cross-env: ^5.0.2
     cross-fetch: ^3.0.4
+    my-custom-extension: 1.0.0
     prop-types: ^15.7.2
     react: 18.2.0
     react-dom: 18.2.0
@@ -31630,6 +31632,16 @@ __metadata:
   checksum: 59d4b5ebff6c265b452d6630ae8873d573c82e36fdc1ed9c34c7901a0bf2d3d357022f49db8e9bded127b743f709c7ef7befec249a2b3967578d649a8029aa06
   languageName: node
   linkType: hard
+
+"my-custom-extension@1.0.0, my-custom-extension@workspace:extensions/myCustomExtension":
+  version: 0.0.0-use.local
+  resolution: "my-custom-extension@workspace:extensions/myCustomExtension"
+  dependencies:
+    "@webiny/app-page-builder": 0.0.0
+    "@webiny/app-page-builder-elements": 0.0.0
+    react: 18.2.0
+  languageName: unknown
+  linkType: soft
 
 "nanoclone@npm:^0.2.1":
   version: 0.2.1
