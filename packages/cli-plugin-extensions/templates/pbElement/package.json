@@ -10,6 +10,8 @@
     "webiny-extension-type:pb-element"
   ],
   "dependencies": {
+    "@webiny/app-page-builder": "0.0.0",
+    "@webiny/app-page-builder-elements": "0.0.0",
     "react": "18.2.0"
   }
 }
