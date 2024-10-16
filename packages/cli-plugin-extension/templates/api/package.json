@@ -1,0 +1,9 @@
+{
+  "name": "PACKAGE_NAME",
+  "main": "src/index.ts",
+  "keywords": [
+    "webiny-extension",
+    "webiny-extension-type:api"
+  ],
+  "version": "1.0.0"
+}
