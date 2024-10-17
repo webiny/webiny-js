@@ -28,7 +28,6 @@ module.exports = ({ path, esm }) => ({
     ],
     plugins: [
         "babel-plugin-macros",
-        "@babel/plugin-proposal-throw-expressions",
         [
             "@babel/plugin-transform-runtime",
             {
@@ -39,12 +38,6 @@ module.exports = ({ path, esm }) => ({
             }
         ],
         ["@emotion/babel-plugin", { autoLabel: "dev-only" }],
-        [
-            "@babel/plugin-proposal-object-rest-spread",
-            {
-                useBuiltIns: true
-            }
-        ],
         [
             "babel-plugin-module-resolver",
             {

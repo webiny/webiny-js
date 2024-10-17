@@ -22,7 +22,6 @@
   "description": "The DynamoDB + Elasticsearch storage operations Webiny Page Builder API.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.24.0",
     "@webiny/api-elasticsearch": "0.0.0",
     "@webiny/api-elasticsearch-tasks": "0.0.0",
     "@webiny/api-page-builder": "0.0.0",
@@ -37,10 +36,6 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/preset-env": "^7.24.0",
-    "@babel/preset-typescript": "^7.23.3",
     "@elastic/elasticsearch": "7.12.0",
     "@elastic/elasticsearch-mock": "0.3.0",
     "@webiny/api": "0.0.0",

@@ -11,10 +11,10 @@
     "react": "18.2.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.23.9",
-    "@babel/preset-react": "^7.23.3",
-    "@babel/preset-typescript": "^7.23.3",
+    "@babel/cli": "^7.25.7",
+    "@babel/core": "^7.25.8",
+    "@babel/preset-react": "^7.25.7",
+    "@babel/preset-typescript": "^7.25.7",
     "@types/react": "18.2.79",
     "@webiny/cli": "^5.0.0",
     "@webiny/project-utils": "^5.0.0",

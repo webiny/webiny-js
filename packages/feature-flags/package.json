@@ -11,12 +11,7 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "license": "MIT",
-  "dependencies": {
-    "@babel/runtime": "^7.24.0"
-  },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
     "@types/uniqid": "^5.3.2",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",

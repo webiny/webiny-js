@@ -10,7 +10,6 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.24.0",
     "@types/react": "18.2.79",
     "@webiny/react-composition": "0.0.0",
     "nanoid": "^3.3.7",
