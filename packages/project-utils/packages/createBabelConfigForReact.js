@@ -40,7 +40,7 @@ module.exports = ({ path, esm }) => ({
         ],
         ["@emotion/babel-plugin", { autoLabel: "dev-only" }],
         [
-            "@babel/plugin-syntax-object-rest-spread",
+            "@babel/plugin-proposal-object-rest-spread",
             {
                 useBuiltIns: true
             }

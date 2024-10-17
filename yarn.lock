@@ -3565,7 +3565,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-proposal-object-rest-spread@npm:^7.20.2":
+"@babel/plugin-proposal-object-rest-spread@npm:^7.20.2, @babel/plugin-proposal-object-rest-spread@npm:^7.20.7":
   version: 7.20.7
   resolution: "@babel/plugin-proposal-object-rest-spread@npm:7.20.7"
   dependencies:
@@ -3637,6 +3637,17 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0
   checksum: 513b5e0e2c1b2846be5336cf680e932ae17924ef885aa1429e1a4f7924724bdd99b15f28d67187d0a006d5f18a0c4b61d96c3ecb4902fed3c8fe2f0abfc9753a
+  languageName: node
+  linkType: hard
+
+"@babel/plugin-proposal-throw-expressions@npm:^7.25.8":
+  version: 7.25.8
+  resolution: "@babel/plugin-proposal-throw-expressions@npm:7.25.8"
+  dependencies:
+    "@babel/helper-plugin-utils": ^7.25.7
+  peerDependencies:
+    "@babel/core": ^7.0.0-0
+  checksum: 255667f49101df2a5d6e228743c8e90e48f9b50ae01c543547bd0991648d8c3a563f25bb1eb13d4f2d5f82c7e40976972cf61e18ae913543e0dbe36c7605dee3
   languageName: node
   linkType: hard
 
@@ -17168,6 +17179,8 @@ __metadata:
     "@babel/cli": ^7.25.7
     "@babel/core": ^7.25.8
     "@babel/plugin-proposal-class-properties": ^7.18.6
+    "@babel/plugin-proposal-object-rest-spread": ^7.20.7
+    "@babel/plugin-proposal-throw-expressions": ^7.25.8
     "@babel/plugin-syntax-object-rest-spread": ^7.8.3
     "@babel/preset-env": ^7.25.8
     "@babel/preset-react": ^7.25.7
