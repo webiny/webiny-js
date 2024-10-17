@@ -123,7 +123,6 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
     const {
         folders: originalFolders,
         loading: foldersLoading,
-        listFolders,
         getDescendantFolders
     } = useFolders();
     const folderContext = useContext(FoldersContext);
@@ -153,10 +152,6 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
     useEffect(() => {
         if (!currentFolderId) {
             return;
-        }
-
-        if (!originalFolders) {
-            listFolders();
         }
 
         setState(state => {
@@ -253,6 +248,10 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         // Initialize an empty object
         let where = {};
 
+        if (!state.folderId) {
+            return where;
+        }
+
         // Check if the current folder ID is not the ROOT_FOLDER folder
         if (state.folderId !== ROOT_FOLDER) {
             // Get descendant folder IDs of the current folder
@@ -331,7 +330,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         const { hasMoreItems } = meta;
 
         // Retrieve all descendant folders of the current folderId
-        const folderWithChildren = getDescendantFolders(folderId);
+        const folderWithChildren = folderId ? getDescendantFolders(folderId) : [];
 
         // Compute the lengths of various arrays for later comparisons
         const foldersLength = folders.length;

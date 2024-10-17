@@ -79,6 +79,8 @@ export const Node = ({ node, depth, isOpen, enableActions, onToggle, onClick }: 
     };
 
     const id = useMemo(() => {
+        console.log("folder.id", folder.id);
+
         const { id } = parseIdentifier(String(folder.id));
         return id;
     }, [folder.id]);
