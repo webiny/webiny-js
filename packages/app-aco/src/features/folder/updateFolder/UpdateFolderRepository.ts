@@ -24,7 +24,7 @@ export class UpdateFolderRepository implements IUpdateFolderRepository {
             parentId: folder.parentId
         };
 
-        await this.gateway.execute(dto);
-        await this.cache.update(folder.id, Folder.create(folder));
+        const result = await this.gateway.execute(dto);
+        await this.cache.update(folder.id, Folder.create(result));
     }
 }

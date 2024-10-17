@@ -105,6 +105,6 @@ export class UpdateFolderGqlGateway implements IUpdateFolderGateway {
             throw new Error(error?.message || "Could not update folder");
         }
 
-        return;
+        return data;
     }
 }
