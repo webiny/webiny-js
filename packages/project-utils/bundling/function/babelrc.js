@@ -10,5 +10,5 @@ module.exports = {
         ],
         require.resolve("@babel/preset-typescript", { paths: [__dirname] })
     ],
-    plugins: []
+    plugins: [require.resolve("@babel/plugin-proposal-class-properties", { paths: [__dirname] })]
 };
