@@ -1,6 +1,6 @@
-import { Client, ApiResponse } from "@elastic/elasticsearch";
-import { BoolQueryConfig as esBoolQueryConfig, Query as esQuery } from "elastic-ts";
-import { Context } from "@webiny/api/types";
+import { ApiResponse, Client } from "@elastic/elasticsearch";
+import { BoolQueryConfig as esBoolQueryConfig, PrimitiveValue, Query as esQuery } from "elastic-ts";
+import { Context, GenericRecord } from "@webiny/api/types";
 /**
  * Re-export some dep lib types.
  */
@@ -78,26 +78,33 @@ export interface ElasticsearchQueryBuilderArgsPlugin {
  */
 export interface ElasticsearchSearchResponseHit<T> {
     _source: T;
-    sort: string;
+    sort: PrimitiveValue[];
 }
 export interface ElasticsearchSearchResponseAggregationBucket<T> {
     key: T;
     doc_count: number;
 }
-export interface ElasticsearchSearchResponse<T = any> {
-    body: {
-        hits: {
-            hits: ElasticsearchSearchResponseHit<T>[];
-            total: {
-                value: number;
-            };
-        };
-        aggregations: {
-            [key: string]: {
-                buckets: ElasticsearchSearchResponseAggregationBucket<T>[];
-            };
-        };
+
+export interface ElasticsearchSearchResponseBodyHits<T> {
+    hits: ElasticsearchSearchResponseHit<T>[];
+    total: {
+        value: number;
     };
+}
+
+export interface ElasticsearchSearchResponseBodyAggregations<T> {
+    [key: string]: {
+        buckets: ElasticsearchSearchResponseAggregationBucket<T>[];
+    };
+}
+
+export interface ElasticsearchSearchResponseBody<T> {
+    hits: ElasticsearchSearchResponseBodyHits<T>;
+    aggregations: ElasticsearchSearchResponseBodyAggregations<T>;
+}
+
+export interface ElasticsearchSearchResponse<T = GenericRecord> {
+    body: ElasticsearchSearchResponseBody<T>;
 }
 
 export interface ElasticsearchIndexRequestBodyMappingsDynamicTemplate {
