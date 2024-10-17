@@ -519,7 +519,8 @@ module.exports = function (webpackEnv, { paths, options }) {
                 cwd: paths.appPath,
                 resolvePluginsRelativeTo: __dirname,
                 baseConfig: {
-                    extends: [require.resolve("eslint-config-react-app/base")]
+                    extends: [require.resolve("eslint-config-react-app/base")],
+                    plugins: options.watch ? ["only-warn"] : []
                 }
             }),
 
@@ -528,6 +529,12 @@ module.exports = function (webpackEnv, { paths, options }) {
                 new ForkTsCheckerWebpackPlugin({
                     typescript: {
                         configFile: paths.appTsConfig,
+                        configOverwrite: {
+                            compilerOptions: {
+                                noUnusedParameters: !options.watch,
+                                noUnusedLocals: !options.watch
+                            }
+                        },
                         typescriptPath: require.resolve("typescript")
                     },
                     async: isEnvDevelopment
