@@ -31,7 +31,7 @@ interface ISearchResultHitsItemSource {
     id: string;
 }
 
-export class ElasticsearchSynchronization implements ISynchronization {
+export class ElasticsearchToDynamoDbSynchronization implements ISynchronization {
     private readonly manager: IDataSynchronizationManager;
     private readonly indexManager: IIndexManager;
 
@@ -41,8 +41,8 @@ export class ElasticsearchSynchronization implements ISynchronization {
     }
 
     public async run(input: IDataSynchronizationInput): Promise<ITaskResponseResult> {
-        const lastIndex = input.elasticsearch?.index;
-        let cursor = input.elasticsearch?.cursor;
+        const lastIndex = input.elasticsearchToDynamoDb?.index;
+        let cursor = input.elasticsearchToDynamoDb?.cursor;
         const indexes = await this.fetchAllIndexes();
         const next = lastIndex ? indexes.findIndex(index => index === lastIndex) + 1 : 0;
 
@@ -54,8 +54,8 @@ export class ElasticsearchSynchronization implements ISynchronization {
             } else if (this.manager.isCloseToTimeout()) {
                 return this.manager.response.continue({
                     ...input,
-                    elasticsearch: {
-                        ...input.elasticsearch,
+                    elasticsearchToDynamoDb: {
+                        ...input.elasticsearchToDynamoDb,
                         index: currentIndex,
                         cursor
                     }
@@ -85,8 +85,8 @@ export class ElasticsearchSynchronization implements ISynchronization {
                 });
                 return this.manager.response.continue({
                     ...input,
-                    elasticsearch: {
-                        ...input.elasticsearch,
+                    elasticsearchToDynamoDb: {
+                        ...input.elasticsearchToDynamoDb,
                         index: currentIndex,
                         cursor: done ? undefined : newCursor
                     }
@@ -98,8 +98,8 @@ export class ElasticsearchSynchronization implements ISynchronization {
 
         return this.manager.response.continue({
             ...input,
-            elasticsearch: {
-                ...input.elasticsearch,
+            elasticsearchToDynamoDb: {
+                ...input.elasticsearchToDynamoDb,
                 finished: true
             }
         });

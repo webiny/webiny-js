@@ -8,12 +8,12 @@ jest.mock("~/tasks/dataSynchronization/createFactories", () => {
     return {
         createFactories: (): IFactories => {
             return {
-                createElasticsearch: ({ manager }) => {
+                createElasticsearchToDynamoDb: ({ manager }) => {
                     return {
                         run: async input => {
                             return manager.response.continue({
                                 ...input,
-                                elasticsearch: {
+                                elasticsearchToDynamoDb: {
                                     finished: true
                                 }
                             });
@@ -72,7 +72,7 @@ describe("data synchronization - elasticsearch", () => {
         const task = await context.tasks.createTask<IDataSynchronizationInput>({
             definitionId: DATA_SYNCHRONIZATION_TASK,
             input: {
-                elasticsearch: {
+                elasticsearchToDynamoDb: {
                     finished: true
                 },
                 dynamoDbElasticsearch: {
@@ -110,7 +110,7 @@ describe("data synchronization - elasticsearch", () => {
                         dynamoDbElasticsearch: {
                             finished: true
                         },
-                        elasticsearch: {
+                        elasticsearchToDynamoDb: {
                             finished: true
                         }
                     }
