@@ -1,17 +1,19 @@
 import React from "react";
 import { UiProvider } from "@webiny/app/contexts/Ui";
-import { ComponentWithChildren } from "~/types";
+import { createProvider } from "@webiny/app";
 
 interface UiStateProviderProps {
     children: React.ReactNode;
 }
 
-export const createUiStateProvider = () => (Component: ComponentWithChildren) => {
-    return function UiStateProvider({ children }: UiStateProviderProps) {
-        return (
-            <UiProvider>
-                <Component>{children}</Component>
-            </UiProvider>
-        );
-    };
+export const createUiStateProvider = () => {
+    return createProvider(Component => {
+        return function UiStateProvider({ children }: UiStateProviderProps) {
+            return (
+                <UiProvider>
+                    <Component>{children}</Component>
+                </UiProvider>
+            );
+        };
+    });
 };

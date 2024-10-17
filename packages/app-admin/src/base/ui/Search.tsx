@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { createVoidComponent, makeDecoratable } from "@webiny/app";
-import { ComponentWithChildren } from "~/types";
+import { createProvider, createVoidComponent, makeDecoratable } from "@webiny/app";
 
 export interface SearchOptionData {
     route: string;
@@ -33,7 +32,7 @@ interface SearchProviderProps {
     [key: string]: any;
 }
 
-export const SearchProvider = (Component: ComponentWithChildren) => {
+export const SearchProvider = createProvider(Component => {
     return function SearchProvider({ children, ...props }: SearchProviderProps) {
         const [options, setOptions] = useState<SearchOptionData[]>([]);
 
@@ -53,7 +52,7 @@ export const SearchProvider = (Component: ComponentWithChildren) => {
             </SearchContext.Provider>
         );
     };
-};
+});
 
 export const Search = makeDecoratable("Search", () => {
     return <SearchRenderer />;

@@ -8,12 +8,11 @@ import React, {
     useState
 } from "react";
 import { generateId } from "@webiny/utils";
-import { createVoidComponent, makeDecoratable, Plugins } from "@webiny/app";
+import { createProvider, createVoidComponent, makeDecoratable, Plugins } from "@webiny/app";
 import { AddMenu as Menu, createEmptyMenu, MenuData, MenuProps, MenuUpdater, Tags } from "~/index";
 import { plugins } from "@webiny/plugins";
 import { AdminMenuPlugin } from "~/types";
 import { ItemProps, SectionProps } from "~/plugins/MenuPlugin";
-import { ComponentWithChildren } from "~/types";
 
 export interface NavigationContext {
     menuItems: MenuData[];
@@ -89,7 +88,7 @@ interface NavigationProviderProps {
     children: React.ReactNode;
 }
 
-export const NavigationProvider = (Component: ComponentWithChildren) => {
+export const NavigationProvider = createProvider(Component => {
     return function NavigationProvider({ children }: NavigationProviderProps) {
         const [menuItems, setState] = useState<MenuData[]>([]);
 
@@ -141,7 +140,7 @@ export const NavigationProvider = (Component: ComponentWithChildren) => {
             </NavigationContext.Provider>
         );
     };
-};
+});
 
 export const Navigation = makeDecoratable("Navigation", () => {
     return (

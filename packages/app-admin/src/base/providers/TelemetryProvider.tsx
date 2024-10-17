@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { sendEvent } from "@webiny/telemetry/react";
-import { ComponentWithChildren } from "~/types";
+import { createProvider } from "@webiny/app";
 
 let eventSent = false;
 
@@ -8,18 +8,20 @@ interface TelemetryProviderProps {
     children: React.ReactNode;
 }
 
-export const createTelemetryProvider = () => (Component: ComponentWithChildren) => {
-    return function TelemetryProvider({ children }: TelemetryProviderProps) {
-        useEffect(() => {
-            if (eventSent) {
-                return;
-            }
+export const createTelemetryProvider = () => {
+    return createProvider(Component => {
+        return function TelemetryProvider({ children }: TelemetryProviderProps) {
+            useEffect(() => {
+                if (eventSent) {
+                    return;
+                }
 
-            eventSent = true;
+                eventSent = true;
 
-            sendEvent("admin-app-start");
-        }, []);
+                sendEvent("admin-app-start");
+            }, []);
 
-        return <Component>{children}</Component>;
-    };
+            return <Component>{children}</Component>;
+        };
+    });
 };
