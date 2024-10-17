@@ -14,13 +14,36 @@ import {
 import { shouldIgnoreEsResponseError } from "./shouldIgnoreEsResponseError";
 import { ITaskResponseResult } from "@webiny/tasks";
 
-interface ISynchronizeParams {
+import { inspect } from "node:util";
+import { batchReadAll } from "@webiny/db-dynamodb";
+
+interface IFetchParams {
     index: string;
     cursor?: PrimitiveValue[];
     limit?: number;
 }
 
-interface ISynchronizeResponse {
+interface IFetchResponseItem {
+    PK: string;
+    SK: string;
+}
+
+interface IFetchResponse {
+    done: boolean;
+    totalCount: number;
+    cursor?: PrimitiveValue[];
+    items: IFetchResponseItem[];
+}
+
+interface ISynchronizeParams {
+    done: boolean;
+    index: string;
+    totalCount: number;
+    items: IFetchResponseItem[];
+    cursor?: PrimitiveValue[];
+}
+
+export interface ISynchronizeResponse {
     done: boolean;
     totalCount: number;
     cursor?: PrimitiveValue[];
@@ -29,6 +52,13 @@ interface ISynchronizeResponse {
 interface ISearchResultHitsItemSource {
     _id: string;
     id: string;
+}
+
+interface IDeleteFromElasticsearchOperation {
+    delete: {
+        _id: string;
+        _index: string;
+    };
 }
 
 export class ElasticsearchToDynamoDbSynchronization implements ISynchronization {
@@ -62,7 +92,7 @@ export class ElasticsearchToDynamoDbSynchronization implements ISynchronization 
                 });
             }
 
-            const { done, cursor: newCursor } = await this.synchronize({
+            const { done, cursor: newCursor } = await this.fetch({
                 index: currentIndex,
                 cursor
             });
@@ -79,9 +109,15 @@ export class ElasticsearchToDynamoDbSynchronization implements ISynchronization 
 
         if (currentIndex) {
             try {
-                const { done, cursor: newCursor } = await this.synchronize({
+                const result = await this.fetch({
                     index: currentIndex,
                     cursor
+                });
+                const { done, cursor: newCursor } = await this.synchronize({
+                    done: result.done,
+                    index: currentIndex,
+                    totalCount: result.totalCount,
+                    items: result.items
                 });
                 return this.manager.response.continue({
                     ...input,
@@ -113,11 +149,7 @@ export class ElasticsearchToDynamoDbSynchronization implements ISynchronization 
         throw new Error("No indexes found.");
     }
 
-    private async synchronize({
-        index,
-        cursor,
-        limit = 1000
-    }: ISynchronizeParams): Promise<ISynchronizeResponse> {
+    private async fetch({ index, cursor, limit = 1000 }: IFetchParams): Promise<IFetchResponse> {
         let response: ElasticsearchSearchResponse<ISearchResultHitsItemSource>;
         try {
             response = await this.manager.elasticsearch.search<
@@ -143,9 +175,18 @@ export class ElasticsearchToDynamoDbSynchronization implements ISynchronization 
              * If we ignore the error, we can continue with the next index.
              */
             if (shouldIgnoreEsResponseError(ex)) {
+                if (process.env.DEBUG === "true") {
+                    console.error(
+                        inspect(ex, {
+                            depth: 5,
+                            showHidden: true
+                        })
+                    );
+                }
                 return {
                     done: true,
-                    totalCount: 0
+                    totalCount: 0,
+                    items: []
                 };
             }
             console.error("Failed to fetch data from Elasticsearch.", ex);
@@ -159,16 +200,63 @@ export class ElasticsearchToDynamoDbSynchronization implements ISynchronization 
             hits.pop();
         }
         const nextCursor = hits.pop()?.sort;
-        if (!nextCursor) {
-            return {
-                totalCount: total.value,
-                done: true
-            };
-        }
+        const items = hits
+            .map(hit => {
+                const [PK, SK] = hit._source._id.split(":");
+                if (PK && SK) {
+                    return null;
+                }
+                return {
+                    PK,
+                    SK
+                };
+            })
+            .filter((item): item is IFetchResponseItem => {
+                return !!item;
+            });
+
         return {
             totalCount: total.value,
             cursor: nextCursor,
-            done: false
+            done: !nextCursor,
+            items
         };
+    }
+
+    private async synchronize(params: ISynchronizeParams): Promise<ISynchronizeResponse> {
+        const { items, cursor, done, totalCount, index } = params;
+        if (items.length === 0 || totalCount === 0) {
+            return {
+                done: true,
+                cursor: undefined,
+                totalCount
+            };
+        }
+
+        const dynamoDbItems = await batchReadAll({
+            items: items.map(item => {
+                return this.table.batchRead(item);
+            }),
+            table: {} as any
+        });
+
+        const missingInDynamoDb = items.filter(item => {
+            return !dynamoDbItems.some(ddbItem => {
+                return ddbItem.PK === item.PK && ddbItem.SK === item.SK;
+            });
+        });
+
+        const deleteFromElasticsearch = missingInDynamoDb.reduce<
+            IDeleteFromElasticsearchOperation[]
+        >((operations, item) => {
+            operations.push({
+                delete: {
+                    _id: `${item.PK}:${item.SK}`,
+                    _index: index
+                }
+            });
+
+            return operations;
+        }, []);
     }
 }

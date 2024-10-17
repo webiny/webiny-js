@@ -51,7 +51,16 @@ export class IndexManager implements IIndexManager {
             if (!Array.isArray(response.body)) {
                 return [];
             }
-            return response.body.map(item => item.index).filter(Boolean);
+            return response.body
+                .map(item => item.index)
+                .filter(item => {
+                    if (!item) {
+                        return false;
+                    } else if (item.startsWith(".")) {
+                        return false;
+                    }
+                    return true;
+                });
         } catch (ex) {
             console.error(
                 JSON.stringify({
