@@ -1,5 +1,6 @@
 import {
     IDynamoDbElasticsearchRecord,
+    IElasticsearchIndexingTaskValues,
     IElasticsearchIndexingTaskValuesKeys,
     IManager
 } from "~/types";
@@ -20,13 +21,16 @@ const getKeys = (results: ScanResponse): IElasticsearchIndexingTaskValuesKeys | 
 };
 
 export class ReindexingTaskRunner {
-    private readonly manager: IManager;
+    private readonly manager: IManager<IElasticsearchIndexingTaskValues>;
     private keys?: IElasticsearchIndexingTaskValuesKeys;
 
     private readonly indexManager: IIndexManager;
     private readonly response: ITaskResponse;
 
-    public constructor(manager: IManager, indexManager: IndexManager) {
+    public constructor(
+        manager: IManager<IElasticsearchIndexingTaskValues>,
+        indexManager: IndexManager
+    ) {
         this.manager = manager;
         this.response = manager.response;
         this.indexManager = indexManager;
