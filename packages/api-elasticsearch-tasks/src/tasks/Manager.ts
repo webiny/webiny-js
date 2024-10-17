@@ -1,7 +1,7 @@
 import { DynamoDBDocument, getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { Client, createElasticsearchClient } from "@webiny/api-elasticsearch";
 import { createTable } from "~/definitions";
-import { Context, IElasticsearchIndexingTaskValues, IManager } from "~/types";
+import { Context, IManager } from "~/types";
 import { createEntry } from "~/definitions/entry";
 import { Entity } from "@webiny/db-dynamodb/toolbox";
 import { ITaskResponse } from "@webiny/tasks/response/abstractions";
@@ -14,17 +14,17 @@ import {
     BatchWriteResult
 } from "@webiny/db-dynamodb";
 
-export interface ManagerParams {
+export interface ManagerParams<T> {
     context: Context;
     documentClient?: DynamoDBDocument;
     elasticsearchClient?: Client;
     isCloseToTimeout: () => boolean;
     isAborted: () => boolean;
     response: ITaskResponse;
-    store: ITaskManagerStore<IElasticsearchIndexingTaskValues>;
+    store: ITaskManagerStore<T>;
 }
 
-export class Manager implements IManager {
+export class Manager<T> implements IManager<T> {
     public readonly documentClient: DynamoDBDocument;
     public readonly elasticsearch: Client;
     public readonly context: Context;
@@ -32,11 +32,11 @@ export class Manager implements IManager {
     public readonly isCloseToTimeout: () => boolean;
     public readonly isAborted: () => boolean;
     public readonly response: ITaskResponse;
-    public readonly store: ITaskManagerStore<IElasticsearchIndexingTaskValues>;
+    public readonly store: ITaskManagerStore<T>;
 
     private readonly entities: Record<string, Entity<any>> = {};
 
-    public constructor(params: ManagerParams) {
+    public constructor(params: ManagerParams<T>) {
         this.context = params.context;
         this.documentClient = params?.documentClient || getDocumentClient();
 
