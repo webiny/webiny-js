@@ -18,6 +18,10 @@ export class FoldersCache implements ICache<Folder> {
         return this.folders;
     }
 
+    getItem(id: string) {
+        return this.folders.find(f => f.id === id);
+    }
+
     async set(item: Folder): Promise<void> {
         this.folders.push(item);
     }

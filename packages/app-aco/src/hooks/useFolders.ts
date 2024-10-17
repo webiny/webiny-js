@@ -1,24 +1,23 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { autorun } from "mobx";
 import { loadingRepositoryFactory } from "@webiny/app-utils";
-import { useWcp } from "@webiny/app-wcp";
-import { FoldersContext, FoldersContextFolderLevelPermissions } from "~/contexts/folders";
+import { FoldersContext } from "~/contexts/folders";
 import {
     folderCacheFactory,
     FolderDtoMapper,
     useCreateFolder,
     useDeleteFolder,
+    useGetCanManageContent,
+    useGetCanManagePermissions,
+    useGetCanManageStructure,
     useGetDescendantFolders,
     useGetFolder,
     useListFolders,
     useUpdateFolder
 } from "~/features/folder";
 import { FolderItem } from "~/types";
-import { ROOT_FOLDER } from "~/constants";
 
 export const useFolders = () => {
-    const { canUseFolderLevelPermissions } = useWcp();
-
     const [vm, setVm] = useState<{
         folders: FolderItem[];
         loading: Record<string, boolean>;
@@ -57,6 +56,9 @@ export const useFolders = () => {
     const { updateFolder } = useUpdateFolder(foldersCache, loadingRepository);
     const { getDescendantFolders } = useGetDescendantFolders(foldersCache);
     const { getFolder } = useGetFolder(foldersCache, loadingRepository);
+    const { canManageStructure } = useGetCanManageStructure(foldersCache);
+    const { canManagePermissions } = useGetCanManagePermissions(foldersCache);
+    const { canManageContent } = useGetCanManageContent(foldersCache);
 
     useEffect(() => {
         if (foldersCache.hasItems()) {
@@ -88,28 +90,6 @@ export const useFolders = () => {
         });
     }, [loadingRepository]);
 
-    const folderLevelPermissions: FoldersContextFolderLevelPermissions = useMemo(() => {
-        const createCanManage =
-            (callback: (folder: FolderItem) => boolean) => (folderId: string) => {
-                if (!canUseFolderLevelPermissions() || folderId === ROOT_FOLDER) {
-                    return true;
-                }
-
-                const folder = vm.folders?.find(folder => folder.id === folderId);
-                if (!folder) {
-                    return false;
-                }
-
-                return callback(folder);
-            };
-
-        return {
-            canManageStructure: createCanManage(folder => folder.canManageStructure),
-            canManagePermissions: createCanManage(folder => folder.canManagePermissions),
-            canManageContent: createCanManage(folder => folder.canManageContent)
-        };
-    }, [vm.folders]);
-
     return {
         ...vm,
         listFolders,
@@ -118,8 +98,10 @@ export const useFolders = () => {
         createFolder,
         updateFolder,
         deleteFolder,
-
-        // OLD
-        folderLevelPermissions
+        folderLevelPermissions: {
+            canManageStructure,
+            canManagePermissions,
+            canManageContent
+        }
     };
 };

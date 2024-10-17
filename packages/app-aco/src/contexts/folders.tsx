@@ -1,14 +1,6 @@
 import React, { ReactNode, useContext, useMemo } from "react";
 import { AcoAppContext } from "~/contexts/app";
 
-export interface FoldersContextFolderLevelPermissions {
-    canManageStructure(folderId: string): boolean;
-
-    canManagePermissions(folderId: string): boolean;
-
-    canManageContent(folderId: string): boolean;
-}
-
 interface FoldersContext {
     type?: string | null;
 }
