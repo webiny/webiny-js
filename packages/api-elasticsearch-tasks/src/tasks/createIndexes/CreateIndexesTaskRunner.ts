@@ -6,12 +6,16 @@ import {
     CreateElasticsearchIndexTaskPluginIndex
 } from "./CreateElasticsearchIndexTaskPlugin";
 import { Context } from "~/types";
+import { IElasticsearchCreateIndexesTaskInput } from "~/tasks/createIndexes/types";
 
 export class CreateIndexesTaskRunner {
-    private readonly manager: Manager;
+    private readonly manager: Manager<IElasticsearchCreateIndexesTaskInput>;
     private readonly indexManager: IndexManager;
 
-    public constructor(manager: Manager, indexManager: IndexManager) {
+    public constructor(
+        manager: Manager<IElasticsearchCreateIndexesTaskInput>,
+        indexManager: IndexManager
+    ) {
         this.manager = manager;
 
         this.indexManager = indexManager;

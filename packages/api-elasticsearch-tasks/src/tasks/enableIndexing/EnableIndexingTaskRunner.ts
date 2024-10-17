@@ -2,13 +2,17 @@ import { IManager } from "~/types";
 import { ITaskResponse, ITaskResponseResult } from "@webiny/tasks/response/abstractions";
 import { IndexManager } from "~/settings";
 import { IIndexManager } from "~/settings/types";
+import { IElasticsearchEnableIndexingTaskInput } from "~/tasks/enableIndexing/types";
 
 export class EnableIndexingTaskRunner {
-    private readonly manager: IManager;
+    private readonly manager: IManager<IElasticsearchEnableIndexingTaskInput>;
     private readonly indexManager: IIndexManager;
     private readonly response: ITaskResponse;
 
-    public constructor(manager: IManager, indexManager: IndexManager) {
+    public constructor(
+        manager: IManager<IElasticsearchEnableIndexingTaskInput>,
+        indexManager: IndexManager
+    ) {
         this.manager = manager;
         this.response = manager.response;
         this.indexManager = indexManager;
