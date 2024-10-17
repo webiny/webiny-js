@@ -1,12 +1,9 @@
-import {
-    ITaskTriggerTransport,
-    TaskTriggerTransportPlugin
-} from "@webiny/tasks/plugins/TaskTriggerTransportPlugin";
+import { ITaskService, TaskServicePlugin } from "@webiny/tasks/plugins/TaskServicePlugin";
 
-class MockTaskTriggerTransportPlugin extends TaskTriggerTransportPlugin {
-    public override name = "tasks.mockTaskTriggerTransport";
+class MockTaskServicePlugin extends TaskServicePlugin {
+    public override name = "tasks.mockTaskService";
 
-    override createTransport(): ITaskTriggerTransport {
+    public override createService(): ITaskService {
         return {
             async send() {
                 return {
@@ -14,11 +11,21 @@ class MockTaskTriggerTransportPlugin extends TaskTriggerTransportPlugin {
                     $metadata: {},
                     FailedEntryCount: 0
                 };
+            },
+            async fetch(input: any) {
+                return {
+                    fetched: true,
+                    input
+                } as any;
             }
         };
     }
 }
 
-export const createMockTaskTriggerTransportPlugin = () => {
-    return [new MockTaskTriggerTransportPlugin()];
+export const createMockTaskServicePlugin = () => {
+    return [
+        new MockTaskServicePlugin({
+            default: true
+        })
+    ];
 };

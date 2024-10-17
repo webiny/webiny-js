@@ -19,7 +19,14 @@ export const mockCreateGetWcpProjectLicense = (
                     options: { maxCount: { type: MT_OPTIONS_MAX_COUNT_TYPE.SEAT_BASED } }
                 },
                 advancedPublishingWorkflow: { enabled: false },
-                advancedAccessControlLayer: { enabled: false }
+                advancedAccessControlLayer: {
+                    enabled: false,
+                    options: {
+                        teams: false,
+                        folderLevelPermissions: false,
+                        privateFiles: false
+                    }
+                }
             }
         }
     };

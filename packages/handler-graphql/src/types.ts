@@ -4,8 +4,10 @@ import {
     GraphQLSchema
 } from "graphql";
 import { Plugin } from "@webiny/plugins/types";
-import { Context } from "@webiny/api/types";
+import { Context, GenericRecord } from "@webiny/api/types";
 import { RouteMethodPath } from "@webiny/handler/types";
+import { ResolversComposition } from "@graphql-tools/resolvers-composition";
+import { IResolvers, TypeSource } from "@graphql-tools/utils";
 
 export interface GraphQLScalarPlugin extends Plugin {
     type: "graphql-scalar";
@@ -23,8 +25,11 @@ export type GraphQLFieldResolver<
     TContext = Context
 > = BaseGraphQLFieldResolver<TSource, TContext, TArgs>;
 
-// `GraphQLSchemaPlugin` types.
-export type Types = string | string[] | (() => string | string[] | Promise<string | string[]>);
+/**
+ * @deprecated Use `TypeDefs` instead.
+ */
+export type Types = TypeDefs;
+export type TypeDefs = TypeSource;
 
 export interface GraphQLSchemaPluginTypeArgs {
     context?: any;
@@ -32,14 +37,18 @@ export interface GraphQLSchemaPluginTypeArgs {
     source?: any;
 }
 
-export type Resolvers<TContext> =
-    | GraphQLScalarType
-    | GraphQLFieldResolver<any, Record<string, any>, TContext>
-    | { [property: string]: Resolvers<TContext> };
+export type Resolvers<TContext> = IResolvers<any, TContext>;
+
+export type ResolverDecorator<TSource = any, TContext = any, TArgs = any> = ResolversComposition<
+    GraphQLFieldResolver<TSource, TContext, TArgs>
+>;
+
+export type ResolverDecorators = GenericRecord<string, ResolverDecorator[]>;
 
 export interface GraphQLSchemaDefinition<TContext> {
-    typeDefs: Types;
+    typeDefs: TypeDefs;
     resolvers?: Resolvers<TContext>;
+    resolverDecorators?: ResolverDecorators;
 }
 
 export interface GraphQLSchemaPlugin<TContext extends Context = Context> extends Plugin {

@@ -15,6 +15,7 @@ export type CmsModelFieldType =
     | "dynamicZone"
     | string;
 
+export type ICmsModelFieldStorageId = `${string}@${string}` | string;
 /**
  * A definition for content model field. This type exists on the app side as well.
  *
@@ -44,7 +45,7 @@ export interface CmsModelField {
      *
      * This is used as path for the entry value.
      */
-    storageId: `${string}@${string}` | string;
+    storageId: ICmsModelFieldStorageId;
     /**
      * Field identifier for the model field that will be available to the outside world.
      * `storageId` is used as path (or column) to store the data.

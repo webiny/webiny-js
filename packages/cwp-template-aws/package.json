@@ -19,7 +19,7 @@
     "fast-glob": "^3.2.7",
     "fs-extra": "^11.2.0",
     "get-yarn-workspaces": "1.0.2",
-    "inquirer": "7.3.3",
+    "inquirer": "8.2.6",
     "load-json-file": "6.2.0",
     "lodash": "^4.17.21",
     "open": "^8.4.0",

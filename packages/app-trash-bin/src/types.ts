@@ -30,3 +30,21 @@ export enum LoadingActions {
     delete = "DELETE",
     restore = "RESTORE"
 }
+
+export interface TrashBinBulkActionsParams {
+    where?: {
+        [key: string]: any;
+    };
+    search?: string;
+    data?: {
+        [key: string]: any;
+    };
+}
+
+export interface TrashBinBulkActionsGatewayParams extends TrashBinBulkActionsParams {
+    action: string;
+}
+
+export interface TrashBinBulkActionsResponse {
+    id: string;
+}

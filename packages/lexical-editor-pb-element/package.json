@@ -14,8 +14,6 @@
     "@webiny/react-composition": "0.0.0",
     "@webiny/theme": "0.0.0",
     "@webiny/ui": "0.0.0",
-    "lodash": "^4.17.21",
-    "medium-editor": "^5.23.3",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },

@@ -69,6 +69,10 @@ export const createSingularSDL: CreateSingularSDL = ({
         }
 
         ${fields.map(f => f.typeDefs).join("\n")}
+        
+        input ${singularName}ListWhereInput {
+            id: String
+        }
 
         type ${singularName}Response {
             data: ${singularName}

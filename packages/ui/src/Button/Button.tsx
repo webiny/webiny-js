@@ -142,9 +142,9 @@ export const ButtonSecondary = (props: ButtonProps) => {
 };
 
 export type ButtonFloatingProps = ButtonProps &
-    FabProps & {
-        label?: React.ReactNode;
-        icon?: React.ReactNode;
+    Omit<FabProps, "icon"> & {
+        label?: string | JSX.Element;
+        icon?: JSX.Element;
         onMouseDown?: (e: SyntheticEvent) => void;
         onMouseUp?: (e: SyntheticEvent) => void;
     };

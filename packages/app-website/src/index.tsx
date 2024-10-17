@@ -28,6 +28,7 @@ export * from "./Page/MainContent";
 export * from "./Page/WebsiteScripts";
 export * from "./Page/ErrorPage";
 export * from "./Menu";
+export * from "./LinkPreload";
 
 // Exporting chosen utils from `@webiny/app` package.
 export * from "@webiny/app/utils/getApiUrl";

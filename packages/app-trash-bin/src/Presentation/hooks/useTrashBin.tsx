@@ -3,6 +3,7 @@ import { autorun } from "mobx";
 import { createGenericContext } from "@webiny/app-admin";
 import { ITrashBinControllers, ITrashBinPresenter } from "~/Presentation/abstractions";
 import { TrashBinItemDTO } from "~/Domain";
+import { TrashBinBulkActionsParams } from "~/types";
 
 export interface TrashBinContext {
     controllers: ITrashBinControllers;
@@ -38,6 +39,17 @@ export const useTrashBin = () => {
         [context.controllers.restoreItem]
     );
 
+    const restoreBulkAction = useCallback(
+        (params: TrashBinBulkActionsParams) =>
+            context.controllers.restoreBulkAction.execute(params),
+        [context.controllers.restoreBulkAction]
+    );
+
+    const deleteBulkAction = useCallback(
+        (params: TrashBinBulkActionsParams) => context.controllers.deleteBulkAction.execute(params),
+        [context.controllers.deleteBulkAction]
+    );
+
     const listItems = useCallback(
         () => context.controllers.listItems.execute(),
         [context.controllers.listItems]
@@ -56,6 +68,16 @@ export const useTrashBin = () => {
     const selectItems = useCallback(
         (items: TrashBinItemDTO[]) => context.controllers.selectItems.execute(items),
         [context.controllers.selectItems]
+    );
+
+    const selectAllItems = useCallback(
+        () => context.controllers.selectAllItems.execute(),
+        [context.controllers.selectAllItems]
+    );
+
+    const unselectAllItems = useCallback(
+        () => context.controllers.unselectAllItems.execute(),
+        [context.controllers.unselectAllItems]
     );
 
     const sortItems = useMemo(
@@ -77,8 +99,12 @@ export const useTrashBin = () => {
         listMoreItems,
         searchItems,
         selectItems,
+        selectAllItems,
+        unselectAllItems,
         sortItems,
-        getRestoredItemById
+        getRestoredItemById,
+        restoreBulkAction,
+        deleteBulkAction
     };
 };
 

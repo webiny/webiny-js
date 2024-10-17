@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { useQuery } from "@apollo/react-hooks";
+import { useSearchParams, useLocation } from "@webiny/react-router";
 import { PageRenderer } from "./PageRenderer";
 import {
     GET_SETTINGS,
@@ -9,7 +10,6 @@ import {
     SettingsQueryResponse,
     SettingsQueryResponseData
 } from "./graphql";
-import { useSearchParams, useLocation } from "@webiny/react-router";
 
 declare global {
     interface Window {
@@ -29,14 +29,19 @@ const trimPath = (value: string) => {
 // allow navigating to other pages, in the `getPath` function below.
 const notFoundInitialPath = trimPath(location.pathname);
 
+export interface PageProps {
+    pathname?: string;
+}
+
 /**
  * This component will fetch the published page's data and pass it to the `PageRenderer` component. Note that, if the
  * `preview` query parameter is present, we're getting the page directly by its ID, instead of the URL.
  * The `preview` search parameter is set, for example, when previewing pages from Page Builder's editor / Admin app.
  */
-export const Page = () => {
-    const { pathname } = useLocation();
+export const Page = (props: PageProps) => {
+    const location = useLocation();
     const [search] = useSearchParams();
+    const pathname = props?.pathname ?? location.pathname;
 
     const getPath = useCallback(() => {
         const path = trimPath(pathname);

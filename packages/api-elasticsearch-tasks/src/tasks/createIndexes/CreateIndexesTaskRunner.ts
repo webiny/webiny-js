@@ -40,7 +40,12 @@ export class CreateIndexesTaskRunner {
                         tenant: tenant.id,
                         locale: locale.code
                     });
-                    indexes.push(...results);
+                    for (const result of results) {
+                        if (indexes.some(i => i.index === result.index)) {
+                            continue;
+                        }
+                        indexes.push(result);
+                    }
                 }
             }
         }

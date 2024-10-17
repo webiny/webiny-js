@@ -1,7 +1,6 @@
 /**
  * Plugins specific to the "website" app.
  */
-import linkPreload from "./linkPreload";
 
 /**
  * Ensures GraphQL's PbPage and PbPageListItem types are correctly cached.
@@ -70,7 +69,6 @@ import carouselStylesSettings from "@webiny/app-page-builder/editor/plugins/elem
 import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMode";
 
 export default [
-    linkPreload(),
     apolloCacheObjectId,
 
     // Page elements

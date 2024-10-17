@@ -14,6 +14,7 @@ export const createExportPagesControllerTask = () => {
         IExportPagesControllerInput,
         IExportPagesControllerOutput
     >({
+        isPrivate: true,
         id: PageExportTask.Controller,
         title: "Page Builder - Export Pages - Controller",
         description: "Export pages from the Page Builder - controller.",

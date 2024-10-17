@@ -22,7 +22,7 @@ export interface CreateHandlerCoreParams {
     topPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     bottomPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
-    path?: `manage/${string}-${string}}` | `read/${string}-${string}}` | string;
+    path?: `manage/${string}-${string}` | `read/${string}-${string}` | string;
 }
 export const createHandlerCore = (params: CreateHandlerCoreParams) => {
     const tenant = {

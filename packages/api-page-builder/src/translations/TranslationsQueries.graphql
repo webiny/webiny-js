@@ -1,0 +1,99 @@
+query GetCollectionById {
+  translations {
+    getTranslatableCollection(collectionId: "page:1") {
+      data {
+        collectionId
+        lastModified
+        items {
+          itemId
+          value
+          modifiedOn
+          modifiedBy {
+            id
+            displayName
+          }
+        }
+      }
+    }
+  }
+}
+
+mutation UpdateCollection {
+  translations {
+    saveTranslatableCollection(
+      collectionId: "page:1"
+      items: [{ itemId: "element:1", value: "Hello" }, { itemId: "element:2", value: "Button" }]
+    ) {
+      data {
+        collectionId
+        lastModified
+        items {
+          itemId
+          value
+          modifiedOn
+          modifiedBy {
+            id
+            displayName
+          }
+        }
+      }
+    }
+  }
+}
+
+query GetTranslatedCollection {
+  translations {
+    getTranslatedCollection(collectionId: "page:1", languageCode: "en") {
+      data {
+        collectionId
+        languageCode
+        items {
+          itemId
+          baseValue
+          value
+          translatedOn
+          translatedBy {
+            id
+            displayName
+          }
+        }
+      }
+      error {
+        code
+        message
+      }
+    }
+  }
+}
+
+mutation UpdateTranslatedCollection {
+  translations {
+    saveTranslatedCollection(
+      collectionId: "page:1"
+      languageCode: "en"
+      items: [
+        { itemId: "element:1", value: "Translated value 1" }
+        { itemId: "element:2", value: "Translated value 2" }
+      ]
+    ) {
+      data {
+        collectionId
+        languageCode
+        items {
+          itemId
+          baseValue
+          value
+          translatedOn
+          translatedBy {
+            id
+            displayName
+          }
+        }
+      }
+      error {
+        code
+        message
+      }
+    }
+  }
+}

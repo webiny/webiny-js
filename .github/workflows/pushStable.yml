@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: yarn --immutable
@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
       - name: Create workflow run cache key
         id: run-cache-key
@@ -48,7 +48,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
       - uses: actions/cache@v4
         with:
@@ -81,7 +81,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -123,7 +123,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}

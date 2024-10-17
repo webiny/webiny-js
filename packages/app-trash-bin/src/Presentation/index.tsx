@@ -3,7 +3,8 @@ import { AcoWithConfig } from "@webiny/app-aco";
 import {
     ITrashBinDeleteItemGateway,
     ITrashBinListGateway,
-    ITrashBinRestoreItemGateway
+    ITrashBinRestoreItemGateway,
+    ITrashBinBulkActionsGateway
 } from "~/Gateways";
 import { ITrashBinItemMapper, TrashBinItemDTO } from "~/Domain";
 import { TrashBinRenderer } from "~/Presentation/TrashBinRenderer";
@@ -22,10 +23,13 @@ interface TrashBinRenderProps {
 
 export type TrashBinProps = {
     render: TrashBinRenderProps;
+    bulkActionsGateway: ITrashBinBulkActionsGateway;
     listGateway: ITrashBinListGateway<any>;
     deleteGateway: ITrashBinDeleteItemGateway;
     restoreGateway: ITrashBinRestoreItemGateway<any>;
     itemMapper: ITrashBinItemMapper<any>;
+    deleteBulkActionName: string;
+    restoreBulkActionName: string;
     onClose?: () => void;
     onItemAfterRestore?: (item: TrashBinItemDTO) => Promise<void>;
     show?: boolean;

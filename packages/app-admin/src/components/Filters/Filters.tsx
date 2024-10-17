@@ -12,7 +12,8 @@ export type GenericFiltersData = GenericFormData;
 
 export type FiltersOnSubmit<T extends GenericFiltersData = GenericFiltersData> = FormOnSubmit<T>;
 
-export interface FiltersProps<T> extends Pick<FormProps<T>, "data" | "onChange"> {
+export interface FiltersProps<T extends GenericFormData = GenericFormData>
+    extends Pick<FormProps<T>, "data" | "onChange"> {
     filters: Filter[];
     show: boolean;
     children?: React.ReactNode;

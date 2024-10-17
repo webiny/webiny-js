@@ -34,7 +34,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     uniquePageId: ID
                     editor: String
                     createdFrom: ID
-                    createdBy: PbCreatedBy
+                    createdBy: PbIdentity
                     createdOn: DateTime
                     savedOn: DateTime
                     publishedOn: DateTime
@@ -83,7 +83,7 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                     savedOn: DateTime
                     createdFrom: ID
                     createdOn: DateTime
-                    createdBy: PbCreatedBy
+                    createdBy: PbIdentity
                     settings: JSON
                 }
 
@@ -243,8 +243,6 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
 
                     # Duplicate page by given ID.
                     duplicatePage(id: ID!, meta: JSON): PbPageResponse
-
-                    unlinkPageFromTemplate(id: ID!): PbPageResponse
 
                     # Publish page
                     publishPage(id: ID!): PbPageResponse
@@ -497,12 +495,6 @@ const createBasePageGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                         } catch (e) {
                             return new ErrorResponse(e);
                         }
-                    },
-
-                    unlinkPageFromTemplate: async (_, args: any, context) => {
-                        return resolve(() => {
-                            return context.pageBuilder.unlinkPageFromTemplate(args.id);
-                        });
                     },
 
                     publishPage: async (_, args: any, context) => {

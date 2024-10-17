@@ -8,6 +8,7 @@ const fields = `
     description
     permissions
     system
+    plugin
     createdOn
 `;
 

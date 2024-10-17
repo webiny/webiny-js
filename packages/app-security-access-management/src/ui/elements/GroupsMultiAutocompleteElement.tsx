@@ -1,7 +1,7 @@
 import React from "react";
 import { FormRenderPropParams } from "@webiny/form";
 import { InputElement } from "@webiny/app-admin/ui/elements/form/InputElement";
-import { GroupsMultiAutoComplete } from "~/components/GroupsMultiAutocomplete";
+import { GroupsMultiAutocomplete } from "~/components/GroupsMultiAutocomplete";
 import { FormFieldElementRenderProps } from "@webiny/app-admin/ui/elements/form/FormFieldElement";
 
 export class GroupsAutocompleteElement extends InputElement {
@@ -24,7 +24,7 @@ export class GroupsAutocompleteElement extends InputElement {
                 name={this.id}
                 validators={typeof validators === "function" ? validators({ formProps }) : []}
             >
-                <GroupsMultiAutoComplete label={"Groups"} />
+                <GroupsMultiAutocomplete label={"Groups"} />
             </Bind>
         );
     }

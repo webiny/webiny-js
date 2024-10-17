@@ -8,7 +8,10 @@ import { FormContext } from "./FormContext";
 import { FormPresenter } from "./FormPresenter";
 import { FormAPI } from "./FormApi";
 
-type Callbacks<T> = Pick<FormProps<T>, "onChange" | "onInvalid">;
+type Callbacks<T extends GenericFormData = GenericFormData> = Pick<
+    FormProps<T>,
+    "onChange" | "onInvalid"
+>;
 
 function FormInner<T extends GenericFormData = GenericFormData>(
     props: FormProps<T>,

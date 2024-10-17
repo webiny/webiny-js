@@ -1,11 +1,13 @@
 import React, { useMemo } from "react";
-import { usePageElements } from "~/hooks/usePageElements";
-import { LinkComponent } from "~/types";
 import styled, { CSSObject } from "@emotion/styled";
 import { ClassNames } from "@emotion/react";
+import isEqual from "lodash/isEqual";
+import { usePageElements } from "~/hooks/usePageElements";
+import { LinkComponent } from "~/types";
 import { DefaultLinkComponent } from "~/renderers/components";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
+import { ElementInput } from "~/inputs/ElementInput";
 
 const ICON_POSITION_FLEX_DIRECTION: Record<string, CSSObject> = {
     right: { flexDirection: "row-reverse" },
@@ -30,11 +32,6 @@ export interface ButtonClickHandler {
         label: string;
         defaultValue: any;
     }>;
-}
-
-export interface CreateButtonParams {
-    linkComponent?: LinkComponent;
-    clickHandlers?: Array<ButtonClickHandler> | (() => Array<ButtonClickHandler>);
 }
 
 interface ButtonBodyProps {
@@ -77,8 +74,6 @@ const ButtonText = ({ text }: ButtonTextProps) => {
     return <div className={"button-text"}>{text}</div>;
 };
 
-export type ButtonRenderer = ReturnType<typeof createButton>;
-
 export interface ButtonElementData {
     buttonText: string;
     link: {
@@ -97,125 +92,177 @@ export interface ButtonElementData {
 }
 
 export interface Props {
-    buttonText?: string;
-    action?: ButtonElementData["action"];
+    linkComponent?: LinkComponent;
+    clickHandlers?: Array<ButtonClickHandler>;
 }
 
-export const createButton = (params: CreateButtonParams = {}) => {
-    const LinkComponent = params?.linkComponent || DefaultLinkComponent;
+export const elementInputs = {
+    buttonText: ElementInput.create<string, ButtonElementData>({
+        name: "buttonText",
+        translatable: true,
+        type: "text",
+        getDefaultValue: ({ element }) => {
+            return element.data.buttonText;
+        }
+    }),
+    iconPosition: ElementInput.create<string, ButtonElementData>({
+        name: "iconPosition",
+        type: "text",
+        getDefaultValue: ({ element }) => {
+            return element.data.icon?.position;
+        }
+    }),
+    iconColor: ElementInput.create<string, ButtonElementData>({
+        name: "iconColor",
+        type: "color",
+        getDefaultValue: ({ element }) => {
+            return element.data.icon?.color;
+        }
+    }),
+    iconSvg: ElementInput.create<string, ButtonElementData>({
+        name: "iconSvg",
+        type: "svgIcon",
+        getDefaultValue: ({ element }) => {
+            return element.data.icon?.svg;
+        }
+    }),
+    iconWidth: ElementInput.create<string, ButtonElementData>({
+        name: "iconWidth",
+        type: "number",
+        getDefaultValue: ({ element }) => {
+            return element.data.icon?.width;
+        }
+    }),
+    actionType: ElementInput.create<ButtonElementData["action"]["actionType"]>({
+        name: "actionType",
+        type: "text",
+        getDefaultValue: ({ element }) => {
+            return element.data.action?.actionType;
+        }
+    }),
+    actionNewTab: ElementInput.create<ButtonElementData["action"]["newTab"]>({
+        name: "actionNewTab",
+        type: "boolean",
+        getDefaultValue: ({ element }) => {
+            return element.data.action?.newTab;
+        }
+    }),
+    actionHref: ElementInput.create<ButtonElementData["action"]["href"]>({
+        name: "actionHref",
+        type: "link",
+        translatable: true,
+        getDefaultValue: ({ element }) => {
+            return element.data.action?.href;
+        }
+    })
+};
 
-    return createRenderer<Props>(
-        props => {
-            const { getStyles } = usePageElements();
-            const { getElement } = useRenderer();
-            const element = getElement<ButtonElementData>();
-            const { link, icon } = element.data;
+export const ButtonRenderer = createRenderer<Props, typeof elementInputs>(
+    props => {
+        const LinkComponent = props.linkComponent || DefaultLinkComponent;
+        const { getStyles } = usePageElements();
+        const { getElement, getInputValues } = useRenderer();
+        const element = getElement<ButtonElementData>();
+        const inputs = getInputValues<typeof elementInputs>();
+        const { link } = element.data;
 
-            const buttonText = props.buttonText || element.data.buttonText;
-            const action = props.action?.href ? props.action : element.data.action;
+        const buttonText = inputs.buttonText || "";
+        let buttonInnerContent = <ButtonText text={buttonText} />;
 
-            let buttonInnerContent = <ButtonText text={buttonText} />;
+        const action: ButtonElementData["action"] = {
+            href: inputs.actionHref || "",
+            newTab: inputs.actionNewTab || false,
+            actionType: inputs.actionType || "link"
+        };
 
-            let StyledButtonBody = ButtonBody,
-                StyledButtonIcon;
+        let StyledButtonBody = ButtonBody,
+            StyledButtonIcon;
 
-            if (icon && icon.svg) {
-                const { position = "left", color } = icon;
+        if (inputs.iconSvg) {
+            const position = inputs.iconPosition || "left";
+            const color = inputs.iconColor || "#000";
 
-                StyledButtonBody = styled(StyledButtonBody)({
-                    display: "flex",
-                    ...ICON_POSITION_FLEX_DIRECTION[position]
-                }) as (props: ButtonBodyProps) => JSX.Element;
+            StyledButtonBody = styled(StyledButtonBody)({
+                display: "flex",
+                ...ICON_POSITION_FLEX_DIRECTION[position]
+            }) as (props: ButtonBodyProps) => JSX.Element;
 
-                StyledButtonIcon = styled(ButtonIcon)(
-                    {
-                        width: icon.width,
-                        ...ICON_POSITION_MARGIN[position]
-                    },
-                    getStyles(theme => {
-                        const themeColor = theme.styles.colors?.[color];
-                        return {
-                            color: themeColor || color
-                        };
-                    })
-                );
+            StyledButtonIcon = styled(ButtonIcon)(
+                {
+                    width: inputs.iconWidth,
+                    ...ICON_POSITION_MARGIN[position]
+                },
+                getStyles(theme => {
+                    const themeColor = theme.styles.colors?.[color];
+                    return {
+                        color: themeColor || color
+                    };
+                })
+            );
 
-                buttonInnerContent = (
-                    <>
-                        <StyledButtonIcon svg={icon.svg} className={`button-icon-${position}`} />
-                        {buttonInnerContent}
-                    </>
-                );
-            }
+            buttonInnerContent = (
+                <>
+                    <StyledButtonIcon svg={inputs.iconSvg} className={`button-icon-${position}`} />
+                    {buttonInnerContent}
+                </>
+            );
+        }
 
-            // The `link` property is a legacy property, and it's not used anymore,
-            // but we still need to support it in order to not break existing pages.
-            const isLinkAction = useMemo(() => {
-                return link?.href || ["link", "scrollToElement"].includes(action?.actionType);
-            }, [link?.href, action?.actionType]);
+        // The `link` property is a legacy property, and it's not used anymore,
+        // but we still need to support it in order to not break existing pages.
+        const isLinkAction = useMemo(() => {
+            return link?.href || ["link", "scrollToElement"].includes(action?.actionType);
+        }, [link?.href, action?.actionType]);
 
-            if (isLinkAction) {
-                let href = "";
+        if (isLinkAction) {
+            let href = "";
 
-                // In case the `action.actionType` is `scrollToElement`, the flag will remain false.
-                let newTab = false;
+            // In case the `action.actionType` is `scrollToElement`, the flag will remain false.
+            let newTab = false;
 
-                if (link?.href) {
-                    href = link.href;
-                    newTab = link?.newTab;
-                } else {
-                    if (action.actionType === "link") {
-                        href = action.href;
-                        newTab = action.newTab;
-                    }
-
-                    if (action.actionType === "scrollToElement") {
-                        href = "#" + action.scrollToElement;
-                    }
+            if (link?.href) {
+                href = link.href;
+                newTab = link?.newTab;
+            } else {
+                if (action.actionType === "link") {
+                    href = action.href;
+                    newTab = action.newTab;
                 }
 
-                return (
-                    <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
-                        <StyledButtonBody>{buttonInnerContent}</StyledButtonBody>
-                    </LinkComponent>
-                );
-            }
-
-            let clickHandler: ButtonClickHandler["handler"] | undefined;
-            if (action?.clickHandler) {
-                let clickHandlers: Array<ButtonClickHandler> = [];
-                if (params?.clickHandlers) {
-                    if (typeof params.clickHandlers === "function") {
-                        clickHandlers = params.clickHandlers();
-                    } else {
-                        clickHandlers = params.clickHandlers;
-                    }
+                if (action.actionType === "scrollToElement") {
+                    href = "#" + action.scrollToElement;
                 }
-
-                clickHandler = clickHandlers?.find(
-                    item => item.id === action?.clickHandler
-                )?.handler;
             }
 
             return (
-                <StyledButtonBody
-                    onClick={() => clickHandler?.({ variables: element.data.action.variables! })}
-                >
-                    {buttonInnerContent}
-                </StyledButtonBody>
+                <LinkComponent href={href} target={newTab ? "_blank" : "_self"}>
+                    <StyledButtonBody>{buttonInnerContent}</StyledButtonBody>
+                </LinkComponent>
             );
-        },
-        {
-            themeStyles({ theme, element }) {
-                const { type } = element.data;
-                return theme.styles.elements?.button[type];
-            },
-            propsAreEqual: (prevProps: Props, nextProps: Props) => {
-                return (
-                    prevProps.buttonText === nextProps.buttonText &&
-                    prevProps.action === nextProps.action
-                );
-            }
         }
-    );
-};
+
+        if (action?.clickHandler) {
+            const clickHandler = props.clickHandlers?.find(
+                item => item.id === action?.clickHandler
+            );
+
+            const onClick = clickHandler
+                ? () => clickHandler.handler({ variables: element.data.action.variables! })
+                : () => void 0;
+
+            return <StyledButtonBody onClick={onClick}>{buttonInnerContent}</StyledButtonBody>;
+        }
+
+        return <StyledButtonBody>{buttonInnerContent}</StyledButtonBody>;
+    },
+    {
+        themeStyles({ theme, element }) {
+            const { type } = element.data;
+            return theme.styles.elements?.button[type];
+        },
+        propsAreEqual: (prevProps, nextProps) => {
+            return isEqual(prevProps.inputs, nextProps.inputs);
+        },
+        inputs: elementInputs
+    }
+);

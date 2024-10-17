@@ -162,7 +162,9 @@ export const syncWithCognito = ({
 
         adminUsers.onUserAfterUpdate.subscribe(async ({ originalUser, updatedUser, inputData }) => {
             const newAttributes = Object.keys(updateAttributes).map(attr => {
-                const mappedAttr = updateAttributes[attr] as MappedAttrType;
+                const mappedAttr = updateAttributes[
+                    attr as keyof typeof updateAttributes
+                ] as MappedAttrType;
                 const attrValue =
                     typeof mappedAttr === "function"
                         ? mappedAttr(updatedUser)

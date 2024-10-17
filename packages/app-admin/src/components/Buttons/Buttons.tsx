@@ -58,8 +58,14 @@ export const ButtonSecondary = ({ onAction, ...other }: ButtonProps) => {
     return <BaseButtonSecondary {...other} onClick={onAction} />;
 };
 
-export const IconButton = ({ label, onAction, tooltipPlacement, ...other }: IconButtonProps) => {
-    if (label) {
+export const IconButton = ({
+    label,
+    onAction,
+    tooltipPlacement,
+    disabled,
+    ...other
+}: IconButtonProps) => {
+    if (label && !disabled) {
         return (
             <Tooltip content={label} placement={tooltipPlacement}>
                 <BaseIconButton {...other} onClick={onAction} />
@@ -67,5 +73,5 @@ export const IconButton = ({ label, onAction, tooltipPlacement, ...other }: Icon
         );
     }
 
-    return <BaseIconButton {...other} onClick={onAction} />;
+    return <BaseIconButton {...other} onClick={onAction} disabled={disabled} />;
 };

@@ -1,5 +1,6 @@
 import { configurations } from "~/configurations";
 import { CmsModel } from "@webiny/api-headless-cms/types";
+import { getElasticsearchIndexPrefix } from "@webiny/api-elasticsearch";
 
 describe("Elasticsearch index", () => {
     const withLocaleItems = [
@@ -19,7 +20,7 @@ describe("Elasticsearch index", () => {
         async (tenant, locale) => {
             process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
 
-            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+            const prefix = getElasticsearchIndexPrefix();
 
             const { index } = configurations.es({
                 model: {
@@ -76,7 +77,7 @@ describe("Elasticsearch index", () => {
         async (tenant, locale) => {
             process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
 
-            const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+            const prefix = getElasticsearchIndexPrefix();
 
             const { index: noLocaleIndex } = configurations.es({
                 model: {

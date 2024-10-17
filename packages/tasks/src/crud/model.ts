@@ -1,5 +1,5 @@
 import { createCmsModel, createPrivateModel } from "@webiny/api-headless-cms";
-import { ITaskLogItemType, TaskDataStatus } from "~/types";
+import { TaskLogItemType, TaskDataStatus } from "~/types";
 
 export const WEBINY_TASK_MODEL_ID = "webinyTask";
 export const WEBINY_TASK_LOG_MODEL_ID = "webinyTaskLog";
@@ -93,11 +93,11 @@ const taskLogModelPlugin = createCmsModel(
                                 enabled: true,
                                 values: [
                                     {
-                                        value: ITaskLogItemType.INFO,
+                                        value: TaskLogItemType.INFO,
                                         label: "Info"
                                     },
                                     {
-                                        value: ITaskLogItemType.ERROR,
+                                        value: TaskLogItemType.ERROR,
                                         label: "Error"
                                     }
                                 ]

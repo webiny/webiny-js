@@ -5,7 +5,7 @@ import {
     PageExportTask
 } from "~/export/pages/types";
 import { ITaskResponseResult } from "@webiny/tasks";
-import { createS3Client } from "@webiny/aws-sdk/client-s3";
+import { createS3 } from "@webiny/aws-sdk/client-s3";
 import lodashChunk from "lodash/chunk";
 
 export class ExportPagesCleanup {
@@ -50,7 +50,7 @@ export class ExportPagesCleanup {
             return collection;
         }, []);
 
-        const s3 = createS3Client({
+        const s3 = createS3({
             region: process.env.AWS_REGION
         });
 

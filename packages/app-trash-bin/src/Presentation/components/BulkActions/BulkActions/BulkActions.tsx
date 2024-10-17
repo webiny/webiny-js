@@ -7,7 +7,11 @@ import { useTrashBinListConfig } from "~/Presentation/configs";
 import { useTrashBin } from "~/Presentation/hooks";
 import { BulkActionsContainer, BulkActionsInner, ButtonsContainer } from "./BulkActions.styled";
 
-export const getEntriesLabel = (count = 0): string => {
+export const getEntriesLabel = (count: number, isSelectedAll: boolean): string => {
+    if (isSelectedAll) {
+        return "all entries";
+    }
+
     return `${count} ${count === 1 ? "item" : "items"}`;
 };
 
@@ -16,8 +20,12 @@ export const BulkActions = () => {
     const { vm, selectItems } = useTrashBin();
 
     const headline = useMemo((): string => {
-        return getEntriesLabel(vm.selectedItems.length) + ` selected:`;
-    }, [vm.selectedItems]);
+        if (vm.isSelectedAll) {
+            return "All entries selected:";
+        }
+
+        return getEntriesLabel(vm.selectedItems.length, vm.isSelectedAll) + ` selected:`;
+    }, [vm.selectedItems, vm.isSelectedAll]);
 
     if (!vm.selectedItems.length) {
         return null;

@@ -41,7 +41,7 @@ import { getIntrospectionQuery } from "graphql";
 import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import createAdminUsersApp from "@webiny/api-admin-users";
-import { createTestWcpLicense } from "~tests/utils/createTestWcpLicense";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { createWcpContext } from "@webiny/api-wcp";
 import { AdminUsersStorageOperations } from "@webiny/api-admin-users/types";
 

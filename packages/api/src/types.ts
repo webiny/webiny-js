@@ -1,8 +1,8 @@
 import { PluginsContainer } from "@webiny/plugins";
 
-export type GenericRecordKey = string | number | symbol;
+export type GenericRecord<K extends PropertyKey = PropertyKey, V = any> = Record<K, V>;
 
-export type GenericRecord<K extends GenericRecordKey = GenericRecordKey, V = any> = Record<K, V>;
+export type NonEmptyArray<T> = [T, ...T[]];
 
 export type BenchmarkRuns = GenericRecord<string, number>;
 

@@ -1,10 +1,11 @@
 import { getJapaneseConfiguration } from "~/indexConfiguration";
 import { createElasticsearchClient } from "../helpers";
+import { getElasticsearchIndexPrefix } from "~/indexPrefix";
 
 describe("Elasticsearch Japanese", () => {
     const client = createElasticsearchClient();
 
-    const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+    const prefix: string = getElasticsearchIndexPrefix();
 
     const indexTestName = `${prefix}index-japanese-index-test`;
 

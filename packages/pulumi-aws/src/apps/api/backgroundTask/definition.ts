@@ -78,6 +78,11 @@ export const createBackgroundTaskDefinition = (
                      * It can be used to handle waiting for child tasks or some resource to be created.
                      */
                     {
+                        Variable: "$",
+                        IsNull: true,
+                        Next: "UnknownError"
+                    },
+                    {
                         And: [
                             {
                                 Variable: "$.status",

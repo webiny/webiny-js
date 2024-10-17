@@ -1,9 +1,16 @@
-import { HigherOrderComponent } from "@webiny/react-composition";
+import React from "react";
+import { Decorator, GenericComponent } from "@webiny/react-composition";
+
+export interface ChildrenProps {
+    children: React.ReactNode;
+}
 
 /**
- * Creates a Higher Order Component which is meant to wrap the entire app content.
+ * Creates a Higher Order Component which wraps the entire app content.
  * This is mostly useful for adding React Context providers.
  */
-export function createProvider(hoc: HigherOrderComponent): HigherOrderComponent {
-    return hoc;
+export function createProvider(
+    decorator: Decorator<GenericComponent<ChildrenProps>>
+): Decorator<GenericComponent<ChildrenProps>> {
+    return decorator;
 }

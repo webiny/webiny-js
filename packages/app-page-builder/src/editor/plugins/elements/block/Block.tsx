@@ -1,16 +1,27 @@
 import React from "react";
-import { PbEditorElement } from "~/types";
-import PeBlock from "./PeBlock";
-
+import { useRecoilValue } from "recoil";
+import { BlockRenderer } from "@webiny/app-page-builder-elements/renderers/block";
 import { Element } from "@webiny/app-page-builder-elements/types";
+import { elementWithChildrenByIdSelector } from "~/editor/recoil/modules";
+import { EmptyCell } from "~/editor/plugins/elements/cell/EmptyCell";
+import { PbEditorElement } from "~/types";
 
-interface BlockProps {
+type Props = Omit<React.ComponentProps<typeof BlockRenderer>, "element"> & {
     element: PbEditorElement;
-}
-
-const Block = (props: BlockProps) => {
-    const { element, ...rest } = props;
-    return <PeBlock element={element as Element} {...rest} />;
 };
 
-export default Block;
+export const Block = (props: Props) => {
+    const { element } = props;
+
+    const elementWithChildren = useRecoilValue(
+        elementWithChildrenByIdSelector(element.id)
+    ) as Element;
+
+    const childrenElements = elementWithChildren?.elements;
+
+    if (Array.isArray(childrenElements) && childrenElements.length > 0) {
+        return <BlockRenderer {...props} element={elementWithChildren} />;
+    }
+
+    return <EmptyCell element={element} />;
+};

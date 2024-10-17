@@ -215,7 +215,6 @@ export interface PagesCrud {
         page: string,
         meta?: Record<string, any>
     ): Promise<TPage>;
-    unlinkPageFromTemplate<TPage extends Page = Page>(id: string): Promise<TPage>;
     updatePage<TPage extends Page = Page>(id: string, data: PbUpdatePageInput): Promise<TPage>;
     deletePage<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
     publishPage<TPage extends Page = Page>(id: string): Promise<TPage>;

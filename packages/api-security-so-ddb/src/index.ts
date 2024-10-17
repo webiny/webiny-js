@@ -402,7 +402,7 @@ export const createStorageOperations = (
                 .map(item => cleanupItem(entities.apiKeys, item))
                 .filter(Boolean) as ApiKey[];
         },
-        async listGroups({ where: { tenant, id_in }, sort }): Promise<Group[]> {
+        async listGroups({ where: { tenant, id_in, slug_in }, sort }): Promise<Group[]> {
             let items: Group[];
             try {
                 items = await queryAll<Group>({
@@ -428,12 +428,17 @@ export const createStorageOperations = (
                 })
             );
 
-            if (!Array.isArray(id_in)) {
-                return items;
+            if (Array.isArray(id_in)) {
+                return items.filter(item => id_in.includes(item.id));
             }
-            return items.filter(item => id_in.includes(item.id));
+
+            if (Array.isArray(slug_in)) {
+                return items.filter(item => slug_in.includes(item.slug));
+            }
+
+            return items;
         },
-        async listTeams({ where: { tenant }, sort }): Promise<Team[]> {
+        async listTeams({ where: { tenant, id_in, slug_in }, sort }): Promise<Team[]> {
             let items: Team[];
             try {
                 items = await queryAll<Team>({
@@ -450,7 +455,7 @@ export const createStorageOperations = (
                 });
             }
 
-            return cleanupItems(
+            items = cleanupItems(
                 entities.teams,
                 sortItems({
                     items,
@@ -458,6 +463,15 @@ export const createStorageOperations = (
                     fields: []
                 })
             );
+
+            if (Array.isArray(id_in)) {
+                return items.filter(item => id_in.includes(item.id));
+            }
+
+            if (Array.isArray(slug_in)) {
+                return items.filter(item => slug_in.includes(item.id));
+            }
+            return items;
         },
         async listTenantLinksByIdentity({ identity }): Promise<TenantLink[]> {
             return await queryAllClean<TenantLink>({

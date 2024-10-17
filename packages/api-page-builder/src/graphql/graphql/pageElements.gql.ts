@@ -10,7 +10,7 @@ export const createPageElementsGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
                 type PbPageElement {
                     id: ID
                     createdOn: DateTime
-                    createdBy: PbCreatedBy
+                    createdBy: PbIdentity
                     name: String
                     type: String
                     content: JSON

@@ -14,9 +14,24 @@ import { createTopic } from "@webiny/pubsub";
 import { validation } from "@webiny/validation";
 import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { GetTeamParams, Team, TeamInput, PermissionsTenantLink, Security } from "~/types";
+import {
+    GetTeamParams,
+    Team,
+    TeamInput,
+    PermissionsTenantLink,
+    Security,
+    ListTeamsParams
+} from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
+import {
+    listTeamsFromProvider as baseListTeamsFromPlugins,
+    type ListTeamsFromPluginsParams
+} from "./groupsTeamsPlugins/listTeamsFromProvider";
+import {
+    getTeamFromProvider as baseGetTeamFromPlugins,
+    type GetTeamFromPluginsParams
+} from "./groupsTeamsPlugins/getTeamFromProvider";
 
 const CreateDataModel = withFields({
     tenant: string({ validation: validation.create("required") }),
@@ -106,7 +121,8 @@ async function updateTenantLinks(
 
 export const createTeamsMethods = ({
     getTenant: initialGetTenant,
-    storageOperations
+    storageOperations,
+    teamsProvider
 }: SecurityConfig) => {
     const getTenant = () => {
         const tenant = initialGetTenant();
@@ -115,6 +131,22 @@ export const createTeamsMethods = ({
         }
         return tenant;
     };
+
+    const listTeamsFromPlugins = (
+        params: Pick<ListTeamsFromPluginsParams, "where">
+    ): Promise<Team[]> => {
+        return baseListTeamsFromPlugins({
+            ...params,
+            teamsProvider
+        });
+    };
+    const getTeamFromPlugins = (params: Pick<GetTeamFromPluginsParams, "where">): Promise<Team> => {
+        return baseGetTeamFromPlugins({
+            ...params,
+            teamsProvider
+        });
+    };
+
     return {
         onTeamBeforeCreate: createTopic("security.onTeamBeforeCreate"),
         onTeamAfterCreate: createTopic("security.onTeamAfterCreate"),
@@ -130,9 +162,14 @@ export const createTeamsMethods = ({
 
             let team: Team | null = null;
             try {
-                team = await storageOperations.getTeam({
-                    where: { ...where, tenant: where.tenant || getTenant() }
-                });
+                const whereWithTenant = { ...where, tenant: where.tenant || getTenant() };
+                const teamFromPlugins = await getTeamFromPlugins({ where: whereWithTenant });
+
+                if (teamFromPlugins) {
+                    team = teamFromPlugins;
+                } else {
+                    team = await storageOperations.getTeam({ where: whereWithTenant });
+                }
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not get team.",
@@ -146,19 +183,26 @@ export const createTeamsMethods = ({
             return team;
         },
 
-        async listTeams(this: Security) {
+        async listTeams(this: Security, { where }: ListTeamsParams = {}) {
             await checkPermission(this);
             try {
-                return await storageOperations.listTeams({
-                    where: {
-                        tenant: getTenant()
-                    },
+                const whereWithTenant = { ...where, tenant: getTenant() };
+
+                const teamsFromDatabase = await storageOperations.listTeams({
+                    where: whereWithTenant,
                     sort: ["createdOn_ASC"]
                 });
+
+                const teamsFromPlugins = await listTeamsFromPlugins({ where: whereWithTenant });
+
+                // We don't have to do any extra sorting because, as we can see above, `createdOn_ASC` is
+                // hardcoded, and teams coming from plugins don't have `createdOn`, meaning they should
+                // always be at the top of the list.
+                return [...teamsFromPlugins, ...teamsFromDatabase];
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not list API keys.",
-                    ex.code || "LIST_API_KEY_ERROR"
+                    ex.message || "Could not list teams.",
+                    ex.code || "LIST_TEAM_ERROR"
                 );
             }
         },
@@ -224,11 +268,26 @@ export const createTeamsMethods = ({
             const model = await new UpdateDataModel().populate(input);
             await model.validate();
 
-            const original = await storageOperations.getTeam({
+            const original = await this.getTeam({
                 where: { tenant: getTenant(), id }
             });
+
             if (!original) {
                 throw new NotFoundError(`Team "${id}" was not found!`);
+            }
+
+            // We can't proceed with the update if one of the following is true:
+            // 1. The group is system group.
+            // 2. The group is created via a plugin.
+            if (original.system) {
+                throw new WebinyError(`Cannot update system teams.`, "CANNOT_UPDATE_SYSTEM_TEAMS");
+            }
+
+            if (original.plugin) {
+                throw new WebinyError(
+                    `Cannot update teams created via plugins.`,
+                    "CANNOT_UPDATE_PLUGIN_TEAMS"
+                );
             }
 
             const data = await model.toJSON({ onlyDirty: true });
@@ -262,9 +321,25 @@ export const createTeamsMethods = ({
         async deleteTeam(this: Security, id: string): Promise<void> {
             await checkPermission(this);
 
-            const team = await storageOperations.getTeam({ where: { tenant: getTenant(), id } });
+            const team = await this.getTeam({ where: { tenant: getTenant(), id } });
             if (!team) {
                 throw new NotFoundError(`Team "${id}" was not found!`);
+            }
+
+            // We can't proceed with the deletion if one of the following is true:
+            // 1. The group is system group.
+            // 2. The group is created via a plugin.
+            // 3. The group is being used by one or more tenant links.
+            // 4. The group is being used by one or more teams.
+            if (team.system) {
+                throw new WebinyError(`Cannot delete system teams.`, "CANNOT_DELETE_SYSTEM_TEAMS");
+            }
+
+            if (team.plugin) {
+                throw new WebinyError(
+                    `Cannot delete teams created via plugins.`,
+                    "CANNOT_DELETE_PLUGIN_TEAMS"
+                );
             }
 
             const usagesInTenantLinks = await storageOperations

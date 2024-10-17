@@ -45,11 +45,11 @@ const ButtonPrimaryStyled = styled(ButtonPrimary)`
 `;
 
 interface LexicalVariableInputPluginProps {
-    tag: string;
+    type: "paragraph" | "heading";
     variableId: string;
 }
 export const LexicalVariableInputPlugin = ({
-    tag,
+    type,
     variableId
 }: LexicalVariableInputPluginProps): JSX.Element => {
     const { value, onChange } = useVariable<LexicalValue>(variableId);
@@ -99,7 +99,7 @@ export const LexicalVariableInputPlugin = ({
             <IconButton icon={<ExpandIcon />} onClick={onDialogOpenClick} />
             <EditorWrapper className="webiny-pb-page-element-text">
                 <LexicalEditor
-                    tag={tag}
+                    type={type}
                     value={initialValue}
                     onChange={onInputChange}
                     onBlur={onInputBlur}
@@ -114,7 +114,7 @@ export const LexicalVariableInputPlugin = ({
                 <DialogContent>
                     <ModalEditorWrapper className="webiny-pb-page-element-text">
                         <LexicalEditor
-                            tag={tag}
+                            type={type}
                             value={initialValue}
                             onChange={setDialogEditorValue}
                             focus={dialogInputFocused}

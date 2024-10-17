@@ -32,7 +32,7 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                     displayName: String!
                     email: String!
 
-                    group: SecurityGroup
+                    groups: [SecurityGroup]
                     firstName: String
                     lastName: String
                     avatar: JSON
@@ -103,12 +103,12 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                     gravatar(user: AdminUser) {
                         return "https://www.gravatar.com/avatar/" + md5(user.email);
                     },
-                    group(user, _, context) {
-                        if (!user.group) {
+                    groups(user: AdminUser, _, context) {
+                        if (!user.groups) {
                             return null;
                         }
 
-                        return context.security.getGroup({ where: { id: user.group } });
+                        return context.security.listGroups({ where: { id_in: user.groups } });
                     }
                 },
                 AdminUsersQuery: {
@@ -164,17 +164,18 @@ export default (params: CreateUserGraphQlPluginsParams) => {
             new GraphQLSchemaPlugin<AdminUsersContext>({
                 typeDefs: /* GraphQL */ `
                     extend type AdminUser {
-                        team: SecurityTeam
+                        teams: [SecurityTeam]
                     }
                 `,
                 resolvers: {
                     AdminUser: {
-                        team(user, _, context) {
-                            if (!user.team) {
-                                return null;
+                        teams(user: AdminUser, _, context) {
+                            const hasTeams = Array.isArray(user.teams) && user.teams.length > 0;
+                            if (!hasTeams) {
+                                return [];
                             }
 
-                            return context.security.getTeam({ where: { id: user.team } });
+                            return context.security.listTeams({ where: { id_in: user.teams } });
                         }
                     }
                 }

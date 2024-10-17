@@ -4,10 +4,11 @@ import {
     FormOnSubmit,
     FormPropsState,
     FormValidationOptions,
+    GenericFormData,
     UseBindHook
 } from "~/types";
 
-export interface FormApiOptions<T> {
+export interface FormApiOptions<T extends GenericFormData = GenericFormData> {
     onSubmit: FormOnSubmit<T>;
     isFormDisabled: boolean | ((state: FormPropsState<T>) => boolean);
     validateOnFirstSubmit: boolean;
@@ -15,7 +16,7 @@ export interface FormApiOptions<T> {
 
 const emptyValues: unknown[] = [undefined, null];
 
-export class FormAPI<T> {
+export class FormAPI<T extends GenericFormData = GenericFormData> {
     private presenter: FormPresenter<T>;
     private readonly options: FormApiOptions<T>;
     private wasSubmitted = false;

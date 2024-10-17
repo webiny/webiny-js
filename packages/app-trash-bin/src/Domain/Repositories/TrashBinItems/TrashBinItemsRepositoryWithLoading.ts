@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { ILoadingRepository } from "@webiny/app-utils";
 import { ITrashBinItemsRepository } from "./ITrashBinItemsRepository";
-import { LoadingActions, TrashBinListQueryVariables } from "~/types";
+import { LoadingActions, TrashBinBulkActionsParams, TrashBinListQueryVariables } from "~/types";
 
 export class TrashBinItemsRepositoryWithLoading implements ITrashBinItemsRepository {
     private loadingRepository: ILoadingRepository;
@@ -58,5 +58,9 @@ export class TrashBinItemsRepositoryWithLoading implements ITrashBinItemsReposit
             this.trashBinItemsRepository.restoreItem(id),
             LoadingActions.restore
         );
+    }
+
+    async bulkAction(action: string, params: TrashBinBulkActionsParams) {
+        await this.trashBinItemsRepository.bulkAction(action, params);
     }
 }

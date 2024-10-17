@@ -300,6 +300,12 @@ describe("page custom field", () => {
             name: "PbListPagesSort",
             enumValues: [
                 {
+                    name: "customViews_ASC"
+                },
+                {
+                    name: "customViews_DESC"
+                },
+                {
                     name: "id_ASC"
                 },
                 {
@@ -328,12 +334,6 @@ describe("page custom field", () => {
                 },
                 {
                     name: "title_DESC"
-                },
-                {
-                    name: "customViews_ASC"
-                },
-                {
-                    name: "customViews_DESC"
                 }
             ],
             possibleTypes: null

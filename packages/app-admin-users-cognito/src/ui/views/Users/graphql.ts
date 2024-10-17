@@ -20,7 +20,7 @@ const userFormFields = (params: { teams: boolean }) => {
             firstName
             lastName
             avatar
-            group {
+            groups {
                 id
                 slug
                 name
@@ -32,7 +32,7 @@ const userFormFields = (params: { teams: boolean }) => {
     return gql.replace(
         "TEAM",
         params.teams
-            ? `team {
+            ? `teams {
                 id
                 slug
                 name

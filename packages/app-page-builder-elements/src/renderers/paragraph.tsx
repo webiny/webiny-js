@@ -1,31 +1,28 @@
 import React from "react";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
-import { isValidLexicalData, LexicalHtmlRenderer } from "@webiny/lexical-editor";
-import { usePageElements } from "~/hooks/usePageElements";
-import { assignStyles } from "~/utils";
+import { ElementInput } from "~/inputs/ElementInput";
 
-export const createParagraph = () => {
-    return createRenderer(() => {
-        const { getElement } = useRenderer();
-        const element = getElement();
-        const { theme } = usePageElements();
-
-        const __html = element.data.text.data.text;
-        if (isValidLexicalData(__html)) {
-            return (
-                <LexicalHtmlRenderer
-                    theme={theme}
-                    themeStylesTransformer={styles => {
-                        return assignStyles({
-                            breakpoints: theme.breakpoints,
-                            styles
-                        });
-                    }}
-                    value={__html}
-                />
-            );
+export const elementInputs = {
+    text: ElementInput.create<string>({
+        name: "text",
+        type: "richText",
+        translatable: true,
+        getDefaultValue: ({ element }) => {
+            return element.data.text.data.text;
         }
+    })
+};
+
+/**
+ * This renderer works with plain HTML. In the past, we used to have the MediumEditor, and it produced plain HTML.
+ * For the new Lexical Editor, we decorate this renderer from the `@webiny/app-page-builder` package.
+ */
+export const ParagraphRenderer = createRenderer<unknown, typeof elementInputs>(
+    () => {
+        const { getInputValues } = useRenderer();
+        const inputs = getInputValues<typeof elementInputs>();
+        const __html = inputs.text || "";
 
         // If the text already contains `p` tags (happens when c/p-ing text into the editor),
         // we don't want to wrap it with another pair of `p` tag.
@@ -39,5 +36,6 @@ export const createParagraph = () => {
         }
 
         return <p dangerouslySetInnerHTML={{ __html }} />;
-    });
-};
+    },
+    { inputs: elementInputs }
+);

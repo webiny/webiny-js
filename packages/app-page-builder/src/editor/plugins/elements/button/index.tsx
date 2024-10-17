@@ -1,6 +1,7 @@
 import React from "react";
 import { css } from "emotion";
 import kebabCase from "lodash/kebabCase";
+import { Element } from "@webiny/app-page-builder-elements/types";
 import {
     DisplayMode,
     PbEditorPageElementPlugin,
@@ -11,7 +12,7 @@ import {
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import ButtonSettings from "./ButtonSettings";
 import ButtonSettingsV2 from "./ButtonSettingsV2";
-import Button from "./Button";
+import { ButtonRenderer } from "@webiny/app-page-builder-elements/renderers/button";
 
 const buttonWrapper = css({
     display: "flex",
@@ -77,8 +78,8 @@ const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
 
                 return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
             },
-            render(props) {
-                return <Button {...props} />;
+            render({ element, ...rest }) {
+                return <ButtonRenderer element={element as Element} {...rest} />;
             }
         } as PbEditorPageElementPlugin,
         {

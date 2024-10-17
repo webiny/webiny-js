@@ -5,9 +5,9 @@ import {
     DecoratableComponent,
     GenericComponent,
     Decorator,
-    CanReturnNull,
     GenericHook,
-    DecoratableHook
+    DecoratableHook,
+    ComponentDecorator
 } from "~/types";
 
 export interface ShouldDecorate<TDecorator = any, TComponent = any> {
@@ -46,9 +46,7 @@ export function createDecoratorFactory<TDecorator>() {
         decoratable: TDecoratable,
         shouldDecorate?: ShouldDecorate<TDecorator, GetDecorateeParams<GetDecoratee<TDecoratable>>>
     ) {
-        return function createDecorator(
-            decorator: Decorator<CanReturnNull<GetDecoratee<TDecoratable>>>
-        ) {
+        return function createDecorator(decorator: ComponentDecorator<GetDecoratee<TDecoratable>>) {
             return function DecoratorPlugin(props: TDecorator) {
                 if (shouldDecorate) {
                     const componentDecorator = createConditionalDecorator<GenericComponent>(
@@ -95,9 +93,9 @@ export function withDecoratorFactory<TDecorator>() {
     ) {
         const createDecorator = createDecoratorFactory<TDecorator>()(Component, shouldDecorate);
 
-        return Object.assign(Component, { createDecorator }) as unknown as DecoratableComponent<
-            GenericComponent<GetDecorateeParams<GetDecoratee<TDecoratable>>>
-        > & { createDecorator: typeof createDecorator };
+        return Object.assign(Component, { createDecorator }) as TDecoratable & {
+            createDecorator: typeof createDecorator;
+        };
     };
 }
 

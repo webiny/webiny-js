@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../api/tsconfig.build.json" },
     { "path": "../api-admin-users/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },

@@ -3,11 +3,12 @@ import { people } from "./base.entries";
 import { getBaseConfiguration } from "~/indexConfiguration";
 import { ElasticsearchBoolQueryConfig } from "~/types";
 import { ElasticsearchQueryBuilderOperatorContainsPlugin } from "~/plugins/operator/contains";
+import { getElasticsearchIndexPrefix } from "~/indexPrefix";
 
 describe("Elasticsearch Base Search", () => {
     const client = createElasticsearchClient();
 
-    const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+    const prefix = getElasticsearchIndexPrefix();
 
     const indexTestName = `${prefix}search-base-index-test`;
 

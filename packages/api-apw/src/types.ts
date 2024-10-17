@@ -2,7 +2,8 @@ import {
     CmsEntry as BaseCmsEntry,
     OnEntryBeforePublishTopicParams,
     OnEntryAfterPublishTopicParams,
-    OnEntryAfterUnpublishTopicParams
+    OnEntryAfterUnpublishTopicParams,
+    CmsEntryListSort
 } from "@webiny/api-headless-cms/types";
 import {
     Page,
@@ -62,7 +63,7 @@ export interface ListWhere {
 
 export interface ListParams {
     where?: ListWhere;
-    sort?: string[];
+    sort?: CmsEntryListSort;
     limit?: number;
     after?: string | null;
 }

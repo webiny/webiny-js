@@ -25,7 +25,7 @@ export interface UIViewProps {
     [key: string]: any;
 }
 
-export class UIView<TConfig = UIElementConfig> extends UIElement<TConfig> {
+export class UIView<TConfig extends UIElementConfig = UIElementConfig> extends UIElement<TConfig> {
     private _events = new Map();
     private _hookDefinitions: Record<string, () => any> = {};
     private _hookValues: Record<string, any> = {};

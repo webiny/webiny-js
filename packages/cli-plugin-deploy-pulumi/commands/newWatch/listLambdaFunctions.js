@@ -12,6 +12,8 @@ const listLambdaFunctions = ({ folder, env, function: fn }) => {
 
     const functionsList = stackExport.deployment.resources
         .filter(r => r.type === "aws:lambda/function:Function")
+        // This filter ensures that Lambda@Edge functions are excluded.
+        .filter(lambdaFunctionResource => "." in lambdaFunctionResource.outputs.code.assets)
         .map(lambdaFunctionResource => {
             const fnName = lambdaFunctionResource.outputs.name;
             const handlerBuildFolderPath = lambdaFunctionResource.outputs.code.assets["."].path;

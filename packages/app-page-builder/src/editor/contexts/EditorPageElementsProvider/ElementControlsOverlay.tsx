@@ -258,7 +258,7 @@ export const ElementControlsOverlay = (props: Props) => {
             return "block | unknown";
         }
 
-        return getElementTitle(element.type);
+        return getElementTitle(element.type, element.id);
     }, [element.data.blockId]);
 
     // Z-index of element controls overlay depends on the depth of the page element.

@@ -15,6 +15,14 @@ import {
 } from "./graphql/groups";
 
 import {
+    CREATE_SECURITY_TEAM,
+    DELETE_SECURITY_TEAM,
+    GET_SECURITY_TEAM,
+    LIST_SECURITY_TEAMS,
+    UPDATE_SECURITY_TEAM
+} from "./graphql/teams";
+
+import {
     CREATE_API_KEY,
     DELETE_API_KEY,
     GET_API_KEY,
@@ -32,9 +40,12 @@ import { TenancyStorageOperations } from "@webiny/api-tenancy/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { SecurityStorageOperations } from "~/types";
 import { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
+import { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
+import { createWcpContext } from "@webiny/api-wcp";
 
 type UseGqlHandlerParams = {
     plugins?: PluginCollection;
+    wcpLicense?: DecryptedWcpProjectLicense;
 };
 
 export default (opts: UseGqlHandlerParams = {}) => {
@@ -48,6 +59,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
     const handler = createHandler({
         plugins: [
             graphqlHandlerPlugins(),
+            createWcpContext({ testProjectLicense: opts.wcpLicense }),
             createTenancyContext({
                 storageOperations: tenancyStorage.storageOperations
             }),
@@ -101,6 +113,23 @@ export default (opts: UseGqlHandlerParams = {}) => {
             return invoke({ body: { query: GET_SECURITY_GROUP, variables } });
         }
     };
+    const securityTeam = {
+        async create(variables = {}) {
+            return invoke({ body: { query: CREATE_SECURITY_TEAM, variables } });
+        },
+        async update(variables = {}) {
+            return invoke({ body: { query: UPDATE_SECURITY_TEAM, variables } });
+        },
+        async delete(variables = {}) {
+            return invoke({ body: { query: DELETE_SECURITY_TEAM, variables } });
+        },
+        async list(variables = {}, headers = {}) {
+            return invoke({ body: { query: LIST_SECURITY_TEAMS, variables }, headers });
+        },
+        async get(variables = {}) {
+            return invoke({ body: { query: GET_SECURITY_TEAM, variables } });
+        }
+    };
 
     const securityApiKeys = {
         async list(variables = {}) {
@@ -144,6 +173,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
         invoke,
         securityIdentity,
         securityGroup,
+        securityTeam,
         securityApiKeys,
         install
     };

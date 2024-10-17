@@ -10,6 +10,6 @@ export const TextVariableInputPlugin = TextVariableInput.createDecorator(Origina
         if (!isValidLexicalData(value)) {
             return <Original variableId={variableId} />;
         }
-        return <LexicalVariableInputPlugin tag={"h1"} variableId={variableId} />;
+        return <LexicalVariableInputPlugin type={"heading"} variableId={variableId} />;
     };
 });

@@ -1,13 +1,13 @@
 import React, { useCallback, useState } from "react";
 import { css } from "emotion";
-import { useMutation } from "@apollo/react-hooks";
 import { IconButton, ButtonPrimary } from "@webiny/ui/Button";
 import { Dialog, DialogCancel, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 import { ReactComponent as LockIcon } from "@material-design-icons/svg/outlined/lock.svg";
 import { useTemplateMode } from "~/pageEditor/hooks/useTemplateMode";
 import { usePage } from "~/pageEditor/hooks/usePage";
-import { UNLINK_PAGE_FROM_TEMPLATE } from "~/pageEditor/graphql";
 import { PageEditorConfig } from "~/pageEditor/editorConfig/PageEditorConfig";
+import { useEventActionHandler, useUpdateElement } from "~/editor";
+import { UnlinkPageFromTemplate } from "~/pageEditor/config/Toolbar/UnlinkPageFromTemplate";
 
 const unlinkTemplateDialog = css`
     & .mdc-dialog__surface {
@@ -36,10 +36,11 @@ const unlinkTemplateDialog = css`
 
 const UnlinkTemplateAction = () => {
     const [isModalShown, setIsModalShown] = useState(false);
-    const [unlinkPage, unlinkPageMutation] = useMutation(UNLINK_PAGE_FROM_TEMPLATE);
+    const [updatingPage, setUpdatingPage] = useState(false);
+    const { getRawElementTree } = useEventActionHandler();
+    const updateElement = useUpdateElement();
 
     const [page] = usePage();
-
     const onOpen = useCallback(() => {
         setIsModalShown(true);
     }, []);
@@ -48,13 +49,17 @@ const UnlinkTemplateAction = () => {
         setIsModalShown(false);
     }, []);
 
-    const onUnlink = useCallback(() => {
-        unlinkPage({
-            variables: { id: page.id }
-        }).then(() => {
-            // TODO: We do a screen refresh just because of some weird state inconsistency-related
-            // TODO: issue. Should fix this when there's more time at hand.
-            window.location.reload();
+    const onUnlink = useCallback(async () => {
+        const content = await getRawElementTree();
+        const unlinkPageFromTemplate = new UnlinkPageFromTemplate();
+        const unlinkedContent = unlinkPageFromTemplate.execute(content);
+
+        setUpdatingPage(true);
+        updateElement(unlinkedContent, {
+            history: true,
+            onFinish: () => {
+                window.location.reload();
+            }
         });
     }, [page.id]);
 
@@ -75,7 +80,7 @@ const UnlinkTemplateAction = () => {
                 </DialogContent>
                 <DialogActions>
                     <DialogCancel onClick={onClose}>Cancel</DialogCancel>
-                    <ButtonPrimary disabled={unlinkPageMutation.loading} onClick={onUnlink}>
+                    <ButtonPrimary disabled={updatingPage} onClick={onUnlink}>
                         Unlink template
                     </ButtonPrimary>
                 </DialogActions>

@@ -1,4 +1,5 @@
 import React, { CSSProperties } from "react";
+import { QueryResult } from "@apollo/react-common";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
@@ -6,7 +7,6 @@ import { Select } from "@webiny/ui/Select";
 import { Page } from "@webiny/app-page-builder-elements/components/Page";
 import { Zoom } from "./Zoom";
 import { PbPageData, PbPageTemplate } from "~/types";
-import { QueryResult } from "@apollo/react-common";
 
 const webinyZoomStyles = css`
     &.mdc-select--no-label:not(.mdc-select--outlined)
@@ -85,7 +85,7 @@ interface PagePreviewProps {
     getPageQuery?: QueryResult;
 }
 
-const PagePreview = ({ page }: PagePreviewProps) => {
+export const PagePreview = ({ page }: PagePreviewProps) => {
     return (
         <Zoom>
             {({ zoom, setZoom }) => (
@@ -100,5 +100,3 @@ const PagePreview = ({ page }: PagePreviewProps) => {
         </Zoom>
     );
 };
-
-export default PagePreview;

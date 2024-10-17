@@ -28,7 +28,7 @@
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "ttypescript": "^1.5.13",
-    "typescript": "4.7.4"
+    "typescript": "4.9.5"
   },
   "publishConfig": {
     "access": "public",

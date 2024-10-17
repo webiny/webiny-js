@@ -12,7 +12,9 @@ import {
     LOG_FORM_VIEW
 } from "@webiny/app-page-builder-elements/renderers/form/dataLoaders/graphql";
 
-const PeForm: FormRenderer = props => {
+type PeFormProps = React.ComponentProps<FormRenderer>;
+
+const PeForm = (props: PeFormProps) => {
     // We wrap the original renderer in order to be able to provide the Apollo client.
     const apolloClient = useApolloClient();
 

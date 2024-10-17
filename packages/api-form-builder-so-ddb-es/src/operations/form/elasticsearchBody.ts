@@ -3,7 +3,8 @@ import {
     applyWhere,
     createLimit,
     createSort,
-    getElasticsearchOperatorPluginsByLocale
+    getElasticsearchOperatorPluginsByLocale,
+    isSharedElasticsearchIndex
 } from "@webiny/api-elasticsearch";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
 import { FormElasticsearchFieldPlugin } from "~/plugins/FormElasticsearchFieldPlugin";
@@ -56,7 +57,7 @@ const createElasticsearchQuery = (params: CreateElasticsearchQueryParams) => {
      * When ES index is shared between tenants, we need to filter records by tenant ID.
      * No need for the tenant filtering otherwise as each index is for single tenant.
      */
-    const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+    const sharedIndex = isSharedElasticsearchIndex();
     if (sharedIndex && where.tenant) {
         query.must.push({
             term: {

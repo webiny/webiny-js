@@ -1,6 +1,6 @@
 import debugPlugins from "@webiny/handler-graphql/debugPlugins";
 import { CmsContext } from "~/types";
-import { PluginCollection } from "@webiny/plugins/types";
+import { Plugin } from "@webiny/plugins/types";
 import { RoutePlugin } from "@webiny/handler";
 import { handleRequest } from "./handleRequest";
 
@@ -20,7 +20,7 @@ const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) =
 
 cmsRoutes.name = "headless-cms.graphql.route.default";
 
-export const graphQLHandlerFactory = ({ debug }: GraphQLHandlerFactoryParams): PluginCollection => {
+export const graphQLHandlerFactory = ({ debug }: GraphQLHandlerFactoryParams): Plugin[] => {
     return [
         ...(debug ? debugPlugins() : []),
         cmsRoutes,

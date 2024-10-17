@@ -1,11 +1,10 @@
 import { createHandler as createBaseHandler } from "@webiny/handler";
 import { registerDefaultPlugins } from "@webiny/handler-aws/plugins";
 import { execute } from "@webiny/handler-aws/execute";
-import { HandlerFactoryParams } from "@webiny/handler-aws/types";
 import { APIGatewayProxyResult } from "aws-lambda";
 import { Context as LambdaContext } from "aws-lambda/handler";
 import { Context, TaskResponseStatus } from "~/types";
-import { ITaskRawEvent } from "~/handler/types";
+import { HandlerParams, ITaskRawEvent } from "~/handler/types";
 import { TaskRunner } from "~/runner";
 import WebinyError from "@webiny/error";
 import { timerFactory } from "@webiny/handler-aws/utils";
@@ -14,8 +13,6 @@ import { TaskEventValidation } from "~/runner/TaskEventValidation";
 export interface HandlerCallable {
     (event: ITaskRawEvent, context: LambdaContext): Promise<APIGatewayProxyResult>;
 }
-
-export type HandlerParams = HandlerFactoryParams;
 
 const url = "/webiny-background-task-event";
 

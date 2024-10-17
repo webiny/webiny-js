@@ -22,8 +22,9 @@ import { CREATE_TEAM, LIST_TEAMS, READ_TEAM, UPDATE_TEAM } from "./graphql";
 import isEmpty from "lodash/isEmpty";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { GroupsMultiAutoComplete } from "~/components/GroupsMultiAutocomplete";
+import { GroupsMultiAutocomplete } from "~/components/GroupsMultiAutocomplete";
 import { Team } from "~/types";
+import { Alert } from "@webiny/ui/Alert";
 
 const t = i18n.ns("app-security/admin/teams/form");
 
@@ -106,6 +107,10 @@ export const TeamsForm = () => {
 
     const data = loading ? {} : get(getQuery, "data.security.team.data", {});
 
+    const systemTeam = data.system;
+    const pluginTeam = data.plugin;
+    const canModifyTeam = !systemTeam && !pluginTeam;
+
     const showEmptyView = !newTeam && !loading && isEmpty(data);
     // Render "No content" selected view.
     if (showEmptyView) {
@@ -133,6 +138,26 @@ export const TeamsForm = () => {
                         {loading && <CircularProgress />}
                         <SimpleFormHeader title={data.name ? data.name : "Untitled"} />
                         <SimpleFormContent>
+                            {systemTeam && (
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Alert type={"info"} title={"Permissions are locked"}>
+                                            This is a protected system team and you can&apos;t
+                                            modify its permissions.
+                                        </Alert>
+                                    </Cell>
+                                </Grid>
+                            )}
+                            {pluginTeam && (
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Alert type={"info"} title={"Important"}>
+                                            This team is registered via an extension, and cannot be
+                                            modified.
+                                        </Alert>
+                                    </Cell>
+                                </Grid>
+                            )}
                             <Grid>
                                 <Cell span={6}>
                                     <Bind
@@ -140,6 +165,7 @@ export const TeamsForm = () => {
                                         validators={validation.create("required,minLength:3")}
                                     >
                                         <Input
+                                            disabled={!canModifyTeam}
                                             label={t`Name`}
                                             data-testid="admin.am.team.new.name"
                                         />
@@ -151,7 +177,7 @@ export const TeamsForm = () => {
                                         validators={validation.create("required,minLength:3")}
                                     >
                                         <Input
-                                            disabled={Boolean(data.id)}
+                                            disabled={!canModifyTeam || !newTeam}
                                             label={t`Slug`}
                                             data-testid="admin.am.team.new.slug"
                                         />
@@ -165,6 +191,7 @@ export const TeamsForm = () => {
                                         validators={validation.create("maxLength:500")}
                                     >
                                         <Input
+                                            disabled={!canModifyTeam}
                                             label={t`Description`}
                                             rows={3}
                                             data-testid="admin.am.team.new.description"
@@ -175,7 +202,8 @@ export const TeamsForm = () => {
                             <Grid>
                                 <Cell span={12}>
                                     <Bind name="groups" validators={validation.create("required")}>
-                                        <GroupsMultiAutoComplete
+                                        <GroupsMultiAutocomplete
+                                            disabled={!canModifyTeam}
                                             label={t`Roles`}
                                             data-testid="admin.am.team.new.groups"
                                         />
@@ -183,19 +211,21 @@ export const TeamsForm = () => {
                                 </Cell>
                             </Grid>
                         </SimpleFormContent>
-                        <SimpleFormFooter>
-                            <ButtonWrapper>
-                                <ButtonDefault
-                                    onClick={() => history.push("/access-management/teams")}
-                                >{t`Cancel`}</ButtonDefault>
-                                <ButtonPrimary
-                                    data-testid="admin.am.team.new.save"
-                                    onClick={ev => {
-                                        form.submit(ev);
-                                    }}
-                                >{t`Save team`}</ButtonPrimary>
-                            </ButtonWrapper>
-                        </SimpleFormFooter>
+                        {canModifyTeam && (
+                            <SimpleFormFooter>
+                                <ButtonWrapper>
+                                    <ButtonDefault
+                                        onClick={() => history.push("/access-management/teams")}
+                                    >{t`Cancel`}</ButtonDefault>
+                                    <ButtonPrimary
+                                        data-testid="admin.am.team.new.save"
+                                        onClick={ev => {
+                                            form.submit(ev);
+                                        }}
+                                    >{t`Save team`}</ButtonPrimary>
+                                </ButtonWrapper>
+                            </SimpleFormFooter>
+                        )}
                     </SimpleForm>
                 );
             }}

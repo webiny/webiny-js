@@ -1,28 +1,19 @@
 import { Plugin } from "@webiny/plugins";
 import { ContextPlugin } from "@webiny/api";
-import { Context, ITaskConfig, ITasksContextConfigObject } from "~/types";
+import { Context } from "~/types";
 import { createTaskModel } from "./crud/model";
 import { createDefinitionCrud } from "./crud/definition.tasks";
-import { createTriggerTasksCrud } from "~/crud/trigger.tasks";
+import { createServiceCrud } from "~/crud/service.tasks";
 import { createTaskCrud } from "./crud/crud.tasks";
 import { createTestingRunTask } from "~/tasks/testingRunTask";
+import { createServicePlugins } from "~/service";
 
-const createConfig = (config?: ITaskConfig): ITasksContextConfigObject => {
-    return {
-        config: {
-            eventBusName: config?.eventBusName || String(process.env.EVENT_BUS)
-        }
-    };
-};
-
-const createTasksCrud = (input?: ITaskConfig) => {
-    const config = createConfig(input);
+const createTasksCrud = () => {
     const plugin = new ContextPlugin<Context>(async context => {
         context.tasks = {
-            ...config,
             ...createDefinitionCrud(context),
             ...createTaskCrud(context),
-            ...createTriggerTasksCrud(context, config.config)
+            ...createServiceCrud(context)
         };
     });
 
@@ -31,10 +22,10 @@ const createTasksCrud = (input?: ITaskConfig) => {
     return plugin;
 };
 
-const createTasksContext = (input?: ITaskConfig): Plugin[] => {
-    return [...createTaskModel(), createTasksCrud(input)];
+const createTasksContext = (): Plugin[] => {
+    return [...createServicePlugins(), ...createTaskModel(), createTasksCrud()];
 };
 
-export const createBackgroundTaskContext = (config?: ITaskConfig): Plugin[] => {
-    return [createTestingRunTask(), ...createTasksContext(config)];
+export const createBackgroundTaskContext = (): Plugin[] => {
+    return [createTestingRunTask(), ...createTasksContext()];
 };

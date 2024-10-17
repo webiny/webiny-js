@@ -1,4 +1,7 @@
 import { makeExecutableSchema } from "@graphql-tools/schema";
+import { mergeResolvers } from "@graphql-tools/merge";
+import { ResolverDecoration } from "@webiny/handler-graphql";
+import { Resolvers, TypeDefs } from "@webiny/handler-graphql/types";
 import { ICmsGraphQLSchemaPlugin } from "~/plugins";
 
 interface Params {
@@ -7,21 +10,28 @@ interface Params {
 
 export const createExecutableSchema = (params: Params) => {
     const { plugins } = params;
-    /**
-     * Really hard to type this to satisfy the makeExecutableSchema
-     */
-    // TODO @ts-refactor
-    const typeDefs: any = [];
-    const resolvers: any = [];
+
+    const typeDefs: TypeDefs[] = [];
+    const resolvers: Resolvers<any>[] = [];
+
+    const resolverDecoration = new ResolverDecoration();
 
     // Get schema definitions from plugins
     for (const plugin of plugins) {
-        typeDefs.push(plugin.schema.typeDefs);
-        resolvers.push(plugin.schema.resolvers);
+        const schema = plugin.schema;
+        if (schema.typeDefs) {
+            typeDefs.push(schema.typeDefs);
+        }
+        if (schema.resolvers) {
+            resolvers.push(schema.resolvers);
+        }
+        if (schema.resolverDecorators) {
+            resolverDecoration.addDecorators(schema.resolverDecorators);
+        }
     }
 
     return makeExecutableSchema({
         typeDefs,
-        resolvers
+        resolvers: resolverDecoration.decorateResolvers(mergeResolvers(resolvers))
     });
 };

@@ -19,6 +19,7 @@ import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorizatio
 import { Context } from "~tests/types";
 import { createListTasksQuery } from "~tests/helpers/graphql/tasks";
 import { createListTaskLogsQuery } from "~tests/helpers/graphql/logs";
+import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
 
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";
@@ -95,6 +96,7 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
             graphQLHandlerPlugins(),
             createBackgroundTaskContext(),
             createBackgroundTaskGraphQL(),
+            createMockTaskServicePlugin(),
             ...plugins
         ]
     });

@@ -1,0 +1,13 @@
+diff --git a/lib/types.d.ts b/lib/types.d.ts
+index 723ae9715022e8ea5d678e9a984b1b5511b230f6..60e30928350db6d718881c45042955aa072a862e 100644
+--- a/lib/types.d.ts
++++ b/lib/types.d.ts
+@@ -4,7 +4,7 @@ import { ExecutionResult as GraphQLExecutionResult } from 'graphql';
+ export { DocumentNode };
+ export interface ExecutionResult<TData = {
+     [key: string]: any;
+-}> extends GraphQLExecutionResult {
++}> extends GraphQLExecutionResult<TData> {
+     data?: TData | null;
+ }
+ export interface GraphQLRequest {

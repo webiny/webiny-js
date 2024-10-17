@@ -1,3 +1,4 @@
+export * from "./TrashBinBulkActionsGraphQLGateway";
 export * from "./TrashBinListGraphQLGateway";
 export * from "./TrashBinDeleteItemGraphQLGateway";
 export * from "./TrashBinRestoreItemGraphQLGateway";

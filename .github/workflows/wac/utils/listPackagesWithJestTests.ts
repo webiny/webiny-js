@@ -162,6 +162,19 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             })
         ];
     },
+    "api-headless-cms-import-export": () => {
+        return [
+            { cmd: "packages/api-headless-cms-import-export --storage=ddb", storage: "ddb" },
+            {
+                cmd: "packages/api-headless-cms-import-export --storage=ddb-es,ddb",
+                storage: "ddb-es"
+            },
+            {
+                cmd: "packages/api-headless-cms-import-export --storage=ddb-os,ddb",
+                storage: "ddb-os"
+            }
+        ];
+    },
     "api-headless-cms-ddb-es": () => {
         return [
             {
@@ -181,11 +194,17 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             { cmd: "packages/api-headless-cms-aco --storage=ddb-os,ddb", storage: "ddb-os" }
         ];
     },
-    "api-headless-cms-tasks": () => {
+    "api-headless-cms-bulk-actions": () => {
         return [
-            { cmd: "packages/api-headless-cms-tasks --storage=ddb", storage: "ddb" },
-            { cmd: "packages/api-headless-cms-tasks --storage=ddb-es,ddb", storage: "ddb-es" },
-            { cmd: "packages/api-headless-cms-tasks --storage=ddb-os,ddb", storage: "ddb-os" }
+            { cmd: "packages/api-headless-cms-bulk-actions --storage=ddb", storage: "ddb" },
+            {
+                cmd: "packages/api-headless-cms-bulk-actions --storage=ddb-es,ddb",
+                storage: "ddb-es"
+            },
+            {
+                cmd: "packages/api-headless-cms-bulk-actions --storage=ddb-os,ddb",
+                storage: "ddb-os"
+            }
         ];
     },
     "api-apw": () => {
@@ -295,6 +314,13 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
                 cmd: "packages/api-elasticsearch-tasks --storage=ddb-os,ddb",
                 storage: "ddb-os"
             }
+        ];
+    },
+    "api-serverless-cms": () => {
+        return [
+            { cmd: "packages/api-serverless-cms --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/api-serverless-cms --storage=ddb-os,ddb", storage: "ddb-os" },
+            { cmd: "packages/api-serverless-cms --storage=ddb", storage: "ddb" }
         ];
     }
 };

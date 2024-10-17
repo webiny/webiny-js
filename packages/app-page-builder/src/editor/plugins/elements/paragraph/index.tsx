@@ -6,10 +6,11 @@ import {
     PbEditorPageElementPlugin,
     PbEditorTextElementPluginsArgs
 } from "~/types";
-import Paragraph, { textClassName } from "./Paragraph";
-import { createInitialTextValue } from "../utils/textUtils";
+import { Paragraph, textClassName } from "./Paragraph";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import { defaultText, displayText } from "~/editor/plugins/elements/paragraph/elementText";
+
+export * from "./ActiveParagraphRenderer";
 
 export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const elementType = kebabCase(args.elementType || "paragraph");
@@ -37,10 +38,6 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
         name: `pb-editor-page-element-${elementType}`,
         type: "pb-editor-page-element",
         elementType: elementType,
-        /**
-         * TODO @ts-refactor @ashutosh
-         * Completely different types between method result and variable
-         */
         // @ts-expect-error
         toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
         settings:
@@ -54,13 +51,6 @@ export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementP
                 elements: [],
                 data: {
                     text: {
-                        ...createInitialPerDeviceSettingValue(
-                            createInitialTextValue({
-                                type: this.elementType,
-                                tag: "p"
-                            }),
-                            DisplayMode.DESKTOP
-                        ),
                         data: {
                             text: previewText
                         }

@@ -7,6 +7,7 @@ import { IResponseBaseResult } from "./ResponseBaseResult";
  */
 
 export interface IResponseContinueParams<T = ITaskDataInput> {
+    message?: string;
     tenant?: string;
     locale?: string;
     webinyTaskId?: string;

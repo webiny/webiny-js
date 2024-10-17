@@ -8,8 +8,9 @@ import {
 } from "~/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import { createInitialTextValue } from "../utils/textUtils";
-import Heading from "./Heading";
+import { Heading } from "./Heading";
 import { defaultText, displayText } from "./elementText";
+export * from "./ActiveHeadingRenderer";
 
 export default (args: PbEditorTextElementPluginsArgs = {}): PbEditorPageElementPlugin => {
     const defaultSettings = [

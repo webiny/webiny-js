@@ -12,6 +12,7 @@ import { LambdaContext } from "@webiny/handler-aws/types";
 import { Context } from "~tests/types";
 import { PluginCollection } from "@webiny/plugins/types";
 import { createBackgroundTaskContext } from "~/index";
+import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -44,6 +45,7 @@ export const useRawHandler = <C extends Context = Context>(params?: UseHandlerPa
             createRawEventHandler(async ({ context }) => {
                 return context;
             }),
+            createMockTaskServicePlugin(),
             ...plugins
         ]
     });

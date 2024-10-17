@@ -7,7 +7,7 @@ const BASE_FIELDS = `
     lastName
     avatar
     gravatar
-    group {
+    groups {
         id
         slug
         name

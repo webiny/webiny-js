@@ -9,11 +9,16 @@ import {
 import { Tab } from "./Tab";
 import { useActiveGroup } from "~/editor/config/Sidebar/useActiveGroup";
 import { createGetId } from "~/editor/config/createGetId";
+import { CurrentBlockProvider } from "~/editor/contexts/CurrentBlockProvider";
 
 const SCOPE = "sidebar";
 
 const BaseSidebar = () => {
-    return <Layout />;
+    return (
+        <CurrentBlockProvider>
+            <Layout />
+        </CurrentBlockProvider>
+    );
 };
 
 export type ScopedElementProps = Omit<CoreElementProps, "scope">;

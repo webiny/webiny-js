@@ -1,7 +1,3 @@
-/**
- * We can safely ignore the error being thrown for the path import.
- */
-// @ts-expect-error
 import path from "path";
 import { ContextPlugin } from "@webiny/api";
 import elasticsearchClientContextPlugin, {
@@ -16,6 +12,7 @@ import { createElasticsearchClient, ElasticsearchClient } from "./createClient";
 import { getDocumentClient, simulateStream } from "../dynamodb";
 import { PluginCollection } from "../environment";
 import { ElasticsearchContext } from "../../../api-elasticsearch/src/types";
+import { getElasticsearchIndexPrefix } from "../../../api-elasticsearch/src/indexPrefix";
 
 interface GetElasticsearchClientParams {
     name: string;
@@ -28,7 +25,7 @@ const cache: Record<string, ElasticsearchClientConfig> = {};
 export const getElasticsearchClient = (params: GetElasticsearchClientParams) => {
     logger.debug(`getElasticsearchClient() called by "%s"`, params.name);
     const state = expect.getState();
-    const testId = path.basename(state.testPath);
+    const testId = path.basename(state.testPath || "");
 
     let config = cache[testId];
     if (!config) {
@@ -58,13 +55,13 @@ export class ElasticsearchClientConfig {
     constructor(prefix: string) {
         if (prefix !== "") {
             // Prefix will only be handled once, for the first processed storage operations.
-            const indexPrefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+            const indexPrefix = getElasticsearchIndexPrefix();
             if (!indexPrefix.includes("api-")) {
                 process.env.ELASTIC_SEARCH_INDEX_PREFIX = `${indexPrefix}${prefix}`;
             }
         }
 
-        logger.debug(`ES index prefix = "%s"`, process.env.ELASTIC_SEARCH_INDEX_PREFIX);
+        logger.debug(`ES index prefix = "%s"`, getElasticsearchIndexPrefix());
 
         const documentClient = getDocumentClient();
         this.elasticsearchClient = createElasticsearchClient() as ElasticsearchClient;

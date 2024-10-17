@@ -1,8 +1,11 @@
+import type { createRenderer } from "~/createRenderer";
+
 export * from "@webiny/theme/types";
 
 import React, { HTMLAttributes } from "react";
 import { type CSSObject } from "@emotion/react";
 import { StylesObject, ThemeBreakpoints, Theme } from "@webiny/theme/types";
+import { ElementInputs, ElementInputValues } from "~/inputs/ElementInput";
 
 export interface Page {
     id: string;
@@ -23,7 +26,7 @@ export interface Element<TElementData = Record<string, any>> {
 
 export interface PageElementsProviderProps {
     theme: Theme;
-    renderers: Record<string, Renderer> | (() => Record<string, Renderer>);
+    renderers: Record<string, DecoratableRenderer> | (() => Record<string, DecoratableRenderer>);
     modifiers: {
         styles: Record<string, ElementStylesModifier>;
         attributes: Record<string, ElementAttributesModifier>;
@@ -35,7 +38,7 @@ export interface PageElementsProviderProps {
 
 export type AttributesObject = React.ComponentProps<any>;
 
-export type GetRenderers = () => Record<string, Renderer>;
+export type GetRenderers = () => Record<string, DecoratableRenderer>;
 export type GetElementAttributes = (element: Element) => AttributesObject;
 export type GetElementStyles = (element: Element) => CSSObject;
 export type GetStyles = (styles: StylesObject | ((theme: Theme) => StylesObject)) => CSSObject;
@@ -89,12 +92,13 @@ export interface PageElementsContextValue extends PageElementsProviderProps {
     setStylesCallback: SetStylesCallback;
 }
 
-type GetElement = <TElementData = Record<string, any>>() => Element<TElementData>;
-type GetAttributes = () => HTMLAttributes<HTMLElement>;
+export type GetElement = <TElementData = Record<string, any>>() => Element<TElementData>;
+export type GetAttributes = () => HTMLAttributes<HTMLElement>;
 
 export interface RendererContextValue extends PageElementsContextValue {
     getElement: GetElement;
     getAttributes: GetAttributes;
+    getInputValues: <TInputs extends ElementInputs>() => ElementInputValues<TInputs>;
     beforeRenderer: React.ComponentType | null;
     afterRenderer: React.ComponentType | null;
     meta: RendererProviderMeta;
@@ -128,7 +132,10 @@ export interface PageProviderProps {
 export type Renderer<
     T = Record<string, any>,
     TElementData = Record<string, any>
-> = React.ComponentType<RendererProps<TElementData> & T>;
+> = React.FunctionComponent<RendererProps<TElementData> & T>;
+
+// TODO: maybe call this `Renderer` but rename the base one to `BaseRenderer` ?
+export type DecoratableRenderer = ReturnType<typeof createRenderer>;
 
 export type ElementAttributesModifier = (args: {
     element: Element;

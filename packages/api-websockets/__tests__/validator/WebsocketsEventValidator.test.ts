@@ -158,7 +158,7 @@ describe("WebsocketsEventValidator", () => {
                             fatal: true,
                             path: ["body"]
                         },
-                        message: "Invalid JSON: Unexpected token s in JSON at position 1"
+                        message: expect.stringContaining("Invalid JSON: Unexpected token")
                     }
                 }
             });

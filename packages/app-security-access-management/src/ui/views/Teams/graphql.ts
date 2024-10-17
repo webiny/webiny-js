@@ -12,6 +12,7 @@ const fields = `
         name
     }
     system
+    plugin
     createdOn
 `;
 

@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 import { useRecordLocking } from "~/hooks";
-import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
+import { ContentEntryEditorConfig, useModel } from "@webiny/app-headless-cms";
 import { useSnackbar } from "@webiny/app-admin";
 
 const {
-    ContentEntry: { ContentEntryForm, useContentEntry }
+    ContentEntry: { ContentEntryForm }
 } = ContentEntryEditorConfig;
 
 type SaveEntry = ReturnType<typeof ContentEntryForm.useContentEntryForm>["saveEntry"];
@@ -13,9 +13,11 @@ export const UseSaveEntryDecorator = ContentEntryForm.useContentEntryForm.create
     originalHook => {
         return function useRecordLockingUseSave() {
             const hook = originalHook();
-            const { entry, contentModel: model } = useContentEntry();
             const { fetchLockedEntryLockRecord, updateEntryLock } = useRecordLocking();
             const { showSnackbar } = useSnackbar();
+            const { model } = useModel();
+
+            const { entry } = hook;
 
             const saveEntry: SaveEntry = useCallback(
                 async (...params) => {

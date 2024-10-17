@@ -10,8 +10,12 @@ export const assignAfterEntryDelete = (params: AssignAfterEntryDeleteParams) => 
     const { context, onEntryAfterDelete } = params;
 
     onEntryAfterDelete.subscribe(async params => {
-        const { entry, model } = params;
+        const { entry, model, permanent } = params;
 
+        // If the entry is being moved to the trash, we keep the model fields locked because the entry can be restored.
+        if (!permanent) {
+            return;
+        }
         const { items } = await context.cms.storageOperations.entries.list(model, {
             where: {
                 entryId_not: entry.entryId,

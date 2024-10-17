@@ -1,7 +1,7 @@
 import { ArchiverError, create as createArchiver } from "archiver";
 import {
     CompleteMultipartUploadOutput,
-    createS3Client,
+    createS3,
     GetObjectCommand
 } from "@webiny/aws-sdk/client-s3";
 import path from "path";
@@ -28,7 +28,7 @@ export class ZipFiles {
         files: string[]
     ): Promise<CompleteMultipartUploadOutput> {
         const fileNames = Array.from(files);
-        const s3Client = createS3Client({
+        const s3Client = createS3({
             requestHandler: new NodeHttpHandler({
                 connectionTimeout: 0,
                 httpAgent: new HttpAgent({

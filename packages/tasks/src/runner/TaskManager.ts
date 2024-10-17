@@ -120,7 +120,7 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
                     input,
                     context: this.context,
                     response: this.taskResponse,
-                    isCloseToTimeout: (seconds?: number) => {
+                    isCloseToTimeout: seconds => {
                         return this.runner.isCloseToTimeout(seconds);
                     },
                     isAborted: () => {

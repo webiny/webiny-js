@@ -13,6 +13,7 @@ import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { PluginCollection } from "@webiny/plugins/types";
 import { LambdaContext } from "@webiny/handler-aws/types";
 import { ITaskRawEvent } from "~/handler/types";
+import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
 
 export interface UseTaskHandlerParams {
     plugins?: PluginCollection;
@@ -45,6 +46,7 @@ export const useTaskHandler = (params?: UseTaskHandlerParams) => {
             createRawEventHandler(async ({ context }) => {
                 return context;
             }),
+            createMockTaskServicePlugin(),
             ...plugins
         ]
     });

@@ -3,6 +3,7 @@ import { LoadingRepository, MetaRepository, Sorting, SortingRepository } from "@
 import { LoadingActions, TrashBinIdentity, TrashBinLocation } from "~/types";
 import { TrashBinControllers } from "~/Presentation/TrashBin/TrashBinControllers";
 import {
+    ITrashBinBulkActionsGateway,
     ITrashBinDeleteItemGateway,
     ITrashBinListGateway,
     ITrashBinRestoreItemGateway
@@ -53,6 +54,12 @@ const createBinDeleteItemGateway = ({
 const createBinRestoreItemGateway = ({
     execute
 }: ITrashBinRestoreItemGateway<Item>): ITrashBinRestoreItemGateway<Item> => ({
+    execute
+});
+
+const createBinBulkActionsGateway = ({
+    execute
+}: ITrashBinBulkActionsGateway): ITrashBinBulkActionsGateway => ({
     execute
 });
 
@@ -141,7 +148,16 @@ describe("TrashBin", () => {
         })
     });
 
+    const bulkActionGateway = createBinBulkActionsGateway({
+        execute: jest.fn().mockImplementation(() => {
+            return Promise.resolve({ id: "123456789" });
+        })
+    });
+
     const itemMapper = new CustomItemMapper();
+
+    const BulkActionDeleteItems = "BulkDeleteItems";
+    const BulkActionRestoreItems = "BulkRestoreItems";
 
     const init = (
         listGateway: ITrashBinListGateway<Item>,
@@ -160,6 +176,7 @@ describe("TrashBin", () => {
             listGateway,
             deleteItemGateway,
             restoreItemGateway,
+            bulkActionGateway,
             itemMapper
         );
 
@@ -177,7 +194,9 @@ describe("TrashBin", () => {
                 itemsRepo,
                 selectedRepo,
                 sortRepoWithDefaults,
-                searchRepo
+                searchRepo,
+                BulkActionDeleteItems,
+                BulkActionRestoreItems
             ).getControllers()
         };
     };
@@ -783,5 +802,161 @@ describe("TrashBin", () => {
         expect(presenter.vm).toMatchObject({
             retentionPeriod: output
         });
+    });
+
+    it("should be able to perform bulk action - RESTORE", async () => {
+        const { controllers } = init(listGateway, deleteItemGateway, restoreItemGateway);
+
+        // let's list some entries from the gateway
+        await controllers.listItems.execute();
+
+        expect(listGateway.execute).toHaveBeenCalledTimes(1);
+
+        const restoreBulkActionPromise = controllers.restoreBulkAction.execute({
+            search: "Custom search",
+            where: {
+                title: "Item title"
+            },
+            data: {
+                any: 1
+            }
+        });
+
+        await restoreBulkActionPromise;
+
+        expect(bulkActionGateway.execute).toHaveBeenCalledTimes(1);
+        expect(bulkActionGateway.execute).toHaveBeenCalledWith({
+            action: BulkActionRestoreItems,
+            search: "Custom search",
+            where: {
+                title: "Item title"
+            },
+            data: {
+                any: 1
+            }
+        });
+    });
+
+    it("should be able to perform bulk action - DELETE", async () => {
+        const { controllers } = init(listGateway, deleteItemGateway, restoreItemGateway);
+
+        // let's list some entries from the gateway
+        await controllers.listItems.execute();
+
+        expect(listGateway.execute).toHaveBeenCalledTimes(1);
+
+        const deleteBulkActionPromise = controllers.deleteBulkAction.execute({
+            search: "Custom search",
+            where: {
+                title: "Item title"
+            },
+            data: {
+                any: 1
+            }
+        });
+
+        await deleteBulkActionPromise;
+
+        expect(bulkActionGateway.execute).toHaveBeenCalledTimes(1);
+        expect(bulkActionGateway.execute).toHaveBeenCalledWith({
+            action: BulkActionDeleteItems,
+            search: "Custom search",
+            where: {
+                title: "Item title"
+            },
+            data: {
+                any: 1
+            }
+        });
+    });
+
+    it("should be able to `selectAll` and `unselectAll` items", async () => {
+        {
+            // let's test the functionality by listing items that span multiple pages.
+            const listGateway = createBinListGateway({
+                execute: jest.fn().mockImplementation(() => {
+                    return Promise.resolve([
+                        [item1, item2, item3],
+                        { totalCount: 4, cursor: "IjMi", hasMoreItems: true }
+                    ]);
+                })
+            });
+
+            const { presenter, controllers } = init(
+                listGateway,
+                deleteItemGateway,
+                restoreItemGateway
+            );
+
+            // let's list some entries from the gateway
+            await controllers.listItems.execute();
+
+            expect(listGateway.execute).toHaveBeenCalledTimes(1);
+
+            // let's check the initial vm state
+            expect(presenter.vm.items.length).toBe(3);
+            expect(presenter.vm.selectedItems.length).toBe(0);
+            expect(presenter.vm.allowSelectAll).toBeFalsy();
+            expect(presenter.vm.isSelectedAll).toBeFalsy();
+
+            // let's check the vm state after selecting all items on the page
+            await controllers.selectItems.execute([item1, item2, item3]);
+            expect(presenter.vm.selectedItems.length).toBe(3);
+            expect(presenter.vm.allowSelectAll).toBeTruthy();
+            expect(presenter.vm.isSelectedAll).toBeFalsy();
+
+            // let's check the vm state after selecting all items
+            await controllers.selectAllItems.execute();
+            expect(presenter.vm.selectedItems.length).toBe(3);
+            expect(presenter.vm.allowSelectAll).toBeTruthy();
+            expect(presenter.vm.isSelectedAll).toBeTruthy();
+
+            // let's check the vm state after unselecting all items
+            await controllers.unselectAllItems.execute();
+            expect(presenter.vm.selectedItems.length).toBe(0);
+            expect(presenter.vm.allowSelectAll).toBeFalsy();
+            expect(presenter.vm.isSelectedAll).toBeFalsy();
+
+            // let's check the vm state after unselecting one item
+            await controllers.selectItems.execute([item1, item2, item3]);
+            expect(presenter.vm.selectedItems.length).toBe(3);
+            await controllers.selectAllItems.execute();
+            expect(presenter.vm.isSelectedAll).toBeTruthy();
+            await controllers.selectItems.execute([item1, item2]);
+            expect(presenter.vm.isSelectedAll).toBeFalsy();
+            expect(presenter.vm.allowSelectAll).toBeFalsy();
+        }
+
+        {
+            // let's test the functionality by listing items that span only one page.
+            const listGateway = createBinListGateway({
+                execute: jest.fn().mockImplementation(() => {
+                    return Promise.resolve([
+                        [item1, item2, item3],
+                        { totalCount: 3, cursor: null, hasMoreItems: false }
+                    ]);
+                })
+            });
+
+            const { presenter, controllers } = init(
+                listGateway,
+                deleteItemGateway,
+                restoreItemGateway
+            );
+
+            // let's list some entries from the gateway
+            await controllers.listItems.execute();
+
+            expect(listGateway.execute).toHaveBeenCalledTimes(1);
+
+            // let's check the initial vm state
+            expect(presenter.vm.items.length).toBe(3);
+
+            // let's check the vm state after selecting all items in the page
+            await controllers.selectItems.execute([item1, item2, item3]);
+            expect(presenter.vm.selectedItems.length).toBe(3);
+            expect(presenter.vm.allowSelectAll).toBeFalsy();
+            expect(presenter.vm.isSelectedAll).toBeFalsy();
+        }
     });
 });

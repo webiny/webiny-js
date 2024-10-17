@@ -40,17 +40,37 @@ export class TaskControl implements ITaskControl {
             task = await this.getTask(taskId);
             this.context.security.setIdentity(task.createdBy);
         } catch (error) {
+            /**
+             * TODO Refactor error handling.
+             */
+            // @ts-expect-error
             return this.response.error({
-                error
+                ...getErrorProperties(error)
             });
         }
         /**
+         * Let's get the task definition.
+         */
+        const definition = this.context.tasks.getDefinition(task.definitionId);
+        if (!definition) {
+            return this.response.error({
+                error: {
+                    message: `Task "${task.id}" cannot be executed because there is no "${task.definitionId}" definition plugin.`,
+                    code: "TASK_DEFINITION_ERROR",
+                    data: {
+                        definitionId: task.definitionId
+                    }
+                }
+            });
+        }
+        const disableDatabaseLogs = !!definition.disableDatabaseLogs;
+
+        /**
          * As this as a run of the task, we need to create a new log entry.
          */
-
         let taskLog: ITaskLog;
         try {
-            taskLog = await this.getTaskLog(task);
+            taskLog = await this.getTaskLog(task, disableDatabaseLogs);
         } catch (error) {
             return this.response.error({
                 error
@@ -85,8 +105,14 @@ export class TaskControl implements ITaskControl {
                 }
             });
         }
+
         const taskResponse = new TaskResponse(this.response);
-        const store = new TaskManagerStore(this.context, task, taskLog);
+        const store = new TaskManagerStore({
+            context: this.context,
+            task,
+            log: taskLog,
+            disableDatabaseLogs
+        });
 
         const manager = new TaskManager(
             this.runner,
@@ -97,19 +123,6 @@ export class TaskControl implements ITaskControl {
         );
 
         const databaseResponse = new DatabaseResponse(this.response, store);
-
-        const definition = this.context.tasks.getDefinition(task.definitionId);
-        if (!definition) {
-            return await databaseResponse.error({
-                error: {
-                    message: `Task "${task.id}" cannot be executed because there is no "${task.definitionId}" definition plugin.`,
-                    code: "TASK_DEFINITION_ERROR",
-                    data: {
-                        definitionId: task.definitionId
-                    }
-                }
-            });
-        }
 
         try {
             const result = await manager.run(definition);
@@ -189,7 +202,21 @@ export class TaskControl implements ITaskControl {
         });
     }
 
-    private async getTaskLog(task: ITask): Promise<ITaskLog> {
+    private async getTaskLog(task: ITask, disableDatabaseLogs: boolean): Promise<ITaskLog> {
+        /**
+         * If logs are disabled, let's return a mocked one.
+         */
+        if (disableDatabaseLogs) {
+            return {
+                id: `${task.id}-log`,
+                createdOn: task.createdOn,
+                createdBy: task.createdBy,
+                executionName: task.executionName,
+                task: task.id,
+                iteration: task.iterations,
+                items: []
+            };
+        }
         let taskLog: ITaskLog | null = null;
         /**
          * First we are trying to get existing latest log.

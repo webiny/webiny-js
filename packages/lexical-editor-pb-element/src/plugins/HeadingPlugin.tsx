@@ -1,20 +1,24 @@
 import React from "react";
-import { useActiveElementId } from "@webiny/app-page-builder/editor/hooks/useActiveElementId";
-import { Element } from "@webiny/app-page-builder-elements/types";
-import Heading from "@webiny/app-page-builder/editor/plugins/elements/heading/Heading";
-import { PeTextRenderer } from "~/components/PeTextRenderer";
-import { useElementVariableValue } from "@webiny/app-page-builder/editor/hooks/useElementVariableValue";
+import {
+    ActiveHeadingRenderer,
+    elementInputs
+} from "@webiny/app-page-builder/editor/plugins/elements/heading";
 import { isValidLexicalData } from "@webiny/lexical-editor";
+import { useRenderer } from "@webiny/app-page-builder-elements";
+import { LexicalTextEditor } from "~/components/LexicalTextEditor";
 
-export const HeadingPlugin = Heading.createDecorator(Original => {
-    return function HeadingPlugin({ element, ...rest }): JSX.Element {
-        const [activeElementId] = useActiveElementId();
-        const variableValue = useElementVariableValue(element);
-        const isActive = activeElementId === element.id;
-        const content = variableValue || element?.data?.text?.data?.text;
-        if (isActive || !isValidLexicalData(content)) {
-            return <Original element={element} {...rest} />;
-        }
-        return <PeTextRenderer element={element as Element} {...rest} />;
-    };
-});
+export const LexicalActiveHeadingRenderer = ActiveHeadingRenderer.Component.createDecorator(
+    Original => {
+        return function LexicalActiveParagraphRenderer() {
+            const { getInputValues } = useRenderer();
+            const inputs = getInputValues<typeof elementInputs>();
+            const __html = inputs.text || "";
+
+            if (!isValidLexicalData(__html)) {
+                return <Original />;
+            }
+
+            return <LexicalTextEditor type={"heading"} text={__html} />;
+        };
+    }
+);

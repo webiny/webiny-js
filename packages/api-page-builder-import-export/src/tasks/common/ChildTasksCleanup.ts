@@ -2,7 +2,7 @@
  * Cleanup of the child tasks.
  * This code will remove all the child tasks and their logs, which have no errors in them.
  */
-import { ITask, Context, ITaskLogItemType } from "@webiny/tasks";
+import { ITask, Context, TaskLogItemType } from "@webiny/tasks";
 
 export interface IChildTasksCleanupExecuteParams {
     context: Context;
@@ -37,7 +37,7 @@ export class ChildTasksCleanup {
          * First, we need to remove all the logs which have no errors.
          */
         for (const log of childLogs) {
-            if (log.items.some(item => item.type === ITaskLogItemType.ERROR)) {
+            if (log.items.some(item => item.type === TaskLogItemType.ERROR)) {
                 continue;
             }
             await context.tasks.deleteLog(log.id);

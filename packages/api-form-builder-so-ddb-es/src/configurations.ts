@@ -1,5 +1,9 @@
 import WebinyError from "@webiny/error";
-import { getLastAddedIndexPlugin } from "@webiny/api-elasticsearch";
+import {
+    getElasticsearchIndexPrefix,
+    getLastAddedIndexPlugin,
+    isSharedElasticsearchIndex
+} from "@webiny/api-elasticsearch";
 import { FormElasticsearchIndexPlugin } from "~/plugins";
 import { ElasticsearchIndexRequestBody } from "@webiny/api-elasticsearch/types";
 import { FormBuilderContext } from "@webiny/api-form-builder/types";
@@ -35,7 +39,7 @@ export const configurations: Configurations = {
             );
         }
 
-        const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+        const sharedIndex = isSharedElasticsearchIndex();
 
         const tenantId = sharedIndex ? "root" : tenant;
         let localeCode: string | null = null;
@@ -54,7 +58,7 @@ export const configurations: Configurations = {
             .join("-")
             .toLowerCase();
 
-        const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+        const prefix = getElasticsearchIndexPrefix();
         if (!prefix) {
             return {
                 index

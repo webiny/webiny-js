@@ -3,24 +3,20 @@ import { css } from "emotion";
 import { Text } from "~/components/Text";
 import { ActionType } from "~/types";
 
-export const ActionWrapper = styled("div")<{ value: ActionType }>`
-    padding: 0px 8px;
+const ACTION_TYPES_COLORS_MAP = {
+    YELLOW: [ActionType.UPDATE],
+    RED: [ActionType.DELETE, ActionType.UNPUBLISH, ActionType.MOVE_TO_TRASH]
+};
+
+export const ActionWrapper = styled.div<{ value: ActionType }>`
+    padding: 0 8px;
     width: fit-content;
     border: 1px solid;
     border-radius: 5px;
 
-    ${({ value, theme }) => {
-        if (
-            [ActionType.CREATE, ActionType.PUBLISH, ActionType.RESTORE_FROM_TRASH].includes(value)
-        ) {
-            return `
-                background-color: ${theme.styles.colors.color2}10;
-                border-color: ${theme.styles.colors.color2};
-                color: ${theme.styles.colors.color2};
-            `;
-        }
-
-        if (ActionType.UPDATE) {
+    ${({ value: actionType }) => {
+        // Yellow.
+        if (ACTION_TYPES_COLORS_MAP.YELLOW.includes(actionType)) {
             return `
                 background-color: #fac42810;
                 border-color: #fac428;
@@ -28,7 +24,8 @@ export const ActionWrapper = styled("div")<{ value: ActionType }>`
             `;
         }
 
-        if ([ActionType.DELETE, ActionType.UNPUBLISH, ActionType.MOVE_TO_TRASH].includes(value)) {
+        // Red.
+        if (ACTION_TYPES_COLORS_MAP.RED.includes(actionType)) {
             return `
                 background-color: #ff000010;
                 border-color: #ff0000;
@@ -36,10 +33,11 @@ export const ActionWrapper = styled("div")<{ value: ActionType }>`
             `;
         }
 
+        // Green.
         return `
-            background-color: ${theme.styles.colors.color4}10;
-            border-color: ${theme.styles.colors.color4};
-            color: ${theme.styles.colors.color4};
+            background-color: #00ccb010;
+            border-color: #00ccb0;
+            color: #00ccb0;
         `;
     }}
 `;
@@ -57,7 +55,7 @@ export const previewColumn = css`
 `;
 
 export const TextGray = styled(Text)`
-    color: ${({ theme }) => theme.styles.colors["color4"]};
+    color: "#616161";
 `;
 
 export const TimezoneText = styled(TextGray)`

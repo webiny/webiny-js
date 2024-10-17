@@ -174,6 +174,7 @@ const taggableResourceTypes = new Set([
     "aws:kms/externalKey:ExternalKey",
     "aws:kms/key:Key",
     "aws:lambda/function:Function",
+    "aws:lambda/eventSourceMapping:EventSourceMapping",
     "aws:lb/loadBalancer:LoadBalancer",
     "aws:lb/targetGroup:TargetGroup",
     "aws:licensemanager/licenseConfiguration:LicenseConfiguration",

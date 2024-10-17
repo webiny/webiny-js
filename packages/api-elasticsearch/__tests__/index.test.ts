@@ -1,6 +1,7 @@
 import { getBaseConfiguration, getJapaneseConfiguration } from "~/indexConfiguration";
 import { ElasticsearchIndexRequestBody } from "~/types";
 import { createElasticsearchClient } from "./helpers";
+import { getElasticsearchIndexPrefix } from "~/indexPrefix";
 
 /**
  * Add configurations when added to the code.
@@ -13,7 +14,7 @@ const settings: [string, ElasticsearchIndexRequestBody][] = [
 describe("Elasticsearch Index Mapping And Settings", () => {
     const client = createElasticsearchClient();
 
-    const prefix: string = process.env.ELASTIC_SEARCH_INDEX_PREFIX || "";
+    const prefix: string = getElasticsearchIndexPrefix();
 
     const testIndexName = `${prefix}dummy-index-test`;
 

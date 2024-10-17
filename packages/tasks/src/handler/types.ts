@@ -1,3 +1,7 @@
+import { HandlerFactoryParams } from "@webiny/handler-aws/types";
+
+export type HandlerParams = HandlerFactoryParams;
+
 export interface IIncomingEvent<TEvent> {
     name: string;
     payload: TEvent;

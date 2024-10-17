@@ -1,4 +1,6 @@
-export const isHeadingTag = (tagValue: string | [string, Record<string, any>]): boolean => {
+export const isHeadingTag = (
+    tagValue: string | [string, Record<string, any>] | undefined
+): boolean => {
     const tagName = Array.isArray(tagValue) ? tagValue[0] : tagValue;
-    return tagName.toLowerCase().includes("h");
+    return tagName?.toLowerCase().includes("h") ?? false;
 };

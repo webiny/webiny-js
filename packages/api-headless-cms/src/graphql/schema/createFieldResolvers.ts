@@ -1,8 +1,8 @@
 import set from "lodash/set";
-import { ApiEndpoint, CmsContext, CmsFieldTypePlugins, CmsModel, CmsModelField } from "~/types";
-import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
 import { Resolvers } from "@webiny/handler-graphql/types";
 import WebinyError from "@webiny/error";
+import { ApiEndpoint, CmsContext, CmsFieldTypePlugins, CmsModel, CmsModelField } from "~/types";
+import { entryFieldFromStorageTransform } from "~/utils/entryStorage";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 interface CreateFieldResolvers {
@@ -77,8 +77,6 @@ export const createFieldResolversFactory = (factoryParams: CreateFieldResolversF
             }
 
             const { fieldId } = field;
-            // TODO @ts-refactor figure out types for parameters
-            // @ts-expect-error
             fieldResolvers[fieldId] = async (parent, args, context: CmsContext, info) => {
                 /**
                  * This is required because due to ref field can be requested without the populated data.

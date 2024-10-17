@@ -12,19 +12,29 @@ import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-headless-cms/admin/content-entries/bulk-actions");
 
-export const getEntriesLabel = (count = 0): string => {
-    return `${count} ${count === 1 ? "entry" : "entries"}`;
+export const getEntriesLabel = (): string => {
+    const { selected, isSelectedAll } = useContentEntriesList();
+
+    if (isSelectedAll) {
+        return "all entries";
+    }
+
+    return `${selected.length} ${selected.length === 1 ? "entry" : "entries"}`;
 };
 
 export const BulkActions = () => {
     const { browser } = useContentEntryListConfig();
-    const { selected, setSelected } = useContentEntriesList();
+    const { selected, setSelected, isSelectedAll } = useContentEntriesList();
 
     const headline = useMemo((): string => {
+        if (isSelectedAll) {
+            return t("All entries selected:");
+        }
+
         return t`{count|count:1:entry:default:entries} selected:`({
             count: selected.length
         });
-    }, [selected]);
+    }, [selected.length, isSelectedAll]);
 
     if (!selected.length) {
         return null;

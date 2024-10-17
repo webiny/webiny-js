@@ -28,6 +28,14 @@ import {
 } from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
+import {
+    listGroupsFromProvider as baseListGroupsFromPlugins,
+    type ListGroupsFromPluginsParams
+} from "./groupsTeamsPlugins/listGroupsFromProvider";
+import {
+    getGroupFromProvider as baseGetGroupFromPlugins,
+    type GetGroupFromPluginsParams
+} from "./groupsTeamsPlugins/getGroupFromProvider";
 
 const CreateDataModel = withFields({
     tenant: string({ validation: validation.create("required") }),
@@ -150,7 +158,8 @@ async function updateTenantLinks(
 
 export const createGroupsMethods = ({
     getTenant: initialGetTenant,
-    storageOperations
+    storageOperations,
+    groupsProvider
 }: SecurityConfig) => {
     const getTenant = () => {
         const tenant = initialGetTenant();
@@ -159,6 +168,25 @@ export const createGroupsMethods = ({
         }
         return tenant;
     };
+
+    const listGroupsFromPlugins = (
+        params: Pick<ListGroupsFromPluginsParams, "where">
+    ): Promise<Group[]> => {
+        return baseListGroupsFromPlugins({
+            ...params,
+            groupsProvider
+        });
+    };
+
+    const getGroupFromPlugins = (
+        params: Pick<GetGroupFromPluginsParams, "where">
+    ): Promise<Group> => {
+        return baseGetGroupFromPlugins({
+            ...params,
+            groupsProvider
+        });
+    };
+
     return {
         onGroupBeforeCreate: createTopic("security.onGroupBeforeCreate"),
         onGroupAfterCreate: createTopic("security.onGroupAfterCreate"),
@@ -174,9 +202,14 @@ export const createGroupsMethods = ({
 
             let group: Group | null = null;
             try {
-                group = await storageOperations.getGroup({
-                    where: { ...where, tenant: where.tenant || getTenant() }
-                });
+                const whereWithTenant = { ...where, tenant: where.tenant || getTenant() };
+                const groupFromPlugins = await getGroupFromPlugins({ where: whereWithTenant });
+
+                if (groupFromPlugins) {
+                    group = groupFromPlugins;
+                } else {
+                    group = await storageOperations.getGroup({ where: whereWithTenant });
+                }
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not get group.",
@@ -193,17 +226,23 @@ export const createGroupsMethods = ({
         async listGroups(this: Security, { where }: ListGroupsParams = {}) {
             await checkPermission(this);
             try {
-                return await storageOperations.listGroups({
-                    where: {
-                        ...where,
-                        tenant: getTenant()
-                    },
+                const whereWithTenant = { ...where, tenant: getTenant() };
+
+                const groupsFromDatabase = await storageOperations.listGroups({
+                    where: whereWithTenant,
                     sort: ["createdOn_ASC"]
                 });
+
+                const groupsFromPlugins = await listGroupsFromPlugins({ where: whereWithTenant });
+
+                // We don't have to do any extra sorting because, as we can see above, `createdOn_ASC` is
+                // hardcoded, and groups coming from plugins don't have `createdOn`, meaning they should
+                // always be at the top of the list.
+                return [...groupsFromPlugins, ...groupsFromDatabase];
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not list API keys.",
-                    ex.code || "LIST_API_KEY_ERROR"
+                    ex.message || "Could not list security groups.",
+                    ex.code || "LIST_SECURITY_GROUP_ERROR"
                 );
             }
         },
@@ -269,11 +308,28 @@ export const createGroupsMethods = ({
             const model = await new UpdateDataModel().populate(input);
             await model.validate();
 
-            const original = await storageOperations.getGroup({
+            const original = await this.getGroup({
                 where: { tenant: getTenant(), id }
             });
             if (!original) {
                 throw new NotFoundError(`Group "${id}" was not found!`);
+            }
+
+            // We can't proceed with the update if one of the following is true:
+            // 1. The group is system group.
+            // 2. The group is created via a plugin.
+            if (original.system) {
+                throw new WebinyError(
+                    `Cannot update system groups.`,
+                    "CANNOT_UPDATE_SYSTEM_GROUPS"
+                );
+            }
+
+            if (original.plugin) {
+                throw new WebinyError(
+                    `Cannot update groups created via plugins.`,
+                    "CANNOT_UPDATE_PLUGIN_GROUPS"
+                );
             }
 
             const data = await model.toJSON({ onlyDirty: true });
@@ -307,21 +363,27 @@ export const createGroupsMethods = ({
         async deleteGroup(this: Security, id: string): Promise<void> {
             await checkPermission(this);
 
-            const group = await storageOperations.getGroup({ where: { tenant: getTenant(), id } });
+            const group = await this.getGroup({ where: { tenant: getTenant(), id } });
             if (!group) {
                 throw new NotFoundError(`Group "${id}" was not found!`);
             }
 
             // We can't proceed with the deletion if one of the following is true:
             // 1. The group is system group.
-            // 2. The group is being used by one or more tenant links.
-            // 3. The group is being used by one or more teams.
-
-            // 1. Is system group?
+            // 2. The group is created via a plugin.
+            // 3. The group is being used by one or more tenant links.
+            // 4. The group is being used by one or more teams.
             if (group.system) {
                 throw new WebinyError(
                     `Cannot delete system groups.`,
                     "CANNOT_DELETE_SYSTEM_GROUPS"
+                );
+            }
+
+            if (group.plugin) {
+                throw new WebinyError(
+                    `Cannot delete groups created via plugins.`,
+                    "CANNOT_DELETE_PLUGIN_GROUPS"
                 );
             }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { ContentEntryEditorConfig } from "~/ContentEntryEditorConfig";
+import { ContentEntryEditorConfig } from "~/admin/config/contentEntries";
 import { useContentEntryForm } from "~/admin/components/ContentEntryForm/useContentEntryForm";
 
 const { Actions } = ContentEntryEditorConfig;

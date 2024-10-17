@@ -19,7 +19,7 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                     lastName: String!
                     password: String!
                     avatar: JSON
-                    ${params.teams ? "group: String" : "group: String!"}
+                    ${params.teams ? "groups: [RefInput]" : "groups: [RefInput!]"}
                 }
 
                 """
@@ -31,7 +31,7 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                     lastName: String
                     password: String
                     avatar: JSON
-                    group: String
+                    groups: [RefInput]
                 }
 
                 """
@@ -119,11 +119,11 @@ export default (params: CreateUserGraphQlPluginsParams) => {
             new GraphQLSchemaPlugin<AdminUsersContext>({
                 typeDefs: /* GraphQL */ `
                     extend input AdminUsersCreateInput {
-                        team: ID
+                        teams: [RefInput]
                     }
 
                     extend input AdminUsersUpdateInput {
-                        team: ID
+                        teams: [RefInput]
                     }
                 `
             })

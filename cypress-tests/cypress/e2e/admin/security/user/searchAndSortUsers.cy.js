@@ -21,7 +21,7 @@ context("Search and sort security users", () => {
                             firstName: uniqid("first name-"),
                             lastName: uniqid("last name-"),
                             password: "12345678",
-                            group: group.id
+                            groups: [group.id]
                         }
                     }).then(user => {
                         users.push(user);

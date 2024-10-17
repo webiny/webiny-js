@@ -11,7 +11,7 @@ import {
 } from "~/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import { ReactComponent as PageListIcon } from "./page-list-icon.svg";
-import PagesList from "./PagesList";
+import { PagesList } from "./PagesList";
 import PagesListFilterSettings from "./PagesListFilterSettings";
 import PagesListDesignSettings from "./PagesListDesignSettings";
 

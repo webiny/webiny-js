@@ -16,7 +16,7 @@ export interface BindComponentRenderPropOnChange<T = any> {
 export interface FormValidationOptions {
     skipValidators?: string[];
 }
-export interface FormAPI<T extends GenericFormData = GenericFormData> {
+export interface FormAPI<T = GenericFormData> {
     data: T;
     submit: (
         event?: React.SyntheticEvent<any, any>,

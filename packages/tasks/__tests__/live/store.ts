@@ -15,7 +15,11 @@ export const createLiveStore = async <C extends Context = Context>(
 ) => {
     const context = params.context || (await createLiveContext(params));
 
-    const store = new TaskManagerStore(context, params.task, params.taskLog);
+    const store = new TaskManagerStore({
+        context,
+        task: params.task,
+        log: params.taskLog
+    });
 
     return {
         store,

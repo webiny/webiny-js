@@ -176,7 +176,6 @@ export const createAuthentication = ({
 
                     validatePermissions(permissions);
                 } catch (err) {
-                    console.log("ERROR", err);
                     if (typeof onError === "function") {
                         onError(err);
                     } else {

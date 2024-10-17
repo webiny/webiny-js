@@ -3,6 +3,15 @@ export const createMappingsSnapshot = () => {
         mappings: {
             dynamic_templates: [
                 {
+                    ids: {
+                        match: "^id|entryId$",
+                        mapping: {
+                            type: "string",
+                            keyword: true
+                        }
+                    }
+                },
+                {
                     dates: {
                         match: "^createdOn|savedOn|publishedOn$",
                         mapping: {

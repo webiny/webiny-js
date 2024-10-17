@@ -54,6 +54,11 @@ export const booksSchema = createGraphQLSchemaPlugin<Context>({
                 return null;
             }
         },
+        Book: {
+            name: book => {
+                return book.name;
+            }
+        },
         Mutation: {
             async createBook() {
                 return true;

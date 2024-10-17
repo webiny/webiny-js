@@ -52,7 +52,12 @@ export class PageExporter {
         // Get file data for all images
         const imageFilesData: File[] = [];
         if (fileIds.length > 0) {
-            const [filesData] = await this.fileManager.listFiles({ where: { id_in: fileIds } });
+            const [filesData] = await this.fileManager.listFiles({
+                where: {
+                    id_in: fileIds
+                },
+                limit: 10000
+            });
             imageFilesData.push(...filesData);
         }
 

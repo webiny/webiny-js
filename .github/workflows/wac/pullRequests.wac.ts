@@ -1,6 +1,11 @@
 import { createWorkflow, NormalJob } from "github-actions-wac";
 import { createJob } from "./jobs";
-import { NODE_VERSION, BUILD_PACKAGES_RUNNER, listPackagesWithJestTests } from "./utils";
+import {
+    NODE_VERSION,
+    BUILD_PACKAGES_RUNNER,
+    listPackagesWithJestTests,
+    AWS_REGION
+} from "./utils";
 import {
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
@@ -18,7 +23,7 @@ const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DI
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 
 const createJestTestsJob = (storage: string | null) => {
-    const env: Record<string, string> = {};
+    const env: Record<string, string> = { AWS_REGION };
 
     if (storage) {
         if (storage === "ddb-es") {

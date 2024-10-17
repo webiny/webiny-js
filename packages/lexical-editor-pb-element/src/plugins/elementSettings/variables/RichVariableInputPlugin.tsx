@@ -10,6 +10,6 @@ export const RichVariableInputPlugin = RichVariableInput.createDecorator(Origina
         if (!isValidLexicalData(value)) {
             return <Original variableId={variableId} />;
         }
-        return <LexicalVariableInputPlugin tag={"p"} variableId={variableId} />;
+        return <LexicalVariableInputPlugin type={"paragraph"} variableId={variableId} />;
     };
 });

@@ -1,6 +1,6 @@
 import kebabCase from "lodash/kebabCase";
+import { ParagraphRenderer } from "@webiny/app-page-builder-elements/renderers/paragraph";
 import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "~/types";
-import { createParagraph } from "@webiny/app-page-builder-elements/renderers/paragraph";
 
 export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {
     const elementType = kebabCase(args.elementType || "paragraph");
@@ -9,6 +9,6 @@ export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => 
         name: `pb-render-page-element-${elementType}`,
         type: "pb-render-page-element",
         elementType: elementType,
-        render: createParagraph()
+        render: ParagraphRenderer
     };
 };

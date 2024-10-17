@@ -29,15 +29,8 @@ describe("task runner task not found", () => {
             tenant: "root",
             locale: "en-US",
             error: {
-                status: "error",
-                webinyTaskId: "unknownTaskId",
-                webinyTaskDefinitionId: "myCustomTaskDefinition",
-                tenant: "root",
-                locale: "en-US",
-                error: {
-                    message: 'Task "unknownTaskId" cannot be executed because it does not exist.',
-                    code: "TASK_NOT_FOUND"
-                }
+                message: 'Task "unknownTaskId" cannot be executed because it does not exist.',
+                code: "TASK_NOT_FOUND"
             }
         });
     });

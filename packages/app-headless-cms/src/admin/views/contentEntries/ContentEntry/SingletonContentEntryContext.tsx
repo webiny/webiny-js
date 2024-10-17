@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useSnackbar, useIsMounted } from "@webiny/app-admin";
 import { useCms } from "~/admin/hooks";
 import { useContentEntries } from "~/admin/views/contentEntries/hooks/useContentEntries";
-import { CmsContentEntry, CmsModel } from "~/types";
-import * as Cms from "~/admin/contexts/Cms";
+import type { CmsContentEntry, CmsModel } from "~/types";
+import type * as Cms from "~/admin/contexts/Cms";
 
 export type UpdateEntryParams = Omit<Cms.UpdateEntryRevisionParams, "model">;
 

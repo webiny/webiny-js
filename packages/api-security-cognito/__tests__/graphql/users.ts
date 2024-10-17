@@ -6,7 +6,7 @@ const DATA_FIELD = /* GraphQL */ `
         lastName
         avatar
         gravatar
-        group {
+        groups {
             id
             slug
             name

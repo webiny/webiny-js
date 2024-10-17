@@ -4,7 +4,7 @@ import { PbEditorElement, PbEditorPageElementVariableRendererPlugin } from "~/ty
 import { useParentBlock } from "~/editor/hooks/useParentBlock";
 
 export function useElementVariables(element: PbEditorElement | null) {
-    const block = useParentBlock(element?.id);
+    const block = useParentBlock() as PbEditorElement | null;
 
     const variableValue = useMemo(() => {
         const { variableId } = element?.data || {};

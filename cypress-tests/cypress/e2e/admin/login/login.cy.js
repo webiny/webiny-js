@@ -49,7 +49,7 @@ context("Login Page", () => {
                         firstName: uniqid("first name-"),
                         lastName: uniqid("last name-"),
                         password,
-                        group: group.id
+                        groups: [group.id]
                     }
                 })
                 .then(user => {
@@ -86,7 +86,7 @@ context("Login Page", () => {
                         firstName: uniqid("first name-"),
                         lastName: uniqid("last name-"),
                         password,
-                        group: group.id
+                        groups: [group.id]
                     }
                 })
                 .then(user => {
@@ -131,7 +131,7 @@ context("Login Page", () => {
                         firstName: uniqid("first name-"),
                         lastName: uniqid("last name-"),
                         password,
-                        group: group.id
+                        groups: [group.id]
                     }
                 })
                 .then(() => {

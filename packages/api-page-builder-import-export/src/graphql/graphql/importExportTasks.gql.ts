@@ -24,7 +24,7 @@ const plugin: GraphQLSchemaPlugin<PbImportExportContext> = {
             type PbImportExportTask {
                 id: ID
                 createdOn: DateTime
-                createdBy: PbCreatedBy
+                createdBy: PbIdentity
                 status: PbImportExportTaskStatus
                 data: JSON
                 stats: PbImportExportTaskStats

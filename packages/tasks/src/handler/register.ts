@@ -1,7 +1,6 @@
 import { registry } from "@webiny/handler-aws/registry";
-import { createHandler, HandlerParams } from "./index";
 import { createSourceHandler } from "@webiny/handler-aws";
-import { IIncomingEvent, ITaskEvent } from "./types";
+import { HandlerParams, IIncomingEvent, ITaskEvent } from "./types";
 
 const handler = createSourceHandler<IIncomingEvent<ITaskEvent>, HandlerParams>({
     name: "handler-webiny-background-task",
@@ -9,6 +8,10 @@ const handler = createSourceHandler<IIncomingEvent<ITaskEvent>, HandlerParams>({
         return !!event.payload?.webinyTaskId;
     },
     handle: async ({ params, event, context }) => {
+        const { createHandler } = await import(
+            /* webpackChunkName: "tasks.handler.createHandler" */
+            "./index"
+        );
         return createHandler(params)(event.payload, context);
     }
 });

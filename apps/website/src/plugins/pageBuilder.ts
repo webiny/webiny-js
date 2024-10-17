@@ -1,7 +1,6 @@
 /**
  * Plugins specific to the "website" app.
  */
-import linkPreload from "./linkPreload";
 
 /**
  * Ensures GraphQL's PbPage and PbPageListItem types are correctly cached.
@@ -66,7 +65,6 @@ import accordionItemSettings from "@webiny/app-page-builder/editor/plugins/eleme
 import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMode";
 
 export default [
-    linkPreload(),
     apolloCacheObjectId,
 
     // Page elements

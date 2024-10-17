@@ -1,9 +1,8 @@
 import { boolean } from "boolean";
 import { GraphQLSchema } from "graphql";
-import { RoutePlugin } from "@webiny/handler";
+import { Context, RoutePlugin } from "@webiny/handler";
 import WebinyError from "@webiny/error";
-import { PluginCollection } from "@webiny/plugins/types";
-import { Context } from "@webiny/handler";
+import { Plugin } from "@webiny/plugins/types";
 import { GraphQLRequestBody, HandlerGraphQLOptions } from "./types";
 import { createGraphQLSchema, getSchemaPlugins } from "./createGraphQLSchema";
 import debugPlugins from "./debugPlugins";
@@ -59,7 +58,7 @@ const formatErrorPayload = (error: Error): string => {
     });
 };
 
-export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
+export default (options: HandlerGraphQLOptions = {}): Plugin[] => {
     let schema: GraphQLSchema | undefined = undefined;
     let cacheKey: string | undefined = undefined;
 

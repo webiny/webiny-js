@@ -66,7 +66,7 @@ import { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 import { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import createAdminUsersApp from "@webiny/api-admin-users";
 import { createWcpContext } from "@webiny/api-wcp";
-import { createTestWcpLicense } from "~tests/utils/createTestWcpLicense";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { AdminUsersStorageOperations } from "@webiny/api-admin-users/types";
 
 export interface UseGQLHandlerParams {

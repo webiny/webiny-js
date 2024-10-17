@@ -1,8 +1,24 @@
 import useGqlHandler from "./useGqlHandler";
 import mocks from "./mocks/securityGroup";
+import { createSecurityRolePlugin } from "~/plugins/SecurityRolePlugin";
 
 describe("Security Group CRUD Test", () => {
-    const { install, securityGroup } = useGqlHandler();
+    const { install, securityGroup } = useGqlHandler({
+        plugins: [
+            createSecurityRolePlugin({
+                id: "test-role-1",
+                name: "Test Role 1",
+                description: "1st test role defined via an extension.",
+                permissions: [{ name: "cms.*" }]
+            }),
+            createSecurityRolePlugin({
+                id: "test-role-2",
+                name: "Test Role 2",
+                description: "2nd test role defined via an extension.",
+                permissions: [{ name: "pb.*" }]
+            })
+        ]
+    });
 
     beforeEach(async () => {
         await install.install();
@@ -23,19 +39,67 @@ describe("Security Group CRUD Test", () => {
         // Let's check whether both of the group exists
         const [listResponse] = await securityGroup.list();
 
-        expect(listResponse.data.security.listGroups).toEqual(
-            expect.objectContaining({
-                data: expect.arrayContaining([
-                    {
-                        name: expect.any(String),
-                        description: expect.any(String),
-                        slug: expect.stringMatching(/anonymous|full-access|group-a|group-b/),
-                        permissions: expect.any(Array)
-                    }
-                ]),
-                error: null
-            })
-        );
+        expect(listResponse.data.security.listGroups).toEqual({
+            error: null,
+            data: [
+                {
+                    name: "Test Role 1",
+                    description: "1st test role defined via an extension.",
+                    slug: "test-role-1",
+                    permissions: [
+                        {
+                            name: "cms.*"
+                        }
+                    ]
+                },
+                {
+                    name: "Test Role 2",
+                    description: "2nd test role defined via an extension.",
+                    slug: "test-role-2",
+                    permissions: [
+                        {
+                            name: "pb.*"
+                        }
+                    ]
+                },
+                {
+                    name: "Full Access",
+                    description: "Grants full access to all apps.",
+                    slug: "full-access",
+                    permissions: [
+                        {
+                            name: "*"
+                        }
+                    ]
+                },
+                {
+                    name: "Anonymous",
+                    description: "Permissions for anonymous users (public access).",
+                    slug: "anonymous",
+                    permissions: []
+                },
+                {
+                    name: "Group-A",
+                    description: "A: Dolor odit et quia animi ipsum nostrum nesciunt.",
+                    slug: "group-a",
+                    permissions: [
+                        {
+                            name: "security.*"
+                        }
+                    ]
+                },
+                {
+                    name: "Group-B",
+                    description: "B: Dolor odit et quia animi ipsum nostrum nesciunt.",
+                    slug: "group-b",
+                    permissions: [
+                        {
+                            name: "security.*"
+                        }
+                    ]
+                }
+            ]
+        });
 
         // Let's update the "groupB" name
         const updatedName = "Group B - updated";
@@ -125,6 +189,51 @@ describe("Security Group CRUD Test", () => {
                             code: "GROUP_EXISTS",
                             message: `Group with slug "${mocks.groupA.slug}" already exists.`,
                             data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("should not allow update of a group created via a plugin", async () => {
+        // Creating a group with same "slug" should not be allowed
+        const [response] = await securityGroup.update({
+            id: "test-role-1",
+            data: {
+                name: "Test Role 1 - updated"
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                security: {
+                    updateGroup: {
+                        data: null,
+                        error: {
+                            code: "CANNOT_UPDATE_PLUGIN_GROUPS",
+                            data: null,
+                            message: "Cannot update groups created via plugins."
+                        }
+                    }
+                }
+            }
+        });
+    });
+
+    test("should not allow deletion of a group created via a plugin", async () => {
+        // Creating a group with same "slug" should not be allowed
+        const [response] = await securityGroup.delete({ id: "" });
+
+        expect(response).toEqual({
+            data: {
+                security: {
+                    deleteGroup: {
+                        data: null,
+                        error: {
+                            code: "CANNOT_DELETE_PLUGIN_GROUPS",
+                            data: null,
+                            message: "Cannot delete groups created via plugins."
                         }
                     }
                 }

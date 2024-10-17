@@ -10,7 +10,7 @@ export const createPageBlockGraphQL = new GraphQLSchemaPlugin<PbContext>({
         type PbPageBlock {
             id: ID
             createdOn: DateTime
-            createdBy: PbCreatedBy
+            createdBy: PbIdentity
             name: String
             blockCategory: String
             content: JSON

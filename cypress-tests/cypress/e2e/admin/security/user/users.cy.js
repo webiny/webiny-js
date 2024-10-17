@@ -19,7 +19,7 @@ context("Security -> Users", () => {
         cy.findByLabelText("Last Name").type(lastName);
         cy.findByTestId("input-element-Email").type(email);
         cy.get("input[type=password]").type(password);
-        cy.findByTestId("group-autocomplete").type(groupName);
+        cy.findByTestId("groups-autocomplete").type(groupName);
         cy.wait(1000);
         cy.findByText(groupName).click();
         // Save details
@@ -39,7 +39,7 @@ context("Security -> Users", () => {
         cy.findByLabelText("First Name").type(newFirstName);
         cy.findByLabelText("Last Name").type(newLastName);
         cy.get("input[type=password]").type(newPassword);
-        cy.findByTestId("group-autocomplete").clear().type(newGroupName);
+        cy.findByTestId("groups-autocomplete").clear().type(newGroupName);
         cy.wait(1000);
         cy.findByText(newGroupName).click();
         // Save details

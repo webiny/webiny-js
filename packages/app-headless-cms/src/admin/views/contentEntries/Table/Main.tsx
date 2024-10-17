@@ -14,6 +14,7 @@ import { ContentEntry } from "~/admin/views/contentEntries/ContentEntry";
 import { useRouter } from "@webiny/react-router";
 import { ROOT_FOLDER } from "~/admin/constants";
 import { BulkActions } from "~/admin/components/ContentEntries/BulkActions";
+import { SelectAll } from "~/admin/components/ContentEntries/SelectAll";
 
 interface MainProps {
     folderId?: string;
@@ -85,6 +86,7 @@ export const Main = ({ folderId: initialFolderId }: MainProps) => {
                 />
                 <BulkActions />
                 <Wrapper>
+                    <SelectAll />
                     <Filters />
                     {list.records.length === 0 &&
                     list.folders.length === 0 &&
