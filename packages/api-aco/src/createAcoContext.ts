@@ -58,23 +58,24 @@ const setupAcoContext = async (
 
     const folderLevelPermissions = new FolderLevelPermissions({
         getIdentity: () => security.getIdentity(),
-        getIdentityTeam: async () => {
+        listIdentityTeams: async () => {
             return security.withoutAuthorization(async () => {
                 const identity = security.getIdentity();
                 if (!identity) {
-                    return null;
+                    return [];
                 }
 
                 const adminUser = await context.adminUsers.getUser({ where: { id: identity.id } });
                 if (!adminUser) {
-                    return null;
+                    return [];
                 }
 
-                if (!adminUser.team) {
-                    return null;
+                const hasTeams = adminUser.teams && adminUser.teams.length > 0;
+                if (hasTeams) {
+                    return context.security.listTeams({ where: { id_in: adminUser.teams } });
                 }
 
-                return context.security.getTeam({ where: { id: adminUser.team } });
+                return [];
             });
         },
         listPermissions: () => security.listPermissions(),

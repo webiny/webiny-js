@@ -35,7 +35,6 @@ export const createResolvers = (): Resolvers<Context> => {
             }
         },
         WebsocketsMutation: {
-            // @ts-expect-error
             disconnect: async (_, args: IWebsocketsMutationDisconnectConnectionsArgs, context) => {
                 return resolve(async () => {
                     await checkPermissions(context);
@@ -46,7 +45,6 @@ export const createResolvers = (): Resolvers<Context> => {
                     });
                 });
             },
-            // @ts-expect-error
             disconnectIdentity: async (
                 _,
                 args: IWebsocketsMutationDisconnectIdentityArgs,
@@ -61,7 +59,6 @@ export const createResolvers = (): Resolvers<Context> => {
                     });
                 });
             },
-            // @ts-expect-error
             disconnectTenant: async (_, args: IWebsocketsMutationDisconnectTenantArgs, context) => {
                 return resolve<IWebsocketsConnectionRegistryData[]>(async () => {
                     await checkPermissions(context);

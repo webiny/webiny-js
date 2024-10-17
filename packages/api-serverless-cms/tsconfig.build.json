@@ -16,7 +16,21 @@
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler-client/tsconfig.build.json" },
-    { "path": "../handler-graphql/tsconfig.build.json" }
+    { "path": "../handler-graphql/tsconfig.build.json" },
+    { "path": "../api-admin-users/tsconfig.build.json" },
+    { "path": "../api-apw/tsconfig.build.json" },
+    { "path": "../api-audit-logs/tsconfig.build.json" },
+    { "path": "../api-headless-cms-aco/tsconfig.build.json" },
+    { "path": "../api-headless-cms-tasks/tsconfig.build.json" },
+    { "path": "../api-page-builder-import-export/tsconfig.build.json" },
+    { "path": "../api-page-builder-import-export-so-ddb/tsconfig.build.json" },
+    { "path": "../api-record-locking/tsconfig.build.json" },
+    { "path": "../api-wcp/tsconfig.build.json" },
+    { "path": "../api-websockets/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-aws/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../tasks/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

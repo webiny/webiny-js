@@ -4,7 +4,7 @@ import { Elevation as BaseElevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ContentEntryForm } from "~/admin/components/ContentEntryForm/ContentEntryForm";
 import { makeDecoratable } from "@webiny/app";
-import { useSingletonContentEntry } from "~/admin/views/contentEntries/hooks/useSingletonContentEntry";
+import { useSingletonContentEntry } from "../hooks/useSingletonContentEntry";
 import { PartialCmsContentEntryWithId } from "~/admin/contexts/Cms";
 import { SingletonHeader } from "~/admin/components/ContentEntryForm/SingletonHeader";
 

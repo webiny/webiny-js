@@ -1,5 +1,5 @@
 import { QuestionCollection } from "inquirer";
-import { CliContext } from "@webiny/cli/types";
+import { CliContext, GenericRecord } from "@webiny/cli/types";
 import { Plugin } from "@webiny/plugins/types";
 import { Ora } from "ora";
 import inquirer from "inquirer";
@@ -54,7 +54,7 @@ export type CliCommandScaffoldQuestionsCallable = (
  * @category Scaffold
  * @category Template
  */
-export interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
+export interface CliCommandScaffoldCallableArgs<T extends GenericRecord> {
     input: T;
     context: CliContext;
     wait: (ms?: number) => Promise<void>;
@@ -68,7 +68,7 @@ export interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
  * @category Scaffold
  * @category Template
  */
-export interface CliCommandScaffoldCallableWithErrorArgs<T extends Record<string, any>>
+export interface CliCommandScaffoldCallableWithErrorArgs<T extends GenericRecord>
     extends CliCommandScaffoldCallableArgs<T> {
     error: Error;
 }
@@ -79,7 +79,7 @@ export interface CliCommandScaffoldCallableWithErrorArgs<T extends Record<string
  * @category Scaffold
  * @category Template
  */
-export interface CliCommandScaffold<T extends Record<string, any>> {
+export interface CliCommandScaffold<T extends GenericRecord> {
     /**
      * Name of the scaffold to be picked from list of choices.
      */
@@ -117,7 +117,7 @@ export interface CliCommandScaffold<T extends Record<string, any>> {
  * @category Scaffold
  * @category Template
  */
-export interface CliCommandScaffoldTemplate<T extends Record<string, any> = Record<string, any>>
+export interface CliCommandScaffoldTemplate<T extends GenericRecord = GenericRecord>
     extends Plugin {
     /**
      * A type of the plugin.

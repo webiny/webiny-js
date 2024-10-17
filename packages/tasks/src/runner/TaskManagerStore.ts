@@ -1,8 +1,9 @@
 import {
+    IListTaskParamsWhere,
     ITask,
     ITaskDataInput,
     ITaskLog,
-    ITaskLogItemType,
+    TaskLogItemType,
     ITaskManagerStoreInfoLog,
     ITaskManagerStorePrivate,
     ITaskManagerStoreSetOutputOptions,
@@ -25,6 +26,7 @@ import {
 import deepEqual from "deep-equal";
 import { getObjectProperties } from "~/utils/getObjectProperties";
 import { ObjectUpdater } from "~/utils/ObjectUpdater";
+import { GenericRecord } from "@webiny/api/types";
 
 const getInput = <T extends ITaskDataInput = ITaskDataInput>(
     originalInput: T,
@@ -40,7 +42,14 @@ const getInput = <T extends ITaskDataInput = ITaskDataInput>(
 };
 
 export interface TaskManagerStoreContext {
-    tasks: Pick<ITasksContextObject, "updateTask" | "updateLog">;
+    tasks: Pick<ITasksContextObject, "updateTask" | "updateLog" | "listTasks">;
+}
+
+export interface ITaskManagerStoreParams {
+    context: TaskManagerStoreContext;
+    task: ITask;
+    log: ITaskLog;
+    disableDatabaseLogs?: boolean;
 }
 
 export class TaskManagerStore<
@@ -51,14 +60,16 @@ export class TaskManagerStore<
     private readonly context: TaskManagerStoreContext;
     private task: ITask<T, O>;
     private taskLog: ITaskLog;
+    private readonly disableDatabaseLogs: boolean;
 
     private readonly taskUpdater = new ObjectUpdater<ITask<T, O>>();
     private readonly taskLogUpdater = new ObjectUpdater<ITaskLog>();
 
-    public constructor(context: TaskManagerStoreContext, task: ITask, log: ITaskLog) {
-        this.context = context;
-        this.task = task as ITask<T, O>;
-        this.taskLog = log;
+    public constructor(params: ITaskManagerStoreParams) {
+        this.context = params.context;
+        this.task = params.task as ITask<T, O>;
+        this.taskLog = params.log;
+        this.disableDatabaseLogs = !!params.disableDatabaseLogs;
     }
 
     public getStatus(): TaskDataStatus {
@@ -67,6 +78,24 @@ export class TaskManagerStore<
 
     public getTask(): ITask<T, O> {
         return this.task as ITask<T, O>;
+    }
+
+    public async listChildTasks<
+        I = GenericRecord,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(definitionId?: string): Promise<ITask<I, O>[]> {
+        const where: IListTaskParamsWhere = {
+            parentId: this.task.id
+        };
+        if (definitionId) {
+            where.definitionId = definitionId;
+        }
+        const result = await this.context.tasks.listTasks<I, O>({
+            where,
+            sort: ["createdOn_ASC"],
+            limit: 1000000
+        });
+        return result.items;
     }
 
     public async updateTask(
@@ -139,12 +168,15 @@ export class TaskManagerStore<
         log: ITaskManagerStoreInfoLog,
         options?: ITaskManagerStoreAddLogOptions
     ): Promise<void> {
+        if (this.disableDatabaseLogs) {
+            return;
+        }
         this.taskLogUpdater.update({
             items: [
                 {
                     message: log.message,
                     data: log.data,
-                    type: ITaskLogItemType.INFO,
+                    type: TaskLogItemType.INFO,
                     createdOn: new Date().toISOString()
                 }
             ]
@@ -163,6 +195,9 @@ export class TaskManagerStore<
         log: ITaskManagerStoreErrorLog,
         options?: ITaskManagerStoreAddLogOptions
     ): Promise<void> {
+        if (this.disableDatabaseLogs) {
+            return;
+        }
         /**
          * Let's log the error to the console as well.
          */
@@ -175,7 +210,7 @@ export class TaskManagerStore<
                 {
                     message: log.message,
                     error: log.error instanceof Error ? getObjectProperties(log.error) : log.error,
-                    type: ITaskLogItemType.ERROR,
+                    type: TaskLogItemType.ERROR,
                     createdOn: new Date().toISOString()
                 }
             ]
@@ -195,6 +230,9 @@ export class TaskManagerStore<
                 this.task.id,
                 this.taskUpdater.fetch()
             );
+        }
+        if (this.disableDatabaseLogs) {
+            return;
         }
         if (this.taskLogUpdater.isDirty()) {
             this.taskLog = await this.context.tasks.updateLog(

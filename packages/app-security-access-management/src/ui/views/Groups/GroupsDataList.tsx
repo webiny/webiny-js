@@ -53,6 +53,7 @@ export interface GroupsDataListProps {
     // TODO @ts-refactor delete and go up the tree and sort it out
     [key: string]: any;
 }
+
 export const GroupsDataList = () => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState(SORTERS[0].sorter);
@@ -178,18 +179,24 @@ export const GroupsDataList = () => {
 
                             <ListItemMeta>
                                 <ListActions>
-                                    {!item.system ? (
+                                    {item.system || item.plugin ? (
+                                        <Tooltip
+                                            placement={"bottom"}
+                                            content={
+                                                <span>
+                                                    {item.system
+                                                        ? t`Cannot delete system roles.`
+                                                        : t`Cannot delete roles registered via extensions.`}
+                                                </span>
+                                            }
+                                        >
+                                            <DeleteIcon disabled />
+                                        </Tooltip>
+                                    ) : (
                                         <DeleteIcon
                                             onClick={() => deleteItem(item)}
                                             data-testid={"default-data-list.delete"}
                                         />
-                                    ) : (
-                                        <Tooltip
-                                            placement={"bottom"}
-                                            content={<span>{t`You can't delete this group.`}</span>}
-                                        >
-                                            <DeleteIcon disabled />
-                                        </Tooltip>
                                     )}
                                 </ListActions>
                             </ListItemMeta>

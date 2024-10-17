@@ -67,7 +67,10 @@ export interface CmsEntryContext {
     /**
      * Get a single content entry for a model.
      */
-    getEntry: (model: CmsModel, params: CmsEntryGetParams) => Promise<CmsEntry>;
+    getEntry: <T = CmsEntryValues>(
+        model: CmsModel,
+        params: CmsEntryGetParams
+    ) => Promise<CmsEntry<T>>;
     /**
      * Get a list of entries for a model by a given ID (revision).
      */
@@ -79,28 +82,28 @@ export interface CmsEntryContext {
     /**
      * List entries for a model. Internal method used by get, listLatest and listPublished.
      */
-    listEntries: <T = CmsEntryValues>(
+    listEntries: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryListParams
     ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     /**
      * Lists the latest entries. Used for manage API.
      */
-    listLatestEntries: <T = CmsEntryValues>(
+    listLatestEntries: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
     ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     /**
      * List published entries. Used for read API.
      */
-    listPublishedEntries: <T = CmsEntryValues>(
+    listPublishedEntries: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
     ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     /**
      * Lists the deleted entries. Used for manage API.
      */
-    listDeletedEntries: <T = CmsEntryValues>(
+    listDeletedEntries: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params?: CmsEntryListParams
     ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
@@ -115,11 +118,11 @@ export interface CmsEntryContext {
     /**
      * Create a new content entry.
      */
-    createEntry: (
+    createEntry: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        input: CreateCmsEntryInput,
+        input: CreateCmsEntryInput<T>,
         options?: CreateCmsEntryOptionsInput
-    ) => Promise<CmsEntry>;
+    ) => Promise<CmsEntry<T>>;
     /**
      * Create a new entry from already existing entry.
      */
@@ -132,10 +135,10 @@ export interface CmsEntryContext {
     /**
      * Update existing entry.
      */
-    updateEntry: (
+    updateEntry: <TInput = CmsEntryValues>(
         model: CmsModel,
         id: string,
-        input: UpdateCmsEntryInput,
+        input: UpdateCmsEntryInput<TInput>,
         meta?: Record<string, any>,
         options?: UpdateCmsEntryOptionsInput
     ) => Promise<CmsEntry>;
