@@ -1,5 +1,6 @@
 import React, { useReducer } from "react";
 import { ImagesListComponent } from "../types";
+import { EmptyElement } from "~/renderers/components";
 
 /**
  * Package react-columned does not have types.
@@ -7,7 +8,6 @@ import { ImagesListComponent } from "../types";
 // @ts-expect-error
 import Columned from "react-columned";
 import Lightbox from "react-images";
-import styled from "@emotion/styled";
 
 const COLUMNS = { 320: 1, 480: 2, 800: 3, 1366: 4 };
 
@@ -57,17 +57,6 @@ const useLightbox = () => {
     };
 };
 
-const NoImagesToDisplay = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100px;
-    width: 100%;
-    border: 1px dashed var(--mdc-theme-secondary);
-    color: var(--mdc-theme-text-secondary-on-background);
-    pointer-events: none;
-`;
-
 export const createDefaultImagesListComponent = (): ImagesListComponent =>
     function DefaultImagesListComponent(props) {
         const { opened, open, close, next, prev, currentIndex } = useLightbox();
@@ -99,5 +88,5 @@ export const createDefaultImagesListComponent = (): ImagesListComponent =>
             );
         }
 
-        return <NoImagesToDisplay>No images to display.</NoImagesToDisplay>;
+        return <EmptyElement message="No images to display." />;
     };
