@@ -27,8 +27,8 @@ export class DataSynchronizationTaskRunner {
          * First we check if we need to sync Elasticsearch.
          */
         //
-        if (!input.elasticsearch?.finished) {
-            const sync = this.factories.createElasticsearch({
+        if (!input.elasticsearchToDynamoDb?.finished) {
+            const sync = this.factories.createElasticsearchToDynamoDb({
                 manager: this.manager,
                 indexManager: this.indexManager
             });

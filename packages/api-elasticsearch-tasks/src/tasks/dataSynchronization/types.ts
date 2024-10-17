@@ -7,14 +7,14 @@ export interface IDataSynchronizationInputValue {
     finished?: boolean;
 }
 
-export interface IDataSynchronizationInputElasticsearchValue
+export interface IDataSynchronizationInputElasticsearchToDynamoDbValue
     extends IDataSynchronizationInputValue {
     index?: string;
     cursor?: PrimitiveValue[];
 }
 
 export interface IDataSynchronizationInput {
-    elasticsearch?: IDataSynchronizationInputElasticsearchValue;
+    elasticsearchToDynamoDb?: IDataSynchronizationInputElasticsearchToDynamoDbValue;
     dynamoDbElasticsearch?: IDataSynchronizationInputValue;
     dynamoDb?: IDataSynchronizationInputValue;
 }
@@ -49,7 +49,7 @@ export interface IDynamoDbSyncFactory {
 }
 
 export interface IFactories {
-    createElasticsearch: IElasticsearchSyncFactory;
+    createElasticsearchToDynamoDb: IElasticsearchSyncFactory;
     createDynamoDbElasticsearch: IDynamoDbElasticsearchSyncFactory;
     createDynamoDb: IDynamoDbSyncFactory;
 }

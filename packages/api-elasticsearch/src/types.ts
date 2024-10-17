@@ -1,5 +1,5 @@
 import { ApiResponse, Client } from "@elastic/elasticsearch";
-import { BoolQueryConfig as esBoolQueryConfig, PrimitiveValue, Query as esQuery } from "elastic-ts";
+import { BoolQueryConfig, PrimitiveValue, Query as esQuery } from "elastic-ts";
 import { Context, GenericRecord } from "@webiny/api/types";
 /**
  * Re-export some dep lib types.
@@ -15,7 +15,7 @@ export interface ElasticsearchContext extends Context {
  * To simplify our plugins, we say that query contains arrays of objects, not single objects.
  * And that they all are defined as empty arrays at the start.
  */
-export interface ElasticsearchBoolQueryConfig extends esBoolQueryConfig {
+export interface ElasticsearchBoolQueryConfig extends BoolQueryConfig {
     must: esQuery[];
     filter: esQuery[];
     should: esQuery[];
