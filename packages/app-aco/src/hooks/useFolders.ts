@@ -52,9 +52,9 @@ export const useFolders = () => {
     }, [type]);
 
     const { createFolder } = useCreateFolder(foldersCache, loadingRepository, type);
-    const { deleteFolder } = useDeleteFolder(foldersCache, loadingRepository, type);
+    const { deleteFolder } = useDeleteFolder(foldersCache, loadingRepository);
     const { listFolders } = useListFolders(foldersCache, loadingRepository, type);
-    const { updateFolder } = useUpdateFolder(foldersCache, loadingRepository, type);
+    const { updateFolder } = useUpdateFolder(foldersCache, loadingRepository);
     const { getDescendantFolders } = useGetDescendantFolders(foldersCache);
     const { getFolder } = useGetFolder(foldersCache, loadingRepository);
 

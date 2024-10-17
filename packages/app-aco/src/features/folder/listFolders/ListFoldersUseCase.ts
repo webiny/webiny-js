@@ -1,4 +1,4 @@
-import { IListFoldersUseCase, ListFoldersParams } from "./IListFoldersUseCase";
+import { IListFoldersUseCase } from "./IListFoldersUseCase";
 import { IListFoldersRepository } from "./IListFoldersRepository";
 
 export class ListFoldersUseCase implements IListFoldersUseCase {
@@ -8,7 +8,7 @@ export class ListFoldersUseCase implements IListFoldersUseCase {
         this.repository = repository;
     }
 
-    async execute(params: ListFoldersParams) {
-        await this.repository.execute(params.type);
+    async execute() {
+        await this.repository.execute();
     }
 }

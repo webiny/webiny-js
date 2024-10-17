@@ -15,8 +15,8 @@ export const useListFolders = (cache: FoldersCache, loading: LoadingRepository, 
     }, [client]);
 
     const repository = useMemo(() => {
-        return new ListFoldersRepository(cache, gateway);
-    }, [cache, gateway]);
+        return new ListFoldersRepository(cache, gateway, type);
+    }, [cache, gateway, type]);
 
     const useCase = useMemo(() => {
         const listFolderUseCase = new ListFoldersUseCase(repository);
@@ -24,7 +24,7 @@ export const useListFolders = (cache: FoldersCache, loading: LoadingRepository, 
     }, [repository, loading]);
 
     const listFolders = useCallback(() => {
-        return useCase.execute({ type });
+        return useCase.execute();
     }, [useCase]);
 
     return {

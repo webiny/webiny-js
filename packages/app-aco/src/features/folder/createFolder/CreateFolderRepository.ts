@@ -8,10 +8,12 @@ import { FolderDto } from "./FolderDto";
 export class CreateFolderRepository implements ICreateFolderRepository {
     private cache: FoldersCache;
     private gateway: ICreateFolderGateway;
+    private type: string;
 
-    constructor(cache: FoldersCache, gateway: ICreateFolderGateway) {
+    constructor(cache: FoldersCache, gateway: ICreateFolderGateway, type: string) {
         this.cache = cache;
         this.gateway = gateway;
+        this.type = type;
         makeAutoObservable(this);
     }
 
@@ -20,7 +22,7 @@ export class CreateFolderRepository implements ICreateFolderRepository {
             title: folder.title,
             slug: folder.slug,
             permissions: folder.permissions,
-            type: folder.type,
+            type: this.type,
             parentId: folder.parentId
         };
 

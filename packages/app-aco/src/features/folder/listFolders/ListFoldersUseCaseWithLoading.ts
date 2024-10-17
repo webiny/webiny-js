@@ -1,6 +1,6 @@
 import { ILoadingRepository } from "@webiny/app-utils";
 import { LoadingActionsEnum } from "~/types";
-import { IListFoldersUseCase, ListFoldersParams } from "./IListFoldersUseCase";
+import { IListFoldersUseCase } from "./IListFoldersUseCase";
 
 export class ListFoldersUseCaseWithLoading implements IListFoldersUseCase {
     private loadingRepository: ILoadingRepository;
@@ -11,10 +11,7 @@ export class ListFoldersUseCaseWithLoading implements IListFoldersUseCase {
         this.useCase = useCase;
     }
 
-    async execute(params: ListFoldersParams) {
-        await this.loadingRepository.runCallBack(
-            this.useCase.execute(params),
-            LoadingActionsEnum.list
-        );
+    async execute() {
+        await this.loadingRepository.runCallBack(this.useCase.execute(), LoadingActionsEnum.list);
     }
 }

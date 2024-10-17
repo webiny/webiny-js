@@ -8,7 +8,7 @@ import { DeleteFolderUseCase } from "./DeleteFolderUseCase";
 import { DeleteFolderUseCaseWithLoading } from "./DeleteFolderUseCaseWithLoading";
 import { DeleteFolderParams } from "./IDeleteFolderUseCase";
 
-export const useDeleteFolder = (cache: FoldersCache, loading: LoadingRepository, type: string) => {
+export const useDeleteFolder = (cache: FoldersCache, loading: LoadingRepository) => {
     const client = useApolloClient();
 
     const gateway = useMemo(() => {
@@ -26,7 +26,7 @@ export const useDeleteFolder = (cache: FoldersCache, loading: LoadingRepository,
 
     const deleteFolder = useCallback(
         (params: DeleteFolderParams) => {
-            return useCase.execute({ ...params, type });
+            return useCase.execute(params);
         },
         [useCase]
     );

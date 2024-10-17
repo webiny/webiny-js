@@ -7,15 +7,17 @@ import { IListFoldersRepository } from "./IListFoldersRepository";
 export class ListFoldersRepository implements IListFoldersRepository {
     private cache: FoldersCache;
     private gateway: IListFoldersGateway;
+    private type: string;
 
-    constructor(cache: FoldersCache, gateway: IListFoldersGateway) {
+    constructor(cache: FoldersCache, gateway: IListFoldersGateway, type: string) {
         this.cache = cache;
         this.gateway = gateway;
+        this.type = type;
         makeAutoObservable(this);
     }
 
-    async execute(type: string) {
-        const items = await this.gateway.execute(type);
+    async execute() {
+        const items = await this.gateway.execute(this.type);
         await this.cache.setMultiple(items.map(item => Folder.create(item)));
     }
 }

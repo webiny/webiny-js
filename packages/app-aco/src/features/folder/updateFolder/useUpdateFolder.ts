@@ -8,7 +8,7 @@ import { UpdateFolderUseCase } from "./UpdateFolderUseCase";
 import { UpdateFolderUseCaseWithLoading } from "./UpdateFolderUseCaseWithLoading";
 import { UpdateFolderParams } from "./IUpdateFolderUseCase";
 
-export const useUpdateFolder = (cache: FoldersCache, loading: LoadingRepository, type: string) => {
+export const useUpdateFolder = (cache: FoldersCache, loading: LoadingRepository) => {
     const client = useApolloClient();
 
     const gateway = useMemo(() => {
@@ -26,7 +26,7 @@ export const useUpdateFolder = (cache: FoldersCache, loading: LoadingRepository,
 
     const updateFolder = useCallback(
         (params: UpdateFolderParams) => {
-            return useCase.execute({ ...params, type });
+            return useCase.execute(params);
         },
         [useCase]
     );

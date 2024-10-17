@@ -16,8 +16,8 @@ export const useCreateFolder = (cache: FoldersCache, loading: LoadingRepository,
     }, [client]);
 
     const repository = useMemo(() => {
-        return new CreateFolderRepository(cache, gateway);
-    }, [cache, gateway]);
+        return new CreateFolderRepository(cache, gateway, type);
+    }, [cache, gateway, type]);
 
     const useCase = useMemo(() => {
         const createFolderUseCase = new CreateFolderUseCase(repository);
@@ -26,7 +26,7 @@ export const useCreateFolder = (cache: FoldersCache, loading: LoadingRepository,
 
     const createFolder = useCallback(
         (params: CreateFolderParams) => {
-            return useCase.execute({ ...params, type });
+            return useCase.execute(params);
         },
         [useCase]
     );
