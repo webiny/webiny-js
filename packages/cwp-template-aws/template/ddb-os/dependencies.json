@@ -4,6 +4,7 @@
   "dependencies": {
     "@webiny/aws-layers": "latest",
     "@webiny/cli": "latest",
+    "@webiny/cli-plugin-extensions": "latest",
     "@webiny/cli-plugin-scaffold": "latest",
     "@webiny/cli-plugin-scaffold-admin-app-module": "latest",
     "@webiny/cli-plugin-scaffold-graphql-service": "latest",
