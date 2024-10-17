@@ -47,7 +47,7 @@ export class AdminUsers_5_41_0_001 {
     }
 
     async execute({ logger }: DataMigrationContext): Promise<void> {
-        const tenants = await queryAll<{ id: string; name: string }>({
+        const tenants = await queryAll<{ data: { id: string; name: string } }>({
             entity: this.tenantEntity,
             partitionKey: "TENANTS",
             options: {
@@ -59,7 +59,7 @@ export class AdminUsers_5_41_0_001 {
         for (const tenant of tenants) {
             const users = await queryAll<{ id: string; email: string; data?: any }>({
                 entity: this.newUserEntity,
-                partitionKey: `T#${tenant.id}#ADMIN_USERS`,
+                partitionKey: `T#${tenant.data.id}#ADMIN_USERS`,
                 options: {
                     index: "GSI1",
                     gt: " "
@@ -67,7 +67,7 @@ export class AdminUsers_5_41_0_001 {
             });
 
             if (users.length === 0) {
-                logger.info(`No users found on tenant "${tenant.id}".`);
+                logger.info(`No users found on tenant "${tenant.data.id}".`);
                 continue;
             }
 
