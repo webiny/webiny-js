@@ -1,7 +1,7 @@
 import { CmsIdentity, FolderPermission } from "~/types";
 
 export interface FolderData {
-    id: string;
+    id?: string;
     title: string;
     slug: string;
     type: string;
@@ -38,7 +38,7 @@ export class Folder {
     public modifiedOn?: string | null;
 
     protected constructor(folder: FolderData) {
-        this.id = folder.id;
+        this.id = folder.id ?? "";
         this.title = folder.title;
         this.slug = folder.slug;
         this.type = folder.type;
