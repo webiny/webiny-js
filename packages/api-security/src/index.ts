@@ -16,8 +16,11 @@ import {
     MultiTenancyAppConfig,
     MultiTenancyGraphQLConfig
 } from "~/enterprise/multiTenancy";
-import { SecurityRolePlugin } from "~/plugins/SecurityRolePlugin";
 import { SecurityTeamPlugin } from "~/plugins/SecurityTeamPlugin";
+import { WithGroupsFromPlugins } from "~/groups/repository/WithGroupsFromPlugins";
+import { ListGroupsRepository } from "~/groups/repository/ListGroupsRepository";
+import { GetGroupRepository } from "~/groups/repository/GetGroupRepository";
+import { WithGroupFromPlugins } from "~/groups/repository/WithGroupFromPlugins";
 
 export { default as NotAuthorizedResponse } from "./NotAuthorizedResponse";
 export { default as NotAuthorizedError } from "./NotAuthorizedError";
@@ -38,6 +41,16 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
 
         const license = context.wcp.getProjectLicense();
 
+        const listGroupsRepository = new WithGroupsFromPlugins(
+            context.plugins,
+            new ListGroupsRepository(storageOperations)
+        );
+
+        const getGroupRepository = new WithGroupFromPlugins(
+            context.plugins,
+            new GetGroupRepository(storageOperations)
+        );
+
         context.security = await createSecurity({
             advancedAccessControlLayer: license?.package?.features?.advancedAccessControlLayer,
             getTenant: () => {
@@ -45,10 +58,8 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
                 return tenant ? tenant.id : undefined;
             },
             storageOperations,
-            groupsProvider: async () =>
-                context.plugins
-                    .byType<SecurityRolePlugin>(SecurityRolePlugin.type)
-                    .map(plugin => plugin.securityRole),
+            getGroupRepository,
+            listGroupsRepository,
             teamsProvider: async () =>
                 context.plugins
                     .byType<SecurityTeamPlugin>(SecurityTeamPlugin.type)

@@ -5,6 +5,8 @@ import { Topic } from "@webiny/pubsub/types";
 import { GetTenant } from "~/createSecurity";
 import { ProjectPackageFeatures } from "@webiny/wcp/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
+import { IGetGroupRepository } from "~/groups/repository/abstractions/IGetGroupRepository";
+import { IListGroupsRepository } from "~/groups/repository/abstractions/IListGroupsRepository";
 
 // Backwards compatibility - START
 export type SecurityIdentity = Identity;
@@ -34,7 +36,8 @@ export interface SecurityConfig {
     advancedAccessControlLayer?: ProjectPackageFeatures["advancedAccessControlLayer"];
     getTenant: GetTenant;
     storageOperations: SecurityStorageOperations;
-    groupsProvider?: () => Promise<SecurityRole[]>;
+    getGroupRepository: IGetGroupRepository;
+    listGroupsRepository: IListGroupsRepository;
     teamsProvider?: () => Promise<SecurityTeam[]>;
 }
 
