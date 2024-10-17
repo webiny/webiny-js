@@ -15,7 +15,6 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.24.0",
     "@sparticuz/chromium": "123.0.1",
     "@webiny/api": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
@@ -35,11 +34,6 @@
     "srcset": "^4.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/plugin-proposal-export-default-from": "^7.23.3",
-    "@babel/preset-env": "^7.24.0",
-    "@babel/preset-typescript": "^7.23.3",
     "@types/object-hash": "^2.2.1",
     "@types/puppeteer-core": "^5.4.0",
     "@webiny/cli": "0.0.0",

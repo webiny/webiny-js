@@ -25,7 +25,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.24.0",
     "@elastic/elasticsearch": "7.12.0",
     "@webiny/api-elasticsearch": "0.0.0",
     "@webiny/api-elasticsearch-tasks": "0.0.0",
@@ -38,10 +37,6 @@
     "elastic-ts": "^0.8.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/preset-env": "^7.24.0",
-    "@babel/preset-typescript": "^7.23.3",
     "@webiny/api-dynamodb-to-elasticsearch": "0.0.0",
     "@webiny/cli": "0.0.0",
     "@webiny/handler-aws": "0.0.0",

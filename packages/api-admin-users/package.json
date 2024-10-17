@@ -27,8 +27,6 @@
     "md5": "^2.3.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
     "@types/jsonwebtoken": "^9.0.2",
     "@types/md5": "^2.3.2",
     "@webiny/api-i18n": "0.0.0",

@@ -30,9 +30,6 @@
     "write-json-file": "^4.3.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/preset-env": "^7.24.0",
     "@types/inquirer": "8.2.10",
     "@types/ncp": "^2.0.4",
     "@types/pluralize": "^0.0.29",

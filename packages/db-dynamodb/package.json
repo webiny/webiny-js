@@ -24,8 +24,6 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
     "@types/is-number": "^7.0.2",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
