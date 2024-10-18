@@ -1,7 +1,20 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "references": [],
+  "references": [
+    {
+      "path": "../plugins/tsconfig.build.json"
+    },
+    {
+      "path": "../aws-sdk/tsconfig.build.json"
+    },
+    {
+      "path": "../cli-plugin-scaffold/tsconfig.build.json"
+    },
+    {
+      "path": "../error/tsconfig.build.json"
+    }
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",

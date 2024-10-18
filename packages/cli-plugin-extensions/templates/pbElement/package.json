@@ -1,0 +1,18 @@
+{
+  "name": "PACKAGE_NAME",
+  "exports": {
+    "./admin": "./src/admin.tsx",
+    "./website": "./src/website.tsx"
+  },
+  "version": "1.0.0",
+  "keywords": [
+    "webiny-extension",
+    "webiny-extension-type:pbElement"
+  ],
+  "dependencies": {
+    "@webiny/app-page-builder": "0.0.0",
+    "@webiny/app-page-builder-elements": "0.0.0",
+    "@webiny/app-website": "0.0.0",
+    "react": "18.2.0"
+  }
+}

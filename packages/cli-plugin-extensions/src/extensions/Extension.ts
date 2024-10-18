@@ -1,6 +1,7 @@
 import { AbstractExtension, ExtensionTypeConstructorParams } from "./AbstractExtension";
 import { AdminExtension } from "./AdminExtension";
 import { ApiExtension } from "./ApiExtension";
+import { PbElementExtension } from "./PbElementExtension";
 import { WorkspaceExtension } from "./WorkspaceExtension";
 import loadJson from "load-json-file";
 import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
@@ -23,6 +24,10 @@ export class Extension extends AbstractExtension {
                 this.extension = new ApiExtension(params);
                 break;
             }
+            case "pbElement": {
+                this.extension = new PbElementExtension(params);
+                break;
+            }
             case "workspace": {
                 this.extension = new WorkspaceExtension(params);
                 break;
@@ -33,8 +38,8 @@ export class Extension extends AbstractExtension {
         }
     }
 
-    async generate() {
-        await this.extension.generate();
+    async link() {
+        await this.extension.link();
     }
 
     getNextSteps(): string[] {
@@ -50,7 +55,7 @@ export class Extension extends AbstractExtension {
         }
 
         return new Extension({
-            name: loadedPkgJson.name,
+            name: path.basename(path.dirname(pkgJsonPath)),
             type: extensionType,
             location: path.dirname(pkgJsonPath),
             packageName: loadedPkgJson.name

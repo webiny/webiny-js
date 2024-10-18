@@ -9,7 +9,7 @@ export const registerWorkspaces = async (extensions: ExtensionWorkspace[]) => {
     const rootPkgJson = await loadJson<PackageJson>(packageJsonPath);
 
     extensions.forEach(extension => {
-        const workspacePath = extension.path.replace(`${process.cwd()}/`, "");
+        const workspacePath = extension.paths.root.replace(`${process.cwd()}/`, "");
 
         if (!rootPkgJson.workspaces.packages.includes(workspacePath)) {
             rootPkgJson.workspaces.packages.push(workspacePath);

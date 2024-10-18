@@ -1,8 +1,9 @@
 import { AbstractExtension } from "./AbstractExtension";
+import { updateWorkspaces } from "~/utils";
 
 export class WorkspaceExtension extends AbstractExtension {
-    async generate() {
-        return Promise.resolve();
+    async link() {
+        await updateWorkspaces(this.params.location);
     }
 
     getNextSteps(): string[] {

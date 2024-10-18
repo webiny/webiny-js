@@ -1,7 +1,4 @@
-import { CliCommandScaffoldCallableArgs, PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import path from "path";
-import readJson from "load-json-file";
-import writeJson from "write-json-file";
 import execa from "execa";
 import Case from "case";
 import { replaceInPath } from "replace-in-path";
@@ -15,18 +12,23 @@ import { setTimeout } from "node:timers/promises";
  */
 // @ts-expect-error
 import { getProject, log } from "@webiny/cli/utils";
-import { Input } from "./types";
+import { ExtensionCommandGenerateParams } from "./types";
 import { runYarnInstall } from "@webiny/cli-plugin-scaffold/utils";
 import chalk from "chalk";
 import { Extension } from "~/extensions/Extension";
+import { CliContext } from "@webiny/cli/types";
+import { Ora } from "ora";
+import { updateDependencies } from "./utils";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
-export const generateExtension = async ({
-    input,
-    ora,
-    context
-}: CliCommandScaffoldCallableArgs<Input>) => {
+export interface GenerateExtensionParams {
+    input: ExtensionCommandGenerateParams;
+    context: CliContext;
+    ora: Ora;
+}
+
+export const generateExtension = async ({ input, ora, context }: GenerateExtensionParams) => {
     const project = getProject();
 
     try {
@@ -79,23 +81,20 @@ export const generateExtension = async ({
 
         if (input.dependencies) {
             const packageJsonPath = path.join(location, "package.json");
-            const packageJson = await readJson<PackageJson>(packageJsonPath);
-            if (!packageJson.dependencies) {
-                packageJson.dependencies = {};
-            }
 
             const packages = input.dependencies.split(",");
+            const packageJsonUpdates: Record<string, string> = {};
             for (const packageName of packages) {
                 const isWebinyPackage = packageName.startsWith("@webiny/");
                 if (isWebinyPackage) {
-                    packageJson.dependencies[packageName] = context.version;
+                    packageJsonUpdates[packageName] = context.version;
                     continue;
                 }
 
                 try {
                     const { stdout } = await execa("npm", ["view", packageName, "version", "json"]);
 
-                    packageJson.dependencies[packageName] = `^${stdout}`;
+                    packageJsonUpdates[packageName] = `^${stdout}`;
                 } catch (e) {
                     throw new Error(
                         `Could not find ${log.error.hl(
@@ -106,7 +105,7 @@ export const generateExtension = async ({
                 }
             }
 
-            await writeJson(packageJsonPath, packageJson);
+            await updateDependencies(packageJsonPath, packageJsonUpdates);
         }
 
         const extension = new Extension({
@@ -116,15 +115,7 @@ export const generateExtension = async ({
             packageName
         });
 
-        await extension.generate();
-
-        // Add package to workspaces
-        const rootPackageJsonPath = path.join(project.root, "package.json");
-        const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
-        if (!rootPackageJson.workspaces.packages.includes(location)) {
-            rootPackageJson.workspaces.packages.push(location);
-            await writeJson(rootPackageJsonPath, rootPackageJson);
-        }
+        await extension.link();
 
         // Sleep for 1 second before proceeding with yarn installation.
         await setTimeout(1000);

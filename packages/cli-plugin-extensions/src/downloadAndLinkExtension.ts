@@ -2,17 +2,17 @@ import os from "os";
 import path from "path";
 import fs from "node:fs";
 import fsAsync from "node:fs/promises";
-import { CliCommandScaffoldCallableArgs } from "@webiny/cli-plugin-scaffold/types";
 import { setTimeout } from "node:timers/promises";
 import { WEBINY_DEV_VERSION } from "~/utils/constants";
 import { linkAllExtensions } from "./utils/linkAllExtensions";
-import { Input } from "./types";
 import { downloadFolderFromS3 } from "./downloadAndLinkExtension/downloadFolderFromS3";
 import { setWebinyPackageVersions } from "~/utils/setWebinyPackageVersions";
 import { runYarnInstall } from "@webiny/cli-plugin-scaffold/utils";
 import chalk from "chalk";
 import { Extension } from "./extensions/Extension";
 import glob from "fast-glob";
+import { CliContext } from "@webiny/cli/types";
+import { Ora } from "ora";
 
 const EXTENSIONS_ROOT_FOLDER = "extensions";
 
@@ -54,14 +54,18 @@ const getExtensionPkgJsonGlobs = (extensionsFolderNames: string[]) => {
     return [base + "/**/package.json", base + "/package.json"];
 };
 
-export const downloadAndLinkExtension = async ({
-    input,
-    ora,
-    context
-}: CliCommandScaffoldCallableArgs<Input>) => {
-    const currentWebinyVersion = context.version;
+export interface DownloadAndLinkExtensionParams {
+    source: string;
+    context: CliContext;
+    ora: Ora;
+}
 
-    const downloadExtensionSource = input.templateArgs!;
+export const downloadAndLinkExtension = async ({
+    source: downloadExtensionSource,
+    context,
+    ora
+}: DownloadAndLinkExtensionParams) => {
+    const currentWebinyVersion = context.version;
 
     try {
         ora.start(`Downloading extension...`);
