@@ -24,7 +24,7 @@ export const promptQuestions: QuestionCollection = [
             { name: "Admin extension", value: "admin" },
             { name: "API extension", value: "api" },
             { name: "Page Builder element", value: "pbElement" },
-            { name: "Website extension", value: "website" },
+            { name: "Website extension", value: "website" }
         ]
     },
     {
