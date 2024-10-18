@@ -10,7 +10,7 @@ export interface ExtensionCommandGenerateParams {
     dependencies?: string;
 }
 
-export type ExtensionCommandNoParams = {};
+export type ExtensionCommandNoParams = object;
 
 export type ExtensionsCommandParams =
     | ExtensionCommandDownloadFromParams
