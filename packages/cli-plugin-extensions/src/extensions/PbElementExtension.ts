@@ -5,8 +5,6 @@ import chalk from "chalk";
 import { JsxFragment, Node, Project } from "ts-morph";
 import { formatCode } from "@webiny/cli-plugin-scaffold/utils";
 import { updateDependencies, updateWorkspaces } from "~/utils";
-import readJson from "load-json-file";
-import writeJson from "write-json-file";
 
 export class PbElementExtension extends AbstractExtension {
     async link() {
@@ -22,9 +20,6 @@ export class PbElementExtension extends AbstractExtension {
         await updateDependencies(websitePackageJsonPath, {
             [this.params.packageName]: "1.0.0"
         });
-
-        await this.updateTsConfigPaths("admin");
-        await this.updateTsConfigPaths("website");
 
         await updateWorkspaces(this.params.location);
     }
@@ -59,7 +54,7 @@ export class PbElementExtension extends AbstractExtension {
         const componentName = ucFirstExtName + "Extension";
 
         const importName = "{ Extension as " + componentName + " }";
-        const importPath = packageName;
+        const importPath = packageName + "/src/" + app;
 
         const project = new Project();
         project.addSourceFileAtPath(extensionsFilePath);
@@ -81,7 +76,7 @@ export class PbElementExtension extends AbstractExtension {
 
         source.insertImportDeclaration(index, {
             defaultImport: importName,
-            moduleSpecifier: importPath + "/" + app
+            moduleSpecifier: importPath
         });
 
         const extensionsIdentifier = source.getFirstDescendant(node => {
@@ -124,32 +119,5 @@ export class PbElementExtension extends AbstractExtension {
         await source.save();
 
         await formatCode(extensionsFilePath, {});
-    }
-
-    private async updateTsConfigPaths(app: "admin" | "website") {
-        const { name: extensionName, packageName } = this.params;
-
-        const tsConfigJsonPath = path.join("apps", app, "tsconfig.json");
-
-        const tsConfigJson = await readJson<Record<string, any>>(tsConfigJsonPath);
-
-        if (!tsConfigJson) {
-            throw new Error(`Could not read "${tsConfigJsonPath}" file.`);
-        }
-
-        if (!tsConfigJson.compilerOptions) {
-            tsConfigJson.compilerOptions = {};
-        }
-
-        if (!tsConfigJson.compilerOptions.paths) {
-            tsConfigJson.compilerOptions.paths = {};
-        }
-
-        tsConfigJson.compilerOptions.paths[packageName] = [`./extensions/${extensionName}/src`];
-        tsConfigJson.compilerOptions.paths[`${packageName}/*`] = [
-            `./extensions/${extensionName}/src/*`
-        ];
-
-        await writeJson(tsConfigJsonPath, tsConfigJson);
     }
 }
