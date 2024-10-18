@@ -22,7 +22,7 @@
     "@webiny/api-headless-cms": "latest",
     "@webiny/api-headless-cms-aco": "latest",
     "@webiny/api-headless-cms-ddb-es": "latest",
-    "@webiny/api-headless-cms-tasks": "latest",
+    "@webiny/api-headless-cms-tasks-ddb-es": "latest",
     "@webiny/api-record-locking": "latest",
     "@webiny/api-page-builder": "latest",
     "@webiny/api-page-builder-aco": "latest",

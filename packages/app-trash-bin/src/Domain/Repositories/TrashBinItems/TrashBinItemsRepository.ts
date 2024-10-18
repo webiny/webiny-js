@@ -4,10 +4,11 @@ import { ITrashBinItemMapper, TrashBinItem } from "~/Domain";
 import {
     ITrashBinListGateway,
     ITrashBinDeleteItemGateway,
-    ITrashBinRestoreItemGateway
+    ITrashBinRestoreItemGateway,
+    ITrashBinBulkActionsGateway
 } from "~/Gateways";
 import { IMetaRepository, Meta } from "@webiny/app-utils";
-import { TrashBinListQueryVariables } from "~/types";
+import { TrashBinBulkActionsParams, TrashBinListQueryVariables } from "~/types";
 import { ITrashBinItemsRepository } from "./ITrashBinItemsRepository";
 
 export class TrashBinItemsRepository<TItem extends Record<string, any>>
@@ -17,6 +18,7 @@ export class TrashBinItemsRepository<TItem extends Record<string, any>>
     private listGateway: ITrashBinListGateway<TItem>;
     private deleteGateway: ITrashBinDeleteItemGateway;
     private restoreGateway: ITrashBinRestoreItemGateway<TItem>;
+    private bulkActionsGateway: ITrashBinBulkActionsGateway;
     private itemMapper: ITrashBinItemMapper<TItem>;
     private items: TrashBinItem[] = [];
     private restoredItems: TrashBinItem[] = [];
@@ -27,12 +29,14 @@ export class TrashBinItemsRepository<TItem extends Record<string, any>>
         listGateway: ITrashBinListGateway<TItem>,
         deleteGateway: ITrashBinDeleteItemGateway,
         restoreGateway: ITrashBinRestoreItemGateway<TItem>,
+        bulkActionsGateway: ITrashBinBulkActionsGateway,
         entryMapper: ITrashBinItemMapper<TItem>
     ) {
         this.metaRepository = metaRepository;
         this.listGateway = listGateway;
         this.deleteGateway = deleteGateway;
         this.restoreGateway = restoreGateway;
+        this.bulkActionsGateway = bulkActionsGateway;
         this.itemMapper = entryMapper;
         this.params = {};
         makeAutoObservable(this);
@@ -119,5 +123,10 @@ export class TrashBinItemsRepository<TItem extends Record<string, any>>
             ];
             this.metaRepository.decreaseTotalCount(1);
         });
+    }
+
+    async bulkAction(action: string, params: TrashBinBulkActionsParams) {
+        const { where, search, data } = params;
+        await this.bulkActionsGateway.execute({ action, where, search, data });
     }
 }

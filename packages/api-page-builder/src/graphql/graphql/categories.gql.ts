@@ -17,7 +17,7 @@ export const createCategoryGraphQL = (): GraphQLSchemaPlugin<PbContext> => {
             typeDefs: /* GraphQL */ `
                 type PbCategory {
                     createdOn: DateTime
-                    createdBy: PbCreatedBy
+                    createdBy: PbIdentity
                     name: String
                     slug: String
                     url: String

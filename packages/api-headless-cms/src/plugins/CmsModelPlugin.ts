@@ -224,7 +224,7 @@ export class CmsModelPlugin extends Plugin {
              */
             if (fieldIdList.includes(fieldId)) {
                 throw new WebinyError(
-                    `Field's "fieldId" is not unique in the content model "${model.modelId}".`,
+                    `Field's "fieldId" (id: ${input.id}) is not unique in the content model "${model.modelId}".`,
                     "FIELD_ID_NOT_UNIQUE_ERROR",
                     {
                         model,

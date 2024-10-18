@@ -18,3 +18,4 @@ export * from "./core/DebounceRender";
 export * from "./core/createProvider";
 export * from "./core/createProviderPlugin";
 export * from "./renderApp";
+export * from "./utils/createGenericContext";

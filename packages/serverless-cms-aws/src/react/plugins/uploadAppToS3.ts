@@ -58,6 +58,10 @@ export const uploadAppToS3 = ({ folder, ...config }: UploadAppToS3Config) => ({
                     value: "no-cache, no-store, must-revalidate"
                 },
                 {
+                    pattern: /robots\.txt/,
+                    value: "no-cache, no-store, must-revalidate"
+                },
+                {
                     pattern: /.*/,
                     value: "max-age=31536000"
                 }

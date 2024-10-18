@@ -7,10 +7,11 @@ import {
     ITaskUpdateData,
     TaskDataStatus
 } from "~/types";
+import { GenericRecord } from "@webiny/api/types";
 
-export type ITaskManagerStoreUpdateTaskValues<T extends ITaskDataInput = ITaskDataInput> = T;
+export type ITaskManagerStoreUpdateTaskValues<T = ITaskDataInput> = T;
 
-export interface ITaskManagerStoreUpdateTaskValuesCb<T extends ITaskDataInput = ITaskDataInput> {
+export interface ITaskManagerStoreUpdateTaskValuesCb<T = ITaskDataInput> {
     (input: T): T;
 }
 
@@ -18,24 +19,24 @@ export interface ITaskManagerStoreUpdateTaskInputOptions {
     save: boolean;
 }
 
-export type ITaskManagerStoreUpdateTaskInputParam<T extends ITaskDataInput = ITaskDataInput> =
+export type ITaskManagerStoreUpdateTaskInputParam<T = ITaskDataInput> =
     | ITaskManagerStoreUpdateTaskValuesCb<T>
     | Partial<ITaskManagerStoreUpdateTaskValues<T>>;
 
 export interface ITaskManagerStoreUpdateTaskParamCb<
-    T extends ITaskDataInput = ITaskDataInput,
+    T = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > {
     (task: ITask<T, O>): ITaskUpdateData<T, O>;
 }
 
 export type ITaskManagerStoreUpdateTask<
-    T extends ITaskDataInput = ITaskDataInput,
+    T = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > = ITaskUpdateData<T, O>;
 
 export type ITaskManagerStoreUpdateTaskParams<
-    T extends ITaskDataInput = ITaskDataInput,
+    T = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > = ITaskManagerStoreUpdateTaskParamCb<T, O> | Partial<ITaskManagerStoreUpdateTask<T, O>>;
 
@@ -75,7 +76,7 @@ export interface ITaskManagerStoreAddLogOptions {
  * Interface should not be used outside the @webiny/tasks package.
  */
 export interface ITaskManagerStorePrivate<
-    T extends ITaskDataInput = ITaskDataInput,
+    T = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > {
     getTask: () => ITask<T, O>;
@@ -87,6 +88,16 @@ export interface ITaskManagerStorePrivate<
         params: ITaskManagerStoreUpdateTaskParams<T, O>,
         options?: ITaskManagerStoreUpdateTaskOptions
     ): Promise<void>;
+    /**
+     * List all child tasks of the current task.
+     * If definitionId is provided, filter by that parameter.
+     */
+    listChildTasks<
+        T = GenericRecord,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    >(
+        definitionId?: string
+    ): Promise<ITask<T, O>[]>;
     /**
      * Update the task input, which are used to store custom user data.
      * You can send partial input, and it will be merged with the existing input.
@@ -129,6 +140,6 @@ export interface ITaskManagerStorePrivate<
 }
 
 export type ITaskManagerStore<
-    T extends ITaskDataInput = ITaskDataInput,
+    T = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > = Omit<ITaskManagerStorePrivate<T, O>, "save">;

@@ -3,40 +3,26 @@ import { LexicalEditorConfig as BaseConfig } from "@webiny/lexical-editor";
 import { CompositionScope } from "@webiny/react-composition";
 
 const ToolbarAction = (props: React.ComponentProps<typeof BaseConfig.ToolbarElement>) => {
-    return (
-        <CompositionScope name={"cms"}>
-            <BaseConfig>
-                <BaseConfig.ToolbarElement {...props} />
-            </BaseConfig>
-        </CompositionScope>
-    );
+    return <BaseConfig.ToolbarElement {...props} />;
 };
 
 const PluginConfig = (props: React.ComponentProps<typeof BaseConfig.Plugin>) => {
-    return (
-        <CompositionScope name={"cms"}>
-            <BaseConfig>
-                <BaseConfig.Plugin {...props} />
-            </BaseConfig>
-        </CompositionScope>
-    );
+    return <BaseConfig.Plugin {...props} />;
 };
 
 const NodeConfig = (props: React.ComponentProps<typeof BaseConfig.Node>) => {
-    return (
-        <CompositionScope name={"cms"}>
-            <BaseConfig>
-                <BaseConfig.Node {...props} />
-            </BaseConfig>
-        </CompositionScope>
-    );
+    return <BaseConfig.Node {...props} />;
 };
 
 /*
  * Lexical editor public Config API
  */
 export const LexicalEditorConfig = ({ children }: { children: React.ReactNode }) => {
-    return <>{children}</>;
+    return (
+        <CompositionScope name={"cms"}>
+            <BaseConfig>{children}</BaseConfig>
+        </CompositionScope>
+    );
 };
 
 LexicalEditorConfig.ToolbarAction = ToolbarAction;

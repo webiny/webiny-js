@@ -53,7 +53,6 @@ export default {
     },
 
     featureFlags: {
-        copyPermissionsButton: true,
         experimentalAdminOmniSearch: true,
         newWatchCommand: true
     }

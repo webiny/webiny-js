@@ -15,7 +15,7 @@ context("Security Users", () => {
                         firstName: uniqid("first name-"),
                         lastName: uniqid("last name-"),
                         password,
-                        group: group.id
+                        groups: [group.id]
                     }
                 })
                 .then(user => {
@@ -69,7 +69,7 @@ context("Security Users", () => {
                         firstName: uniqid("first name-"),
                         lastName: uniqid("last name-"),
                         password,
-                        group: group.id
+                        groups: [group.id]
                     }
                 })
                 .then(user => {
