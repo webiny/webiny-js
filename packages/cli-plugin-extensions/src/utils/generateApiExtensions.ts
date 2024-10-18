@@ -8,7 +8,7 @@ export const generateApiExtensions = async (extensions: ExtensionWorkspace[]) =>
     const code: string[][] = [];
 
     extensions.forEach(extension => {
-        const name = path.basename(extension.path);
+        const name = path.basename(extension.paths.root);
         const extensionFactory = name + "ExtensionFactory";
         const importStatement = `import { createExtension as ${extensionFactory}} from "${extension.packageJson.name}";`;
         code.push([importStatement, `${extensionFactory}()`]);

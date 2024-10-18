@@ -12,7 +12,7 @@ export abstract class AbstractExtension {
         this.params = params;
     }
 
-    abstract generate(): Promise<void>;
+    abstract link(): Promise<void>;
 
     abstract getNextSteps(): string[];
 

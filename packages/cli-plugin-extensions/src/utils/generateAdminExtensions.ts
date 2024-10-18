@@ -10,7 +10,7 @@ export const generateAdminExtensions = async (extensions: ExtensionWorkspace[]) 
     const code: string[][] = [];
 
     extensions.forEach(extension => {
-        const name = camelCase(path.basename(extension.path));
+        const name = camelCase(path.basename(extension.paths.root));
         const ucFirstName = name.charAt(0).toUpperCase() + name.slice(1);
         const componentName = ucFirstName + "Extension";
         const importStatement = `import { Extension as ${componentName}} from "${extension.packageJson.name}";`;

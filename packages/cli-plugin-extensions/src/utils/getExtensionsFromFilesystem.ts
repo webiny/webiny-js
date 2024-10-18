@@ -3,10 +3,13 @@ import glob from "glob";
 import path from "path";
 import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
 
-export type ExtensionType = "api" | "admin" | undefined;
+export type ExtensionType = "api" | "admin" | "pbElement" | undefined;
 
 export type ExtensionWorkspace = {
-    path: string;
+    paths: {
+        root: string,
+        packageJson: string,
+    }
     type: ExtensionType;
     packageJson: PackageJson;
 };
@@ -16,9 +19,13 @@ export const getExtensionsFromFilesystem = (): ExtensionWorkspace[] => {
         ignore: ["**/node_modules/**"]
     });
     return workspaces
-        .map(pkg => ({
-            path: path.dirname(pkg),
-            packageJson: loadJson.sync<PackageJson>(pkg)
+        .map(workspacePackageJsonPath => ({
+            paths: {
+                root: path.dirname(workspacePackageJsonPath),
+                packageJson: workspacePackageJsonPath
+            },
+            packageJson: loadJson.sync<PackageJson>(workspacePackageJsonPath),
+            packageJsonPath: workspacePackageJsonPath
         }))
         .map(workspace => {
             const typeKeyword = (workspace.packageJson.keywords || []).find(kw => {
