@@ -1,0 +1,13 @@
+{
+  "name": "PACKAGE_NAME",
+  "main": "src/index.tsx",
+  "version": "1.0.0",
+  "keywords": [
+    "webiny-extension",
+    "webiny-extension-type:admin"
+  ],
+  "dependencies": {
+    "react": "18.2.0",
+    "@webiny/app-website": "0.0.0"
+  }
+}
