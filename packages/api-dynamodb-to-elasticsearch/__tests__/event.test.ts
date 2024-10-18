@@ -1,7 +1,7 @@
 import { createEventHandler } from "~/index";
 import { PluginsContainer } from "@webiny/plugins";
 import { marshall as baseMarshall } from "@webiny/aws-sdk/client-dynamodb";
-import { DynamoDBRecord } from "aws-lambda";
+import { DynamoDBRecord } from "@webiny/handler-aws/types";
 
 interface Event {
     Records: DynamoDBRecord[];
@@ -84,6 +84,24 @@ describe("event", () => {
 
         const result = await eventHandler.cb({
             context,
+            event,
+            lambdaContext,
+            request,
+            reply,
+            next: jest.fn()
+        });
+
+        expect(result).toEqual(null);
+    });
+
+    it("should just skip because of no elasticsearch", async () => {
+        const eventHandler = createEventHandler();
+
+        const result = await eventHandler.cb({
+            context: {
+                ...context,
+                elasticsearch: undefined
+            },
             event,
             lambdaContext,
             request,
