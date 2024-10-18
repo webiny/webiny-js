@@ -54,7 +54,7 @@ export class PbElementExtension extends AbstractExtension {
         const componentName = ucFirstExtName + "Extension";
 
         const importName = "{ Extension as " + componentName + " }";
-        const importPath = packageName;
+        const importPath = packageName + "/src/" + app;
 
         const project = new Project();
         project.addSourceFileAtPath(extensionsFilePath);
@@ -76,7 +76,7 @@ export class PbElementExtension extends AbstractExtension {
 
         source.insertImportDeclaration(index, {
             defaultImport: importName,
-            moduleSpecifier: importPath + "/src/" + app
+            moduleSpecifier: importPath
         });
 
         const extensionsIdentifier = source.getFirstDescendant(node => {
