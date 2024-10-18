@@ -62,9 +62,6 @@ jobs:
         run: >-
           echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >>
           $GITHUB_OUTPUT
-      - name: Get a list of packages that changed
-        id: changed-packages-list
-        run: yarn workspaces list --since=origin/dev --json
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -98,6 +95,9 @@ jobs:
         with:
           path: ${{ github.base_ref }}/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
+      - name: Get a list of packages that changed
+        id: changed-packages-list
+        run: yarn workspaces list --since=origin/dev --json
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
