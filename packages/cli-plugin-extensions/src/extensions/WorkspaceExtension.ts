@@ -1,5 +1,5 @@
 import { AbstractExtension } from "./AbstractExtension";
-import {updateWorkspaces} from "~/utils";
+import { updateWorkspaces } from "~/utils";
 
 export class WorkspaceExtension extends AbstractExtension {
     async link() {

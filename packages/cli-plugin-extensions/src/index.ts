@@ -48,7 +48,7 @@ export default (): CliCommandPlugin[] => {
             create({ yargs, context }) {
                 yargs.command(
                     "extension [download-from]",
-                    'Create a new extension',
+                    "Create a new extension",
                     (yargs: Record<string, any>) => {
                         yargs.example("$0 extension");
                         yargs.example("$0 extension --type admin --name customFilePreview");

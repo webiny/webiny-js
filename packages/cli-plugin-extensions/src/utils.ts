@@ -30,4 +30,4 @@ export const updateWorkspaces = async (location: string) => {
         rootPackageJson.workspaces.packages.push(location);
         await writeJson(rootPackageJsonPath, rootPackageJson);
     }
-}
+};

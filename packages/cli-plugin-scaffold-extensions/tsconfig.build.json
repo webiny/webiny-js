@@ -1,8 +1,6 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": [
-    "src"
-  ],
+  "include": ["src"],
   "references": [
     {
       "path": "../cli-plugin-extensions/tsconfig.build.json"
@@ -16,12 +14,8 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "paths": {
-      "~/*": [
-        "./src/*"
-      ],
-      "~tests/*": [
-        "./__tests__/*"
-      ]
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"]
     },
     "baseUrl": "."
   }

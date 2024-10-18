@@ -7,9 +7,9 @@ export type ExtensionType = "api" | "admin" | "pbElement" | undefined;
 
 export type ExtensionWorkspace = {
     paths: {
-        root: string,
-        packageJson: string,
-    }
+        root: string;
+        packageJson: string;
+    };
     type: ExtensionType;
     packageJson: PackageJson;
 };
