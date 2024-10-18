@@ -6,4 +6,8 @@ class BeforeBuildPlugin extends PulumiCommandLifecycleEventHookPlugin {
     static type = "hook-before-build";
 }
 
-module.exports = { BeforeBuildPlugin };
+const createBeforeBuildPlugin = callable => {
+    return new BeforeBuildPlugin(callable);
+};
+
+module.exports = { BeforeBuildPlugin, createBeforeBuildPlugin };

@@ -6,4 +6,8 @@ class AfterDeployPlugin extends PulumiCommandLifecycleEventHookPlugin {
     static type = "hook-after-deploy";
 }
 
-module.exports = { AfterDeployPlugin };
+const createAfterDeployPlugin = callable => {
+    return new AfterDeployPlugin(callable);
+};
+
+module.exports = { AfterDeployPlugin, createAfterDeployPlugin };
