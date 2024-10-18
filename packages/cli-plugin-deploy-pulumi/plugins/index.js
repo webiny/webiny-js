@@ -3,5 +3,5 @@ module.exports = {
     ...require("./AfterDeployPlugin"),
     ...require("./BeforeBuildPlugin"),
     ...require("./BeforeDeployPlugin"),
-    ...require("./BeforeWatchPlugin"),
+    ...require("./BeforeWatchPlugin")
 };
