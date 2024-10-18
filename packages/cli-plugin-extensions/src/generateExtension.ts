@@ -1,7 +1,4 @@
-import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import path from "path";
-import readJson from "load-json-file";
-import writeJson from "write-json-file";
 import execa from "execa";
 import Case from "case";
 import { replaceInPath } from "replace-in-path";

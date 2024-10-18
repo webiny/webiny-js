@@ -16903,7 +16903,6 @@ __metadata:
     glob: ^7.1.2
     inquirer: 8.2.6
     load-json-file: ^6.2.0
-    lodash: ^4.17.21
     ora: 4.1.1
     prettier: ^2.8.3
     replace-in-path: ^1.1.0
