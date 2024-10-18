@@ -131,11 +131,6 @@ export const pullRequests = createWorkflow({
                     name: "Is a PR from a fork",
                     id: "is-fork-pr",
                     run: 'echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >> $GITHUB_OUTPUT'
-                },
-                {
-                    name: "Get a list of packages that changed",
-                    id: "changed-packages-list",
-                    run: "yarn workspaces list --since=origin/dev --json"
                 }
             ]
         }),
