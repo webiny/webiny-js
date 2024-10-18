@@ -14,7 +14,6 @@
   "license": "MIT",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@babel/runtime": "^7.24.0",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@types/react": "18.2.79",
@@ -39,11 +38,6 @@
     "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/preset-env": "^7.24.0",
-    "@babel/preset-react": "^7.23.3",
-    "@babel/preset-typescript": "^7.23.3",
     "@emotion/babel-plugin": "^11.11.0",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",

@@ -14,17 +14,11 @@
   "description": "A simple React library for working with forms.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.24.0",
     "@webiny/react-composition": "0.0.0",
     "@webiny/validation": "0.0.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/plugin-proposal-class-properties": "^7.18.6",
-    "@babel/preset-env": "^7.24.0",
-    "@babel/preset-typescript": "^7.23.3",
     "@testing-library/react": "^15.0.7",
     "@testing-library/user-event": "^14.5.2",
     "@types/invariant": "^2.2.35",

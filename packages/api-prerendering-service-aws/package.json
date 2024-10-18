@@ -11,7 +11,6 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.24.0",
     "@webiny/api": "0.0.0",
     "@webiny/api-prerendering-service": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
@@ -22,11 +21,6 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/plugin-proposal-export-default-from": "^7.23.3",
-    "@babel/preset-env": "^7.24.0",
-    "@babel/preset-typescript": "^7.23.3",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "rimraf": "^5.0.5",

@@ -18,17 +18,12 @@
   "description": "The DynamoDB storage operations for import export feature in the Webiny Page Builder API.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.24.0",
     "@webiny/api-page-builder-import-export": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/db-dynamodb": "0.0.0",
     "@webiny/error": "0.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/preset-env": "^7.24.0",
-    "@babel/preset-typescript": "^7.23.3",
     "@webiny/api-security": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",
     "@webiny/cli": "0.0.0",

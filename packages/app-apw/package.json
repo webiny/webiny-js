@@ -10,7 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@babel/runtime": "^7.24.0",
     "@emotion/is-prop-valid": "^1.1.1",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
@@ -44,11 +43,6 @@
     "react-spinner-material": "1.1.4"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/preset-env": "^7.24.0",
-    "@babel/preset-react": "^7.23.3",
-    "@babel/preset-typescript": "^7.23.3",
     "@emotion/babel-plugin": "^11.11.0",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",

@@ -26,10 +26,6 @@
     "@webiny/handler-graphql": "0.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/preset-env": "^7.24.0",
-    "@babel/preset-typescript": "^7.23.3",
     "@webiny/api-admin-users": "0.0.0",
     "@webiny/api-apw": "0.0.0",
     "@webiny/api-audit-logs": "0.0.0",

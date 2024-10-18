@@ -10,7 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "@apollo/react-components": "^3.1.5",
-    "@babel/runtime": "^7.24.0",
     "@emotion/react": "^11.10.6",
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-security": "0.0.0",
@@ -30,11 +29,6 @@
     "react-helmet": "^6.1.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/preset-env": "^7.24.0",
-    "@babel/preset-react": "^7.23.3",
-    "@babel/preset-typescript": "^7.23.3",
     "@emotion/babel-plugin": "^11.11.0",
     "@types/react": "18.2.79",
     "@webiny/cli": "0.0.0",
