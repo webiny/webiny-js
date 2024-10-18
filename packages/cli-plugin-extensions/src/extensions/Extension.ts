@@ -6,6 +6,7 @@ import { WorkspaceExtension } from "./WorkspaceExtension";
 import loadJson from "load-json-file";
 import { PackageJson } from "@webiny/cli-plugin-scaffold/types";
 import path from "path";
+import { WebsiteExtension } from "~/extensions/WebsiteExtension";
 
 type PackageJsonPath = string;
 
@@ -26,6 +27,10 @@ export class Extension extends AbstractExtension {
             }
             case "pbElement": {
                 this.extension = new PbElementExtension(params);
+                break;
+            }
+            case "website": {
+                this.extension = new WebsiteExtension(params);
                 break;
             }
             case "workspace": {
