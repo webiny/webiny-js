@@ -28,7 +28,6 @@ import { AuditLogs } from "@webiny/app-audit-logs";
 import { LexicalEditorPlugin } from "@webiny/lexical-editor-pb-element";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Module as MailerSettings } from "@webiny/app-mailer";
-import { Folders } from "@webiny/app-aco";
 import { Websockets } from "@webiny/app-websockets";
 import { RecordLocking } from "@webiny/app-record-locking";
 import { TrashBinConfigs } from "@webiny/app-trash-bin";
@@ -51,7 +50,6 @@ const App = (props: AdminProps) => {
             <Security />
             <AccessManagement />
             <AppInstaller />
-            <Folders />
             <FileManager />
             <GraphQLPlayground createApolloClient={createApolloClient} />
             <I18N />
