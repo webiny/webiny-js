@@ -29,6 +29,7 @@ export * from "./Page/WebsiteScripts";
 export * from "./Page/ErrorPage";
 export * from "./Menu";
 export * from "./LinkPreload";
+export * from "./plugins";
 
 // Exporting chosen utils from `@webiny/app` package.
 export * from "@webiny/app/utils/getApiUrl";
@@ -39,3 +40,4 @@ export * from "@webiny/app/utils/getPrerenderId";
 export * from "@webiny/app/utils/getTenantId";
 export * from "@webiny/app/utils/isLocalhost";
 export * from "@webiny/app/utils/isPrerendering";
+

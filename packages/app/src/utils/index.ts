@@ -7,3 +7,4 @@ export * from "./getPrerenderId";
 export * from "./getTenantId";
 export * from "./isLocalhost";
 export * from "./isPrerendering";
+export * from "./legacyPluginToReactComponent";
