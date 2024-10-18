@@ -9,4 +9,3 @@ export function useRegisterLegacyPlugin<TPlugin extends Plugin>(plugin: TPlugin)
         plugins.register(plugin);
     }
 }
-

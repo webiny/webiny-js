@@ -40,4 +40,3 @@ export * from "@webiny/app/utils/getPrerenderId";
 export * from "@webiny/app/utils/getTenantId";
 export * from "@webiny/app/utils/isLocalhost";
 export * from "@webiny/app/utils/isPrerendering";
-
