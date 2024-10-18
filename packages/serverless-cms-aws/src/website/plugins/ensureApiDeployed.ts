@@ -16,22 +16,22 @@ const createPluginCallable: (command: "build" | "watch") => Callable =
         }
 
         const apiAppName = ctx.error.hl("API");
-        const adminAppName = ctx.error.hl("Admin");
+        const websiteAppName = ctx.error.hl("Website");
         const cmd = ctx.error.hl(`yarn webiny deploy api --env ${env}`);
         ctx.error(
-            `Cannot ${command} ${adminAppName} project application before deploying ${apiAppName}.`
+            `Cannot ${command} ${websiteAppName} project application before deploying ${apiAppName}.`
         );
 
         throw new GracefulError(
             [
-                `Before ${command}ing ${adminAppName} project application, please`,
+                `Before ${command}ing ${websiteAppName} project application, please`,
                 `deploy ${apiAppName} first by running: ${cmd}.`
             ].join(" ")
         );
     };
 
 export const ensureApiDeployedBeforeBuild = createBeforeBuildPlugin(createPluginCallable("build"));
-ensureApiDeployedBeforeBuild.name = "admin.before-deploy.ensure-api-deployed";
+ensureApiDeployedBeforeBuild.name = "website.before-deploy.ensure-api-deployed";
 
 export const ensureApiDeployedBeforeWatch = createBeforeWatchPlugin(createPluginCallable("watch"));
-ensureApiDeployedBeforeWatch.name = "admin.before-watch.ensure-api-deployed";
+ensureApiDeployedBeforeWatch.name = "website.before-watch.ensure-api-deployed";
