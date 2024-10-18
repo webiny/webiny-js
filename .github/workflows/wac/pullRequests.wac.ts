@@ -146,13 +146,7 @@ export const pullRequests = createWorkflow({
 
                 // Once we've built packages with the help of the global cache, we can now cache
                 // the result for this run. All of the following jobs will use this cache.
-                ...runBuildCacheSteps,
-
-                {
-                    name: "Get a list of packages that changed",
-                    id: "changed-packages-list",
-                    run: "yarn workspaces list --since=origin/dev --json"
-                }
+                ...runBuildCacheSteps
             ]
         }),
         staticCodeAnalysis: createJob({
