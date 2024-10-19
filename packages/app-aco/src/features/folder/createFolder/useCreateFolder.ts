@@ -1,34 +1,32 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useContext } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
-import { LoadingRepository } from "@webiny/app-utils";
-import { FoldersCache } from "../cache";
 import { CreateFolderGqlGateway } from "./CreateFolderGqlGateway";
-import { CreateFolderRepository } from "./CreateFolderRepository";
-import { CreateFolderUseCase } from "./CreateFolderUseCase";
-import { CreateFolderUseCaseWithLoading } from "./CreateFolderUseCaseWithLoading";
 import { CreateFolderParams } from "./ICreateFolderUseCase";
+import { CreateFolder } from "./CreateFolder";
+import { FoldersContext } from "~/contexts/folders";
 
-export const useCreateFolder = (cache: FoldersCache, loading: LoadingRepository, type: string) => {
+export const useCreateFolder = () => {
     const client = useApolloClient();
+    const gateway = new CreateFolderGqlGateway(client);
 
-    const gateway = useMemo(() => {
-        return new CreateFolderGqlGateway(client);
-    }, [client]);
+    const foldersContext = useContext(FoldersContext);
 
-    const repository = useMemo(() => {
-        return new CreateFolderRepository(cache, gateway, type);
-    }, [cache, gateway, type]);
+    if (!foldersContext) {
+        throw new Error("useCreateFolder must be used within a FoldersProvider");
+    }
 
-    const useCase = useMemo(() => {
-        const createFolderUseCase = new CreateFolderUseCase(repository);
-        return new CreateFolderUseCaseWithLoading(loading, createFolderUseCase);
-    }, [repository, loading]);
+    const { type } = foldersContext;
+
+    if (!type) {
+        throw Error(`FoldersProvider requires a "type" prop or an AcoAppContext to be available!`);
+    }
 
     const createFolder = useCallback(
         (params: CreateFolderParams) => {
-            return useCase.execute(params);
+            const instance = CreateFolder.instance(gateway, type);
+            return instance.execute(params);
         },
-        [useCase]
+        [type, gateway]
     );
 
     return {

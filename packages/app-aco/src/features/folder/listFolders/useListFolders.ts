@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { autorun } from "mobx";
 import { useApolloClient } from "@apollo/react-hooks";
-import { LoadingRepository } from "@webiny/app-utils";
-import { FoldersCache } from "../cache";
-import { ListFoldersRepository } from "./ListFoldersRepository";
 import { ListFoldersGqlGateway } from "./ListFoldersGqlGateway";
-import { ListFoldersUseCaseWithLoading } from "./ListFoldersUseCaseWithLoading";
-import { ListFoldersUseCase } from "./ListFoldersUseCase";
+import { ListFolders } from "./ListFolders";
 import { FolderDtoMapper } from "./FolderDto";
+import { FoldersContext } from "~/contexts/folders";
 import { FolderItem } from "~/types";
 
-export const useListFolders = (cache: FoldersCache, loading: LoadingRepository, type: string) => {
+export const useListFolders = () => {
+    const client = useApolloClient();
+    const gateway = new ListFoldersGqlGateway(client);
+
     const [vm, setVm] = useState<{
         folders: FolderItem[];
         loading: Record<string, boolean>;
@@ -21,27 +21,32 @@ export const useListFolders = (cache: FoldersCache, loading: LoadingRepository, 
         }
     });
 
-    const client = useApolloClient();
+    const foldersContext = useContext(FoldersContext);
 
-    const gateway = useMemo(() => {
-        return new ListFoldersGqlGateway(client);
-    }, [client]);
+    if (!foldersContext) {
+        throw new Error("useCreateFolder must be used within a FoldersProvider");
+    }
 
-    const repository = useMemo(() => {
-        return new ListFoldersRepository(cache, gateway, type);
-    }, [cache, gateway, type]);
+    const { type } = foldersContext;
 
-    const useCase = useMemo(() => {
-        const listFolderUseCase = new ListFoldersUseCase(repository);
-        return new ListFoldersUseCaseWithLoading(loading, listFolderUseCase);
-    }, [repository, loading]);
+    if (!type) {
+        throw Error(`FoldersProvider requires a "type" prop or an AcoAppContext to be available!`);
+    }
+
+    const {
+        useCase,
+        folders: foldersCache,
+        loading
+    } = useMemo(() => {
+        return ListFolders.instance(gateway, type);
+    }, [type, gateway]);
 
     const listFolders = useCallback(() => {
         return useCase.execute();
     }, [useCase]);
 
     useEffect(() => {
-        if (cache.hasItems()) {
+        if (foldersCache.hasItems()) {
             return; // Skip if we already have folders in the cache.
         }
 
@@ -50,14 +55,14 @@ export const useListFolders = (cache: FoldersCache, loading: LoadingRepository, 
 
     useEffect(() => {
         return autorun(() => {
-            const folders = cache.getItems().map(folder => FolderDtoMapper.toDTO(folder));
+            const folders = foldersCache.getItems().map(folder => FolderDtoMapper.toDTO(folder));
 
             setVm(vm => ({
                 ...vm,
                 folders
             }));
         });
-    }, [cache]);
+    }, [foldersCache]);
 
     useEffect(() => {
         return autorun(() => {

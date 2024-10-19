@@ -1,34 +1,32 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useContext } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
-import { FoldersCache } from "../cache";
 import { UpdateFolderGqlGateway } from "./UpdateFolderGqlGateway";
-import { UpdateFolderRepository } from "./UpdateFolderRepository";
-import { LoadingRepository } from "@webiny/app-utils";
-import { UpdateFolderUseCase } from "./UpdateFolderUseCase";
-import { UpdateFolderUseCaseWithLoading } from "./UpdateFolderUseCaseWithLoading";
+import { UpdateFolder } from "./UpdateFolder";
 import { UpdateFolderParams } from "./IUpdateFolderUseCase";
+import { FoldersContext } from "~/contexts/folders";
 
-export const useUpdateFolder = (cache: FoldersCache, loading: LoadingRepository) => {
+export const useUpdateFolder = () => {
     const client = useApolloClient();
+    const gateway = new UpdateFolderGqlGateway(client);
 
-    const gateway = useMemo(() => {
-        return new UpdateFolderGqlGateway(client);
-    }, [client]);
+    const foldersContext = useContext(FoldersContext);
 
-    const repository = useMemo(() => {
-        return new UpdateFolderRepository(cache, gateway);
-    }, [cache, gateway]);
+    if (!foldersContext) {
+        throw new Error("useUpdateFolder must be used within a FoldersProvider");
+    }
 
-    const useCase = useMemo(() => {
-        const updateFolderUseCase = new UpdateFolderUseCase(repository);
-        return new UpdateFolderUseCaseWithLoading(loading, updateFolderUseCase);
-    }, [repository, loading]);
+    const { type } = foldersContext;
+
+    if (!type) {
+        throw Error(`FoldersProvider requires a "type" prop or an AcoAppContext to be available!`);
+    }
 
     const updateFolder = useCallback(
         (params: UpdateFolderParams) => {
-            return useCase.execute(params);
+            const instance = UpdateFolder.instance(gateway, type);
+            return instance.execute(params);
         },
-        [useCase]
+        [type, gateway]
     );
 
     return {

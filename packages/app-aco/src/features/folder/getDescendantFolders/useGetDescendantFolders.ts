@@ -1,22 +1,26 @@
-import { useCallback, useMemo } from "react";
-import { FoldersCache } from "../cache";
-import { GetDescendantFoldersRepository } from "./GetDescendantFoldersRepository";
-import { GetDescendantFoldersUseCase } from "./GetDescendantFoldersUseCase";
+import { useCallback, useContext } from "react";
+import { GetDescendantFolders } from "./GetDescendantFolders";
+import { FoldersContext } from "~/contexts/folders";
 
-export const useGetDescendantFolders = (cache: FoldersCache) => {
-    const repository = useMemo(() => {
-        return new GetDescendantFoldersRepository(cache);
-    }, [cache]);
+export const useGetDescendantFolders = () => {
+    const foldersContext = useContext(FoldersContext);
 
-    const useCase = useMemo(() => {
-        return new GetDescendantFoldersUseCase(repository);
-    }, [repository]);
+    if (!foldersContext) {
+        throw new Error("useCreateFolder must be used within a FoldersProvider");
+    }
+
+    const { type } = foldersContext;
+
+    if (!type) {
+        throw Error(`FoldersProvider requires a "type" prop or an AcoAppContext to be available!`);
+    }
 
     const getDescendantFolders = useCallback(
         (id: string) => {
-            return useCase.execute({ id });
+            const instance = GetDescendantFolders.instance(type);
+            return instance.execute({ id });
         },
-        [useCase]
+        [type]
     );
 
     return {

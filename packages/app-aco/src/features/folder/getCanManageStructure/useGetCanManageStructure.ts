@@ -1,33 +1,29 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useContext } from "react";
 import { useWcp } from "@webiny/app-wcp";
-import { FoldersCache } from "../cache";
-import { GetCanManageStructureRepository } from "./GetCanManageStructureRepository";
-import { GetCanManageStructureWithFlpUseCase } from "./GetCanManageStructureWithFlpUseCase";
-import { GetCanManageStructureUseCase } from "./GetCanManageStructureUseCase";
+import { FoldersContext } from "~/contexts/folders";
+import { GetCanManageStructure } from "./GetCanManageStructure";
 
-export const useGetCanManageStructure = (cache: FoldersCache) => {
+export const useGetCanManageStructure = () => {
     const { canUseFolderLevelPermissions } = useWcp();
 
-    const repository = useMemo(() => {
-        return new GetCanManageStructureRepository(cache);
-    }, [cache]);
+    const foldersContext = useContext(FoldersContext);
 
-    const useCase = useMemo(() => {
-        if (canUseFolderLevelPermissions) {
-            return new GetCanManageStructureWithFlpUseCase(
-                repository,
-                canUseFolderLevelPermissions
-            );
-        }
+    if (!foldersContext) {
+        throw new Error("useGetCanManageContent must be used within a FoldersProvider");
+    }
 
-        return new GetCanManageStructureUseCase(repository);
-    }, [repository, canUseFolderLevelPermissions]);
+    const { type } = foldersContext;
+
+    if (!type) {
+        throw Error(`FoldersProvider requires a "type" prop or an AcoAppContext to be available!`);
+    }
 
     const canManageStructure = useCallback(
         (id: string) => {
-            return useCase.execute(id);
+            const instance = GetCanManageStructure.instance(type, canUseFolderLevelPermissions());
+            return instance.execute(id);
         },
-        [useCase]
+        [type, canUseFolderLevelPermissions]
     );
 
     return {

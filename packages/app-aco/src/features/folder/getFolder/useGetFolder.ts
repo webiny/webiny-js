@@ -1,34 +1,32 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useContext } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
-import { LoadingRepository } from "@webiny/app-utils";
-import { FoldersCache } from "../cache";
 import { GetFolderGqlGateway } from "./GetFolderGqlGateway";
-import { GetFolderRepository } from "./GetFolderRepository";
-import { GetFolderUseCaseWithLoading } from "./GetFolderUseCaseWithLoading";
-import { GetFolderUseCase } from "./GetFolderUseCase";
 import { GetFolderParams } from "./IGetFolderUseCase";
+import { GetFolder } from "./GetFolder";
+import { FoldersContext } from "~/contexts/folders";
 
-export const useGetFolder = (cache: FoldersCache, loading: LoadingRepository) => {
+export const useGetFolder = () => {
     const client = useApolloClient();
+    const gateway = new GetFolderGqlGateway(client);
 
-    const gateway = useMemo(() => {
-        return new GetFolderGqlGateway(client);
-    }, [client]);
+    const foldersContext = useContext(FoldersContext);
 
-    const repository = useMemo(() => {
-        return new GetFolderRepository(cache, gateway);
-    }, [cache, gateway]);
+    if (!foldersContext) {
+        throw new Error("useGetFolder must be used within a FoldersProvider");
+    }
 
-    const useCase = useMemo(() => {
-        const getFolderUseCase = new GetFolderUseCase(repository);
-        return new GetFolderUseCaseWithLoading(loading, getFolderUseCase);
-    }, [repository, loading]);
+    const { type } = foldersContext;
+
+    if (!type) {
+        throw Error(`FoldersProvider requires a "type" prop or an AcoAppContext to be available!`);
+    }
 
     const getFolder = useCallback(
         (params: GetFolderParams) => {
-            return useCase.execute(params);
+            const instance = GetFolder.instance(gateway, type);
+            return instance.execute(params);
         },
-        [useCase]
+        [type, gateway]
     );
 
     return {

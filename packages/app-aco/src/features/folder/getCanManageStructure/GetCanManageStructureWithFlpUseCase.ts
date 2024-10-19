@@ -3,21 +3,12 @@ import { IGetCanManageStructureRepository } from "./IGetCanManageStructureReposi
 
 export class GetCanManageStructureWithFlpUseCase implements IGetCanManageStructureUseCase {
     private repository: IGetCanManageStructureRepository;
-    private canUseFolderLevelPermissions: () => boolean;
 
-    constructor(
-        repository: IGetCanManageStructureRepository,
-        canUseFolderLevelPermissions: () => boolean
-    ) {
+    constructor(repository: IGetCanManageStructureRepository) {
         this.repository = repository;
-        this.canUseFolderLevelPermissions = canUseFolderLevelPermissions;
     }
 
     execute(id: string) {
-        if (!this.canUseFolderLevelPermissions) {
-            return true;
-        }
-
         return this.repository.execute(id);
     }
 }
