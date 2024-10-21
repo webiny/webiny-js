@@ -1,9 +1,10 @@
 import { useCallback, useContext } from "react";
 import { useWcp } from "@webiny/app-wcp";
 import { FoldersContext } from "~/contexts/folders";
-import { GetCanManageContent } from "./GetCanManageContent";
+import { GetFolderLevelPermission } from "./GetFolderLevelPermission";
+import { FolderPermissionName } from "./FolderPermissionName";
 
-export const useGetCanManageContent = () => {
+export const useGetFolderLevelPermission = (permissionName: FolderPermissionName) => {
     const { canUseFolderLevelPermissions } = useWcp();
 
     const foldersContext = useContext(FoldersContext);
@@ -18,15 +19,19 @@ export const useGetCanManageContent = () => {
         throw Error(`FoldersProvider requires a "type" prop or an AcoAppContext to be available!`);
     }
 
-    const canManageContent = useCallback(
+    const getFolderLevelPermission = useCallback(
         (id: string) => {
-            const instance = GetCanManageContent.instance(type, canUseFolderLevelPermissions());
+            const instance = GetFolderLevelPermission.instance(
+                type,
+                permissionName,
+                canUseFolderLevelPermissions()
+            );
             return instance.execute(id);
         },
         [type, canUseFolderLevelPermissions]
     );
 
     return {
-        canManageContent
+        getFolderLevelPermission
     };
 };

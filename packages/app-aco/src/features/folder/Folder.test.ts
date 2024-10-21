@@ -1,12 +1,8 @@
-import { ICreateFolderGateway } from "~/features/folder/createFolder/ICreateFolderGateway";
-import { FolderGqlDto } from "~/features/folder/createFolder/FolderGqlDto";
-import { CmsIdentity } from "~/types";
 import pick from "lodash/pick";
-import { CreateFolder } from "./CreateFolder";
-
-const createFolderGateway = ({ execute }: ICreateFolderGateway): ICreateFolderGateway => ({
-    execute
-});
+import { CmsIdentity } from "@webiny/app-headless-cms-common/types";
+import { FolderGqlDto } from "~/features/folder/createFolder/FolderGqlDto";
+import { ICreateFolderGateway } from "~/features/folder/createFolder/ICreateFolderGateway";
+import { CreateFolder } from "~/features/folder/createFolder/CreateFolder";
 
 const user1: CmsIdentity = {
     id: "user-1",
@@ -35,7 +31,11 @@ const folder1: FolderGqlDto = {
     modifiedOn: null
 };
 
-describe("CreateFolder", () => {
+const createFolderGateway = ({ execute }: ICreateFolderGateway): ICreateFolderGateway => ({
+    execute
+});
+
+describe("Folder features", () => {
     it("should be able to create a folder", async () => {
         const gateway = createFolderGateway({
             execute: jest.fn().mockImplementation(() => {

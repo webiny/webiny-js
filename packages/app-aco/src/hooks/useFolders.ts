@@ -1,11 +1,9 @@
 import {
     useCreateFolder,
     useDeleteFolder,
-    useGetCanManageContent,
-    useGetCanManagePermissions,
-    useGetCanManageStructure,
     useGetDescendantFolders,
     useGetFolder,
+    useGetFolderLevelPermission,
     useListFolders,
     useUpdateFolder
 } from "~/features/folder";
@@ -17,9 +15,12 @@ export const useFolders = () => {
     const { updateFolder } = useUpdateFolder();
     const { getDescendantFolders } = useGetDescendantFolders();
     const { getFolder } = useGetFolder();
-    const { canManageStructure } = useGetCanManageStructure();
-    const { canManagePermissions } = useGetCanManagePermissions();
-    const { canManageContent } = useGetCanManageContent();
+    const { getFolderLevelPermission: canManageStructure } =
+        useGetFolderLevelPermission("canManageStructure");
+    const { getFolderLevelPermission: canManagePermissions } =
+        useGetFolderLevelPermission("canManagePermissions");
+    const { getFolderLevelPermission: canManageContent } =
+        useGetFolderLevelPermission("canManageContent");
 
     return {
         folders,
