@@ -122,7 +122,7 @@ export const useSetPermissionsDialog = (): UseSetPermissionsDialogResponse => {
         const updateData = { ...folder, ...data };
 
         try {
-            await updateFolder(updateData, { refetchFoldersList: true });
+            await updateFolder(updateData);
             showSnackbar("Folder permissions updated successfully!");
         } catch (error) {
             showSnackbar(error.message);

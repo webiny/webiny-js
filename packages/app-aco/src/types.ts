@@ -67,6 +67,17 @@ export type LoadingActions =
     | "DELETE"
     | "MOVE";
 
+export enum LoadingActionsEnum {
+    init = "INIT",
+    list = "LIST",
+    listMore = "LIST_MORE",
+    get = "GET",
+    create = "CREATE",
+    update = "UPDATE",
+    delete = "DELETE",
+    move = "MOVE"
+}
+
 export interface AcoError {
     code: string;
     message: string;
@@ -142,7 +153,17 @@ export interface CreateFolderResponse {
 export interface CreateFolderVariables {
     data: Omit<
         FolderItem,
-        "id" | "createdOn" | "createdBy" | "savedOn" | "savedBy" | "modifiedOn" | "modifiedBy"
+        | "id"
+        | "createdOn"
+        | "createdBy"
+        | "savedOn"
+        | "savedBy"
+        | "modifiedOn"
+        | "modifiedBy"
+        | "hasNonInheritedPermissions"
+        | "canManageContent"
+        | "canManagePermissions"
+        | "canManageStructure"
     >;
 }
 

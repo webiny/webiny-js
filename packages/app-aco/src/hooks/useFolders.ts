@@ -1,40 +1,40 @@
-import { useContext, useEffect, useMemo } from "react";
-import { FoldersContext } from "~/contexts/folders";
+import {
+    useCreateFolder,
+    useDeleteFolder,
+    useGetDescendantFolders,
+    useGetFolder,
+    useGetFolderLevelPermission,
+    useListFolders,
+    useUpdateFolder
+} from "~/features/folder";
 
 export const useFolders = () => {
-    const context = useContext(FoldersContext);
-    if (!context) {
-        throw new Error("useFolders must be used within a FoldersProvider");
-    }
+    const { createFolder } = useCreateFolder();
+    const { deleteFolder } = useDeleteFolder();
+    const { listFolders, folders, loading } = useListFolders();
+    const { updateFolder } = useUpdateFolder();
+    const { getDescendantFolders } = useGetDescendantFolders();
+    const { getFolder } = useGetFolder();
+    const { getFolderLevelPermission: canManageStructure } =
+        useGetFolderLevelPermission("canManageStructure");
+    const { getFolderLevelPermission: canManagePermissions } =
+        useGetFolderLevelPermission("canManagePermissions");
+    const { getFolderLevelPermission: canManageContent } =
+        useGetFolderLevelPermission("canManageContent");
 
-    const { folders, loading, listFolders, ...other } = context;
-
-    useEffect(() => {
-        /**
-         * On first mount, call `listFolders`, which will either issue a network request, or load folders from cache.
-         * We don't need to store the result of it to any local state; that is managed by the context provider.
-         *
-         * IMPORTANT: we check if the folders array exists: the hook can be used from multiple components and
-         * fetch the outdated list from Apollo Cache. Since the state is managed locally, we fetch the folders only
-         * at the first mount.
-         */
-        if (folders) {
-            return;
+    return {
+        folders,
+        loading,
+        listFolders,
+        getFolder,
+        getDescendantFolders,
+        createFolder,
+        updateFolder,
+        deleteFolder,
+        folderLevelPermissions: {
+            canManageStructure,
+            canManagePermissions,
+            canManageContent
         }
-        listFolders();
-    }, []);
-
-    return useMemo(
-        () => ({
-            /**
-             * NOTE: do NOT expose listFolders from this hook, because you already have folders in the `folders` property.
-             * You'll never need to call `listFolders` from any component. As soon as you call `useFolders()`, you'll initiate
-             * fetching of `folders`, which is managed by the FoldersContext.
-             */
-            loading,
-            folders,
-            ...other
-        }),
-        [folders, loading]
-    );
+    };
 };

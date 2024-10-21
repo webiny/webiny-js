@@ -11,7 +11,7 @@ import {
     ListSearchRecordsSort,
     SearchRecordItem
 } from "~/types";
-import { useAcoApp, useNavigateFolder } from "~/hooks";
+import { useAcoApp, useFolders, useNavigateFolder } from "~/hooks";
 import { FoldersContext } from "~/contexts/folders";
 import { SearchRecordsContext } from "~/contexts/records";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting";
@@ -120,6 +120,11 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
     const { identity } = useSecurity();
     const { currentFolderId } = useNavigateFolder();
     const { folderIdPath, folderIdInPath } = useAcoApp();
+    const {
+        folders: originalFolders,
+        loading: foldersLoading,
+        getDescendantFolders
+    } = useFolders();
     const folderContext = useContext(FoldersContext);
     const searchContext = useContext(SearchRecordsContext);
 
@@ -132,12 +137,6 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
     const [listTitle, setListTitle] = useStateIfMounted<string | undefined>(undefined);
     const [state, setState] = useStateIfMounted<State<GenericSearchData>>(initializeAcoListState());
 
-    const {
-        folders: originalFolders,
-        loading: foldersLoading,
-        listFolders,
-        getDescendantFolders
-    } = folderContext;
     const { records: originalRecords, loading: recordsLoading, listRecords, meta } = searchContext;
 
     /**
@@ -153,10 +152,6 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
     useEffect(() => {
         if (!currentFolderId) {
             return;
-        }
-
-        if (!originalFolders) {
-            listFolders();
         }
 
         setState(state => {
@@ -253,6 +248,10 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         // Initialize an empty object
         let where = {};
 
+        if (!state.folderId) {
+            return where;
+        }
+
         // Check if the current folder ID is not the ROOT_FOLDER folder
         if (state.folderId !== ROOT_FOLDER) {
             // Get descendant folder IDs of the current folder
@@ -331,7 +330,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         const { hasMoreItems } = meta;
 
         // Retrieve all descendant folders of the current folderId
-        const folderWithChildren = getDescendantFolders(folderId);
+        const folderWithChildren = folderId ? getDescendantFolders(folderId) : [];
 
         // Compute the lengths of various arrays for later comparisons
         const foldersLength = folders.length;

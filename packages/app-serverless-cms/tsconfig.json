@@ -3,7 +3,6 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../app" },
-    { "path": "../app-aco" },
     { "path": "../app-admin" },
     { "path": "../app-admin-rmwc" },
     { "path": "../app-apw" },
@@ -37,8 +36,6 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
-      "@webiny/app-aco/*": ["../app-aco/src/*"],
-      "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-admin-rmwc/*": ["../app-admin-rmwc/src/*"],

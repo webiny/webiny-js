@@ -29,7 +29,7 @@ export const FolderTree = ({
     onFolderClick,
     rootFolderLabel
 }: FolderTreeProps) => {
-    const { folders, folderLevelPermissions: flp } = useFolders();
+    const { folders, folderLevelPermissions: flp, loading } = useFolders();
     const localFolders = useMemo(() => {
         if (!folders) {
             return [];
@@ -44,7 +44,7 @@ export const FolderTree = ({
     }, [folders]);
 
     const renderList = () => {
-        if (!folders) {
+        if (loading.INIT || loading.LIST) {
             return <Loader />;
         }
 
