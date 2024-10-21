@@ -9,7 +9,7 @@ import { folderCacheFactory } from "~/features/folder";
 export class UpdateFolder {
     public static instance(type: string, gateway: IUpdateFolderGateway): IUpdateFolderUseCase {
         const foldersCache = folderCacheFactory.getCache(type);
-        const loadingRepository = loadingRepositoryFactory.getRepository();
+        const loadingRepository = loadingRepositoryFactory.getRepository(type);
         const repository = new UpdateFolderRepository(foldersCache, gateway);
         const useCase = new UpdateFolderUseCase(repository);
         return new UpdateFolderUseCaseWithLoading(loadingRepository, useCase);

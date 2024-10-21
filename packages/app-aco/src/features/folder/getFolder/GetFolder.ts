@@ -9,7 +9,7 @@ import { folderCacheFactory } from "../cache";
 export class GetFolder {
     public static instance(type: string, gateway: IGetFolderGateway): IGetFolderUseCase {
         const foldersCache = folderCacheFactory.getCache(type);
-        const loadingRepository = loadingRepositoryFactory.getRepository();
+        const loadingRepository = loadingRepositoryFactory.getRepository(type);
         const repository = new GetFolderRepository(foldersCache, gateway);
         const useCase = new GetFolderUseCase(repository);
         return new GetFolderUseCaseWithLoading(loadingRepository, useCase);
