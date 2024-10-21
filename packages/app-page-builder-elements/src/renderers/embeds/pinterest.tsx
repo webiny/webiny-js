@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Element, Renderer } from "~/types";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
+import { EmptyElement } from "~/renderers/components";
 
 declare global {
     interface Window {
@@ -50,7 +51,7 @@ const Pinterest: PinterestComponent = ({ element }) => {
         return <a data-pin-do="embedPin" data-pin-width={data.size || "small"} href={data.url} />;
     }
 
-    return null;
+    return <EmptyElement message="Please provide a link for this embed element." />;
 };
 
 export const createPinterest = () => {

@@ -1,6 +1,8 @@
 import React, { useEffect, useCallback } from "react";
-import { Element } from "~/types";
 import styled from "@emotion/styled";
+
+import { EmptyElement } from "~/renderers/components";
+import { Element } from "~/types";
 
 export interface OEmbedPropsInitCallableParams {
     props: OEmbedProps;
@@ -74,5 +76,9 @@ export const OEmbed = (props: OEmbedProps) => {
         appendSDK(props).then(() => initEmbed(props));
     });
 
-    return url ? renderer() : null;
+    if (!url) {
+        return <EmptyElement message="Please provide a link for this embed element." />;
+    }
+
+    return renderer();
 };

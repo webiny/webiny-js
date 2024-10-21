@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 import { createRenderer, CreateRendererOptions } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
 import { LinkComponent as LinkComponentType } from "~/types";
-import { DefaultLinkComponent } from "~/renderers/components";
+import { DefaultLinkComponent, EmptyElement } from "~/renderers/components";
 
 declare global {
     // eslint-disable-next-line
@@ -128,7 +128,7 @@ export const ImageRendererComponent = ({
             );
         }
     } else {
-        content = renderEmpty || null;
+        content = renderEmpty || <EmptyElement message="Please select an image." />;
     }
 
     const linkProps = link || element.data?.link;

@@ -1,6 +1,7 @@
 import React from "react";
 import { createRenderer } from "~/createRenderer";
 import { useRenderer } from "~/hooks/useRenderer";
+import { EmptyElement } from "~/renderers/components";
 
 export interface IFrameElementData {
     iframe: {
@@ -13,6 +14,11 @@ export const createIFrame = () =>
         const { getElement } = useRenderer();
 
         const element = getElement<IFrameElementData>();
+        const url = element.data.iframe.url;
 
-        return <iframe src={element.data.iframe.url} width="100%" height="100%" />;
+        if (!url) {
+            return <EmptyElement message="Please provide a link for this iframe element." />;
+        }
+
+        return <iframe src={url} width="100%" height="100%" />;
     });
