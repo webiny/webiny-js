@@ -13,7 +13,6 @@
   ],
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@babel/runtime": "^7.24.0",
     "inquirer": "8.2.6",
     "load-json-file": "^6.2.0",
     "ora": "4.1.1",
@@ -21,9 +20,6 @@
     "write-json-file": "^4.3.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/preset-env": "^7.24.0",
     "@types/inquirer": "8.2.10",
     "@webiny/cli": "0.0.0",
     "@webiny/plugins": "0.0.0",

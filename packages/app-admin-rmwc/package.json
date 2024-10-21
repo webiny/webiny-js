@@ -9,7 +9,6 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.24.0",
     "@emotion/styled": "^11.10.6",
     "@material-design-icons/svg": "^0.14.3",
     "@rmwc/base": "^14.2.2",
@@ -34,11 +33,6 @@
     "store": "^2.0.12"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/preset-env": "^7.24.0",
-    "@babel/preset-react": "^7.23.3",
-    "@babel/preset-typescript": "^7.23.3",
     "@emotion/babel-plugin": "^11.11.0",
     "@types/react-helmet": "^6.1.5",
     "@webiny/cli": "0.0.0",
