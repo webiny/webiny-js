@@ -15975,7 +15975,6 @@ __metadata:
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/react": ^11.10.6
     "@webiny/app": 0.0.0
-    "@webiny/app-aco": 0.0.0
     "@webiny/app-admin": 0.0.0
     "@webiny/app-admin-rmwc": 0.0.0
     "@webiny/app-apw": 0.0.0

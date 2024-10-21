@@ -3,7 +3,6 @@
   "include": ["src"],
   "references": [
     { "path": "../app/tsconfig.build.json" },
-    { "path": "../app-aco/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-admin-rmwc/tsconfig.build.json" },
     { "path": "../app-apw/tsconfig.build.json" },
