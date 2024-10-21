@@ -1,4 +1,5 @@
 import {
+    createDataSynchronization,
     createElasticsearchReindexingTask,
     createEnableIndexingTask,
     createIndexesTaskDefinition
@@ -14,7 +15,8 @@ export const createElasticsearchBackgroundTasks = (
     return [
         createElasticsearchReindexingTask(params),
         createEnableIndexingTask(params),
-        createIndexesTaskDefinition(params)
+        createIndexesTaskDefinition(params),
+        createDataSynchronization(params)
     ];
 };
 

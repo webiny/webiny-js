@@ -6,4 +6,8 @@ class AfterBuildPlugin extends PulumiCommandLifecycleEventHookPlugin {
     static type = "hook-after-build";
 }
 
-module.exports = { AfterBuildPlugin };
+const createAfterBuildPlugin = callable => {
+    return new AfterBuildPlugin(callable);
+};
+
+module.exports = { AfterBuildPlugin, createAfterBuildPlugin };

@@ -51,15 +51,15 @@ export interface IDynamoDbElasticsearchRecord {
     modified: string;
 }
 
-export interface IManager {
+export interface IManager<T> {
     readonly documentClient: DynamoDBDocument;
     readonly elasticsearch: Client;
     readonly context: Context;
     readonly table: ReturnType<typeof createTable>;
     readonly isCloseToTimeout: () => boolean;
     readonly isAborted: () => boolean;
-    readonly response: ITaskResponse;
-    readonly store: ITaskManagerStore<IElasticsearchIndexingTaskValues>;
+    readonly response: ITaskResponse<T>;
+    readonly store: ITaskManagerStore<T>;
 
     getEntity: (name: string) => Entity<any>;
 

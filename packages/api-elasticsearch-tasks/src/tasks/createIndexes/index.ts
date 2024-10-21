@@ -14,14 +14,14 @@ export const createIndexesTaskDefinition = (params?: IElasticsearchTaskConfig) =
         maxIterations: 2,
         run: async ({ response, context, isCloseToTimeout, isAborted, store, input }) => {
             const { Manager } = await import(
-                /* webpackChunkName: "ElasticsearchTaskManager" */
+                /* webpackChunkName: "Manager" */
                 "../Manager"
             );
             const { IndexManager } = await import(
-                /* webpackChunkName: "ElasticsearchTaskSettings" */ "~/settings"
+                /* webpackChunkName: "IndexManager" */ "~/settings"
             );
 
-            const manager = new Manager({
+            const manager = new Manager<IElasticsearchCreateIndexesTaskInput>({
                 elasticsearchClient: params?.elasticsearchClient,
                 documentClient: params?.documentClient,
                 response,

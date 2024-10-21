@@ -3,12 +3,16 @@ import { PrimitiveValue } from "~/types";
 /**
  * Encode a received cursor value into something that can be passed on to the user.
  */
-export const encodeCursor = (cursor?: string | string[] | null): string | undefined => {
-    if (!cursor) {
+export const encodeCursor = (input?: PrimitiveValue[]): string | undefined => {
+    if (!input) {
         return undefined;
     }
 
-    cursor = Array.isArray(cursor) ? cursor.map(encodeURIComponent) : encodeURIComponent(cursor);
+    const cursor = Array.isArray(input)
+        ? input
+              .filter((item: PrimitiveValue): item is string | number | boolean => item !== null)
+              .map(item => encodeURIComponent(item))
+        : encodeURIComponent(input);
 
     try {
         return Buffer.from(JSON.stringify(cursor)).toString("base64");
@@ -28,7 +32,7 @@ export const decodeCursor = (cursor?: string | null): PrimitiveValue[] | undefin
     try {
         const value = JSON.parse(Buffer.from(cursor, "base64").toString("ascii"));
         if (Array.isArray(value)) {
-            return value.map(decodeURIComponent);
+            return value.filter(item => item !== null).map(decodeURIComponent);
         }
         const decoded = decodeURIComponent(value);
         return decoded ? [decoded] : undefined;
