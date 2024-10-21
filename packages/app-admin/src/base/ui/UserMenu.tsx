@@ -1,6 +1,5 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react";
-import { createVoidComponent, makeDecoratable } from "@webiny/app";
-import { ComponentWithChildren } from "~/types";
+import { createProvider, createVoidComponent, makeDecoratable } from "@webiny/app";
 
 export interface UserMenuItemData {
     label?: string;
@@ -32,7 +31,7 @@ interface UserMenuProviderProps {
     [key: string]: any;
 }
 
-export const UserMenuProvider = (Component: ComponentWithChildren) => {
+export const UserMenuProvider = createProvider(Component => {
     return function UserMenuProvider({ children, ...props }: UserMenuProviderProps) {
         const [menuItems, setItems] = useState<UserMenuItemData[]>([]);
 
@@ -65,7 +64,7 @@ export const UserMenuProvider = (Component: ComponentWithChildren) => {
             </UserMenuContext.Provider>
         );
     };
-};
+});
 
 export const UserMenu = makeDecoratable("UserMenu", () => {
     return <UserMenuRenderer />;

@@ -3,6 +3,7 @@ import { GenericFormData } from "@webiny/form";
 import { useSnackbar } from "~/hooks";
 import { Dialog } from "./Dialog";
 import { CustomDialog } from "./CustomDialog";
+import { createProvider } from "@webiny/app";
 
 interface ShowDialogParams {
     title: ReactNode;
@@ -154,8 +155,8 @@ interface DialogsProviderProps {
     children: React.ReactNode;
 }
 
-export const createDialogsProvider =
-    () => (Component: React.ComponentType<React.PropsWithChildren>) => {
+export const createDialogsProvider = () => {
+    return createProvider(Component => {
         return function DialogsProviderDecorator({ children }: DialogsProviderProps) {
             return (
                 <DialogsProvider>
@@ -163,4 +164,5 @@ export const createDialogsProvider =
                 </DialogsProvider>
             );
         };
-    };
+    });
+};
