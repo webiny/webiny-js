@@ -28,14 +28,6 @@ import {
 } from "~/types";
 import NotAuthorizedError from "../NotAuthorizedError";
 import { SecurityConfig } from "~/types";
-import {
-    listGroupsFromProvider as baseListGroupsFromPlugins,
-    type ListGroupsFromPluginsParams
-} from "./groupsTeamsPlugins/listGroupsFromProvider";
-import {
-    getGroupFromProvider as baseGetGroupFromPlugins,
-    type GetGroupFromPluginsParams
-} from "./groupsTeamsPlugins/getGroupFromProvider";
 
 const CreateDataModel = withFields({
     tenant: string({ validation: validation.create("required") }),
@@ -159,7 +151,8 @@ async function updateTenantLinks(
 export const createGroupsMethods = ({
     getTenant: initialGetTenant,
     storageOperations,
-    groupsProvider
+    getGroupRepository,
+    listGroupsRepository
 }: SecurityConfig) => {
     const getTenant = () => {
         const tenant = initialGetTenant();
@@ -167,24 +160,6 @@ export const createGroupsMethods = ({
             throw new WebinyError("Missing tenant.");
         }
         return tenant;
-    };
-
-    const listGroupsFromPlugins = (
-        params: Pick<ListGroupsFromPluginsParams, "where">
-    ): Promise<Group[]> => {
-        return baseListGroupsFromPlugins({
-            ...params,
-            groupsProvider
-        });
-    };
-
-    const getGroupFromPlugins = (
-        params: Pick<GetGroupFromPluginsParams, "where">
-    ): Promise<Group> => {
-        return baseGetGroupFromPlugins({
-            ...params,
-            groupsProvider
-        });
     };
 
     return {
@@ -203,13 +178,7 @@ export const createGroupsMethods = ({
             let group: Group | null = null;
             try {
                 const whereWithTenant = { ...where, tenant: where.tenant || getTenant() };
-                const groupFromPlugins = await getGroupFromPlugins({ where: whereWithTenant });
-
-                if (groupFromPlugins) {
-                    group = groupFromPlugins;
-                } else {
-                    group = await storageOperations.getGroup({ where: whereWithTenant });
-                }
+                group = await getGroupRepository.execute({ where: whereWithTenant });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not get group.",
@@ -228,17 +197,10 @@ export const createGroupsMethods = ({
             try {
                 const whereWithTenant = { ...where, tenant: getTenant() };
 
-                const groupsFromDatabase = await storageOperations.listGroups({
+                return await listGroupsRepository.execute({
                     where: whereWithTenant,
                     sort: ["createdOn_ASC"]
                 });
-
-                const groupsFromPlugins = await listGroupsFromPlugins({ where: whereWithTenant });
-
-                // We don't have to do any extra sorting because, as we can see above, `createdOn_ASC` is
-                // hardcoded, and groups coming from plugins don't have `createdOn`, meaning they should
-                // always be at the top of the list.
-                return [...groupsFromPlugins, ...groupsFromDatabase];
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not list security groups.",
