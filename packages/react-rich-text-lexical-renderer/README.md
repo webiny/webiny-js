@@ -29,7 +29,7 @@ yarn add @webiny/react-rich-text-lexical-renderer
 Fetch your data from Headless CMS, then pass it to the component like this:
 
 ```tsx
-import {RichTextRenderer} from "@webiny/react-rich-text-renderer";
+import { RichTextLexicalRenderer } from "@webiny/react-rich-text-lexical-renderer";
 
 // Load content from Headless CMS (here we show what your content might look like).
 const content = {
