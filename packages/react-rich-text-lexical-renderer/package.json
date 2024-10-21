@@ -9,7 +9,6 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.24.0",
     "@types/react": "18.2.79",
     "@webiny/app-theme": "0.0.0",
     "@webiny/lexical-editor": "0.0.0",

@@ -75,7 +75,13 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
                 delay
             });
 
-            const task = await context.tasks.createTask<T>(input);
+            let task: ITask<T>;
+            try {
+                task = await context.tasks.createTask<T>(input);
+            } catch (ex) {
+                console.log("Could not create the task.", ex);
+                throw ex;
+            }
 
             let result: Awaited<ReturnType<typeof service.send>> | null = null;
             try {
@@ -91,6 +97,8 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
                     );
                 }
             } catch (ex) {
+                console.log("Could not trigger the step function.");
+                console.error(ex);
                 /**
                  * In case of failure to create the Event Bridge Event, we need to delete the task that was meant to be created.
                  * TODO maybe we can leave the task and update it as failed - with event bridge error?

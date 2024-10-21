@@ -192,114 +192,116 @@ export const pullRequests = createWorkflow({
         jestTestsNoStorage: createJestTestsJob(null),
         jestTestsDdb: createJestTestsJob("ddb"),
         jestTestsDdbEs: createJestTestsJob("ddb-es"),
-        jestTestsDdbOs: createJestTestsJob("ddb-os"),
+        jestTestsDdbOs: createJestTestsJob("ddb-os")
 
-        verdaccioPublish: createJob({
-            name: "Publish to Verdaccio",
-            needs: ["constants", "build"],
-            if: "needs.constants.outputs.is-fork-pr != 'true'",
-            checkout: {
-                "fetch-depth": 0,
-                ref: "${{ github.event.pull_request.head.ref }}",
-                path: DIR_WEBINY_JS
-            },
-            steps: [
-                ...yarnCacheSteps,
-                ...runBuildCacheSteps,
-                ...installBuildSteps,
-                ...withCommonParams(
-                    [
-                        {
-                            name: "Start Verdaccio local server",
-                            run: "npx pm2 start verdaccio -- -c .verdaccio.yaml"
-                        },
-                        {
-                            name: "Configure NPM to use local registry",
-                            run: "npm config set registry http://localhost:4873"
-                        },
-                        {
-                            name: "Set git email",
-                            run: 'git config --global user.email "webiny-bot@webiny.com"'
-                        },
-                        {
-                            name: "Set git username",
-                            run: 'git config --global user.name "webiny-bot"'
-                        },
-                        {
-                            name: 'Create ".npmrc" file in the project root, with a dummy auth token',
-                            run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
-                        },
-                        {
-                            name: "Version and publish to Verdaccio",
-                            run: "yarn release --type=verdaccio"
-                        }
-                    ],
-                    { "working-directory": DIR_WEBINY_JS }
-                ),
-                {
-                    name: "Upload verdaccio files",
-                    uses: "actions/upload-artifact@v4",
-                    with: {
-                        name: "verdaccio-files",
-                        "retention-days": 1,
-                        "include-hidden-files": true,
-                        path: [
-                            DIR_WEBINY_JS + "/.verdaccio/",
-                            DIR_WEBINY_JS + "/.verdaccio.yaml"
-                        ].join("\n")
-                    }
-                }
-            ]
-        }),
-        testCreateWebinyProject: createJob({
-            name: 'Test "create-webiny-project"',
-            needs: "verdaccioPublish",
-            strategy: {
-                "fail-fast": false,
-                matrix: {
-                    os: ["ubuntu-latest"],
-                    node: [NODE_VERSION]
-                }
-            },
-            "runs-on": "${{ matrix.os }}",
-            checkout: false,
-            setupNode: {
-                "node-version": "${{ matrix.node }}"
-            },
-            steps: [
-                {
-                    uses: "actions/download-artifact@v4",
-                    with: {
-                        name: "verdaccio-files",
-                        path: "verdaccio-files"
-                    }
-                },
-                {
-                    name: "Start Verdaccio local server",
-                    "working-directory": "verdaccio-files",
-                    run: "yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml"
-                },
-                {
-                    name: "Configure NPM to use local registry",
-                    run: "npm config set registry http://localhost:4873"
-                },
-                {
-                    name: "Set git email",
-                    run: 'git config --global user.email "webiny-bot@webiny.com"'
-                },
-                {
-                    name: "Set git username",
-                    run: 'git config --global user.name "webiny-bot"'
-                },
-                {
-                    name: "Disable Webiny telemetry",
-                    run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
-                },
-                {
-                    name: "Create a new Webiny project",
-                    run: `npx create-webiny-project@local-npm test-project --tag local-npm --no-interactive --assign-to-yarnrc \'{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}\' --template-options \'{"region":"${AWS_REGION}"}\'\n`
-                }
-            ]
-        })
+        // We commented out these tests because, A) they don't bring much value, and B) these are
+        // run within "push" workflows anyway (we deploy a Webiny instance and run E2E tests there).
+        // verdaccioPublish: createJob({
+        //     name: "Publish to Verdaccio",
+        //     needs: ["constants", "build"],
+        //     if: "needs.constants.outputs.is-fork-pr != 'true'",
+        //     checkout: {
+        //         "fetch-depth": 0,
+        //         ref: "${{ github.event.pull_request.head.ref }}",
+        //         path: DIR_WEBINY_JS
+        //     },
+        //     steps: [
+        //         ...yarnCacheSteps,
+        //         ...runBuildCacheSteps,
+        //         ...installBuildSteps,
+        //         ...withCommonParams(
+        //             [
+        //                 {
+        //                     name: "Start Verdaccio local server",
+        //                     run: "npx pm2 start verdaccio -- -c .verdaccio.yaml"
+        //                 },
+        //                 {
+        //                     name: "Configure NPM to use local registry",
+        //                     run: "npm config set registry http://localhost:4873"
+        //                 },
+        //                 {
+        //                     name: "Set git email",
+        //                     run: 'git config --global user.email "webiny-bot@webiny.com"'
+        //                 },
+        //                 {
+        //                     name: "Set git username",
+        //                     run: 'git config --global user.name "webiny-bot"'
+        //                 },
+        //                 {
+        //                     name: 'Create ".npmrc" file in the project root, with a dummy auth token',
+        //                     run: "echo '//localhost:4873/:_authToken=\"dummy-auth-token\"' > .npmrc"
+        //                 },
+        //                 {
+        //                     name: "Version and publish to Verdaccio",
+        //                     run: "yarn release --type=verdaccio"
+        //                 }
+        //             ],
+        //             { "working-directory": DIR_WEBINY_JS }
+        //         ),
+        //         {
+        //             name: "Upload verdaccio files",
+        //             uses: "actions/upload-artifact@v4",
+        //             with: {
+        //                 name: "verdaccio-files",
+        //                 "retention-days": 1,
+        //                 "include-hidden-files": true,
+        //                 path: [
+        //                     DIR_WEBINY_JS + "/.verdaccio/",
+        //                     DIR_WEBINY_JS + "/.verdaccio.yaml"
+        //                 ].join("\n")
+        //             }
+        //         }
+        //     ]
+        // }),
+        // testCreateWebinyProject: createJob({
+        //     name: 'Test "create-webiny-project"',
+        //     needs: "verdaccioPublish",
+        //     strategy: {
+        //         "fail-fast": false,
+        //         matrix: {
+        //             os: ["ubuntu-latest"],
+        //             node: [NODE_VERSION]
+        //         }
+        //     },
+        //     "runs-on": "${{ matrix.os }}",
+        //     checkout: false,
+        //     setupNode: {
+        //         "node-version": "${{ matrix.node }}"
+        //     },
+        //     steps: [
+        //         {
+        //             uses: "actions/download-artifact@v4",
+        //             with: {
+        //                 name: "verdaccio-files",
+        //                 path: "verdaccio-files"
+        //             }
+        //         },
+        //         {
+        //             name: "Start Verdaccio local server",
+        //             "working-directory": "verdaccio-files",
+        //             run: "yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml"
+        //         },
+        //         {
+        //             name: "Configure NPM to use local registry",
+        //             run: "npm config set registry http://localhost:4873"
+        //         },
+        //         {
+        //             name: "Set git email",
+        //             run: 'git config --global user.email "webiny-bot@webiny.com"'
+        //         },
+        //         {
+        //             name: "Set git username",
+        //             run: 'git config --global user.name "webiny-bot"'
+        //         },
+        //         {
+        //             name: "Disable Webiny telemetry",
+        //             run: 'mkdir ~/.webiny && echo \'{ "id": "ci", "telemetry": false }\' > ~/.webiny/config\n'
+        //         },
+        //         {
+        //             name: "Create a new Webiny project",
+        //             run: 'npx create-webiny-project@local-npm test-project --tag local-npm --no-interactive --assign-to-yarnrc \'{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}\' --template-options \'{"region":"eu-central-1"}\'\n'
+        //         }
+        //     ]
+        // })
     }
 });

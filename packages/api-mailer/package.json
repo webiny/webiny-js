@@ -14,7 +14,6 @@
   "description": "The API to send e-mails.",
   "license": "MIT",
   "dependencies": {
-    "@babel/runtime": "^7.24.0",
     "@webiny/api": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/error": "0.0.0",
@@ -27,10 +26,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.9",
-    "@babel/core": "^7.24.0",
-    "@babel/preset-env": "^7.24.0",
-    "@babel/preset-typescript": "^7.23.3",
     "@types/crypto-js": "^4.1.1",
     "@types/nodemailer": "^6.4.4",
     "@webiny/api-i18n": "0.0.0",
