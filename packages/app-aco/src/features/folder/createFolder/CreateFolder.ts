@@ -7,25 +7,11 @@ import { CreateFolderUseCaseWithLoading } from "./CreateFolderUseCaseWithLoading
 import { folderCacheFactory } from "../cache";
 
 export class CreateFolder {
-    static cache: Map<string, ICreateFolderUseCase> = new Map();
-
-    public static instance(gateway: ICreateFolderGateway, type: string): ICreateFolderUseCase {
-        if (!this.cache.has(type)) {
-            // Create a new instance if not cached
-            const foldersCache = folderCacheFactory.getCache(type);
-            const loadingRepository = loadingRepositoryFactory.getRepository();
-            const repository = new CreateFolderRepository(foldersCache, gateway, type);
-            const useCase = new CreateFolderUseCase(repository);
-            const useCaseWithLoading = new CreateFolderUseCaseWithLoading(
-                loadingRepository,
-                useCase
-            );
-
-            // Store in cache
-            this.cache.set(type, useCaseWithLoading);
-        }
-
-        // Return the cached instance
-        return this.cache.get(type)!;
+    public static instance(type: string, gateway: ICreateFolderGateway): ICreateFolderUseCase {
+        const foldersCache = folderCacheFactory.getCache(type);
+        const loadingRepository = loadingRepositoryFactory.getRepository();
+        const repository = new CreateFolderRepository(foldersCache, gateway, type);
+        const useCase = new CreateFolderUseCase(repository);
+        return new CreateFolderUseCaseWithLoading(loadingRepository, useCase);
     }
 }

@@ -23,7 +23,7 @@ export const useGetFolder = () => {
 
     const getFolder = useCallback(
         (params: GetFolderParams) => {
-            const instance = GetFolder.instance(gateway, type);
+            const instance = GetFolder.instance(type, gateway);
             return instance.execute(params);
         },
         [type, gateway]

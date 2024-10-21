@@ -5,22 +5,14 @@ import { GetCanManageContentUseCase } from "./GetCanManageContentUseCase";
 import { folderCacheFactory } from "../cache";
 
 export class GetCanManageContent {
-    static cache: Map<string, IGetCanManageContentUseCase> = new Map();
-
     public static instance(type: string, canUseFlp: boolean): IGetCanManageContentUseCase {
-        if (!this.cache.has(type)) {
-            // Create a new instance if not cached
-            const foldersCache = folderCacheFactory.getCache(type);
-            const repository = new GetCanManageContentRepository(foldersCache);
+        const foldersCache = folderCacheFactory.getCache(type);
+        const repository = new GetCanManageContentRepository(foldersCache);
 
-            if (canUseFlp) {
-                return new GetCanManageContentWithFlpUseCase(repository);
-            }
-
-            return new GetCanManageContentUseCase();
+        if (canUseFlp) {
+            return new GetCanManageContentWithFlpUseCase(repository);
         }
 
-        // Return the cached instance
-        return this.cache.get(type)!;
+        return new GetCanManageContentUseCase();
     }
 }

@@ -38,7 +38,7 @@ export const useListFolders = () => {
         folders: foldersCache,
         loading
     } = useMemo(() => {
-        return ListFolders.instance(gateway, type);
+        return ListFolders.instance(type, gateway);
     }, [type, gateway]);
 
     const listFolders = useCallback(() => {

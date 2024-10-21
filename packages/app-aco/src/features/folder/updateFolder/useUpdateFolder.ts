@@ -23,7 +23,7 @@ export const useUpdateFolder = () => {
 
     const updateFolder = useCallback(
         (params: UpdateFolderParams) => {
-            const instance = UpdateFolder.instance(gateway, type);
+            const instance = UpdateFolder.instance(type, gateway);
             return instance.execute(params);
         },
         [type, gateway]

@@ -23,7 +23,7 @@ export const useDeleteFolder = () => {
 
     const deleteFolder = useCallback(
         (params: DeleteFolderParams) => {
-            const instance = DeleteFolder.getInstance(gateway, type);
+            const instance = DeleteFolder.instance(type, gateway);
             return instance.execute(params);
         },
         [type, gateway]

@@ -23,7 +23,7 @@ export const useCreateFolder = () => {
 
     const createFolder = useCallback(
         (params: CreateFolderParams) => {
-            const instance = CreateFolder.instance(gateway, type);
+            const instance = CreateFolder.instance(type, gateway);
             return instance.execute(params);
         },
         [type, gateway]

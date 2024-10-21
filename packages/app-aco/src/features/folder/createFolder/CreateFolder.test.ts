@@ -43,7 +43,7 @@ describe("CreateFolder", () => {
             })
         });
 
-        const createFolder = CreateFolder.getInstance(gateway, type);
+        const createFolder = CreateFolder.instance(type, gateway);
 
         const createPromise = createFolder.execute(
             pick(folder1, ["title", "slug", "type", "parentId", "permissions"])

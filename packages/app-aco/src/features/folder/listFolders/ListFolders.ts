@@ -17,7 +17,7 @@ export class ListFolders {
     static foldersCache: Map<string, FoldersCache> = new Map();
     static loadingCache: Map<string, LoadingRepository> = new Map();
 
-    public static instance(gateway: IListFoldersGateway, type: string): IListFoldersInstance {
+    public static instance(type: string, gateway: IListFoldersGateway): IListFoldersInstance {
         if (!this.foldersCache.has(type)) {
             this.foldersCache.set(type, folderCacheFactory.getCache(type));
         }
