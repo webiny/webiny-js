@@ -80,8 +80,11 @@ GitHub Issues. Best for: bugs and errors you encounter using Webbiny 👉 https:
 ## 💪 Contributing
 
 Webiny is all about the community. Please feel free to join in, whether it's fixing bugs, improving our documentation, or simply spreading the word. Please see our [Contributing Guidelines](/docs/CONTRIBUTING.md), which explain project organization, setup, testing, and other steps.
+
 If you need any assistance in contribution, please reach out via our [community Slack](https://www.webiny.com/slack).
 <br /><br />
+
+Also, don't forget to star this repository, it's the easiest, best thing you could do to help us.
 
 ## 📜 License
 
