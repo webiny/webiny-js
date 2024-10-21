@@ -32,13 +32,16 @@ export class OperationsBuilder implements IOperationsBuilder {
     public async build(params: IOperationsBuilderBuildParams): Promise<IOperations> {
         const operations = new Operations();
         for (const record of params.records) {
-            const dynamodb = record.dynamodb;
-            if (!dynamodb) {
+            if (!record.dynamodb) {
+                continue;
+            } else if (!record.eventName) {
+                console.error(
+                    `Could not get operation from the record, skipping event "${record.eventID}".`
+                );
                 continue;
             }
-            const newImage = unmarshall<RecordDynamoDbImage>(dynamodb.NewImage);
 
-            const keys = unmarshall<RecordDynamoDbKeys>(dynamodb.Keys);
+            const keys = unmarshall<RecordDynamoDbKeys>(record.dynamodb.Keys);
             if (!keys?.PK || !keys.SK) {
                 console.error(
                     `Could not get keys from the record, skipping event "${record.eventID}".`
@@ -46,30 +49,46 @@ export class OperationsBuilder implements IOperationsBuilder {
                 continue;
             }
 
-            // Note that with the `REMOVE` event, there is no `NewImage` property. Which means,
-            // if the `newImage` is `undefined`, we are dealing with a `REMOVE` event and we still
-            // need to process it.
-            if (newImage && newImage.ignore === true) {
-                continue;
-            } else if (newImage && !newImage.index) {
-                console.error(
-                    `Could not get index from the new image, skipping event "${record.eventID}".`
-                );
-                continue;
-            }
-            const _id = `${keys.PK}:${keys.SK}`;
-            const oldImage = unmarshall<RecordDynamoDbImage>(dynamodb.OldImage);
-            const operation = record.eventName;
+            const id = `${keys.PK}:${keys.SK}`;
 
             /**
              * On operations other than REMOVE we decompress the data and store it into the Elasticsearch.
              * No need to try to decompress if operation is REMOVE since there is no data sent into that operation.
              */
-            if (operation === OperationType.INSERT || operation === OperationType.MODIFY) {
+            if (
+                record.eventName === OperationType.INSERT ||
+                record.eventName === OperationType.MODIFY
+            ) {
+                const newImage = unmarshall<RecordDynamoDbImage>(record.dynamodb.NewImage);
                 /**
                  * If there is no newImage, silently continue to the next operation.
                  */
-                if (!newImage || Object.keys(newImage).length === 0) {
+                if (
+                    !newImage ||
+                    typeof newImage !== "object" ||
+                    Object.keys(newImage).length === 0
+                ) {
+                    continue;
+                }
+                /**
+                 * Note that with the `REMOVE` event, there is no `NewImage` property. Which means,
+                 * if the `newImage` is `undefined`, we are dealing with a `REMOVE` event and we still
+                 * need to process it.
+                 */
+                //
+                else if (newImage.ignore === true) {
+                    // Nothing to log here, we are skipping the record intentionally.
+                    continue;
+                }
+                /**
+                 * Also, possibly there is no index?
+                 */
+                //
+                else if (!newImage.index) {
+                    console.error(
+                        `Could not get index from the new image, skipping event "${record.eventID}".`
+                    );
+                    console.log({ newImage });
                     continue;
                 }
                 /**
@@ -85,17 +104,18 @@ export class OperationsBuilder implements IOperationsBuilder {
                  */
                 if (data === undefined || data === null) {
                     console.error(
-                        `Could not get decompressed data, skipping ES operation "${operation}", ID ${_id}`
+                        `Could not get decompressed data, skipping ES operation "${record.eventName}", ID ${id}. Skipping...`
                     );
                     continue;
                 }
 
                 operations.insert({
-                    id: _id,
+                    id,
                     index: newImage.index,
                     data
                 });
-            } else if (operation === OperationType.REMOVE) {
+            } else if (record.eventName === OperationType.REMOVE) {
+                const oldImage = unmarshall<RecordDynamoDbImage>(record.dynamodb.OldImage);
                 /**
                  * If there is no index found, silently continue to the next operation.
                  */
@@ -103,7 +123,7 @@ export class OperationsBuilder implements IOperationsBuilder {
                     continue;
                 }
                 operations.delete({
-                    id: _id,
+                    id,
                     index: oldImage.index
                 });
             }
