@@ -1,5 +1,5 @@
 import React from "react";
-import { Slider as AdminUiSlider } from "@webiny/admin-ui";
+import { Slider as AdminUiSlider } from "@webiny/admin-ui/form-components";
 import { FormComponentProps } from "~/types";
 import { FormElementMessage } from "~/FormElementMessage";
 
@@ -71,18 +71,13 @@ class Slider extends React.Component<Props> {
 
         return (
             <React.Fragment>
-                {label && (
-                    <div className="mdc-text-field-helper-text mdc-text-field-helper-text--persistent">
-                        {label}
-                    </div>
-                )}
-
                 <AdminUiSlider
                     {...this.props}
                     min={this.toFloat(this.props.min)}
                     max={this.toFloat(this.props.max, 100)}
                     step={this.toFloat(this.props.step, 1)}
                     value={sliderValue}
+                    label={label}
                     onValueCommit={this.onValueCommit}
                     onValueChange={this.onValueChange}
                 />

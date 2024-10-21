@@ -1,6 +1,6 @@
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Slider } from "./Slider";
-import React from "react";
 
 const meta: Meta<typeof Slider> = {
     title: "Components/Slider",
@@ -36,7 +36,7 @@ export const WithMinAndMaxValues = {
 
 export const WithDefaultValue = {
     args: {
-        defaultValue: [50]
+        defaultValue: 50
     }
 };
 
@@ -48,6 +48,20 @@ export const WithSteps = {
 
 export const Disabled = {
     args: {
-        disabled: true
+        disabled: true,
+        defaultValue: 50
+    }
+};
+
+export const WithLabel = {
+    args: {
+        label: "Label"
+    }
+};
+
+export const WithSideLabel = {
+    args: {
+        label: "Label",
+        labelPosition: "side"
     }
 };
