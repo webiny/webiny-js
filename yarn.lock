@@ -17205,6 +17205,7 @@ __metadata:
     css-minimizer-webpack-plugin: ^6.0.0
     eslint: ^8.56.0
     eslint-config-react-app: ^6.0.0
+    eslint-plugin-only-warn: ^1.0.3
     eslint-webpack-plugin: ^3.1.1
     file-loader: 6.2.0
     fork-ts-checker-webpack-plugin: ^9.0.2
@@ -23930,6 +23931,13 @@ __metadata:
   peerDependencies:
     eslint: ">=5.16.0"
   checksum: 5804c4f8a6e721f183ef31d46fbe3b4e1265832f352810060e0502aeac7de034df83352fc88643b19641bb2163f2587f1bd4119aff0fd21e8d98c57c450e013b
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-only-warn@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "eslint-plugin-only-warn@npm:1.0.3"
+  checksum: 669ddf839738c415bf9ecbdef89f2e9c0c0a232312ef9e61dde8f435fcb67d3f5196ce0481ce9880d7b75e523b07908f8a0b56c5d4552da7a4d69f9069c68d16
   languageName: node
   linkType: hard
 
