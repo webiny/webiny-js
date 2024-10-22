@@ -1,18 +1,31 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import debounce from "lodash/debounce";
+
+export interface UseRangeSlider {
+    values: number[];
+    onValuesChange: (value: number[]) => void;
+}
 
 export const useRangeSlider = (
     initialValue: number[],
-    onValueChange?: (value: number[]) => void
-) => {
-    const [localValue, setLocalValue] = useState(initialValue);
+    onValuesChange?: (value: number[]) => void
+): UseRangeSlider => {
+    const [localValues, setLocalValue] = useState(initialValue);
+
+    const debouncedOnValueChange = useMemo(() => {
+        return onValuesChange ? debounce(onValuesChange, 100) : undefined;
+    }, [onValuesChange]);
 
     const handleValueChange = useCallback(
-        (newValue: number[]) => {
-            setLocalValue(newValue);
-            onValueChange?.(newValue);
+        (newValues: number[]) => {
+            setLocalValue(newValues);
+            debouncedOnValueChange?.(newValues);
         },
-        [onValueChange]
+        [onValuesChange]
     );
 
-    return [localValue, handleValueChange] as const;
+    return {
+        values: localValues,
+        onValuesChange: handleValueChange
+    };
 };

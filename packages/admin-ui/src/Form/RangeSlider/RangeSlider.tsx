@@ -35,7 +35,7 @@ const FormRangeSlider = ({
     ...props
 }: RangeSliderProps) => {
     const initialValues = originalValues ?? [min, max];
-    const [values, onValuesChange] = useRangeSlider(initialValues, originalOnValuesChange);
+    const { values, onValuesChange } = useRangeSlider(initialValues, originalOnValuesChange);
 
     const labelValues = React.useMemo(() => {
         return values.map(value => (valueConverter ? valueConverter(value) : String(value)));

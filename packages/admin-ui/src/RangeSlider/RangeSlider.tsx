@@ -15,7 +15,7 @@ const RangeSliderBase = ({
     ...props
 }: RangeSliderProps) => {
     const initialValues = originalValues || [min, max];
-    const [values, onValuesChange] = useRangeSlider(initialValues, originalOnValuesChange);
+    const { values, onValuesChange } = useRangeSlider(initialValues, originalOnValuesChange);
 
     return (
         <SliderRoot

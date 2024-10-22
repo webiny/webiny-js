@@ -13,7 +13,10 @@ const SliderBaseRoot = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <SliderPrimitive.Root
         ref={ref}
-        className={cn("relative flex w-full touch-none select-none items-center", className)}
+        className={cn(
+            "relative flex w-full touch-none select-none items-center cursor-pointer",
+            className
+        )}
         {...props}
     />
 ));
@@ -62,7 +65,7 @@ const SliderBase = ({
         originalValue !== undefined
             ? originalValue // Use the original value if defined.
             : props.min ?? 0; // Fallback to `min`, or 0 if both are undefined.
-    const [value, onValueChange] = useSlider(initialValue, originalOnValueChange);
+    const { value, onValueChange } = useSlider(initialValue, originalOnValueChange);
 
     const handleValueChange = React.useCallback(
         (newValue: number[]) => {

@@ -78,7 +78,7 @@ const FormSlider = ({
         originalValue !== undefined
             ? originalValue // Use the original value if defined.
             : props.min ?? 0; // Fallback to `min`, or 0 if both are undefined.
-    const [value, onValueChange] = useSlider(initialValue, originalOnValueChange);
+    const { value, onValueChange } = useSlider(initialValue, originalOnValueChange);
 
     const labelValue = React.useMemo(() => {
         return valueConverter ? valueConverter(value) : String(value);
