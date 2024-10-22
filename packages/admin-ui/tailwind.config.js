@@ -21,56 +21,61 @@ module.exports = {
         },
         backgroundColor: {
             neutral: {
-                DEFAULT: "hsl(var(--bg-neutral))",
+                DEFAULT: "hsl(var(--bg-neutral-base))",
                 dark: "hsl(var(--bg-neutral-dark))",
-                strong: "hsl(var(--bg-neutral-strong))",
                 xstrong: "hsl(var(--bg-neutral-xstrong))",
+                strong: "hsl(var(--bg-neutral-strong))",
                 muted: "hsl(var(--bg-neutral-muted))",
+                disabled: "hsl(var(--bg-neutral-disabled))",
                 dimmed: "hsl(var(--bg-neutral-dimmed))",
                 subtle: "hsl(var(--bg-neutral-subtle))",
                 light: "hsl(var(--bg-neutral-light))",
-                disabled: "hsl(var(--bg-neutral-disabled))",
                 base: "hsl(var(--bg-neutral-base))"
             },
             primary: {
-                DEFAULT: "hsl(var(--bg-primary))",
-                strong: "hsl(var(--bg-primary-strong))",
-                xstrong: "hsl(var(--bg-primary-xstrong))",
+                DEFAULT: "hsl(var(--bg-primary-default))",
+                default: "hsl(var(--bg-primary-default))",
                 muted: "hsl(var(--bg-primary-muted))",
+                disabled: "hsl(var(--bg-primary-disabled))",
                 subtle: "hsl(var(--bg-primary-subtle))",
-                disabled: "hsl(var(--bg-primary-disabled))"
+                strong: "hsl(var(--bg-primary-strong))",
+                xstrong: "hsl(var(--bg-primary-xstrong))"
             },
             secondary: {
-                DEFAULT: "hsl(var(--bg-secondary))",
-                strong: "hsl(var(--bg-secondary-strong))",
-                xstrong: "hsl(var(--bg-secondary-xstrong))",
+                DEFAULT: "hsl(var(--bg-secondary-default))",
+                default: "hsl(var(--bg-secondary-default))",
                 muted: "hsl(var(--bg-secondary-muted))",
+                disabled: "hsl(var(--bg-secondary-disabled))",
                 subtle: "hsl(var(--bg-secondary-subtle))",
-                disabled: "hsl(var(--bg-secondary-disabled))"
+                strong: "hsl(var(--bg-secondary-strong))",
+                xstrong: "hsl(var(--bg-secondary-xstrong))"
             },
             success: {
-                DEFAULT: "hsl(var(--bg-success))",
-                strong: "hsl(var(--bg-success-strong))",
-                xstrong: "hsl(var(--bg-success-xstrong))",
+                DEFAULT: "hsl(var(--bg-success-default))",
+                default: "hsl(var(--bg-success-default))",
                 muted: "hsl(var(--bg-success-muted))",
+                disabled: "hsl(var(--bg-success-disabled))",
                 subtle: "hsl(var(--bg-success-subtle))",
-                disabled: "hsl(var(--bg-success-disabled))"
+                strong: "hsl(var(--bg-success-strong))",
+                xstrong: "hsl(var(--bg-success-xstrong))"
             },
             destructive: {
-                DEFAULT: "hsl(var(--bg-destructive))",
-                strong: "hsl(var(--bg-destructive-strong))",
-                xstrong: "hsl(var(--bg-destructive-xstrong))",
+                DEFAULT: "hsl(var(--bg-destructive-default))",
+                default: "hsl(var(--bg-destructive-default))",
                 muted: "hsl(var(--bg-destructive-muted))",
+                disabled: "hsl(var(--bg-destructive-disabled))",
                 subtle: "hsl(var(--bg-destructive-subtle))",
-                disabled: "hsl(var(--bg-destructive-disabled))"
+                strong: "hsl(var(--bg-destructive-strong))",
+                xstrong: "hsl(var(--bg-destructive-xstrong))"
             },
             warning: {
-                DEFAULT: "hsl(var(--bg-warning))",
-                strong: "hsl(var(--bg-warning-strong))",
-                xstrong: "hsl(var(--bg-warning-xstrong))",
+                DEFAULT: "hsl(var(--bg-warning-default))",
+                default: "hsl(var(--bg-warning-default))",
                 muted: "hsl(var(--bg-warning-muted))",
+                disabled: "hsl(var(--bg-warning-disabled))",
                 subtle: "hsl(var(--bg-warning-subtle))",
-                disabled: "hsl(var(--bg-warning-disabled))"
+                strong: "hsl(var(--bg-warning-strong))",
+                xstrong: "hsl(var(--bg-warning-xstrong))"
             }
         },
         colors: {
@@ -89,16 +94,21 @@ module.exports = {
                 dimmed: "hsl(var(--border-neutral-dimmed))",
                 subtle: "hsl(var(--border-neutral-subtle))"
             },
-
             accent: {
                 DEFAULT: "hsl(var(--border-accent-default))",
-                "accent-subtle": "hsl(var(--border-accent-subtle))"
+                default: "hsl(var(--border-accent-default))",
+                subtle: "hsl(var(--border-accent-subtle))"
             },
-            destructive: "hsl(var(--border-destructive-default))",
-            success: "hsl(var(--border-success-default))"
+            destructive: {
+                DEFAULT: "hsl(var(--border-destructive-default))",
+                default: "hsl(var(--border-destructive-default))"
+            },
+            success: {
+                DEFAULT: "hsl(var(--border-success-default))",
+                default: "hsl(var(--border-success-default))"
+            }
         },
         borderRadius: {
-            DEFAULT: "var(--radius-sm)",
             xs: "var(--radius-xs)",
             sm: "var(--radius-sm)",
             md: "var(--radius-md)",
