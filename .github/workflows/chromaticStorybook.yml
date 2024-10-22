@@ -1,0 +1,80 @@
+name: 'Chromatic - Storybook Preview'
+
+# The events that will trigger the action
+on:
+  # Trigger the workflow when a comment is created on an issue or pull request
+  issue_comment:
+    types: [created]
+  # Allow the workflow to be run manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  chromatic:
+    # Only run the job if the comment contains '/storybook' OR it's triggered manually
+    if: github.event_name == 'workflow_dispatch' || github.event.comment.body == '/storybook'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Default Branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install hub
+        run: |
+          sudo apt-get install -y hub
+
+      # Fetch pull request details if event is issue_comment and it's a pull request
+      - name: Fetch PR details using hub
+        id: fetch_pr
+        if: github.event.issue.pull_request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          pr_number=${{ github.event.issue.number }}
+          head_branch=$(hub pr show "$pr_number" -f '%H') # Head branch (source)
+          echo "head_branch=$head_branch" >> $GITHUB_ENV
+
+      # Checkout the PR's head branch if it's a pull request; otherwise, use the branch on which the action is triggered manually.
+      - name: Checkout the PR's head branch if it's a pull request; otherwise, use the branch on which the action is triggered manually.
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # Conditionally checkout based on event type and use hub fetched branch if needed.
+          ref: |
+            ${{ github.event_name == 'workflow_dispatch' && github.ref_name || env.head_branch }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Post Install
+        run: yarn postinstall
+
+      - name: Build
+        run: yarn build:quick
+
+      # Run Chromatic Action
+      - name: Run Chromatic
+        id: chromatic
+        uses: chromaui/action@v1
+        with:
+          # Chromatic projectToken, see https://storybook.js.org/tutorials/design-systems-for-developers/react/en/review/ to obtain it
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          workingDir: packages/admin-ui
+
+      # Create or update a comment on PR with the Storybook URL
+      - name: Comment on PR with Storybook URL
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.issue.number || github.event.pull_request.number }}
+          body: |
+            🚀 **Storybook Preview**
+            You can preview the Storybook by visiting the link below:
+
+            [Storybook Preview URL](${{ steps.chromatic.outputs.storybookUrl }})
