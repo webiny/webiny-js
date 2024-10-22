@@ -6,7 +6,7 @@ import { createStorageOperations as securityStorageOperations } from "@webiny/ap
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
 import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import cognitoAuthentication, { syncWithCognito } from "@webiny/api-security-cognito";
+import { createAuth0 } from "@webiny/api-security-auth0";
 import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
 import tenantLinkAuthorization from "@webiny/api-security/plugins/tenantLinkAuthorization";
 import createAdminUsersApp from "@webiny/api-admin-users";
@@ -35,21 +35,17 @@ export default ({ documentClient }: { documentClient: DynamoDBDocument }) => [
     /**
      * Expose security GraphQL schema.
      */
-    createSecurityGraphQL(),
+    createSecurityGraphQL({
+        async getDefaultTenant(context) {
+            return context.tenancy.getRootTenant();
+        }
+    }),
 
     /**
      * Create Admin Users app.
      */
     createAdminUsersApp({
         storageOperations: createAdminUsersStorageOperations({ documentClient })
-    }),
-
-    /**
-     * Sync Admin Users with Cognito User Pool.
-     */
-    syncWithCognito({
-        region: String(process.env.COGNITO_REGION),
-        userPoolId: String(process.env.COGNITO_USER_POOL_ID)
     }),
 
     /**
@@ -67,13 +63,24 @@ export default ({ documentClient }: { documentClient: DynamoDBDocument }) => [
     apiKeyAuthentication({ identityType: "api-key" }),
 
     /**
-     * Cognito authentication plugin.
-     * This plugin will verify the JWT token against the provided User Pool.
+     * Configure Auth0 authentication and authorization.
      */
-    cognitoAuthentication({
-        region: String(process.env.COGNITO_REGION),
-        userPoolId: String(process.env.COGNITO_USER_POOL_ID),
-        identityType: "admin"
+    createAuth0({
+        /**
+         * `domain` is required for token verification.
+         */
+        domain: String(process.env.WEBINY_API_AUTH0_DOMAIN),
+        /**
+         * Construct the identity object and map token claims to arbitrary identity properties.
+         */
+        getIdentity({ token }) {
+            return {
+                id: token["sub"],
+                type: "admin",
+                displayName: token["name"],
+                groups: ["full-access"]
+            };
+        }
     }),
 
     /**
