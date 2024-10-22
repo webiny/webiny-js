@@ -1,19 +1,20 @@
 import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { makeDecoratable } from "@webiny/react-composition";
+import { SliderRoot, SliderThumb, SliderTrack } from "~/Slider";
 
-import { SliderRoot, SliderThumb, SliderTrack } from "~/Slider/Slider";
+type RangeSliderProps = Omit<SliderPrimitive.SliderProps, "defaultValue">;
 
 const RangeSliderBase = ({
-    defaultValue,
-    value,
+    value: originalValues,
     min = 0,
     max = 100,
+    minStepsBetweenThumbs = 1,
     onValueChange,
     ...props
-}: SliderPrimitive.SliderProps) => {
-    const initialValue = defaultValue || value || [min, max];
-    const [localValues, setLocalValues] = React.useState(initialValue);
+}: RangeSliderProps) => {
+    const value = originalValues || [min, max];
+    const [localValues, setLocalValues] = React.useState(value);
 
     const handleValueChange = React.useCallback(
         (newValues: number[]) => {
@@ -29,13 +30,13 @@ const RangeSliderBase = ({
         <SliderRoot
             min={min}
             max={max}
-            minStepsBetweenThumbs={1}
+            minStepsBetweenThumbs={minStepsBetweenThumbs}
             value={localValues}
             onValueChange={handleValueChange}
             {...props}
         >
             <SliderTrack />
-            {initialValue.map((_, index) => (
+            {localValues.map((_, index) => (
                 <SliderThumb key={`sliderThumb-${index}`} />
             ))}
         </SliderRoot>

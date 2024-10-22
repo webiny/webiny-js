@@ -34,9 +34,9 @@ export const WithMinAndMaxValues = {
     }
 };
 
-export const WithDefaultValue = {
+export const WithValue = {
     args: {
-        defaultValue: 50
+        value: 50
     }
 };
 
@@ -49,19 +49,6 @@ export const WithSteps = {
 export const Disabled = {
     args: {
         disabled: true,
-        defaultValue: 50
-    }
-};
-
-export const WithLabel = {
-    args: {
-        label: "Label"
-    }
-};
-
-export const WithSideLabel = {
-    args: {
-        label: "Label",
-        labelPosition: "side"
+        value: 50
     }
 };

@@ -1,9 +1,6 @@
 import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { makeDecoratable } from "@webiny/react-composition";
-import { cva, VariantProps } from "class-variance-authority";
-
-import { Label } from "~/Label";
 import { cn } from "~/utils";
 
 /**
@@ -44,56 +41,16 @@ const SliderBaseThumb = () => (
 
 const SliderThumb = makeDecoratable("SliderThumb", SliderBaseThumb);
 
-/**
- * Slider Value
- */
-interface SliderValueProps extends React.HTMLAttributes<HTMLSpanElement> {
-    value: number;
-}
-
-const SliderBaseValue = (props: SliderValueProps) => (
-    <span className={"font-light text-sm leading-none"}>{props.value}</span>
-);
-
-const SliderValue = makeDecoratable("SliderValue", SliderBaseValue);
-
-/**
- * Slider
- */
-const sliderVariants = cva("w-full", {
-    variants: {
-        labelPosition: {
-            top: "",
-            side: "flex"
-        }
-    },
-    defaultVariants: {
-        labelPosition: "top"
-    }
-});
-
-interface SliderProps
-    extends Omit<SliderPrimitive.SliderProps, "defaultValue" | "value">,
-        VariantProps<typeof sliderVariants> {
-    label?: React.ReactNode;
-    defaultValue?: number;
+interface SliderProps extends Omit<SliderPrimitive.SliderProps, "defaultValue" | "value"> {
     value?: number;
 }
 
-const SliderBase = ({
-    label,
-    defaultValue: originalDefaultValue,
-    value: originalValue,
-    onValueChange,
-    labelPosition,
-    className,
-    ...props
-}: SliderProps) => {
-    const defaultValue = originalDefaultValue ? [originalDefaultValue] : undefined;
-    const value = originalValue ? [originalValue] : undefined;
-    const initialValue = defaultValue || value || [0];
-
-    const [localValue, setLocalValue] = React.useState(initialValue);
+const SliderBase = ({ value: originalValue, onValueChange, ...props }: SliderProps) => {
+    const value =
+        originalValue !== undefined
+            ? [originalValue] // Wrap in an array if it's a number.
+            : [props.min ?? 0]; // Fallback to `min`, or 0 if both are undefined.
+    const [localValue, setLocalValue] = React.useState(value);
 
     const handleValueChange = React.useCallback(
         (newValue: number[]) => {
@@ -106,19 +63,10 @@ const SliderBase = ({
     );
 
     return (
-        <div className={cn(sliderVariants({ labelPosition }), className)}>
-            {label && <Label text={label} weight={"light"} className={""} />}
-            <SliderRoot
-                {...props}
-                value={localValue}
-                defaultValue={defaultValue}
-                onValueChange={handleValueChange}
-            >
-                <SliderTrack />
-                <SliderThumb />
-            </SliderRoot>
-            {label && <SliderValue value={localValue[0]} />}
-        </div>
+        <SliderRoot {...props} value={localValue} onValueChange={handleValueChange}>
+            <SliderTrack />
+            <SliderThumb />
+        </SliderRoot>
     );
 };
 
