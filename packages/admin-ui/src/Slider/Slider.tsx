@@ -2,7 +2,7 @@ import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { makeDecoratable } from "@webiny/react-composition";
 import { cn } from "~/utils";
-import { useSlider } from "~/Slider/useSlider";
+import { useSlider } from "./useSlider";
 
 /**
  * Slider Root
