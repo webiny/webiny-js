@@ -1,5 +1,8 @@
 import { GenericRecord } from "@webiny/cli/types";
 import { DynamoDBRecord } from "@webiny/handler-aws/types";
+import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
+
+export type Context = Pick<ElasticsearchContext, "elasticsearch" | "plugins">;
 
 export interface IOperationsBuilderBuildParams {
     records: DynamoDBRecord[];
@@ -25,6 +28,7 @@ export interface IDeleteOperationParams {
 export interface IOperations {
     items: GenericRecord[];
     total: number;
+    clear(): void;
     insert(params: IInsertOperationParams): void;
     modify(params: IModifyOperationParams): void;
     delete(params: IDeleteOperationParams): void;

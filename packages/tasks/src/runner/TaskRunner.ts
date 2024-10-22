@@ -23,8 +23,8 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
      * Follow the same example for the rest of the properties.
      */
     public readonly context: C;
+    public readonly timer: ITimer;
     private readonly validation: ITaskEventValidation;
-    private readonly timer: ITimer;
 
     /**
      * We take all required variables separately because they will get injected via DI - so less refactoring is required in the future.

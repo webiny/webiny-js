@@ -5,11 +5,17 @@ import { getNumberEnvVariable } from "./helpers/getNumberEnvVariable";
 
 const minRemainingSecondsToTimeout = 120;
 
-export interface IExecuteWithRetryParams extends IExecuteParams {
+const MAX_PROCESSOR_PERCENT = getNumberEnvVariable(
+    "MAX_ES_PROCESSOR",
+    process.env.NODE_ENV === "test" ? 101 : 98
+);
+
+export interface IExecuteWithRetryParams extends Omit<IExecuteParams, "maxProcessorPercent"> {
     maxRetryTime?: number;
     retries?: number;
     minTimeout?: number;
     maxTimeout?: number;
+    maxProcessorPercent?: number;
 }
 
 export const executeWithRetry = async (params: IExecuteWithRetryParams) => {
@@ -35,7 +41,7 @@ export const executeWithRetry = async (params: IExecuteWithRetryParams) => {
             execute({
                 timer: params.timer,
                 maxRunningTime: params.maxRunningTime,
-                maxProcessorPercent: params.maxProcessorPercent,
+                maxProcessorPercent: params.maxProcessorPercent || MAX_PROCESSOR_PERCENT,
                 context: params.context,
                 operations: params.operations
             }),

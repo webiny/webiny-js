@@ -5,9 +5,9 @@ import {
     WaitingHealthyClusterAbortedError
 } from "@webiny/api-elasticsearch";
 import { ITimer } from "@webiny/handler-aws";
-import { ApiResponse, ElasticsearchContext } from "@webiny/api-elasticsearch/types";
+import { ApiResponse } from "@webiny/api-elasticsearch/types";
 import { WebinyError } from "@webiny/error";
-import { IOperations } from "./types";
+import { Context, IOperations } from "./types";
 
 export interface BulkOperationsResponseBodyItemIndexError {
     reason?: string;
@@ -30,7 +30,7 @@ export interface IExecuteParams {
     timer: ITimer;
     maxRunningTime: number;
     maxProcessorPercent: number;
-    context: Pick<ElasticsearchContext, "elasticsearch">;
+    context: Context;
     operations: IOperations;
 }
 
@@ -67,6 +67,11 @@ const checkErrors = (result?: ApiResponse<BulkOperationsResponseBody>): void => 
 export const execute = (params: IExecuteParams) => {
     return async (): Promise<void> => {
         const { context, timer, maxRunningTime, maxProcessorPercent, operations } = params;
+
+        if (operations.total === 0) {
+            return;
+        }
+
         const remainingTime = timer.getRemainingSeconds();
         const runningTime = maxRunningTime - remainingTime;
         const maxWaitingTime = remainingTime - 90;

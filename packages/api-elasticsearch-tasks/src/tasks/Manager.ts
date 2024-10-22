@@ -13,6 +13,7 @@ import {
     BatchWriteItem,
     BatchWriteResult
 } from "@webiny/db-dynamodb";
+import { ITimer } from "@webiny/handler-aws/utils";
 
 export interface ManagerParams<T> {
     context: Context;
@@ -22,6 +23,7 @@ export interface ManagerParams<T> {
     isAborted: () => boolean;
     response: ITaskResponse;
     store: ITaskManagerStore<T>;
+    timer: ITimer;
 }
 
 export class Manager<T> implements IManager<T> {
@@ -33,6 +35,7 @@ export class Manager<T> implements IManager<T> {
     public readonly isAborted: () => boolean;
     public readonly response: ITaskResponse;
     public readonly store: ITaskManagerStore<T>;
+    public readonly timer: ITimer;
 
     private readonly entities: Record<string, Entity<any>> = {};
 
@@ -58,6 +61,7 @@ export class Manager<T> implements IManager<T> {
         };
         this.response = params.response;
         this.store = params.store;
+        this.timer = params.timer;
     }
 
     public getEntity(name: string): Entity<any> {

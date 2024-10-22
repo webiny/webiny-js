@@ -1,14 +1,8 @@
-import { getNumberEnvVariable } from "~/helpers/getNumberEnvVariable";
 import { createDynamoDBEventHandler, timerFactory } from "@webiny/handler-aws";
-import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
+import { Context } from "~/types";
 import { Decompressor } from "~/Decompressor";
 import { OperationsBuilder } from "~/OperationsBuilder";
 import { executeWithRetry } from "~/executeWithRetry";
-
-const MAX_PROCESSOR_PERCENT = getNumberEnvVariable(
-    "MAX_ES_PROCESSOR",
-    process.env.NODE_ENV === "test" ? 101 : 98
-);
 
 /**
  * Also, we need to set the maximum running time for the Lambda Function.
@@ -20,7 +14,7 @@ const MAX_RUNNING_TIME = 900;
 export const createEventHandler = () => {
     return createDynamoDBEventHandler(async ({ event, context: ctx, lambdaContext }) => {
         const timer = timerFactory(lambdaContext);
-        const context = ctx as unknown as ElasticsearchContext;
+        const context = ctx as unknown as Context;
         if (!context.elasticsearch) {
             console.error("Missing elasticsearch definition on context.");
             return null;
@@ -49,7 +43,6 @@ export const createEventHandler = () => {
         await executeWithRetry({
             timer,
             maxRunningTime: MAX_RUNNING_TIME,
-            maxProcessorPercent: MAX_PROCESSOR_PERCENT,
             context,
             operations
         });

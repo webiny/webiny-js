@@ -16,15 +16,17 @@ import {
 } from "~/response/abstractions";
 import { getErrorProperties } from "~/utils/getErrorProperties";
 
+type ITaskManagerRunner = Pick<ITaskRunner, "isCloseToTimeout" | "timer">;
+
 export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
-    private readonly runner: Pick<ITaskRunner, "isCloseToTimeout">;
+    private readonly runner: ITaskManagerRunner;
     private readonly context: Context;
     private readonly response: IResponse;
     private readonly taskResponse: ITaskResponse;
     private readonly store: ITaskManagerStorePrivate;
 
     public constructor(
-        runner: Pick<ITaskRunner, "isCloseToTimeout">,
+        runner: ITaskManagerRunner,
         context: Context,
         response: IResponse,
         taskResponse: ITaskResponse,
@@ -134,7 +136,8 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
                             ...params,
                             parent: this.store.getTask()
                         });
-                    }
+                    },
+                    timer: this.runner.timer
                 });
             });
         } catch (ex) {

@@ -1,26 +1,24 @@
 import {
-    FormBuilderStorageOperations as BaseFormBuilderStorageOperations,
-    FormBuilderSystemStorageOperations as BaseFormBuilderSystemStorageOperations,
-    FormBuilderSubmissionStorageOperations as BaseFormBuilderSubmissionStorageOperations,
-    FormBuilderSettingsStorageOperations as BaseFormBuilderSettingsStorageOperations,
+    FormBuilder,
+    FormBuilderContext as BaseFormBuilderContext,
     FormBuilderFormStorageOperations as BaseFormBuilderFormStorageOperations,
-    FormBuilderContext
+    FormBuilderSettingsStorageOperations as BaseFormBuilderSettingsStorageOperations,
+    FormBuilderStorageOperations as BaseFormBuilderStorageOperations,
+    FormBuilderSubmissionStorageOperations as BaseFormBuilderSubmissionStorageOperations,
+    FormBuilderSystemStorageOperations as BaseFormBuilderSystemStorageOperations
 } from "@webiny/api-form-builder/types";
 import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
-import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
-import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
+import { AttributeDefinition, Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { Client } from "@elastic/elasticsearch";
 import { PluginCollection } from "@webiny/plugins/types";
-
-export { FormBuilderContext };
 
 export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
     FORM = "FormBuilderForm",
+    ES_SUBMISSION = "FormBuilderSubmissionEs",
     ES_FORM = "FormBuilderFormEs",
     SUBMISSION = "FormBuilderSubmission",
-    ES_SUBMISSION = "FormBuilderSubmissionEs",
     SYSTEM = "FormBuilderSystem",
     SETTINGS = "FormBuilderSettings"
 }
@@ -95,4 +93,10 @@ export interface FormBuilderStorageOperations
 
 export interface FormBuilderStorageOperationsFactory {
     (params: FormBuilderStorageOperationsFactoryParams): FormBuilderStorageOperations;
+}
+
+export interface FormBuilderContext extends BaseFormBuilderContext {
+    formBuilder: FormBuilder & {
+        storageOperations: FormBuilderStorageOperations;
+    };
 }

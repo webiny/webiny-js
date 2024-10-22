@@ -124,6 +124,16 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     return {
         name: "dynamodb:elasticsearch",
         beforeInit: async context => {
+            context.db.registry.register({
+                item: entities.entries,
+                app: "cms",
+                tags: ["regular"]
+            });
+            context.db.registry.register({
+                item: entities.entriesEs,
+                app: "cms",
+                tags: ["es"]
+            });
             /**
              * Attach the elasticsearch into context if it is not already attached.
              */

@@ -6,7 +6,7 @@ export const createEnableIndexingTask = (params?: IElasticsearchTaskConfig) => {
     return createTaskDefinition<Context, IElasticsearchEnableIndexingTaskInput>({
         id: "elasticsearchEnableIndexing",
         title: "Enable Indexing on Elasticsearch Indexes",
-        run: async ({ response, context, isAborted, isCloseToTimeout, input, store }) => {
+        run: async ({ response, context, isAborted, isCloseToTimeout, input, store, timer }) => {
             const { Manager } = await import(
                 /* webpackChunkName: "Manager" */
                 "../Manager"
@@ -26,7 +26,8 @@ export const createEnableIndexingTask = (params?: IElasticsearchTaskConfig) => {
                 context,
                 isAborted,
                 isCloseToTimeout,
-                store
+                store,
+                timer
             });
 
             const indexManager = new IndexManager(

@@ -2,6 +2,9 @@ import { IManager } from "~/types";
 import { PrimitiveValue } from "@webiny/api-elasticsearch/types";
 import { IIndexManager } from "~/settings/types";
 import { ITaskResponseResult } from "@webiny/tasks";
+import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
+import { IElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchSynchronize";
+import { IElasticsearchFetcher } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchFetcher";
 
 export interface IDataSynchronizationInputValue {
     finished?: boolean;
@@ -26,6 +29,8 @@ export interface ISynchronization {
 export interface IElasticsearchSyncParams {
     manager: IDataSynchronizationManager;
     indexManager: IIndexManager;
+    synchronize: IElasticsearchSynchronize;
+    fetcher: IElasticsearchFetcher;
 }
 
 export interface IElasticsearchSyncFactory {
@@ -55,3 +60,5 @@ export interface IFactories {
 }
 
 export type IDataSynchronizationManager = IManager<IDataSynchronizationInput>;
+
+export type EntityAttributes = Record<string, AttributeDefinition>;

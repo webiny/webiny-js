@@ -7,14 +7,14 @@ import {
     CmsModelField,
     CmsModelFieldToGraphQLPlugin,
     CmsModelFieldType,
+    HeadlessCms,
     HeadlessCmsStorageOperations as BaseHeadlessCmsStorageOperations
 } from "@webiny/api-headless-cms/types";
-import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
+import { AttributeDefinition, Entity, Table, TableConstructor } from "@webiny/db-dynamodb/toolbox";
 import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
-import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
 import { Client } from "@elastic/elasticsearch";
-import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
 import { PluginsContainer } from "@webiny/plugins";
+import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 
 /**
  * A definition of the entry that is being prepared for the Elasticsearch.
@@ -167,6 +167,12 @@ export interface StorageOperationsFactoryParams {
     plugins?: PluginCollection;
 }
 
+export interface CmsContext extends BaseCmsContext, ElasticsearchContext {
+    cms: HeadlessCms & {
+        storageOperations: HeadlessCmsStorageOperations;
+    };
+}
+
 export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations<CmsContext> {
     getTable: () => Table<string, string, string>;
     getEsTable: () => Table<string, string, string>;
@@ -178,10 +184,6 @@ export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOper
 
 export interface StorageOperationsFactory {
     (params: StorageOperationsFactoryParams): HeadlessCmsStorageOperations;
-}
-
-export interface CmsContext extends BaseCmsContext {
-    [key: string]: any;
 }
 
 export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations {

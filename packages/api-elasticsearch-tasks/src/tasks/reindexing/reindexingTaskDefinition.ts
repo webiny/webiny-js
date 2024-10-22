@@ -5,7 +5,7 @@ export const createElasticsearchReindexingTask = (params?: IElasticsearchTaskCon
     return createTaskDefinition<Context, IElasticsearchIndexingTaskValues>({
         id: "elasticsearchReindexing",
         title: "Elasticsearch reindexing",
-        run: async ({ context, isCloseToTimeout, response, input, isAborted, store }) => {
+        run: async ({ context, isCloseToTimeout, response, input, isAborted, store, timer }) => {
             const { Manager } = await import(
                 /* webpackChunkName: "Manager" */
                 "../Manager"
@@ -24,7 +24,8 @@ export const createElasticsearchReindexingTask = (params?: IElasticsearchTaskCon
                 context,
                 isAborted,
                 isCloseToTimeout,
-                store
+                store,
+                timer
             });
 
             const indexManager = new IndexManager(manager.elasticsearch, input.settings || {});

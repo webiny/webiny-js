@@ -12,7 +12,7 @@ export const createDataSynchronization = (params?: IElasticsearchTaskConfig) => 
         description: "Synchronize data between Elasticsearch and DynamoDB",
         maxIterations: 50,
         disableDatabaseLogs: true,
-        async run({ context, response, isCloseToTimeout, isAborted, store, input }) {
+        async run({ context, response, isCloseToTimeout, isAborted, store, input, timer }) {
             const { Manager } = await import(
                 /* webpackChunkName: "Manager" */
                 "../Manager"
@@ -29,7 +29,8 @@ export const createDataSynchronization = (params?: IElasticsearchTaskConfig) => 
                 context,
                 isAborted,
                 isCloseToTimeout,
-                store
+                store,
+                timer
             });
 
             const indexManager = new IndexManager(manager.elasticsearch, {});

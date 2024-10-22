@@ -12,6 +12,9 @@
     "access": "public",
     "directory": "dist"
   },
+  "dependencies": {
+    "@webiny/api": "0.0.0"
+  },
   "devDependencies": {
     "@babel/cli": "^7.23.9",
     "@babel/core": "^7.24.0",

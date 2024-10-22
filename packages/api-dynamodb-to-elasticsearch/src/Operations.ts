@@ -13,10 +13,18 @@ export enum OperationType {
 }
 
 export class Operations implements IOperations {
-    public readonly items: GenericRecord[] = [];
+    private _items: GenericRecord[] = [];
+
+    public get items(): GenericRecord[] {
+        return this._items;
+    }
 
     public get total(): number {
         return this.items.length;
+    }
+
+    public clear() {
+        this._items = [];
     }
 
     public insert(params: IInsertOperationParams): void {

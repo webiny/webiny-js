@@ -139,6 +139,27 @@ export const createFormBuilderStorageOperations: FormBuilderStorageOperationsFac
 
     return {
         beforeInit: async (context: FormBuilderContext) => {
+            context.db.registry.register({
+                item: entities.form,
+                app: "fb",
+                tags: ["regular", "form"]
+            });
+            context.db.registry.register({
+                item: entities.esForm,
+                app: "fb",
+                tags: ["es", "form"]
+            });
+            context.db.registry.register({
+                item: entities.submission,
+                app: "fb",
+                tags: ["regular", "form-submission"]
+            });
+            context.db.registry.register({
+                item: entities.esSubmission,
+                app: "fb",
+                tags: ["es", "form-submission"]
+            });
+
             const types: string[] = [
                 // Elasticsearch
                 CompressionPlugin.type,

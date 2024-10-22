@@ -2,18 +2,15 @@ import {
     BlockCategoryStorageOperations as BaseBlockCategoryStorageOperations,
     CategoryStorageOperations as BaseCategoryStorageOperations,
     PageBlockStorageOperations as BasePageBlockStorageOperations,
+    PageBuilderContextObject,
     PageBuilderStorageOperations as BasePageBuilderStorageOperations,
     PageTemplateStorageOperations as BasePageTemplateStorageOperations,
-    PbContext
+    PbContext as BasePbContext
 } from "@webiny/api-page-builder/types";
-import { Entity, Table } from "@webiny/db-dynamodb/toolbox";
+import { AttributeDefinition, Entity, Table, TableConstructor } from "@webiny/db-dynamodb/toolbox";
 import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import { Client } from "@elastic/elasticsearch";
 import { PluginCollection } from "@webiny/plugins/types";
-import { TableConstructor } from "@webiny/db-dynamodb/toolbox";
-import { AttributeDefinition } from "@webiny/db-dynamodb/toolbox";
-
-export { PbContext };
 
 export type Attributes = Record<string, AttributeDefinition>;
 
@@ -50,6 +47,12 @@ export interface PageBuilderStorageOperations extends BasePageBuilderStorageOper
         | "pageTemplates",
         Entity<any>
     >;
+}
+
+export interface PbContext extends BasePbContext {
+    pageBuilder: PageBuilderContextObject & {
+        storageOperations: PageBuilderStorageOperations;
+    };
 }
 
 export interface StorageOperationsFactoryParams {

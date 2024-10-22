@@ -4,6 +4,8 @@ import {
     IFactories
 } from "~/tasks/dataSynchronization/types";
 import { IIndexManager } from "~/settings/types";
+import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchSynchronize";
+import { ElasticsearchFetcher } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchFetcher";
 
 export interface IDataSynchronizationTaskRunnerParams {
     manager: IDataSynchronizationManager;
@@ -30,7 +32,14 @@ export class DataSynchronizationTaskRunner {
         if (!input.elasticsearchToDynamoDb?.finished) {
             const sync = this.factories.createElasticsearchToDynamoDb({
                 manager: this.manager,
-                indexManager: this.indexManager
+                indexManager: this.indexManager,
+                synchronize: new ElasticsearchSynchronize({
+                    context: this.manager.context,
+                    timer: this.manager.timer
+                }),
+                fetcher: new ElasticsearchFetcher({
+                    client: this.manager.elasticsearch
+                })
             });
             try {
                 return await sync.run(input);
