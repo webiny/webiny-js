@@ -2,6 +2,7 @@ import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { makeDecoratable } from "@webiny/react-composition";
 import { cn } from "~/utils";
+import { useSlider } from "~/Slider/useSlider";
 
 /**
  * Slider Root
@@ -41,29 +42,49 @@ const SliderBaseThumb = () => (
 
 const SliderThumb = makeDecoratable("SliderThumb", SliderBaseThumb);
 
-interface SliderProps extends Omit<SliderPrimitive.SliderProps, "defaultValue" | "value"> {
+interface SliderProps
+    extends Omit<
+        SliderPrimitive.SliderProps,
+        "defaultValue" | "value" | "onValueChange" | "onValueCommit"
+    > {
     value?: number;
+    onValueChange?(value: number): void;
+    onValueCommit?(value: number): void;
 }
 
-const SliderBase = ({ value: originalValue, onValueChange, ...props }: SliderProps) => {
-    const value =
+const SliderBase = ({
+    value: originalValue,
+    onValueChange: originalOnValueChange,
+    onValueCommit,
+    ...props
+}: SliderProps) => {
+    const initialValue =
         originalValue !== undefined
-            ? [originalValue] // Wrap in an array if it's a number.
-            : [props.min ?? 0]; // Fallback to `min`, or 0 if both are undefined.
-    const [localValue, setLocalValue] = React.useState(value);
+            ? originalValue // Use the original value if defined.
+            : props.min ?? 0; // Fallback to `min`, or 0 if both are undefined.
+    const [value, onValueChange] = useSlider(initialValue, originalOnValueChange);
 
     const handleValueChange = React.useCallback(
         (newValue: number[]) => {
-            setLocalValue(newValue);
-            if (onValueChange) {
-                onValueChange(newValue);
-            }
+            onValueChange?.(newValue[0]);
         },
         [onValueChange]
     );
 
+    const handleValueCommit = React.useCallback(
+        (newValue: number[]) => {
+            onValueCommit?.(newValue[0]);
+        },
+        [onValueCommit]
+    );
+
     return (
-        <SliderRoot {...props} value={localValue} onValueChange={handleValueChange}>
+        <SliderRoot
+            {...props}
+            value={[value]}
+            onValueChange={handleValueChange}
+            onValueCommit={handleValueCommit}
+        >
             <SliderTrack />
             <SliderThumb />
         </SliderRoot>
@@ -74,4 +95,4 @@ SliderBase.displayName = SliderPrimitive.Root.displayName;
 
 const Slider = makeDecoratable("Slider", SliderBase);
 
-export { Slider, SliderRoot, SliderTrack, SliderThumb };
+export { Slider, type SliderProps, SliderRoot, SliderTrack, SliderThumb };
