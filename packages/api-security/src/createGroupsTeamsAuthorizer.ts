@@ -45,8 +45,6 @@ export const createGroupsTeamsAuthorizer = <TContext extends SecurityContext = S
         const { security, wcp } = context;
         security.addAuthorizer(async () => {
             const identity = security.getIdentity();
-            const tenant = context.tenancy.getCurrentTenant();
-
             if (!identity) {
                 return null;
             }
@@ -55,7 +53,6 @@ export const createGroupsTeamsAuthorizer = <TContext extends SecurityContext = S
             if (config.identityType && identity.type !== config.identityType) {
                 return null;
             }
-
 
             // @ts-expect-error Check `packages/api-security/src/plugins/tenantLinkAuthorization.ts:23`.
             const locale = context.i18n?.getContentLocale();
@@ -95,23 +92,25 @@ export const createGroupsTeamsAuthorizer = <TContext extends SecurityContext = S
                 groupSlugs.push(...identity.groups);
             }
 
-            // Load groups coming from teams.
-            if (config.listTeamSlugs) {
-                const teamSlugs = await config.listTeamSlugs(context);
-                teamSlugs.push(...groupSlugs);
-            }
-
-            if (identity.team) {
-                teamSlugs.push(identity.team);
-            }
-
-            if (identity.teams) {
-                teamSlugs.push(...identity.teams);
-            }
-
             if (wcp.canUseTeams()) {
-                const loadedTeams = await security.getStorageOperations().listTeams({
-                    where: { tenant: tenant.id, slug_in: teamSlugs.filter(Boolean) as string[] }
+                // Load groups coming from teams.
+                if (config.listTeamSlugs) {
+                    const teamSlugs = await config.listTeamSlugs(context);
+                    teamSlugs.push(...groupSlugs);
+                }
+
+                if (identity.team) {
+                    teamSlugs.push(identity.team);
+                }
+
+                if (identity.teams) {
+                    teamSlugs.push(...identity.teams);
+                }
+
+                const loadedTeams = await security.withoutAuthorization(() => {
+                    return security.listTeams({
+                        where: { slug_in: teamSlugs.filter(Boolean) as string[] }
+                    });
                 });
 
                 groupSlugs.push(...loadedTeams.map(team => team.groups).flat());
@@ -120,8 +119,10 @@ export const createGroupsTeamsAuthorizer = <TContext extends SecurityContext = S
             const dedupedGroupSlugs = Array.from(new Set(groupSlugs)) as string[];
 
             // Load groups coming from teams.
-            const loadedGroups = await security.getStorageOperations().listGroups({
-                where: { tenant: tenant.id, slug_in: dedupedGroupSlugs }
+            const loadedGroups = await security.withoutAuthorization(() => {
+                return security.listGroups({
+                    where: { slug_in: dedupedGroupSlugs }
+                });
             });
 
             if (loadedGroups.length > 0) {
@@ -134,9 +135,13 @@ export const createGroupsTeamsAuthorizer = <TContext extends SecurityContext = S
             // NOTE: this will work well for flat tenant hierarchy where there's a `root` tenant and 1 level of sibling sub-tenants.
             // For multi-level hierarchy, the best approach is to code a plugin with the desired permission fetching logic.
 
+            const tenant = context.tenancy.getCurrentTenant();
+
             if (tenant.parent && config.inheritGroupsFromParentTenant !== false) {
-                const groups = await security.getStorageOperations().listGroups({
-                    where: { tenant: tenant.parent, slug_in: dedupedGroupSlugs }
+                const groups = await security.withoutAuthorization(() => {
+                    return security.listGroups({
+                        where: { slug_in: dedupedGroupSlugs }
+                    });
                 });
 
                 if (groups.length > 0) {
