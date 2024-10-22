@@ -1,5 +1,5 @@
 import React from "react";
-import { Slider as AdminUiSlider } from "@webiny/admin-ui/form-components";
+import { Slider as AdminUiSlider } from "@webiny/admin-ui";
 import { FormComponentProps } from "~/types";
 import { FormElementMessage } from "~/FormElementMessage";
 
