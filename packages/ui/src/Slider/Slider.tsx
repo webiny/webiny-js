@@ -39,12 +39,12 @@ type Props = FormComponentProps & {
  * Please use the `Slider` component from the `@webiny/admin-ui` package instead.
  */
 class Slider extends React.Component<Props> {
-    onValueCommit = (values: number[]) => {
-        this.props.onChange && this.props.onChange(values[0]);
+    onValueCommit = (value: number) => {
+        this.props.onChange && this.props.onChange(value);
     };
 
-    onValueChange = (values: number[]) => {
-        this.props.onInput && this.props.onInput(values[0]);
+    onValueChange = (value: number) => {
+        this.props.onInput && this.props.onInput(value);
     };
 
     toFloat = (value: number | string | undefined, defaultValue = 0): number => {
@@ -71,13 +71,18 @@ class Slider extends React.Component<Props> {
 
         return (
             <React.Fragment>
+                {label && (
+                    <div className="mdc-text-field-helper-text mdc-text-field-helper-text--persistent">
+                        {label}
+                    </div>
+                )}
+
                 <AdminUiSlider
                     {...this.props}
                     min={this.toFloat(this.props.min)}
                     max={this.toFloat(this.props.max, 100)}
                     step={this.toFloat(this.props.step, 1)}
                     value={sliderValue}
-                    label={label}
                     onValueCommit={this.onValueCommit}
                     onValueChange={this.onValueChange}
                 />
