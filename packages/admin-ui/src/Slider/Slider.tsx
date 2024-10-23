@@ -79,8 +79,8 @@ const SliderBase = ({
     return (
         <SliderRoot
             {...props}
-            value={value ? [value] : undefined}
-            defaultValue={defaultValue ? [defaultValue] : undefined}
+            value={value !== undefined ? [value] : undefined}
+            defaultValue={defaultValue !== undefined ? [defaultValue] : undefined}
             onValueChange={handleValueChange}
             onValueCommit={handleValueCommit}
         >

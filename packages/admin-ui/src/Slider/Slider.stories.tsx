@@ -34,6 +34,14 @@ export const WithMinAndMaxValues = {
     }
 };
 
+export const WithNegativeMinValue = {
+    args: {
+        min: -100,
+        max: 100,
+        defaultValue: 0
+    }
+};
+
 export const WithDefaultValue = {
     args: {
         defaultValue: 50

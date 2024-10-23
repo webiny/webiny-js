@@ -46,6 +46,15 @@ export const WithMinAndMaxValues = {
     }
 };
 
+export const WithNegativeMinValue = {
+    args: {
+        label: "Label",
+        min: -100,
+        max: 100,
+        defaultValue: 0
+    }
+};
+
 export const WithSteps = {
     args: {
         label: "Label",
