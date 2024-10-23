@@ -226,7 +226,7 @@ export const createGroupsMethods = ({
         async listGroups(this: Security, { where }: ListGroupsParams = {}) {
             await checkPermission(this);
             try {
-                const whereWithTenant = { tenant: getTenant(), ...where };
+                const whereWithTenant = { ...where, tenant: getTenant() };
 
                 const groupsFromDatabase = await storageOperations.listGroups({
                     where: whereWithTenant,
