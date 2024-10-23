@@ -34,8 +34,7 @@ const SliderBaseWithTopValue = ({ label, labelValue, ...props }: SliderBaseProps
     return (
         <div className={"w-full"}>
             <div className={"flex pr-1 py-1 mb-2"}>
-                <Label text={label} weight={"light"} />
-                <SliderValue value={labelValue} />
+                <Label text={label} weight={"light"} value={labelValue} />
             </div>
             <div>
                 <BaseSlider {...props} />
@@ -67,47 +66,30 @@ const SliderBaseWithSideValue = ({ label, labelValue, ...props }: SliderBaseProp
 
 const SliderWithSideValue = makeDecoratable("SliderWithSideValue", SliderBaseWithSideValue);
 
-const FormSlider = ({
-    value: originalValue,
-    onValueChange: originalOnValueChange,
-    valueConverter,
-    label,
-    labelPosition = "top",
-    ...props
-}: SliderProps) => {
-    const initialValue =
-        originalValue !== undefined
-            ? originalValue // Use the original value if defined.
-            : props.min ?? 0; // Fallback to `min`, or 0 if both are undefined.
-    const { value, onValueChange } = useSlider(initialValue, originalOnValueChange);
+const FormSlider = (props: SliderProps) => {
+    const { value, labelValue, onValueChange } = useSlider(props);
 
-    const labelValue = React.useMemo(() => {
-        return valueConverter ? valueConverter(value) : String(value);
-    }, [value, valueConverter]);
-
-    if (labelPosition === "side") {
+    if (props.labelPosition === "side") {
         return (
             <SliderWithSideValue
+                {...props}
                 value={value}
-                label={label}
                 labelValue={labelValue}
                 onValueChange={onValueChange}
-                {...props}
             />
         );
     }
 
     return (
         <SliderWithTopValue
+            {...props}
             value={value}
             labelValue={labelValue}
-            label={label}
             onValueChange={onValueChange}
-            {...props}
         />
     );
 };
 
 const Slider = makeDecoratable("Slider", FormSlider);
 
-export { Slider };
+export { Slider, type SliderProps };
