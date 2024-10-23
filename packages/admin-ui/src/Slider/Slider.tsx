@@ -2,7 +2,6 @@ import * as React from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { makeDecoratable } from "@webiny/react-composition";
 import { cn } from "~/utils";
-import { useSlider } from "./useSlider";
 
 /**
  * Slider Root
@@ -51,22 +50,18 @@ interface SliderProps
         "defaultValue" | "value" | "onValueChange" | "onValueCommit"
     > {
     value?: number;
+    defaultValue?: number;
     onValueChange?(value: number): void;
     onValueCommit?(value: number): void;
 }
 
 const SliderBase = ({
-    value: originalValue,
-    onValueChange: originalOnValueChange,
+    value,
+    defaultValue,
+    onValueChange,
     onValueCommit,
     ...props
 }: SliderProps) => {
-    const initialValue =
-        originalValue !== undefined
-            ? originalValue // Use the original value if defined.
-            : props.min ?? 0; // Fallback to `min`, or 0 if both are undefined.
-    const { value, onValueChange } = useSlider(initialValue, originalOnValueChange);
-
     const handleValueChange = React.useCallback(
         (newValue: number[]) => {
             onValueChange?.(newValue[0]);
@@ -84,7 +79,8 @@ const SliderBase = ({
     return (
         <SliderRoot
             {...props}
-            value={[value]}
+            value={value ? [value] : undefined}
+            defaultValue={defaultValue ? [defaultValue] : undefined}
             onValueChange={handleValueChange}
             onValueCommit={handleValueCommit}
         >

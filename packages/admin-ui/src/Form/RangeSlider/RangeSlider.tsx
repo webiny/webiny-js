@@ -3,9 +3,9 @@ import { makeDecoratable } from "@webiny/react-composition";
 import { Label } from "~/Label";
 import {
     RangeSlider as BaseRangeSlider,
-    RangeSliderProps as BaseRangeSliderProps,
-    useRangeSlider
+    RangeSliderProps as BaseRangeSliderProps
 } from "~/RangeSlider";
+import { useRangeSlider } from "~/Form/RangeSlider/useRangeSlider";
 
 /**
  * Range Slider Value
@@ -26,7 +26,8 @@ interface RangeSliderProps extends BaseRangeSliderProps {
 }
 
 const FormRangeSlider = ({
-    value: originalValues,
+    value,
+    defaultValue,
     onValueChange: originalOnValuesChange,
     valueConverter,
     label,
@@ -34,7 +35,10 @@ const FormRangeSlider = ({
     max = 100,
     ...props
 }: RangeSliderProps) => {
-    const initialValues = originalValues ?? [min, max];
+    const initialValues = React.useMemo(() => {
+        return value || defaultValue || [min, max];
+    }, [value, min, max, defaultValue]);
+
     const { values, onValuesChange } = useRangeSlider(initialValues, originalOnValuesChange);
 
     const labelValues = React.useMemo(() => {
@@ -51,7 +55,7 @@ const FormRangeSlider = ({
                     <RangeSliderValue value={labelValues[0]} />
                 </div>
                 <div className={"basis-10/12"}>
-                    <BaseRangeSlider onValueChange={onValuesChange} {...props} />
+                    <BaseRangeSlider {...props} value={values} onValueChange={onValuesChange} />
                 </div>
                 <div className={"basis-1/12 pl-2 text-right"}>
                     <RangeSliderValue value={labelValues[1]} />

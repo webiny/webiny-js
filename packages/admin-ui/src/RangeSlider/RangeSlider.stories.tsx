@@ -37,9 +37,9 @@ export const WithMinAndMaxValues = {
     }
 };
 
-export const WithValues = {
+export const WithDefaultValues = {
     args: {
-        value: [25, 75]
+        defaultValue: [25, 75]
     }
 };
 

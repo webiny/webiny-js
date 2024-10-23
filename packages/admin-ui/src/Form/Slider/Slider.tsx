@@ -1,7 +1,8 @@
 import * as React from "react";
 import { makeDecoratable } from "@webiny/react-composition";
 import { Label } from "~/Label";
-import { Slider as BaseSlider, SliderProps as BaseSliderProps, useSlider } from "~/Slider";
+import { Slider as BaseSlider, SliderProps as BaseSliderProps } from "~/Slider";
+import { useSlider } from "~/Form/Slider/useSlider";
 
 /**
  * Slider Value
