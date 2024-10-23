@@ -61,15 +61,13 @@ export const listPermissionsFromGroupsAndTeams = async <
     const teamSlugs: TeamSlug[] = [];
 
     if (config.getGroupSlug) {
-        const groupSlug = await config.getGroupSlug(context);
-        if (groupSlug) {
-            groupSlugs.push(groupSlug);
-        }
+        const loadedGroupSlug = await config.getGroupSlug(context);
+        groupSlugs.push(loadedGroupSlug);
     }
 
     if (config.listGroupSlugs) {
-        const groupSlugs = await config.listGroupSlugs(context);
-        groupSlugs.push(...groupSlugs);
+        const loadedGroupSlugs = await config.listGroupSlugs(context);
+        groupSlugs.push(...loadedGroupSlugs);
     }
 
     if (identity.group) {
@@ -83,8 +81,8 @@ export const listPermissionsFromGroupsAndTeams = async <
     if (wcp.canUseTeams()) {
         // Load groups coming from teams.
         if (config.listTeamSlugs) {
-            const teamSlugs = await config.listTeamSlugs(context);
-            teamSlugs.push(...teamSlugs);
+            const loadedTeamSlugs = await config.listTeamSlugs(context);
+            teamSlugs.push(...loadedTeamSlugs);
         }
 
         if (identity.team) {
@@ -96,10 +94,12 @@ export const listPermissionsFromGroupsAndTeams = async <
         }
 
         const filteredTeamSlugs = teamSlugs.filter(Boolean) as string[];
-        if (filteredTeamSlugs.length > 0) {
+        const dedupedTeamSlugs = Array.from(new Set(filteredTeamSlugs));
+
+        if (dedupedTeamSlugs.length > 0) {
             const loadedTeams = await security.withoutAuthorization(() => {
                 return security.listTeams({
-                    where: { slug_in: filteredTeamSlugs }
+                    where: { slug_in: dedupedTeamSlugs }
                 });
             });
 
