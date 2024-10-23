@@ -36,15 +36,15 @@ export const createGroupsTeamsAuthorizer = <TContext extends SecurityContext = S
                 }
             }
 
-            const permissions = await listPermissionsFromGroupsAndTeams<TContext>({
+            const currentTenantPermissions = await listPermissionsFromGroupsAndTeams<TContext>({
                 config,
                 context,
                 identity,
                 localeCode: locale.code
             });
 
-            if (Array.isArray(permissions)) {
-                return permissions;
+            if (Array.isArray(currentTenantPermissions)) {
+                return currentTenantPermissions;
             }
 
             // If no security groups were found, it could be due to an identity accessing a sub-tenant. In this case,
@@ -65,7 +65,7 @@ export const createGroupsTeamsAuthorizer = <TContext extends SecurityContext = S
                 return [];
             }
 
-            return tenancy.withTenant(parentTenant, async () => {
+            const parentTenantPermissions = await tenancy.withTenant(parentTenant, async () => {
                 return listPermissionsFromGroupsAndTeams({
                     config,
                     context,
@@ -73,6 +73,12 @@ export const createGroupsTeamsAuthorizer = <TContext extends SecurityContext = S
                     localeCode: locale.code
                 });
             });
+
+            if (Array.isArray(parentTenantPermissions)) {
+                return parentTenantPermissions;
+            }
+
+            return null;
         });
     });
 };
