@@ -84,7 +84,7 @@ export const listPermissionsFromGroupsAndTeams = async <
         // Load groups coming from teams.
         if (config.listTeamSlugs) {
             const teamSlugs = await config.listTeamSlugs(context);
-            teamSlugs.push(...groupSlugs);
+            teamSlugs.push(...teamSlugs);
         }
 
         if (identity.team) {
