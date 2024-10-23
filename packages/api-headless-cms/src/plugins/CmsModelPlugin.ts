@@ -359,7 +359,7 @@ export const createPrivateModel = (
     };
 };
 
-const getSingletonTag = (input?: string[]) => {
+const ensureSingletonTag = (input?: string[]) => {
     const tags = input || [];
     return tags.includes(CMS_MODEL_SINGLETON_TAG) ? tags : [...tags, CMS_MODEL_SINGLETON_TAG];
 };
@@ -368,7 +368,7 @@ export const createSingleEntryModel = (input: CmsModelInput, options?: CmsModelP
     return createCmsModelPlugin(
         {
             ...input,
-            tags: getSingletonTag(input.tags)
+            tags: ensureSingletonTag(input.tags)
         },
         options
     );
@@ -379,6 +379,6 @@ export const createSingleEntryPrivateModel = (
 ) => {
     return createPrivateModel({
         ...input,
-        tags: getSingletonTag(input.tags)
+        tags: ensureSingletonTag(input.tags)
     });
 };
