@@ -137,10 +137,11 @@ export const createGroupsTeamsAuthorizer = <TContext extends SecurityContext = S
 
             const tenant = context.tenancy.getCurrentTenant();
 
-            if (tenant.parent && config.inheritGroupsFromParentTenant !== false) {
+            const parentTenant = tenant.parent;
+            if (parentTenant && config.inheritGroupsFromParentTenant !== false) {
                 const groups = await security.withoutAuthorization(() => {
                     return security.listGroups({
-                        where: { slug_in: dedupedGroupSlugs }
+                        where: { tenant: parentTenant, slug_in: dedupedGroupSlugs }
                     });
                 });
 

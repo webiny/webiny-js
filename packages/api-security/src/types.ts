@@ -316,6 +316,7 @@ export interface GetGroupParams {
 
 export interface ListGroupsParams {
     where?: {
+        tenant?: string;
         id_in?: string[];
         slug_in?: string[];
     };
