@@ -11,6 +11,7 @@ import {
 } from "~/types";
 import { createFieldStorageId } from "~/crud/contentModel/createFieldStorageId";
 import { validateStorageId } from "~/crud/contentModel/validateStorageId";
+import { CMS_MODEL_SINGLETON_TAG } from "~/constants";
 
 const createApiName = (name: string) => {
     return upperFirst(camelCase(name));
@@ -356,4 +357,28 @@ export const createPrivateModel = (
         },
         ...input
     };
+};
+
+const ensureSingletonTag = (input?: string[]) => {
+    const tags = input || [];
+    return tags.includes(CMS_MODEL_SINGLETON_TAG) ? tags : [...tags, CMS_MODEL_SINGLETON_TAG];
+};
+
+export const createSingleEntryModel = (input: CmsModelInput, options?: CmsModelPluginOptions) => {
+    return createCmsModelPlugin(
+        {
+            ...input,
+            tags: ensureSingletonTag(input.tags)
+        },
+        options
+    );
+};
+
+export const createSingleEntryPrivateModel = (
+    input: Omit<CmsPrivateModelFull, "group" | "isPrivate">
+) => {
+    return createPrivateModel({
+        ...input,
+        tags: ensureSingletonTag(input.tags)
+    });
 };

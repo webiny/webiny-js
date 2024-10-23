@@ -1,17 +1,18 @@
 import type {
     APIGatewayEvent,
-    Context as LambdaContext,
     APIGatewayEventRequestContextWithAuthorizer,
+    Context as LambdaContext,
     DynamoDBStreamEvent,
     EventBridgeEvent,
     S3Event,
-    SQSEvent,
-    SNSEvent
+    SNSEvent,
+    SQSEvent
 } from "aws-lambda";
-
 import "fastify";
 import { CreateHandlerParams as BaseCreateHandlerParams } from "@webiny/handler";
 import { LambdaFastifyOptions as LambdaOptions } from "@fastify/aws-lambda";
+
+export { AttributeValue, DynamoDBRecord } from "aws-lambda";
 
 export { HandlerRegistry } from "~/registry";
 

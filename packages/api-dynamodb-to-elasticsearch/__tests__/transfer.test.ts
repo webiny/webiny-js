@@ -1,4 +1,4 @@
-import { createEventHandler, Operations } from "~/index";
+import { createEventHandler, OperationType } from "~/index";
 import { createElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/createClient";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { Context, LambdaContext, Reply, Request } from "@webiny/handler-aws/types";
@@ -28,7 +28,7 @@ describe("transfer data", () => {
             event: {
                 Records: [
                     {
-                        eventName: Operations.INSERT,
+                        eventName: OperationType.INSERT,
                         dynamodb: {
                             Keys: marshall({
                                 PK: "PK_TEST",
