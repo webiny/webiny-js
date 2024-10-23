@@ -19764,7 +19764,7 @@ __metadata:
     "@types/graphlib": ^2.1.8
     "@types/is-hotkey": ^0.1.7
     "@types/mime": ^2.0.3
-    "@types/react": 18.2.79
+    "@types/react": 18.3.5
     "@types/store": ^2.0.2
     "@webiny/admin-ui": 0.0.0
     "@webiny/app": 0.0.0
