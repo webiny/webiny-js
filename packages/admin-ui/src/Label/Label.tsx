@@ -45,11 +45,25 @@ const LabelInfo = makeDecoratable("LabelInfo", LabelInfoBase);
 /**
  * Label Value
  */
-interface LabelValueProps {
+const labelValueVariants = cva("", {
+    variants: {
+        weight: {
+            strong: "font-medium",
+            light: "font-light"
+        }
+    },
+    defaultVariants: {
+        weight: "strong"
+    }
+});
+
+interface LabelValueProps extends VariantProps<typeof labelValueVariants> {
     value: React.ReactNode;
 }
 
-const LabelValueBase = ({ value }: LabelValueProps) => <Text text={value} />;
+const LabelValueBase = ({ value, weight }: LabelValueProps) => (
+    <Text text={value} className={cn(labelValueVariants({ weight }))} />
+);
 const LabelValue = makeDecoratable("LabelValue", LabelValueBase);
 
 const labelVariants = cva(
@@ -92,7 +106,7 @@ const LabelBase = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>,
                     {optional && !required && <LabelOptional />}
                 </span>
             </span>
-            {value && <LabelValue value={value} />}
+            {value && <LabelValue value={value} weight={weight} />}
         </LabelPrimitive.Root>
     )
 );
