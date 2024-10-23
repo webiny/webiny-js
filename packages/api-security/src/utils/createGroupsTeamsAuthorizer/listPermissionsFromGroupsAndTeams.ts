@@ -95,11 +95,11 @@ export const listPermissionsFromGroupsAndTeams = async <
             teamSlugs.push(...identity.teams);
         }
 
-        const filteredTeams = teamSlugs.filter(Boolean) as string[];
-        if (teamSlugs.length > 0) {
+        const filteredTeamSlugs = teamSlugs.filter(Boolean) as string[];
+        if (filteredTeamSlugs.length > 0) {
             const loadedTeams = await security.withoutAuthorization(() => {
                 return security.listTeams({
-                    where: { slug_in: filteredTeams }
+                    where: { slug_in: filteredTeamSlugs }
                 });
             });
 
@@ -108,7 +108,9 @@ export const listPermissionsFromGroupsAndTeams = async <
         }
     }
 
-    const dedupedGroupSlugs = Array.from(new Set(groupSlugs)) as string[];
+    const filteredGroupSlugs = groupSlugs.filter(Boolean) as string[];
+    const dedupedGroupSlugs = Array.from(new Set(filteredGroupSlugs));
+
     if (dedupedGroupSlugs.length > 0) {
         // Load groups coming from teams.
         const loadedGroups = await security.withoutAuthorization(() => {
