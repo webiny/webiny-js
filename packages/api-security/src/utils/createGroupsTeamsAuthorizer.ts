@@ -62,7 +62,7 @@ export const createGroupsTeamsAuthorizer = <TContext extends SecurityContext = S
 
             const parentTenant = await tenancy.getTenantById(parentTenantId);
             if (!parentTenant) {
-                return [];
+                return null;
             }
 
             const parentTenantPermissions = await tenancy.withTenant(parentTenant, async () => {
