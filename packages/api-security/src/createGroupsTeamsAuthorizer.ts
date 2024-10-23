@@ -42,7 +42,7 @@ export const createGroupsTeamsAuthorizer = <TContext extends SecurityContext = S
     config: GroupsTeamsAuthorizerConfig<TContext>
 ) => {
     return new ContextPlugin<TContext>(context => {
-        const { security, wcp } = context;
+        const { security, wcp, tenancy } = context;
         security.addAuthorizer(async () => {
             const identity = security.getIdentity();
             if (!identity) {
@@ -137,17 +137,30 @@ export const createGroupsTeamsAuthorizer = <TContext extends SecurityContext = S
 
             const tenant = context.tenancy.getCurrentTenant();
 
-            const parentTenant = tenant.parent;
-            if (parentTenant && config.inheritGroupsFromParentTenant !== false) {
-                const groups = await security.withoutAuthorization(() => {
+            if (config.inheritGroupsFromParentTenant === false) {
+                return null;
+            }
+
+            const parentTenantId = tenant.parent;
+            if (!parentTenantId) {
+                return null;
+            }
+
+            const groups = await security.withoutAuthorization(async () => {
+                const parentTenant = await tenancy.getTenantById(parentTenantId);
+                if (!parentTenant) {
+                    return [];
+                }
+
+                return tenancy.withTenant(parentTenant, async () => {
                     return security.listGroups({
-                        where: { tenant: parentTenant, slug_in: dedupedGroupSlugs }
+                        where: { slug_in: dedupedGroupSlugs }
                     });
                 });
+            });
 
-                if (groups.length > 0) {
-                    return getPermissionsFromSecurityGroupsForLocale(groups, locale.code);
-                }
+            if (groups.length > 0) {
+                return getPermissionsFromSecurityGroupsForLocale(groups, locale.code);
             }
 
             return null;

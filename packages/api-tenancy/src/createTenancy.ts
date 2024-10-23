@@ -85,6 +85,13 @@ export async function createTenancy({
             }
             return results;
         },
+        async withTenant(tenant, cb) {
+            const initialTenant = this.getCurrentTenant();
+            this.setCurrentTenant(tenant);
+            const result = await cb(tenant);
+            this.setCurrentTenant(initialTenant);
+            return result;
+        },
         ...createSystemMethods({ storageOperations }),
         ...createTenantsMethods({ storageOperations, incrementWcpTenants, decrementWcpTenants })
     };
