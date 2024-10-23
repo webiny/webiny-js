@@ -1,8 +1,5 @@
 import { createAuthenticator, AuthenticatorConfig } from "~/createAuthenticator";
-import {
-    createGroupsTeamsAuthorizer,
-    GroupsTeamsAuthorizerConfig
-} from "@webiny/api-security/createGroupsTeamsAuthorizer";
+import { createGroupsTeamsAuthorizer, GroupsTeamsAuthorizerConfig } from "@webiny/api-security";
 import { createIdentityType } from "~/createIdentityType";
 import { createAdminUsersHooks } from "./createAdminUsersHooks";
 import { extendTenancy } from "./extendTenancy";
