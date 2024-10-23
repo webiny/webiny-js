@@ -8,7 +8,7 @@ export { createAuthenticator } from "./createAuthenticator";
 export type { AuthenticatorConfig } from "./createAuthenticator";
 export { createOkta } from "./createOkta";
 
-export { createGroupsTeamsAuthorizer, GroupsTeamsAuthorizerConfig };
+export { createGroupsTeamsAuthorizer, type GroupsTeamsAuthorizerConfig };
 
 // Backwards compatibility.
 // @deprecated Use `createGroupsTeamsAuthorizer` instead.
