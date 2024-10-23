@@ -1,5 +1,5 @@
 import React from "react";
-import { Slider as AdminUiSlider } from "@webiny/admin-ui";
+import { Slider as AdminUiSlider } from "@webiny/admin-ui/Form";
 import { FormComponentProps } from "~/types";
 import { FormElementMessage } from "~/FormElementMessage";
 
@@ -14,10 +14,10 @@ type Props = FormComponentProps & {
     description?: string;
 
     // The minimum value of the Slider.
-    min: number | string;
+    min?: number | string;
 
     // The maximum value of the Slider.
-    max: number | string;
+    max?: number | string;
 
     // A step to quantize values by.
     step?: number | string;
@@ -71,14 +71,9 @@ class Slider extends React.Component<Props> {
 
         return (
             <React.Fragment>
-                {label && (
-                    <div className="mdc-text-field-helper-text mdc-text-field-helper-text--persistent">
-                        {label}
-                    </div>
-                )}
-
                 <AdminUiSlider
                     {...this.props}
+                    label={label}
                     min={this.toFloat(this.props.min)}
                     max={this.toFloat(this.props.max, 100)}
                     step={this.toFloat(this.props.step, 1)}

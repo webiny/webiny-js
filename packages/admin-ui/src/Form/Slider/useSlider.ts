@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo } from "react";
+import { useCallback, useState, useMemo, useEffect } from "react";
 import debounce from "lodash/debounce";
 import { SliderProps } from "./Slider";
 
@@ -15,7 +15,13 @@ export const useSlider = ({
     value,
     valueConverter
 }: SliderProps): UseSlider => {
-    const [localValue, setLocalValue] = useState(value ?? defaultValue ?? min ?? 0);
+    const [localValue, setLocalValue] = useState(defaultValue ?? value ?? min ?? 0);
+
+    useEffect(() => {
+        if (value !== undefined && value !== localValue) {
+            setLocalValue(value);
+        }
+    }, [value]);
 
     const debouncedOnValueChange = useMemo(() => {
         return onValueChange ? debounce(onValueChange, 100) : undefined;

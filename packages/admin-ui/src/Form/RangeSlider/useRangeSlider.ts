@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import debounce from "lodash/debounce";
 import { RangeSliderProps } from "./RangeSlider";
 
@@ -16,7 +16,13 @@ export const useRangeSlider = ({
     onValueChange,
     valueConverter
 }: RangeSliderProps): UseRangeSlider => {
-    const [localValues, setLocalValue] = useState(value ?? defaultValue ?? [min, max]);
+    const [localValues, setLocalValue] = useState(defaultValue ?? value ?? [min, max]);
+
+    useEffect(() => {
+        if (value !== undefined && value !== localValues) {
+            setLocalValue(value);
+        }
+    }, [value]);
 
     const debouncedOnValueChange = useMemo(() => {
         return onValueChange ? debounce(onValueChange, 100) : undefined;
