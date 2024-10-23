@@ -25,30 +25,13 @@ interface RangeSliderProps extends BaseRangeSliderProps {
     valueConverter?: (value: number) => string;
 }
 
-const FormRangeSlider = ({
-    value,
-    defaultValue,
-    onValueChange: originalOnValuesChange,
-    valueConverter,
-    label,
-    min = 0,
-    max = 100,
-    ...props
-}: RangeSliderProps) => {
-    const initialValues = React.useMemo(() => {
-        return value || defaultValue || [min, max];
-    }, [value, min, max, defaultValue]);
-
-    const { values, onValuesChange } = useRangeSlider(initialValues, originalOnValuesChange);
-
-    const labelValues = React.useMemo(() => {
-        return values.map(value => (valueConverter ? valueConverter(value) : String(value)));
-    }, [values, valueConverter]);
+const FormRangeSlider = (props: RangeSliderProps) => {
+    const { values, labelValues, onValuesChange } = useRangeSlider(props);
 
     return (
         <div className={"w-full"}>
             <div>
-                <Label text={label} weight={"light"} />
+                <Label text={props.label} weight={"light"} />
             </div>
             <div className={"flex flex-row items-center justify-between"}>
                 <div className={"basis-1/12 pr-2"}>
@@ -67,4 +50,4 @@ const FormRangeSlider = ({
 
 const RangeSlider = makeDecoratable("RangeSlider", FormRangeSlider);
 
-export { RangeSlider };
+export { RangeSlider, type RangeSliderProps };

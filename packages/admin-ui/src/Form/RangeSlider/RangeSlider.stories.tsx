@@ -31,6 +31,35 @@ export const Default: Story = {
     }
 };
 
+export const WithMinAndMaxValues = {
+    args: {
+        label: "Label",
+        min: 25,
+        max: 75
+    }
+};
+
+export const WithDefaultValues = {
+    args: {
+        label: "Label",
+        defaultValue: [25, 75]
+    }
+};
+
+export const WithSteps = {
+    args: {
+        label: "Label",
+        step: 10
+    }
+};
+
+export const Disabled = {
+    args: {
+        label: "Label",
+        disabled: true
+    }
+};
+
 export const WithCustomValueConverter = {
     args: {
         label: "Label",
