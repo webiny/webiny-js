@@ -1,5 +1,5 @@
 import { createAuthenticator, AuthenticatorConfig } from "~/createAuthenticator";
-import { createGroupAuthorizer, GroupAuthorizerConfig } from "~/createGroupAuthorizer";
+import { createGroupsTeamsAuthorizer, GroupsTeamsAuthorizerConfig } from "@webiny/api-security";
 import { createIdentityType } from "~/createIdentityType";
 import { createAdminUsersHooks } from "./createAdminUsersHooks";
 import { extendTenancy } from "./extendTenancy";
@@ -7,7 +7,7 @@ import { Context } from "~/types";
 
 export interface CreateAuth0Config<TContext extends Context = Context>
     extends AuthenticatorConfig,
-        GroupAuthorizerConfig<TContext> {
+        GroupsTeamsAuthorizerConfig<TContext> {
     graphQLIdentityType?: string;
 }
 
@@ -22,7 +22,7 @@ export const createAuth0 = <TContext extends Context = Context>(
             domain: config.domain,
             getIdentity: config.getIdentity
         }),
-        createGroupAuthorizer<TContext>({
+        createGroupsTeamsAuthorizer<TContext>({
             identityType,
             getGroupSlug: config.getGroupSlug,
             inheritGroupsFromParentTenant: config.inheritGroupsFromParentTenant,

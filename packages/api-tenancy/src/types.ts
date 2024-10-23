@@ -53,6 +53,10 @@ export interface Tenancy {
         tenants: TTenant[],
         cb: (tenant: TTenant) => Promise<TReturn>
     ): Promise<TReturn[]>;
+    withTenant<TTenant extends Tenant, TReturn>(
+        tenant: TTenant,
+        cb: (tenant: TTenant) => Promise<TReturn>
+    ): Promise<TReturn>;
 }
 
 export interface TenancyContext extends BaseContext, DbContext, WcpContext {

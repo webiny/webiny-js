@@ -1,5 +1,5 @@
 import { createAuthenticator, AuthenticatorConfig } from "~/createAuthenticator";
-import { createGroupAuthorizer, GroupAuthorizerConfig } from "~/createGroupAuthorizer";
+import { createGroupsTeamsAuthorizer, GroupsTeamsAuthorizerConfig } from "@webiny/api-security";
 import { createIdentityType } from "~/createIdentityType";
 import { extendTenancy } from "./extendTenancy";
 import { createAdminUsersHooks } from "./createAdminUsersHooks";
@@ -7,7 +7,7 @@ import { Context } from "~/types";
 
 export interface CreateOktaConfig<TContext extends Context = Context>
     extends AuthenticatorConfig,
-        GroupAuthorizerConfig<TContext> {
+        GroupsTeamsAuthorizerConfig<TContext> {
     graphQLIdentityType?: string;
 }
 
@@ -22,7 +22,7 @@ export const createOkta = <TContext extends Context = Context>(
             issuer: config.issuer,
             getIdentity: config.getIdentity
         }),
-        createGroupAuthorizer<TContext>({
+        createGroupsTeamsAuthorizer<TContext>({
             identityType,
             getGroupSlug: config.getGroupSlug
         }),
