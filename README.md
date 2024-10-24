@@ -101,13 +101,13 @@ Webiny has many features, too many to list to make this readme digestible, so in
 
 - **Headless CMS** - Programmatically integrate your apps with Webiny's GraphQL Headless CMS.
 
-- **GraphQL API** - You can build a GraphQL API using the [Headless CMS](https://www.webiny.com/serverless-app/headless-cms), but you can [also use the `webiny scaffold` command](https://www.webiny.com/docs/how-to-guides/scaffolding/graphql-api) to create new GraphQL resolvers where you can add your custom business logic.
+- **GraphQL API** - You can build a GraphQL API using the [Headless CMS](https://www.webiny.com/serverless-app/headless-cms), but you can [also use the `webiny scaffold` command](https://www.webiny.com/docs/core-development-concepts/scaffolding/extend-graphql-api) to create new GraphQL resolvers where you can add your custom business logic.
 
 - **Marketing landing pages and micro-sites** - Using the [Page Builder](https://www.webiny.com/serverless-app/page-builder) marketing teams can quickly build new websites without knowledge of HTML or CSS. 
 
 - **Multi-tenant SaaS applications** - Webiny has a robust multi-tenancy layer with built-in data separation. You can build your own SaaS applications on top and let Webiny handle the API, security, and data storage for you.
 
-- **Full-stack serverless applications** - Besides using Webiny to manage your content needs, you can expand the existing functionality by creating new full-stack serverless applications on top. Follow [this tutorial](https://www.webiny.com/docs/tutorials/create-custom-application/introduction) to build your own full-stack serverless Pinterest clone.
+- **Full-stack serverless applications** - Besides using Webiny to manage your content needs, you can expand the existing functionality by creating new full-stack serverless applications on top.
 
 - **Multi-website & multi-language portal** - All Webiny apps are multi-tenant by default, meaning with a single instance of Webiny, you can run hundreds of projects and websites from a single code-base.
 
