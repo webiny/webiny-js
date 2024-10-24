@@ -1,86 +1,86 @@
 module.exports = {
     backgroundColor: {
         destructive: {
-            DEFAULT: "var(--bg-destructive-default)",
-            default: "var(--bg-destructive-default)",
-            disabled: "var(--bg-destructive-disabled)",
-            muted: "var(--bg-destructive-muted)",
-            strong: "var(--bg-destructive-strong)",
-            subtle: "var(--bg-destructive-subtle)",
-            xstrong: "var(--bg-destructive-xstrong)"
+            DEFAULT: "hsl(var(--bg-destructive-default))",
+            default: "hsl(var(--bg-destructive-default))",
+            disabled: "hsl(var(--bg-destructive-disabled))",
+            muted: "hsl(var(--bg-destructive-muted))",
+            strong: "hsl(var(--bg-destructive-strong))",
+            subtle: "hsl(var(--bg-destructive-subtle))",
+            xstrong: "hsl(var(--bg-destructive-xstrong))"
         },
         neutral: {
-            DEFAULT: "var(--bg-neutral-default)",
-            base: "var(--bg-neutral-base)",
-            dark: "var(--bg-neutral-dark)",
-            dimmed: "var(--bg-neutral-dimmed)",
-            disabled: "var(--bg-neutral-disabled)",
-            light: "var(--bg-neutral-light)",
-            muted: "var(--bg-neutral-muted)",
-            strong: "var(--bg-neutral-strong)",
-            subtle: "var(--bg-neutral-subtle)",
-            xstrong: "var(--bg-neutral-xstrong)"
+            DEFAULT: "hsl(var(--bg-neutral-default))",
+            base: "hsl(var(--bg-neutral-base))",
+            dark: "hsl(var(--bg-neutral-dark))",
+            dimmed: "hsl(var(--bg-neutral-dimmed))",
+            disabled: "hsl(var(--bg-neutral-disabled))",
+            light: "hsl(var(--bg-neutral-light))",
+            muted: "hsl(var(--bg-neutral-muted))",
+            strong: "hsl(var(--bg-neutral-strong))",
+            subtle: "hsl(var(--bg-neutral-subtle))",
+            xstrong: "hsl(var(--bg-neutral-xstrong))"
         },
         primary: {
-            DEFAULT: "var(--bg-primary-default)",
-            default: "var(--bg-primary-default)",
-            disabled: "var(--bg-primary-disabled)",
-            muted: "var(--bg-primary-muted)",
-            strong: "var(--bg-primary-strong)",
-            subtle: "var(--bg-primary-subtle)",
-            xstrong: "var(--bg-primary-xstrong)"
+            DEFAULT: "hsl(var(--bg-primary-default))",
+            default: "hsl(var(--bg-primary-default))",
+            disabled: "hsl(var(--bg-primary-disabled))",
+            muted: "hsl(var(--bg-primary-muted))",
+            strong: "hsl(var(--bg-primary-strong))",
+            subtle: "hsl(var(--bg-primary-subtle))",
+            xstrong: "hsl(var(--bg-primary-xstrong))"
         },
         secondary: {
-            DEFAULT: "var(--bg-secondary-default)",
-            default: "var(--bg-secondary-default)",
-            disabled: "var(--bg-secondary-disabled)",
-            muted: "var(--bg-secondary-muted)",
-            strong: "var(--bg-secondary-strong)",
-            subtle: "var(--bg-secondary-subtle)",
-            xstrong: "var(--bg-secondary-xstrong)"
+            DEFAULT: "hsl(var(--bg-secondary-default))",
+            default: "hsl(var(--bg-secondary-default))",
+            disabled: "hsl(var(--bg-secondary-disabled))",
+            muted: "hsl(var(--bg-secondary-muted))",
+            strong: "hsl(var(--bg-secondary-strong))",
+            subtle: "hsl(var(--bg-secondary-subtle))",
+            xstrong: "hsl(var(--bg-secondary-xstrong))"
         },
         success: {
-            DEFAULT: "var(--bg-success-default)",
-            default: "var(--bg-success-default)",
-            disabled: "var(--bg-success-disabled)",
-            muted: "var(--bg-success-muted)",
-            strong: "var(--bg-success-strong)",
-            subtle: "var(--bg-success-subtle)",
-            xstrong: "var(--bg-success-xstrong)"
+            DEFAULT: "hsl(var(--bg-success-default))",
+            default: "hsl(var(--bg-success-default))",
+            disabled: "hsl(var(--bg-success-disabled))",
+            muted: "hsl(var(--bg-success-muted))",
+            strong: "hsl(var(--bg-success-strong))",
+            subtle: "hsl(var(--bg-success-subtle))",
+            xstrong: "hsl(var(--bg-success-xstrong))"
         },
         warning: {
-            DEFAULT: "var(--bg-warning-default)",
-            default: "var(--bg-warning-default)",
-            disabled: "var(--bg-warning-disabled)",
-            muted: "var(--bg-warning-muted)",
-            strong: "var(--bg-warning-strong)",
-            subtle: "var(--bg-warning-subtle)",
-            xstrong: "var(--bg-warning-xstrong)"
+            DEFAULT: "hsl(var(--bg-warning-default))",
+            default: "hsl(var(--bg-warning-default))",
+            disabled: "hsl(var(--bg-warning-disabled))",
+            muted: "hsl(var(--bg-warning-muted))",
+            strong: "hsl(var(--bg-warning-strong))",
+            subtle: "hsl(var(--bg-warning-subtle))",
+            xstrong: "hsl(var(--bg-warning-xstrong))"
         }
     },
     borderColor: {
         accent: {
-            DEFAULT: "var(--border-accent-default)",
-            default: "var(--border-accent-default)",
-            dimmed: "var(--border-accent-dimmed)",
-            subtle: "var(--border-accent-subtle)"
+            DEFAULT: "hsl(var(--border-accent-default))",
+            default: "hsl(var(--border-accent-default))",
+            dimmed: "hsl(var(--border-accent-dimmed))",
+            subtle: "hsl(var(--border-accent-subtle))"
         },
         destructive: {
-            DEFAULT: "var(--border-destructive-default)",
-            default: "var(--border-destructive-default)"
+            DEFAULT: "hsl(var(--border-destructive-default))",
+            default: "hsl(var(--border-destructive-default))"
         },
         neutral: {
-            DEFAULT: "var(--border-neutral-default)",
-            black: "var(--border-neutral-black)",
-            dark: "var(--border-neutral-dark)",
-            dimmed: "var(--border-neutral-dimmed)",
-            muted: "var(--border-neutral-muted)",
-            strong: "var(--border-neutral-strong)",
-            subtle: "var(--border-neutral-subtle)"
+            DEFAULT: "hsl(var(--border-neutral-default))",
+            black: "hsl(var(--border-neutral-black))",
+            dark: "hsl(var(--border-neutral-dark))",
+            dimmed: "hsl(var(--border-neutral-dimmed))",
+            muted: "hsl(var(--border-neutral-muted))",
+            strong: "hsl(var(--border-neutral-strong))",
+            subtle: "hsl(var(--border-neutral-subtle))"
         },
         sucess: {
-            DEFAULT: "var(--border-sucess-default)",
-            default: "var(--border-sucess-default)"
+            DEFAULT: "hsl(var(--border-sucess-default))",
+            default: "hsl(var(--border-sucess-default))"
         }
     },
     borderRadius: {
@@ -124,31 +124,31 @@ module.exports = {
     },
     textColor: {
         accent: {
-            DEFAULT: "var(--text-accent-default)",
-            muted: "var(--text-accent-muted)",
-            primary: "var(--text-accent-primary)",
-            subtle: "var(--text-accent-subtle)"
+            DEFAULT: "hsl(var(--text-accent-default))",
+            muted: "hsl(var(--text-accent-muted))",
+            primary: "hsl(var(--text-accent-primary))",
+            subtle: "hsl(var(--text-accent-subtle))"
         },
         destructive: {
-            DEFAULT: "var(--text-destructive-default)",
-            muted: "var(--text-destructive-muted)",
-            primary: "var(--text-destructive-primary)",
-            subtle: "var(--text-destructive-subtle)"
+            DEFAULT: "hsl(var(--text-destructive-default))",
+            muted: "hsl(var(--text-destructive-muted))",
+            primary: "hsl(var(--text-destructive-primary))",
+            subtle: "hsl(var(--text-destructive-subtle))"
         },
         neutral: {
-            DEFAULT: "var(--text-neutral-default)",
-            dimmed: "var(--text-neutral-dimmed)",
-            disabled: "var(--text-neutral-disabled)",
-            light: "var(--text-neutral-light)",
-            muted: "var(--text-neutral-muted)",
-            primary: "var(--text-neutral-primary)",
-            strong: "var(--text-neutral-strong)"
+            DEFAULT: "hsl(var(--text-neutral-default))",
+            dimmed: "hsl(var(--text-neutral-dimmed))",
+            disabled: "hsl(var(--text-neutral-disabled))",
+            light: "hsl(var(--text-neutral-light))",
+            muted: "hsl(var(--text-neutral-muted))",
+            primary: "hsl(var(--text-neutral-primary))",
+            strong: "hsl(var(--text-neutral-strong))"
         },
         sucess: {
-            DEFAULT: "var(--text-sucess-default)",
-            muted: "var(--text-sucess-muted)",
-            primary: "var(--text-sucess-primary)",
-            subtle: "var(--text-sucess-subtle)"
+            DEFAULT: "hsl(var(--text-sucess-default))",
+            muted: "hsl(var(--text-sucess-muted))",
+            primary: "hsl(var(--text-sucess-primary))",
+            subtle: "hsl(var(--text-sucess-subtle))"
         }
     }
 };

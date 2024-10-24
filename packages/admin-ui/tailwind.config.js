@@ -29,16 +29,16 @@ module.exports = {
                 "2xl": "1400px"
             }
         },
-
-        backgroundColor,
-        borderColor,
-        borderRadius,
-        borderWidth,
-        margin,
-        padding,
-        spacing,
-        textColor,
         extend: {
+            backgroundColor,
+            borderColor,
+            borderRadius,
+            borderWidth,
+            margin,
+            padding,
+            spacing,
+            textColor,
+
             fontFamily: {
                 sans: ["var(--font-sans)", ...fontFamily.sans]
             },

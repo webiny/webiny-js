@@ -5,11 +5,11 @@ const createTailwindConfigCustomizations = normalizedFigmaExport => {
                 const [color, variant] = variantName.split("-");
                 if (!acc[color]) {
                     acc[color] = {
-                        DEFAULT: `var(--bg-${color}-default)`
+                        DEFAULT: `hsl(var(--bg-${color}-default))`
                     };
                 }
 
-                acc[color][variant] = `var(--bg-${variantName})`;
+                acc[color][variant] = `hsl(var(--bg-${variantName}))`;
             }
             return acc;
         }, {}),
@@ -18,11 +18,11 @@ const createTailwindConfigCustomizations = normalizedFigmaExport => {
                 const [color, variant] = variantName.split("-");
                 if (!acc[color]) {
                     acc[color] = {
-                        DEFAULT: `var(--border-${color}-default)`
+                        DEFAULT: `hsl(var(--border-${color}-default))`
                     };
                 }
 
-                acc[color][variant] = `var(--border-${variantName})`;
+                acc[color][variant] = `hsl(var(--border-${variantName}))`;
             }
             return acc;
         }, {}),
@@ -61,11 +61,11 @@ const createTailwindConfigCustomizations = normalizedFigmaExport => {
                 const [color, variant] = variantName.split("-");
                 if (!acc[color]) {
                     acc[color] = {
-                        DEFAULT: `var(--text-${color}-default)`
+                        DEFAULT: `hsl(var(--text-${color}-default))`
                     };
                 }
 
-                acc[color][variant] = `var(--text-${variantName})`;
+                acc[color][variant] = `hsl(var(--text-${variantName}))`;
             }
             return acc;
         }, {}),
