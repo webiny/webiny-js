@@ -49,7 +49,7 @@ const labelValueVariants = cva("", {
     variants: {
         weight: {
             strong: "font-medium",
-            light: "font-light"
+            light: "font-normal"
         }
     },
     defaultVariants: {
@@ -72,7 +72,7 @@ const labelVariants = cva(
         variants: {
             weight: {
                 strong: "font-medium",
-                light: "font-light"
+                light: "font-normal"
             }
         },
         defaultVariants: {

@@ -15,7 +15,7 @@ interface RangeSliderValueProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 const RangeSliderBaseValue = (props: RangeSliderValueProps) => (
-    <span className={"font-light text-sm leading-none"}>{props.value}</span>
+    <span className={"font-normal text-sm leading-none"}>{props.value}</span>
 );
 
 const RangeSliderValue = makeDecoratable("RangeSliderValue", RangeSliderBaseValue);

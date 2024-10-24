@@ -12,8 +12,8 @@ export const useSlider = ({
     defaultValue,
     min,
     onValueChange,
-    value,
-    valueConverter
+    transformValue,
+    value
 }: SliderProps): UseSlider => {
     const [localValue, setLocalValue] = useState(defaultValue ?? value ?? min ?? 0);
 
@@ -36,8 +36,8 @@ export const useSlider = ({
     );
 
     const labelValue = useMemo(() => {
-        return valueConverter ? valueConverter(localValue) : String(localValue);
-    }, [localValue, valueConverter]);
+        return transformValue ? transformValue(localValue) : String(localValue);
+    }, [localValue, transformValue]);
 
     return {
         value: localValue,

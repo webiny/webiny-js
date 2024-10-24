@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Slider } from "./Slider";
+import { TooltipProvider } from "~/Tooltip";
 
 const meta: Meta<typeof Slider> = {
     title: "Components/Form/Slider",
@@ -15,9 +16,11 @@ const meta: Meta<typeof Slider> = {
     },
     decorators: [
         Story => (
-            <div className="w-[60%] h-32 mx-auto flex justify-center items-center">
-                <Story />
-            </div>
+            <TooltipProvider>
+                <div className="w-[60%] h-32 mx-auto flex justify-center items-center">
+                    <Story />
+                </div>
+            </TooltipProvider>
         )
     ]
 };
@@ -38,7 +41,7 @@ export const WithDefaultValue: Story = {
     }
 };
 
-export const WithMinAndMaxValues = {
+export const WithMinAndMaxValues: Story = {
     args: {
         label: "Label",
         min: 10,
@@ -46,7 +49,7 @@ export const WithMinAndMaxValues = {
     }
 };
 
-export const WithNegativeMinValue = {
+export const WithNegativeMinValue: Story = {
     args: {
         label: "Label",
         min: -100,
@@ -55,14 +58,14 @@ export const WithNegativeMinValue = {
     }
 };
 
-export const WithSteps = {
+export const WithSteps: Story = {
     args: {
         label: "Label",
         step: 10
     }
 };
 
-export const Disabled = {
+export const Disabled: Story = {
     args: {
         label: "Label",
         disabled: true,
@@ -70,17 +73,50 @@ export const Disabled = {
     }
 };
 
-export const WithSideLabel = {
+export const WithSideLabel: Story = {
     args: {
         label: "Label",
         labelPosition: "side"
     }
 };
 
-export const WithCustomValueConverter = {
+export const WithTooltip: Story = {
     args: {
         label: "Label",
-        valueConverter: (value: number) => {
+        showTooltip: true
+    }
+};
+
+export const WithTooltipSideTop: Story = {
+    args: {
+        label: "Label",
+        showTooltip: true,
+        tooltipSide: "top"
+    }
+};
+
+export const WithSideLabelAndTooltip: Story = {
+    args: {
+        label: "Label",
+        showTooltip: true,
+        labelPosition: "side"
+    }
+};
+
+export const WithCustomValueConverter: Story = {
+    args: {
+        label: "Label",
+        transformValue: (value: number) => {
+            return `${Math.round(value)}%`;
+        }
+    }
+};
+
+export const WithCustomValueConverterAndTooltip: Story = {
+    args: {
+        label: "Label",
+        showTooltip: true,
+        transformValue: (value: number) => {
             return `${Math.round(value)}%`;
         }
     }

@@ -27,14 +27,14 @@ type Story = StoryObj<typeof Slider>;
 
 export const Default: Story = {};
 
-export const WithMinAndMaxValues = {
+export const WithMinAndMaxValues: Story = {
     args: {
         min: 10,
         max: 20
     }
 };
 
-export const WithNegativeMinValue = {
+export const WithNegativeMinValue: Story = {
     args: {
         min: -100,
         max: 100,
@@ -42,21 +42,43 @@ export const WithNegativeMinValue = {
     }
 };
 
-export const WithDefaultValue = {
+export const WithDefaultValue: Story = {
     args: {
         defaultValue: 50
     }
 };
 
-export const WithSteps = {
+export const WithSteps: Story = {
     args: {
         step: 10
     }
 };
 
-export const Disabled = {
+export const Disabled: Story = {
     args: {
         disabled: true,
         value: 50
+    }
+};
+
+export const WithTooltip: Story = {
+    args: {
+        showTooltip: true
+    }
+};
+
+export const WithTooltipSideTop: Story = {
+    args: {
+        showTooltip: true,
+        tooltipSide: "top"
+    }
+};
+
+export const WithTooltipAndCustomValueTransformer: Story = {
+    args: {
+        showTooltip: true,
+        transformValue: (value: number) => {
+            return `${Math.round(value)}%`;
+        }
     }
 };

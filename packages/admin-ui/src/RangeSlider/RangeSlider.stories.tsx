@@ -54,3 +54,25 @@ export const Disabled = {
         disabled: true
     }
 };
+
+export const WithTooltip: Story = {
+    args: {
+        showTooltip: true
+    }
+};
+
+export const WithTooltipSideTop: Story = {
+    args: {
+        showTooltip: true,
+        tooltipSide: "top"
+    }
+};
+
+export const WithTooltipAndCustomValueTransformer: Story = {
+    args: {
+        showTooltip: true,
+        onValueConvert: (value: number) => {
+            return `${Math.round(value)}%`;
+        }
+    }
+};
