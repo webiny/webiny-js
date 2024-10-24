@@ -48,6 +48,7 @@ schema.graphql
 lerna.json
 .stormTests
 *storybook.log
+.normalizedFigmaExport.json
 
 # TODO remove after moving traffic splitting config to WPC
 gateway.*.json
