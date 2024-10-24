@@ -3,11 +3,9 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { Card, CardContent, CardFooter, CardHeader } from "./Card";
 
-// More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 const meta: Meta<typeof Card> = {
     title: "Components/Card",
     component: Card,
-    // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
     tags: ["autodocs"]
 };
 
@@ -21,7 +19,6 @@ const defaultContentProps = {
     footer: <CardFooter content={"This is card footer. Anything can go in here."} />
 };
 
-// More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Default: Story = {
     args: {
         ...defaultContentProps,

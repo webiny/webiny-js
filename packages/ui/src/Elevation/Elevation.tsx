@@ -1,4 +1,5 @@
 import React from "react";
+import cn from "classnames";
 
 export type ElevationProps = {
     // Any element that needs to be highlighted.
@@ -21,8 +22,12 @@ export type ElevationProps = {
  * @deprecated This component is deprecated and will be removed in future releases.
  * Please use the `Card` component from the `@webiny/admin-ui` package instead.
  */
-const Elevation = (props: ElevationProps) => {
-    return <div className={"bg-white shadow-md p-4"}>{props.children}</div>;
+const Elevation = ({ className, ...props }: ElevationProps) => {
+    return (
+        <div {...props} className={cn("bg-white shadow-md p-4", className)}>
+            {props.children}
+        </div>
+    );
 };
 
 Elevation.displayName = "Elevation";
