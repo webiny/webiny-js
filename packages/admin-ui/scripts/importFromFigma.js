@@ -23,7 +23,7 @@ const saveFileAndFormat = async (filePath, content) => {
         cwd: process.cwd(),
         normalizedFigmaExport: path.join(__dirname, "../.normalizedFigmaExport.json"),
         tailwindConfigCustomizations: path.join(__dirname, "../tailwind.config.customizations.js"),
-        stylesScss: path.join(__dirname, "../src/styles2.scss")
+        stylesScss: path.join(__dirname, "../src/styles.scss")
     };
 
     console.log("Storing...");
