@@ -7,13 +7,10 @@
     // New variables from design.
 
     // Background colors.
-    {BACKGROUND_COLORS}
-
-    // Text colors.
-    {TEXT_COLORS}
+    {BACKGROUND_COLOR}
 
     // Border color.
-    {BORDER_COLORS}
+    {BORDER_COLOR}
 
     // Border radius.
     {BORDER_RADIUS}
@@ -21,20 +18,17 @@
     // Border width.
     {BORDER_WIDTH}
 
-    // Padding.
-    {PADDING}
-
     // Margin.
     {MARGIN}
 
-    // Elevation.
-    {ELEVATION}
-
-    // Fill.
-    {FILL}
+    // Padding.
+    {PADDING}
 
     // Spacing.
     {SPACING}
+
+    // Text color.
+    {TEXT_COLOR}
 
     // Old vars (we'll delete these once we're done).
 

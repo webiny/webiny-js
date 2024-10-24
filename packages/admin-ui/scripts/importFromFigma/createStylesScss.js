@@ -4,7 +4,7 @@ const createStylesScss = normalizedFigmaExport => {
     // Generate `styles.scss` file.
     let stylesScss = fs.readFileSync(__dirname + "/templates/styles.scss.txt", "utf8");
 
-    // 1. Background colors.
+    // 1. Background color.
     {
         let currentBgColorGroup = null;
         const bgColors = normalizedFigmaExport
@@ -26,35 +26,10 @@ const createStylesScss = normalizedFigmaExport => {
             })
             .flat();
 
-        stylesScss = stylesScss.replace("{BACKGROUND_COLORS}", bgColors.join("\n"));
+        stylesScss = stylesScss.replace("{BACKGROUND_COLOR}", bgColors.join("\n"));
     }
 
-    // 2. Text colors.
-    {
-        let currentTextColor = null;
-        const textColors = normalizedFigmaExport
-            .filter(item => item.type === "textColor")
-            .map(variable => {
-                const [colorGroup] = variable.variantName.split("-");
-                const cssVar = `--text-${variable.variantName}: ${variable.hsla.h}, ${variable.hsla.s}%, ${variable.hsla.l}%;`;
-
-                if (!currentTextColor) {
-                    currentTextColor = colorGroup;
-                    return cssVar;
-                }
-
-                if (!currentTextColor || currentTextColor !== colorGroup) {
-                    currentTextColor = colorGroup;
-                    return ["", cssVar];
-                }
-                return cssVar;
-            })
-            .flat();
-
-        stylesScss = stylesScss.replace("{TEXT_COLORS}", textColors.join("\n"));
-    }
-
-    // 3. Border colors.
+    // 2. Border color.
     {
         let currentBorderColor = null;
         const borderColors = normalizedFigmaExport
@@ -76,10 +51,10 @@ const createStylesScss = normalizedFigmaExport => {
             })
             .flat();
 
-        stylesScss = stylesScss.replace("{BORDER_COLORS}", borderColors.join("\n"));
+        stylesScss = stylesScss.replace("{BORDER_COLOR}", borderColors.join("\n"));
     }
 
-    // 4. Border radius.
+    // 3. Border radius.
     {
         const borderRadius = normalizedFigmaExport
             .filter(item => item.type === "borderRadius")
@@ -90,7 +65,7 @@ const createStylesScss = normalizedFigmaExport => {
         stylesScss = stylesScss.replace("{BORDER_RADIUS}", borderRadius.join("\n"));
     }
 
-    // 5. Border width.
+    // 4. Border width.
     {
         const borderWidth = normalizedFigmaExport
             .filter(item => item.type === "borderWidth")
@@ -99,6 +74,15 @@ const createStylesScss = normalizedFigmaExport => {
             );
 
         stylesScss = stylesScss.replace("{BORDER_WIDTH}", borderWidth.join("\n"));
+    }
+
+    // 5. Margin.
+    {
+        const margin = normalizedFigmaExport
+            .filter(item => item.type === "margin")
+            .map(variable => `--margin-${variable.variantName}: ${variable.resolvedValue}px;`);
+
+        stylesScss = stylesScss.replace("{MARGIN}", margin.join("\n"));
     }
 
     // 6. Padding.
@@ -110,41 +94,7 @@ const createStylesScss = normalizedFigmaExport => {
         stylesScss = stylesScss.replace("{PADDING}", padding.join("\n"));
     }
 
-    // 7. Elevation.
-    {
-        const elevation = normalizedFigmaExport
-            .filter(item => item.type === "elevation")
-            .map(variable => `--elevation-${variable.variantName}: ${variable.resolvedValue}px;`);
-
-        stylesScss = stylesScss.replace("{ELEVATION}", elevation.join("\n"));
-    }
-
-    // 8. Fill.
-    {
-        let currentFillColor = null;
-        const textColors = normalizedFigmaExport
-            .filter(item => item.type === "fill")
-            .map(variable => {
-                const [colorGroup] = variable.variantName.split("-");
-                const cssVar = `--fill-${variable.variantName}: ${variable.hsla.h}, ${variable.hsla.s}%, ${variable.hsla.l}%;`;
-
-                if (!currentFillColor) {
-                    currentFillColor = colorGroup;
-                    return cssVar;
-                }
-
-                if (!currentFillColor || currentFillColor !== colorGroup) {
-                    currentFillColor = colorGroup;
-                    return ["", cssVar];
-                }
-                return cssVar;
-            })
-            .flat();
-
-        stylesScss = stylesScss.replace("{FILL}", textColors.join("\n"));
-    }
-
-    // 9. Spacing.
+    // 7. Spacing.
     {
         const spacing = normalizedFigmaExport
             .filter(item => item.type === "spacing")
@@ -153,15 +103,30 @@ const createStylesScss = normalizedFigmaExport => {
         stylesScss = stylesScss.replace("{SPACING}", spacing.join("\n"));
     }
 
-    // 10. Margin.
+    // 8. Text color.
     {
-        const margin = normalizedFigmaExport
-            .filter(item => item.type === "margin")
-            .map(variable => `--margin-${variable.variantName}: ${variable.resolvedValue}px;`);
+        let currentTextColor = null;
+        const textColors = normalizedFigmaExport
+            .filter(item => item.type === "textColor")
+            .map(variable => {
+                const [colorGroup] = variable.variantName.split("-");
+                const cssVar = `--text-${variable.variantName}: ${variable.hsla.h}, ${variable.hsla.s}%, ${variable.hsla.l}%;`;
 
-        stylesScss = stylesScss.replace("{MARGIN}", margin.join("\n"));
+                if (!currentTextColor) {
+                    currentTextColor = colorGroup;
+                    return cssVar;
+                }
+
+                if (!currentTextColor || currentTextColor !== colorGroup) {
+                    currentTextColor = colorGroup;
+                    return ["", cssVar];
+                }
+                return cssVar;
+            })
+            .flat();
+
+        stylesScss = stylesScss.replace("{TEXT_COLOR}", textColors.join("\n"));
     }
-
     return stylesScss;
 };
 

@@ -9,11 +9,12 @@ const adminAppSourceGlob = `${project.root}/apps/admin`;
 const {
     backgroundColor,
     borderColor,
-    textColor,
     borderRadius,
     borderWidth,
+    margin,
     padding,
-    margin
+    spacing,
+    textColor
 } = require("./tailwind.config.customizations");
 
 /** @type {import('tailwindcss').Config} */
@@ -30,12 +31,13 @@ module.exports = {
         },
 
         backgroundColor,
-        colors: textColor,
         borderColor,
         borderRadius,
         borderWidth,
-        padding,
         margin,
+        padding,
+        spacing,
+        textColor,
         extend: {
             fontFamily: {
                 sans: ["var(--font-sans)", ...fontFamily.sans]

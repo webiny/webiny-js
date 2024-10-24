@@ -52,26 +52,6 @@
     --bg-warning-subtle: 43, 100%, 96.5%;
     --bg-warning-xstrong: 45, 98.2%, 21.6%;
 
-    // Text colors.
-    --text-accent-muted: 14, 94.7%, 77.8%;
-    --text-accent-primary: 15, 95.6%, 55.9%;
-    --text-accent-subtle: 5, 100%, 97.5%;
-
-    --text-destructive-muted: 1, 83.2%, 76.7%;
-    --text-destructive-primary: 0, 71%, 48.6%;
-    --text-destructive-subtle: 0, 100%, 96.9%;
-
-    --text-neutral-dimmed: 219, 12.1%, 77.3%;
-    --text-neutral-disabled: 219, 12.1%, 77.3%;
-    --text-neutral-light: 0, 0%, 100%;
-    --text-neutral-muted: 218, 10.7%, 65.3%;
-    --text-neutral-primary: 214, 12.3%, 11.2%;
-    --text-neutral-strong: 213, 10.1%, 38.8%;
-
-    --text-sucess-muted: 169, 59.8%, 64.9%;
-    --text-sucess-primary: 170, 100%, 37.5%;
-    --text-sucess-subtle: 170, 57.1%, 91.8%;
-
     // Border color.
     --border-accent-default: 15, 95.6%, 55.9%;
     --border-accent-dimmed: 15, 94.2%, 86.5%;
@@ -100,14 +80,6 @@
     --border-width-md: 2px;
     --border-width-sm: 1px;
 
-    // Padding.
-    --padding-lg: 24px;
-    --padding-md: 16px;
-    --padding-sm: 8px;
-    --padding-xl: 32px;
-    --padding-xs: 4px;
-    --padding-xxl: 48px;
-
     // Margin.
     --margin-lg: 24px;
     --margin-md: 16px;
@@ -116,28 +88,13 @@
     --margin-xs: 4px;
     --margin-xxl: 32px;
 
-    // Elevation.
-    --elevation-flat: 0px;
-    --elevation-lg: 16px;
-    --elevation-md: 8px;
-    --elevation-sm: 4px;
-    --elevation-xl: 24px;
-    --elevation-xxl: 48px;
-
-    // Fill.
-    --fill-accent-default: 15, 95.6%, 55.9%;
-
-    --fill-destructive: 0, 71%, 48.6%;
-
-    --fill-neutral-base: 0, 0%, 100%;
-    --fill-neutral-dark: 215, 11.1%, 21.2%;
-    --fill-neutral-disabled: 219, 12.1%, 77.3%;
-    --fill-neutral-strong: 218, 10.7%, 65.3%;
-    --fill-neutral-xstrong: 213, 10.1%, 38.8%;
-
-    --fill-success: 170, 100%, 37.5%;
-
-    --fill-warning: 45, 95.7%, 63.7%;
+    // Padding.
+    --padding-lg: 24px;
+    --padding-md: 16px;
+    --padding-sm: 8px;
+    --padding-xl: 32px;
+    --padding-xs: 4px;
+    --padding-xxl: 48px;
 
     // Spacing.
     --spacing-3xl: 64px;
@@ -149,6 +106,26 @@
     --spacing-xs: 4px;
     --spacing-xxl: 48px;
     --spacing-xxs: 2px;
+
+    // Text color.
+    --text-accent-muted: 14, 94.7%, 77.8%;
+    --text-accent-primary: 15, 95.6%, 55.9%;
+    --text-accent-subtle: 5, 100%, 97.5%;
+
+    --text-destructive-muted: 1, 83.2%, 76.7%;
+    --text-destructive-primary: 0, 71%, 48.6%;
+    --text-destructive-subtle: 0, 100%, 96.9%;
+
+    --text-neutral-dimmed: 219, 12.1%, 77.3%;
+    --text-neutral-disabled: 219, 12.1%, 77.3%;
+    --text-neutral-light: 0, 0%, 100%;
+    --text-neutral-muted: 218, 10.7%, 65.3%;
+    --text-neutral-primary: 214, 12.3%, 11.2%;
+    --text-neutral-strong: 213, 10.1%, 38.8%;
+
+    --text-sucess-muted: 169, 59.8%, 64.9%;
+    --text-sucess-primary: 170, 100%, 37.5%;
+    --text-sucess-subtle: 170, 57.1%, 91.8%;
 
     // Old vars (we'll delete these once we're done).
 
