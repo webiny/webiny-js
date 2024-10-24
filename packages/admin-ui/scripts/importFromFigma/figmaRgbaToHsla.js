@@ -24,7 +24,9 @@ function rgbToHsl(r, g, b) {
         }
 
         h = Math.round(h * 60); // Convert to degrees
-        if (h < 0) h += 360;
+        if (h < 0) {
+            h += 360;
+        }
     }
 
     s = +(s * 100).toFixed(1);
