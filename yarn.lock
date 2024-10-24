@@ -12206,6 +12206,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/number@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@radix-ui/number@npm:1.1.0"
+  checksum: e4fc7483c19141c25dbaf3d140b75e2b7fed0bfa3ad969f4441f0266ed34b35413f57a35df7b025e2a977152bbe6131849d3444fc6f15a73345dfc2bfdc105fa
+  languageName: node
+  linkType: hard
+
 "@radix-ui/primitive@npm:1.0.1":
   version: 1.0.1
   resolution: "@radix-ui/primitive@npm:1.0.1"
@@ -12782,6 +12789,35 @@ __metadata:
     "@types/react-dom":
       optional: true
   checksum: a7c3445603a45075dcf3559eb8f2f2e8545afeae253e67d0bde736c66b293c601974a1d6f9d7be1802d83869933dc120a7389ab98189ceb9a24659737dde0162
+  languageName: node
+  linkType: hard
+
+"@radix-ui/react-slider@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@radix-ui/react-slider@npm:1.2.0"
+  dependencies:
+    "@radix-ui/number": 1.1.0
+    "@radix-ui/primitive": 1.1.0
+    "@radix-ui/react-collection": 1.1.0
+    "@radix-ui/react-compose-refs": 1.1.0
+    "@radix-ui/react-context": 1.1.0
+    "@radix-ui/react-direction": 1.1.0
+    "@radix-ui/react-primitive": 2.0.0
+    "@radix-ui/react-use-controllable-state": 1.1.0
+    "@radix-ui/react-use-layout-effect": 1.1.0
+    "@radix-ui/react-use-previous": 1.1.0
+    "@radix-ui/react-use-size": 1.1.0
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 51ebaa9e6787f969ff3cb5eef02f0a716d83b22f3ed0a241cea3dd1d974da0b27e41eb0cd5faff048bd1488576a82c3fd0de9016c70c5a63d1294176df9367ca
   languageName: node
   linkType: hard
 
@@ -17725,6 +17761,7 @@ __metadata:
     "@material-design-icons/svg": ^0.14.3
     "@radix-ui/react-accessible-icon": ^1.1.0
     "@radix-ui/react-label": ^2.1.0
+    "@radix-ui/react-slider": ^1.2.0
     "@radix-ui/react-slot": ^1.1.0
     "@radix-ui/react-switch": ^1.1.0
     "@radix-ui/react-tabs": ^1.1.0
@@ -17744,6 +17781,7 @@ __metadata:
     clsx: ^2.1.1
     css-loader: ^6.10.0
     file-loader: 6.2.0
+    lodash: ^4.17.21
     postcss-loader: ^6.2.1
     react: 18.2.0
     rimraf: ^5.0.5
@@ -22511,7 +22549,6 @@ __metadata:
     "@rmwc/menu": ^14.2.2
     "@rmwc/radio": ^14.2.2
     "@rmwc/select": ^14.2.2
-    "@rmwc/slider": ^14.2.2
     "@rmwc/snackbar": ^14.2.2
     "@rmwc/textfield": ^14.2.2
     "@rmwc/top-app-bar": ^14.2.2
