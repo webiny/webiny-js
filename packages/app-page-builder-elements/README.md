@@ -35,7 +35,7 @@ yarn add @webiny/app-page-builder-elements
 ## Overview
 
 A package that provides all the tools necessary to render pages created with Webiny's Page Builder application. It
-not only contains a set od default **page element renderers** (paragraph, heading, block,
+not only contains a set of default **page element renderers** (paragraph, heading, block,
 cell, grid, ...), but also the necessary utilities to create new ones.
 
 ## Examples
