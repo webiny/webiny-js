@@ -22,4 +22,4 @@ export const ensureApiDeployedBeforeBuild = createBeforeBuildPlugin(({ env }, ct
     );
 });
 
-ensureApiDeployedBeforeBuild.name = "admin.before-deploy.ensure-api-deployed";
+ensureApiDeployedBeforeBuild.name = "admin.before-build.ensure-api-deployed";
