@@ -6,6 +6,8 @@ const localStorage = require("./localStorage");
 const log = require("./log");
 const sendEvent = require("./sendEvent");
 const PluginsContainer = require("./PluginsContainer");
+const sleep = require("./sleep");
+const sleepSync = require("./sleepSync");
 
 const noop = () => {
     // Do nothing.
@@ -20,5 +22,7 @@ module.exports = {
     log,
     noop,
     sendEvent,
-    PluginsContainer
+    PluginsContainer,
+    sleep,
+    sleepSync
 };

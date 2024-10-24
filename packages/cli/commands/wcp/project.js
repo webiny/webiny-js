@@ -1,7 +1,8 @@
 const open = require("open");
 const inquirer = require("inquirer");
 const chalk = require("chalk");
-const { getUser, WCP_APP_URL, setProjectId, sleep } = require("./utils");
+const { getUser, WCP_APP_URL, setProjectId } = require("./utils");
+const { sleep } = require("../../utils");
 
 module.exports.command = () => [
     {

@@ -1,6 +1,7 @@
 const open = require("open");
 const { GraphQLClient } = require("graphql-request");
-const { setProjectId, setWcpPat, sleep } = require("./utils");
+const { setProjectId, setWcpPat } = require("./utils");
+const { sleep } = require("../../utils");
 const chalk = require("chalk");
 const { getWcpGqlApiUrl, getWcpAppUrl } = require("@webiny/wcp");
 

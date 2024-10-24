@@ -6,7 +6,6 @@ const { setWcpPat } = require("./setWcpPat");
 const { getWcpPat } = require("./getWcpPat");
 const { getWcpProjectId } = require("./getWcpProjectId");
 const { getWcpOrgProjectId } = require("./getWcpOrgProjectId");
-const { sleep } = require("./sleep");
 
 module.exports = {
     getUser,
@@ -16,6 +15,5 @@ module.exports = {
     setWcpPat,
     getWcpPat,
     getWcpProjectId,
-    getWcpOrgProjectId,
-    sleep
+    getWcpOrgProjectId
 };
