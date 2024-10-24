@@ -1,0 +1,237 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    // New variables from design.
+
+    // Background colors.
+    --bg-destructive-default: 0, 71%, 48.6%;
+    --bg-destructive-disabled: 1, 83.2%, 76.7%;
+    --bg-destructive-muted: 0, 66.3%, 62.7%;
+    --bg-destructive-strong: 0, 76.4%, 38.2%;
+    --bg-destructive-subtle: 0, 100%, 96.9%;
+    --bg-destructive-xstrong: 0, 83.6%, 21.6%;
+
+    --bg-neutral-base: 0, 0%, 100%;
+    --bg-neutral-dark: 214, 12.3%, 11.2%;
+    --bg-neutral-dimmed: 220, 11.1%, 94.7%;
+    --bg-neutral-disabled: 220, 11.1%, 94.7%;
+    --bg-neutral-light: 210, 14.3%, 97.3%;
+    --bg-neutral-muted: 225, 16.7%, 90.6%;
+    --bg-neutral-strong: 219, 12.1%, 77.3%;
+    --bg-neutral-subtle: 180, 11.1%, 98.2%;
+    --bg-neutral-xstrong: 213, 10.1%, 38.8%;
+
+    --bg-primary-default: 15, 95.6%, 55.9%;
+    --bg-primary-disabled: 14, 94.7%, 77.8%;
+    --bg-primary-muted: 14, 94.7%, 77.8%;
+    --bg-primary-strong: 14, 94.1%, 40%;
+    --bg-primary-subtle: 5, 100%, 97.5%;
+    --bg-primary-xstrong: 14, 100%, 25.5%;
+
+    --bg-secondary-default: 170, 100%, 37.5%;
+    --bg-secondary-disabled: 169, 59.8%, 64.9%;
+    --bg-secondary-muted: 169, 59.8%, 64.9%;
+    --bg-secondary-strong: 165, 100%, 28.6%;
+    --bg-secondary-subtle: 170, 57.1%, 91.8%;
+    --bg-secondary-xstrong: 160, 100%, 14.5%;
+
+    --bg-success-default: 170, 100%, 37.5%;
+    --bg-success-disabled: 168, 58.1%, 79.4%;
+    --bg-success-muted: 169, 59.8%, 64.9%;
+    --bg-success-strong: 165, 100%, 28.6%;
+    --bg-success-subtle: 170, 57.1%, 91.8%;
+    --bg-success-xstrong: 160, 100%, 14.5%;
+
+    --bg-warning-default: 45, 95.7%, 63.7%;
+    --bg-warning-disabled: 45, 96.9%, 87.5%;
+    --bg-warning-muted: 45, 95.1%, 75.9%;
+    --bg-warning-strong: 45, 100%, 37.3%;
+    --bg-warning-subtle: 43, 100%, 96.5%;
+    --bg-warning-xstrong: 45, 98.2%, 21.6%;
+
+    // Text colors.
+    --text-accent-muted: 14, 94.7%, 77.8%;
+    --text-accent-primary: 15, 95.6%, 55.9%;
+    --text-accent-subtle: 5, 100%, 97.5%;
+
+    --text-destructive-muted: 1, 83.2%, 76.7%;
+    --text-destructive-primary: 0, 71%, 48.6%;
+    --text-destructive-subtle: 0, 100%, 96.9%;
+
+    --text-neutral-dimmed: 219, 12.1%, 77.3%;
+    --text-neutral-disabled: 219, 12.1%, 77.3%;
+    --text-neutral-light: 0, 0%, 100%;
+    --text-neutral-muted: 218, 10.7%, 65.3%;
+    --text-neutral-primary: 214, 12.3%, 11.2%;
+    --text-neutral-strong: 213, 10.1%, 38.8%;
+
+    --text-sucess-muted: 169, 59.8%, 64.9%;
+    --text-sucess-primary: 170, 100%, 37.5%;
+    --text-sucess-subtle: 170, 57.1%, 91.8%;
+
+    // Border color.
+    --border-accent-default: 15, 95.6%, 55.9%;
+    --border-accent-dimmed: 15, 94.2%, 86.5%;
+    --border-accent-subtle: 5, 100%, 97.5%;
+
+    --border-destructive-default: 0, 71%, 48.6%;
+
+    --border-neutral-black: 214, 12.3%, 11.2%;
+    --border-neutral-dark: 215, 9.6%, 51%;
+    --border-neutral-dimmed: 220, 11.1%, 94.7%;
+    --border-neutral-muted: 219, 12.1%, 77.3%;
+    --border-neutral-strong: 218, 10.7%, 65.3%;
+    --border-neutral-subtle: 210, 14.3%, 97.3%;
+
+    --border-sucess-default: 170, 100%, 37.5%;
+
+    // Border radius.
+    --radius-lg: 16px;
+    --radius-md: 8px;
+    --radius-sm: 4px;
+    --radius-xl: 24px;
+    --radius-xs: 2px;
+    --radius-xxl: 36px;
+
+    // Border width.
+    --border-width-md: 2px;
+    --border-width-sm: 1px;
+
+    // Padding.
+    --padding-lg: 24px;
+    --padding-md: 16px;
+    --padding-sm: 8px;
+    --padding-xl: 32px;
+    --padding-xs: 4px;
+    --padding-xxl: 48px;
+
+    // Margin.
+    --margin-lg: 24px;
+    --margin-md: 16px;
+    --margin-sm: 8px;
+    --margin-xl: 32px;
+    --margin-xs: 4px;
+    --margin-xxl: 32px;
+
+    // Elevation.
+    --elevation-flat: 0px;
+    --elevation-lg: 16px;
+    --elevation-md: 8px;
+    --elevation-sm: 4px;
+    --elevation-xl: 24px;
+    --elevation-xxl: 48px;
+
+    // Fill.
+    --fill-accent-default: 15, 95.6%, 55.9%;
+
+    --fill-destructive: 0, 71%, 48.6%;
+
+    --fill-neutral-base: 0, 0%, 100%;
+    --fill-neutral-dark: 215, 11.1%, 21.2%;
+    --fill-neutral-disabled: 219, 12.1%, 77.3%;
+    --fill-neutral-strong: 218, 10.7%, 65.3%;
+    --fill-neutral-xstrong: 213, 10.1%, 38.8%;
+
+    --fill-success: 170, 100%, 37.5%;
+
+    --fill-warning: 45, 95.7%, 63.7%;
+
+    // Spacing.
+    --spacing-3xl: 64px;
+    --spacing-lg: 24px;
+    --spacing-md: 16px;
+    --spacing-none: 0px;
+    --spacing-sm: 8px;
+    --spacing-xl: 32px;
+    --spacing-xs: 4px;
+    --spacing-xxl: 48px;
+    --spacing-xxs: 2px;
+
+    // Old vars (we'll delete these once we're done).
+
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+
+    --primary: 15 96% 56%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --neutral: 210 40% 96.1%;
+    --neutral-strong: 210 40% 96.1%;
+    --neutral-muted: 210 40% 96.1%;
+    --neutral-dimmed: 210 40% 96.1%;
+    --neutral-disabled: 210 40% 96.1%;
+    --neutral-light: 0 0% 100%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 215 20.2% 65.1%;
+
+    --font-sans: "Inter", "Source Sans Pro", "Open Sans", sans-serif;
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 1.2%;
+
+    --secondary: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 216 34% 17%;
+
+    --radius: 8px;
+  }
+}
+
+//@layer base {
+//  * {
+//    @apply border-border;
+//  }
+//
+//  body {
+//    @apply bg-background text-foreground;
+//    font-feature-settings: "rlig" 1, "calt" 1;
+//  }
+//}

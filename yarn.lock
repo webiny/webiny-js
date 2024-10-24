@@ -17798,6 +17798,8 @@ __metadata:
     "@webiny/utils": 0.0.0
     class-variance-authority: ^0.7.0
     clsx: ^2.1.1
+    color-convert: ^2.0.1
+    colors-convert: ^1.4.1
     css-loader: ^6.10.0
     file-loader: 6.2.0
     postcss-loader: ^6.2.1
@@ -26226,6 +26228,15 @@ __metadata:
   version: 2.0.19
   resolution: "colorette@npm:2.0.19"
   checksum: 888cf5493f781e5fcf54ce4d49e9d7d698f96ea2b2ef67906834bb319a392c667f9ec69f4a10e268d2946d13a9503d2d19b3abaaaf174e3451bfe91fb9d82427
+  languageName: node
+  linkType: hard
+
+"colors-convert@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "colors-convert@npm:1.4.1"
+  dependencies:
+    lodash: ^4.17.15
+  checksum: 56b7d2811296459f8dbb8ed52ef9f0967ea7890325b5dbca0f7203f0651c050b13ba9604084ebd5859e73286bdbdaee289f238fe37b2c56516fb6f77780deb99
   languageName: node
   linkType: hard
 

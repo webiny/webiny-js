@@ -154,7 +154,9 @@
     "webiny": "./node_modules/.bin/webiny",
     "wby": "./node_modules/.bin/wby",
     "webiny-admin-storybook": "cd packages/admin-ui && yarn storybook",
-    "webiny-admin-build-storybook": "cd packages/admin-ui && cross-env OUT=../../netlify-static yarn build-storybook"
+    "webiny-admin-build-storybook": "cd packages/admin-ui && cross-env OUT=../../netlify-static yarn build-storybook",
+    "webiny-admin-import-from-figma": "node packages/admin-ui/scripts/importFromFigma.js"
+
   },
   "husky": {
     "hooks": {
