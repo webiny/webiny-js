@@ -23,7 +23,8 @@ export const promptQuestions: QuestionCollection = [
         choices: [
             { name: "Admin extension", value: "admin" },
             { name: "API extension", value: "api" },
-            { name: "Page Builder element", value: "pbElement" }
+            { name: "Page Builder element", value: "pbElement" },
+            { name: "Website extension", value: "website" }
         ]
     },
     {
