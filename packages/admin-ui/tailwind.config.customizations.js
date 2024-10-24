@@ -123,5 +123,32 @@ module.exports = {
     borderWidth: {
         md: "var(--border-width-md)",
         sm: "var(--border-width-sm)"
+    },
+    padding: {
+        lg: "var(--padding-lg)",
+        md: "var(--padding-md)",
+        sm: "var(--padding-sm)",
+        xl: "var(--padding-xl)",
+        xs: "var(--padding-xs)",
+        xxl: "var(--padding-xxl)"
+    },
+    margin: {
+        lg: "var(--margin-lg)",
+        md: "var(--margin-md)",
+        sm: "var(--margin-sm)",
+        xl: "var(--margin-xl)",
+        xs: "var(--margin-xs)",
+        xxl: "var(--margin-xxl)"
+    },
+    spacing: {
+        "3xl": "var(--spacing-3xl)",
+        lg: "var(--spacing-lg)",
+        md: "var(--spacing-md)",
+        none: "var(--spacing-none)",
+        sm: "var(--spacing-sm)",
+        xl: "var(--spacing-xl)",
+        xs: "var(--spacing-xs)",
+        xxl: "var(--spacing-xxl)",
+        xxs: "var(--spacing-xxs)"
     }
 };

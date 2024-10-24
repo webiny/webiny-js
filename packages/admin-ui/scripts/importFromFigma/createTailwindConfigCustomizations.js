@@ -50,8 +50,40 @@ const createTailwindConfigCustomizations = normalizedFigmaExport => {
                 acc[variantName] = `var(--border-width-${variantName})`;
             }
             return acc;
+        }, {}),
+        padding: normalizedFigmaExport.reduce((acc, { type, variantName }) => {
+            if (type === "padding") {
+                acc[variantName] = `var(--padding-${variantName})`;
+            }
+            return acc;
+        }, {}),
+        margin: normalizedFigmaExport.reduce((acc, { type, variantName }) => {
+            if (type === "margin") {
+                acc[variantName] = `var(--margin-${variantName})`;
+            }
+            return acc;
+        }, {}),
+        spacing: normalizedFigmaExport.reduce((acc, { type, variantName }) => {
+            if (type === "spacing") {
+                acc[variantName] = `var(--spacing-${variantName})`;
+            }
+            return acc;
         }, {})
     };
 };
 
 module.exports = { createTailwindConfigCustomizations };
+
+// const VARIABLE_TYPES = [
+//     "backgroundColor", ----
+//     "borderColor", ----
+//     "textColor", ----
+//     "padding", ----
+//     "elevation", ❓<===============================
+//     "fill", ❓<===============================
+//     "spacing", ----
+//     "margin", ----
+//     "borderRadius", ----
+//     "dimension", ❓<===============================
+//     "borderWidth" ----
+// ];

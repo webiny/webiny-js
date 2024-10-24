@@ -11,7 +11,9 @@ const {
     borderColor,
     textColor,
     borderRadius,
-    borderWidth
+    borderWidth,
+    padding,
+    margin
 } = require("./tailwind.config.customizations");
 
 /** @type {import('tailwindcss').Config} */
@@ -32,15 +34,9 @@ module.exports = {
         borderColor,
         borderRadius,
         borderWidth,
+        padding,
+        margin,
         extend: {
-            padding: {
-                xs: "var(--padding-xs)",
-                sm: "var(--padding-sm)",
-                md: "var(--padding-md)",
-                lg: "var(--padding-lg)",
-                xl: "var(--padding-xl)",
-                xxl: "var(--padding-xxl)"
-            },
             fontFamily: {
                 sans: ["var(--font-sans)", ...fontFamily.sans]
             },
