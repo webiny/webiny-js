@@ -19,7 +19,8 @@ export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
         config.pulumiOutputToEnv<ApiOutput>("apps/api", ({ output, env }) => {
             if (!output) {
                 log.warning(
-                    `Could not assign required environment variables. API project application's stack output could not be retrieved.`
+                    `Could not assign required environment variables. %s project application's stack output could not be retrieved. Learn more: https://webiny.link/missing-stack-output`,
+                    "API"
                 );
 
                 // We want to wait a bit because Webpack output just quickly hides the warning message.
