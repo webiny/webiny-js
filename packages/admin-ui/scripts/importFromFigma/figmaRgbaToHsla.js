@@ -45,7 +45,7 @@ function figmaRgbaToHsla(figmaColor) {
     const { h, s, l } = rgbToHsl(red, green, blue);
 
     // Return the HSLA value
-    return {  h, s, l, a } ;
+    return { h, s, l, a };
 }
 
 module.exports = { figmaRgbaToHsla };
