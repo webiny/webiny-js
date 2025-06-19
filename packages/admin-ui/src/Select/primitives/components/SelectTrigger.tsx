@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ReactComponent as ChevronDown } from "@webiny/icons/keyboard_arrow_down.svg";
-import * as SelectPrimitives from "@radix-ui/react-select";
+import { Select as SelectPrimitives } from "radix-ui";
 import { cn, cva, type VariantProps } from "~/utils";
 import { SelectIcon } from "./SelectIcon";
 

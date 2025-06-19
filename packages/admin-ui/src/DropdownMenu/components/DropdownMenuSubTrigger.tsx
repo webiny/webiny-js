@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
+import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 import { cn } from "~/utils";
 import { ReactComponent as ChevronRight } from "@webiny/icons/chevron_right.svg";
 

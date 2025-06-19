@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Slot, Slottable } from "@radix-ui/react-slot";
+import { Slot } from "radix-ui";
 import { cn, cva, type VariantProps, makeDecoratable } from "~/utils";
 
 const buttonWrapperVariants = cva("wby-inline-block", {
@@ -190,7 +190,7 @@ const ButtonBase = ({
     containerClassName,
     ...rest
 }: ButtonProps) => {
-    const Comp = asChild ? Slot : "button";
+    const Comp = asChild ? Slot.Root : "button";
 
     const contentLayout = useMemo<ContentLayout>(() => {
         if (!text) {
@@ -217,7 +217,7 @@ const ButtonBase = ({
         <span className={cn(buttonWrapperVariants({ disabled }), containerClassName)}>
             <Comp className={cssClasses} disabled={disabled} aria-disabled={disabled} {...rest}>
                 {iconPosition !== "end" && icon}
-                <Slottable>{text}</Slottable>
+                <Slot.Slottable>{text}</Slot.Slottable>
                 {iconPosition === "end" && icon}
             </Comp>
         </span>

@@ -4,7 +4,7 @@ import { SidebarMenuRootButton } from "./SidebarMenuRootButton";
 import { SidebarMenuItemIcon } from "./SidebarMenuItemIcon";
 import { SidebarMenuItemAction } from "./SidebarMenuItemAction";
 import { SidebarMenuSub } from "./SidebarMenuSub";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
+import { Collapsible } from "radix-ui";
 import { Icon } from "~/Icon";
 import { ReactComponent as KeyboardArrowRightIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 import { type SidebarMenuItemProps } from "./SidebarMenuItem";
@@ -46,21 +46,21 @@ const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMen
         );
 
         return (
-            <Collapsible
+            <Collapsible.Root
                 className={cn("wby-w-full wby-group/menu-item-collapsible")}
                 open={isSectionExpanded}
                 onOpenChange={toggleSectionExpanded}
             >
-                <CollapsibleTrigger asChild>
+                <Collapsible.Trigger asChild>
                     <SidebarMenuRootButton {...buttonProps} action={chevron} />
-                </CollapsibleTrigger>
-                <CollapsibleContent
+                </Collapsible.Trigger>
+                <Collapsible.Content
                     forceMount
                     className={"wby-hidden data-[state=open]:!wby-block"}
                 >
                     <SidebarMenuSub>{children}</SidebarMenuSub>
-                </CollapsibleContent>
-            </Collapsible>
+                </Collapsible.Content>
+            </Collapsible.Root>
         );
     }, [children, buttonProps, menuItemId, isSectionExpanded, toggleSectionExpanded]);
 

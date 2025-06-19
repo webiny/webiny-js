@@ -1,7 +1,6 @@
 import * as React from "react";
-import * as DrawerPrimitive from "@radix-ui/react-dialog";
+import { Dialog as DrawerPrimitive } from "radix-ui";
 import { cn, cva, type VariantProps } from "~/utils";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
 
 export interface DrawerContentProps
     extends React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>,
@@ -41,7 +40,7 @@ const DrawerContent = React.forwardRef<
     // When modal is set to false, we want to prevent the user from closing the drawer by clicking outside of it.
     // Only by clicking on "X" icon or by pressing the escape key should the drawer be closed.
     const modalProps = React.useMemo<
-        Pick<DialogPrimitive.DialogContentProps, "onInteractOutside">
+        Pick<DrawerPrimitive.DialogContentProps, "onInteractOutside">
     >(() => {
         if (modal === false) {
             return {

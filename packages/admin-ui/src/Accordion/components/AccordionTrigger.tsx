@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ReactComponent as KeyboardArrowDownIcon } from "@webiny/icons/keyboard_arrow_down.svg";
-import * as CollapsiblePrimitive from "@radix-ui/react-collapsible";
+import { Collapsible as CollapsiblePrimitive } from "radix-ui";
 import { cn } from "~/utils";
 import { type AccordionItemProps } from "./AccordionItem";
 import { AccordionItemAction } from "./AccordionItemAction";

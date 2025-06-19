@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as SliderPrimitives from "@radix-ui/react-slider";
+import { Slider as SliderPrimitives } from "radix-ui";
 import { cn } from "~/utils";
 
 const SliderTrack = () => (

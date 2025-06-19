@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ReactComponent as Close } from "@webiny/icons/close.svg";
-import * as SelectPrimitives from "@radix-ui/react-select";
+import { Select as SelectPrimitives } from "radix-ui";
 import { type VariantProps } from "~/utils";
 import { useSelect } from "./useSelect";
 import { SelectOptionDto, SelectOptionFormatted } from "../domains";

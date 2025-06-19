@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as SliderPrimitives from "@radix-ui/react-slider";
+import { Slider as SliderPrimitives } from "radix-ui";
 import { SliderRoot, SliderThumb, type SliderThumbProps, SliderTrack } from "~/Slider";
 import { useRangeSlider } from "./useRangeSlider";
 

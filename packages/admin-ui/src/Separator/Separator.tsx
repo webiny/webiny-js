@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as SeparatorPrimitive from "@radix-ui/react-separator";
+import { Separator as SeparatorPrimitive } from "radix-ui";
 import { cva, type VariantProps, makeDecoratable } from "~/utils";
 
 const separatorVariants = cva("wby-shrink-0", {

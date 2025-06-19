@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import { Tooltip as TooltipPrimitive } from "radix-ui";
 import { cn, cva, type VariantProps } from "~/utils";
 
 const tooltipContentVariants = cva(

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ReactComponent as ChevronUp } from "@webiny/icons/keyboard_arrow_up.svg";
-import * as SelectPrimitives from "@radix-ui/react-select";
+import { Select as SelectPrimitives } from "radix-ui";
 import { cn } from "~/utils";
 
 type SelectScrollUpButtonProps = SelectPrimitives.SelectScrollUpButtonProps;

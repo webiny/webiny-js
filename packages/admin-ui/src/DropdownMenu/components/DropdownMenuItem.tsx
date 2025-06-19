@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
+import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 import { cn, cva, makeDecoratable } from "~/utils";
 import { DropdownMenuSubRoot } from "./DropdownMenuSubRoot";
 import { DropdownMenuSubTrigger } from "./DropdownMenuSubTrigger";

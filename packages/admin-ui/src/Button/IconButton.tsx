@@ -1,5 +1,5 @@
 import React from "react";
-import { Slot } from "@radix-ui/react-slot";
+import { Slot } from "radix-ui";
 import { cn, cva, type VariantProps, makeDecoratable } from "~/utils";
 
 const iconButtonWrapperVariants = cva("wby-inline-block", {
@@ -138,7 +138,7 @@ const DecoratableIconButton = ({
     disabled,
     ...props
 }: IconButtonProps) => {
-    const Comp = asChild ? Slot : "button";
+    const Comp = asChild ? Slot.Root : "button";
     return (
         <span className={cn(iconButtonWrapperVariants({ disabled }))}>
             <Comp

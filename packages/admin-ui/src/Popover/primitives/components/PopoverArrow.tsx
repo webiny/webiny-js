@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as PopoverPrimitive from "@radix-ui/react-popover";
+import { Popover as PopoverPrimitive } from "radix-ui";
 import { cn, cva, type VariantProps } from "~/utils";
 
 const popoverArrowVariants = cva("", {

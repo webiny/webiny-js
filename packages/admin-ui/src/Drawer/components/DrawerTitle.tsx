@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as DrawerPrimitive from "@radix-ui/react-dialog";
+import { Dialog as DrawerPrimitive } from "radix-ui";
 import { cn } from "~/utils";
 
 export type DrawerTitleProps = React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Title>;

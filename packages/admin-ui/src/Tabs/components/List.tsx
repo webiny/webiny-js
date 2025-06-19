@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as TabsPrimitive from "@radix-ui/react-tabs";
+import { Tabs as TabsPrimitive } from "radix-ui";
 import { cn, cva, type VariantProps } from "~/utils";
 
 const tabListVariants = cva("wby-w-full wby-inline-flex wby-items-center wby-justify-start", {

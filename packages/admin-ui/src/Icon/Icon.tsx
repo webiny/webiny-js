@@ -1,5 +1,5 @@
 import React from "react";
-import * as AccessibleIcon from "@radix-ui/react-accessible-icon";
+import { AccessibleIcon } from "radix-ui";
 import { cn, cva, makeDecoratable, type VariantProps } from "~/utils";
 
 const iconVariants = cva("wby-shrink-0", {

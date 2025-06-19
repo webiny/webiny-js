@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { cn } from "~/utils";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
+import { Collapsible } from "radix-ui";
 import { SidebarMenuSubButton } from "./SidebarMenuSubButton";
 import { SidebarMenuSubItemIndentation } from "./SidebarMenuSubItemIndentation";
 import { SidebarMenuSub } from "./SidebarMenuSub";
@@ -53,20 +53,20 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
         );
 
         return (
-            <Collapsible className="wby-w-full wby-group/menu-sub-item-collapsible">
+            <Collapsible.Root className="wby-w-full wby-group/menu-sub-item-collapsible">
                 <div className={"wby-flex wby-items-center"}>
                     <SidebarMenuSubItemIndentation
                         lvl={currentLevel}
                         variant={buttonProps.variant}
                     />
-                    <CollapsibleTrigger asChild>
+                    <Collapsible.Trigger asChild>
                         <SidebarMenuSubButton {...buttonProps} action={chevron} />
-                    </CollapsibleTrigger>
+                    </Collapsible.Trigger>
                 </div>
-                <CollapsibleContent>
+                <Collapsible.Content>
                     <SidebarMenuSub>{children}</SidebarMenuSub>
-                </CollapsibleContent>
-            </Collapsible>
+                </Collapsible.Content>
+            </Collapsible.Root>
         );
     }, [children, buttonProps, currentLevel, menuItemId, isSectionExpanded, toggleSectionExpanded]);
 
