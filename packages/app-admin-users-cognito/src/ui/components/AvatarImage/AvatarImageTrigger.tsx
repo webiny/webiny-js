@@ -26,8 +26,7 @@ const AvatarImageTrigger = ({ onSelectItem, disabled }: AvatarImageTriggerProps)
                                 icon={<ImageIcon />}
                                 label={"Select from library"}
                                 size={"lg"}
-                                color={"neutral"}
-                                disabled={disabled}
+                                color={"neutral-light"}
                             />
                         }
                         variant={"ghost-negative"}

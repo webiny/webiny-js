@@ -45,8 +45,7 @@ const AvatarImagePreview = ({
                                             icon={<EditIcon />}
                                             label={"Select another image"}
                                             size={"md"}
-                                            color={"neutral"}
-                                            disabled={disabled}
+                                            color={"neutral-light"}
                                         />
                                     }
                                     variant={"ghost-negative"}
@@ -67,8 +66,7 @@ const AvatarImagePreview = ({
                                             icon={<TrashIcon />}
                                             label={"Remove"}
                                             size={"md"}
-                                            color={"neutral"}
-                                            disabled={disabled}
+                                            color={"neutral-light"}
                                         />
                                     }
                                     variant={"ghost-negative"}

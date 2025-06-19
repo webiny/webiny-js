@@ -1,6 +1,6 @@
 import React from "react";
 import { AdminConfig } from "~/config/AdminConfig";
-import wbyLogo from "./Tenant/wby-logo.png";
+import wbyLogo from "./Tenant/wby-logo.svg";
 
 export const Tenant = React.memo(() => {
     const { Tenant } = AdminConfig;

@@ -17,6 +17,7 @@ declare global {
 }
 
 import { Wrapper, InnerContent, InstallContent, installerSplitView, SuccessDialog } from "./styled";
+import { Button, Heading, OverlayLoader, Text } from "@webiny/admin-ui";
 
 interface AppInstallerProps {
     children: React.ReactNode;
@@ -59,36 +60,28 @@ export const AppInstaller = ({ children }: AppInstallerProps) => {
     const renderLayout = (content: React.ReactNode, secure = false): React.ReactElement => {
         return (
             <Tags tags={{ installer: true }}>
-                <SplitView className={installerSplitView}>
-                    <LeftPanel span={2}>
-                        <Sidebar
-                            allInstallers={installers}
-                            installer={installer}
-                            showLogin={showLogin}
-                        />
-                    </LeftPanel>
-                    <RightPanel span={10}>
+                <>
+                    <Sidebar
+                        allInstallers={installers}
+                        installer={installer}
+                        showLogin={showLogin}
+                    />
+                    <>
                         {!showLogin && !secure && content}
                         {(showLogin || secure) && <LoginScreen>{content}</LoginScreen>}
-                    </RightPanel>
-                </SplitView>
+                    </>
+                </>
             </Tags>
         );
     };
 
     const renderBody = (content: React.ReactNode): React.ReactElement => {
-        return (
-            <Wrapper>
-                <InstallContent>
-                    <InnerContent>{content}</InnerContent>
-                </InstallContent>
-            </Wrapper>
-        );
+        return <>{content}</>;
     };
 
     // Loading installers data
     if (loading) {
-        return <CircularProgress label={"Checking apps..."} />;
+        return <OverlayLoader text={"Checking apps..."} />;
     }
 
     // This means there are no installers to run or installation was finished
@@ -106,30 +99,27 @@ export const AppInstaller = ({ children }: AppInstallerProps) => {
 
     return renderLayout(
         renderBody(
-            <Elevation z={1}>
-                <SuccessDialog>
-                    <Typography use={"headline4"}>You&apos;re ready!</Typography>
-                    <p>All applications were successfully installed.</p>
-                    {!isCypressTest && isRootTenant && isFirstInstall ? (
-                        <iframe
-                            height="0"
-                            width="0"
-                            frameBorder="0"
-                            style={{ opacity: "0" }}
-                            src="https://www.webiny.com/thank-you/new-install"
-                        ></iframe>
-                    ) : null}
-                    <ButtonPrimary
-                        data-testid={"open-webiny-cms-admin-button"}
-                        onClick={() => {
-                            markInstallerAsCompleted();
-                            setFinished(true);
-                        }}
-                    >
-                        Finish install
-                    </ButtonPrimary>
-                </SuccessDialog>
-            </Elevation>
+            <>
+                <Heading level={4}>You are ready!</Heading>
+                <Text>All applications were successfully installed.</Text>
+                {!isCypressTest && isRootTenant && isFirstInstall ? (
+                    <iframe
+                        height="0"
+                        width="0"
+                        frameBorder="0"
+                        style={{ opacity: "0" }}
+                        src="https://www.webiny.com/thank-you/new-install"
+                    ></iframe>
+                ) : null}
+                <Button
+                    text={"Finish install"}
+                    data-testid={"open-webiny-cms-admin-button"}
+                    onClick={() => {
+                        markInstallerAsCompleted();
+                        setFinished(true);
+                    }}
+                />
+            </>
         ),
         true
     );
