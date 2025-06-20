@@ -1,11 +1,13 @@
 import React from "react";
 import { ReactComponent as DragIndicator } from "@webiny/icons/drag_indicator.svg";
-import { IconButton, Icon, cn } from "@webiny/admin-ui";
+import { IconButton } from "~/Button";
+import { Icon } from "~/Icon";
+import { cn, makeDecoratable } from "~/utils";
 
-type TreeItemDragIndicatorProps = {
+type ItemDragHandleProps = {
     handleRef?: React.Ref<HTMLSpanElement>;
 };
-const TreeItemDragIndicator = ({ handleRef }: TreeItemDragIndicatorProps) => {
+const BaseItemDragHandle = ({ handleRef }: ItemDragHandleProps) => {
     const [isDragging, setIsDragging] = React.useState(false);
 
     return (
@@ -28,4 +30,6 @@ const TreeItemDragIndicator = ({ handleRef }: TreeItemDragIndicatorProps) => {
     );
 };
 
-export { TreeItemDragIndicator, TreeItemDragIndicatorProps };
+const ItemDragHandle = makeDecoratable("TreeItemDragHandle", BaseItemDragHandle);
+
+export { ItemDragHandle, type ItemDragHandleProps };

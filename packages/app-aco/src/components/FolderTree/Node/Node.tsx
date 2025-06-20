@@ -1,18 +1,11 @@
 import React, { useMemo } from "react";
 import { NodeModel, useDragOver } from "@minoru/react-dnd-treeview";
-import { cn, Text } from "@webiny/admin-ui";
+import { cn, Text, Tree } from "@webiny/admin-ui";
 import { ReactComponent as Folder } from "@webiny/icons/folder.svg";
 import { ReactComponent as FolderShared } from "@webiny/icons/folder_shared.svg";
 import { ReactComponent as HomeIcon } from "@webiny/icons/home.svg";
 import { parseIdentifier } from "@webiny/utils";
 import { MenuActions } from "../MenuActions";
-import {
-    TreeItem,
-    TreeItemCollapsibleTrigger,
-    TreeItemContent,
-    TreeItemDragIndicator,
-    TreeItemIcon
-} from "./components";
 import { ROOT_FOLDER } from "~/constants";
 import { useFolder } from "~/hooks";
 import { DndFolderItemData, FolderItem } from "~/types";
@@ -60,7 +53,7 @@ export const FolderNode = ({
             {...props}
             className={cn("wby-flex wby-items-center wby-w-full wby-gap-sm wby-pr-xxl", className)}
         >
-            <TreeItemIcon label={"Folder"} element={icon} active={isActive} />
+            <Tree.Item.Icon label={"Folder"} element={icon} active={isActive} />
             <Text as={"div"} className={"wby-truncate"}>
                 {text}
             </Text>
@@ -109,22 +102,22 @@ export const Node = ({
     const { hasNonInheritedPermissions, canManagePermissions } = folder || {};
 
     return (
-        <TreeItem
+        <Tree.Item
             active={!!node.data?.isFocused}
             style={{ paddingInlineStart: indent }}
             {...dragOverProps}
         >
             {isRoot ? null : (
                 <>
-                    <TreeItemDragIndicator handleRef={handleRef} />
-                    <TreeItemCollapsibleTrigger
+                    <Tree.Item.DragHandle handleRef={handleRef} />
+                    <Tree.Item.CollapseTrigger
                         open={isOpen}
                         loading={isLoading}
                         onClick={handleToggle}
                     />
                 </>
             )}
-            <TreeItemContent onClick={handleClick} className={`aco-folder-${id}`}>
+            <Tree.Item.Content onClick={handleClick} className={`aco-folder-${id}`}>
                 <FolderNode
                     isRoot={isRoot}
                     isActive={!!node.data?.isFocused}
@@ -132,8 +125,8 @@ export const Node = ({
                     hasNonInheritedPermissions={hasNonInheritedPermissions}
                     canManagePermissions={canManagePermissions}
                 />
-            </TreeItemContent>
+            </Tree.Item.Content>
             {enableActions && !isRoot && <MenuActions />}
-        </TreeItem>
+        </Tree.Item>
     );
 };

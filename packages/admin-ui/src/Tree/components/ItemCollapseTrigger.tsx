@@ -1,17 +1,16 @@
 import React from "react";
 import { ReactComponent as ChevronRight } from "@webiny/icons/chevron_right.svg";
-import { cn, IconButton, Icon, type IconButtonProps, Loader } from "@webiny/admin-ui";
+import { IconButton, type IconButtonProps } from "~/Button";
+import { Loader } from "~/Loader";
+import { Icon } from "~/Icon";
+import { makeDecoratable, cn } from "~/utils";
 
-interface TreeItemCollapsibleTriggerProps extends IconButtonProps {
+interface ItemCollapseTriggerProps extends IconButtonProps {
     open?: boolean;
     loading?: boolean;
 }
 
-const TreeItemCollapsibleTrigger = ({
-    open,
-    loading,
-    ...props
-}: TreeItemCollapsibleTriggerProps) => {
+const BaseItemCollapseTrigger = ({ open, loading, ...props }: ItemCollapseTriggerProps) => {
     if (loading) {
         return <Loader size={"xs"} variant={"subtle"} />;
     }
@@ -37,4 +36,6 @@ const TreeItemCollapsibleTrigger = ({
     );
 };
 
-export { TreeItemCollapsibleTrigger, type TreeItemCollapsibleTriggerProps };
+const ItemCollapseTrigger = makeDecoratable("TreeItemCollapseTrigger", BaseItemCollapseTrigger);
+
+export { ItemCollapseTrigger, type ItemCollapseTriggerProps };

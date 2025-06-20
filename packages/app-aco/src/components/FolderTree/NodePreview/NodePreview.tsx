@@ -1,6 +1,6 @@
 import React from "react";
+import { Tree } from "@webiny/admin-ui";
 import { FolderNode } from "../Node";
-import { TreeItem } from "~/components/FolderTree/Node/components";
 
 type NodePreviewProps = {
     text: string;
@@ -8,11 +8,11 @@ type NodePreviewProps = {
 
 export const NodePreview = ({ text }: NodePreviewProps) => {
     return (
-        <TreeItem
+        <Tree.Item
             className={"wby-bg-neutral-dark/10 wby-absolute wby-z-[100]"}
             style={{ maxWidth: 256 }}
         >
             <FolderNode text={text} isRoot={false} isActive={false} />
-        </TreeItem>
+        </Tree.Item>
     );
 };
