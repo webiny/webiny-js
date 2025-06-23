@@ -73,6 +73,34 @@ export const Default: Story = {
     argTypes: {}
 };
 
+export const SizeSmall: Story = {
+    args: {
+        ...Default.args,
+        size: "sm"
+    }
+};
+
+export const SizeMedium: Story = {
+    args: {
+        ...Default.args,
+        size: "md"
+    }
+};
+
+export const SizeLarge: Story = {
+    args: {
+        ...Default.args,
+        size: "lg"
+    }
+};
+
+export const SizeExtraLarge: Story = {
+    args: {
+        ...Default.args,
+        size: "xl"
+    }
+};
+
 export const ControlledVisibility: Story = {
     render: props => {
         const [open, setOpen] = React.useState(false);
@@ -289,6 +317,12 @@ export const Documentation: Story = {
             control: "select",
             options: ["left", "right"],
             defaultValue: "right"
+        },
+        size: {
+            description: "Controls the size of the drawer",
+            control: "select",
+            options: ["sm", "md", "lg", "xl"],
+            defaultValue: "md"
         },
         showCloseButton: {
             description: "Show close button in the top-right corner",
