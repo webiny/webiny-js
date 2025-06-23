@@ -61,6 +61,10 @@ const Column = makeDecoratable("Column", ColumnBase);
 const gridVariants = cva("wby-grid", {
     variants: {
         gap: {
+            none: "wby-gap-0",
+            micro: "wby-gap-xs",
+            small: "wby-gap-sm",
+            compact: "wby-gap-md",
             comfortable: "wby-gap-lg",
             spacious: "wby-gap-xl"
         }

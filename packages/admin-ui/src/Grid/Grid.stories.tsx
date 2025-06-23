@@ -32,7 +32,42 @@ export const Default: Story = {
     }
 };
 
-export const SpaciousGap: Story = {
+export const WithGapNone: Story = {
+    args: {
+        ...Default.args,
+        gap: "none"
+    }
+};
+
+export const WithGapMicro: Story = {
+    args: {
+        ...Default.args,
+        gap: "micro"
+    }
+};
+
+export const WithGapSmall: Story = {
+    args: {
+        ...Default.args,
+        gap: "small"
+    }
+};
+
+export const WithGapCompact: Story = {
+    args: {
+        ...Default.args,
+        gap: "compact"
+    }
+};
+
+export const WithGapComfortable: Story = {
+    args: {
+        ...Default.args,
+        gap: "comfortable"
+    }
+};
+
+export const WithGapSpacious: Story = {
     args: {
         ...Default.args,
         gap: "spacious"
@@ -115,7 +150,7 @@ export const Documentation: Story = {
         gap: {
             description: "Spacing between grid columns",
             control: "select",
-            options: ["comfortable", "spacious"],
+            options: ["none", "micro", "small", "compact", "comfortable", "spacious"],
             defaultValue: "comfortable"
         },
         className: {
