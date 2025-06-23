@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Dialog } from "./Dialog";
 import { Button } from "~/Button";
 import { DropdownMenu } from "~/DropdownMenu";
-import { ReactComponent as DoorbellIcon } from "@webiny/icons/ring_volume.svg";
+import { ReactComponent as NotificationIcon } from "@webiny/icons/notifications_active.svg";
 import { Tabs } from "~/Tabs";
 import { IconPicker } from "~/IconPicker";
 
@@ -24,6 +24,7 @@ type Story = StoryObj<typeof Dialog>;
 
 export const Default: Story = {
     args: {
+        size: "md",
         trigger: <Button variant="primary" text={"Open"} />,
         title: "Dialog Title",
         description: "A short dialog description.",
@@ -65,6 +66,27 @@ export const SizeMedium: Story = {
     args: {
         ...Default.args,
         size: "md"
+    }
+};
+
+export const SizeLarge: Story = {
+    args: {
+        ...Default.args,
+        size: "lg"
+    }
+};
+
+export const SizeExtraLarge: Story = {
+    args: {
+        ...Default.args,
+        size: "xl"
+    }
+};
+
+export const SizeFullScreen: Story = {
+    args: {
+        ...Default.args,
+        size: "full"
     }
 };
 
@@ -213,7 +235,7 @@ export const DropdownIconPickerInDialog: Story = {
 export const WithIcon: Story = {
     args: {
         ...Default.args,
-        icon: <Dialog.Icon icon={<DoorbellIcon />} label={"Title icon"} />
+        icon: <Dialog.Icon icon={<NotificationIcon />} label={"Title icon"} />
     }
 };
 
@@ -312,7 +334,7 @@ export const Documentation: Story = {
         size: {
             description: "Controls the size of the dialog",
             control: "select",
-            options: ["sm", "md"]
+            options: ["sm", "md", "lg", "xl", "full"]
         },
         showCloseButton: {
             description:

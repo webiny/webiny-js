@@ -1,12 +1,25 @@
 import * as React from "react";
 import { Dialog as DialogPrimitive } from "radix-ui";
-import { cn } from "~/utils";
+import { cn, cva, type VariantProps } from "~/utils";
 
-export type DialogTitleProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>;
+const dialogTitleVariants = cva("wby-flex wby-items-center wby-gap-sm", {
+    variants: {
+        size: {
+            sm: "wby-text-h5",
+            md: "wby-text-h5",
+            lg: "wby-text-h4",
+            xl: "wby-text-h4",
+            full: "wby-text-h4"
+        }
+    },
+    defaultVariants: {
+        size: "md"
+    }
+});
 
-export const DialogTitle = ({ className, ...props }: DialogTitleProps) => (
-    <DialogPrimitive.Title
-        {...props}
-        className={cn("wby-text-h4 wby-flex wby-gap-sm", className)}
-    />
+export type DialogTitleProps = React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title> &
+    VariantProps<typeof dialogTitleVariants>;
+
+export const DialogTitle = ({ className, size, ...props }: DialogTitleProps) => (
+    <DialogPrimitive.Title {...props} className={cn(dialogTitleVariants({ size }), className)} />
 );

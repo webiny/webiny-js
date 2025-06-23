@@ -1,21 +1,39 @@
 import * as React from "react";
-import { cn } from "~/utils";
+import { cn, cva } from "~/utils";
 import { type DialogProps } from "../Dialog";
 import { DialogTitle } from "./DialogTitle";
 import { DialogDescription } from "./DialogDescription";
-import { useMemo } from "react";
+
+const dialogHeaderVariants = cva(
+    ["wby-flex wby-flex-col wby-gap-sm", "wby-text-neutral-primary", "wby-sm:text-left"],
+    {
+        variants: {
+            size: {
+                sm: "wby-pt-md wby-pb-md-extra wby-px-md-extra wby-mr-xl",
+                md: "wby-pt-md wby-pb-md-extra wby-px-md-extra wby-mr-xl",
+                lg: "wby-pt-md wby-pb-md-extra wby-px-lg wby-mr-xl",
+                xl: "wby-pt-md wby-pb-md-extra wby-px-lg wby-mr-xl",
+                full: "wby-pt-md wby-pb-md-extra wby-px-lg wby-mr-xl"
+            }
+        },
+        defaultVariants: {
+            size: "md"
+        }
+    }
+);
 
 export type DialogHeaderProps = Omit<React.HTMLAttributes<HTMLDivElement>, "title"> &
-    Pick<DialogProps, "title" | "icon" | "description">;
+    Pick<DialogProps, "title" | "icon" | "description" | "size">;
 
 export const DialogHeader = ({
     title,
     icon,
     description,
+    size,
     className,
     ...props
 }: DialogHeaderProps) => {
-    const nothingToRender = useMemo(() => {
+    const nothingToRender = React.useMemo(() => {
         return !title && !description && !icon;
     }, [title, description, icon]);
 
@@ -24,18 +42,13 @@ export const DialogHeader = ({
     }
 
     return (
-        <div
-            {...props}
-            className={cn(
-                "wby-flex wby-flex-col wby-gap-sm wby-px-lg wby-pt-md wby-pb-md-extra wby-mr-xl wby-sm:text-left wby-text-neutral-primary",
-                className
-            )}
-        >
-            <DialogTitle className={"wby-flex wby-justify-between"}>
-                <div className={"wby-flex wby-gap-xs"}>
-                    {icon}
-                    {title}
-                </div>
+        <div {...props} className={cn(dialogHeaderVariants({ size }), className)}>
+            <DialogTitle size={size}>
+                {icon &&
+                    React.cloneElement(icon, {
+                        size: size && ["sm", "md"].includes(size) ? "md" : "lg" // Adjust icon size based on dialog size
+                    })}
+                {title}
             </DialogTitle>
             {description && <DialogDescription>{description}</DialogDescription>}
         </div>
