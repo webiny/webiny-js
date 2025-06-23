@@ -131,6 +131,14 @@ const inputVariants = cva(
                     "data-[focused=true]:wby-bg-neutral-dark/5",
                     "disabled:wby-bg-transparent disabled:wby-text-neutral-disabled disabled:placeholder:wby-text-neutral-disabled",
                     "data-[disabled=true]:wby-bg-transparent data-[disabled=true]:wby-text-neutral-disabled data-[disabled=true]:placeholder:wby-text-neutral-disabled"
+                ],
+                "ghost-negative": [
+                    "wby-bg-transparent wby-border-transparent wby-text-neutral-light/50 placeholder:wby-text-neutral-light/50",
+                    "hover:wby-bg-neutral-base/20",
+                    "focus:wby-bg-neutral-base focus:wby-text-neutral-primary",
+                    "data-[focused=true]:wby-bg-neutral-base data-[focused=true]:placeholder:wby-text-neutral-primary",
+                    "disabled:wby-bg-transparent disabled:wby-text-neutral-disabled/50 disabled:placeholder:wby-text-neutral-disabled/50",
+                    "data-[disabled=true]:wby-bg-transparent data-[disabled=true]:wby-text-neutral-disabled/50 data-[disabled=true]:placeholder:wby-text-neutral-disabled/50"
                 ]
             },
             iconPosition: {
@@ -198,6 +206,11 @@ const inputVariants = cva(
                 variant: "ghost",
                 invalid: true,
                 class: "!wby-border-destructive-subtle !wby-bg-destructive-subtle"
+            },
+            {
+                variant: "ghost-negative",
+                invalid: true,
+                class: "!wby-border-destructive-default !wby-bg-destructive-subtle wby-text-neutral-primary placeholder:wby-text-neutral-dimmed"
             }
         ],
         defaultVariants: {

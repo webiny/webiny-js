@@ -42,6 +42,18 @@ export const Documentation: Story = {
         validate: undefined
     },
     argTypes: {
+        size: {
+            description: "Textarea field size",
+            control: "select",
+            options: ["md", "lg", "xl"],
+            defaultValue: "lg"
+        },
+        variant: {
+            description: "Textarea field style variant",
+            control: "select",
+            options: ["primary", "secondary", "ghost", "ghost-negative"],
+            defaultValue: "primary"
+        },
         label: {
             description: "Label text for the textarea",
             control: "text"

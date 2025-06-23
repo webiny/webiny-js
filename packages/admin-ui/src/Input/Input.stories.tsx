@@ -217,7 +217,7 @@ export const Documentation: Story = {
         variant: {
             description: "Input field style variant",
             control: "select",
-            options: ["primary", "secondary", "ghost"],
+            options: ["primary", "secondary", "ghost", "ghost-negative"],
             defaultValue: "primary"
         },
         label: {

@@ -158,6 +158,48 @@ export const GhostVariantInvalid: Story = {
     }
 };
 
+export const GhostNegativeVariant: Story = {
+    args: {
+        variant: "ghost-negative",
+        placeholder: "Custom placeholder"
+    },
+    decorators: [
+        Story => (
+            <div className="wby-bg-neutral-dark wby-p-xl">
+                <Story />
+            </div>
+        )
+    ]
+};
+
+export const GhostNegativeVariantDisabled: Story = {
+    args: {
+        ...GhostNegativeVariant.args,
+        disabled: true
+    },
+    decorators: [
+        Story => (
+            <div className="wby-bg-neutral-dark wby-p-xl">
+                <Story />
+            </div>
+        )
+    ]
+};
+
+export const GhostNegativeVariantInvalid: Story = {
+    args: {
+        ...GhostNegativeVariant.args,
+        invalid: true
+    },
+    decorators: [
+        Story => (
+            <div className="wby-bg-neutral-dark wby-p-xl">
+                <Story />
+            </div>
+        )
+    ]
+};
+
 export const WithForwardEventOnChange: Story = {
     args: {
         ...Default.args,
