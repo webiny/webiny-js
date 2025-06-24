@@ -135,8 +135,8 @@ const inputVariants = cva(
                 "ghost-negative": [
                     "wby-bg-transparent wby-border-transparent wby-text-neutral-light/50 placeholder:wby-text-neutral-light/50",
                     "hover:wby-bg-neutral-base/20",
-                    "focus:wby-bg-neutral-base focus:wby-text-neutral-primary",
-                    "data-[focused=true]:wby-bg-neutral-base data-[focused=true]:placeholder:wby-text-neutral-primary",
+                    "focus:wby-bg-neutral-base focus:wby-text-neutral-primary focus:placeholder:wby-text-neutral-dimmed",
+                    "data-[focused=true]:wby-bg-neutral-base data-[focused=true]:wby-bg-neutral-primary data-[focused=true]:placeholder:wby-text-neutral-dimmed",
                     "disabled:wby-bg-transparent disabled:wby-text-neutral-disabled/50 disabled:placeholder:wby-text-neutral-disabled/50",
                     "data-[disabled=true]:wby-bg-transparent data-[disabled=true]:wby-text-neutral-disabled/50 data-[disabled=true]:placeholder:wby-text-neutral-disabled/50"
                 ]
