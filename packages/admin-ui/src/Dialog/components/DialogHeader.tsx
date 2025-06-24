@@ -46,7 +46,7 @@ export const DialogHeader = ({
             <DialogTitle size={size}>
                 {icon &&
                     React.cloneElement(icon, {
-                        size: size && ["sm", "md"].includes(size) ? "md" : "lg" // Adjust icon size based on dialog size
+                        size: size && ["lg", "xl", "full"].includes(size) ? "lg" : "md" // Adjust icon size based on dialog size
                     })}
                 {title}
             </DialogTitle>

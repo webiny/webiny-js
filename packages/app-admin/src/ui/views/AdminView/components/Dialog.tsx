@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import get from "lodash/get";
 import { useUi } from "@webiny/app/hooks/useUi";
-import { Dialog, DialogAccept, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
+import { Dialog } from "@webiny/admin-ui";
 
 export const DialogContainer = () => {
     const ui = useUi();
@@ -18,21 +18,30 @@ export const DialogContainer = () => {
     }, [ui]);
 
     return (
-        <Dialog open={!!message} onClose={hideDialog} data-testid={dataTestId} style={style}>
-            {title && <DialogTitle>{title}</DialogTitle>}
-            <DialogContent>{message}</DialogContent>
-            <DialogActions>
-                {actions.cancel && (
-                    <DialogAccept onClick={actions.cancel.onClick}>
-                        {actions.cancel.label}
-                    </DialogAccept>
-                )}
-                {actions.accept && (
-                    <DialogAccept onClick={actions.accept.onClick}>
-                        {actions.accept.label}
-                    </DialogAccept>
-                )}
-            </DialogActions>
+        <Dialog
+            open={!!message}
+            onClose={hideDialog}
+            data-testid={dataTestId}
+            style={style}
+            title={title}
+            actions={
+                <>
+                    {actions.cancel && (
+                        <Dialog.CancelButton
+                            onClick={actions.cancel.onClick}
+                            text={actions.cancel.label}
+                        />
+                    )}
+                    {actions.accept && (
+                        <Dialog.ConfirmButton
+                            onClick={actions.accept.onClick}
+                            text={actions.accept.label}
+                        />
+                    )}
+                </>
+            }
+        >
+            {message}
         </Dialog>
     );
 };

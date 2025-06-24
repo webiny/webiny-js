@@ -1,8 +1,6 @@
 import React, { ReactNode } from "react";
+import { Dialog as AdminDialog, OverlayLoader } from "@webiny/admin-ui";
 import { Form, FormOnSubmit, GenericFormData } from "@webiny/form";
-import { ButtonDefault, ButtonPrimary } from "@webiny/ui/Button";
-import { Dialog as UiDialog, DialogActions, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
-import { CircularProgress } from "@webiny/ui/Progress";
 
 interface DialogProps {
     title: ReactNode;
@@ -15,6 +13,7 @@ interface DialogProps {
     loading: boolean;
     open: boolean;
     formData?: GenericFormData;
+    size?: "sm" | "md" | "lg" | "xl" | "full";
 }
 
 export const Dialog = ({
@@ -27,35 +26,43 @@ export const Dialog = ({
     loadingLabel = "Loading...",
     closeDialog,
     onSubmit,
-    formData
+    formData,
+    size
 }: DialogProps) => {
     const handleSubmit: FormOnSubmit = data => {
         onSubmit(data);
     };
 
     return (
-        <UiDialog open={open} onClose={closeDialog}>
-            {open ? (
-                <Form onSubmit={handleSubmit} data={formData}>
-                    {({ submit }) => (
+        <Form onSubmit={handleSubmit} data={formData}>
+            {({ submit }) => (
+                <AdminDialog
+                    open={open}
+                    onClose={closeDialog}
+                    size={size}
+                    title={title}
+                    actions={
                         <>
-                            {loading && <CircularProgress label={loadingLabel} />}
-                            <DialogTitle>{title}</DialogTitle>
-                            <DialogContent>{content}</DialogContent>
-                            <DialogActions>
-                                {cancelLabel ? (
-                                    <ButtonDefault onClick={closeDialog}>
-                                        {cancelLabel}
-                                    </ButtonDefault>
-                                ) : null}
-                                {acceptLabel ? (
-                                    <ButtonPrimary onClick={submit}>{acceptLabel}</ButtonPrimary>
-                                ) : null}
-                            </DialogActions>
+                            {cancelLabel ? (
+                                <AdminDialog.CancelButton
+                                    onClick={closeDialog}
+                                    text={cancelLabel}
+                                />
+                            ) : null}
+                            {acceptLabel ? (
+                                <AdminDialog.ConfirmButton onClick={submit} text={acceptLabel} />
+                            ) : null}
                         </>
-                    )}
-                </Form>
-            ) : null}
-        </UiDialog>
+                    }
+                >
+                    {open ? (
+                        <>
+                            {loading && <OverlayLoader text={loadingLabel} />}
+                            {content}
+                        </>
+                    ) : null}
+                </AdminDialog>
+            )}
+        </Form>
     );
 };

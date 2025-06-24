@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Form, FormOnSubmit, GenericFormData, useForm } from "@webiny/form";
-import { Dialog as UiDialog } from "@webiny/ui/Dialog";
+import { Dialog } from "@webiny/admin-ui";
 
 interface DialogProps {
     onSubmit: (data: GenericFormData) => void;
@@ -16,7 +16,7 @@ export const CustomDialog = ({ open, loading, closeDialog, onSubmit, children }:
     };
 
     return (
-        <UiDialog open={open} onClose={closeDialog}>
+        <Dialog open={open} onClose={closeDialog}>
             {open ? (
                 <Form onSubmit={handleSubmit}>
                     {() => (
@@ -26,7 +26,7 @@ export const CustomDialog = ({ open, loading, closeDialog, onSubmit, children }:
                     )}
                 </Form>
             ) : null}
-        </UiDialog>
+        </Dialog>
     );
 };
 

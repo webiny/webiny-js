@@ -16,6 +16,7 @@ interface ShowDialogParams {
     onAccept?: (data: GenericFormData) => void;
     onClose?: () => void;
     formData?: GenericFormData;
+    size?: "sm" | "md" | "lg" | "xl" | "full";
 }
 
 interface ShowCustomDialogParams {
@@ -51,7 +52,8 @@ export const initializeState = (params: Partial<DialogState> = {}): DialogState 
     open: params.open ?? false,
     loading: params.loading ?? false,
     element: params.element,
-    formData: params.formData ?? {}
+    formData: params.formData ?? {},
+    size: params.size ?? "md"
 });
 
 export const DialogsContext = React.createContext<DialogsContext | undefined>(undefined);
@@ -143,6 +145,7 @@ export const DialogsProvider = ({ children }: DialogsProviderProps) => {
                         closeDialog={() => closeDialog(dialog.id)}
                         onSubmit={data => onSubmit(dialog.id, data)}
                         formData={dialog.formData}
+                        size={dialog.size}
                     />
                 )
             )}

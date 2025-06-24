@@ -105,7 +105,7 @@ const DialogBase = (props: DialogProps) => {
             headerProps: { title, icon, description, size },
             bodyProps: { children, bodyPadding, size },
             footerProps: { info, actions, size },
-            closeButtonProps: { show: showCloseButton },
+            closeButtonProps: { show: showCloseButton, size },
             contentProps: { ...rest, size }
         };
     }, [props]);
@@ -119,7 +119,7 @@ const DialogBase = (props: DialogProps) => {
                     <DialogHeader {...headerProps} />
                     <DialogBody {...bodyProps} />
                     <DialogFooter {...footerProps} />
-                    {closeButtonProps.show && <DialogClose />}
+                    {closeButtonProps.show && <DialogClose size={closeButtonProps.size} />}
                 </DialogContent>
             </DialogPortal>
         </DialogRoot>
