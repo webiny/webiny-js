@@ -36,6 +36,8 @@ export const ImageEditorDialog = (props: ImageEditorDialogProps) => {
     return (
         <Dialog
             style={{ zIndex: dialogZIndex }}
+            title={"Edit Image"}
+            size={"full"}
             open={open}
             onClose={onClose}
             {...dialogProps}

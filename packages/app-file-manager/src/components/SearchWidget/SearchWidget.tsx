@@ -19,7 +19,8 @@ export const SearchWidget = () => {
                     data-testid={"file-manager.search-input"}
                     startIcon={<Icon label={"Search"} icon={<SearchIcon />} />}
                     size={"md"}
-                    variant={"ghost"}
+                    variant={"ghost-negative"}
+                    className={"wby-max-w-full wby-w-80"}
                 />
             )}
         </DelayedOnChange>

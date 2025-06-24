@@ -185,10 +185,8 @@ class ImageEditor extends React.Component<ImageEditorProps, ImageEditorState> {
         const { src, tools, children } = this.props;
         const { tool } = this.state;
         const editor = (
-            <>
-                <div
-                    className={"wby-flex wby-justify-center wby-items-center wby-w-full wby-mt-md"}
-                >
+            <div className={"wby-w-full wby-h-full wby-flex wby-flex-col wby-gap-md"}>
+                <div className={"wby-flex wby-justify-center wby-items-center wby-w-full"}>
                     {tools.map(key => {
                         const tool: ImageEditorTool = toolbar[key];
                         if (!tool) {
@@ -211,7 +209,7 @@ class ImageEditor extends React.Component<ImageEditorProps, ImageEditorState> {
                         );
                     })}
                 </div>
-                <div className={"wby-w-full wby-my-md"}>
+                <div className={"wby-w-full"}>
                     {tool ? (
                         <>
                             {typeof tool.renderForm === "function" &&
@@ -247,7 +245,7 @@ class ImageEditor extends React.Component<ImageEditorProps, ImageEditorState> {
                     )}
                 </div>
 
-                <div className={"wby-text-center wby-mx-auto"}>
+                <div className={" wby-flex-1 wby-w-full wby-text-center wby-mx-auto"}>
                     <canvas
                         key={src}
                         id={"canvas"}
@@ -255,7 +253,7 @@ class ImageEditor extends React.Component<ImageEditorProps, ImageEditorState> {
                         ref={this.canvas as React.Ref<any>}
                     />
                 </div>
-            </>
+            </div>
         );
 
         if (typeof children === "function") {
