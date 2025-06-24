@@ -35,8 +35,8 @@ const DecoratablePopover = ({
             side={side}
             variant={variant}
         >
-            {close && <PopoverPrimitive.Close />}
             {content}
+            {close && <PopoverPrimitive.Close />}
             {arrow && <PopoverPrimitive.Arrow variant={variant} />}
         </PopoverPrimitive.Content>
     </PopoverPrimitive>

@@ -5,7 +5,7 @@ import { cn, cva, type VariantProps } from "~/utils";
 const popoverContentVariants = cva(
     [
         "wby-z-50 wby-bg-neutral-base wby-rounded-sm wby-shadow-md wby-overflow-hidden wby-outline-none",
-        "data-[state=open]:wby-animate-in data-[state=closed]:wby-animate-out data-[state=closed]:wby-fade-out-0 data-[state=open]:wby-fade-in-0 data-[state=closed]:wby-zoom-out-95 data-[state=open]:wby-zoom-in-95",
+        "data-[state=open]:wby-animate-in data-[state=closed]:wby-animate-out data-[state=closed]:wby-fade-out-0 data-[state=open]:wby-fade-in-0 data-[state=closed]:wby-zoom-out-95 data-[state=open]:wby-zoom-in-95 wby-origin-(--radix-popover-content-transform-origin)",
         "data-[side=bottom]:wby-slide-in-from-top-2 data-[side=left]:wby-slide-in-from-right-2 data-[side=right]:wby-slide-in-from-left-2 data-[side=top]:wby-slide-in-from-bottom-2"
     ],
     {
@@ -16,10 +16,10 @@ const popoverContentVariants = cva(
             },
             arrow: {
                 true: [
-                    "data-[side=top]:wby-mb-xs-plus",
-                    "data-[side=bottom]:wby-mt-xs-plus",
-                    "data-[side=left]:wby-mr-xs-plus",
-                    "data-[side=right]:wby-ml-xs-plus"
+                    "data-[side=top]:wby-pb-xs-plus",
+                    "data-[side=bottom]:wby-pt-xs-plus",
+                    "data-[side=left]:wby-pr-xs-plus",
+                    "data-[side=right]:wby-pl-xs-plus"
                 ],
                 false: ["wby-border-sm"]
             }
