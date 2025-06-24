@@ -6,7 +6,10 @@ import { StyledColumn } from "./stories/StyledColumn";
 
 const meta: Meta<typeof Grid> = {
     title: "Components/Grid",
-    component: Grid
+    component: Grid,
+    parameters: {
+        layout: "padded"
+    }
 };
 
 export default meta;
@@ -15,7 +18,7 @@ type Story = StoryObj<typeof Grid>;
 
 export const Default: Story = {
     args: {
-        className: "wby-bg-neutral-light wby-p-4",
+        className: "wby-bg-neutral-light wby-p-md wby-w-full",
         children: (
             <>
                 <StyledColumn index={1} />
