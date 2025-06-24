@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { makeDecoratable } from "~/utils";
 import { AutoCompletePrimitive, AutoCompletePrimitiveProps } from "./primitives";
 import {
@@ -23,11 +23,33 @@ const DecoratableAutoComplete = ({
     const { isValid: validationIsValid, message: validationMessage } = validation || {};
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
 
+    // Retrieve the internally generated ID from cmdk's <Command.Input> to sync with the external <label>
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [inputId, setInputId] = useState<string>();
+
+    useEffect(() => {
+        if (inputRef.current?.id) {
+            setInputId(inputRef.current.id);
+        }
+    }, []);
+
     return (
         <div className={"wby-w-full"}>
-            <FormComponentLabel text={label} required={required} disabled={disabled} />
+            <FormComponentLabel
+                text={label}
+                required={required}
+                disabled={disabled}
+                invalid={invalid}
+                htmlFor={inputId}
+            />
             <FormComponentDescription text={description} disabled={disabled} />
-            <AutoCompletePrimitive {...props} disabled={disabled} label={label} invalid={invalid} />
+            <AutoCompletePrimitive
+                {...props}
+                inputRef={inputRef}
+                disabled={disabled}
+                label={label}
+                invalid={invalid}
+            />
             <FormComponentErrorMessage
                 text={validationMessage}
                 invalid={invalid}

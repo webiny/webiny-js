@@ -40,6 +40,10 @@ interface MultiAutoCompletePrimitiveProps {
      */
     initialMessage?: React.ReactNode;
     /**
+     * Reference to the input element.
+     */
+    inputRef?: React.Ref<HTMLInputElement>;
+    /**
      * Accessible label for the command menu. Not shown visibly.
      */
     label?: React.ReactNode;
@@ -157,6 +161,7 @@ const DecoratableMultiAutoCompletePrimitive = (props: MultiAutoCompletePrimitive
                 <PopoverPrimitive.Trigger asChild>
                     <span>
                         <MultiAutoCompleteInput
+                            inputRef={props.inputRef}
                             value={vm.inputVm.value}
                             placeholder={vm.inputVm.placeholder}
                             changeValue={searchOption}

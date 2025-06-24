@@ -27,6 +27,10 @@ interface AutoCompletePrimitiveProps {
      */
     initialMessage?: React.ReactNode;
     /**
+     * Reference to the input element.
+     */
+    inputRef?: React.Ref<HTMLInputElement>;
+    /**
      * Indicates if the input field is invalid.
      * Refer to `InputPrimitiveProps["invalid"]` for possible values.
      */
@@ -131,10 +135,11 @@ const DecoratableAutoCompletePrimitive = (props: AutoCompletePrimitiveProps) => 
 
     return (
         <PopoverPrimitive open={vm.optionsListVm.open} onOpenChange={() => setListOpenState(true)}>
-            <Command label={props.label} onKeyDown={handleKeyDown}>
+            <Command label={String(props.label)} onKeyDown={handleKeyDown}>
                 <PopoverPrimitive.Trigger asChild>
                     <span>
                         <Command.Input
+                            inputRef={props.inputRef}
                             value={vm.inputVm.value}
                             onValueChange={searchOption}
                             placeholder={vm.inputVm.placeholder}

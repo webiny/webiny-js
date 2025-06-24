@@ -7,10 +7,12 @@ type InputProps = Omit<React.ComponentPropsWithoutRef<typeof CommandPrimitive.In
         inputElement?: React.ReactNode;
     };
 
-const Input = ({ inputElement, size, ...props }: InputProps) => {
+const Input = ({ inputElement, size, inputRef, ...props }: InputProps) => {
     return (
         <CommandPrimitive.Input asChild {...props}>
-            {inputElement ?? <InputPrimitive size={size} forwardEventOnChange={true} />}
+            {inputElement ?? (
+                <InputPrimitive size={size} forwardEventOnChange={true} inputRef={inputRef} />
+            )}
         </CommandPrimitive.Input>
     );
 };

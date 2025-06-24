@@ -49,7 +49,6 @@ const LabelBase = ({
     text,
     weight,
     invalid,
-    id,
     ...props
 }: LabelProps) => {
     if (!text) {
@@ -59,7 +58,6 @@ const LabelBase = ({
     return (
         <LabelPrimitive.Root
             className={cn(labelVariants({ weight, disabled, invalid }), className)}
-            htmlFor={id}
             {...props}
         >
             <span>

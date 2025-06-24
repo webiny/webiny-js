@@ -40,10 +40,17 @@ const MultiAutoCompleteInput = ({
     value,
     variant,
     className,
+    inputRef: parentInputRef,
     ...props
 }: MultiAutoCompleteInputProps) => {
     const [focused, setFocused] = React.useState<boolean>(false);
-    const inputRef = React.useRef<HTMLInputElement>(null);
+    const inputRef = React.useMemo<React.RefObject<HTMLInputElement>>(
+        () =>
+            parentInputRef && typeof parentInputRef !== "function"
+                ? parentInputRef
+                : React.createRef<HTMLInputElement>(),
+        [parentInputRef]
+    );
     const iconPosition = getIconPosition(startIcon, endIcon);
 
     const renderSelectedOptions = React.useCallback(

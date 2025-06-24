@@ -37,7 +37,7 @@ const DecoratableRadio = ({ className, label, id, ...props }: RadioProps) => {
                     />
                 </RadioGroupPrimitive.Indicator>
             </RadioGroupPrimitive.Item>
-            <Label id={id} text={label} weight={"light"} className={"wby-text-md"} />
+            <Label htmlFor={id} text={label} weight={"light"} className={"wby-text-md"} />
         </div>
     );
 };

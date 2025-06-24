@@ -54,7 +54,7 @@ const SwitchRenderer = ({
     return (
         <div className={cn(switchVariants({ labelPosition }), className)}>
             <Label
-                id={id}
+                htmlFor={id}
                 text={label}
                 disabled={disabled}
                 required={required}

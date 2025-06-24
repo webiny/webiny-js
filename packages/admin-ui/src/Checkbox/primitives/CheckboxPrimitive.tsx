@@ -98,7 +98,9 @@ const DecoratableCheckboxPrimitiveRenderer = ({
                     )}
                 </span>
             </CheckboxPrimitives.Root>
-            {hasLabel && <Label id={id} text={label} weight={"light"} className={"wby-text-md"} />}
+            {hasLabel && (
+                <Label htmlFor={id} text={label} weight={"light"} className={"wby-text-md"} />
+            )}
         </div>
     );
 };

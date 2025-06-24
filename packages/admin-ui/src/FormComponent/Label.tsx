@@ -8,9 +8,11 @@ interface FormComponentLabelProps extends React.HTMLAttributes<HTMLDivElement> {
     required?: boolean;
     disabled?: boolean;
     hint?: React.ReactNode;
+    htmlFor?: string;
 }
 
 const DecoratableFormComponentLabel = ({
+    htmlFor,
     text,
     required,
     disabled,
@@ -28,6 +30,7 @@ const DecoratableFormComponentLabel = ({
         if (React.isValidElement(text) && text.type === Label) {
             return React.cloneElement(text as React.ReactElement<LabelProps>, {
                 ...text.props,
+                htmlFor: text.props.htmlFor ?? htmlFor,
                 required: text.props.required ?? required,
                 disabled: text.props.disabled ?? disabled,
                 hint: text.props.hint ?? hint,
@@ -37,6 +40,7 @@ const DecoratableFormComponentLabel = ({
 
         return (
             <Label
+                htmlFor={htmlFor}
                 text={text}
                 required={required}
                 disabled={disabled}
@@ -44,7 +48,7 @@ const DecoratableFormComponentLabel = ({
                 invalid={invalid}
             />
         );
-    }, [text, required, disabled, hint, invalid]);
+    }, [text, required, disabled, hint, invalid, htmlFor]);
 
     if (!renderLabel) {
         return null;
