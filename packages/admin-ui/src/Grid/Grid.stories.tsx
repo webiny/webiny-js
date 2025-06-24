@@ -147,7 +147,7 @@ export const Documentation: Story = {
     },
     args: {
         gap: "comfortable",
-        className: "wby-bg-neutral-light wby-p-4"
+        className: "wby-bg-neutral-light wby-p-md wby-w-full"
     },
     argTypes: {
         gap: {
