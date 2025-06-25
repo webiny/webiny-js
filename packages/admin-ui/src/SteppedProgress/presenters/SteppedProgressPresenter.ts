@@ -5,7 +5,6 @@ import {
     ProgressItemFormatter,
     type ProgressItemFormatted
 } from "../domains";
-import type { SteppedProgressProps } from "../SteppedProgress";
 
 interface SteppedProgressPresenterParams {
     items: ProgressItemParams[];
@@ -15,7 +14,7 @@ interface ISteppedProgressPresenter {
     vm: {
         items: ProgressItemFormatted[];
     };
-    init: (props: SteppedProgressProps) => void;
+    init: (props: SteppedProgressPresenterParams) => void;
 }
 
 class SteppedProgressPresenter implements ISteppedProgressPresenter {
@@ -25,8 +24,8 @@ class SteppedProgressPresenter implements ISteppedProgressPresenter {
         makeAutoObservable(this);
     }
 
-    public init(props: SteppedProgressProps) {
-        this.items = props.items.map(item => ProgressItem.create(item));
+    public init(params: SteppedProgressPresenterParams) {
+        this.items = params.items.map(item => ProgressItem.create(item));
     }
 
     get vm() {

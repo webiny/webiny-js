@@ -7448,7 +7448,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@juggle/resize-observer@npm:^3.3.1":
+"@juggle/resize-observer@npm:^3.3.1, @juggle/resize-observer@npm:^3.4.0":
   version: 3.4.0
   resolution: "@juggle/resize-observer@npm:3.4.0"
   checksum: 10/73d1d00ee9132fb6f0aea0531940a6b93603e935590bd450fc6285a328d906102eeeb95dea77b2edac0e779031a9708aa8c82502bd298ee4dd26e7dff48f397a
@@ -7832,18 +7832,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@minoru/react-dnd-treeview@npm:3.2.1":
-  version: 3.2.1
-  resolution: "@minoru/react-dnd-treeview@npm:3.2.1"
+"@minoru/react-dnd-treeview@npm:^3.5.2":
+  version: 3.5.2
+  resolution: "@minoru/react-dnd-treeview@npm:3.5.2"
   dependencies:
-    dnd-multi-backend: "npm:^7.0.0-alpha.4"
+    "@juggle/resize-observer": "npm:^3.4.0"
+    dnd-multi-backend: "npm:^8.1.2"
+    framer-motion: "npm:^11.17.0"
     react-dnd-html5-backend: "npm:^16.0.1"
     react-dnd-touch-backend: "npm:^16.0.1"
+    react-use-measure: "npm:^2.1.1"
   peerDependencies:
-    react: 17.x || 18.x
+    react: 18.x || 19.x
     react-dnd: 15.x || 16.x
-    react-dom: 17.x || 18.x
-  checksum: 10/8c08fbb6a0206626f32e2dc52508ff12d9a0ffdd5d276af897365bdb90bc0f15e80d6a56b8de50c27e3d4790d8423e98db270a1b8555bb23f8c1e90e5220cd44
+    react-dom: 18.x || 19.x
+  checksum: 10/ec36178d286abb50463fb4f97b3ab23df4e4b03f47a7ed092d47944325ff39a80c42c50234abc4e176a50d80a6e0c7f47f69d7dfcd98711aa02b5fe45b64f0bd
   languageName: node
   linkType: hard
 
@@ -15403,6 +15406,7 @@ __metadata:
     "@fortawesome/fontawesome-svg-core": "npm:^1.3.0"
     "@fortawesome/free-solid-svg-icons": "npm:^6.0.0"
     "@fortawesome/react-fontawesome": "npm:^0.1.17"
+    "@minoru/react-dnd-treeview": "npm:^3.5.2"
     "@storybook/addon-a11y": "npm:7.6.20"
     "@storybook/addon-essentials": "npm:7.6.20"
     "@storybook/react": "npm:7.6.20"
@@ -15437,6 +15441,7 @@ __metadata:
     react-ace: "npm:^13.0.0"
     react-color: "npm:^2.19.3"
     react-custom-scrollbars: "npm:^4.2.1"
+    react-dnd: "npm:^16.0.1"
     react-virtualized: "npm:^9.22.5"
     rimraf: "npm:^6.0.1"
     sass: "npm:1.44.0"
@@ -16946,7 +16951,7 @@ __metadata:
   resolution: "@webiny/app-aco@workspace:packages/app-aco"
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
-    "@minoru/react-dnd-treeview": "npm:3.2.1"
+    "@minoru/react-dnd-treeview": "npm:^3.5.2"
     "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
@@ -25270,10 +25275,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dnd-multi-backend@npm:^7.0.0-alpha.4":
-  version: 7.1.3
-  resolution: "dnd-multi-backend@npm:7.1.3"
-  checksum: 10/2c7aee0cedeaadca1927c87e4cbf89cc494ad1f9754432d29c90915508a93b3f277e5c81fb7d73025dca2aa0212be5243608914da4258b1e6fa62c2360d247c1
+"dnd-multi-backend@npm:^8.1.2":
+  version: 8.1.2
+  resolution: "dnd-multi-backend@npm:8.1.2"
+  peerDependencies:
+    dnd-core: ^16.0.1
+  checksum: 10/456b0e51e53bbdb340b7afc414af0e63e964a5bbc54e24bf2304e2bc2c1dc5e053a34f1eaced8a013a8eff5e43958e5b2d55a66c3582395ffec5faa6a6eaf3e4
   languageName: node
   linkType: hard
 
@@ -27921,6 +27928,28 @@ __metadata:
   version: 4.3.7
   resolution: "fraction.js@npm:4.3.7"
   checksum: 10/bb5ebcdeeffcdc37b68ead3bdfc244e68de188e0c64e9702197333c72963b95cc798883ad16adc21588088b942bca5b6a6ff4aeb1362d19f6f3b629035dc15f5
+  languageName: node
+  linkType: hard
+
+"framer-motion@npm:^11.17.0":
+  version: 11.18.2
+  resolution: "framer-motion@npm:11.18.2"
+  dependencies:
+    motion-dom: "npm:^11.18.1"
+    motion-utils: "npm:^11.18.1"
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    "@emotion/is-prop-valid": "*"
+    react: ^18.0.0 || ^19.0.0
+    react-dom: ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@emotion/is-prop-valid":
+      optional: true
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 10/f8805f9f5664b86aad6b9ed280a79b10e7ed4e31048728d4c3767d95a5c9feeb0279844bbe613dcb3741bb784cdf6ad761e726249fa4feeec9bec4a29f78a397
   languageName: node
   linkType: hard
 
@@ -34017,6 +34046,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"motion-dom@npm:^11.18.1":
+  version: 11.18.1
+  resolution: "motion-dom@npm:11.18.1"
+  dependencies:
+    motion-utils: "npm:^11.18.1"
+  checksum: 10/d9172638e05998486800b1045fd2060dce13c748bdef2071b8d6f94adf87da9f5e11d44367a6ea2b4d2a8701d150a21427c1676b023dfe0e48f36c0383b2ceec
+  languageName: node
+  linkType: hard
+
+"motion-utils@npm:^11.18.1":
+  version: 11.18.1
+  resolution: "motion-utils@npm:11.18.1"
+  checksum: 10/8af61c8260ed6abe9c0d4e1037bd80de95a461a62c89daaf26bfdcdccc96799eed5c45adbdff90ea78614336bf2e3b91f4eb6ecb4e4028a3bce53977b54822a2
+  languageName: node
+  linkType: hard
+
 "mqtt-packet@npm:^9.0.1":
   version: 9.0.1
   resolution: "mqtt-packet@npm:9.0.1"
@@ -38793,6 +38838,19 @@ __metadata:
     react: ">=16.6.0"
     react-dom: ">=16.6.0"
   checksum: 10/ca32d3fd2168c976c5d90a317f25d5f5cd723608b415fb3b9006f9d793c8965c619562d0884503a3e44e4b06efbca4fdd1520f30e58ca3e00a0890e637d55419
+  languageName: node
+  linkType: hard
+
+"react-use-measure@npm:^2.1.1":
+  version: 2.1.7
+  resolution: "react-use-measure@npm:2.1.7"
+  peerDependencies:
+    react: ">=16.13"
+    react-dom: ">=16.13"
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+  checksum: 10/d3cbd359b97728654904a7b3b42c2bcac95596702d482bd497362869eeb040f0e585eb7073cfe76a6055783215581f5db5d2be3ba5b78668f0dd0be5b3330e67
   languageName: node
   linkType: hard
 
