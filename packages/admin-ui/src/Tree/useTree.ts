@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { DropOptions as DndDropOptions, NodeModel } from "@minoru/react-dnd-treeview";
 import { autorun } from "mobx";
 import { TreePresenter, type TreePresenterInitParams } from "./presenters";
-import type { DropOptions, TreeProps } from "./Tree";
+import type { TreeProps, DropOptions } from "./Tree";
 import { Node, NodeFormatter } from "~/Tree/domains";
 
-export const useTree = (props: TreeProps) => {
-    const params: TreePresenterInitParams = useMemo(() => {
+export const useTree = <TData = unknown>(props: TreeProps<TData>) => {
+    const params: TreePresenterInitParams<TData> = useMemo(() => {
         return {
             nodes: props.nodes,
             rootId: props.rootId,
@@ -15,7 +15,7 @@ export const useTree = (props: TreeProps) => {
     }, [props.nodes, props.rootId, props.defaultOpenNodesIds]);
 
     const presenter = useMemo(() => {
-        return new TreePresenter();
+        return new TreePresenter<TData>();
     }, []);
 
     const [vm, setVm] = useState(presenter.vm);
@@ -30,14 +30,14 @@ export const useTree = (props: TreeProps) => {
         });
     }, [presenter]);
 
-    const handleDrop = async (newTree: NodeModel[], options: DndDropOptions) => {
+    const handleDrop = async (newTree: NodeModel<TData>[], options: DndDropOptions) => {
         const newNodeTree = newTree.map(node => {
-            return Node.create({
+            return Node.create<TData>({
                 id: String(node.id),
                 parentId: String(node.parent),
                 droppable: node.droppable,
                 text: node.text,
-                data: node.data
+                data: node.data as TData
             });
         });
 
@@ -46,9 +46,9 @@ export const useTree = (props: TreeProps) => {
         if (props.onDrop) {
             const { dragSourceId, dropTargetId } = options;
 
-            const newTreeDto = newNodeTree.map(node => NodeFormatter.toDto(node));
+            const newTreeDto = newNodeTree.map(node => NodeFormatter.toDto<TData>(node));
 
-            const dropOptions: DropOptions = {
+            const dropOptions: DropOptions<TData> = {
                 dragSourceId: String(dragSourceId),
                 dropTargetId: String(dropTargetId),
                 dragSource: newTreeDto.find(node => node.id === String(options.dragSourceId)),
@@ -59,18 +59,18 @@ export const useTree = (props: TreeProps) => {
         }
     };
 
-    const changeOpen = (newOpenIds: NodeModel["id"][]) => {
+    const changeOpen = (newOpenIds: NodeModel<TData>["id"][]) => {
         if (props.onChangeOpen) {
             const newOpenNodes = vm.nodes
                 .filter(node => newOpenIds.includes(node.id))
                 .map(node =>
-                    NodeFormatter.toDto(
-                        Node.create({
+                    NodeFormatter.toDto<TData>(
+                        Node.create<TData>({
                             id: String(node.id),
                             parentId: String(node.parent),
                             droppable: node.droppable,
                             text: node.text,
-                            data: node.data
+                            data: node.data as TData
                         })
                     )
                 );
@@ -79,41 +79,41 @@ export const useTree = (props: TreeProps) => {
         }
     };
 
-    const canDrag = (node: NodeModel | undefined) => {
+    const canDrag = (node: NodeModel<TData> | undefined) => {
         if (!node) {
             return false;
         }
 
-        const nodeDto = NodeFormatter.toDto(
-            Node.create({
+        const nodeDto = NodeFormatter.toDto<TData>(
+            Node.create<TData>({
                 id: String(node.id),
                 parentId: String(node.parent),
                 droppable: node.droppable,
                 text: node.text,
-                data: node.data as Record<string, unknown>
+                data: node.data as TData
             })
         );
 
         return props.canDrag ? props.canDrag(nodeDto) : true;
     };
 
-    const canDrop = (tree: NodeModel[], options: DndDropOptions) => {
+    const canDrop = (tree: NodeModel<TData>[], options: DndDropOptions) => {
         if (props.canDrop) {
             const { dragSourceId, dropTargetId } = options;
 
             const nodeTree = tree.map(node => {
-                return Node.create({
+                return Node.create<TData>({
                     id: String(node.id),
                     parentId: String(node.parent),
                     droppable: node.droppable,
                     text: node.text,
-                    data: node.data as Record<string, unknown>
+                    data: node.data as TData
                 });
             });
 
-            const nodeTreeDto = nodeTree.map(node => NodeFormatter.toDto(node));
+            const nodeTreeDto = nodeTree.map(node => NodeFormatter.toDto<TData>(node));
 
-            const dropOptions: DropOptions = {
+            const dropOptions: DropOptions<TData> = {
                 dragSourceId: String(dragSourceId),
                 dropTargetId: String(dropTargetId),
                 dragSource: nodeTreeDto.find(node => node.id === String(options.dragSourceId)),

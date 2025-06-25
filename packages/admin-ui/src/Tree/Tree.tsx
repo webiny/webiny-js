@@ -18,26 +18,26 @@ import { useTree } from "./useTree";
 //     onToggle: () => void;
 // };
 
-interface DropOptions {
-    dragSourceId?: NodeDto["id"];
-    dropTargetId: NodeDto["id"];
-    dragSource?: NodeDto;
-    dropTarget?: NodeDto;
+export interface DropOptions<TData = unknown> {
+    dragSourceId?: NodeDto<TData>["id"];
+    dropTargetId: NodeDto<TData>["id"];
+    dragSource?: NodeDto<TData>;
+    dropTarget?: NodeDto<TData>;
 }
 
-interface TreeProps {
-    nodes: NodeDto[];
+export interface TreeProps<TData = unknown> {
+    nodes: NodeDto<TData>[];
     rootId?: string;
     defaultOpenNodesIds?: string[];
     activeNodeIds?: string[];
-    onDrop?: (newTree: NodeDto[], options: DropOptions) => Promise<void>;
-    onChangeOpen?: (newOpenNodes: NodeDto[]) => void;
-    canDrag?: (node: NodeDto | undefined) => boolean;
-    canDrop?: (tree: NodeDto[], options: DropOptions) => boolean;
+    onDrop?: (newTree: NodeDto<TData>[], options: DropOptions<TData>) => Promise<void>;
+    onChangeOpen?: (newOpenNodes: NodeDto<TData>[]) => void;
+    canDrag?: (node: NodeDto<TData> | undefined) => boolean;
+    canDrop?: (tree: NodeDto<TData>[], options: DropOptions<TData>) => boolean;
 }
 
-const BaseTree = (props: TreeProps) => {
-    const { vm, handleDrop, changeOpen, canDrag, canDrop } = useTree(props);
+const BaseTree = <TData,>(props: TreeProps<TData>) => {
+    const { vm, handleDrop, changeOpen, canDrag, canDrop } = useTree<TData>(props);
 
     return (
         <DndProvider backend={MultiBackend} options={getBackendOptions()}>
@@ -69,4 +69,4 @@ const Tree = withStaticProps(DecoratableTree, {
     Item
 });
 
-export { Tree, type TreeProps, type DropOptions };
+export { Tree };

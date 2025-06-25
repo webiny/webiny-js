@@ -71,6 +71,38 @@ export const WithActiveNodeIds: Story = {
     }
 };
 
+// Example custom data type
+interface CustomData {
+    foo: string;
+    bar: number;
+}
+
+type CustomStory = StoryObj<typeof Tree<CustomData>>;
+
+export const WithCustomData: CustomStory = {
+    args: {
+        nodes: [
+            {
+                id: "1",
+                parentId: "0",
+                text: "Node 1",
+                data: { foo: "bar", bar: 42 }
+            },
+            {
+                id: "2",
+                parentId: "0",
+                text: "Node 2",
+                data: { foo: "baz", bar: 99 }
+            }
+        ],
+        onDrop: async (newTree, options) => {
+            // newTree and options are fully typed with CustomData
+            console.log("Custom data tree:", newTree);
+            console.log("Custom data drop options:", options);
+        }
+    }
+};
+
 export const WithOnDropCallback: Story = {
     args: {
         ...Default.args,
