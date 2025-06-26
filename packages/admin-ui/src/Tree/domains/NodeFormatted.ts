@@ -1,10 +1,18 @@
-import type { ReactElement } from "react";
+export type NodeFormattedDefaultData = {
+    id: string;
+    label: string;
+    parentId: string;
+    droppable: boolean;
+    active: boolean;
+    loading: boolean;
+};
 
-export interface NodeFormatted<TData = unknown> {
+export type WithDefaultNodeData<T> = NodeFormattedDefaultData & T;
+
+export interface NodeFormatted<TData = Record<string, any>> {
     id: string;
     text: string;
     parent: string;
     droppable: boolean;
-    data: TData;
-    icon?: ReactElement;
+    data: WithDefaultNodeData<TData>;
 }

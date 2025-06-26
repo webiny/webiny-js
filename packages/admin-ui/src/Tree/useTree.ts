@@ -34,9 +34,9 @@ export const useTree = <TData = unknown>(props: TreeProps<TData>) => {
         const newNodeTree = newTree.map(node => {
             return Node.create<TData>({
                 id: String(node.id),
+                label: node.text,
                 parentId: String(node.parent),
                 droppable: node.droppable,
-                text: node.text,
                 data: node.data as TData
             });
         });
@@ -67,9 +67,9 @@ export const useTree = <TData = unknown>(props: TreeProps<TData>) => {
                     NodeFormatter.toDto<TData>(
                         Node.create<TData>({
                             id: String(node.id),
+                            label: node.text,
                             parentId: String(node.parent),
                             droppable: node.droppable,
-                            text: node.text,
                             data: node.data as TData
                         })
                     )
@@ -89,7 +89,7 @@ export const useTree = <TData = unknown>(props: TreeProps<TData>) => {
                 id: String(node.id),
                 parentId: String(node.parent),
                 droppable: node.droppable,
-                text: node.text,
+                label: node.text,
                 data: node.data as TData
             })
         );
@@ -104,9 +104,9 @@ export const useTree = <TData = unknown>(props: TreeProps<TData>) => {
             const nodeTree = tree.map(node => {
                 return Node.create<TData>({
                     id: String(node.id),
+                    label: node.text,
                     parentId: String(node.parent),
                     droppable: node.droppable,
-                    text: node.text,
                     data: node.data as TData
                 });
             });

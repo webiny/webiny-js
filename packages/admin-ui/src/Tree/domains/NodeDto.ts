@@ -1,10 +1,9 @@
-import type { ReactElement } from "react";
-
-export interface NodeDto<TData = unknown> {
+export interface NodeDto<TData = Record<string, any>> {
     id: string;
-    text: string;
+    label: string;
     parentId: string;
     droppable?: boolean;
+    active?: boolean;
+    loading?: boolean;
     data?: TData;
-    icon?: ReactElement;
 }

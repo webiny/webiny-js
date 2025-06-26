@@ -10,7 +10,7 @@ describe("TreePresenter", () => {
                 nodes: [
                     {
                         id: "1",
-                        text: "Node 1",
+                        label: "Node 1",
                         parentId: "0"
                     }
                 ]
@@ -21,8 +21,15 @@ describe("TreePresenter", () => {
                     id: "1",
                     text: "Node 1",
                     parent: "0",
-                    droppable: false,
-                    data: {}
+                    droppable: true,
+                    data: {
+                        id: "1",
+                        label: "Node 1",
+                        parentId: "0",
+                        droppable: true,
+                        active: false,
+                        loading: false
+                    }
                 }
             ]);
         }
@@ -33,7 +40,7 @@ describe("TreePresenter", () => {
                 nodes: [
                     {
                         id: "2",
-                        text: "Node 2",
+                        label: "Node 2",
                         parentId: "0",
                         droppable: true
                     }
@@ -46,7 +53,14 @@ describe("TreePresenter", () => {
                     text: "Node 2",
                     parent: "0",
                     droppable: true,
-                    data: {}
+                    data: {
+                        id: "2",
+                        label: "Node 2",
+                        parentId: "0",
+                        droppable: true,
+                        active: false,
+                        loading: false
+                    }
                 }
             ]);
         }
@@ -57,7 +71,7 @@ describe("TreePresenter", () => {
                 nodes: [
                     {
                         id: "3",
-                        text: "Node 3",
+                        label: "Node 3",
                         parentId: "0",
                         data: { customData: "value" }
                     }
@@ -69,8 +83,78 @@ describe("TreePresenter", () => {
                     id: "3",
                     text: "Node 3",
                     parent: "0",
-                    droppable: false,
-                    data: { customData: "value" }
+                    droppable: true,
+                    data: {
+                        id: "3",
+                        label: "Node 3",
+                        parentId: "0",
+                        droppable: true,
+                        active: false,
+                        loading: false,
+                        customData: "value"
+                    }
+                }
+            ]);
+        }
+
+        // `nodes` with active
+        {
+            presenter.init({
+                nodes: [
+                    {
+                        id: "4",
+                        label: "Node 4",
+                        parentId: "0",
+                        active: true
+                    }
+                ]
+            });
+
+            expect(presenter.vm.nodes).toEqual([
+                {
+                    id: "4",
+                    text: "Node 4",
+                    parent: "0",
+                    droppable: true,
+                    data: {
+                        id: "4",
+                        label: "Node 4",
+                        parentId: "0",
+                        droppable: true,
+                        active: true,
+                        loading: false
+                    }
+                }
+            ]);
+        }
+
+        // `nodes` with loading
+        {
+            presenter.init({
+                nodes: [
+                    {
+                        id: "4",
+                        label: "Node 4",
+                        parentId: "0",
+                        loading: true
+                    }
+                ]
+            });
+
+            expect(presenter.vm.nodes).toEqual([
+                {
+                    id: "4",
+                    text: "Node 4",
+                    parent: "0",
+                    droppable: true,
+                    data: {
+                        id: "4",
+                        label: "Node 4",
+                        parentId: "0",
+                        droppable: true,
+                        active: false,
+                        loading: true
+                    }
                 }
             ]);
         }
@@ -81,7 +165,7 @@ describe("TreePresenter", () => {
                 nodes: [
                     {
                         id: "4",
-                        text: "Node 4",
+                        label: "Node 4",
                         parentId: "0"
                     }
                 ],
@@ -97,7 +181,7 @@ describe("TreePresenter", () => {
                 nodes: [
                     {
                         id: "5",
-                        text: "Node 5",
+                        label: "Node 5",
                         parentId: "0"
                     }
                 ],

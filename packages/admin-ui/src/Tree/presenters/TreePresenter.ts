@@ -48,9 +48,11 @@ class TreePresenter<TData = unknown> implements ITreePresenter<TData> {
             this.nodes = newTree.map(item =>
                 Node.create<TData>({
                     id: String(item.id),
-                    text: item.text,
+                    label: item.label,
                     parentId: String(item.parentId),
                     droppable: item.droppable,
+                    active: item.active,
+                    loading: item.loading,
                     data: item.data
                 })
             );

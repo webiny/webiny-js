@@ -1,32 +1,33 @@
-import type { ReactElement } from "react";
-
-export interface NodeParams<TData = unknown> {
+export interface NodeParams<TData = Record<string, any>> {
     id: string;
-    text: string;
     parentId: string;
     droppable?: boolean;
+    active?: boolean;
+    loading?: boolean;
+    label: string;
     data?: TData;
-    icon?: ReactElement;
 }
 
-export class Node<TData = unknown> {
+export class Node<TData = Record<string, any>> {
     private readonly _id: string;
-    private readonly _text: string;
     private readonly _parentId: string;
     private readonly _droppable: boolean;
+    private readonly _active: boolean;
+    private readonly _loading: boolean;
+    private readonly _label: string;
     private readonly _data: TData;
-    private readonly _icon?: ReactElement;
 
     protected constructor(params: NodeParams<TData>) {
         this._id = params.id;
-        this._text = params.text;
         this._parentId = params.parentId;
         this._droppable = params.droppable ?? true;
+        this._active = params.active ?? false;
+        this._loading = params.loading ?? false;
+        this._label = params.label;
         this._data = params.data as TData;
-        this._icon = params.icon;
     }
 
-    static create<TData = unknown>(data: NodeParams<TData>): Node<TData> {
+    static create<TData = Record<string, any>>(data: NodeParams<TData>): Node<TData> {
         return new Node<TData>(data);
     }
 
@@ -34,8 +35,8 @@ export class Node<TData = unknown> {
         return this._id;
     }
 
-    get text() {
-        return this._text;
+    get label() {
+        return this._label;
     }
 
     get parentId() {
@@ -46,11 +47,15 @@ export class Node<TData = unknown> {
         return this._droppable;
     }
 
-    get data(): TData {
-        return this._data;
+    get active() {
+        return this._active;
     }
 
-    get icon(): ReactElement | undefined {
-        return this._icon;
+    get loading() {
+        return this._loading;
+    }
+
+    get data(): TData {
+        return this._data;
     }
 }

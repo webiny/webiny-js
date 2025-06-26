@@ -1,4 +1,8 @@
+import React from "react";
+import { ReactComponent as FolderIcon } from "@webiny/icons/folder.svg";
+import { ReactComponent as FullScreenIcon } from "@webiny/icons/fullscreen.svg";
 import type { Meta, StoryObj } from "@storybook/react";
+
 import { Tree } from "./Tree";
 
 const meta: Meta<typeof Tree> = {
@@ -19,32 +23,32 @@ export const Default: Story = {
             {
                 id: "1",
                 parentId: "0",
-                text: "Node 1"
+                label: "Node 1"
             },
             {
                 id: "2",
                 parentId: "0",
-                text: "Node 2"
+                label: "Node 2"
             },
             {
                 id: "3",
                 parentId: "0",
-                text: "Node 3"
+                label: "Node 3"
             },
             {
                 id: "1-1",
                 parentId: "1",
-                text: "Child Node 1-1"
+                label: "Child Node 1-1"
             },
             {
                 id: "1-1-1",
                 parentId: "1-1",
-                text: "Grandchild Node 1-1-1"
+                label: "Grandchild Node 1-1-1"
             },
             {
                 id: "2-1",
                 parentId: "2",
-                text: "Child Node 2-1"
+                label: "Child Node 2-1"
             }
         ]
     }
@@ -77,21 +81,21 @@ interface CustomData {
     bar: number;
 }
 
-type CustomStory = StoryObj<typeof Tree<CustomData>>;
+type StoryWithCustomData = StoryObj<typeof Tree<CustomData>>;
 
-export const WithCustomData: CustomStory = {
+export const WithCustomData: StoryWithCustomData = {
     args: {
         nodes: [
             {
                 id: "1",
                 parentId: "0",
-                text: "Node 1",
+                label: "Node 1",
                 data: { foo: "bar", bar: 42 }
             },
             {
                 id: "2",
                 parentId: "0",
-                text: "Node 2",
+                label: "Node 2",
                 data: { foo: "baz", bar: 99 }
             }
         ],
@@ -129,27 +133,27 @@ export const WithCanDrag: Story = {
             {
                 id: "1",
                 parentId: "0",
-                text: "Node 1 - You cannot drag this node"
+                label: "Node 1 - You cannot drag this node"
             },
             {
                 id: "2",
                 parentId: "0",
-                text: "Node 2"
+                label: "Node 2"
             },
             {
                 id: "3",
                 parentId: "0",
-                text: "Node 3"
+                label: "Node 3"
             },
             {
                 id: "2-1",
                 parentId: "1",
-                text: "Child Node 2-1"
+                label: "Child Node 2-1"
             },
             {
                 id: "2-1-1",
                 parentId: "2",
-                text: "Grandchild Node 2-1-1"
+                label: "Grandchild Node 2-1-1"
             }
         ],
         canDrag: node => node?.id !== "1"
@@ -163,27 +167,27 @@ export const WithCanDrop: Story = {
             {
                 id: "1",
                 parentId: "0",
-                text: "Node 1 - You cannot drop on this node"
+                label: "Node 1 - You cannot drop on this node"
             },
             {
                 id: "2",
                 parentId: "0",
-                text: "Node 2"
+                label: "Node 2"
             },
             {
                 id: "3",
                 parentId: "0",
-                text: "Node 3"
+                label: "Node 3"
             },
             {
                 id: "2-1",
                 parentId: "1",
-                text: "Child Node 2-1"
+                label: "Child Node 2-1"
             },
             {
                 id: "2-1-1",
                 parentId: "2",
-                text: "Grandchild Node 2-1-1"
+                label: "Grandchild Node 2-1-1"
             }
         ],
         canDrop: (_, options) => {
@@ -195,5 +199,52 @@ export const WithCanDrop: Story = {
 
             return true;
         }
+    }
+};
+
+// Example custom data type
+interface CustomRenderData {
+    icon: React.ReactElement;
+}
+
+type StoryWithCustomNodeRenderer = StoryObj<typeof Tree<CustomRenderData>>;
+
+export const WithCustomNodeRenderer: StoryWithCustomNodeRenderer = {
+    args: {
+        ...Default.args,
+        nodes: [
+            {
+                id: "1",
+                parentId: "0",
+                label: "Node 1",
+                data: { icon: <FolderIcon /> }
+            },
+            {
+                id: "2",
+                parentId: "0",
+                label: "Node 2",
+                data: { icon: <FolderIcon /> }
+            },
+            {
+                id: "3",
+                parentId: "0",
+                label: "Node 3",
+                data: { icon: <FolderIcon /> }
+            },
+            {
+                id: "4",
+                parentId: "0",
+                label: "Node 4",
+                data: { icon: <FullScreenIcon /> }
+            }
+        ],
+        renderer: data => (
+            <Tree.Item>
+                <Tree.Item.Content>
+                    <Tree.Item.Icon label={data.label} element={data.icon} />
+                    {data.label}
+                </Tree.Item.Content>
+            </Tree.Item>
+        )
     }
 };

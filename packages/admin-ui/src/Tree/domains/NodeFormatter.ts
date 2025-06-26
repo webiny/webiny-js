@@ -3,25 +3,31 @@ import type { NodeFormatted } from "~/Tree/domains/NodeFormatted";
 import type { NodeDto } from "~/Tree/domains/NodeDto";
 
 export class NodeFormatter {
-    static toFormatted<TData = unknown>(item: Node<TData>): NodeFormatted<TData> {
+    static toFormatted<TData = Record<string, any>>(item: Node<TData>): NodeFormatted<TData> {
         return {
             id: item.id,
-            text: item.text,
+            text: item.label,
             parent: item.parentId,
             droppable: item.droppable ?? true,
-            data: item.data,
-            icon: item.icon
+            data: {
+                id: item.id,
+                label: item.label,
+                parentId: item.parentId,
+                droppable: item.droppable ?? true,
+                active: item.active ?? false,
+                loading: item.loading ?? false,
+                ...item.data
+            }
         };
     }
 
-    static toDto<TData = unknown>(item: Node<TData>): NodeDto<TData> {
+    static toDto<TData = Record<string, any>>(item: Node<TData>): NodeDto<TData> {
         return {
             id: item.id,
-            text: item.text,
+            label: item.label,
             parentId: item.parentId,
             droppable: item.droppable,
-            data: item.data,
-            icon: item.icon
+            data: item.data
         };
     }
 }

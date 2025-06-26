@@ -1,9 +1,10 @@
 import React from "react";
 import { getBackendOptions, MultiBackend, Tree as DndTree } from "@minoru/react-dnd-treeview";
+import type { RenderParams } from "@minoru/react-dnd-treeview/dist/types";
 import { DndProvider } from "react-dnd";
 import { makeDecoratable, withStaticProps } from "~/utils";
 import { Item } from "./components";
-import type { NodeDto } from "./domains";
+import type { NodeDto, WithDefaultNodeData } from "./domains";
 import { useTree } from "./useTree";
 
 // export type RenderParams = {
@@ -18,14 +19,14 @@ import { useTree } from "./useTree";
 //     onToggle: () => void;
 // };
 
-export interface DropOptions<TData = unknown> {
+export interface DropOptions<TData = Record<string, any>> {
     dragSourceId?: NodeDto<TData>["id"];
     dropTargetId: NodeDto<TData>["id"];
     dragSource?: NodeDto<TData>;
     dropTarget?: NodeDto<TData>;
 }
 
-export interface TreeProps<TData = unknown> {
+export interface TreeProps<TData = WithDefaultNodeData<Record<string, any>>> {
     nodes: NodeDto<TData>[];
     rootId?: string;
     defaultOpenNodesIds?: string[];
@@ -34,6 +35,7 @@ export interface TreeProps<TData = unknown> {
     onChangeOpen?: (newOpenNodes: NodeDto<TData>[]) => void;
     canDrag?: (node: NodeDto<TData> | undefined) => boolean;
     canDrop?: (tree: NodeDto<TData>[], options: DropOptions<TData>) => boolean;
+    renderer?: (data: WithDefaultNodeData<TData>, params: RenderParams) => React.ReactNode;
 }
 
 const BaseTree = <TData,>(props: TreeProps<TData>) => {
@@ -46,11 +48,18 @@ const BaseTree = <TData,>(props: TreeProps<TData>) => {
                 rootId={vm.rootId}
                 initialOpen={vm.openNodesId}
                 render={(node, params) => {
-                    console.log("params", params);
+                    const data = node.data as WithDefaultNodeData<TData>;
 
+                    if (props.renderer) {
+                        const rendered = props.renderer(data, params);
+                        if (React.isValidElement(rendered)) {
+                            return rendered;
+                        }
+                        return <span />;
+                    }
                     return (
-                        <Item active={true}>
-                            <Item.Content onClick={params.onToggle}>{node.text}</Item.Content>
+                        <Item active={data.active}>
+                            <Item.Content onClick={params.onToggle}>{data.label}</Item.Content>
                         </Item>
                     );
                 }}
