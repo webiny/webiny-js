@@ -7,6 +7,7 @@ const meta: Meta<typeof ColorPickerPrimitive> = {
     component: ColorPickerPrimitive,
     argTypes: {
         onChange: { action: "onChange" },
+        onChangeComplete: { action: "onChangeComplete" },
         onOpenChange: { action: "onOpenChange" }
     },
     parameters: {
@@ -17,7 +18,15 @@ const meta: Meta<typeof ColorPickerPrimitive> = {
         return (
             <div className={"wby-w-full"}>
                 <div className={"wby-flex wby-items-center wby-justify-center wby-mb-4"}>
-                    <ColorPickerPrimitive {...args} value={value} onChange={setValue} />
+                    <ColorPickerPrimitive
+                        {...args}
+                        value={value}
+                        onChange={value => console.log("Value changed:", value)}
+                        onChangeComplete={value => {
+                            console.log("Value change complete:", value);
+                            setValue(value);
+                        }}
+                    />
                 </div>
                 <div className={"wby-text-center"}>
                     Current selected value: <pre>{value}</pre>

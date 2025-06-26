@@ -31,6 +31,11 @@ interface ColorPickerPrimitiveProps extends Omit<React.HTMLAttributes<HTMLDivEle
      */
     onChange?: (value: string) => void;
     /**
+     * Callback triggered when the color selection is complete.
+     * This is called after the user has finished selecting a color.
+     */
+    onChangeComplete?: (value: string) => void;
+    /**
      * Optional selected value.
      */
     value?: string;
@@ -68,20 +73,21 @@ const DecoratableColorPickerPrimitive = ({
     value,
     onOpenChange,
     onChange,
+    onChangeComplete,
     ...props
 }: ColorPickerPrimitiveProps) => {
-    const { vm, setColor, setOpen } = useColorPicker({
+    const { vm, setColor, commitColor, setOpen } = useColorPicker({
         value,
         onOpenChange,
-        onChange
+        onChange,
+        onChangeComplete
     });
 
     return (
         <div {...props}>
-            <PopoverPrimitive open={vm.open}>
+            <PopoverPrimitive open={vm.open} onOpenChange={setOpen}>
                 <PopoverPrimitive.Trigger asChild>
                     <div
-                        onClick={() => setOpen(!vm.open)}
                         data-disabled={disabled}
                         className={cn(
                             inputVariants({
@@ -98,12 +104,12 @@ const DecoratableColorPickerPrimitive = ({
                         />
                     </div>
                 </PopoverPrimitive.Trigger>
-                <PopoverPrimitive.Content
-                    align={align}
-                    onEscapeKeyDown={() => setOpen(false)}
-                    onInteractOutside={() => setOpen(false)}
-                >
-                    <SketchPicker color={vm.value} onChange={setColor} />
+                <PopoverPrimitive.Content align={align} onEscapeKeyDown={() => setOpen(false)}>
+                    <SketchPicker
+                        color={vm.value}
+                        onChange={setColor}
+                        onChangeComplete={commitColor}
+                    />
                 </PopoverPrimitive.Content>
             </PopoverPrimitive>
         </div>

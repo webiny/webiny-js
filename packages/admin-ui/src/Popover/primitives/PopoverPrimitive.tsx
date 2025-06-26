@@ -1,18 +1,18 @@
-import { Popover } from "radix-ui";
 import {
+    PopoverAnchor,
     PopoverArrow,
     PopoverContent,
+    PopoverClose,
+    PopoverRoot,
+    PopoverTrigger,
+    type PopoverAnchorProps as PopoverPrimitiveAnchorProps,
     type PopoverArrowProps as PopoverPrimitiveArrowProps,
-    type PopoverContentProps as PopoverPrimitiveContentProps
+    type PopoverCloseProps as PopoverPrimitiveCloseProps,
+    type PopoverContentProps as PopoverPrimitiveContentProps,
+    type PopoverRootProps as PopoverPrimitiveProps,
+    type PopoverTriggerProps as PopoverPrimitiveTriggerProps
 } from "./components";
 import { withStaticProps } from "~/utils";
-
-const PopoverRoot = Popover.Root;
-const PopoverAnchor = Popover.Anchor;
-const PopoverTrigger = Popover.Trigger;
-const PopoverClose = Popover.Close;
-
-type PopoverPrimitiveProps = Popover.PopoverProps;
 
 const PopoverPrimitive = withStaticProps(PopoverRoot, {
     Anchor: PopoverAnchor,
@@ -25,6 +25,9 @@ const PopoverPrimitive = withStaticProps(PopoverRoot, {
 export {
     PopoverPrimitive,
     type PopoverPrimitiveProps,
+    type PopoverPrimitiveAnchorProps,
     type PopoverPrimitiveArrowProps,
-    type PopoverPrimitiveContentProps
+    type PopoverPrimitiveCloseProps,
+    type PopoverPrimitiveContentProps,
+    type PopoverPrimitiveTriggerProps
 };

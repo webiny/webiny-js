@@ -44,6 +44,7 @@ const PopoverContent = ({
 }: PopoverContentProps) => (
     <PopoverPrimitive.Portal>
         <PopoverPrimitive.Content
+            data-slot="popover-content"
             align={align}
             sideOffset={sideOffset}
             collisionPadding={collisionPadding}

@@ -4,6 +4,7 @@ import { ColorState } from "react-color";
 interface ColorPickerPresenterParams {
     onOpenChange?: (open: boolean) => void;
     onValueChange?: (value: string) => void;
+    onValueCommit?: (value: string) => void;
     value?: string;
 }
 
@@ -41,6 +42,11 @@ class ColorPickerPresenter implements IColorPickerPresenter {
     setColor = (color: ColorState) => {
         this.value = color.hex;
         this.params?.onValueChange?.(color.hex);
+    };
+
+    commitColor = (color: ColorState) => {
+        this.value = color.hex;
+        this.params?.onValueCommit?.(color.hex);
     };
 
     setOpen = (open: boolean) => {

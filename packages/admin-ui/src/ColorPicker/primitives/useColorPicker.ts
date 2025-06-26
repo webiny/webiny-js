@@ -8,9 +8,10 @@ export const useColorPicker = (props: ColorPickerPrimitiveProps) => {
         () => ({
             value: props.value,
             onOpenChange: props.onOpenChange,
-            onValueChange: props.onChange
+            onValueChange: props.onChange,
+            onValueCommit: props.onChangeComplete
         }),
-        [props.value, props.onOpenChange, props.onChange]
+        [props.value, props.onOpenChange, props.onChange, props.onChangeComplete]
     );
 
     const presenter = useMemo(() => {
@@ -34,6 +35,7 @@ export const useColorPicker = (props: ColorPickerPrimitiveProps) => {
     return {
         vm,
         setColor: presenter.setColor,
+        commitColor: presenter.commitColor,
         setOpen: presenter.setOpen
     };
 };

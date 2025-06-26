@@ -27,6 +27,14 @@ describe("ColorPickerPresenter", () => {
         expect(onValueChange).toHaveBeenCalledWith("#ff0000");
     });
 
+    it("should commit the color", () => {
+        const onValueCommit = jest.fn();
+        presenter.init({ onValueChange, onValueCommit });
+        presenter.commitColor({ hex: "#00ff00" } as ColorState);
+        expect(presenter.vm.value).toBe("#00ff00");
+        expect(onValueCommit).toHaveBeenCalledWith("#00ff00");
+    });
+
     it("should set the open state", () => {
         const onOpenChange = jest.fn();
         presenter.init({ onValueChange, onOpenChange });
