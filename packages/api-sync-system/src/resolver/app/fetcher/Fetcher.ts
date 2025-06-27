@@ -138,6 +138,7 @@ export class Fetcher implements IFetcher {
             onFail: ex => {
                 console.error(`Max retries reached. Could not fetch items from table: ${table}`);
                 console.log(convertException(ex));
+                console.log(JSON.stringify(command));
             }
         });
 
@@ -152,12 +153,20 @@ export class Fetcher implements IFetcher {
     }
 
     private getKeys(items: IFetchExecuteExecuteParamsItem[]): IKeys[] {
-        return items.map(item => {
-            return {
+        const keys = new Map<string, IKeys>();
+
+        for (const item of items) {
+            const key = `PK:${item.PK}#SK:${item.SK}`;
+            if (keys.has(key)) {
+                continue;
+            }
+            keys.set(key, {
                 PK: item.PK,
                 SK: item.SK
-            };
-        });
+            });
+        }
+
+        return Array.from(keys.values());
     }
 }
 

@@ -76,12 +76,6 @@ export class Handler implements IHandler {
         };
         const command = new PutEventsCommand(input);
 
-        console.log(
-            JSON.stringify({
-                sending: input
-            })
-        );
-
         try {
             const eventBridgeClient = this.getEventBridgeClient();
             return await eventBridgeClient.send(command);

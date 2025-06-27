@@ -51,12 +51,10 @@ export const createDefaultFilterOutRecordPlugins = (): FilterOutRecordPlugin[] =
             filterOut: record => {
                 const pk = record.PK.toLowerCase();
                 if (equalKeys.includes(pk)) {
-                    console.log("filtering out equal", JSON.stringify(record));
                     return true;
                 }
                 for (const key of startsWithKeys) {
                     if (pk.startsWith(key)) {
-                        console.log("filtering out starts with", JSON.stringify(record));
                         return true;
                     }
                 }

@@ -18,6 +18,7 @@ export class PutCommandHandler {
     public constructor(params: IPutCommandHandlerParams) {
         this.storer = params.storer;
     }
+
     public async handle(params: IPutCommandHandlerHandleParams): Promise<void> {
         const { items, targetDeployment, targetTable } = params;
 
@@ -26,10 +27,12 @@ export class PutCommandHandler {
         });
 
         await this.storer.store({
+            command: "put",
             deployment: targetDeployment,
             table: targetTable,
-            items: result,
-            command: "put"
+            items: result
         });
+
+        // TODO should transfer files from source to target deployment
     }
 }

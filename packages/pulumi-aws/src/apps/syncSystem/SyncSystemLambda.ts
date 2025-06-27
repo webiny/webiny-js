@@ -54,7 +54,7 @@ export const SyncSystemLambda = createAppModule({
                 enabled: true,
                 eventSourceArn: sqsQueue.output.arn,
                 functionName: lambda.output.arn,
-                batchSize: 10
+                batchSize: 1
                 // maximumBatchingWindowInSeconds: 2
             }
         });

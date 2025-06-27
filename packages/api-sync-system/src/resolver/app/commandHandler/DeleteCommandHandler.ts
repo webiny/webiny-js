@@ -36,10 +36,12 @@ export class DeleteCommandHandler {
             });
 
         await this.storer.store({
-            deployment: targetDeployment,
             command: "delete",
+            deployment: targetDeployment,
             table: targetTable,
             items: result
         });
+
+        // TODO should delete files from target deployment
     }
 }

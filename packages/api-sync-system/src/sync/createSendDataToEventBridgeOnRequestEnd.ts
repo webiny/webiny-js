@@ -8,7 +8,7 @@ const execute = async (handler: IHandler) => {
         return await handler.flush();
     } catch (ex) {
         const error = convertException(ex);
-        console.log({
+        console.error({
             flushError: error
         });
         return {

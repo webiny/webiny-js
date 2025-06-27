@@ -92,14 +92,12 @@ export class RecordHandler implements IRecordHandler {
                  */
                 const items = bundle.items
                     .map(item => {
-                        const result = container.get({
+                        return container.get({
                             PK: item.PK,
                             SK: item.SK,
                             table: bundle.table,
                             source: bundle.source
                         });
-
-                        return result?.data;
                     })
                     .filter((item): item is IStoreItem => !!item);
 

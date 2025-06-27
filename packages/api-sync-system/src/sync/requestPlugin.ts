@@ -5,6 +5,7 @@ import { getManifest } from "~/sync/utils/manifest.js";
 import { attachToDynamoDbDocument } from "~/sync/attachToDynamoDbDocument.js";
 import { createSendDataToEventBridgeOnRequestEnd } from "~/sync/createSendDataToEventBridgeOnRequestEnd.js";
 import { createHandler } from "./createHandler.js";
+import { convertException } from "@webiny/utils/exception.js";
 
 export interface ICreateSyncSystemHandlerOnRequestPluginParams {
     getDocumentClient(): Pick<DynamoDBDocument, "send">;
@@ -18,11 +19,19 @@ export const createSyncSystemHandlerOnRequestPlugin = (
 ) => {
     return createHandlerOnRequest(async (_, __, context) => {
         const { data: manifest, error } = await getManifest(params);
-        if (!manifest?.sync?.region || error) {
+        if (error) {
+            console.error("Error happened when fetching manifest.");
             console.log(
                 JSON.stringify({
-                    error,
-                    noManifest: manifest
+                    error: convertException(error)
+                })
+            );
+            return;
+        } else if (!manifest?.sync?.region) {
+            console.error("There is no manifest.");
+            console.log(
+                JSON.stringify({
+                    manifest
                 })
             );
             return;

@@ -8,6 +8,7 @@ import {
 } from "~tests/mocks/deployments.js";
 import { createMockTableItemData } from "~tests/mocks/tableItem.js";
 import { SemVer } from "semver";
+import { DynamoDBTableType } from "~/types.js";
 
 const item1 = createMockTableItemData({
     order: 1
@@ -32,6 +33,7 @@ const targetDeployment = createMockTargetDeployment({
 
 const plugins = new PluginsContainer([
     createTransformRecordPlugin({
+        tableType: DynamoDBTableType.REGULAR,
         canTransform: ({ from }) => {
             return from.version.minor === 40;
         },
@@ -40,6 +42,7 @@ const plugins = new PluginsContainer([
         }
     }),
     createTransformRecordPlugin({
+        tableType: DynamoDBTableType.REGULAR,
         canTransform: ({ from, to }) => {
             if (from.version.minor !== 42) {
                 return false;
@@ -70,6 +73,7 @@ describe("TransformHandler", () => {
         const handler = new TransformHandler({
             plugins: new PluginsContainer([
                 createTransformRecordPlugin({
+                    tableType: DynamoDBTableType.REGULAR,
                     canTransform,
                     transform: async (_, next) => {
                         return {
@@ -80,6 +84,7 @@ describe("TransformHandler", () => {
                     }
                 }),
                 createTransformRecordPlugin({
+                    tableType: DynamoDBTableType.REGULAR,
                     canTransform,
                     transform: async (_, next) => {
                         return {
@@ -90,6 +95,7 @@ describe("TransformHandler", () => {
                     }
                 }),
                 createTransformRecordPlugin({
+                    tableType: DynamoDBTableType.REGULAR,
                     canTransform,
                     transform: async (_, next) => {
                         return {
@@ -100,6 +106,7 @@ describe("TransformHandler", () => {
                     }
                 }),
                 createTransformRecordPlugin({
+                    tableType: DynamoDBTableType.REGULAR,
                     canTransform,
                     transform: async (_, next) => {
                         return {

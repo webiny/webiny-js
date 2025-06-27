@@ -1,14 +1,14 @@
-import type { DynamoDBTableType } from "~/types.js";
+import { DynamoDBTableType } from "~/types.js";
 
 export const getTableType = (tableName: string): DynamoDBTableType => {
     switch (tableName) {
         case process.env.DB_TABLE:
-            return "regular";
+            return DynamoDBTableType.REGULAR;
         case process.env.DB_TABLE_ELASTICSEARCH:
-            return "elasticsearch";
+            return DynamoDBTableType.ELASTICSEARCH;
         case process.env.DB_TABLE_LOG:
-            return "log";
+            return DynamoDBTableType.LOG;
         default:
-            return "unknown";
+            return DynamoDBTableType.LOG;
     }
 };

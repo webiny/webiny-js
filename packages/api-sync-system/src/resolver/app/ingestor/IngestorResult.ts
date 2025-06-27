@@ -2,7 +2,7 @@ import type { IIngestorResult, IIngestorResultAddParams, IIngestorResultItem } f
 import type { ITable } from "~/sync/types.js";
 
 export class IngestorResult implements IIngestorResult {
-    private readonly items: IIngestorResultItem[] = [];
+    private readonly items: Map<string, IIngestorResultItem> = new Map();
 
     public add(params: IIngestorResultAddParams): void {
         const { item, source } = params;
@@ -17,17 +17,25 @@ export class IngestorResult implements IIngestorResult {
             return;
         }
 
-        this.items.push({
+        const command = item.command === "delete" ? "delete" : "put";
+
+        const key = `PK:${item.PK}#SK:${item.SK}#cmd:${command}#source:${source.name}`;
+
+        if (this.items.has(key)) {
+            return;
+        }
+
+        this.items.set(key, {
             PK: item.PK,
             SK: item.SK,
             source,
-            command: item.command,
+            command,
             table
         });
     }
 
     public getItems(): IIngestorResultItem[] {
-        return this.items;
+        return Array.from(this.items.values());
     }
 }
 

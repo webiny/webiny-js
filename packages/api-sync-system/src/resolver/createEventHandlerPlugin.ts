@@ -15,6 +15,8 @@ import { createBundles } from "~/resolver/app/bundler/Bundles.js";
 import { createCommandBundle } from "~/resolver/app/bundler/CommandBundle.js";
 import { createTableBundle } from "~/resolver/app/bundler/TableBundle.js";
 import { TransformHandler } from "~/resolver/app/transform/TransformHandler.js";
+import type { Reply as FastifyReply } from "@webiny/handler/types.js";
+import { SQSEventHandler } from "@webiny/handler-aws/sqs/plugins/SQSEventHandler.js";
 
 export interface ICreateEventHandlerPluginParams {
     tableName: string | undefined;
@@ -26,81 +28,92 @@ export interface ICreateEventHandlerPluginParams {
 export const createEventHandlerPlugin = (params: ICreateEventHandlerPluginParams) => {
     const { createDocumentClient, tableName } = params;
 
-    return createSQSEventHandler(async ({ event, context, reply }) => {
-        if (!tableName) {
-            throw new WebinyError({
-                message: "Table name variable is not set."
-            });
-        }
-        try {
-            const fetcher = createFetcher({
-                maxRetries: 10,
-                retryDelay: 1000,
-                createDocumentClient: deployment => {
-                    return createDocumentClient({
-                        region: deployment.region
-                    });
-                }
-            });
-
-            const deploymentsFetcher = createDeploymentsFetcher({
-                client: createDocumentClient({
-                    region: process.env.AWS_REGION
-                }),
-                table: tableName
-            });
-            /**
-             * Fetch all possible deployments, out of which we will filter out the deployment that the records came from.
-             */
-            const deployments = await deploymentsFetcher.fetch();
-
-            const storer = createStorer({
-                createDocumentClient: deployment => {
-                    return createDocumentClient({
-                        region: deployment.region
-                    });
-                }
-            });
-
-            const transformHandler = new TransformHandler({
-                plugins: context.plugins
-            });
-
-            const recordHandler = createRecordHandler({
-                plugins: context.plugins,
-                fetcher,
-                storer,
-                deployments,
-                transformHandler,
-                commandBundler: createBundler({
-                    createBundles: () => {
-                        return createBundles({
-                            createBundle: createCommandBundle
+    const plugin = createSQSEventHandler(
+        async ({ event, context, reply }): Promise<FastifyReply> => {
+            if (!tableName) {
+                throw new WebinyError({
+                    message: "Table name variable is not set."
+                });
+            }
+            try {
+                const fetcher = createFetcher({
+                    maxRetries: 10,
+                    retryDelay: 1000,
+                    createDocumentClient: deployment => {
+                        return createDocumentClient({
+                            region: deployment.region
                         });
                     }
-                }),
-                tableBundler: createBundler({
-                    createBundles: () => {
-                        return createBundles({
-                            createBundle: createTableBundle
+                });
+
+                const deploymentsFetcher = createDeploymentsFetcher({
+                    client: createDocumentClient({
+                        region: process.env.AWS_REGION
+                    }),
+                    table: tableName
+                });
+                /**
+                 * Fetch all possible deployments, out of which we will filter out the deployment that the records came from.
+                 */
+                const deployments = await deploymentsFetcher.fetch();
+
+                const storer = createStorer({
+                    createDocumentClient: deployment => {
+                        return createDocumentClient({
+                            region: deployment.region
                         });
                     }
-                })
-            });
-            const app = createResolverApp({
-                recordHandler,
-                deployments
-            });
-            await app.resolve({
-                records: event.Records
-            });
-            reply.send({
-                ok: true
-            });
-        } catch (ex) {
-            console.error(convertException(ex));
-            reply.send(ex);
+                });
+
+                const transformHandler = new TransformHandler({
+                    plugins: context.plugins
+                });
+
+                const recordHandler = createRecordHandler({
+                    plugins: context.plugins,
+                    fetcher,
+                    storer,
+                    deployments,
+                    transformHandler,
+                    commandBundler: createBundler({
+                        createBundles: () => {
+                            return createBundles({
+                                createBundle: createCommandBundle
+                            });
+                        }
+                    }),
+                    tableBundler: createBundler({
+                        createBundles: () => {
+                            return createBundles({
+                                createBundle: createTableBundle
+                            });
+                        }
+                    })
+                });
+                const app = createResolverApp({
+                    recordHandler,
+                    deployments
+                });
+                console.log({
+                    event
+                });
+                await app.resolve({
+                    records: event.Records
+                });
+                return reply.send({
+                    ok: true
+                });
+            } catch (ex) {
+                const error = convertException(ex);
+                console.error(error);
+                return reply.send({
+                    error
+                });
+            }
         }
-        return reply;
-    });
+    );
+
+    plugin.name = `${SQSEventHandler.type}.syncResolver`;
+
+    return plugin;
 };

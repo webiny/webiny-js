@@ -1,4 +1,4 @@
-import type { ExtendedCommandType } from "~/types.js";
+import type { CommandType } from "~/types.js";
 import type { IResolverSQSRecord } from "~/resolver/app/abstractions/ResolverRecord.js";
 import type { IDetailItem } from "~/sync/handler/types.js";
 import type { ITable } from "~/sync/types.js";
@@ -11,7 +11,7 @@ export interface IIngestorIngestParams {
 export interface IIngestorResultItem {
     PK: string;
     SK: string;
-    command: ExtendedCommandType;
+    command: CommandType;
     table: ITable;
     source: IDeployment;
 }

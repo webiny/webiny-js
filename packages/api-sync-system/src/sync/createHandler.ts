@@ -55,20 +55,7 @@ export const createHandler = (params: ICreateHandlerParams) => {
             const client = getEventBridgeClient();
             return {
                 send: async command => {
-                    console.log(
-                        JSON.stringify({
-                            command
-                        })
-                    );
-                    const result = await client.send(command);
-                    console.log(
-                        JSON.stringify({
-                            sent: true,
-                            command,
-                            result
-                        })
-                    );
-                    return result;
+                    return await client.send(command);
                 }
             };
         },

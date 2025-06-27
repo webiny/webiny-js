@@ -6,19 +6,20 @@ import { middleware } from "./middleware.js";
 import { IStoreItem } from "../storer/types";
 
 export interface IMiddlewareParams {
+    readonly plugins: PluginsContainer;
     readonly record: IStoreItem;
-    sourceDeployment: IDeployment;
-    targetDeployment: IDeployment;
-    sourceTable: ITable;
-    targetTable: ITable;
+    readonly sourceDeployment: IDeployment;
+    readonly targetDeployment: IDeployment;
+    readonly sourceTable: ITable;
+    readonly targetTable: ITable;
 }
 
 export interface ITransformHandlerTransformParams {
-    sourceTable: ITable;
-    sourceDeployment: IDeployment;
-    targetTable: ITable;
-    targetDeployment: IDeployment;
-    items: IStoreItem[];
+    readonly sourceTable: ITable;
+    readonly sourceDeployment: IDeployment;
+    readonly targetTable: ITable;
+    readonly targetDeployment: IDeployment;
+    readonly items: IStoreItem[];
 }
 
 export interface ITransformHandlerTransformResult {
@@ -30,13 +31,15 @@ export interface ITransformHandler {
 }
 
 export interface ITransformHandlerParams {
-    plugins: PluginsContainer;
+    readonly plugins: PluginsContainer;
 }
 
 export class TransformHandler implements ITransformHandler {
+    private readonly pluginsContainer: PluginsContainer;
     private readonly plugins: TransformRecordPlugin[];
 
     public constructor(params: ITransformHandlerParams) {
+        this.pluginsContainer = params.plugins;
         this.plugins = params.plugins.byType<TransformRecordPlugin>(TransformRecordPlugin.type);
     }
 
@@ -45,12 +48,38 @@ export class TransformHandler implements ITransformHandler {
     ): Promise<ITransformHandlerTransformResult> {
         const { sourceTable, sourceDeployment, targetDeployment, targetTable, items } = params;
 
+        if (this.plugins.length === 0) {
+            process.env.DEBUG === "true" &&
+                console.log("There are no transform plugins registered in the system.");
+            return {
+                items
+            };
+        }
+
         const plugins = this.plugins.filter(plugin => {
+            if (plugin.isForTableType(sourceTable.type) === false) {
+                return false;
+            }
             return plugin.canTransform({
                 from: sourceDeployment,
                 to: targetDeployment
             });
         });
+
+        if (plugins.length === 0) {
+            process.env.DEBUG === "true" &&
+                console.log(
+                    "There are no transform plugins registered for the given deployment versions or sourceTable type.",
+                    {
+                        sourceVersion: sourceDeployment.version.format(),
+                        targetVersion: targetDeployment.version.format(),
+                        sourceTable
+                    }
+                );
+            return {
+                items
+            };
+        }
 
         const runner = middleware<IMiddlewareParams, IStoreItem>(
             plugins.map(plugin => {
@@ -65,6 +94,7 @@ export class TransformHandler implements ITransformHandler {
                 const record = Object.freeze(input);
                 return await runner(
                     {
+                        plugins: this.pluginsContainer,
                         sourceTable,
                         sourceDeployment,
                         targetDeployment,

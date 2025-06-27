@@ -1,6 +1,6 @@
 import { ServiceDiscovery } from "@webiny/api";
 import zod from "zod";
-import { convertException, createZodError } from "@webiny/utils";
+import { createZodError } from "@webiny/utils";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 
 const validateManifest = zod.object({
@@ -32,9 +32,7 @@ export const getManifest = async (params: IGetManifestParams) => {
         }
         const { data, error } = validateManifest.safeParse(manifest);
         if (error) {
-            console.error("Sync System: Failed to validate manifest.");
             const err = createZodError(error);
-            console.info(JSON.stringify(convertException(err)));
             return {
                 error: err
             };
@@ -43,8 +41,6 @@ export const getManifest = async (params: IGetManifestParams) => {
             data
         };
     } catch (ex) {
-        console.error("Sync System: Failed to load manifest.");
-        console.info(convertException(ex));
         return {
             error: ex
         };
