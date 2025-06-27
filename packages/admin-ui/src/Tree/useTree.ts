@@ -29,7 +29,6 @@ export const useTree = <TData = Record<string, any>>(props: TreeProps<TData>) =>
     const [vm, setVm] = useState(presenter.vm);
 
     useEffect(() => {
-        console.log("defaultOpenNodeIds", params.defaultOpenNodeIds);
         presenter.init(params);
     }, [params, presenter]);
 

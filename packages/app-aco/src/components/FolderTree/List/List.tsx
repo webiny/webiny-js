@@ -34,6 +34,7 @@ export const List = ({
     const { showSnackbar } = useSnackbar();
     const [treeData, setTreeData] = useState<NodeDto<FolderItem>[]>([]);
     const [initialOpenList, setInitialOpenList] = useState<undefined | string[]>();
+    const [openFolderIds, setOpenFolderIds] = useState<string[]>([ROOT_FOLDER]);
 
     useEffect(() => {
         if (folders) {
@@ -45,14 +46,15 @@ export const List = ({
 
     const memoCreateInitialOpenList = useCallback(
         (focusedFolderId?: string) => {
-            return createInitialOpenList(folders, focusedFolderId);
+            return createInitialOpenList(folders, openFolderIds, focusedFolderId);
         },
-        [folders, focusedFolderId]
+        [folders, openFolderIds]
     );
 
     useEffect(() => {
-        setInitialOpenList(memoCreateInitialOpenList(focusedFolderId));
-    }, [focusedFolderId]);
+        const openIds = memoCreateInitialOpenList(focusedFolderId);
+        setInitialOpenList(openIds);
+    }, [focusedFolderId, openFolderIds]);
 
     const handleDrop: TreeProps["onDrop"] = async (_, { dragSourceId, dropTargetId }) => {
         try {
@@ -83,6 +85,7 @@ export const List = ({
 
     const handleChangeOpen: TreeProps["onChangeOpen"] = async nodes => {
         const folderIds = nodes.map(node => node.id);
+        setOpenFolderIds([...new Set([ROOT_FOLDER, ...folderIds])]);
         const filteredFolderIds = folderIds.filter(item => item !== ROOT_FOLDER && item !== "0");
         await listFoldersByParentIds(filteredFolderIds);
     };

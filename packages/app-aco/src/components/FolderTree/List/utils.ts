@@ -39,16 +39,18 @@ export const createTreeData = (
  * opened by user interaction.
  *
  * @param folders list of folders returned by folders cache.
+ * @param openIds list of open folders ids.
  * @param focusedId id of the current folder selected/focused.
  * @return array of ids of open folders.
  */
 export const createInitialOpenList = (
     folders: FolderItem[] = [],
+    openIds: string[] = [],
     focusedId?: string
 ): string[] | undefined => {
     // In case of no focused folder, return the current open folders
     if (!focusedId) {
-        return [ROOT_FOLDER];
+        return openIds;
     }
 
     // Create a Map with folders, using folderId as key
@@ -69,10 +71,10 @@ export const createInitialOpenList = (
     // In case there is not focused folder or has no parent, return the current open folders
     const focusedFolder = folderMap.get(focusedId);
     if (!focusedFolder || !focusedFolder.parentId) {
-        return [ROOT_FOLDER];
+        return openIds;
     }
 
     // Remove duplicates and return
     const result = findParents([focusedId], focusedId);
-    return [...new Set([...result])];
+    return [...new Set([...result, ...openIds])];
 };
