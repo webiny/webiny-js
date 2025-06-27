@@ -10,6 +10,7 @@ import type {
     DynamoDBClientConfig,
     DynamoDBDocument
 } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { createFileManagerPlugins } from "~/resolver/fileManager/fileManager.js";
 
 export type AllowedResolverPlugins = TransformRecordPlugin | CommandHandlerPlugin;
 
@@ -23,6 +24,9 @@ export interface ICreateResolverHandlerParams extends HandlerParams {
  */
 export const createResolverHandler = (params: ICreateResolverHandlerParams): HandlerCallable => {
     const plugins = new PluginsContainer([
+        // TODO move into related packages
+        createFileManagerPlugins(),
+        // leave here
         createEventHandlerPlugin({
             createDocumentClient: params.createDocumentClient,
             tableName: params.tableName || process.env.DB_TABLE

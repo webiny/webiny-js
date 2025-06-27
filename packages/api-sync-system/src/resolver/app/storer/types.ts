@@ -1,11 +1,21 @@
 import type { IDeployment } from "~/resolver/deployment/types.js";
 import type { ITable } from "~/sync/types.js";
 import type { CommandType } from "~/types.js";
+import type { GenericRecord } from "@webiny/api/types.js";
+
+export type StoreItemPossibleValues =
+    | string
+    | number
+    | boolean
+    | undefined
+    | null
+    | GenericRecord
+    | StoreItemPossibleValues[];
 
 export interface IStoreItem {
     PK: string;
     SK: string;
-    [key: string]: unknown;
+    [key: string]: StoreItemPossibleValues;
 }
 
 export interface IStorerExecParams {

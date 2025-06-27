@@ -1,9 +1,11 @@
 import type { IStoreItem, IStorer } from "../storer/types";
 import type { ITable } from "~/sync/types";
 import type { IDeployment } from "~/resolver/deployment/types.js";
+import type { IBundle } from "~/resolver/app/bundler/types.js";
 
 export interface IPutCommandHandlerHandleParams {
     items: IStoreItem[];
+    bundle: IBundle;
     targetDeployment: IDeployment;
     targetTable: ITable;
 }

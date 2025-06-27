@@ -17,6 +17,7 @@ import { TransformHandler } from "~/resolver/app/transform/TransformHandler.js";
 import type { Reply as FastifyReply } from "@webiny/handler/types.js";
 import { SQSEventHandler } from "@webiny/handler-aws/sqs/plugins/SQSEventHandler.js";
 import { createSingleStorer } from "./app/storer/SingleStorer.js";
+import { StorerAfterEachPlugin } from "./plugins/StorerAfterEachPlugin.js";
 
 export interface ICreateEventHandlerPluginParams {
     tableName: string | undefined;
@@ -57,11 +58,23 @@ export const createEventHandlerPlugin = (params: ICreateEventHandlerPluginParams
                  */
                 const deployments = await deploymentsFetcher.fetch();
 
+                const storerAfterEachPlugins = context.plugins.byType<StorerAfterEachPlugin>(
+                    StorerAfterEachPlugin.type
+                );
+
                 const storer = createSingleStorer({
                     createDocumentClient: deployment => {
                         return createDocumentClient({
                             region: deployment.region
                         });
+                    },
+                    afterEach: async params => {
+                        for (const plugin of storerAfterEachPlugins) {
+                            if (!plugin.canHandle(params)) {
+                                continue;
+                            }
+                            await plugin.handle(params);
+                        }
                     }
                 });
 
