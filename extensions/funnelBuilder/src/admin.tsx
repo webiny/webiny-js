@@ -16,28 +16,38 @@ import { ButtonAdminPlugins } from "./frontend/pageElements/button/ButtonAdminPl
 import { ThemeSettingsProvider } from "./frontend/admin/ThemeSettingsProvider";
 import { PbEditorLogUpdatePageErrorsPlugin } from "./frontend/admin/plugins/PbEditorLogUpdatePageErrors";
 
-export const Extension = () => (
-    <>
-        {/* Fields. */}
-        <TextFieldAdminPlugins />
-        <TextareaFieldAdminPlugins />
-        <CheckboxGroupFieldAdminPlugins />
-        <ControlsAdminPlugins />
-        <ButtonAdminPlugins />
+let extensionsRegistered = false;
 
-        {/* Container Page Element */}
-        <ContainerAdminPlugins />
-        <StepAdminPlugins />
+export const Extension = () => {
+    if (extensionsRegistered) {
+        return null;
+    }
 
-        {/* Other */}
-        <FieldValidatorPlugins />
-        <ConditionOperatorPlugins />
-        <ConditionActionPlugins />
-        <FunnelBuilderPageElementGroup />
-        <DecoratedElementControls />
-        <PbEditorOverrideEventActionPlugins />
-        <PbEditorOverridePageElementSettingsPlugins />
-        <ThemeSettingsProvider />
-        <PbEditorLogUpdatePageErrorsPlugin />
-    </>
-);
+    extensionsRegistered = true;
+
+    return (
+        <>
+            {/* Fields. */}
+            <TextFieldAdminPlugins />
+            <TextareaFieldAdminPlugins />
+            <CheckboxGroupFieldAdminPlugins />
+            <ControlsAdminPlugins />
+            <ButtonAdminPlugins />
+
+            {/* Container Page Element */}
+            <ContainerAdminPlugins />
+            <StepAdminPlugins />
+
+            {/* Other */}
+            <FieldValidatorPlugins />
+            <ConditionOperatorPlugins />
+            <ConditionActionPlugins />
+            <FunnelBuilderPageElementGroup />
+            <DecoratedElementControls />
+            <PbEditorOverrideEventActionPlugins />
+            <PbEditorOverridePageElementSettingsPlugins />
+            <ThemeSettingsProvider />
+            <PbEditorLogUpdatePageErrorsPlugin />
+        </>
+    );
+};
