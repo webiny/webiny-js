@@ -39,6 +39,8 @@ export const useTree = <TData = Record<string, any>>(props: TreeProps<TData>) =>
     }, [presenter]);
 
     const handleDrop = async (newTree: NodeModel<TData>[], options: DndDropOptions) => {
+        console.log("newTree", newTree);
+
         const newNodeTree = newTree.map(node => {
             return Node.create<TData>({
                 id: String(node.id),

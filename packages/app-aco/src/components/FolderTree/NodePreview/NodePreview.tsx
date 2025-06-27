@@ -12,7 +12,7 @@ export const NodePreview = ({ text }: NodePreviewProps) => {
             className={"wby-bg-neutral-dark/10 wby-absolute wby-z-[100]"}
             style={{ maxWidth: 256 }}
         >
-            <FolderNode text={text} isRoot={false} isActive={false} />
+            <FolderNode text={text} isRoot={false} />
         </Tree.Item>
     );
 };

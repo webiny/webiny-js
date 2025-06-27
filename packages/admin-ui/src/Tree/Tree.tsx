@@ -1,5 +1,10 @@
 import React from "react";
-import { getBackendOptions, MultiBackend, Tree as DndTree } from "@minoru/react-dnd-treeview";
+import {
+    getBackendOptions,
+    MultiBackend,
+    Tree as DndTree,
+    useDragOver
+} from "@minoru/react-dnd-treeview";
 import type { RenderParams } from "@minoru/react-dnd-treeview/dist/types";
 import { DndProvider } from "react-dnd";
 import { makeDecoratable, withStaticProps } from "~/utils";
@@ -60,17 +65,26 @@ const BaseTree = <TData,>(props: TreeProps<TData>) => {
                     // Indentation logic: increase padding by 20 px per level with a base of 10 px
                     const indent = 10 + params.depth * 20;
 
+                    // Use the drag over hook to handle drag and drop interactions
+                    const dragOverProps = useDragOver(node.id, params.isOpen, params.onToggle);
+
+                    const onToggle = (e: React.MouseEvent) => {
+                        e.stopPropagation();
+                        params.onToggle && params.onToggle();
+                    };
+
                     return (
                         <Item
                             active={nodeData.active}
                             loading={nodeData.loading}
                             style={{ paddingInlineStart: indent }}
+                            {...dragOverProps}
                         >
                             {!vm.lockedOpenNodeIds.includes(nodeData.id) && (
                                 <Tree.Item.CollapseTrigger
                                     open={params.isOpen}
                                     loading={nodeData.loading}
-                                    onClick={params.onToggle}
+                                    onClick={onToggle}
                                 />
                             )}
 
