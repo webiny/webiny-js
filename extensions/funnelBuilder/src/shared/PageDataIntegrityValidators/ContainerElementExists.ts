@@ -6,7 +6,7 @@ import { FunnelModelDto } from "../models/FunnelModel";
 export class ContainerElementExists {
     static id = "ContainerElementExists";
 
-    // Ensures existence of the container element in a page.
+    // Ensures the existence of the container element in a page.
     static validate(page: PbPage) {
         const traverser = new ElementTreeTraverser();
 

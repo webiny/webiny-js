@@ -7,5 +7,10 @@ export const setInitialPageContent = () => {
             // Ensure funnel builder is immediately added to the page content.
             page.content = createInitialPageContent();
         });
+
+        ctx.pageBuilder.onPageTemplateBeforeCreate.subscribe(async ({ pageTemplate }) => {
+            // Ensure funnel builder is immediately added to the template content.
+            pageTemplate.content = createInitialPageContent();
+        });
     });
 };
