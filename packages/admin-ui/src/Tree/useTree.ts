@@ -3,16 +3,24 @@ import { DropOptions as DndDropOptions, NodeModel } from "@minoru/react-dnd-tree
 import { autorun } from "mobx";
 import { TreePresenter, type TreePresenterInitParams } from "./presenters";
 import type { TreeProps, DropOptions } from "./Tree";
-import { Node, NodeFormatter } from "~/Tree/domains";
+import { Node, NodeFormatter } from "./domains";
 
 export const useTree = <TData = unknown>(props: TreeProps<TData>) => {
     const params: TreePresenterInitParams<TData> = useMemo(() => {
         return {
             nodes: props.nodes,
             rootId: props.rootId,
-            defaultOpenNodesIds: props.defaultOpenNodesIds
+            defaultOpenNodeIds: props.defaultOpenNodeIds,
+            defaultLockedOpenNodeIds: props.defaultLockedOpenNodeIds,
+            loadingNodeIds: props.loadingNodeIds
         };
-    }, [props.nodes, props.rootId, props.defaultOpenNodesIds]);
+    }, [
+        props.nodes,
+        props.rootId,
+        props.defaultOpenNodeIds,
+        props.defaultLockedOpenNodeIds,
+        props.loadingNodeIds
+    ]);
 
     const presenter = useMemo(() => {
         return new TreePresenter<TData>();
@@ -21,6 +29,7 @@ export const useTree = <TData = unknown>(props: TreeProps<TData>) => {
     const [vm, setVm] = useState(presenter.vm);
 
     useEffect(() => {
+        console.log("defaultOpenNodeIds", params.defaultOpenNodeIds);
         presenter.init(params);
     }, [params, presenter]);
 
@@ -126,5 +135,29 @@ export const useTree = <TData = unknown>(props: TreeProps<TData>) => {
         return true;
     };
 
-    return { vm, handleDrop, changeOpen, canDrag, canDrop };
+    const sort = (a: NodeModel<TData>, b: NodeModel<TData>) => {
+        if (props.sort && typeof props.sort === "function") {
+            const nodeTreeA = Node.create<TData>({
+                id: String(a.id),
+                label: a.text,
+                parentId: String(a.parent),
+                droppable: a.droppable,
+                data: a.data
+            });
+
+            const nodeTreeB = Node.create<TData>({
+                id: String(b.id),
+                label: b.text,
+                parentId: String(b.parent),
+                droppable: b.droppable,
+                data: b.data
+            });
+
+            return props.sort(NodeFormatter.toDto(nodeTreeA), NodeFormatter.toDto(nodeTreeB));
+        }
+
+        return 1;
+    };
+
+    return { vm, handleDrop, changeOpen, canDrag, canDrop, sort };
 };

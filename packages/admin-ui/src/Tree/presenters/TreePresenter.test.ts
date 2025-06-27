@@ -175,7 +175,7 @@ describe("TreePresenter", () => {
             expect(presenter.vm.rootId).toBe("4");
         }
 
-        // `defaultOpenNodesIds`
+        // `defaultOpenNodeIds`
         {
             presenter.init({
                 nodes: [
@@ -185,10 +185,26 @@ describe("TreePresenter", () => {
                         parentId: "0"
                     }
                 ],
-                defaultOpenNodesIds: ["5"]
+                defaultOpenNodeIds: ["5"]
             });
 
-            expect(presenter.vm.openNodesId).toEqual(["5"]);
+            expect(presenter.vm.openNodeIds).toEqual(["5"]);
+        }
+
+        // `defaultLockedOpenNodeIds`
+        {
+            presenter.init({
+                nodes: [
+                    {
+                        id: "6",
+                        label: "Node 6",
+                        parentId: "0"
+                    }
+                ],
+                defaultLockedOpenNodeIds: ["6"]
+            });
+
+            expect(presenter.vm.lockedOpenNodeIds).toEqual(["6"]);
         }
     });
 });

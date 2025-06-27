@@ -10,8 +10,8 @@ const itemVariants = cva(
     [
         "wby-group",
         "wby-relative",
-        "wby-flex wby-items-center wby-gap-xs",
-        "wby-px-sm wby-py-xs-plus wby-rounded-md",
+        "wby-flex wby-items-center wby-justify-start wby-gap-xs",
+        "wby-px-sm-plus wby-py-xs-plus wby-rounded-md",
         "wby-text-neutral-primary",
         "wby-cursor-pointer",
         "hover:wby-bg-neutral-dark/5"
@@ -20,6 +20,9 @@ const itemVariants = cva(
         variants: {
             active: {
                 true: "wby-bg-neutral-dark/5 wby-font-semibold"
+            },
+            loading: {
+                true: "!wby-text-neutral-disabled !wby-fill-neutral-disabled !wby-pointer-events-none"
             }
         }
     }
@@ -27,10 +30,10 @@ const itemVariants = cva(
 
 type ItemProps = React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof itemVariants>;
 
-const BaseItem = ({ children, className, active, ...props }: ItemProps) => {
+const BaseItem = ({ children, className, active, loading, ...props }: ItemProps) => {
     return (
-        <div className={"wby-mb-xs wby-px-xs-plus"}>
-            <div {...props} className={cn(itemVariants({ active }), className)}>
+        <div className={"wby-mb-xs wby-px-sm"}>
+            <div {...props} className={cn(itemVariants({ active, loading }), className)}>
                 {children}
             </div>
         </div>

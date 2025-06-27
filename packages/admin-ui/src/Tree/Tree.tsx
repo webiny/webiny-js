@@ -7,18 +7,6 @@ import { Item } from "./components";
 import type { NodeDto, WithDefaultNodeData } from "./domains";
 import { useTree } from "./useTree";
 
-// export type RenderParams = {
-//     depth: number;
-//     isOpen: boolean;
-//     isDragging: boolean;
-//     isDropTarget: boolean;
-//     draggable: boolean;
-//     hasChild: boolean;
-//     containerRef: RefObject<HTMLElement | null>;
-//     handleRef: RefObject<HTMLDivElement | null>;
-//     onToggle: () => void;
-// };
-
 export interface DropOptions<TData = Record<string, any>> {
     dragSourceId?: NodeDto<TData>["id"];
     dropTargetId: NodeDto<TData>["id"];
@@ -29,37 +17,80 @@ export interface DropOptions<TData = Record<string, any>> {
 export interface TreeProps<TData = WithDefaultNodeData<Record<string, any>>> {
     nodes: NodeDto<TData>[];
     rootId?: string;
-    defaultOpenNodesIds?: string[];
-    activeNodeIds?: string[];
-    onDrop?: (newTree: NodeDto<TData>[], options: DropOptions<TData>) => Promise<void>;
+    defaultOpenNodeIds?: string[];
+    defaultLockedOpenNodeIds?: string[];
+    loadingNodeIds?: string[];
     onChangeOpen?: (newOpenNodes: NodeDto<TData>[]) => void;
-    canDrag?: (node: NodeDto<TData> | undefined) => boolean;
+    onDrop?: (newTree: NodeDto<TData>[], options: DropOptions<TData>) => Promise<void>;
+    onNodeClick?: (node: WithDefaultNodeData<TData>) => void;
+    canDrag?: (node: NodeDto<TData>) => boolean;
     canDrop?: (tree: NodeDto<TData>[], options: DropOptions<TData>) => boolean;
-    renderer?: (data: WithDefaultNodeData<TData>, params: RenderParams) => React.ReactNode;
+    renderer?: (node: WithDefaultNodeData<TData>, params: RenderParams) => React.ReactNode;
+    sort?: (a: NodeDto<TData>, b: NodeDto<TData>) => number;
+}
+
+interface RenderTreeNodeParams<TData> {
+    node: WithDefaultNodeData<TData>;
+    params: RenderParams;
+    renderer?: TreeProps<TData>["renderer"];
+}
+
+function renderTreeNode<TData>({ node, params, renderer }: RenderTreeNodeParams<TData>) {
+    const rendered = renderer?.(node, params);
+
+    if (rendered && React.isValidElement(rendered)) {
+        return rendered;
+    }
+
+    return node.label;
 }
 
 const BaseTree = <TData,>(props: TreeProps<TData>) => {
-    const { vm, handleDrop, changeOpen, canDrag, canDrop } = useTree<TData>(props);
+    const { vm, handleDrop, changeOpen, canDrag, canDrop, sort } = useTree<TData>(props);
 
     return (
         <DndProvider backend={MultiBackend} options={getBackendOptions()}>
             <DndTree
                 tree={vm.nodes}
                 rootId={vm.rootId}
-                initialOpen={vm.openNodesId}
+                initialOpen={vm.openNodeIds}
                 render={(node, params) => {
-                    const data = node.data as WithDefaultNodeData<TData>;
+                    const nodeData = node.data as WithDefaultNodeData<TData>;
 
-                    if (props.renderer) {
-                        const rendered = props.renderer(data, params);
-                        if (React.isValidElement(rendered)) {
-                            return rendered;
-                        }
-                        return <span />;
-                    }
+                    // Indentation logic: increase padding by 20 px per level with a base of 10 px
+                    const indent = 10 + params.depth * 20;
+
                     return (
-                        <Item active={data.active}>
-                            <Item.Content onClick={params.onToggle}>{data.label}</Item.Content>
+                        <Item
+                            active={nodeData.active}
+                            loading={nodeData.loading}
+                            style={{ paddingInlineStart: indent }}
+                        >
+                            {!vm.lockedOpenNodeIds.includes(nodeData.id) && (
+                                <Tree.Item.CollapseTrigger
+                                    open={params.isOpen}
+                                    loading={nodeData.loading}
+                                    onClick={params.onToggle}
+                                />
+                            )}
+
+                            <Item.Content
+                                onClick={() => {
+                                    if (props.onNodeClick) {
+                                        props.onNodeClick(nodeData);
+                                    }
+                                }}
+                            >
+                                {renderTreeNode({
+                                    node: nodeData,
+                                    params,
+                                    renderer: props.renderer
+                                })}
+                            </Item.Content>
+
+                            {params.draggable && (
+                                <Tree.Item.DragHandle handleRef={params.handleRef} />
+                            )}
                         </Item>
                     );
                 }}
@@ -67,6 +98,12 @@ const BaseTree = <TData,>(props: TreeProps<TData>) => {
                 onChangeOpen={changeOpen}
                 canDrag={canDrag}
                 canDrop={canDrop}
+                classes={{
+                    dropTarget: "wby-bg-neutral-dark/5",
+                    draggingSource: "wby-opacity-50",
+                    placeholder: "wby-relative"
+                }}
+                sort={sort}
             />
         </DndProvider>
     );

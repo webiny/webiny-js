@@ -1,6 +1,6 @@
 import React from "react";
 import { ReactComponent as FolderIcon } from "@webiny/icons/folder.svg";
-import { ReactComponent as FullScreenIcon } from "@webiny/icons/fullscreen.svg";
+import { ReactComponent as ArticleIcon } from "@webiny/icons/article.svg";
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Tree } from "./Tree";
@@ -64,14 +64,83 @@ export const WithRootId: Story = {
 export const WithDefaultOpenNodesIds: Story = {
     args: {
         ...Default.args,
-        defaultOpenNodesIds: ["1"]
+        defaultOpenNodeIds: ["1"]
     }
 };
 
-export const WithActiveNodeIds: Story = {
+export const WithActiveNodes: Story = {
     args: {
-        ...Default.args,
-        activeNodeIds: ["1"]
+        nodes: [
+            {
+                id: "1",
+                parentId: "0",
+                label: "Node 1",
+                active: true
+            },
+            {
+                id: "2",
+                parentId: "0",
+                label: "Node 2"
+            },
+            {
+                id: "3",
+                parentId: "0",
+                label: "Node 3"
+            },
+            {
+                id: "1-1",
+                parentId: "1",
+                label: "Child Node 1-1"
+            },
+            {
+                id: "1-1-1",
+                parentId: "1-1",
+                label: "Grandchild Node 1-1-1"
+            },
+            {
+                id: "2-1",
+                parentId: "2",
+                label: "Child Node 2-1"
+            }
+        ]
+    }
+};
+
+export const WithLoadingNodes: Story = {
+    args: {
+        nodes: [
+            {
+                id: "1",
+                parentId: "0",
+                label: "Node 1",
+                loading: true
+            },
+            {
+                id: "2",
+                parentId: "0",
+                label: "Node 2"
+            },
+            {
+                id: "3",
+                parentId: "0",
+                label: "Node 3"
+            },
+            {
+                id: "1-1",
+                parentId: "1",
+                label: "Child Node 1-1"
+            },
+            {
+                id: "1-1-1",
+                parentId: "1-1",
+                label: "Grandchild Node 1-1-1"
+            },
+            {
+                id: "2-1",
+                parentId: "2",
+                label: "Child Node 2-1"
+            }
+        ]
     }
 };
 
@@ -117,7 +186,7 @@ export const WithOnDropCallback: Story = {
     }
 };
 
-export const WithonChangeOpenCallback: Story = {
+export const WithOnChangeOpenCallback: Story = {
     args: {
         ...Default.args,
         onChangeOpen: newOpenNodes => {
@@ -235,16 +304,14 @@ export const WithCustomNodeRenderer: StoryWithCustomNodeRenderer = {
                 id: "4",
                 parentId: "0",
                 label: "Node 4",
-                data: { icon: <FullScreenIcon /> }
+                data: { icon: <ArticleIcon /> }
             }
         ],
-        renderer: data => (
-            <Tree.Item>
-                <Tree.Item.Content>
-                    <Tree.Item.Icon label={data.label} element={data.icon} />
-                    {data.label}
-                </Tree.Item.Content>
-            </Tree.Item>
+        renderer: node => (
+            <Tree.Item.Content>
+                <Tree.Item.Icon label={node.label} element={node.icon} />
+                {node.label}
+            </Tree.Item.Content>
         )
     }
 };

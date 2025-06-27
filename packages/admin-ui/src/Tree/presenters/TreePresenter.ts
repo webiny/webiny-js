@@ -4,7 +4,9 @@ import { Node, type NodeFormatted, type NodeParams, NodeFormatter } from "../dom
 interface TreePresenterInitParams<TData = unknown> {
     nodes?: NodeParams<TData>[];
     rootId?: string;
-    defaultOpenNodesIds?: string[];
+    defaultOpenNodeIds?: string[];
+    defaultLockedOpenNodeIds?: string[];
+    loadingNodeIds?: string[];
 }
 
 interface ITreePresenter<TData = unknown> {
@@ -13,13 +15,16 @@ interface ITreePresenter<TData = unknown> {
     vm: {
         nodes: NodeFormatted<TData>[];
         rootId: string;
-        openNodesId: string[];
+        openNodeIds: string[];
+        lockedOpenNodeIds?: string[];
+        loadingNodeIds?: string[];
     };
 }
 
 class TreePresenter<TData = unknown> implements ITreePresenter<TData> {
     private nodes: Node<TData>[] = [];
-    private openNodesId: string[] = [];
+    private openNodeIds: string[] = [];
+    private lockedOpenNodeIds: string[] = [];
     private rootId: string = "";
 
     constructor() {
@@ -29,14 +34,16 @@ class TreePresenter<TData = unknown> implements ITreePresenter<TData> {
     get vm() {
         return {
             nodes: this.nodes.map(item => NodeFormatter.toFormatted<TData>(item)),
-            openNodesId: this.openNodesId,
+            openNodeIds: this.openNodeIds,
+            lockedOpenNodeIds: this.lockedOpenNodeIds,
             rootId: this.rootId
         };
     }
 
     public init(params: TreePresenterInitParams<TData>) {
         this.nodes = (params.nodes ?? []).map(item => Node.create<TData>(item));
-        this.openNodesId = params.defaultOpenNodesIds ?? [];
+        this.openNodeIds = params.defaultOpenNodeIds ?? [];
+        this.lockedOpenNodeIds = params.defaultLockedOpenNodeIds ?? [];
         this.rootId = params.rootId ?? "0";
     }
 

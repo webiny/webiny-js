@@ -1,6 +1,6 @@
-import { InitialOpen, NodeModel } from "@minoru/react-dnd-treeview";
-import { DndFolderItemData, FolderItem } from "~/types";
+import { FolderItem } from "~/types";
 import { ROOT_FOLDER } from "~/constants";
+import type { NodeDto } from "@webiny/admin-ui";
 
 /**
  * Transform an array of folders returned by folders cache into an array of elements for the tree component.
@@ -8,13 +8,15 @@ import { ROOT_FOLDER } from "~/constants";
  * @param folders list of folders returned by folders cache.
  * @param focusedNodeId id of the current folder selected/focused.
  * @param hiddenFolderIds list ids of the folder you don't want to show within the list.
+ * @param getIsFolderLoading function to determine if a folder is loading.
  * @return array of elements to render the tree component.
  */
 export const createTreeData = (
     folders: FolderItem[] = [],
     focusedNodeId?: string,
-    hiddenFolderIds: string[] = []
-): NodeModel<DndFolderItemData>[] => {
+    hiddenFolderIds: string[] = [],
+    getIsFolderLoading?: (id: string) => boolean
+): NodeDto[] => {
     return folders
         .map(item => {
             const { id, parentId, title } = item;
@@ -22,12 +24,11 @@ export const createTreeData = (
             return {
                 id,
                 // toLowerCase() fixes a bug introduced by 5.36.0: accidentally we stored "ROOT" as parentId, instead of null
-                parent: parentId?.toLowerCase() || ROOT_FOLDER,
-                text: title,
+                parentId: parentId?.toLowerCase() || ROOT_FOLDER,
+                label: title,
                 droppable: true,
-                data: {
-                    isFocused: focusedNodeId === id
-                }
+                active: focusedNodeId === id,
+                loading: getIsFolderLoading ? getIsFolderLoading(id) : false
             };
         })
         .filter(item => !hiddenFolderIds.includes(item.id));
@@ -38,18 +39,16 @@ export const createTreeData = (
  * opened by user interaction.
  *
  * @param folders list of folders returned by folders cache.
- * @param openIds list of open folders ids.
  * @param focusedId id of the current folder selected/focused.
  * @return array of ids of open folders.
  */
 export const createInitialOpenList = (
     folders: FolderItem[] = [],
-    openIds: string[] = [],
     focusedId?: string
-): InitialOpen | undefined => {
+): string[] | undefined => {
     // In case of no focused folder, return the current open folders
     if (!focusedId) {
-        return openIds;
+        return [ROOT_FOLDER];
     }
 
     // Create a Map with folders, using folderId as key
@@ -70,10 +69,10 @@ export const createInitialOpenList = (
     // In case there is not focused folder or has no parent, return the current open folders
     const focusedFolder = folderMap.get(focusedId);
     if (!focusedFolder || !focusedFolder.parentId) {
-        return openIds;
+        return [ROOT_FOLDER];
     }
 
     // Remove duplicates and return
     const result = findParents([focusedId], focusedId);
-    return [...new Set([...result, ...openIds])];
+    return [...new Set([...result])];
 };

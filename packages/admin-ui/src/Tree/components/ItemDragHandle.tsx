@@ -1,17 +1,18 @@
-import React from "react";
+import React, { RefObject } from "react";
 import { ReactComponent as DragIndicator } from "@webiny/icons/drag_indicator.svg";
 import { IconButton } from "~/Button";
 import { Icon } from "~/Icon";
 import { cn, makeDecoratable } from "~/utils";
 
 type ItemDragHandleProps = {
-    handleRef?: React.Ref<HTMLSpanElement>;
+    handleRef?: RefObject<HTMLDivElement | null>;
 };
+
 const BaseItemDragHandle = ({ handleRef }: ItemDragHandleProps) => {
     const [isDragging, setIsDragging] = React.useState(false);
 
     return (
-        <span ref={handleRef}>
+        <div ref={handleRef as React.LegacyRef<HTMLDivElement>}>
             <IconButton
                 size={"xs"}
                 variant={"secondary"}
@@ -26,7 +27,7 @@ const BaseItemDragHandle = ({ handleRef }: ItemDragHandleProps) => {
                     isDragging ? "wby-cursor-grabbing" : "wby-cursor-grab"
                 ])}
             />
-        </span>
+        </div>
     );
 };
 
