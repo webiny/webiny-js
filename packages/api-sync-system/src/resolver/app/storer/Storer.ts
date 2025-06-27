@@ -77,27 +77,31 @@ export class Storer implements IStorer {
 
                 const retry = createRetry({
                     maxRetries: this.maxRetries,
-                    retryDelay: this.retryDelay,
-                    onFail: async ex => {
-                        console.error("Error executing batch write command.");
-                        console.log(convertException(ex));
-                    }
+                    retryDelay: this.retryDelay
                 });
 
-                await retry.retry(async () => {
-                    if (!cmd) {
-                        return;
-                    }
-                    const result = await client.send(cmd);
+                await retry.retry(
+                    async () => {
+                        if (!cmd) {
+                            return;
+                        }
+                        const result = await client.send(cmd);
 
-                    if (!result.UnprocessedItems?.[table.name]) {
-                        cmd = undefined;
-                        return;
+                        if (!result.UnprocessedItems?.[table.name]) {
+                            cmd = undefined;
+                            return;
+                        }
+                        cmd = new BatchWriteCommand({
+                            RequestItems: result.UnprocessedItems
+                        });
+                    },
+                    {
+                        onFail: async ex => {
+                            console.error("Error executing batch write command.");
+                            console.log(convertException(ex));
+                        }
                     }
-                    cmd = new BatchWriteCommand({
-                        RequestItems: result.UnprocessedItems
-                    });
-                });
+                );
             } while (cmd);
         }
     }

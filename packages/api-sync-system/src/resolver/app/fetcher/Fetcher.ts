@@ -134,22 +134,28 @@ export class Fetcher implements IFetcher {
 
         const retry = createRetry({
             maxRetries: this.maxRetries,
-            retryDelay: this.retryDelay,
-            onFail: ex => {
-                console.error(`Max retries reached. Could not fetch items from table: ${table}`);
-                console.log(convertException(ex));
-                console.log(JSON.stringify(command));
+            retryDelay: this.retryDelay
+        });
+
+        return await retry.retry(
+            async () => {
+                const result = await client.send(command);
+
+                return {
+                    items: (result.Responses?.[table] || []) as T[],
+                    unprocessedKeys: (result.UnprocessedKeys?.[table]?.Keys || []) as IKeys[]
+                };
+            },
+            {
+                onFail: ex => {
+                    console.error(
+                        `Max retries reached. Could not fetch items from table: ${table}`
+                    );
+                    console.log(convertException(ex));
+                    console.log(JSON.stringify(command));
+                }
             }
-        });
-
-        return await retry.retry(async () => {
-            const result = await client.send(command);
-
-            return {
-                items: (result.Responses?.[table] || []) as T[],
-                unprocessedKeys: (result.UnprocessedKeys?.[table]?.Keys || []) as IKeys[]
-            };
-        });
+        );
     }
 
     private getKeys(items: IFetchExecuteExecuteParamsItem[]): IKeys[] {

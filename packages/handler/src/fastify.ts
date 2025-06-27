@@ -32,7 +32,6 @@ import { IfNotOptionsRequest } from "./PreHandler/IfNotOptionsRequest";
 import { ProcessBeforeHandlerPlugins } from "./PreHandler/ProcessBeforeHandlerPlugins";
 import { IfOptionsRequest } from "./PreHandler/IfOptionsRequest";
 import { SendEarlyOptionsResponse } from "./PreHandler/SendEarlyOptionsResponse";
-import { OnRequestResponsePlugin } from "~/plugins/OnRequestResponsePlugin.js";
 import { OnRequestTimeoutPlugin } from "~/plugins/OnRequestTimeoutPlugin.js";
 import { OnRequestResponseSendPlugin } from "~/plugins/OnRequestResponseSendPlugin.js";
 
@@ -415,13 +414,7 @@ export const createHandler = (params: CreateHandlerParams) => {
     /**
      * We need to output the benchmark results at the end of the request in both response and timeout cases
      */
-    app.addHook("onResponse", async (request, reply) => {
-        const plugins = app.webiny.plugins.byType<OnRequestResponsePlugin>(
-            OnRequestResponsePlugin.type
-        );
-        for (const plugin of plugins) {
-            await plugin.exec(request, reply);
-        }
+    app.addHook("onResponse", async () => {
         await context.benchmark.output();
     });
 

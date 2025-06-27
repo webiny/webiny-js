@@ -3,6 +3,7 @@ import type { CommandType } from "~/types.js";
 import type { IStoreItem, IStorer } from "~/resolver/app/storer/types.js";
 import type { IDeployment } from "~/resolver/deployment/types.js";
 import type { ITable } from "~/sync/types.js";
+import type { IBundle } from "~/resolver/app/bundler/types.js";
 
 export interface ICommandHandlerPluginCallable {
     (params: ICommandHandlerPluginHandleParams): Promise<void>;
@@ -15,6 +16,7 @@ export interface ICommandHandlerPluginCanHandleCallable {
 export interface ICommandHandlerPluginHandleParams {
     storer: IStorer;
     items: IStoreItem[];
+    bundle: IBundle;
     targetDeployment: IDeployment;
     targetTable: ITable;
 }
@@ -39,12 +41,7 @@ export class CommandHandlerPlugin extends Plugin {
     }
 
     public async handle(params: ICommandHandlerPluginHandleParams): Promise<void> {
-        return await this.config.handle({
-            storer: params.storer,
-            items: params.items,
-            targetDeployment: params.targetDeployment,
-            targetTable: params.targetTable
-        });
+        return await this.config.handle(params);
     }
 }
 

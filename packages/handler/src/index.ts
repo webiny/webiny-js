@@ -13,6 +13,5 @@ export * from "~/plugins/HandlerOnRequestPlugin";
 export * from "~/plugins/ModifyFastifyPlugin";
 export * from "~/plugins/ModifyResponseHeadersPlugin";
 export * from "~/plugins/OnRequestResponseSendPlugin.js";
-export * from "~/plugins/OnRequestResponsePlugin.js";
 export * from "~/plugins/OnRequestTimeoutPlugin.js";
 export * from "./ResponseHeaders";

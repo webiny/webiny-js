@@ -1,11 +1,13 @@
 import type { IStoreItem, IStorer } from "../storer/types";
 import type { IDeployment } from "~/resolver/deployment/types.js";
 import type { ITable } from "~/sync/types.js";
+import type { IBundle } from "~/resolver/app/bundler/types.js";
 
 export interface IDeleteCommandHandlerHandleParams {
     targetDeployment: IDeployment;
     targetTable: ITable;
     items: IStoreItem[];
+    bundle: IBundle;
 }
 
 export interface IDeleteCommandHandlerParams {
@@ -19,9 +21,8 @@ export class DeleteCommandHandler {
         this.storer = params.storer;
     }
     public async handle(params: IDeleteCommandHandlerHandleParams): Promise<void> {
-        const { targetDeployment, targetTable, items } = params;
-
-        const result = items
+        const { targetDeployment, targetTable, bundle } = params;
+        const result = bundle.items
             .map(item => {
                 if (!item.PK || !item.SK) {
                     return null;
