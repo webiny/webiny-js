@@ -14,7 +14,7 @@ export interface DropOptions<TData = Record<string, any>> {
     dropTarget?: NodeDto<TData>;
 }
 
-export interface TreeProps<TData = WithDefaultNodeData<Record<string, any>>> {
+export interface TreeProps<TData = Record<string, any>> {
     nodes: NodeDto<TData>[];
     rootId?: string;
     defaultOpenNodeIds?: string[];

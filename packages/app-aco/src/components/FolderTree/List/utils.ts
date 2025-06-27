@@ -16,7 +16,7 @@ export const createTreeData = (
     focusedNodeId?: string,
     hiddenFolderIds: string[] = [],
     getIsFolderLoading?: (id: string) => boolean
-): NodeDto[] => {
+): NodeDto<FolderItem>[] => {
     return folders
         .map(item => {
             const { id, parentId, title } = item;

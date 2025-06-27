@@ -5,7 +5,7 @@ import { TreePresenter, type TreePresenterInitParams } from "./presenters";
 import type { TreeProps, DropOptions } from "./Tree";
 import { Node, NodeFormatter } from "./domains";
 
-export const useTree = <TData = unknown>(props: TreeProps<TData>) => {
+export const useTree = <TData = Record<string, any>>(props: TreeProps<TData>) => {
     const params: TreePresenterInitParams<TData> = useMemo(() => {
         return {
             nodes: props.nodes,

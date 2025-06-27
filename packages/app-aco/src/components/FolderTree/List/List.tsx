@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Tree, type NodeDto, type TreeProps } from "@webiny/admin-ui";
+import { Tree, type NodeDto, type TreeProps, type WithDefaultNodeData } from "@webiny/admin-ui";
 import { useSnackbar } from "@webiny/app-admin";
 import { Node } from "../Node";
 import { createInitialOpenList, createTreeData } from "./utils";
@@ -32,7 +32,7 @@ export const List = ({
     const { getFolderLevelPermission: canManageStructure } =
         useGetFolderLevelPermission("canManageStructure");
     const { showSnackbar } = useSnackbar();
-    const [treeData, setTreeData] = useState<NodeDto[]>([]);
+    const [treeData, setTreeData] = useState<NodeDto<FolderItem>[]>([]);
     const [initialOpenList, setInitialOpenList] = useState<undefined | string[]>();
 
     useEffect(() => {
@@ -87,35 +87,32 @@ export const List = ({
         await listFoldersByParentIds(filteredFolderIds);
     };
 
-    const canDrag: TreeProps["canDrag"] = useCallback(
-        (node: NodeDto) => {
+    const canDrag: TreeProps<FolderItem>["canDrag"] = useCallback(
+        (node: NodeDto<FolderItem>) => {
             const isRootFolder = node.id === ROOT_FOLDER;
             return !isRootFolder && canManageStructure(node.id);
         },
         [canManageStructure]
     );
 
-    const nodeRenderer: TreeProps["renderer"] = useCallback(
-        node => {
-            const folder = folders.find(folder => folder.id === node.id);
-            return (
-                <FolderProvider folder={folder}>
-                    <Node enableActions={enableActions} />
-                </FolderProvider>
-            );
-        },
-        [folders, enableActions]
-    );
+    const nodeRenderer: TreeProps<FolderItem>["renderer"] = node => {
+        const folder = folders.find(folder => folder.id === node.id);
+        return (
+            <FolderProvider folder={folder}>
+                <Node enableActions={enableActions} />
+            </FolderProvider>
+        );
+    };
 
     const onNodeClick = useCallback(
-        node => {
+        (node: WithDefaultNodeData<FolderItem>) => {
             onFolderClick(node);
         },
         [onFolderClick]
     );
 
     return (
-        <Tree
+        <Tree<FolderItem>
             nodes={treeData}
             rootId={"0"}
             onDrop={handleDrop}
