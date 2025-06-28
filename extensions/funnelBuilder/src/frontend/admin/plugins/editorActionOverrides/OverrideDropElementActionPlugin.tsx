@@ -8,8 +8,12 @@ import type { DropElementActionArgsType } from "@webiny/app-page-builder/editor/
 import type { EventActionCallable, PbEditorElementTree } from "@webiny/app-page-builder/types";
 import { Snackbar } from "@webiny/ui/Snackbar";
 import { useDisclosure } from "../../useDisclosure";
-import { CONTAINER_ELEMENT_ID, isFunnelElement } from "../../../../shared/constants";
 import { ElementTreeTraverser } from "../../../../shared/ElementTreeTraverser";
+import {
+    CONTAINER_ELEMENT_ID,
+    isFieldElementType,
+    isFunnelElement
+} from "../../../../shared/constants";
 
 export interface Handler {
     name: string;
@@ -48,9 +52,15 @@ export const OverrideDropElementActionPlugin = () => {
 
                         const { target, source } = args;
 
-                        // 1. Handle field drops.
+                        // 1. Handle funnel element drops.
                         if (isFunnelElement(source.type)) {
-                            // 1. Check if the funnel element has been dropped within the container element.
+                            // 1.1 If not a field element, we prevent moving.
+                            if (!isFieldElementType(source.type)) {
+                                showSnackbar("This element cannot be moved.");
+                                return DO_NOTHING;
+                            }
+
+                            // 1.2 Check if the funnel element has been dropped outside the container element.
                             const containerElement = await state.getElementById(
                                 CONTAINER_ELEMENT_ID
                             );
@@ -77,7 +87,7 @@ export const OverrideDropElementActionPlugin = () => {
                                 return DO_NOTHING;
                             }
 
-                            // 2. Check if the funnel element has been dropped within the success (last) step.
+                            // 1.3 Check if the funnel element has been dropped within the success (last) step.
                             const lastStepElementWithDescendants =
                                 containerWithDescendants.elements[
                                     containerElement.elements.length - 1
@@ -98,6 +108,16 @@ export const OverrideDropElementActionPlugin = () => {
 
                             if (isDroppedWithinTheLastStep) {
                                 showSnackbar("Cannot drop fields within the success page.");
+                                return DO_NOTHING;
+                            }
+                        }
+
+                        // 2. We also want to prevent moving the funnel step grid element, which
+                        // is the grid that's placed as the first child in every step element.
+                        if (source.id) {
+                            const movedElement = await state.getElementById(source.id);
+                            if (movedElement && movedElement.data.isFunnelStepGrid) {
+                                showSnackbar("This element cannot be moved.");
                                 return DO_NOTHING;
                             }
                         }
