@@ -30,13 +30,13 @@ export interface TreeProps<TData = Record<string, any>> {
     onNodeClick?: (node: WithDefaultNodeData<TData>) => void;
     canDrag?: (node: NodeDto<TData>) => boolean;
     canDrop?: (tree: NodeDto<TData>[], options: DropOptions<TData>) => boolean;
-    renderer?: (node: WithDefaultNodeData<TData>, params: RenderParams) => React.ReactNode;
+    renderer?: (node: WithDefaultNodeData<TData>, params?: RenderParams) => React.ReactNode;
     sort?: (a: NodeDto<TData>, b: NodeDto<TData>) => number;
 }
 
 interface RenderTreeNodeParams<TData> {
     node: WithDefaultNodeData<TData>;
-    params: RenderParams;
+    params?: RenderParams;
     renderer?: TreeProps<TData>["renderer"];
 }
 
@@ -108,13 +108,23 @@ const BaseTree = <TData,>(props: TreeProps<TData>) => {
                         </Item>
                     );
                 }}
+                dragPreviewRender={monitorProps => (
+                    <Item>
+                        <Item.Content>
+                            {renderTreeNode({
+                                node: monitorProps.item.data as WithDefaultNodeData<TData>,
+                                renderer: props.renderer
+                            })}
+                        </Item.Content>
+                    </Item>
+                )}
                 onDrop={handleDrop}
                 onChangeOpen={changeOpen}
                 canDrag={canDrag}
                 canDrop={canDrop}
                 classes={{
                     dropTarget: "wby-bg-neutral-dark/5",
-                    draggingSource: "wby-opacity-50",
+                    draggingSource: "wby-opacity-50 wby-bg-neutral-dimmed",
                     placeholder: "wby-relative"
                 }}
                 sort={sort}
