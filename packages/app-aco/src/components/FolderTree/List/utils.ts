@@ -45,33 +45,35 @@ export const createInitialOpenList = (
     openIds: string[] = [],
     focusedId?: string
 ): string[] | undefined => {
-    // In case of no focused folder, return the current open folders
-    if (!focusedId) {
+    //  There is always a root folder, opened by default
+    if (!focusedId || openIds.length > 1) {
         return openIds;
     }
 
-    // Create a Map with folders, using folderId as key
-    const folderMap = new Map<string, FolderItem>();
-    folders.forEach(folder => folderMap.set(folder.id, folder));
+    // Create a map for quick folder lookup by id
+    const folderMap = new Map(folders.map(folder => [folder.id, folder]));
+    // Store the chain of folder ids from the focused folder up to the root
+    const result: string[] = [];
 
-    // Recursive function that drill up the folderMap and includes the folderId above a given folder (identified by folderId)
-    const findParents = (acc: string[], folderId: string): string[] => {
-        const folder = folderMap.get(folderId);
-        if (!folder || !folder.parentId || acc.includes(folder.parentId)) {
-            return acc;
+    let currentId: string | undefined = focusedId;
+
+    // Traverse up the folder tree, collecting parent ids
+    while (currentId) {
+        // Add the current folder id if not already in the result
+        if (!result.includes(currentId)) {
+            result.push(currentId);
         }
-
-        acc.push(folder.parentId);
-        return findParents(acc, folder.parentId);
-    };
-
-    // In case there is not focused folder or has no parent, return the current open folders
-    const focusedFolder = folderMap.get(focusedId);
-    if (!focusedFolder || !focusedFolder.parentId) {
-        return openIds;
+        // Get the folder object for the current id
+        const folder = folderMap.get(currentId) as FolderItem | undefined;
+        // Get the parent id of the current folder
+        const parentId = folder?.parentId;
+        // Stop if there is no parent or we've already added this parent
+        if (!parentId || result.includes(parentId)) {
+            break;
+        }
+        // Move up to the parent folder
+        currentId = parentId;
     }
 
-    // Remove duplicates and return
-    const result = findParents([focusedId], focusedId);
     return [...new Set([...result, ...openIds])];
 };
