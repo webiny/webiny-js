@@ -25,7 +25,7 @@ describe("createHandler", () => {
 
     it("should create a handler and a converter", async () => {
         const { handler, converter } = createHandler({
-            eventBridgeClient: createMockEventBridgeClient(),
+            getEventBridgeClient: () => createMockEventBridgeClient(),
             system: createMockSystem(),
             manifest: createMockManifest(),
             getPlugins: () => {
@@ -41,7 +41,7 @@ describe("createHandler", () => {
         const { converter } = createHandler({
             system: createMockSystem(),
             manifest: createMockManifest(),
-            eventBridgeClient: createMockEventBridgeClient(),
+            getEventBridgeClient: () => createMockEventBridgeClient(),
             getPlugins() {
                 return createMockPluginsContainer();
             }
@@ -71,7 +71,7 @@ describe("createHandler", () => {
 
     it("should convert put command", async () => {
         const { converter } = createHandler({
-            eventBridgeClient: createMockEventBridgeClient(),
+            getEventBridgeClient: () => createMockEventBridgeClient(),
             getPlugins() {
                 return createMockPluginsContainer();
             },
@@ -103,7 +103,7 @@ describe("createHandler", () => {
 
     it("should convert update command", async () => {
         const { converter } = createHandler({
-            eventBridgeClient: createMockEventBridgeClient(),
+            getEventBridgeClient: () => createMockEventBridgeClient(),
             getPlugins() {
                 return createMockPluginsContainer();
             },
@@ -135,7 +135,7 @@ describe("createHandler", () => {
 
     it("should convert get command", async () => {
         const { converter } = createHandler({
-            eventBridgeClient: createMockEventBridgeClient(),
+            getEventBridgeClient: () => createMockEventBridgeClient(),
             getPlugins() {
                 return createMockPluginsContainer();
             },
@@ -160,7 +160,7 @@ describe("createHandler", () => {
 
     it("should convert batch get command", async () => {
         const { converter } = createHandler({
-            eventBridgeClient: createMockEventBridgeClient(),
+            getEventBridgeClient: () => createMockEventBridgeClient(),
             getPlugins() {
                 return createMockPluginsContainer();
             },
@@ -194,7 +194,7 @@ describe("createHandler", () => {
 
     it("should convert batch write command", async () => {
         const { converter } = createHandler({
-            eventBridgeClient: createMockEventBridgeClient(),
+            getEventBridgeClient: () => createMockEventBridgeClient(),
             getPlugins() {
                 return createMockPluginsContainer();
             },
@@ -295,7 +295,7 @@ describe("createHandler", () => {
 
     it("should not convert batch write command if no table", async () => {
         const { converter } = createHandler({
-            eventBridgeClient: createMockEventBridgeClient(),
+            getEventBridgeClient: () => createMockEventBridgeClient(),
             getPlugins() {
                 return createMockPluginsContainer();
             },
@@ -316,7 +316,7 @@ describe("createHandler", () => {
 
     it("should not convert batch write command if no items in table", async () => {
         const { converter } = createHandler({
-            eventBridgeClient: createMockEventBridgeClient(),
+            getEventBridgeClient: () => createMockEventBridgeClient(),
             getPlugins() {
                 return createMockPluginsContainer();
             },

@@ -22,7 +22,7 @@ export class PutCommandHandler {
     }
 
     public async handle(params: IPutCommandHandlerHandleParams): Promise<void> {
-        const { items, targetDeployment, targetTable } = params;
+        const { items, targetDeployment, targetTable, bundle } = params;
 
         const result = items.filter(item => {
             return !!item.PK && !!item.SK;
@@ -32,7 +32,8 @@ export class PutCommandHandler {
             command: "put",
             deployment: targetDeployment,
             table: targetTable,
-            items: result
+            items: result,
+            bundle
         });
 
         // TODO should transfer files from source to target deployment

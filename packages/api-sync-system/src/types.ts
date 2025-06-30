@@ -12,3 +12,15 @@ export enum DynamoDBTableType {
 }
 
 export interface Context extends BaseContext {}
+
+export interface IFileLambdaPayloadInfo {
+    bucket: string;
+    region: string;
+}
+
+export interface IFileLambdaPayload {
+    action: "delete" | "copy";
+    key: string;
+    source: IFileLambdaPayloadInfo;
+    target: IFileLambdaPayloadInfo;
+}

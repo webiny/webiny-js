@@ -5,6 +5,7 @@ export {
     GetObjectCommand,
     HeadObjectCommand,
     ListObjectsCommand,
+    UploadPartCopyCommand,
     ListObjectsV2Command,
     ListPartsCommand,
     ObjectCannedACL,
@@ -22,13 +23,19 @@ export {
 } from "@aws-sdk/client-s3";
 
 export type {
+    AbortMultipartUploadCommandInput,
+    CompleteMultipartUploadCommandInput,
+    UploadPartCopyCommandInput,
+    CreateMultipartUploadCommandInput,
     CompleteMultipartUploadCommandOutput,
     AbortMultipartUploadCommandOutput,
     CompleteMultipartUploadOutput,
     DeleteObjectOutput,
     GetObjectOutput,
+    CompletedPart,
     GetObjectCommandOutput,
     HeadObjectOutput,
+    HeadObjectCommandInput,
     HeadObjectCommandOutput,
     DeleteObjectCommandOutput,
     ListObjectsOutput,

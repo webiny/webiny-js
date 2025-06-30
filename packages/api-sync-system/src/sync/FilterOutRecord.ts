@@ -1,5 +1,5 @@
 import type { FilterOutRecordPlugin } from "~/sync/plugins/FilterOutRecordPlugin.js";
-import type { ICommandValueItem } from "~/sync/types.js";
+import type { ICommandValueItemExtended } from "~/sync/types.js";
 
 export class FilterOutRecord {
     private readonly plugins: FilterOutRecordPlugin[];
@@ -10,7 +10,7 @@ export class FilterOutRecord {
     /**
      * If method returns `true`, the record will be filtered out.
      */
-    public filterOut(item: ICommandValueItem): boolean {
+    public filterOut(item: ICommandValueItemExtended): boolean {
         for (const plugin of this.plugins) {
             if (plugin.execute(item)) {
                 return true;

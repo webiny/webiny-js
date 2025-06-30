@@ -10,6 +10,7 @@ import { CommandType } from "~/types";
 import type { ITable } from "~/sync/types.js";
 import { createRetry } from "../utils/Retry";
 import { convertException } from "@webiny/utils";
+import type { IBundle } from "~/resolver/app/bundler/types.js";
 
 export interface ISingleStorerParamsCreateDocumentClientCallable {
     (deployment: Pick<IDeployment, "region">): DynamoDBDocument;
@@ -28,6 +29,8 @@ export interface ISingleStorerOnErrorCb {
 
 export interface ISingleStorerAfterEachParams {
     command: CommandType;
+    deployment: IDeployment;
+    bundle: IBundle;
     item: IStoreItem;
     table: ITable;
     result: PutCommandOutput | DeleteCommandOutput;
@@ -61,7 +64,7 @@ export class SingleStorer implements IStorer {
     }
 
     public async store(params: IStorerExecParams): Promise<void> {
-        const { deployment, table, command, items } = params;
+        const { deployment, bundle, table, command, items } = params;
         if (items.length === 0) {
             return;
         }
@@ -133,7 +136,9 @@ export class SingleStorer implements IStorer {
                     table,
                     command,
                     result,
-                    item
+                    item,
+                    deployment,
+                    bundle
                 });
             } catch (ex) {
                 console.error(`Error in afterEach callback for command: ${command}`);

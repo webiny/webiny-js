@@ -6,6 +6,8 @@ import type {
     DeleteCommandOutput,
     PutCommandOutput
 } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import type { IDeployment } from "~/resolver/deployment/types.js";
+import type { IBundle } from "~/resolver/app/bundler/types.js";
 
 export interface IStorerAfterEachPluginCanHandleParams {
     command: CommandType;
@@ -16,6 +18,8 @@ export interface IStorerAfterEachPluginCanHandleParams {
 
 export interface IStorerAfterEachPluginHandleParams<T> {
     command: CommandType;
+    deployment: IDeployment;
+    bundle: IBundle;
     item: IStoreItem;
     table: ITable;
     result: T;

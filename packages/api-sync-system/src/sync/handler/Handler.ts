@@ -1,6 +1,7 @@
 import type {
     ICommandValue,
     ICommandValueItem,
+    ICommandValueItemExtended,
     IDynamoDbCommand,
     IHandler,
     IHandlerConverter,
@@ -51,6 +52,10 @@ export class Handler implements IHandler {
 
     public async flush(): Promise<unknown> {
         const items = this.createEventBusEvent();
+        console.log({
+            commands: this.commands,
+            items
+        });
         if (!items?.length) {
             return;
         }
@@ -78,7 +83,11 @@ export class Handler implements IHandler {
 
         try {
             const eventBridgeClient = this.getEventBridgeClient();
-            return await eventBridgeClient.send(command);
+            const result = await eventBridgeClient.send(command);
+            console.log({
+                result
+            });
+            return result;
         } catch (ex) {
             console.log("Could not send events to Sync System EventBridge.");
             console.error(ex.message);
@@ -108,13 +117,21 @@ export class Handler implements IHandler {
                 if (this.filterOutRecord.filterOut(item)) {
                     continue;
                 }
-                items.push(item);
+                items.push({
+                    tableName: item.tableName,
+                    command: item.command,
+                    tableType: item.tableType,
+                    PK: item.PK,
+                    SK: item.SK
+                });
             }
 
             return items;
         }, []);
 
-        return everything.length === 0 ? null : (everything as NonEmptyArray<ICommandValueItem>);
+        return everything.length === 0
+            ? null
+            : (everything as NonEmptyArray<ICommandValueItemExtended>);
     }
 }
 

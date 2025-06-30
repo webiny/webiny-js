@@ -40,7 +40,8 @@ export class DeleteCommandHandler {
             command: "delete",
             deployment: targetDeployment,
             table: targetTable,
-            items: result
+            items: result,
+            bundle
         });
 
         // TODO should delete files from target deployment

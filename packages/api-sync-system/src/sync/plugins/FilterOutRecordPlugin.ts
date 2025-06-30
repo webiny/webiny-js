@@ -1,11 +1,14 @@
 import { Plugin } from "@webiny/plugins/Plugin.js";
-import type { ICommandValueItem } from "~/sync/types.js";
+import type { ICommandValueItemExtended } from "~/sync/types.js";
 
 export interface IFilterOutRecordPluginCallable {
-    (record: ICommandValueItem): boolean;
+    (record: ICommandValueItemExtended): boolean;
 }
 
 export interface IFilterOutRecordPluginParams {
+    /**
+     * Filter out returns true if the record should be filtered out.
+     */
     filterOut: IFilterOutRecordPluginCallable;
     name: string;
 }
@@ -23,7 +26,7 @@ export class FilterOutRecordPlugin extends Plugin {
     /**
      * If method returns `true`, the record will be filtered out.
      */
-    public execute(item: ICommandValueItem): boolean {
+    public execute(item: ICommandValueItemExtended): boolean {
         return this.cb(item);
     }
 

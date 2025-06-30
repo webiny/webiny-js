@@ -1,6 +1,12 @@
 import { createFileManagerOnPutPlugin } from "./fileManagerOnPut.js";
 import { createFileManagerOnDeletePlugin } from "./fileManagerOnDelete.js";
+import type { IGetLambdaTriggerCb, ICreateS3ClientCb } from "./types.js";
 
-export const createFileManagerPlugins = () => {
-    return [createFileManagerOnPutPlugin(), createFileManagerOnDeletePlugin()];
+export interface ICreateFileManagerPluginsParams {
+    createS3Client: ICreateS3ClientCb;
+    getLambdaTrigger: IGetLambdaTriggerCb;
+}
+
+export const createFileManagerPlugins = (params: ICreateFileManagerPluginsParams) => {
+    return [createFileManagerOnPutPlugin(params), createFileManagerOnDeletePlugin(params)];
 };

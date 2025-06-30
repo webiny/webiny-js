@@ -43,9 +43,13 @@ export interface ICommandValueItem {
     tableType: DynamoDBTableType;
 }
 
+export interface ICommandValueItemExtended extends ICommandValueItem {
+    input: IDynamoDbCommand;
+}
+
 export interface ICommandValue {
     readonly command: AllCommandType;
-    getItems(): NonEmptyArray<ICommandValueItem> | null;
+    getItems(): NonEmptyArray<ICommandValueItemExtended> | null;
 }
 
 export interface ICommand<Result extends ICommandValue = ICommandValue> {
