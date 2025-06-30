@@ -108,7 +108,6 @@ const BaseTree = <TData,>(props: TreeProps<TData>) => {
                         </Item>
                     );
                 }}
-                placeholderRender={(_, { depth }) => <Item.Placeholder depth={depth} />}
                 onDrop={handleDrop}
                 onChangeOpen={changeOpen}
                 canDrag={canDrag}
@@ -119,7 +118,6 @@ const BaseTree = <TData,>(props: TreeProps<TData>) => {
                     placeholder: "wby-relative"
                 }}
                 sort={sort}
-                enableAnimateExpand={true}
             />
         </DndProvider>
     );

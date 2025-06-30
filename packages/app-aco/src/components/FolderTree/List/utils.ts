@@ -8,14 +8,12 @@ import type { NodeDto } from "@webiny/admin-ui";
  * @param folders list of folders returned by folders cache.
  * @param focusedNodeId id of the current folder selected/focused.
  * @param hiddenFolderIds list ids of the folder you don't want to show within the list.
- * @param getIsFolderLoading function to determine if a folder is loading.
  * @return array of elements to render the tree component.
  */
 export const createTreeData = (
     folders: FolderItem[] = [],
     focusedNodeId?: string,
-    hiddenFolderIds: string[] = [],
-    getIsFolderLoading?: (id: string) => boolean
+    hiddenFolderIds: string[] = []
 ): NodeDto<FolderItem>[] => {
     return folders
         .map(item => {
@@ -27,8 +25,7 @@ export const createTreeData = (
                 parentId: parentId?.toLowerCase() || ROOT_FOLDER,
                 label: title,
                 droppable: true,
-                active: focusedNodeId === id,
-                loading: getIsFolderLoading ? getIsFolderLoading(id) : false
+                active: focusedNodeId === id
             };
         })
         .filter(item => !hiddenFolderIds.includes(item.id));

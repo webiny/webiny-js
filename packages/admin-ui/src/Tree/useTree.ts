@@ -6,16 +6,14 @@ import type { TreeProps, DropOptions } from "./Tree";
 import { Node, NodeFormatter } from "./domains";
 
 export const useTree = <TData = Record<string, any>>(props: TreeProps<TData>) => {
-    const params: TreePresenterInitParams<TData> = useMemo(() => {
+    const params: TreePresenterInitParams = useMemo(() => {
         return {
-            nodes: props.nodes,
             rootId: props.rootId,
             defaultOpenNodeIds: props.defaultOpenNodeIds,
             defaultLockedOpenNodeIds: props.defaultLockedOpenNodeIds,
             loadingNodeIds: props.loadingNodeIds
         };
     }, [
-        props.nodes,
         props.rootId,
         props.defaultOpenNodeIds,
         props.defaultLockedOpenNodeIds,
@@ -33,14 +31,16 @@ export const useTree = <TData = Record<string, any>>(props: TreeProps<TData>) =>
     }, [params, presenter]);
 
     useEffect(() => {
+        presenter.initNodes(props.nodes);
+    }, [props.nodes]);
+
+    useEffect(() => {
         return autorun(() => {
             setVm(presenter.vm);
         });
     }, [presenter]);
 
     const handleDrop = async (newTree: NodeModel<TData>[], options: DndDropOptions) => {
-        console.log("newTree", newTree);
-
         const newNodeTree = newTree.map(node => {
             return Node.create<TData>({
                 id: String(node.id),

@@ -1,8 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { Node, type NodeFormatted, type NodeParams, NodeFormatter } from "../domains";
 
-interface TreePresenterInitParams<TData = unknown> {
-    nodes?: NodeParams<TData>[];
+interface TreePresenterInitParams {
     rootId?: string;
     defaultOpenNodeIds?: string[];
     defaultLockedOpenNodeIds?: string[];
@@ -10,7 +9,8 @@ interface TreePresenterInitParams<TData = unknown> {
 }
 
 interface ITreePresenter<TData = unknown> {
-    init: (params: TreePresenterInitParams<TData>) => void;
+    init: (params: TreePresenterInitParams) => void;
+    initNodes: (nodes?: NodeParams<TData>[]) => void;
     handleDrop: (newTree: Node<TData>[]) => Promise<void>;
     vm: {
         nodes: NodeFormatted<TData>[];
@@ -25,6 +25,7 @@ class TreePresenter<TData = unknown> implements ITreePresenter<TData> {
     private nodes: Node<TData>[] = [];
     private openNodeIds: string[] = [];
     private lockedOpenNodeIds: string[] = [];
+    private loadingNodeIds: string[] = [];
     private rootId: string = "";
 
     constructor() {
@@ -33,21 +34,28 @@ class TreePresenter<TData = unknown> implements ITreePresenter<TData> {
 
     get vm() {
         return {
-            nodes: this.nodes.map(item => NodeFormatter.toFormatted<TData>(item)),
+            nodes: this.nodes.map(item =>
+                NodeFormatter.toFormatted<TData>(item, this.loadingNodeIds)
+            ),
             openNodeIds: this.openNodeIds,
             lockedOpenNodeIds: this.lockedOpenNodeIds,
+            loadingNodeIds: this.loadingNodeIds,
             rootId: this.rootId
         };
     }
 
-    public init(params: TreePresenterInitParams<TData>) {
-        this.nodes = (params.nodes ?? []).map(item => Node.create<TData>(item));
+    public init(params: TreePresenterInitParams) {
         this.openNodeIds = params.defaultOpenNodeIds ?? [];
         this.lockedOpenNodeIds = params.defaultLockedOpenNodeIds ?? [];
+        this.loadingNodeIds = params.loadingNodeIds ?? [];
         this.rootId = params.rootId ?? "0";
     }
 
-    public handleDrop = async (newTree: Node<TData>[]): Promise<void> => {
+    public initNodes(nodes?: NodeParams<TData>[]) {
+        this.nodes = (nodes ?? []).map(item => Node.create<TData>(item));
+    }
+
+    public handleDrop = async (newTree: NodeParams<TData>[]): Promise<void> => {
         const oldNodes = [...this.nodes];
 
         try {
@@ -58,8 +66,6 @@ class TreePresenter<TData = unknown> implements ITreePresenter<TData> {
                     label: item.label,
                     parentId: String(item.parentId),
                     droppable: item.droppable,
-                    active: item.active,
-                    loading: item.loading,
                     data: item.data
                 })
             );

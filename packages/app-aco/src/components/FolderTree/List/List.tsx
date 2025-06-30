@@ -27,7 +27,7 @@ export const List = ({
     hiddenFolderIds,
     enableActions
 }: ListProps) => {
-    const { listFoldersByParentIds, getIsFolderLoading } = useListFoldersByParentIds();
+    const { listFoldersByParentIds, loading } = useListFoldersByParentIds();
     const { updateFolder } = useUpdateFolder();
     const { getFolderLevelPermission: canManageStructure } =
         useGetFolderLevelPermission("canManageStructure");
@@ -38,11 +38,9 @@ export const List = ({
 
     useEffect(() => {
         if (folders) {
-            setTreeData(
-                createTreeData(folders, focusedFolderId, hiddenFolderIds, getIsFolderLoading)
-            );
+            setTreeData(createTreeData(folders, focusedFolderId, hiddenFolderIds));
         }
-    }, [folders, focusedFolderId]);
+    }, [folders, focusedFolderId, hiddenFolderIds]);
 
     const memoCreateInitialOpenList = useCallback(
         (focusedFolderId?: string) => {
@@ -126,6 +124,7 @@ export const List = ({
             renderer={nodeRenderer}
             defaultOpenNodeIds={initialOpenList}
             defaultLockedOpenNodeIds={[ROOT_FOLDER]}
+            loadingNodeIds={loading}
         />
     );
 };

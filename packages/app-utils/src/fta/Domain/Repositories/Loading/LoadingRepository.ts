@@ -13,6 +13,10 @@ export class LoadingRepository implements ILoadingRepository {
         return Object.fromEntries(this.loadings);
     }
 
+    getActiveLoadings(): string[] {
+        return [...this.loadings.entries()].filter(([, value]) => value).map(([key]) => key);
+    }
+
     hasLoading() {
         return [...this.loadings.values()].some(Boolean);
     }

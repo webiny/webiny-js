@@ -6,15 +6,13 @@ describe("TreePresenter", () => {
 
         // `nodes`
         {
-            presenter.init({
-                nodes: [
-                    {
-                        id: "1",
-                        label: "Node 1",
-                        parentId: "0"
-                    }
-                ]
-            });
+            presenter.initNodes([
+                {
+                    id: "1",
+                    label: "Node 1",
+                    parentId: "0"
+                }
+            ]);
 
             expect(presenter.vm.nodes).toEqual([
                 {
@@ -36,16 +34,14 @@ describe("TreePresenter", () => {
 
         // `nodes` with droppable
         {
-            presenter.init({
-                nodes: [
-                    {
-                        id: "2",
-                        label: "Node 2",
-                        parentId: "0",
-                        droppable: true
-                    }
-                ]
-            });
+            presenter.initNodes([
+                {
+                    id: "2",
+                    label: "Node 2",
+                    parentId: "0",
+                    droppable: true
+                }
+            ]);
 
             expect(presenter.vm.nodes).toEqual([
                 {
@@ -67,16 +63,14 @@ describe("TreePresenter", () => {
 
         // `nodes` with data
         {
-            presenter.init({
-                nodes: [
-                    {
-                        id: "3",
-                        label: "Node 3",
-                        parentId: "0",
-                        data: { customData: "value" }
-                    }
-                ]
-            });
+            presenter.initNodes([
+                {
+                    id: "3",
+                    label: "Node 3",
+                    parentId: "0",
+                    data: { customData: "value" }
+                }
+            ]);
 
             expect(presenter.vm.nodes).toEqual([
                 {
@@ -99,16 +93,14 @@ describe("TreePresenter", () => {
 
         // `nodes` with active
         {
-            presenter.init({
-                nodes: [
-                    {
-                        id: "4",
-                        label: "Node 4",
-                        parentId: "0",
-                        active: true
-                    }
-                ]
-            });
+            presenter.initNodes([
+                {
+                    id: "4",
+                    label: "Node 4",
+                    parentId: "0",
+                    active: true
+                }
+            ]);
 
             expect(presenter.vm.nodes).toEqual([
                 {
@@ -128,47 +120,17 @@ describe("TreePresenter", () => {
             ]);
         }
 
-        // `nodes` with loading
-        {
-            presenter.init({
-                nodes: [
-                    {
-                        id: "4",
-                        label: "Node 4",
-                        parentId: "0",
-                        loading: true
-                    }
-                ]
-            });
-
-            expect(presenter.vm.nodes).toEqual([
-                {
-                    id: "4",
-                    text: "Node 4",
-                    parent: "0",
-                    droppable: true,
-                    data: {
-                        id: "4",
-                        label: "Node 4",
-                        parentId: "0",
-                        droppable: true,
-                        active: false,
-                        loading: true
-                    }
-                }
-            ]);
-        }
-
         // `rootId`
         {
+            presenter.initNodes([
+                {
+                    id: "4",
+                    label: "Node 4",
+                    parentId: "0"
+                }
+            ]);
+
             presenter.init({
-                nodes: [
-                    {
-                        id: "4",
-                        label: "Node 4",
-                        parentId: "0"
-                    }
-                ],
                 rootId: "4"
             });
 
@@ -177,14 +139,15 @@ describe("TreePresenter", () => {
 
         // `defaultOpenNodeIds`
         {
+            presenter.initNodes([
+                {
+                    id: "5",
+                    label: "Node 5",
+                    parentId: "0"
+                }
+            ]);
+
             presenter.init({
-                nodes: [
-                    {
-                        id: "5",
-                        label: "Node 5",
-                        parentId: "0"
-                    }
-                ],
                 defaultOpenNodeIds: ["5"]
             });
 
@@ -193,18 +156,100 @@ describe("TreePresenter", () => {
 
         // `defaultLockedOpenNodeIds`
         {
+            presenter.initNodes([
+                {
+                    id: "6",
+                    label: "Node 6",
+                    parentId: "0"
+                }
+            ]);
+
             presenter.init({
-                nodes: [
-                    {
-                        id: "6",
-                        label: "Node 6",
-                        parentId: "0"
-                    }
-                ],
                 defaultLockedOpenNodeIds: ["6"]
             });
 
             expect(presenter.vm.lockedOpenNodeIds).toEqual(["6"]);
         }
+
+        // `loadingNodeIds`
+        {
+            presenter.initNodes([
+                {
+                    id: "7",
+                    label: "Node 7",
+                    parentId: "0"
+                }
+            ]);
+
+            presenter.init({
+                loadingNodeIds: ["7"]
+            });
+
+            expect(presenter.vm.loadingNodeIds).toEqual(["7"]);
+            expect(presenter.vm.nodes[0].data.loading).toBe(true);
+        }
+    });
+
+    it("should handle drop and update nodes correctly", async () => {
+        const presenter = new TreePresenter();
+
+        presenter.initNodes([
+            {
+                id: "1",
+                label: "Node 1",
+                parentId: "0"
+            },
+            {
+                id: "2",
+                label: "Node 2",
+                parentId: "0"
+            }
+        ]);
+
+        await presenter.handleDrop([
+            {
+                id: "1",
+                label: "Node 1 Updated",
+                parentId: "2",
+                droppable: true
+            },
+            {
+                id: "2",
+                label: "Node 2 Updated",
+                parentId: "0",
+                droppable: true
+            }
+        ]);
+
+        expect(presenter.vm.nodes).toEqual([
+            {
+                id: "1",
+                text: "Node 1 Updated",
+                parent: "2",
+                droppable: true,
+                data: {
+                    id: "1",
+                    label: "Node 1 Updated",
+                    parentId: "2",
+                    droppable: true,
+                    active: false,
+                    loading: false
+                }
+            },
+            {
+                id: "2",
+                text: "Node 2 Updated",
+                parent: "0",
+                droppable: true,
+                data: {
+                    id: "2",
+                    label: "Node 2 Updated",
+                    parentId: "0",
+                    droppable: true,
+                    active: false,
+                    loading: false
+                }
+            }
+        ]);
     });
 });

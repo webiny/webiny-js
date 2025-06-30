@@ -3,7 +3,10 @@ import type { NodeFormatted } from "~/Tree/domains/NodeFormatted";
 import type { NodeDto } from "~/Tree/domains/NodeDto";
 
 export class NodeFormatter {
-    static toFormatted<TData = Record<string, any>>(item: Node<TData>): NodeFormatted<TData> {
+    static toFormatted<TData = Record<string, any>>(
+        item: Node<TData>,
+        loadingNodeIds: string[]
+    ): NodeFormatted<TData> {
         return {
             id: item.id,
             text: item.label,
@@ -15,7 +18,7 @@ export class NodeFormatter {
                 parentId: item.parentId,
                 droppable: item.droppable ?? true,
                 active: item.active ?? false,
-                loading: item.loading ?? false,
+                loading: loadingNodeIds.includes(item.id),
                 ...item.data
             }
         };
