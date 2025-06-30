@@ -209,6 +209,32 @@ export const WithHiddenTab: Story = {
     }
 };
 
+export const WithCustomTabSpacing: Story = {
+    args: {
+        ...Default.args,
+        spacing: "sm",
+        tabs: [
+            <Tabs.Tab
+                key={"account"}
+                value={"account"}
+                trigger={"Account"}
+                content={
+                    "Tab with custom spacing XXL - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vel libero nec libero lacinia fermentum. Nullam nec nunc nec libero lacinia fermentum."
+                }
+                spacing={"xxl"}
+            />,
+            <Tabs.Tab
+                key={"password"}
+                value={"password"}
+                trigger={"Password"}
+                content={
+                    "Tab with inherited spacing - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vel libero nec libero lacinia fermentum. Nullam nec nunc nec libero lacinia fermentum. "
+                }
+            />
+        ]
+    }
+};
+
 // Update the Documentation story to properly handle control changes
 export const Documentation: Story = {
     render: args => {

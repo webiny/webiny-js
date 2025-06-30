@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useRef } from "react";
-import { makeDecoratable, generateId } from "~/utils";
+import { makeDecoratable, generateId, type VariantProps } from "~/utils";
 import { TabsContext } from "./Context";
+import { tabListVariants } from "./List";
 
 interface TabProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "children" | "content"> {
     value: string;
     trigger: React.ReactNode;
     content: React.ReactNode;
     icon?: React.ReactElement;
+    spacing?: VariantProps<typeof tabListVariants>["spacing"];
     disabled?: boolean;
     visible?: boolean;
     "data-testid"?: string;

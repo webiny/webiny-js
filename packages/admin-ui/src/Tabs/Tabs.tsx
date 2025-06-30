@@ -70,7 +70,12 @@ const DecoratableTabs = ({
     const contents = useMemo(
         () =>
             tabs.map(tab => (
-                <Content key={tab.id} value={tab.value} content={tab.content} spacing={spacing} />
+                <Content
+                    key={tab.id}
+                    value={tab.value}
+                    content={tab.content}
+                    spacing={tab.spacing ?? spacing}
+                />
             )),
         [tabs, spacing]
     );
