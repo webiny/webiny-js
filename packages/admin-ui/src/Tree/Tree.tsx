@@ -26,7 +26,7 @@ export interface TreeProps<TData = Record<string, any>> {
     defaultLockedOpenNodeIds?: string[];
     loadingNodeIds?: string[];
     onChangeOpen?: (newOpenNodes: NodeDto<TData>[]) => void;
-    onDrop?: (newTree: NodeDto<TData>[], options: DropOptions<TData>) => Promise<void>;
+    onDrop?: (newTree: NodeDto<TData>[], options: DropOptions<TData>) => Promise<void> | void;
     onNodeClick?: (node: WithDefaultNodeData<TData>) => void;
     canDrag?: (node: NodeDto<TData>) => boolean;
     canDrop?: (tree: NodeDto<TData>[], options: DropOptions<TData>) => boolean;
@@ -108,6 +108,7 @@ const BaseTree = <TData,>(props: TreeProps<TData>) => {
                         </Item>
                     );
                 }}
+                placeholderRender={(_, { depth }) => <Item.Placeholder depth={depth} />}
                 onDrop={handleDrop}
                 onChangeOpen={changeOpen}
                 canDrag={canDrag}
@@ -118,6 +119,7 @@ const BaseTree = <TData,>(props: TreeProps<TData>) => {
                     placeholder: "wby-relative"
                 }}
                 sort={sort}
+                enableAnimateExpand={true}
             />
         </DndProvider>
     );

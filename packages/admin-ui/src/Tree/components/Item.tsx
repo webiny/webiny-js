@@ -5,6 +5,7 @@ import { ItemContent } from "./ItemContent";
 import { ItemDragHandle } from "./ItemDragHandle";
 import { ItemIcon } from "./ItemIcon";
 import { ItemSubIndentation } from "./ItemSubIndentation";
+import { ItemPlaceholder } from "./ItemPlaceholder";
 
 const itemVariants = cva(
     [
@@ -47,7 +48,8 @@ const Item = withStaticProps(DecoratableItem, {
     Content: ItemContent,
     DragHandle: ItemDragHandle,
     Icon: ItemIcon,
-    SubIndentation: ItemSubIndentation
+    SubIndentation: ItemSubIndentation,
+    Placeholder: ItemPlaceholder
 });
 
 export { Item, type ItemProps };
