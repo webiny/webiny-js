@@ -136,8 +136,8 @@ export const useTree = <TData = Record<string, any>>(props: TreeProps<TData>) =>
         return true;
     };
 
-    const sort = (a: NodeModel<TData>, b: NodeModel<TData>) => {
-        if (props.sort && typeof props.sort === "function") {
+    const sort = (a: NodeModel<TData>, b: NodeModel<TData>): number => {
+        if (typeof props.sort === "function") {
             const nodeTreeA = Node.create<TData>({
                 id: String(a.id),
                 label: a.text,
@@ -154,10 +154,13 @@ export const useTree = <TData = Record<string, any>>(props: TreeProps<TData>) =>
                 data: b.data
             });
 
-            return props.sort(NodeFormatter.toDto(nodeTreeA), NodeFormatter.toDto(nodeTreeB));
+            return props.sort(
+                NodeFormatter.toDto<TData>(nodeTreeA),
+                NodeFormatter.toDto<TData>(nodeTreeB)
+            );
         }
 
-        return 1;
+        return 0;
     };
 
     return { vm, handleDrop, changeOpen, canDrag, canDrop, sort };

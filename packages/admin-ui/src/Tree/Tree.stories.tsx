@@ -315,3 +315,67 @@ export const WithCustomNodeRenderer: StoryWithCustomNodeRenderer = {
         )
     }
 };
+
+// Example custom sorting by `order` property
+interface CustomSortCallbackData {
+    order: number;
+}
+
+type WithCustomSortCallbackRenderer = StoryObj<typeof Tree<CustomSortCallbackData>>;
+
+export const WithCustomSortCallback: WithCustomSortCallbackRenderer = {
+    args: {
+        ...Default.args,
+        nodes: [
+            {
+                id: "3",
+                parentId: "0",
+                label: "Node 3",
+                data: {
+                    order: 3
+                }
+            },
+            {
+                id: "1",
+                parentId: "0",
+                label: "Node 1",
+                data: {
+                    order: 1
+                }
+            },
+            {
+                id: "2",
+                parentId: "0",
+                label: "Node 2",
+                data: {
+                    order: 2
+                }
+            },
+            {
+                id: "5",
+                parentId: "1",
+                label: "Node 5",
+                data: {
+                    order: 5
+                }
+            },
+            {
+                id: "4",
+                parentId: "1",
+                label: "Node 4",
+                data: {
+                    order: 4
+                }
+            },
+            {
+                id: "6",
+                parentId: "1",
+                label: "Node 6",
+                data: {
+                    order: 6
+                }
+            }
+        ],
+        sort: (a, b) => (a.data?.order ?? 0) - (b.data?.order ?? 0)
+    }
+};
