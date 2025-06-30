@@ -8,19 +8,23 @@ interface ChildrenRenderPropRowCallableParams {
 interface ChildrenRenderPropRowCallable {
     (params: ChildrenRenderPropRowCallableParams): React.ReactNode;
 }
-
 interface ChildrenRenderPropHeaderCallable {
     (): React.ReactNode;
 }
 interface ChildrenRenderPropEmptyCallable {
     (): React.ReactNode;
 }
+interface ChildrenRenderPropFooterCallable {
+    (): React.ReactNode;
+}
+
 interface ChildrenRenderProp {
     actions: {
         add: (index?: number) => () => void;
         remove: (index: number) => () => void;
     };
     header: (cb: ChildrenRenderPropHeaderCallable) => React.ReactNode;
+    footer: (cb: ChildrenRenderPropFooterCallable) => React.ReactNode;
     row: (cb: ChildrenRenderPropRowCallable) => React.ReactNode;
     empty: (cb: ChildrenRenderPropEmptyCallable) => React.ReactNode;
 }
@@ -39,6 +43,7 @@ class DynamicFieldset extends React.Component<DynamicFieldsetProps> {
     };
 
     header: React.ReactNode = null;
+    footer: React.ReactNode = null;
     rows: React.ReactNode = null;
     empty: React.ReactNode = null;
 
@@ -79,6 +84,11 @@ class DynamicFieldset extends React.Component<DynamicFieldsetProps> {
         return null;
     };
 
+    renderFooter = (cb: () => React.ReactNode): React.ReactNode => {
+        this.footer = cb();
+        return null;
+    };
+
     renderRow = (cb: ChildrenRenderPropRowCallable): React.ReactNode => {
         const { value } = this.props;
         if (!value) {
@@ -102,6 +112,7 @@ class DynamicFieldset extends React.Component<DynamicFieldsetProps> {
         children({
             actions: this.actions,
             header: this.renderHeader,
+            footer: this.renderFooter,
             row: this.renderRow,
             empty: this.renderEmpty
         });
@@ -114,6 +125,7 @@ class DynamicFieldset extends React.Component<DynamicFieldsetProps> {
             <React.Fragment>
                 {this.header}
                 {this.rows}
+                {this.footer}
             </React.Fragment>
         );
     }

@@ -7,19 +7,26 @@ import { Button, DynamicFieldset, Heading, IconButton, Input, Text } from "@webi
 
 const PATHNAME_REGEX = /^\/[/.a-zA-Z0-9-_]+$/;
 
-interface HeaderPros {
-    addAlias: () => void;
-}
-
-const Header = ({ addAlias }: HeaderPros) => {
+const Header = () => {
     return (
         <>
             <Heading level={6} className={"wby-text-neutral-primary"}>
                 {"File Aliases"}
             </Heading>
-            <Text size={"sm"} as={"div"} className={"wby-mt-xs wby-mb-sm-extra"}>
+            <Text size={"sm"} as={"div"} className={"wby-mt-xs"}>
                 To make your file accessible via custom paths, add one or more aliases.
             </Text>
+        </>
+    );
+};
+
+interface FooterProps {
+    addAlias: () => void;
+}
+
+const Footer = ({ addAlias }: FooterProps) => {
+    return (
+        <div className={"wby-mt-md"}>
             <Button
                 onClick={addAlias}
                 text="Add Alias"
@@ -27,7 +34,7 @@ const Header = ({ addAlias }: HeaderPros) => {
                 size={"sm"}
                 icon={<AddIcon />}
             />
-        </>
+        </div>
     );
 };
 
@@ -57,7 +64,7 @@ export const Aliases = () => {
     return (
         <div className={"wby-my-lg"}>
             <DynamicFieldset value={value || [""]} onChange={onChange}>
-                {({ actions, header, row, empty }) => (
+                {({ actions, header, footer, row, empty }) => (
                     <>
                         {row(({ index }) => (
                             <div className={"wby-mt-md"}>
@@ -77,11 +84,17 @@ export const Aliases = () => {
                                 </div>
                             </div>
                         ))}
+                        {footer(() => (
+                            <Footer addAlias={addAlias} />
+                        ))}
                         {header(() => (
-                            <Header addAlias={addAlias} />
+                            <Header />
                         ))}
                         {empty(() => (
-                            <Header addAlias={addAlias} />
+                            <>
+                                <Header />
+                                <Footer addAlias={addAlias} />
+                            </>
                         ))}
                     </>
                 )}
