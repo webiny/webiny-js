@@ -1,20 +1,29 @@
 import gql from "graphql-tag";
+import { css } from "emotion";
 import React, { useCallback, useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
-import {
-    Alert,
-    Button,
-    Checkbox,
-    Grid,
-    Heading,
-    Input,
-    OverlayLoader,
-    Text
-} from "@webiny/admin-ui";
 import { Form } from "@webiny/form";
+import { Alert } from "@webiny/ui/Alert";
+import { ButtonPrimary } from "@webiny/ui/Button";
+import { Input } from "@webiny/ui/Input";
+import { Checkbox } from "@webiny/ui/Checkbox";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
+import {
+    SimpleForm,
+    SimpleFormContent,
+    SimpleFormFooter,
+    SimpleFormHeader
+} from "@webiny/app-admin/components/SimpleForm";
 import { View } from "@webiny/app/components/View";
 import { AdminInstallationPlugin } from "@webiny/app-admin/types";
+
+const removeGridPadding = css`
+    > .mdc-layout-grid {
+        padding: 0;
+    }
+`;
 
 const IS_INSTALLED = gql`
     query IsAdminUsersInstalled {
@@ -100,117 +109,84 @@ const Install = ({ onInstalled }: InstallProps) => {
     const privacyPolicyLink = <a href="https://www.webiny.com/privacy-policy">privacy policy</a>;
 
     return (
-        <div className="wby-flex-1 wby-relative">
-            {loading && <OverlayLoader />}
-            <div className={"wby-container"}>
-                <Form onSubmit={onSubmit} submitOnEnter>
-                    {({ data, Bind, submit }) => (
-                        <>
-                            <div
-                                style={{
-                                    marginTop: 130
-                                }}
-                                className={"wby-text-center wby-mb-xxl"}
-                            >
-                                <Heading
-                                    level={3}
-                                    className={"wby-text-accent-primary wby-text-center wby-mb-sm"}
+        <Form onSubmit={onSubmit} submitOnEnter>
+            {({ data, Bind, submit }) => (
+                <SimpleForm>
+                    {loading && <CircularProgress />}
+                    <SimpleFormHeader title={"Create an Admin User"} />
+                    <SimpleFormContent>
+                        <Grid>
+                            {error && (
+                                <Cell span={12}>
+                                    <Alert title={"Something went wrong"} type={"danger"}>
+                                        {error}
+                                    </Alert>
+                                </Cell>
+                            )}
+                            <Cell span={12}>Let&apos;s create your admin user:</Cell>
+                            <Cell span={12}>
+                                <Bind
+                                    name="firstName"
+                                    validators={validation.create("required,minLength:2")}
                                 >
-                                    {"Create admin account"}
-                                </Heading>
-                                <Text className={"wby-text-neutral-strong"}>
-                                    {
-                                        "To get things started, we need you to create Webiny Admin account. "
-                                    }
-                                </Text>
-                            </div>
-                            <div
-                                className={"wby-mx-auto"}
-                                style={{
-                                    width: 480
-                                }}
-                            >
-                                <Grid>
-                                    <>
-                                        {error && (
-                                            <Grid.Column span={12}>
-                                                <Alert
-                                                    title={"Something went wrong"}
-                                                    type={"danger"}
-                                                >
-                                                    {error}
-                                                </Alert>
-                                            </Grid.Column>
-                                        )}
-                                    </>
-                                    <Grid.Column span={6}>
-                                        <Bind
-                                            name="firstName"
-                                            validators={validation.create("required,minLength:2")}
-                                        >
-                                            <Input label={`First Name`} />
-                                        </Bind>
-                                    </Grid.Column>
-                                    <Grid.Column span={6}>
-                                        <Bind
-                                            name="lastName"
-                                            validators={validation.create("required,minLength:2")}
-                                        >
-                                            <Input label={`Last Name`} />
-                                        </Bind>
-                                    </Grid.Column>
-                                    <Grid.Column span={12}>
-                                        <Bind
-                                            name="email"
-                                            validators={validation.create("required,email")}
-                                            beforeChange={(value: string, cb) =>
-                                                cb(value.toLowerCase())
-                                            }
-                                        >
-                                            <Input label={`Email`} />
-                                        </Bind>
-                                    </Grid.Column>
-                                    <View
-                                        name={"adminUsers.installation.fields"}
-                                        props={{ Bind, data }}
+                                    <Input label={`First Name`} />
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
+                                <Bind
+                                    name="lastName"
+                                    validators={validation.create("required,minLength:2")}
+                                >
+                                    <Input label={`Last Name`} />
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
+                                <Bind
+                                    name="email"
+                                    validators={validation.create("required,email")}
+                                    beforeChange={(value: string, cb) => cb(value.toLowerCase())}
+                                >
+                                    <Input label={`Email`} />
+                                </Bind>
+                            </Cell>
+                            <View name={"adminUsers.installation.fields"} props={{ Bind, data }} />
+                        </Grid>
+
+                        <Grid style={{ paddingTop: "0px" }}>
+                            <Cell span={12}>
+                                <Bind name="subscribed">
+                                    <Checkbox
+                                        label={
+                                            "I want to receive updates on product improvements and new features."
+                                        }
                                     />
-                                    <Grid.Column span={12}>
-                                        <Bind name="subscribed">
-                                            {({ value, onChange }) => (
-                                                <Checkbox
-                                                    checked={value}
-                                                    onChange={onChange}
-                                                    value={value}
-                                                    label={
-                                                        "I want to receive updates on product improvements and new features."
-                                                    }
-                                                />
-                                            )}
-                                        </Bind>
-                                    </Grid.Column>
-                                    <Grid.Column span={12} className={"wby-text-center"}>
-                                        <Button
-                                            size={"lg"}
-                                            text={"Create account"}
-                                            data-testid="install-security-button"
-                                            onClick={() => {
-                                                submit();
-                                            }}
-                                        />
-                                    </Grid.Column>
-                                    <Grid.Column span={6} offset={3} className={"wby-text-center"}>
-                                        <Text size={"sm"}>
-                                            By submitting the form, you agree to our Terms of
-                                            Service and acknowledge our {privacyPolicyLink}.
-                                        </Text>
-                                    </Grid.Column>
-                                </Grid>
-                            </div>
-                        </>
-                    )}
-                </Form>
-            </div>
-        </div>
+                                </Bind>
+                            </Cell>
+                        </Grid>
+                    </SimpleFormContent>
+                    <SimpleFormFooter className={removeGridPadding}>
+                        <Grid>
+                            <Cell span={8}>
+                                <p style={{ textAlign: "left" }}>
+                                    By submitting the form, you agree to our Terms of Service and
+                                    acknowledge our {privacyPolicyLink}.
+                                </p>
+                            </Cell>
+                            <Cell span={4}>
+                                <ButtonPrimary
+                                    data-testid="install-security-button"
+                                    onClick={() => {
+                                        submit();
+                                    }}
+                                >
+                                    Create Admin User
+                                </ButtonPrimary>
+                            </Cell>
+                        </Grid>
+                    </SimpleFormFooter>
+                </SimpleForm>
+            )}
+        </Form>
     );
 };
 
