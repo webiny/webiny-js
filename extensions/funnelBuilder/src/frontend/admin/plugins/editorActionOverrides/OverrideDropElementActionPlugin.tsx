@@ -12,7 +12,6 @@ import { ElementTreeTraverser } from "../../../../shared/ElementTreeTraverser";
 import {
     CONTAINER_ELEMENT_ID,
     isContainerElementType,
-    isFieldElementType,
     isFunnelElement,
     isStepElementType
 } from "../../../../shared/constants";
