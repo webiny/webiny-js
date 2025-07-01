@@ -7,6 +7,7 @@ import { DeleteCommand, getDocumentClient, PutCommand } from "@webiny/aws-sdk/cl
 import { getSyncSystemOutput } from "@webiny/pulumi-aws/apps/syncSystem/getSyncSystemOutput.js";
 import { getStackOutput } from "@webiny/cli-plugin-deploy-pulumi/utils/index.js";
 import { createSystemName } from "@webiny/api-sync-system/utils/createSystemName.js";
+import type { ISyncSystemDeploymentInfo } from "./types.js";
 
 interface IGetStacksParams {
     env: string;
@@ -61,11 +62,11 @@ export const createSyncSystemPlugins = (): Plugin[] => {
                 throw new Error("Sync System DynamoDB table name is not defined.");
             }
 
-            const item = {
+            const item: ISyncSystemDeploymentInfo = {
                 name: createSystemName({ env, variant }),
                 env,
                 variant,
-                version: process.env.WEBINY_VERSION,
+                version: process.env.WEBINY_VERSION as string,
                 region: core.region,
                 s3Id: core.fileManagerBucketId,
                 s3Arn: core.fileManagerBucketArn,

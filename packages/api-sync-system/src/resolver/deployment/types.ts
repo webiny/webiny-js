@@ -5,7 +5,6 @@ import { ITable } from "~/sync/types";
 export interface IDeploymentServices {
     s3Id: string;
     s3Arn: string;
-    s3BucketName: string;
     primaryDynamoDbArn: string;
     primaryDynamoDbName: string;
     primaryDynamoDbHashKey: string;

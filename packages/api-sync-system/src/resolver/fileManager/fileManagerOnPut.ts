@@ -3,7 +3,7 @@ import { shouldBeHandled } from "~/resolver/fileManager/shouldBeHandled.js";
 import type { PutCommandOutput } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { CopyFile } from "./CopyFile.js";
 import { convertException } from "@webiny/utils";
-import type { IGetLambdaTriggerCb, ICreateS3ClientCb } from "./types.js";
+import type { ICreateS3ClientCb, IGetLambdaTriggerCb } from "./types.js";
 
 export interface ICreateFileManagerOnPutPluginParams {
     createS3Client: ICreateS3ClientCb;

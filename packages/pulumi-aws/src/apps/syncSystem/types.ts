@@ -24,19 +24,26 @@ export interface IGetSyncSystemOutputResult extends IStackOutput {
     dynamoDbHashKey: string;
     dynamoDbRangeKey: string;
     /**
-     * SyncSystemLambda
+     * SyncSystemResolverLambda
      */
-    lambdaArn: string;
-    lambdaName: string;
-    lambdaRoleArn: string;
-    lambdaRoleName: string;
-    lambdaRoleId: string;
-    lambdaPolicyArn: string;
-    lambdaPolicyName: string;
-    lambdaPolicyId: string;
-    lambdaEventSourceMappingId: string;
-    lambdaEventSourceMappingArn: string;
-    lambdaEventSourceMappingEventSourceArn: string;
+    resolverLambdaArn: string;
+    resolverLambdaName: string;
+    resolverLambdaRoleArn: string;
+    resolverLambdaRoleName: string;
+    resolverLambdaRoleId: string;
+    resolverLambdaPolicyArn: string;
+    resolverLambdaPolicyName: string;
+    resolverLambdaPolicyId: string;
+    resolverLambdaEventSourceMappingId: string;
+    resolverLambdaEventSourceMappingArn: string;
+    resolverLambdaEventSourceMappingEventSourceArn: string;
+    /**
+     * SyncSystemFilesLambda
+     */
+    filesLambdaArn: string;
+    filesLambdaName: string;
+    filesLambdaRoleArn: string;
+    filesLambdaRoleName: string;
     /**
      * SyncSystemEventBus
      */

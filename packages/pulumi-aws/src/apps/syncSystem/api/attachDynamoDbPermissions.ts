@@ -17,9 +17,9 @@ export interface IAttachDynamoDbPermissionsParams {
 export const attachDynamoDbPermissions = (params: IAttachDynamoDbPermissionsParams) => {
     const { app, syncSystem, core } = params;
 
-    const { lambdaRoleName } = syncSystem;
+    const { resolverLambdaRoleName } = syncSystem;
 
-    const lambdaToDynamoDbResourceName = createSyncResourceName(`lambda-to-dynamodb`);
+    const lambdaToDynamoDbResourceName = createSyncResourceName(`resolver-lambda-to-dynamodb`);
 
     const dynamoDbPolicy = app.addResource(aws.iam.Policy, {
         name: `${lambdaToDynamoDbResourceName}-policy`,
@@ -96,7 +96,7 @@ export const attachDynamoDbPermissions = (params: IAttachDynamoDbPermissionsPara
     const lambdaRolePolicyAttachment = app.addResource(aws.iam.RolePolicyAttachment, {
         name: `${lambdaToDynamoDbResourceName}-role-policy-attachment`,
         config: {
-            role: lambdaRoleName,
+            role: resolverLambdaRoleName,
             policyArn: dynamoDbPolicy.output.arn
         }
     });

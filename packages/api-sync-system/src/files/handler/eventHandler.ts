@@ -1,28 +1,27 @@
-import { createEventHandler } from "@webiny/handler-aws/raw/index.js";
-import type { IFileHandlerEvent } from "./handler/types.js";
+import type { IFileHandlerEvent } from "~/files/handler/types.js";
+import { validatePayload } from "~/files/handler/validation/validate.js";
 import { convertException } from "@webiny/utils";
-import { validatePayload } from "./handler/validation/validate.js";
-import { S3Client, type S3ClientConfig } from "@webiny/aws-sdk/client-s3/index.js";
-import { FileHandler } from "./handler/FileHandler.js";
-import { createZodError } from "@webiny/utils/createZodError.js";
+import { ActionHandler } from "~/files/handler/ActionHandler.js";
+import { createEventHandler } from "@webiny/handler-aws/raw/index.js";
+import { S3Client, type S3ClientConfig } from "@webiny/aws-sdk/client-s3";
 
-export interface ICreateHandlerParams {
+export interface ICreateFilesEventHandlerParams {
     createS3Client: (params: S3ClientConfig) => S3Client;
 }
 
-export const createHandler = (params: ICreateHandlerParams) => {
+export const createEventHandlerPlugin = (params: ICreateFilesEventHandlerParams) => {
     const { createS3Client } = params;
-    return createEventHandler<IFileHandlerEvent>(async ({ payload }) => {
+    const plugin = createEventHandler<IFileHandlerEvent>(async ({ payload }) => {
         const { data, error, success } = await validatePayload({
             payload
         });
         if (!success || error) {
             console.error("Error validating input.");
             console.log(convertException(error));
-            throw createZodError(error);
+            return;
         }
 
-        const handler = new FileHandler({
+        const actionHandler = new ActionHandler({
             getS3Client: region => {
                 return createS3Client({
                     region
@@ -31,7 +30,7 @@ export const createHandler = (params: ICreateHandlerParams) => {
         });
 
         try {
-            await handler.handle({
+            await actionHandler.handle({
                 action: data.action,
                 source: data.source,
                 target: data.target,
@@ -43,7 +42,10 @@ export const createHandler = (params: ICreateHandlerParams) => {
             console.log({
                 ...data
             });
-            throw ex;
         }
     });
+
+    plugin.name = `sync.files.eventHandler`;
+
+    return plugin;
 };

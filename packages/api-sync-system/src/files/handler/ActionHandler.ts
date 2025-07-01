@@ -3,18 +3,18 @@ import { CopyFile } from "./copy/CopyFile";
 import { DeleteFile } from "./delete/DeleteFile.js";
 import type { IFileLambdaPayload } from "~/types.js";
 
-export interface IFileHandlerParamsGetS3ClientCb {
+export interface IActionHandlerParamsGetS3ClientCb {
     (region: string): S3Client;
 }
 
-export interface IFileHandlerParams {
-    getS3Client: IFileHandlerParamsGetS3ClientCb;
+export interface IActionHandlerParams {
+    getS3Client: IActionHandlerParamsGetS3ClientCb;
 }
 
-export class FileHandler {
-    private readonly getS3Client: IFileHandlerParamsGetS3ClientCb;
+export class ActionHandler {
+    private readonly getS3Client: IActionHandlerParamsGetS3ClientCb;
 
-    public constructor(params: IFileHandlerParams) {
+    public constructor(params: IActionHandlerParams) {
         this.getS3Client = params.getS3Client;
     }
 

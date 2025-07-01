@@ -16,7 +16,7 @@ import { createTableBundle } from "~/resolver/app/bundler/TableBundle.js";
 import { TransformHandler } from "~/resolver/app/transform/TransformHandler.js";
 import type { Reply as FastifyReply } from "@webiny/handler/types.js";
 import { SQSEventHandler } from "@webiny/handler-aws/sqs/plugins/SQSEventHandler.js";
-import { createSingleStorer } from "./app/storer/SingleStorer.js";
+import { createStorer } from "./app/storer/Storer.js";
 import { StorerAfterEachPlugin } from "./plugins/StorerAfterEachPlugin.js";
 
 export interface ICreateEventHandlerPluginParams {
@@ -62,7 +62,7 @@ export const createEventHandlerPlugin = (params: ICreateEventHandlerPluginParams
                     StorerAfterEachPlugin.type
                 );
 
-                const storer = createSingleStorer({
+                const storer = createStorer({
                     createDocumentClient: deployment => {
                         return createDocumentClient({
                             region: deployment.region

@@ -2,6 +2,7 @@ import * as aws from "@pulumi/aws";
 import type { PulumiApp } from "@webiny/pulumi";
 import { SyncSystemSQS } from "../SyncSystemSQS.js";
 import { SyncSystemDynamoDb } from "../SyncSystemDynamoDb.js";
+import { SyncSystemFilesLambda } from "~/apps/syncSystem/SyncSystemFilesLambda.js";
 
 interface ICreateSyncSystemLambdaPolicyParams {
     name: string;
@@ -11,6 +12,7 @@ interface ICreateSyncSystemLambdaPolicyParams {
 export function createSyncSystemInputLambdaPolicy(params: ICreateSyncSystemLambdaPolicyParams) {
     const { app } = params;
     const { sqsQueue } = app.getModule(SyncSystemSQS);
+    const { lambda: filesLambda } = app.getModule(SyncSystemFilesLambda);
     const dynamoDb = app.getModule(SyncSystemDynamoDb);
 
     const policy: aws.iam.PolicyDocument = {
@@ -92,6 +94,14 @@ export function createSyncSystemInputLambdaPolicy(params: ICreateSyncSystemLambd
                     dynamoDb.output.arn.apply(arn => `${arn}`),
                     dynamoDb.output.arn.apply(arn => `${arn}/*`)
                 ]
+            },
+            {
+                Sid: "PermissionForFilesLambda",
+                Effect: "Allow",
+                Action: ["lambda:InvokeFunction"],
+                Resource: filesLambda.output.arn.apply(arn => {
+                    return [`${arn}`, `${arn}/*`];
+                })
             }
         ]
     };

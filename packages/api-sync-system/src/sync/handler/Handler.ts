@@ -83,11 +83,7 @@ export class Handler implements IHandler {
 
         try {
             const eventBridgeClient = this.getEventBridgeClient();
-            const result = await eventBridgeClient.send(command);
-            console.log({
-                result
-            });
-            return result;
+            return await eventBridgeClient.send(command);
         } catch (ex) {
             console.log("Could not send events to Sync System EventBridge.");
             console.error(ex.message);

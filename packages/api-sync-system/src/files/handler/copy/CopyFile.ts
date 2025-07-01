@@ -2,6 +2,8 @@ import type {
     AbortMultipartUploadCommandInput,
     CompletedPart,
     CompleteMultipartUploadCommandInput,
+    CopyObjectCommandInput,
+    CopyObjectCommandOutput,
     CreateMultipartUploadCommandInput,
     HeadObjectCommandInput,
     S3Client,
@@ -10,11 +12,13 @@ import type {
 import {
     AbortMultipartUploadCommand,
     CompleteMultipartUploadCommand,
+    CopyObjectCommand,
     CreateMultipartUploadCommand,
     HeadObjectCommand,
     UploadPartCopyCommand
 } from "@webiny/aws-sdk/client-s3/index.js";
 import bytes from "bytes";
+import { convertException } from "@webiny/utils";
 
 type ByteSize = number | `${number}B` | `${number}KB` | `${number}MB` | `${number}GB`;
 
@@ -67,6 +71,12 @@ export interface IAbortMultipartUploadParams {
     targetBucket: string;
     targetKey: string;
     uploadId: string;
+}
+
+interface ICopyMetadataParams {
+    sourceBucket: string;
+    targetBucket: string;
+    key: string;
 }
 
 export class CopyFile {
@@ -222,7 +232,7 @@ export class CopyFile {
             targetHead = null;
         }
 
-        if (targetHead?.ETag === sourceHead.ETag) {
+        if (targetHead?.ChecksumSHA256 === sourceHead.ChecksumSHA256) {
             return;
         }
 
@@ -273,7 +283,10 @@ export class CopyFile {
             }
 
             await Promise.all(promises);
-
+            /**
+             * Complete the multipart upload with all the completed parts.
+             */
+            console.log(`Completing multipart upload for ${key} to ${targetBucket}`);
             await this.completeMultipartUpload({
                 targetBucket,
                 targetKey: key,
@@ -284,5 +297,65 @@ export class CopyFile {
             await this.abortMultipartUpload({ targetBucket, targetKey: key, uploadId });
             throw ex;
         }
+        /**
+         * And then copy the metadata file.
+         */
+
+        try {
+            console.log(`Copying metadata for ${key} from ${sourceBucket} to ${targetBucket}`);
+            const result = await this.copyMetadata({
+                sourceBucket,
+                targetBucket,
+                key
+            });
+            console.log({
+                havingResult: true,
+                copyMetadataResult: result
+            });
+        } catch (ex) {
+            console.error(
+                `Failed to copy metadata for ${key} from ${sourceBucket} to ${targetBucket}.`
+            );
+            console.log(convertException(ex));
+        }
+    }
+
+    private async copyMetadata(
+        params: ICopyMetadataParams
+    ): Promise<CopyObjectCommandOutput | null> {
+        const { sourceBucket, targetBucket, key } = params;
+
+        const metadataKey = `${key}.metadata`;
+
+        const [sourceMetadata, targetMetadata] = await Promise.all([
+            this.headObject({
+                client: this.sourceClient,
+                bucket: sourceBucket,
+                key: metadataKey
+            }).catch(() => null),
+            this.headObject({
+                client: this.targetClient,
+                bucket: targetBucket,
+                key: metadataKey
+            }).catch(() => null)
+        ]);
+
+        if (!sourceMetadata?.ChecksumSHA256 || !sourceMetadata.ChecksumSHA256) {
+            return null;
+        }
+
+        if (targetMetadata?.ChecksumSHA256 === sourceMetadata.ChecksumSHA256) {
+            return null;
+        }
+
+        const input: CopyObjectCommandInput = {
+            Bucket: targetBucket,
+            Key: metadataKey,
+            CopySource: encodeURIComponent(`${sourceBucket}/${metadataKey}`)
+        };
+
+        const command = new CopyObjectCommand(input);
+
+        return await this.targetClient.send(command);
     }
 }

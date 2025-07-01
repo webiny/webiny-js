@@ -14,14 +14,16 @@ export interface IAttachS3PermissionsParams {
 export const attachS3Permissions = (params: IAttachS3PermissionsParams) => {
     const { app, syncSystem, core } = params;
 
-    const { lambdaRoleName } = syncSystem;
+    const { resolverLambdaRoleName, filesLambdaRoleName } = syncSystem;
 
-    const lambdaToS3ResourceName = createSyncResourceName(`lambda-to-s3-fm`);
+    const resolverLambdaToS3ResourceName = createSyncResourceName(`resolver-lambda-to-s3-fm`);
+    const filesLambdaToS3ResourceName = createSyncResourceName(`files-lambda-to-s3-fm`);
 
     const s3Policy = app.addResource(aws.iam.Policy, {
-        name: `${lambdaToS3ResourceName}-policy`,
+        name: `${resolverLambdaToS3ResourceName}-policy`,
         config: {
-            description: "This policy enables access from Sync System Lambda to Webiny S3.",
+            description:
+                "This policy enables access from Sync System Resolver and Files Lambda to Webiny S3.",
             policy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -44,16 +46,25 @@ export const attachS3Permissions = (params: IAttachS3PermissionsParams) => {
         }
     });
 
-    const s3PolicyAttachment = app.addResource(aws.iam.RolePolicyAttachment, {
-        name: `${lambdaToS3ResourceName}-policy-attachment`,
+    const resolverLambdaS3PolicyAttachment = app.addResource(aws.iam.RolePolicyAttachment, {
+        name: `${resolverLambdaToS3ResourceName}-policy-attachment`,
         config: {
-            role: lambdaRoleName,
+            role: resolverLambdaRoleName,
+            policyArn: s3Policy.output.arn
+        }
+    });
+
+    const filesLambdaS3PolicyAttachment = app.addResource(aws.iam.RolePolicyAttachment, {
+        name: `${filesLambdaToS3ResourceName}-policy-attachment`,
+        config: {
+            role: filesLambdaRoleName,
             policyArn: s3Policy.output.arn
         }
     });
 
     return {
         s3Policy,
-        s3PolicyAttachment
+        filesLambdaS3PolicyAttachment,
+        resolverLambdaS3PolicyAttachment
     };
 };

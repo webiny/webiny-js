@@ -2,12 +2,13 @@ import * as pulumi from "@pulumi/pulumi";
 import { createPulumiApp, PulumiAppParam } from "@webiny/pulumi";
 import { DEFAULT_PROD_ENV_NAMES } from "~/constants.js";
 import { SyncSystemSQS } from "./SyncSystemSQS.js";
-import { SyncSystemLambda } from "./SyncSystemLambda.js";
+import { SyncSystemResolverLambda } from "./SyncSystemResolverLambda.js";
 import type { IGetSyncSystemOutputResult, PulumiOutput } from "./types.js";
 import { APPS_SYNC_SYSTEM_PATH } from "./constants.js";
 import { SyncSystemEventBus } from "./SyncSystemEventBus.js";
 import { customApp } from "./customApp.js";
 import { SyncSystemDynamoDb } from "~/apps/syncSystem/SyncSystemDynamoDb.js";
+import { SyncSystemFilesLambda } from "~/apps/syncSystem/SyncSystemFilesLambda.js";
 
 export type SyncSystemPulumiApp = ReturnType<typeof createSyncSystemPulumiApp>;
 
@@ -97,7 +98,9 @@ export function createSyncSystemPulumiApp(projectAppParams: CreateSyncSystemPulu
             const { sqsQueue } = regionApp.addModule(SyncSystemSQS);
             const dynamoDb = regionApp.addModule(SyncSystemDynamoDb);
 
-            const lambda = regionApp.addModule(SyncSystemLambda);
+            const filesLambda = regionApp.addModule(SyncSystemFilesLambda);
+
+            const resolverLambda = regionApp.addModule(SyncSystemResolverLambda);
             const { eventBusRule, eventBus, eventBusTarget, eventBusPolicy } =
                 regionApp.addModule(SyncSystemEventBus);
 
@@ -120,23 +123,28 @@ export function createSyncSystemPulumiApp(projectAppParams: CreateSyncSystemPulu
                 dynamoDbHashKey: dynamoDb.output.hashKey,
                 dynamoDbRangeKey: dynamoDb.output.rangeKey as pulumi.Output<string>,
                 /**
-                 * SyncSystemLambda
+                 * SyncSystemResolverLambda
                  */
-                lambdaArn: lambda.lambda.output.arn,
-                lambdaName: lambda.lambda.output.name,
-                lambdaRoleArn: lambda.role.output.arn,
-                lambdaRoleName: lambda.role.output.name,
-                lambdaRoleId: lambda.role.output.id,
-                lambdaPolicyArn: lambda.policy.output.arn,
-                lambdaPolicyName: lambda.policy.output.name,
-                lambdaPolicyId: lambda.policy.output.id,
-                lambdaEventSourceMappingArn: lambda.eventSourceMapping.output.arn,
-                lambdaEventSourceMappingId: lambda.eventSourceMapping.output.id,
+                resolverLambdaArn: resolverLambda.lambda.output.arn,
+                resolverLambdaName: resolverLambda.lambda.output.name,
+                resolverLambdaRoleArn: resolverLambda.role.output.arn,
+                resolverLambdaRoleName: resolverLambda.role.output.name,
+                resolverLambdaRoleId: resolverLambda.role.output.id,
+                resolverLambdaPolicyArn: resolverLambda.policy.output.arn,
+                resolverLambdaPolicyName: resolverLambda.policy.output.name,
+                resolverLambdaPolicyId: resolverLambda.policy.output.id,
+                resolverLambdaEventSourceMappingArn: resolverLambda.eventSourceMapping.output.arn,
+                resolverLambdaEventSourceMappingId: resolverLambda.eventSourceMapping.output.id,
+                // # We can safely cast as we know that the property exists.
+                resolverLambdaEventSourceMappingEventSourceArn: resolverLambda.eventSourceMapping
+                    .output.eventSourceArn as pulumi.Output<string>,
                 /**
-                 * We can safely cast as we know that the property exists.
+                 * SyncSystemFilesLambda
                  */
-                lambdaEventSourceMappingEventSourceArn: lambda.eventSourceMapping.output
-                    .eventSourceArn as pulumi.Output<string>,
+                filesLambdaArn: filesLambda.lambda.output.arn,
+                filesLambdaName: filesLambda.lambda.output.name,
+                filesLambdaRoleArn: filesLambda.role.output.arn,
+                filesLambdaRoleName: filesLambda.role.output.name,
                 /**
                  * SyncSystemEventBus
                  */
@@ -158,10 +166,18 @@ export function createSyncSystemPulumiApp(projectAppParams: CreateSyncSystemPulu
                 eventBusRule: eventBusRule.output,
                 eventBusTarget: eventBusTarget.output,
                 eventBusPolicy: eventBusPolicy.output,
-                lambda: lambda.lambda.output,
-                lambdaRole: lambda.role.output,
-                lambdaPolicy: lambda.policy.output,
-                lambdaEventSourceMapping: lambda.eventSourceMapping.output,
+                /**
+                 * Files Lambda - used to process files and store/delete them from S3.
+                 */
+                filesLambda: filesLambda.lambda.output,
+                filesLambdaRole: filesLambda.role.output,
+                /**
+                 * Resolver Lambda - gets hit by SQS and resolves the data.
+                 */
+                resolverLambda: resolverLambda.lambda.output,
+                resolverLambdaRole: resolverLambda.role.output,
+                resolverLambdaPolicy: resolverLambda.policy.output,
+                resolverLambdaEventSourceMapping: resolverLambda.eventSourceMapping.output,
                 /**
                  * Systems we are connecting together.
                  */

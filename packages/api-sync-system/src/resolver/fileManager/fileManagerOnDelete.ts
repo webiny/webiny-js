@@ -37,7 +37,7 @@ export const createFileManagerOnDeletePlugin = (params: ICreateFileManagerOnDele
                     bundle: params.bundle
                 });
             } catch (ex) {
-                console.error("Error while handling file manager onPut plugin.");
+                console.error("Error while handling file manager onDelete plugin.");
                 console.log(convertException(ex));
             }
         }

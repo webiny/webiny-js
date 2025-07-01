@@ -9,16 +9,19 @@ import { createSyncResourceName } from "./createSyncResourceName.js";
 import { createAssetArchive } from "~/utils/createAssetArchive.js";
 import { SyncSystemSQS } from "./SyncSystemSQS.js";
 import { SyncSystemDynamoDb } from "~/apps/syncSystem/SyncSystemDynamoDb.js";
+import { SyncSystemFilesLambda } from "~/apps/syncSystem/SyncSystemFilesLambda.js";
 
-export type SyncSystemLambda = PulumiAppModule<typeof SyncSystemLambda>;
+export type SyncSystemResolverLambda = PulumiAppModule<typeof SyncSystemResolverLambda>;
 
-export const SyncSystemLambda = createAppModule({
-    name: "SyncSystemLambda",
+export const SyncSystemResolverLambda = createAppModule({
+    name: "SyncSystemResolverLambda",
     config(app: PulumiApp) {
         const { sqsQueue } = app.getModule(SyncSystemSQS);
         const dynamoDb = app.getModule(SyncSystemDynamoDb);
 
-        const roleName = createSyncResourceName("input-lambda-role");
+        const { lambda: filesLambda } = app.getModule(SyncSystemFilesLambda);
+
+        const roleName = createSyncResourceName("resolver-lambda-role");
         const policy = createSyncSystemInputLambdaPolicy({
             name: `${roleName}-policy`,
             app
@@ -29,7 +32,7 @@ export const SyncSystemLambda = createAppModule({
         });
 
         const lambda = app.addResource(aws.lambda.Function, {
-            name: createSyncResourceName("lambda"),
+            name: createSyncResourceName("resolver-lambda"),
             config: {
                 runtime: LAMBDA_RUNTIME,
                 handler: "handler.handler",
@@ -40,6 +43,7 @@ export const SyncSystemLambda = createAppModule({
                 environment: {
                     variables: {
                         DB_TABLE: dynamoDb.output.name,
+                        AWS_SYNC_FILE_LAMBDA_ARN: filesLambda.output.arn,
                         DEBUG: String(process.env.DEBUG),
                         PULUMI_APPS: "true",
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
@@ -49,7 +53,7 @@ export const SyncSystemLambda = createAppModule({
         });
 
         const eventSourceMapping = app.addResource(aws.lambda.EventSourceMapping, {
-            name: createSyncResourceName("sqs-to-lambda"),
+            name: createSyncResourceName("sqs-to-resolver-lambda"),
             config: {
                 enabled: true,
                 eventSourceArn: sqsQueue.output.arn,

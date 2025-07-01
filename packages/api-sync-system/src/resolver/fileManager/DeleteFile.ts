@@ -80,11 +80,11 @@ export class DeleteFile {
                 key: fileKey,
                 source: {
                     region: bundle.source.region,
-                    bucket: bundle.source.services.s3BucketName
+                    bucket: bundle.source.services.s3Id
                 },
                 target: {
                     region: deployment.region,
-                    bucket: deployment.services.s3BucketName
+                    bucket: deployment.services.s3Id
                 }
             }
         });

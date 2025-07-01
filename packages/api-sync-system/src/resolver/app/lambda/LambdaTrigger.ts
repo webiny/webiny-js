@@ -44,7 +44,6 @@ export class LambdaTrigger<TPayload> {
         };
 
         const cmd = new InvokeCommand(input);
-
         try {
             return await lambdaClient.send(cmd);
         } catch (ex) {

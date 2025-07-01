@@ -1,46 +1,70 @@
-import type { IStorer, IStorerExecParams } from "./types";
-import type {
-    BatchWriteCommandInput,
-    DynamoDBDocument
-} from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { BatchWriteCommand } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import type { IStoreItem, IStorer, IStorerExecParams } from "./types";
 import type { IDeployment } from "~/resolver/deployment/types.js";
-import { convertException } from "@webiny/utils/exception.js";
-import lodashChunk from "lodash/chunk";
-import type { CommandType } from "~/types.js";
+import type {
+    DeleteCommandOutput,
+    DynamoDBDocument,
+    PutCommandOutput
+} from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { DeleteCommand, PutCommand } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { CommandType } from "~/types";
+import type { ITable } from "~/sync/types.js";
 import { createRetry } from "../utils/Retry";
+import { convertException } from "@webiny/utils";
+import type { IBundle } from "~/resolver/app/bundler/types.js";
 
 export interface IStorerParamsCreateDocumentClientCallable {
-    (deployment: Pick<IDeployment, "region">): Pick<DynamoDBDocument, "send">;
+    (deployment: Pick<IDeployment, "region">): DynamoDBDocument;
+}
+
+export interface IStorerOnErrorParams {
+    command: CommandType;
+    item: IStoreItem;
+    table: ITable;
+    error: Error;
+}
+
+export interface IStorerOnErrorCb {
+    (params: IStorerOnErrorParams): Promise<void>;
+}
+
+export interface ISingleStorerAfterEachParams {
+    command: CommandType;
+    deployment: IDeployment;
+    bundle: IBundle;
+    item: IStoreItem;
+    table: ITable;
+    result: PutCommandOutput | DeleteCommandOutput;
+}
+
+export interface IStorerAfterEachCb {
+    (params: ISingleStorerAfterEachParams): Promise<void>;
 }
 
 export interface IStorerParams {
-    maxBatchSize?: number;
     maxRetries?: number;
     retryDelay?: number;
     createDocumentClient: IStorerParamsCreateDocumentClientCallable;
-}
-
-interface IRequestType {
-    name: "PutRequest" | "DeleteRequest";
-    key: "Item" | "Key";
+    onError?: IStorerOnErrorCb;
+    afterEach?: IStorerAfterEachCb;
 }
 
 export class Storer implements IStorer {
-    private readonly maxBatchSize: number;
     private readonly maxRetries: number;
     private readonly retryDelay: number;
     private readonly createDocumentClient: IStorerParamsCreateDocumentClientCallable;
+    private readonly afterEach?: IStorerAfterEachCb;
+    private readonly onError?: IStorerOnErrorCb;
 
     public constructor(params: IStorerParams) {
-        this.maxBatchSize = params.maxBatchSize || 25;
         this.maxRetries = params.maxRetries || 10;
         this.retryDelay = params.retryDelay || 1000;
         this.createDocumentClient = params.createDocumentClient;
+        this.afterEach = params.afterEach;
+        this.onError = params.onError;
     }
 
     public async store(params: IStorerExecParams): Promise<void> {
-        const { deployment, table, command, items } = params;
+        const { deployment, bundle, table, command, items } = params;
         if (items.length === 0) {
             return;
         }
@@ -48,79 +72,78 @@ export class Storer implements IStorer {
             region: deployment.region
         });
 
-        let requestType: IRequestType;
-        try {
-            requestType = this.getRequestType(command);
-        } catch (ex) {
-            console.error(`Error getting request type: ${command}.`);
-            console.log(convertException(ex));
-            return;
-        }
+        const retry = createRetry({
+            maxRetries: this.maxRetries,
+            retryDelay: this.retryDelay
+        });
 
-        const batches = lodashChunk(items, this.maxBatchSize);
+        for (const item of items) {
+            const result = await retry.retry(
+                async (): Promise<DeleteCommandOutput | PutCommandOutput | null> => {
+                    switch (command) {
+                        case "delete":
+                            return await client.send(
+                                new DeleteCommand({
+                                    TableName: table.name,
+                                    Key: {
+                                        PK: item.PK,
+                                        SK: item.SK
+                                    }
+                                })
+                            );
+                        case "put":
+                            return await client.send(
+                                new PutCommand({
+                                    TableName: table.name,
+                                    Item: item
+                                })
+                            );
 
-        for (const batch of batches) {
-            let cmd: BatchWriteCommand | undefined = undefined;
-            do {
-                const input: BatchWriteCommandInput = {
-                    RequestItems: {
-                        [table.name]: batch.map(item => {
-                            return {
-                                [requestType.name]: {
-                                    [requestType.key]: item
-                                }
-                            };
-                        })
+                        default:
+                            console.error(`Unsupported command type: ${command}`);
+                            return null;
                     }
-                };
-                cmd = new BatchWriteCommand(input);
-
-                const retry = createRetry({
-                    maxRetries: this.maxRetries,
-                    retryDelay: this.retryDelay
+                },
+                {
+                    onFail: async error => {
+                        console.error("Error executing batch write command.");
+                        console.log(convertException(error));
+                        if (!this.onError) {
+                            return;
+                        }
+                        try {
+                            await this.onError({
+                                item,
+                                command,
+                                table,
+                                error
+                            });
+                        } catch (ex) {
+                            console.error(`Error in onError callback for command: ${command}`);
+                            console.log({
+                                original: convertException(error),
+                                error: convertException(ex)
+                            });
+                        }
+                    }
+                }
+            );
+            if (!result || !this.afterEach) {
+                continue;
+            }
+            try {
+                await this.afterEach({
+                    table,
+                    command,
+                    result,
+                    item,
+                    deployment,
+                    bundle
                 });
-
-                await retry.retry(
-                    async () => {
-                        if (!cmd) {
-                            return;
-                        }
-                        const result = await client.send(cmd);
-
-                        if (!result.UnprocessedItems?.[table.name]) {
-                            cmd = undefined;
-                            return;
-                        }
-                        cmd = new BatchWriteCommand({
-                            RequestItems: result.UnprocessedItems
-                        });
-                    },
-                    {
-                        onFail: async ex => {
-                            console.error("Error executing batch write command.");
-                            console.log(convertException(ex));
-                        }
-                    }
-                );
-            } while (cmd);
-        }
-    }
-
-    private getRequestType(command: CommandType): IRequestType {
-        switch (command) {
-            case "put":
-                return {
-                    name: "PutRequest",
-                    key: "Item"
-                };
-
-            case "delete":
-                return {
-                    name: "DeleteRequest",
-                    key: "Key"
-                };
-            default:
-                throw new Error(`Invalid command type: ${command}`);
+            } catch (ex) {
+                console.error(`Error in afterEach callback for command: ${command}`);
+                console.log(convertException(ex));
+            }
         }
     }
 }
