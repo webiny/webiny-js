@@ -52,10 +52,7 @@ export class Handler implements IHandler {
 
     public async flush(): Promise<unknown> {
         const items = this.createEventBusEvent();
-        console.log({
-            commands: this.commands,
-            items
-        });
+
         if (!items?.length) {
             return;
         }

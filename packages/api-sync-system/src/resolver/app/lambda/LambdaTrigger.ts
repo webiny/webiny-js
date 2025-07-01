@@ -18,7 +18,7 @@ export interface IInvokeLambdaTriggerParams {
 
 export interface IInvokeLambdaHandleParams<TPayload> {
     payload: TPayload;
-    invocationType?: InvocationType;
+    invocationType: InvocationType;
 }
 
 export class LambdaTrigger<TPayload> {
@@ -36,10 +36,7 @@ export class LambdaTrigger<TPayload> {
 
         const input: InvokeCommandInput = {
             FunctionName: this.arn,
-            /**
-             * We don't care when it will be done.
-             */
-            InvocationType: invocationType || "Event",
+            InvocationType: invocationType,
             Payload: Buffer.from(JSON.stringify(payload))
         };
 

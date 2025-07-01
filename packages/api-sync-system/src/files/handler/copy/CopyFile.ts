@@ -126,7 +126,16 @@ export class CopyFile {
             Key: key
         };
         const command = new HeadObjectCommand(input);
-        return await client.send(command);
+        try {
+            return await client.send(command);
+        } catch (ex) {
+            if (ex.name === "NotFound" || ex.$metadata?.httpStatusCode === 404) {
+                return null;
+            }
+            console.error(`Failed to head object ${key} in bucket ${bucket}.`);
+            console.log(convertException(ex));
+            return null;
+        }
     }
 
     private async createMultipartUpload(params: ICreateMultipartUploadParams): Promise<string> {
@@ -193,7 +202,7 @@ export class CopyFile {
         };
 
         const command = new CompleteMultipartUploadCommand(input);
-        await this.targetClient.send(command);
+        return await this.targetClient.send(command);
     }
 
     private async abortMultipartUpload(params: IAbortMultipartUploadParams) {
@@ -220,19 +229,16 @@ export class CopyFile {
         if (!sourceHead?.ContentLength || !sourceHead.ETag) {
             throw new Error("Source object metadata is invalid or missing");
         }
+        /**
+         * If the target object already exists, we can skip the copy operation.
+         */
+        const targetHead = await this.headObject({
+            client: this.targetClient,
+            bucket: targetBucket,
+            key
+        });
 
-        let targetHead;
-        try {
-            targetHead = await this.headObject({
-                client: this.targetClient,
-                bucket: targetBucket,
-                key
-            });
-        } catch {
-            targetHead = null;
-        }
-
-        if (targetHead?.ChecksumSHA256 === sourceHead.ChecksumSHA256) {
+        if (targetHead) {
             return;
         }
 
@@ -286,7 +292,6 @@ export class CopyFile {
             /**
              * Complete the multipart upload with all the completed parts.
              */
-            console.log(`Completing multipart upload for ${key} to ${targetBucket}`);
             await this.completeMultipartUpload({
                 targetBucket,
                 targetKey: key,
@@ -302,15 +307,10 @@ export class CopyFile {
          */
 
         try {
-            console.log(`Copying metadata for ${key} from ${sourceBucket} to ${targetBucket}`);
-            const result = await this.copyMetadata({
+            await this.copyMetadata({
                 sourceBucket,
                 targetBucket,
                 key
-            });
-            console.log({
-                havingResult: true,
-                copyMetadataResult: result
             });
         } catch (ex) {
             console.error(
@@ -339,12 +339,16 @@ export class CopyFile {
                 key: metadataKey
             }).catch(() => null)
         ]);
-
-        if (!sourceMetadata?.ChecksumSHA256 || !sourceMetadata.ChecksumSHA256) {
+        /**
+         * If the source metadata does not exist, we cannot copy it.
+         */
+        if (!sourceMetadata?.ETag) {
             return null;
         }
-
-        if (targetMetadata?.ChecksumSHA256 === sourceMetadata.ChecksumSHA256) {
+        /**
+         * If the target metadata already exists, we can skip copying it.
+         */
+        if (targetMetadata) {
             return null;
         }
 
