@@ -1,4 +1,5 @@
 import { createTopic } from "@webiny/pubsub";
+import type { WebsiteBuilderConfig } from "~/types";
 import type {
     OnWebsiteBuilderPageAfterCreateTopicParams,
     OnWebsiteBuilderPageAfterDeleteTopicParams,
@@ -6,11 +7,10 @@ import type {
     OnWebsiteBuilderPageBeforeCreateTopicParams,
     OnWebsiteBuilderPageBeforeDeleteTopicParams,
     OnWebsiteBuilderPageBeforeUpdateTopicParams,
-    WebsiteBuilderConfig,
-    WebsiteBuilderPageCrud
-} from "~/types";
+    WbPageCrud
+} from "~/page/page.types";
 
-export const createPagesCrud = (config: WebsiteBuilderConfig): WebsiteBuilderPageCrud => {
+export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
     // create
     const onWebsiteBuilderPageBeforeCreate =
         createTopic<OnWebsiteBuilderPageBeforeCreateTopicParams>("wb.onPageBeforeCreate");
