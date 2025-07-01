@@ -17873,6 +17873,38 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-website-builder@npm:0.0.0, @webiny/api-website-builder@workspace:packages/api-website-builder":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-website-builder@workspace:packages/api-website-builder"
+  dependencies:
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-admin-users": "npm:0.0.0"
+    "@webiny/api-file-manager": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-i18n-ddb": "npm:0.0.0"
+    "@webiny/api-security": "npm:0.0.0"
+    "@webiny/api-security-so-ddb": "npm:0.0.0"
+    "@webiny/api-tenancy": "npm:0.0.0"
+    "@webiny/api-tenancy-so-ddb": "npm:0.0.0"
+    "@webiny/api-wcp": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/handler-aws": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/pubsub": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    "@webiny/validation": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
+    graphql: "npm:^15.9.0"
+    lodash: "npm:^4.17.21"
+    prettier: "npm:^2.8.8"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.3.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-websockets@npm:0.0.0, @webiny/api-websockets@workspace:packages/api-websockets":
   version: 0.0.0-use.local
   resolution: "@webiny/api-websockets@workspace:packages/api-websockets"
@@ -21456,6 +21488,7 @@ __metadata:
     "@webiny/api-tenancy-so-ddb": "npm:0.0.0"
     "@webiny/api-tenant-manager": "npm:0.0.0"
     "@webiny/api-wcp": "npm:0.0.0"
+    "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/cli": "npm:0.0.0"

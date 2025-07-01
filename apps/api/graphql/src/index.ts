@@ -43,6 +43,7 @@ import { createContinuingTask } from "~/plugins/continuingTask";
 import { createWebsockets } from "@webiny/api-websockets";
 import { createRecordLocking } from "@webiny/api-record-locking";
 import { createLogger } from "@webiny/api-log";
+import { createWebsiteBuilder } from "@webiny/api-website-builder";
 
 import scaffoldsPlugins from "./plugins/scaffolds";
 import { extensions } from "./extensions";
@@ -113,6 +114,7 @@ export const handler = createHandler({
         createAcoPageBuilderContext(),
         createAcoHcmsContext(),
         createHcmsTasks(),
+        createWebsiteBuilder(),
         createFileModelModifier(({ modifier }) => {
             modifier.addField({
                 id: "customField1",

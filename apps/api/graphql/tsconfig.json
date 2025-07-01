@@ -130,6 +130,9 @@
     },
     {
       "path": "../../../packages/api-log/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-website-builder/tsconfig.build.json"
     }
   ],
   "compilerOptions": {
@@ -220,6 +223,8 @@
       "@webiny/api-background-tasks-ddb": ["../../../packages/api-background-tasks-ddb/src"],
       "@webiny/tasks/*": ["../../../packages/tasks/src/*"],
       "@webiny/tasks": ["../../../packages/tasks/src"],
+      "@webiny/api-website-builder/*": ["../../../packages/api-website-builder/src/*"],
+      "@webiny/api-website-builder": ["../../../packages/api-website-builder/src"],
       "@webiny/api-websockets/*": ["../../../packages/api-websockets/src/*"],
       "@webiny/api-websockets": ["../../../packages/api-websockets/src"],
       "@webiny/api-log/*": ["../../../packages/api-log/src/*"],

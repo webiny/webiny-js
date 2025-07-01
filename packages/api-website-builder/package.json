@@ -1,0 +1,53 @@
+{
+  "name": "@webiny/api-website-builder",
+  "version": "0.0.0",
+  "main": "index.js",
+  "keywords": [
+    "wb:base"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-website-builder"
+  },
+  "description": "A set of backend website builder related features.",
+  "author": "Webiny Ltd.",
+  "license": "MIT",
+  "scripts": {
+    "build": "node ../cli/bin.js run build",
+    "watch": "node ../cli/bin.js run watch"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "dependencies": {
+    "@webiny/api": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-security": "0.0.0",
+    "@webiny/api-tenancy": "0.0.0",
+    "@webiny/error": "0.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/handler-graphql": "0.0.0",
+    "@webiny/pubsub": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "@webiny/validation": "0.0.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@webiny/api-admin-users": "0.0.0",
+    "@webiny/api-file-manager": "0.0.0",
+    "@webiny/api-i18n-ddb": "0.0.0",
+    "@webiny/api-security-so-ddb": "0.0.0",
+    "@webiny/api-tenancy-so-ddb": "0.0.0",
+    "@webiny/api-wcp": "0.0.0",
+    "@webiny/handler-aws": "0.0.0",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "@webiny/wcp": "0.0.0",
+    "graphql": "^15.9.0",
+    "prettier": "^2.8.8",
+    "rimraf": "^6.0.1",
+    "typescript": "5.3.3"
+  }
+}
