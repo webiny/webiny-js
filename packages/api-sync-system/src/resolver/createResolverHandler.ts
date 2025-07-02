@@ -19,16 +19,17 @@ export type AllowedResolverPlugins = TransformRecordPlugin | CommandHandlerPlugi
 
 export interface ICreateResolverHandlerParams extends HandlerParams {
     plugins: AllowedResolverPlugins[];
-    createS3Client: (params: S3ClientConfig) => S3Client;
-    createLambdaClient: () => LambdaClient;
-    createDocumentClient: (params: DynamoDBClientConfig) => DynamoDBDocument;
+    createS3Client: (params: S3ClientConfig) => Pick<S3Client, "send">;
+    createLambdaClient: () => Pick<LambdaClient, "send">;
+    createDocumentClient: (params: DynamoDBClientConfig) => Pick<DynamoDBDocument, "send">;
     tableName?: string;
+    awsSyncLambdaArn?: string;
 }
 /**
  * Handler for the Sync System Resolver - based on SQS handler.
  */
 export const createResolverHandler = (params: ICreateResolverHandlerParams): HandlerCallable => {
-    const awsSyncLambdaArn = process.env.AWS_SYNC_FILE_LAMBDA_ARN;
+    const awsSyncLambdaArn = params.awsSyncLambdaArn || process.env.AWS_SYNC_FILE_LAMBDA_ARN;
     if (!awsSyncLambdaArn) {
         const message = `Missing "process.env.AWS_SYNC_FILE_LAMBDA_ARN".`;
         console.error(message);

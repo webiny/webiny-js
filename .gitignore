@@ -54,4 +54,3 @@ gateway.*.json
 
 packages/tasks/tpl/*
 
-packages/**/__tests__/**/*.d.ts

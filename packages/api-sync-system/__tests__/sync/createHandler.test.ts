@@ -65,7 +65,8 @@ describe("createHandler", () => {
             PK: "p1",
             SK: "s1",
             tableName,
-            tableType: getTableType(tableName)
+            tableType: getTableType(tableName),
+            input: expect.any(Object)
         });
     });
 
@@ -97,7 +98,8 @@ describe("createHandler", () => {
             PK: "p1",
             SK: "s1",
             tableName,
-            tableType: getTableType(tableName)
+            tableType: getTableType(tableName),
+            input: expect.any(Object)
         });
     });
 
@@ -129,7 +131,8 @@ describe("createHandler", () => {
             PK: "p1",
             SK: "s1",
             tableName,
-            tableType: getTableType(tableName)
+            tableType: getTableType(tableName),
+            input: expect.any(Object)
         });
     });
 
@@ -260,35 +263,40 @@ describe("createHandler", () => {
                 PK: "p1",
                 SK: "s1",
                 tableName,
-                tableType: getTableType(tableName)
+                tableType: getTableType(tableName),
+                input: expect.any(Object)
             },
             {
                 command: "delete",
                 PK: "p2",
                 SK: "s2",
                 tableName,
-                tableType: getTableType(tableName)
+                tableType: getTableType(tableName),
+                input: expect.any(Object)
             },
             {
                 command: "put",
                 PK: "p3",
                 SK: "s3",
                 tableName,
-                tableType: getTableType(tableName)
+                tableType: getTableType(tableName),
+                input: expect.any(Object)
             },
             {
                 command: "delete",
                 PK: "p4",
                 SK: "s4",
                 tableName,
-                tableType: getTableType(tableName)
+                tableType: getTableType(tableName),
+                input: expect.any(Object)
             },
             {
                 command: "delete",
                 PK: "p5",
                 SK: "s5",
                 tableName,
-                tableType: getTableType(tableName)
+                tableType: getTableType(tableName),
+                input: expect.any(Object)
             }
         ]);
     });

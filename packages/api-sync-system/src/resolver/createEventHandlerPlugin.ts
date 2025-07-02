@@ -21,7 +21,7 @@ import { StorerAfterEachPlugin } from "./plugins/StorerAfterEachPlugin.js";
 
 export interface ICreateEventHandlerPluginParams {
     tableName: string | undefined;
-    createDocumentClient: (params: DynamoDBClientConfig) => DynamoDBDocument;
+    createDocumentClient: (params: DynamoDBClientConfig) => Pick<DynamoDBDocument, "send">;
 }
 /**
  * TODO maybe add logger?

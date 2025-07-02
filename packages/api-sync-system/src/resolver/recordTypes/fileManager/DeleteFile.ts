@@ -12,7 +12,7 @@ import type { HeadObjectCommandInput, S3Client } from "@webiny/aws-sdk/client-s3
 import { HeadObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
 
 interface IExistsParams {
-    client: S3Client;
+    client: Pick<S3Client, "send">;
     bucket: string;
     key: string;
 }

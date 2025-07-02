@@ -47,7 +47,7 @@ export const createMockSQSEvent = (): SQSEvent => {
                     time: "something",
                     region: "eu-central-1",
                     resources: [],
-                    detail: JSON.stringify({
+                    detail: {
                         id: generateAlphaNumericId(),
                         items: [
                             {
@@ -62,7 +62,7 @@ export const createMockSQSEvent = (): SQSEvent => {
                             env: "test",
                             variant: "blue"
                         })
-                    }),
+                    },
                     eventBusName: "something"
                 })
             })

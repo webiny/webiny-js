@@ -1,4 +1,3 @@
-import { PluginsContainer } from "@webiny/plugins";
 import { TransformHandler } from "~/resolver/app/transform/TransformHandler.js";
 import { createTransformRecordPlugin } from "~/resolver/plugins/TransformRecordPlugin.js";
 import { createRegularMockTable } from "~tests/mocks/table.js";
@@ -9,6 +8,7 @@ import {
 import { createMockTableItemData } from "~tests/mocks/tableItem.js";
 import { SemVer } from "semver";
 import { DynamoDBTableType } from "~/types.js";
+import { createMockPluginsContainer } from "~tests/mocks/plugins.js";
 
 const item1 = createMockTableItemData({
     order: 1
@@ -31,7 +31,7 @@ const targetDeployment = createMockTargetDeployment({
     version: new SemVer("5.43.0")
 });
 
-const plugins = new PluginsContainer([
+const plugins = createMockPluginsContainer([
     createTransformRecordPlugin({
         tableType: DynamoDBTableType.REGULAR,
         canTransform: ({ from }) => {
@@ -71,7 +71,7 @@ describe("TransformHandler", () => {
             return true;
         };
         const handler = new TransformHandler({
-            plugins: new PluginsContainer([
+            plugins: createMockPluginsContainer([
                 createTransformRecordPlugin({
                     tableType: DynamoDBTableType.REGULAR,
                     canTransform,

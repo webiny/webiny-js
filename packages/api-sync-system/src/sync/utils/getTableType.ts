@@ -9,6 +9,6 @@ export const getTableType = (tableName: string): DynamoDBTableType => {
         case process.env.DB_TABLE_LOG:
             return DynamoDBTableType.LOG;
         default:
-            return DynamoDBTableType.LOG;
+            return DynamoDBTableType.UNKNOWN;
     }
 };

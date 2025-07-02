@@ -13,7 +13,7 @@ import { convertException } from "@webiny/utils";
 import type { IBundle } from "~/resolver/app/bundler/types.js";
 
 export interface IStorerParamsCreateDocumentClientCallable {
-    (deployment: Pick<IDeployment, "region">): DynamoDBDocument;
+    (deployment: Pick<IDeployment, "region">): Pick<DynamoDBDocument, "send">;
 }
 
 export interface IStorerOnErrorParams {

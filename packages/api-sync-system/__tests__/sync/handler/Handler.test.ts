@@ -28,7 +28,7 @@ describe("Handler", () => {
         });
 
         const handler = createMockSyncHandler({
-            eventBridgeClient: client,
+            getEventBridgeClient: () => client,
             converter: createMockHandlerConverter({
                 commandConverters: "all"
             })
@@ -121,7 +121,7 @@ describe("Handler", () => {
         });
 
         const handler = createMockSyncHandler({
-            eventBridgeClient: client,
+            getEventBridgeClient: () => client,
             converter: "all"
         });
 

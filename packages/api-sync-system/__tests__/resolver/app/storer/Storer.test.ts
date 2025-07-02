@@ -1,9 +1,13 @@
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { createStorer, Storer } from "~/resolver/app/storer/Storer.js";
 import { createRegularMockTable } from "~tests/mocks/table.js";
-import { createMockTargetDeployment } from "~tests/mocks/deployments.js";
+import {
+    createMockSourceDeployment,
+    createMockTargetDeployment
+} from "~tests/mocks/deployments.js";
 import { createMockTableItemData } from "~tests/mocks/tableItem.js";
 import { ScanCommand } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { createCommandBundle } from "~/resolver/app/bundler/CommandBundle.js";
 
 const item1 = createMockTableItemData({
     order: 1,
@@ -23,6 +27,13 @@ describe("Storer", () => {
 
     const table = createRegularMockTable();
     const deployment = createMockTargetDeployment();
+    const sourceDeployment = createMockSourceDeployment();
+
+    const bundle = createCommandBundle({
+        source: sourceDeployment,
+        table,
+        command: "put"
+    });
 
     it("should create a new Storer instance", () => {
         const storer = createStorer({
@@ -36,7 +47,6 @@ describe("Storer", () => {
 
     it("should store items in batches", async () => {
         const storer = createStorer({
-            maxBatchSize: 5,
             createDocumentClient: () => {
                 return client;
             }
@@ -46,7 +56,8 @@ describe("Storer", () => {
             command: "put",
             items: [item1, item2, item3],
             table,
-            deployment
+            deployment,
+            bundle
         });
 
         const scanned = await client.send(
@@ -85,6 +96,6 @@ describe("Storer", () => {
             deployment
         });
 
-        expect(console.error).toHaveBeenCalledWith(`Error getting request type: ${command}.`);
+        expect(console.error).toHaveBeenCalledWith(`Unsupported command type: ${command}`);
     });
 });

@@ -7,5 +7,5 @@ export interface IGetLambdaTriggerCb {
 }
 
 export interface ICreateS3ClientCb {
-    (params: S3ClientConfig): S3Client;
+    (params: S3ClientConfig): Pick<S3Client, "send">;
 }

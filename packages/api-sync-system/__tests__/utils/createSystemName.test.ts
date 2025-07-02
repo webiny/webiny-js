@@ -1,4 +1,4 @@
-import { createSystemName } from "./createSystemName";
+import { createSystemName } from "~/utils/createSystemName.js";
 
 describe("createSystemName", () => {
     it("should properly create a system name out of env", () => {

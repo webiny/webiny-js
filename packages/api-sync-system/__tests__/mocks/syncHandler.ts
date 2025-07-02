@@ -3,6 +3,7 @@ import { createMockEventBridgeClient } from "~tests/mocks/eventBridgeClient.js";
 import { createMockSystem } from "~tests/mocks/system.js";
 import { createMockHandlerConverter } from "~tests/mocks/handlerConverter.js";
 import { createMockEventBus } from "~tests/mocks/eventBus.js";
+import { createFilterOutRecord } from "~/sync/FilterOutRecord";
 
 export interface ICreateMockSyncHandlerParams extends Omit<IHandlerParams, "converter"> {
     converter: "all" | IHandlerParams["converter"];
@@ -16,9 +17,15 @@ export const createMockSyncHandler = (params: Partial<ICreateMockSyncHandlerPara
               })
             : params.converter || createMockHandlerConverter();
     return createSyncHandler({
-        client: params.client || createMockEventBridgeClient(),
+        getEventBridgeClient: () => {
+            if (params.getEventBridgeClient) {
+                return params.getEventBridgeClient();
+            }
+            return createMockEventBridgeClient();
+        },
         system: params.system || createMockSystem(),
         converter,
-        eventBus: params.eventBus || createMockEventBus()
+        eventBus: params.eventBus || createMockEventBus(),
+        filterOutRecord: params.filterOutRecord || createFilterOutRecord([])
     });
 };

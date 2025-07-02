@@ -2,12 +2,22 @@ import { PutCommandHandler } from "~/resolver/app/commandHandler/PutCommandHandl
 import { createMockStorer } from "~tests/mocks/storer.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { createRegularMockTable } from "~tests/mocks/table.js";
-import { createMockTargetDeployment } from "~tests/mocks/deployments.js";
+import {
+    createMockSourceDeployment,
+    createMockTargetDeployment
+} from "~tests/mocks/deployments.js";
 import { createPutCommandHandlerPlugin } from "~/resolver/app/commandHandler/put.js";
+import { createCommandBundle } from "~/resolver/app/bundler/CommandBundle.js";
 
 describe("PutCommandHandler", () => {
     const table = createRegularMockTable();
     const targetDeployment = createMockTargetDeployment();
+    const sourceDeployment = createMockSourceDeployment();
+    const bundle = createCommandBundle({
+        command: "put",
+        source: sourceDeployment,
+        table
+    });
     const storer = createMockStorer({
         createDocumentClient: params => {
             return getDocumentClient({
@@ -26,7 +36,8 @@ describe("PutCommandHandler", () => {
             storer,
             targetTable: table,
             items: [],
-            targetDeployment
+            targetDeployment,
+            bundle
         });
 
         expect(result).toBeUndefined();
@@ -39,6 +50,7 @@ describe("PutCommandHandler", () => {
 
         await handler.handle({
             targetTable: table,
+            bundle,
             items: [
                 {
                     PK: "T#1",

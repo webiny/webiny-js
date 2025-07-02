@@ -1,9 +1,10 @@
-import { ITable } from "~/sync/types";
+import type { ITable } from "~/sync/types";
+import { DynamoDBTableType } from "~/types.js";
 
 export const createRegularMockTable = (params?: ITable): ITable => {
     return {
         name: process.env.DB_TABLE as string,
-        type: "regular",
+        type: DynamoDBTableType.REGULAR,
         arn: "arnRegular",
         ...params
     };
@@ -12,7 +13,7 @@ export const createRegularMockTable = (params?: ITable): ITable => {
 export const createElasticsearchMockTable = (params?: ITable): ITable => {
     return {
         name: process.env.DB_TABLE_ELASTICSEARCH as string,
-        type: "elasticsearch",
+        type: DynamoDBTableType.ELASTICSEARCH,
         arn: "arnElasticsearch",
         ...params
     };
@@ -21,7 +22,7 @@ export const createElasticsearchMockTable = (params?: ITable): ITable => {
 export const createLogMockTable = (params?: ITable): ITable => {
     return {
         name: process.env.DB_TABLE_LOG as string,
-        type: "log",
+        type: DynamoDBTableType.LOG,
         arn: "arnLog",
         ...params
     };

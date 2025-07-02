@@ -1,4 +1,4 @@
-import { createSyncSystem } from "~/index.js";
+import { createSyncSystem } from "~/sync/createSyncSystem.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { ServiceDiscovery } from "@webiny/api";
@@ -47,7 +47,9 @@ describe("createSyncSystem", () => {
                 return createMockEventBridgeClient();
             }
         });
-
-        expect(syncSystem.plugins()).toHaveLength(1);
+        /**
+         * Update the plugin number according to the plugins initially created inside the createSyncSystem function.
+         */
+        expect(syncSystem.plugins()).toHaveLength(2);
     });
 });

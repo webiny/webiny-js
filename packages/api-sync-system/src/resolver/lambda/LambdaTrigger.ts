@@ -8,7 +8,7 @@ import { InvokeCommand } from "@webiny/aws-sdk/client-lambda/index.js";
 import { convertException } from "@webiny/utils/exception.js";
 
 export interface IInvokeLambdaTriggerParamsCreateLambdaClientCb {
-    (): LambdaClient;
+    (): Pick<LambdaClient, "send">;
 }
 
 export interface IInvokeLambdaTriggerParams {

@@ -94,7 +94,7 @@ describe("createEventHandlerPlugin", () => {
                         time: "something",
                         region: "eu-central-1",
                         resources: [],
-                        detail: JSON.stringify({
+                        detail: {
                             id: generateAlphaNumericId(),
                             items: [
                                 {
@@ -109,7 +109,7 @@ describe("createEventHandlerPlugin", () => {
                                 env: "test",
                                 variant: "blue"
                             })
-                        }),
+                        },
                         eventBusName: "something"
                     })
                 })

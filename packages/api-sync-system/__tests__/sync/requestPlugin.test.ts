@@ -1,4 +1,4 @@
-import { createSyncSystemHandlerOnRequestPlugin } from "./requestPlugin.js";
+import { createSyncSystemHandlerOnRequestPlugin } from "~/sync/requestPlugin.js";
 import { createMockSystem } from "~tests/mocks/system.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { HandlerOnRequestPlugin } from "@webiny/handler/plugins/HandlerOnRequestPlugin.js";

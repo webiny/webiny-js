@@ -9,7 +9,7 @@ import type { IDeployment } from "~/resolver/deployment/types.js";
 import type { ICreateS3ClientCb, IGetLambdaTriggerCb } from "./types.js";
 
 interface IExistsParams {
-    client: S3Client;
+    client: Pick<S3Client, "send">;
     bucket: string;
     key: string;
 }

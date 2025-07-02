@@ -1,6 +1,5 @@
 import { createRecordHandler, RecordHandler } from "~/resolver/app/RecordHandler.js";
 import { createMockTransformHandler } from "~tests/mocks/transformHandler.js";
-import { PluginsContainer } from "@webiny/plugins";
 import { createMockCommandBundler, createMockTableBundler } from "~tests/mocks/bundler.js";
 import {
     createMockSourceDeployment,
@@ -11,12 +10,13 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
 import { createMockFetcher } from "~tests/mocks/fetcher.js";
 import { createDeployments } from "~/resolver/deployment/Deployments.js";
 import { createIngestorResult } from "~/resolver/app/ingestor/IngestorResult.js";
+import { createMockPluginsContainer } from "~tests/mocks/plugins.js";
 
 describe("RecordHandler", () => {
     const createDocumentClient = () => {
         return getDocumentClient();
     };
-    const plugins = new PluginsContainer();
+    const plugins = createMockPluginsContainer();
     const transformHandler = createMockTransformHandler({
         plugins
     });
