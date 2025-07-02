@@ -25,7 +25,27 @@ export class CmsPagesStorage implements WbPagesStorageOperations {
         this.cms = cms;
     }
 
-    async create({ data }: WbPagesStorageOperationsCreateParams): Promise<WbPage> {
+    public get = async (params: WbPagesStorageOperationsGetParams): Promise<WbPage | null> => {
+        const { id } = params;
+        const entry = await this.cms.getEntry(this.model, { where: { entryId: id, latest: true } });
+        return entry ? this.getWbPageFieldValues(entry) : null;
+    };
+
+    public list = async (
+        params: WbPagesStorageOperationsListParams
+    ): Promise<WbPagesStorageOperationsListResponse> => {
+        const [entries, meta] = await this.cms.listLatestEntries(this.model, {
+            after: params.after,
+            limit: params.limit,
+            sort: params.sort,
+            where: params.where,
+            search: params.search
+        });
+
+        return [entries.map(entry => this.getWbPageFieldValues(entry)), meta];
+    };
+
+    public create = async ({ data }: WbPagesStorageOperationsCreateParams): Promise<WbPage> => {
         if (!data.location?.folderId) {
             data.location = {
                 ...data.location,
@@ -39,33 +59,9 @@ export class CmsPagesStorage implements WbPagesStorageOperations {
         });
 
         return this.getWbPageFieldValues(entry);
-    }
+    };
 
-    async delete({ id }: WbPagesStorageOperationsDeleteParams): Promise<void> {
-        await this.cms.deleteEntry(this.model, id);
-    }
-
-    async get(params: WbPagesStorageOperationsGetParams): Promise<WbPage | null> {
-        const { id } = params;
-        const entry = await this.cms.getEntry(this.model, { where: { entryId: id, latest: true } });
-        return entry ? this.getWbPageFieldValues(entry) : null;
-    }
-
-    async list(
-        params: WbPagesStorageOperationsListParams
-    ): Promise<WbPagesStorageOperationsListResponse> {
-        const [entries, meta] = await this.cms.listLatestEntries(this.model, {
-            after: params.after,
-            limit: params.limit,
-            sort: params.sort,
-            where: params.where,
-            search: params.search
-        });
-
-        return [entries.map(entry => this.getWbPageFieldValues(entry)), meta];
-    }
-
-    async update({ id, data }: WbPagesStorageOperationsUpdateParams): Promise<WbPage> {
+    public update = async ({ id, data }: WbPagesStorageOperationsUpdateParams): Promise<WbPage> => {
         const entry = await this.cms.getEntry(this.model, {
             where: { entryId: id, latest: true }
         });
@@ -78,7 +74,11 @@ export class CmsPagesStorage implements WbPagesStorageOperations {
         });
 
         return this.getWbPageFieldValues(updatedEntry);
-    }
+    };
+
+    public delete = async ({ id }: WbPagesStorageOperationsDeleteParams): Promise<void> => {
+        await this.cms.deleteEntry(this.model, id);
+    };
 
     private getWbPageFieldValues(entry: CmsEntry) {
         return {

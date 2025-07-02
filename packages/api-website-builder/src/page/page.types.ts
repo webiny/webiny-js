@@ -1,5 +1,5 @@
 import type { WbListMeta, WbLocation } from "~/types";
-import type { CmsEntryListSort } from "@webiny/api-headless-cms/types";
+import type { CmsEntryListSort, CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import type { Topic } from "@webiny/pubsub/types";
 
 export interface WbPage {
@@ -12,7 +12,22 @@ export interface WbPage {
     extensions?: Record<string, any>;
 }
 
-export type CreateWbPageData = Pick<WbPage, "properties" | "bindings" | "elements" | "location">;
+export interface ListWbPagesParams {
+    where: CmsEntryListWhere;
+    sort: CmsEntryListSort;
+    limit: number;
+    after: string | null;
+    search?: string;
+}
+
+export interface GetWbPageParams {
+    id: string;
+}
+
+export type CreateWbPageData = Pick<
+    WbPage,
+    "properties" | "bindings" | "elements" | "location" | "extensions"
+>;
 
 export interface UpdateWbPageData {
     location?: WbLocation;
@@ -21,7 +36,7 @@ export interface UpdateWbPageData {
     elements?: Record<string, any>;
 }
 
-export interface DeleteWbPageData {
+export interface DeleteWbPageParams {
     id: string;
 }
 
@@ -60,16 +75,7 @@ export interface WbPagesStorageOperationsUpdateParams {
  * @category PagesStorageOperations
  * @category PagesStorageOperationsParams
  */
-export type WbPagesStorageOperationsDeleteParams = DeleteWbPageData;
-
-/**
- * @category StorageOperations
- * @category PagesStorageOperations
- * @category PagesStorageOperationsParams
- */
-export interface WbPagesStorageOperationsListParamsWhere {
-    [key: string]: any;
-}
+export type WbPagesStorageOperationsDeleteParams = DeleteWbPageParams;
 
 /**
  * @category StorageOperations
@@ -77,7 +83,7 @@ export interface WbPagesStorageOperationsListParamsWhere {
  * @category PagesStorageOperationsParams
  */
 export interface WbPagesStorageOperationsListParams {
-    where: WbPagesStorageOperationsListParamsWhere;
+    where: CmsEntryListWhere;
     sort: CmsEntryListSort;
     limit: number;
     after: string | null;
@@ -151,23 +157,23 @@ export interface WbPageCrud {
     /**
      * Get a single page with given ID from the storage.
      */
-    get(): Promise<void>;
+    get(params: GetWbPageParams): Promise<WbPage | null>;
     /**
      * Get a list of pages filtered by given parameters.
      */
-    list(): Promise<void>;
+    list(params: ListWbPagesParams): Promise<[WbPage[], WbListMeta]>;
     /**
      * Create a new page in the storage.
      */
-    create(): Promise<void>;
+    create(data: CreateWbPageData): Promise<WbPage>;
     /**
      * Update an existing page in the storage.
      */
-    update(): Promise<void>;
+    update(id: string, data: UpdateWbPageData): Promise<WbPage>;
     /**
      * Delete a page from the storage.
      */
-    delete(): Promise<void>;
+    delete(params: DeleteWbPageParams): Promise<void>;
 
     onWebsiteBuilderPageBeforeCreate: Topic<OnWebsiteBuilderPageBeforeCreateTopicParams>;
     onWebsiteBuilderPageAfterCreate: Topic<OnWebsiteBuilderPageAfterCreateTopicParams>;

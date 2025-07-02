@@ -1,11 +1,12 @@
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields";
-import type { CmsFieldTypePlugins, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
-import { ErrorResponse, GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields";
+import { ErrorResponse, GraphQLSchemaPlugin, ListResponse } from "@webiny/handler-graphql";
 import { ensureAuthentication } from "~/utils/ensureAuthentication";
 import { resolve } from "~/utils/resolve";
-import type { WebsiteBuilderContext } from "~/types";
 import { PAGE_MODEL_ID } from "~/page/page.model";
+import type { CmsFieldTypePlugins, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
+import type { WebsiteBuilderContext } from "~/types";
 
 export interface CreatePageTypeDefsParams {
     model: CmsModel;
@@ -53,12 +54,16 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
         fields: createUpdateFields(fields),
         fieldTypePlugins
     });
+    const listFilterFieldsRender = renderListFilterFields({
+        model,
+        fields: model.fields,
+        type: "manage",
+        fieldTypePlugins
+    });
 
     return /* GraphQL */ `
         ${fieldTypes.map(f => f.typeDefs).join("\n")}
        
-       
-
         type WbPage {
             id: ID!
             createdOn: DateTime
@@ -85,7 +90,9 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
         }
         
         input WbPagesListWhereInput {
-            createdBy: ID
+            ${listFilterFieldsRender}
+            AND: [WbPagesListWhereInput!]
+            OR: [WbPagesListWhereInput!]
         }
         
         type WbPageResponse {
@@ -136,32 +143,31 @@ export const createPagesSchema = (params: CreatePageTypeDefsParams) => {
                         return context.cms.getModel(PAGE_MODEL_ID);
                     });
                 },
-                getPageByPath: async (_, { path }, context) => {
-                    return resolve(() => {
-                        ensureAuthentication(context);
-                        console.log("Getting page with path:", path);
-                        return context.websiteBuilder.page.get();
-                    });
-                },
-                getPageTemplate: async (_, { template }, context) => {
-                    return resolve(() => {
-                        ensureAuthentication(context);
-                        console.log("Getting page with template:", template);
-                        return context.websiteBuilder.page.get();
-                    });
-                },
+                // getPageByPath: async (_, { path }, context) => {
+                //     return resolve(() => {
+                //         ensureAuthentication(context);
+                //         console.log("Getting page with path:", path);
+                //         return context.websiteBuilder.page.get();
+                //     });
+                // },
+                // getPageTemplate: async (_, { template }, context) => {
+                //     return resolve(() => {
+                //         ensureAuthentication(context);
+                //         console.log("Getting page with template:", template);
+                //         return context.websiteBuilder.page.get();
+                //     });
+                // },
                 getPage: async (_, { id }, context) => {
                     return resolve(() => {
                         ensureAuthentication(context);
-                        console.log("Getting page with id:", id);
-                        return context.websiteBuilder.page.get();
+                        return context.websiteBuilder.page.get(id);
                     });
                 },
                 listPages: async (_, args: any, context) => {
                     try {
                         ensureAuthentication(context);
-                        console.log("Listing pages with args:", args);
-                        return context.websiteBuilder.page.list();
+                        const [entries, meta] = await context.websiteBuilder.page.list(args);
+                        return new ListResponse(entries, meta);
                     } catch (e) {
                         return new ErrorResponse(e);
                     }
@@ -171,22 +177,19 @@ export const createPagesSchema = (params: CreatePageTypeDefsParams) => {
                 createPage: async (_, { data }, context) => {
                     return resolve(() => {
                         ensureAuthentication(context);
-                        console.log("Creating page with data:", data);
-                        return context.websiteBuilder.page.create();
+                        return context.websiteBuilder.page.create(data);
                     });
                 },
                 updatePage: async (_, { id, data }, context) => {
                     return resolve(() => {
                         ensureAuthentication(context);
-                        console.log("Updating page with ID:", id, "and data:", data);
-                        return context.websiteBuilder.page.update();
+                        return context.websiteBuilder.page.update(id, data);
                     });
                 },
                 deletePage: async (_, { id }, context) => {
                     return resolve(() => {
                         ensureAuthentication(context);
-                        console.log("Deleting page with ID:", id);
-                        return context.websiteBuilder.page.delete();
+                        return context.websiteBuilder.page.delete(id);
                     });
                 }
             }

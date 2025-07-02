@@ -1,5 +1,11 @@
 import { createTopic } from "@webiny/pubsub";
-import type { WebsiteBuilderConfig } from "~/types";
+import {
+    getCreatePageUseCase,
+    getDeletePageUseCase,
+    getGetPageUseCase,
+    getListPagesUseCase,
+    getUpdatePagerUseCase
+} from "~/page/useCases";
 import type {
     OnWebsiteBuilderPageAfterCreateTopicParams,
     OnWebsiteBuilderPageAfterDeleteTopicParams,
@@ -7,8 +13,10 @@ import type {
     OnWebsiteBuilderPageBeforeCreateTopicParams,
     OnWebsiteBuilderPageBeforeDeleteTopicParams,
     OnWebsiteBuilderPageBeforeUpdateTopicParams,
+    UpdateWbPageData,
     WbPageCrud
 } from "~/page/page.types";
+import type { WebsiteBuilderConfig } from "~/types";
 
 export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
     // create
@@ -27,7 +35,39 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
     const onWebsiteBuilderPageAfterDelete =
         createTopic<OnWebsiteBuilderPageAfterDeleteTopicParams>("wb.onPageAfterDelete");
 
-    console.log("config", config);
+    const { createPageUseCase } = getCreatePageUseCase({
+        createOperation: config.storageOperations.pages.create,
+        topics: {
+            onWebsiteBuilderPageBeforeCreate,
+            onWebsiteBuilderPageAfterCreate
+        }
+    });
+
+    const { updatePageUseCase } = getUpdatePagerUseCase({
+        updateOperation: config.storageOperations.pages.update,
+        getOperation: config.storageOperations.pages.get,
+        topics: {
+            onWebsiteBuilderPageBeforeUpdate,
+            onWebsiteBuilderPageAfterUpdate
+        }
+    });
+
+    const { deletePageUseCase } = getDeletePageUseCase({
+        deleteOperation: config.storageOperations.pages.delete,
+        getOperation: config.storageOperations.pages.get,
+        topics: {
+            onWebsiteBuilderPageBeforeDelete,
+            onWebsiteBuilderPageAfterDelete
+        }
+    });
+
+    const { getPageUseCase } = getGetPageUseCase({
+        getOperation: config.storageOperations.pages.get
+    });
+
+    const { listPagesUseCase } = getListPagesUseCase({
+        listOperation: config.storageOperations.pages.list
+    });
 
     return {
         onWebsiteBuilderPageBeforeCreate,
@@ -37,21 +77,20 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         onWebsiteBuilderPageBeforeDelete,
         onWebsiteBuilderPageAfterDelete,
 
-        // Define the CRUD operations for pages here
-        create: async () => {
-            // Implementation for creating a page
+        list: async params => {
+            return listPagesUseCase.execute(params);
         },
-        get: async () => {
-            // Implementation for retrieving a page by ID
+        get: async params => {
+            return getPageUseCase.execute(params);
         },
-        update: async () => {
-            // Implementation for updating a page by ID
+        create: async data => {
+            return createPageUseCase.execute(data);
         },
-        delete: async () => {
-            // Implementation for deleting a page by ID
+        update: async (id: string, data: UpdateWbPageData) => {
+            return updatePageUseCase.execute(id, data);
         },
-        list: async () => {
-            // Implementation for listing pages with optional parameters
+        delete: async params => {
+            return deletePageUseCase.execute(params);
         }
     };
 };
