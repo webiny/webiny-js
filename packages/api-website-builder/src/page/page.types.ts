@@ -48,6 +48,14 @@ export interface DuplicateWbPageParams {
     id: string;
 }
 
+export interface PublishWbPageParams {
+    id: string;
+}
+
+export interface UnpublishWbPageParams {
+    id: string;
+}
+
 /**
  * @category StorageOperations
  * @category PagesStorageOperations
@@ -77,6 +85,20 @@ export interface WbPagesStorageOperationsUpdateParams {
     id: string;
     data: UpdateWbPageData;
 }
+
+/**
+ * @category StorageOperations
+ * @category PagesStorageOperations
+ * @category PagesStorageOperationsParams
+ */
+export type WbPagesStorageOperationsPublishParams = PublishWbPageParams;
+
+/**
+ * @category StorageOperations
+ * @category PagesStorageOperations
+ * @category PagesStorageOperationsParams
+ */
+export type WbPagesStorageOperationsUnpublishParams = UnpublishWbPageParams;
 
 /**
  * @category StorageOperations
@@ -124,6 +146,22 @@ export interface OnWebsiteBuilderPageAfterUpdateTopicParams {
     input: Record<string, any>;
 }
 
+export interface OnWebsiteBuilderPageBeforePublishTopicParams {
+    page: WbPage;
+}
+
+export interface OnWebsiteBuilderPageAfterPublishTopicParams {
+    page: WbPage;
+}
+
+export interface OnWebsiteBuilderPageBeforeUnpublishTopicParams {
+    page: WbPage;
+}
+
+export interface OnWebsiteBuilderPageAfterUnpublishTopicParams {
+    page: WbPage;
+}
+
 export interface OnWebsiteBuilderPageBeforeDuplicateTopicParams {
     original: WbPage;
 }
@@ -165,6 +203,14 @@ export interface WbPagesStorageOperations {
      */
     update: (params: WbPagesStorageOperationsUpdateParams) => Promise<WbPage>;
     /**
+     * Publish the page and stores the information in the database.
+     */
+    publish: (params: WbPagesStorageOperationsPublishParams) => Promise<WbPage>;
+    /**
+     * Unpublish the page and stores the information in the database.
+     */
+    unpublish: (params: WbPagesStorageOperationsUnpublishParams) => Promise<WbPage>;
+    /**
      * Delete the page from the database.
      */
     delete: (params: WbPagesStorageOperationsDeleteParams) => Promise<void>;
@@ -192,6 +238,14 @@ export interface WbPageCrud {
      */
     duplicate(params: DuplicateWbPageParams): Promise<WbPage>;
     /**
+     * Publish a page.
+     */
+    publish(params: PublishWbPageParams): Promise<WbPage>;
+    /**
+     * Unpublish a page.
+     */
+    unpublish(params: UnpublishWbPageParams): Promise<WbPage>;
+    /**
      * Delete a page from the storage.
      */
     delete(params: DeleteWbPageParams): Promise<void>;
@@ -200,6 +254,10 @@ export interface WbPageCrud {
     onWebsiteBuilderPageAfterCreate: Topic<OnWebsiteBuilderPageAfterCreateTopicParams>;
     onWebsiteBuilderPageBeforeUpdate: Topic<OnWebsiteBuilderPageBeforeUpdateTopicParams>;
     onWebsiteBuilderPageAfterUpdate: Topic<OnWebsiteBuilderPageAfterUpdateTopicParams>;
+    onWebsiteBuilderPageBeforePublish: Topic<OnWebsiteBuilderPageBeforePublishTopicParams>;
+    onWebsiteBuilderPageAfterPublish: Topic<OnWebsiteBuilderPageAfterPublishTopicParams>;
+    onWebsiteBuilderPageBeforeUnpublish: Topic<OnWebsiteBuilderPageBeforeUnpublishTopicParams>;
+    onWebsiteBuilderPageAfterUnpublish: Topic<OnWebsiteBuilderPageAfterUnpublishTopicParams>;
     onWebsiteBuilderPageBeforeDuplicate: Topic<OnWebsiteBuilderPageBeforeDuplicateTopicParams>;
     onWebsiteBuilderPageAfterDuplicate: Topic<OnWebsiteBuilderPageAfterDuplicateTopicParams>;
     onWebsiteBuilderPageBeforeDelete: Topic<OnWebsiteBuilderPageBeforeDeleteTopicParams>;

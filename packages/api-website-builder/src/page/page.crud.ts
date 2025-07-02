@@ -5,16 +5,22 @@ import {
     getDuplicatePageUseCase,
     getGetPageUseCase,
     getListPagesUseCase,
+    getPublishPageUseCase,
+    getUnpublishPageUseCase,
     getUpdatePagerUseCase
 } from "~/page/useCases";
 import type {
     OnWebsiteBuilderPageAfterCreateTopicParams,
     OnWebsiteBuilderPageAfterDeleteTopicParams,
     OnWebsiteBuilderPageAfterDuplicateTopicParams,
+    OnWebsiteBuilderPageAfterPublishTopicParams,
+    OnWebsiteBuilderPageAfterUnpublishTopicParams,
     OnWebsiteBuilderPageAfterUpdateTopicParams,
     OnWebsiteBuilderPageBeforeCreateTopicParams,
     OnWebsiteBuilderPageBeforeDeleteTopicParams,
     OnWebsiteBuilderPageBeforeDuplicateTopicParams,
+    OnWebsiteBuilderPageBeforePublishTopicParams,
+    OnWebsiteBuilderPageBeforeUnpublishTopicParams,
     OnWebsiteBuilderPageBeforeUpdateTopicParams,
     UpdateWbPageData,
     WbPageCrud
@@ -48,6 +54,36 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         topics: {
             onWebsiteBuilderPageBeforeUpdate,
             onWebsiteBuilderPageAfterUpdate
+        }
+    });
+
+    // publish
+    const onWebsiteBuilderPageBeforePublish =
+        createTopic<OnWebsiteBuilderPageBeforePublishTopicParams>("wb.onPageBeforePublish");
+    const onWebsiteBuilderPageAfterPublish =
+        createTopic<OnWebsiteBuilderPageAfterPublishTopicParams>("wb.onPageAfterPublish");
+
+    const { publishPageUseCase } = getPublishPageUseCase({
+        publishOperation: config.storageOperations.pages.publish,
+        getOperation: config.storageOperations.pages.get,
+        topics: {
+            onWebsiteBuilderPageBeforePublish,
+            onWebsiteBuilderPageAfterPublish
+        }
+    });
+
+    // unpublish
+    const onWebsiteBuilderPageBeforeUnpublish =
+        createTopic<OnWebsiteBuilderPageBeforeUnpublishTopicParams>("wb.onPageBeforeUnpublish");
+    const onWebsiteBuilderPageAfterUnpublish =
+        createTopic<OnWebsiteBuilderPageAfterUnpublishTopicParams>("wb.onPageAfterUnpublish");
+
+    const { unpublishPageUseCase } = getUnpublishPageUseCase({
+        unpublishOperation: config.storageOperations.pages.unpublish,
+        getOperation: config.storageOperations.pages.get,
+        topics: {
+            onWebsiteBuilderPageBeforeUnpublish,
+            onWebsiteBuilderPageAfterUnpublish
         }
     });
 
@@ -96,6 +132,10 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         onWebsiteBuilderPageAfterCreate,
         onWebsiteBuilderPageBeforeUpdate,
         onWebsiteBuilderPageAfterUpdate,
+        onWebsiteBuilderPageBeforePublish,
+        onWebsiteBuilderPageAfterPublish,
+        onWebsiteBuilderPageBeforeUnpublish,
+        onWebsiteBuilderPageAfterUnpublish,
         onWebsiteBuilderPageBeforeDuplicate,
         onWebsiteBuilderPageAfterDuplicate,
         onWebsiteBuilderPageBeforeDelete,
@@ -112,6 +152,12 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         },
         update: async (id: string, data: UpdateWbPageData) => {
             return updatePageUseCase.execute(id, data);
+        },
+        publish: async params => {
+            return publishPageUseCase.execute(params);
+        },
+        unpublish: async params => {
+            return unpublishPageUseCase.execute(params);
         },
         duplicate: async params => {
             return duplicatePageUseCase.execute(params);
