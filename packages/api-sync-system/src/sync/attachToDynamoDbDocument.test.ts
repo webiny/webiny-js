@@ -26,7 +26,7 @@ describe("attachToDynamoDbDocument", () => {
             system: createMockSystem(),
             manifest: createMockManifest(),
             commandConverters: [],
-            eventBridgeClient: createMockEventBridgeClient(),
+            getEventBridgeClient: () => createMockEventBridgeClient(),
             getPlugins() {
                 return createMockPluginsContainer();
             }

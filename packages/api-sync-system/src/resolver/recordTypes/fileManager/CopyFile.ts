@@ -1,12 +1,12 @@
-import type { ICreateS3ClientCb, IGetLambdaTriggerCb } from "~/resolver/fileManager/types.js";
-import { CommandType } from "~/types.js";
+import type { CommandType } from "~/types.js";
 import type { IStoreItem } from "~/resolver/app/storer/types.js";
 import type { ITable } from "~/sync/types.js";
-import type { IDeployment } from "~/resolver/deployment/types.js";
-import type { PutCommandOutput } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { IBundle } from "~/resolver/app/bundler/types.js";
+import type { PutCommandOutput } from "@webiny/aws-sdk/client-dynamodb";
 import type { HeadObjectCommandInput, S3Client } from "@webiny/aws-sdk/client-s3/index.js";
 import { HeadObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
+import type { IBundle } from "~/resolver/app/bundler/types.js";
+import type { IDeployment } from "~/resolver/deployment/types.js";
+import type { ICreateS3ClientCb, IGetLambdaTriggerCb } from "./types.js";
 
 interface IExistsParams {
     client: S3Client;
@@ -14,12 +14,7 @@ interface IExistsParams {
     key: string;
 }
 
-export interface IDeleteFileParams {
-    createS3Client: ICreateS3ClientCb;
-    getLambdaTrigger: IGetLambdaTriggerCb;
-}
-
-export interface IDeleteFileHandleParams {
+export interface ICopyFileHandleParams {
     command: CommandType;
     item: IStoreItem;
     table: ITable;
@@ -28,16 +23,21 @@ export interface IDeleteFileHandleParams {
     bundle: IBundle;
 }
 
-export class DeleteFile {
+export interface ICopyFileParams {
+    createS3Client: ICreateS3ClientCb;
+    getLambdaTrigger: IGetLambdaTriggerCb;
+}
+
+export class CopyFile {
     private readonly createS3Client: ICreateS3ClientCb;
     private readonly getLambdaTrigger: IGetLambdaTriggerCb;
 
-    public constructor(params: IDeleteFileParams) {
+    public constructor(params: ICopyFileParams) {
         this.createS3Client = params.createS3Client;
         this.getLambdaTrigger = params.getLambdaTrigger;
     }
 
-    public async handle(params: IDeleteFileHandleParams): Promise<void> {
+    public async handle(params: ICopyFileHandleParams): Promise<void> {
         const { item, bundle, deployment } = params;
         /**
          * First we need to figure out the file location.
@@ -65,18 +65,20 @@ export class DeleteFile {
             bucket: deployment.services.s3Id,
             key: fileKey
         });
-        if (!exists) {
-            // If the file does not exist, we can skip the deletion.
+
+        if (exists) {
+            // If the file already exists, we can skip copying it.
             return;
         }
 
         /**
-         * Then we can safely trigger a Lambda function that will delete the file.
+         * Then we can safely trigger a Lambda function that will copy the file.
          */
+
         await this.getLambdaTrigger().handle({
             invocationType: "Event",
             payload: {
-                action: "delete",
+                action: "copy",
                 key: fileKey,
                 source: {
                     region: bundle.source.region,

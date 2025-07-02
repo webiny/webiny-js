@@ -1,9 +1,9 @@
-import { createSyncSystemHandlerOnRequestPlugin } from "~/sync/requestPlugin.js";
+import { createSyncSystemHandlerOnRequestPlugin } from "./requestPlugin.js";
 import { createMockSystem } from "~tests/mocks/system.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { HandlerOnRequestPlugin } from "@webiny/handler/plugins/HandlerOnRequestPlugin.js";
 import { createMockContext } from "~tests/mocks/context";
-import { OnRequestResponsePlugin } from "@webiny/handler/plugins/OnRequestResponsePlugin.js";
+import { OnRequestResponseSendPlugin } from "@webiny/handler/plugins/OnRequestResponseSendPlugin.js";
 import { OnRequestTimeoutPlugin } from "@webiny/handler/plugins/OnRequestTimeoutPlugin.js";
 import { createMockManifest, createMockManifestInDynamoDb } from "~tests/mocks/manifest.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
@@ -33,7 +33,7 @@ describe("requestPlugin", () => {
 
         await result.exec(request, reply, context);
 
-        expect(context.plugins.byType(OnRequestResponsePlugin.type)).toHaveLength(0);
+        expect(context.plugins.byType(OnRequestResponseSendPlugin.type)).toHaveLength(0);
         expect(context.plugins.byType(OnRequestTimeoutPlugin.type)).toHaveLength(0);
     });
 
@@ -57,7 +57,7 @@ describe("requestPlugin", () => {
 
         await result.exec(request, reply, context);
 
-        expect(context.plugins.byType(OnRequestResponsePlugin.type)).toHaveLength(1);
+        expect(context.plugins.byType(OnRequestResponseSendPlugin.type)).toHaveLength(1);
         expect(context.plugins.byType(OnRequestTimeoutPlugin.type)).toHaveLength(1);
     });
 });

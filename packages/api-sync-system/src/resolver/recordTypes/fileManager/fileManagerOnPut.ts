@@ -1,31 +1,28 @@
 import { createStorerAfterEachPluginWithName } from "~/resolver/plugins/StorerAfterEachPlugin.js";
-import { shouldBeHandled } from "~/resolver/fileManager/shouldBeHandled.js";
-import type {
-    DeleteCommandOutput,
-    PutCommandOutput
-} from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { ICreateS3ClientCb, IGetLambdaTriggerCb } from "./types.js";
+import { shouldBeHandled } from "./shouldBeHandled.js";
+import type { PutCommandOutput } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { CopyFile } from "./CopyFile.js";
 import { convertException } from "@webiny/utils";
-import { DeleteFile } from "./DeleteFile.js";
+import type { ICreateS3ClientCb, IGetLambdaTriggerCb } from "./types.js";
 
-export interface ICreateFileManagerOnDeletePluginParams {
+export interface ICreateFileManagerOnPutPluginParams {
     createS3Client: ICreateS3ClientCb;
     getLambdaTrigger: IGetLambdaTriggerCb;
 }
 
-export const createFileManagerOnDeletePlugin = (params: ICreateFileManagerOnDeletePluginParams) => {
-    const deleteFile = new DeleteFile(params);
-    return createStorerAfterEachPluginWithName<DeleteCommandOutput>("fileManager.onDelete", {
+export const createFileManagerOnPutPlugin = (params: ICreateFileManagerOnPutPluginParams) => {
+    const copyFile = new CopyFile(params);
+    return createStorerAfterEachPluginWithName<PutCommandOutput>("fileManager.onPut", {
         canHandle: params => {
             const { command } = params;
-            if (command !== "delete") {
+            if (command !== "put") {
                 return false;
             }
             return shouldBeHandled(params);
         },
         handle: async params => {
             try {
-                return await deleteFile.handle({
+                return await copyFile.handle({
                     item: params.item,
                     command: params.command,
                     /**
@@ -37,7 +34,7 @@ export const createFileManagerOnDeletePlugin = (params: ICreateFileManagerOnDele
                     bundle: params.bundle
                 });
             } catch (ex) {
-                console.error("Error while handling file manager onDelete plugin.");
+                console.error("Error while handling file manager onPut plugin.");
                 console.log(convertException(ex));
             }
         }

@@ -1,6 +1,6 @@
 import { createSendDataToEventBridgeOnRequestEnd } from "~/sync/createSendDataToEventBridgeOnRequestEnd.js";
 import { createMockSyncHandler } from "~tests/mocks/syncHandler.js";
-import { OnRequestResponsePlugin } from "@webiny/handler/plugins/OnRequestResponsePlugin.js";
+import { OnRequestResponseSendPlugin } from "@webiny/handler/plugins/OnRequestResponseSendPlugin.js";
 import { OnRequestTimeoutPlugin } from "@webiny/handler/plugins/OnRequestTimeoutPlugin.js";
 import { createMockEventBridgeClient } from "~tests/mocks/eventBridgeClient.js";
 import { createMockPutCommand } from "~tests/mocks/putCommand.js";
@@ -13,7 +13,7 @@ describe("createSendDataToEventBridgeOnRequestEnd", () => {
         const result = createSendDataToEventBridgeOnRequestEnd(handler);
 
         expect(result).toHaveLength(2);
-        expect(result[0]).toBeInstanceOf(OnRequestResponsePlugin);
+        expect(result[0]).toBeInstanceOf(OnRequestResponseSendPlugin);
         expect(result[1]).toBeInstanceOf(OnRequestTimeoutPlugin);
     });
 
@@ -26,7 +26,7 @@ describe("createSendDataToEventBridgeOnRequestEnd", () => {
             send
         });
         const handler = createMockSyncHandler({
-            eventBridgeClient: client,
+            getEventBridgeClient: () => client,
             converter: "all"
         });
 
@@ -35,11 +35,11 @@ describe("createSendDataToEventBridgeOnRequestEnd", () => {
         const plugins = createSendDataToEventBridgeOnRequestEnd(handler);
 
         const target = plugins[0];
-        expect(target).toBeInstanceOf(OnRequestResponsePlugin);
+        expect(target).toBeInstanceOf(OnRequestResponseSendPlugin);
 
         expect(send).not.toHaveBeenCalled();
 
-        await target.exec(request, reply);
+        await target.exec(request, reply, {});
 
         await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -55,7 +55,7 @@ describe("createSendDataToEventBridgeOnRequestEnd", () => {
             send
         });
         const handler = createMockSyncHandler({
-            eventBridgeClient: client,
+            getEventBridgeClient: () => client,
             converter: "all"
         });
 
@@ -68,7 +68,7 @@ describe("createSendDataToEventBridgeOnRequestEnd", () => {
 
         expect(send).not.toHaveBeenCalled();
 
-        await target.exec(request, reply);
+        await target.exec(request, reply, {});
 
         await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -87,7 +87,7 @@ describe("createSendDataToEventBridgeOnRequestEnd", () => {
             send
         });
         const handler = createMockSyncHandler({
-            eventBridgeClient: client,
+            getEventBridgeClient: () => client,
             converter: "all"
         });
 
@@ -96,14 +96,14 @@ describe("createSendDataToEventBridgeOnRequestEnd", () => {
         const plugins = createSendDataToEventBridgeOnRequestEnd(handler);
 
         const target = plugins[0];
-        expect(target).toBeInstanceOf(OnRequestResponsePlugin);
+        expect(target).toBeInstanceOf(OnRequestResponseSendPlugin);
 
         const logError = jest.fn();
         console.error = logError;
 
         expect(send).not.toHaveBeenCalled();
         try {
-            await target.exec(request, reply);
+            await target.exec(request, reply, {});
             await new Promise(resolve => setTimeout(resolve, 100));
         } catch (ex) {
             expect(ex).toEqual("SHOULD NOT REACH!");

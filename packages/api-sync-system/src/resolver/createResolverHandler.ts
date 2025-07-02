@@ -2,19 +2,18 @@ import type { HandlerCallable, HandlerParams } from "@webiny/handler-aws/sqs";
 import { createHandler as createSQSHandler } from "@webiny/handler-aws/sqs";
 import { PluginsContainer } from "@webiny/plugins";
 import { createEventHandlerPlugin } from "./createEventHandlerPlugin.js";
-import type { TransformRecordPlugin } from "~/resolver/plugins/TransformRecordPlugin.js";
-import type { CommandHandlerPlugin } from "~/resolver/plugins/CommandHandlerPlugin.js";
-import { createPutCommandHandlerPlugin } from "~/resolver/app/commandHandler/put.js";
-import { createDeleteCommandHandlerPlugin } from "~/resolver/app/commandHandler/delete.js";
+import type { TransformRecordPlugin } from "./plugins/TransformRecordPlugin.js";
+import type { CommandHandlerPlugin } from "./plugins/CommandHandlerPlugin.js";
+import { createPutCommandHandlerPlugin } from "./app/commandHandler/put.js";
+import { createDeleteCommandHandlerPlugin } from "./app/commandHandler/delete.js";
 import type {
     DynamoDBClientConfig,
     DynamoDBDocument
 } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { createFileManagerPlugins } from "~/resolver/fileManager/fileManager.js";
-import { LambdaTrigger } from "~/resolver/app/lambda/LambdaTrigger.js";
+import { createFileManagerPlugins } from "./recordTypes/fileManager/fileManager.js";
+import { LambdaTrigger } from "./lambda/LambdaTrigger.js";
 import type { LambdaClient } from "@webiny/aws-sdk/client-lambda/index.js";
-import type { S3ClientConfig } from "@webiny/aws-sdk/client-s3/index.js";
-import { S3Client } from "@webiny/aws-sdk/client-s3/index.js";
+import type { S3Client, S3ClientConfig } from "@webiny/aws-sdk/client-s3/index.js";
 
 export type AllowedResolverPlugins = TransformRecordPlugin | CommandHandlerPlugin;
 
