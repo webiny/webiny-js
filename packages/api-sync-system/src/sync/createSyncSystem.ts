@@ -5,7 +5,7 @@ import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js"
 import type { PossiblyUndefinedProperties } from "@webiny/api/types";
 import { createSyncSystemHandlerOnRequestPlugin } from "./requestPlugin.js";
 import type { FilterOutRecordPlugin } from "./plugins/FilterOutRecordPlugin.js";
-import { createDefaultFilterOutRecordPlugins } from "./filter/index.js";
+import { createDefaultFilterOutRecordPlugins } from "./filter/createDefaultFilterOutRecordPlugins.js";
 
 export type IAllowedPlugins = FilterOutRecordPlugin;
 

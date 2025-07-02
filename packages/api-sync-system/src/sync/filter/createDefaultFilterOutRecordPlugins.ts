@@ -7,7 +7,7 @@ import {
  * Order keys by what is most like to be filtered out - most inserts/updates/deletes.
  * This is out of my head, so it might not be the best order.
  */
-const equalKeys: string[] = [
+export const equalKeys: string[] = [
     // Logging - every request
     "LOG",
     // P
@@ -30,7 +30,7 @@ const equalKeys: string[] = [
     return key.toLowerCase();
 });
 
-const startsWithKeys: string[] = [
+export const startsWithKeys: string[] = [
     // Websockets - on every user login
     "WS#",
     // Migrations - on every deployment
@@ -47,7 +47,7 @@ const startsWithKeys: string[] = [
  * TODO figure out a way to skip these models.
  * When deleting a record, we do not have a modelId in the values.
  */
-const skipModels: string[] = [
+export const skipModels: string[] = [
     // APW
     "apwChangeRequestModelDefinition",
     "apwCommentModelDefinition",
