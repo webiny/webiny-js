@@ -62,11 +62,22 @@ describe("createDefaultFilterOutRecordPlugins", () => {
     });
 
     it("should not filter out key by modelId in input.input.Item.modelId", () => {
-        expect.assertions(2);
+        expect.assertions(3);
         const plugins = createDefaultFilterOutRecordPlugins();
         const plugin = plugins[0];
 
         expect(skipModels.length > 0).toBe(true);
+
+        expect(
+            plugin.execute({
+                PK: "NOT_IMPORTANT",
+                input: {
+                    input: {
+                        Item: {}
+                    }
+                }
+            } as any)
+        ).toBe(false);
 
         expect(
             plugin.execute({

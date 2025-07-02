@@ -41,4 +41,50 @@ describe("HandlerConverter", () => {
         // @ts-expect-error
         expect(result.__test).toBeTrue();
     });
+
+    it("should log errors and return null value when command is plain object", () => {
+        const def = new NullCommandValue();
+        const handlerConverter = createHandlerConverter({
+            defaultValue: def
+        });
+
+        console.error = jest.fn();
+        console.log = jest.fn();
+
+        const result = handlerConverter.convert({} as any);
+        expect(result).toEqual(def);
+
+        expect(console.error).toHaveBeenCalledTimes(1);
+        expect(console.log).toHaveBeenCalledTimes(0);
+
+        expect(console.error).toHaveBeenCalledWith("Unknown command: Object");
+    });
+
+    it("should log errors and return null value when command is does not have a constructor name", () => {
+        const def = new NullCommandValue();
+        const handlerConverter = createHandlerConverter({
+            defaultValue: def
+        });
+
+        console.error = jest.fn();
+        console.log = jest.fn();
+
+        const value = {
+            constructor: {
+                name: undefined
+            }
+        } as any;
+
+        const result = handlerConverter.convert(value);
+        expect(result).toEqual(def);
+
+        expect(console.error).toHaveBeenCalledTimes(2);
+        expect(console.log).toHaveBeenCalledTimes(1);
+
+        expect(console.error).toHaveBeenNthCalledWith(1, "Unknown command: unknown");
+        expect(console.error).toHaveBeenNthCalledWith(
+            2,
+            "Command is not an instance of a class, it might be a plain object. Stringified command is in next line."
+        );
+    });
 });
