@@ -132,6 +132,7 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
         extend type WbMutation {
             createPage(data: WbPageCreateInput!): WbPageResponse
             updatePage(id: ID!, data: FolderUpdateInput!): WbPageResponse
+            duplicatePage(id: ID!): WbPageResponse
             deletePage(id: ID!): WbBooleanResponse
         }
     `;
@@ -189,6 +190,12 @@ export const createPagesSchema = (params: CreatePageTypeDefsParams) => {
                     return resolve(() => {
                         ensureAuthentication(context);
                         return context.websiteBuilder.page.update(id, data);
+                    });
+                },
+                duplicatePage: async (_, { id }, context) => {
+                    return resolve(() => {
+                        ensureAuthentication(context);
+                        return context.websiteBuilder.page.duplicate(id);
                     });
                 },
                 deletePage: async (_, { id }, context) => {

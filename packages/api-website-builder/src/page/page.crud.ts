@@ -2,6 +2,7 @@ import { createTopic } from "@webiny/pubsub";
 import {
     getCreatePageUseCase,
     getDeletePageUseCase,
+    getDuplicatePageUseCase,
     getGetPageUseCase,
     getListPagesUseCase,
     getUpdatePagerUseCase
@@ -9,9 +10,11 @@ import {
 import type {
     OnWebsiteBuilderPageAfterCreateTopicParams,
     OnWebsiteBuilderPageAfterDeleteTopicParams,
+    OnWebsiteBuilderPageAfterDuplicateTopicParams,
     OnWebsiteBuilderPageAfterUpdateTopicParams,
     OnWebsiteBuilderPageBeforeCreateTopicParams,
     OnWebsiteBuilderPageBeforeDeleteTopicParams,
+    OnWebsiteBuilderPageBeforeDuplicateTopicParams,
     OnWebsiteBuilderPageBeforeUpdateTopicParams,
     UpdateWbPageData,
     WbPageCrud
@@ -24,16 +27,6 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         createTopic<OnWebsiteBuilderPageBeforeCreateTopicParams>("wb.onPageBeforeCreate");
     const onWebsiteBuilderPageAfterCreate =
         createTopic<OnWebsiteBuilderPageAfterCreateTopicParams>("wb.onPageAfterCreate");
-    // update
-    const onWebsiteBuilderPageBeforeUpdate =
-        createTopic<OnWebsiteBuilderPageBeforeUpdateTopicParams>("wb.onPageBeforeUpdate");
-    const onWebsiteBuilderPageAfterUpdate =
-        createTopic<OnWebsiteBuilderPageAfterUpdateTopicParams>("wb.onPageAfterUpdate");
-    // delete
-    const onWebsiteBuilderPageBeforeDelete =
-        createTopic<OnWebsiteBuilderPageBeforeDeleteTopicParams>("wb.onPageBeforeDelete");
-    const onWebsiteBuilderPageAfterDelete =
-        createTopic<OnWebsiteBuilderPageAfterDeleteTopicParams>("wb.onPageAfterDelete");
 
     const { createPageUseCase } = getCreatePageUseCase({
         createOperation: config.storageOperations.pages.create,
@@ -42,6 +35,12 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
             onWebsiteBuilderPageAfterCreate
         }
     });
+
+    // update
+    const onWebsiteBuilderPageBeforeUpdate =
+        createTopic<OnWebsiteBuilderPageBeforeUpdateTopicParams>("wb.onPageBeforeUpdate");
+    const onWebsiteBuilderPageAfterUpdate =
+        createTopic<OnWebsiteBuilderPageAfterUpdateTopicParams>("wb.onPageAfterUpdate");
 
     const { updatePageUseCase } = getUpdatePagerUseCase({
         updateOperation: config.storageOperations.pages.update,
@@ -52,6 +51,27 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         }
     });
 
+    // duplicate
+    const onWebsiteBuilderPageBeforeDuplicate =
+        createTopic<OnWebsiteBuilderPageBeforeDuplicateTopicParams>("wb.onPageBeforeDuplicate");
+    const onWebsiteBuilderPageAfterDuplicate =
+        createTopic<OnWebsiteBuilderPageAfterDuplicateTopicParams>("wb.onPageAfterDuplicate");
+
+    const { duplicatePageUseCase } = getDuplicatePageUseCase({
+        createOperation: config.storageOperations.pages.create,
+        getOperation: config.storageOperations.pages.get,
+        topics: {
+            onWebsiteBuilderPageBeforeDuplicate,
+            onWebsiteBuilderPageAfterDuplicate
+        }
+    });
+
+    // delete
+    const onWebsiteBuilderPageBeforeDelete =
+        createTopic<OnWebsiteBuilderPageBeforeDeleteTopicParams>("wb.onPageBeforeDelete");
+    const onWebsiteBuilderPageAfterDelete =
+        createTopic<OnWebsiteBuilderPageAfterDeleteTopicParams>("wb.onPageAfterDelete");
+
     const { deletePageUseCase } = getDeletePageUseCase({
         deleteOperation: config.storageOperations.pages.delete,
         getOperation: config.storageOperations.pages.get,
@@ -61,10 +81,12 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         }
     });
 
+    // get
     const { getPageUseCase } = getGetPageUseCase({
         getOperation: config.storageOperations.pages.get
     });
 
+    // list
     const { listPagesUseCase } = getListPagesUseCase({
         listOperation: config.storageOperations.pages.list
     });
@@ -74,6 +96,8 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         onWebsiteBuilderPageAfterCreate,
         onWebsiteBuilderPageBeforeUpdate,
         onWebsiteBuilderPageAfterUpdate,
+        onWebsiteBuilderPageBeforeDuplicate,
+        onWebsiteBuilderPageAfterDuplicate,
         onWebsiteBuilderPageBeforeDelete,
         onWebsiteBuilderPageAfterDelete,
 
@@ -88,6 +112,9 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         },
         update: async (id: string, data: UpdateWbPageData) => {
             return updatePageUseCase.execute(id, data);
+        },
+        duplicate: async params => {
+            return duplicatePageUseCase.execute(params);
         },
         delete: async params => {
             return deletePageUseCase.execute(params);
