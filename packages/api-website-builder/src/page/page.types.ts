@@ -5,7 +5,11 @@ import type { Topic } from "@webiny/pubsub/types";
 export interface WbPage {
     id: string;
     entryId: string;
-    location?: WbLocation;
+    wbyAco_location: WbLocation;
+    tenant: string;
+    locale: string;
+    webinyVersion: string;
+
     properties: Record<string, any>;
     bindings: Record<string, any>;
     elements: Record<string, any>;
@@ -26,7 +30,7 @@ export interface GetWbPageParams {
 
 export type CreateWbPageData = Pick<
     WbPage,
-    "properties" | "bindings" | "elements" | "location" | "extensions"
+    "properties" | "bindings" | "elements" | "wbyAco_location" | "extensions"
 >;
 
 export interface UpdateWbPageData {

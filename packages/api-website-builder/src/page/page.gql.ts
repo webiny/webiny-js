@@ -7,6 +7,7 @@ import { resolve } from "~/utils/resolve";
 import { PAGE_MODEL_ID } from "~/page/page.model";
 import type { CmsFieldTypePlugins, CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
 import type { WebsiteBuilderContext } from "~/types";
+import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "@webiny/api-headless-cms/constants";
 
 export interface CreatePageTypeDefsParams {
     model: CmsModel;
@@ -42,18 +43,21 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
         type: "manage",
         fieldTypePlugins
     });
+
     const inputCreateFields = renderInputFields({
         models,
         model,
         fields,
         fieldTypePlugins
     });
+
     const inputUpdateFields = renderInputFields({
         models,
         model,
         fields: createUpdateFields(fields),
         fieldTypePlugins
     });
+
     const listFilterFieldsRender = renderListFilterFields({
         model,
         fields: model.fields,
@@ -61,27 +65,27 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
         fieldTypePlugins
     });
 
+    const onByMetaGqlFields = ENTRY_META_FIELDS.map(field => {
+        const fieldType = isDateTimeEntryMetaField(field) ? "DateTime" : "WbIdentity";
+
+        return `${field}: ${fieldType}`;
+    }).join("\n");
+
     return /* GraphQL */ `
         ${fieldTypes.map(f => f.typeDefs).join("\n")}
        
         type WbPage {
             id: ID!
-            createdOn: DateTime
-            modifiedOn: DateTime
-            savedOn: DateTime
-            createdBy: AcoUser
-            modifiedBy: AcoUser
-            savedBy: AcoUser
-            
+            entryId: String!
+            wbyAco_location: WbLocation
+            ${onByMetaGqlFields}
             ${fieldTypes.map(f => f.fields).join("\n")}
         }
-
+        
         ${inputCreateFields.map(f => f.typeDefs).join("\n")}
         
         input WbPageCreateInput {
-             # Pass an ID if you want to create a folder with a specific ID.
-             id: ID  
-             
+             wbyAco_location: WbLocationInput
              ${inputCreateFields.map(f => f.fields).join("\n")}
         }
                 
@@ -117,10 +121,11 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
             getPageTemplate(slug: String!): WbPageResponse
             getPage(id: ID!): WbPageResponse
             listPages(
-                where: WbPagesListWhereInput!
+                where: WbPagesListWhereInput
                 limit: Int
                 after: String
                 sort: WbSort
+                search: String
             ): WbPagesListResponse
         }
 

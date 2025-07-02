@@ -10,7 +10,6 @@ import type {
     WbPagesStorageOperationsListResponse,
     WbPagesStorageOperationsUpdateParams
 } from "~/page/page.types";
-import { ROOT_FOLDER } from "~/constants";
 
 export class CmsPagesStorage implements WbPagesStorageOperations {
     private readonly cms: HeadlessCms;
@@ -46,18 +45,7 @@ export class CmsPagesStorage implements WbPagesStorageOperations {
     };
 
     public create = async ({ data }: WbPagesStorageOperationsCreateParams): Promise<WbPage> => {
-        if (!data.location?.folderId) {
-            data.location = {
-                ...data.location,
-                folderId: ROOT_FOLDER
-            };
-        }
-
-        const entry = await this.cms.createEntry(this.model, {
-            ...data,
-            wbyAco_location: data.location
-        });
-
+        const entry = await this.cms.createEntry(this.model, data);
         return this.getWbPageFieldValues(entry);
     };
 
@@ -68,10 +56,7 @@ export class CmsPagesStorage implements WbPagesStorageOperations {
 
         const values = omit(data, ["id", "tenant", "locale", "webinyVersion"]);
 
-        const updatedEntry = await this.cms.updateEntry(this.model, entry.id, {
-            ...values,
-            wbyAco_location: values.location ?? entry.location
-        });
+        const updatedEntry = await this.cms.updateEntry(this.model, entry.id, values);
 
         return this.getWbPageFieldValues(updatedEntry);
     };
@@ -82,7 +67,12 @@ export class CmsPagesStorage implements WbPagesStorageOperations {
 
     private getWbPageFieldValues(entry: CmsEntry) {
         return {
-            id: entry.entryId,
+            id: entry.id,
+            entryId: entry.entryId,
+            wbyAco_location: entry.location,
+            tenant: entry.tenant,
+            locale: entry.locale,
+            webinyVersion: entry.webinyVersion,
             ...entry.values
         } as WbPage;
     }

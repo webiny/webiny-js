@@ -26,10 +26,24 @@ const baseSchema = new GraphQLSchemaPlugin({
             cursor: String
         }
 
-        type WbUser {
+        type WbIdentity {
             id: ID
             displayName: String
             type: String
+        }
+
+        input WbIdentityInput {
+            id: String!
+            displayName: String!
+            type: String!
+        }
+
+        type WbLocation {
+            folderId: String
+        }
+
+        input WbLocationInput {
+            folderId: String
         }
 
         type WbError {
