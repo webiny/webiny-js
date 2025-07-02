@@ -56,6 +56,11 @@ export interface UnpublishWbPageParams {
     id: string;
 }
 
+export interface MoveWbPageParams {
+    id: string;
+    folderId: string;
+}
+
 /**
  * @category StorageOperations
  * @category PagesStorageOperations
@@ -99,6 +104,13 @@ export type WbPagesStorageOperationsPublishParams = PublishWbPageParams;
  * @category PagesStorageOperationsParams
  */
 export type WbPagesStorageOperationsUnpublishParams = UnpublishWbPageParams;
+
+/**
+ * @category StorageOperations
+ * @category PagesStorageOperations
+ * @category PagesStorageOperationsParams
+ */
+export type WbPagesStorageOperationsMoveParams = MoveWbPageParams;
 
 /**
  * @category StorageOperations
@@ -171,6 +183,14 @@ export interface OnWebsiteBuilderPageAfterDuplicateTopicParams {
     page: WbPage;
 }
 
+export interface OnWebsiteBuilderPageBeforeMoveTopicParams {
+    page: WbPage;
+}
+
+export interface OnWebsiteBuilderPageAfterMoveTopicParams {
+    page: WbPage;
+}
+
 export interface OnWebsiteBuilderPageBeforeDeleteTopicParams {
     page: WbPage;
 }
@@ -211,6 +231,10 @@ export interface WbPagesStorageOperations {
      */
     unpublish: (params: WbPagesStorageOperationsUnpublishParams) => Promise<WbPage>;
     /**
+     * Move the page into a folder and stores the information in the database.
+     */
+    move: (params: MoveWbPageParams) => Promise<WbPage>;
+    /**
      * Delete the page from the database.
      */
     delete: (params: WbPagesStorageOperationsDeleteParams) => Promise<void>;
@@ -246,6 +270,10 @@ export interface WbPageCrud {
      */
     unpublish(params: UnpublishWbPageParams): Promise<WbPage>;
     /**
+     * Move a page into a folder
+     */
+    move(params: MoveWbPageParams): Promise<WbPage>;
+    /**
      * Delete a page from the storage.
      */
     delete(params: DeleteWbPageParams): Promise<void>;
@@ -260,6 +288,8 @@ export interface WbPageCrud {
     onWebsiteBuilderPageAfterUnpublish: Topic<OnWebsiteBuilderPageAfterUnpublishTopicParams>;
     onWebsiteBuilderPageBeforeDuplicate: Topic<OnWebsiteBuilderPageBeforeDuplicateTopicParams>;
     onWebsiteBuilderPageAfterDuplicate: Topic<OnWebsiteBuilderPageAfterDuplicateTopicParams>;
+    onWebsiteBuilderPageBeforeMove: Topic<OnWebsiteBuilderPageBeforeMoveTopicParams>;
+    onWebsiteBuilderPageAfterMove: Topic<OnWebsiteBuilderPageAfterMoveTopicParams>;
     onWebsiteBuilderPageBeforeDelete: Topic<OnWebsiteBuilderPageBeforeDeleteTopicParams>;
     onWebsiteBuilderPageAfterDelete: Topic<OnWebsiteBuilderPageAfterDeleteTopicParams>;
 }

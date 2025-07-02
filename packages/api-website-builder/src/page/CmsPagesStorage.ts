@@ -8,6 +8,7 @@ import type {
     WbPagesStorageOperationsGetParams,
     WbPagesStorageOperationsListParams,
     WbPagesStorageOperationsListResponse,
+    WbPagesStorageOperationsMoveParams,
     WbPagesStorageOperationsPublishParams,
     WbPagesStorageOperationsUnpublishParams,
     WbPagesStorageOperationsUpdateParams
@@ -70,6 +71,11 @@ export class CmsPagesStorage implements WbPagesStorageOperations {
 
     public unpublish = async ({ id }: WbPagesStorageOperationsUnpublishParams): Promise<WbPage> => {
         const entry = await this.cms.unpublishEntry(this.model, id);
+        return this.getWbPageFieldValues(entry);
+    };
+
+    public move = async ({ id, folderId }: WbPagesStorageOperationsMoveParams): Promise<WbPage> => {
+        const entry = await this.cms.moveEntry(this.model, id, folderId);
         return this.getWbPageFieldValues(entry);
     };
 

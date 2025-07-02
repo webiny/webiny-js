@@ -13,12 +13,14 @@ import type {
     OnWebsiteBuilderPageAfterCreateTopicParams,
     OnWebsiteBuilderPageAfterDeleteTopicParams,
     OnWebsiteBuilderPageAfterDuplicateTopicParams,
+    OnWebsiteBuilderPageAfterMoveTopicParams,
     OnWebsiteBuilderPageAfterPublishTopicParams,
     OnWebsiteBuilderPageAfterUnpublishTopicParams,
     OnWebsiteBuilderPageAfterUpdateTopicParams,
     OnWebsiteBuilderPageBeforeCreateTopicParams,
     OnWebsiteBuilderPageBeforeDeleteTopicParams,
     OnWebsiteBuilderPageBeforeDuplicateTopicParams,
+    OnWebsiteBuilderPageBeforeMoveTopicParams,
     OnWebsiteBuilderPageBeforePublishTopicParams,
     OnWebsiteBuilderPageBeforeUnpublishTopicParams,
     OnWebsiteBuilderPageBeforeUpdateTopicParams,
@@ -26,6 +28,7 @@ import type {
     WbPageCrud
 } from "~/page/page.types";
 import type { WebsiteBuilderConfig } from "~/types";
+import { getMovePageUseCase } from "~/page/useCases/MovePage";
 
 export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
     // create
@@ -102,6 +105,21 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         }
     });
 
+    // move
+    const onWebsiteBuilderPageBeforeMove =
+        createTopic<OnWebsiteBuilderPageBeforeMoveTopicParams>("wb.onPageBeforeMove");
+    const onWebsiteBuilderPageAfterMove =
+        createTopic<OnWebsiteBuilderPageAfterMoveTopicParams>("wb.onPageAfterMove");
+
+    const { movePageUseCase } = getMovePageUseCase({
+        moveOperation: config.storageOperations.pages.move,
+        getOperation: config.storageOperations.pages.get,
+        topics: {
+            onWebsiteBuilderPageBeforeMove,
+            onWebsiteBuilderPageAfterMove
+        }
+    });
+
     // delete
     const onWebsiteBuilderPageBeforeDelete =
         createTopic<OnWebsiteBuilderPageBeforeDeleteTopicParams>("wb.onPageBeforeDelete");
@@ -138,6 +156,8 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         onWebsiteBuilderPageAfterUnpublish,
         onWebsiteBuilderPageBeforeDuplicate,
         onWebsiteBuilderPageAfterDuplicate,
+        onWebsiteBuilderPageBeforeMove,
+        onWebsiteBuilderPageAfterMove,
         onWebsiteBuilderPageBeforeDelete,
         onWebsiteBuilderPageAfterDelete,
 
@@ -161,6 +181,9 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         },
         duplicate: async params => {
             return duplicatePageUseCase.execute(params);
+        },
+        move: async params => {
+            return movePageUseCase.execute(params);
         },
         delete: async params => {
             return deletePageUseCase.execute(params);
