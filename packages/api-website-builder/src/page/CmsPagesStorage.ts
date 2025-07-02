@@ -4,6 +4,7 @@ import type {
     WbPage,
     WbPagesStorageOperations,
     WbPagesStorageOperationsCreateParams,
+    WbPagesStorageOperationsCreateRevisionFromParams,
     WbPagesStorageOperationsDeleteParams,
     WbPagesStorageOperationsGetParams,
     WbPagesStorageOperationsListParams,
@@ -76,6 +77,13 @@ export class CmsPagesStorage implements WbPagesStorageOperations {
 
     public move = async ({ id, folderId }: WbPagesStorageOperationsMoveParams): Promise<WbPage> => {
         const entry = await this.cms.moveEntry(this.model, id, folderId);
+        return this.getWbPageFieldValues(entry);
+    };
+
+    public createRevisionFrom = async ({
+        id
+    }: WbPagesStorageOperationsCreateRevisionFromParams): Promise<WbPage> => {
+        const entry = await this.cms.createEntryRevisionFrom(this.model, id, {});
         return this.getWbPageFieldValues(entry);
     };
 

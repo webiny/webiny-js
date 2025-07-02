@@ -61,6 +61,10 @@ export interface MoveWbPageParams {
     folderId: string;
 }
 
+export interface CreateWbPageRevisionFromParams {
+    id: string;
+}
+
 /**
  * @category StorageOperations
  * @category PagesStorageOperations
@@ -111,6 +115,13 @@ export type WbPagesStorageOperationsUnpublishParams = UnpublishWbPageParams;
  * @category PagesStorageOperationsParams
  */
 export type WbPagesStorageOperationsMoveParams = MoveWbPageParams;
+
+/**
+ * @category StorageOperations
+ * @category PagesStorageOperations
+ * @category PagesStorageOperationsParams
+ */
+export type WbPagesStorageOperationsCreateRevisionFromParams = CreateWbPageRevisionFromParams;
 
 /**
  * @category StorageOperations
@@ -183,6 +194,15 @@ export interface OnWebsiteBuilderPageAfterDuplicateTopicParams {
     page: WbPage;
 }
 
+export interface OnWebsiteBuilderPageBeforeCreateRevisionFromTopicParams {
+    original: WbPage;
+}
+
+export interface OnWebsiteBuilderPageAfterCreateRevisionFromTopicParams {
+    original: WbPage;
+    page: WbPage;
+}
+
 export interface OnWebsiteBuilderPageBeforeMoveTopicParams {
     page: WbPage;
 }
@@ -223,17 +243,21 @@ export interface WbPagesStorageOperations {
      */
     update: (params: WbPagesStorageOperationsUpdateParams) => Promise<WbPage>;
     /**
-     * Publish the page and stores the information in the database.
+     * Publish the page and store the information in the database.
      */
     publish: (params: WbPagesStorageOperationsPublishParams) => Promise<WbPage>;
     /**
-     * Unpublish the page and stores the information in the database.
+     * Unpublish the page and store the information in the database.
      */
     unpublish: (params: WbPagesStorageOperationsUnpublishParams) => Promise<WbPage>;
     /**
-     * Move the page into a folder and stores the information in the database.
+     * Move the page into a folder and store the information in the database.
      */
     move: (params: MoveWbPageParams) => Promise<WbPage>;
+    /**
+     * Create a page revision and store the information in the database.
+     */
+    createRevisionFrom: (params: CreateWbPageRevisionFromParams) => Promise<WbPage>;
     /**
      * Delete the page from the database.
      */
@@ -274,6 +298,10 @@ export interface WbPageCrud {
      */
     move(params: MoveWbPageParams): Promise<WbPage>;
     /**
+     * Create a page revision from an id.
+     */
+    createRevisionFrom(params: CreateWbPageRevisionFromParams): Promise<WbPage>;
+    /**
      * Delete a page from the storage.
      */
     delete(params: DeleteWbPageParams): Promise<void>;
@@ -290,6 +318,8 @@ export interface WbPageCrud {
     onWebsiteBuilderPageAfterDuplicate: Topic<OnWebsiteBuilderPageAfterDuplicateTopicParams>;
     onWebsiteBuilderPageBeforeMove: Topic<OnWebsiteBuilderPageBeforeMoveTopicParams>;
     onWebsiteBuilderPageAfterMove: Topic<OnWebsiteBuilderPageAfterMoveTopicParams>;
+    onWebsiteBuilderPageBeforeCreateRevisionFrom: Topic<OnWebsiteBuilderPageBeforeCreateRevisionFromTopicParams>;
+    onWebsiteBuilderPageAfterCreateRevisionFrom: Topic<OnWebsiteBuilderPageAfterCreateRevisionFromTopicParams>;
     onWebsiteBuilderPageBeforeDelete: Topic<OnWebsiteBuilderPageBeforeDeleteTopicParams>;
     onWebsiteBuilderPageAfterDelete: Topic<OnWebsiteBuilderPageAfterDeleteTopicParams>;
 }

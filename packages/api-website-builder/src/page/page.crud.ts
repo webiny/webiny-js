@@ -1,5 +1,6 @@
 import { createTopic } from "@webiny/pubsub";
 import {
+    getCreatePageRevisionFromUseCase,
     getCreatePageUseCase,
     getDeletePageUseCase,
     getDuplicatePageUseCase,
@@ -10,6 +11,7 @@ import {
     getUpdatePagerUseCase
 } from "~/page/useCases";
 import type {
+    OnWebsiteBuilderPageAfterCreateRevisionFromTopicParams,
     OnWebsiteBuilderPageAfterCreateTopicParams,
     OnWebsiteBuilderPageAfterDeleteTopicParams,
     OnWebsiteBuilderPageAfterDuplicateTopicParams,
@@ -17,6 +19,7 @@ import type {
     OnWebsiteBuilderPageAfterPublishTopicParams,
     OnWebsiteBuilderPageAfterUnpublishTopicParams,
     OnWebsiteBuilderPageAfterUpdateTopicParams,
+    OnWebsiteBuilderPageBeforeCreateRevisionFromTopicParams,
     OnWebsiteBuilderPageBeforeCreateTopicParams,
     OnWebsiteBuilderPageBeforeDeleteTopicParams,
     OnWebsiteBuilderPageBeforeDuplicateTopicParams,
@@ -120,6 +123,25 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         }
     });
 
+    // create page revision from
+    const onWebsiteBuilderPageBeforeCreateRevisionFrom =
+        createTopic<OnWebsiteBuilderPageBeforeCreateRevisionFromTopicParams>(
+            "wb.onPageBeforeCreateRevisionFrom"
+        );
+    const onWebsiteBuilderPageAfterCreateRevisionFrom =
+        createTopic<OnWebsiteBuilderPageAfterCreateRevisionFromTopicParams>(
+            "wb.onPageAfterCreateRevisionFrom"
+        );
+
+    const { createPageRevisionFromUseCase } = getCreatePageRevisionFromUseCase({
+        createRevisionFromOperation: config.storageOperations.pages.createRevisionFrom,
+        getOperation: config.storageOperations.pages.get,
+        topics: {
+            onWebsiteBuilderPageBeforeCreateRevisionFrom,
+            onWebsiteBuilderPageAfterCreateRevisionFrom
+        }
+    });
+
     // delete
     const onWebsiteBuilderPageBeforeDelete =
         createTopic<OnWebsiteBuilderPageBeforeDeleteTopicParams>("wb.onPageBeforeDelete");
@@ -158,6 +180,8 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         onWebsiteBuilderPageAfterDuplicate,
         onWebsiteBuilderPageBeforeMove,
         onWebsiteBuilderPageAfterMove,
+        onWebsiteBuilderPageBeforeCreateRevisionFrom,
+        onWebsiteBuilderPageAfterCreateRevisionFrom,
         onWebsiteBuilderPageBeforeDelete,
         onWebsiteBuilderPageAfterDelete,
 
@@ -184,6 +208,9 @@ export const createPagesCrud = (config: WebsiteBuilderConfig): WbPageCrud => {
         },
         move: async params => {
             return movePageUseCase.execute(params);
+        },
+        createRevisionFrom(params) {
+            return createPageRevisionFromUseCase.execute(params);
         },
         delete: async params => {
             return deletePageUseCase.execute(params);

@@ -1,4 +1,5 @@
 export * from "./CreatePage";
+export * from "./CreatePageRevisionFrom";
 export * from "./DeletePage";
 export * from "./DuplicatePage";
 export * from "./GetPage";
