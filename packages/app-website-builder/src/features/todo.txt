@@ -1,1 +1,3 @@
-[] ListPages: improve caching, now the cache is cleared every time usecase is invoked
+[] ListPages: improve caching, now the cache is cleared every time use case is invoked
+[] GetPage: should I return the page from getPage hook?
+[] GetPage: add tests
