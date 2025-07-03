@@ -131,7 +131,7 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
 
         extend type WbMutation {
             createPage(data: WbPageCreateInput!): WbPageResponse
-            updatePage(id: ID!, data: FolderUpdateInput!): WbPageResponse
+            updatePage(id: ID!, data: WbPageUpdateInput!): WbPageResponse
             duplicatePage(id: ID!): WbPageResponse
             deletePage(id: ID!): WbBooleanResponse
         }
