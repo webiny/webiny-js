@@ -1,0 +1,29 @@
+import type {
+    DeletePageParams,
+    IDeletePageUseCase
+} from "~/features/pages/deletePage/IDeletePageUseCase.js";
+import type { IDeletePageRepository } from "~/features/pages/deletePage/IDeletePageRepository.js";
+import { Page } from "~/features/pages/Page.js";
+
+export class DeletePageUseCase implements IDeletePageUseCase {
+    private repository: IDeletePageRepository;
+
+    constructor(repository: IDeletePageRepository) {
+        this.repository = repository;
+    }
+
+    async execute(params: DeletePageParams) {
+        await this.repository.execute(
+            Page.create({
+                id: params.id,
+                entryId: params.id,
+                status: params.status,
+                location: params.location,
+                properties: params.properties,
+                bindings: params.bindings,
+                elements: params.elements,
+                extensions: params.extensions
+            })
+        );
+    }
+}
