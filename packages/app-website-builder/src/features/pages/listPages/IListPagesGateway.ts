@@ -1,4 +1,4 @@
-import { PageGqlDto } from "./PageGqlDto.js";
+import { PageGatewayDto } from "./PageGatewayDto.js";
 import type { WbListMeta } from "~/types.js";
 
 export interface ListPagesGatewayParams {
@@ -6,7 +6,7 @@ export interface ListPagesGatewayParams {
 }
 
 export interface ListPagesGatewayResponse {
-    pages: PageGqlDto[];
+    pages: PageGatewayDto[];
     meta: WbListMeta;
 }
 

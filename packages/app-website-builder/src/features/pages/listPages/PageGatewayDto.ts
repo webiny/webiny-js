@@ -1,7 +1,7 @@
 import type { WbIdentity, WbLocation } from "~/types";
 import type { WbStatus } from "~/constants.js";
 
-export interface PageGqlDto {
+export interface PageGatewayDto {
     id: string;
     entryId: string;
     status: WbStatus;

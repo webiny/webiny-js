@@ -1,7 +1,7 @@
 import ApolloClient from "apollo-client";
 import gql from "graphql-tag";
 import { IListPagesGateway, type ListPagesGatewayParams } from "./IListPagesGateway.js";
-import type { PageGqlDto } from "~/features/pages/listPages/PageGqlDto.js";
+import type { PageGatewayDto } from "~/features/pages/listPages/PageGatewayDto.js";
 import { type WbError, type WbListMeta, type WbLocation } from "~/types";
 
 const LIST_META_FIELD = /* GraphQL */ `
@@ -15,7 +15,7 @@ const LIST_META_FIELD = /* GraphQL */ `
 export interface ListPagesResponse {
     websiteBuilder: {
         listPages: {
-            data: PageGqlDto[] | null;
+            data: PageGatewayDto[] | null;
             meta: WbListMeta;
             error: WbError | null;
         };
