@@ -13,3 +13,9 @@ export interface WbError {
     message: string;
     data?: Record<string, any> | null;
 }
+
+export interface WbListMeta {
+    cursor: string | null;
+    totalCount: number;
+    hasMoreItems: boolean;
+}

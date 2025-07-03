@@ -1,4 +1,4 @@
-import type { WbLocation } from "~/types.js";
+import type { WbIdentity, WbLocation } from "~/types.js";
 import { ROOT_FOLDER, statuses, type WbStatus } from "~/constants.js";
 
 export interface PageData {
@@ -11,6 +11,12 @@ export interface PageData {
     bindings?: Record<string, any>;
     elements?: Record<string, any>;
     extensions?: Record<string, any>;
+    createdBy?: WbIdentity;
+    createdOn?: string;
+    savedBy?: WbIdentity;
+    savedOn?: string;
+    modifiedBy?: WbIdentity | null;
+    modifiedOn?: string | null;
 }
 
 export class Page {
@@ -22,23 +28,35 @@ export class Page {
     public bindings: Record<string, any>;
     public elements: Record<string, any>;
     public extensions: Record<string, any>;
+    public createdBy: WbIdentity;
+    public createdOn: string;
+    public savedBy: WbIdentity;
+    public savedOn: string;
+    public modifiedBy: WbIdentity;
+    public modifiedOn: string;
 
     protected constructor(data: PageData) {
         this.id = data.id ?? "";
         this.entryId = data.entryId ?? "";
         this.status = data.status ?? statuses.draft;
-        this.location = this.getLocation(data);
+        this.location = this.createLocation(data);
         this.properties = data.properties ?? {};
         this.bindings = data.bindings ?? {};
         this.elements = data.elements ?? {};
         this.extensions = data.extensions ?? {};
+        this.createdBy = this.createIdentity(data.createdBy);
+        this.createdOn = data.createdOn ?? "";
+        this.savedBy = this.createIdentity(data.savedBy);
+        this.savedOn = data.savedOn ?? "";
+        this.modifiedBy = this.createIdentity(data.modifiedBy);
+        this.modifiedOn = data.modifiedOn ?? "";
     }
 
     static create(data: PageData) {
         return new Page(data);
     }
 
-    private getLocation(data: PageData): WbLocation {
+    private createLocation(data: PageData): WbLocation {
         if (data.wbyAco_location) {
             return data.wbyAco_location;
         }
@@ -49,6 +67,14 @@ export class Page {
 
         return {
             folderId: ROOT_FOLDER
+        };
+    }
+
+    private createIdentity(identity?: WbIdentity | null): WbIdentity {
+        return {
+            id: identity?.id || "",
+            displayName: identity?.displayName || "",
+            type: identity?.type || ""
         };
     }
 }
