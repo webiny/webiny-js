@@ -132,7 +132,11 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
         extend type WbMutation {
             createPage(data: WbPageCreateInput!): WbPageResponse
             updatePage(id: ID!, data: WbPageUpdateInput!): WbPageResponse
+            publishPage(id: ID!): WbPageResponse
+            unpublishPage(id: ID!): WbPageResponse
             duplicatePage(id: ID!): WbPageResponse
+            movePage(id: ID!, folderId: ID!): WbPageResponse
+            createPageRevisionFrom(id: ID!): WbPageResponse
             deletePage(id: ID!): WbBooleanResponse
         }
     `;
@@ -195,7 +199,31 @@ export const createPagesSchema = (params: CreatePageTypeDefsParams) => {
                 duplicatePage: async (_, { id }, context) => {
                     return resolve(() => {
                         ensureAuthentication(context);
-                        return context.websiteBuilder.page.duplicate(id);
+                        return context.websiteBuilder.page.duplicate({ id });
+                    });
+                },
+                publishPage: async (_, { id }, context) => {
+                    return resolve(() => {
+                        ensureAuthentication(context);
+                        return context.websiteBuilder.page.publish({ id });
+                    });
+                },
+                unpublishPage: async (_, { id }, context) => {
+                    return resolve(() => {
+                        ensureAuthentication(context);
+                        return context.websiteBuilder.page.unpublish({ id });
+                    });
+                },
+                movePage: async (_, { id, folderId }, context) => {
+                    return resolve(() => {
+                        ensureAuthentication(context);
+                        return context.websiteBuilder.page.move({ id, folderId });
+                    });
+                },
+                createPageRevisionFrom: async (_, { id }, context) => {
+                    return resolve(() => {
+                        ensureAuthentication(context);
+                        return context.websiteBuilder.page.createRevisionFrom({ id });
                     });
                 },
                 deletePage: async (_, { id }, context) => {
