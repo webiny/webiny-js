@@ -51,14 +51,7 @@ export const createHandler = (params: ICreateHandlerParams) => {
 
     const handler = createSyncHandler({
         system,
-        getEventBridgeClient: () => {
-            const client = getEventBridgeClient();
-            return {
-                send: async command => {
-                    return await client.send(command);
-                }
-            };
-        },
+        getEventBridgeClient,
         eventBus: {
             arn: manifest.sync.eventBusArn,
             name: manifest.sync.eventBusName

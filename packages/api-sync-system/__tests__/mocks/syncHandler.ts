@@ -4,6 +4,7 @@ import { createMockSystem } from "~tests/mocks/system.js";
 import { createMockHandlerConverter } from "~tests/mocks/handlerConverter.js";
 import { createMockEventBus } from "~tests/mocks/eventBus.js";
 import { createFilterOutRecord } from "~/sync/FilterOutRecord";
+import { createDefaultFilterOutRecordPlugins } from "~/sync/filter/createDefaultFilterOutRecordPlugins.js";
 
 export interface ICreateMockSyncHandlerParams extends Omit<IHandlerParams, "converter"> {
     converter: "all" | IHandlerParams["converter"];
@@ -26,6 +27,7 @@ export const createMockSyncHandler = (params: Partial<ICreateMockSyncHandlerPara
         system: params.system || createMockSystem(),
         converter,
         eventBus: params.eventBus || createMockEventBus(),
-        filterOutRecord: params.filterOutRecord || createFilterOutRecord([])
+        filterOutRecord:
+            params.filterOutRecord || createFilterOutRecord(createDefaultFilterOutRecordPlugins())
     });
 };

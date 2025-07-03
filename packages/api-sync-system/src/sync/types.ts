@@ -11,7 +11,8 @@ import type {
 } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type {
     EventBridgeClient,
-    EventBridgeClientConfig
+    EventBridgeClientConfig,
+    PutEventsCommandOutput
 } from "@webiny/aws-sdk/client-eventbridge/index.js";
 import type { AllCommandType, DynamoDBTableType, ExtendedCommandType } from "~/types.js";
 
@@ -74,7 +75,7 @@ export interface ISystem {
 
 export interface IHandler {
     readonly id: string;
-    flush(): Promise<unknown>;
+    flush(): Promise<PutEventsCommandOutput | null>;
     add(input: IDynamoDbCommand): void;
 }
 

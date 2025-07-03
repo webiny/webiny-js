@@ -3,6 +3,7 @@ import type { IHandler } from "~/sync/types.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import {
     BatchWriteCommand,
+    DeleteCommand,
     PutCommand,
     UpdateCommand
 } from "@webiny/aws-sdk/client-dynamodb/index.js";
@@ -31,6 +32,7 @@ export const decorateClientWithHandler = (
 
     const originalSend = client.send;
     const originalPut = client.put;
+    const originalDelete = client.delete;
     const originalBatchWrite = client.batchWrite;
     const originalUpdate = client.update;
 
@@ -49,6 +51,14 @@ export const decorateClientWithHandler = (
         handler.add(cmd);
         // @ts-expect-error
         return originalPut.apply(client, [params]);
+    };
+
+    // @ts-expect-error
+    client.delete = async params => {
+        const cmd = new DeleteCommand(params);
+        handler.add(cmd);
+        // @ts-expect-error
+        return originalDelete.apply(client, [params]);
     };
 
     // @ts-expect-error

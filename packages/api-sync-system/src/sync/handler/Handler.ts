@@ -7,7 +7,11 @@ import type {
     IHandlerConverter,
     ISystem
 } from "../types.js";
-import type { EventBridgeClient, PutEventsCommandInput } from "@webiny/aws-sdk/client-eventbridge";
+import type {
+    EventBridgeClient,
+    PutEventsCommandInput,
+    PutEventsCommandOutput
+} from "@webiny/aws-sdk/client-eventbridge";
 import { PutEventsCommand } from "@webiny/aws-sdk/client-eventbridge";
 import { convertException } from "@webiny/utils";
 import { generateAlphaNumericId } from "@webiny/utils/generateId.js";
@@ -50,11 +54,11 @@ export class Handler implements IHandler {
         this.commands.push(cmd);
     }
 
-    public async flush(): Promise<unknown> {
+    public async flush(): Promise<PutEventsCommandOutput | null> {
         const items = this.createEventBusEvent();
 
         if (!items?.length) {
-            return;
+            return null;
         }
 
         const detail: IDetail = {
