@@ -1,5 +1,5 @@
 import type { Page } from "~/features/pages/Page.js";
 
-export interface IDeletePageRepository {
+export interface IPublishPageRepository {
     execute: (page: Page) => Promise<void>;
 }

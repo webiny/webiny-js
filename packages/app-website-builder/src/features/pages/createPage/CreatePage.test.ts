@@ -27,11 +27,11 @@ describe("CreatePage", () => {
     });
 
     it("should be able to create a new page", async () => {
-        const createFolder = CreatePage.getInstance(gateway);
+        const createPage = CreatePage.getInstance(gateway);
 
         expect(pageCache.hasItems()).toBeFalse();
 
-        await createFolder.execute({
+        await createPage.execute({
             location: {
                 folderId: "folder-1"
             }

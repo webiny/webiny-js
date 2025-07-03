@@ -103,7 +103,7 @@ describe("UpdatePage", () => {
         });
     });
 
-    it("should not update a folder if id is missing", async () => {
+    it("should not update a page if id is missing", async () => {
         const gateway = {
             execute: jest.fn().mockResolvedValue(null)
         };

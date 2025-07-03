@@ -34,7 +34,7 @@ export interface UpdatePageVariables {
 }
 
 export const UPDATE_PAGE = (PAGE_FIELDS: string) => gql`
-    mutation UpdateFolder($id: ID!, $data: WbPageUpdateInput!) {
+    mutation UpdatePage($id: ID!, $data: WbPageUpdateInput!) {
         websiteBuilder {
             updatePage(id: $id, data: $data) {
                 data ${PAGE_FIELDS}

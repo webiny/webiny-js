@@ -16,5 +16,6 @@ export const loadingActions = {
     create: "CREATE",
     update: "UPDATE",
     delete: "DELETE",
-    move: "MOVE"
+    move: "MOVE",
+    publish: "PUBLISH"
 } as const;

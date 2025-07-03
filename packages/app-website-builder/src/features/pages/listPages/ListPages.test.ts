@@ -72,12 +72,12 @@ describe("ListPages", () => {
         jest.clearAllMocks();
     });
 
-    it("should be able to list folders", async () => {
-        const listFolders = ListPages.getInstance(gateway);
+    it("should be able to list pages", async () => {
+        const listPages = ListPages.getInstance(gateway);
 
         expect(pagesCache.hasItems()).toBeFalse();
 
-        await listFolders.useCase.execute({ folderId: "folder-1" });
+        await listPages.useCase.execute({ folderId: "folder-1" });
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);
         expect(gateway.execute).toHaveBeenLastCalledWith({
@@ -89,7 +89,7 @@ describe("ListPages", () => {
         expect(items.length).toEqual(3);
     });
 
-    it("should return empty array if no folders are found", async () => {
+    it("should return empty array if no pages are found", async () => {
         const emptyGateway = {
             execute: jest.fn().mockResolvedValue({
                 pages: [],
@@ -100,11 +100,11 @@ describe("ListPages", () => {
                 }
             })
         };
-        const listFolders = ListPages.getInstance(emptyGateway);
+        const listPages = ListPages.getInstance(emptyGateway);
 
         expect(pagesCache.hasItems()).toBeFalse();
 
-        await listFolders.useCase.execute({
+        await listPages.useCase.execute({
             folderId: "folder-1"
         });
 
@@ -119,12 +119,12 @@ describe("ListPages", () => {
         const errorGateway = {
             execute: jest.fn().mockRejectedValue(new Error("Gateway error"))
         };
-        const listFolders = ListPages.getInstance(errorGateway);
+        const listPages = ListPages.getInstance(errorGateway);
 
         expect(pagesCache.hasItems()).toBeFalse();
 
         await expect(
-            listFolders.useCase.execute({
+            listPages.useCase.execute({
                 folderId: "folder-1"
             })
         ).rejects.toThrow("Gateway error");
@@ -133,12 +133,12 @@ describe("ListPages", () => {
         expect(pagesCache.hasItems()).toBeFalse();
     });
 
-    it("should NOT cache folders after listing", async () => {
-        const listFolders = ListPages.getInstance(gateway);
+    it("should NOT cache pages after listing", async () => {
+        const listPages = ListPages.getInstance(gateway);
 
         expect(pagesCache.hasItems()).toBeFalse();
 
-        await listFolders.useCase.execute({ folderId: "folder-1" });
+        await listPages.useCase.execute({ folderId: "folder-1" });
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);
         expect(pagesCache.hasItems()).toBeTrue();
@@ -147,7 +147,7 @@ describe("ListPages", () => {
         expect(items.length).toEqual(3);
 
         // Execute again, it should execute the gateway again
-        await listFolders.useCase.execute({ folderId: "folder-1" });
+        await listPages.useCase.execute({ folderId: "folder-1" });
         expect(gateway.execute).toHaveBeenCalledTimes(2);
     });
 });
