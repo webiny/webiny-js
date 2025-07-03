@@ -18,5 +18,6 @@ export const loadingActions = {
     delete: "DELETE",
     move: "MOVE",
     publish: "PUBLISH",
-    unpublish: "UNPUBLISH"
+    unpublish: "UNPUBLISH",
+    duplicate: "DUPLICATE"
 } as const;
