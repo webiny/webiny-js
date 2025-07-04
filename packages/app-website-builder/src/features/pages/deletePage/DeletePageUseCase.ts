@@ -16,7 +16,7 @@ export class DeletePageUseCase implements IDeletePageUseCase {
         await this.repository.execute(
             Page.create({
                 id: params.id,
-                entryId: params.id,
+                entryId: params.entryId,
                 status: params.status,
                 location: params.location,
                 properties: params.properties,

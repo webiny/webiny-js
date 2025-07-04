@@ -8,7 +8,7 @@ export class DeletePage implements IDeletePage {
         this.deleteOperation = deleteOperation;
     }
 
-    async execute(params: DeleteWbPageParams): Promise<void> {
-        await this.deleteOperation(params);
+    async execute({ entryId }: DeleteWbPageParams): Promise<void> {
+        await this.deleteOperation({ id: entryId });
     }
 }

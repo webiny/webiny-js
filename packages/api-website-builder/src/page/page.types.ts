@@ -41,7 +41,7 @@ export interface UpdateWbPageData {
 }
 
 export interface DeleteWbPageParams {
-    id: string;
+    entryId: string;
 }
 
 export interface DuplicateWbPageParams {
@@ -128,7 +128,9 @@ export type WbPagesStorageOperationsCreateRevisionFromParams = CreateWbPageRevis
  * @category PagesStorageOperations
  * @category PagesStorageOperationsParams
  */
-export type WbPagesStorageOperationsDeleteParams = DeleteWbPageParams;
+export interface WbPagesStorageOperationsDeleteParams {
+    id: string;
+}
 
 /**
  * @category StorageOperations
