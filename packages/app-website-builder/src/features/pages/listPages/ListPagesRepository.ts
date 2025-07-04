@@ -17,7 +17,6 @@ export class ListPagesRepository implements IListPagesRepository {
 
     async execute(params: IListPagesRepositoryParams) {
         const { pages } = await this.gateway.execute(params);
-        this.cache.clear();
         this.cache.addItems(pages.map(page => Page.create(page)));
     }
 }

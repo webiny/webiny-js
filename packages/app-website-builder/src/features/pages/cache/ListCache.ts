@@ -57,7 +57,7 @@ export class ListCache<T> implements IListCache<T> {
 
     addItems(items: T[]) {
         runInAction(() => {
-            this.state = unionBy(this.state, items, "id");
+            this.state = unionBy(this.state, items, "entryId");
         });
     }
 
