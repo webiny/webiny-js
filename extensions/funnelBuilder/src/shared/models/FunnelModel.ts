@@ -68,6 +68,11 @@ export class FunnelModel {
         if (funnelDto.steps) {
             this.steps = funnelDto.steps.map(s => FunnelStepModel.fromDto(s));
         }
+        if (funnelDto.conditionRules) {
+            this.conditionRules = funnelDto.conditionRules.map(
+                dto => FunnelConditionRuleModel.fromDto(this, dto)
+            );
+        }
     }
 
     getChecksum() {
