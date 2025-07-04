@@ -30,7 +30,7 @@ export class CmsPagesStorage implements WbPagesStorageOperations {
 
     public get = async (params: WbPagesStorageOperationsGetParams): Promise<WbPage | null> => {
         const { id } = params;
-        const entry = await this.cms.getEntry(this.model, { where: { entryId: id, latest: true } });
+        const entry = await this.cms.getEntry(this.model, { where: { id, latest: true } });
         return entry ? this.getWbPageFieldValues(entry) : null;
     };
 
@@ -55,7 +55,7 @@ export class CmsPagesStorage implements WbPagesStorageOperations {
 
     public update = async ({ id, data }: WbPagesStorageOperationsUpdateParams): Promise<WbPage> => {
         const entry = await this.cms.getEntry(this.model, {
-            where: { entryId: id, latest: true }
+            where: { id, latest: true }
         });
 
         const values = omit(data, ["id", "tenant", "locale", "webinyVersion"]);
