@@ -23,7 +23,7 @@ import { convertException } from "@webiny/utils";
 type ByteSize = number | `${number}B` | `${number}KB` | `${number}MB` | `${number}GB`;
 
 export interface ICopyFileParams {
-    getS3Client: (region: string) => S3Client;
+    getS3Client: (region: string) => Pick<S3Client, "send">;
     sourceRegion: string;
     targetRegion: string;
     maxConcurrency?: number;
@@ -38,7 +38,7 @@ export interface ICopyParams {
 }
 
 export interface IHeadObjectParams {
-    client: S3Client;
+    client: Pick<S3Client, "send">;
     bucket: string;
     key: string;
 }
@@ -80,8 +80,8 @@ interface ICopyMetadataParams {
 }
 
 export class CopyFile {
-    private readonly sourceClient: S3Client;
-    private readonly targetClient: S3Client;
+    private readonly sourceClient: Pick<S3Client, "send">;
+    private readonly targetClient: Pick<S3Client, "send">;
     private readonly maxConcurrency: number;
     private readonly minPartSizeBytes: number;
     private readonly maxPartSizeBytes: number;

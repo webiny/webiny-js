@@ -31,9 +31,9 @@ export interface ICreateResolverHandlerParams extends HandlerParams {
  * Handler for the Sync System Resolver - based on SQS handler.
  */
 export const createResolverHandler = (params: ICreateResolverHandlerParams): HandlerCallable => {
-    const awsSyncLambdaArn = params.awsSyncLambdaArn || process.env.AWS_SYNC_FILE_LAMBDA_ARN;
+    const awsSyncLambdaArn = params.awsSyncLambdaArn || process.env.AWS_SYNC_WORKER_LAMBDA_ARN;
     if (!awsSyncLambdaArn) {
-        const message = `Missing "process.env.AWS_SYNC_FILE_LAMBDA_ARN".`;
+        const message = `Missing "process.env.AWS_SYNC_WORKER_LAMBDA_ARN".`;
         console.error(message);
         throw new Error(message);
     }

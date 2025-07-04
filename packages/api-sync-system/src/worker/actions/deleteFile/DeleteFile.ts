@@ -2,7 +2,7 @@ import type { S3Client } from "@webiny/aws-sdk/client-s3/index.js";
 import { DeleteObjectCommand, HeadObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
 
 export interface IDeleteFileParamsGetS3ClientCb {
-    (region: string): S3Client;
+    (region: string): Pick<S3Client, "send">;
 }
 
 export interface IDeleteFileParams {
@@ -18,7 +18,7 @@ export interface IDeleteFileInput {
 }
 
 interface IDeleteFileObjectExistsParams {
-    client: S3Client;
+    client: Pick<S3Client, "send">;
     bucket: string;
     key: string;
 }

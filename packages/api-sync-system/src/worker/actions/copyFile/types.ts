@@ -5,7 +5,7 @@ export interface ICopyFileActionEventData {
 
 export interface ICopyFileActionEvent {
     key: string;
-    action: "copy";
+    action: "copyFile";
     source: ICopyFileActionEventData;
     target: ICopyFileActionEventData;
 }

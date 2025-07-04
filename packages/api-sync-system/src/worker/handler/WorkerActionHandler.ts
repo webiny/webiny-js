@@ -11,7 +11,7 @@ export interface IActionHandlerParams {
     plugins: WorkerActionPlugin[];
 }
 
-export class ActionHandler implements IActionHandler {
+export class WorkerActionHandler implements IActionHandler {
     private readonly plugins: WorkerActionPlugin[];
 
     public constructor(params: IActionHandlerParams) {

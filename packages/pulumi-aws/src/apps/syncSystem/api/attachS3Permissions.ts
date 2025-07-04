@@ -14,16 +14,16 @@ export interface IAttachS3PermissionsParams {
 export const attachS3Permissions = (params: IAttachS3PermissionsParams) => {
     const { app, syncSystem, core } = params;
 
-    const { resolverLambdaRoleName, filesLambdaRoleName } = syncSystem;
+    const { resolverLambdaRoleName, workerLambdaRoleName } = syncSystem;
 
     const resolverLambdaToS3ResourceName = createSyncResourceName(`resolver-lambda-to-s3-fm`);
-    const filesLambdaToS3ResourceName = createSyncResourceName(`files-lambda-to-s3-fm`);
+    const workerLambdaToS3ResourceName = createSyncResourceName(`worker-lambda-to-s3-fm`);
 
     const s3Policy = app.addResource(aws.iam.Policy, {
         name: `${resolverLambdaToS3ResourceName}-policy`,
         config: {
             description:
-                "This policy enables access from Sync System Resolver and Files Lambda to Webiny S3.",
+                "This policy enables access from Sync System Resolver and Worker Lambda to Webiny S3.",
             policy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -54,17 +54,17 @@ export const attachS3Permissions = (params: IAttachS3PermissionsParams) => {
         }
     });
 
-    const filesLambdaS3PolicyAttachment = app.addResource(aws.iam.RolePolicyAttachment, {
-        name: `${filesLambdaToS3ResourceName}-policy-attachment`,
+    const workerLambdaS3PolicyAttachment = app.addResource(aws.iam.RolePolicyAttachment, {
+        name: `${workerLambdaToS3ResourceName}-policy-attachment`,
         config: {
-            role: filesLambdaRoleName,
+            role: workerLambdaRoleName,
             policyArn: s3Policy.output.arn
         }
     });
 
     return {
         s3Policy,
-        filesLambdaS3PolicyAttachment,
+        workerLambdaS3PolicyAttachment,
         resolverLambdaS3PolicyAttachment
     };
 };

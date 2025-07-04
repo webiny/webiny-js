@@ -3,6 +3,7 @@ export interface IWorkerActionHandleParams<T> {
 }
 
 export interface IWorkerAction<T = unknown> {
+    name: string;
     parse(input: unknown): T | undefined;
     handle(params: IWorkerActionHandleParams<T>): Promise<void>;
 }

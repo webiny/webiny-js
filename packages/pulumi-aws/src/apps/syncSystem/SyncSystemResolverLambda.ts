@@ -19,7 +19,7 @@ export const SyncSystemResolverLambda = createAppModule({
         const { sqsQueue } = app.getModule(SyncSystemSQS);
         const dynamoDb = app.getModule(SyncSystemDynamoDb);
 
-        const { lambda: filesLambda } = app.getModule(SyncSystemWorkerLambda);
+        const { lambda: workerLambda } = app.getModule(SyncSystemWorkerLambda);
 
         const roleName = createSyncResourceName("resolver-lambda-role");
         const policy = createSyncSystemInputLambdaPolicy({
@@ -43,7 +43,7 @@ export const SyncSystemResolverLambda = createAppModule({
                 environment: {
                     variables: {
                         DB_TABLE: dynamoDb.output.name,
-                        AWS_SYNC_FILE_LAMBDA_ARN: filesLambda.output.arn,
+                        AWS_SYNC_WORKER_LAMBDA_ARN: workerLambda.output.arn,
                         DEBUG: String(process.env.DEBUG),
                         PULUMI_APPS: "true",
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"

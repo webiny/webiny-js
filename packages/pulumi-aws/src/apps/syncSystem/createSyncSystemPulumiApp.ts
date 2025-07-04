@@ -98,7 +98,7 @@ export function createSyncSystemPulumiApp(projectAppParams: CreateSyncSystemPulu
             const { sqsQueue } = regionApp.addModule(SyncSystemSQS);
             const dynamoDb = regionApp.addModule(SyncSystemDynamoDb);
 
-            const filesLambda = regionApp.addModule(SyncSystemWorkerLambda);
+            const workerLambda = regionApp.addModule(SyncSystemWorkerLambda);
 
             const resolverLambda = regionApp.addModule(SyncSystemResolverLambda);
             const { eventBusRule, eventBus, eventBusTarget, eventBusPolicy } =
@@ -139,12 +139,12 @@ export function createSyncSystemPulumiApp(projectAppParams: CreateSyncSystemPulu
                 resolverLambdaEventSourceMappingEventSourceArn: resolverLambda.eventSourceMapping
                     .output.eventSourceArn as pulumi.Output<string>,
                 /**
-                 * SyncSystemFilesLambda
+                 * SyncSystemWorkerLambda
                  */
-                filesLambdaArn: filesLambda.lambda.output.arn,
-                filesLambdaName: filesLambda.lambda.output.name,
-                filesLambdaRoleArn: filesLambda.role.output.arn,
-                filesLambdaRoleName: filesLambda.role.output.name,
+                workerLambdaArn: workerLambda.lambda.output.arn,
+                workerLambdaName: workerLambda.lambda.output.name,
+                workerLambdaRoleArn: workerLambda.role.output.arn,
+                workerLambdaRoleName: workerLambda.role.output.name,
                 /**
                  * SyncSystemEventBus
                  */
@@ -167,10 +167,10 @@ export function createSyncSystemPulumiApp(projectAppParams: CreateSyncSystemPulu
                 eventBusTarget: eventBusTarget.output,
                 eventBusPolicy: eventBusPolicy.output,
                 /**
-                 * Files Lambda - used to process files and store/delete them from S3.
+                 * Worker Lambda - used to resolve actions triggered by the resolver Lambda.
                  */
-                filesLambda: filesLambda.lambda.output,
-                filesLambdaRole: filesLambda.role.output,
+                workerLambda: workerLambda.lambda.output,
+                workerLambdaRole: workerLambda.role.output,
                 /**
                  * Resolver Lambda - gets hit by SQS and resolves the data.
                  */

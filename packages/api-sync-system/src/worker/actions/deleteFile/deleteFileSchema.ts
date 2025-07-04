@@ -6,9 +6,9 @@ const createDataSchema = (type: string) => {
         region: zod.string().min(1, `${type} Region is required.`)
     });
 };
-export const createDeleteSchema = () => {
+export const createDeleteFileSchema = () => {
     return zod.object({
-        action: zod.enum(["delete"]),
+        action: zod.enum(["deleteFile"]),
         key: zod.string().min(1, "Key is required."),
         source: createDataSchema("Source"),
         target: createDataSchema("Target")

@@ -12,7 +12,7 @@ interface ICreateSyncSystemLambdaPolicyParams {
 export function createSyncSystemInputLambdaPolicy(params: ICreateSyncSystemLambdaPolicyParams) {
     const { app } = params;
     const { sqsQueue } = app.getModule(SyncSystemSQS);
-    const { lambda: filesLambda } = app.getModule(SyncSystemWorkerLambda);
+    const { lambda: workerLambda } = app.getModule(SyncSystemWorkerLambda);
     const dynamoDb = app.getModule(SyncSystemDynamoDb);
 
     const policy: aws.iam.PolicyDocument = {
@@ -96,10 +96,10 @@ export function createSyncSystemInputLambdaPolicy(params: ICreateSyncSystemLambd
                 ]
             },
             {
-                Sid: "PermissionForFilesLambda",
+                Sid: "PermissionForWorkerLambda",
                 Effect: "Allow",
                 Action: ["lambda:InvokeFunction"],
-                Resource: filesLambda.output.arn.apply(arn => {
+                Resource: workerLambda.output.arn.apply(arn => {
                     return [`${arn}`, `${arn}/*`];
                 })
             }

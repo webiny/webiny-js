@@ -5,6 +5,6 @@ export interface IDeleteFileActionEventData {
 
 export interface IDeleteFileActionEvent {
     key: string;
-    action: "delete";
+    action: "deleteFile";
     target: IDeleteFileActionEventData;
 }

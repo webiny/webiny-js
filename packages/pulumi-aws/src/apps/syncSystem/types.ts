@@ -38,12 +38,12 @@ export interface IGetSyncSystemOutputResult extends IStackOutput {
     resolverLambdaEventSourceMappingArn: string;
     resolverLambdaEventSourceMappingEventSourceArn: string;
     /**
-     * SyncSystemFilesLambda
+     * SyncSystemWorkerLambda
      */
-    filesLambdaArn: string;
-    filesLambdaName: string;
-    filesLambdaRoleArn: string;
-    filesLambdaRoleName: string;
+    workerLambdaArn: string;
+    workerLambdaName: string;
+    workerLambdaRoleArn: string;
+    workerLambdaRoleName: string;
     /**
      * SyncSystemEventBus
      */

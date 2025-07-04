@@ -1,25 +1,27 @@
 import { createWorkerActionPlugin } from "~/worker/plugins/WorkerActionPlugin.js";
-import type { IWorkerActionHandleParams } from "~/worker/types.js";
 import { CopyFile } from "./CopyFile.js";
 import type { S3Client } from "@webiny/aws-sdk/client-s3/index.js";
-import { createCopySchema } from "~/worker/actions/copyFile/copySchema.js";
 import type { ICopyFileActionEvent } from "./types.js";
+import { createCopyFileSchema } from "./copyFileSchema.js";
+import { logValidationError } from "~/worker/actions/logValidationError.js";
 
 export interface ICreateCopyFileActionParams {
-    getS3Client: (region: string) => S3Client;
+    getS3Client: (region: string) => Pick<S3Client, "send">;
 }
 
 export const createCopyFileAction = ({ getS3Client }: ICreateCopyFileActionParams) => {
-    return createWorkerActionPlugin({
-        parse(input: unknown) {
-            const schema = createCopySchema();
-            const validation = schema.safeParse({ payload: input });
-            if (!validation.success || validation.error) {
+    return createWorkerActionPlugin<ICopyFileActionEvent>({
+        name: "sync.worker.action.copyFile",
+        parse(input) {
+            const schema = createCopyFileSchema();
+            const result = schema.safeParse(input);
+            if (!result.success || result.error) {
+                logValidationError(result.error);
                 return undefined;
             }
-            return validation.data;
+            return result.data;
         },
-        async handle(params: IWorkerActionHandleParams<ICopyFileActionEvent>): Promise<void> {
+        async handle(params) {
             const { data } = params;
             const copyFile = new CopyFile({
                 getS3Client,

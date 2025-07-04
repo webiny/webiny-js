@@ -2,14 +2,14 @@ import zod from "zod";
 
 const createDataSchema = (type: string) => {
     return zod.object({
-        bucket: zod.string().min(1, `${type} Bucket is required.`),
+        userPoolId: zod.string().min(1, `${type} UserPoolId is required.`),
         region: zod.string().min(1, `${type} Region is required.`)
     });
 };
-export const createCopySchema = () => {
+export const createCopyUserSchema = () => {
     return zod.object({
-        action: zod.enum(["copy"]),
-        key: zod.string().min(1, "Key is required."),
+        action: zod.enum(["copyUser"]),
+        username: zod.string().min(1, "Username is required."),
         source: createDataSchema("Source"),
         target: createDataSchema("Target")
     });
