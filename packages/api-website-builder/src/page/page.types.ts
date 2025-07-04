@@ -6,6 +6,9 @@ export interface WbPage {
     id: string;
     entryId: string;
     wbyAco_location: WbLocation;
+    status: string;
+    version: number;
+    locked: boolean;
     tenant: string;
     locale: string;
     webinyVersion: string;

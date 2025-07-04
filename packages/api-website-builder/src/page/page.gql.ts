@@ -78,6 +78,9 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
             id: ID!
             entryId: String!
             wbyAco_location: WbLocation
+            status: String!
+            version: Number!
+            locked: Boolean!
             ${onByMetaGqlFields}
             ${fieldTypes.map(f => f.fields).join("\n")}
         }
