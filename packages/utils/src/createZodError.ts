@@ -1,5 +1,6 @@
 import WebinyError from "@webiny/error";
-import { ZodError } from "zod/lib/ZodError";
+import type { ZodError } from "zod/lib/ZodError";
+import { generateAlphaNumericId } from "~/generateId.js";
 
 interface OutputError {
     code: string;
@@ -15,10 +16,17 @@ const createValidationErrorData = (error: ZodError) => {
     return {
         invalidFields: error.issues.reduce<OutputErrors>((collection, issue) => {
             const name = issue.path.join(".");
-            if (!name) {
+            if (!name && !issue.code) {
                 return collection;
             }
-            collection[name] = {
+
+            const key =
+                name ||
+                issue.path.join(".") ||
+                issue.message ||
+                issue.code ||
+                generateAlphaNumericId();
+            collection[key] = {
                 code: issue.code,
                 message: issue.message,
                 data: {

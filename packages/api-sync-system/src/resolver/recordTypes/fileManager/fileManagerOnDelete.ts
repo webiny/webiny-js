@@ -1,21 +1,16 @@
 import { createStorerAfterEachPluginWithName } from "~/resolver/plugins/StorerAfterEachPlugin.js";
 import { shouldBeHandled } from "./shouldBeHandled.js";
-import type {
-    DeleteCommandOutput,
-    PutCommandOutput
-} from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { ICreateS3ClientCb, IGetLambdaTriggerCb } from "./types.js";
 import { convertException } from "@webiny/utils";
-import { DeleteFile } from "./DeleteFile.js";
+import { IDeleteFile } from "./types.js";
 
 export interface ICreateFileManagerOnDeletePluginParams {
-    createS3Client: ICreateS3ClientCb;
-    getLambdaTrigger: IGetLambdaTriggerCb;
+    deleteFile: IDeleteFile;
 }
 
 export const createFileManagerOnDeletePlugin = (params: ICreateFileManagerOnDeletePluginParams) => {
-    const deleteFile = new DeleteFile(params);
-    return createStorerAfterEachPluginWithName<DeleteCommandOutput>("fileManager.onDelete", {
+    const { deleteFile } = params;
+
+    return createStorerAfterEachPluginWithName("fileManager.onDelete", {
         canHandle: params => {
             const { command } = params;
             if (command !== "delete") {
@@ -24,17 +19,17 @@ export const createFileManagerOnDeletePlugin = (params: ICreateFileManagerOnDele
             return shouldBeHandled(params);
         },
         handle: async params => {
+            const { item } = params;
+            /**
+             * We are 100% positive that the key exists here because canHandle would not allow for handle to be called.
+             */
+            // @ts-expect-error
+            const key = (item.values["text@key"] || item.values["key"]) as string;
             try {
-                return await deleteFile.handle({
-                    item: params.item,
-                    command: params.command,
-                    /**
-                     * We can safely cast here because we are 100% positive that result is of type PutCommandOutput.
-                     */
-                    result: params.result as PutCommandOutput,
-                    table: params.table,
-                    deployment: params.deployment,
-                    bundle: params.bundle
+                await deleteFile.handle({
+                    target: params.target,
+                    source: params.source,
+                    key
                 });
             } catch (ex) {
                 console.error("Error while handling file manager onDelete plugin.");

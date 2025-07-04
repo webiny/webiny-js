@@ -9,7 +9,7 @@ import { createSyncResourceName } from "./createSyncResourceName.js";
 import { createAssetArchive } from "~/utils/createAssetArchive.js";
 import { SyncSystemSQS } from "./SyncSystemSQS.js";
 import { SyncSystemDynamoDb } from "~/apps/syncSystem/SyncSystemDynamoDb.js";
-import { SyncSystemFilesLambda } from "~/apps/syncSystem/SyncSystemFilesLambda.js";
+import { SyncSystemWorkerLambda } from "~/apps/syncSystem/SyncSystemWorkerLambda.js";
 
 export type SyncSystemResolverLambda = PulumiAppModule<typeof SyncSystemResolverLambda>;
 
@@ -19,7 +19,7 @@ export const SyncSystemResolverLambda = createAppModule({
         const { sqsQueue } = app.getModule(SyncSystemSQS);
         const dynamoDb = app.getModule(SyncSystemDynamoDb);
 
-        const { lambda: filesLambda } = app.getModule(SyncSystemFilesLambda);
+        const { lambda: filesLambda } = app.getModule(SyncSystemWorkerLambda);
 
         const roleName = createSyncResourceName("resolver-lambda-role");
         const policy = createSyncSystemInputLambdaPolicy({

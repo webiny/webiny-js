@@ -9,12 +9,14 @@ import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/getDocumentCl
 import { createMockEventBridgeClient } from "~tests/mocks/eventBridgeClient.js";
 import { createMockPluginsContainer } from "~tests/mocks/plugins.js";
 import type { IDynamoDbCommand, IHandler } from "~/sync/types.js";
-import {
+import type {
     BatchWriteCommandInput,
+    DeleteCommandInput,
     DynamoDBDocument,
-    PutCommandInput
+    PutCommandInput,
+    UpdateCommandInput
 } from "@webiny/aws-sdk/client-dynamodb";
-import { DeleteCommandInput, PutCommand, UpdateCommandInput } from "@aws-sdk/lib-dynamodb";
+import { PutCommand } from "@webiny/aws-sdk/client-dynamodb";
 
 describe("attachToDynamoDbDocument", () => {
     it("should not have attached decorator", async () => {

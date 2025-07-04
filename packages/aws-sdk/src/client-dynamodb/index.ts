@@ -8,26 +8,30 @@ export type {
 export type { StreamRecord } from "@aws-sdk/client-dynamodb-streams";
 
 export {
+    BatchWriteCommand,
+    BatchGetCommand,
+    PutCommand,
+    ScanCommand,
+    GetCommand,
+    UpdateCommand,
+    DeleteCommand,
+    DynamoDBDocument
+} from "@aws-sdk/lib-dynamodb";
+
+export type {
     BatchWriteCommandInput,
     BatchWriteCommandOutput,
     BatchGetCommandInput,
     BatchGetCommandOutput,
     PutCommandInput,
     PutCommandOutput,
+    UpdateCommandInput,
     GetCommandInput,
     GetCommandOutput,
     DeleteCommandInput,
     DeleteCommandOutput,
-    BatchWriteCommand,
-    BatchGetCommand,
-    PutCommand,
-    ScanCommand,
     ScanCommandInput,
     ScanCommandOutput,
-    GetCommand,
-    UpdateCommand,
-    DeleteCommand,
-    DynamoDBDocument,
     QueryCommandOutput
 } from "@aws-sdk/lib-dynamodb";
 

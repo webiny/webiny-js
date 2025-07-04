@@ -6,9 +6,9 @@ const createDataSchema = (type: string) => {
         region: zod.string().min(1, `${type} Region is required.`)
     });
 };
-export const createValidationSchema = () => {
+export const createCopySchema = () => {
     return zod.object({
-        action: zod.enum(["copy", "delete"]),
+        action: zod.enum(["copy"]),
         key: zod.string().min(1, "Key is required."),
         source: createDataSchema("Source"),
         target: createDataSchema("Target")

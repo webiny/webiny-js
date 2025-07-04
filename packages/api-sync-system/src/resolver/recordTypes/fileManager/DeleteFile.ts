@@ -1,15 +1,12 @@
 import type {
     ICreateS3ClientCb,
+    IDeleteFile,
+    IDeleteFileHandleParams,
     IGetLambdaTriggerCb
 } from "~/resolver/recordTypes/fileManager/types.js";
-import type { CommandType } from "~/types.js";
-import type { IStoreItem } from "~/resolver/app/storer/types.js";
-import type { ITable } from "~/sync/types.js";
-import type { IDeployment } from "~/resolver/deployment/types.js";
-import type { PutCommandOutput } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { IBundle } from "~/resolver/app/bundler/types.js";
 import type { HeadObjectCommandInput, S3Client } from "@webiny/aws-sdk/client-s3/index.js";
 import { HeadObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
+import type { InvokeCommandOutput } from "@webiny/aws-sdk/client-lambda/index.js";
 
 interface IExistsParams {
     client: Pick<S3Client, "send">;
@@ -22,16 +19,7 @@ export interface IDeleteFileParams {
     getLambdaTrigger: IGetLambdaTriggerCb;
 }
 
-export interface IDeleteFileHandleParams {
-    command: CommandType;
-    item: IStoreItem;
-    table: ITable;
-    deployment: IDeployment;
-    result: PutCommandOutput;
-    bundle: IBundle;
-}
-
-export class DeleteFile {
+export class DeleteFile implements IDeleteFile {
     private readonly createS3Client: ICreateS3ClientCb;
     private readonly getLambdaTrigger: IGetLambdaTriggerCb;
 
@@ -40,54 +28,42 @@ export class DeleteFile {
         this.getLambdaTrigger = params.getLambdaTrigger;
     }
 
-    public async handle(params: IDeleteFileHandleParams): Promise<void> {
-        const { item, bundle, deployment } = params;
-        /**
-         * First we need to figure out the file location.
-         */
-        if (!item.values) {
-            return;
-        }
-        // @ts-expect-error
-        const fileKey = item.values["text@key"] || item.values["key"];
-        if (!fileKey || typeof fileKey !== "string") {
-            // TODO should we log that there is no file key?
-            return;
-        }
+    public async handle(params: IDeleteFileHandleParams): Promise<InvokeCommandOutput | null> {
+        const { key, source, target } = params;
 
         /**
          * We need to check on the target if the file already exists.
          */
 
         const targetClient = this.createS3Client({
-            region: deployment.region
+            region: target.region
         });
 
         const exists = await this.exists({
             client: targetClient,
-            bucket: deployment.services.s3Id,
-            key: fileKey
+            bucket: target.services.s3Id,
+            key
         });
         if (!exists) {
             // If the file does not exist, we can skip the deletion.
-            return;
+            return null;
         }
 
         /**
          * Then we can safely trigger a Lambda function that will delete the file.
          */
-        await this.getLambdaTrigger().handle({
+        return await this.getLambdaTrigger().handle({
             invocationType: "Event",
             payload: {
                 action: "delete",
-                key: fileKey,
+                key,
                 source: {
-                    region: bundle.source.region,
-                    bucket: bundle.source.services.s3Id
+                    region: source.region,
+                    bucket: source.services.s3Id
                 },
                 target: {
-                    region: deployment.region,
-                    bucket: deployment.services.s3Id
+                    region: target.region,
+                    bucket: target.services.s3Id
                 }
             }
         });

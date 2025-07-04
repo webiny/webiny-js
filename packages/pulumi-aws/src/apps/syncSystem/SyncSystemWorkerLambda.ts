@@ -7,12 +7,12 @@ import { createSyncResourceName } from "./createSyncResourceName.js";
 import { createAssetArchive } from "~/utils/createAssetArchive.js";
 import { createLambdaRoleWithoutVpc } from "~/apps/lambdaUtils.js";
 
-export type SyncSystemFilesLambda = PulumiAppModule<typeof SyncSystemFilesLambda>;
+export type SyncSystemWorkerLambda = PulumiAppModule<typeof SyncSystemWorkerLambda>;
 
-export const SyncSystemFilesLambda = createAppModule({
-    name: "SyncSystemFilesLambda",
+export const SyncSystemWorkerLambda = createAppModule({
+    name: "SyncSystemWorkerLambda",
     config(app: PulumiApp) {
-        const lambdaName = createSyncResourceName("files-lambda");
+        const lambdaName = createSyncResourceName("worker-lambda");
         const roleName = `${lambdaName}-role`;
 
         const role = createLambdaRoleWithoutVpc(app, {
@@ -35,7 +35,7 @@ export const SyncSystemFilesLambda = createAppModule({
                 role: role.output.arn,
                 timeout: 900,
                 memorySize: 512,
-                code: createAssetArchive(path.join(app.paths.workspace, "files/build")),
+                code: createAssetArchive(path.join(app.paths.workspace, "worker/build")),
                 environment: {
                     variables: {
                         DEBUG: String(process.env.DEBUG),

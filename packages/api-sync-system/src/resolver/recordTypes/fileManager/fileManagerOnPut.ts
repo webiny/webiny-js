@@ -1,18 +1,16 @@
 import { createStorerAfterEachPluginWithName } from "~/resolver/plugins/StorerAfterEachPlugin.js";
 import { shouldBeHandled } from "./shouldBeHandled.js";
-import type { PutCommandOutput } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { CopyFile } from "./CopyFile.js";
 import { convertException } from "@webiny/utils";
-import type { ICreateS3ClientCb, IGetLambdaTriggerCb } from "./types.js";
+import type { ICopyFile } from "~/resolver/recordTypes/fileManager/types.js";
 
 export interface ICreateFileManagerOnPutPluginParams {
-    createS3Client: ICreateS3ClientCb;
-    getLambdaTrigger: IGetLambdaTriggerCb;
+    copyFile: ICopyFile;
 }
 
 export const createFileManagerOnPutPlugin = (params: ICreateFileManagerOnPutPluginParams) => {
-    const copyFile = new CopyFile(params);
-    return createStorerAfterEachPluginWithName<PutCommandOutput>("fileManager.onPut", {
+    const { copyFile } = params;
+
+    return createStorerAfterEachPluginWithName("fileManager.onPut", {
         canHandle: params => {
             const { command } = params;
             if (command !== "put") {
@@ -21,17 +19,17 @@ export const createFileManagerOnPutPlugin = (params: ICreateFileManagerOnPutPlug
             return shouldBeHandled(params);
         },
         handle: async params => {
+            const { item } = params;
+            /**
+             * We are 100% positive that the key exists here because canHandle would not allow for handle to be called.
+             */
+            // @ts-expect-error
+            const key = (item.values["text@key"] || item.values["key"]) as string;
             try {
-                return await copyFile.handle({
-                    item: params.item,
-                    command: params.command,
-                    /**
-                     * We can safely cast here because we are 100% positive that result is of type PutCommandOutput.
-                     */
-                    result: params.result as PutCommandOutput,
-                    table: params.table,
-                    deployment: params.deployment,
-                    bundle: params.bundle
+                await copyFile.handle({
+                    target: params.target,
+                    source: params.source,
+                    key
                 });
             } catch (ex) {
                 console.error("Error while handling file manager onPut plugin.");

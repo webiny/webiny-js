@@ -8,7 +8,7 @@ import { APPS_SYNC_SYSTEM_PATH } from "./constants.js";
 import { SyncSystemEventBus } from "./SyncSystemEventBus.js";
 import { customApp } from "./customApp.js";
 import { SyncSystemDynamoDb } from "~/apps/syncSystem/SyncSystemDynamoDb.js";
-import { SyncSystemFilesLambda } from "~/apps/syncSystem/SyncSystemFilesLambda.js";
+import { SyncSystemWorkerLambda } from "~/apps/syncSystem/SyncSystemWorkerLambda.js";
 
 export type SyncSystemPulumiApp = ReturnType<typeof createSyncSystemPulumiApp>;
 
@@ -98,7 +98,7 @@ export function createSyncSystemPulumiApp(projectAppParams: CreateSyncSystemPulu
             const { sqsQueue } = regionApp.addModule(SyncSystemSQS);
             const dynamoDb = regionApp.addModule(SyncSystemDynamoDb);
 
-            const filesLambda = regionApp.addModule(SyncSystemFilesLambda);
+            const filesLambda = regionApp.addModule(SyncSystemWorkerLambda);
 
             const resolverLambda = regionApp.addModule(SyncSystemResolverLambda);
             const { eventBusRule, eventBus, eventBusTarget, eventBusPolicy } =

@@ -14,6 +14,8 @@ import { createFileManagerPlugins } from "./recordTypes/fileManager/fileManager.
 import { LambdaTrigger } from "./lambda/LambdaTrigger.js";
 import type { LambdaClient } from "@webiny/aws-sdk/client-lambda/index.js";
 import type { S3Client, S3ClientConfig } from "@webiny/aws-sdk/client-s3/index.js";
+import { CopyFile } from "~/resolver/recordTypes/fileManager/CopyFile.js";
+import { DeleteFile } from "./recordTypes/fileManager/DeleteFile.js";
 
 export type AllowedResolverPlugins = TransformRecordPlugin | CommandHandlerPlugin;
 
@@ -41,13 +43,24 @@ export const createResolverHandler = (params: ICreateResolverHandlerParams): Han
         createLambdaClient: params.createLambdaClient
     });
 
+    const copyFile = new CopyFile({
+        createS3Client: params.createS3Client,
+        getLambdaTrigger: () => {
+            return lambdaTrigger;
+        }
+    });
+    const deleteFile = new DeleteFile({
+        createS3Client: params.createS3Client,
+        getLambdaTrigger: () => {
+            return lambdaTrigger;
+        }
+    });
+
     const plugins = new PluginsContainer([
         // TODO move into related packages
         createFileManagerPlugins({
-            createS3Client: params.createS3Client,
-            getLambdaTrigger: () => {
-                return lambdaTrigger;
-            }
+            copyFile,
+            deleteFile
         }),
         // leave here
         createEventHandlerPlugin({

@@ -2,35 +2,29 @@ import { Plugin } from "@webiny/plugins/Plugin.js";
 import { CommandType } from "~/types.js";
 import type { IStoreItem } from "~/resolver/app/storer/types.js";
 import type { ITable } from "~/sync/types.js";
-import type {
-    DeleteCommandOutput,
-    PutCommandOutput
-} from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { IDeployment } from "~/resolver/deployment/types.js";
-import type { IBundle } from "~/resolver/app/bundler/types.js";
 
 export interface IStorerAfterEachPluginCanHandleParams {
     command: CommandType;
-    item: IStoreItem;
+    target: IDeployment;
+    source: IDeployment;
     table: ITable;
-    result: PutCommandOutput | DeleteCommandOutput;
+    item: IStoreItem;
 }
 
-export interface IStorerAfterEachPluginHandleParams<T> {
-    command: CommandType;
-    deployment: IDeployment;
-    bundle: IBundle;
-    item: IStoreItem;
+export interface IStorerAfterEachPluginHandleParams {
+    target: IDeployment;
+    source: IDeployment;
     table: ITable;
-    result: T;
+    item: IStoreItem;
 }
 
 export interface IStorerAfterEachPluginParams {
     canHandle: (params: IStorerAfterEachPluginCanHandleParams) => boolean;
-    handle: <T>(params: IStorerAfterEachPluginHandleParams<T>) => Promise<void>;
+    handle: (params: IStorerAfterEachPluginHandleParams) => Promise<void>;
 }
 
-export class StorerAfterEachPlugin<T = PutCommandOutput | DeleteCommandOutput> extends Plugin {
+export class StorerAfterEachPlugin extends Plugin {
     public static override readonly type: string = "syncSystem.storerAfterEachPlugin";
 
     private readonly config: IStorerAfterEachPluginParams;
@@ -44,20 +38,20 @@ export class StorerAfterEachPlugin<T = PutCommandOutput | DeleteCommandOutput> e
         return this.config.canHandle(params);
     }
 
-    public handle(params: IStorerAfterEachPluginHandleParams<T>): Promise<void> {
-        return this.config.handle<T>(params);
+    public handle(params: IStorerAfterEachPluginHandleParams): Promise<void> {
+        return this.config.handle(params);
     }
 }
 
-export const createStorerAfterEachPlugin = <T>(params: IStorerAfterEachPluginParams) => {
-    return new StorerAfterEachPlugin<T>(params);
+export const createStorerAfterEachPlugin = (params: IStorerAfterEachPluginParams) => {
+    return new StorerAfterEachPlugin(params);
 };
 
-export const createStorerAfterEachPluginWithName = <T>(
+export const createStorerAfterEachPluginWithName = (
     name: string,
     params: IStorerAfterEachPluginParams
 ) => {
-    const plugin = createStorerAfterEachPlugin<T>(params);
+    const plugin = createStorerAfterEachPlugin(params);
     plugin.name = `${StorerAfterEachPlugin.type}.${name}`;
     return plugin;
 };

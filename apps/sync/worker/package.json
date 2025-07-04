@@ -1,5 +1,5 @@
 {
-  "name": "sync-system-files",
+  "name": "sync-system-worker",
   "version": "0.1.0",
   "scripts": {
     "build": "yarn webiny run build",
