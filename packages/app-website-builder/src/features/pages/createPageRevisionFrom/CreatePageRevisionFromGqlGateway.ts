@@ -18,7 +18,7 @@ export interface CreatePageRevisionFromPageResponse {
 }
 
 export const CREATE_PAGE_REVISION_FROM = (PAGE_FIELDS: string) => gql`
-    mutation PublishPage($id: ID!) {
+    mutation CreatePageRevisionFrom($id: ID!) {
         websiteBuilder {
             createPageRevisionFrom(id: $id) {
                data ${PAGE_FIELDS}

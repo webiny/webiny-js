@@ -14,6 +14,12 @@ export class CreatePageRevisionFromRepository implements ICreatePageRevisionFrom
 
     async execute(page: Page) {
         const result = await this.gateway.execute(page.id);
-        this.cache.addItems([Page.create(result)]);
+        this.cache.updateItems(p => {
+            if (p.entryId === page.entryId) {
+                return Page.create(result);
+            }
+
+            return Page.create(p);
+        });
     }
 }

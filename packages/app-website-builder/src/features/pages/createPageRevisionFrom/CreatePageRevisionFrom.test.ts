@@ -9,6 +9,7 @@ describe("CreatePageRevisionFrom", () => {
             id: "page-1#0002",
             entryId: "page-1",
             status: statuses.draft,
+            version: 2,
             wbyAco_location: {
                 folderId: "folder-1"
             },
@@ -49,14 +50,14 @@ describe("CreatePageRevisionFrom", () => {
         ]);
     });
 
-    it("should be able to publish a page", async () => {
-        const publishPage = CreatePageRevisionFrom.getInstance(gateway);
+    it("should be able to create a page revision from another revision", async () => {
+        const createPageRevisionFrom = CreatePageRevisionFrom.getInstance(gateway);
 
         expect(pagesCache.hasItems()).toBeTrue();
         const item = pagesCache.getItem(page => page.id === "page-1#0001");
         expect(item?.id).toEqual("page-1#0001");
 
-        await publishPage.execute({
+        await createPageRevisionFrom.execute({
             id: "page-1#0001",
             entryId: "page-1",
             status: statuses.draft,
@@ -75,13 +76,11 @@ describe("CreatePageRevisionFrom", () => {
         });
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);
-        expect(gateway.execute).toHaveBeenLastCalledWith("page-1#0001");
 
         expect(pagesCache.hasItems()).toBeTrue();
-        const publishedItem = pagesCache.getItem(page => page.entryId === "page-1");
-
-        expect(publishedItem?.id).toEqual("page-1#0001");
-        expect(publishedItem?.status).toEqual(statuses.published);
+        const newRevision = pagesCache.getItem(page => page.entryId === "page-1");
+        expect(newRevision?.id).toEqual("page-1#0002");
+        expect(newRevision?.version).toEqual(2);
     });
 
     it("should not publish a page if id is missing", async () => {

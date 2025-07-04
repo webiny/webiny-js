@@ -5,6 +5,7 @@ export interface PageData {
     id?: string;
     entryId?: string;
     status?: WbStatus;
+    version?: number;
     location?: WbLocation;
     wbyAco_location?: WbLocation;
     properties?: Record<string, any>;
@@ -23,6 +24,7 @@ export class Page {
     public id: string;
     public entryId: string;
     public status: WbStatus;
+    public version: number;
     public location: WbLocation;
     public properties: Record<string, any>;
     public bindings: Record<string, any>;
@@ -39,6 +41,7 @@ export class Page {
         this.id = data.id ?? "";
         this.entryId = data.entryId ?? "";
         this.status = data.status ?? statuses.draft;
+        this.version = data.version ?? 1;
         this.location = this.createLocation(data);
         this.properties = data.properties ?? {};
         this.bindings = data.bindings ?? {};
