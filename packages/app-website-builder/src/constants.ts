@@ -9,15 +9,16 @@ export const statuses = {
 
 export type WbLoading = (typeof loadingActions)[keyof typeof loadingActions];
 export const loadingActions = {
+    create: "CREATE",
+    createRevisionFrom: "CREATE_REVISION_FROM",
+    delete: "DELETE",
+    duplicate: "DUPLICATE",
+    get: "GET",
     init: "INIT",
     list: "LIST",
     listMore: "LIST_MORE",
-    get: "GET",
-    create: "CREATE",
-    update: "UPDATE",
-    delete: "DELETE",
     move: "MOVE",
     publish: "PUBLISH",
     unpublish: "UNPUBLISH",
-    duplicate: "DUPLICATE"
+    update: "UPDATE"
 } as const;
