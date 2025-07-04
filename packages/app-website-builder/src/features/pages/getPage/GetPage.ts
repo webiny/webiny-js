@@ -1,4 +1,4 @@
-import { loadingRepositoryFactory } from "@webiny/app-utils";
+import { LoadingRepository, loadingRepositoryFactory } from "@webiny/app-utils";
 import type { IGetPageUseCase } from "~/features/pages/getPage/IGetPageUseCase.js";
 import type { IGetPageGateway } from "~/features/pages/getPage/IGetPageGateway.js";
 import { pageCacheFactory } from "~/features/pages/cache/index.js";
@@ -6,12 +6,22 @@ import { GetPageRepository } from "~/features/pages/getPage/GetPageRepository.js
 import { GetPageUseCase } from "~/features/pages/getPage/GetPageUseCase.js";
 import { GetPageUseCaseWithLoading } from "~/features/pages/getPage/GetPageUseCaseWithLoading.js";
 
+interface IGetPageInstance {
+    useCase: IGetPageUseCase;
+    loading: LoadingRepository;
+}
+
 export class GetPage {
-    public static getInstance(gateway: IGetPageGateway): IGetPageUseCase {
+    public static getInstance(gateway: IGetPageGateway): IGetPageInstance {
         const pagesCache = pageCacheFactory.getCache();
         const loadingRepository = loadingRepositoryFactory.getRepository("WbPage");
         const repository = new GetPageRepository(pagesCache, gateway);
         const useCase = new GetPageUseCase(repository);
-        return new GetPageUseCaseWithLoading(loadingRepository, useCase);
+        const useCaseWithLoading = new GetPageUseCaseWithLoading(loadingRepository, useCase);
+
+        return {
+            useCase: useCaseWithLoading,
+            loading: loadingRepository
+        };
     }
 }
