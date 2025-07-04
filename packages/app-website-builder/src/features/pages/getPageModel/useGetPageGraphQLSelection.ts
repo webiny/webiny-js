@@ -14,8 +14,9 @@ export const useGetPageGraphQLSelection = () => {
         id
         entryId
         status
+        version
         wbyAco_location {
-            location
+            folderId
         }
         createdOn
         createdBy {

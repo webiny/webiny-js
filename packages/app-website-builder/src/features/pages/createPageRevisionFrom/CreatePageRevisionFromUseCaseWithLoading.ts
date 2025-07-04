@@ -2,7 +2,7 @@ import { ILoadingRepository } from "@webiny/app-utils";
 import {
     ICreatePageRevisionFromUseCase,
     type CreatePageRevisionFromParams
-} from "./ICreatePageRevisionFromPageUseCase.js";
+} from "./ICreatePageRevisionFromUseCase.js";
 import { loadingActions } from "~/constants.js";
 
 export class CreatePageRevisionFromUseCaseWithLoading implements ICreatePageRevisionFromUseCase {

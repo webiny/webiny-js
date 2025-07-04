@@ -5,7 +5,7 @@ import type { PageModelDto } from "~/features/pages/getPageModel/PageModelDto.js
 import type { WbError } from "~/types";
 
 export interface GetPageModelResponse {
-    aco: {
+    websiteBuilder: {
         getPageModel: {
             data: PageModelDto;
             error: WbError | null;
@@ -46,7 +46,7 @@ export class GetPageModelGqlGateway implements IGetPageModelGateway {
             throw new Error("Network error while fetch page model.");
         }
 
-        const { data, error } = response.aco.getPageModel;
+        const { data, error } = response.websiteBuilder.getPageModel;
 
         if (!data) {
             throw new Error(error?.message || `Could not fetch page model`);

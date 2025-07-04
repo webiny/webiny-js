@@ -1,4 +1,5 @@
 export * from "./createPage/index.js";
+export * from "./createPageRevisionFrom/index.js";
 export * from "./deletePage/index.js";
 export * from "./duplicatePage/index.js";
 export * from "./getPage/index.js";

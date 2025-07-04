@@ -25,6 +25,7 @@
     { "path": "../app-tenant-manager/tsconfig.build.json" },
     { "path": "../app-trash-bin/tsconfig.build.json" },
     { "path": "../app-websockets/tsconfig.build.json" },
+    { "path": "../app-website-builder/tsconfig.build.json" },
     { "path": "../lexical-editor-actions/tsconfig.build.json" },
     { "path": "../lexical-editor-pb-element/tsconfig.build.json" },
     { "path": "../lexical-theme/tsconfig.build.json" },

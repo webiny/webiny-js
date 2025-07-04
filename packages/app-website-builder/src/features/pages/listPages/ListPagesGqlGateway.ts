@@ -12,6 +12,14 @@ const LIST_META_FIELD = /* GraphQL */ `
     }
 `;
 
+const ERROR_FIELD = /* GraphQL */ `
+    error {
+        code
+        data
+        message
+    }
+`;
+
 export interface ListPagesResponse {
     websiteBuilder: {
         listPages: {
@@ -37,12 +45,8 @@ export const LIST_PAGES = (PAGES_FIELDS: string) => gql`
         websiteBuilder {
             listPages(where: $where, limit: $limit, after: $after, sort: $sort, search: $search) {
                 data ${PAGES_FIELDS}
-                meta ${LIST_META_FIELD}
-                error {
-                    code
-                    data
-                    message
-                }
+                ${LIST_META_FIELD}
+                ${ERROR_FIELD}
             }
         }
     }
@@ -59,6 +63,8 @@ export class ListPagesGqlGateway implements IListPagesGateway {
 
     async execute(params: ListPagesGatewayParams) {
         const { folderId } = params;
+
+        console.log(LIST_PAGES(this.modelFields));
 
         const { data: response } = await this.client.query<
             ListPagesResponse,

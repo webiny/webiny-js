@@ -13,7 +13,7 @@ export const useGetPage = () => {
     const getPage = useCallback(
         (params: GetPageParams) => {
             const instance = GetPage.getInstance(gateway);
-            return instance.execute(params);
+            return instance.useCase.execute(params);
         },
         [gateway]
     );
