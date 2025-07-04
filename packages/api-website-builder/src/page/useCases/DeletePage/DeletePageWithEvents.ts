@@ -19,7 +19,7 @@ export class DeletePageWithEvents implements IDeletePage {
     }
 
     async execute(params: DeleteWbPageParams): Promise<void> {
-        const page = await this.getOperation({ id: params.entryId });
+        const page = await this.getOperation({ entryId: params.entryId });
 
         if (!page) {
             throw new WebinyError(

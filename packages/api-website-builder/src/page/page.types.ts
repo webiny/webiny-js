@@ -75,6 +75,7 @@ export interface CreateWbPageRevisionFromParams {
  */
 export interface WbPagesStorageOperationsGetParams {
     id?: string;
+    entryId?: string;
     path?: string;
     templateSlug?: string;
 }
