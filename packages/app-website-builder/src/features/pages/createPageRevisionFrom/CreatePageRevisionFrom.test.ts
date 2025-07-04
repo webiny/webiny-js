@@ -84,9 +84,9 @@ describe("CreatePageRevisionFrom", () => {
     });
 
     it("should not publish a page if id is missing", async () => {
-        const publishPage = CreatePageRevisionFrom.getInstance(gateway);
+        const createRevisionFrom = CreatePageRevisionFrom.getInstance(gateway);
 
-        await publishPage.execute({
+        await createRevisionFrom.execute({
             id: "",
             entryId: "",
             status: statuses.draft,
@@ -106,9 +106,10 @@ describe("CreatePageRevisionFrom", () => {
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);
 
-        const publishedItem = pagesCache.getItem(page => page.entryId === "page-1");
+        const newRevision = pagesCache.getItem(page => page.entryId === "page-1");
 
-        expect(publishedItem?.id).toEqual("page-1#0001");
-        expect(publishedItem?.status).toEqual(statuses.draft);
+        expect(newRevision?.id).toEqual("page-1#0001");
+        expect(newRevision?.id).toEqual("page-1#0001");
+        expect(newRevision?.version).toEqual(1);
     });
 });
