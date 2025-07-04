@@ -46,6 +46,13 @@ const baseSchema = new GraphQLSchemaPlugin({
             folderId: String
         }
 
+        input WbLocationWhereInput {
+            folderId: ID
+            folderId_in: [ID!]
+            folderId_not: ID
+            folderId_not_in: [ID!]
+        }
+
         type WbError {
             code: String
             message: String

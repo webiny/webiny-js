@@ -97,6 +97,7 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
         }
         
         input WbPagesListWhereInput {
+            wbyAco_location: WbLocationWhereInput
             ${listFilterFieldsRender}
             AND: [WbPagesListWhereInput!]
             OR: [WbPagesListWhereInput!]

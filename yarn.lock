@@ -18939,6 +18939,7 @@ __metadata:
     "@webiny/app-tenancy": "npm:0.0.0"
     "@webiny/app-tenant-manager": "npm:0.0.0"
     "@webiny/app-trash-bin": "npm:0.0.0"
+    "@webiny/app-website-builder": "npm:0.0.0"
     "@webiny/app-websockets": "npm:0.0.0"
     "@webiny/lexical-editor-actions": "npm:0.0.0"
     "@webiny/lexical-editor-pb-element": "npm:0.0.0"
