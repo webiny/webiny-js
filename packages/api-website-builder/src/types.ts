@@ -7,12 +7,14 @@ import {
     type SecurityIdentity
 } from "@webiny/api-security/types";
 import { AdminUsersContext } from "@webiny/api-admin-users/types";
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContext, type CmsIdentity } from "@webiny/api-headless-cms/types";
 import type { WbPageCrud, WbPagesStorageOperations } from "~/page/page.types";
 
 export interface WbLocation {
     folderId: string;
 }
+
+export type WbIdentity = CmsIdentity;
 
 export interface WbListMeta {
     hasMoreItems: boolean;

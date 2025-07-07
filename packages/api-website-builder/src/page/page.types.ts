@@ -1,4 +1,4 @@
-import type { WbListMeta, WbLocation } from "~/types";
+import type { WbIdentity, WbListMeta, WbLocation } from "~/types";
 import type { CmsEntryListSort, CmsEntryListWhere } from "@webiny/api-headless-cms/types";
 import type { Topic } from "@webiny/pubsub/types";
 
@@ -9,6 +9,12 @@ export interface WbPage {
     status: string;
     version: number;
     locked: boolean;
+    createdOn: string;
+    createdBy: WbIdentity;
+    savedOn: string;
+    savedBy: WbIdentity;
+    modifiedOn: string;
+    modifiedBy: WbIdentity;
     tenant: string;
     locale: string;
     webinyVersion: string;
