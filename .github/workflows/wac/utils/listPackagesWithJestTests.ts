@@ -266,6 +266,13 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
             }
         ];
     },
+    "app-website-builder": () => {
+        return [
+            {
+                cmd: "packages/app-website-builder"
+            }
+        ];
+    },
     "admin-ui": () => {
         return [
             {
