@@ -18,9 +18,33 @@ export interface IFileLambdaPayloadInfo {
     region: string;
 }
 
-export interface IFileLambdaPayload {
-    action: "delete" | "copy";
+export interface ICopyFileLambdaPayload {
+    action: "copyFile";
     key: string;
     source: IFileLambdaPayloadInfo;
     target: IFileLambdaPayloadInfo;
+}
+
+export interface IDeleteFileLambdaPayload {
+    action: "deleteFile";
+    key: string;
+    target: IFileLambdaPayloadInfo;
+}
+
+export interface IUserLambdaPayloadInfo {
+    region: string;
+    userPoolId: string;
+}
+
+export interface IDeleteUserLambdaPayload {
+    action: "deleteUser";
+    username: string;
+    target: IUserLambdaPayloadInfo;
+}
+
+export interface ICopyUserLambdaPayload {
+    action: "createUser" | "updateUser";
+    username: string;
+    source: IUserLambdaPayloadInfo;
+    target: IUserLambdaPayloadInfo;
 }

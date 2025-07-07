@@ -1,12 +1,12 @@
 import { DeleteFile } from "~/resolver/recordTypes/fileManager/DeleteFile.js";
 import { createS3Client, HeadObjectCommand, S3Client } from "@webiny/aws-sdk/client-s3/index.js";
 import { mockClient } from "aws-sdk-client-mock";
-import { createLambdaTriggerMock } from "~tests/mocks/lambdaTrigger.js";
 import {
     createMockSourceDeployment,
     createMockTargetDeployment
 } from "~tests/mocks/deployments.js";
 import { createLambdaClient, InvokeCommand, LambdaClient } from "@webiny/aws-sdk/client-lambda";
+import { LambdaTrigger } from "~/resolver/lambda/LambdaTrigger.js";
 
 describe("DeleteFile", () => {
     it("should return null if file does not exist", async () => {
@@ -18,13 +18,18 @@ describe("DeleteFile", () => {
                 httpStatusCode: 404
             }
         });
+        const mockedLambdaClient = mockClient(LambdaClient);
+        mockedLambdaClient.on(InvokeCommand).resolves({
+            StatusCode: 200
+        });
 
         const deleteFile = new DeleteFile({
             createS3Client: params => {
                 return createS3Client(params);
             },
             getLambdaTrigger: () => {
-                return createLambdaTriggerMock({
+                return new LambdaTrigger({
+                    arn: "unknown",
                     createLambdaClient
                 });
             }
@@ -43,13 +48,18 @@ describe("DeleteFile", () => {
         const mockedS3Client = mockClient(S3Client);
 
         mockedS3Client.on(HeadObjectCommand).rejects();
+        const mockedLambdaClient = mockClient(LambdaClient);
+        mockedLambdaClient.on(InvokeCommand).resolves({
+            StatusCode: 200
+        });
 
         const deleteFile = new DeleteFile({
             createS3Client: params => {
                 return createS3Client(params);
             },
             getLambdaTrigger: () => {
-                return createLambdaTriggerMock({
+                return new LambdaTrigger({
+                    arn: "unknown",
                     createLambdaClient
                 });
             }
@@ -83,7 +93,8 @@ describe("DeleteFile", () => {
                 return createS3Client(params);
             },
             getLambdaTrigger: () => {
-                return createLambdaTriggerMock({
+                return new LambdaTrigger({
+                    arn: "unknown",
                     createLambdaClient
                 });
             }

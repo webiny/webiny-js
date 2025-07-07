@@ -13,6 +13,7 @@ export interface IDeploymentServices {
     elasticsearchDynamodbTableName?: string;
     logDynamodbTableArn: string;
     logDynamodbTableName: string;
+    cognitoUserPoolId: string;
 }
 
 export interface IDeployment {

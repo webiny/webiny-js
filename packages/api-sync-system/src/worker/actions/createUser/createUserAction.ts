@@ -1,24 +1,22 @@
 import { createWorkerActionPlugin } from "~/worker/plugins/WorkerActionPlugin.js";
-import type { ICopyUserActionEvent } from "~/worker/actions/copyUser/types.js";
-import { createCopyUserSchema } from "./copyUserSchema.js";
+import type { ICreateUserActionEvent } from "~/worker/actions/createUser/types.js";
+import { createCreateUserSchema } from "./createUserSchema.js";
 import type { CognitoIdentityProvider } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
-import { CopyUser } from "~/worker/actions/copyUser/CopyUser.js";
+import { CreateUser } from "~/worker/actions/createUser/CreateUser.js";
 import { logValidationError } from "~/worker/actions/logValidationError.js";
 
-export interface ICreateCopyUserActionParams {
-    getCognitoProvider(
-        region: string
-    ): Pick<CognitoIdentityProvider, "adminCreateUser" | "adminGetUser" | "adminDeleteUser">;
+export interface ICreateCreateUserActionParams {
+    getCognitoProvider(region: string): Pick<CognitoIdentityProvider, "send">;
 }
 
-export const createCopyUserAction = (params: ICreateCopyUserActionParams) => {
-    const copyUser = new CopyUser({
+export const createCreateUserAction = (params: ICreateCreateUserActionParams) => {
+    const createUser = new CreateUser({
         getCognitoProvider: params.getCognitoProvider
     });
-    return createWorkerActionPlugin<ICopyUserActionEvent>({
-        name: "sync.worker.action.copyUser",
+    return createWorkerActionPlugin<ICreateUserActionEvent>({
+        name: "sync.worker.action.createUser",
         parse: input => {
-            const schema = createCopyUserSchema();
+            const schema = createCreateUserSchema();
 
             const result = schema.safeParse(input);
             if (!result.success || result.error) {
@@ -29,7 +27,7 @@ export const createCopyUserAction = (params: ICreateCopyUserActionParams) => {
         },
         async handle(params) {
             const { data } = params;
-            return copyUser.copy({
+            return createUser.create({
                 username: data.username,
                 sourceRegion: data.source.region,
                 sourceUserPoolId: data.source.userPoolId,

@@ -16,6 +16,10 @@ import type { LambdaClient } from "@webiny/aws-sdk/client-lambda/index.js";
 import type { S3Client, S3ClientConfig } from "@webiny/aws-sdk/client-s3/index.js";
 import { CopyFile } from "~/resolver/recordTypes/fileManager/CopyFile.js";
 import { DeleteFile } from "./recordTypes/fileManager/DeleteFile.js";
+import { createUsersPlugins } from "~/resolver/recordTypes/users/users.js";
+import { CopyUser } from "./recordTypes/users/CopyUser.js";
+import { CognitoIdentityProviderClient } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
+import { DeleteUser } from "./recordTypes/users/DeleteUser.js";
 
 export type AllowedResolverPlugins = TransformRecordPlugin | CommandHandlerPlugin;
 
@@ -24,6 +28,9 @@ export interface ICreateResolverHandlerParams extends HandlerParams {
     createS3Client: (params: S3ClientConfig) => Pick<S3Client, "send">;
     createLambdaClient: () => Pick<LambdaClient, "send">;
     createDocumentClient: (params: DynamoDBClientConfig) => Pick<DynamoDBDocument, "send">;
+    createCognitoIdentityProviderClient: (
+        region: string
+    ) => Pick<CognitoIdentityProviderClient, "send">;
     tableName?: string;
     awsSyncLambdaArn?: string;
 }
@@ -56,11 +63,28 @@ export const createResolverHandler = (params: ICreateResolverHandlerParams): Han
         }
     });
 
+    const copyUser = new CopyUser({
+        createCognitoIdentityProviderClient: params.createCognitoIdentityProviderClient,
+        getLambdaTrigger: () => {
+            return lambdaTrigger;
+        }
+    });
+    const deleteUser = new DeleteUser({
+        createCognitoIdentityProviderClient: params.createCognitoIdentityProviderClient,
+        getLambdaTrigger: () => {
+            return lambdaTrigger;
+        }
+    });
+
     const plugins = new PluginsContainer([
         // TODO move into related packages
         createFileManagerPlugins({
             copyFile,
             deleteFile
+        }),
+        createUsersPlugins({
+            copyUser,
+            deleteUser
         }),
         // leave here
         createEventHandlerPlugin({

@@ -3,7 +3,6 @@ import { createMockSystem } from "~tests/mocks/system.js";
 import { createMockManifest } from "~tests/mocks/manifest.js";
 import { Handler } from "~/sync/handler/Handler.js";
 import { HandlerConverter } from "~/sync/handler/HandlerConverter.js";
-import { createMockEventBridgeClient } from "~tests/mocks/eventBridgeClient.js";
 import {
     BatchGetCommand,
     BatchWriteCommand,
@@ -19,13 +18,26 @@ import { DeleteCommandValue } from "~/sync/handler/converter/commands/DeleteComm
 import { BatchWriteCommandValue } from "~/sync/handler/converter/commands/BatchWriteCommandValue.js";
 import { getTableType } from "~/sync/utils/getTableType.js";
 import { createMockPluginsContainer } from "~tests/mocks/plugins.js";
+import {
+    createEventBridgeClient,
+    EventBridgeClient,
+    PutEventsCommand
+} from "@webiny/aws-sdk/client-eventbridge/index.js";
+import { mockClient } from "aws-sdk-client-mock";
 
 describe("createHandler", () => {
     const tableName = process.env.DB_TABLE as string;
 
     it("should create a handler and a converter", async () => {
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
         const { handler, converter } = createHandler({
-            getEventBridgeClient: () => createMockEventBridgeClient(),
+            getEventBridgeClient: createEventBridgeClient,
             system: createMockSystem(),
             manifest: createMockManifest(),
             getPlugins: () => {
@@ -38,10 +50,17 @@ describe("createHandler", () => {
     });
 
     it("should convert delete command", async () => {
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
         const { converter } = createHandler({
             system: createMockSystem(),
             manifest: createMockManifest(),
-            getEventBridgeClient: () => createMockEventBridgeClient(),
+            getEventBridgeClient: createEventBridgeClient,
             getPlugins() {
                 return createMockPluginsContainer();
             }
@@ -71,8 +90,15 @@ describe("createHandler", () => {
     });
 
     it("should convert put command", async () => {
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
         const { converter } = createHandler({
-            getEventBridgeClient: () => createMockEventBridgeClient(),
+            getEventBridgeClient: createEventBridgeClient,
             getPlugins() {
                 return createMockPluginsContainer();
             },
@@ -104,8 +130,15 @@ describe("createHandler", () => {
     });
 
     it("should convert update command", async () => {
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
         const { converter } = createHandler({
-            getEventBridgeClient: () => createMockEventBridgeClient(),
+            getEventBridgeClient: createEventBridgeClient,
             getPlugins() {
                 return createMockPluginsContainer();
             },
@@ -137,8 +170,15 @@ describe("createHandler", () => {
     });
 
     it("should convert get command", async () => {
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
         const { converter } = createHandler({
-            getEventBridgeClient: () => createMockEventBridgeClient(),
+            getEventBridgeClient: createEventBridgeClient,
             getPlugins() {
                 return createMockPluginsContainer();
             },
@@ -162,8 +202,15 @@ describe("createHandler", () => {
     });
 
     it("should convert batch get command", async () => {
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
         const { converter } = createHandler({
-            getEventBridgeClient: () => createMockEventBridgeClient(),
+            getEventBridgeClient: createEventBridgeClient,
             getPlugins() {
                 return createMockPluginsContainer();
             },
@@ -196,8 +243,14 @@ describe("createHandler", () => {
     });
 
     it("should convert batch write command", async () => {
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
         const { converter } = createHandler({
-            getEventBridgeClient: () => createMockEventBridgeClient(),
+            getEventBridgeClient: createEventBridgeClient,
             getPlugins() {
                 return createMockPluginsContainer();
             },
@@ -302,8 +355,14 @@ describe("createHandler", () => {
     });
 
     it("should not convert batch write command if no table", async () => {
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
         const { converter } = createHandler({
-            getEventBridgeClient: () => createMockEventBridgeClient(),
+            getEventBridgeClient: createEventBridgeClient,
             getPlugins() {
                 return createMockPluginsContainer();
             },
@@ -323,8 +382,14 @@ describe("createHandler", () => {
     });
 
     it("should not convert batch write command if no items in table", async () => {
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
         const { converter } = createHandler({
-            getEventBridgeClient: () => createMockEventBridgeClient(),
+            getEventBridgeClient: createEventBridgeClient,
             getPlugins() {
                 return createMockPluginsContainer();
             },

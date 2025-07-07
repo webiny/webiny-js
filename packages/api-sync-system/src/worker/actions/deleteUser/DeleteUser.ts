@@ -1,15 +1,15 @@
-import type {
-    AdminDeleteUserCommandInput,
-    AdminGetUserCommandInput,
-    AdminGetUserCommandOutput,
-    CognitoIdentityProvider
+import {
+    AdminDeleteUserCommand,
+    type AdminDeleteUserCommandInput,
+    AdminGetUserCommand,
+    type AdminGetUserCommandInput,
+    type AdminGetUserCommandOutput,
+    type CognitoIdentityProvider
 } from "@webiny/aws-sdk/client-cognito-identity-provider";
 import { convertException } from "@webiny/utils/exception.js";
 
 export interface IDeleteUserParams {
-    getCognitoProvider: (
-        region: string
-    ) => Pick<CognitoIdentityProvider, "adminCreateUser" | "adminGetUser" | "adminDeleteUser">;
+    getCognitoProvider: (region: string) => Pick<CognitoIdentityProvider, "send">;
 }
 
 export interface IDeleteUserDeleteParams {
@@ -21,13 +21,11 @@ export interface IDeleteUserDeleteParams {
 interface IDeleteUserGetUserParams {
     userPoolId: string;
     username: string;
-    provider: Pick<CognitoIdentityProvider, "adminGetUser">;
+    provider: Pick<CognitoIdentityProvider, "send">;
 }
 
 export class DeleteUser {
-    private readonly getCognitoProvider: (
-        region: string
-    ) => Pick<CognitoIdentityProvider, "adminCreateUser" | "adminGetUser" | "adminDeleteUser">;
+    private readonly getCognitoProvider: (region: string) => Pick<CognitoIdentityProvider, "send">;
 
     public constructor(params: IDeleteUserParams) {
         this.getCognitoProvider = params.getCognitoProvider;
@@ -52,8 +50,9 @@ export class DeleteUser {
             Username: username
         };
 
+        const cmd = new AdminDeleteUserCommand(deleteUserInput);
         try {
-            await provider.adminDeleteUser(deleteUserInput);
+            await provider.send(cmd);
         } catch (ex) {
             console.error(
                 `Failed to delete user "${username}" in pool "${userPoolId}". More info in next log line.`
@@ -71,9 +70,11 @@ export class DeleteUser {
             Username: username
         };
 
+        const cmd = new AdminGetUserCommand(input);
+
         try {
-            const result = await provider.adminGetUser(input);
-            if (result.$metadata?.httpStatusCode !== 200) {
+            const result = await provider.send(cmd);
+            if (result.$metadata?.httpStatusCode === 200) {
                 return result;
             }
         } catch (ex) {

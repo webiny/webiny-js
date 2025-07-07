@@ -1,18 +1,18 @@
-import type {
-    AdminCreateUserRequest,
-    AdminGetUserCommandInput,
-    AdminGetUserCommandOutput,
-    CognitoIdentityProvider
+import {
+    AdminCreateUserCommand,
+    type AdminCreateUserRequest,
+    AdminGetUserCommand,
+    type AdminGetUserCommandInput,
+    type AdminGetUserCommandOutput,
+    type CognitoIdentityProvider
 } from "@webiny/aws-sdk/client-cognito-identity-provider";
 import { convertException } from "@webiny/utils/exception.js";
 
-export interface ICopyUserParams {
-    getCognitoProvider: (
-        region: string
-    ) => Pick<CognitoIdentityProvider, "adminCreateUser" | "adminGetUser" | "adminDeleteUser">;
+export interface ICreateUserParams {
+    getCognitoProvider: (region: string) => Pick<CognitoIdentityProvider, "send">;
 }
 
-export interface ICopyUserCopyParams {
+export interface ICreateUserCreateParams {
     username: string;
     sourceRegion: string;
     targetRegion: string;
@@ -20,22 +20,20 @@ export interface ICopyUserCopyParams {
     targetUserPoolId: string;
 }
 
-interface ICopyUserGetUserParams {
+interface ICreateUserGetUserParams {
     userPoolId: string;
     username: string;
-    provider: Pick<CognitoIdentityProvider, "adminGetUser">;
+    provider: Pick<CognitoIdentityProvider, "send">;
 }
 
-export class CopyUser {
-    private readonly getCognitoProvider: (
-        region: string
-    ) => Pick<CognitoIdentityProvider, "adminCreateUser" | "adminGetUser" | "adminDeleteUser">;
+export class CreateUser {
+    private readonly getCognitoProvider: (region: string) => Pick<CognitoIdentityProvider, "send">;
 
-    public constructor(params: ICopyUserParams) {
+    public constructor(params: ICreateUserParams) {
         this.getCognitoProvider = params.getCognitoProvider;
     }
 
-    public async copy(params: ICopyUserCopyParams): Promise<void> {
+    public async create(params: ICreateUserCreateParams): Promise<void> {
         const { sourceUserPoolId, targetUserPoolId, username, targetRegion, sourceRegion } = params;
 
         const sourceProvider = this.getCognitoProvider(sourceRegion);
@@ -68,8 +66,10 @@ export class CopyUser {
             Username: username
         };
 
+        const cmd = new AdminCreateUserCommand(createUserInput);
+
         try {
-            await targetProvider.adminCreateUser(createUserInput);
+            await targetProvider.send(cmd);
         } catch (ex) {
             console.error(
                 `Failed to create user "${username}" in pool "${targetUserPoolId}". More info in next log line.`
@@ -79,7 +79,7 @@ export class CopyUser {
     }
 
     private async getUser(
-        params: ICopyUserGetUserParams
+        params: ICreateUserGetUserParams
     ): Promise<AdminGetUserCommandOutput | null> {
         const { userPoolId, username, provider } = params;
         const input: AdminGetUserCommandInput = {
@@ -87,8 +87,10 @@ export class CopyUser {
             Username: username
         };
 
+        const cmd = new AdminGetUserCommand(input);
+
         try {
-            const result = await provider.adminGetUser(input);
+            const result = await provider.send(cmd);
             if (result.$metadata?.httpStatusCode === 200) {
                 return result;
             }

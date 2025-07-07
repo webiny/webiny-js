@@ -3,19 +3,31 @@ import { createResolverHandler } from "~/resolver/createResolverHandler.js";
 import { createMockSQSEventRecord } from "~tests/mocks/sqsEvent.js";
 import { createLambdaContext } from "~tests/mocks/lambdaContext.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
-import { createMockLambdaClient } from "~tests/mocks/lambdaClient.js";
-import { createMockS3Client } from "~tests/mocks/s3Client.js";
+import { mockClient } from "aws-sdk-client-mock";
+import { createLambdaClient, LambdaClient } from "@webiny/aws-sdk/client-lambda/index.js";
+import { createS3Client, S3Client } from "@webiny/aws-sdk/client-s3/index.js";
 
 describe("createResolverHandler", () => {
     it("should create a resolver handler and get an error on input because of no deployments", async () => {
+        const mockedLambdaClient = mockClient(LambdaClient);
+        mockedLambdaClient.onAnyCommand().resolves({
+            StatusCode: 200
+        });
+        const mockedS3Client = mockClient(S3Client);
+        mockedS3Client.onAnyCommand().resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
         const handler = createResolverHandler({
             awsSyncLambdaArn: "some-arn",
             plugins: [],
             createLambdaClient: () => {
-                return createMockLambdaClient();
+                return createLambdaClient();
             },
             createS3Client: () => {
-                return createMockS3Client();
+                return createS3Client();
             },
             createDocumentClient: params => {
                 return getDocumentClient(params);

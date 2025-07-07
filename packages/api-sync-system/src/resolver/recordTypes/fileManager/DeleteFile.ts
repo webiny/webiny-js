@@ -7,6 +7,7 @@ import type {
 import type { HeadObjectCommandInput, S3Client } from "@webiny/aws-sdk/client-s3/index.js";
 import { HeadObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import type { InvokeCommandOutput } from "@webiny/aws-sdk/client-lambda/index.js";
+import type { IDeleteFileLambdaPayload } from "~/types.js";
 
 interface IExistsParams {
     client: Pick<S3Client, "send">;
@@ -16,12 +17,12 @@ interface IExistsParams {
 
 export interface IDeleteFileParams {
     createS3Client: ICreateS3ClientCb;
-    getLambdaTrigger: IGetLambdaTriggerCb;
+    getLambdaTrigger: IGetLambdaTriggerCb<IDeleteFileLambdaPayload>;
 }
 
 export class DeleteFile implements IDeleteFile {
     private readonly createS3Client: ICreateS3ClientCb;
-    private readonly getLambdaTrigger: IGetLambdaTriggerCb;
+    private readonly getLambdaTrigger: IGetLambdaTriggerCb<IDeleteFileLambdaPayload>;
 
     public constructor(params: IDeleteFileParams) {
         this.createS3Client = params.createS3Client;
@@ -29,7 +30,7 @@ export class DeleteFile implements IDeleteFile {
     }
 
     public async handle(params: IDeleteFileHandleParams): Promise<InvokeCommandOutput | null> {
-        const { key, source, target } = params;
+        const { key, target } = params;
 
         /**
          * We need to check on the target if the file already exists.
@@ -55,12 +56,8 @@ export class DeleteFile implements IDeleteFile {
         return await this.getLambdaTrigger().handle({
             invocationType: "Event",
             payload: {
-                action: "delete",
+                action: "deleteFile",
                 key,
-                source: {
-                    region: source.region,
-                    bucket: source.services.s3Id
-                },
                 target: {
                     region: target.region,
                     bucket: target.services.s3Id

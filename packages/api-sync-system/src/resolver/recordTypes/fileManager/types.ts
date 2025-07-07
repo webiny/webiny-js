@@ -1,11 +1,10 @@
 import type { LambdaTrigger } from "~/resolver/lambda/LambdaTrigger.js";
 import type { S3Client, S3ClientConfig } from "@webiny/aws-sdk/client-s3/index.js";
-import type { IFileLambdaPayload } from "~/types.js";
 import type { IDeployment } from "~/resolver/deployment/types.js";
 import type { InvokeCommandOutput } from "@webiny/aws-sdk/client-lambda/index.js";
 
-export interface IGetLambdaTriggerCb {
-    (): LambdaTrigger<IFileLambdaPayload>;
+export interface IGetLambdaTriggerCb<T> {
+    (): LambdaTrigger<T>;
 }
 
 export interface ICreateS3ClientCb {

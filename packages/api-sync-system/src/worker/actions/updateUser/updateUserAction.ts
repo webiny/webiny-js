@@ -1,22 +1,22 @@
 import { createWorkerActionPlugin } from "~/worker/plugins/WorkerActionPlugin.js";
-import type { IDeleteUserActionEvent } from "./types.js";
-import { createDeleteUserSchema } from "./deleteUserSchema.js";
+import type { IUpdateUserActionEvent } from "~/worker/actions/updateUser/types.js";
+import { createUpdateUserSchema } from "./updateUserSchema.js";
 import type { CognitoIdentityProvider } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
-import { DeleteUser } from "./DeleteUser.js";
+import { UpdateUser } from "~/worker/actions/updateUser/UpdateUser.js";
 import { logValidationError } from "~/worker/actions/logValidationError.js";
 
-export interface ICreateDeleteUserActionParams {
+export interface ICreateUpdateUserActionParams {
     getCognitoProvider(region: string): Pick<CognitoIdentityProvider, "send">;
 }
 
-export const createDeleteUserAction = (params: ICreateDeleteUserActionParams) => {
-    const deleteUser = new DeleteUser({
+export const createUpdateUserAction = (params: ICreateUpdateUserActionParams) => {
+    const createUser = new UpdateUser({
         getCognitoProvider: params.getCognitoProvider
     });
-    return createWorkerActionPlugin<IDeleteUserActionEvent>({
-        name: "sync.worker.action.deleteUser",
+    return createWorkerActionPlugin<IUpdateUserActionEvent>({
+        name: "sync.worker.action.createUser",
         parse: input => {
-            const schema = createDeleteUserSchema();
+            const schema = createUpdateUserSchema();
 
             const result = schema.safeParse(input);
             if (!result.success || result.error) {
@@ -27,10 +27,12 @@ export const createDeleteUserAction = (params: ICreateDeleteUserActionParams) =>
         },
         async handle(params) {
             const { data } = params;
-            return deleteUser.delete({
+            return createUser.create({
                 username: data.username,
-                region: data.target.region,
-                userPoolId: data.target.userPoolId
+                sourceRegion: data.source.region,
+                sourceUserPoolId: data.source.userPoolId,
+                targetRegion: data.target.region,
+                targetUserPoolId: data.target.userPoolId
             });
         }
     });

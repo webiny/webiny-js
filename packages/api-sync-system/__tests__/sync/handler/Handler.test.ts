@@ -1,5 +1,4 @@
 import { Handler } from "~/sync/handler/Handler.js";
-import { createMockEventBridgeClient } from "~tests/mocks/eventBridgeClient.js";
 import { createMockHandlerConverter } from "~tests/mocks/handlerConverter.js";
 import {
     DeleteCommand,
@@ -10,22 +9,62 @@ import {
     UpdateCommand
 } from "@webiny/aws-sdk/client-dynamodb";
 import { createMockSyncHandler } from "~tests/mocks/syncHandler.js";
-import { PutEventsCommand, PutEventsCommandOutput } from "@webiny/aws-sdk/client-eventbridge";
+import {
+    createEventBridgeClient,
+    EventBridgeClient,
+    PutEventsCommand,
+    PutEventsCommandInput,
+    PutEventsCommandOutput
+} from "@webiny/aws-sdk/client-eventbridge";
 import { generateAlphaNumericId } from "@webiny/utils";
+import { mockClient } from "aws-sdk-client-mock";
 
 describe("Handler", () => {
     const tableName = process.env.DB_TABLE as string;
 
     it("should create a sync handler", async () => {
-        const handler = createMockSyncHandler();
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
+        const handler = createMockSyncHandler({
+            getEventBridgeClient: createEventBridgeClient
+        });
 
         expect(handler).toBeInstanceOf(Handler);
     });
 
     it("should add commands and flush them", async () => {
-        const send = jest.fn(async (cmd: PutEventsCommand): Promise<PutEventsCommandOutput> => {
+        const send = jest.fn(
+            async (input: PutEventsCommandInput): Promise<PutEventsCommandOutput> => {
+                return {
+                    Entries: (input.Entries || []).map(entry => {
+                        return {
+                            EventId: generateAlphaNumericId(),
+                            ...entry
+                        };
+                    }),
+                    FailedEntryCount: 0,
+                    $metadata: {
+                        httpStatusCode: 200,
+                        requestId: generateAlphaNumericId(),
+                        extendedRequestId: undefined,
+                        cfId: undefined,
+                        attempts: 1,
+                        totalRetryDelay: 0
+                    }
+                };
+            }
+        );
+
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).callsFake((input: PutEventsCommandInput) => {
+            send(input);
             return {
-                Entries: (cmd.input.Entries || []).map(entry => {
+                Entries: (input.Entries || []).map(entry => {
                     return {
                         EventId: generateAlphaNumericId(),
                         ...entry
@@ -43,18 +82,14 @@ describe("Handler", () => {
             };
         });
 
-        const client = createMockEventBridgeClient({
-            send
-        });
-
         const handler = createMockSyncHandler({
-            getEventBridgeClient: () => client,
+            getEventBridgeClient: createEventBridgeClient,
             converter: createMockHandlerConverter({
                 commandConverters: "all"
             })
         });
 
-        expect(client.send).not.toHaveBeenCalled();
+        expect(send).not.toHaveBeenCalled();
 
         /**
          * No commands so nothing to flush.
@@ -192,14 +227,11 @@ describe("Handler", () => {
     });
 
     it("should throw an error on flush due to unknown error", async () => {
-        const client = createMockEventBridgeClient({
-            send: async () => {
-                throw new Error("Unspecified error.");
-            }
-        });
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).rejects("Unspecified error.");
 
         const handler = createMockSyncHandler({
-            getEventBridgeClient: () => client,
+            getEventBridgeClient: createEventBridgeClient,
             converter: "all"
         });
 

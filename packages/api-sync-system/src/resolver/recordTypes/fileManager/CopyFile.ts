@@ -7,6 +7,7 @@ import type {
     IGetLambdaTriggerCb
 } from "./types.js";
 import type { InvokeCommandOutput } from "@webiny/aws-sdk/client-lambda/index.js";
+import type { ICopyFileLambdaPayload } from "~/types.js";
 
 interface IExistsParams {
     client: Pick<S3Client, "send">;
@@ -16,12 +17,12 @@ interface IExistsParams {
 
 export interface ICopyFileParams {
     createS3Client: ICreateS3ClientCb;
-    getLambdaTrigger: IGetLambdaTriggerCb;
+    getLambdaTrigger: IGetLambdaTriggerCb<ICopyFileLambdaPayload>;
 }
 
 export class CopyFile implements ICopyFile {
     private readonly createS3Client: ICreateS3ClientCb;
-    private readonly getLambdaTrigger: IGetLambdaTriggerCb;
+    private readonly getLambdaTrigger: IGetLambdaTriggerCb<ICopyFileLambdaPayload>;
 
     public constructor(params: ICopyFileParams) {
         this.createS3Client = params.createS3Client;
@@ -55,7 +56,7 @@ export class CopyFile implements ICopyFile {
         return await this.getLambdaTrigger().handle({
             invocationType: "Event",
             payload: {
-                action: "copy",
+                action: "copyFile",
                 key,
                 source: {
                     region: source.region,

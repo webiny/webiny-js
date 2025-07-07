@@ -6,7 +6,6 @@ import { createHandler } from "~/sync/createHandler.js";
 import { createMockSystem } from "~tests/mocks/system.js";
 import { createMockManifest } from "~tests/mocks/manifest.js";
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb/getDocumentClient.js";
-import { createMockEventBridgeClient } from "~tests/mocks/eventBridgeClient.js";
 import { createMockPluginsContainer } from "~tests/mocks/plugins.js";
 import type { IDynamoDbCommand, IHandler } from "~/sync/types.js";
 import type {
@@ -17,6 +16,12 @@ import type {
     UpdateCommandInput
 } from "@webiny/aws-sdk/client-dynamodb";
 import { PutCommand } from "@webiny/aws-sdk/client-dynamodb";
+import {
+    createEventBridgeClient,
+    EventBridgeClient,
+    PutEventsCommand
+} from "@webiny/aws-sdk/client-eventbridge/index.js";
+import { mockClient } from "aws-sdk-client-mock";
 
 describe("attachToDynamoDbDocument", () => {
     it("should not have attached decorator", async () => {
@@ -30,6 +35,13 @@ describe("attachToDynamoDbDocument", () => {
     });
 
     it("should attach a decorator to the DynamoDB DocumentClient", async () => {
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
         const initialClient = getDocumentClient();
         // @ts-expect-error
         expect(initialClient.__decoratedByWebiny).toBeUndefined();
@@ -38,7 +50,7 @@ describe("attachToDynamoDbDocument", () => {
             system: createMockSystem(),
             manifest: createMockManifest(),
             commandConverters: [],
-            getEventBridgeClient: () => createMockEventBridgeClient(),
+            getEventBridgeClient: createEventBridgeClient,
             getPlugins() {
                 return createMockPluginsContainer();
             }

@@ -1,8 +1,6 @@
 import { createSyncHandler, type IHandlerParams } from "~/sync/handler/Handler.js";
-import { createMockEventBridgeClient } from "~tests/mocks/eventBridgeClient.js";
 import { createMockSystem } from "~tests/mocks/system.js";
 import { createMockHandlerConverter } from "~tests/mocks/handlerConverter.js";
-import { createMockEventBus } from "~tests/mocks/eventBus.js";
 import { createFilterOutRecord } from "~/sync/FilterOutRecord";
 import { createDefaultFilterOutRecordPlugins } from "~/sync/filter/createDefaultFilterOutRecordPlugins.js";
 
@@ -10,7 +8,10 @@ export interface ICreateMockSyncHandlerParams extends Omit<IHandlerParams, "conv
     converter: "all" | IHandlerParams["converter"];
 }
 
-export const createMockSyncHandler = (params: Partial<ICreateMockSyncHandlerParams> = {}) => {
+export const createMockSyncHandler = (
+    params: Partial<ICreateMockSyncHandlerParams> &
+        Pick<ICreateMockSyncHandlerParams, "getEventBridgeClient">
+) => {
     const converter =
         params.converter === "all"
             ? createMockHandlerConverter({
@@ -19,14 +20,14 @@ export const createMockSyncHandler = (params: Partial<ICreateMockSyncHandlerPara
             : params.converter || createMockHandlerConverter();
     return createSyncHandler({
         getEventBridgeClient: () => {
-            if (params.getEventBridgeClient) {
-                return params.getEventBridgeClient();
-            }
-            return createMockEventBridgeClient();
+            return params.getEventBridgeClient();
         },
         system: params.system || createMockSystem(),
         converter,
-        eventBus: params.eventBus || createMockEventBus(),
+        eventBus: params.eventBus || {
+            arn: "unknown",
+            name: "default-event-bus"
+        },
         filterOutRecord:
             params.filterOutRecord || createFilterOutRecord(createDefaultFilterOutRecordPlugins())
     });

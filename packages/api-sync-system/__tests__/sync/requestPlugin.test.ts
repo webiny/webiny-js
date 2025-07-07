@@ -8,7 +8,12 @@ import { OnRequestTimeoutPlugin } from "@webiny/handler/plugins/OnRequestTimeout
 import { createMockManifest, createMockManifestInDynamoDb } from "~tests/mocks/manifest.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { ServiceDiscovery } from "@webiny/api";
-import { createMockEventBridgeClient } from "~tests/mocks/eventBridgeClient.js";
+import { mockClient } from "aws-sdk-client-mock";
+import {
+    createEventBridgeClient,
+    EventBridgeClient,
+    PutEventsCommand
+} from "@webiny/aws-sdk/client-eventbridge";
 
 describe("requestPlugin", () => {
     let client: DynamoDBDocument;
@@ -19,12 +24,17 @@ describe("requestPlugin", () => {
     });
 
     it("should not have any plugins registered if no manifest is provided", async () => {
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
         const result = createSyncSystemHandlerOnRequestPlugin({
             system: createMockSystem(),
             getDocumentClient: () => client,
-            getEventBridgeClient: () => {
-                return createMockEventBridgeClient();
-            }
+            getEventBridgeClient: createEventBridgeClient
         });
 
         expect(result).toBeInstanceOf(HandlerOnRequestPlugin);
@@ -38,6 +48,12 @@ describe("requestPlugin", () => {
     });
 
     it("should have registered plugins if manifest exists", async () => {
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
         await createMockManifestInDynamoDb({
             client,
             manifest: createMockManifest().sync
@@ -46,9 +62,7 @@ describe("requestPlugin", () => {
         const result = createSyncSystemHandlerOnRequestPlugin({
             system: createMockSystem(),
             getDocumentClient: () => client,
-            getEventBridgeClient: () => {
-                return createMockEventBridgeClient();
-            }
+            getEventBridgeClient: createEventBridgeClient
         });
 
         expect(result).toBeInstanceOf(HandlerOnRequestPlugin);

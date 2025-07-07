@@ -6,7 +6,8 @@ import type { Plugin } from "@webiny/plugins/types.js";
 import { createCopyFileAction } from "~/worker/actions/copyFile/copyFileAction.js";
 import { createDeleteFileAction } from "~/worker/actions/deleteFile/deleteFileAction.js";
 import type { S3Client, S3ClientConfig } from "@webiny/aws-sdk/client-s3/index.js";
-import { createCopyUserAction } from "~/worker/actions/copyUser/copyUserAction.js";
+import { createCreateUserAction } from "~/worker/actions/createUser/createUserAction.js";
+import { createUpdateUserAction } from "~/worker/actions/updateUser/updateUserAction.js";
 import type {
     CognitoIdentityProvider,
     CognitoIdentityProviderClientConfig
@@ -20,7 +21,7 @@ export interface IWorkerHandlerParams extends Omit<CreateHandlerParams, "plugins
     createS3Client: (params: S3ClientConfig) => Pick<S3Client, "send">;
     createCognitoProvider(
         input: CognitoIdentityProviderClientConfig
-    ): Pick<CognitoIdentityProvider, "adminCreateUser" | "adminGetUser" | "adminDeleteUser">;
+    ): Pick<CognitoIdentityProvider, "send">;
 }
 
 export const createWorkerHandler = (params: IWorkerHandlerParams) => {
@@ -51,7 +52,12 @@ export const createWorkerHandler = (params: IWorkerHandlerParams) => {
         })
     );
     plugins.register(
-        createCopyUserAction({
+        createCreateUserAction({
+            getCognitoProvider
+        })
+    );
+    plugins.register(
+        createUpdateUserAction({
             getCognitoProvider
         })
     );

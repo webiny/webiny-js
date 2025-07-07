@@ -2,13 +2,27 @@ import { createSendDataToEventBridgeOnRequestEnd } from "~/sync/createSendDataTo
 import { createMockSyncHandler } from "~tests/mocks/syncHandler.js";
 import { OnRequestResponseSendPlugin } from "@webiny/handler/plugins/OnRequestResponseSendPlugin.js";
 import { OnRequestTimeoutPlugin } from "@webiny/handler/plugins/OnRequestTimeoutPlugin.js";
-import { createMockEventBridgeClient } from "~tests/mocks/eventBridgeClient.js";
 import { createMockPutCommand } from "~tests/mocks/putCommand.js";
 import { createMockReply, createMockRequest } from "~tests/mocks/context.js";
+import {
+    createEventBridgeClient,
+    EventBridgeClient,
+    PutEventsCommand
+} from "@webiny/aws-sdk/client-eventbridge/index.js";
+import { mockClient } from "aws-sdk-client-mock";
 
 describe("createSendDataToEventBridgeOnRequestEnd", () => {
     it("should create plugins to attach handler to request end", () => {
-        const handler = createMockSyncHandler();
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
+        const handler = createMockSyncHandler({
+            getEventBridgeClient: createEventBridgeClient
+        });
 
         const result = createSendDataToEventBridgeOnRequestEnd(handler);
 
@@ -18,15 +32,22 @@ describe("createSendDataToEventBridgeOnRequestEnd", () => {
     });
 
     it("should trigger flush on request end", async () => {
+        const send = jest.fn();
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).callsFake(input => {
+            send(input);
+            return {
+                $metadata: {
+                    httpStatusCode: 200
+                }
+            };
+        });
+
         const { request } = createMockRequest();
         const { reply } = createMockReply();
 
-        const send = jest.fn();
-        const client = createMockEventBridgeClient({
-            send
-        });
         const handler = createMockSyncHandler({
-            getEventBridgeClient: () => client,
+            getEventBridgeClient: createEventBridgeClient,
             converter: "all"
         });
 
@@ -47,15 +68,21 @@ describe("createSendDataToEventBridgeOnRequestEnd", () => {
     });
 
     it("should trigger flush on request timeout", async () => {
+        const send = jest.fn();
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).callsFake(input => {
+            send(input);
+            return {
+                $metadata: {
+                    httpStatusCode: 200
+                }
+            };
+        });
         const { request } = createMockRequest();
         const { reply } = createMockReply();
 
-        const send = jest.fn();
-        const client = createMockEventBridgeClient({
-            send
-        });
         const handler = createMockSyncHandler({
-            getEventBridgeClient: () => client,
+            getEventBridgeClient: createEventBridgeClient,
             converter: "all"
         });
 
@@ -80,14 +107,17 @@ describe("createSendDataToEventBridgeOnRequestEnd", () => {
         const { reply } = createMockReply();
 
         const unspecifiedEventBridgeError = "Unspecified Event Bridge error.";
-        const send = jest.fn(() => {
+
+        const send = jest.fn();
+
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).callsFake(input => {
+            send(input);
             throw new Error(unspecifiedEventBridgeError);
         });
-        const client = createMockEventBridgeClient({
-            send
-        });
+
         const handler = createMockSyncHandler({
-            getEventBridgeClient: () => client,
+            getEventBridgeClient: createEventBridgeClient,
             converter: "all"
         });
 

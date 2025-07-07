@@ -20,6 +20,10 @@ const deploymentsValidation = zod.array(
         version: zod.string(),
         s3Id: zod.string(),
         s3Arn: zod.string(),
+        cognitoUserPoolId: zod
+            .string()
+            .optional()
+            .transform(input => input || ""),
         primaryDynamoDbArn: zod.string(),
         primaryDynamoDbName: zod.string(),
         primaryDynamoDbHashKey: zod.string(),
@@ -104,6 +108,7 @@ export class DeploymentsFetcher implements IDeploymentsFetcher {
                 services: {
                     s3Id: item.s3Id,
                     s3Arn: item.s3Arn,
+                    cognitoUserPoolId: item.cognitoUserPoolId,
                     primaryDynamoDbArn: item.primaryDynamoDbArn,
                     primaryDynamoDbName: item.primaryDynamoDbName,
                     primaryDynamoDbHashKey: item.primaryDynamoDbHashKey,

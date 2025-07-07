@@ -3,7 +3,12 @@ import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js"
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { ServiceDiscovery } from "@webiny/api";
 import { createMockSystem } from "~tests/mocks/system.js";
-import { createMockEventBridgeClient } from "~tests/mocks/eventBridgeClient.js";
+import {
+    createEventBridgeClient,
+    EventBridgeClient,
+    PutEventsCommand
+} from "@webiny/aws-sdk/client-eventbridge/index.js";
+import { mockClient } from "aws-sdk-client-mock";
 
 describe("createSyncSystem", () => {
     let client: DynamoDBDocument;
@@ -14,6 +19,13 @@ describe("createSyncSystem", () => {
     });
 
     it("should create an empty sync system plugins array", () => {
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
         const error = jest.fn();
 
         console.error = error;
@@ -26,9 +38,7 @@ describe("createSyncSystem", () => {
                 variant: undefined
             },
             getDocumentClient: () => client,
-            getEventBridgeClient: () => {
-                return createMockEventBridgeClient();
-            }
+            getEventBridgeClient: createEventBridgeClient
         });
 
         expect(syncSystem.plugins()).toHaveLength(0);
@@ -40,12 +50,17 @@ describe("createSyncSystem", () => {
     });
 
     it("should create a sync system plugins", async () => {
+        const mockedEventBridgeClient = mockClient(EventBridgeClient);
+        mockedEventBridgeClient.on(PutEventsCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
         const syncSystem = createSyncSystem({
             system: createMockSystem(),
             getDocumentClient: () => client,
-            getEventBridgeClient: () => {
-                return createMockEventBridgeClient();
-            }
+            getEventBridgeClient: createEventBridgeClient
         });
         /**
          * Update the plugin number according to the plugins initially created inside the createSyncSystem function.

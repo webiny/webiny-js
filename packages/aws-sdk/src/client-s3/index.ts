@@ -26,6 +26,9 @@ export {
 export type {
     CopyObjectCommandInput,
     CopyObjectCommandOutput,
+    DeleteObjectCommandInput,
+    DeleteObjectsCommandInput,
+    DeleteObjectsCommandOutput,
     AbortMultipartUploadCommandInput,
     CompleteMultipartUploadCommandInput,
     UploadPartCopyCommandInput,
