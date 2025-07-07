@@ -26,7 +26,7 @@ export interface IDeleteUserParams {
 
 export class DeleteUser implements IDeleteUser {
     private readonly createCognitoIdentityProviderClient: ICreateCognitoIdentityProviderClientCb;
-    readonly getLambdaTrigger: IGetLambdaTriggerCb;
+    private readonly getLambdaTrigger: IGetLambdaTriggerCb;
 
     public constructor(params: IDeleteUserParams) {
         this.createCognitoIdentityProviderClient = params.createCognitoIdentityProviderClient;
