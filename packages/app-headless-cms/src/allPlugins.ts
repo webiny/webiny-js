@@ -7,6 +7,8 @@ import booleanField from "~/admin/plugins/fields/boolean";
 import dateTimeField from "~/admin/plugins/fields/dateTime";
 import refField from "~/admin/plugins/fields/ref";
 import objectField from "~/admin/plugins/fields/object";
+import jsonField from "~/admin/plugins/fields/json";
+import searchableJsonField from "~/admin/plugins/fields/searchableJson";
 
 import numberFieldRenderer from "~/admin/plugins/fieldRenderers/number";
 import textFieldRenderer from "~/admin/plugins/fieldRenderers/text";
@@ -85,5 +87,7 @@ export default [
     objectFieldRenderer,
     dynamicZoneField,
     dynamicZoneFieldRenderer,
-    hiddenFieldRenderer
+    hiddenFieldRenderer,
+    jsonField,
+    searchableJsonField
 ];

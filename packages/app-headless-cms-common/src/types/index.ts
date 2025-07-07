@@ -138,6 +138,11 @@ export interface CmsModelFieldTypePlugin extends Plugin {
          */
         multipleValuesLabel?: React.ReactNode;
         /**
+         * Determines if this field type should be hidden from the admin UI.
+         * If set to `true`, the field type will not be visible or selectable in the admin interface.
+         */
+        hideInAdmin?: boolean;
+        /**
          * These are default values when the field is first created. This is a representation of the field that is stored in the database.
          *
          * ```ts

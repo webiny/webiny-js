@@ -52,7 +52,9 @@ interface FieldsSidebarProps {
 }
 
 export const FieldsSidebar = ({ onFieldDragStart }: FieldsSidebarProps) => {
-    const fieldTypePlugin = plugins.byType<CmsModelFieldTypePlugin>("cms-editor-field-type");
+    const fieldTypePlugin = plugins
+        .byType<CmsModelFieldTypePlugin>("cms-editor-field-type")
+        .filter(p => !p.field.hideInAdmin);
 
     return (
         <>
