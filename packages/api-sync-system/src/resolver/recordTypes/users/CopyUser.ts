@@ -26,7 +26,7 @@ export interface ICopyUserParams {
 
 export class CopyUser implements ICopyUser {
     private readonly createCognitoIdentityProviderClient: ICreateCognitoIdentityProviderClientCb;
-    readonly getLambdaTrigger: IGetLambdaTriggerCb;
+    private readonly getLambdaTrigger: IGetLambdaTriggerCb;
 
     public constructor(params: ICopyUserParams) {
         this.createCognitoIdentityProviderClient = params.createCognitoIdentityProviderClient;

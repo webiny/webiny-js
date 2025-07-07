@@ -16,12 +16,12 @@ export interface IDeploymentServices {
     cognitoUserPoolId: string;
 }
 
-export interface IDeployment {
+export interface IDeployment<S = IDeploymentServices> {
     name: string;
     env: string;
     variant: string | undefined;
     region: string;
-    services: IDeploymentServices;
+    services: S;
     version: SemVer;
     getTable(type: DynamoDBTableType): ITable;
 }
