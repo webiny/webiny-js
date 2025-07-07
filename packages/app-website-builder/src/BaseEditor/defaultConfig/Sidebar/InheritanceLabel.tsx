@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Text, Tag, Tooltip, Icon, Button, Separator } from "@webiny/admin-ui";
+import { Text, Tag, Icon, Button, Separator, DropdownMenu } from "@webiny/admin-ui";
 import { EditorBreakpoint, useBreakpoint } from "~/BaseEditor/hooks/useBreakpoint";
 
 export interface InheritanceLabelProps {
@@ -13,6 +13,8 @@ const getBreakpointIcon = (breakpoints: EditorBreakpoint[], name: string) => {
     const bp = breakpoints.find(breakpoint => breakpoint.name === name);
     return bp ? bp.icon : null;
 };
+
+const iconClassName = "wby-cursor-pointer wby-mr-xs";
 
 export const InheritanceLabel = ({
     inheritedFrom,
@@ -34,7 +36,7 @@ export const InheritanceLabel = ({
 
     return (
         <div className={"wby-flex wby-items-center"}>
-            <Tooltip
+            <DropdownMenu
                 trigger={
                     isOverridden ? (
                         <Icon
@@ -42,7 +44,7 @@ export const InheritanceLabel = ({
                             label=""
                             size="sm"
                             color="neutral-strong"
-                            className={"wby-mr-xs"}
+                            className={iconClassName}
                             style={{ fill: "hsl(var(--bg-success-default))" }}
                         />
                     ) : (
@@ -51,22 +53,22 @@ export const InheritanceLabel = ({
                             label=""
                             size="sm"
                             color="neutral-strong"
-                            className={"wby-mr-xs"}
+                            className={iconClassName}
                         />
                     )
                 }
-                content={
+                align="center"
+                side="bottom"
+                className={"wy-p-sm wby-shadow-lg"}
+            >
+                <div className={"wby-p-sm wby-text-sm"} style={{ width: 200 }}>
                     <InheritedFrom
                         inheritedFrom={inheritedFrom ?? baseBreakpoint.name}
                         overriddenAt={isOverridden ? breakpoint.name : null}
                         onReset={onReset}
                     />
-                }
-                align="center"
-                side="bottom"
-                variant="accent"
-                showArrow={true}
-            />
+                </div>
+            </DropdownMenu>
             {text}
         </div>
     );
@@ -78,16 +80,16 @@ interface InheritedFromProps {
     onReset: () => void;
 }
 
-const InheritedFrom = ({ overriddenAt, inheritedFrom, onReset }: InheritedFromProps) => {
+export const InheritedFrom = ({ overriddenAt, inheritedFrom, onReset }: InheritedFromProps) => {
     if (overriddenAt) {
         return (
             <div>
                 This value is set on the current breakpoint.
                 <Separator variant={"dimmed"} margin={"lg"} />
-                <Button variant={"secondary"} onClick={onReset} text={"Reset value"} size={"sm"} />
+                <Button variant={"primary"} onClick={onReset} text={"Reset value"} size={"sm"} />
                 <Separator variant={"dimmed"} margin={"lg"} />
                 Resetting will inherit the value from the{" "}
-                <Tag variant={"neutral-light"} content={inheritedFrom} /> breakpoint.
+                <Tag variant={"neutral-muted"} content={inheritedFrom} /> breakpoint.
             </div>
         );
     }
@@ -95,7 +97,7 @@ const InheritedFrom = ({ overriddenAt, inheritedFrom, onReset }: InheritedFromPr
     return (
         <Text size={"sm"}>
             This value is inherited from the{" "}
-            <Tag variant={"neutral-light"} content={inheritedFrom} /> breakpoint.
+            <Tag variant={"neutral-muted"} content={inheritedFrom} /> breakpoint.
         </Text>
     );
 };

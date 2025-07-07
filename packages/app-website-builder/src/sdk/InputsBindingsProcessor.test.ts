@@ -9,13 +9,11 @@ describe("InputsBindingsProcessor", () => {
         {
             name: "title",
             type: "text",
-            dataType: "text",
             list: false,
             path: "title",
             children: [],
             input: {
                 type: "text",
-                dataType: "text",
                 name: "title",
                 label: "Title"
             }
@@ -23,20 +21,17 @@ describe("InputsBindingsProcessor", () => {
         {
             name: "items",
             type: "object",
-            dataType: "object",
             list: true,
             path: "items",
             children: [
                 {
                     name: "label",
                     type: "text",
-                    dataType: "text",
                     list: false,
                     path: "items.label",
                     children: [],
                     input: {
                         type: "text",
-                        dataType: "text",
                         name: "label",
                         label: "Label"
                     }
@@ -44,13 +39,11 @@ describe("InputsBindingsProcessor", () => {
             ],
             input: {
                 type: "object",
-                dataType: "object",
                 name: "items",
                 list: true,
                 fields: [
                     {
                         type: "text",
-                        dataType: "text",
                         name: "label",
                         label: "Label"
                     }
@@ -65,11 +58,9 @@ describe("InputsBindingsProcessor", () => {
             children: [],
             name: "children",
             type: "slot",
-            dataType: "string",
             list: false,
             input: {
                 type: "slot",
-                dataType: "string",
                 name: "children",
                 label: "Children"
             }
@@ -80,18 +71,16 @@ describe("InputsBindingsProcessor", () => {
 
     const baseBindings: DocumentElementBindings = {
         inputs: {
-            title: { id: "title", static: "Base Title", type: "text", dataType: "text" },
+            title: { id: "title", static: "Base Title", type: "text" },
             "items/0/label": {
                 id: "label0",
                 static: "Base Label 1",
-                type: "text",
-                dataType: "text"
+                type: "text"
             },
             "items/1/label": {
                 id: "label1",
                 static: "Base Label 2",
-                type: "text",
-                dataType: "text"
+                type: "text"
             }
         },
         styles: {}
@@ -100,18 +89,17 @@ describe("InputsBindingsProcessor", () => {
     const overrides: DocumentElementBindings["overrides"] = {
         tablet: {
             inputs: {
-                title: { id: "title", static: "Tablet Title", type: "text", dataType: "text" },
+                title: { id: "title", static: "Tablet Title", type: "text" },
                 "items/0/label": {
                     id: "label0",
                     static: "Tablet Label 1",
-                    type: "text",
-                    dataType: "text"
+                    type: "text"
                 }
             }
         },
         mobile: {
             inputs: {
-                title: { id: "title", static: "Mobile Title", type: "text", dataType: "text" }
+                title: { id: "title", static: "Mobile Title", type: "text" }
             }
         }
     };
@@ -128,7 +116,6 @@ describe("InputsBindingsProcessor", () => {
                 inputs: [
                     {
                         type: "slot",
-                        dataType: "string",
                         list: true,
                         renderer: "Webiny/Slot",
                         name: "children",
@@ -243,7 +230,7 @@ describe("InputsBindingsProcessor", () => {
         const rawBindings: DocumentElementBindings = {
             inputs: {
                 ...baseBindings.inputs,
-                "some/key": { id: "someKey", static: "toRemove", type: "text", dataType: "text" }
+                "some/key": { id: "someKey", static: "toRemove", type: "text" }
             },
             overrides,
             styles: {}
@@ -290,30 +277,26 @@ describe("InputsBindingsProcessor", () => {
         updater.applyToDocument(rebuilt);
 
         expect(rebuilt.bindings.elementId.inputs).toMatchObject({
-            title: { id: "title", static: "Base Title", type: "text", dataType: "text" },
+            title: { id: "title", static: "Base Title", type: "text" },
             "items/0/label": {
                 id: "label0",
                 static: "Base Label 1",
-                type: "text",
-                dataType: "text"
+                type: "text"
             },
             "items/1/label": {
                 id: "label1",
                 static: "Base Label 2",
-                type: "text",
-                dataType: "text"
+                type: "text"
             },
             "items/2/label": {
                 id: expect.any(String),
                 static: "New Label 1",
-                type: "text",
-                dataType: "text"
+                type: "text"
             },
             children: {
                 id: expect.any(String),
                 static: expect.any(String),
-                type: "slot",
-                dataType: "string"
+                type: "slot"
             }
         });
     });

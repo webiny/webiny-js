@@ -47,6 +47,7 @@ export const KeyboardShortcuts = () => {
             e.preventDefault();
             editor.undo();
         });
+
         addKeyHandler("mod+shift+z", e => {
             e.preventDefault();
             editor.redo();

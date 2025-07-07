@@ -1,26 +1,35 @@
-import type { ComponentManifest } from "@webiny/app-website-builder/sdk/types";
-import { contentSdk, registerComponentGroup } from "@webiny/app-website-builder/react/index";
+import {
+    contentSdk,
+    registerComponentGroup,
+    type ComponentManifest
+} from "@webiny/website-builder-react";
 
-export const initContentSdk = () => {
-    contentSdk.init({
-        apiKey: "123",
-        // builtInComponents: false,
-        // theme: {}
-    });
+interface InitContentSdkOptions {
+    preview?: boolean;
+    apiKey?: string;
+}
 
-    registerComponentGroup({
-        name: "basic",
-        label: "Basic"
-    });
+export const initContentSdk = (options: InitContentSdkOptions = {}) => {
+    const previewMode = options.preview === true && !contentSdk.isEditing();
 
-    registerComponentGroup({
-        name: "ecommerce",
-        label: "eCommerce"
-    });
+    contentSdk.init(
+        {
+            apiKey: options.apiKey ?? String(process.env.NEXT_PUBLIC_WEBSITE_BUILDER_API_KEY),
+            preview: previewMode ?? false
+        },
+        () => {
+            registerComponentGroup({
+                name: "basic",
+                label: "Basic",
+                description: "Components for simple content creation"
+            });
 
-    registerComponentGroup({
-        name: "custom",
-        label: "Custom",
-        filter: (component: ComponentManifest) => !component.group
-    });
+            registerComponentGroup({
+                name: "custom",
+                label: "Custom",
+                description: "Assorted custom components",
+                filter: (component: ComponentManifest) => !component.group
+            });
+        }
+    );
 };

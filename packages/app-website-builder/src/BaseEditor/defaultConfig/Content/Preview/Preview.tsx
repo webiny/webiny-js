@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Messenger } from "~/sdk/messenger";
 import { useDocumentEditor } from "~/DocumentEditor";
 import { AddressBar } from "./AddressBar";
@@ -22,6 +22,7 @@ import { mouseTracker } from "~/sdk";
 import { Commands } from "~/BaseEditor";
 
 export const Preview = () => {
+    const [showLoading, setShowLoading] = useState(true);
     const editor = useDocumentEditor();
 
     const getIframeBox = useCallback(() => {
@@ -136,6 +137,10 @@ export const Preview = () => {
             });
         });
 
+        messenger.on("preview.escape", () => {
+            editor.executeCommand(Commands.DeselectElement);
+        });
+
         messenger.on("preview.undo", () => {
             editor.undo();
         });
@@ -209,13 +214,21 @@ export const Preview = () => {
                 deltaY: event.deltaY
             });
         });
+
+        setTimeout(() => {
+            setShowLoading(false);
+        }, 100);
     }, []);
 
     return (
         <>
             <DropZoneManagerProvider dropzoneManager={dropzoneManager}>
                 <AddressBar />
-                <Iframe viewportManager={viewportManager} onConnected={onConnected} />
+                <Iframe
+                    viewportManager={viewportManager}
+                    onConnected={onConnected}
+                    showLoading={showLoading}
+                />
             </DropZoneManagerProvider>
             <MouseStatus />
             <KeyboardShortcuts />

@@ -16,6 +16,7 @@ export const Layout = () => {
         <ToolbarContainer data-role={"toolbar-layout"}>
             <Tabs
                 size="md"
+                spacing={"md"}
                 defaultValue={"insert"}
                 tabs={[<Toolbar.Elements key="tabs" group={"tabs"} />]}
                 separator={true}

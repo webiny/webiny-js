@@ -12,6 +12,7 @@ import { useRepeatValue } from "./useRepeatValue";
 import { InputRenderer } from "./InputRenderer";
 import { ComponentManifestToAstConverter } from "~/sdk/ComponentManifestToAstConverter";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument";
+import { InfoMessage } from "~/BaseEditor/defaultConfig/Sidebar/InfoMessage";
 
 interface ElementInputsProps {
     element: DocumentElement;
@@ -32,8 +33,16 @@ export const ElementInputs = ({ element }: ElementInputsProps) => {
         return ComponentManifestToAstConverter.convert(component.inputs ?? []);
     }, [component.name, element.id]);
 
+    const hasEditableInputs = useMemo(() => {
+        return inputsAst.filter(input => input.type !== "slot").length > 0;
+    }, [inputsAst]);
+
     if (!element) {
         return null;
+    }
+
+    if (!hasEditableInputs) {
+        return <InfoMessage message={"This element has no inputs."} />;
     }
 
     return (

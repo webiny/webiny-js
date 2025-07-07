@@ -1,5 +1,5 @@
 import type { Document } from "~/sdk/types";
-import type { IMetadata, Metadata } from "./IMetadata";
+import type { IMetadata } from "./IMetadata";
 
 export class BreakpointElementMetadata implements IMetadata {
     private readonly breakpoints: string[];
@@ -16,7 +16,7 @@ export class BreakpointElementMetadata implements IMetadata {
         this.metadata.applyToDocument(document);
     }
 
-    get<T extends Metadata = Metadata>(id: string): T | undefined {
+    get<T = unknown>(id: string): T | undefined {
         const upTo = this.breakpoints.indexOf(this.currentBreakpoint);
 
         for (let i = upTo; i >= 0; i--) {

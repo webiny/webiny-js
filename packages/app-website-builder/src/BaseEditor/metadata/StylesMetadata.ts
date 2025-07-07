@@ -1,5 +1,5 @@
 import type { Document } from "~/sdk/types";
-import type { IMetadata, Metadata } from "./IMetadata";
+import type { IMetadata } from "./IMetadata";
 
 export class StylesMetadata implements IMetadata {
     private metadata: IMetadata;
@@ -13,7 +13,7 @@ export class StylesMetadata implements IMetadata {
         this.metadata.applyToDocument(document);
     }
 
-    get<T extends Metadata = Metadata>(id: string): T | undefined {
+    get<T = unknown>(id: string): T | undefined {
         return this.metadata.get(`${this.prefix}${id}`);
     }
 

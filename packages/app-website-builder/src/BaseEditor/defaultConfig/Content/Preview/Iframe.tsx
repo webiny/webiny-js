@@ -8,6 +8,7 @@ import { OverlayLoader } from "@webiny/admin-ui";
 import type { ViewportManager } from "~/sdk/ViewportManager";
 
 interface IframeProps {
+    showLoading: boolean;
     viewportManager: ViewportManager;
     onConnected: (messenger: Messenger) => void;
 }
@@ -19,9 +20,10 @@ export const Iframe = React.memo((props: IframeProps) => {
 
     const previewUrl = useSelectFromEditor<string>(state => {
         const searchParams = new URLSearchParams();
-        searchParams.append("preview.document.type", "page");
-        searchParams.append("preview.document.id", "12345678");
-        searchParams.append("preview.document.path", "/page-1");
+        searchParams.append("wb.editing", "true");
+        searchParams.append("wb.editing.type", "page");
+        searchParams.append("wb.editing.id", "12345678");
+        searchParams.append("wb.editing.pathname", "/page-1");
 
         const iframeUrl = `http://localhost:3000/page-1?${searchParams.toString()}`;
         return state.previewUrl ?? iframeUrl;
@@ -32,11 +34,15 @@ export const Iframe = React.memo((props: IframeProps) => {
             className={"wby-relative wby-flex wby-flex-col wby-items-center"}
             data-role={"responsive-container"}
         >
-            <ConnectEditorToPreview
-                iframeRef={iframeRef}
-                onConnected={props.onConnected}
-                loader={<OverlayLoader size="lg" variant="accent" text="Loading preview..." />}
-            />
+            <ConnectEditorToPreview iframeRef={iframeRef} onConnected={props.onConnected} />
+            {props.showLoading ? (
+                <OverlayLoader
+                    size="lg"
+                    variant="accent"
+                    text="Loading preview..."
+                    className={"wby-bg-neutral-base"}
+                />
+            ) : null}
             <div
                 className="wby-min-h-[calc(100vh-43px-50px)] wby-max-h-[calc(100vh-43px-50px)] wby-box-border  wby-overflow-hidden"
                 style={{ width: previewWidth }}

@@ -35,13 +35,12 @@ describe("BindingsResolver", () => {
                 text: {
                     id: "text",
                     type: "text",
-                    dataType: "string",
                     expression: "$state.user.name",
                     static: "Static fallback"
                 }
             },
             styles: {
-                padding: {
+                paddingTop: {
                     static: "10px"
                 }
             }
@@ -57,7 +56,7 @@ describe("BindingsResolver", () => {
         });
 
         expect(resolved.inputs.text).toBe("Alice");
-        expect(resolved.styles).toEqual({ padding: "10px" });
+        expect(resolved.styles).toEqual({ paddingTop: "10px" });
     });
 
     it("resolves nested objects", () => {
@@ -69,7 +68,6 @@ describe("BindingsResolver", () => {
                     children: {
                         id: "children",
                         type: "slot",
-                        dataType: "string",
                         list: true,
                         static: ["qizw1hgqjvj8g5a43szzc"]
                     }
@@ -80,26 +78,23 @@ describe("BindingsResolver", () => {
                     title: {
                         id: "title",
                         static: "Default Columns Title",
-                        type: "text",
-                        dataType: "text"
+                        type: "text"
                     },
                     "leftColumn/0": {
                         id: "slot",
                         static: ["7znyr9z2cpizegnrk2rhu"],
                         type: "slot",
-                        dataType: "string",
                         list: true
                     },
                     "rightColumn/0": {
                         id: "slot",
                         static: ["cwld8kxy0qhhtaql42lr5"],
                         type: "slot",
-                        dataType: "string",
                         list: true
                     }
                 },
                 styles: {
-                    padding: {
+                    paddingTop: {
                         static: "20px"
                     },
                     backgroundColor: {
@@ -112,14 +107,12 @@ describe("BindingsResolver", () => {
                     title: {
                         id: "title",
                         static: "Left Column Title",
-                        type: "text",
-                        dataType: "text"
+                        type: "text"
                     },
                     children: {
                         id: "slot",
                         static: [],
                         type: "slot",
-                        dataType: "string",
                         list: true
                     }
                 },
@@ -137,14 +130,12 @@ describe("BindingsResolver", () => {
                     title: {
                         id: "title",
                         static: "Right Column Title",
-                        type: "text",
-                        dataType: "text"
+                        type: "text"
                     },
                     children: {
                         id: "slot",
                         static: [],
                         type: "slot",
-                        dataType: "string",
                         list: true
                     }
                 },
@@ -205,7 +196,6 @@ describe("BindingsResolver", () => {
         const inputs = [
             {
                 type: "text",
-                dataType: "text",
                 renderer: "Webiny/Input",
                 name: "title",
                 label: "Title",
@@ -213,7 +203,6 @@ describe("BindingsResolver", () => {
             },
             {
                 type: "slot",
-                dataType: "string",
                 list: true,
                 renderer: "Webiny/Slot",
                 name: "leftColumn",
@@ -221,7 +210,6 @@ describe("BindingsResolver", () => {
             },
             {
                 type: "slot",
-                dataType: "string",
                 list: true,
                 renderer: "Webiny/Slot",
                 name: "rightColumn",
@@ -249,7 +237,6 @@ describe("BindingsResolver", () => {
                 text: {
                     id: "text",
                     type: "text",
-                    dataType: "string",
                     static: "Static only"
                 }
             }
@@ -275,7 +262,6 @@ describe("BindingsResolver", () => {
                 text: {
                     id: "text",
                     type: "text",
-                    dataType: "string",
                     static: "Fallback",
                     expression: "$.unknown.value"
                 }
@@ -333,7 +319,6 @@ describe("BindingsResolver", () => {
                 text: {
                     id: "text",
                     type: "text",
-                    dataType: "string",
                     expression: "$.title",
                     static: "Unnamed"
                 }
@@ -367,7 +352,6 @@ describe("BindingsResolver", () => {
                 text: {
                     id: "text",
                     type: "text",
-                    dataType: "string",
                     static: "Should not be used"
                 }
             }
@@ -395,7 +379,6 @@ describe("BindingsResolver", () => {
                 text: {
                     id: "text",
                     type: "text",
-                    dataType: "string",
                     static: "Static fallback",
                     expression: "$state.list.0.text"
                 }

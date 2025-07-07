@@ -1,11 +1,9 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import { initContentSdk } from "./initContentSdk";
 
-export const ContentSdkInitializer = React.memo(() => {
-    useEffect(() => {
-        initContentSdk();
-    }, []);
+export const ContentSdkInitializer = React.memo(({ draftMode }: { draftMode: boolean }) => {
+    initContentSdk({ preview: draftMode });
 
     return null;
 });

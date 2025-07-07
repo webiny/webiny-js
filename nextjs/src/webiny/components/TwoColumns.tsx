@@ -1,5 +1,5 @@
 import React from "react";
-import type { ComponentProps } from "@webiny/app-website-builder/react";
+import type { ComponentProps } from "@webiny/website-builder-react";
 
 type TwoColumnsProps = ComponentProps<{
     title: string;

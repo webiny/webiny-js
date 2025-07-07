@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [{ "path": "../app-website-builder" }],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/app-website-builder/*": ["../app-website-builder/src/*"],
+      "@webiny/app-website-builder": ["../app-website-builder/src"]
+    },
+    "baseUrl": "."
+  }
+}

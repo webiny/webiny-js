@@ -204,15 +204,12 @@ export class ElementFactory {
 
                 const newElementId = newElement.element.id;
 
-                console.log("newElement", newElement);
-
                 ops.push(
                     ...newElement.operations,
                     operations.setInputBinding(elementId, path, {
                         id: generateAlphaNumericLowerCaseId(),
                         static: node.list ? [newElementId] : newElementId,
                         type: node.type,
-                        dataType: node.dataType,
                         list: node.list
                     })
                 );
@@ -224,7 +221,6 @@ export class ElementFactory {
                         id: generateAlphaNumericLowerCaseId(),
                         static: ignoreDefaultValues ? undefined : value ?? node.input.defaultValue,
                         type: node.type,
-                        dataType: node.dataType,
                         list: node.list
                     })
                 );

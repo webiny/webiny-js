@@ -1,33 +1,33 @@
 import { useCallback, useMemo, useState } from "react";
+import set from "lodash/set";
+import { generateAlphaNumericLowerCaseId } from "@webiny/utils/generateId";
 import { useDocumentEditor } from "~/DocumentEditor";
 import type { ValueBinding } from "~/sdk/types";
 import { Commands } from "~/BaseEditor";
 import { InputAstNode } from "~/sdk/ComponentManifestToAstConverter";
 import { functionConverter } from "~/sdk";
-import { useElementFactory } from "./useElementFactory";
 import { useBreakpoint } from "~/BaseEditor/hooks/useBreakpoint";
 import { useBindingsForElement } from "./useBindingsForElement";
 import { useElementInputsAst } from "~/BaseEditor/hooks/useElementInputsAst";
 import { InputsBindingsProcessor } from "~/sdk/InputBindingsProcessor";
 import { StylesBindingsProcessor } from "~/sdk/StylesBindingsProcessor";
 import { createElement, CreateElementParams } from "~/sdk/createElement";
-import set from "lodash/set";
-import { generateAlphaNumericLowerCaseId } from "@webiny/utils/generateId";
 import {
     BreakpointElementMetadata,
     ElementMetadata,
     InputMetadata,
     type IMetadata
 } from "~/BaseEditor/metadata";
+import { useElementFactory } from "./useElementFactory";
 
 export type OnChangeParams = {
-    value: ValueObject;
+    value: InputValueObject;
     metadata: IMetadata;
 };
 
 export type InputBindingOnChange = (cb: (params: OnChangeParams) => void) => void;
 
-class ValueObject {
+export class InputValueObject {
     private value: any;
 
     constructor(value: any) {
@@ -101,7 +101,7 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
         (cb: (params: OnChangeParams) => void) => {
             const deepInputs = inputsProcessor.toDeepInputs(resolvedBindings.inputs);
 
-            const valueObject = new ValueObject(value);
+            const valueObject = new InputValueObject(value);
 
             const updaterInput = {
                 value: valueObject,
@@ -164,7 +164,7 @@ export const useInputValue = (elementId: string, node: InputAstNode) => {
         (cb: (params: OnChangeParams) => void) => {
             const deepInputs = inputsProcessor.toDeepInputs(resolvedBindings.inputs);
 
-            const valueObject = new ValueObject(value);
+            const valueObject = new InputValueObject(value);
 
             const updaterInput = {
                 value: valueObject,

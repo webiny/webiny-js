@@ -1,15 +1,12 @@
 import React from "react";
-import { CommercePlugin, type CommerceApi } from "./commercePlugin";
+import { EcommercePlugin, type IEcommerceApi } from "@webiny/app-website-builder/ecommerce";
 import { KiboClient } from "./kiboClient";
-import { authToken } from "../../../kiboAuthToken";
 
-type KiboCommerceSettings = typeof settings;
-
-const settings = {
-    apiHost: String(process.env.WEBINY_ADMIN_KIBO_API_HOST),
-    sharedSecret: String(process.env.WEBINY_ADMIN_KIBO_SHARED_SECRET),
-    clientId: String(process.env.WEBINY_ADMIN_KIBO_CLIENT_ID),
-    authToken
+type KiboCommerceSettings = {
+    apiHost: string;
+    sharedSecret: string;
+    clientId: string;
+    authToken: string;
 };
 
 const productCache = new Map<string, any>();
@@ -38,7 +35,7 @@ function initEcommerceApi(settings: KiboCommerceSettings) {
         }
     });
 
-    const service: CommerceApi = {
+    const service: IEcommerceApi = {
         product: {
             async findById(productCode: string) {
                 if (productCache.has(productCode)) {
@@ -98,13 +95,22 @@ function initEcommerceApi(settings: KiboCommerceSettings) {
 
 export const Extension = () => {
     return (
-        <CommercePlugin name={"KiboCommerce"} init={() => initEcommerceApi(settings)}>
-            {/*<PageType
+        <EcommercePlugin
+            name={"KiboCommerce"}
+            init={(settings: KiboCommerceSettings) => initEcommerceApi(settings)}
+        >
+            <EcommercePlugin.PageType
                 name={"kiboProductPage"}
                 label={"Kibo Product Page"}
                 resourceType="product"
-                previewPath={"/product/{product.id}"}
-            />*/}
-        </CommercePlugin>
+                previewPath={resource => `/product/${resource.id}`}
+            />
+            <EcommercePlugin.PageType
+                name={"kiboCategoryPage"}
+                label={"Kibo Category Page"}
+                resourceType="category"
+                previewPath={resource => `/category/${resource.id}`}
+            />
+        </EcommercePlugin>
     );
 };

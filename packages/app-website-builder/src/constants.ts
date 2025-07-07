@@ -1,3 +1,4 @@
+export const BASE_BREAKPOINT = "desktop";
 export { ROOT_FOLDER } from "@webiny/app-aco/constants";
 
 export type WbStatus = (typeof statuses)[keyof typeof statuses];

@@ -5,7 +5,7 @@ import {
     BooleanInput,
     ColorInput,
     FileInput,
-    RichTextInput,
+    LexicalInput,
     SelectInput,
     RadioInput,
     ObjectInput,
@@ -16,13 +16,12 @@ import {
 } from "./types";
 import { functionConverter } from "~/sdk/FunctionConverter";
 
-type OmitType<T> = Omit<T, "type" | "dataType">;
+type OmitType<T> = Omit<T, "type">;
 
 // Text
 export function createTextInput(input: OmitType<TextInput>) {
     return createInput({
         type: "text",
-        dataType: "text",
         renderer: "Webiny/Input",
         ...input
     }) as TextInput;
@@ -32,7 +31,6 @@ export function createTextInput(input: OmitType<TextInput>) {
 export function createLongTextInput(input: OmitType<LongTextInput>) {
     return createInput({
         type: "longText",
-        dataType: "text",
         renderer: "Webiny/Textarea",
         ...input
     });
@@ -42,7 +40,6 @@ export function createLongTextInput(input: OmitType<LongTextInput>) {
 export function createNumberInput(input: OmitType<NumberInput>) {
     return createInput({
         type: "number",
-        dataType: "number",
         renderer: "Webiny/Number",
         ...input
     }) as NumberInput;
@@ -52,7 +49,6 @@ export function createNumberInput(input: OmitType<NumberInput>) {
 export function createBooleanInput(input: OmitType<BooleanInput>) {
     return createInput({
         type: "boolean",
-        dataType: "boolean",
         renderer: "Webiny/Switch",
         ...input
     }) as BooleanInput;
@@ -62,7 +58,6 @@ export function createBooleanInput(input: OmitType<BooleanInput>) {
 export function createColorInput(input: OmitType<ColorInput>) {
     return createInput({
         type: "color",
-        dataType: "text",
         renderer: "Webiny/ColorPicker",
         ...input
     }) as ColorInput;
@@ -72,7 +67,6 @@ export function createColorInput(input: OmitType<ColorInput>) {
 export function createFileInput(input: OmitType<FileInput>) {
     return createInput({
         type: "file",
-        dataType: "text",
         renderer: "Webiny/FileManager",
         ...input
     }) as FileInput;
@@ -82,27 +76,24 @@ export function createFileInput(input: OmitType<FileInput>) {
 export function createDateInput(input: OmitType<DateTimeInput>) {
     return createInput({
         type: "datetime",
-        dataType: "datetime",
         renderer: "Webiny/DateTime",
         ...input
     }) as DateTimeInput;
 }
 
 // Rich Text
-export function createRichTextInput(input: OmitType<RichTextInput>) {
+export function createLexicalInput(input: OmitType<LexicalInput>) {
     return createInput({
-        type: "richText",
-        dataType: "json",
+        type: "lexical",
         renderer: "Webiny/Lexical",
         ...input
-    }) as RichTextInput;
+    }) as LexicalInput;
 }
 
 // Select
 export function createSelectInput(input: OmitType<SelectInput>) {
     return createInput({
         type: "select",
-        dataType: "text",
         renderer: "Webiny/Select",
         ...input
     }) as SelectInput;
@@ -112,7 +103,6 @@ export function createSelectInput(input: OmitType<SelectInput>) {
 export function createRadioInput(input: OmitType<RadioInput>) {
     return createInput({
         type: "radio",
-        dataType: "text",
         renderer: "Webiny/RadioGroup",
         ...input
     }) as RadioInput;
@@ -122,7 +112,6 @@ export function createRadioInput(input: OmitType<RadioInput>) {
 export function createObjectInput(input: OmitType<ObjectInput>) {
     return createInput({
         type: "object",
-        dataType: "object",
         renderer: "Webiny/Object",
         ...input
     }) as ObjectInput;
@@ -132,7 +121,6 @@ export function createObjectInput(input: OmitType<ObjectInput>) {
 export function createTagsInput(input: OmitType<TagsInput>) {
     return createInput({
         type: "text",
-        dataType: "text",
         list: true,
         renderer: "Webiny/Tags",
         ...input
@@ -142,7 +130,6 @@ export function createTagsInput(input: OmitType<TagsInput>) {
 export function createSlotInput(input: OmitType<SlotInput>) {
     return createInput({
         type: "slot",
-        dataType: "string",
         list: true,
         renderer: "Webiny/Slot",
         ...input

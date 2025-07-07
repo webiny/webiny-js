@@ -7,17 +7,17 @@ describe("BindingsProcessor", () => {
 
     const bindings: DocumentElementBindings = {
         inputs: {
-            title: { id: "title", static: "Hello", type: "text", dataType: "string" },
-            count: { id: "count", static: 1, type: "number", dataType: "number", expression: "$state.count" }
+            title: { id: "title", static: "Hello", type: "text" },
+            count: { id: "count", static: 1, type: "number", expression: "$state.count" }
         },
         styles: {
-            padding: { static: "10px" },
+            paddingTop: { static: "10px" },
             backgroundColor: { static: "white" }
         },
         overrides: {
             tablet: {
                 inputs: {
-                    title: { id: "title", static: "Hello Tablet", type: "text", dataType: "string" }
+                    title: { id: "title", static: "Hello Tablet", type: "text" }
                 },
                 styles: {
                     backgroundColor: { static: "gray" }
@@ -25,10 +25,10 @@ describe("BindingsProcessor", () => {
             },
             mobile: {
                 inputs: {
-                    count: { id: "count", static: 3, type: "number", dataType: "number" }
+                    count: { id: "count", static: 3, type: "number" }
                 },
                 styles: {
-                    padding: { static: "5px" }
+                    paddingTop: { static: "5px" }
                 }
             }
         }
@@ -46,7 +46,7 @@ describe("BindingsProcessor", () => {
         expect(result.inputs?.count.static).toBe(1);
         expect(result.inputs?.count.expression).toBe("$state.count");
         expect(result.styles?.backgroundColor?.static).toBe("gray");
-        expect(result.styles?.padding?.static).toBe("10px");
+        expect(result.styles?.paddingTop?.static).toBe("10px");
     });
 
     it("should merge mobile and tablet overrides", () => {
@@ -55,7 +55,7 @@ describe("BindingsProcessor", () => {
         expect(result.inputs?.count.static).toBe(3);
         expect(result.inputs?.count.expression).toBe("$state.count");
         expect(result.styles?.backgroundColor?.static).toBe("gray");
-        expect(result.styles?.padding?.static).toBe("5px");
+        expect(result.styles?.paddingTop?.static).toBe("5px");
     });
 
     it("should ignore unknown breakpoints", () => {

@@ -9,13 +9,11 @@ const mockComponents: Record<string, ComponentManifest> = {
         inputs: [
             {
                 type: "text",
-                dataType: "text",
                 renderer: "Webiny/Input",
                 name: "text"
             },
             {
                 type: "boolean",
-                dataType: "boolean",
                 renderer: "Webiny/Checkbox",
                 name: "flag"
             }
@@ -37,20 +35,17 @@ const mockComponents: Record<string, ComponentManifest> = {
         inputs: [
             {
                 type: "text",
-                dataType: "text",
                 renderer: "Webiny/GridSize",
                 name: "gridSize"
             },
             {
                 type: "object",
-                dataType: "object",
                 renderer: "Webiny/Object",
                 name: "columns",
                 list: true,
                 fields: [
                     {
                         type: "slot",
-                        dataType: "json",
                         list: false,
                         renderer: "Webiny/Slot",
                         name: "children",
@@ -108,7 +103,7 @@ const mockComponents: Record<string, ComponentManifest> = {
                 ]
             },
             styles: {
-                padding: "10px"
+                paddingTop: "10px"
             }
         }
     },
@@ -126,7 +121,6 @@ const mockComponents: Record<string, ComponentManifest> = {
         inputs: [
             {
                 type: "slot",
-                dataType: "json",
                 list: true,
                 renderer: "Webiny/Slot",
                 name: "children",

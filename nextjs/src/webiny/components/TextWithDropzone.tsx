@@ -1,6 +1,6 @@
 import React from "react";
 import { LexicalHtmlRenderer } from "@webiny/lexical-editor";
-import type { ComponentPropsWithChildren } from "@webiny/app-website-builder/react";
+import type { ComponentPropsWithChildren } from "@webiny/website-builder-react";
 
 type TextWithDropzoneProps = ComponentPropsWithChildren<{
     title: string;

@@ -154,19 +154,22 @@ module.exports = function (webpackEnv, { paths, options }) {
                         {
                             loader: require.resolve("@svgr/webpack"),
                             options: {
-                                exportType: "named",
                                 svgoConfig: {
                                     plugins: [
                                         {
                                             name: "preset-default",
-                                            params: {
-                                                overrides: {
-                                                    removeViewBox: false
-                                                }
-                                            }
+                                            params: { overrides: { removeViewBox: false } }
                                         }
                                     ]
                                 }
+                            }
+                        },
+                        // Case 2: All other imports (e.g. from CSS or HTML) → emit as asset
+                        {
+                            loader: "url-loader",
+                            options: {
+                                limit: 10000,
+                                name: "static/media/[name].[hash:8].[ext]"
                             }
                         }
                     ]

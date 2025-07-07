@@ -59,7 +59,7 @@ export const BackgroundPosition = ({ elementId }: { elementId: string }) => {
             }
             description={"Select background position"}
             disabled={!hasBackgroundImage}
-            value={localValue}
+            value={localValue ?? "center"}
             displayResetAction={false}
             onChange={onPositionChange}
             options={options}

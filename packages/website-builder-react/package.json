@@ -1,0 +1,37 @@
+{
+  "name": "@webiny/website-builder-react",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "exports": {
+    ".": "./index.js"
+  },
+  "description": "A React frontend integration SDK for Webiny Website Builder.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>",
+    "Sven Al Hamad <sven@webiny.com>",
+    "Adrian Smijulj <adrian@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/app-website-builder": "0.0.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.79",
+    "@webiny/project-utils": "0.0.0",
+    "typescript": "5.3.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "node ../cli/bin.js run build",
+    "watch": "node ../cli/bin.js run watch"
+  }
+}

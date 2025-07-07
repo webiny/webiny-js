@@ -6,6 +6,7 @@ import { $selectElement } from "~/editorSdk/utils";
 import { Draggable } from "~/BaseEditor/components/Draggable";
 import { useIsDragging } from "~/BaseEditor/defaultConfig/Content/Preview/useIsDragging";
 import { useElementComponentManifest } from "~/BaseEditor/defaultConfig/Content/Preview/useElementComponentManifest";
+import { useStyles } from "~/BaseEditor/defaultConfig/Sidebar/StyleSettings/useStyles";
 
 interface ElementOverlayProps {
     elementId: string;
@@ -26,7 +27,6 @@ export const ElementOverlay = React.memo(
         children
     }: ElementOverlayProps) => {
         const editor = useDocumentEditor();
-
         const componentManifest = useElementComponentManifest(previewBox.id);
 
         const onClick = useCallback((event: React.MouseEvent) => {
@@ -72,6 +72,9 @@ export const ElementOverlay = React.memo(
                                 pointerEvents
                             }}
                         >
+                            {isSelected ? (
+                                <AllMarginStripes elementId={elementId} previewBox={previewBox} />
+                            ) : null}
                             {children}
                         </div>
                         <div
@@ -114,3 +117,78 @@ export const ElementOverlay = React.memo(
 );
 
 ElementOverlay.displayName = "ElementOverlay";
+
+interface AllMarginStripesProps {
+    elementId: string;
+    previewBox: Box;
+}
+
+const borderWidth = "var(--border-width-md)";
+
+const AllMarginStripes = ({ elementId, previewBox }: AllMarginStripesProps) => {
+    const { styles } = useStyles(elementId);
+    const { marginTop = 0, marginBottom = 0, marginLeft = 0, marginRight = 0 } = styles;
+
+    return (
+        <>
+            {marginTop ? (
+                <MarginStripes
+                    top={`calc(0px - ${marginTop} - ${borderWidth})`}
+                    left={`calc(0px - ${borderWidth})`}
+                    height={marginTop}
+                    width={`${previewBox.width}px`}
+                />
+            ) : null}
+            {marginRight ? (
+                <MarginStripes
+                    top={`calc(0px - ${borderWidth})`}
+                    left={`calc(${previewBox.width}px - ${borderWidth})`}
+                    height={`${previewBox.height}px`}
+                    width={marginRight}
+                />
+            ) : null}
+            {marginBottom ? (
+                <MarginStripes
+                    top={`calc(${previewBox.height}px - ${borderWidth})`}
+                    left={`calc(0px - ${borderWidth})`}
+                    height={marginBottom}
+                    width={`${previewBox.width}px`}
+                />
+            ) : null}
+            {marginLeft ? (
+                <MarginStripes
+                    top={`calc(0px - ${borderWidth})`}
+                    left={`calc(0px - ${marginLeft} - ${borderWidth})`}
+                    height={`${previewBox.height}px`}
+                    width={marginLeft}
+                />
+            ) : null}
+        </>
+    );
+};
+
+interface MarginStripesProps {
+    top: string;
+    left: string;
+    height: string;
+    width: string;
+}
+
+const MarginStripes = ({ top, left, height, width }: MarginStripesProps) => {
+    return (
+        <div
+            data-role={"element-margin"}
+            style={{
+                pointerEvents: "none",
+                position: "absolute",
+                top,
+                left,
+                height,
+                width,
+                backgroundImage:
+                    "linear-gradient(135deg, #ecebff 18.75%, #ffffff 18.75%, #ffffff 50%, #ecebff 50%, #ecebff 68.75%, #ffffff 68.75%, #ffffff 100%)",
+                backgroundSize: "4.49px 4.49px"
+            }}
+        ></div>
+    );
+};

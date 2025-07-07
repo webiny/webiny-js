@@ -108,12 +108,20 @@ export class ViewportManager {
 
     private getViewportInfo(): ViewportInfo {
         const modes = [...this.breakpoints].reverse();
-        const viewport = {
-            width: window.innerWidth,
-            height: window.innerHeight,
-            scrollX: window.scrollX,
-            scrollY: window.scrollY
-        };
+        const viewport = environment.isClient()
+            ? {
+                  width: window.innerWidth,
+                  height: window.innerHeight,
+                  scrollX: window.scrollX,
+                  scrollY: window.scrollY
+              }
+            : {
+                  // During SSR or Next.js build, viewport is not available.
+                  height: 0,
+                  width: 2000,
+                  scrollX: 0,
+                  scrollY: 0
+              };
 
         const [breakpoint] = modes.filter(mode => mode.maxWidth >= viewport.width);
 

@@ -2,11 +2,11 @@ import { makeObservable, autorun, observable } from "mobx";
 import type { GenericRecord } from "@webiny/app/types.js";
 import { EditorHistory } from "./EditorHistory.js";
 import { type IState, type MutableState, State } from "./State";
-import * as fjp from "fast-json-patch";
+import { jsonPatch, type JsonPatchOperation } from "~/sdk/jsonPatch";
 
 export type StateChangeEvent<TState> = {
     reason: "undo" | "redo" | "update";
-    diff: fjp.Operation[];
+    diff: JsonPatchOperation[];
     state: TState;
 };
 
@@ -41,7 +41,7 @@ export class StateWithHistory<TState extends GenericRecord = GenericRecord>
             }
 
             const previousState = this.previousState ?? {};
-            const diff = fjp.compare(previousState, newState);
+            const diff = jsonPatch.compare(previousState, newState);
             this.previousState = undefined;
 
             this.history.trackState(newState);

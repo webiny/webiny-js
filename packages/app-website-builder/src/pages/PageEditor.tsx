@@ -1,9 +1,7 @@
 import React from "react";
-import mockPage1 from "~/DocumentEditor/mocks/mockPage1";
-import emptyPage from "~/DocumentEditor/mocks/emptyPage";
 import { DocumentEditor } from "~/DocumentEditor/DocumentEditor.js";
-import { EditorStateDebugger } from "./EditorStateDebugger";
 import { CompositionScope } from "@webiny/app-admin";
+import emptyPage from "~/sdk/mocks/emptyPage";
 
 export const PageEditor = () => {
     return (

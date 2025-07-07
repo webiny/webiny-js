@@ -20,7 +20,6 @@ export function $addElementReferenceToParent(
         inputs[slot] = {
             ...inputs[slot],
             type: "slot",
-            dataType: "string",
             static: elementId
         };
     } else {
@@ -28,7 +27,6 @@ export function $addElementReferenceToParent(
         inputs[slot] = {
             ...inputs[slot],
             type: "slot",
-            dataType: "string",
             list: true,
             static: [
                 ...(slotElements?.static ?? []).slice(0, index),

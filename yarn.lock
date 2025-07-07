@@ -20597,6 +20597,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/website-builder-react@workspace:packages/website-builder-react":
+  version: 0.0.0-use.local
+  resolution: "@webiny/website-builder-react@workspace:packages/website-builder-react"
+  dependencies:
+    "@types/react": "npm:18.2.79"
+    "@webiny/app-website-builder": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
+    typescript: "npm:5.3.3"
+  languageName: unknown
+  linkType: soft
+
 "@wry/caches@npm:^1.0.0":
   version: 1.0.1
   resolution: "@wry/caches@npm:1.0.1"

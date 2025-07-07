@@ -24,12 +24,14 @@ export const ExpressionRenderer = ({
         if (repeat) {
             return new StatePathsExtractor(document.state)
                 .getChildPaths(repeat.expression)
-                .filter(option => option.type.matches(input.dataType))
+                // TODO: implement data type adapters
+                // .filter(option => option.type.matches(input.dataType))
                 .values();
         }
         return new StatePathsExtractor(document.state)
             .getPaths()
-            .filter(option => option.type.matches(input.dataType))
+            // TODO: implement data type adapters
+            // .filter(option => option.type.matches(input.dataType))
             .values();
     });
 

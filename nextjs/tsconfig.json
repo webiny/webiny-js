@@ -26,7 +26,6 @@
       "@/hooks/*": ["./src/kibo/hooks/*"],
       "@/hooks": ["./src/kibo/hooks"],
       "@/styles/*": ["./src/kibo/styles/*"],
-      "@/styles/*": ["./src/kibo/styles/*"],
       "@/webiny/*": ["./src/webiny/*"]
     }
   },

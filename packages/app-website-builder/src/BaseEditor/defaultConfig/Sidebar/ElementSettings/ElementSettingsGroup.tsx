@@ -4,7 +4,7 @@ import { ScrollableContainer } from "~/BaseEditor/config/Sidebar/ScrollableConta
 
 export const ElementSettingsGroup = () => {
     return (
-        <ScrollableContainer>
+        <ScrollableContainer tabIndex={-1}>
             <Sidebar.Group.Tab
                 name={"element"}
                 label={"Element"}

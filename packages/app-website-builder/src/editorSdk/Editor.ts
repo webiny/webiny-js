@@ -22,6 +22,7 @@ export type EditorState = {
     showOverlays: boolean;
     components: Record<string, ComponentManifest>;
     componentGroups: Record<string, SerializedComponentGroup>;
+    breakpoint?: string;
     [key: string]: any;
 };
 

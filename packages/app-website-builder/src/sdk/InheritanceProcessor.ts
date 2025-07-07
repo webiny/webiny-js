@@ -107,7 +107,7 @@ export class InheritanceProcessor {
             const overridden = lastOverrideIndex === currentBpIndex;
 
             // Find nearest ancestor breakpoint less than currentBpIndex
-            let inheritedFromIndex = -1;
+            let inheritedFromIndex = 0; // Use `desktop` as fallback.
             for (let j = currentBpIndex - 1; j >= 0; j--) {
                 if (overrideIndices.has(j)) {
                     inheritedFromIndex = j;
@@ -115,16 +115,20 @@ export class InheritanceProcessor {
                 }
             }
 
+            const inheritedFrom =
+                inheritedFromIndex >= 0 ? this.breakpoints[inheritedFromIndex] : undefined;
+
             inputsInheritance[key] = {
                 overridden,
-                inheritedFrom:
-                    inheritedFromIndex >= 0 ? this.breakpoints[inheritedFromIndex] : undefined
+                inheritedFrom: breakpoint === inheritedFrom ? undefined : inheritedFrom
             };
         }
 
         // 3) Compute inheritance info for styles
         const stylesInheritance: InheritanceInfo["styles"] = {};
-        for (const key of Object.keys(styles)) {
+        const keys = new Set([...Object.keys(styles), ...Array.from(overriddenStylesMap.keys())]);
+
+        for (const key of keys) {
             const overrideIndices = overriddenStylesMap.get(key) ?? new Set();
 
             let lastOverrideIndex = -1;
@@ -136,7 +140,7 @@ export class InheritanceProcessor {
 
             const overridden = lastOverrideIndex === currentBpIndex;
 
-            let inheritedFromIndex = -1;
+            let inheritedFromIndex = 0; // Use `desktop` as fallback.
             for (let j = currentBpIndex - 1; j >= 0; j--) {
                 if (overrideIndices.has(j)) {
                     inheritedFromIndex = j;
@@ -144,10 +148,12 @@ export class InheritanceProcessor {
                 }
             }
 
+            const inheritedFrom =
+                inheritedFromIndex >= 0 ? this.breakpoints[inheritedFromIndex] : undefined;
+
             stylesInheritance[key] = {
                 overridden,
-                inheritedFrom:
-                    inheritedFromIndex >= 0 ? this.breakpoints[inheritedFromIndex] : undefined
+                inheritedFrom: breakpoint === inheritedFrom ? undefined : inheritedFrom
             };
         }
 

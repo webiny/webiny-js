@@ -1,10 +1,11 @@
 import { componentRegistry } from "~/sdk/ComponentRegistry.js";
 import { ComponentResolver, ResolveElementParams } from "~/sdk/ComponentResolver.js";
-import { logger } from "~/sdk/Logger.js";
-import type {
+import {
     Component,
+    GetPageOptions,
     IContentSdk,
     IDataProvider,
+    ListPagesOptions,
     Page,
     ResolvedComponent
 } from "~/sdk/types.js";
@@ -37,20 +38,18 @@ export class LiveSdk implements IContentSdk {
         });
 
         this.initialized = true;
-
-        logger.debug("Live SDK initialized!");
     }
 
-    async getPage(path: string): Promise<Page | null> {
-        const page = await this.dataProvider.getPage(path);
+    async getPage(path: string, options?: GetPageOptions): Promise<Page | null> {
+        const page = await this.dataProvider.getPage(path, options);
         if (page) {
             documentStoreManager.getStore(page.properties.id).setDocument(page);
         }
         return page;
     }
 
-    listPages(): Promise<Page[]> {
-        return this.dataProvider.listPages();
+    listPages(options?: ListPagesOptions): Promise<Page[]> {
+        return this.dataProvider.listPages(options);
     }
 
     registerComponent(blueprint: Component): void {

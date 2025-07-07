@@ -1,5 +1,5 @@
 import pick from "lodash/pick";
-import * as fjp from "fast-json-patch";
+import { jsonPatch } from "~/sdk/jsonPatch";
 import { HistorySnapshot, type SnapshotState } from "./HistorySnapshot.js";
 
 interface EditorHistoryParams {
@@ -29,7 +29,7 @@ export class EditorHistory {
         const newSnapshotState = this.getValuesOfInterest(snapshot);
         const currentSnapshot = this.snapshots[this.activeSnapshotIndex];
 
-        const changes = fjp.compare(currentSnapshot.getState(), newSnapshotState);
+        const changes = jsonPatch.compare(currentSnapshot.getState(), newSnapshotState);
         if (changes.length === 0) {
             return;
         }

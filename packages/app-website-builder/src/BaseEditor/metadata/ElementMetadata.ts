@@ -11,7 +11,7 @@ export class ElementMetadata implements IMetadata {
         this.metadata = metadata;
     }
 
-    get<T extends Metadata = Metadata>(id: string): T | undefined {
+    get<T = unknown>(id: string): T | undefined {
         return this.metadata[id];
     }
 

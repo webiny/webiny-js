@@ -7,19 +7,29 @@ import {
     createNumberInput,
     createBooleanInput,
     createLongTextInput,
-    createRichTextInput,
+    createLexicalInput,
     createElement,
     createObjectInput,
     createSelectInput
-} from "@webiny/app-website-builder/react/index.js";
+} from "@webiny/website-builder-react";
 import { Root } from "./components/Root";
-import ProductRecommendations from "./components/ProductRecommendations";
-import { ProductHighlight } from "./components/ProductHighlight";
 import Hero_1 from "@/webiny/components/Hero-1";
-import { Column, Grid, GridColumn } from "./components/Grid";
-import { createLexicalValue, RichTextComponent } from "./components/RichTextComponent";
+import { type Column, Grid, GridColumn } from "./components/Grid";
+import { createLexicalValue, LexicalComponent } from "./components/LexicalComponent";
+import { Box } from "./components/Box";
 
-const SimpleTextComponent = ({ inputs: { text } }: { inputs: { text: string } }) => <p>{text}</p>;
+const SimpleTextComponent = ({
+    inputs: { text, image }
+}: {
+    inputs: { text: string; image: any };
+}) => {
+    return (
+        <div>
+            <p>{text}</p>
+            <img src={image} />{" "}
+        </div>
+    );
+};
 
 export const customComponents = [
     createComponent(Root, {
@@ -27,6 +37,12 @@ export const customComponents = [
         label: "Main Content",
         acceptsChildren: true,
         hideFromToolbar: true
+    }),
+    createComponent(Box, {
+        name: "Webiny/Box",
+        label: "Box",
+        group: "basic",
+        acceptsChildren: true
     }),
     createComponent(Grid, {
         name: "Webiny/Grid",
@@ -163,7 +179,7 @@ export const customComponents = [
                             inputs: {
                                 children: [
                                     createElement({
-                                        component: "Webiny/RichText"
+                                        component: "Webiny/Lexical"
                                     })
                                 ]
                             }
@@ -175,7 +191,7 @@ export const customComponents = [
                             inputs: {
                                 children: [
                                     createElement({
-                                        component: "Webiny/RichText"
+                                        component: "Webiny/Lexical"
                                     })
                                 ]
                             }
@@ -187,12 +203,18 @@ export const customComponents = [
                 boxSizing: "border-box",
                 display: "flex",
                 flexDirection: "row",
-                flexFlow: "wrap",
+                flexWrap: "wrap",
                 justifyContent: "flex-start",
                 alignItems: "stretch",
                 width: "100%",
-                margin: "0px",
-                padding: "5px"
+                marginTop: "0px",
+                marginBottom: "0px",
+                marginLeft: "0px",
+                marginRight: "0px",
+                paddingTop: "5px",
+                paddingRight: "5px",
+                paddingBottom: "5px",
+                paddingLeft: "5px"
             }
         }
     }),
@@ -205,17 +227,20 @@ export const customComponents = [
         hideFromToolbar: true,
         defaults: {
             styles: {
-                padding: "10px"
+                paddingTop: "10px",
+                paddingRight: "10px",
+                paddingBottom: "10px",
+                paddingLeft: "10px"
             }
         }
     }),
-    createComponent(RichTextComponent, {
-        name: "Webiny/RichText",
+    createComponent(LexicalComponent, {
+        name: "Webiny/Lexical",
         label: "Rich Text",
         group: "basic",
         image: "https://material-icons.github.io/material-icons/svg/text_fields/outline.svg",
         inputs: [
-            createRichTextInput({
+            createLexicalInput({
                 name: "content",
                 label: "Content"
             })
@@ -251,79 +276,7 @@ export const customComponents = [
             }
         }
     }),
-    /*createComponent(TextWithDropzone, {
-        name: "Webiny/TextWithDropzone",
-        label: "Text with Dropzone",
-        group: "basic",
-        acceptsChildren: true,
-        inputs: [
-            createTextInput({
-                name: "title",
-                label: "Title",
-                required: true
-            }),
-            createRichTextInput({
-                name: "content",
-                label: "Content",
-                required: true
-            })
-        ]
-    }),
-    createComponent(TwoColumns, {
-        name: "Webiny/TwoColumns",
-        label: "Two Columns",
-        group: "basic",
-        inputs: [
-            createTextInput({
-                name: "title",
-                label: "Title"
-            }),
-            createSlotInput({
-                name: "leftColumn"
-            }),
-            createSlotInput({
-                name: "rightColumn"
-            })
-        ],
-        defaults: {
-            inputs: {
-                title: "Default Columns Title",
-                leftColumn: [
-                    createElement({
-                        component: "Webiny/TextWithDropzone",
-                        inputs: {
-                            title: "Left Column Title"
-                        },
-                        styles: {
-                            desktop: {
-                                backgroundColor: "red",
-                                marginTop: "20px"
-                            }
-                        }
-                    })
-                ],
-                rightColumn: [
-                    createElement({
-                        component: "Webiny/TextWithDropzone",
-                        inputs: {
-                            title: "Right Column Title"
-                        },
-                        styles: {
-                            desktop: {
-                                backgroundColor: "blue",
-                                marginTop: "20px"
-                            }
-                        }
-                    })
-                ]
-            },
-            styles: {
-                padding: "20px",
-                backgroundColor: "#5c9a12"
-            }
-        }
-    }),*/
-    createComponent(ProductRecommendations, {
+    /*createComponent(ProductRecommendations, {
         name: "Kibo/ProductRecommendations",
         label: "Product Recommendations",
         group: "ecommerce",
@@ -359,7 +312,7 @@ export const customComponents = [
                 label: "Product"
             })
         ]
-    }),
+    }),*/
     createComponent(Hero_1, {
         name: "Webiny/Hero",
         label: "Hero #1"

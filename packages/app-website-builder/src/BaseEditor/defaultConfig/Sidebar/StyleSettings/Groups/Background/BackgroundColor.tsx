@@ -6,12 +6,12 @@ import { InheritanceLabel } from "~/BaseEditor/defaultConfig/Sidebar/Inheritance
 
 export const BackgroundColor = ({ elementId }: { elementId: string }) => {
     const { styles, onChange, onPreviewChange, inheritanceMap } = useStyles(elementId);
-    const [value, setValue] = useState(styles.backgroundColor ?? "#000000");
+    const [value, setValue] = useState(styles.backgroundColor ?? "transparent");
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
-        if (styles.backgroundColor && styles.backgroundColor !== value) {
-            setValue(styles.backgroundColor);
+        if (styles.backgroundColor !== value) {
+            setValue(styles.backgroundColor ?? "transparent");
         }
     }, [styles.backgroundColor]);
 

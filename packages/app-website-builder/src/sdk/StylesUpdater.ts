@@ -1,4 +1,4 @@
-import * as fjp from "fast-json-patch";
+import { jsonPatch } from "~/sdk/jsonPatch";
 import set from "lodash/set";
 import type { Document, DocumentElementBindings } from "./types";
 import type { IBindingsUpdater } from "./IBindingsUpdater";
@@ -39,7 +39,7 @@ export class StylesUpdater implements IBindingsUpdater {
 
         const ignore = ["/inputs", "/overrides/inputs", "/metadata"];
 
-        return fjp.compare(bindings, toCompare).filter(op => {
+        return jsonPatch.compare(bindings, toCompare).filter(op => {
             return !ignore.some(prefix => op.path.startsWith(prefix));
         });
     }

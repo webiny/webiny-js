@@ -1,49 +1,115 @@
+import type { Component, GetPageOptions, IContentSdk, Page, ResolvedComponent } from "~/sdk/types";
 import { environment } from "./Environment.js";
-import type { Component, IContentSdk, ResolvedComponent } from "~/sdk/types";
 import { LiveSdk, type LiveSdkConfig } from "./LiveSdk.js";
-import { PreviewSdk } from "./PreviewSdk.js";
+import { EditingSdk } from "./EditingSdk.js";
 import { ResolveElementParams } from "~/sdk/ComponentResolver";
+import { PreviewSdk } from "./PreviewSdk.js";
 
-export type ContentSDKConfig = LiveSdkConfig;
+export type ContentSDKConfig = LiveSdkConfig & {
+    preview?: boolean;
+};
 
-export class ContentSdk implements IContentSdk {
-    private readonly live: LiveSdk;
-    public preview?: PreviewSdk;
-    private active: IContentSdk;
+class InternalContentSdk implements IContentSdk {
+    private activeSdk: IContentSdk;
+    private editingSdk: EditingSdk | undefined;
 
-    constructor() {
-        this.live = new LiveSdk();
-
-        const isPreview = environment.isPreview() && environment.isClient();
-        if (isPreview) {
-            this.preview = new PreviewSdk(this.live);
-            this.active = this.preview;
-        } else {
-            this.active = this.live;
-        }
+    constructor(liveSdk: LiveSdk, editingSdk?: EditingSdk) {
+        this.activeSdk = editingSdk ?? liveSdk;
+        this.editingSdk = editingSdk;
     }
 
-    public init(config: ContentSDKConfig) {
-        this.live.init(config);
-        if (this.preview) {
-            this.preview.init();
-        }
+    getEditingSdk() {
+        return this.editingSdk;
     }
 
-    public getPage(path: string) {
-        return this.active.getPage(path);
+    async getPage(path: string, options?: GetPageOptions): Promise<Page | null> {
+        return this.activeSdk.getPage(path, options);
     }
 
-    public listPages() {
-        return this.active.listPages();
+    listPages(): Promise<Page[]> {
+        return this.activeSdk.listPages();
     }
 
-    registerComponent(blueprint: Component): void {
-        this.active.registerComponent(blueprint);
+    registerComponent(component: Component): void {
+        this.activeSdk.registerComponent(component);
     }
 
     resolveElement(params: ResolveElementParams): ResolvedComponent[] | null {
-        return this.active.resolveElement(params);
+        return this.activeSdk.resolveElement(params);
+    }
+}
+
+export class ContentSdk implements IContentSdk {
+    protected sdk?: InternalContentSdk;
+    private isPreview = false;
+    private lastConfig: any;
+
+    public init(config: ContentSDKConfig, afterInit?: () => void): void {
+        const configHash = JSON.stringify(config);
+        if (this.lastConfig && this.lastConfig === configHash) {
+            return;
+        }
+
+        this.lastConfig = configHash;
+
+        let liveSdk: IContentSdk = new LiveSdk();
+        (liveSdk as LiveSdk).init(config);
+
+        if (config.preview && !environment.isEditing()) {
+            this.isPreview = true;
+            liveSdk = new PreviewSdk(liveSdk);
+        }
+
+        let editingSdk;
+        if (environment.isEditing()) {
+            editingSdk = new EditingSdk(liveSdk);
+            editingSdk.init();
+        }
+
+        this.sdk = new InternalContentSdk(liveSdk as LiveSdk, editingSdk);
+
+        if (typeof afterInit === "function") {
+            afterInit();
+        }
+    }
+
+    public getEditingSdk() {
+        this.assertInitialized();
+        return this.sdk.getEditingSdk();
+    }
+
+    public getPage(path: string) {
+        this.assertInitialized();
+        return this.sdk.getPage(path);
+    }
+
+    public listPages() {
+        this.assertInitialized();
+        return this.sdk.listPages();
+    }
+
+    registerComponent(blueprint: Component): void {
+        this.assertInitialized();
+        this.sdk.registerComponent(blueprint);
+    }
+
+    resolveElement(params: ResolveElementParams): ResolvedComponent[] | null {
+        this.assertInitialized();
+        return this.sdk.resolveElement(params);
+    }
+
+    isEditing() {
+        return environment.isEditing();
+    }
+
+    isPreviewing() {
+        return this.isPreview;
+    }
+
+    private assertInitialized(): asserts this is this & { sdk: IContentSdk } {
+        if (!this.sdk) {
+            throw new Error(`ContentSdk has not been initialized!`);
+        }
     }
 }
 

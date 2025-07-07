@@ -17,6 +17,7 @@ interface TooltipProps extends Omit<TooltipPrimitive.TooltipContentProps, "conte
     side?: TooltipPrimitive.TooltipContentProps["side"];
     variant?: TooltipContentProps["variant"];
     trigger: React.ReactNode;
+    rawTrigger?: boolean;
 }
 
 const DecoratableTooltip = ({

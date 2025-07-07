@@ -7,7 +7,7 @@ export type Message<T = any> = {
     payload: T;
 };
 
-type Handler<T = any> = (payload: T, logicalType: string) => void;
+type Handler<T = any> = (payload: T, logicalType: string, wildcardMatch?: string) => void;
 
 export class Messenger {
     private listeners = new Map<string, Set<Handler>>();
@@ -44,6 +44,17 @@ export class Messenger {
         if (handlers) {
             handlers.forEach(fn => fn(payload, logicalType));
         }
+
+        // Additionally, handle wildcard listeners that match this event
+        this.listeners.forEach((handlers, key) => {
+            if (key.includes("*")) {
+                if (micromatch.isMatch(type, this.prefixGlob + key)) {
+                    // Pass the matched wildcard part (after the prefix and wildcard portion)
+                    const wildcardPart = type.slice((this.prefixGlob + key).indexOf("*") - 1);
+                    handlers.forEach(fn => fn(payload, logicalType, wildcardPart));
+                }
+            }
+        });
     }
 
     private stripPrefix(fullType: string): string {

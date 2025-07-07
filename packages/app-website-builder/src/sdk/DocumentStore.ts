@@ -1,5 +1,5 @@
-import { applyPatch as jsonPatchApply, Operation } from "fast-json-patch";
-import { makeAutoObservable, runInAction, observable, toJS } from "mobx";
+import { jsonPatch, type JsonPatchOperation } from "~/sdk/jsonPatch";
+import { makeAutoObservable, runInAction, observable } from "mobx";
 import type { Document } from "~/sdk/types";
 
 export class DocumentStore {
@@ -55,9 +55,9 @@ export class DocumentStore {
         }
     }
 
-    applyPatch(patch: Operation[]) {
+    applyPatch(patch: JsonPatchOperation[]) {
         runInAction(() => {
-            jsonPatchApply(this.document!, patch, false, true);
+            jsonPatch.applyPatch(this.document!, patch, false, true);
         });
     }
 

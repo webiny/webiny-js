@@ -16,8 +16,9 @@ import { Preview } from "./Content/Preview";
 import { InsertElements } from "./Toolbar/InsertElements";
 import { CommandHandlers } from "~/BaseEditor/commandHandlers";
 import { ElementSettings } from "./Sidebar/ElementSettings/ElementSettings";
-import { DocumentStateEditor } from "./DocumentStateEditor";
 import { ElementInputRenderers } from "./ElementInputRenderers";
+import { BackButton } from "./TopBar/BackButton";
+import { Title } from "./TopBar/Title";
 
 const { Ui } = EditorConfig;
 
@@ -38,6 +39,8 @@ export const DefaultEditorConfig = React.memo(() => {
             <EditorConfig>
                 <CommandHandlers />
                 <ElementInputRenderers />
+                <Ui.TopBar.Element name={"buttonBack"} group={"left"} element={<BackButton />} />
+                <Ui.TopBar.Element name={"title"} group={"left"} element={<Title />} />
                 <Ui.TopBar.Action name={"dropdownActions"} element={<PageOptionsDropdown />} />
                 <Ui.Content.Element name={"breadcrumbs"} element={<Breadcrumbs />} />
                 <Ui.Content.Element name={"background"} element={<Background />} />

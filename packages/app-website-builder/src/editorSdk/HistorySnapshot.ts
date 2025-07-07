@@ -1,4 +1,4 @@
-import type { Operation } from "fast-json-patch";
+import type { JsonPatchOperation } from "~/sdk/jsonPatch";
 
 export type SnapshotState = Record<string, any>;
 
@@ -7,7 +7,7 @@ export class HistorySnapshot<T = SnapshotState> {
     private readonly createdOn: Date;
     private readonly changes: any;
 
-    constructor(state: T, changes: Operation[] = []) {
+    constructor(state: T, changes: JsonPatchOperation[] = []) {
         this.changes = changes;
         this.state = state;
         this.createdOn = new Date();

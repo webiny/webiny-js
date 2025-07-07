@@ -3,7 +3,6 @@ import type { ComponentInput } from "./types";
 export type InputAstNode = {
     name: string;
     type: string;
-    dataType: string;
     list: boolean;
     path: string;
     children: InputAstNode[];
@@ -21,7 +20,6 @@ export class ComponentManifestToAstConverter {
             const node: InputAstNode = {
                 name: input.name,
                 type: input.type,
-                dataType: input.dataType,
                 list: input.list || false,
                 path,
                 children: [],

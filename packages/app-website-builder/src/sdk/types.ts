@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import type { ResolveElementParams } from "~/sdk/ComponentResolver";
 import type { BindingsApi } from "~/sdk/BindingsApi";
+import { ShorthandCssProperties } from "./types/ShorthandCssProperties";
 
 export type ElementMap = Record<string, DocumentElement>;
 
@@ -9,7 +10,6 @@ export type DocumentState = Record<string, any>;
 export type InputValueBinding<T = any> = ValueBinding<T> & {
     id: string;
     type: string;
-    dataType: string;
     list?: boolean;
 };
 
@@ -24,7 +24,7 @@ export type RepeatValueBinding = {
     expression: string;
 };
 
-export type CssProperties = CSSProperties;
+export type CssProperties = Omit<CSSProperties, ShorthandCssProperties>;
 
 export type DocumentElementStyleBindings = Partial<{
     [K in keyof CssProperties]: StyleValueBinding<CssProperties[K]>;
@@ -90,6 +90,7 @@ export type SerializedComponentGroup = ComponentGroup & {
 export type ComponentGroup = {
     name: string;
     label: string;
+    description?: string;
     filter?: (component: ComponentManifest) => boolean;
 };
 
@@ -188,9 +189,16 @@ export type PreviewViewportData = {
     viewport: PreviewViewportInfo;
 };
 
+export type ApiOptions = {
+    preview?: boolean;
+};
+
+export type GetPageOptions = ApiOptions;
+export type ListPagesOptions = ApiOptions;
+
 export interface IDataProvider {
-    getPage(path: string): Promise<Page | null>;
-    listPages(): Promise<Page[]>;
+    getPage(path: string, options?: GetPageOptions): Promise<Page | null>;
+    listPages(options?: ListPagesOptions): Promise<Page[]>;
 }
 
 export interface IEnvironment {
@@ -216,7 +224,6 @@ export type Breakpoint = {
 export type BaseInput<T = any> = {
     name: string;
     type: string;
-    dataType: string;
     onChange?: (
         bindings: ReturnType<BindingsApi["getPublicApi"]>,
         context: { breakpoint: string }
@@ -235,78 +242,64 @@ export type BaseInput<T = any> = {
 // Discriminated union per input type
 export type TextInput = BaseInput<string> & {
     type: "text";
-    dataType: "text";
 };
 
 export type SlotInput = BaseInput<any> & {
     type: "slot";
-    dataType: "string";
     components?: string[];
 };
 
 export type TagsInput = BaseInput<string[]> & {
     type: "text";
-    dataType: "text";
 };
 
 export type LongTextInput = BaseInput<string> & {
     type: "longText";
-    dataType: "text";
 };
 
 export type NumberInput = BaseInput<number> & {
     type: "number";
-    dataType: "number";
     minValue?: number;
 };
 
 export type BooleanInput = BaseInput<boolean> & {
     type: "boolean";
-    dataType: "boolean";
 };
 
 export type ColorInput = BaseInput<string> & {
     type: "color";
-    dataType: "text";
 };
 
 export type FileInput = BaseInput<string> & {
     type: "file";
-    dataType: "text";
     allowedFileTypes: string[];
 };
 
 export type DateTimeInput = BaseInput<string> & {
     type: "datetime";
-    dataType: "datetime";
 };
 
-export type RichTextInput = BaseInput<string> & {
-    type: "richText";
-    dataType: "json";
+export type LexicalInput = BaseInput<string> & {
+    type: "lexical";
 };
 
 export type SelectInput = BaseInput<string> & {
     type: "select";
-    dataType: "text";
     options: { label: string; value: string }[];
 };
 
 export type RadioInput = BaseInput<string> & {
     type: "radio";
-    dataType: "text";
     options: { label: string; value: string }[];
 };
 
 export type ObjectInput = BaseInput<Record<string, any>> & {
     type: "object";
-    dataType: "object";
     fields: ComponentInput[];
 };
 
 export type CustomInput = BaseInput<any> & {
     type: string;
-    dataType: string;
     fields: ComponentInput[];
 };
 
@@ -319,7 +312,7 @@ export type ComponentInput =
     | ColorInput
     | FileInput
     | DateTimeInput
-    | RichTextInput
+    | LexicalInput
     | SelectInput
     | RadioInput
     | TagsInput

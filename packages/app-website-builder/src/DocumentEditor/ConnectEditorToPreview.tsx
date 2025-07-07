@@ -1,23 +1,17 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { MessageOrigin, Messenger } from "../sdk/messenger";
 import { usePreviewData } from "~/BaseEditor/hooks/usePreviewData";
 
 type ConnectEditorToPreviewProps = {
     iframeRef: React.RefObject<HTMLIFrameElement>;
-    loader: React.ReactNode;
     onConnected: (
         messenger: Messenger,
         elementPositionsHook?: ReturnType<typeof usePreviewData>
     ) => void;
 };
 
-export function ConnectEditorToPreview({
-    iframeRef,
-    onConnected,
-    loader
-}: ConnectEditorToPreviewProps) {
+export function ConnectEditorToPreview({ iframeRef, onConnected }: ConnectEditorToPreviewProps) {
     const messengerRef = useRef<Messenger | null>(null);
-    const [connected, setConnected] = useState(false);
 
     useEffect(() => {
         if (!iframeRef.current?.contentWindow) {
@@ -35,7 +29,6 @@ export function ConnectEditorToPreview({
 
         // Listen for "preview-ready"
         const off = messenger.on("preview.ready", () => {
-            setConnected(true);
             onConnected(messenger);
         });
 
@@ -45,5 +38,5 @@ export function ConnectEditorToPreview({
         };
     }, [iframeRef, onConnected]);
 
-    return connected ? null : loader;
+    return null;
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import type { ComponentProps, ComponentPropsWithChildren } from "@webiny/app-website-builder/react";
+import type { ComponentProps, ComponentPropsWithChildren } from "@webiny/website-builder-react";
 
 export const GridColumn = ({ inputs }: { inputs: ComponentPropsWithChildren["inputs"] }) => {
     return <>{inputs.children}</>;

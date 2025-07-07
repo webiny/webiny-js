@@ -230,7 +230,6 @@ export class InputsBindingsProcessor {
                         const binding = {
                             static: node.list ? [createdId] : createdId,
                             type: node.type,
-                            dataType: node.dataType,
                             list: node.list,
                             id: idToUse
                         };
@@ -284,7 +283,6 @@ export class InputsBindingsProcessor {
                             ...(originalEntry ?? {}),
                             static: newValue,
                             type: node.type,
-                            dataType: node.dataType,
                             list: node.list,
                             id: idToUse
                         };

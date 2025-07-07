@@ -2,7 +2,7 @@ import { IEnvironment } from "./types.js";
 
 export class Environment implements IEnvironment {
     public isPreview(): boolean {
-        return this.isIframe() || this.getQueryParam("preview.document") !== null;
+        return this.getQueryParam("preview.document") !== null;
     }
 
     public isClient(): boolean {
@@ -13,7 +13,7 @@ export class Environment implements IEnvironment {
         return !this.isClient();
     }
 
-    public isIframe(): boolean {
+    public isEditing(): boolean {
         return this.isClient() && window.parent !== window;
     }
 

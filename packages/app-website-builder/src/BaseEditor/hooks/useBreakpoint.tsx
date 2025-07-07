@@ -5,6 +5,7 @@ import { Breakpoint } from "~/sdk/types";
 import { ReactComponent as LaptopIcon } from "@webiny/icons/laptop_mac.svg";
 import { ReactComponent as TabletIcon } from "@webiny/icons/tablet_mac.svg";
 import { ReactComponent as MobileIcon } from "@webiny/icons/phone_iphone.svg";
+import { BASE_BREAKPOINT } from "~/constants";
 
 export type EditorBreakpoint = Breakpoint & {
     title: string;
@@ -59,7 +60,7 @@ export const useBreakpoint = () => {
     );
 
     return {
-        isBaseBreakpoint: breakpoint.name === "desktop",
+        isBaseBreakpoint: breakpoint.name === BASE_BREAKPOINT,
         breakpoint,
         breakpoints: BREAKPOINTS,
         setBreakpoint

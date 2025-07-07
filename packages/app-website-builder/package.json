@@ -6,6 +6,12 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
+  "exports": {
+    ".": "./index.js",
+    "./sdk": "./sdk/index.js",
+    "./ecommerce": "./ecommerce/index.js",
+    "./Extension": "./Extension.js"
+  },
   "author": "Pavel Denisjuk",
   "license": "MIT",
   "dependencies": {

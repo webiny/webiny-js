@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { StaticToolbar } from "@webiny/lexical-editor";
 import type { RichTextEditorProps } from "@webiny/lexical-editor/types";
-import { CompositionScope } from "@webiny/react-composition";
 import { LexicalEditor as BaseLexicalEditor } from "@webiny/app-admin/components/LexicalEditor";
 import "./wbStaticToolbar.css";
 

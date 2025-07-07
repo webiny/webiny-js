@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { DelayedOnChange, FormComponentLabel } from "@webiny/admin-ui";
+import { createLexicalStateTransformer } from "@webiny/lexical-converter";
 import { CompositionScope } from "@webiny/app-admin/index";
 import { LexicalEditor } from "./LexicalEditor";
 import { ElementInputRendererProps } from "~/BaseEditor";
@@ -13,9 +14,18 @@ type LexicalInputRendererProps = Omit<ElementInputRendererProps, "onChange" | "m
 };
 
 export const LexicalInputRenderer = (props: ElementInputRendererProps) => {
+    const transformer = useMemo(() => {
+        return createLexicalStateTransformer();
+    }, []);
+
     const onChange = (lexicalValue: string) => {
         props.onChange(({ value }) => {
-            value.set(lexicalValue);
+            const html = transformer.toHtml(lexicalValue);
+
+            value.set({
+                state: lexicalValue,
+                html
+            });
         });
     };
 
@@ -89,7 +99,7 @@ const ExpandableLexicalInputRenderer = ({
         <>
             <FormComponentLabel text={label} />
             <CompositionScope name={"compact"}>
-                <DelayedOnChange value={value} onChange={onChange}>
+                <DelayedOnChange value={value.state} onChange={onChange}>
                     {({ value, onChange }) => (
                         <LexicalEditor value={value} onChange={onChange} key={input.name} />
                     )}
@@ -97,7 +107,7 @@ const ExpandableLexicalInputRenderer = ({
             </CompositionScope>
             <EditorDialog
                 open={isExpanded}
-                value={value}
+                value={value.state}
                 onChange={applyChanges}
                 onClose={() => setExpanded(false)}
                 input={input}
