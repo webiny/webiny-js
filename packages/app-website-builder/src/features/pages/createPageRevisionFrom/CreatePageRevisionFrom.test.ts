@@ -16,6 +16,9 @@ describe("CreatePageRevisionFrom", () => {
             properties: {
                 title: "Page 1"
             },
+            metadata: {
+                data: "data-1"
+            },
             elements: {
                 element1: "element"
             },
@@ -28,6 +31,7 @@ describe("CreatePageRevisionFrom", () => {
     const pagesCache = pageCacheFactory.getCache();
 
     beforeEach(() => {
+        jest.clearAllMocks();
         pagesCache.clear();
         pagesCache.addItems([
             Page.create({
@@ -39,6 +43,9 @@ describe("CreatePageRevisionFrom", () => {
                 },
                 properties: {
                     title: "Page 1"
+                },
+                metadata: {
+                    data: "data-1"
                 },
                 elements: {
                     element1: "element"

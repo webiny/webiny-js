@@ -15,6 +15,9 @@ describe("PublishPage", () => {
             properties: {
                 title: "Page 1"
             },
+            metadata: {
+                metadata: "data-1"
+            },
             elements: {
                 element1: "element"
             },
@@ -27,6 +30,7 @@ describe("PublishPage", () => {
     const pagesCache = pageCacheFactory.getCache();
 
     beforeEach(() => {
+        jest.clearAllMocks();
         pagesCache.clear();
         pagesCache.addItems([
             Page.create({
@@ -38,6 +42,9 @@ describe("PublishPage", () => {
                 },
                 properties: {
                     title: "Page 1"
+                },
+                metadata: {
+                    metadata: "data-1"
                 },
                 elements: {
                     element1: "element"

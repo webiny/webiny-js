@@ -20,6 +20,7 @@ export class UpdatePageRepository implements IUpdatePageRepository {
             status: page.status,
             wbyAco_location: page.location,
             properties: page.properties,
+            metadata: page.metadata,
             elements: page.elements,
             bindings: page.bindings,
             extensions: page.extensions

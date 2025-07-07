@@ -22,6 +22,9 @@ describe("DeletePage", () => {
                 properties: {
                     title: "Page 1"
                 },
+                metadata: {
+                    title: "Page 1"
+                },
                 elements: {
                     element1: "element"
                 },

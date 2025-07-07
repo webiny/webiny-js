@@ -20,6 +20,9 @@ describe("UpdatePage", () => {
                 properties: {
                     title: "Page 1"
                 },
+                metadata: {
+                    data: "metadata-1"
+                },
                 elements: {
                     element1: "element"
                 },
@@ -41,6 +44,9 @@ describe("UpdatePage", () => {
                 },
                 properties: {
                     title: "Page 1 - Updated"
+                },
+                metadata: {
+                    data: "metadata-1-updated"
                 },
                 elements: {
                     element1: "element-updated"
@@ -64,6 +70,9 @@ describe("UpdatePage", () => {
         expect(item?.elements).toMatchObject({
             element1: "element"
         });
+        expect(item?.metadata).toMatchObject({
+            data: "metadata-1"
+        });
         expect(item?.bindings).toMatchObject({
             data: "any-data"
         });
@@ -84,6 +93,9 @@ describe("UpdatePage", () => {
         });
         expect(updatedItem?.elements).toMatchObject({
             element1: "element-updated"
+        });
+        expect(updatedItem?.metadata).toMatchObject({
+            data: "metadata-1-updated"
         });
         expect(updatedItem?.bindings).toMatchObject({
             data: "any-data-updated"
@@ -113,6 +125,9 @@ describe("UpdatePage", () => {
         });
         expect(updatedItem?.elements).toMatchObject({
             element1: "element"
+        });
+        expect(updatedItem?.metadata).toMatchObject({
+            data: "metadata-1"
         });
         expect(updatedItem?.bindings).toMatchObject({
             data: "any-data"

@@ -58,7 +58,7 @@ export class UpdatePageGqlGateway implements IUpdatePageGateway {
     }
 
     async execute(page: PageDto) {
-        const { id, properties, elements, bindings, extensions } = page;
+        const { id, properties, metadata, elements, bindings, extensions } = page;
 
         const { data: response } = await this.client.mutate<
             UpdatePageResponse,
@@ -69,6 +69,7 @@ export class UpdatePageGqlGateway implements IUpdatePageGateway {
                 id,
                 data: {
                     properties,
+                    metadata,
                     elements,
                     bindings,
                     extensions

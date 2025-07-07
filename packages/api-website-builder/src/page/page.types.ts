@@ -20,6 +20,7 @@ export interface WbPage {
     webinyVersion: string;
 
     properties: Record<string, any>;
+    metadata: Record<string, any>;
     bindings: Record<string, any>;
     elements: Record<string, any>;
     extensions?: Record<string, any>;
@@ -39,12 +40,13 @@ export interface GetWbPageParams {
 
 export type CreateWbPageData = Pick<
     WbPage,
-    "properties" | "bindings" | "elements" | "wbyAco_location" | "extensions"
+    "properties" | "metadata" | "bindings" | "elements" | "wbyAco_location" | "extensions"
 >;
 
 export interface UpdateWbPageData {
     location?: WbLocation;
     properties?: Record<string, any>;
+    metadata?: Record<string, any>;
     bindings?: Record<string, any>;
     elements?: Record<string, any>;
 }

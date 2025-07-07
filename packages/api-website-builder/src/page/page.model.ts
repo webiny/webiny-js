@@ -6,6 +6,12 @@ const propertiesField = () =>
         type: "searchable-json"
     });
 
+const metadataField = () =>
+    createModelField({
+        label: "Metadata",
+        type: "json"
+    });
+
 const bindingsField = () =>
     createModelField({
         label: "Bindings",
@@ -32,7 +38,13 @@ const extensionsField = () =>
 export const PAGE_MODEL_ID = "wbPage";
 
 export const createPageModel = () => {
-    const fields = [propertiesField(), bindingsField(), elementsField(), extensionsField()];
+    const fields = [
+        propertiesField(),
+        metadataField(),
+        bindingsField(),
+        elementsField(),
+        extensionsField()
+    ];
 
     return createPrivateModel({
         name: "Website Builder - Page",

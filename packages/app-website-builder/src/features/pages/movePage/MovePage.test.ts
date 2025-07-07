@@ -23,6 +23,9 @@ describe("MovePage", () => {
                 properties: {
                     title: "Page 1"
                 },
+                metadata: {
+                    metadata: "data-1"
+                },
                 elements: {
                     element1: "element"
                 },

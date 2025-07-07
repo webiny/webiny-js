@@ -9,6 +9,7 @@ export interface PageDto {
     version: number;
     location: WbLocation;
     properties: Record<string, any>;
+    metadata: Record<string, any>;
     bindings: Record<string, any>;
     elements: Record<string, any>;
     extensions: Record<string, any>;
@@ -29,6 +30,7 @@ export class PageDtoMapper {
             version: page.version,
             location: page.location,
             properties: page.properties,
+            metadata: page.metadata,
             bindings: page.bindings,
             elements: page.elements,
             extensions: page.extensions,

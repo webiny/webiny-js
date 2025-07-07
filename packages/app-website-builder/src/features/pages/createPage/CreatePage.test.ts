@@ -12,6 +12,9 @@ describe("CreatePage", () => {
             properties: {
                 title: "Page 1"
             },
+            metadata: {
+                data: "data-1"
+            },
             elements: {
                 element1: "element"
             },
@@ -50,6 +53,9 @@ describe("CreatePage", () => {
         });
         expect(item?.properties).toEqual({
             title: "Page 1"
+        });
+        expect(item?.metadata).toEqual({
+            data: "data-1"
         });
         expect(item?.elements).toEqual({
             element1: "element"

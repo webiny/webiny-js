@@ -17,6 +17,7 @@ export class CreatePageRepository implements ICreatePageRepository {
         const dto: PageDto = {
             wbyAco_location: page.location,
             properties: page.properties,
+            metadata: page.metadata,
             elements: page.elements,
             bindings: page.bindings,
             extensions: page.extensions

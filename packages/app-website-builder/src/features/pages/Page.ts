@@ -9,6 +9,7 @@ export interface PageData {
     location?: WbLocation;
     wbyAco_location?: WbLocation;
     properties?: Record<string, any>;
+    metadata?: Record<string, any>;
     bindings?: Record<string, any>;
     elements?: Record<string, any>;
     extensions?: Record<string, any>;
@@ -27,6 +28,7 @@ export class Page {
     public version: number;
     public location: WbLocation;
     public properties: Record<string, any>;
+    public metadata: Record<string, any>;
     public bindings: Record<string, any>;
     public elements: Record<string, any>;
     public extensions: Record<string, any>;
@@ -44,6 +46,7 @@ export class Page {
         this.version = data.version ?? 1;
         this.location = this.createLocation(data);
         this.properties = data.properties ?? {};
+        this.metadata = data.metadata ?? {};
         this.bindings = data.bindings ?? {};
         this.elements = data.elements ?? {};
         this.extensions = data.extensions ?? {};

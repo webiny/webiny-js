@@ -16,6 +16,9 @@ describe("ListPages", () => {
                     properties: {
                         title: "Page 1"
                     },
+                    metadata: {
+                        metadata: "data-1"
+                    },
                     elements: {
                         element1: "element"
                     },
@@ -33,6 +36,9 @@ describe("ListPages", () => {
                     properties: {
                         title: "Page 2"
                     },
+                    metadata: {
+                        metadata: "data-2"
+                    },
                     elements: {
                         element1: "element"
                     },
@@ -49,6 +55,9 @@ describe("ListPages", () => {
                     },
                     properties: {
                         title: "Page 3"
+                    },
+                    metadata: {
+                        metadata: "data-3"
                     },
                     elements: {
                         element1: "element"
@@ -105,6 +114,9 @@ describe("ListPages", () => {
                             properties: {
                                 title: "Page 1"
                             },
+                            metadata: {
+                                metadata: "data-1"
+                            },
                             elements: {
                                 element1: "element"
                             },
@@ -121,6 +133,9 @@ describe("ListPages", () => {
                             },
                             properties: {
                                 title: "Page 2"
+                            },
+                            metadata: {
+                                metadata: "data-2"
                             },
                             elements: {
                                 element1: "element"
@@ -148,6 +163,9 @@ describe("ListPages", () => {
                             properties: {
                                 title: "Page 3"
                             },
+                            metadata: {
+                                metadata: "data-3"
+                            },
                             elements: {
                                 element1: "element"
                             },
@@ -164,6 +182,9 @@ describe("ListPages", () => {
                             },
                             properties: {
                                 title: "Page 4"
+                            },
+                            metadata: {
+                                metadata: "data-4"
                             },
                             elements: {
                                 element1: "element"

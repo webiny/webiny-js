@@ -14,6 +14,7 @@ export class CreatePageUseCase implements ICreatePageUseCase {
             Page.create({
                 location: params.location,
                 properties: params.properties,
+                metadata: params.metadata,
                 elements: params.elements,
                 bindings: params.bindings,
                 extensions: params.extensions
