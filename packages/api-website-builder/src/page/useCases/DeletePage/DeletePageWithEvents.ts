@@ -18,12 +18,12 @@ export class DeletePageWithEvents implements IDeletePage {
         this.decoretee = decoretee;
     }
 
-    async execute(params: DeleteWbPageParams): Promise<void> {
-        const page = await this.getOperation({ entryId: params.entryId });
+    async execute(params: DeleteWbPageParams) {
+        const page = await this.getOperation({ id: params.id });
 
         if (!page) {
             throw new WebinyError(
-                `Page with entryId ${params.entryId} not found`,
+                `Page with id ${params.id} not found`,
                 "DELETE_PAGE_WITH_EVENTS_ERROR"
             );
         }

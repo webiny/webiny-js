@@ -50,7 +50,7 @@ export interface UpdateWbPageData {
 }
 
 export interface DeleteWbPageParams {
-    entryId: string;
+    id: string;
 }
 
 export interface DuplicateWbPageParams {

@@ -141,7 +141,7 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
             duplicatePage(id: ID!): WbPageResponse
             movePage(id: ID!, folderId: ID!): WbPageResponse
             createPageRevisionFrom(id: ID!): WbPageResponse
-            deletePage(entryId: ID!): WbBooleanResponse
+            deletePage(id: ID!): WbBooleanResponse
         }
     `;
 };
@@ -230,10 +230,11 @@ export const createPagesSchema = (params: CreatePageTypeDefsParams) => {
                         return context.websiteBuilder.page.createRevisionFrom({ id });
                     });
                 },
-                deletePage: async (_, { entryId }, context) => {
-                    return resolve(() => {
+                deletePage: async (_, { id }, context) => {
+                    return resolve(async () => {
                         ensureAuthentication(context);
-                        return context.websiteBuilder.page.delete({ entryId });
+                        await context.websiteBuilder.page.delete({ id });
+                        return true;
                     });
                 }
             }
