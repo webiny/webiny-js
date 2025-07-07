@@ -8,6 +8,7 @@
   },
   "exports": {
     ".": "./index.js",
+    "./App": "./App.js",
     "./sdk": "./sdk/index.js",
     "./ecommerce": "./ecommerce/index.js",
     "./Extension": "./Extension.js"
