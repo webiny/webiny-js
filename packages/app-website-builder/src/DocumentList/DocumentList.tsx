@@ -72,24 +72,6 @@ export const DocumentList = () => {
                             }
                         />
                         <Button
-                            text={"Unpublish"}
-                            onClick={() =>
-                                unpublishPage({
-                                    id: page.id,
-                                    entryId: page.entryId
-                                })
-                            }
-                        />
-                        <Button
-                            text={"Unpublish"}
-                            onClick={() =>
-                                unpublishPage({
-                                    id: page.id,
-                                    entryId: page.entryId
-                                })
-                            }
-                        />
-                        <Button
                             text={"Duplicate"}
                             onClick={() =>
                                 duplicatePage({
