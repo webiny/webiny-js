@@ -70,20 +70,7 @@ describe("UpdatePage", () => {
 
         await updatePage.execute({
             id: "page-1#0001",
-            entryId: "page-1",
-            status: statuses.draft,
-            wbyAco_location: {
-                folderId: "folder-1"
-            },
-            properties: {
-                title: "Page 1 - Updated"
-            },
-            elements: {
-                element1: "element-updated"
-            },
-            bindings: {
-                data: "any-data-updated"
-            }
+            entryId: "page-1"
         });
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);
@@ -112,20 +99,7 @@ describe("UpdatePage", () => {
 
         await updatePage.execute({
             id: "",
-            entryId: "",
-            status: statuses.draft,
-            wbyAco_location: {
-                folderId: "folder-1"
-            },
-            properties: {
-                title: "Page 1 - Updated"
-            },
-            elements: {
-                element1: "element-updated"
-            },
-            bindings: {
-                data: "any-data-updated"
-            }
+            entryId: ""
         });
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);
@@ -155,20 +129,7 @@ describe("UpdatePage", () => {
         await expect(
             updatePage.execute({
                 id: "page-1#0001",
-                entryId: "page-1",
-                status: statuses.draft,
-                wbyAco_location: {
-                    folderId: "folder-1"
-                },
-                properties: {
-                    title: "Page 1 - Updated"
-                },
-                elements: {
-                    element1: "element-updated"
-                },
-                bindings: {
-                    data: "any-data-updated"
-                }
+                entryId: "page-1"
             })
         ).rejects.toThrow("Gateway error");
 

@@ -1,5 +1,5 @@
 import type { MovePageUseCasesTopics } from "./index";
-import type { MoveWbPageParams, WbPage, WbPagesStorageOperations } from "~/page/page.types";
+import type { MoveWbPageParams, WbPagesStorageOperations } from "~/page/page.types";
 import type { IMovePage } from "~/page/useCases/MovePage/IMovePage";
 import { WebinyError } from "@webiny/error";
 
@@ -18,19 +18,24 @@ export class MovePageWithEvents implements IMovePage {
         this.decoretee = decoretee;
     }
 
-    async execute(params: MoveWbPageParams): Promise<WbPage> {
-        const oldPage = await this.getOperation({ id: params.id });
+    async execute(params: MoveWbPageParams) {
+        const page = await this.getOperation({ id: params.id });
 
-        if (!oldPage) {
+        if (!page) {
             throw new WebinyError(
                 `Page with id ${params.id} not found`,
                 "MOVE_PAGE_WITH_EVENTS_ERROR"
             );
         }
 
-        await this.topics.onWebsiteBuilderPageBeforeMove.publish({ page: oldPage });
-        const page = await this.decoretee.execute(params);
-        await this.topics.onWebsiteBuilderPageAfterMove.publish({ page });
-        return page;
+        await this.topics.onWebsiteBuilderPageBeforeMove.publish({
+            page,
+            folderId: params.folderId
+        });
+        await this.decoretee.execute(params);
+        await this.topics.onWebsiteBuilderPageAfterMove.publish({
+            page,
+            folderId: params.folderId
+        });
     }
 }

@@ -16,13 +16,7 @@ export class DuplicatePageUseCase implements IDuplicatePageUseCase {
         await this.repository.execute(
             Page.create({
                 id: params.id,
-                entryId: params.entryId,
-                status: params.status,
-                location: params.location,
-                properties: params.properties,
-                bindings: params.bindings,
-                elements: params.elements,
-                extensions: params.extensions
+                entryId: params.entryId
             })
         );
     }

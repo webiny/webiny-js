@@ -4,7 +4,7 @@ import { IDeletePageGateway } from "./IDeletePageGateway.js";
 import type { WbError } from "~/types.js";
 
 export interface DeletePageVariables {
-    entryId: string;
+    id: string;
 }
 
 export interface DeletePageResponse {
@@ -17,9 +17,9 @@ export interface DeletePageResponse {
 }
 
 export const DELETE_PAGE = gql`
-    mutation DeletePage($entryId: ID!) {
+    mutation DeletePage($id: ID!) {
         websiteBuilder {
-            deletePage(entryId: $entryId) {
+            deletePage(id: $id) {
                 data
                 error {
                     code
@@ -38,14 +38,14 @@ export class DeletePageGqlGateway implements IDeletePageGateway {
         this.client = client;
     }
 
-    async execute(entryId: string) {
+    async execute(id: string) {
         const { data: response } = await this.client.mutate<
             DeletePageResponse,
             DeletePageVariables
         >({
             mutation: DELETE_PAGE,
             variables: {
-                entryId
+                id
             }
         });
 

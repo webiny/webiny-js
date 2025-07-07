@@ -6,6 +6,7 @@ export interface PageDto {
     id: string;
     entryId: string;
     status: WbStatus;
+    version: number;
     location: WbLocation;
     properties: Record<string, any>;
     bindings: Record<string, any>;
@@ -25,6 +26,7 @@ export class PageDtoMapper {
             id: page.id,
             entryId: page.entryId,
             status: page.status,
+            version: page.version,
             location: page.location,
             properties: page.properties,
             bindings: page.bindings,

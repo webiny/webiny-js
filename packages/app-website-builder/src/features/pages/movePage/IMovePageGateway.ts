@@ -1,5 +1,3 @@
-import type { PageGatewayDto } from "./PageGatewayDto.js";
-
 export interface IMovePageGateway {
-    execute: (id: string, folderId: string) => Promise<PageGatewayDto>;
+    execute: (id: string, folderId: string) => Promise<void>;
 }

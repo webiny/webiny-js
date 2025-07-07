@@ -13,7 +13,7 @@ export class DeletePageRepository implements IDeletePageRepository {
     }
 
     async execute(page: Page) {
-        await this.gateway.execute(page.entryId);
+        await this.gateway.execute(page.id);
         this.cache.removeItems(p => p.entryId === page.entryId);
     }
 }

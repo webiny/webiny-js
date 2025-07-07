@@ -82,9 +82,8 @@ export class CmsPagesStorage implements WbPagesStorageOperations {
         return this.getWbPageFieldValues(entry);
     };
 
-    public move = async ({ id, folderId }: WbPagesStorageOperationsMoveParams): Promise<WbPage> => {
-        const entry = await this.cms.moveEntry(this.model, id, folderId);
-        return this.getWbPageFieldValues(entry);
+    public move = async ({ id, folderId }: WbPagesStorageOperationsMoveParams): Promise<void> => {
+        await this.cms.moveEntry(this.model, id, folderId);
     };
 
     public createRevisionFrom = async ({

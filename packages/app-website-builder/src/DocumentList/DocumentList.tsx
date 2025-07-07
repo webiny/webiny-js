@@ -29,14 +29,15 @@ export const DocumentList = () => {
 
     return (
         <>
-            <p>{"Does not work: Delete, Move"}</p>
             {pages.map(page => (
                 <div key={page.entryId}>
                     <p>Id {page.id}</p>
                     <p>EntryId {page.entryId}</p>
-                    <p>CreatedOn {page.createdOn} (missing)</p>
+                    <p>CreatedOn {page.createdOn}</p>
+                    <p>CreatedyBy {JSON.stringify(page.createdBy)}</p>
+                    <p>SavedOn {page.savedOn}</p>
                     <p>Status {page.status}</p>
-                    <p>Version (missing)</p>
+                    <p>Version {page.version}</p>
                     <p>FolderId {page.location.folderId}</p>
                     <p>
                         <Button

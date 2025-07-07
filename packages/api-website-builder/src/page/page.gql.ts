@@ -1,7 +1,12 @@
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields";
-import { ErrorResponse, GraphQLSchemaPlugin, ListResponse } from "@webiny/handler-graphql";
+import {
+    ErrorResponse,
+    GraphQLSchemaPlugin,
+    ListResponse,
+    Response
+} from "@webiny/handler-graphql";
 import { ensureAuthentication } from "~/utils/ensureAuthentication";
 import { resolve } from "~/utils/resolve";
 import { PAGE_MODEL_ID } from "~/page/page.model";
@@ -139,7 +144,7 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
             publishPage(id: ID!): WbPageResponse
             unpublishPage(id: ID!): WbPageResponse
             duplicatePage(id: ID!): WbPageResponse
-            movePage(id: ID!, folderId: ID!): WbPageResponse
+            movePage(id: ID!, folderId: ID!): WbBooleanResponse
             createPageRevisionFrom(id: ID!): WbPageResponse
             deletePage(id: ID!): WbBooleanResponse
         }
@@ -219,10 +224,9 @@ export const createPagesSchema = (params: CreatePageTypeDefsParams) => {
                     });
                 },
                 movePage: async (_, { id, folderId }, context) => {
-                    return resolve(() => {
-                        ensureAuthentication(context);
-                        return context.websiteBuilder.page.move({ id, folderId });
-                    });
+                    ensureAuthentication(context);
+                    await context.websiteBuilder.page.move({ id, folderId });
+                    return new Response(true);
                 },
                 createPageRevisionFrom: async (_, { id }, context) => {
                     return resolve(() => {
@@ -231,11 +235,9 @@ export const createPagesSchema = (params: CreatePageTypeDefsParams) => {
                     });
                 },
                 deletePage: async (_, { id }, context) => {
-                    return resolve(async () => {
-                        ensureAuthentication(context);
-                        await context.websiteBuilder.page.delete({ id });
-                        return true;
-                    });
+                    ensureAuthentication(context);
+                    await context.websiteBuilder.page.delete({ id });
+                    return new Response(true);
                 }
             }
         }

@@ -64,8 +64,6 @@ export class ListPagesGqlGateway implements IListPagesGateway {
     async execute(params: ListPagesGatewayParams) {
         const { folderId } = params;
 
-        console.log(LIST_PAGES(this.modelFields));
-
         const { data: response } = await this.client.query<
             ListPagesResponse,
             ListPagesQueryVariables

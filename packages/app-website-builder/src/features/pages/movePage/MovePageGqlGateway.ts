@@ -2,7 +2,6 @@ import ApolloClient from "apollo-client";
 import gql from "graphql-tag";
 import { IMovePageGateway } from "./IMovePageGateway.js";
 import type { WbError } from "~/types.js";
-import type { PageGatewayDto } from "~/features/pages/getPage/PageGatewayDto.js";
 
 export interface MovePageVariables {
     id: string;
@@ -12,17 +11,17 @@ export interface MovePageVariables {
 export interface MovePageResponse {
     websiteBuilder: {
         movePage: {
-            data: PageGatewayDto | null;
+            data: boolean;
             error: WbError | null;
         };
     };
 }
 
-export const MOVE_PAGE = (PAGE_FIELDS: string) => gql`
+export const MOVE_PAGE = gql`
     mutation MovePage($id: ID!, $folderId: ID!) {
         websiteBuilder {
             movePage(id: $id, folderId: $folderId) {
-               data ${PAGE_FIELDS}
+                data
                 error {
                     code
                     data
@@ -44,7 +43,7 @@ export class MovePageGqlGateway implements IMovePageGateway {
 
     async execute(id: string, folderId: string) {
         const { data: response } = await this.client.mutate<MovePageResponse, MovePageVariables>({
-            mutation: MOVE_PAGE(this.modelFields),
+            mutation: MOVE_PAGE,
             variables: {
                 id,
                 folderId
@@ -61,6 +60,6 @@ export class MovePageGqlGateway implements IMovePageGateway {
             throw new Error(error?.message || "Could not move page.");
         }
 
-        return data;
+        return;
     }
 }

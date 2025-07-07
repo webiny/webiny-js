@@ -217,10 +217,12 @@ export interface OnWebsiteBuilderPageAfterCreateRevisionFromTopicParams {
 
 export interface OnWebsiteBuilderPageBeforeMoveTopicParams {
     page: WbPage;
+    folderId: string;
 }
 
 export interface OnWebsiteBuilderPageAfterMoveTopicParams {
     page: WbPage;
+    folderId: string;
 }
 
 export interface OnWebsiteBuilderPageBeforeDeleteTopicParams {
@@ -265,7 +267,7 @@ export interface WbPagesStorageOperations {
     /**
      * Move the page into a folder and store the information in the database.
      */
-    move: (params: MoveWbPageParams) => Promise<WbPage>;
+    move: (params: MoveWbPageParams) => Promise<void>;
     /**
      * Create a page revision and store the information in the database.
      */
@@ -308,7 +310,7 @@ export interface WbPageCrud {
     /**
      * Move a page into a folder
      */
-    move(params: MoveWbPageParams): Promise<WbPage>;
+    move(params: MoveWbPageParams): Promise<void>;
     /**
      * Create a page revision from an id.
      */

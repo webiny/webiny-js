@@ -5,23 +5,7 @@ import { Page } from "~/features/pages/Page.js";
 
 describe("MovePage", () => {
     const gateway = {
-        execute: jest.fn().mockResolvedValue({
-            id: "page-1#0001",
-            entryId: "page-1",
-            status: statuses.draft,
-            wbyAco_location: {
-                folderId: "folder-2"
-            },
-            properties: {
-                title: "Page 1"
-            },
-            elements: {
-                element1: "element"
-            },
-            bindings: {
-                data: "any-data"
-            }
-        })
+        execute: jest.fn().mockResolvedValue(true)
     };
 
     const pagesCache = pageCacheFactory.getCache();
