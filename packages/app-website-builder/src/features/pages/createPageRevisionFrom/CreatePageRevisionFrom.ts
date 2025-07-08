@@ -1,10 +1,10 @@
 import { loadingRepositoryFactory } from "@webiny/app-utils";
 import type { ICreatePageRevisionFromGateway } from "~/features/pages/createPageRevisionFrom/ICreatePageRevisionFromGateway.js";
 import type { ICreatePageRevisionFromUseCase } from "~/features/pages/createPageRevisionFrom/ICreatePageRevisionFromUseCase.js";
-import { pageCacheFactory } from "~/features/pages/cache/index.js";
 import { CreatePageRevisionFromRepository } from "~/features/pages/createPageRevisionFrom/CreatePageRevisionFromRepository.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/createPageRevisionFrom/CreatePageRevisionFromUseCase.js";
 import { CreatePageRevisionFromUseCaseWithLoading } from "~/features/pages/createPageRevisionFrom/CreatePageRevisionFromUseCaseWithLoading.js";
+import { pageCacheFactory } from "~/domains/Page/index.js";
 
 export class CreatePageRevisionFrom {
     public static getInstance(

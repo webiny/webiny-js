@@ -1,9 +1,9 @@
-import { Page } from "~/features/pages/Page.js";
 import type {
     IUnpublishPageUseCase,
     UnpublishPageParams
 } from "~/features/pages/unpublishPage/IUnpublishPageUseCase.js";
 import type { IUnpublishPageRepository } from "~/features/pages/unpublishPage/IUnpublishPageRepository.js";
+import { Page } from "~/domains/Page/index.js";
 
 export class UnpublishPageUseCase implements IUnpublishPageUseCase {
     private repository: IUnpublishPageRepository;

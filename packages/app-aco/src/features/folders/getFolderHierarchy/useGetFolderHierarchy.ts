@@ -15,8 +15,12 @@ export const useGetFolderHierarchy = () => {
 
     const [vm, setVm] = useState<{
         folders: FolderItem[];
+        loading: Record<string, boolean>;
     }>({
-        folders: []
+        folders: [],
+        loading: {
+            [LoadingActionsEnum.init]: true
+        }
     });
 
     const {
@@ -44,6 +48,17 @@ export const useGetFolderHierarchy = () => {
         },
         [loadingState]
     );
+
+    useEffect(() => {
+        return autorun(() => {
+            const loading = loadingState.get();
+
+            setVm(vm => ({
+                ...vm,
+                loading
+            }));
+        });
+    }, [loadingState]);
 
     useEffect(() => {
         return autorun(() => {

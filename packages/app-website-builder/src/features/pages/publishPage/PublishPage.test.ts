@@ -1,7 +1,6 @@
 import { PublishPage } from "./PublishPage.js";
-import { pageCacheFactory } from "~/features/pages/cache/index.js";
 import { statuses } from "~/constants.js";
-import { Page } from "~/features/pages/Page.js";
+import { Page, pageCacheFactory } from "~/domains/Page/index.js";
 
 describe("PublishPage", () => {
     const gateway = {

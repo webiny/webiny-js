@@ -1,7 +1,6 @@
-import { ListCache } from "../cache";
 import { IGetPageRepository } from "./IGetPageRepository.js";
 import { IGetPageGateway } from "./IGetPageGateway.js";
-import { Page } from "~/features/pages/Page.js";
+import { ListCache, Page } from "~/domains/Page/index.js";
 
 export class GetPageRepository implements IGetPageRepository {
     private cache: ListCache<Page>;

@@ -1,4 +1,4 @@
-import type { Page } from "~/features/pages/Page.js";
+import { Page } from "~/domains/Page/index.js";
 
 export interface IUpdatePageRepository {
     execute: (page: Page) => Promise<void>;

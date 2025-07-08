@@ -1,5 +1,5 @@
-import type { Page } from "~/features/pages/Page.js";
-import { ListCache } from "~/features/pages/cache/ListCache.js";
+import { ListCache } from "./ListCache.js";
+import type { Page } from "./Page.js";
 
 export class PagesCacheFactory {
     private cache: ListCache<Page> = new ListCache<Page>();

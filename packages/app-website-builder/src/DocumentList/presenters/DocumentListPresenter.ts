@@ -4,6 +4,7 @@ import type { TableItem } from "~/types.js";
 import type { FolderItem } from "@webiny/app-aco/types.js";
 import { loadingActions, ROOT_FOLDER } from "~/constants.js";
 import type { MetaDTO } from "@webiny/app-utils";
+import { type IParamsRepository, paramsRepositoryFactory } from "~/domains/Params/index.js";
 
 interface DocumentListPresenterParams {
     folderId: string;
@@ -21,9 +22,11 @@ class DocumentListPresenter {
     private documentsLoadingState: Record<string, boolean> = {};
     private folders: FolderItem[] = [];
     private foldersLoadingState: Record<string, boolean> = {};
+    private paramsRepository: IParamsRepository;
 
     constructor() {
         makeAutoObservable(this);
+        this.paramsRepository = paramsRepositoryFactory.getRepository("WbPage");
     }
 
     public init(params: DocumentListPresenterParams) {
@@ -44,6 +47,7 @@ class DocumentListPresenter {
                 totalCount: this.documentMeta?.totalCount ?? 0,
                 currentCount: this.documents.length ?? 0
             },
+            searchQuery: this.paramsRepository.get().search || "",
             isRoot: this.getIsRoot(),
             isLoading: this.getIsLoading(),
             isLoadingMore: this.getIsLoadingMore()

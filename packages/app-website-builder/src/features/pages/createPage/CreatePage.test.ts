@@ -1,5 +1,5 @@
-import { pageCacheFactory } from "~/features/pages/cache/index.js";
 import { CreatePage } from "~/features/pages/createPage/CreatePage.js";
+import { pageCacheFactory } from "~/domains/Page/index.js";
 
 describe("CreatePage", () => {
     const gateway = {

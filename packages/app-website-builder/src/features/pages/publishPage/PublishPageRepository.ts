@@ -1,7 +1,6 @@
 import type { IPublishPageRepository } from "~/features/pages/publishPage/IPublishPageRepository.js";
-import { ListCache } from "~/features/pages/cache/index.js";
-import { Page } from "~/features/pages/Page.js";
 import type { IPublishPageGateway } from "~/features/pages/publishPage/IPublishPageGateway.js";
+import { ListCache, Page } from "~/domains/Page/index.js";
 
 export class PublishPageRepository implements IPublishPageRepository {
     private cache: ListCache<Page>;

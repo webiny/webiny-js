@@ -1,7 +1,6 @@
 import type { ICreatePageRevisionFromRepository } from "~/features/pages/createPageRevisionFrom/ICreatePageRevisionFromRepository.js";
-import { ListCache } from "~/features/pages/cache/index.js";
-import { Page } from "~/features/pages/Page.js";
 import type { ICreatePageRevisionFromGateway } from "~/features/pages/createPageRevisionFrom/ICreatePageRevisionFromGateway.js";
+import { ListCache, Page } from "~/domains/Page/index.js";
 
 export class CreatePageRevisionFromRepository implements ICreatePageRevisionFromRepository {
     private cache: ListCache<Page>;

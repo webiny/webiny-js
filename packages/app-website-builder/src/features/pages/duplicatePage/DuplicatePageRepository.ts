@@ -1,6 +1,5 @@
 import type { IDuplicatePageRepository } from "~/features/pages/duplicatePage/IDuplicatePageRepository.js";
-import { ListCache } from "~/features/pages/cache/index.js";
-import { Page } from "~/features/pages/Page.js";
+import { ListCache, Page } from "~/domains/Page/index.js";
 import type { IDuplicatePageGateway } from "~/features/pages/duplicatePage/IDuplicatePageGateway.js";
 
 export class DuplicatePageRepository implements IDuplicatePageRepository {

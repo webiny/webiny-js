@@ -1,10 +1,10 @@
 import { loadingRepositoryFactory } from "@webiny/app-utils";
 import type { IUpdatePageGateway } from "~/features/pages/updatePage/IUpdatePageGateway.js";
 import type { IUpdatePageUseCase } from "~/features/pages/updatePage/IUpdatePageUseCase.js";
-import { pageCacheFactory } from "~/features/pages/cache/index.js";
 import { UpdatePageRepository } from "~/features/pages/updatePage/UpdatePageRepository.js";
 import { UpdatePageUseCase } from "~/features/pages/updatePage/UpdatePageUseCase.js";
 import { UpdatePageUseCaseWithLoading } from "~/features/pages/updatePage/UpdatePageUseCaseWithLoading.js";
+import { pageCacheFactory } from "~/domains/Page/index.js";
 
 export class UpdatePage {
     public static getInstance(gateway: IUpdatePageGateway): IUpdatePageUseCase {

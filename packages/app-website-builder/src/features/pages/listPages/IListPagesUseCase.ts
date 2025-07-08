@@ -1,7 +1,13 @@
 export interface ListPagesUseCaseParams {
-    folderId: string;
+    where?: {
+        [key: string]: any;
+    };
+    sort?: string[];
+    limit?: number;
+    after?: string;
+    search?: string;
 }
 
 export interface IListPagesUseCase {
-    execute: (params: ListPagesUseCaseParams) => Promise<void>;
+    execute: (params?: ListPagesUseCaseParams) => Promise<void>;
 }

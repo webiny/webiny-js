@@ -1,8 +1,7 @@
 import { IUpdatePageRepository } from "./IUpdatePageRepository.js";
-import { ListCache } from "../cache";
 import { IUpdatePageGateway } from "./IUpdatePageGateway.js";
 import { PageDto } from "./PageDto.js";
-import { Page } from "~/features/pages/Page.js";
+import { ListCache, Page } from "~/domains/Page/index.js";
 
 export class UpdatePageRepository implements IUpdatePageRepository {
     private cache: ListCache<Page>;

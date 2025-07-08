@@ -8,7 +8,7 @@ export class ListPagesUseCase implements IListPagesUseCase {
         this.repository = repository;
     }
 
-    async execute(params: ListPagesUseCaseParams) {
+    async execute(params?: ListPagesUseCaseParams) {
         await this.repository.execute(params);
     }
 }

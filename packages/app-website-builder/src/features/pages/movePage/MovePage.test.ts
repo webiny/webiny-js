@@ -1,7 +1,6 @@
 import { MovePage } from "./MovePage.js";
-import { pageCacheFactory } from "~/features/pages/cache/index.js";
 import { statuses } from "~/constants.js";
-import { Page } from "~/features/pages/Page.js";
+import { Page, pageCacheFactory } from "~/domains/Page/index.js";
 
 describe("MovePage", () => {
     const gateway = {

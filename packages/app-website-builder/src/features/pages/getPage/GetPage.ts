@@ -1,10 +1,10 @@
 import { LoadingRepository, loadingRepositoryFactory } from "@webiny/app-utils";
 import type { IGetPageUseCase } from "~/features/pages/getPage/IGetPageUseCase.js";
 import type { IGetPageGateway } from "~/features/pages/getPage/IGetPageGateway.js";
-import { pageCacheFactory } from "~/features/pages/cache/index.js";
 import { GetPageRepository } from "~/features/pages/getPage/GetPageRepository.js";
 import { GetPageUseCase } from "~/features/pages/getPage/GetPageUseCase.js";
 import { GetPageUseCaseWithLoading } from "~/features/pages/getPage/GetPageUseCaseWithLoading.js";
+import { pageCacheFactory } from "~/domains/Page/index.js";
 
 interface IGetPageInstance {
     useCase: IGetPageUseCase;

@@ -2,7 +2,7 @@ import ApolloClient from "apollo-client";
 import gql from "graphql-tag";
 import { IListPagesGateway, type ListPagesGatewayParams } from "./IListPagesGateway.js";
 import type { PageGatewayDto } from "~/features/pages/listPages/PageGatewayDto.js";
-import { type WbError, type WbListMeta, type WbLocation } from "~/types";
+import { type WbError, type WbListMeta } from "~/types";
 
 const LIST_META_FIELD = /* GraphQL */ `
     meta {
@@ -32,7 +32,7 @@ export interface ListPagesResponse {
 
 export interface ListPagesQueryVariables {
     where: {
-        wbyAco_location: WbLocation;
+        [key: string]: any;
     };
     limit?: number;
     sort?: Record<string, any>;
@@ -61,8 +61,8 @@ export class ListPagesGqlGateway implements IListPagesGateway {
         this.modelFields = modelFields;
     }
 
-    async execute(params: ListPagesGatewayParams) {
-        const { folderId } = params;
+    async execute(params?: ListPagesGatewayParams) {
+        const { where = {}, search, limit, sort, after } = params || {};
 
         const { data: response } = await this.client.query<
             ListPagesResponse,
@@ -70,12 +70,11 @@ export class ListPagesGqlGateway implements IListPagesGateway {
         >({
             query: LIST_PAGES(this.modelFields),
             variables: {
-                limit: 50,
-                where: {
-                    wbyAco_location: {
-                        folderId
-                    }
-                }
+                where,
+                limit,
+                sort,
+                search,
+                after
             },
             fetchPolicy: "network-only"
         });

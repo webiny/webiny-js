@@ -1,6 +1,6 @@
 import type { WbIdentity, WbLocation } from "~/types";
-import type { Page } from "~/features/pages/Page.js";
 import type { WbStatus } from "~/constants.js";
+import { Page } from "~/domains/Page/index.js";
 
 export interface PageDto {
     id: string;

@@ -2,7 +2,13 @@ import { PageGatewayDto } from "./PageGatewayDto.js";
 import type { WbListMeta } from "~/types.js";
 
 export interface ListPagesGatewayParams {
-    folderId: string;
+    where?: {
+        [key: string]: any;
+    };
+    sort?: string[];
+    limit?: number;
+    after?: string;
+    search?: string;
 }
 
 export interface ListPagesGatewayResponse {
@@ -11,5 +17,5 @@ export interface ListPagesGatewayResponse {
 }
 
 export interface IListPagesGateway {
-    execute: (params: ListPagesGatewayParams) => Promise<ListPagesGatewayResponse>;
+    execute: (params?: ListPagesGatewayParams) => Promise<ListPagesGatewayResponse>;
 }

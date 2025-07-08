@@ -1,7 +1,6 @@
-import { ListCache } from "~/features/pages/cache/index.js";
-import { Page } from "~/features/pages/Page.js";
 import type { IMovePageRepository } from "~/features/pages/movePage/IMovePageRepository.js";
 import type { IMovePageGateway } from "~/features/pages/movePage/IMovePageGateway.js";
+import { ListCache, Page } from "~/domains/Page/index.js";
 
 export class MovePageRepository implements IMovePageRepository {
     private cache: ListCache<Page>;

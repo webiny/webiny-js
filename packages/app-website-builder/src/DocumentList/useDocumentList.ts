@@ -3,6 +3,7 @@ import { autorun } from "mobx";
 import { useGetFolderHierarchy, useNavigateFolder } from "@webiny/app-aco";
 import { DocumentListPresenter } from "~/DocumentList/presenters/index.js";
 import { useListPages } from "~/features/pages/index.js";
+import { paramsRepositoryFactory } from "~/domains/Params/index.js";
 
 export const useDocumentList = () => {
     const { folders, loading: foldersLoadingState, getFolderHierarchy } = useGetFolderHierarchy();
@@ -20,7 +21,9 @@ export const useDocumentList = () => {
                 wbyAco_location: {
                     folderId: currentFolderId
                 }
-            }
+            },
+            search: "",
+            after: ""
         });
     }, [currentFolderId]);
 

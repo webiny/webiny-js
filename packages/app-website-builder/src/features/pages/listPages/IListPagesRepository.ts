@@ -1,7 +1,13 @@
 export interface IListPagesRepositoryParams {
-    folderId: string;
+    where?: {
+        [key: string]: any;
+    };
+    sort?: string[];
+    limit?: number;
+    after?: string;
+    search?: string;
 }
 
 export interface IListPagesRepository {
-    execute: (params: IListPagesRepositoryParams) => Promise<void>;
+    execute: (params?: IListPagesRepositoryParams) => Promise<void>;
 }

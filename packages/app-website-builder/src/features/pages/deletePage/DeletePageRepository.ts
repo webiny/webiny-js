@@ -1,7 +1,7 @@
 import type { IDeletePageRepository } from "~/features/pages/deletePage/IDeletePageRepository.js";
-import { ListCache } from "~/features/pages/cache/index.js";
-import type { Page } from "~/features/pages/Page.js";
+
 import type { IDeletePageGateway } from "~/features/pages/deletePage/IDeletePageGateway.js";
+import { ListCache, Page } from "~/domains/Page/index.js";
 
 export class DeletePageRepository implements IDeletePageRepository {
     private cache: ListCache<Page>;

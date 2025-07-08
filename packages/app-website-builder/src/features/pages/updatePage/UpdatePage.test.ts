@@ -1,7 +1,6 @@
 import { UpdatePage } from "./UpdatePage.js";
-import { pageCacheFactory } from "../cache/PagesCacheFactory";
-import { Page } from "../Page";
 import { statuses } from "~/constants";
+import { Page, pageCacheFactory } from "~/domains/Page/index.js";
 
 describe("UpdatePage", () => {
     const pagesCache = pageCacheFactory.getCache();

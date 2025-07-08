@@ -19156,6 +19156,7 @@ __metadata:
     "@webiny/app-i18n": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-theme": "npm:0.0.0"
+    "@webiny/app-utils": "npm:0.0.0"
     "@webiny/cli": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature-flags": "npm:0.0.0"

@@ -1,6 +1,6 @@
-import { pageCacheFactory } from "~/features/pages/cache/index.js";
 import { GetPage } from "~/features/pages/getPage/GetPage.js";
 import { statuses } from "~/constants.js";
+import { pageCacheFactory } from "~/domains/Page/index.js";
 
 describe("GetPage", () => {
     const gateway = {

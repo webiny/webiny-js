@@ -5,9 +5,11 @@ import { Scrollbar } from "@webiny/admin-ui";
 import { useDocumentList } from "~/DocumentList/useDocumentList.js";
 import { Header } from "~/DocumentList/components/Header/index.js";
 import { BottomInfoBar } from "~/DocumentList/components/BottomInfoBar/index.js";
+import { useListMorePages } from "~/features/pages/index.js";
 
 const Main = () => {
     const { vm } = useDocumentList();
+    const { listMorePages } = useListMorePages();
     const { showDialog: showCreateFolderDialog } = useCreateDialog();
     const { getFolderLevelPermission: canManageContent } =
         useGetFolderLevelPermission("canManageContent");
@@ -28,8 +30,7 @@ const Main = () => {
 
     const loadMoreOnScroll = debounce(async ({ scrollFrame }) => {
         if (scrollFrame.top > 0.8) {
-            alert("List More");
-            // await list.listMoreRecords();
+            await listMorePages();
         }
     }, 200);
 
@@ -42,10 +43,6 @@ const Main = () => {
                 onCreateFolder={onCreateFolder}
                 onCreateDocument={() => alert("Create document")}
                 isRoot={vm.isRoot}
-                searchValue={""}
-                onSearchChange={function (value: string): void {
-                    throw new Error("Function not implemented.");
-                }}
             />
             <div
                 style={{ top: "105px" }}
@@ -57,7 +54,13 @@ const Main = () => {
                     <Scrollbar
                         data-testid="default-data-list"
                         onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
-                    ></Scrollbar>
+                    >
+                        {vm.data.map(d => (
+                            <p key={d.id}>
+                                {d.id} {d?.title as string} {d?.properties?.title as string}
+                            </p>
+                        ))}
+                    </Scrollbar>
                     <BottomInfoBar />
                 </>
             </div>

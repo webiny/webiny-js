@@ -1,10 +1,10 @@
 import { loadingRepositoryFactory } from "@webiny/app-utils";
 import type { IDeletePageGateway } from "~/features/pages/deletePage/IDeletePageGateway.js";
 import type { IDeletePageUseCase } from "~/features/pages/deletePage/IDeletePageUseCase.js";
-import { pageCacheFactory } from "~/features/pages/cache/index.js";
 import { DeletePageRepository } from "~/features/pages/deletePage/DeletePageRepository.js";
 import { DeletePageUseCase } from "~/features/pages/deletePage/DeletePageUseCase.js";
 import { DeletePageUseCaseWithLoading } from "~/features/pages/deletePage/DeletePageUseCaseWithLoading.js";
+import { pageCacheFactory } from "~/domains/Page/index.js";
 
 export class DeletePage {
     public static getInstance(gateway: IDeletePageGateway): IDeletePageUseCase {
