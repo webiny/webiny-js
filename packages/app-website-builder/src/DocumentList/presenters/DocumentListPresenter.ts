@@ -42,12 +42,13 @@ class DocumentListPresenter {
         return {
             folderId: this.folderId,
             title: this.getVmTitle(),
-            data: this.getVmFolders().concat(this.getVmDocuments()),
+            data: this.getData(),
             meta: {
                 totalCount: this.documentMeta?.totalCount ?? 0,
                 currentCount: this.documents.length ?? 0
             },
             searchQuery: this.paramsRepository.get().search || "",
+            isSearch: this.getIsSearch(),
             isRoot: this.getIsRoot(),
             isLoading: this.getIsLoading(),
             isLoadingMore: this.getIsLoadingMore()
@@ -70,6 +71,18 @@ class DocumentListPresenter {
 
     private getVmFolders = () => {
         return this.folders.filter(f => f.parentId === this.folderId) as TableItem[];
+    };
+
+    private getData = () => {
+        if (this.getIsSearch()) {
+            return this.getVmDocuments();
+        }
+
+        return this.getVmFolders().concat(this.getVmDocuments());
+    };
+
+    private getIsSearch = () => {
+        return Boolean(this.paramsRepository.get().search);
     };
 
     private getIsLoading = () => {
