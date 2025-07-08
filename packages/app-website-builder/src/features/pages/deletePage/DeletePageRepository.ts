@@ -1,13 +1,13 @@
 import type { IDeletePageRepository } from "~/features/pages/deletePage/IDeletePageRepository.js";
 
 import type { IDeletePageGateway } from "~/features/pages/deletePage/IDeletePageGateway.js";
-import { ListCache, Page } from "~/domains/Page/index.js";
+import { type IListCache, Page } from "~/domains/Page/index.js";
 
 export class DeletePageRepository implements IDeletePageRepository {
-    private cache: ListCache<Page>;
+    private cache: IListCache<Page>;
     private gateway: IDeletePageGateway;
 
-    constructor(cache: ListCache<Page>, gateway: IDeletePageGateway) {
+    constructor(cache: IListCache<Page>, gateway: IDeletePageGateway) {
         this.cache = cache;
         this.gateway = gateway;
     }

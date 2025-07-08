@@ -1,12 +1,12 @@
 import { IGetPageRepository } from "./IGetPageRepository.js";
 import { IGetPageGateway } from "./IGetPageGateway.js";
-import { ListCache, Page } from "~/domains/Page/index.js";
+import { type IListCache, Page } from "~/domains/Page/index.js";
 
 export class GetPageRepository implements IGetPageRepository {
-    private cache: ListCache<Page>;
+    private cache: IListCache<Page>;
     private gateway: IGetPageGateway;
 
-    constructor(cache: ListCache<Page>, gateway: IGetPageGateway) {
+    constructor(cache: IListCache<Page>, gateway: IGetPageGateway) {
         this.cache = cache;
         this.gateway = gateway;
     }

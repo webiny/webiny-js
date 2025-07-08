@@ -8,12 +8,12 @@ import { IListPagesUseCase } from "./IListPagesUseCase.js";
 import { IListPagesGateway } from "./IListPagesGateway.js";
 import { ListPagesRepository } from "./ListPagesRepository.js";
 import { ListPagesUseCase } from "./ListPagesUseCase.js";
-import { ListCache, Page, pageCacheFactory } from "~/domains/Page/index.js";
+import { type IListCache, Page, pageCacheFactory } from "~/domains/Page/index.js";
 import { paramsRepositoryFactory } from "~/domains/Params/index.js";
 
 interface IListPagesInstance {
     useCase: IListPagesUseCase;
-    pages: ListCache<Page>;
+    pages: IListCache<Page>;
     loading: LoadingRepository;
     meta: MetaRepository;
 }

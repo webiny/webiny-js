@@ -1,13 +1,13 @@
 import { IUpdatePageRepository } from "./IUpdatePageRepository.js";
 import { IUpdatePageGateway } from "./IUpdatePageGateway.js";
 import { PageDto } from "./PageDto.js";
-import { ListCache, Page } from "~/domains/Page/index.js";
+import { type IListCache, Page } from "~/domains/Page/index.js";
 
 export class UpdatePageRepository implements IUpdatePageRepository {
-    private cache: ListCache<Page>;
+    private cache: IListCache<Page>;
     private gateway: IUpdatePageGateway;
 
-    constructor(cache: ListCache<Page>, gateway: IUpdatePageGateway) {
+    constructor(cache: IListCache<Page>, gateway: IUpdatePageGateway) {
         this.cache = cache;
         this.gateway = gateway;
     }

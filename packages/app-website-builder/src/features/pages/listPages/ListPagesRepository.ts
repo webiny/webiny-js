@@ -4,20 +4,20 @@ import type {
     IListPagesRepository,
     IListPagesRepositoryParams
 } from "~/features/pages/listPages/IListPagesRepository.js";
-import { ListCache, Page } from "~/domains/Page/index.js";
+import { type IListCache, Page } from "~/domains/Page/index.js";
 import type { IListPagesGateway } from "~/features/pages/listPages/IListPagesGateway.js";
 import { ParamsRepository } from "~/domains/Params/index.js";
 import { loadingActions } from "~/constants.js";
 
 export class ListPagesRepository implements IListPagesRepository {
-    private cache: ListCache<Page>;
+    private cache: IListCache<Page>;
     private loading: ILoadingRepository;
     private meta: MetaRepository;
     private params: ParamsRepository;
     private gateway: IListPagesGateway;
 
     constructor(
-        cache: ListCache<Page>,
+        cache: IListCache<Page>,
         meta: MetaRepository,
         loading: ILoadingRepository,
         params: ParamsRepository,
