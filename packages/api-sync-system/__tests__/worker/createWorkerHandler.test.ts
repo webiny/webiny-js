@@ -1,4 +1,4 @@
-import { createWorkerHandler } from "~/worker/createWorkerHandler.js";
+import { createWorkerHandler } from "~/index.js";
 import {
     CognitoIdentityProvider,
     createCognitoIdentityProviderClient

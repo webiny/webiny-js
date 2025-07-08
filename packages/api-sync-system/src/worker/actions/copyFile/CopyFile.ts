@@ -104,117 +104,8 @@ export class CopyFile {
         this.maxPartSizeBytes = this.parseByteSize(maxPartSize);
 
         if (this.minPartSizeBytes < 5 * 1024 * 1024) {
-            throw new Error("minPartSize must be at least 5MB");
+            throw new Error("minPartSize must be at least 5MB.");
         }
-    }
-
-    private parseByteSize(value: ByteSize): number {
-        if (typeof value === "number") {
-            return value;
-        }
-        const parsed = bytes.parse(value);
-        if (typeof parsed === "number") {
-            return parsed;
-        }
-        throw new Error(`Invalid byte size value: ${value}`);
-    }
-
-    private async headObject(params: IHeadObjectParams) {
-        const { client, bucket, key } = params;
-        const input: HeadObjectCommandInput = {
-            Bucket: bucket,
-            Key: key
-        };
-        const command = new HeadObjectCommand(input);
-        try {
-            return await client.send(command);
-        } catch (ex) {
-            if (ex.name === "NotFound" || ex.$metadata?.httpStatusCode === 404) {
-                return null;
-            }
-            console.error(`Failed to head object ${key} in bucket ${bucket}.`);
-            console.log(convertException(ex));
-            return null;
-        }
-    }
-
-    private async createMultipartUpload(params: ICreateMultipartUploadParams): Promise<string> {
-        const { targetBucket, targetKey } = params;
-        const input: CreateMultipartUploadCommandInput = {
-            Bucket: targetBucket,
-            Key: targetKey
-        };
-        const command = new CreateMultipartUploadCommand(input);
-        const response = await this.targetClient.send(command);
-        if (!response.UploadId) {
-            throw new Error("Failed to create multipart upload");
-        }
-        return response.UploadId;
-    }
-
-    private async uploadPartCopy(params: IUploadPartCopyParams): Promise<void> {
-        const {
-            sourceBucket,
-            sourceKey,
-            targetBucket,
-            targetKey,
-            uploadId,
-            partNumber,
-            start,
-            end,
-            completedParts
-        } = params;
-
-        const input: UploadPartCopyCommandInput = {
-            Bucket: targetBucket,
-            Key: targetKey,
-            UploadId: uploadId,
-            PartNumber: partNumber,
-            CopySource: encodeURIComponent(`${sourceBucket}/${sourceKey}`),
-            CopySourceRange: `bytes=${start}-${end}`
-        };
-
-        const command = new UploadPartCopyCommand(input);
-        const response = await this.targetClient.send(command);
-
-        if (!response.CopyPartResult?.ETag) {
-            throw new Error(`UploadPartCopy failed for part ${partNumber}`);
-        }
-
-        completedParts.push({
-            ETag: response.CopyPartResult.ETag,
-            PartNumber: partNumber
-        });
-    }
-
-    private async completeMultipartUpload(params: ICompleteMultipartUploadParams) {
-        const { targetBucket, targetKey, uploadId, completedParts } = params;
-
-        const sortedParts = [...completedParts].sort((a, b) => {
-            return a.PartNumber! - b.PartNumber!;
-        });
-
-        const input: CompleteMultipartUploadCommandInput = {
-            Bucket: targetBucket,
-            Key: targetKey,
-            UploadId: uploadId,
-            MultipartUpload: { Parts: sortedParts }
-        };
-
-        const command = new CompleteMultipartUploadCommand(input);
-        return await this.targetClient.send(command);
-    }
-
-    private async abortMultipartUpload(params: IAbortMultipartUploadParams) {
-        const { targetBucket, targetKey, uploadId } = params;
-
-        const input: AbortMultipartUploadCommandInput = {
-            Bucket: targetBucket,
-            Key: targetKey,
-            UploadId: uploadId
-        };
-        const command = new AbortMultipartUploadCommand(input);
-        await this.targetClient.send(command);
     }
 
     public async copy(params: ICopyParams): Promise<void> {
@@ -227,7 +118,7 @@ export class CopyFile {
         });
 
         if (!sourceHead?.ContentLength || !sourceHead.ETag) {
-            throw new Error("Source object metadata is invalid or missing");
+            throw new Error("Source object metadata is invalid or missing.");
         }
         /**
          * If the target object already exists, we can skip the copy operation.
@@ -318,6 +209,119 @@ export class CopyFile {
             );
             console.log(convertException(ex));
         }
+    }
+
+    private parseByteSize(value: ByteSize): number {
+        if (typeof value === "number") {
+            return value;
+        }
+        const parsed = bytes.parse(value);
+        if (typeof parsed === "number") {
+            return parsed;
+        }
+        const typeOfValue = typeof value;
+        throw new Error(`Invalid byte size value type "${typeOfValue}".`);
+    }
+
+    private async headObject(params: IHeadObjectParams) {
+        const { client, bucket, key } = params;
+        const input: HeadObjectCommandInput = {
+            Bucket: bucket,
+            Key: key
+        };
+        const command = new HeadObjectCommand(input);
+        try {
+            const result = await client.send(command);
+            if (result.$metadata?.httpStatusCode === 200) {
+                return result;
+            }
+        } catch (ex) {
+            if (ex.name === "NotFound" || ex.$metadata?.httpStatusCode === 404) {
+                return null;
+            }
+            console.error(`Failed to head object ${key} in bucket ${bucket}.`);
+            console.log(convertException(ex));
+        }
+        return null;
+    }
+
+    private async createMultipartUpload(params: ICreateMultipartUploadParams): Promise<string> {
+        const { targetBucket, targetKey } = params;
+        const input: CreateMultipartUploadCommandInput = {
+            Bucket: targetBucket,
+            Key: targetKey
+        };
+        const command = new CreateMultipartUploadCommand(input);
+        const response = await this.targetClient.send(command);
+        if (!response.UploadId) {
+            throw new Error("Failed to create multipart upload.");
+        }
+        return response.UploadId;
+    }
+
+    private async uploadPartCopy(params: IUploadPartCopyParams): Promise<void> {
+        const {
+            sourceBucket,
+            sourceKey,
+            targetBucket,
+            targetKey,
+            uploadId,
+            partNumber,
+            start,
+            end,
+            completedParts
+        } = params;
+
+        const input: UploadPartCopyCommandInput = {
+            Bucket: targetBucket,
+            Key: targetKey,
+            UploadId: uploadId,
+            PartNumber: partNumber,
+            CopySource: encodeURIComponent(`${sourceBucket}/${sourceKey}`),
+            CopySourceRange: `bytes=${start}-${end}`
+        };
+
+        const command = new UploadPartCopyCommand(input);
+        const response = await this.targetClient.send(command);
+
+        if (!response.CopyPartResult?.ETag) {
+            throw new Error(`UploadPartCopy failed for part ${partNumber}`);
+        }
+
+        completedParts.push({
+            ETag: response.CopyPartResult.ETag,
+            PartNumber: partNumber
+        });
+    }
+
+    private async completeMultipartUpload(params: ICompleteMultipartUploadParams) {
+        const { targetBucket, targetKey, uploadId, completedParts } = params;
+
+        const sortedParts = [...completedParts].sort((a, b) => {
+            return a.PartNumber! - b.PartNumber!;
+        });
+
+        const input: CompleteMultipartUploadCommandInput = {
+            Bucket: targetBucket,
+            Key: targetKey,
+            UploadId: uploadId,
+            MultipartUpload: { Parts: sortedParts }
+        };
+
+        const command = new CompleteMultipartUploadCommand(input);
+        return await this.targetClient.send(command);
+    }
+
+    private async abortMultipartUpload(params: IAbortMultipartUploadParams) {
+        const { targetBucket, targetKey, uploadId } = params;
+
+        const input: AbortMultipartUploadCommandInput = {
+            Bucket: targetBucket,
+            Key: targetKey,
+            UploadId: uploadId
+        };
+        const command = new AbortMultipartUploadCommand(input);
+        await this.targetClient.send(command);
     }
 
     private async copyMetadata(

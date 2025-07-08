@@ -102,6 +102,7 @@ export const createMockSourceDeployment = (params: Partial<ICreateMockDeployment
         env: "dev",
         variant: "source",
         name: "dev#source",
+        s3Id: "sourceS3Id",
         ...params
     });
 };
@@ -111,6 +112,7 @@ export const createMockTargetDeployment = (params: Partial<ICreateMockDeployment
         env: "dev",
         variant: "target",
         name: "dev#target",
+        s3Id: "targetS3Id",
         ...params
     });
 };

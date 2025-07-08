@@ -36,7 +36,7 @@ export class Retry implements IRetryable {
         }
         this.retryCount++;
         await sleep(this.retryDelay);
-        const result = await this.retry<T>(fn);
+        const result = await this.retry<T>(fn, options);
         this.retryCount = 0;
         return result;
     }
