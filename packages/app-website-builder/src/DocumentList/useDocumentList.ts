@@ -6,14 +6,9 @@ import { useListPages } from "~/features/pages/index.js";
 import { paramsRepositoryFactory } from "~/domains/Params/index.js";
 
 export const useDocumentList = () => {
-    const { folders, loading: foldersLoadingState, getFolderHierarchy } = useGetFolderHierarchy();
+    const { folders, getFolderHierarchy } = useGetFolderHierarchy();
     const { currentFolderId } = useNavigateFolder();
-    const {
-        pages: documents,
-        loading: documentsLoadingState,
-        meta: documentMeta,
-        listPages: listDocuments
-    } = useListPages();
+    const { listPages: listDocuments } = useListPages();
 
     useEffect(() => {
         listDocuments({
@@ -37,21 +32,9 @@ export const useDocumentList = () => {
 
     const params = useMemo(
         () => ({
-            folderId: currentFolderId,
-            documents,
-            documentMeta,
-            documentsLoadingState,
-            folders,
-            foldersLoadingState
+            folderId: currentFolderId
         }),
-        [
-            currentFolderId,
-            documents,
-            documentMeta,
-            documentsLoadingState,
-            folders,
-            foldersLoadingState
-        ]
+        [currentFolderId]
     );
 
     const presenter = useMemo(() => {

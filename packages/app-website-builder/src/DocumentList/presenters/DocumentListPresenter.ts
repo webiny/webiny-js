@@ -1,41 +1,41 @@
 import { makeAutoObservable } from "mobx";
-import type { PageDto } from "~/features/pages/listPages/index.js";
 import type { TableItem } from "~/types.js";
-import type { FolderItem } from "@webiny/app-aco/types.js";
-import { loadingActions, ROOT_FOLDER } from "~/constants.js";
-import type { MetaDTO } from "@webiny/app-utils";
+import { loadingActions, ROOT_FOLDER, WB_PAGE_APP } from "~/constants.js";
+import {
+    type ILoadingRepository,
+    type IMetaRepository,
+    loadingRepositoryFactory,
+    metaRepositoryFactory
+} from "@webiny/app-utils";
 import { type IParamsRepository, paramsRepositoryFactory } from "~/domains/Params/index.js";
+import { type IListCache, type Page, pageCacheFactory } from "~/domains/Page/index.js";
+import { Folder, folderCacheFactory } from "@webiny/app-aco";
 
 interface DocumentListPresenterParams {
     folderId: string;
-    documents: PageDto[];
-    documentMeta: MetaDTO;
-    documentsLoadingState: Record<string, boolean>;
-    folders: FolderItem[];
-    foldersLoadingState: Record<string, boolean>;
 }
 
 class DocumentListPresenter {
     private folderId: string = ROOT_FOLDER;
-    private documents: PageDto[] = [];
-    private documentMeta?: MetaDTO = undefined;
-    private documentsLoadingState: Record<string, boolean> = {};
-    private folders: FolderItem[] = [];
-    private foldersLoadingState: Record<string, boolean> = {};
+    private foldersCache: IListCache<Folder>;
+    private foldersLoadingRepository: ILoadingRepository;
+    private documentsCache: IListCache<Page>;
+    private documentsLoadingRepository: ILoadingRepository;
     private paramsRepository: IParamsRepository;
+    private metaRepository: IMetaRepository;
 
     constructor() {
         makeAutoObservable(this);
+        this.foldersCache = folderCacheFactory.getCache(WB_PAGE_APP);
+        this.foldersLoadingRepository = loadingRepositoryFactory.getRepository(WB_PAGE_APP);
+        this.documentsCache = pageCacheFactory.getCache();
+        this.documentsLoadingRepository = loadingRepositoryFactory.getRepository("WbPage");
+        this.metaRepository = metaRepositoryFactory.getRepository("WbPage");
         this.paramsRepository = paramsRepositoryFactory.getRepository("WbPage");
     }
 
     public init(params: DocumentListPresenterParams) {
         this.folderId = params.folderId;
-        this.documents = params.documents;
-        this.documentMeta = params.documentMeta;
-        this.documentsLoadingState = params.documentsLoadingState;
-        this.folders = params.folders;
-        this.foldersLoadingState = params.foldersLoadingState;
     }
 
     public get vm() {
@@ -44,8 +44,8 @@ class DocumentListPresenter {
             title: this.getVmTitle(),
             data: this.getData(),
             meta: {
-                totalCount: this.documentMeta?.totalCount ?? 0,
-                currentCount: this.documents.length ?? 0
+                totalCount: this.metaRepository.get().totalCount ?? 0,
+                currentCount: this.documentsCache.count() ?? 0
             },
             searchQuery: this.paramsRepository.get().search || "",
             isSearch: this.getIsSearch(),
@@ -61,16 +61,20 @@ class DocumentListPresenter {
 
     private getVmTitle = () => {
         return !this.getIsLoading()
-            ? this.folders.find(f => f.id === this.folderId)?.title
+            ? this.foldersCache.getItem(f => f.id === this.folderId)?.title
             : undefined;
     };
 
     private getVmDocuments = () => {
-        return this.documents.filter(d => d.location.folderId === this.folderId) as TableItem[];
+        return this.documentsCache
+            .getItems()
+            .filter(d => d.location.folderId === this.folderId) as unknown as TableItem[];
     };
 
     private getVmFolders = () => {
-        return this.folders.filter(f => f.parentId === this.folderId) as TableItem[];
+        return this.foldersCache
+            .getItems()
+            .filter(f => f.parentId === this.folderId) as unknown as TableItem[];
     };
 
     private getData = () => {
@@ -87,14 +91,14 @@ class DocumentListPresenter {
 
     private getIsLoading = () => {
         return Boolean(
-            this.documentsLoadingState[loadingActions.init] ||
-                this.documentsLoadingState[loadingActions.list] ||
-                this.foldersLoadingState[this.folderId]
+            this.documentsLoadingRepository.isLoading(loadingActions.init) ||
+                this.documentsLoadingRepository.isLoading(loadingActions.list) ||
+                this.foldersLoadingRepository.isLoading(this.folderId)
         );
     };
 
     private getIsLoadingMore = () => {
-        return Boolean(this.documentsLoadingState[loadingActions.listMore]);
+        return Boolean(this.documentsLoadingRepository.isLoading(loadingActions.listMore));
     };
 }
 

@@ -56,9 +56,7 @@ const Main = () => {
                         onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
                     >
                         {vm.data.map(d => (
-                            <p key={d.id}>
-                                {d.id} {d?.title as string} {d?.properties?.title as string}
-                            </p>
+                            <p key={d.id}>{d.id}</p>
                         ))}
                     </Scrollbar>
                     <BottomInfoBar />
