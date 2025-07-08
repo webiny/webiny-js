@@ -1,5 +1,4 @@
 import { makeAutoObservable } from "mobx";
-import type { TableItem } from "~/types.js";
 import { loadingActions, ROOT_FOLDER, WB_PAGE_APP } from "~/constants.js";
 import {
     type ILoadingRepository,
@@ -10,6 +9,7 @@ import {
 import { type IParamsRepository, paramsRepositoryFactory } from "~/domains/Params/index.js";
 import { type IListCache, type Page, pageCacheFactory } from "~/domains/Page/index.js";
 import { Folder, folderCacheFactory } from "@webiny/app-aco";
+import { DocumentListMapper } from "~/DocumentList/presenters/DocumentListMapper.js";
 
 interface DocumentListPresenterParams {
     folderId: string;
@@ -68,13 +68,21 @@ class DocumentListPresenter {
     private getVmDocuments = () => {
         return this.documentsCache
             .getItems()
-            .filter(d => d.location.folderId === this.folderId) as unknown as TableItem[];
+            .filter(d => d.location.folderId === this.folderId)
+            .map(d => DocumentListMapper.fromPage(d));
     };
 
     private getVmFolders = () => {
         return this.foldersCache
             .getItems()
-            .filter(f => f.parentId === this.folderId) as unknown as TableItem[];
+            .filter(f => {
+                if (this.folderId === ROOT_FOLDER) {
+                    return f.parentId === null;
+                } else {
+                    return f.parentId === this.folderId;
+                }
+            })
+            .map(f => DocumentListMapper.fromFolder(f));
     };
 
     private getData = () => {

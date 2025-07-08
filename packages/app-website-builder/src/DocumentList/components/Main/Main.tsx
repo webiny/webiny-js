@@ -5,6 +5,7 @@ import { Scrollbar } from "@webiny/admin-ui";
 import { useDocumentList } from "~/DocumentList/useDocumentList.js";
 import { Header } from "~/DocumentList/components/Header/index.js";
 import { BottomInfoBar } from "~/DocumentList/components/BottomInfoBar/index.js";
+import { Table } from "~/DocumentList/components/Table/index.js";
 import { useListMorePages } from "~/features/pages/index.js";
 
 const Main = () => {
@@ -28,7 +29,7 @@ const Main = () => {
         showCreateFolderDialog({ currentParentId: vm.folderId });
     }, [vm.folderId]);
 
-    const loadMoreOnScroll = debounce(async ({ scrollFrame }) => {
+    const onTableScroll = debounce(async ({ scrollFrame }) => {
         if (scrollFrame.top > 0.8) {
             await listMorePages();
         }
@@ -53,11 +54,9 @@ const Main = () => {
                 <>
                     <Scrollbar
                         data-testid="default-data-list"
-                        onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame })}
+                        onScrollFrame={scrollFrame => onTableScroll({ scrollFrame })}
                     >
-                        {vm.data.map(d => (
-                            <p key={d.id}>{d.id}</p>
-                        ))}
+                        <Table />
                     </Scrollbar>
                     <BottomInfoBar />
                 </>
