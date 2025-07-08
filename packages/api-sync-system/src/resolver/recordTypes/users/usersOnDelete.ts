@@ -13,7 +13,7 @@ export const createUserOnDeletePlugin = (params: IDeleteUserOnDeletePluginParams
     return createStorerAfterEachPluginWithName("users.onDelete", {
         canHandle: params => {
             const { command } = params;
-            if (command !== "put") {
+            if (command !== "delete") {
                 return false;
             }
             return shouldBeHandled(params);

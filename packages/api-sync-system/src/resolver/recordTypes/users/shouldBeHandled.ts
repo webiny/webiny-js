@@ -4,7 +4,7 @@ export const shouldBeHandled = (params: IStorerAfterEachPluginCanHandleParams): 
     const { item, table, source, target } = params;
     if (table.type !== "regular") {
         return false;
-    } else if (item.PK.includes("#ADMIN_USER#")) {
+    } else if (item.PK.includes("#ADMIN_USER#") === false) {
         return false;
     } else if (item.SK !== "A") {
         return false;

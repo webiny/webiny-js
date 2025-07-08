@@ -41,6 +41,7 @@ export interface ICreateMockDeploymentItem {
     version: SemVer;
     s3Id: string;
     s3Arn: string;
+    cognitoUserPoolId: string;
     primaryDynamoDbArn: string;
     primaryDynamoDbName: string;
     primaryDynamoDbHashKey: string;
@@ -68,6 +69,7 @@ export const createMockDeploymentData = (item: Partial<ICreateMockDeploymentItem
         elasticsearchDynamodbTableName: "elasticsearchDynamodbTableName",
         logDynamodbTableArn: "logDynamodbTableArn",
         logDynamodbTableName: "logDynamodbTableName",
+        cognitoUserPoolId: "cognitoUserPoolId",
         ...item
     };
 };
@@ -82,6 +84,7 @@ export const createMockDeployment = (
         services: {
             s3Id: item.s3Id,
             s3Arn: item.s3Arn,
+            cognitoUserPoolId: item.cognitoUserPoolId,
             primaryDynamoDbArn: item.primaryDynamoDbArn,
             primaryDynamoDbName: item.primaryDynamoDbName,
             primaryDynamoDbHashKey: item.primaryDynamoDbHashKey,
