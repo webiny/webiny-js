@@ -5,6 +5,4 @@
 - selection and bulk actions
 - sorting
 - check on folder tree item click
-- add security provider for folders FLP
-- check folder action dialogs
 - add trash-bin
