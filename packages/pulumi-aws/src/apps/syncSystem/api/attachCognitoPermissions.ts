@@ -1,45 +1,45 @@
 import * as aws from "@pulumi/aws";
 import type { PulumiApp } from "@webiny/pulumi";
-import type { IGetSyncSystemOutputResult } from "~/apps/syncSystem/types.js";
-import type { CoreOutput } from "~/apps/common/CoreOutput.js";
-import { createSyncResourceName } from "~/apps/syncSystem/createSyncResourceName.js";
 import type { WithServiceManifest } from "~/utils/withServiceManifest.js";
+import type { IGetSyncSystemOutputResult } from "~/apps/syncSystem/types.js";
+import type { CoreOutput } from "~/apps/index.js";
+import { createSyncResourceName } from "~/apps/syncSystem/createSyncResourceName.js";
 
-export interface IAttachS3PermissionsParams {
+export interface IAttachCognitoPermissionsParams {
     app: PulumiApp & WithServiceManifest;
     syncSystem: IGetSyncSystemOutputResult;
     core: CoreOutput;
 }
 
-export const attachS3Permissions = (params: IAttachS3PermissionsParams) => {
+export const attachCognitoPermissions = (params: IAttachCognitoPermissionsParams) => {
     const { app, syncSystem, core } = params;
+    /**
+     * TODO there must be a way to skip this if Cognito is not used in the Webiny deployment.
+     */
+    if (!core.cognitoUserPoolArn) {
+        return null;
+    }
 
     const { resolverLambdaRoleName, workerLambdaRoleName } = syncSystem;
 
-    const resolverLambdaToS3ResourceName = createSyncResourceName(`resolver-lambda-to-s3-fm`);
-    const workerLambdaToS3ResourceName = createSyncResourceName(`worker-lambda-to-s3-fm`);
+    const resolverLambdaToS3ResourceName = createSyncResourceName(`resolver-lambda-to-cognito`);
+    const workerLambdaToS3ResourceName = createSyncResourceName(`worker-lambda-to-cognito`);
 
-    const s3Policy = app.addResource(aws.iam.Policy, {
+    const cognitoPolicy = app.addResource(aws.iam.Policy, {
         name: `${resolverLambdaToS3ResourceName}-policy`,
         config: {
             description:
-                "This policy enables access from Sync System Resolver and Worker Lambda to Webiny S3.",
+                "This policy enables access from Sync System Resolver and Worker Lambda to Webiny Cognito.",
             policy: {
                 Version: "2012-10-17",
                 Statement: [
                     {
-                        Sid: "PermissionForSyncLambdaToS3",
+                        Sid: "PermissionForSyncLambdaToCognito",
                         Effect: "Allow",
-                        Action: [
-                            "s3:DeleteObject",
-                            "s3:PutObject",
-                            "s3:GetObject",
-                            "s3:ListBucket"
-                        ],
-                        Resource: [
-                            core.fileManagerBucketArn.apply(arn => arn),
-                            core.fileManagerBucketArn.apply(arn => `${arn}/*`)
-                        ]
+                        Action: ["cognito-idp:*"],
+                        Resource: core.cognitoUserPoolArn.apply(arn => {
+                            return [arn, `${arn}/*`];
+                        })
                     }
                 ]
             }
@@ -50,7 +50,7 @@ export const attachS3Permissions = (params: IAttachS3PermissionsParams) => {
         name: `${resolverLambdaToS3ResourceName}-policy-attachment`,
         config: {
             role: resolverLambdaRoleName,
-            policyArn: s3Policy.output.arn
+            policyArn: cognitoPolicy.output.arn
         }
     });
 
@@ -58,12 +58,12 @@ export const attachS3Permissions = (params: IAttachS3PermissionsParams) => {
         name: `${workerLambdaToS3ResourceName}-policy-attachment`,
         config: {
             role: workerLambdaRoleName,
-            policyArn: s3Policy.output.arn
+            policyArn: cognitoPolicy.output.arn
         }
     });
 
     return {
-        s3Policy,
+        cognitoPolicy,
         workerLambdaS3PolicyAttachment,
         resolverLambdaS3PolicyAttachment
     };

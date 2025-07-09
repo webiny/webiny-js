@@ -19,7 +19,8 @@ describe("Deployment", () => {
                 logDynamodbTableName: "log-table",
                 logDynamodbTableArn: "arn:aws:dynamodb:region:account-id:table/log-table",
                 primaryDynamoDbHashKey: "PK",
-                primaryDynamoDbRangeKey: "SK"
+                primaryDynamoDbRangeKey: "SK",
+                cognitoUserPoolId: "cognito-user-pool-id"
             },
             region: "us-east-1",
             version: new SemVer("1.0.0")
@@ -59,7 +60,8 @@ describe("Deployment", () => {
                 primaryDynamoDbHashKey: "PK",
                 primaryDynamoDbRangeKey: "SK",
                 elasticsearchDynamodbTableName: undefined,
-                elasticsearchDynamodbTableArn: undefined
+                elasticsearchDynamodbTableArn: undefined,
+                cognitoUserPoolId: "cognito-user-pool-id"
             },
             region: "us-east-1",
             version: new SemVer("1.0.0")

@@ -205,9 +205,7 @@ describe("usersOnPut", () => {
         });
 
         const copyUser = new CopyUser({
-            createCognitoIdentityProviderClient: region => {
-                return createCognitoIdentityProviderClient({ region });
-            },
+            createCognitoIdentityProviderClient,
             getLambdaTrigger: () => {
                 return new LambdaTrigger({
                     arn: "someLambdaArn",
@@ -275,9 +273,7 @@ describe("usersOnPut", () => {
         });
 
         const copyUser = new CopyUser({
-            createCognitoIdentityProviderClient: region => {
-                return createCognitoIdentityProviderClient({ region });
-            },
+            createCognitoIdentityProviderClient,
             getLambdaTrigger: () => {
                 return new LambdaTrigger({
                     arn: "someLambdaArn",
@@ -336,9 +332,7 @@ describe("usersOnPut", () => {
         mockedLambda.on(InvokeCommand).rejects("Unknown testing error.");
 
         const copyUser = new CopyUser({
-            createCognitoIdentityProviderClient: region => {
-                return createCognitoIdentityProviderClient({ region });
-            },
+            createCognitoIdentityProviderClient,
             getLambdaTrigger: () => {
                 return new LambdaTrigger({
                     arn: "someLambdaArn",

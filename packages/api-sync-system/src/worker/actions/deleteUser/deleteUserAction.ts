@@ -1,17 +1,22 @@
 import { createWorkerActionPlugin } from "~/worker/plugins/WorkerActionPlugin.js";
 import type { IDeleteUserActionEvent } from "./types.js";
 import { createDeleteUserSchema } from "./deleteUserSchema.js";
-import type { CognitoIdentityProvider } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
+import type {
+    CognitoIdentityProvider,
+    CognitoIdentityProviderClientConfig
+} from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
 import { DeleteUser } from "./DeleteUser.js";
 import { logValidationError } from "~/worker/actions/logValidationError.js";
 
 export interface ICreateDeleteUserActionParams {
-    getCognitoProvider(region: string): Pick<CognitoIdentityProvider, "send">;
+    createCognitoProvider(
+        config: Partial<CognitoIdentityProviderClientConfig>
+    ): Pick<CognitoIdentityProvider, "send">;
 }
 
 export const createDeleteUserAction = (params: ICreateDeleteUserActionParams) => {
     const deleteUser = new DeleteUser({
-        getCognitoProvider: params.getCognitoProvider
+        createCognitoProvider: params.createCognitoProvider
     });
     return createWorkerActionPlugin<IDeleteUserActionEvent>({
         name: "sync.worker.action.deleteUser",

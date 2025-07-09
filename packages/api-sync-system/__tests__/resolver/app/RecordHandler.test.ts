@@ -11,6 +11,7 @@ import { createMockFetcher } from "~tests/mocks/fetcher.js";
 import { createDeployments } from "~/resolver/deployment/Deployments.js";
 import { createIngestorResult } from "~/resolver/app/ingestor/IngestorResult.js";
 import { createMockPluginsContainer } from "~tests/mocks/plugins.js";
+import { SourceDataContainer } from "~/resolver/app/data/SourceDataContainer.js";
 
 describe("RecordHandler", () => {
     const createDocumentClient = () => {
@@ -43,7 +44,10 @@ describe("RecordHandler", () => {
             tableBundler,
             deployments,
             fetcher,
-            storer
+            storer,
+            createSourceDataContainer: () => {
+                return SourceDataContainer.create();
+            }
         });
         expect(handler).toBeInstanceOf(RecordHandler);
     });
@@ -56,7 +60,10 @@ describe("RecordHandler", () => {
             tableBundler,
             deployments,
             fetcher,
-            storer
+            storer,
+            createSourceDataContainer: () => {
+                return SourceDataContainer.create();
+            }
         });
         const ingestorResult = createIngestorResult();
         const result = await handler.handle({

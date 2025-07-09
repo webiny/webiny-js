@@ -44,13 +44,19 @@ describe("CopyFile", () => {
         expect(result).toBeNull();
     });
 
-    it("should return null if error happens during HeadObjectCommand operation", async () => {
-        const mockedS3Client = mockClient(S3Client);
+    it("should copy file if error happens during HeadObjectCommand operation", async () => {
+        const send = jest.fn();
 
-        mockedS3Client.on(HeadObjectCommand).rejects();
+        const mockedS3Client = mockClient(S3Client);
+        mockedS3Client.on(HeadObjectCommand).callsFake(input => {
+            send(input);
+            throw new Error();
+        });
         const mockedLambdaClient = mockClient(LambdaClient);
         mockedLambdaClient.on(InvokeCommand).resolves({
-            StatusCode: 200
+            $metadata: {
+                httpStatusCode: 200
+            }
         });
 
         const copyFile = new CopyFile({
@@ -65,13 +71,24 @@ describe("CopyFile", () => {
             }
         });
 
+        const source = createMockSourceDeployment();
+        const target = createMockTargetDeployment();
         const result = await copyFile.handle({
-            source: createMockSourceDeployment(),
-            target: createMockTargetDeployment(),
+            source,
+            target,
             key: "test-file.txt"
         });
 
-        expect(result).toBeNull();
+        expect(result).toEqual({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+        expect(send).toHaveBeenCalledTimes(1);
+        expect(send).toHaveBeenCalledWith({
+            Bucket: target.services.s3Id,
+            Key: "test-file.txt"
+        });
     });
 
     it("should trigger a lambda to copy file", async () => {

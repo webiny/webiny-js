@@ -4,12 +4,15 @@ import {
     AdminGetUserCommand,
     type AdminGetUserCommandInput,
     type AdminGetUserCommandOutput,
-    type CognitoIdentityProvider
+    type CognitoIdentityProvider,
+    CognitoIdentityProviderClientConfig
 } from "@webiny/aws-sdk/client-cognito-identity-provider";
 import { convertException } from "@webiny/utils/exception.js";
 
 export interface IDeleteUserParams {
-    getCognitoProvider: (region: string) => Pick<CognitoIdentityProvider, "send">;
+    createCognitoProvider: (
+        config: Partial<CognitoIdentityProviderClientConfig>
+    ) => Pick<CognitoIdentityProvider, "send">;
 }
 
 export interface IDeleteUserDeleteParams {
@@ -25,16 +28,20 @@ interface IDeleteUserGetUserParams {
 }
 
 export class DeleteUser {
-    private readonly getCognitoProvider: (region: string) => Pick<CognitoIdentityProvider, "send">;
+    private readonly createCognitoProvider: (
+        config: Partial<CognitoIdentityProviderClientConfig>
+    ) => Pick<CognitoIdentityProvider, "send">;
 
     public constructor(params: IDeleteUserParams) {
-        this.getCognitoProvider = params.getCognitoProvider;
+        this.createCognitoProvider = params.createCognitoProvider;
     }
 
     public async delete(params: IDeleteUserDeleteParams): Promise<void> {
         const { userPoolId, username, region } = params;
 
-        const provider = this.getCognitoProvider(region);
+        const provider = this.createCognitoProvider({
+            region
+        });
         const user = await this.getUser({
             userPoolId,
             username,
@@ -45,12 +52,12 @@ export class DeleteUser {
             return;
         }
 
-        const deleteUserInput: AdminDeleteUserCommandInput = {
+        const input: AdminDeleteUserCommandInput = {
             UserPoolId: userPoolId,
             Username: username
         };
 
-        const cmd = new AdminDeleteUserCommand(deleteUserInput);
+        const cmd = new AdminDeleteUserCommand(input);
         try {
             await provider.send(cmd);
         } catch (ex) {

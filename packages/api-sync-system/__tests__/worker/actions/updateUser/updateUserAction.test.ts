@@ -14,9 +14,7 @@ describe("updateUserAction", () => {
         console.log = jest.fn();
 
         const action = createUpdateUserAction({
-            getCognitoProvider: region => {
-                return createCognitoIdentityProviderClient({ region });
-            }
+            createCognitoProvider: createCognitoIdentityProviderClient
         });
 
         const result = action.parse({
@@ -69,9 +67,7 @@ describe("updateUserAction", () => {
 
     it("should parse valid input data", () => {
         const action = createUpdateUserAction({
-            getCognitoProvider: region => {
-                return createCognitoIdentityProviderClient({ region });
-            }
+            createCognitoProvider: createCognitoIdentityProviderClient
         });
 
         const result = action.parse({
@@ -100,7 +96,7 @@ describe("updateUserAction", () => {
         });
     });
 
-    it("should copy a user", async () => {
+    it("should update user", async () => {
         const mockedClient = mockClient(CognitoIdentityProviderClient);
         mockedClient.on(AdminGetUserCommand).callsFake((input: AdminGetUserCommandInput) => {
             return {
@@ -133,9 +129,7 @@ describe("updateUserAction", () => {
             });
 
         const action = createUpdateUserAction({
-            getCognitoProvider: region => {
-                return createCognitoIdentityProviderClient({ region });
-            }
+            createCognitoProvider: createCognitoIdentityProviderClient
         });
 
         const result = await action.handle({
@@ -155,9 +149,6 @@ describe("updateUserAction", () => {
 
         expect(result).toEqual(undefined);
         expect(send).toHaveBeenCalledWith({
-            $metadata: {
-                httpStatusCode: 200
-            },
             UserPoolId: "targetUserPool",
             Username: "testUser",
             UserAttributes: [
@@ -175,9 +166,7 @@ describe("updateUserAction", () => {
         });
 
         const action = createUpdateUserAction({
-            getCognitoProvider: region => {
-                return createCognitoIdentityProviderClient({ region });
-            }
+            createCognitoProvider: createCognitoIdentityProviderClient
         });
 
         try {
@@ -217,9 +206,7 @@ describe("updateUserAction", () => {
         });
 
         const action = createUpdateUserAction({
-            getCognitoProvider: region => {
-                return createCognitoIdentityProviderClient({ region });
-            }
+            createCognitoProvider: createCognitoIdentityProviderClient
         });
 
         try {

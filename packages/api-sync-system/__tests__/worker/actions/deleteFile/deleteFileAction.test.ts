@@ -12,9 +12,7 @@ describe("deleteFileAction", () => {
     it("should fail to parse invalid input data", () => {
         console.log = jest.fn();
         const action = createDeleteFileAction({
-            getS3Client: region => {
-                return createS3Client({ region });
-            }
+            createS3Client
         });
 
         const result = action.parse({
@@ -66,9 +64,7 @@ describe("deleteFileAction", () => {
 
     it("should successfully parse valid input data", () => {
         const action = createDeleteFileAction({
-            getS3Client: region => {
-                return createS3Client({ region });
-            }
+            createS3Client
         });
 
         const result = action.parse({
@@ -116,9 +112,7 @@ describe("deleteFileAction", () => {
         });
 
         const action = createDeleteFileAction({
-            getS3Client: region => {
-                return createS3Client({ region });
-            }
+            createS3Client
         });
 
         const result = await action.handle({
@@ -158,9 +152,7 @@ describe("deleteFileAction", () => {
         });
 
         const action = createDeleteFileAction({
-            getS3Client: region => {
-                return createS3Client({ region });
-            }
+            createS3Client
         });
 
         const result = await action.handle({

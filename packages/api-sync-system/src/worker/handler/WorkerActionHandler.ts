@@ -1,11 +1,6 @@
-import type { S3Client } from "@webiny/aws-sdk/client-s3";
 import type { IActionHandler } from "~/worker/types.js";
 import { WorkerActionPlugin } from "~/worker/plugins/WorkerActionPlugin.js";
 import { WebinyError } from "@webiny/error";
-
-export interface IActionHandlerParamsGetS3ClientCb {
-    (region: string): S3Client;
-}
 
 export interface IActionHandlerParams {
     plugins: WorkerActionPlugin[];

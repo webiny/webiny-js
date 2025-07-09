@@ -1,15 +1,15 @@
 import { createWorkerActionPlugin } from "~/worker/plugins/WorkerActionPlugin.js";
 import { DeleteFile } from "./DeleteFile.js";
-import type { S3Client } from "@webiny/aws-sdk/client-s3/index.js";
+import type { S3Client, S3ClientConfig } from "@webiny/aws-sdk/client-s3/index.js";
 import { createDeleteFileSchema } from "./deleteFileSchema.js";
 import type { IDeleteFileActionEvent } from "./types.js";
 import { logValidationError } from "~/worker/actions/logValidationError.js";
 
 export interface ICreateDeleteFileActionParams {
-    getS3Client: (region: string) => Pick<S3Client, "send">;
+    createS3Client: (config: Partial<S3ClientConfig>) => Pick<S3Client, "send">;
 }
 
-export const createDeleteFileAction = ({ getS3Client }: ICreateDeleteFileActionParams) => {
+export const createDeleteFileAction = ({ createS3Client }: ICreateDeleteFileActionParams) => {
     return createWorkerActionPlugin<IDeleteFileActionEvent>({
         name: "sync.worker.action.deleteFile",
         parse(input) {
@@ -25,7 +25,7 @@ export const createDeleteFileAction = ({ getS3Client }: ICreateDeleteFileActionP
         async handle(params) {
             const { data } = params;
             const deleteFile = new DeleteFile({
-                getS3Client,
+                createS3Client,
                 region: data.target.region
             });
             return deleteFile.delete({

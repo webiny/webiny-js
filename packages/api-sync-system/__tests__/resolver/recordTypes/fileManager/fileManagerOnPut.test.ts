@@ -65,6 +65,7 @@ describe("fileManagerOnPut", () => {
                 result.key = params.key;
                 result.source = params.source;
                 result.target = params.target;
+                return null;
             }
         };
 

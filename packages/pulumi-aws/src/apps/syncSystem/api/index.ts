@@ -6,6 +6,7 @@ import { addServiceManifest } from "~/apps/syncSystem/api/addServiceManifest.js"
 import type { PulumiApp } from "@webiny/pulumi/types";
 import type { CoreOutput } from "~/apps/common/CoreOutput.js";
 import type { WithServiceManifest } from "~/utils/withServiceManifest.js";
+import { attachCognitoPermissions } from "~/apps/syncSystem/api/attachCognitoPermissions.js";
 
 export interface IAttachSyncSystemParams {
     app: PulumiApp & WithServiceManifest;
@@ -37,6 +38,11 @@ export const attachSyncSystem = (params: IAttachSyncSystemParams) => {
     /**
      * Permissions for Sync System to access Webiny system resources.
      */
+    attachCognitoPermissions({
+        app,
+        syncSystem,
+        core
+    });
     attachDynamoDbPermissions({
         app,
         syncSystem,

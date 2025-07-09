@@ -35,7 +35,7 @@ export const attachEventBusPermissions = (params: IAttachEventBusPermissionsPara
                 Version: "2012-10-17",
                 Statement: [
                     {
-                        Sid: "PermissionForLambdaToEventBridge",
+                        Sid: "PermissionForSyncLambdaToEventBridge",
                         Effect: "Allow",
                         Action: "events:PutEvents",
                         Resource: [eventBusArn]

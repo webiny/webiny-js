@@ -1,17 +1,22 @@
 import { createWorkerActionPlugin } from "~/worker/plugins/WorkerActionPlugin.js";
 import type { ICreateUserActionEvent } from "~/worker/actions/createUser/types.js";
 import { createCreateUserSchema } from "./createUserSchema.js";
-import type { CognitoIdentityProvider } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
+import type {
+    CognitoIdentityProvider,
+    CognitoIdentityProviderClientConfig
+} from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
 import { CreateUser } from "~/worker/actions/createUser/CreateUser.js";
 import { logValidationError } from "~/worker/actions/logValidationError.js";
 
 export interface ICreateCreateUserActionParams {
-    getCognitoProvider(region: string): Pick<CognitoIdentityProvider, "send">;
+    createCognitoProvider(
+        config: Partial<CognitoIdentityProviderClientConfig>
+    ): Pick<CognitoIdentityProvider, "send">;
 }
 
 export const createCreateUserAction = (params: ICreateCreateUserActionParams) => {
     const createUser = new CreateUser({
-        getCognitoProvider: params.getCognitoProvider
+        createCognitoProvider: params.createCognitoProvider
     });
     return createWorkerActionPlugin<ICreateUserActionEvent>({
         name: "sync.worker.action.createUser",

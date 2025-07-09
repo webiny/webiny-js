@@ -7,6 +7,7 @@ import type {
     CreateMultipartUploadCommandInput,
     HeadObjectCommandInput,
     S3Client,
+    S3ClientConfig,
     UploadPartCopyCommandInput
 } from "@webiny/aws-sdk/client-s3/index.js";
 import {
@@ -23,7 +24,7 @@ import { convertException } from "@webiny/utils";
 type ByteSize = number | `${number}B` | `${number}KB` | `${number}MB` | `${number}GB`;
 
 export interface ICopyFileParams {
-    getS3Client: (region: string) => Pick<S3Client, "send">;
+    createS3Client: (config: Partial<S3ClientConfig>) => Pick<S3Client, "send">;
     sourceRegion: string;
     targetRegion: string;
     maxConcurrency?: number;
@@ -88,7 +89,7 @@ export class CopyFile {
 
     public constructor(params: ICopyFileParams) {
         const {
-            getS3Client,
+            createS3Client,
             sourceRegion,
             targetRegion,
             maxConcurrency = 100,
@@ -96,8 +97,12 @@ export class CopyFile {
             maxPartSize = "1GB"
         } = params;
 
-        this.sourceClient = getS3Client(sourceRegion);
-        this.targetClient = getS3Client(targetRegion);
+        this.sourceClient = createS3Client({
+            region: sourceRegion
+        });
+        this.targetClient = createS3Client({
+            region: targetRegion
+        });
         this.maxConcurrency = maxConcurrency;
 
         this.minPartSizeBytes = this.parseByteSize(minPartSize);

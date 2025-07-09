@@ -18,6 +18,7 @@ import type { Reply as FastifyReply } from "@webiny/handler/types.js";
 import { SQSEventHandler } from "@webiny/handler-aws/sqs/plugins/SQSEventHandler.js";
 import { createStorer } from "./app/storer/Storer.js";
 import { StorerAfterEachPlugin } from "./plugins/StorerAfterEachPlugin.js";
+import { SourceDataContainer } from "~/resolver/app/data/SourceDataContainer.js";
 
 export interface ICreateEventHandlerPluginParams {
     tableName: string | undefined;
@@ -101,7 +102,10 @@ export const createEventHandlerPlugin = (params: ICreateEventHandlerPluginParams
                                 createBundle: createTableBundle
                             });
                         }
-                    })
+                    }),
+                    createSourceDataContainer: () => {
+                        return SourceDataContainer.create();
+                    }
                 });
                 const app = createResolverApp({
                     recordHandler,

@@ -29,7 +29,7 @@ export const attachDynamoDbPermissions = (params: IAttachDynamoDbPermissionsPara
                 Version: "2012-10-17",
                 Statement: [
                     {
-                        Sid: "PermissionForLambdaToDynamoDb",
+                        Sid: "PermissionForSyncLambdaToDynamoDb",
                         Effect: "Allow",
                         Action: [
                             "dynamodb:BatchGetItem",

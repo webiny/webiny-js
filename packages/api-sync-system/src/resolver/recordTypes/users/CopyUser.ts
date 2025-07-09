@@ -65,7 +65,9 @@ export class CopyUser implements ICopyUser {
     private async userExists(params: IGetUserParams): Promise<boolean> {
         const { userPoolId, username, region } = params;
 
-        const provider = this.createCognitoIdentityProviderClient(region);
+        const provider = this.createCognitoIdentityProviderClient({
+            region
+        });
 
         const input: AdminGetUserCommandInput = {
             UserPoolId: userPoolId,

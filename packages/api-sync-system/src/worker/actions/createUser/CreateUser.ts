@@ -1,15 +1,21 @@
+import type {
+    AdminCreateUserCommandInput,
+    AdminGetUserCommandInput,
+    AdminGetUserCommandOutput,
+    CognitoIdentityProvider,
+    CognitoIdentityProviderClientConfig
+} from "@webiny/aws-sdk/client-cognito-identity-provider";
 import {
     AdminCreateUserCommand,
-    type AdminCreateUserRequest,
-    AdminGetUserCommand,
-    type AdminGetUserCommandInput,
-    type AdminGetUserCommandOutput,
-    type CognitoIdentityProvider
+    AdminGetUserCommand
 } from "@webiny/aws-sdk/client-cognito-identity-provider";
 import { convertException } from "@webiny/utils/exception.js";
+import { removeCognitoUserAttributes } from "~/worker/actions/removeCognitoUserAttributes.js";
 
 export interface ICreateUserParams {
-    getCognitoProvider: (region: string) => Pick<CognitoIdentityProvider, "send">;
+    createCognitoProvider: (
+        config: Partial<CognitoIdentityProviderClientConfig>
+    ) => Pick<CognitoIdentityProvider, "send">;
 }
 
 export interface ICreateUserCreateParams {
@@ -27,16 +33,20 @@ interface ICreateUserGetUserParams {
 }
 
 export class CreateUser {
-    private readonly getCognitoProvider: (region: string) => Pick<CognitoIdentityProvider, "send">;
+    private readonly createCognitoProvider: (
+        config: Partial<CognitoIdentityProviderClientConfig>
+    ) => Pick<CognitoIdentityProvider, "send">;
 
     public constructor(params: ICreateUserParams) {
-        this.getCognitoProvider = params.getCognitoProvider;
+        this.createCognitoProvider = params.createCognitoProvider;
     }
 
     public async create(params: ICreateUserCreateParams): Promise<void> {
         const { sourceUserPoolId, targetUserPoolId, username, targetRegion, sourceRegion } = params;
 
-        const sourceProvider = this.getCognitoProvider(sourceRegion);
+        const sourceProvider = this.createCognitoProvider({
+            region: sourceRegion
+        });
 
         const sourceUser = await this.getUser({
             userPoolId: sourceUserPoolId,
@@ -46,7 +56,9 @@ export class CreateUser {
         if (!sourceUser) {
             throw new Error(`Source user "${username}" not found in pool "${sourceUserPoolId}".`);
         }
-        const targetProvider = this.getCognitoProvider(targetRegion);
+        const targetProvider = this.createCognitoProvider({
+            region: targetRegion
+        });
         const targetUser = await this.getUser({
             userPoolId: targetUserPoolId,
             username,
@@ -56,17 +68,21 @@ export class CreateUser {
             console.log(`Target user "${username}" already exists in pool "${targetUserPoolId}".`);
             return;
         }
-
-        const createUserInput: AdminCreateUserRequest = {
+        /**
+         * TODO: verify that this is everything that is required to create a user.
+         * We cannot just spread the sourceUser as it causes an exception:
+         * `Cannot modify the non-mutable attribute sub`
+         */
+        const input: AdminCreateUserCommandInput = {
             DesiredDeliveryMediums: [],
             ForceAliasCreation: false,
             MessageAction: "SUPPRESS",
-            ...sourceUser,
+            UserAttributes: removeCognitoUserAttributes(sourceUser.UserAttributes || []),
             UserPoolId: targetUserPoolId,
             Username: username
         };
 
-        const cmd = new AdminCreateUserCommand(createUserInput);
+        const cmd = new AdminCreateUserCommand(input);
 
         try {
             await targetProvider.send(cmd);

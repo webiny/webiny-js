@@ -17,11 +17,7 @@ describe("copyFileAction", () => {
         console.log = jest.fn();
 
         const action = createCopyFileAction({
-            getS3Client: region => {
-                return createS3Client({
-                    region
-                });
-            }
+            createS3Client
         });
 
         const result = action.parse({
@@ -73,11 +69,7 @@ describe("copyFileAction", () => {
 
     it("should parse input data", () => {
         const action = createCopyFileAction({
-            getS3Client: region => {
-                return createS3Client({
-                    region
-                });
-            }
+            createS3Client
         });
 
         const result = action.parse({
@@ -142,11 +134,7 @@ describe("copyFileAction", () => {
         });
 
         const action = createCopyFileAction({
-            getS3Client: region => {
-                return createS3Client({
-                    region
-                });
-            }
+            createS3Client
         });
 
         await action.handle({

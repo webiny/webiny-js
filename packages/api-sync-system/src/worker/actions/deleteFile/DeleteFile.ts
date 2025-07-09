@@ -1,13 +1,13 @@
-import type { S3Client } from "@webiny/aws-sdk/client-s3/index.js";
+import type { S3Client, S3ClientConfig } from "@webiny/aws-sdk/client-s3/index.js";
 import { DeleteObjectCommand, HeadObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
 
 export interface IDeleteFileParamsGetS3ClientCb {
-    (region: string): Pick<S3Client, "send">;
+    (config: Partial<S3ClientConfig>): Pick<S3Client, "send">;
 }
 
 export interface IDeleteFileParams {
     region: string;
-    getS3Client: IDeleteFileParamsGetS3ClientCb;
+    createS3Client: IDeleteFileParamsGetS3ClientCb;
     maxRetries?: number;
     baseDelayMs?: number;
 }
@@ -25,21 +25,23 @@ interface IDeleteFileObjectExistsParams {
 
 export class DeleteFile {
     private readonly region: string;
-    private readonly getS3Client: IDeleteFileParamsGetS3ClientCb;
+    private readonly createS3Client: IDeleteFileParamsGetS3ClientCb;
     private readonly maxRetries: number;
     private readonly baseDelayMs: number;
 
     public constructor(params: IDeleteFileParams) {
-        const { getS3Client, region, maxRetries = 5, baseDelayMs = 100 } = params;
+        const { createS3Client, region, maxRetries = 5, baseDelayMs = 100 } = params;
         this.region = region;
-        this.getS3Client = getS3Client;
+        this.createS3Client = createS3Client;
         this.maxRetries = maxRetries;
         this.baseDelayMs = baseDelayMs;
     }
 
     public async delete(params: IDeleteFileInput): Promise<void> {
         const { bucket, key } = params;
-        const client = this.getS3Client(this.region);
+        const client = this.createS3Client({
+            region: this.region
+        });
 
         if (!(await this.objectExists({ client, bucket, key }))) {
             return;

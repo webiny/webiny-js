@@ -4,12 +4,14 @@ import { SyncSystemSQS } from "../SyncSystemSQS.js";
 import { SyncSystemDynamoDb } from "../SyncSystemDynamoDb.js";
 import { SyncSystemWorkerLambda } from "~/apps/syncSystem/SyncSystemWorkerLambda.js";
 
-interface ICreateSyncSystemLambdaPolicyParams {
+interface ICreateSyncSystemResolverLambdaPolicyParams {
     name: string;
     app: PulumiApp;
 }
 
-export function createSyncSystemInputLambdaPolicy(params: ICreateSyncSystemLambdaPolicyParams) {
+export function createSyncSystemResolverLambdaPolicy(
+    params: ICreateSyncSystemResolverLambdaPolicyParams
+) {
     const { app } = params;
     const { sqsQueue } = app.getModule(SyncSystemSQS);
     const { lambda: workerLambda } = app.getModule(SyncSystemWorkerLambda);

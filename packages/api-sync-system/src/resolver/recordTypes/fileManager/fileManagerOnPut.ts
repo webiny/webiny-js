@@ -1,7 +1,7 @@
 import { createStorerAfterEachPluginWithName } from "~/resolver/plugins/StorerAfterEachPlugin.js";
 import { shouldBeHandled } from "./shouldBeHandled.js";
 import { convertException } from "@webiny/utils";
-import type { ICopyFile } from "~/resolver/recordTypes/fileManager/types.js";
+import type { ICopyFile } from "./types.js";
 
 export interface ICreateFileManagerOnPutPluginParams {
     copyFile: ICopyFile;

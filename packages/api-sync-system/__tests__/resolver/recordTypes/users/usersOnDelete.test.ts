@@ -204,9 +204,7 @@ describe("usersOnDelete", () => {
         });
 
         const deleteUser = new DeleteUser({
-            createCognitoIdentityProviderClient: region => {
-                return createCognitoIdentityProviderClient({ region });
-            },
+            createCognitoIdentityProviderClient,
             getLambdaTrigger: () => {
                 return new LambdaTrigger({
                     arn: "someLambdaArn",
@@ -261,9 +259,7 @@ describe("usersOnDelete", () => {
         mockedLambda.on(InvokeCommand).rejects("Unknown testing error.");
 
         const deleteUser = new DeleteUser({
-            createCognitoIdentityProviderClient: region => {
-                return createCognitoIdentityProviderClient({ region });
-            },
+            createCognitoIdentityProviderClient,
             getLambdaTrigger: () => {
                 return new LambdaTrigger({
                     arn: "someLambdaArn",

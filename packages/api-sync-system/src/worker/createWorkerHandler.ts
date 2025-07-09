@@ -8,9 +8,9 @@ import { createDeleteFileAction } from "~/worker/actions/deleteFile/deleteFileAc
 import type { S3Client, S3ClientConfig } from "@webiny/aws-sdk/client-s3/index.js";
 import { createCreateUserAction } from "~/worker/actions/createUser/createUserAction.js";
 import { createUpdateUserAction } from "~/worker/actions/updateUser/updateUserAction.js";
-import type {
-    CognitoIdentityProvider,
-    CognitoIdentityProviderClientConfig
+import {
+    type CognitoIdentityProvider,
+    type CognitoIdentityProviderClientConfig
 } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
 import { createDeleteUserAction } from "~/worker/actions/deleteUser/deleteUserAction.js";
 
@@ -19,51 +19,41 @@ export type IAllowedWorkerHandlerPlugins = Plugin[];
 export interface IWorkerHandlerParams extends Omit<CreateHandlerParams, "plugins"> {
     plugins?: IAllowedWorkerHandlerPlugins[];
     createS3Client: (params: S3ClientConfig) => Pick<S3Client, "send">;
-    createCognitoProvider(
+    createCognitoIdentityProviderClient(
         input: CognitoIdentityProviderClientConfig
     ): Pick<CognitoIdentityProvider, "send">;
 }
 
 export const createWorkerHandler = (params: IWorkerHandlerParams) => {
-    const { createS3Client, createCognitoProvider } = params;
+    const { createS3Client, createCognitoIdentityProviderClient } = params;
     const plugins = new PluginsContainer(params.plugins || []);
 
-    const getS3Client = (region: string) => {
-        return createS3Client({
-            region
-        });
-    };
-    const getCognitoProvider = (region: string) => {
-        return createCognitoProvider({
-            region
-        });
-    };
     /**
      * Default action plugins are registered here.
      */
     plugins.register(
         createCopyFileAction({
-            getS3Client
+            createS3Client
         })
     );
     plugins.register(
         createDeleteFileAction({
-            getS3Client
+            createS3Client
         })
     );
     plugins.register(
         createCreateUserAction({
-            getCognitoProvider
+            createCognitoProvider: createCognitoIdentityProviderClient
         })
     );
     plugins.register(
         createUpdateUserAction({
-            getCognitoProvider
+            createCognitoProvider: createCognitoIdentityProviderClient
         })
     );
     plugins.register(
         createDeleteUserAction({
-            getCognitoProvider
+            createCognitoProvider: createCognitoIdentityProviderClient
         })
     );
 

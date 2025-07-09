@@ -4,7 +4,7 @@ import type { PulumiApp, PulumiAppModule } from "@webiny/pulumi";
 import { createAppModule } from "@webiny/pulumi";
 import { createLambdaRoleWithoutVpc } from "../lambdaUtils.js";
 import { LAMBDA_RUNTIME } from "~/constants.js";
-import { createSyncSystemInputLambdaPolicy } from "./lambda/createSyncSystemInputLambdaPolicy.js";
+import { createSyncSystemResolverLambdaPolicy } from "./lambda/createSyncSystemResolverLambdaPolicy.js";
 import { createSyncResourceName } from "./createSyncResourceName.js";
 import { createAssetArchive } from "~/utils/createAssetArchive.js";
 import { SyncSystemSQS } from "./SyncSystemSQS.js";
@@ -22,7 +22,7 @@ export const SyncSystemResolverLambda = createAppModule({
         const { lambda: workerLambda } = app.getModule(SyncSystemWorkerLambda);
 
         const roleName = createSyncResourceName("resolver-lambda-role");
-        const policy = createSyncSystemInputLambdaPolicy({
+        const policy = createSyncSystemResolverLambdaPolicy({
             name: `${roleName}-policy`,
             app
         });

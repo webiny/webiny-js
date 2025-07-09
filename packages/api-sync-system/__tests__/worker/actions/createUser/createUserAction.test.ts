@@ -14,9 +14,7 @@ describe("createUserAction", () => {
         console.log = jest.fn();
 
         const action = createCreateUserAction({
-            getCognitoProvider: region => {
-                return createCognitoIdentityProviderClient({ region });
-            }
+            createCognitoProvider: createCognitoIdentityProviderClient
         });
 
         const result = action.parse({
@@ -69,9 +67,7 @@ describe("createUserAction", () => {
 
     it("should parse valid input data", () => {
         const action = createCreateUserAction({
-            getCognitoProvider: region => {
-                return createCognitoIdentityProviderClient({ region });
-            }
+            createCognitoProvider: createCognitoIdentityProviderClient
         });
 
         const result = action.parse({
@@ -130,9 +126,7 @@ describe("createUserAction", () => {
         });
 
         const action = createCreateUserAction({
-            getCognitoProvider: region => {
-                return createCognitoIdentityProviderClient({ region });
-            }
+            createCognitoProvider: createCognitoIdentityProviderClient
         });
 
         const result = await action.handle({
@@ -152,9 +146,6 @@ describe("createUserAction", () => {
 
         expect(result).toEqual(undefined);
         expect(send).toHaveBeenCalledWith({
-            $metadata: {
-                httpStatusCode: 200
-            },
             DesiredDeliveryMediums: [],
             ForceAliasCreation: false,
             MessageAction: "SUPPRESS",

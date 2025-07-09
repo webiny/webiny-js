@@ -94,7 +94,7 @@ export const syncWithCognito = ({
 
                 // User does not exist.
             }
-            // TODO use this to create a user in the system B cognito
+
             const params: AdminCreateUserRequest = {
                 UserPoolId: userPoolId,
                 Username: username,

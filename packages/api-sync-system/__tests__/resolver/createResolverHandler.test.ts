@@ -6,6 +6,7 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.
 import { mockClient } from "aws-sdk-client-mock";
 import { createLambdaClient, LambdaClient } from "@webiny/aws-sdk/client-lambda/index.js";
 import { createS3Client, S3Client } from "@webiny/aws-sdk/client-s3/index.js";
+import { createCognitoIdentityProviderClient } from "@webiny/aws-sdk/client-cognito-identity-provider";
 
 describe("createResolverHandler", () => {
     it("should create a resolver handler and get an error on input because of no deployments", async () => {
@@ -21,7 +22,7 @@ describe("createResolverHandler", () => {
         });
 
         const handler = createResolverHandler({
-            awsSyncLambdaArn: "some-arn",
+            awsWorkerLambdaArn: "some-arn",
             plugins: [],
             createLambdaClient: () => {
                 return createLambdaClient();
@@ -31,6 +32,9 @@ describe("createResolverHandler", () => {
             },
             createDocumentClient: params => {
                 return getDocumentClient(params);
+            },
+            createCognitoIdentityProviderClient(config) {
+                return createCognitoIdentityProviderClient(config);
             }
         });
 

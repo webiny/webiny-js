@@ -32,9 +32,7 @@ describe("CopyUser", () => {
         });
 
         const copyUser = new CopyUser({
-            createCognitoIdentityProviderClient: region => {
-                return createCognitoIdentityProviderClient({ region });
-            },
+            createCognitoIdentityProviderClient,
             getLambdaTrigger: () => {
                 return new LambdaTrigger({
                     arn: "someLambdaArn",
@@ -104,9 +102,7 @@ describe("CopyUser", () => {
         });
 
         const copyUser = new CopyUser({
-            createCognitoIdentityProviderClient: region => {
-                return createCognitoIdentityProviderClient({ region });
-            },
+            createCognitoIdentityProviderClient,
             getLambdaTrigger: () => {
                 return new LambdaTrigger({
                     arn: "someLambdaArn",

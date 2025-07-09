@@ -2,13 +2,14 @@ import type {
     InvocationType,
     InvokeCommandInput,
     InvokeCommandOutput,
-    LambdaClient
+    LambdaClient,
+    LambdaClientConfig
 } from "@webiny/aws-sdk/client-lambda/index.js";
 import { InvokeCommand } from "@webiny/aws-sdk/client-lambda/index.js";
 import { convertException } from "@webiny/utils/exception.js";
 
 export interface IInvokeLambdaTriggerParamsCreateLambdaClientCb {
-    (): Pick<LambdaClient, "send">;
+    (config: LambdaClientConfig): Pick<LambdaClient, "send">;
 }
 
 export interface IInvokeLambdaTriggerParams {
@@ -31,7 +32,9 @@ export class LambdaTrigger<TPayload> {
     }
 
     public async handle(params: IInvokeLambdaHandleParams<TPayload>): Promise<InvokeCommandOutput> {
-        const lambdaClient = this.createLambdaClient();
+        const lambdaClient = this.createLambdaClient({
+            region: process.env.AWS_REGION
+        });
         const { payload, invocationType } = params;
 
         const input: InvokeCommandInput = {

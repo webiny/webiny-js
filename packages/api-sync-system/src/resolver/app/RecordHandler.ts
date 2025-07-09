@@ -6,10 +6,10 @@ import type { PluginsContainer } from "@webiny/plugins";
 import type { IFetcher } from "~/resolver/app/fetcher/types.js";
 import type { IStoreItem, IStorer } from "~/resolver/app/storer/types.js";
 import type { IBundle, IBundler } from "~/resolver/app/bundler/types.js";
-import { SourceDataContainer } from "~/resolver/app/data/SourceDataContainer.js";
 import type { IDeployment, IDeployments } from "~/resolver/deployment/types.js";
 import type { ITransformHandler } from "~/resolver/app/transform/TransformHandler.js";
 import type { ITable } from "~/sync/types.js";
+import type { ISourceDataContainer } from "~/resolver/app/data/types.js";
 
 export interface IRecordHandlerParams {
     fetcher: IFetcher;
@@ -19,6 +19,7 @@ export interface IRecordHandlerParams {
     tableBundler: IBundler;
     deployments: IDeployments;
     transformHandler: ITransformHandler;
+    createSourceDataContainer: () => ISourceDataContainer;
 }
 
 interface IFindTargetTableParams {
@@ -35,6 +36,7 @@ export class RecordHandler implements IRecordHandler {
     private readonly tableBundler: IBundler;
     private readonly deployments: IDeployments;
     private readonly transformHandler: ITransformHandler;
+    private readonly createSourceDataContainer: () => ISourceDataContainer;
 
     public constructor(params: IRecordHandlerParams) {
         this.plugins = params.plugins;
@@ -44,6 +46,7 @@ export class RecordHandler implements IRecordHandler {
         this.tableBundler = params.tableBundler;
         this.deployments = params.deployments;
         this.transformHandler = params.transformHandler;
+        this.createSourceDataContainer = params.createSourceDataContainer;
 
         this.commandHandlerPlugins = this.plugins.byType<CommandHandlerPlugin>(
             CommandHandlerPlugin.type
@@ -57,7 +60,7 @@ export class RecordHandler implements IRecordHandler {
             items: data.getItems()
         });
 
-        const container = SourceDataContainer.create();
+        const container = this.createSourceDataContainer();
 
         for (const bundle of sources.getBundles()) {
             /**

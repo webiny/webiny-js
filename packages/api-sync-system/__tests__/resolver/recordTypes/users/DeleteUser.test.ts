@@ -35,9 +35,7 @@ describe("DeleteUser", () => {
         });
 
         const deleteUser = new DeleteUser({
-            createCognitoIdentityProviderClient: region => {
-                return createCognitoIdentityProviderClient({ region });
-            },
+            createCognitoIdentityProviderClient,
             getLambdaTrigger: () => {
                 return new LambdaTrigger({
                     arn: "someLambdaArn",
@@ -93,9 +91,7 @@ describe("DeleteUser", () => {
         });
 
         const deleteUser = new DeleteUser({
-            createCognitoIdentityProviderClient: region => {
-                return createCognitoIdentityProviderClient({ region });
-            },
+            createCognitoIdentityProviderClient,
             getLambdaTrigger: () => {
                 return new LambdaTrigger({
                     arn: "someLambdaArn",

@@ -27,6 +27,8 @@ const documentClientConfig: TranslateConfig = {
     }
 };
 
+export { getDocumentClient as createDocumentClient };
+
 export const getDocumentClient = (input?: DynamoDBClientConfig): DynamoDBDocument => {
     const config: DynamoDBClientConfig = {
         ...DEFAULT_CONFIG,

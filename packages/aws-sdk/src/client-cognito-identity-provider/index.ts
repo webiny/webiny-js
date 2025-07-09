@@ -15,6 +15,7 @@ export {
 } from "@aws-sdk/client-cognito-identity-provider";
 
 export type {
+    AttributeType,
     ListUsersResponse,
     UserType,
     CognitoIdentityProviderClientConfig,

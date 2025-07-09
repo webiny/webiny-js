@@ -79,13 +79,14 @@ export class CopyFile implements ICopyFile {
         const cmd = new HeadObjectCommand(input);
         try {
             const result = await client.send(cmd);
-            return result.$metadata?.httpStatusCode === 200;
-        } catch {
-            // TODO What happens if this fails? To we continue with the copy or end the process?
+            return result.$metadata?.httpStatusCode === 200 && !!result.ETag;
+        } catch (ex) {
             /**
-             * For now, we will assume that file exists.
+             * TODO What happens if this fails? To we continue with the copy or end the process?
+             * Do we log the error?
+             * For now, we will assume that file does not exist.
              */
-            return true;
+            return false;
         }
     }
 }

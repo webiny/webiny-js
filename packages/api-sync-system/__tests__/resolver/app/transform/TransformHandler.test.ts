@@ -53,9 +53,6 @@ const plugins = createMockPluginsContainer([
         },
         async transform(_, next) {
             const result = await next();
-            console.log({
-                result
-            });
             return {
                 ...result,
                 transformed: true

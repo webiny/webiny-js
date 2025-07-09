@@ -1,19 +1,27 @@
+import {
+    createLambdaClient,
+    InvokeCommand,
+    InvokeCommandInput,
+    LambdaClient
+} from "@webiny/aws-sdk/client-lambda";
+import { mockClient } from "aws-sdk-client-mock";
 import { LambdaTrigger } from "~/resolver/lambda/LambdaTrigger.js";
 
 describe("LambdaTrigger", () => {
     const arn = "arn:aws:lambda:us-east-1:123456789012:function:my-function";
 
     it("should invoke a Lambda function with the correct parameters", async () => {
+        const mockedClient = mockClient(LambdaClient);
+        mockedClient.on(InvokeCommand).callsFake((input: InvokeCommandInput) => {
+            return {
+                StatusCode: 200,
+                Payload: JSON.stringify(input)
+            };
+        });
+
         const trigger = new LambdaTrigger({
             arn,
-            createLambdaClient: () => ({
-                send: async cmd => {
-                    return {
-                        StatusCode: 200,
-                        Payload: JSON.stringify(cmd.input)
-                    };
-                }
-            })
+            createLambdaClient
         });
 
         const result = await trigger.handle({
@@ -38,13 +46,12 @@ describe("LambdaTrigger", () => {
     });
 
     it("should trigger lambda and throw an error on failure", async () => {
+        const mockedClient = mockClient(LambdaClient);
+        mockedClient.on(InvokeCommand).rejects("Lambda invocation failed.");
+
         const trigger = new LambdaTrigger({
             arn,
-            createLambdaClient: () => ({
-                send: async () => {
-                    throw new Error("Lambda invocation failed");
-                }
-            })
+            createLambdaClient
         });
 
         await expect(
@@ -54,6 +61,6 @@ describe("LambdaTrigger", () => {
                 },
                 invocationType: "RequestResponse"
             })
-        ).rejects.toThrow("Lambda invocation failed");
+        ).rejects.toThrow("Lambda invocation failed.");
     });
 });

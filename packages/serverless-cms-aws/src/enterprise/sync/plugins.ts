@@ -77,7 +77,8 @@ export const createSyncSystemPlugins = (): Plugin[] => {
                 elasticsearchDynamodbTableArn: core.elasticsearchDynamodbTableArn,
                 elasticsearchDynamodbTableName: core.elasticsearchDynamodbTableName,
                 logDynamodbTableArn: core.logDynamodbTableArn,
-                logDynamodbTableName: core.logDynamodbTableName
+                logDynamodbTableName: core.logDynamodbTableName,
+                cognitoUserPoolId: core.cognitoUserPoolId
             };
 
             const cmd = new PutCommand({

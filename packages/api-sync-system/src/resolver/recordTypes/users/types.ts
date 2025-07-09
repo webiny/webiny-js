@@ -1,5 +1,8 @@
 import type { IDeployment } from "~/resolver/deployment/types";
-import type { CognitoIdentityProviderClient } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
+import type {
+    CognitoIdentityProviderClient,
+    CognitoIdentityProviderClientConfig
+} from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
 import type { InvokeCommandOutput } from "@webiny/aws-sdk/client-lambda/index.js";
 
 export interface IUserDeploymentServices {
@@ -26,5 +29,8 @@ export interface IDeleteUser {
 }
 
 export interface ICreateCognitoIdentityProviderClientCb {
-    (region: string): Pick<CognitoIdentityProviderClient, "send">;
+    (config: Partial<CognitoIdentityProviderClientConfig>): Pick<
+        CognitoIdentityProviderClient,
+        "send"
+    >;
 }

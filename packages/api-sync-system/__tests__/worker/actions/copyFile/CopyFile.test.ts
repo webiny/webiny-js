@@ -20,17 +20,11 @@ describe("CopyFile", () => {
     const sourceRegion = sourceDeployment.region;
     const sourceBucket = sourceDeployment.services.s3Id;
 
-    const getS3Client = (region: string) => {
-        return createS3Client({
-            region
-        });
-    };
-
     it("should throw an error if minPartSize cannot be parsed", async () => {
         try {
             const copyFile = new CopyFile({
                 targetRegion,
-                getS3Client,
+                createS3Client,
                 sourceRegion,
                 // @ts-expect-error
                 minPartSize: {}
@@ -45,7 +39,7 @@ describe("CopyFile", () => {
         try {
             const copyFile = new CopyFile({
                 targetRegion,
-                getS3Client,
+                createS3Client: createS3Client,
                 sourceRegion,
                 minPartSize: "4.99MB"
             });
@@ -58,7 +52,7 @@ describe("CopyFile", () => {
     it("should set minPartSizeBytes to 5.5MB", async () => {
         const copyFileString = new CopyFile({
             targetRegion,
-            getS3Client,
+            createS3Client: createS3Client,
             sourceRegion,
             minPartSize: "5.5MB"
         });
@@ -67,7 +61,7 @@ describe("CopyFile", () => {
 
         const copyFileNumber = new CopyFile({
             targetRegion,
-            getS3Client,
+            createS3Client,
             sourceRegion,
             minPartSize: 5.5 * 1024 * 1024
         });
@@ -81,7 +75,7 @@ describe("CopyFile", () => {
 
         const copyFile = new CopyFile({
             targetRegion,
-            getS3Client,
+            createS3Client,
             sourceRegion
         });
 
@@ -113,7 +107,7 @@ describe("CopyFile", () => {
 
         const copyFile = new CopyFile({
             targetRegion,
-            getS3Client,
+            createS3Client,
             sourceRegion
         });
 
@@ -156,7 +150,7 @@ describe("CopyFile", () => {
 
         const copyFile = new CopyFile({
             targetRegion,
-            getS3Client,
+            createS3Client,
             sourceRegion
         });
 

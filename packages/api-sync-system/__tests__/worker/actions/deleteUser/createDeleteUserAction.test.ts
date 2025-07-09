@@ -14,9 +14,7 @@ describe("deleteUserAction", () => {
         console.log = jest.fn();
 
         const action = createDeleteUserAction({
-            getCognitoProvider: region => {
-                return createCognitoIdentityProviderClient({ region });
-            }
+            createCognitoProvider: createCognitoIdentityProviderClient
         });
 
         const result = action.parse({
@@ -61,9 +59,7 @@ describe("deleteUserAction", () => {
 
     it("should successfully parse valid input data", () => {
         const action = createDeleteUserAction({
-            getCognitoProvider: region => {
-                return createCognitoIdentityProviderClient({ region });
-            }
+            createCognitoProvider: createCognitoIdentityProviderClient
         });
 
         const result = action.parse({
@@ -92,9 +88,7 @@ describe("deleteUserAction", () => {
         });
 
         const action = createDeleteUserAction({
-            getCognitoProvider(region) {
-                return createCognitoIdentityProviderClient({ region });
-            }
+            createCognitoProvider: createCognitoIdentityProviderClient
         });
 
         const result = await action.handle({
@@ -135,9 +129,7 @@ describe("deleteUserAction", () => {
         });
 
         const action = createDeleteUserAction({
-            getCognitoProvider(region) {
-                return createCognitoIdentityProviderClient({ region });
-            }
+            createCognitoProvider: createCognitoIdentityProviderClient
         });
 
         const result = await action.handle({

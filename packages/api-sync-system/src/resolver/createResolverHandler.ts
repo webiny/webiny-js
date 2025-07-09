@@ -12,13 +12,16 @@ import type {
 } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createFileManagerPlugins } from "./recordTypes/fileManager/fileManager.js";
 import { LambdaTrigger } from "./lambda/LambdaTrigger.js";
-import type { LambdaClient } from "@webiny/aws-sdk/client-lambda/index.js";
+import type { LambdaClient, LambdaClientConfig } from "@webiny/aws-sdk/client-lambda/index.js";
 import type { S3Client, S3ClientConfig } from "@webiny/aws-sdk/client-s3/index.js";
 import { CopyFile } from "~/resolver/recordTypes/fileManager/CopyFile.js";
 import { DeleteFile } from "./recordTypes/fileManager/DeleteFile.js";
 import { createUsersPlugins } from "~/resolver/recordTypes/users/users.js";
 import { CopyUser } from "./recordTypes/users/CopyUser.js";
-import { CognitoIdentityProviderClient } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
+import {
+    CognitoIdentityProviderClient,
+    CognitoIdentityProviderClientConfig
+} from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
 import { DeleteUser } from "./recordTypes/users/DeleteUser.js";
 
 export type AllowedResolverPlugins = TransformRecordPlugin | CommandHandlerPlugin;
@@ -26,27 +29,27 @@ export type AllowedResolverPlugins = TransformRecordPlugin | CommandHandlerPlugi
 export interface ICreateResolverHandlerParams extends HandlerParams {
     plugins: AllowedResolverPlugins[];
     createS3Client: (params: S3ClientConfig) => Pick<S3Client, "send">;
-    createLambdaClient: () => Pick<LambdaClient, "send">;
-    createDocumentClient: (params: DynamoDBClientConfig) => Pick<DynamoDBDocument, "send">;
+    createLambdaClient: (config: Partial<LambdaClientConfig>) => Pick<LambdaClient, "send">;
+    createDocumentClient: (params: Partial<DynamoDBClientConfig>) => Pick<DynamoDBDocument, "send">;
     createCognitoIdentityProviderClient: (
-        region: string
+        config: Partial<CognitoIdentityProviderClientConfig>
     ) => Pick<CognitoIdentityProviderClient, "send">;
     tableName?: string;
-    awsSyncLambdaArn?: string;
+    awsWorkerLambdaArn?: string;
 }
 /**
  * Handler for the Sync System Resolver - based on SQS handler.
  */
 export const createResolverHandler = (params: ICreateResolverHandlerParams): HandlerCallable => {
-    const awsSyncLambdaArn = params.awsSyncLambdaArn || process.env.AWS_SYNC_WORKER_LAMBDA_ARN;
-    if (!awsSyncLambdaArn) {
+    const awsWorkerLambdaArn = params.awsWorkerLambdaArn || process.env.AWS_SYNC_WORKER_LAMBDA_ARN;
+    if (!awsWorkerLambdaArn) {
         const message = `Missing "process.env.AWS_SYNC_WORKER_LAMBDA_ARN".`;
         console.error(message);
         throw new Error(message);
     }
 
     const lambdaTrigger = new LambdaTrigger({
-        arn: awsSyncLambdaArn,
+        arn: awsWorkerLambdaArn,
         createLambdaClient: params.createLambdaClient
     });
 

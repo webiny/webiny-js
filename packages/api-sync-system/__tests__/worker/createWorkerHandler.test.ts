@@ -12,7 +12,7 @@ describe("createWorkerHandler", () => {
         mockClient(S3Client);
 
         const handler = createWorkerHandler({
-            createCognitoProvider: createCognitoIdentityProviderClient,
+            createCognitoIdentityProviderClient,
             createS3Client: createS3Client
         });
 

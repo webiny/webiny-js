@@ -14,4 +14,5 @@ export interface ISyncSystemDeploymentInfo {
     elasticsearchDynamodbTableName: string | undefined;
     logDynamodbTableArn: string;
     logDynamodbTableName: string;
+    cognitoUserPoolId: string;
 }
