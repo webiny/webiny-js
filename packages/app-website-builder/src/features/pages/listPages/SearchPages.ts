@@ -5,6 +5,8 @@ import { loadingRepositoryFactory, metaRepositoryFactory } from "@webiny/app-uti
 import { paramsRepositoryFactory } from "~/domains/Params/index.js";
 import { ListPagesRepository } from "~/features/pages/listPages/ListPagesRepository.js";
 import { SearchPagesUseCase } from "~/features/pages/listPages/SearchPagesUseCase.js";
+import { QueryStringGateway } from "~/features/pages/listPages/QueryStringGateway.js";
+import { ListPagesRepositoryWithQueryString } from "~/features/pages/listPages/ListPagesRepositoryWithQueryString.js";
 
 interface SearchPagesInstance {
     useCase: ISearchPagesUseCase;
@@ -25,7 +27,13 @@ export class SearchPages {
             gateway
         );
 
-        const useCase = new SearchPagesUseCase(repository);
+        const searchQueryGateway = new QueryStringGateway("search");
+        const repositoryWithSearchQuery = new ListPagesRepositoryWithQueryString(
+            searchQueryGateway,
+            repository
+        );
+
+        const useCase = new SearchPagesUseCase(repositoryWithSearchQuery);
 
         return {
             useCase
