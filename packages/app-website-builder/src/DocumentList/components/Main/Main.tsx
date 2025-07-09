@@ -7,6 +7,7 @@ import { Header } from "~/DocumentList/components/Header/index.js";
 import { BottomInfoBar } from "~/DocumentList/components/BottomInfoBar/index.js";
 import { Table } from "~/DocumentList/components/Table/index.js";
 import { useListMorePages } from "~/features/pages/index.js";
+import { Empty } from "~/DocumentList/components/Empty/index.js";
 
 const Main = () => {
     const { vm } = useDocumentList();
@@ -56,7 +57,17 @@ const Main = () => {
                         data-testid="default-data-list"
                         onScrollFrame={scrollFrame => onTableScroll({ scrollFrame })}
                     >
-                        <Table />
+                        {vm.isEmpty ? (
+                            <Empty
+                                isSearch={vm.isSearch}
+                                canCreateFolder={canCreateFolder}
+                                canCreateContent={canCreateContent}
+                                onCreateFolder={onCreateFolder}
+                                onCreateDocument={() => alert("Create document")}
+                            />
+                        ) : (
+                            <Table />
+                        )}
                     </Scrollbar>
                     <BottomInfoBar />
                 </>

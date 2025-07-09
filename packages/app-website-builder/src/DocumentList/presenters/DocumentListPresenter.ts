@@ -49,6 +49,7 @@ class DocumentListPresenter {
             },
             searchQuery: this.paramsRepository.get().search || "",
             isSearch: this.getIsSearch(),
+            isEmpty: this.getIsEmpty(),
             isRoot: this.getIsRoot(),
             isLoading: this.getIsLoading(),
             isLoadingMore: this.getIsLoadingMore()
@@ -108,6 +109,10 @@ class DocumentListPresenter {
     private getIsLoadingMore = () => {
         return Boolean(this.documentsLoadingRepository.isLoading(loadingActions.listMore));
     };
+
+    private getIsEmpty() {
+        return !this.getIsLoading() && !this.getData().length;
+    }
 }
 
 export { DocumentListPresenter, type DocumentListPresenterParams };
