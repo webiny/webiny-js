@@ -18,7 +18,7 @@ export class ParamsRepository implements IParamsRepository {
 
     get(): ParamsRepositoryGetVariables {
         return toJS({
-            where: this.where,
+            where: toJS(this.where),
             limit: this.limit,
             sort: this.sort,
             after: this.after,
