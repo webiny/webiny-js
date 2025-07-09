@@ -1,6 +1,5 @@
 export interface PublishPageParams {
     id: string;
-    entryId: string;
 }
 
 export interface IPublishPageUseCase {

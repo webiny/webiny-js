@@ -1,4 +1,4 @@
-import { loadingRepositoryFactory } from "@webiny/app-utils";
+import { loadingRepositoryFactory, metaRepositoryFactory } from "@webiny/app-utils";
 import type { IDuplicatePageGateway } from "~/features/pages/duplicatePage/IDuplicatePageGateway.js";
 import type { IDuplicatePageUseCase } from "~/features/pages/duplicatePage/IDuplicatePageUseCase.js";
 import { DuplicatePageRepository } from "~/features/pages/duplicatePage/DuplicatePageRepository.js";
@@ -10,7 +10,8 @@ export class DuplicatePage {
     public static getInstance(gateway: IDuplicatePageGateway): IDuplicatePageUseCase {
         const pagesCache = pageCacheFactory.getCache();
         const loadingRepository = loadingRepositoryFactory.getRepository("WbPage");
-        const repository = new DuplicatePageRepository(pagesCache, gateway);
+        const metaRepository = metaRepositoryFactory.getRepository("WbPage");
+        const repository = new DuplicatePageRepository(pagesCache, metaRepository, gateway);
         const useCase = new DuplicatePageUseCase(repository);
         return new DuplicatePageUseCaseWithLoading(loadingRepository, useCase);
     }

@@ -1,6 +1,5 @@
 export interface UpdatePageParams {
     id: string;
-    entryId: string;
     properties?: Record<string, any>;
     metadata?: Record<string, any>;
     bindings?: Record<string, any>;

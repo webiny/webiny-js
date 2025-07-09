@@ -15,8 +15,7 @@ export class UnpublishPageUseCase implements IUnpublishPageUseCase {
     async execute(params: UnpublishPageParams) {
         await this.repository.execute(
             Page.create({
-                id: params.id,
-                entryId: params.entryId
+                id: params.id
             })
         );
     }

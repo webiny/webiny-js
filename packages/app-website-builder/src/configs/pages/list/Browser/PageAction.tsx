@@ -16,5 +16,6 @@ const BasePageAction = (props: PageActionProps) => {
 };
 
 export const PageAction = Object.assign(BasePageAction, {
-    OptionsMenuItem: Record.Action.OptionsMenuItem
+    OptionsMenuItem: Record.Action.OptionsMenuItem,
+    OptionsMenuLink: Record.Action.OptionsMenuLink
 });

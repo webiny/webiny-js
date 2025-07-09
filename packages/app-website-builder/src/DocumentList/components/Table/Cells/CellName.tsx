@@ -9,6 +9,7 @@ import { useNavigateFolder } from "@webiny/app-aco";
 import { FolderTableItem } from "@webiny/app-aco/types";
 import { PageListConfig } from "~/configs/index.js";
 import type { DocumentDto } from "~/DocumentList/presenters/index.js";
+import { useGetEditPageUrl } from "~/DocumentList/hooks/useGetEditPageUrl.js";
 
 interface FolderCellNameProps {
     folder: FolderTableItem;
@@ -63,8 +64,9 @@ interface EntryCellNameProps {
 }
 
 export const DocumentCellName = ({ document }: EntryCellNameProps) => {
+    const { getEditPageUrl } = useGetEditPageUrl();
     return (
-        <Link to={"#"} variant={"secondary"} className={"wby-truncate"}>
+        <Link to={getEditPageUrl(document)} variant={"secondary"} className={"wby-truncate"}>
             <DocumentCellRowTitle document={document} />
         </Link>
     );

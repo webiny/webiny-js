@@ -77,8 +77,7 @@ describe("UpdatePage", () => {
         });
 
         await updatePage.execute({
-            id: "page-1#0001",
-            entryId: "page-1"
+            id: "page-1#0001"
         });
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);
@@ -109,8 +108,7 @@ describe("UpdatePage", () => {
         const updatePage = UpdatePage.getInstance(gateway);
 
         await updatePage.execute({
-            id: "",
-            entryId: ""
+            id: ""
         });
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);
@@ -142,8 +140,7 @@ describe("UpdatePage", () => {
 
         await expect(
             updatePage.execute({
-                id: "page-1#0001",
-                entryId: "page-1"
+                id: "page-1#0001"
             })
         ).rejects.toThrow("Gateway error");
 

@@ -13,7 +13,11 @@ export class UpdatePageUseCase implements IUpdatePageUseCase {
         await this.repository.execute(
             Page.create({
                 id: params.id,
-                entryId: params.entryId
+                properties: params.properties,
+                metadata: params.metadata,
+                bindings: params.bindings,
+                elements: params.elements,
+                extensions: params.extensions
             })
         );
     }

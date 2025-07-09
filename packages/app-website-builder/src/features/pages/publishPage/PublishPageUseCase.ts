@@ -15,8 +15,7 @@ export class PublishPageUseCase implements IPublishPageUseCase {
     async execute(params: PublishPageParams) {
         await this.repository.execute(
             Page.create({
-                id: params.id,
-                entryId: params.entryId
+                id: params.id
             })
         );
     }

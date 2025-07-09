@@ -1,6 +1,5 @@
 export interface UnpublishPageParams {
     id: string;
-    entryId: string;
 }
 
 export interface IUnpublishPageUseCase {

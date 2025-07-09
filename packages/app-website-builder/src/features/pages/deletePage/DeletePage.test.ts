@@ -42,8 +42,7 @@ describe("DeletePage", () => {
         expect(item?.id).toEqual("page-1#0001");
 
         await deletePage.execute({
-            id: "page-1#0001",
-            entryId: "page-1"
+            id: "page-1#0001"
         });
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);

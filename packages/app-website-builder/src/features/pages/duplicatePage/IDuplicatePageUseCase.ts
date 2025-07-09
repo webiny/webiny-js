@@ -1,6 +1,5 @@
 export interface DuplicatePageParams {
     id: string;
-    entryId: string;
 }
 
 export interface IDuplicatePageUseCase {

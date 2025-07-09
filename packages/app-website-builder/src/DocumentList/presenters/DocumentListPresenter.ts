@@ -25,13 +25,13 @@ class DocumentListPresenter {
     private metaRepository: IMetaRepository;
 
     constructor() {
-        makeAutoObservable(this);
         this.foldersCache = folderCacheFactory.getCache(WB_PAGE_APP);
         this.foldersLoadingRepository = loadingRepositoryFactory.getRepository(WB_PAGE_APP);
         this.documentsCache = pageCacheFactory.getCache();
         this.documentsLoadingRepository = loadingRepositoryFactory.getRepository("WbPage");
         this.metaRepository = metaRepositoryFactory.getRepository("WbPage");
         this.paramsRepository = paramsRepositoryFactory.getRepository("WbPage");
+        makeAutoObservable(this);
     }
 
     public init(params: DocumentListPresenterParams) {

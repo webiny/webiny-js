@@ -27,3 +27,4 @@ export const loadingActions = {
 export const WB_PAGE_APP = "wb:page";
 export const LOCAL_STORAGE_KEY_LATEST_VISITED_FOLDER = "webiny_wb_page_latest_visited_folder";
 export const PAGE_LIST_ROUTE = "/website-builder/pages";
+export const PAGE_EDITOR_ROUTE = "/website-builder/pages/editor";

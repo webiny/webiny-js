@@ -7,7 +7,12 @@ import {
     CellCreated,
     CellModified,
     CellName,
-    CellStatus
+    CellStatus,
+    ChangeStatus,
+    Delete,
+    Duplicate,
+    Edit,
+    Move
 } from "~/DocumentList/components/Table/index.js";
 
 const { Browser } = PageListConfig;
@@ -19,6 +24,11 @@ export const PagesConfig = () => {
                 <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
                 <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
                 <Browser.Folder.Action name={"delete"} element={<DeleteFolder />} />
+                <Browser.PageAction name={"edit"} element={<Edit />} />
+                <Browser.PageAction name={"changeStatus"} element={<ChangeStatus />} />
+                <Browser.PageAction name={"duplicate"} element={<Duplicate />} />
+                <Browser.PageAction name={"moveToFolder"} element={<Move />} />
+                <Browser.PageAction name={"delete"} element={<Delete />} />
                 <Browser.Table.Column
                     name={"name"}
                     header={"Name"}

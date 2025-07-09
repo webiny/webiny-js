@@ -15,7 +15,6 @@ export class UpdatePageRepository implements IUpdatePageRepository {
     async execute(page: Page) {
         const dto: PageDto = {
             id: page.id,
-            entryId: page.entryId,
             status: page.status,
             wbyAco_location: page.location,
             properties: page.properties,

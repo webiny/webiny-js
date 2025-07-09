@@ -64,8 +64,7 @@ describe("CreatePageRevisionFrom", () => {
         expect(item?.id).toEqual("page-1#0001");
 
         await createPageRevisionFrom.execute({
-            id: "page-1#0001",
-            entryId: "page-1"
+            id: "page-1#0001"
         });
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);
@@ -80,8 +79,7 @@ describe("CreatePageRevisionFrom", () => {
         const createRevisionFrom = CreatePageRevisionFrom.getInstance(gateway);
 
         await createRevisionFrom.execute({
-            id: "",
-            entryId: ""
+            id: ""
         });
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);

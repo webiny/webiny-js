@@ -1,25 +1,13 @@
-import {
-    LoadingRepository,
-    loadingRepositoryFactory,
-    MetaRepository,
-    metaRepositoryFactory
-} from "@webiny/app-utils";
+import { loadingRepositoryFactory, metaRepositoryFactory } from "@webiny/app-utils";
 import { IListPagesUseCase } from "./IListPagesUseCase.js";
 import { IListPagesGateway } from "./IListPagesGateway.js";
 import { ListPagesRepository } from "./ListPagesRepository.js";
 import { ListPagesUseCase } from "./ListPagesUseCase.js";
-import { type IListCache, Page, pageCacheFactory } from "~/domains/Page/index.js";
+import { pageCacheFactory } from "~/domains/Page/index.js";
 import { paramsRepositoryFactory } from "~/domains/Params/index.js";
 
-interface IListPagesInstance {
-    useCase: IListPagesUseCase;
-    pages: IListCache<Page>;
-    loading: LoadingRepository;
-    meta: MetaRepository;
-}
-
 export class ListPages {
-    public static getInstance(gateway: IListPagesGateway): IListPagesInstance {
+    public static getInstance(gateway: IListPagesGateway): IListPagesUseCase {
         const pagesCache = pageCacheFactory.getCache();
         const loadingRepository = loadingRepositoryFactory.getRepository("WbPage");
         const metaRepository = metaRepositoryFactory.getRepository("WbPage");
@@ -31,14 +19,6 @@ export class ListPages {
             paramsRepository,
             gateway
         );
-
-        const useCase = new ListPagesUseCase(repository);
-
-        return {
-            useCase,
-            pages: pagesCache,
-            loading: loadingRepository,
-            meta: metaRepository
-        };
+        return new ListPagesUseCase(repository);
     }
 }

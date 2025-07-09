@@ -2,11 +2,12 @@ import React from "react";
 import { FolderProvider, useAcoConfig } from "@webiny/app-aco";
 import { makeDecoratable, OptionsMenu } from "@webiny/app-admin";
 import { PageListConfig } from "~/configs/index.js";
+import { DocumentProvider } from "~/DocumentList/hooks/useDocument.js";
 
 const DefaultCellActions = () => {
     const { useTableRow, isFolderRow } = PageListConfig.Browser.Table.Column;
     const { row } = useTableRow();
-    const { folder: folderConfig, record: recordConfig } = useAcoConfig();
+    const { folder: folderConfig, record: documentConfig } = useAcoConfig();
 
     if (isFolderRow(row)) {
         // If the user cannot manage folder structure, no need to show the menu.
@@ -25,13 +26,12 @@ const DefaultCellActions = () => {
     }
 
     return (
-        <></>
-        /*<EntryProvider entry={row}>
+        <DocumentProvider document={row}>
             <OptionsMenu
-                actions={recordConfig.actions}
+                actions={documentConfig.actions}
                 data-testid={"table.row.wb.document.menu-action"}
             />
-        </EntryProvider>*/
+        </DocumentProvider>
     );
 };
 

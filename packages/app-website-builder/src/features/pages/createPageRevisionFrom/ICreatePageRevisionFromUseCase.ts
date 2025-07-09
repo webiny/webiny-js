@@ -1,6 +1,5 @@
 export interface CreatePageRevisionFromParams {
     id: string;
-    entryId: string;
 }
 
 export interface ICreatePageRevisionFromUseCase {

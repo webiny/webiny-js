@@ -60,8 +60,7 @@ describe("UnpublishPage", () => {
         expect(item?.id).toEqual("page-1#0001");
 
         await publishPage.execute({
-            id: "page-1#0001",
-            entryId: "page-1"
+            id: "page-1#0001"
         });
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);
@@ -78,8 +77,7 @@ describe("UnpublishPage", () => {
         const publishPage = UnpublishPage.getInstance(gateway);
 
         await publishPage.execute({
-            id: "",
-            entryId: ""
+            id: ""
         });
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);
