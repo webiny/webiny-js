@@ -15,6 +15,7 @@ export const useDocumentList = () => {
     const { listPages: listDocuments } = useListPages();
 
     useEffect(() => {
+        // List all documents when the current folder changes. Let's reset both search and after params
         listDocuments({
             where: {
                 wbyAco_location: {
@@ -24,9 +25,7 @@ export const useDocumentList = () => {
             search: "",
             after: ""
         });
-    }, [currentFolderId]);
 
-    useEffect(() => {
         // The folders collection is empty, it must be the first render, let's load the full hierarchy.
         if (folders.length === 0) {
             getFolderHierarchy(currentFolderId);
