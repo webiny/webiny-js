@@ -1,11 +1,16 @@
 import { useState, useMemo, useEffect } from "react";
 import { autorun } from "mobx";
-import { useGetFolderHierarchy, useNavigateFolder } from "@webiny/app-aco";
+import {
+    useGetFolderHierarchy,
+    useListFoldersByParentIds,
+    useNavigateFolder
+} from "@webiny/app-aco";
 import { DocumentListPresenter } from "~/DocumentList/presenters/index.js";
 import { useListPages } from "~/features/pages/index.js";
 
 export const useDocumentList = () => {
     const { folders, getFolderHierarchy } = useGetFolderHierarchy();
+    const { listFoldersByParentIds } = useListFoldersByParentIds();
     const { currentFolderId } = useNavigateFolder();
     const { listPages: listDocuments } = useListPages();
 
@@ -22,11 +27,13 @@ export const useDocumentList = () => {
     }, [currentFolderId]);
 
     useEffect(() => {
-        if (folders.length > 0) {
-            return; // Skip if we already have folders in the cache.
+        // The folders collection is empty, it must be the first render, let's load the full hierarchy.
+        if (folders.length === 0) {
+            getFolderHierarchy(currentFolderId);
+        } else {
+            // Otherwise let's load only the current folder sub-tree
+            listFoldersByParentIds([currentFolderId]);
         }
-
-        getFolderHierarchy(currentFolderId);
     }, [currentFolderId]);
 
     const params = useMemo(

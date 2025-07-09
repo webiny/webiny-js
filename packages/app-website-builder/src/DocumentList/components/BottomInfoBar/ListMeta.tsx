@@ -9,7 +9,7 @@ export interface ListMetaProps {
 
 export const ListMeta = (props: ListMetaProps) => {
     const getLabel = useCallback((count = 0): string => {
-        return `${count} ${count === 1 ? "entry" : "entries"}`;
+        return `${count} ${count === 1 ? "page" : "pages"}`;
     }, []);
 
     if (props.loading) {

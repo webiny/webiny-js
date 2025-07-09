@@ -13,7 +13,7 @@ export const ListStatus = ({ loading }: ListStatusProps) => {
     return (
         <div className="wby-flex wby-items-center wby-gap-sm">
             <Text size={"sm"} as={"div"} className={"wby-text-neutral-strong"}>
-                {"Loading more entries..."}
+                {"Loading more pages..."}
             </Text>
             <Loader size={"xs"} />
         </div>
