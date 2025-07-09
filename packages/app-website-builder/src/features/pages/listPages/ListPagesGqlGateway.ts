@@ -34,7 +34,7 @@ export interface ListPagesQueryVariables {
     where: {
         [key: string]: any;
     };
-    limit?: number;
+    limit: number;
     sort?: Record<string, any>;
     after?: string | null;
     search?: string;
@@ -61,21 +61,13 @@ export class ListPagesGqlGateway implements IListPagesGateway {
         this.modelFields = modelFields;
     }
 
-    async execute(params?: ListPagesGatewayParams) {
-        const { where = {}, search, limit, sort, after } = params || {};
-
+    async execute(params: ListPagesGatewayParams) {
         const { data: response } = await this.client.query<
             ListPagesResponse,
             ListPagesQueryVariables
         >({
             query: LIST_PAGES(this.modelFields),
-            variables: {
-                where,
-                limit,
-                sort,
-                search,
-                after
-            },
+            variables: params,
             fetchPolicy: "network-only"
         });
 

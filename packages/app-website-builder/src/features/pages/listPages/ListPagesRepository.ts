@@ -6,7 +6,7 @@ import type {
 } from "~/features/pages/listPages/IListPagesRepository.js";
 import { type IListCache, Page } from "~/domains/Page/index.js";
 import type { IListPagesGateway } from "~/features/pages/listPages/IListPagesGateway.js";
-import { ParamsRepository } from "~/domains/Params/index.js";
+import { ParamsRepository, type ParamsRepositoryGetVariables } from "~/domains/Params/index.js";
 import { loadingActions } from "~/constants.js";
 
 export class ListPagesRepository implements IListPagesRepository {
@@ -43,7 +43,7 @@ export class ListPagesRepository implements IListPagesRepository {
         }
     }
 
-    private async query(params?: IListPagesRepositoryParams) {
+    private async query(params: ParamsRepositoryGetVariables) {
         if (params?.after) {
             await this.loading.runCallBack(
                 (async () => {

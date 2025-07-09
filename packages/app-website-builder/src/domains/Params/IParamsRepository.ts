@@ -1,4 +1,12 @@
-export interface ParamsRepositoryParams {
+export interface ParamsRepositoryGetVariables {
+    where: Record<string, any>;
+    limit: number;
+    sort?: string[];
+    after?: string;
+    search?: string;
+}
+
+export interface ParamsRepositorySetParams {
     where?: Record<string, any>;
     sort?: string[];
     limit?: number;
@@ -7,6 +15,6 @@ export interface ParamsRepositoryParams {
 }
 
 export interface IParamsRepository {
-    get: () => Record<string, any>;
-    setAll: (params: ParamsRepositoryParams) => void;
+    get: () => ParamsRepositoryGetVariables;
+    setAll: (params: ParamsRepositorySetParams) => void;
 }

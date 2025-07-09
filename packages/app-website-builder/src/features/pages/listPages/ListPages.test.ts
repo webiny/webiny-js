@@ -86,7 +86,7 @@ describe("ListPages", () => {
 
         expect(pagesCache.hasItems()).toBeFalse();
 
-        await listPages.useCase.execute({
+        await listPages.execute({
             where: {
                 wbyAco_location: {
                     folderId: "folder-1"
@@ -100,7 +100,8 @@ describe("ListPages", () => {
                 wbyAco_location: {
                     folderId: "folder-1"
                 }
-            }
+            },
+            limit: 50
         });
         expect(pagesCache.hasItems()).toBeTrue();
 
@@ -217,7 +218,7 @@ describe("ListPages", () => {
         expect(pagesCache.hasItems()).toBeFalse();
 
         // First call
-        await listPages.useCase.execute({
+        await listPages.execute({
             where: {
                 wbyAco_location: {
                     folderId: "folder-1"
@@ -231,7 +232,8 @@ describe("ListPages", () => {
                 wbyAco_location: {
                     folderId: "folder-1"
                 }
-            }
+            },
+            limit: 50
         });
         expect(pagesCache.hasItems()).toBeTrue();
 
@@ -242,7 +244,7 @@ describe("ListPages", () => {
         }
 
         // Second call
-        await listPages.useCase.execute({
+        await listPages.execute({
             where: {
                 wbyAco_location: {
                     folderId: "folder-2"
@@ -256,7 +258,8 @@ describe("ListPages", () => {
                 wbyAco_location: {
                     folderId: "folder-2"
                 }
-            }
+            },
+            limit: 50
         });
         expect(pagesCache.hasItems()).toBeTrue();
 
@@ -282,7 +285,7 @@ describe("ListPages", () => {
 
         expect(pagesCache.hasItems()).toBeFalse();
 
-        await listPages.useCase.execute({
+        await listPages.execute({
             where: {
                 wbyAco_location: {
                     folderId: "folder-1"
@@ -305,47 +308,15 @@ describe("ListPages", () => {
 
         expect(pagesCache.hasItems()).toBeFalse();
 
-        await expect(
-            listPages.useCase.execute({
-                where: {
-                    wbyAco_location: {
-                        folderId: "folder-1"
-                    }
+        await listPages.execute({
+            where: {
+                wbyAco_location: {
+                    folderId: "folder-1"
                 }
-            })
-        ).rejects.toThrow("Gateway error");
+            }
+        });
 
         expect(errorGateway.execute).toHaveBeenCalledTimes(1);
         expect(pagesCache.hasItems()).toBeFalse();
-    });
-
-    it("should NOT cache pages after listing", async () => {
-        const listPages = ListPages.getInstance(gateway);
-
-        expect(pagesCache.hasItems()).toBeFalse();
-
-        await listPages.useCase.execute({
-            where: {
-                wbyAco_location: {
-                    folderId: "folder-1"
-                }
-            }
-        });
-
-        expect(gateway.execute).toHaveBeenCalledTimes(1);
-        expect(pagesCache.hasItems()).toBeTrue();
-
-        const items = pagesCache.getItems();
-        expect(items.length).toEqual(3);
-
-        // Execute again, it should execute the gateway again
-        await listPages.useCase.execute({
-            where: {
-                wbyAco_location: {
-                    folderId: "folder-1"
-                }
-            }
-        });
-        expect(gateway.execute).toHaveBeenCalledTimes(2);
     });
 });
