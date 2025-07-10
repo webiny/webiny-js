@@ -33,6 +33,14 @@ export interface OpenSearchConfig {
     sharedIndexes: boolean;
 }
 
+export interface IDeploymentsCallableParams {
+    env: string;
+}
+
+export interface IDeploymentsCallable {
+    (params: IDeploymentsCallableParams): [IBlueGreenDeployment, IBlueGreenDeployment];
+}
+
 export interface CreateBlueGreenPulumiAppParams {
     /**
      * Secures against deleting database by accident.
@@ -79,7 +87,7 @@ export interface CreateBlueGreenPulumiAppParams {
      * Available deployments for the Blue / Green switch.
      * They will be validated before deploy.
      */
-    deployments: () => [IBlueGreenDeployment, IBlueGreenDeployment];
+    deployments: IDeploymentsCallable;
     /**
      * Attach domains to the Blue/Green CloudFront.
      */
@@ -95,7 +103,7 @@ export function createBlueGreenPulumiApp(projectAppParams: CreateBlueGreenPulumi
             const productionEnvironments =
                 app.params.create.productionEnvironments || DEFAULT_PROD_ENV_NAMES;
 
-            const deployments = validateDeployments(projectAppParams.deployments());
+            const deployments = validateDeployments(projectAppParams.deployments(app.params.run));
 
             const applicationsDomains = await getApplicationDomains({
                 stacks: deployments
@@ -105,7 +113,7 @@ export function createBlueGreenPulumiApp(projectAppParams: CreateBlueGreenPulumi
                 input: applicationsDomains
             });
 
-            const attachedDomains = projectAppParams.domains();
+            const attachedDomains = projectAppParams.domains(app.params.run);
 
             const domains = resolveDomains({
                 attachedDomains,

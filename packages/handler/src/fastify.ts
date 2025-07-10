@@ -32,6 +32,8 @@ import { IfNotOptionsRequest } from "./PreHandler/IfNotOptionsRequest";
 import { ProcessBeforeHandlerPlugins } from "./PreHandler/ProcessBeforeHandlerPlugins";
 import { IfOptionsRequest } from "./PreHandler/IfOptionsRequest";
 import { SendEarlyOptionsResponse } from "./PreHandler/SendEarlyOptionsResponse";
+import { OnRequestTimeoutPlugin } from "~/plugins/OnRequestTimeoutPlugin.js";
+import { OnRequestResponseSendPlugin } from "~/plugins/OnRequestResponseSendPlugin.js";
 
 const modifyResponseHeaders = (app: FastifyInstance, request: Request, reply: Reply) => {
     const modifyHeaders = app.webiny.plugins.byType<ModifyResponseHeadersPlugin>(
@@ -298,7 +300,7 @@ export const createHandler = (params: CreateHandlerParams) => {
             new IfOptionsRequest([new SendEarlyOptionsResponse(modifyHeadersPlugins)])
         ]);
 
-        await preHandler.execute(request, reply);
+        await preHandler.execute(request, reply, app.webiny);
     });
 
     app.addHook("preSerialization", async (_, __, payload) => {
@@ -397,9 +399,15 @@ export const createHandler = (params: CreateHandlerParams) => {
     /**
      * Apply response headers modifier plugins.
      */
-    app.addHook("onSend", async (request, reply, payload) => {
+    app.addHook("onSend", async (request, reply, input) => {
         modifyResponseHeaders(app, request, reply);
-
+        const plugins = app.webiny.plugins.byType<OnRequestResponseSendPlugin>(
+            OnRequestResponseSendPlugin.type
+        );
+        let payload = input;
+        for (const plugin of plugins) {
+            payload = await plugin.exec(request, reply, payload);
+        }
         return payload;
     });
 
@@ -410,7 +418,13 @@ export const createHandler = (params: CreateHandlerParams) => {
         await context.benchmark.output();
     });
 
-    app.addHook("onTimeout", async () => {
+    app.addHook("onTimeout", async (request, reply) => {
+        const plugins = app.webiny.plugins.byType<OnRequestTimeoutPlugin>(
+            OnRequestTimeoutPlugin.type
+        );
+        for (const plugin of plugins) {
+            await plugin.exec(request, reply);
+        }
         await context.benchmark.output();
     });
 

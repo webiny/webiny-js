@@ -1,13 +1,14 @@
 import * as aws from "@pulumi/aws";
 import { createAppModule, PulumiApp, PulumiAppModule } from "@webiny/pulumi";
+import { createSyncResourceName } from "~/apps/syncSystem/createSyncResourceName.js";
 
-export type SyncSystemDynamo = PulumiAppModule<typeof SyncSystemDynamo>;
+export type SyncSystemDynamoDb = PulumiAppModule<typeof SyncSystemDynamoDb>;
 
-export const SyncSystemDynamo = createAppModule({
+export const SyncSystemDynamoDb = createAppModule({
     name: "SyncSystemDynamoDb",
-    config(app: PulumiApp, params: { protect: boolean }) {
+    config(app: PulumiApp) {
         return app.addResource(aws.dynamodb.Table, {
-            name: "sync-table",
+            name: createSyncResourceName("table"),
             config: {
                 attributes: [
                     { name: "PK", type: "S" },
@@ -21,7 +22,6 @@ export const SyncSystemDynamo = createAppModule({
                 hashKey: "PK",
                 rangeKey: "SK",
                 globalSecondaryIndexes: [
-                    // TODO possibly add more indexes here
                     {
                         name: "GSI1",
                         hashKey: "GSI1_PK",
@@ -35,9 +35,6 @@ export const SyncSystemDynamo = createAppModule({
                         projectionType: "ALL"
                     }
                 ]
-            },
-            opts: {
-                protect: params.protect
             }
         });
     }

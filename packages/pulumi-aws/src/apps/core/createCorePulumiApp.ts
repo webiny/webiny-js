@@ -172,7 +172,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
             // Setup file core bucket
             const { bucket: fileManagerBucket } = app.addModule(CoreFileManger, { protect });
 
-            let elasticSearch;
+            let elasticSearch = undefined;
             if (searchEngineType === "openSearch") {
                 elasticSearch = app.addModule(OpenSearch, { protect });
             } else if (searchEngineType === "elasticSearch") {
@@ -189,6 +189,7 @@ export function createCorePulumiApp(projectAppParams: CreateCorePulumiAppParams 
                 deploymentId: deploymentId.hex,
                 region: aws.config.region,
                 fileManagerBucketId: fileManagerBucket.output.id,
+                fileManagerBucketArn: fileManagerBucket.output.arn,
                 primaryDynamodbTableArn: dynamoDbTable.output.arn,
                 primaryDynamodbTableName: dynamoDbTable.output.name,
                 primaryDynamodbTableHashKey: dynamoDbTable.output.hashKey,

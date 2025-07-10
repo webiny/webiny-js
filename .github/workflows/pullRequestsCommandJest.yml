@@ -238,7 +238,8 @@ jobs:
           --storage=ddb","storage":"ddb","packageName":"api-prerendering-service","id":"a2831c88465244dc03f188f4a40e4d63"},{"cmd":"packages/api-security
           --storage=ddb","storage":"ddb","packageName":"api-security","id":"0a065366763b713fb016c43ce21e77b9"},{"cmd":"packages/api-security-cognito
           --storage=ddb","storage":"ddb","packageName":"api-security-cognito","id":"0787967fe56689618106e6c64e784bff"},{"cmd":"packages/api-serverless-cms
-          --storage=ddb","storage":"ddb","packageName":"api-serverless-cms","id":"b660572a629aa6e9191829fe7bfd33cc"},{"cmd":"packages/api-tenancy
+          --storage=ddb","storage":"ddb","packageName":"api-serverless-cms","id":"b660572a629aa6e9191829fe7bfd33cc"},{"cmd":"packages/api-serverless-cms
+          --storage=ddb","storage":"ddb","packageName":"api-sync-system","id":"b660572a629aa6e9191829fe7bfd33cc"},{"cmd":"packages/api-tenancy
           --storage=ddb","storage":"ddb","packageName":"api-tenancy","id":"0c81e56d64e97e6b563965250f04ed34"},{"cmd":"packages/api-tenant-manager
           --storage=ddb","storage":"ddb","packageName":"api-tenant-manager","id":"4b93a028b8055553c3443a45b38079e9"},{"cmd":"packages/tasks
           --storage=ddb","storage":"ddb","packageName":"tasks","id":"925ba761b5995e8a8b980c0789034b3c"}]')
@@ -327,7 +328,8 @@ jobs:
           --shard=6/6","storage":"ddb-es","packageName":"api-page-builder","id":"02927f20dd60108bec8356b6dae55357"},{"cmd":"packages/api-page-builder-aco
           --storage=ddb-es,ddb","storage":"ddb-es","packageName":"api-page-builder-aco","id":"d12985ec4dcdb80af419125d236a73d8"},{"cmd":"packages/api-page-builder-so-ddb-es
           --storage=ddb-es,ddb","storage":"ddb-es","packageName":"api-page-builder-so-ddb-es","id":"911289d4016adf351238298ce5b41ac8"},{"cmd":"packages/api-serverless-cms
-          --storage=ddb-es,ddb","storage":"ddb-es","packageName":"api-serverless-cms","id":"3d8f52f5b779b9ded3d746716fed019f"},{"cmd":"packages/migrations
+          --storage=ddb-es,ddb","storage":"ddb-es","packageName":"api-serverless-cms","id":"3d8f52f5b779b9ded3d746716fed019f"},{"cmd":"packages/api-serverless-cms
+          --storage=ddb-es,ddb","storage":"ddb-es","packageName":"api-sync-system","id":"3d8f52f5b779b9ded3d746716fed019f"},{"cmd":"packages/migrations
           --storage=ddb-es,ddb","storage":["ddb-es"],"packageName":"migrations","id":"7262de0ebd8c413fce5cc1428462df1a"},{"cmd":"packages/tasks
           --storage=ddb-es,ddb","storage":"ddb-es","packageName":"tasks","id":"0c5cd8395d241e54e3488ffcc1c81c26"}]')
           }}
@@ -425,7 +427,8 @@ jobs:
           --shard=6/6","storage":"ddb-os","packageName":"api-page-builder","id":"b979f8aa837353847942b60e8f4bc057"},{"cmd":"packages/api-page-builder-aco
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-page-builder-aco","id":"a1a7c90d43da1678f254bd4331cf4d55"},{"cmd":"packages/api-page-builder-so-ddb-es
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-page-builder-so-ddb-es","id":"e0236755edb31fc1a6005eb161941bf8"},{"cmd":"packages/api-serverless-cms
-          --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-serverless-cms","id":"28f2386bb4be699710cb574f3401d76b"},{"cmd":"packages/migrations
+          --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-serverless-cms","id":"28f2386bb4be699710cb574f3401d76b"},{"cmd":"packages/api-serverless-cms
+          --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-sync-system","id":"28f2386bb4be699710cb574f3401d76b"},{"cmd":"packages/migrations
           --storage=ddb-os,ddb","storage":["ddb-os"],"packageName":"migrations","id":"3f8965830bbe44499a4bc97baf27e090"},{"cmd":"packages/tasks
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"tasks","id":"5eadfa5cc14ec4e8ba87ac3dfb112580"}]')
           }}

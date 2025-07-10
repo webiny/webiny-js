@@ -14852,6 +14852,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-sync-system@npm:0.0.0, @webiny/api-sync-system@workspace:packages/api-sync-system":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-sync-system@workspace:packages/api-sync-system"
+  dependencies:
+    "@faker-js/faker": "npm:^9.3.0"
+    "@types/lodash": "npm:^4.17.13"
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/cli": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/handler-aws": "npm:0.0.0"
+    "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    aws-sdk-client-mock: "npm:^4.1.0"
+    bytes: "npm:^3.1.2"
+    jest: "npm:^29.7.0"
+    jest-dynalite: "npm:^3.6.1"
+    lodash: "npm:^4.17.21"
+    rimraf: "npm:^6.0.1"
+    semver: "npm:^7.6.3"
+    typescript: "npm:5.3.3"
+    zod: "npm:^3.23.8"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-tenancy-so-ddb@npm:0.0.0, @webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb"
@@ -17347,6 +17374,7 @@ __metadata:
     "@webiny/api-prerendering-service-so-ddb": "npm:0.0.0"
     "@webiny/api-security": "npm:0.0.0"
     "@webiny/api-security-so-ddb": "npm:0.0.0"
+    "@webiny/api-sync-system": "npm:0.0.0"
     "@webiny/api-tenancy": "npm:0.0.0"
     "@webiny/api-tenancy-so-ddb": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
@@ -18364,6 +18392,7 @@ __metadata:
     "@webiny/api-security-cognito": "npm:0.0.0"
     "@webiny/api-security-so-ddb": "npm:0.0.0"
     "@webiny/api-serverless-cms": "npm:0.0.0"
+    "@webiny/api-sync-system": "npm:0.0.0"
     "@webiny/api-tenancy": "npm:0.0.0"
     "@webiny/api-tenancy-so-ddb": "npm:0.0.0"
     "@webiny/api-tenant-manager": "npm:0.0.0"
@@ -29030,7 +29059,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-resolve@npm:^29.7.0":
+"jest-resolve@npm:^29.5.0, jest-resolve@npm:^29.7.0":
   version: 29.7.0
   resolution: "jest-resolve@npm:29.7.0"
   dependencies:
@@ -37175,6 +37204,7 @@ __metadata:
     semver: "npm:^7.6.3"
     ts-expect: "npm:^1.3.0"
     ts-jest: "npm:29.1.5"
+    ts-jest-resolver: "npm:^2.0.1"
     ts-node: "npm:^10.9.2"
     type-fest: "npm:4.14.0"
     typescript: "npm:5.3.3"
@@ -39703,6 +39733,15 @@ __metadata:
   dependencies:
     tslib: "npm:^1.9.3"
   checksum: 10/dd6f268aa358f9d28dec0b8539667cc9829eaac588438a78a422079a1b3b9a98a96306f862a745b0581173528d11a6aeff861c6e3a988d65a113a82e55a5f409
+  languageName: node
+  linkType: hard
+
+"ts-jest-resolver@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "ts-jest-resolver@npm:2.0.1"
+  dependencies:
+    jest-resolve: "npm:^29.5.0"
+  checksum: 10/0845b9ab6a7d5c7b872e7573550607e9da1a2281c4db7a9d900c52b518bf5237ca265d56356b2ebb6d5aad705613e55e406c0eb66cad60ab2a303d17e6b0844e
   languageName: node
   linkType: hard
 

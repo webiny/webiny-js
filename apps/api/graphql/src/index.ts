@@ -46,12 +46,37 @@ import { createLogger } from "@webiny/api-log";
 
 import scaffoldsPlugins from "./plugins/scaffolds";
 import { extensions } from "./extensions";
+/**
+ * #### TESTING sync system
+ */
+import { createSyncSystem } from "@webiny/api-sync-system";
+import { createEventBridgeClient } from "@webiny/aws-sdk/client-eventbridge/index.js";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
 
+const syncSystem = createSyncSystem({
+    getDocumentClient: () => {
+        return documentClient;
+    },
+    getEventBridgeClient: params => {
+        return createEventBridgeClient(params);
+    },
+    system: {
+        env: process.env.WEBINY_ENV,
+        variant: process.env.WEBINY_ENV_VARIANT,
+        region: process.env.AWS_REGION,
+        version: process.env.WEBINY_VERSION
+    },
+    plugins: []
+});
+/**
+ * ####
+ */
+
 export const handler = createHandler({
     plugins: [
+        syncSystem.plugins(),
         createBenchmarkEnablePlugin(),
         createWcpContext(),
         createWcpGraphQL(),

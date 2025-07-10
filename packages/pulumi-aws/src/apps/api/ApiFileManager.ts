@@ -109,6 +109,12 @@ export const ApiFileManager = createAppModule({
         };
 
         return {
+            roles: {
+                manage: role
+            },
+            policies: {
+                manage: policy
+            },
             functions,
             bucketNotification
         };

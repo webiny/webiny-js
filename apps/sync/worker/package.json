@@ -1,0 +1,16 @@
+{
+  "name": "sync-system-worker",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "dependencies": {
+    "@webiny/cli": "0.0.0",
+    "@webiny/api-sync-system": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0"
+  },
+  "devDependencies": {
+    "@webiny/cli-plugin-deploy-pulumi": "0.0.0"
+  }
+}

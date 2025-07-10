@@ -36,6 +36,7 @@
     "@webiny/api-security-cognito": "0.0.0",
     "@webiny/api-security-so-ddb": "0.0.0",
     "@webiny/api-serverless-cms": "0.0.0",
+    "@webiny/api-sync-system": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",
     "@webiny/api-tenancy-so-ddb": "0.0.0",
     "@webiny/api-tenant-manager": "0.0.0",

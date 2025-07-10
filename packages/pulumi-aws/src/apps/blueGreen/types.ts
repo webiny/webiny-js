@@ -47,8 +47,12 @@ export interface IAttachedDomains {
     domains?: IAttachedDomainsTypes;
 }
 
+export interface IAttachDomainsCallableParams {
+    env: string;
+}
+
 export interface IAttachDomainsCallable {
-    (): IAttachedDomains;
+    (params: IAttachDomainsCallableParams): IAttachedDomains;
 }
 
 export type IAttachedDomainKey = keyof IAttachedDomainsTypes;

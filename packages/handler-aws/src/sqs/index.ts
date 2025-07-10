@@ -1,7 +1,7 @@
 import type {
     APIGatewayProxyResult,
-    SQSEvent,
-    Context as LambdaContext
+    Context as LambdaContext,
+    SQSEvent
 } from "@webiny/aws-sdk/types";
 import { createHandler as createBaseHandler } from "@webiny/handler";
 import { registerDefaultPlugins } from "~/plugins";
@@ -70,7 +70,10 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
             }
 
             app.__webiny_raw_result = result;
-            return reply.send({});
+            if (!reply.sent) {
+                reply.send({});
+            }
+            return reply;
         });
         return execute({
             app,

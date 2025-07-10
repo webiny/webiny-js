@@ -19,6 +19,7 @@ export const CoreOutput = createAppModule({
 
             return {
                 fileManagerBucketId: output["fileManagerBucketId"],
+                fileManagerBucketArn: output["fileManagerBucketArn"],
                 primaryDynamodbTableArn: output["primaryDynamodbTableArn"],
                 primaryDynamodbTableName: output["primaryDynamodbTableName"],
                 primaryDynamodbTableHashKey: output["primaryDynamodbTableHashKey"],

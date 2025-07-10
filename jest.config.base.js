@@ -21,6 +21,7 @@ module.exports = function ({ path }, presets = []) {
         tsPreset,
         {
             displayName: name,
+            resolver: "ts-jest-resolver",
             modulePaths: [`${path}/src`],
             testMatch: [`${path}/**/*${type}.test.[jt]s?(x)`],
             transform: {

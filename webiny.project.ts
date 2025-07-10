@@ -50,6 +50,7 @@ export default {
     },
     appAliases: {
         blueGreen: "apps/blueGreen",
+        sync: "apps/sync",
         core: "apps/core",
         api: "apps/api",
         admin: "apps/admin",

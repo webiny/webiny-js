@@ -1,5 +1,10 @@
 import * as aws from "@pulumi/aws";
-import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
+import {
+    createPulumiApp,
+    type PulumiApp,
+    PulumiAppParam,
+    PulumiAppParamCallback
+} from "@webiny/pulumi";
 import {
     ApiApwScheduler,
     ApiBackgroundTask,
@@ -26,7 +31,9 @@ import { getEnvVariableWebinyVariant } from "~/env/variant";
 import { getEnvVariableWebinyEnv } from "~/env/env";
 import { getEnvVariableWebinyProjectName } from "~/env/projectName";
 import { getEnvVariableAwsRegion } from "~/env/awsRegion";
+import { attachSyncSystem } from "../syncSystem/api/index.js";
 import { getAwsAccountId } from "~/apps/awsUtils";
+import type { WithServiceManifest } from "~/utils/withServiceManifest.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -88,7 +95,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
         name: "api",
         path: "apps/api",
         config: projectAppParams,
-        program: async app => {
+        program: async (app: PulumiApp & WithServiceManifest) => {
             let searchEngineParams:
                 | CreateCorePulumiAppParams["openSearch"]
                 | CreateCorePulumiAppParams["elasticSearch"]
@@ -274,8 +281,13 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 migrationLambdaArn: migration.function.output.arn,
                 graphqlLambdaName: graphql.functions.graphql.output.name,
                 graphqlLambdaRole: graphql.role.output.arn,
+                graphqlLambdaRoleName: graphql.role.output.name,
                 backgroundTaskLambdaArn: backgroundTask.backgroundTask.output.arn,
                 backgroundTaskStepFunctionArn: backgroundTask.stepFunction.output.arn,
+                fileManagerManageLambdaArn: fileManager.functions.manage.output.arn,
+                fileManagerManageLambdaRole: fileManager.roles.manage.output.arn,
+                fileManagerManageLambdaRoleName: fileManager.roles.manage.output.name,
+                fileManagerDownloadLambdaArn: fileManager.functions.download.output.arn,
                 websocketApiId: websocket.websocketApi.output.id,
                 websocketApiUrl: websocket.websocketApiUrl
             });
@@ -298,6 +310,14 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                         usedUrl: "apiUrl"
                     }
                 });
+            });
+            /**
+             * We need to attach the Sync System if it exists.
+             */
+            attachSyncSystem({
+                app,
+                core,
+                env: app.params.run.env
             });
 
             tagResources({

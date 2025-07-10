@@ -223,7 +223,9 @@
       "@webiny/api-websockets/*": ["../../../packages/api-websockets/src/*"],
       "@webiny/api-websockets": ["../../../packages/api-websockets/src"],
       "@webiny/api-log/*": ["../../../packages/api-log/src/*"],
-      "@webiny/api-log": ["../../../packages/api-log/src"]
+      "@webiny/api-log": ["../../../packages/api-log/src"],
+      "@webiny/api-sync-system/*": ["../../../packages/api-sync-system/src/*"],
+      "@webiny/api-sync-system": ["../../../packages/api-sync-system/src"]
     },
     "baseUrl": "."
   }
