@@ -4,7 +4,7 @@ import type { ICreatePageRevisionFromUseCase } from "~/features/pages/createPage
 import { CreatePageRevisionFromRepository } from "~/features/pages/createPageRevisionFrom/CreatePageRevisionFromRepository.js";
 import { CreatePageRevisionFromUseCase } from "~/features/pages/createPageRevisionFrom/CreatePageRevisionFromUseCase.js";
 import { CreatePageRevisionFromUseCaseWithLoading } from "~/features/pages/createPageRevisionFrom/CreatePageRevisionFromUseCaseWithLoading.js";
-import { pageCacheFactory } from "~/domains/Page/index.js";
+import { pageCacheFactory } from "~/domain/Page/index.js";
 
 export class CreatePageRevisionFrom {
     public static getInstance(

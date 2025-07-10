@@ -3,7 +3,7 @@ import type {
     IParamsRepository,
     ParamsRepositoryGetVariables,
     ParamsRepositorySetParams
-} from "~/domains/Params/IParamsRepository.js";
+} from "~/domain/Params/IParamsRepository.js";
 
 export class ParamsRepository implements IParamsRepository {
     where: Record<string, any> = {};

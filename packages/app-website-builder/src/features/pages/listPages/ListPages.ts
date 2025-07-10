@@ -3,8 +3,8 @@ import { IListPagesUseCase } from "./IListPagesUseCase.js";
 import { IListPagesGateway } from "./IListPagesGateway.js";
 import { ListPagesRepository } from "./ListPagesRepository.js";
 import { ListPagesUseCase } from "./ListPagesUseCase.js";
-import { pageCacheFactory } from "~/domains/Page/index.js";
-import { paramsRepositoryFactory } from "~/domains/Params/index.js";
+import { pageCacheFactory } from "~/domain/Page/index.js";
+import { paramsRepositoryFactory } from "~/domain/Params/index.js";
 
 export class ListPages {
     public static getInstance(gateway: IListPagesGateway): IListPagesUseCase {

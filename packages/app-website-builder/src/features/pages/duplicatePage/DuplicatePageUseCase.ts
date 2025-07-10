@@ -3,7 +3,7 @@ import type {
     IDuplicatePageUseCase
 } from "~/features/pages/duplicatePage/IDuplicatePageUseCase.js";
 import type { IDuplicatePageRepository } from "~/features/pages/duplicatePage/IDuplicatePageRepository.js";
-import { Page } from "~/domains/Page/index.js";
+import { Page } from "~/domain/Page/index.js";
 
 export class DuplicatePageUseCase implements IDuplicatePageUseCase {
     private repository: IDuplicatePageRepository;

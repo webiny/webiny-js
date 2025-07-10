@@ -3,7 +3,7 @@ import type {
     PublishPageParams
 } from "~/features/pages/publishPage/IPublishPageUseCase.js";
 import type { IPublishPageRepository } from "~/features/pages/publishPage/IPublishPageRepository.js";
-import { Page } from "~/domains/Page/index.js";
+import { Page } from "~/domain/Page/index.js";
 
 export class PublishPageUseCase implements IPublishPageUseCase {
     private repository: IPublishPageRepository;

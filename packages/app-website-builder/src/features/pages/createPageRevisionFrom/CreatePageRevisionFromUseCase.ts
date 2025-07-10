@@ -3,7 +3,7 @@ import type {
     ICreatePageRevisionFromUseCase
 } from "~/features/pages/createPageRevisionFrom/ICreatePageRevisionFromUseCase.js";
 import type { ICreatePageRevisionFromRepository } from "~/features/pages/createPageRevisionFrom/ICreatePageRevisionFromRepository.js";
-import { Page } from "~/domains/Page/index.js";
+import { Page } from "~/domain/Page/index.js";
 
 export class CreatePageRevisionFromUseCase implements ICreatePageRevisionFromUseCase {
     private repository: ICreatePageRevisionFromRepository;

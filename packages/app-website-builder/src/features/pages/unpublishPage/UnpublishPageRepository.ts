@@ -1,6 +1,6 @@
 import type { IUnpublishPageRepository } from "~/features/pages/unpublishPage/IUnpublishPageRepository.js";
 import type { IUnpublishPageGateway } from "~/features/pages/unpublishPage/IUnpublishPageGateway.js";
-import { type IListCache, Page } from "~/domains/Page/index.js";
+import { type IListCache, Page } from "~/domain/Page/index.js";
 
 export class UnpublishPageRepository implements IUnpublishPageRepository {
     private cache: IListCache<Page>;

@@ -1,11 +1,11 @@
 import { IListPagesGateway } from "~/features/pages/listPages/IListPagesGateway.js";
-import { pageCacheFactory } from "~/domains/Page/index.js";
+import { pageCacheFactory } from "~/domain/Page/index.js";
 import {
     loadingRepositoryFactory,
     metaRepositoryFactory,
     sortRepositoryFactory
 } from "@webiny/app-utils";
-import { paramsRepositoryFactory } from "~/domains/Params/index.js";
+import { paramsRepositoryFactory } from "~/domain/Params/index.js";
 import { ListPagesRepository } from "~/features/pages/listPages/ListPagesRepository.js";
 import { SortPagesUseCase } from "~/features/pages/listPages/SortPagesUseCase.js";
 import type { ISortPagesUseCase } from "~/features/pages/listPages/ISortPagesUseCase.js";

@@ -1,4 +1,4 @@
-import { Page } from "~/domains/Page/index.js";
+import { Page } from "~/domain/Page/index.js";
 
 export interface IUnpublishPageRepository {
     execute: (page: Page) => Promise<void>;

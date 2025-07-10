@@ -1,5 +1,5 @@
 import type { IDuplicatePageRepository } from "~/features/pages/duplicatePage/IDuplicatePageRepository.js";
-import { type IListCache, Page } from "~/domains/Page/index.js";
+import { type IListCache, Page } from "~/domain/Page/index.js";
 import type { IDuplicatePageGateway } from "~/features/pages/duplicatePage/IDuplicatePageGateway.js";
 import type { IMetaRepository } from "@webiny/app-utils";
 

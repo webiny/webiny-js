@@ -1,6 +1,6 @@
 import { ListPages } from "~/features/pages/listPages/ListPages.js";
 import { statuses } from "~/constants.js";
-import { pageCacheFactory } from "~/domains/Page/index.js";
+import { pageCacheFactory } from "~/domain/Page/index.js";
 
 describe("ListPages", () => {
     const gateway = {

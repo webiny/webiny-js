@@ -1,6 +1,6 @@
 import { DuplicatePage } from "./DuplicatePage.js";
 import { statuses } from "~/constants.js";
-import { Page, pageCacheFactory } from "~/domains/Page/index.js";
+import { Page, pageCacheFactory } from "~/domain/Page/index.js";
 
 describe("DuplicatePage", () => {
     const gateway = {

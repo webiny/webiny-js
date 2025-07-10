@@ -9,8 +9,8 @@ import {
     SortingMapper,
     sortRepositoryFactory
 } from "@webiny/app-utils";
-import { type IParamsRepository, paramsRepositoryFactory } from "~/domains/Params/index.js";
-import { type IListCache, type Page, pageCacheFactory } from "~/domains/Page/index.js";
+import { type IParamsRepository, paramsRepositoryFactory } from "~/domain/Params/index.js";
+import { type IListCache, type Page, pageCacheFactory } from "~/domain/Page/index.js";
 import { Folder, folderCacheFactory } from "@webiny/app-aco";
 import { DocumentListMapper } from "~/DocumentList/presenters/DocumentListMapper.js";
 

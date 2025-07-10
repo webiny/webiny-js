@@ -1,7 +1,7 @@
 import { ICreatePageRepository } from "./ICreatePageRepository.js";
 import { ICreatePageGateway } from "./ICreatePageGateway.js";
 import { PageDto } from "./PageDto.js";
-import { type IListCache, Page } from "~/domains/Page/index.js";
+import { type IListCache, Page } from "~/domain/Page/index.js";
 
 export class CreatePageRepository implements ICreatePageRepository {
     private cache: IListCache<Page>;

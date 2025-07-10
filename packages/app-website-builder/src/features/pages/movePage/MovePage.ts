@@ -4,7 +4,7 @@ import type { IMovePageUseCase } from "~/features/pages/movePage/IMovePageUseCas
 import { MovePageRepository } from "~/features/pages/movePage/MovePageRepository.js";
 import { MovePageUseCase } from "~/features/pages/movePage/MovePageUseCase.js";
 import { MovePageUseCaseWithLoading } from "~/features/pages/movePage/MovePageUseCaseWithLoading.js";
-import { pageCacheFactory } from "~/domains/Page/index.js";
+import { pageCacheFactory } from "~/domain/Page/index.js";
 
 export class MovePage {
     public static getInstance(gateway: IMovePageGateway): IMovePageUseCase {

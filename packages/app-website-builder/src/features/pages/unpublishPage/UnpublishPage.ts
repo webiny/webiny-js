@@ -4,7 +4,7 @@ import type { IUnpublishPageGateway } from "~/features/pages/unpublishPage/IUnpu
 import { UnpublishPageRepository } from "~/features/pages/unpublishPage/UnpublishPageRepository.js";
 import { UnpublishPageUseCase } from "~/features/pages/unpublishPage/UnpublishPageUseCase.js";
 import { UnpublishPageUseCaseWithLoading } from "~/features/pages/unpublishPage/UnpublishPageUseCaseWithLoading.js";
-import { pageCacheFactory } from "~/domains/Page/index.js";
+import { pageCacheFactory } from "~/domain/Page/index.js";
 
 export class UnpublishPage {
     public static getInstance(gateway: IUnpublishPageGateway): IUnpublishPageUseCase {

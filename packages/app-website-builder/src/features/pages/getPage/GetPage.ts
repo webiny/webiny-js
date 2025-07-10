@@ -4,7 +4,7 @@ import type { IGetPageGateway } from "~/features/pages/getPage/IGetPageGateway.j
 import { GetPageRepository } from "~/features/pages/getPage/GetPageRepository.js";
 import { GetPageUseCase } from "~/features/pages/getPage/GetPageUseCase.js";
 import { GetPageUseCaseWithLoading } from "~/features/pages/getPage/GetPageUseCaseWithLoading.js";
-import { pageCacheFactory } from "~/domains/Page/index.js";
+import { pageCacheFactory } from "~/domain/Page/index.js";
 
 interface IGetPageInstance {
     useCase: IGetPageUseCase;

@@ -1,6 +1,6 @@
 import type { IDeletePageRepository } from "~/features/pages/deletePage/IDeletePageRepository.js";
 import type { IDeletePageGateway } from "~/features/pages/deletePage/IDeletePageGateway.js";
-import { type IListCache, Page } from "~/domains/Page/index.js";
+import { type IListCache, Page } from "~/domain/Page/index.js";
 import type { IMetaRepository } from "@webiny/app-utils";
 
 export class DeletePageRepository implements IDeletePageRepository {

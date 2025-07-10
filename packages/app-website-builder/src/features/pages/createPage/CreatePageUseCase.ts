@@ -1,6 +1,6 @@
 import type { CreatePageParams, ICreatePageUseCase } from "./ICreatePageUseCase.js";
 import { ICreatePageRepository } from "./ICreatePageRepository.js";
-import { Page } from "~/domains/Page/index.js";
+import { Page } from "~/domain/Page/index.js";
 
 export class CreatePageUseCase implements ICreatePageUseCase {
     private repository: ICreatePageRepository;

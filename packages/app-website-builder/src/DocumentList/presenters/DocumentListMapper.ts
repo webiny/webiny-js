@@ -1,5 +1,5 @@
 import { Folder } from "@webiny/app-aco";
-import { Page } from "~/domains/Page/index.js";
+import { Page } from "~/domain/Page/index.js";
 import type { WbIdentity } from "~/types.js";
 import { CmsIdentity } from "@webiny/app-headless-cms-common/types/shared.js";
 

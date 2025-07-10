@@ -1,8 +1,8 @@
 import type { ISearchPagesUseCase } from "~/features/pages/listPages/ISearchPagesUseCase.js";
 import { IListPagesGateway } from "~/features/pages/listPages/IListPagesGateway.js";
-import { pageCacheFactory } from "~/domains/Page/index.js";
+import { pageCacheFactory } from "~/domain/Page/index.js";
 import { loadingRepositoryFactory, metaRepositoryFactory } from "@webiny/app-utils";
-import { paramsRepositoryFactory } from "~/domains/Params/index.js";
+import { paramsRepositoryFactory } from "~/domain/Params/index.js";
 import { ListPagesRepository } from "~/features/pages/listPages/ListPagesRepository.js";
 import { SearchPagesUseCase } from "~/features/pages/listPages/SearchPagesUseCase.js";
 import { QueryStringGateway } from "~/features/pages/listPages/QueryStringGateway.js";

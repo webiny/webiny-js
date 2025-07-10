@@ -3,7 +3,7 @@ import type {
     IDeletePageUseCase
 } from "~/features/pages/deletePage/IDeletePageUseCase.js";
 import type { IDeletePageRepository } from "~/features/pages/deletePage/IDeletePageRepository.js";
-import { Page } from "~/domains/Page/index.js";
+import { Page } from "~/domain/Page/index.js";
 
 export class DeletePageUseCase implements IDeletePageUseCase {
     private repository: IDeletePageRepository;

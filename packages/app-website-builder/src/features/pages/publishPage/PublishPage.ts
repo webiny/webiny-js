@@ -4,7 +4,7 @@ import type { IPublishPageUseCase } from "~/features/pages/publishPage/IPublishP
 import { PublishPageRepository } from "~/features/pages/publishPage/PublishPageRepository.js";
 import { PublishPageUseCase } from "~/features/pages/publishPage/PublishPageUseCase.js";
 import { PublishPageUseCaseWithLoading } from "~/features/pages/publishPage/PublishPageUseCaseWithLoading.js";
-import { pageCacheFactory } from "~/domains/Page/index.js";
+import { pageCacheFactory } from "~/domain/Page/index.js";
 
 export class PublishPage {
     public static getInstance(gateway: IPublishPageGateway): IPublishPageUseCase {
