@@ -35,7 +35,5 @@ export class PutCommandHandler {
             items: result,
             bundle
         });
-
-        // TODO should transfer files from source to target deployment
     }
 }

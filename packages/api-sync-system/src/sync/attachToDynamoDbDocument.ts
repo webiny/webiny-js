@@ -33,8 +33,8 @@ export const decorateClientWithHandler = (
     const originalSend = client.send;
     const originalPut = client.put;
     const originalDelete = client.delete;
-    const originalBatchWrite = client.batchWrite;
     const originalUpdate = client.update;
+    const originalBatchWrite = client.batchWrite;
 
     // @ts-expect-error
     client.__webinyHandler = handler;
