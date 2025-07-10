@@ -27,7 +27,7 @@ export function useMovePageToFolder({ record }: UseMovePageToFolderParams) {
                     }
                 });
                 showSnackbar(
-                    `Page "${record.title}" was successfully moved to folder "${folder.title}"!`
+                    `Page "${record.title}" was successfully moved to folder "${folder.label}"!`
                 );
             }
         });

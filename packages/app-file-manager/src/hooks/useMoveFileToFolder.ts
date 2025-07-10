@@ -19,7 +19,7 @@ export function useMoveFileToFolder(file: FileItem) {
             async onAccept({ folder }) {
                 await moveFileToFolder(file.id, folder.id);
                 showSnackbar(
-                    `File "${file.name}" was successfully moved to folder "${folder.title}"!`
+                    `File "${file.name}" was successfully moved to folder "${folder.label}"!`
                 );
             }
         });

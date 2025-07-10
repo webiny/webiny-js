@@ -27,7 +27,7 @@ export function useMoveContentEntryToFolder({ record }: UseMoveContentEntryToFol
                     }
                 });
                 showSnackbar(
-                    `Entry "${record.title}" was successfully moved to folder "${folder.title}"!`
+                    `Entry "${record.title}" was successfully moved to folder "${folder.label}"!`
                 );
             }
         });
