@@ -13,7 +13,7 @@ export class SortingRepository implements ISortingRepository {
         return this.sorting;
     }
 
-    set(sorts: Sorting[]) {
+    async set(sorts: Sorting[]) {
         this.sorting = sorts;
     }
 }

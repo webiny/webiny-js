@@ -1,7 +1,8 @@
 import { ParamsRepository } from "./ParamsRepository.js";
+import type { IParamsRepository } from "./IParamsRepository.js";
 
 export class ParamsRepositoryFactory {
-    private cache: Map<string, ParamsRepository> = new Map();
+    private cache: Map<string, IParamsRepository> = new Map();
 
     getRepository(namespace?: string) {
         const cacheKey = this.getCacheKey(namespace);
@@ -10,7 +11,7 @@ export class ParamsRepositoryFactory {
             this.cache.set(cacheKey, new ParamsRepository());
         }
 
-        return this.cache.get(cacheKey) as ParamsRepository;
+        return this.cache.get(cacheKey) as IParamsRepository;
     }
 
     private getCacheKey(namespace?: string) {
