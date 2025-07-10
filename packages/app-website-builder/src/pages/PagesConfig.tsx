@@ -33,7 +33,7 @@ export const PagesConfig = () => {
                     name={"name"}
                     header={"Name"}
                     cell={<CellName />}
-                    sortable={true}
+                    sortable={false}
                     hideable={false}
                     size={200}
                 />

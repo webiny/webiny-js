@@ -3,8 +3,11 @@ import { loadingActions, ROOT_FOLDER, WB_PAGE_APP } from "~/constants.js";
 import {
     type ILoadingRepository,
     type IMetaRepository,
+    ISortingRepository,
     loadingRepositoryFactory,
-    metaRepositoryFactory
+    metaRepositoryFactory,
+    SortingMapper,
+    sortRepositoryFactory
 } from "@webiny/app-utils";
 import { type IParamsRepository, paramsRepositoryFactory } from "~/domains/Params/index.js";
 import { type IListCache, type Page, pageCacheFactory } from "~/domains/Page/index.js";
@@ -23,6 +26,7 @@ class DocumentListPresenter {
     private documentsLoadingRepository: ILoadingRepository;
     private paramsRepository: IParamsRepository;
     private metaRepository: IMetaRepository;
+    private sortingRepository: ISortingRepository;
 
     constructor() {
         this.foldersCache = folderCacheFactory.getCache(WB_PAGE_APP);
@@ -31,6 +35,7 @@ class DocumentListPresenter {
         this.documentsLoadingRepository = loadingRepositoryFactory.getRepository("WbPage");
         this.metaRepository = metaRepositoryFactory.getRepository("WbPage");
         this.paramsRepository = paramsRepositoryFactory.getRepository("WbPage");
+        this.sortingRepository = sortRepositoryFactory.getRepository("WbPage");
         makeAutoObservable(this);
     }
 
@@ -47,6 +52,7 @@ class DocumentListPresenter {
                 totalCount: this.metaRepository.get().totalCount ?? 0,
                 currentCount: this.documentsCache.count() ?? 0
             },
+            sorting: this.sortingRepository.get().map(sort => SortingMapper.fromDTOtoColumn(sort)),
             searchQuery: this.paramsRepository.get().search || "",
             isSearch: this.getIsSearch(),
             isEmpty: this.getIsEmpty(),

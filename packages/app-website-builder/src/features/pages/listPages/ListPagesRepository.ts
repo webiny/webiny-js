@@ -32,12 +32,14 @@ export class ListPagesRepository implements IListPagesRepository {
         reaction(
             () => toJS(this.params.get()),
             params => {
+                console.log("reaction", params);
                 this.query(params);
             }
         );
     }
 
     async execute(params?: IListPagesRepositoryParams) {
+        console.log("execute", params);
         if (params) {
             this.params.setAll(params);
         }

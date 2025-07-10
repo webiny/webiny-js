@@ -27,6 +27,8 @@ export class ParamsRepository implements IParamsRepository {
     }
 
     setAll(params: ParamsRepositorySetParams) {
+        console.log("params", params);
+
         runInAction(() => {
             if (params.where !== undefined) {
                 this.where = params.where;
