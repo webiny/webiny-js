@@ -65,18 +65,6 @@ const baseSchema = new GraphQLSchemaPlugin({
             error: WbError
         }
 
-        enum WbSortDirection {
-            ASC
-            DESC
-        }
-
-        input WbSort {
-            id: WbSortDirection
-            createdOn: WbSortDirection
-            modifiedOn: WbSortDirection
-            savedOn: WbSortDirection
-        }
-
         extend type Query {
             websiteBuilder: WbQuery
         }

@@ -3,8 +3,8 @@ import { SortingRepository } from "./SortingRepository";
 export class SortingRepositoryFactory {
     private cache: Map<string, SortingRepository> = new Map();
 
-    getRepository() {
-        const cacheKey = this.getCacheKey();
+    getRepository(namespace?: string) {
+        const cacheKey = this.getCacheKey(namespace);
 
         if (!this.cache.has(cacheKey)) {
             this.cache.set(cacheKey, new SortingRepository());
@@ -13,8 +13,8 @@ export class SortingRepositoryFactory {
         return this.cache.get(cacheKey) as SortingRepository;
     }
 
-    private getCacheKey() {
-        return Date.now().toString();
+    private getCacheKey(namespace?: string) {
+        return namespace ?? Date.now().toString();
     }
 }
 

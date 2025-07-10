@@ -35,13 +35,13 @@ export interface ListPagesQueryVariables {
         [key: string]: any;
     };
     limit: number;
-    sort?: Record<string, any>;
+    sort?: string[];
     after?: string | null;
     search?: string;
 }
 
 export const LIST_PAGES = (PAGES_FIELDS: string) => gql`
-    query ListPages($where: WbPagesListWhereInput, $limit: Int, $after: String, $sort: WbSort, $search: String) {
+    query ListPages($where: WbPagesListWhereInput, $limit: Int, $after: String, $sort: [WbPageListSorter], $search: String) {
         websiteBuilder {
             listPages(where: $where, limit: $limit, after: $after, sort: $sort, search: $search) {
                 data ${PAGES_FIELDS}

@@ -1,6 +1,7 @@
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields";
 import { renderInputFields } from "@webiny/api-headless-cms/utils/renderInputFields";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields";
+import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum";
 import {
     ErrorResponse,
     GraphQLSchemaPlugin,
@@ -76,6 +77,12 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
         return `${field}: ${fieldType}`;
     }).join("\n");
 
+    const sortEnumRender = renderSortEnum({
+        model,
+        fields: model.fields,
+        fieldTypePlugins
+    });
+
     return /* GraphQL */ `
         ${fieldTypes.map(f => f.typeDefs).join("\n")}
        
@@ -123,6 +130,10 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
             data: JSON
             error: WbError
         }
+        
+        enum WbPageListSorter {
+            ${sortEnumRender}
+        }
 
         extend type WbQuery {
             getPageModel: WbPageModelResponse!
@@ -133,7 +144,7 @@ export const createPageTypeDefs = (params: CreatePageTypeDefsParams): string => 
                 where: WbPagesListWhereInput
                 limit: Int
                 after: String
-                sort: WbSort
+                sort: [WbPageListSorter]
                 search: String
             ): WbPagesListResponse
         }
