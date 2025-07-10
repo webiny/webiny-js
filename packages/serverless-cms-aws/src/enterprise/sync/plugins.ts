@@ -118,8 +118,8 @@ export const createSyncSystemPlugins = (): Plugin[] => {
             const cmd = new DeleteCommand({
                 TableName: tableName,
                 Key: {
-                    PK: "DEPLOYMENTS",
-                    SK: `${env}#${variant || "unknown"}`
+                    PK: `DEPLOYMENT#${env}#${variant || "unknown"}`,
+                    SK: `default`
                 }
             });
             try {
