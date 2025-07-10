@@ -8,5 +8,5 @@ export interface ParamsRepositorySetParams {
 
 export interface IParamsRepository {
     get: () => ParamsRepositoryGetVariables;
-    set: (params: ParamsRepositorySetParams) => void;
+    set: (params: ParamsRepositorySetParams) => Promise<void>;
 }
