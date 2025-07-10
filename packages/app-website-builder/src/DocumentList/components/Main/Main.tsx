@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import debounce from "lodash/debounce";
 import { useCreateDialog, useGetFolderLevelPermission } from "@webiny/app-aco";
 import { Scrollbar } from "@webiny/admin-ui";
@@ -18,13 +18,19 @@ const Main = () => {
     const { getFolderLevelPermission: canManageStructure } =
         useGetFolderLevelPermission("canManageStructure");
 
-    const canCreateFolder = useMemo(() => {
-        return canManageStructure(vm.folderId);
-    }, [canManageContent, vm.folderId]);
+    const canCreateContent = useCallback(
+        (folderId: string) => {
+            return canManageContent(folderId);
+        },
+        [canManageContent]
+    );
 
-    const canCreateContent = useMemo(() => {
-        return canManageContent(vm.folderId);
-    }, [canManageContent, vm.folderId]);
+    const canCreateFolder = useCallback(
+        (folderId: string) => {
+            return canManageStructure(folderId);
+        },
+        [canManageStructure]
+    );
 
     const onCreateFolder = useCallback(() => {
         showCreateFolderDialog({ currentParentId: vm.folderId });
@@ -40,8 +46,8 @@ const Main = () => {
         <div className={"wby-h-full wby-relative wby-overflow-hidden"}>
             <Header
                 title={vm.title}
-                canCreateFolder={canCreateFolder}
-                canCreateContent={canCreateContent}
+                canCreateFolder={canCreateFolder(vm.folderId)}
+                canCreateContent={canCreateContent(vm.folderId)}
                 onCreateFolder={onCreateFolder}
                 onCreateDocument={() => alert("Create document")}
                 isRoot={vm.isRoot}
@@ -60,8 +66,8 @@ const Main = () => {
                         {vm.isEmpty ? (
                             <Empty
                                 isSearch={vm.isSearch}
-                                canCreateFolder={canCreateFolder}
-                                canCreateContent={canCreateContent}
+                                canCreateFolder={canCreateFolder(vm.folderId)}
+                                canCreateContent={canCreateContent(vm.folderId)}
                                 onCreateFolder={onCreateFolder}
                                 onCreateDocument={() => alert("Create document")}
                             />
