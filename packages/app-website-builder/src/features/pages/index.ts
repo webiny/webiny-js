@@ -4,7 +4,7 @@ export * from "./deletePage/index.js";
 export * from "./duplicatePage/index.js";
 export * from "./getPage/index.js";
 export * from "./getPageModel/index.js";
-export * from "./listPages/index.js";
+export * from "./loadPages/index.js";
 export * from "./movePage/index.js";
 export * from "./navigateToFolder/index.js";
 export * from "./publishPage/index.js";

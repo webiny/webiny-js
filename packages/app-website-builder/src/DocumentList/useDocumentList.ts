@@ -6,24 +6,18 @@ import {
     useNavigateFolder
 } from "@webiny/app-aco";
 import { DocumentListPresenter } from "~/DocumentList/presenters/index.js";
-import { useListPages } from "~/features/pages/index.js";
+import { useLoadPages } from "~/features/pages/index.js";
 
 export const useDocumentList = () => {
     const { folders, getFolderHierarchy } = useGetFolderHierarchy();
     const { listFoldersByParentIds } = useListFoldersByParentIds();
     const { currentFolderId } = useNavigateFolder();
-    const { listPages: listDocuments } = useListPages();
+    const { loadPages: listDocuments } = useLoadPages();
 
     useEffect(() => {
         // List all documents when the current folder changes. Let's reset both search and after params
         listDocuments({
-            where: {
-                wbyAco_location: {
-                    folderId: currentFolderId
-                }
-            },
-            search: "",
-            after: ""
+            folderId: currentFolderId
         });
 
         // The folders collection is empty, it must be the first render, let's load the full hierarchy.

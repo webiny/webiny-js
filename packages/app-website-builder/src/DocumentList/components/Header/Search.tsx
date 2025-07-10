@@ -1,23 +1,32 @@
 import React from "react";
 import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 import { DelayedOnChange, Icon, Input } from "@webiny/admin-ui";
-import { useSearchPages } from "~/features/pages/index.js";
+import { useLoadPages, useSearchPages } from "~/features/pages/index.js";
 import { useNavigateFolder } from "@webiny/app-aco";
 import { useDocumentList } from "~/DocumentList/useDocumentList.js";
 
 export const Search = () => {
     const { vm } = useDocumentList();
     const { searchPages } = useSearchPages();
+    const { loadPages } = useLoadPages();
     const { currentFolderId } = useNavigateFolder();
 
     return (
         <DelayedOnChange
             value={vm.searchQuery}
             onChange={value => {
-                if (value === vm.searchQuery) {
+                const searchQuery = value.trim();
+
+                if (searchQuery === vm.searchQuery) {
                     return;
                 }
-                searchPages(value, currentFolderId);
+
+                if (!searchQuery) {
+                    loadPages({ folderId: currentFolderId });
+                    return;
+                }
+
+                searchPages(searchQuery, currentFolderId);
             }}
         >
             {({ value, onChange }) => (

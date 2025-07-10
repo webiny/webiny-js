@@ -1,4 +1,4 @@
-import type { PageDto } from "~/features/pages/index.js";
+import type { PageDto } from "~/domain/Page/index.js";
 import type { FolderTableItem, RecordTableItem } from "@webiny/app-aco/table.types.js";
 
 export interface WbIdentity {

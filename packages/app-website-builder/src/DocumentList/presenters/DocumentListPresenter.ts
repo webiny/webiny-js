@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import orderBy from "lodash/orderBy";
 import { loadingActions, ROOT_FOLDER, WB_PAGE_APP } from "~/constants.js";
 import {
     type ILoadingRepository,
@@ -9,10 +10,10 @@ import {
     SortingMapper,
     sortRepositoryFactory
 } from "@webiny/app-utils";
-import { type IParamsRepository, paramsRepositoryFactory } from "~/domain/Params/index.js";
 import { type IListCache, type Page, pageCacheFactory } from "~/domain/Page/index.js";
 import { Folder, folderCacheFactory } from "@webiny/app-aco";
 import { DocumentListMapper } from "~/DocumentList/presenters/DocumentListMapper.js";
+import { type ISearchRepository, searchRepositoryFactory } from "~/domain/Search/index.js";
 
 interface DocumentListPresenterParams {
     folderId: string;
@@ -24,7 +25,7 @@ class DocumentListPresenter {
     private foldersLoadingRepository: ILoadingRepository;
     private documentsCache: IListCache<Page>;
     private documentsLoadingRepository: ILoadingRepository;
-    private paramsRepository: IParamsRepository;
+    private searchRepository: ISearchRepository;
     private metaRepository: IMetaRepository;
     private sortingRepository: ISortingRepository;
 
@@ -33,8 +34,8 @@ class DocumentListPresenter {
         this.foldersLoadingRepository = loadingRepositoryFactory.getRepository(WB_PAGE_APP);
         this.documentsCache = pageCacheFactory.getCache();
         this.documentsLoadingRepository = loadingRepositoryFactory.getRepository("WbPage");
+        this.searchRepository = searchRepositoryFactory.getRepository("WbPage");
         this.metaRepository = metaRepositoryFactory.getRepository("WbPage");
-        this.paramsRepository = paramsRepositoryFactory.getRepository("WbPage");
         this.sortingRepository = sortRepositoryFactory.getRepository("WbPage");
         makeAutoObservable(this);
     }
@@ -52,8 +53,8 @@ class DocumentListPresenter {
                 totalCount: this.metaRepository.get().totalCount ?? 0,
                 currentCount: this.documentsCache.count() ?? 0
             },
-            sorting: this.sortingRepository.get().map(sort => SortingMapper.fromDTOtoColumn(sort)),
-            searchQuery: this.paramsRepository.get().search || "",
+            sorting: this.getSorting(),
+            searchQuery: this.searchRepository.get() || "",
             isSearch: this.getIsSearch(),
             isEmpty: this.getIsEmpty(),
             isRoot: this.getIsRoot(),
@@ -80,16 +81,26 @@ class DocumentListPresenter {
     };
 
     private getVmFolders = () => {
-        return this.foldersCache
-            .getItems()
-            .filter(f => {
-                if (this.folderId === ROOT_FOLDER) {
-                    return f.parentId === null;
-                } else {
-                    return f.parentId === this.folderId;
-                }
-            })
-            .map(f => DocumentListMapper.fromFolder(f));
+        const folders = this.foldersCache.getItems().filter(f => {
+            if (this.folderId === ROOT_FOLDER) {
+                return f.parentId === null;
+            } else {
+                return f.parentId === this.folderId;
+            }
+        });
+
+        // Get current sorting from the sorting repository
+        const sorts = this.sortingRepository.get();
+
+        if (sorts.length > 0) {
+            // Use orderBy to sort folders according to the sorting array
+            const iteratees = sorts.map(sort => sort.field);
+            const orders = sorts.map(sort => sort.order);
+            return orderBy(folders, iteratees, orders).map(f => DocumentListMapper.fromFolder(f));
+        }
+
+        // If no sorts, just map
+        return folders.map(f => DocumentListMapper.fromFolder(f));
     };
 
     private getData = () => {
@@ -101,7 +112,7 @@ class DocumentListPresenter {
     };
 
     private getIsSearch = () => {
-        return Boolean(this.paramsRepository.get().search);
+        return Boolean(this.searchRepository.get());
     };
 
     private getIsLoading = () => {
@@ -119,6 +130,12 @@ class DocumentListPresenter {
     private getIsEmpty() {
         return !this.getIsLoading() && !this.getData().length;
     }
+
+    private getSorting = () => {
+        return this.sortingRepository.get().map(sort => {
+            return SortingMapper.fromDTOtoColumn(sort);
+        });
+    };
 }
 
 export { DocumentListPresenter, type DocumentListPresenterParams };

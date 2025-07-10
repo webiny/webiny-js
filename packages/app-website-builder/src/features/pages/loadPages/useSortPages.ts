@@ -1,7 +1,7 @@
 import { useApolloClient } from "@apollo/react-hooks";
-import { ListPagesGqlGateway } from "~/features/pages/listPages/ListPagesGqlGateway.js";
+import { ListPagesGqlGateway } from "~/features/pages/loadPages/ListPagesGqlGateway.js";
 import { useGetPageGraphQLSelection } from "~/features/pages/index.js";
-import { SortPages } from "~/features/pages/listPages/SortPages.js";
+import { SortPages } from "~/features/pages/loadPages/SortPages.js";
 import { OnDataTableSortingChange } from "@webiny/admin-ui";
 import { ColumnSorting, SortingMapper } from "@webiny/app-utils";
 
@@ -22,7 +22,7 @@ export const useSortPages = () => {
         };
 
         const instance = SortPages.getInstance(gateway);
-        return instance.useCase.execute(params);
+        return instance.execute(params);
     };
 
     return {

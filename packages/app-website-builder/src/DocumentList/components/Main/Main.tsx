@@ -6,12 +6,12 @@ import { useDocumentList } from "~/DocumentList/useDocumentList.js";
 import { Header } from "~/DocumentList/components/Header/index.js";
 import { BottomInfoBar } from "~/DocumentList/components/BottomInfoBar/index.js";
 import { Table } from "~/DocumentList/components/Table/index.js";
-import { useListMorePages } from "~/features/pages/index.js";
 import { Empty } from "~/DocumentList/components/Empty/index.js";
+import { useLoadMorePages } from "~/features/pages/index.js";
 
 const Main = () => {
     const { vm } = useDocumentList();
-    const { listMorePages } = useListMorePages();
+    const { loadMorePages } = useLoadMorePages();
     const { showDialog: showCreateFolderDialog } = useCreateDialog();
     const { getFolderLevelPermission: canManageContent } =
         useGetFolderLevelPermission("canManageContent");
@@ -38,7 +38,7 @@ const Main = () => {
 
     const onTableScroll = debounce(async ({ scrollFrame }) => {
         if (scrollFrame.top > 0.8) {
-            await listMorePages();
+            await loadMorePages();
         }
     }, 200);
 

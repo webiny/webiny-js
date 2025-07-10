@@ -2,9 +2,7 @@ import { PageGatewayDto } from "./PageGatewayDto.js";
 import type { WbListMeta } from "~/types.js";
 
 export interface ListPagesGatewayParams {
-    where: {
-        [key: string]: any;
-    };
+    where: Record<string, any>;
     limit: number;
     sort?: string[];
     after?: string;

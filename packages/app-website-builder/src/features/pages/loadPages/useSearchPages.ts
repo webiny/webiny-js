@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
-import { ListPagesGqlGateway } from "~/features/pages/listPages/ListPagesGqlGateway.js";
 import { useGetPageGraphQLSelection } from "~/features/pages/index.js";
-import { SearchPages } from "~/features/pages/listPages/SearchPages.js";
+import { ListPagesGqlGateway } from "~/features/pages/loadPages/ListPagesGqlGateway.js";
+import { SearchPages } from "~/features/pages/loadPages/SearchPages.js";
 import { useGetDescendantFolders } from "@webiny/app-aco";
 
 export const useSearchPages = () => {
@@ -15,10 +15,10 @@ export const useSearchPages = () => {
         (query: string, folderId: string) => {
             const instance = SearchPages.getInstance(gateway);
             const folders = getDescendantFolders(folderId);
-            return instance.useCase.execute(
+            return instance.execute({
                 query,
-                folders.map(f => f.id)
-            );
+                folderIds: folders.map(f => f.id)
+            });
         },
         [gateway]
     );

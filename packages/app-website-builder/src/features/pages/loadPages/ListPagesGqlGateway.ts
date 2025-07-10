@@ -1,7 +1,7 @@
 import ApolloClient from "apollo-client";
 import gql from "graphql-tag";
+import type { PageGatewayDto } from "~/features/pages/loadPages/PageGatewayDto.js";
 import { IListPagesGateway, type ListPagesGatewayParams } from "./IListPagesGateway.js";
-import type { PageGatewayDto } from "~/features/pages/listPages/PageGatewayDto.js";
 import { type WbError, type WbListMeta } from "~/types";
 
 const LIST_META_FIELD = /* GraphQL */ `

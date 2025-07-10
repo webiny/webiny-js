@@ -7,43 +7,21 @@ import type {
 
 export class ParamsRepository implements IParamsRepository {
     where: Record<string, any> = {};
-    limit = 50;
-    sort: string[] | undefined;
-    after: string | undefined;
-    search: string | undefined;
 
     constructor() {
-        makeAutoObservable(this, {}, { autoBind: true });
+        makeAutoObservable(this);
     }
 
     get(): ParamsRepositoryGetVariables {
         return toJS({
-            where: toJS(this.where),
-            limit: this.limit,
-            sort: this.sort,
-            after: this.after,
-            search: this.search
+            where: toJS(this.where)
         });
     }
 
-    setAll(params: ParamsRepositorySetParams) {
-        console.log("params", params);
-
+    set(params: ParamsRepositorySetParams) {
         runInAction(() => {
             if (params.where !== undefined) {
                 this.where = params.where;
-            }
-            if (params.limit !== undefined) {
-                this.limit = params.limit;
-            }
-            if (params.sort !== undefined) {
-                this.sort = params.sort;
-            }
-            if (params.after !== undefined) {
-                this.after = params.after;
-            }
-            if (params.search !== undefined) {
-                this.search = params.search;
             }
         });
     }
