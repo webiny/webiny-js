@@ -9,9 +9,46 @@
 yarn add @webiny/api-sync-system
 ```
 
+## How To Use?
+
+### Information About `env` and `variant` Parameters
+We will use `dev` environment in the examples.
+
+Variants can be anything you like, for our example we use `blue` and `green`, but you can use `orange`, `black`, `car`,
+`horse`, `space`, etc.
+
+### Deploy the Sync System
+
+Deploy the Sync System to the `dev` environment.
+
+```bash
+yarn webiny deploy sync --env=dev
+```
+
+### Deploy `blue` and `green` Webiny
+
+It imperative the two systems to be in the same environment as the Sync System, as it will automatically connect Webiny deployments in the same environment.
+
+```bash
+yarn webiny deploy --env=dev --variant=blue && yarn webiny deploy --env=dev --variant=green
+```
+
+Also, there can be more than two systems, so you can deploy as many as you like, just make sure to use different variants.
+
+### Install Webiny Blue Variant
+
+Do a:
+```
+yarn webiny info
+```
+Find the `blue` variant Admin URL, and open it in your browser. Install the system by following the instructions.
+
+At that point, green system should be installed as well.
+
+
 # TODO
 
-### Add BlueGreen, Resolver and Work Folders to user projects
+### Add BlueGreen, Resolver and Work Folders to User Projects
 We need to deploy the following folders to the user project:
 - blueGreen
 - sync/resolver
