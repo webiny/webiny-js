@@ -89,27 +89,30 @@ class DocumentListPresenter {
             }
         });
 
-        // Get current sorting from the sorting repository
-        const sorts = this.sortingRepository.get();
-
-        if (sorts.length > 0) {
-            // Use orderBy to sort folders according to the sorting array
-            const iteratees = sorts.map(sort => sort.field);
-            const orders = sorts.map(sort => sort.order);
-            return orderBy(folders, iteratees, orders).map(f => DocumentListMapper.fromFolder(f));
-        }
-
-        // If no sorts, just map
         return folders.map(f => DocumentListMapper.fromFolder(f));
     };
 
     private getData = () => {
         if (this.getIsSearch()) {
-            return this.getVmDocuments();
+            // Only documents, sorted if needed
+            return this.sortItems(this.getVmDocuments());
         }
 
-        return this.getVmFolders().concat(this.getVmDocuments());
+        // Not in search: folders first, then documents, both sorted if needed
+        const folders = this.sortItems(this.getVmFolders());
+        const documents = this.sortItems(this.getVmDocuments());
+        return [...folders, ...documents];
     };
+
+    private sortItems<T>(items: T[]): T[] {
+        const sorts = this.sortingRepository.get();
+        if (sorts.length === 0) {
+            return items;
+        }
+        const iteratees = sorts.map(sort => sort.field);
+        const orders = sorts.map(sort => sort.order);
+        return orderBy(items, iteratees, orders);
+    }
 
     private getIsSearch = () => {
         return Boolean(this.searchRepository.get());

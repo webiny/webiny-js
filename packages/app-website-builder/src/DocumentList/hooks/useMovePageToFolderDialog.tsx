@@ -26,7 +26,7 @@ export function useMovePageToFolderDialog({ page }: UseMovePageToFolderDialog) {
                     folderId: folder.id
                 });
                 showSnackbar(
-                    `Page "${page.title}" was successfully moved to folder "${folder.title}"!`
+                    `Page "${page.title}" was successfully moved to folder "${folder.label}"!`
                 );
             }
         });

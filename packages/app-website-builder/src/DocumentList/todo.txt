@@ -1,5 +1,11 @@
-- Check duplicate action: newly created page does not appear in the list
+- first loading shows an empty view
 - load search from query string
+- filters
 - selection and bulk actions
 - check on folder tree item click
 - add trash-bin
+- check folders dialog update input
+- remove PageModel load and provider, declare the fields statically
+- remove bindings and elements from list queries
+- create separate cache for full pages
+- add a getRevisions
