@@ -1,7 +1,8 @@
 import { SortingRepository } from "./SortingRepository";
+import type { ISortingRepository } from "~/fta/index.js";
 
 export class SortingRepositoryFactory {
-    private cache: Map<string, SortingRepository> = new Map();
+    private cache: Map<string, ISortingRepository> = new Map();
 
     getRepository(namespace?: string) {
         const cacheKey = this.getCacheKey(namespace);
@@ -10,7 +11,7 @@ export class SortingRepositoryFactory {
             this.cache.set(cacheKey, new SortingRepository());
         }
 
-        return this.cache.get(cacheKey) as SortingRepository;
+        return this.cache.get(cacheKey) as ISortingRepository;
     }
 
     private getCacheKey(namespace?: string) {

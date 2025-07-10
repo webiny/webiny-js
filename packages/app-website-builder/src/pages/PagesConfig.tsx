@@ -60,6 +60,7 @@ export const PagesConfig = () => {
                     hideable={false}
                     className={"wby-text-right"}
                 />
+                <Browser.Table.Sorting name={"savedOn"} field={"savedOn"} order={"desc"} />
             </PageListConfig>
         </>
     );
