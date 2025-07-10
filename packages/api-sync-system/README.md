@@ -11,6 +11,14 @@ yarn add @webiny/api-sync-system
 
 # TODO
 
+### Add BlueGreen, Resolver and Work Folders to user projects
+We need to deploy the following folders to the user project:
+- blueGreen
+- sync/resolver
+- sync/worker
+
+Maybe have it as a CLI command?
+
 ### Test the Blue / Green Deployment
 
 - create domains api.bg.webiny.com, admin.bg.webiny.com, website.bg.webiny.com, preview.bg.webiny.com
