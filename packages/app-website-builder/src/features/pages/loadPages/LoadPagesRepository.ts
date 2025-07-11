@@ -55,15 +55,14 @@ export class LoadPagesRepository implements ILoadPagesRepository {
             hasMoreItems: false
         });
 
-        await this.loading.runCallBack(
-            (async () => {
-                const { pages, meta } = await this.gateway.execute(this.getGatewayParams());
-                this.pages.clear();
-                this.pages.addItems(pages.map(page => Page.create(page)));
-                await this.meta.set(MetaMapper.toDto(meta));
-            })(),
-            loadingActions.list
-        );
+        const callback = async () => {
+            const { pages, meta } = await this.gateway.execute(this.getGatewayParams());
+            this.pages.clear();
+            this.pages.addItems(pages.map(page => Page.create(page)));
+            await this.meta.set(MetaMapper.toDto(meta));
+        };
+
+        await this.loading.runCallBack(callback(), loadingActions.list);
     }
 
     async loadMorePages() {
@@ -73,43 +72,40 @@ export class LoadPagesRepository implements ILoadPagesRepository {
             return;
         }
 
-        await this.loading.runCallBack(
-            (async () => {
-                const { pages, meta } = await this.gateway.execute(this.getGatewayParams());
-                this.pages.addItems(pages.map(page => Page.create(page)));
-                await this.meta.set(MetaMapper.toDto(meta));
-            })(),
-            loadingActions.listMore
-        );
+        const callback = async () => {
+            const { pages, meta } = await this.gateway.execute(this.getGatewayParams());
+            this.pages.addItems(pages.map(page => Page.create(page)));
+            await this.meta.set(MetaMapper.toDto(meta));
+        };
+
+        await this.loading.runCallBack(callback(), loadingActions.listMore);
     }
 
     async searchPages(query: string, where: Record<string, any>) {
         this.params.set({ where });
         await this.search.set(query);
 
-        await this.loading.runCallBack(
-            (async () => {
-                const { pages, meta } = await this.gateway.execute(this.getGatewayParams());
-                this.pages.clear();
-                this.pages.addItems(pages.map(page => Page.create(page)));
-                await this.meta.set(MetaMapper.toDto(meta));
-            })(),
-            loadingActions.list
-        );
+        const callback = async () => {
+            const { pages, meta } = await this.gateway.execute(this.getGatewayParams());
+            this.pages.clear();
+            this.pages.addItems(pages.map(page => Page.create(page)));
+            await this.meta.set(MetaMapper.toDto(meta));
+        };
+
+        await this.loading.runCallBack(callback(), loadingActions.list);
     }
 
     async sortPages(sorts: Sorting[]) {
         this.sorting.set(sorts);
 
-        await this.loading.runCallBack(
-            (async () => {
-                const { pages, meta } = await this.gateway.execute(this.getGatewayParams());
-                this.pages.clear();
-                this.pages.addItems(pages.map(page => Page.create(page)));
-                await this.meta.set(MetaMapper.toDto(meta));
-            })(),
-            loadingActions.list
-        );
+        const callback = async () => {
+            const { pages, meta } = await this.gateway.execute(this.getGatewayParams());
+            this.pages.clear();
+            this.pages.addItems(pages.map(page => Page.create(page)));
+            await this.meta.set(MetaMapper.toDto(meta));
+        };
+
+        await this.loading.runCallBack(callback(), loadingActions.list);
     }
 
     private getGatewayParams(): ListPagesGatewayParams {

@@ -1,4 +1,3 @@
-- first loading shows an empty view
 - load search from query string
 - filters
 - check on folder tree item click

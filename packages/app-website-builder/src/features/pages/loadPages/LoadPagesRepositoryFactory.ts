@@ -1,7 +1,6 @@
 import {
     loadingRepositoryFactory,
     metaRepositoryFactory,
-    Sorting,
     sortRepositoryFactory
 } from "@webiny/app-utils";
 import { pageCacheFactory } from "~/domain/Page/index.js";
@@ -12,22 +11,16 @@ import { LoadPagesRepository } from "~/features/pages/loadPages/LoadPagesReposit
 import type { ILoadPagesRepository } from "~/features/pages/loadPages/ILoadPagesRepository.js";
 import { QueryStringSearchStateGateway } from "~/features/pages/loadPages/QueryStringSearchStateGateway.js";
 import { SearchRepositoryWithQueryStringGateway } from "~/features/pages/loadPages/SearchRepositoryWithQueryStringGateway.js";
-import { SortingRepositoryWithDefaults } from "~/domain/Sorting/index.js";
 
 export class LoadPagesRepositoryFactory {
-    getRepository(gateway: IListPagesGateway, sorting?: Sorting[]): ILoadPagesRepository {
+    getRepository(gateway: IListPagesGateway): ILoadPagesRepository {
         const namespace = "WbPage";
 
         const pagesCache = pageCacheFactory.getCache();
         const loadingRepository = loadingRepositoryFactory.getRepository(namespace);
         const metaRepository = metaRepositoryFactory.getRepository(namespace);
         const paramsRepository = paramsRepositoryFactory.getRepository(namespace);
-
-        let sortingRepository = sortRepositoryFactory.getRepository(namespace);
-
-        if (sorting) {
-            sortingRepository = new SortingRepositoryWithDefaults(sorting, sortingRepository);
-        }
+        const sortingRepository = sortRepositoryFactory.getRepository(namespace);
 
         const searchRepository = searchRepositoryFactory.getRepository(namespace);
         const searchQueryStringGateway = new QueryStringSearchStateGateway();

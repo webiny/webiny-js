@@ -25,6 +25,10 @@ export class LoadingRepository implements ILoadingRepository {
         return this.loadings.get(action) ?? false;
     }
 
+    isEmpty() {
+        return this.loadings.size === 0;
+    }
+
     async set(action: string, isLoading = true) {
         this.loadings.set(action, isLoading);
     }

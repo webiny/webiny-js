@@ -4,4 +4,5 @@ export interface ILoadingRepository {
     runCallBack: <T>(callback: Promise<T>, action: string) => Promise<T>;
     isLoading: (action: string) => boolean;
     hasLoading: () => boolean;
+    isEmpty: () => boolean;
 }
