@@ -23,7 +23,7 @@ export class SortingRepositoryWithDefaults implements ISortingRepository {
         return this.repository.get();
     }
 
-    set(sorts: Sorting[]) {
+    async set(sorts: Sorting[]) {
         return this.repository.set(sorts);
     }
 }
