@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo } from "react";
 import { ReactComponent as MoveIcon } from "@webiny/icons/drive_file_move.svg";
 import { useMoveToFolderDialog, useNavigateFolder, useRecords } from "@webiny/app-aco";
-import { FolderItem } from "@webiny/app-aco/types";
 import { observer } from "mobx-react-lite";
 import { PageListConfig } from "~/admin/config/pages";
 import { ROOT_FOLDER } from "~/admin/constants";
 import { getPagesLabel } from "~/admin/components/BulkActions/BulkActions";
+import type { NodeDto } from "@webiny/admin-ui";
 
 export const ActionMove = observer(() => {
     const { moveRecord } = useRecords();
@@ -22,10 +22,10 @@ export const ActionMove = observer(() => {
     }, [worker.items.length]);
 
     const openWorkerDialog = useCallback(
-        (folder: FolderItem) => {
+        (folder: NodeDto) => {
             showConfirmationDialog({
                 title: "Move pages",
-                message: `You are about to move ${pagesLabel} to ${folder.title}. Are you sure you want to continue?`,
+                message: `You are about to move ${pagesLabel} to ${folder.label}. Are you sure you want to continue?`,
                 loadingLabel: `Processing ${pagesLabel}`,
                 execute: async () => {
                     await worker.processInSeries(async ({ item, report }) => {

@@ -2,12 +2,11 @@ import React, { useCallback } from "react";
 import { ReactComponent as MoveIcon } from "@webiny/icons/exit_to_app.svg";
 import { useRecords, useMoveToFolderDialog, useNavigateFolder } from "@webiny/app-aco";
 import { useSnackbar } from "@webiny/app-admin";
-import { FolderItem } from "@webiny/app-aco/types";
 import { observer } from "mobx-react-lite";
 import { ContentEntryListConfig } from "~/admin/config/contentEntries";
 import { ROOT_FOLDER } from "~/admin/constants";
 import { getEntriesLabel } from "~/admin/components/ContentEntries/BulkActions/BulkActions";
-import { Tooltip } from "@webiny/admin-ui";
+import { type NodeDto, Tooltip } from "@webiny/admin-ui";
 
 export const ActionMove = observer(() => {
     const { moveRecord } = useRecords();
@@ -23,10 +22,11 @@ export const ActionMove = observer(() => {
     const entriesLabel = getEntriesLabel();
 
     const openWorkerDialog = useCallback(
-        (folder: FolderItem) => {
+        (folder: NodeDto) => {
+            console.log("folder", folder);
             showConfirmationDialog({
                 title: "Move entries",
-                message: `You are about to move ${entriesLabel} to ${folder.title}. Are you sure you want to continue?`,
+                message: `You are about to move ${entriesLabel} to ${folder.label}. Are you sure you want to continue?`,
                 loadingLabel: `Processing ${entriesLabel}`,
                 execute: async () => {
                     if (worker.isSelectedAll) {
@@ -43,7 +43,7 @@ export const ActionMove = observer(() => {
                         });
                         worker.resetItems();
                         showSnackbar(
-                            `All entries will be moved to ${folder.title}. This process will be carried out in the background and may take some time. You can safely navigate away from this page while the process is running.`,
+                            `All entries will be moved to ${folder.label}. This process will be carried out in the background and may take some time. You can safely navigate away from this page while the process is running.`,
                             {
                                 dismissIcon: true,
                                 timeout: -1

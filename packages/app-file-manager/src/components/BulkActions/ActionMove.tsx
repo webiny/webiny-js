@@ -2,13 +2,11 @@ import React, { useCallback, useMemo } from "react";
 import { ReactComponent as MoveIcon } from "@webiny/icons/exit_to_app.svg";
 import { observer } from "mobx-react-lite";
 import { useMoveToFolderDialog, useNavigateFolder } from "@webiny/app-aco";
-import { FolderItem } from "@webiny/app-aco/types";
-
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider";
 import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig";
 import { getFilesLabel } from "~/components/BulkActions/BulkActions";
 import { ROOT_FOLDER } from "~/constants";
-import { Tooltip } from "@webiny/admin-ui";
+import { type NodeDto, Tooltip } from "@webiny/admin-ui";
 
 export const ActionMove = observer(() => {
     const { moveFileToFolder } = useFileManagerView();
@@ -25,10 +23,10 @@ export const ActionMove = observer(() => {
     }, [worker.items.length]);
 
     const openWorkerDialog = useCallback(
-        (folder: FolderItem) => {
+        (folder: NodeDto) => {
             showConfirmationDialog({
                 title: "Move files",
-                message: `You are about to move ${filesLabel} to ${folder.title}. Are you sure you want to continue?`,
+                message: `You are about to move ${filesLabel} to ${folder.label}. Are you sure you want to continue?`,
                 loadingLabel: `Processing ${filesLabel}`,
                 execute: async () => {
                     await worker.processInSeries(async ({ item, report }) => {
