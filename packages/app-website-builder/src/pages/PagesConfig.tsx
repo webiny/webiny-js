@@ -14,6 +14,13 @@ import {
     Edit,
     Move
 } from "~/DocumentList/components/Table/index.js";
+import {
+    BulkActionDelete,
+    BulkActionDuplicate,
+    BulkActionMovePage,
+    BulkActionPublish,
+    BulkActionUnpublish
+} from "~/DocumentList/components/BulkActions/index.js";
 
 const { Browser } = PageListConfig;
 
@@ -24,11 +31,16 @@ export const PagesConfig = () => {
                 <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
                 <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
                 <Browser.Folder.Action name={"delete"} element={<DeleteFolder />} />
-                <Browser.PageAction name={"edit"} element={<Edit />} />
-                <Browser.PageAction name={"changeStatus"} element={<ChangeStatus />} />
-                <Browser.PageAction name={"duplicate"} element={<Duplicate />} />
-                <Browser.PageAction name={"moveToFolder"} element={<Move />} />
-                <Browser.PageAction name={"delete"} element={<Delete />} />
+                <Browser.Page.Action name={"edit"} element={<Edit />} />
+                <Browser.Page.Action name={"changeStatus"} element={<ChangeStatus />} />
+                <Browser.Page.Action name={"duplicate"} element={<Duplicate />} />
+                <Browser.Page.Action name={"moveToFolder"} element={<Move />} />
+                <Browser.Page.Action name={"delete"} element={<Delete />} />
+                <Browser.BulkAction name={"publishPages"} element={<BulkActionPublish />} />
+                <Browser.BulkAction name={"unpublishPages"} element={<BulkActionUnpublish />} />
+                <Browser.BulkAction name={"duplicatePages"} element={<BulkActionDuplicate />} />
+                <Browser.BulkAction name={"movePages"} element={<BulkActionMovePage />} />
+                <Browser.BulkAction name={"deletePages"} element={<BulkActionDelete />} />
                 <Browser.Table.Column
                     name={"name"}
                     header={"Name"}

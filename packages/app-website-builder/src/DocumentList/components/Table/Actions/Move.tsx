@@ -7,7 +7,7 @@ import { useDocument } from "~/DocumentList/hooks/useDocument.js";
 export const Move = () => {
     const { document } = useDocument();
     const { openMovePageToFolderDialog } = useMovePageToFolderDialog({ page: document });
-    const { OptionsMenuItem } = PageListConfig.Browser.PageAction;
+    const { OptionsMenuItem } = PageListConfig.Browser.Page.Action;
 
     return (
         <OptionsMenuItem icon={<MoveIcon />} label={"Move"} onAction={openMovePageToFolderDialog} />

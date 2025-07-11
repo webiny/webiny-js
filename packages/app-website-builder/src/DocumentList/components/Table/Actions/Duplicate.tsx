@@ -9,7 +9,7 @@ export const Duplicate = () => {
     const { openDuplicatePageConfirmationDialog } = useDuplicatePageConfirmationDialog({
         page: document
     });
-    const { OptionsMenuItem } = PageListConfig.Browser.PageAction;
+    const { OptionsMenuItem } = PageListConfig.Browser.Page.Action;
 
     return (
         <OptionsMenuItem

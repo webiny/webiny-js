@@ -7,7 +7,7 @@ import { PageListConfig } from "~/configs/index.js";
 export const Edit = () => {
     const { document } = useDocument();
     const { getEditPageUrl } = useGetEditPageUrl();
-    const { OptionsMenuLink } = PageListConfig.Browser.PageAction;
+    const { OptionsMenuLink } = PageListConfig.Browser.Page.Action;
 
     return <OptionsMenuLink icon={<EditIcon />} label={"Edit"} to={getEditPageUrl(document)} />;
 };

@@ -14,6 +14,10 @@ import { type IListCache, type Page, pageCacheFactory } from "~/domain/Page/inde
 import { Folder, folderCacheFactory } from "@webiny/app-aco";
 import { DocumentListMapper } from "~/DocumentList/presenters/DocumentListMapper.js";
 import { type ISearchRepository, searchRepositoryFactory } from "~/domain/Search/index.js";
+import {
+    type ISelectedItemsRepository,
+    selectedItemsRepositoryFactory
+} from "~/domain/SelectedItems/index.js";
 
 interface DocumentListPresenterParams {
     folderId: string;
@@ -28,6 +32,7 @@ class DocumentListPresenter {
     private searchRepository: ISearchRepository;
     private metaRepository: IMetaRepository;
     private sortingRepository: ISortingRepository;
+    private selectedRepository: ISelectedItemsRepository;
 
     constructor() {
         this.foldersCache = folderCacheFactory.getCache(WB_PAGE_APP);
@@ -37,6 +42,7 @@ class DocumentListPresenter {
         this.searchRepository = searchRepositoryFactory.getRepository("WbPage");
         this.metaRepository = metaRepositoryFactory.getRepository("WbPage");
         this.sortingRepository = sortRepositoryFactory.getRepository("WbPage");
+        this.selectedRepository = selectedItemsRepositoryFactory.getRepository("WbPage");
         makeAutoObservable(this);
     }
 
@@ -49,6 +55,7 @@ class DocumentListPresenter {
             folderId: this.folderId,
             title: this.getVmTitle(),
             data: this.getData(),
+            selected: this.getSelected(),
             meta: {
                 totalCount: this.metaRepository.get().totalCount ?? 0,
                 currentCount: this.documentsCache.count() ?? 0
@@ -102,6 +109,10 @@ class DocumentListPresenter {
         const folders = this.sortItems(this.getVmFolders());
         const documents = this.sortItems(this.getVmDocuments());
         return [...folders, ...documents];
+    };
+
+    private getSelected = () => {
+        return this.selectedRepository.getSelectedItems();
     };
 
     private sortItems<T>(items: T[]): T[] {

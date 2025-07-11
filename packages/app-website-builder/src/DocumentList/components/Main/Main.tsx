@@ -8,6 +8,7 @@ import { BottomInfoBar } from "~/DocumentList/components/BottomInfoBar/index.js"
 import { Table } from "~/DocumentList/components/Table/index.js";
 import { Empty } from "~/DocumentList/components/Empty/index.js";
 import { useLoadMorePages } from "~/features/pages/index.js";
+import { BulkActions } from "../BulkActions";
 
 const Main = () => {
     const { vm } = useDocumentList();
@@ -59,6 +60,7 @@ const Main = () => {
                 }
             >
                 <>
+                    <BulkActions />
                     <Scrollbar
                         data-testid="default-data-list"
                         onScrollFrame={scrollFrame => onTableScroll({ scrollFrame })}

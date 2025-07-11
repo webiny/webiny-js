@@ -25,8 +25,6 @@ interface PageListConfig {
 export function usePageListConfig() {
     const config = base.useConfig();
 
-    console.log("usePageListConfig", config);
-
     const browser = config.browser || {};
 
     return useMemo(
