@@ -31,6 +31,7 @@ export function usePageListConfig() {
         () => ({
             browser: {
                 ...browser,
+                bulkActions: [...(browser.bulkActions || [])],
                 filters: [...(browser.filters || [])],
                 filtersToWhere: [...(browser.filtersToWhere || [])]
             }

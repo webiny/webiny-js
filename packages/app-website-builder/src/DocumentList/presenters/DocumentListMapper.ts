@@ -1,5 +1,5 @@
-import { Folder } from "@webiny/app-aco";
-import { Page } from "~/domain/Page/index.js";
+import { Folder, FolderDtoMapper } from "@webiny/app-aco";
+import { Page, PageDtoMapper } from "~/domain/Page/index.js";
 import type { WbIdentity } from "~/types.js";
 import { CmsIdentity } from "@webiny/app-headless-cms-common/types/shared.js";
 
@@ -26,7 +26,7 @@ export class DocumentListMapper {
             createdOn: page.createdOn,
             savedBy: this.getIdentity(page.savedBy),
             savedOn: page.savedOn,
-            data: page
+            data: PageDtoMapper.toDTO(page)
         };
     }
 
@@ -40,7 +40,7 @@ export class DocumentListMapper {
             createdOn: folder.createdOn || "",
             savedBy: this.getIdentity(folder.savedBy),
             savedOn: folder.savedOn || "",
-            data: folder
+            data: FolderDtoMapper.toDTO(folder)
         };
     }
 
