@@ -1,4 +1,4 @@
-import type { ISelectedItemsRepository } from "~/domain/SelectedItems/index.js";
+import type { ISelectedItemsRepository } from "~/domain/SelectedItem/index.js";
 import type { ISelectPagesUseCase } from "~/features/pages/selectPages/ISelectPagesUseCases.js";
 
 export class SelectPagesUseCase<T = any> implements ISelectPagesUseCase<T> {

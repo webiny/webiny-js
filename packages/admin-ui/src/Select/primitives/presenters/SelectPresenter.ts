@@ -54,8 +54,8 @@ class SelectPresenter implements ISelectPresenter {
         };
     }
 
-    public changeValue = (value: string) => {
-        this.params?.onValueChange?.(value);
+    public changeValue = (value?: string) => {
+        this.params?.onValueChange?.(value || "");
     };
 
     public resetValue = () => {

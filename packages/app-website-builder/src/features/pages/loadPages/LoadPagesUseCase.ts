@@ -2,12 +2,12 @@ import type {
     ILoadPagesUseCase,
     LoadPagesUseCaseParams
 } from "~/features/pages/loadPages/ILoadPagesUseCase.js";
-import type { ILoadPagesRepository } from "~/features/pages/loadPages/ILoadPagesRepository.js";
+import type { IListPagesRepository } from "~/features/pages/loadPages/IListPagesRepository.js";
 
 export class LoadPagesUseCase implements ILoadPagesUseCase {
-    private repository: ILoadPagesRepository;
+    private repository: IListPagesRepository;
 
-    constructor(repository: ILoadPagesRepository) {
+    constructor(repository: IListPagesRepository) {
         this.repository = repository;
     }
 

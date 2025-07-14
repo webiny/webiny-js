@@ -1,11 +1,11 @@
-import { useState, useMemo, useEffect } from "react";
+import { useCallback, useState, useMemo, useEffect } from "react";
 import { autorun } from "mobx";
 import {
     useGetFolderHierarchy,
     useListFoldersByParentIds,
     useNavigateFolder
 } from "@webiny/app-aco";
-import { DocumentListPresenter } from "~/DocumentList/presenters/index.js";
+import { useDocumentListPresenter } from "./presenters/DocumentListPresenterContext";
 import { useLoadPages } from "~/features/pages/index.js";
 
 export const useDocumentList = () => {
@@ -13,6 +13,7 @@ export const useDocumentList = () => {
     const { listFoldersByParentIds } = useListFoldersByParentIds();
     const { currentFolderId } = useNavigateFolder();
     const { loadPages: listDocuments } = useLoadPages();
+    const presenter = useDocumentListPresenter();
 
     useEffect(() => {
         // List all documents when the current folder changes. Let's reset both search and after params
@@ -27,6 +28,9 @@ export const useDocumentList = () => {
             // Otherwise let's load only the current folder sub-tree
             listFoldersByParentIds([currentFolderId]);
         }
+
+        // Close the filter list
+        presenter.showFilters(false);
     }, [currentFolderId]);
 
     const params = useMemo(
@@ -36,15 +40,11 @@ export const useDocumentList = () => {
         [currentFolderId]
     );
 
-    const presenter = useMemo(() => {
-        return new DocumentListPresenter();
-    }, []);
-
-    const [vm, setVm] = useState(presenter.vm);
-
     useEffect(() => {
         presenter.init(params);
     }, [params, presenter]);
+
+    const [vm, setVm] = useState(presenter.vm);
 
     useEffect(() => {
         return autorun(() => {
@@ -52,7 +52,15 @@ export const useDocumentList = () => {
         });
     }, [presenter]);
 
+    const showFilters = useCallback(
+        (show: boolean) => {
+            presenter.showFilters(show);
+        },
+        [presenter]
+    );
+
     return {
-        vm
+        vm,
+        showFilters
     };
 };

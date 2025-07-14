@@ -21,6 +21,7 @@ import {
     BulkActionPublish,
     BulkActionUnpublish
 } from "~/DocumentList/components/BulkActions/index.js";
+import { FilterByStatus } from "~/DocumentList/components/Filters/index.js";
 
 const { Browser } = PageListConfig;
 
@@ -28,6 +29,7 @@ export const PagesConfig = () => {
     return (
         <>
             <PageListConfig>
+                <Browser.Filter name={"status"} element={<FilterByStatus />} />
                 <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
                 <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
                 <Browser.Folder.Action name={"delete"} element={<DeleteFolder />} />
@@ -72,7 +74,6 @@ export const PagesConfig = () => {
                     hideable={false}
                     className={"wby-text-right"}
                 />
-                <Browser.Table.Sorting name={"savedOn"} field={"savedOn"} order={"desc"} />
             </PageListConfig>
         </>
     );

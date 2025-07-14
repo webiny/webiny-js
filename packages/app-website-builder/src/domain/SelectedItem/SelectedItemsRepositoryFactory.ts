@@ -1,5 +1,5 @@
 import { SelectedItemsRepository } from "./SelectedItemsRepository";
-import type { ISelectedItemsRepository } from "~/domain/SelectedItems/ISelectedItemsRepository.js";
+import type { ISelectedItemsRepository } from "~/domain/SelectedItem/ISelectedItemsRepository.js";
 
 export class SelectedItemsRepositoryFactory {
     private cache: Map<string, ISelectedItemsRepository<any>> = new Map();

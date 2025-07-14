@@ -9,6 +9,7 @@ import { Table } from "~/DocumentList/components/Table/index.js";
 import { Empty } from "~/DocumentList/components/Empty/index.js";
 import { useLoadMorePages } from "~/features/pages/index.js";
 import { BulkActions } from "../BulkActions";
+import { Filters } from "~/DocumentList/components/Filters/index.js";
 
 const Main = () => {
     const { vm } = useDocumentList();
@@ -59,26 +60,25 @@ const Main = () => {
                     "wby-w-full wby-overflow-hidden wby-absolute wby-top-0 wby-bottom-0 wby-left-0"
                 }
             >
-                <>
-                    <BulkActions />
-                    <Scrollbar
-                        data-testid="default-data-list"
-                        onScrollFrame={scrollFrame => onTableScroll({ scrollFrame })}
-                    >
-                        {vm.isEmpty ? (
-                            <Empty
-                                isSearch={vm.isSearch}
-                                canCreateFolder={canCreateFolder(vm.folderId)}
-                                canCreateContent={canCreateContent(vm.folderId)}
-                                onCreateFolder={onCreateFolder}
-                                onCreateDocument={() => alert("Create document")}
-                            />
-                        ) : (
-                            <Table />
-                        )}
-                    </Scrollbar>
-                    <BottomInfoBar />
-                </>
+                <BulkActions />
+                <Filters />
+                <Scrollbar
+                    data-testid="default-data-list"
+                    onScrollFrame={scrollFrame => onTableScroll({ scrollFrame })}
+                >
+                    {vm.isEmpty ? (
+                        <Empty
+                            isSearch={vm.isSearch}
+                            canCreateFolder={canCreateFolder(vm.folderId)}
+                            canCreateContent={canCreateContent(vm.folderId)}
+                            onCreateFolder={onCreateFolder}
+                            onCreateDocument={() => alert("Create document")}
+                        />
+                    ) : (
+                        <Table />
+                    )}
+                </Scrollbar>
+                <BottomInfoBar />
             </div>
         </div>
     );

@@ -1,5 +1,6 @@
 import React from "react";
 import { Separator } from "@webiny/admin-ui";
+import { ButtonFilters } from "./ButtonFilters.js";
 import { ButtonsCreate } from "./ButtonsCreate";
 import { Search } from "./Search";
 import { Title } from "./Title";
@@ -28,6 +29,7 @@ export const Header = (props: HeaderProps) => {
                         </div>
                         <div>
                             <div className={"wby-flex wby-gap-sm"}>
+                                <ButtonFilters />
                                 <ButtonsCreate
                                     canCreateFolder={canCreateFolder}
                                     canCreateContent={canCreateContent}

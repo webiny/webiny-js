@@ -7,13 +7,14 @@ import { pageCacheFactory } from "~/domain/Page/index.js";
 import { paramsRepositoryFactory } from "~/domain/Params/index.js";
 import { searchRepositoryFactory } from "~/domain/Search/index.js";
 import type { IListPagesGateway } from "~/features/pages/loadPages/IListPagesGateway.js";
-import { LoadPagesRepository } from "~/features/pages/loadPages/LoadPagesRepository.js";
-import type { ILoadPagesRepository } from "~/features/pages/loadPages/ILoadPagesRepository.js";
+import { ListPagesRepository } from "~/features/pages/loadPages/ListPagesRepository.js";
+import type { IListPagesRepository } from "~/features/pages/loadPages/IListPagesRepository.js";
 import { QueryStringSearchStateGateway } from "~/features/pages/loadPages/QueryStringSearchStateGateway.js";
 import { SearchRepositoryWithQueryStringGateway } from "~/features/pages/loadPages/SearchRepositoryWithQueryStringGateway.js";
+import { filterRepositoryFactory } from "~/domain/Filter/index.js";
 
-export class LoadPagesRepositoryFactory {
-    getRepository(gateway: IListPagesGateway): ILoadPagesRepository {
+export class ListPagesRepositoryFactory {
+    getRepository(gateway: IListPagesGateway): IListPagesRepository {
         const namespace = "WbPage";
 
         const pagesCache = pageCacheFactory.getCache();
@@ -21,6 +22,7 @@ export class LoadPagesRepositoryFactory {
         const metaRepository = metaRepositoryFactory.getRepository(namespace);
         const paramsRepository = paramsRepositoryFactory.getRepository(namespace);
         const sortingRepository = sortRepositoryFactory.getRepository(namespace);
+        const filterRepository = filterRepositoryFactory.getRepository(namespace);
 
         const searchRepository = searchRepositoryFactory.getRepository(namespace);
         const searchQueryStringGateway = new QueryStringSearchStateGateway();
@@ -29,16 +31,17 @@ export class LoadPagesRepositoryFactory {
             searchRepository
         );
 
-        return new LoadPagesRepository(
+        return new ListPagesRepository(
             pagesCache,
             loadingRepository,
             metaRepository,
             paramsRepository,
             searchRepositoryWithQueryString,
             sortingRepository,
+            filterRepository,
             gateway
         );
     }
 }
 
-export const loadPagesRepositoryFactory = new LoadPagesRepositoryFactory();
+export const listPagesRepositoryFactory = new ListPagesRepositoryFactory();

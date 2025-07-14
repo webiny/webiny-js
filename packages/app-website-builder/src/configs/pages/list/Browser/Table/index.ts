@@ -1,12 +1,9 @@
-import { Column, ColumnConfig } from "./Column";
-import { Sorting, SortingConfig } from "./Sorting";
+import { Column, type ColumnConfig } from "./Column";
 
 export interface TableConfig {
     columns: ColumnConfig[];
-    sorting: SortingConfig[];
 }
 
 export const Table = {
-    Column,
-    Sorting
+    Column
 };

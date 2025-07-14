@@ -2,13 +2,13 @@ import type {
     ISortPagesUseCase,
     SortPagesUseCaseParams
 } from "~/features/pages/loadPages/ISortPagesUseCase.js";
-import type { ILoadPagesRepository } from "~/features/pages/loadPages/ILoadPagesRepository.js";
+import type { IListPagesRepository } from "~/features/pages/loadPages/IListPagesRepository.js";
 import { Sorting } from "@webiny/app-utils";
 
 export class SortPagesUseCase implements ISortPagesUseCase {
-    private repository: ILoadPagesRepository;
+    private repository: IListPagesRepository;
 
-    constructor(repository: ILoadPagesRepository) {
+    constructor(repository: IListPagesRepository) {
         this.repository = repository;
     }
 

@@ -17,7 +17,8 @@ import { type ISearchRepository, searchRepositoryFactory } from "~/domain/Search
 import {
     type ISelectedItemsRepository,
     selectedItemsRepositoryFactory
-} from "~/domain/SelectedItems/index.js";
+} from "~/domain/SelectedItem/index.js";
+import { filterRepositoryFactory, type IFilterRepository } from "~/domain/Filter/index.js";
 
 interface DocumentListPresenterParams {
     folderId: string;
@@ -32,7 +33,9 @@ class DocumentListPresenter {
     private searchRepository: ISearchRepository;
     private metaRepository: IMetaRepository;
     private sortingRepository: ISortingRepository;
+    private filterRepository: IFilterRepository;
     private selectedRepository: ISelectedItemsRepository;
+    private filtersVisible: boolean = false;
 
     constructor() {
         this.foldersCache = folderCacheFactory.getCache(WB_PAGE_APP);
@@ -42,6 +45,7 @@ class DocumentListPresenter {
         this.searchRepository = searchRepositoryFactory.getRepository("WbPage");
         this.metaRepository = metaRepositoryFactory.getRepository("WbPage");
         this.sortingRepository = sortRepositoryFactory.getRepository("WbPage");
+        this.filterRepository = filterRepositoryFactory.getRepository("WbPage");
         this.selectedRepository = selectedItemsRepositoryFactory.getRepository("WbPage");
         makeAutoObservable(this);
     }
@@ -66,9 +70,14 @@ class DocumentListPresenter {
             isEmpty: this.getIsEmpty(),
             isRoot: this.getIsRoot(),
             isLoading: this.getIsLoading(),
-            isLoadingMore: this.getIsLoadingMore()
+            isLoadingMore: this.getIsLoadingMore(),
+            isFilterVisible: this.filtersVisible
         };
     }
+
+    public showFilters = (show: boolean) => {
+        this.filtersVisible = show;
+    };
 
     private getIsRoot = () => {
         return this.folderId === ROOT_FOLDER;
@@ -81,10 +90,7 @@ class DocumentListPresenter {
     };
 
     private getVmDocuments = () => {
-        return this.documentsCache
-            .getItems()
-            .filter(d => d.location.folderId === this.folderId)
-            .map(d => DocumentListMapper.fromPage(d));
+        return this.documentsCache.getItems().map(d => DocumentListMapper.fromPage(d));
     };
 
     private getVmFolders = () => {
@@ -126,7 +132,7 @@ class DocumentListPresenter {
     }
 
     private getIsSearch = () => {
-        return Boolean(this.searchRepository.get());
+        return Boolean(this.searchRepository.get() || this.filterRepository.hasFilters());
     };
 
     private getIsLoading = () => {
