@@ -323,7 +323,7 @@ export const WithExternalValueControl: Story = {
                     <SelectPrimitive {...args} value={value} onChange={value => setValue(value)} />
                 </div>
                 <div className={"wby-mt-4 wby-text-center"}>
-                    <Button text={"Reset"} onClick={() => setValue("")} />
+                    <Button text={"Reset"} onClick={() => setValue(undefined)} />
                 </div>
                 <div className={"wby-mt-4 wby-text-center"}>
                     Current selected value: <pre>{value}</pre>

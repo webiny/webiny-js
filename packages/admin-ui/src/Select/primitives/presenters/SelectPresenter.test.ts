@@ -3,6 +3,24 @@ import { SelectPresenter } from "./SelectPresenter";
 describe("SelectPresenter", () => {
     const onValueChange = jest.fn();
 
+    it("should return the compatible `vm.selectRoot` based on props", () => {
+        const onValueChange = jest.fn();
+
+        // `value`
+        {
+            const presenter = new SelectPresenter();
+            presenter.init({ onValueChange, value: "Custom value" });
+            expect(presenter.vm.selectRoot.value).toEqual("Custom value");
+        }
+
+        {
+            // default: no props
+            const presenter = new SelectPresenter();
+            presenter.init({ onValueChange });
+            expect(presenter.vm.selectRoot.value).toEqual("");
+        }
+    });
+
     it("should return the compatible `vm.selectTrigger` based on props", () => {
         const onValueChange = jest.fn();
 

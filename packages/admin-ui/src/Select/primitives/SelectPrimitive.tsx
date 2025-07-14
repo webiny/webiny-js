@@ -145,10 +145,14 @@ const SelectOptions = (props: SelectOptionsProps) => {
 /**
  * SelectRenderer
  */
-type SelectRootProps = SelectPrimitives.SelectProps;
+export type SelectRootVm = {
+    value: string;
+};
+
+type SelectRootProps = Omit<SelectPrimitives.SelectProps, "onValueChange">;
 
 type SelectRendererProps = {
-    selectRootProps: Omit<SelectRootProps, "onValueChange">;
+    selectRootProps: SelectRootProps;
     selectTriggerProps: Omit<SelectTriggerProps, "onValueReset">;
     selectOptionsProps: SelectOptionsProps;
     onValueChange: (value: string) => void;
@@ -236,7 +240,7 @@ const SelectPrimitive = (props: SelectPrimitiveProps) => {
 
     return (
         <SelectPrimitiveRenderer
-            selectRootProps={{ ...selectRootProps, disabled }}
+            selectRootProps={{ ...selectRootProps, ...vm.selectRoot, disabled }}
             selectTriggerProps={{
                 ...vm.selectTrigger,
                 size,

@@ -2,7 +2,8 @@ import { makeAutoObservable } from "mobx";
 import {
     SelectOptionsVm,
     SelectTriggerVm,
-    SelectOption as SelectOptionParams
+    SelectOption as SelectOptionParams,
+    type SelectRootVm
 } from "../SelectPrimitive";
 import { SelectOption, SelectOptionMapper } from "../../domains";
 
@@ -17,6 +18,7 @@ interface SelectPresenterParams {
 
 interface ISelectPresenter<TParams extends SelectPresenterParams = SelectPresenterParams> {
     vm: {
+        selectRoot: SelectRootVm;
         selectTrigger: SelectTriggerVm;
         selectOptions: SelectOptionsVm;
     };
@@ -43,6 +45,9 @@ class SelectPresenter implements ISelectPresenter {
 
     get vm() {
         return {
+            selectRoot: {
+                value: this.params?.value || ""
+            },
             selectTrigger: {
                 placeholder: this.params?.placeholder || "Select an option",
                 hasValue: !!this.params?.value,
