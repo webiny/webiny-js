@@ -1,5 +1,11 @@
-import { IListEntriesOperation, IListEntries } from "~/crud/contentEntry/abstractions";
-import { CmsEntry, CmsEntryListParams, CmsEntryMeta, CmsEntryValues, CmsModel } from "~/types";
+import { IListEntries, IListEntriesOperation } from "~/crud/contentEntry/abstractions";
+import {
+    CmsEntry,
+    CmsEntryMeta,
+    CmsEntryStorageOperationsListParams,
+    CmsEntryValues,
+    CmsModel
+} from "~/types";
 import WebinyError from "@webiny/error";
 
 export class ListEntries implements IListEntries {
@@ -11,7 +17,7 @@ export class ListEntries implements IListEntries {
 
     async execute<T extends CmsEntryValues>(
         model: CmsModel,
-        params?: CmsEntryListParams
+        params: CmsEntryStorageOperationsListParams
     ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
         const { where: initialWhere, limit: initialLimit, fields } = params || {};
 

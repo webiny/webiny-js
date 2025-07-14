@@ -1171,7 +1171,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             input: []
         });
 
-        if (!fields.includes(fieldId)) {
+        if (!fields.hasFieldId(fieldId)) {
             throw new WebinyError(
                 "Cannot list unique entry field values if the field is not searchable.",
                 "LIST_UNIQUE_ENTRY_VALUES_ERROR",
@@ -1326,10 +1326,19 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          */
         async listEntries<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
-            params: CmsEntryListParams
+            params?: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
             return context.benchmark.measure("headlessCms.crud.entries.listEntries", async () => {
-                return await listEntriesUseCase.execute<T>(model, params);
+                return await listEntriesUseCase.execute<T>(model, {
+                    ...params,
+                    where: params?.where || {},
+                    limit: params?.limit || 50,
+                    fields: getSearchableFields({
+                        input: params?.fields || [],
+                        plugins: context.plugins,
+                        fields: model.fields
+                    })
+                });
             });
         },
         async listLatestEntries<T extends CmsEntryValues = CmsEntryValues>(
@@ -1339,7 +1348,16 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return context.benchmark.measure(
                 "headlessCms.crud.entries.listLatestEntries",
                 async () => {
-                    return await listLatestUseCase.execute<T>(model, params);
+                    return await listLatestUseCase.execute<T>(model, {
+                        ...params,
+                        where: params?.where || {},
+                        limit: params?.limit || 50,
+                        fields: getSearchableFields({
+                            input: params?.fields || [],
+                            plugins: context.plugins,
+                            fields: model.fields
+                        })
+                    });
                 }
             );
         },
@@ -1350,7 +1368,16 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return context.benchmark.measure(
                 "headlessCms.crud.entries.listDeletedEntries",
                 async () => {
-                    return await listDeletedUseCase.execute<T>(model, params);
+                    return await listDeletedUseCase.execute<T>(model, {
+                        ...params,
+                        where: params?.where || {},
+                        limit: params?.limit || 50,
+                        fields: getSearchableFields({
+                            input: params?.fields || [],
+                            plugins: context.plugins,
+                            fields: model.fields
+                        })
+                    });
                 }
             );
         },
@@ -1361,7 +1388,16 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return context.benchmark.measure(
                 "headlessCms.crud.entries.listPublishedEntries",
                 async () => {
-                    return await listPublishedUseCase.execute<T>(model, params);
+                    return await listPublishedUseCase.execute<T>(model, {
+                        ...params,
+                        where: params?.where || {},
+                        limit: params?.limit || 50,
+                        fields: getSearchableFields({
+                            input: params?.fields || [],
+                            plugins: context.plugins,
+                            fields: model.fields
+                        })
+                    });
                 }
             );
         },

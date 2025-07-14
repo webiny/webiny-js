@@ -1,8 +1,14 @@
-import { CmsEntry, CmsEntryListParams, CmsEntryMeta, CmsEntryValues, CmsModel } from "~/types";
+import type {
+    CmsEntry,
+    CmsEntryMeta,
+    CmsEntryStorageOperationsListParams,
+    CmsEntryValues,
+    CmsModel
+} from "~/types";
 
 export interface IListEntries {
     execute: <T extends CmsEntryValues>(
         model: CmsModel,
-        params?: CmsEntryListParams
+        params: CmsEntryStorageOperationsListParams
     ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
 }

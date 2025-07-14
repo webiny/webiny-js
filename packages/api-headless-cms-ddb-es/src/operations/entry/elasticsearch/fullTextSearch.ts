@@ -1,6 +1,6 @@
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
 import { normalizeValue } from "@webiny/api-elasticsearch";
-import { CmsModel, CmsModelField } from "@webiny/api-headless-cms/types";
+import { CmsModel, type IFullTextSearchFields } from "@webiny/api-headless-cms/types";
 import { PluginsContainer } from "@webiny/plugins";
 import {
     CmsEntryElasticsearchFullTextSearchPlugin,
@@ -12,12 +12,14 @@ import {
  */
 const defaultPlugin = createCmsEntryElasticsearchFullTextSearchPlugin({
     apply: params => {
-        const { query, term, fields, createFieldPath, prepareTerm } = params;
+        const { query, term, fields, prepareTerm } = params;
 
         query.must.push({
             query_string: {
                 allow_leading_wildcard: true,
-                fields: fields.map(createFieldPath),
+                fields: fields.getAllStoragePaths().map(field => {
+                    return `values.${field}`;
+                }),
                 query: `*${prepareTerm(term)}*`,
                 default_operator: "and"
             }
@@ -71,11 +73,11 @@ interface Params {
     model: CmsModel;
     query: ElasticsearchBoolQueryConfig;
     term?: string;
-    fields: CmsModelField[];
+    fields?: IFullTextSearchFields;
 }
 export const applyFullTextSearch = (params: Params): void => {
     const { plugins, query, term, fields, model } = params;
-    if (!term || term.length === 0 || fields.length === 0) {
+    if (!term || term.length === 0 || !fields || fields.hasAny() === false) {
         return;
     }
 
@@ -86,7 +88,6 @@ export const applyFullTextSearch = (params: Params): void => {
 
     plugin.apply({
         model,
-        createFieldPath: field => `values.${field.storageId}`,
         fields,
         query,
         term,

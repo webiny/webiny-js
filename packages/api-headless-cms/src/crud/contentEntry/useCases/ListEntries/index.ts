@@ -40,10 +40,7 @@ export const listEntriesUseCases = (params: ListEntriesUseCasesParams) => {
         listOperationWithEventsSort
     );
     const listOperationWithEventsSortStatusCheckFields =
-        new ListEntriesOperationWithSearchableFields(
-            params.context,
-            listOperationWithEventsSortStatusCheck
-        );
+        new ListEntriesOperationWithSearchableFields(listOperationWithEventsSortStatusCheck);
 
     const listNotDeletedOperation = new ListEntriesOperationNotDeleted(
         listOperationWithEventsSortStatusCheckFields

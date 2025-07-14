@@ -1,21 +1,24 @@
 import { PluginsContainer } from "@webiny/plugins";
-import { CmsEntryListParams, CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types";
+import {
+    CmsEntryListWhere,
+    type CmsEntryStorageOperationsListParams,
+    CmsModel
+} from "@webiny/api-headless-cms/types";
 import { createModelFields } from "./fields";
-import { createFullTextSearchFields } from "./fullTextSearchFields";
 import { createInitialQuery } from "./initialQuery";
 import { applyFullTextSearch } from "./fullTextSearch";
 import { createQueryModifierPluginList } from "./plugins/queryModifier";
 import { createSortModifierPluginList } from "./plugins/sortModifier";
 import { createBodyModifierPluginList } from "./plugins/bodyModifier";
 import { createElasticsearchSort } from "./sort";
-import { PrimitiveValue, SearchBody, BoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import { BoolQueryConfig, PrimitiveValue, SearchBody } from "@webiny/api-elasticsearch/types";
 import { createExecFiltering } from "./filtering";
 import { assignMinimumShouldMatchToQuery } from "./assignMinimumShouldMatchToQuery";
 
 interface Params {
     plugins: PluginsContainer;
     model: CmsModel;
-    params: Omit<CmsEntryListParams, "where" | "after"> & {
+    params: Omit<CmsEntryStorageOperationsListParams, "where" | "after"> & {
         where: CmsEntryListWhere;
         after?: PrimitiveValue[];
     };
@@ -51,15 +54,7 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
         plugins,
         model
     });
-    /**
-     * We need the fields which we can search through via the full text search.
-     *
-     */
-    const fullTextSearchFields = createFullTextSearchFields({
-        model,
-        term,
-        fields
-    });
+
     /**
      * The initial elasticsearch query where we attach some default conditions we always need.
      */
@@ -75,7 +70,7 @@ export const createElasticsearchBody = ({ plugins, model, params }: Params): Sea
         plugins,
         query,
         term,
-        fields: fullTextSearchFields
+        fields
     });
 
     const execFiltering = createExecFiltering({

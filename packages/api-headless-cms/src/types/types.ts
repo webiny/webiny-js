@@ -1804,9 +1804,9 @@ export interface CmsEntryStorageOperationsGetParams {
 
 export interface CmsEntryStorageOperationsListParams {
     where: CmsEntryListWhere;
+    fields?: IFullTextSearchFields;
     sort?: CmsEntryListSort;
     search?: string;
-    fields?: string[];
     limit: number;
     after?: string | null;
 }
@@ -2187,4 +2187,30 @@ export interface HeadlessCmsStorageOperations<C = CmsContext> {
      */
     beforeInit: (context: C) => Promise<void>;
     init?: (context: C) => Promise<void>;
+}
+
+export interface IFullTextSearchField {
+    parent: IFullTextSearchField | null;
+    field: CmsModelField;
+    path: string;
+    storagePath: string;
+}
+
+export interface IFullTextSearchFieldsFindCallable {
+    (field: IFullTextSearchField): IFullTextSearchField | undefined;
+}
+
+export interface IFullTextSearchFieldsMapCallable<T> {
+    (field: IFullTextSearchField): T;
+}
+
+export interface IFullTextSearchFields {
+    getByPath(path: string): IFullTextSearchField | undefined;
+    getByStoragePath(storagePath: string): IFullTextSearchField | undefined;
+    getAllPaths(): string[];
+    getAllStoragePaths(): string[];
+    hasAny(): boolean;
+    hasFieldId(fieldId: string): boolean;
+    find(cb: IFullTextSearchFieldsFindCallable): IFullTextSearchField | undefined;
+    map<T>(cb: IFullTextSearchFieldsMapCallable<T>): T[];
 }

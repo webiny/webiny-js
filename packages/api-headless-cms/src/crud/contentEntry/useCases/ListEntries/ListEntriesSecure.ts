@@ -1,6 +1,12 @@
 import { AccessControl } from "~/crud/AccessControl/AccessControl";
 import { IListEntries } from "../../abstractions";
-import { CmsEntry, CmsEntryListParams, CmsEntryMeta, CmsEntryValues, CmsModel } from "~/types";
+import {
+    CmsEntry,
+    CmsEntryMeta,
+    CmsEntryStorageOperationsListParams,
+    CmsEntryValues,
+    CmsModel
+} from "~/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 
 export class ListEntriesSecure implements IListEntries {
@@ -20,7 +26,7 @@ export class ListEntriesSecure implements IListEntries {
 
     async execute<T extends CmsEntryValues>(
         model: CmsModel,
-        params?: CmsEntryListParams
+        params: CmsEntryStorageOperationsListParams
     ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
         await this.accessControl.ensureCanAccessEntry({ model });
         const { where: initialWhere } = params || {};
