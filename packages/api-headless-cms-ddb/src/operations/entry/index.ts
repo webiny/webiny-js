@@ -1141,7 +1141,7 @@ export const createEntriesStorageOperations = (
             fields: modelFields,
             fullTextSearch: {
                 term: search,
-                fields: fields || []
+                fields: fields ? fields.getAllPaths() : []
             }
         });
 

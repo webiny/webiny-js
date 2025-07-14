@@ -2,6 +2,8 @@ import { useFruitManageHandler } from "~tests/testHelpers/useFruitManageHandler"
 import { setupContentModelGroup, setupContentModels } from "~tests/testHelpers/setup";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
 import { toSlug } from "~/utils/toSlug";
+import { useProductManageHandler } from "~tests/testHelpers/useProductManageHandler";
+import { Product } from "~tests/types";
 
 describe("search", () => {
     const categoryManager = useCategoryManageHandler({
@@ -498,5 +500,151 @@ describe("search", () => {
                 }
             }
         });
+    });
+
+    it("should search in root and nested fields", async () => {
+        const productManager = useProductManageHandler({
+            path: "manage/en-US"
+        });
+
+        const group = await setupContentModelGroup(productManager);
+        await setupContentModels(fruitManager, group, ["product", "category"]);
+
+        const [createCategoryResult] = await categoryManager.createCategory({
+            data: {
+                title: "Test",
+                slug: "test"
+            }
+        });
+        const category = createCategoryResult.data.createCategory.data;
+        expect(category).toMatchObject({
+            id: expect.any(String)
+        });
+
+        const product: Product = {
+            title: "a test product:shoe",
+            price: 1234567890,
+            availableOn: "2020-01-01",
+            color: "black",
+            inStock: true,
+            itemsInStock: 202,
+            image: "test-product.png",
+            availableSizes: ["s", "m", "l"],
+            category: {
+                id: category.id,
+                modelId: "category"
+            },
+            variant: {
+                name: "product:shoe:blue",
+                category: {
+                    id: category.id,
+                    modelId: "category"
+                },
+                price: 101,
+                images: ["test-product.png"],
+                options: [
+                    {
+                        name: "product:shoe:blue:withStripes",
+                        category: {
+                            id: category.id,
+                            modelId: "category"
+                        },
+                        categories: [
+                            {
+                                id: category.id,
+                                modelId: "category"
+                            }
+                        ],
+                        price: 1234567890,
+                        image: "test-product.png",
+                        longText: ["Long text in the subvariant #1"]
+                    }
+                ]
+            }
+        };
+
+        const [productResponse] = await productManager.createProduct({
+            data: product
+        });
+        expect(productResponse).toMatchObject({
+            data: {
+                createProduct: {
+                    data: {
+                        id: expect.any(String),
+                        title: product.title
+                    },
+                    error: null
+                }
+            }
+        });
+        const createdProduct = productResponse.data.createProduct.data;
+
+        const noResult = {
+            data: {
+                listProducts: {
+                    data: [],
+                    meta: {
+                        totalCount: 0,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        };
+        const foundProductResult = {
+            data: {
+                listProducts: {
+                    data: [
+                        {
+                            id: createdProduct.id
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        };
+        /**
+         * Searches which should not produce any results
+         */
+        const noResultSearches: string[] = [
+            "unknownSearchTermWhichShouldNotProduceAnyResults",
+            "product:shoe:red",
+            "product:shoe:green",
+            "guitar:yello",
+            "product:shoe:blue:withStripes:green"
+        ];
+        for (const search of noResultSearches) {
+            const [response] = await productManager.listProducts({
+                search
+            });
+            expect(response).toMatchObject(noResult);
+            expect(response.data.listProducts.data).toHaveLength(0);
+        }
+        /**
+         * Searches which should produce results
+         */
+        const foundSearches = [
+            "product:shoe:blue",
+            "product:shoe",
+            "blue:withStripes",
+            "shoe:blue",
+            "product",
+            "product:shoe:blue:withStripes"
+        ];
+        for (const search of foundSearches) {
+            const [response] = await productManager.listProducts({
+                search
+            });
+            if (!response.data.listProducts?.data?.length) {
+                throw new Error(`Search "${search}" did not return any results.`);
+            }
+            expect(response).toMatchObject(foundProductResult);
+        }
     });
 });

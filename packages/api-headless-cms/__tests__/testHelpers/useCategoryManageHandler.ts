@@ -92,8 +92,9 @@ const listCategoriesQuery = (model: CmsModel) => {
             $sort: [${model.singularApiName}ListSorter]
             $limit: Int
             $after: String
+            $search: String
         ) {
-            listCategories: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
+            listCategories: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after, search: $search) {
                 data {
                     ${categoryFields}
                 }
