@@ -3,6 +3,10 @@ import { createHandlerConverter, HandlerConverter } from "~/sync/handler/Handler
 import { NullCommandValue } from "~/sync/handler/converter/commands/NullCommandValue.js";
 
 describe("HandlerConverter", () => {
+    beforeEach(() => {
+        process.env.DEBUG = "true";
+    });
+
     it("should create an empty handler converter", () => {
         const def = new NullCommandValue();
         // @ts-expect-error

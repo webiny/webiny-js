@@ -10,6 +10,10 @@ import {
 import { mockClient } from "aws-sdk-client-mock";
 
 describe("deleteUserAction", () => {
+    beforeEach(() => {
+        process.env.DEBUG = "true";
+    });
+
     it("should fail to parse invalid input data", () => {
         console.log = jest.fn();
 

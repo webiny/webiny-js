@@ -13,6 +13,10 @@ import { mockClient } from "aws-sdk-client-mock";
 import { createCopyFileAction } from "~/worker/actions/copyFile/copyFileAction.js";
 
 describe("copyFileAction", () => {
+    beforeEach(() => {
+        process.env.DEBUG = "true";
+    });
+
     it("should fail to parse invalid input data", () => {
         console.log = jest.fn();
 
