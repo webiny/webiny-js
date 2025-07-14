@@ -367,7 +367,7 @@ describe("filtering", () => {
             fields,
             fullTextSearch: {
                 term: "yellow",
-                fields: searchableFields
+                fields: searchableFields.getAllPaths()
             }
         });
         expect(resultsYellow).toHaveLength(3);
@@ -382,7 +382,7 @@ describe("filtering", () => {
             fields,
             fullTextSearch: {
                 term: "white",
-                fields: searchableFields
+                fields: searchableFields.getAllPaths()
             }
         });
         expect(resultsWhite).toHaveLength(2);
@@ -397,7 +397,7 @@ describe("filtering", () => {
             fields,
             fullTextSearch: {
                 term: "grey",
-                fields: searchableFields
+                fields: searchableFields.getAllPaths()
             }
         });
         expect(resultsGrey).toHaveLength(2);
@@ -412,7 +412,7 @@ describe("filtering", () => {
             fields,
             fullTextSearch: {
                 term: "red",
-                fields: searchableFields
+                fields: searchableFields.getAllPaths()
             }
         });
         expect(resultsRed).toHaveLength(3);
