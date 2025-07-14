@@ -1,4 +1,3 @@
-- filters +++
 - check folders dialog update input check how value and onchange is passed - onchange ++
 - remove PageModel load and provider, declare the fields statically +
 - remove bindings and elements from list queries +

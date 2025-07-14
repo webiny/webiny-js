@@ -6,13 +6,14 @@ import {
     useNavigateFolder
 } from "@webiny/app-aco";
 import { useDocumentListPresenter } from "./presenters/DocumentListPresenterContext";
-import { useLoadPages } from "~/features/pages/index.js";
+import { useFilterPages, useLoadPages } from "~/features/pages/index.js";
 
 export const useDocumentList = () => {
     const { folders, getFolderHierarchy } = useGetFolderHierarchy();
     const { listFoldersByParentIds } = useListFoldersByParentIds();
     const { currentFolderId } = useNavigateFolder();
     const { loadPages: listDocuments } = useLoadPages();
+    const { filterPages: filterDocuments } = useFilterPages();
     const presenter = useDocumentListPresenter();
 
     useEffect(() => {
@@ -55,6 +56,11 @@ export const useDocumentList = () => {
     const showFilters = useCallback(
         (show: boolean) => {
             presenter.showFilters(show);
+
+            // When set to false, it will also clear any applied document filters for the current folder.
+            if (!show) {
+                filterDocuments({}, currentFolderId);
+            }
         },
         [presenter]
     );
