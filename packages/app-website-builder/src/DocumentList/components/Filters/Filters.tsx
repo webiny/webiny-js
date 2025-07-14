@@ -25,12 +25,6 @@ export const Filters = () => {
     };
 
     return (
-        <>
-            <BaseFilters
-                filters={browser.filters}
-                show={vm.isFilterVisible}
-                onChange={applyFilters}
-            />
-        </>
+        <BaseFilters filters={browser.filters} show={vm.isFilterVisible} onChange={applyFilters} />
     );
 };

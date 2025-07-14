@@ -26,8 +26,6 @@ export const FilterByStatus = () => {
         ];
     }, []);
 
-    console.log("bind.value", bind.value);
-
     return (
         <Select
             {...bind}

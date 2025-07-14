@@ -3,6 +3,7 @@ import type {
     IFilterPagesUseCase,
     FilterPagesUseCaseParams
 } from "~/features/pages/loadPages/IFilterPagesUseCase.js";
+import { ROOT_FOLDER } from "~/constants.js";
 
 export class FilterPagesUseCase implements IFilterPagesUseCase {
     private repository: IListPagesRepository;
@@ -12,6 +13,23 @@ export class FilterPagesUseCase implements IFilterPagesUseCase {
     }
 
     async execute(params: FilterPagesUseCaseParams) {
+        const cleanFilters = Object.fromEntries(
+            Object.entries(params.filters).filter(([_, value]) => value !== undefined)
+        );
+
+        // If the filters object is empty, we want to retrieve all documents in the folder.
+        if (Object.values(cleanFilters).length === 0) {
+            await this.repository.loadPages({
+                where: {
+                    wbyAco_location: {
+                        folderId: params.folderIds[0] ?? ROOT_FOLDER
+                    }
+                }
+            });
+
+            return;
+        }
+
         let where = {};
 
         if (params.folderIds.length > 0) {
@@ -22,6 +40,6 @@ export class FilterPagesUseCase implements IFilterPagesUseCase {
             };
         }
 
-        await this.repository.filterPages(params.filters, where);
+        await this.repository.filterPages(cleanFilters, where);
     }
 }
