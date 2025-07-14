@@ -3,11 +3,11 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { CreatePageGqlGateway } from "./CreatePageGqlGateway.js";
 import { type CreatePageParams } from "./ICreatePageUseCase.js";
 import { CreatePage } from "./CreatePage.js";
-import { useGetPageGraphQLSelection } from "../getPageModel/index.js";
+import { useGetPageGraphQLFields } from "../getPageModel/index.js";
 
 export const useCreatePage = () => {
     const client = useApolloClient();
-    const fields = useGetPageGraphQLSelection();
+    const fields = useGetPageGraphQLFields(["properties", "metadata", "bindings", "elements"]);
     const gateway = new CreatePageGqlGateway(client, fields);
 
     const createPage = useCallback(
