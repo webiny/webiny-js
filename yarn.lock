@@ -972,6 +972,55 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-scheduler@npm:3.821.0":
+  version: 3.821.0
+  resolution: "@aws-sdk/client-scheduler@npm:3.821.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": "npm:5.2.0"
+    "@aws-crypto/sha256-js": "npm:5.2.0"
+    "@aws-sdk/core": "npm:3.821.0"
+    "@aws-sdk/credential-provider-node": "npm:3.821.0"
+    "@aws-sdk/middleware-host-header": "npm:3.821.0"
+    "@aws-sdk/middleware-logger": "npm:3.821.0"
+    "@aws-sdk/middleware-recursion-detection": "npm:3.821.0"
+    "@aws-sdk/middleware-user-agent": "npm:3.821.0"
+    "@aws-sdk/region-config-resolver": "npm:3.821.0"
+    "@aws-sdk/types": "npm:3.821.0"
+    "@aws-sdk/util-endpoints": "npm:3.821.0"
+    "@aws-sdk/util-user-agent-browser": "npm:3.821.0"
+    "@aws-sdk/util-user-agent-node": "npm:3.821.0"
+    "@smithy/config-resolver": "npm:^4.1.4"
+    "@smithy/core": "npm:^3.5.1"
+    "@smithy/fetch-http-handler": "npm:^5.0.4"
+    "@smithy/hash-node": "npm:^4.0.4"
+    "@smithy/invalid-dependency": "npm:^4.0.4"
+    "@smithy/middleware-content-length": "npm:^4.0.4"
+    "@smithy/middleware-endpoint": "npm:^4.1.9"
+    "@smithy/middleware-retry": "npm:^4.1.10"
+    "@smithy/middleware-serde": "npm:^4.0.8"
+    "@smithy/middleware-stack": "npm:^4.0.4"
+    "@smithy/node-config-provider": "npm:^4.1.3"
+    "@smithy/node-http-handler": "npm:^4.0.6"
+    "@smithy/protocol-http": "npm:^5.1.2"
+    "@smithy/smithy-client": "npm:^4.4.1"
+    "@smithy/types": "npm:^4.3.1"
+    "@smithy/url-parser": "npm:^4.0.4"
+    "@smithy/util-base64": "npm:^4.0.0"
+    "@smithy/util-body-length-browser": "npm:^4.0.0"
+    "@smithy/util-body-length-node": "npm:^4.0.0"
+    "@smithy/util-defaults-mode-browser": "npm:^4.0.17"
+    "@smithy/util-defaults-mode-node": "npm:^4.0.17"
+    "@smithy/util-endpoints": "npm:^3.0.6"
+    "@smithy/util-middleware": "npm:^4.0.4"
+    "@smithy/util-retry": "npm:^4.0.5"
+    "@smithy/util-utf8": "npm:^4.0.0"
+    "@types/uuid": "npm:^9.0.1"
+    tslib: "npm:^2.6.2"
+    uuid: "npm:^9.0.1"
+  checksum: 10/063b1824e396c5e91fd6ff99d9e78e2038eaa6b15a4f3baa6c1449cea89577a1cdf53d5d1835fd433dc8608c21703d1eb0bb2e7d8f95edc2a4c308380fe488bf
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-sfn@npm:3.821.0":
   version: 3.821.0
   resolution: "@aws-sdk/client-sfn@npm:3.821.0"
@@ -14187,6 +14236,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-headless-cms-schedule@workspace:packages/api-headless-cms-scheduler":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-headless-cms-schedule@workspace:packages/api-headless-cms-scheduler"
+  dependencies:
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-i18n": "npm:0.0.0"
+    "@webiny/api-security": "npm:0.0.0"
+    "@webiny/api-tenancy": "npm:0.0.0"
+    "@webiny/api-wcp": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/handler-aws": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    typescript: "npm:5.3.3"
+    zod: "npm:^3.23.8"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-headless-cms-tasks-ddb-es@workspace:packages/api-headless-cms-tasks-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-tasks-ddb-es@workspace:packages/api-headless-cms-tasks-ddb-es"
@@ -16321,6 +16393,7 @@ __metadata:
     "@aws-sdk/client-iot": "npm:3.821.0"
     "@aws-sdk/client-lambda": "npm:3.821.0"
     "@aws-sdk/client-s3": "npm:3.821.0"
+    "@aws-sdk/client-scheduler": "npm:3.821.0"
     "@aws-sdk/client-sfn": "npm:3.821.0"
     "@aws-sdk/client-sqs": "npm:3.821.0"
     "@aws-sdk/client-sts": "npm:3.821.0"
