@@ -1,14 +1,13 @@
 import type { CmsModel } from "@webiny/api-headless-cms/types";
-import type {
-    IScheduleAction,
-    IScheduleExecutor,
-    IScheduleFetcher,
-    IScheduleRecord,
-    ISchedulerInput
+import {
+    type IScheduleAction,
+    type IScheduleExecutor,
+    type IScheduleFetcher,
+    type IScheduleRecord,
+    type ISchedulerInput,
+    ScheduleType
 } from "~/scheduler/types.js";
 import { createScheduleRecordId } from "~/scheduler/createScheduleRecordId.js";
-import { convertException } from "@webiny/utils";
-import { NotFoundError } from "@webiny/handler-graphql";
 import type { ISchedulerService } from "~/service/types.js";
 import type { PublishScheduleActionCms } from "~/scheduler/actions/PublishScheduleAction.js";
 import type { UnpublishScheduleActionCms } from "~/scheduler/actions/UnpublishScheduleAction.js";
@@ -43,16 +42,7 @@ export class ScheduleExecutor implements IScheduleExecutor {
         const scheduleRecordId = createScheduleRecordId(targetId);
         const original = await this.fetcher.getScheduled(targetId);
 
-        const action = this.actions.find(action => action.canHandle(input));
-        if (!action) {
-            throw new WebinyError(
-                `No action found for input type "${input.type}".`,
-                "NO_ACTION_FOUND",
-                {
-                    type: input.type
-                }
-            );
-        }
+        const action = this.getAction(input.type);
 
         if (original) {
             return action.reschedule(original, input);
@@ -66,28 +56,32 @@ export class ScheduleExecutor implements IScheduleExecutor {
     }
 
     public async cancel(id: string): Promise<void> {
-        const record = await this.fetcher.getScheduled(id);
-        if (!record) {
-            return;
+        const original = await this.fetcher.getScheduled(id);
+        if (!original) {
+            throw new WebinyError(
+                `No scheduled record found for ID "${id}".`,
+                "SCHEDULED_RECORD_NOT_FOUND",
+                {
+                    id
+                }
+            );
         }
 
-        try {
-            await this.cms.deleteEntry(this.scheduleModel, record.id);
-        } catch (ex) {
-            if (ex.code === "NOT_FOUND" || ex instanceof NotFoundError) {
-                return;
-            }
-            console.error(`Error while deleting scheduled record: ${id}.`);
-            console.log(convertException(ex));
-            throw ex;
-        }
+        const action = this.getAction(original.type);
+        return action.cancel(original.id);
+    }
 
-        const result = await this.service.delete(record.id);
-        if (!result.error) {
-            return;
-        } else if (result.error.code === "NOT_FOUND" || result.error instanceof NotFoundError) {
-            return;
+    private getAction(type: ScheduleType): IScheduleAction {
+        const action = this.actions.find(action => {
+            return action.canHandle({
+                type
+            });
+        });
+        if (action) {
+            return action;
         }
-        throw result.error;
+        throw new WebinyError(`No action found for input type "${type}".`, "NO_ACTION_FOUND", {
+            type
+        });
     }
 }

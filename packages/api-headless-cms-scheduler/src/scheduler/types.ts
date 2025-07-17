@@ -94,7 +94,7 @@ export interface IScheduleActionScheduleParams {
     input: ISchedulerInput;
 }
 export interface IScheduleAction {
-    canHandle(input: ISchedulerInput): boolean;
+    canHandle(input: Pick<ISchedulerInput, "type">): boolean;
     schedule(params: IScheduleActionScheduleParams): Promise<IScheduleRecord>;
     cancel(id: string): Promise<void>;
     reschedule(original: IScheduleRecord, input: ISchedulerInput): Promise<IScheduleRecord>;
