@@ -14236,9 +14236,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms-schedule@workspace:packages/api-headless-cms-scheduler":
+"@webiny/api-headless-cms-scheduler@npm:0.0.0, @webiny/api-headless-cms-scheduler@workspace:packages/api-headless-cms-scheduler":
   version: 0.0.0-use.local
-  resolution: "@webiny/api-headless-cms-schedule@workspace:packages/api-headless-cms-scheduler"
+  resolution: "@webiny/api-headless-cms-scheduler@workspace:packages/api-headless-cms-scheduler"
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
@@ -18451,6 +18451,7 @@ __metadata:
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-aco": "npm:0.0.0"
     "@webiny/api-headless-cms-ddb": "npm:0.0.0"
+    "@webiny/api-headless-cms-scheduler": "npm:0.0.0"
     "@webiny/api-headless-cms-tasks": "npm:0.0.0"
     "@webiny/api-i18n": "npm:0.0.0"
     "@webiny/api-i18n-ddb": "npm:0.0.0"
