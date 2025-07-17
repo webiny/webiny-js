@@ -14254,6 +14254,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
+    aws-sdk-client-mock: "npm:^4.1.0"
     typescript: "npm:5.3.3"
     zod: "npm:^3.23.8"
   languageName: unknown

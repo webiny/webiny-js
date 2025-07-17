@@ -6,8 +6,12 @@ import { createMockTargetModel } from "~tests/mocks/targetModel.js";
 import { UnpublishScheduleAction } from "~/scheduler/actions/UnpublishScheduleAction.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import { ScheduleRecord } from "~/scheduler/ScheduleRecord.js";
-import type { IScheduleEntryValues } from "~/scheduler/types.js";
+import { type IScheduleEntryValues, ScheduleType } from "~/scheduler/types.js";
 import { createScheduleRecordId } from "~/scheduler/createScheduleRecordId.js";
+import { mockClient } from "aws-sdk-client-mock";
+import { dateToISOString } from "~/scheduler/dates.js";
+import { CreateScheduleCommand, SchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
+import { SchedulerService } from "~/service/SchedulerService.js";
 
 describe("UnpublishScheduleAction", () => {
     const service = createMockService();
@@ -44,7 +48,7 @@ describe("UnpublishScheduleAction", () => {
         const result = await action.schedule({
             input: {
                 immediately: true,
-                type: "unpublish"
+                type: ScheduleType.unpublish
             },
             targetId: "target-id#0002",
             scheduleRecordId: createScheduleRecordId(`target-id#0002`)
@@ -56,14 +60,15 @@ describe("UnpublishScheduleAction", () => {
             targetId: "target-id#0002",
             model: targetModel,
             scheduledBy: getIdentity(),
+            dateOn: expect.any(Date),
             publishOn: undefined,
             unpublishOn: expect.any(Date),
-            type: "unpublish",
+            type: ScheduleType.unpublish,
             title: "Test Entry"
         });
     });
 
-    it("should unpublish an entry immediately if the dateOn is in the past", async () => {
+    it("should unpublish an entry immediately if the scheduleOn is in the past", async () => {
         const cms = createMockCms({
             async getEntryById<T>() {
                 return {
@@ -89,11 +94,11 @@ describe("UnpublishScheduleAction", () => {
             cms
         });
 
-        const dateOn = new Date(Date.now() - 1000000);
+        const scheduleOn = new Date(Date.now() - 1000000);
         const result = await action.schedule({
             input: {
-                dateOn,
-                type: "unpublish"
+                scheduleOn,
+                type: ScheduleType.unpublish
             },
             targetId: "target-id#0002",
             scheduleRecordId: createScheduleRecordId(`target-id#0002`)
@@ -106,27 +111,39 @@ describe("UnpublishScheduleAction", () => {
             model: targetModel,
             scheduledBy: getIdentity(),
             publishOn: undefined,
-            unpublishOn: dateOn,
-            type: "unpublish",
+            unpublishOn: scheduleOn,
+            dateOn: undefined,
+            type: ScheduleType.unpublish,
             title: "Test Entry"
         });
     });
 
     it("should schedule an unpublish action for a future date", async () => {
-        const serviceCreate = jest.fn(async () => {});
-        const service = createMockService({
-            create: serviceCreate
+        const client = mockClient(SchedulerClient);
+        client.on(CreateScheduleCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
         });
-        const dateOn = new Date(Date.now() + 1000000);
+
+        const service = new SchedulerService({
+            getClient: () => client,
+            config: {
+                roleArn: "arn:aws:iam::123456789012:role/scheduler-role",
+                lambdaArn: "arn:aws:lambda:us-east-1:123456789012:function:scheduler-lambda"
+            }
+        });
+
+        const scheduleOn = new Date(Date.now() + 1000000);
 
         const createEntryMock = jest.fn(async () => {
-            // @ts-expect-error
-            const entry: CmsEntry<IScheduleEntryValues> = {
+            const entry: Pick<CmsEntry<IScheduleEntryValues>, "id" | "values" | "savedBy"> = {
                 id: createScheduleRecordId(`target-id#0002`),
                 values: {
                     targetId: "target-id#0002",
-                    type: "unpublish",
-                    dateOn: dateOn.toISOString(),
+                    type: ScheduleType.unpublish,
+                    scheduledOn: dateToISOString(scheduleOn),
+                    dateOn: dateToISOString(scheduleOn),
                     title: "Test Entry",
                     targetModelId: targetModel.modelId,
                     scheduledBy: getIdentity()
@@ -164,8 +181,8 @@ describe("UnpublishScheduleAction", () => {
 
         const result = await action.schedule({
             input: {
-                dateOn,
-                type: "unpublish"
+                scheduleOn: scheduleOn,
+                type: ScheduleType.unpublish
             },
             targetId: "target-id#0002",
             scheduleRecordId: createScheduleRecordId(`target-id#0002`)
@@ -178,20 +195,22 @@ describe("UnpublishScheduleAction", () => {
             model: targetModel,
             scheduledBy: getIdentity(),
             publishOn: undefined,
-            unpublishOn: dateOn,
-            type: "unpublish",
+            unpublishOn: scheduleOn,
+            dateOn: scheduleOn,
+            type: ScheduleType.unpublish,
             title: "Test Entry"
         });
 
         expect(createEntryMock).toHaveBeenCalledTimes(1);
         expect(createEntryMock).toHaveBeenCalledWith(scheduleModel, {
             id: createScheduleRecordId(`target-id#0002`),
-            dateOn: dateOn.toISOString(),
+            dateOn: undefined,
+            scheduledOn: scheduleOn.toISOString(),
             scheduledBy: getIdentity(),
             targetId: "target-id#0002",
             targetModelId: "targetModel",
             title: "Test Entry",
-            type: "unpublish"
+            type: ScheduleType.unpublish
         });
     });
 });

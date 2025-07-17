@@ -5,10 +5,25 @@ import {
     listScheduleSchema,
     updateScheduleSchema
 } from "~/graphql/schema.js";
+import { type ISchedulerInput, ScheduleType } from "~/scheduler/types.js";
+
+interface IExpectedSchemaInput {
+    id: string;
+    modelId: string;
+    input: ISchedulerInput;
+}
+
+interface IExpectedCancelSchemaInput {
+    id: string;
+    modelId: string;
+}
 
 describe("graphql/schema", () => {
     it("getScheduleSchema: accepts valid input and returns expected data", async () => {
-        const input = { modelId: "model", id: "123" };
+        const input = {
+            modelId: "model",
+            id: "123"
+        };
         const result = await getScheduleSchema.safeParseAsync(input);
         expect(result.success).toBe(true);
         if (result.success) {
@@ -67,7 +82,10 @@ describe("graphql/schema", () => {
         const input = {
             modelId: "model",
             id: "123",
-            input: { immediately: true, type: "publish" }
+            input: {
+                immediately: true,
+                type: "publish"
+            }
         };
         const result = await createScheduleSchema.safeParseAsync(input);
         expect(result.success).toBe(true);
@@ -77,31 +95,34 @@ describe("graphql/schema", () => {
     });
     it("createScheduleSchema: accepts dateOn input and returns expected data", async () => {
         const date = new Date();
-        const input = {
+        const input: IExpectedSchemaInput = {
             modelId: "model",
             id: "123",
-            input: { dateOn: date, type: "unpublish" }
+            input: {
+                scheduleOn: date,
+                type: ScheduleType.unpublish
+            }
         };
         const result = await createScheduleSchema.safeParseAsync(input);
         expect(result.success).toBe(true);
-        if (result.success) {
-            expect(result.data).toEqual({
-                ...input,
-                input: {
-                    ...input.input,
-                    // @ts-expect-error
-                    dateOn: result.data.input.dateOn
-                }
-            });
-            // @ts-expect-error
-            expect(result.data.input.dateOn instanceof Date).toBe(true);
-        }
+
+        expect(result.data).toEqual({
+            ...input,
+            input: {
+                ...input.input,
+                scheduleOn: date
+            }
+        });
+        // @ts-expect-error
+        expect(result.data.input.scheduleOn).toBeInstanceOf(Date);
     });
     it("createScheduleSchema: rejects missing input fields", async () => {
         const result = await createScheduleSchema.safeParseAsync({
             modelId: "model",
             id: "123",
-            input: { type: "publish" }
+            input: {
+                type: "publish"
+            }
         });
         expect(result.success).toBe(false);
     });
@@ -110,7 +131,10 @@ describe("graphql/schema", () => {
         const input = {
             modelId: "model",
             id: "123",
-            input: { immediately: true, type: "publish" }
+            input: {
+                immediately: true,
+                type: "publish"
+            }
         };
         const result = await updateScheduleSchema.safeParseAsync(input);
         expect(result.success).toBe(true);
@@ -120,10 +144,13 @@ describe("graphql/schema", () => {
     });
     it("updateScheduleSchema: accepts dateOn input and returns expected data", async () => {
         const date = new Date();
-        const input = {
+        const input: IExpectedSchemaInput = {
             modelId: "model",
             id: "123",
-            input: { dateOn: date, type: "unpublish" }
+            input: {
+                scheduleOn: date,
+                type: ScheduleType.unpublish
+            }
         };
         const result = await updateScheduleSchema.safeParseAsync(input);
         expect(result.success).toBe(true);
@@ -132,25 +159,28 @@ describe("graphql/schema", () => {
                 ...input,
                 input: {
                     ...input.input,
-                    // @ts-expect-error
-                    dateOn: result.data.input.dateOn
+                    scheduleOn: date
                 }
             });
-            // @ts-expect-error
-            expect(result.data.input.dateOn instanceof Date).toBe(true);
+            expect(result.data.input.scheduleOn).toBeInstanceOf(Date);
         }
     });
     it("updateScheduleSchema: rejects missing input fields", async () => {
         const result = await updateScheduleSchema.safeParseAsync({
             modelId: "model",
             id: "123",
-            input: { type: "publish" }
+            input: {
+                type: "publish"
+            }
         });
         expect(result.success).toBe(false);
     });
 
     it("cancelScheduleSchema: accepts valid input and returns expected data", async () => {
-        const input = { modelId: "model", id: "123" };
+        const input: IExpectedCancelSchemaInput = {
+            modelId: "model",
+            id: "123"
+        };
         const result = await cancelScheduleSchema.safeParseAsync(input);
         expect(result.success).toBe(true);
         if (result.success) {

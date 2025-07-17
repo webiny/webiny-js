@@ -1,13 +1,17 @@
-import type {
-    IScheduleAction,
-    IScheduleActionScheduleParams,
-    IScheduleEntryValues,
-    ISchedulerInput
+import {
+    type IScheduleAction,
+    type IScheduleActionScheduleParams,
+    type IScheduleEntryValues,
+    type IScheduleRecord,
+    type ISchedulerInput,
+    ScheduleType
 } from "~/scheduler/types.js";
 import { createScheduleRecord, transformScheduleEntry } from "~/scheduler/ScheduleRecord.js";
 import { convertException } from "@webiny/utils";
 import type { CmsIdentity, CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types";
 import type { ISchedulerService } from "~/service/types.js";
+import { dateToISOString } from "~/scheduler/dates.js";
+import { NotFoundError } from "@webiny/handler-graphql";
 
 export type PublishScheduleActionCms = Pick<
     HeadlessCms,
@@ -38,10 +42,10 @@ export class PublishScheduleAction implements IScheduleAction {
     }
 
     public canHandle(input: ISchedulerInput): boolean {
-        return input.type === "publish";
+        return input.type === ScheduleType.publish;
     }
 
-    public async schedule(params: IScheduleActionScheduleParams) {
+    public async schedule(params: IScheduleActionScheduleParams): Promise<IScheduleRecord> {
         const { targetId, input, scheduleRecordId } = params;
 
         const targetEntry = await this.cms.getEntryById(this.targetModel, targetId);
@@ -49,7 +53,10 @@ export class PublishScheduleAction implements IScheduleAction {
         const identity = this.getIdentity();
 
         const currentDate = new Date();
-
+        /**
+         * Immediately publish the entry if requested.
+         * No need to create a schedule entry or the service event.
+         */
         if (input.immediately) {
             const publishedEntry = await this.cms.publishEntry(this.targetModel, targetId);
             return createScheduleRecord({
@@ -59,17 +66,23 @@ export class PublishScheduleAction implements IScheduleAction {
                 scheduledBy: publishedEntry.savedBy,
                 scheduledOn: new Date(publishedEntry.savedOn),
                 dateOn: currentDate,
-                type: "publish",
+                type: ScheduleType.publish,
                 title
             });
-        } else if (input.dateOn < currentDate) {
+        }
+        /**
+         * If the entry is scheduled for a date in the past, we need to update it with publish information, if user sent something.
+         * No need to create a schedule entry or the service event.
+         */
+        //
+        else if (input.scheduleOn < currentDate) {
             /**
              * We need to update the entry with publish information because we cannot update it in the publishing process.
              */
             await this.cms.updateEntry(this.targetModel, targetId, {
                 firstPublishedBy: identity,
-                firstPublishedOn: input.dateOn.toISOString(),
-                lastPublishedOn: input.dateOn.toISOString(),
+                firstPublishedOn: dateToISOString(input.scheduleOn),
+                lastPublishedOn: dateToISOString(input.scheduleOn),
                 lastPublishedBy: identity
             });
             const publishedEntry = await this.cms.publishEntry(this.targetModel, targetId);
@@ -80,7 +93,7 @@ export class PublishScheduleAction implements IScheduleAction {
                 scheduledBy: publishedEntry.savedBy,
                 scheduledOn: currentDate,
                 dateOn: input.dateOn,
-                type: "publish",
+                type: ScheduleType.publish,
                 title
             });
         }
@@ -90,29 +103,125 @@ export class PublishScheduleAction implements IScheduleAction {
             targetId,
             targetModelId: this.targetModel.modelId,
             title,
-            type: "publish",
-            dateOn: input.dateOn.toISOString(),
+            type: ScheduleType.publish,
+            scheduledOn: dateToISOString(input.scheduleOn),
+            dateOn: input.dateOn ? dateToISOString(input.dateOn) : undefined,
             scheduledBy: identity
         });
 
-        try {
-            await this.service.create({
-                id: scheduleRecordId,
-                dateOn: input.dateOn
-            });
-            return transformScheduleEntry(this.targetModel, scheduleEntry);
-        } catch (ex) {
+        const result = await this.service.create({
+            id: scheduleRecordId,
+            scheduleOn: input.scheduleOn
+        });
+        if (result.error) {
             console.error(
-                `Error while creating service event for schedule entry: ${scheduleRecordId}.`
+                `Could not create service event for schedule entry: ${scheduleRecordId}. Deleting the schedule entry...`
             );
-            console.log(convertException(ex));
+            console.log(convertException(result.error));
             try {
                 await this.cms.deleteEntry(this.scheduleModel, scheduleRecordId);
             } catch (err) {
                 console.error(`Error while deleting schedule entry: ${scheduleRecordId}.`);
                 console.log(convertException(err));
             }
+        }
+        return transformScheduleEntry(this.targetModel, scheduleEntry);
+    }
+
+    public async reschedule(
+        original: IScheduleRecord,
+        input: ISchedulerInput
+    ): Promise<IScheduleRecord> {
+        const currentDate = new Date();
+        const targetId = original.targetId;
+        /**
+         * There are two cases when we can immediately publish the entry:
+         * 1. If the user requested it.
+         * 2. If the entry is scheduled for a date in the past.
+         */
+        if (input.immediately || input.scheduleOn < currentDate) {
+            const updatedTargetEntry = await this.cms.updateEntry(this.targetModel, targetId, {
+                lastPublishedOn: input.dateOn ? input.dateOn.toISOString() : undefined,
+                lastPublishedBy: this.getIdentity()
+            });
+
+            const publishedEntry = await this.cms.publishEntry(
+                this.targetModel,
+                updatedTargetEntry.id
+            );
+            /**
+             * We can safely cancel the original schedule entry and the event.
+             *
+             * // TODO determine if we want to ignore the error of the cancelation.
+             */
+            try {
+                await this.cancel(original.id);
+            } catch {
+                //
+            }
+
+            return {
+                ...original,
+                publishOn: currentDate,
+                unpublishOn: undefined,
+                dateOn: publishedEntry.lastPublishedOn
+                    ? new Date(publishedEntry.lastPublishedOn)
+                    : undefined
+            };
+        }
+
+        await this.cms.updateEntry<Pick<IScheduleEntryValues, "scheduledOn" | "dateOn">>(
+            this.scheduleModel,
+            original.id,
+            {
+                scheduledOn: dateToISOString(input.scheduleOn),
+                dateOn: input.dateOn ? dateToISOString(input.dateOn) : undefined
+            }
+        );
+
+        const result = await this.service.update({
+            id: original.id,
+            scheduleOn: input.scheduleOn
+        });
+        if (!result.error) {
+            return {
+                ...original,
+                publishOn: new Date(),
+                unpublishOn: undefined,
+                dateOn: input.dateOn
+            };
+        }
+        throw result.error;
+    }
+
+    public async cancel(id: string): Promise<void> {
+        /**
+         * No need to do anything if the record does not exist.
+         */
+        try {
+            await this.cms.getEntryById(this.scheduleModel, id);
+        } catch {
+            return;
+        }
+
+        try {
+            await this.cms.deleteEntry(this.scheduleModel, id);
+        } catch (ex) {
+            if (ex.code === "NOT_FOUND" || ex instanceof NotFoundError) {
+                return;
+            }
+            console.error(`Error while deleting schedule entry: ${id}.`);
+            console.log(convertException(ex));
             throw ex;
         }
+
+        const result = await this.service.delete(id);
+        if (!result.error) {
+            return;
+        }
+        console.error(`Error while deleting service event for schedule entry: ${id}.`);
+        console.log(convertException(result.error));
+
+        throw result.error;
     }
 }

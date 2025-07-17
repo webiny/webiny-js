@@ -355,9 +355,9 @@ const CUSTOM_HANDLERS: Record<string, () => Array<PackageWithTests>> = {
     },
     "api-headless-cms-scheduler": () => {
         return [
-            {cmd: "packages/headless-cms-scheduler --storage=ddb-es,ddb", storage: "ddb-es"},
-            {cmd: "packages/headless-cms-scheduler --storage=ddb-os,ddb", storage: "ddb-os"},
-            {cmd: "packages/headless-cms-scheduler --storage=ddb", storage: "ddb"}
+            { cmd: "packages/headless-cms-scheduler --storage=ddb-es,ddb", storage: "ddb-es" },
+            { cmd: "packages/headless-cms-scheduler --storage=ddb-os,ddb", storage: "ddb-os" },
+            { cmd: "packages/headless-cms-scheduler --storage=ddb", storage: "ddb" }
         ];
     }
 };

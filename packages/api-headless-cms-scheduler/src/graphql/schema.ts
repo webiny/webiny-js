@@ -3,27 +3,14 @@ import type {
     CmsEntryListSortAsc,
     CmsEntryListSortDesc
 } from "@webiny/api-headless-cms/types/index.js";
+import { type DateOnType, ScheduleType } from "~/scheduler/types.js";
 
 export const getScheduleSchema = zod.object({
     modelId: zod.string(),
     id: zod.string()
 });
 
-const publishAndUnpublishSchemaType = zod.enum(["publish", "unpublish"]);
-
-const immediatelySchema = zod.object({
-    immediately: zod.literal(true),
-    onDate: zod.never().optional(),
-    type: publishAndUnpublishSchemaType
-});
-
-const dateOnSchema = zod.object({
-    immediately: zod.never().optional(),
-    dateOn: zod.union([zod.date(), zod.string().transform(value => new Date(value))]),
-    type: publishAndUnpublishSchemaType
-});
-
-const inputSchema = zod.union([immediatelySchema, dateOnSchema]);
+const publishAndUnpublishSchemaType = zod.nativeEnum(ScheduleType);
 
 export const listScheduleSchema = zod.object({
     modelId: zod.string(),
@@ -32,9 +19,9 @@ export const listScheduleSchema = zod.object({
         targetEntryId: zod.string().optional(),
         type: publishAndUnpublishSchemaType.optional(),
         scheduledBy: zod.string().optional(),
-        dateOn: zod.date().optional(),
-        dateOn_gte: zod.date().optional(),
-        dateOn_lte: zod.date().optional()
+        scheduleOn: zod.date().optional(),
+        scheduledOn_gte: zod.date().optional(),
+        scheduledOn_lte: zod.date().optional()
     }),
     sort: zod
         .array(
@@ -53,16 +40,42 @@ export const listScheduleSchema = zod.object({
     after: zod.string().optional()
 });
 
+const dateOnSchema = zod
+    .date()
+    .optional()
+    .transform<DateOnType | undefined>(value => {
+        return value instanceof Date ? value : undefined;
+    });
+
+const schedulerInputSchema = zod.discriminatedUnion("immediately", [
+    zod.object({
+        immediately: zod.literal(true),
+        scheduleOn: zod.never().optional(),
+        dateOn: zod.date().optional(),
+        type: publishAndUnpublishSchemaType
+    }),
+    zod.object({
+        immediately: zod.literal(false).optional(),
+        scheduleOn: zod.date().or(
+            zod.string().transform(value => {
+                return new Date(value);
+            })
+        ),
+        dateOn: dateOnSchema,
+        type: publishAndUnpublishSchemaType
+    })
+]);
+
 export const createScheduleSchema = zod.object({
     modelId: zod.string(),
     id: zod.string(),
-    input: inputSchema
+    input: schedulerInputSchema
 });
 
 export const updateScheduleSchema = zod.object({
     modelId: zod.string(),
     id: zod.string(),
-    input: inputSchema
+    input: schedulerInputSchema
 });
 
 export const cancelScheduleSchema = zod.object({

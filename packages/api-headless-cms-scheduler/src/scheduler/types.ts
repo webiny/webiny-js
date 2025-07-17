@@ -5,16 +5,34 @@ import type {
     CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 
+export enum ScheduleType {
+    publish = "publish",
+    unpublish = "unpublish"
+}
+
+export type DateISOString =
+    `${number}-${number}-${number}T${number}:${number}:${number}.${number}Z`;
+/**
+ * A date when the action is to be scheduled.
+ */
+export type ScheduledOnType = Date;
+/**
+ * A custom date when the action is to be set as done (publishedOn and related dates).
+ */
+export type DateOnType = Date;
+
 export interface ISchedulerInputImmediately {
     immediately: true;
-    dateOn?: never;
-    type: "publish" | "unpublish";
+    scheduleOn?: never;
+    dateOn?: DateOnType;
+    type: ScheduleType;
 }
 
 export interface ISchedulerInputScheduled {
-    immediately?: never;
-    dateOn: Date;
-    type: "publish" | "unpublish";
+    immediately?: false;
+    scheduleOn: ScheduledOnType;
+    dateOn?: DateOnType;
+    type: ScheduleType;
 }
 
 export type ISchedulerInput = ISchedulerInputScheduled | ISchedulerInputImmediately;
@@ -24,9 +42,10 @@ export interface IScheduleRecord {
     targetId: string;
     model: CmsModel;
     scheduledBy: CmsIdentity;
-    publishOn: Date | undefined;
-    unpublishOn: Date | undefined;
-    type: "publish" | "unpublish";
+    dateOn: DateOnType | undefined;
+    publishOn: ScheduledOnType | undefined;
+    unpublishOn: ScheduledOnType | undefined;
+    type: ScheduleType;
     title: string;
 }
 
@@ -53,8 +72,9 @@ export interface IScheduleEntryValues {
     targetId: string;
     targetModelId: string;
     scheduledBy: CmsIdentity;
-    dateOn: string;
-    type: "publish" | "unpublish";
+    dateOn: DateISOString | undefined;
+    scheduledOn: DateISOString;
+    type: string;
     title: string;
 }
 
@@ -76,4 +96,6 @@ export interface IScheduleActionScheduleParams {
 export interface IScheduleAction {
     canHandle(input: ISchedulerInput): boolean;
     schedule(params: IScheduleActionScheduleParams): Promise<IScheduleRecord>;
+    cancel(id: string): Promise<void>;
+    reschedule(original: IScheduleRecord, input: ISchedulerInput): Promise<IScheduleRecord>;
 }

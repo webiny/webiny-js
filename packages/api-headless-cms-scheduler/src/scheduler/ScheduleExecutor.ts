@@ -42,9 +42,6 @@ export class ScheduleExecutor implements IScheduleExecutor {
     public async schedule(targetId: string, input: ISchedulerInput): Promise<IScheduleRecord> {
         const scheduleRecordId = createScheduleRecordId(targetId);
         const original = await this.fetcher.getScheduled(targetId);
-        if (original) {
-            return this.reschedule(original, input);
-        }
 
         const action = this.actions.find(action => action.canHandle(input));
         if (!action) {
@@ -55,6 +52,10 @@ export class ScheduleExecutor implements IScheduleExecutor {
                     type: input.type
                 }
             );
+        }
+
+        if (original) {
+            return action.reschedule(original, input);
         }
 
         return await action.schedule({
@@ -81,22 +82,12 @@ export class ScheduleExecutor implements IScheduleExecutor {
             throw ex;
         }
 
-        await this.service.delete(record.id);
-    }
-
-    private async reschedule(
-        original: IScheduleRecord,
-        input: ISchedulerInput
-    ): Promise<IScheduleRecord> {
-        try {
-            await this.cms.deleteEntry(this.scheduleModel, original.id);
-            await this.service.delete(original.id);
-        } catch (ex) {
-            console.error(`Failed to clean up existing schedule: ${original.id}`);
-            console.log(convertException(ex));
-            throw ex;
+        const result = await this.service.delete(record.id);
+        if (!result.error) {
+            return;
+        } else if (result.error.code === "NOT_FOUND" || result.error instanceof NotFoundError) {
+            return;
         }
-
-        return this.schedule(original.targetId, input);
+        throw result.error;
     }
 }

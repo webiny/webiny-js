@@ -4,6 +4,14 @@ import type {
     ISchedulerServiceUpdateInput
 } from "~/service/types.js";
 import { WebinyError } from "@webiny/error";
+import { mockClient } from "aws-sdk-client-mock";
+import {
+    CreateScheduleCommand,
+    DeleteScheduleCommand,
+    GetScheduleCommand,
+    SchedulerClient,
+    UpdateScheduleCommand
+} from "@webiny/aws-sdk/client-scheduler";
 
 describe("SchedulerService", () => {
     const lambdaArn = "arn:aws:lambda:us-east-1:123456789012:function:test";
@@ -13,129 +21,193 @@ describe("SchedulerService", () => {
         roleArn
     };
 
-    function createMockClient(sendImpl?: (command: any) => any) {
-        return {
-            send: jest.fn(sendImpl)
-        };
-    }
-
     it("creates a schedule successfully", async () => {
-        const mockClient = createMockClient(async () => ({}));
+        const client = mockClient(SchedulerClient);
+        client.on(CreateScheduleCommand).resolves({
+            $metadata: {
+                httpStatusCode: 999
+            }
+        });
+
         const service = new SchedulerService({
-            getClient: () => mockClient,
+            getClient: () => client,
             config
         });
 
         const input: ISchedulerServiceCreateInput = {
             id: "schedule-1",
-            dateOn: new Date(Date.now() + 100000)
+            scheduleOn: new Date(Date.now() + 100000)
         };
 
-        await expect(service.create(input)).resolves.toBeUndefined();
-        expect(mockClient.send).toHaveBeenCalled();
+        const result = await service.create(input);
+        expect(result).toEqual({
+            data: {
+                $metadata: {
+                    httpStatusCode: 999
+                }
+            }
+        });
     });
 
     it("throws if creating a schedule in the past", async () => {
-        const mockClient = createMockClient();
+        const client = mockClient(SchedulerClient);
         const service = new SchedulerService({
-            getClient: () => mockClient,
+            getClient: () => client,
             config
         });
 
         const input: ISchedulerServiceCreateInput = {
             id: "schedule-1",
-            dateOn: new Date(Date.now() - 100000)
+            scheduleOn: new Date(Date.now() - 100000)
         };
 
-        await expect(service.create(input)).rejects.toThrow(WebinyError);
+        const result = await service.create(input);
+
+        expect(result).toEqual({
+            error: expect.any(WebinyError)
+        });
     });
 
     it("updates a schedule successfully", async () => {
-        const mockClient = createMockClient(async () => ({}));
+        const client = mockClient(SchedulerClient);
+        client.on(UpdateScheduleCommand).resolves({
+            $metadata: {
+                httpStatusCode: 999
+            }
+        });
+        client.on(GetScheduleCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
         const service = new SchedulerService({
-            getClient: () => mockClient,
+            getClient: () => client,
             config
         });
 
         const input: ISchedulerServiceUpdateInput = {
             id: "schedule-1",
-            dateOn: new Date(Date.now() + 100000)
+            scheduleOn: new Date(Date.now() + 100000)
         };
 
-        await expect(service.update(input)).resolves.toBeUndefined();
-        expect(mockClient.send).toHaveBeenCalled();
+        const result = await service.update(input);
+
+        expect(result).toEqual({
+            data: {
+                $metadata: {
+                    httpStatusCode: 999
+                }
+            }
+        });
     });
 
     it("throws if updating a schedule in the past", async () => {
-        const mockClient = createMockClient();
+        const client = mockClient(SchedulerClient);
         const service = new SchedulerService({
-            getClient: () => mockClient,
+            getClient: () => client,
             config
         });
 
         const input: ISchedulerServiceUpdateInput = {
             id: "schedule-1",
-            dateOn: new Date(Date.now() - 100000)
+            scheduleOn: new Date(Date.now() - 100000)
         };
 
-        await expect(service.update(input)).rejects.toThrow(WebinyError);
+        const result = await service.update(input);
+
+        expect(result).toEqual({
+            error: expect.any(WebinyError)
+        });
     });
 
     it("deletes a schedule successfully if it exists", async () => {
-        const mockClient = createMockClient(async () => ({}));
+        const client = mockClient(SchedulerClient);
+
+        client.on(DeleteScheduleCommand).resolves({
+            $metadata: {
+                httpStatusCode: 999
+            }
+        });
+
         const service = new SchedulerService({
-            getClient: () => mockClient,
+            getClient: () => client,
             config
         });
         jest.spyOn(service, "exists").mockResolvedValue(true);
-        await expect(service.delete("schedule-1")).resolves.toBeUndefined();
-        expect(mockClient.send).toHaveBeenCalled();
+
+        const result = await service.delete("schedule-1");
+
+        expect(result).toEqual({
+            data: {
+                $metadata: {
+                    httpStatusCode: 999
+                }
+            }
+        });
     });
 
     it("does not delete a schedule if it does not exist", async () => {
-        const mockClient = createMockClient();
+        const client = mockClient(SchedulerClient);
         const service = new SchedulerService({
-            getClient: () => mockClient,
+            getClient: () => client,
             config
         });
         jest.spyOn(service, "exists").mockResolvedValue(false);
-        await expect(service.delete("schedule-1")).resolves.toBeUndefined();
-        expect(mockClient.send).not.toHaveBeenCalled();
+
+        const result = await service.delete("schedule-1");
+
+        expect(result).toEqual({
+            error: expect.any(WebinyError)
+        });
     });
 
     it("exists returns true if schedule is found", async () => {
-        const mockClient = createMockClient(async () => ({ $metadata: { httpStatusCode: 200 } }));
+        const client = mockClient(SchedulerClient);
+        client.on(GetScheduleCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
+        });
+
         const service = new SchedulerService({
-            getClient: () => mockClient,
+            getClient: () => client,
             config
         });
-        await expect(service.exists("schedule-1")).resolves.toBe(true);
-        expect(mockClient.send).toHaveBeenCalled();
+
+        const result = await service.exists("schedule-1");
+
+        expect(result).toEqual(true);
     });
 
     it("exists returns false if ResourceNotFoundException is thrown", async () => {
-        const mockClient = createMockClient(async () => {
-            const err: any = new Error("not found");
-            err.name = "ResourceNotFoundException";
-            throw err;
+        const client = mockClient(SchedulerClient);
+        client.on(GetScheduleCommand).callsFake(async () => {
+            const error = new Error("Resource not found.");
+            error.name = "ResourceNotFoundException";
+            throw error;
         });
         const service = new SchedulerService({
-            getClient: () => mockClient,
+            getClient: () => client,
             config
         });
-        await expect(service.exists("schedule-1")).resolves.toBe(false);
-        expect(mockClient.send).toHaveBeenCalled();
+
+        const result = await service.exists("schedule-1");
+        expect(result).toBe(false);
     });
 
     it("throws on unknown error in exists", async () => {
-        const mockClient = createMockClient(async () => {
-            throw new Error("unknown");
+        const client = mockClient(SchedulerClient);
+        client.on(GetScheduleCommand).callsFake(async () => {
+            throw new Error("Unknown error.");
         });
         const service = new SchedulerService({
-            getClient: () => mockClient,
+            getClient: () => client,
             config
         });
-        await expect(service.exists("schedule-1")).rejects.toThrow("unknown");
-        expect(mockClient.send).toHaveBeenCalled();
+
+        const result = await service.exists("schedule-1");
+
+        expect(result).toEqual(false);
     });
 });

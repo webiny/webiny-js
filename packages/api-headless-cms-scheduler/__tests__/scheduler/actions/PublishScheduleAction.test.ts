@@ -6,8 +6,12 @@ import { createMockTargetModel } from "~tests/mocks/targetModel.js";
 import { PublishScheduleAction } from "~/scheduler/actions/PublishScheduleAction.js";
 import type { CmsEntry, CmsEntryValues } from "@webiny/api-headless-cms/types/index.js";
 import { ScheduleRecord } from "~/scheduler/ScheduleRecord.js";
-import type { IScheduleEntryValues } from "~/scheduler/types.js";
+import { type IScheduleEntryValues, ScheduleType } from "~/scheduler/types.js";
 import { createScheduleRecordId } from "~/scheduler/createScheduleRecordId.js";
+import { dateToISOString } from "~/scheduler/dates.js";
+import { SchedulerService } from "~/service/SchedulerService.js";
+import { CreateScheduleCommand, SchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
+import { mockClient } from "aws-sdk-client-mock";
 
 describe("PublishScheduleAction", () => {
     const service = createMockService();
@@ -44,7 +48,7 @@ describe("PublishScheduleAction", () => {
         const result = await action.schedule({
             input: {
                 immediately: true,
-                type: "publish"
+                type: ScheduleType.publish
             },
             targetId: "target-id#0002",
             scheduleRecordId: createScheduleRecordId(`target-id#0002`)
@@ -58,12 +62,13 @@ describe("PublishScheduleAction", () => {
             scheduledBy: getIdentity(),
             publishOn: expect.any(Date),
             unpublishOn: undefined,
-            type: "publish",
+            dateOn: expect.any(Date),
+            type: ScheduleType.publish,
             title: "Test Entry"
         });
     });
 
-    it("should publish an entry immediately if the dateOn is in the past", async () => {
+    it("should publish an entry immediately if the scheduleOn is in the past", async () => {
         const updateEntryMock = jest.fn(async <T = CmsEntryValues>() => {
             return {} as CmsEntry<T>;
         });
@@ -93,11 +98,11 @@ describe("PublishScheduleAction", () => {
             cms
         });
 
-        const dateOn = new Date(Date.now() - 1000000);
+        const scheduleOn = new Date(Date.now() - 1000000);
         const result = await action.schedule({
             input: {
-                dateOn,
-                type: "publish"
+                scheduleOn,
+                type: ScheduleType.publish
             },
             targetId: "target-id#0002",
             scheduleRecordId: createScheduleRecordId(`target-id#0002`)
@@ -109,43 +114,53 @@ describe("PublishScheduleAction", () => {
             targetId: "target-id#0002",
             model: targetModel,
             scheduledBy: getIdentity(),
-            publishOn: dateOn,
+            publishOn: expect.any(Date),
             unpublishOn: undefined,
-            type: "publish",
+            dateOn: undefined,
+            type: ScheduleType.publish,
             title: "Test Entry"
         });
 
         expect(updateEntryMock).toHaveBeenCalledTimes(1);
         expect(updateEntryMock).toHaveBeenCalledWith(targetModel, "target-id#0002", {
             firstPublishedBy: getIdentity(),
-            firstPublishedOn: dateOn.toISOString(),
+            firstPublishedOn: scheduleOn.toISOString(),
             lastPublishedBy: getIdentity(),
-            lastPublishedOn: dateOn.toISOString()
+            lastPublishedOn: scheduleOn.toISOString()
         });
     });
 
     it("should schedule a publish action for a future date", async () => {
-        const serviceCreate = jest.fn(async () => {});
-        const service = createMockService({
-            create: serviceCreate
+        const client = mockClient(SchedulerClient);
+        client.on(CreateScheduleCommand).resolves({
+            $metadata: {
+                httpStatusCode: 200
+            }
         });
-        const dateOn = new Date(Date.now() + 1000000);
+        const service = new SchedulerService({
+            getClient: () => client,
+            config: {
+                lambdaArn: "arn:aws:lambda:us-east-1:123456789012:function:my-function",
+                roleArn: "arn:aws:iam::123456789012:role/my-role"
+            }
+        });
+        const scheduleOn = new Date(Date.now() + 1000000);
 
         const crateEntryMock = jest.fn(async () => {
-            // @ts-expect-error
-            const entry: CmsEntry<IScheduleEntryValues> = {
+            const entry: Pick<CmsEntry<IScheduleEntryValues>, "id" | "values" | "savedBy"> = {
                 id: createScheduleRecordId(`target-id#0002`),
                 values: {
                     targetId: "target-id#0002",
-                    type: "publish",
-                    dateOn: dateOn.toISOString(),
+                    type: ScheduleType.publish,
+                    scheduledOn: dateToISOString(scheduleOn),
+                    dateOn: dateToISOString(scheduleOn),
                     title: "Test Entry",
                     targetModelId: targetModel.modelId,
                     scheduledBy: getIdentity()
                 },
                 savedBy: getIdentity()
             };
-            return entry;
+            return entry as CmsEntry<IScheduleEntryValues>;
         });
         const cms = createMockCms({
             // @ts-expect-error
@@ -176,8 +191,8 @@ describe("PublishScheduleAction", () => {
 
         const result = await action.schedule({
             input: {
-                dateOn,
-                type: "publish"
+                scheduleOn,
+                type: ScheduleType.publish
             },
             targetId: "target-id#0002",
             scheduleRecordId: createScheduleRecordId(`target-id#0002`)
@@ -189,21 +204,23 @@ describe("PublishScheduleAction", () => {
             targetId: "target-id#0002",
             model: targetModel,
             scheduledBy: getIdentity(),
-            publishOn: dateOn,
+            publishOn: scheduleOn,
             unpublishOn: undefined,
-            type: "publish",
+            dateOn: scheduleOn,
+            type: ScheduleType.publish,
             title: "Test Entry"
         });
 
         expect(crateEntryMock).toHaveBeenCalledTimes(1);
         expect(crateEntryMock).toHaveBeenCalledWith(scheduleModel, {
             id: createScheduleRecordId(`target-id#0002`),
-            dateOn: dateOn.toISOString(),
+            dateOn: undefined,
             scheduledBy: getIdentity(),
+            scheduledOn: dateToISOString(scheduleOn),
             targetId: "target-id#0002",
             targetModelId: "targetModel",
             title: "Test Entry",
-            type: "publish"
+            type: ScheduleType.publish
         });
     });
 });
