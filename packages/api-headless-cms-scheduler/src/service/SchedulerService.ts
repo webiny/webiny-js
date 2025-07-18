@@ -22,6 +22,7 @@ import type {
 } from "./types.js";
 import { WebinyError } from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
+import { dateInTheFuture } from "~/utils/dateInTheFuture.js";
 
 export interface ISchedulerServiceParams {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
@@ -46,17 +47,15 @@ export class SchedulerService implements ISchedulerService {
         params: ISchedulerServiceCreateInput
     ): Promise<ISchedulerServiceCreateResponse> {
         const { id, scheduleOn } = params;
-        if (scheduleOn < new Date()) {
-            return {
-                error: new WebinyError(
-                    `Cannot create a schedule for "${id}" with date in the past: ${scheduleOn.toISOString()}`,
-                    "SCHEDULE_DATE_IN_PAST",
-                    {
-                        id,
-                        dateOn: scheduleOn.toISOString()
-                    }
-                )
-            };
+        if (dateInTheFuture(scheduleOn) === false) {
+            throw new WebinyError(
+                `Cannot create a schedule for "${id}" with date in the past: ${scheduleOn.toISOString()}`,
+                "SCHEDULE_DATE_IN_PAST",
+                {
+                    id,
+                    dateOn: scheduleOn.toISOString()
+                }
+            );
         }
         /**
          * There is a possibility that the schedule already exists, in which case we will just update it.
@@ -67,29 +66,16 @@ export class SchedulerService implements ISchedulerService {
         if (exists) {
             return this.update(params);
         }
-        const input: CreateScheduleCommandInput = {
-            Name: id,
-            ScheduleExpression: `at(${scheduleOn.toISOString()})`,
-            FlexibleTimeWindow: {
-                Mode: "OFF"
-            },
-            Target: {
-                Arn: this.config.lambdaArn,
-                RoleArn: this.config.roleArn,
-                Input: JSON.stringify({
-                    id
-                })
-            }
-        };
+        const input: CreateScheduleCommandInput = this.getInput(id, scheduleOn);
+        console.log({
+            input
+        });
         const command = new CreateScheduleCommand(input);
         try {
-            return {
-                data: await this.getClient().send(command)
-            };
+            return await this.getClient().send(command);
         } catch (ex) {
-            return {
-                error: WebinyError.from(ex)
-            };
+            console.error(ex);
+            throw WebinyError.from(ex);
         }
     }
 
@@ -97,17 +83,15 @@ export class SchedulerService implements ISchedulerService {
         params: ISchedulerServiceUpdateInput
     ): Promise<ISchedulerServiceUpdateResponse> {
         const { id, scheduleOn } = params;
-        if (scheduleOn < new Date()) {
-            return {
-                error: new WebinyError(
-                    `Cannot update an existing schedule for "${id}" with date in the past: ${scheduleOn.toISOString()}`,
-                    "SCHEDULE_DATE_IN_PAST",
-                    {
-                        id,
-                        dateOn: scheduleOn.toISOString()
-                    }
-                )
-            };
+        if (dateInTheFuture(scheduleOn) === false) {
+            throw new WebinyError(
+                `Cannot update an existing schedule for "${id}" with date in the past: ${scheduleOn.toISOString()}`,
+                "SCHEDULE_DATE_IN_PAST",
+                {
+                    id,
+                    dateOn: scheduleOn.toISOString()
+                }
+            );
         }
         /**
          * If the schedule does not exist, we cannot update it.
@@ -116,46 +100,21 @@ export class SchedulerService implements ISchedulerService {
          */
         const exists = await this.exists(id);
         if (!exists) {
-            return {
-                error: new NotFoundError(
-                    `Cannot update schedule "${id}" because it does not exist.`
-                )
-            };
+            throw new NotFoundError(`Cannot update schedule "${id}" because it does not exist.`);
         }
-        const input: UpdateScheduleCommandInput = {
-            Name: id,
-            ScheduleExpression: `at(${scheduleOn.toISOString()})`,
-            FlexibleTimeWindow: {
-                Mode: "OFF"
-            },
-            Target: {
-                Arn: this.config.lambdaArn,
-                RoleArn: this.config.roleArn,
-                Input: JSON.stringify({
-                    id
-                })
-            }
-        };
+        const input: UpdateScheduleCommandInput = this.getInput(id, scheduleOn);
         const command = new UpdateScheduleCommand(input);
         try {
-            return {
-                data: await this.getClient().send(command)
-            };
+            return await this.getClient().send(command);
         } catch (ex) {
-            return {
-                error: WebinyError.from(ex)
-            };
+            throw WebinyError.from(ex);
         }
     }
 
     public async delete(id: string): Promise<ISchedulerServiceDeleteResponse> {
         const exists = await this.exists(id);
         if (!exists) {
-            return {
-                error: new NotFoundError(
-                    `Cannot delete schedule "${id}" because it does not exist.`
-                )
-            };
+            throw new NotFoundError(`Cannot delete schedule "${id}" because it does not exist.`);
         }
 
         const input: DeleteScheduleCommandInput = {
@@ -163,13 +122,9 @@ export class SchedulerService implements ISchedulerService {
         };
         const command = new DeleteScheduleCommand(input);
         try {
-            return {
-                data: await this.getClient().send(command)
-            };
+            return await this.getClient().send(command);
         } catch (ex) {
-            return {
-                error: WebinyError.from(ex)
-            };
+            throw WebinyError.from(ex);
         }
     }
 
@@ -184,6 +139,36 @@ export class SchedulerService implements ISchedulerService {
         } catch (ex) {
             return false;
         }
+    }
+
+    private createScheduleExpression(input: Date): string {
+        return `at(${this.getTimeAt(input)})`;
+    }
+
+    private getTimeAt(input: Date): string {
+        return input.toISOString().replace(".000Z", "");
+    }
+
+    private getInput(
+        id: string,
+        scheduleOn: Date
+    ): CreateScheduleCommandInput | UpdateScheduleCommandInput {
+        return {
+            Name: id,
+            ActionAfterCompletion: "DELETE",
+            ScheduleExpression: this.createScheduleExpression(scheduleOn),
+            FlexibleTimeWindow: {
+                Mode: "OFF"
+            },
+            Target: {
+                Arn: this.config.lambdaArn,
+                RoleArn: this.config.roleArn,
+                Input: JSON.stringify({
+                    scheduledCmsAction: true,
+                    id
+                })
+            }
+        };
     }
 }
 

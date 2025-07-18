@@ -12,6 +12,7 @@ import type { CmsIdentity, CmsModel, HeadlessCms } from "@webiny/api-headless-cm
 import type { ISchedulerService } from "~/service/types.js";
 import { dateToISOString } from "~/scheduler/dates.js";
 import { NotFoundError } from "@webiny/handler-graphql";
+import { dateInTheFuture } from "~/utils/dateInTheFuture.js";
 
 export type UnpublishScheduleActionCms = Pick<
     HeadlessCms,
@@ -101,22 +102,26 @@ export class UnpublishScheduleAction implements IScheduleAction {
             scheduledOn: dateToISOString(input.scheduleOn)
         });
 
-        const result = await this.service.create({
-            id: scheduleRecordId,
-            scheduleOn: input.scheduleOn
-        });
-        if (result.error) {
+        try {
+            await this.service.create({
+                id: scheduleRecordId,
+                scheduleOn: input.scheduleOn
+            });
+        } catch (ex) {
             console.error(
                 `Could not create service event for schedule entry: ${scheduleRecordId}. Deleting the schedule entry...`
             );
-            console.log(convertException(result.error));
+            console.log(convertException(ex));
             try {
                 await this.cms.deleteEntry(this.scheduleModel, scheduleRecordId);
             } catch (err) {
                 console.error(`Error while deleting schedule entry: ${scheduleRecordId}.`);
                 console.log(convertException(err));
+                throw err;
             }
+            throw ex;
         }
+
         return transformScheduleEntry(this.targetModel, scheduleEntry);
     }
 
@@ -131,7 +136,7 @@ export class UnpublishScheduleAction implements IScheduleAction {
          * 1. If the user requested it.
          * 2. If the entry is scheduled for a date in the past.
          */
-        if (input.immediately || input.scheduleOn < currentDate) {
+        if (input.immediately || dateInTheFuture(input.scheduleOn)) {
             const publishedEntry = await this.cms.unpublishEntry(this.targetModel, targetId);
             /**
              * We can safely cancel the original schedule entry and the event.
@@ -163,19 +168,23 @@ export class UnpublishScheduleAction implements IScheduleAction {
             }
         );
 
-        const result = await this.service.update({
-            id: original.id,
-            scheduleOn: input.scheduleOn
-        });
-        if (!result.error) {
-            return {
-                ...original,
-                publishOn: undefined,
-                unpublishOn: currentDate,
-                dateOn: input.dateOn
-            };
+        try {
+            await this.service.update({
+                id: original.id,
+                scheduleOn: input.scheduleOn
+            });
+        } catch (ex) {
+            console.error(`Could not update service event for schedule entry: ${original.id}.`);
+            console.log(convertException(ex));
+            throw ex;
         }
-        throw result.error;
+
+        return {
+            ...original,
+            publishOn: undefined,
+            unpublishOn: currentDate,
+            dateOn: input.dateOn
+        };
     }
 
     public async cancel(id: string): Promise<void> {
@@ -199,13 +208,13 @@ export class UnpublishScheduleAction implements IScheduleAction {
             throw ex;
         }
 
-        const result = await this.service.delete(id);
-        if (!result.error) {
-            return;
-        }
-        console.error(`Error while deleting service event for schedule entry: ${id}.`);
-        console.log(convertException(result.error));
+        try {
+            await this.service.delete(id);
+        } catch (ex) {
+            console.error(`Error while deleting service event for schedule entry: ${id}.`);
+            console.log(convertException(ex));
 
-        throw result.error;
+            throw ex;
+        }
     }
 }

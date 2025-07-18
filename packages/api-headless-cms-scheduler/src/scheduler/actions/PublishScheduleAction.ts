@@ -12,6 +12,7 @@ import type { CmsIdentity, CmsModel, HeadlessCms } from "@webiny/api-headless-cm
 import type { ISchedulerService } from "~/service/types.js";
 import { dateToISOString } from "~/scheduler/dates.js";
 import { NotFoundError } from "@webiny/handler-graphql";
+import { dateInTheFuture } from "~/utils/dateInTheFuture.js";
 
 export type PublishScheduleActionCms = Pick<
     HeadlessCms,
@@ -75,7 +76,7 @@ export class PublishScheduleAction implements IScheduleAction {
          * No need to create a schedule entry or the service event.
          */
         //
-        else if (input.scheduleOn < currentDate) {
+        else if (dateInTheFuture(input.scheduleOn) === false) {
             /**
              * We need to update the entry with publish information because we cannot update it in the publishing process.
              */
@@ -109,21 +110,24 @@ export class PublishScheduleAction implements IScheduleAction {
             scheduledBy: identity
         });
 
-        const result = await this.service.create({
-            id: scheduleRecordId,
-            scheduleOn: input.scheduleOn
-        });
-        if (result.error) {
+        try {
+            await this.service.create({
+                id: scheduleRecordId,
+                scheduleOn: input.scheduleOn
+            });
+        } catch (ex) {
             console.error(
                 `Could not create service event for schedule entry: ${scheduleRecordId}. Deleting the schedule entry...`
             );
-            console.log(convertException(result.error));
+            console.log(convertException(ex));
             try {
                 await this.cms.deleteEntry(this.scheduleModel, scheduleRecordId);
             } catch (err) {
                 console.error(`Error while deleting schedule entry: ${scheduleRecordId}.`);
                 console.log(convertException(err));
+                throw err;
             }
+            throw ex;
         }
         return transformScheduleEntry(this.targetModel, scheduleEntry);
     }
@@ -179,19 +183,20 @@ export class PublishScheduleAction implements IScheduleAction {
             }
         );
 
-        const result = await this.service.update({
-            id: original.id,
-            scheduleOn: input.scheduleOn
-        });
-        if (!result.error) {
-            return {
-                ...original,
-                publishOn: new Date(),
-                unpublishOn: undefined,
-                dateOn: input.dateOn
-            };
+        try {
+            await this.service.update({
+                id: original.id,
+                scheduleOn: input.scheduleOn
+            });
+        } catch (ex) {
+            throw ex;
         }
-        throw result.error;
+        return {
+            ...original,
+            publishOn: new Date(),
+            unpublishOn: undefined,
+            dateOn: input.dateOn
+        };
     }
 
     public async cancel(id: string): Promise<void> {
@@ -215,13 +220,12 @@ export class PublishScheduleAction implements IScheduleAction {
             throw ex;
         }
 
-        const result = await this.service.delete(id);
-        if (!result.error) {
-            return;
+        try {
+            await this.service.delete(id);
+        } catch (ex) {
+            console.error(`Error while deleting service event for schedule entry: ${id}.`);
+            console.log(convertException(ex));
+            throw ex;
         }
-        console.error(`Error while deleting service event for schedule entry: ${id}.`);
-        console.log(convertException(result.error));
-
-        throw result.error;
     }
 }

@@ -3,7 +3,7 @@ import { createZodError } from "@webiny/utils";
 import zod from "zod";
 
 const schema = zod.object({
-    schedule: zod.object({
+    scheduler: zod.object({
         lambdaArn: zod.string(),
         roleArn: zod.string()
     })
@@ -31,9 +31,9 @@ export const getManifest = async (): Promise<IGetManifestResult> => {
             return {
                 error: new Error("Manifest could not be loaded.")
             };
-        } else if (!manifest.schedule) {
+        } else if (!manifest.scheduler) {
             return {
-                error: new Error("Schedule not found in the Manifest.")
+                error: new Error("Scheduler not found in the Manifest.")
             };
         }
 
@@ -45,7 +45,7 @@ export const getManifest = async (): Promise<IGetManifestResult> => {
         }
 
         return {
-            data: result.data.schedule
+            data: result.data.scheduler
         };
     } catch (ex) {
         return {

@@ -54,8 +54,8 @@ export const createSchedulerGraphQL = () => {
                 targetId: String!
                 model: CmsContentModel!
                 scheduledBy: CmsIdentity!
-                publishOn: Date
-                unpublishOn: Date
+                publishOn: DateTime
+                unpublishOn: DateTime
                 type: CmsScheduleRecordType!
                 title: String!
             }
@@ -72,7 +72,8 @@ export const createSchedulerGraphQL = () => {
             }
 
             input CmsCreateScheduleInput {
-                dateOn: Date!
+                immediately: Boolean
+                scheduleOn: DateTime
                 type: CmsScheduleRecordType!
             }
 
@@ -82,7 +83,8 @@ export const createSchedulerGraphQL = () => {
             }
 
             input CmsUpdateScheduleInput {
-                dateOn: Date!
+                immediately: Boolean
+                scheduleOn: DateTime
                 type: CmsScheduleRecordType!
             }
 
@@ -97,27 +99,27 @@ export const createSchedulerGraphQL = () => {
             }
 
             extend type Query {
-                getSchedule(modelId: String!, id: ID!): CmsGetScheduleResponse!
-                listSchedules(modelId: String!): CmsListSchedulesResponse!
+                getCmsSchedule(modelId: String!, id: ID!): CmsGetScheduleResponse!
+                listCmsSchedules(modelId: String!): CmsListSchedulesResponse!
             }
 
             extend type Mutation {
-                createSchedule(
+                createCmsSchedule(
                     modelId: String!
                     id: ID!
                     input: CmsCreateScheduleInput!
                 ): CmsCreateScheduleResponse!
-                updateSchedule(
+                updateCmsSchedule(
                     modelId: String!
                     id: ID!
                     input: CmsUpdateScheduleInput!
                 ): CmsUpdateScheduleResponse!
-                cancelSchedule(modelId: String!, id: ID!): CmsCancelScheduleResponse!
+                cancelCmsSchedule(modelId: String!, id: ID!): CmsCancelScheduleResponse!
             }
         `,
         resolvers: {
             Query: {
-                async getSchedule(_, args, context) {
+                async getCmsSchedule(_, args, context) {
                     return resolve(async () => {
                         const validated = await getScheduleSchema.safeParseAsync(args);
                         if (validated.error) {
@@ -129,7 +131,7 @@ export const createSchedulerGraphQL = () => {
                         return scheduler.getScheduled(validated.data.id);
                     });
                 },
-                async listSchedules(_, args, context) {
+                async listCmsSchedules(_, args, context) {
                     return resolveList(async () => {
                         const validated = await listScheduleSchema.safeParseAsync(args);
                         if (validated.error) {
@@ -148,36 +150,42 @@ export const createSchedulerGraphQL = () => {
                 }
             },
             Mutation: {
-                async createSchedule(_, args, context) {
-                    const validated = await createScheduleSchema.safeParseAsync(args);
-                    if (validated.error) {
-                        throw createZodError(validated.error);
-                    }
+                async createCmsSchedule(_, args, context) {
+                    return resolve(async () => {
+                        const validated = await createScheduleSchema.safeParseAsync(args);
+                        if (validated.error) {
+                            throw createZodError(validated.error);
+                        }
 
-                    const model = await context.cms.getModel(validated.data.modelId);
-                    const scheduler = context.cms.scheduler(model);
+                        const model = await context.cms.getModel(validated.data.modelId);
+                        const scheduler = context.cms.scheduler(model);
 
-                    return scheduler.schedule(validated.data.id, validated.data.input);
+                        return await scheduler.schedule(validated.data.id, validated.data.input);
+                    });
                 },
-                async updateSchedule(_, args, context) {
-                    const validated = await updateScheduleSchema.safeParseAsync(args);
-                    if (validated.error) {
-                        throw createZodError(validated.error);
-                    }
-                    const model = await context.cms.getModel(validated.data.modelId);
-                    const scheduler = context.cms.scheduler(model);
+                async updateCmsSchedule(_, args, context) {
+                    return resolve(async () => {
+                        const validated = await updateScheduleSchema.safeParseAsync(args);
+                        if (validated.error) {
+                            throw createZodError(validated.error);
+                        }
+                        const model = await context.cms.getModel(validated.data.modelId);
+                        const scheduler = context.cms.scheduler(model);
 
-                    return scheduler.schedule(validated.data.id, validated.data.input);
+                        return scheduler.schedule(validated.data.id, validated.data.input);
+                    });
                 },
-                async cancelSchedule(_, args, context) {
-                    const validated = await cancelScheduleSchema.safeParseAsync(args);
-                    if (validated.error) {
-                        throw createZodError(validated.error);
-                    }
-                    const model = await context.cms.getModel(validated.data.modelId);
-                    const scheduler = context.cms.scheduler(model);
+                async cancelCmsSchedule(_, args, context) {
+                    return resolve(async () => {
+                        const validated = await cancelScheduleSchema.safeParseAsync(args);
+                        if (validated.error) {
+                            throw createZodError(validated.error);
+                        }
+                        const model = await context.cms.getModel(validated.data.modelId);
+                        const scheduler = context.cms.scheduler(model);
 
-                    return scheduler.cancel(validated.data.id);
+                        return scheduler.cancel(validated.data.id);
+                    });
                 }
             }
         }

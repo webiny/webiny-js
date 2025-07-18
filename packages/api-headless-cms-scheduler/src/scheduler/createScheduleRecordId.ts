@@ -1,5 +1,6 @@
-import { parseIdentifier } from "@webiny/utils";
-import { SCHEDULE_ID_PREFIX } from "~/constants";
+import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
+import { SCHEDULE_ID_PREFIX } from "~/constants.js";
+import { zeroPad } from "@webiny/utils/zeroPad.js";
 
 export const createScheduleRecordId = (input: string): string => {
     /**
@@ -10,5 +11,5 @@ export const createScheduleRecordId = (input: string): string => {
     }
 
     const { id, version } = parseIdentifier(input);
-    return `${SCHEDULE_ID_PREFIX}${id}-${version}`;
+    return `${SCHEDULE_ID_PREFIX}${id}-${zeroPad(version || 1)}`;
 };

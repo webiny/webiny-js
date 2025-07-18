@@ -1,6 +1,5 @@
 import type { ScheduledOnType } from "~/scheduler/types.js";
-import { WebinyError } from "@webiny/error";
-import {
+import type {
     CreateScheduleCommandOutput,
     DeleteScheduleCommandOutput,
     UpdateScheduleCommandOutput
@@ -16,47 +15,11 @@ export interface ISchedulerServiceUpdateInput {
     scheduleOn: ScheduledOnType;
 }
 
-export interface ISchedulerServiceCancelSuccessResponse {
-    data: CreateScheduleCommandOutput;
-    error?: never;
-}
+export type ISchedulerServiceCreateResponse = CreateScheduleCommandOutput;
 
-export interface ISchedulerServiceCancelErrorResponse {
-    error: WebinyError;
-    data?: never;
-}
+export type ISchedulerServiceUpdateResponse = UpdateScheduleCommandOutput;
 
-export type ISchedulerServiceCreateResponse =
-    | ISchedulerServiceCancelErrorResponse
-    | ISchedulerServiceCancelSuccessResponse;
-
-export interface ISchedulerServiceUpdateSuccessResponse {
-    data: UpdateScheduleCommandOutput;
-    error?: never;
-}
-
-export interface ISchedulerServiceUpdateErrorResponse {
-    error: WebinyError;
-    data?: never;
-}
-
-export type ISchedulerServiceUpdateResponse =
-    | ISchedulerServiceUpdateErrorResponse
-    | ISchedulerServiceUpdateSuccessResponse;
-
-export interface ISchedulerServiceDeleteSuccessResponse {
-    data: DeleteScheduleCommandOutput;
-    error?: never;
-}
-
-export interface ISchedulerServiceDeleteErrorResponse {
-    error: WebinyError;
-    data?: never;
-}
-
-export type ISchedulerServiceDeleteResponse =
-    | ISchedulerServiceDeleteErrorResponse
-    | ISchedulerServiceDeleteSuccessResponse;
+export type ISchedulerServiceDeleteResponse = DeleteScheduleCommandOutput;
 
 export interface ISchedulerService {
     create(params: ISchedulerServiceCreateInput): Promise<ISchedulerServiceCreateResponse>;
