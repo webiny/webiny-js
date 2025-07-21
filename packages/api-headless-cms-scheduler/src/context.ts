@@ -12,6 +12,7 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { SCHEDULE_MODEL_ID } from "./constants.js";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
 export interface ICreateHeadlessCmsSchedulerContextParams {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
@@ -29,8 +30,9 @@ export const createHeadlessCmsScheduleContext = (
         if (!ready) {
             return;
         }
-
-        const manifest = await getManifest();
+        const manifest = await getManifest({
+            client: context.db.driver.getClient() as DynamoDBDocument
+        });
         if (manifest.error) {
             console.error(manifest.error.message);
             console.log(convertException(manifest.error, ["message"]));

@@ -34,6 +34,7 @@ import { getEnvVariableAwsRegion } from "~/env/awsRegion";
 import { attachSyncSystem } from "../syncSystem/api/index.js";
 import { getAwsAccountId } from "~/apps/awsUtils";
 import type { WithServiceManifest } from "~/utils/withServiceManifest.js";
+import { ApiScheduler } from "~/apps/api/ApiScheduler.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -261,6 +262,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             const cloudfront = app.addModule(ApiCloudfront);
             const backgroundTask = app.addModule(ApiBackgroundTask);
             const migration = app.addModule(ApiMigration);
+            const scheduler = app.addModule(ApiScheduler);
 
             const domains = app.getParam(projectAppParams.domains);
             if (domains) {
@@ -289,7 +291,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 fileManagerManageLambdaRoleName: fileManager.roles.manage.output.name,
                 fileManagerDownloadLambdaArn: fileManager.functions.download.output.arn,
                 websocketApiId: websocket.websocketApi.output.id,
-                websocketApiUrl: websocket.websocketApiUrl
+                websocketApiUrl: websocket.websocketApiUrl,
+                schedulerLambdaInvokeRole: scheduler.invokeRole.output.arn
             });
 
             // Only add `dynamoDbElasticsearchTable` output if using search engine (ES/OS).
@@ -334,7 +337,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 cloudfront,
                 apwScheduler,
                 migration,
-                backgroundTask
+                backgroundTask,
+                scheduler
             };
         }
     });
@@ -349,6 +353,14 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 cloudfront: {
                     distributionId: baseApp.resources.cloudfront.output.id
                 }
+            }
+        });
+
+        app.addServiceManifest({
+            name: "scheduler",
+            manifest: {
+                lambdaArn: baseApp.resources.graphql.functions.graphql.output.arn,
+                roleArn: baseApp.resources.scheduler.invokeRole.output.arn
             }
         });
     });

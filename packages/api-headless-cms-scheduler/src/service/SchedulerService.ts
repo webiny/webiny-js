@@ -23,6 +23,8 @@ import type {
 import { WebinyError } from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { dateInTheFuture } from "~/utils/dateInTheFuture.js";
+import { SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
+import type { IWebinyScheduledCmsActionEventValues } from "~/handler/Handler.js";
 
 export interface ISchedulerServiceParams {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
@@ -67,9 +69,6 @@ export class SchedulerService implements ISchedulerService {
             return this.update(params);
         }
         const input: CreateScheduleCommandInput = this.getInput(id, scheduleOn);
-        console.log({
-            input
-        });
         const command = new CreateScheduleCommand(input);
         try {
             return await this.getClient().send(command);
@@ -153,6 +152,10 @@ export class SchedulerService implements ISchedulerService {
         id: string,
         scheduleOn: Date
     ): CreateScheduleCommandInput | UpdateScheduleCommandInput {
+        const values: IWebinyScheduledCmsActionEventValues = {
+            id,
+            scheduleOn: scheduleOn.toISOString()
+        };
         return {
             Name: id,
             ActionAfterCompletion: "DELETE",
@@ -164,8 +167,7 @@ export class SchedulerService implements ISchedulerService {
                 Arn: this.config.lambdaArn,
                 RoleArn: this.config.roleArn,
                 Input: JSON.stringify({
-                    scheduledCmsAction: true,
-                    id
+                    [SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER]: values
                 })
             }
         };

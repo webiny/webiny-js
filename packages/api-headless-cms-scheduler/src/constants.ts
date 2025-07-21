@@ -5,3 +5,7 @@ export const SCHEDULE_ID_PREFIX = "wby-schedule-";
  * Everything else will result in immediately running the action.
  */
 export const SCHEDULE_MIN_FUTURE_MINUTES = 2;
+/**
+ *
+ */
+export const SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER = "WebinyScheduledCmsAction";

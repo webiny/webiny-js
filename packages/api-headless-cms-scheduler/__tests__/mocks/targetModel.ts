@@ -1,8 +1,16 @@
+import { createModelGroupPlugin, createModelPlugin } from "@webiny/api-headless-cms";
 import { CmsModel } from "@webiny/api-headless-cms/types";
+
+const group = {
+    id: "default",
+    name: "Default Group"
+};
+
+export const MOCK_TARGET_MODEL_ID = "targetModel";
 
 export const createMockTargetModel = (): CmsModel => {
     return {
-        modelId: "targetModel",
+        modelId: MOCK_TARGET_MODEL_ID,
         name: "Target Model",
         description: "This is a mock target model for testing purposes.",
         fields: [
@@ -14,13 +22,10 @@ export const createMockTargetModel = (): CmsModel => {
                 label: "Title"
             }
         ],
-        group: {
-            id: "default",
-            name: "Default Group"
-        },
+        group,
         singularApiName: "targetModel",
         pluralApiName: "targetModels",
-        layout: [],
+        layout: [["title"]],
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
         webinyVersion: "0.0.0",
@@ -28,4 +33,19 @@ export const createMockTargetModel = (): CmsModel => {
         locale: "en-US",
         titleFieldId: "title"
     };
+};
+
+export const createMockTargetModelPlugins = () => {
+    return [
+        createModelGroupPlugin({
+            ...group,
+            slug: "default",
+            description: null,
+            icon: "fa/fas"
+        }),
+        createModelPlugin({
+            ...createMockTargetModel(),
+            isPrivate: undefined
+        })
+    ];
 };

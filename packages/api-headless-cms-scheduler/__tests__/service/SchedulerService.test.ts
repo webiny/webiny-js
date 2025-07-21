@@ -36,15 +36,13 @@ describe("SchedulerService", () => {
 
         const input: ISchedulerServiceCreateInput = {
             id: "schedule-1",
-            scheduleOn: new Date(Date.now() + 100000)
+            scheduleOn: new Date(Date.now() + 1000000)
         };
 
         const result = await service.create(input);
         expect(result).toEqual({
-            data: {
-                $metadata: {
-                    httpStatusCode: 999
-                }
+            $metadata: {
+                httpStatusCode: 999
             }
         });
     });
@@ -61,11 +59,15 @@ describe("SchedulerService", () => {
             scheduleOn: new Date(Date.now() - 100000)
         };
 
-        const result = await service.create(input);
-
-        expect(result).toEqual({
-            error: expect.any(WebinyError)
-        });
+        try {
+            const result = await service.create(input);
+            expect(result).toEqual("SHOULD NOT REACH HERE");
+        } catch (ex) {
+            expect(ex).toBeInstanceOf(WebinyError);
+            expect(ex.message).toContain(
+                `Cannot create a schedule for "schedule-1" with date in the past:`
+            );
+        }
     });
 
     it("updates a schedule successfully", async () => {
@@ -88,16 +90,14 @@ describe("SchedulerService", () => {
 
         const input: ISchedulerServiceUpdateInput = {
             id: "schedule-1",
-            scheduleOn: new Date(Date.now() + 100000)
+            scheduleOn: new Date(Date.now() + 1000000)
         };
 
         const result = await service.update(input);
 
         expect(result).toEqual({
-            data: {
-                $metadata: {
-                    httpStatusCode: 999
-                }
+            $metadata: {
+                httpStatusCode: 999
             }
         });
     });
@@ -111,14 +111,18 @@ describe("SchedulerService", () => {
 
         const input: ISchedulerServiceUpdateInput = {
             id: "schedule-1",
-            scheduleOn: new Date(Date.now() - 100000)
+            scheduleOn: new Date(Date.now())
         };
 
-        const result = await service.update(input);
-
-        expect(result).toEqual({
-            error: expect.any(WebinyError)
-        });
+        try {
+            const result = await service.update(input);
+            expect(result).toEqual("SHOULD NOT REACH HERE");
+        } catch (ex) {
+            expect(ex).toBeInstanceOf(WebinyError);
+            expect(ex.message).toContain(
+                `Cannot update an existing schedule for "schedule-1" with date in the past:`
+            );
+        }
     });
 
     it("deletes a schedule successfully if it exists", async () => {
@@ -139,10 +143,8 @@ describe("SchedulerService", () => {
         const result = await service.delete("schedule-1");
 
         expect(result).toEqual({
-            data: {
-                $metadata: {
-                    httpStatusCode: 999
-                }
+            $metadata: {
+                httpStatusCode: 999
             }
         });
     });
@@ -155,11 +157,15 @@ describe("SchedulerService", () => {
         });
         jest.spyOn(service, "exists").mockResolvedValue(false);
 
-        const result = await service.delete("schedule-1");
-
-        expect(result).toEqual({
-            error: expect.any(WebinyError)
-        });
+        try {
+            const result = await service.delete("schedule-1");
+            expect(result).toEqual("SHOULD NOT REACH HERE");
+        } catch (ex) {
+            expect(ex).toBeInstanceOf(WebinyError);
+            expect(ex.message).toContain(
+                `Cannot delete schedule "schedule-1" because it does not exist.`
+            );
+        }
     });
 
     it("exists returns true if schedule is found", async () => {

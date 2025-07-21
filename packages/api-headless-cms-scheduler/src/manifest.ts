@@ -1,4 +1,5 @@
 import { ServiceDiscovery } from "@webiny/api";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 import { createZodError } from "@webiny/utils";
 import zod from "zod";
 
@@ -24,8 +25,13 @@ export interface IGetManifestSuccessResult {
 
 export type IGetManifestResult = IGetManifestSuccessResult | IGetManifestErrorResult;
 
-export const getManifest = async (): Promise<IGetManifestResult> => {
+export interface IGetManifestParams {
+    client: DynamoDBDocument;
+}
+
+export const getManifest = async (params: IGetManifestParams): Promise<IGetManifestResult> => {
     try {
+        ServiceDiscovery.setDocumentClient(params.client);
         const manifest = await ServiceDiscovery.load();
         if (!manifest) {
             return {

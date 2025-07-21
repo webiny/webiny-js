@@ -28,7 +28,8 @@ export type HandlerEvent =
     | SQSEvent
     | S3Event
     | EventBridgeEvent<string, string>
-    | DynamoDBStreamEvent;
+    | DynamoDBStreamEvent
+    | unknown;
 
 export interface EventResolver<T = any> {
     (event: HandlerEvent, context: LambdaContext): T;

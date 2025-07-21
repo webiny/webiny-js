@@ -76,6 +76,7 @@ export interface IScheduleEntryValues {
     scheduledOn: DateISOString;
     type: string;
     title: string;
+    error?: string;
 }
 
 export interface IScheduleExecutor {
