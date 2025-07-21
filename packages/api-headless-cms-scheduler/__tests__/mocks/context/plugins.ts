@@ -12,9 +12,7 @@ import { ScheduleContext } from "~/types.js";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { createBackgroundTaskContext } from "@webiny/tasks";
 import { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin";
 import { createHeadlessCmsSchedule } from "~/index.js";
 import type {
     SchedulerClient,
@@ -108,7 +106,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations
             }),
-            createBackgroundTaskContext(),
             createHeadlessCmsGraphQL(),
             plugins,
             graphQLHandlerPlugins(),
@@ -117,7 +114,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                     return params.getScheduleClient(config);
                 }
             }),
-            createMockTaskServicePlugin(),
             bottomPlugins
         ]
     };
