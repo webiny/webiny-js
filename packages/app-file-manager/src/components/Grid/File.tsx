@@ -63,7 +63,10 @@ export type DefaultFileBodyProps = Pick<FileProps, "selected" | "onSelect" | "ch
 
 const DefaultFileBody = ({ selected, onSelect, children }: DefaultFileBodyProps) => {
     return (
-        <div className={"wby-relative"}>
+        <div
+            onClick={onSelect}
+            className={cn(["wby-relative", onSelect ? "wby-cursor-pointer" : "wby-cursor-default"])}
+        >
             <DefaultFileControls selected={selected} onSelect={onSelect} />
             <LazyLoad
                 height={150}
