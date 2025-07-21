@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Separator } from "@webiny/admin-ui";
-import { FolderTree, useGetFolderHierarchy } from "@webiny/app-aco";
+import { FolderTree, useGetFolderHierarchy, useListFoldersByParentIds } from "@webiny/app-aco";
 
 interface LeftSidebarProps {
     currentFolder: string;
@@ -10,13 +10,15 @@ interface LeftSidebarProps {
 
 export const LeftSidebar = ({ currentFolder, onFolderClick, children }: LeftSidebarProps) => {
     const { folders, getFolderHierarchy } = useGetFolderHierarchy();
+    const { listFoldersByParentIds } = useListFoldersByParentIds();
 
     useEffect(() => {
-        if (folders.length > 0) {
-            return; // Skip if we already have folders in the cache.
+        if (folders.length === 0) {
+            getFolderHierarchy(currentFolder);
+        } else {
+            // Otherwise let's load only the current folder sub-tree
+            listFoldersByParentIds([currentFolder]);
         }
-
-        getFolderHierarchy(currentFolder);
     }, [currentFolder]);
 
     return (

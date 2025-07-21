@@ -44,9 +44,9 @@ export const createInitialOpenList = (
     folders: FolderItem[] = [],
     openIds: string[] = [],
     focusedId?: string
-): string[] | undefined => {
+): string[] => {
     //  There is always a root folder, opened by default
-    if (!focusedId || openIds.length > 1) {
+    if (!focusedId) {
         return openIds;
     }
 

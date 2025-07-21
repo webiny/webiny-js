@@ -16,6 +16,8 @@ export const MenuActions = () => {
 
     return (
         <div
+            // Let's stop click event propagation, otherwise opening the OptionsMenu event will propagate up to the main Tree Item
+            onClick={e => e.stopPropagation()}
             className={cn(
                 "wby-invisible group-hover:wby-visible",
                 "wby-size-md wby-cursor-pointer",

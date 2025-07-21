@@ -32,32 +32,33 @@ export const List = ({
     const { getFolderLevelPermission: canManageStructure } =
         useGetFolderLevelPermission("canManageStructure");
     const { showSnackbar } = useSnackbar();
+
     const [treeData, setTreeData] = useState<NodeDto<FolderItem>[]>([]);
-    const [initialOpenList, setInitialOpenList] = useState<undefined | string[]>();
     const [openFolderIds, setOpenFolderIds] = useState<string[]>([ROOT_FOLDER]);
 
     useEffect(() => {
-        if (folders) {
-            setTreeData(createTreeData(folders, focusedFolderId, hiddenFolderIds));
-        }
+        setTreeData(createTreeData(folders, focusedFolderId, hiddenFolderIds));
     }, [folders, focusedFolderId, hiddenFolderIds]);
 
-    const memoCreateInitialOpenList = useCallback(
-        (focusedFolderId?: string) => {
-            return createInitialOpenList(folders, openFolderIds, focusedFolderId);
-        },
-        [folders, openFolderIds]
-    );
-
     useEffect(() => {
-        const openIds = memoCreateInitialOpenList(focusedFolderId);
-        setInitialOpenList(openIds);
-    }, [focusedFolderId, openFolderIds]);
+        setOpenFolderIds(prev => {
+            const expanded = createInitialOpenList(folders, prev, focusedFolderId);
+            return [...new Set([ROOT_FOLDER, ...expanded])];
+        });
+    }, [focusedFolderId, folders, setOpenFolderIds]);
+
+    const handleChangeOpen: TreeProps["onChangeOpen"] = async nodes => {
+        const folderIds = nodes.map(node => node.id);
+        const updatedOpenIds = [...new Set([ROOT_FOLDER, ...folderIds])];
+        setOpenFolderIds(updatedOpenIds);
+
+        const fetchableIds = folderIds.filter(id => id !== ROOT_FOLDER && id !== "0");
+        await listFoldersByParentIds(fetchableIds);
+    };
 
     const handleDrop: TreeProps["onDrop"] = async (_, { dragSourceId, dropTargetId }) => {
         try {
             const item = folders.find(folder => folder.id === dragSourceId);
-
             if (!item) {
                 throw new Error("Folder not found!");
             }
@@ -67,7 +68,7 @@ export const List = ({
                 parentId: dropTargetId !== ROOT_FOLDER ? (dropTargetId as string) : null
             });
         } catch (error) {
-            return showSnackbar(error.message);
+            showSnackbar(error.message);
         }
     };
 
@@ -81,18 +82,8 @@ export const List = ({
         []
     );
 
-    const handleChangeOpen: TreeProps["onChangeOpen"] = async nodes => {
-        const folderIds = nodes.map(node => node.id);
-        setOpenFolderIds([...new Set([ROOT_FOLDER, ...folderIds])]);
-        const filteredFolderIds = folderIds.filter(item => item !== ROOT_FOLDER && item !== "0");
-        await listFoldersByParentIds(filteredFolderIds);
-    };
-
     const canDrag: TreeProps<FolderItem>["canDrag"] = useCallback(
-        (node: NodeDto<FolderItem>) => {
-            const isRootFolder = node.id === ROOT_FOLDER;
-            return !isRootFolder && canManageStructure(node.id);
-        },
+        (node: NodeDto<FolderItem>) => node.id !== ROOT_FOLDER && canManageStructure(node.id),
         [canManageStructure]
     );
 
@@ -105,7 +96,7 @@ export const List = ({
         );
     };
 
-    const onNodeClick = useCallback(
+    const handleNodeClick = useCallback(
         (node: WithDefaultNodeData<FolderItem>) => {
             onFolderClick(node);
         },
@@ -116,13 +107,13 @@ export const List = ({
         <Tree<FolderItem>
             nodes={treeData}
             rootId={"0"}
-            onDrop={handleDrop}
+            defaultOpenNodeIds={openFolderIds}
             onChangeOpen={handleChangeOpen}
-            onNodeClick={onNodeClick}
+            onDrop={handleDrop}
+            onNodeClick={handleNodeClick}
             sort={sort}
             canDrag={canDrag}
             renderer={nodeRenderer}
-            defaultOpenNodeIds={initialOpenList}
             defaultLockedOpenNodeIds={[ROOT_FOLDER]}
             loadingNodeIds={loading}
         />
