@@ -90,7 +90,7 @@ const DefaultFileLabel = ({ file }: DefaultFileLabelProps) => {
                 {file.name}
             </Text>
             <Text size={"sm"} as={"div"} className={"wby-truncate wby-text-neutral-dimmed"}>
-                {file.type} / <TimeAgo datetime={file.createdOn} />
+                {file.type} {" // "} <TimeAgo datetime={file.createdOn} />
             </Text>
         </div>
     );
