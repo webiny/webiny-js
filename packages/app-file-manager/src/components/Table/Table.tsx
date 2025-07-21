@@ -15,8 +15,11 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const view = useFileManagerView();
 
     const data = useMemo<TableItem[]>(() => {
+        if (!view.displaySubFolders) {
+            return createRecordsData(view.files);
+        }
         return [...createFoldersData(view.folders), ...createRecordsData(view.files)];
-    }, [view.folders, view.files]);
+    }, [view.folders, view.files, view.displaySubFolders]);
 
     return (
         <div ref={ref}>
