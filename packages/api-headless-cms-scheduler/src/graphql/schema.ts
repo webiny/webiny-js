@@ -4,6 +4,7 @@ import type {
     CmsEntryListSortDesc
 } from "@webiny/api-headless-cms/types/index.js";
 import { type DateOnType, ScheduleType } from "~/scheduler/types.js";
+import { dateToISOString } from "~/scheduler/dates.js";
 
 export const getScheduleSchema = zod.object({
     modelId: zod.string(),
@@ -19,9 +20,33 @@ export const listScheduleSchema = zod.object({
         targetEntryId: zod.string().optional(),
         type: publishAndUnpublishSchemaType.optional(),
         scheduledBy: zod.string().optional(),
-        scheduleOn: zod.date().optional(),
-        scheduledOn_gte: zod.date().optional(),
-        scheduledOn_lte: zod.date().optional()
+        scheduledOn: zod
+            .date()
+            .optional()
+            .transform(value => {
+                if (!value) {
+                    return undefined;
+                }
+                return dateToISOString(value);
+            }),
+        scheduledOn_gte: zod
+            .date()
+            .optional()
+            .transform(value => {
+                if (!value) {
+                    return undefined;
+                }
+                return dateToISOString(value);
+            }),
+        scheduledOn_lte: zod
+            .date()
+            .optional()
+            .transform(value => {
+                if (!value) {
+                    return undefined;
+                }
+                return dateToISOString(value);
+            })
     }),
     sort: zod
         .array(

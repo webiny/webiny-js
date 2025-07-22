@@ -33,6 +33,7 @@ import { RecordLocking } from "@webiny/app-record-locking";
 import { TrashBinConfigs } from "@webiny/app-trash-bin";
 import { DynamicPages } from "@webiny/app-dynamic-pages/admin";
 import { AdvancedContentOrganisation } from "@webiny/app-aco";
+import { HeadlessCmsScheduler } from "@webiny/app-headless-cms-scheduler";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
@@ -71,6 +72,7 @@ const App = (props: AdminProps) => {
             <TrashBinConfigs />
             <DynamicPages />
             <AdvancedContentOrganisation />
+            <HeadlessCmsScheduler />
             {props.children}
         </BaseAdmin>
     );

@@ -54,8 +54,18 @@ export interface ISchedulerListResponse {
     meta: CmsEntryMeta;
 }
 
+export interface ISchedulerListParamsWhere {
+    targetId?: string;
+    targetEntryId?: string;
+    type?: ScheduleType;
+    scheduledBy?: string;
+    scheduledOn?: DateISOString;
+    scheduledOn_gte?: DateISOString;
+    scheduledOn_lte?: DateISOString;
+}
+
 export interface ISchedulerListParams {
-    where: Record<string, any> | undefined;
+    where: ISchedulerListParamsWhere;
     sort: CmsEntryListSort | undefined;
     limit: number | undefined;
     after: string | undefined;

@@ -98,9 +98,30 @@ export const createSchedulerGraphQL = () => {
                 error: CmsError
             }
 
+            input CmsListSchedulesWhereInput {
+                targetId: ID
+                targetEntryId: ID
+                type: CmsScheduleRecordType
+                scheduledBy: ID
+                scheduledOn: DateTime
+                scheduledOn_gte: DateTime
+                scheduledOn_lte: DateTime
+            }
+
+            enum CmsListSchedulesSorter {
+                scheduleOn_ASC
+                scheduleOn_DESC
+            }
+
             extend type Query {
                 getCmsSchedule(modelId: String!, id: ID!): CmsGetScheduleResponse!
-                listCmsSchedules(modelId: String!): CmsListSchedulesResponse!
+                listCmsSchedules(
+                    modelId: String!
+                    where: CmsListSchedulesWhereInput
+                    sort: [CmsListSchedulesSorter!]
+                    limit: Int
+                    after: String
+                ): CmsListSchedulesResponse!
             }
 
             extend type Mutation {

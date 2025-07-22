@@ -1,12 +1,12 @@
 import gql from "graphql-tag";
 import {
-    CmsContentEntryRevision,
     CmsContentEntry,
+    CmsContentEntryRevision,
     CmsEditorContentModel,
     CmsErrorResponse,
     CmsMetaResponse,
-    CmsModelField,
-    CmsModel
+    CmsModel,
+    CmsModelField
 } from "~/types";
 import { createFieldsList } from "./createFieldsList";
 import { getModelTitleFieldId } from "./getModelTitleFieldId";
@@ -215,9 +215,9 @@ export const createRevisionsQuery = (model: CmsEditorContentModel) => {
  * ############################################
  * List CMS Entries Query
  */
-export interface CmsEntriesListQueryResponse {
+export interface CmsEntriesListQueryResponse<T = Record<string, any>> {
     content: {
-        data: CmsContentEntry[];
+        data: (CmsContentEntry & T)[];
         error: CmsErrorResponse | null;
         meta: CmsMetaResponse;
     };
