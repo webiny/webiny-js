@@ -65,7 +65,7 @@ const RightPanel = ({ children, className, ...props }: SplitViewPanelProps) => {
             defaultSize={defaultSize}
             minSize={30}
             id="rightPanel"
-            className={cn("webiny-split-view__right-panel", className)}
+            className={cn("wby-overflow-scroll webiny-split-view__right-panel", className)}
             {...props}
         >
             {children}
