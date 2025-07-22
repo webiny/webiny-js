@@ -8,7 +8,7 @@ import { createScheduleRecordId } from "~/scheduler/createScheduleRecordId.js";
 
 describe("Scheduler Event Handler", () => {
     const lambdaContext = {} as LambdaContext;
-    it("should handle a raw event", async () => {
+    it("should trigger handle an event which matches scheduled event", async () => {
         const eventHandler = createScheduledCmsActionEventHandler();
 
         expect(eventHandler).toBeInstanceOf(RawEventHandler);
@@ -36,15 +36,18 @@ describe("Scheduler Event Handler", () => {
             event,
             context: lambdaContext
         });
+        /**
+         * We are expecting an error because the context is not set up properly - we dont need it to be set up.
+         */
         expect(result).toEqual({
-            body: '{"message":"Cannot read properties of undefined (reading \'getEntryManager\')"}',
+            body: '{"message":"Cannot read properties of undefined (reading \'withoutAuthorization\')"}',
             headers: {
                 "access-control-allow-headers": "*",
                 "access-control-allow-methods": "POST",
                 "access-control-allow-origin": "*",
                 "cache-control": "no-store",
                 connection: "keep-alive",
-                "content-length": "77",
+                "content-length": "82",
                 "content-type": "text/plain; charset=utf-8",
                 date: expect.toBeDateString()
             },

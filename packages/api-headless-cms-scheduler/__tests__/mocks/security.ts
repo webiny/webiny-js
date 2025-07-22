@@ -8,6 +8,9 @@ export const createMockSecurity = (
     return {
         // @ts-expect-error
         getIdentity,
+        withoutAuthorization: (cb: () => Promise<any>) => {
+            return cb();
+        },
         ...input
     };
 };
