@@ -66,7 +66,7 @@ const MultiAutoCompleteInput = ({
                 return (
                     <Tag
                         key={`tag-${option.value}-${index}`}
-                        variant={"neutral-light"}
+                        variant={"neutral-muted"}
                         content={option.label}
                         onDismiss={() => removeSelectedOption(option.value)}
                     />
