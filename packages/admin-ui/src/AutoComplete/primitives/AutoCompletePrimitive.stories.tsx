@@ -119,6 +119,7 @@ export const PrimaryVariantInvalid: Story = {
 
 export const SecondaryVariant: Story = {
     args: {
+        ...Default.args,
         variant: "secondary",
         placeholder: "Custom placeholder"
     }
@@ -140,6 +141,7 @@ export const SecondaryVariantInvalid: Story = {
 
 export const GhostVariant: Story = {
     args: {
+        ...Default.args,
         variant: "ghost",
         placeholder: "Custom placeholder"
     }
@@ -157,6 +159,49 @@ export const GhostVariantInvalid: Story = {
         ...GhostVariant.args,
         invalid: true
     }
+};
+
+export const GhostNegativeVariant: Story = {
+    args: {
+        ...Default.args,
+        variant: "ghost-negative",
+        placeholder: "Custom placeholder"
+    },
+    decorators: [
+        Story => (
+            <div className="wby-bg-neutral-dark wby-text-neutral-light wby-p-xl">
+                <Story />
+            </div>
+        )
+    ]
+};
+
+export const GhostNegativeVariantDisabled: Story = {
+    args: {
+        ...GhostNegativeVariant.args,
+        disabled: true
+    },
+    decorators: [
+        Story => (
+            <div className="wby-bg-neutral-dark wby-text-neutral-light wby-p-xl">
+                <Story />
+            </div>
+        )
+    ]
+};
+
+export const GhostNegativeVariantInvalid: Story = {
+    args: {
+        ...GhostNegativeVariant.args,
+        invalid: true
+    },
+    decorators: [
+        Story => (
+            <div className="wby-bg-neutral-dark wby-text-neutral-light wby-p-xl">
+                <Story />
+            </div>
+        )
+    ]
 };
 
 export const WithPredefinedValue: Story = {

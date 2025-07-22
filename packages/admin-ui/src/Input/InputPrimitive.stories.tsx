@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { ReactComponent as NotificationsIcon } from "@webiny/icons/notifications.svg";
 import { ReactComponent as CalendarIcon } from "@webiny/icons/calendar_month.svg";
@@ -44,6 +44,17 @@ const meta: Meta<typeof InputPrimitive> = {
     },
     parameters: {
         layout: "padded"
+    },
+    render: args => {
+        const [value, setValue] = useState(args.value);
+        return (
+            <div className={"wby-w-full"}>
+                <InputPrimitive {...args} value={value} onChange={setValue} />
+                <div className={"wby-mt-4 wby-text-center"}>
+                    Current selected value: <pre>{value}</pre>
+                </div>
+            </div>
+        );
     }
 };
 
@@ -97,6 +108,7 @@ export const WithStartAndEndIcons: Story = {
 
 export const PrimaryVariant: Story = {
     args: {
+        ...WithStartAndEndIcons.args,
         variant: "primary",
         placeholder: "Custom placeholder"
     }
@@ -118,6 +130,7 @@ export const PrimaryVariantInvalid: Story = {
 
 export const SecondaryVariant: Story = {
     args: {
+        ...WithStartAndEndIcons.args,
         variant: "secondary",
         placeholder: "Custom placeholder"
     }
@@ -139,6 +152,7 @@ export const SecondaryVariantInvalid: Story = {
 
 export const GhostVariant: Story = {
     args: {
+        ...WithStartAndEndIcons.args,
         variant: "ghost",
         placeholder: "Custom placeholder"
     }
@@ -160,12 +174,13 @@ export const GhostVariantInvalid: Story = {
 
 export const GhostNegativeVariant: Story = {
     args: {
+        ...WithStartAndEndIcons.args,
         variant: "ghost-negative",
         placeholder: "Custom placeholder"
     },
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-dark wby-p-xl">
+            <div className="wby-bg-neutral-dark wby-text-neutral-light wby-p-xl">
                 <Story />
             </div>
         )
@@ -179,7 +194,7 @@ export const GhostNegativeVariantDisabled: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-dark wby-p-xl">
+            <div className="wby-bg-neutral-dark wby-text-neutral-light wby-p-xl">
                 <Story />
             </div>
         )
@@ -193,7 +208,7 @@ export const GhostNegativeVariantInvalid: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-dark wby-p-xl">
+            <div className="wby-bg-neutral-dark wby-text-neutral-light wby-p-xl">
                 <Story />
             </div>
         )

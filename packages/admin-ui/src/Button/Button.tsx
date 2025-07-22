@@ -42,13 +42,13 @@ const buttonVariants = cva(
                     "focus-visible:wby-ring-lg focus-visible:wby-ring-primary-dimmed"
                 ],
                 ghost: [
-                    "wby-text-neutral-strong wby-fill-neutral-xstrong",
+                    "wby-bg-transparent wby-text-neutral-strong wby-fill-neutral-xstrong",
                     "hover:wby-bg-neutral-dimmed",
                     "active:wby-bg-neutral-muted",
                     "aria-disabled:wby-text-neutral-disabled aria-disabled:wby-fill-neutral-strong"
                 ],
                 "ghost-negative": [
-                    "wby-text-neutral-light wby-fill-neutral-base",
+                    "wby-bg-transparent wby-text-neutral-light wby-fill-neutral-base",
                     "hover:wby-bg-neutral-base/20",
                     "active:wby-bg-neutral-base/30",
                     "aria-disabled:wby-text-neutral-disabled aria-disabled:wby-fill-neutral-base/50",

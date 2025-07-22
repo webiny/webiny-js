@@ -66,16 +66,20 @@ const Trigger = ({
                 }}
                 icon={
                     <span>
-                        <Icon icon={<Close />} label={"Reset"} />
+                        <Icon
+                            icon={<Close />}
+                            label={"Reset"}
+                            color={variant === "ghost-negative" ? "neutral-negative" : "inherit"}
+                        />
                     </span>
                 }
                 size={"xs"}
-                variant={"secondary"}
+                variant={variant === "ghost-negative" ? "ghost-negative" : "secondary"}
                 disabled={disabled}
                 asChild
             />
         );
-    }, [hasValue, onValueReset, disabled]);
+    }, [hasValue, onValueReset, disabled, displayResetAction, variant]);
 
     return (
         <SelectTrigger

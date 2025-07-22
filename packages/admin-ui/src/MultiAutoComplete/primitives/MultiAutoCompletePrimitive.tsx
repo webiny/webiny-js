@@ -178,6 +178,7 @@ const DecoratableMultiAutoCompletePrimitive = (props: MultiAutoCompletePrimitive
                             endIcon={
                                 <MultiAutoCompleteInputIcons
                                     inputSize={props.size}
+                                    inputVariant={props.variant}
                                     displayResetAction={
                                         !vm.selectedOptionsVm.empty && vm.inputVm.displayResetAction
                                     }

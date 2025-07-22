@@ -1,5 +1,5 @@
 import React from "react";
-import { getIconPosition, InputIcon, InputPrimitiveProps, inputVariants } from "~/Input";
+import { InputIcon, InputPrimitiveProps, inputVariants } from "~/Input";
 import { Command, CommandOptionFormatted } from "~/Command";
 import { Tag } from "~/Tag";
 import { cn, cva, type VariantProps } from "~/utils";
@@ -51,7 +51,6 @@ const MultiAutoCompleteInput = ({
                 : React.createRef<HTMLInputElement>(),
         [parentInputRef]
     );
-    const iconPosition = getIconPosition(startIcon, endIcon);
 
     const renderSelectedOptions = React.useCallback(
         (options: CommandOptionFormatted[]) => {
@@ -66,14 +65,14 @@ const MultiAutoCompleteInput = ({
                 return (
                     <Tag
                         key={`tag-${option.value}-${index}`}
-                        variant={"neutral-muted"}
+                        variant={variant === "ghost-negative" ? "neutral-xstrong" : "neutral-muted"}
                         content={option.label}
                         onDismiss={() => removeSelectedOption(option.value)}
                     />
                 );
             });
         },
-        [selectedOptionRenderer, removeSelectedOption]
+        [selectedOptionRenderer, removeSelectedOption, variant]
     );
 
     return (
@@ -83,7 +82,6 @@ const MultiAutoCompleteInput = ({
                 inputVariants({
                     variant,
                     size,
-                    iconPosition,
                     invalid
                 }),
                 multiAutoCompleteInputVariants({ disabled }),
@@ -100,18 +98,11 @@ const MultiAutoCompleteInput = ({
             data-disabled={disabled}
             data-focused={focused}
         >
-            {startIcon && (
-                <InputIcon
-                    disabled={disabled}
-                    icon={startIcon}
-                    inputSize={size}
-                    position={"start"}
-                />
-            )}
-            <div className="wby-relative wby-flex wby-flex-wrap wby-gap-xs">
+            {startIcon && <InputIcon icon={startIcon} inputSize={size} />}
+            <div className="wby-relative wby-flex wby-flex-wrap wby-flex-1 wby-gap-xs">
                 {renderSelectedOptions(selectedOptions)}
                 <Command.Input
-                    className={"wby-flex-1 wby-bg-transparent wby-border-none wby-outline-none"}
+                    className={"wby-bg-transparent wby-border-none wby-outline-none"}
                     value={value}
                     onValueChange={changeValue}
                     placeholder={placeholder}
@@ -133,9 +124,7 @@ const MultiAutoCompleteInput = ({
                     }
                 />
             </div>
-            {endIcon && (
-                <InputIcon disabled={disabled} icon={endIcon} inputSize={size} position={"end"} />
-            )}
+            {endIcon && <InputIcon icon={endIcon} inputSize={size} />}
         </div>
     );
 };

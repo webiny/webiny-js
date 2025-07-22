@@ -151,6 +151,7 @@ const DecoratableAutoCompletePrimitive = (props: AutoCompletePrimitiveProps) => 
                             endIcon={
                                 <AutoCompleteInputIcons
                                     inputSize={props.size}
+                                    inputVariant={props.variant}
                                     displayResetAction={vm.inputVm.displayResetAction}
                                     disabled={props.disabled}
                                     loading={props.loading}

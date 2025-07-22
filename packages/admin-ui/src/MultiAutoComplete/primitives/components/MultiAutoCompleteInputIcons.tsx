@@ -7,6 +7,7 @@ import { Loader } from "~/Loader";
 
 interface MultiAutoCompleteInputIconsProps {
     displayResetAction: boolean;
+    inputVariant?: "primary" | "secondary" | "ghost" | "ghost-negative" | null;
     inputSize?: "md" | "lg" | "xl" | null;
     loading?: boolean;
     disabled?: boolean;
@@ -21,8 +22,20 @@ export const MultiAutoCompleteInputIcons = (props: MultiAutoCompleteInputIconsPr
             {props.displayResetAction && (
                 <IconButton
                     size={props.inputSize === "xl" ? "sm" : "xs"} // Map button size based on the input size.
-                    variant={"secondary"}
-                    icon={<Icon icon={<Close />} label={"Reset"} />}
+                    variant={
+                        props.inputVariant === "ghost-negative" ? "ghost-negative" : "secondary"
+                    }
+                    icon={
+                        <Icon
+                            icon={<Close />}
+                            label={"Reset"}
+                            color={
+                                props.inputVariant === "ghost-negative"
+                                    ? "neutral-negative"
+                                    : "inherit"
+                            }
+                        />
+                    }
                     disabled={props.disabled}
                     onClick={event => {
                         event.stopPropagation();

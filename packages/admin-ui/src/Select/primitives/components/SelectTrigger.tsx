@@ -33,6 +33,13 @@ const selectTriggerVariants = cva(
                     "focus:wby-bg-neutral-dark/5",
                     "data-[state=open]:wby-bg-neutral-dark/5",
                     "disabled:wby-bg-neutral-disabled disabled:wby-border-neutral-dimmed disabled:wby-text-neutral-disabled disabled:placeholder:wby-text-neutral-disabled disabled:wby-fill-neutral-disabled"
+                ],
+                "ghost-negative": [
+                    "wby-bg-transparent wby-border-transparent wby-text-neutral-light/50 placeholder:wby-text-neutral-light/50 wby-fill-neutral-base/50",
+                    "hover:wby-bg-neutral-base/20",
+                    "focus:wby-bg-neutral-base/20",
+                    "data-[state=open]:wby-bg-neutral-base data-[state=open]:wby-text-neutral-primary data[state=open]:placeholder:wby-text-neutral-dimmed data[state=open]:!wby-fill-neutral-xstrong",
+                    "disabled:wby-bg-transparent disabled:wby-text-neutral-disabled/50 disabled:placeholder:wby-text-neutral-disabled/50"
                 ]
             },
             size: {
@@ -68,6 +75,11 @@ const selectTriggerVariants = cva(
                 variant: "ghost",
                 invalid: true,
                 class: "!wby-border-destructive-subtle !wby-bg-destructive-subtle"
+            },
+            {
+                variant: "ghost-negative",
+                invalid: true,
+                class: "!wby-border-destructive-default !wby-bg-destructive-subtle wby-text-neutral-primary placeholder:wby-text-neutral-dimmed !wby-fill-neutral-xstrong"
             }
         ],
         defaultVariants: {

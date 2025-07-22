@@ -44,13 +44,13 @@ const iconButtonVariants = cva(
                     "focus-visible:wby-ring-lg focus-visible:wby-ring-primary-dimmed"
                 ],
                 ghost: [
-                    "wby-fill-neutral-xstrong",
+                    "wby-bg-transparent wby-fill-neutral-xstrong",
                     "hover:wby-bg-neutral-dimmed",
                     "active:wby-bg-neutral-muted",
                     "aria-disabled:wby-fill-neutral-strong hover:aria-disabled:wby-bg-transparent active:aria-disabled:wby-bg-transparent"
                 ],
                 "ghost-negative": [
-                    "wby-fill-neutral-base",
+                    "wby-bg-transparent wby-fill-neutral-base",
                     "hover:wby-bg-neutral-base/20",
                     "active:wby-bg-neutral-base/30",
                     "focus-visible:!wby-border-neutral-base",
