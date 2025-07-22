@@ -1,4 +1,4 @@
-import { SCHEDULE_MIN_FUTURE_MINUTES } from "~/constants.js";
+import { SCHEDULE_MIN_FUTURE_SECONDS } from "~/constants.js";
 
 /**
  * Check if the provided date is in the future.
@@ -6,7 +6,7 @@ import { SCHEDULE_MIN_FUTURE_MINUTES } from "~/constants.js";
  * Otherwise, we consider it as "immediate" and run the action right away.
  */
 export const dateInTheFuture = (date: Date): boolean => {
-    const minDate = new Date(Date.now() + SCHEDULE_MIN_FUTURE_MINUTES * 60 * 1000);
+    const minDate = new Date(Date.now() + SCHEDULE_MIN_FUTURE_SECONDS * 1000);
 
     return date.getTime() >= minDate.getTime();
 };

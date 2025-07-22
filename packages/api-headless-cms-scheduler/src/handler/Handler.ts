@@ -3,6 +3,7 @@ import { SCHEDULE_MODEL_ID, SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER } from "~/cons
 import type { IHandlerAction } from "~/handler/types.js";
 import type { IScheduleEntryValues } from "~/scheduler/types.js";
 import type { ScheduleContext } from "~/types.js";
+import { createIdentifier } from "@webiny/utils/createIdentifier.js";
 
 export interface IHandlerParams {
     actions: IHandlerAction[];
@@ -11,7 +12,7 @@ export interface IHandlerParams {
 export interface IHandlerHandleParams {
     payload: IWebinyScheduledCmsActionEvent;
     cms: Pick<ScheduleContext["cms"], "scheduler" | "getEntryManager" | "getModel">;
-    security: Pick<ScheduleContext["security"], "setIdentity">;
+    security: Pick<ScheduleContext["security"], "setIdentity" | "withoutAuthorization">;
 }
 
 export interface IWebinyScheduledCmsActionEventValues {
@@ -33,26 +34,37 @@ export class Handler {
         const { payload, cms, security } = params;
 
         const values = payload[SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER];
-        const scheduleEntryManager = await cms.getEntryManager<IScheduleEntryValues>(
-            SCHEDULE_MODEL_ID
-        );
+        const scheduleEntryManager = await security.withoutAuthorization(async () => {
+            return cms.getEntryManager<IScheduleEntryValues>(SCHEDULE_MODEL_ID);
+        });
+
+        const scheduleEntryId = createIdentifier({
+            id: values.id,
+            version: 1
+        });
         /**
          * Just fetch the schedule entry so we know the model it is targeting.
          */
-        const scheduleEntry = await scheduleEntryManager.get(values.id);
+        const scheduleEntry = await security.withoutAuthorization(async () => {
+            return scheduleEntryManager.get(scheduleEntryId);
+        });
+        /**
+         * We want to mock the identity of the user that scheduled this record.
+         */
+        security.setIdentity(scheduleEntry.createdBy);
 
         const targetModel = await cms.getModel(scheduleEntry.values.targetModelId);
         /**
          * We want a formatted schedule record to be used later.
          */
         const scheduler = cms.scheduler(targetModel);
-        const scheduleRecord = await scheduler.getScheduled(values.id);
+        const scheduleRecord = await scheduler.getScheduled(scheduleEntryId);
         /**
          * Should not happen as we fetched it a few lines up, just in different format.
          */
         if (!scheduleRecord) {
             throw new WebinyError(
-                `No schedule record found for ID: ${values.id}`,
+                `No schedule record found for ID: ${scheduleEntryId}`,
                 "SCHEDULE_RECORD_NOT_FOUND",
                 values
             );
@@ -60,25 +72,21 @@ export class Handler {
 
         const action = this.actions.find(action => action.canHandle(scheduleRecord));
         if (!action) {
-            await scheduleEntryManager.update(values.id, {
+            await scheduleEntryManager.update(scheduleEntryId, {
                 error: `No action found for schedule record ID.`
             });
             throw new WebinyError(
-                `No action found for schedule record ID: ${values.id}`,
+                `No action found for schedule record ID: ${scheduleEntryId}`,
                 "NO_ACTION_FOUND",
                 scheduleRecord
             );
         }
-        /**
-         * We want to mock the identity of the user that scheduled this record.
-         */
-        security.setIdentity(scheduleRecord.scheduledBy);
 
         try {
             await action.handle(scheduleRecord);
         } catch (ex) {
-            console.error(`Error while handling schedule record ID: ${values.id}`);
-            await scheduleEntryManager.update(values.id, {
+            console.error(`Error while handling schedule record ID: ${scheduleEntryId}`);
+            await scheduleEntryManager.update(scheduleEntryId, {
                 error: ex.message
             });
             throw ex;
@@ -86,6 +94,6 @@ export class Handler {
         /**
          * Everything is ok. Delete the schedule record.
          */
-        await scheduleEntryManager.delete(values.id);
+        await scheduleEntryManager.delete(scheduleEntryId);
     }
 }

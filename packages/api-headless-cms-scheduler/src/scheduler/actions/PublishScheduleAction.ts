@@ -174,14 +174,13 @@ export class PublishScheduleAction implements IScheduleAction {
             };
         }
 
-        await this.cms.updateEntry<Pick<IScheduleEntryValues, "scheduledOn" | "dateOn">>(
-            this.scheduleModel,
-            original.id,
-            {
-                scheduledOn: dateToISOString(input.scheduleOn),
-                dateOn: input.dateOn ? dateToISOString(input.dateOn) : undefined
-            }
-        );
+        await this.cms.updateEntry<
+            Pick<IScheduleEntryValues, "scheduledOn" | "dateOn" | "scheduledBy">
+        >(this.scheduleModel, original.id, {
+            scheduledBy: this.getIdentity(),
+            scheduledOn: dateToISOString(input.scheduleOn),
+            dateOn: input.dateOn ? dateToISOString(input.dateOn) : undefined
+        });
 
         try {
             await this.service.update({

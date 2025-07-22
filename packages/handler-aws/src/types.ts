@@ -13,6 +13,7 @@ import type {
 import "fastify";
 import type { CreateHandlerParams as BaseCreateHandlerParams } from "@webiny/handler";
 import type { LambdaFastifyOptions as LambdaOptions } from "@fastify/aws-lambda";
+import type { GenericRecord } from "@webiny/utils";
 
 export type { AttributeValue, DynamoDBRecord };
 
@@ -29,7 +30,7 @@ export type HandlerEvent =
     | S3Event
     | EventBridgeEvent<string, string>
     | DynamoDBStreamEvent
-    | unknown;
+    | GenericRecord<string>;
 
 export interface EventResolver<T = any> {
     (event: HandlerEvent, context: LambdaContext): T;
