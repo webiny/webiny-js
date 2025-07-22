@@ -46,11 +46,13 @@ import { createLogger } from "@webiny/api-log";
 
 import scaffoldsPlugins from "./plugins/scaffolds";
 import { extensions } from "./extensions";
+import { createHeadlessCmsSchedule } from "@webiny/api-headless-cms-scheduler";
 /**
  * #### TESTING sync system
  */
 import { createSyncSystem } from "@webiny/api-sync-system";
 import { createEventBridgeClient } from "@webiny/aws-sdk/client-eventbridge/index.js";
+import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler";
 
 const debug = process.env.DEBUG === "true";
 const documentClient = getDocumentClient();
@@ -165,7 +167,11 @@ export const handler = createHandler({
         createAuditLogs(),
         createCountDynamoDbTask(),
         createContinuingTask(),
-
+        createHeadlessCmsSchedule({
+            getClient: config => {
+                return createSchedulerClient(config);
+            }
+        }),
         // Leave this at the end.
         scaffoldsPlugins(),
         extensions()

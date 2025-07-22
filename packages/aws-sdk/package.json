@@ -18,6 +18,7 @@
     "@aws-sdk/client-iot": "3.821.0",
     "@aws-sdk/client-lambda": "3.821.0",
     "@aws-sdk/client-s3": "3.821.0",
+    "@aws-sdk/client-scheduler": "3.821.0",
     "@aws-sdk/client-sfn": "3.821.0",
     "@aws-sdk/client-sqs": "3.821.0",
     "@aws-sdk/client-sts": "3.821.0",
