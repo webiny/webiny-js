@@ -29,12 +29,15 @@ class MultiAutoCompleteSelectedOptionPresenter
     }
 
     init(params: MultiAutoCompleteSelectedOptionsParams) {
-        if (params.options) {
+        if (params.options?.length) {
             for (const option of params.options) {
                 if (!this.options.getItem(o => o.value === option.value)) {
                     this.options.addItems([option]);
                 }
             }
+        } else {
+            // If no options are provided, clear the existing options
+            this.options.clear();
         }
     }
 

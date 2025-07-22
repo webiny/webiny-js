@@ -142,7 +142,7 @@ class MultiAutoCompletePresenter implements IMultiAutoCompletePresenter {
                     ? CommandOption.createFromString(option)
                     : CommandOption.create(option);
 
-            commandOption.selected = values.includes(commandOption.value);
+            commandOption.selected = values?.includes(commandOption.value) ?? false;
 
             return commandOption;
         });
@@ -152,6 +152,10 @@ class MultiAutoCompletePresenter implements IMultiAutoCompletePresenter {
         commandOptions: CommandOption[],
         values: string[] = []
     ): CommandOption[] {
+        if (!values.length) {
+            return [];
+        }
+
         return values.map(value => {
             const option = commandOptions.find(option => option.value === value);
 
