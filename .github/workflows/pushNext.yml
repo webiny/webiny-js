@@ -238,7 +238,8 @@ jobs:
           --shard=6/6","storage":"ddb","packageName":"api-headless-cms","id":"26f0b825b771340ca981858d86bd1f42"},{"cmd":"packages/api-headless-cms-aco
           --storage=ddb","storage":"ddb","packageName":"api-headless-cms-aco","id":"718c110b004c59ed7d13cbcc875a6b64"},{"cmd":"packages/api-headless-cms-bulk-actions
           --storage=ddb","storage":"ddb","packageName":"api-headless-cms-bulk-actions","id":"00c0a57737502f28c304015d2d1ba442"},{"cmd":"packages/api-headless-cms-import-export
-          --storage=ddb","storage":"ddb","packageName":"api-headless-cms-import-export","id":"e9052e7c40171aeb43ce089fdfbbe3c8"},{"cmd":"packages/api-i18n
+          --storage=ddb","storage":"ddb","packageName":"api-headless-cms-import-export","id":"e9052e7c40171aeb43ce089fdfbbe3c8"},{"cmd":"packages/headless-cms-scheduler
+          --storage=ddb","storage":"ddb","packageName":"api-headless-cms-scheduler","id":"7a6f48e2e28a0d38d43ff366486921d3"},{"cmd":"packages/api-i18n
           --storage=ddb","storage":"ddb","packageName":"api-i18n","id":"943e15fe21c847b164f9413f8baf97b7"},{"cmd":"packages/api-log
           --storage=ddb","storage":"ddb","packageName":"api-log","id":"9baae1f165e409fea40713e0cf2d300f"},{"cmd":"packages/api-mailer
           --storage=ddb","storage":"ddb","packageName":"api-mailer","id":"2cc1dc707a39e72f4e5d9a140677ca39"},{"cmd":"packages/api-page-builder
@@ -333,7 +334,8 @@ jobs:
           --storage=ddb-es,ddb","storage":"ddb-es","packageName":"api-headless-cms-bulk-actions","id":"d57a9e2a64e475f4629a14f4e1130e78"},{"cmd":"packages/api-headless-cms-ddb-es
           --storage=ddb-es,ddb","storage":"ddb-es","packageName":"api-headless-cms-ddb-es","id":"f64e01fd77d4d1c22803e1523560b07c"},{"cmd":"packages/api-headless-cms-es-tasks
           --storage=ddb-es,ddb","storage":["ddb-es"],"packageName":"api-headless-cms-es-tasks","id":"f857b5e4a7381a7f10eadef6ec83d9e0"},{"cmd":"packages/api-headless-cms-import-export
-          --storage=ddb-es,ddb","storage":"ddb-es","packageName":"api-headless-cms-import-export","id":"fa2cbb7997de447c87e3f1b646008711"},{"cmd":"packages/api-mailer
+          --storage=ddb-es,ddb","storage":"ddb-es","packageName":"api-headless-cms-import-export","id":"fa2cbb7997de447c87e3f1b646008711"},{"cmd":"packages/headless-cms-scheduler
+          --storage=ddb-es,ddb","storage":"ddb-es","packageName":"api-headless-cms-scheduler","id":"726b18aa206e3f4140600c825cf3ef11"},{"cmd":"packages/api-mailer
           --storage=ddb-es,ddb","storage":"ddb-es","packageName":"api-mailer","id":"ccc077215f734fbec817d90fdb04d423"},{"cmd":"packages/api-page-builder
           --storage=ddb-es,ddb
           --shard=1/6","storage":"ddb-es","packageName":"api-page-builder","id":"a9d5f7851f0b921677df8521ff899f86"},{"cmd":"packages/api-page-builder
@@ -432,7 +434,8 @@ jobs:
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-headless-cms-bulk-actions","id":"a798b4705a7eb9858a51d80b386cf30a"},{"cmd":"packages/api-headless-cms-ddb-es
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-headless-cms-ddb-es","id":"23bea783bb40390ae069dfa4985f97d2"},{"cmd":"packages/api-headless-cms-es-tasks
           --storage=ddb-os,ddb","storage":["ddb-os"],"packageName":"api-headless-cms-es-tasks","id":"ee446fd78ad6294bbfb3c0689ff2602e"},{"cmd":"packages/api-headless-cms-import-export
-          --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-headless-cms-import-export","id":"6059cf3e78f93525c8ed72ad83b7de1a"},{"cmd":"packages/api-mailer
+          --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-headless-cms-import-export","id":"6059cf3e78f93525c8ed72ad83b7de1a"},{"cmd":"packages/headless-cms-scheduler
+          --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-headless-cms-scheduler","id":"ff31685928277fe3598e5047f25209db"},{"cmd":"packages/api-mailer
           --storage=ddb-os,ddb","storage":"ddb-os","packageName":"api-mailer","id":"0ede859b604febdfa78018cdd1067a77"},{"cmd":"packages/api-page-builder
           --storage=ddb-os,ddb
           --shard=1/6","storage":"ddb-os","packageName":"api-page-builder","id":"691427cc9c5cb297c68cb2f90d7fcb89"},{"cmd":"packages/api-page-builder
