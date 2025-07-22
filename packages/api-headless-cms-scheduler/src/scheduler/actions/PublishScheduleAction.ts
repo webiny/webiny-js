@@ -8,11 +8,18 @@ import {
 } from "~/scheduler/types.js";
 import { createScheduleRecord, transformScheduleEntry } from "~/scheduler/ScheduleRecord.js";
 import { convertException } from "@webiny/utils";
-import type { CmsIdentity, CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types";
+import type {
+    CmsEntry,
+    CmsEntryValues,
+    CmsIdentity,
+    CmsModel,
+    HeadlessCms
+} from "@webiny/api-headless-cms/types";
 import type { ISchedulerService } from "~/service/types.js";
 import { dateToISOString } from "~/scheduler/dates.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { dateInTheFuture } from "~/utils/dateInTheFuture.js";
+import { WebinyError } from "@webiny/error/index";
 
 export type PublishScheduleActionCms = Pick<
     HeadlessCms,
@@ -49,7 +56,8 @@ export class PublishScheduleAction implements IScheduleAction {
     public async schedule(params: IScheduleActionScheduleParams): Promise<IScheduleRecord> {
         const { targetId, input, scheduleRecordId } = params;
 
-        const targetEntry = await this.cms.getEntryById(this.targetModel, targetId);
+        const targetEntry = await this.getUpdateableTargetEntry(targetId);
+
         const title = targetEntry.values[this.targetModel.titleFieldId] || "Unknown entry title";
         const identity = this.getIdentity();
 
@@ -138,16 +146,23 @@ export class PublishScheduleAction implements IScheduleAction {
     ): Promise<IScheduleRecord> {
         const currentDate = new Date();
         const targetId = original.targetId;
+
+        const targetEntry = await this.getUpdateableTargetEntry(targetId);
+
         /**
          * There are two cases when we can immediately publish the entry:
          * 1. If the user requested it.
          * 2. If the entry is scheduled for a date in the past.
          */
         if (input.immediately || input.scheduleOn < currentDate) {
-            const updatedTargetEntry = await this.cms.updateEntry(this.targetModel, targetId, {
-                lastPublishedOn: input.dateOn ? input.dateOn.toISOString() : undefined,
-                lastPublishedBy: this.getIdentity()
-            });
+            const updatedTargetEntry = await this.cms.updateEntry(
+                this.targetModel,
+                targetEntry.id,
+                {
+                    lastPublishedOn: input.dateOn ? input.dateOn.toISOString() : undefined,
+                    lastPublishedBy: this.getIdentity()
+                }
+            );
 
             const publishedEntry = await this.cms.publishEntry(
                 this.targetModel,
@@ -226,5 +241,19 @@ export class PublishScheduleAction implements IScheduleAction {
             console.log(convertException(ex));
             throw ex;
         }
+    }
+
+    private async getUpdateableTargetEntry<T = CmsEntryValues>(id: string): Promise<CmsEntry<T>> {
+        const entry = await this.cms.getEntryById<T>(this.targetModel, id);
+        if (entry.locked) {
+            throw new WebinyError(
+                `Cannot schedule a publish action for entry "${entry.id}" because it is locked.`,
+                "ENTRY_LOCKED",
+                {
+                    entryId: entry.id
+                }
+            );
+        }
+        return entry;
     }
 }
