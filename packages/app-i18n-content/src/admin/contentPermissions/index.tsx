@@ -14,7 +14,7 @@ export default {
     render(props) {
         return (
             <Accordion.Item
-                open={true}
+                defaultOpen={true}
                 icon={<Accordion.Item.Icon label={"Content"} icon={<PermissionsIcon />} />}
                 title={t`Content`}
                 description={t`Per-locale content access permissions management.`}
