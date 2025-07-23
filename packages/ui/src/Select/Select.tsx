@@ -212,6 +212,7 @@ export const Select = (props: SelectProps) => {
             placeholder={placeholder}
             size={size}
             onChange={value => props?.onChange?.(value)}
+            displayResetAction={false}
         />
     );
 };
