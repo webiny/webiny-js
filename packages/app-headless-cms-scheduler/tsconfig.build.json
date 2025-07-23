@@ -2,13 +2,8 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../app-admin/tsconfig.build.json" },
-    { "path": "../app-headless-cms/tsconfig.build.json" },
-    { "path": "../app-security/tsconfig.build.json" },
-    { "path": "../form/tsconfig.build.json" },
-    { "path": "../ui/tsconfig.build.json" },
-    { "path": "../utils/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" }
+    { "path": "../app-headless-cms-common/tsconfig.build.json" },
+    { "path": "../ui/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

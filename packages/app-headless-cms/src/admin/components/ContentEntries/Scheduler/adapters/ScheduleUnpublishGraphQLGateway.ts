@@ -1,13 +1,14 @@
-import type { IScheduleUnpublishGraphQLGateway } from "./abstractions/ScheduleUnpublishGraphQLGateway";
 import type { ApolloClient } from "apollo-client";
-import type { IScheduleUnpublishGraphQLMutationParams } from "./abstractions/ScheduleUnpublishGraphQLGateway.js";
-import type { ScheduleEntry } from "~/types.js";
-import { ScheduleType } from "~/types.js";
-import type { CmsErrorResponse } from "@webiny/app-headless-cms-common/types/index.js";
+import type { CmsErrorResponse, CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import zod from "zod";
-import { scheduleEntrySchema } from "~/graphql/schema/scheduleEntry.js";
+import { scheduleEntrySchema } from "./schema/scheduleEntry.js";
 import { createZodError } from "@webiny/utils/createZodError";
 import gql from "graphql-tag";
+import { ScheduleEntry, ScheduleType } from "@webiny/app-headless-cms-scheduler/types.js";
+import type {
+    IScheduleUnpublishGraphQLGateway,
+    IScheduleUnpublishGraphQLMutationParams
+} from "@webiny/app-headless-cms-scheduler/gateways/ScheduleUnpublishGraphQLGateway.js";
 
 const createScheduleUnpublishMutation = () => {
     return gql`
@@ -60,9 +61,11 @@ const schema = zod.object({
 
 export class ScheduleUnpublishGraphQLGateway implements IScheduleUnpublishGraphQLGateway {
     private readonly client: ApolloClient<any>;
+    private readonly model: CmsModel;
 
-    constructor(client: ApolloClient<any>) {
+    public constructor(client: ApolloClient<any>, model: CmsModel) {
         this.client = client;
+        this.model = model;
     }
 
     public async execute(params: IScheduleUnpublishGraphQLMutationParams) {

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { ReactComponent as ListIcon } from "./icons/view_list.svg";
+import { ReactComponent as ViewListIcon } from "~/admin/icons/view_list.svg";
 
 export const Button = styled("button")`
     background: none;
@@ -29,6 +29,6 @@ export const IconContainer = styled.div`
     fill: var(--mdc-theme-text-secondary-on-background);
 `;
 
-export const Icon = styled(ListIcon)`
+export const Icon = styled(ViewListIcon)`
     padding: 0 4px;
 `;

@@ -1,6 +1,6 @@
-import { CmsModel } from "@webiny/app-headless-cms/types";
+import { CmsModel } from "@webiny/app-headless-cms-common/types/model.js";
 import zod from "zod";
-import { ScheduleType } from "~/types.js";
+import { ScheduleType } from "@webiny/app-headless-cms-scheduler/types.js";
 
 export const scheduleEntrySchema = zod.object({
     id: zod.string(),

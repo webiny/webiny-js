@@ -9,7 +9,7 @@ import { useModel } from "~/admin/components/ModelProvider";
 import { i18n } from "@webiny/app/i18n";
 import { css } from "emotion";
 import { TrashBin } from "~/admin/components/ContentEntries/TrashBin/components/TrashBin";
-import { makeDecoratable } from "@webiny/react-composition";
+import { Scheduler } from "~/admin/components/ContentEntries/Scheduler/components/Scheduler.js";
 
 const t = i18n.ns("app-headless-cms/admin/content-entries/table");
 
@@ -31,13 +31,6 @@ const disabled = css({
 interface SidebarProps {
     folderId?: string;
 }
-
-export const SidebarFooterContainer = makeDecoratable(
-    "SidebarFooterContainer",
-    (props: React.PropsWithChildren) => {
-        return <SidebarFooter>{props.children}</SidebarFooter>;
-    }
-);
 
 export const Sidebar = ({ folderId }: SidebarProps) => {
     const { navigateToFolder } = useNavigateFolder();
@@ -79,9 +72,10 @@ export const Sidebar = ({ folderId }: SidebarProps) => {
                     enableCreate={true}
                 />
             </SidebarContent>
-            <SidebarFooterContainer>
+            <SidebarFooter>
+                <Scheduler />
                 <TrashBin />
-            </SidebarFooterContainer>
+            </SidebarFooter>
         </SidebarContainer>
     );
 };

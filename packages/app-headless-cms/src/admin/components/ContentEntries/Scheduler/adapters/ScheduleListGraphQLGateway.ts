@@ -1,14 +1,18 @@
 import type { ApolloClient } from "apollo-client";
-import type { CmsErrorResponse, CmsMetaResponse } from "@webiny/app-headless-cms-common/types";
 import type {
-    IScheduleListGraphQLGateway,
-    IScheduleListGraphQLQueryParams
-} from "./abstractions/ScheduleListGraphQLGateway";
-import type { ScheduleEntry } from "~/types.js";
+    CmsErrorResponse,
+    CmsMetaResponse,
+    CmsModel
+} from "@webiny/app-headless-cms-common/types";
 import gql from "graphql-tag";
 import zod from "zod";
 import { createZodError } from "@webiny/utils/createZodError.js";
-import { scheduleEntrySchema } from "~/graphql/schema/scheduleEntry.js";
+import { scheduleEntrySchema } from "./schema/scheduleEntry.js";
+import type {
+    IScheduleListGraphQLGateway,
+    IScheduleListGraphQLQueryParams
+} from "@webiny/app-headless-cms-scheduler/gateways/ScheduleListGraphQLGateway.js";
+import type { ScheduleEntry } from "@webiny/app-headless-cms-scheduler/types.js";
 
 const createScheduleListQuery = () => {
     return gql`
@@ -77,9 +81,11 @@ const schema = zod.object({
 
 export class ScheduleListGraphQLGateway implements IScheduleListGraphQLGateway {
     private readonly client: ApolloClient<any>;
+    private readonly model: CmsModel;
 
-    constructor(client: ApolloClient<any>) {
+    public constructor(client: ApolloClient<any>, model: CmsModel) {
         this.client = client;
+        this.model = model;
     }
 
     public async execute(params: IScheduleListGraphQLQueryParams) {

@@ -52,7 +52,12 @@ export class ScheduleFetcher implements IScheduleFetcher {
         const result = await this.cms.listEntries<IScheduleEntryValues>(this.scheduleModel, {
             sort: params.sort,
             limit: params.limit,
-            where: params.where,
+            /**
+             * When params
+             */
+            where: {
+                ...params.where
+            },
             after: params.after
         });
 

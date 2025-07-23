@@ -1,5 +1,3 @@
-import type { ScheduleEntry } from "~/types.js";
-
 export interface IScheduleCancelGraphQLMutationParams {
     id: string;
 }

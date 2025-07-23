@@ -1,8 +1,10 @@
-import type { IScheduleCancelGraphQLGateway } from "./abstractions/ScheduleCancelGraphQLGateway";
 import type { ApolloClient } from "apollo-client";
-import type { IScheduleCancelGraphQLMutationParams } from "./abstractions/ScheduleCancelGraphQLGateway.js";
-import type { CmsErrorResponse } from "@webiny/app-headless-cms-common/types/index.js";
+import type { CmsErrorResponse, CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import gql from "graphql-tag";
+import type {
+    IScheduleCancelGraphQLGateway,
+    IScheduleCancelGraphQLMutationParams
+} from "@webiny/app-headless-cms-scheduler/gateways/ScheduleCancelGraphQLGateway.js";
 
 const createScheduleCancelMutation = () => {
     return gql`
@@ -33,9 +35,11 @@ interface ScheduleCancelGraphQLMutationResponse {
 
 export class ScheduleCancelGraphQLGateway implements IScheduleCancelGraphQLGateway {
     private readonly client: ApolloClient<any>;
+    private readonly model: CmsModel;
 
-    constructor(client: ApolloClient<any>) {
+    public constructor(client: ApolloClient<any>, model: CmsModel) {
         this.client = client;
+        this.model = model;
     }
 
     public async execute(params: IScheduleCancelGraphQLMutationParams) {
