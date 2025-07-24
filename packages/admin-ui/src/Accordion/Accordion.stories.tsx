@@ -232,31 +232,34 @@ export const WithControlledOpenedItem: Story = {
                     <AccordionItem
                         index={1}
                         description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                        defaultOpen={openFirstItem}
+                        open={openFirstItem}
+                        onOpenChange={open => setOpenFirstItem(open)}
                     />
                     <AccordionItem
                         index={2}
                         description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                        defaultOpen={openSecondItem}
+                        open={openSecondItem}
+                        onOpenChange={open => setOpenSecondItem(open)}
                     />
                     <AccordionItem
                         index={3}
                         description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                        defaultOpen={openThirdItem}
+                        open={openThirdItem}
+                        onOpenChange={open => setOpenThirdItem(open)}
                     />
                 </Accordion>
                 <div className={"wby-flex wby-justify-center wby-mt-lg wby-gap-md"}>
                     <Button
                         onClick={() => setOpenFirstItem(!openFirstItem)}
-                        text={"Trigger First Item"}
+                        text={"Toggle First Item"}
                     />
                     <Button
                         onClick={() => setOpenSecondItem(!openSecondItem)}
-                        text={"Trigger Second Item"}
+                        text={"Toggle Second Item"}
                     />
                     <Button
                         onClick={() => setOpenThirdItem(!openThirdItem)}
-                        text={"Trigger Third Item"}
+                        text={"Toggle Third Item"}
                     />
                 </div>
             </>
