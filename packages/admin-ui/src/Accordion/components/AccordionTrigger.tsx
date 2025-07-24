@@ -5,10 +5,11 @@ import { cn } from "~/utils";
 import { type AccordionItemProps } from "./AccordionItem";
 import { AccordionItemAction } from "./AccordionItemAction";
 import { Icon } from "~/Icon";
+import { AccordionItemDragHandle } from "~/Accordion/components/AccordionItemDragHandle";
 
 type AccordionTriggerProps = Pick<
     AccordionItemProps,
-    "title" | "description" | "icon" | "handle" | "interactive" | "actions"
+    "title" | "description" | "icon" | "handle" | "interactive" | "actions" | "draggable"
 >;
 
 const AccordionTrigger = ({
@@ -16,8 +17,8 @@ const AccordionTrigger = ({
     description,
     actions,
     icon,
-    handle,
-    interactive = true
+    interactive = true,
+    draggable
 }: AccordionTriggerProps) => {
     // The following three attributes are required for the trigger to act as a button.
     // We can't use the default button element here because the content of the trigger
@@ -43,7 +44,7 @@ const AccordionTrigger = ({
             <div
                 {...divAsButtonProps}
                 className={cn(
-                    "wby-w-full wby-flex wby-items-center wby-cursor-pointer",
+                    "wby-group/trigger wby-w-full wby-flex wby-items-center wby-cursor-pointer wby-relative",
                     "focus-visible:wby-outline-none focus-visible:wby-border-none focus-visible:wby-ring-sm focus-visible:wby-ring-primary-dimmed",
                     "hover:wby-bg-neutral-dimmed",
                     "group-[.wby-accordion-variant-container]:wby-rounded-lg",
@@ -51,7 +52,7 @@ const AccordionTrigger = ({
                     interactive ? "wby-cursor-pointer" : "wby-cursor-default"
                 )}
             >
-                {handle}
+                {draggable ? <AccordionItemDragHandle /> : null}
                 <div
                     className={
                         "wby-w-full wby-flex wby-justify-between wby-items-center wby-px-md wby-py-sm-extra"

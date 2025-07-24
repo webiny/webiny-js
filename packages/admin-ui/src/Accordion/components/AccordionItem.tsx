@@ -4,7 +4,6 @@ import { AccordionTrigger } from "./AccordionTrigger";
 import { AccordionContent } from "./AccordionContent";
 import { AccordionItemIcon } from "./AccordionItemIcon";
 import { AccordionItemAction } from "./AccordionItemAction";
-import { AccordionItemHandle } from "./AccordionItemHandle";
 import { AccordionRoot, type AccordionRootProps } from "~/Accordion/components/AccordionRoot";
 
 interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {
@@ -13,6 +12,7 @@ interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {
     icon?: React.ReactNode;
     handle?: React.ReactNode;
     interactive?: boolean;
+    draggable?: boolean;
     actions?: React.ReactNode;
     children: React.ReactNode;
 }
@@ -24,7 +24,6 @@ const AccordionItemBase = (props: AccordionItemProps) => {
             className,
             defaultOpen,
             disabled,
-            interactive,
             onOpenChange,
             open,
 
@@ -44,8 +43,7 @@ const AccordionItemBase = (props: AccordionItemProps) => {
                 open
             },
             triggerProps: {
-                ...triggerProps,
-                interactive
+                ...triggerProps
             },
             contentProps: { children, withIcon: !!props.icon, withHandle: !!props.handle }
         };
@@ -56,7 +54,7 @@ const AccordionItemBase = (props: AccordionItemProps) => {
             {...itemProps}
             className={cn(
                 [
-                    "wby-border-b-sm wby-border-b-neutral-dimmed data-[state=open]:wby-rounded-bl-lg data-[state=open]:wby-rounded-br-lg",
+                    "wby-group-item wby-border-b-sm wby-border-b-neutral-dimmed data-[state=open]:wby-rounded-bl-lg data-[state=open]:wby-rounded-br-lg",
                     "group-[.wby-accordion-variant-container]:wby-rounded-lg",
                     "group-[.wby-accordion-background-base]:wby-bg-neutral-base",
                     "group-[.wby-accordion-background-light]:wby-bg-neutral-light",
@@ -75,8 +73,7 @@ const DecoratableAccordionItem = makeDecoratable("AccordionItem", AccordionItemB
 
 const AccordionItem = withStaticProps(DecoratableAccordionItem, {
     Icon: AccordionItemIcon,
-    Action: AccordionItemAction,
-    Handle: AccordionItemHandle
+    Action: AccordionItemAction
 });
 
 export { AccordionItem, type AccordionItemProps };

@@ -137,7 +137,7 @@ export const WithActionsIcon: Story = {
     }
 };
 
-export const WithHandleIcon: Story = {
+export const WithDraggableItem: Story = {
     ...Default,
     args: {
         children: (
@@ -146,12 +146,16 @@ export const WithHandleIcon: Story = {
                     index={1}
                     description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
                     icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                    handle={<Accordion.Item.Handle />}
+                    draggable={true}
                 />
                 <AccordionItem
                     index={2}
                     description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                    handle={<Accordion.Item.Handle />}
+                    draggable={true}
+                />
+                <AccordionItem
+                    index={3}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
                 />
             </>
         )
