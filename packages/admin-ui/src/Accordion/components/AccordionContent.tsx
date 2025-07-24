@@ -41,7 +41,7 @@ const AccordionContent = ({ children, withIcon, withHandle, ...props }: Accordio
             {...props}
             className={cn(accordionContentVariants({ withHandle, withIcon }), props.className)}
         >
-            <div className={"wby-pt-sm wby-pb-lg wby-pl-md wby-pr-[52px]"}>{children}</div>
+            <div className={"wby-pt-sm wby-pb-lg wby-px-md"}>{children}</div>
         </CollapsiblePrimitive.Content>
     );
 };
