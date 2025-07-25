@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
-import { ScheduleGetGraphQLGateway } from "../adapters/ScheduleGetGraphQLGateway.js";
-import { ScheduleListGraphQLGateway } from "../adapters/ScheduleListGraphQLGateway.js";
-import { ScheduleCancelGraphQLGateway } from "../adapters/ScheduleCancelGraphQLGateway.js";
-import { SchedulePublishGraphQLGateway } from "../adapters/SchedulePublishGraphQLGateway.js";
-import { ScheduleUnpublishGraphQLGateway } from "../adapters/ScheduleUnpublishGraphQLGateway.js";
+import { SchedulerGetGraphQLGateway } from "../adapters/SchedulerGetGraphQLGateway.js";
+import { SchedulerListGraphQLGateway } from "../adapters/SchedulerListGraphQLGateway.js";
+import { SchedulerCancelGraphQLGateway } from "../adapters/SchedulerCancelGraphQLGateway.js";
+import { SchedulerPublishGraphQLGateway } from "../adapters/SchedulerPublishGraphQLGateway.js";
+import { SchedulerUnpublishGraphQLGateway } from "../adapters/SchedulerUnpublishGraphQLGateway.js";
 import { useApolloClient, useModel, usePermission } from "~/admin/hooks";
 import { SchedulerButton } from "./ScheduleSidebarButton.js";
-import { Scheduler as BaseScheduler } from "@webiny/app-headless-cms-scheduler";
+import { Scheduler as BaseScheduler } from "@webiny/app-headless-cms-scheduler/index.js";
 
 export const Scheduler = () => {
     const client = useApolloClient();
@@ -14,40 +14,32 @@ export const Scheduler = () => {
     const { model } = useModel();
 
     const getGateway = useMemo(() => {
-        return new ScheduleGetGraphQLGateway(client, model);
-    }, [client, model]);
+        return new SchedulerGetGraphQLGateway(client);
+    }, [client]);
 
     const listGateway = useMemo(() => {
-        return new ScheduleListGraphQLGateway(client, model);
-    }, [client, model]);
+        return new SchedulerListGraphQLGateway(client);
+    }, [client]);
 
     const cancelGateway = useMemo(() => {
-        return new ScheduleCancelGraphQLGateway(client, model);
-    }, [client, model]);
+        return new SchedulerCancelGraphQLGateway(client);
+    }, [client]);
 
     const publishGateway = useMemo(() => {
-        return new SchedulePublishGraphQLGateway(client, model);
-    }, [client, model]);
+        return new SchedulerPublishGraphQLGateway(client);
+    }, [client]);
 
     const unpublishGateway = useMemo(() => {
-        return new ScheduleUnpublishGraphQLGateway(client, model);
-    }, [client, model]);
+        return new SchedulerUnpublishGraphQLGateway(client);
+    }, [client]);
 
     if (!canPublish("cms.contentEntry") && !canUnpublish("cms.contentEntry")) {
         return null;
     }
-    if (Date.now() > new Date("2024-01-01").getTime()) {
-        return (
-            <SchedulerButton
-                onClick={() => {
-                    return;
-                }}
-            />
-        );
-    }
 
     return (
         <BaseScheduler
+            model={model}
             render={({ showScheduler }) => {
                 return <SchedulerButton onClick={showScheduler} />;
             }}
