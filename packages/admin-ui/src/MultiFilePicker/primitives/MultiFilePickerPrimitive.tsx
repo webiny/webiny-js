@@ -5,6 +5,7 @@ import {
     type FilePickerPrimitiveProps,
     filePickerVariants,
     FilePreview,
+    FormPickerDescription,
     FormPickerLabel,
     ImagePreview,
     RichItemPreview,
@@ -44,6 +45,7 @@ const BaseMultiFilePickerPrimitive = ({
     className,
     buttonPlaceholder,
     containerStyle,
+    description,
     disabled,
     invalid,
     label,
@@ -71,13 +73,26 @@ const BaseMultiFilePickerPrimitive = ({
             )}
             style={containerStyle}
         >
-            {label && type === "area" && (
-                <div className={"wby-flex wby-justify-between"}>
-                    {typeof label === "string" ? (
-                        <FormPickerLabel label={label} className={"wby-m-0"} />
-                    ) : (
-                        label
-                    )}
+            {type === "area" && (
+                <div className={"wby-w-full wby-flex wby-justify-between"}>
+                    <div className={"wby-w-full"}>
+                        {label && (
+                            <div className={"wby-mb-xs"}>
+                                {typeof label === "string" ? (
+                                    <FormPickerLabel label={label} className={"wby-m-0"} />
+                                ) : (
+                                    label
+                                )}
+                            </div>
+                        )}
+                        {description && (
+                            <FormPickerDescription
+                                description={description}
+                                disabled={disabled}
+                                className={"wby-m-0"}
+                            />
+                        )}
+                    </div>
                     <Button
                         text={buttonPlaceholder ?? "Select a file"}
                         variant={"ghost"}
@@ -88,7 +103,7 @@ const BaseMultiFilePickerPrimitive = ({
                 </div>
             )}
             {vm.hasFiles ? (
-                <div className="wby-overflow-y-scroll wby-flex wby-flex-col wby-gap-xs">
+                <div className="wby-w-full wby-overflow-y-scroll wby-flex wby-flex-col wby-gap-xs">
                     {vm.files.map((file, i) => (
                         <FilePreview
                             key={`file-preview-${i}`}

@@ -1,6 +1,10 @@
 import React, { useCallback, useMemo } from "react";
 import { makeDecoratable, withStaticProps } from "~/utils";
-import { FilePickerPrimitive, type FilePickerPrimitiveProps } from "./primitives";
+import {
+    FilePickerPrimitive,
+    type FilePickerPrimitiveProps,
+    FormPickerDescription
+} from "./primitives";
 import {
     FormComponentErrorMessage,
     FormComponentNote,
@@ -46,13 +50,15 @@ const BaseFilePicker = ({
     return (
         <div className={"wby-w-full"}>
             {type !== "area" && (
-                <FormPickerLabel
-                    label={label}
-                    required={required}
-                    disabled={disabled}
-                    description={description}
-                    invalid={invalid}
-                />
+                <>
+                    <FormPickerLabel
+                        label={label}
+                        required={required}
+                        disabled={disabled}
+                        invalid={invalid}
+                    />
+                    <FormPickerDescription description={description} disabled={disabled} />
+                </>
             )}
             <FilePickerPrimitive
                 {...props}
@@ -61,11 +67,11 @@ const BaseFilePicker = ({
                         label={label}
                         required={required}
                         disabled={disabled}
-                        description={description}
                         className={"wby-m-0"}
                         invalid={invalid}
                     />
                 }
+                description={description}
                 disabled={disabled}
                 invalid={invalid}
                 onBlur={onBlur}

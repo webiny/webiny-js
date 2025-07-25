@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn, cva, type VariantProps, makeDecoratable, withStaticProps } from "~/utils";
-import { FormPickerLabel, Trigger } from "./components";
+import { FormPickerDescription, FormPickerLabel, Trigger } from "./components";
 import { Label } from "~/Label";
 import { InputPrimitiveProps, inputVariants } from "~/Input";
 import { ImagePreview, RichItemPreview, TextOnlyPreview, FilePreview } from "./components";
@@ -13,7 +13,7 @@ const filePickerVariants = cva(
         "wby-w-full wby-border-sm wby-text-md wby-peer wby-rounded-md",
         "focus-visible:wby-outline-none",
         "data-[disabled=true]:wby-cursor-not-allowed",
-        "wby-flex wby-flex-col wby-gap-y-sm-extra"
+        "wby-flex wby-flex-col wby-items-start wby-gap-y-sm-extra"
     ],
     {
         variants: {
@@ -59,6 +59,10 @@ interface FilePickerPrimitiveProps
      */
     label?: React.ReactElement<typeof Label> | React.ReactNode | string;
     /**
+     * Description for the file picker.
+     */
+    description?: React.ReactNode | string;
+    /**
      * Callback triggered when an item is edited.
      */
     onEditItem?: (item: FileItemFormatted | null) => void;
@@ -95,6 +99,7 @@ interface FilePickerPrimitiveProps
 const BaseFilePickerPrimitive = ({
     className,
     containerStyle,
+    description,
     disabled,
     invalid,
     label,
@@ -120,13 +125,26 @@ const BaseFilePickerPrimitive = ({
             )}
             style={containerStyle}
         >
-            {label &&
-                type === "area" &&
-                (typeof label === "string" ? (
-                    <FormPickerLabel label={label} className={"wby-m-0"} />
-                ) : (
-                    label
-                ))}
+            {type === "area" && (
+                <div className={"wby-w-full"}>
+                    {label && (
+                        <div className={"wby-mb-xs"}>
+                            {typeof label === "string" ? (
+                                <FormPickerLabel label={label} className={"wby-m-0"} />
+                            ) : (
+                                label
+                            )}
+                        </div>
+                    )}
+                    {description && (
+                        <FormPickerDescription
+                            description={description}
+                            disabled={disabled}
+                            className={"wby-m-0"}
+                        />
+                    )}
+                </div>
+            )}
             {vm.file ? (
                 <FilePreview
                     disabled={disabled}
