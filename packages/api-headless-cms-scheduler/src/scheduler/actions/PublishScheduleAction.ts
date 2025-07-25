@@ -158,13 +158,6 @@ export class PublishScheduleAction implements IScheduleAction {
 
         const targetEntry = await this.getUpdateableTargetEntry(targetId);
 
-        console.log({
-            original,
-            reschedule: input,
-            scheduleOn: input.scheduleOn,
-            scheduleOnType: typeof input.scheduleOn
-        });
-
         /**
          * There are two cases when we can immediately publish the entry:
          * 1. If the user requested it.
@@ -179,9 +172,6 @@ export class PublishScheduleAction implements IScheduleAction {
                     lastPublishedBy: this.getIdentity()
                 }
             );
-            console.log({
-                updatedTargetEntry
-            });
 
             const publishedEntry = await this.cms.publishEntry(
                 this.targetModel,
@@ -208,16 +198,12 @@ export class PublishScheduleAction implements IScheduleAction {
             };
         }
 
-        const updatedEntry = await this.cms.updateEntry<
+        await this.cms.updateEntry<
             Pick<IScheduleEntryValues, "scheduledOn" | "dateOn" | "scheduledBy">
         >(this.scheduleModel, original.id, {
             scheduledBy: this.getIdentity(),
             scheduledOn: dateToISOString(input.scheduleOn),
             dateOn: input.dateOn ? dateToISOString(input.dateOn) : undefined
-        });
-
-        console.log({
-            updatedEntry
         });
 
         try {
