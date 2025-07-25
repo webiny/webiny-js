@@ -1,19 +1,23 @@
 import * as React from "react";
 import { FormComponentDescription, type FormComponentProps } from "~/FormComponent";
 
-type FormPickerDescriptionProps = Pick<FormComponentProps, "description" | "disabled"> & {
+type FilePickerDescriptionProps = Pick<FormComponentProps, "description" | "disabled"> & {
     invalid?: boolean;
     className?: string;
 };
 
-const FormPickerDescription = ({
+const FilePickerDescription = ({
     description,
     disabled,
     className
-}: FormPickerDescriptionProps) => {
+}: FilePickerDescriptionProps) => {
+    if (!description) {
+        return null;
+    }
+
     return (
         <FormComponentDescription text={description} disabled={disabled} className={className} />
     );
 };
 
-export { FormPickerDescription, type FormPickerDescriptionProps };
+export { FilePickerDescription, type FilePickerDescriptionProps };

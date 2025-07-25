@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn, cva, type VariantProps, makeDecoratable, withStaticProps } from "~/utils";
-import { FormPickerDescription, FormPickerLabel, Trigger } from "./components";
+import { FilePickerLabel, FilePickerDescription, Trigger } from "./components";
 import { Label } from "~/Label";
 import { InputPrimitiveProps, inputVariants } from "~/Input";
 import { ImagePreview, RichItemPreview, TextOnlyPreview, FilePreview } from "./components";
@@ -125,12 +125,12 @@ const BaseFilePickerPrimitive = ({
             )}
             style={containerStyle}
         >
-            {type === "area" && (
+            {type === "area" && (label || description) && (
                 <div className={"wby-w-full"}>
                     {label && (
                         <div className={"wby-mb-xs"}>
                             {typeof label === "string" ? (
-                                <FormPickerLabel
+                                <FilePickerLabel
                                     label={label}
                                     className={"wby-m-0"}
                                     disabled={disabled}
@@ -141,7 +141,7 @@ const BaseFilePickerPrimitive = ({
                         </div>
                     )}
                     {description && (
-                        <FormPickerDescription
+                        <FilePickerDescription
                             description={description}
                             disabled={disabled}
                             className={"wby-m-0"}

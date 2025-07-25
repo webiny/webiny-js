@@ -2,11 +2,11 @@ import React from "react";
 import {
     type FileItemDto,
     type FileItemFormatted,
+    FilePickerDescription,
+    FilePickerLabel,
     type FilePickerPrimitiveProps,
     filePickerVariants,
     FilePreview,
-    FormPickerDescription,
-    FormPickerLabel,
     ImagePreview,
     RichItemPreview,
     TextOnlyPreview,
@@ -73,20 +73,24 @@ const BaseMultiFilePickerPrimitive = ({
             )}
             style={containerStyle}
         >
-            {type === "area" && (
+            {type === "area" && (label || description) && (
                 <div className={"wby-w-full wby-flex wby-justify-between"}>
                     <div className={"wby-w-full"}>
                         {label && (
                             <div className={"wby-mb-xs"}>
                                 {typeof label === "string" ? (
-                                    <FormPickerLabel label={label} className={"wby-m-0"} />
+                                    <FilePickerLabel
+                                        label={label}
+                                        className={"wby-m-0"}
+                                        disabled={disabled}
+                                    />
                                 ) : (
                                     label
                                 )}
                             </div>
                         )}
                         {description && (
-                            <FormPickerDescription
+                            <FilePickerDescription
                                 description={description}
                                 disabled={disabled}
                                 className={"wby-m-0"}

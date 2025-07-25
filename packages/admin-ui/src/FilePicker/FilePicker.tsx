@@ -1,21 +1,17 @@
 import React, { useCallback, useMemo } from "react";
 import { makeDecoratable, withStaticProps } from "~/utils";
 import {
+    FilePickerDescription,
+    FilePickerLabel,
     FilePickerPrimitive,
-    type FilePickerPrimitiveProps,
-    FormPickerDescription
+    type FilePickerPrimitiveProps
 } from "./primitives";
 import {
     FormComponentErrorMessage,
     FormComponentNote,
     type FormComponentProps
 } from "~/FormComponent";
-import {
-    ImagePreview,
-    RichItemPreview,
-    TextOnlyPreview,
-    FormPickerLabel
-} from "~/FilePicker/primitives/components";
+import { ImagePreview, RichItemPreview, TextOnlyPreview } from "~/FilePicker/primitives/components";
 
 type FilePickerProps = FilePickerPrimitiveProps & FormComponentProps;
 
@@ -51,26 +47,18 @@ const BaseFilePicker = ({
         <div className={"wby-w-full"}>
             {type !== "area" && (
                 <>
-                    <FormPickerLabel
+                    <FilePickerLabel
                         label={label}
                         required={required}
                         disabled={disabled}
                         invalid={invalid}
                     />
-                    <FormPickerDescription description={description} disabled={disabled} />
+                    <FilePickerDescription description={description} disabled={disabled} />
                 </>
             )}
             <FilePickerPrimitive
                 {...props}
-                label={
-                    <FormPickerLabel
-                        label={label}
-                        required={required}
-                        disabled={disabled}
-                        className={"wby-m-0"}
-                        invalid={invalid}
-                    />
-                }
+                label={label}
                 description={description}
                 disabled={disabled}
                 invalid={invalid}
