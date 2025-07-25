@@ -1,11 +1,12 @@
-import {
-    type IScheduleAction,
-    type IScheduleActionScheduleParams,
-    type IScheduleEntryValues,
-    type IScheduleRecord,
-    type ISchedulerInput,
-    ScheduleType
+import type {
+    IScheduleAction,
+    IScheduleActionScheduleParams,
+    IScheduleEntryValues,
+    IScheduleFetcher,
+    IScheduleRecord,
+    ISchedulerInput
 } from "~/scheduler/types.js";
+import { ScheduleType } from "~/scheduler/types.js";
 import { createScheduleRecord, transformScheduleEntry } from "~/scheduler/ScheduleRecord.js";
 import { convertException } from "@webiny/utils";
 import type {
@@ -32,6 +33,7 @@ export interface IPublishScheduleActionParams {
     targetModel: CmsModel;
     scheduleModel: CmsModel;
     getIdentity: () => CmsIdentity;
+    fetcher: IScheduleFetcher;
 }
 
 export class PublishScheduleAction implements IScheduleAction {
@@ -40,6 +42,7 @@ export class PublishScheduleAction implements IScheduleAction {
     private readonly targetModel: CmsModel;
     private readonly scheduleModel: CmsModel;
     private readonly getIdentity: () => CmsIdentity;
+    private readonly fetcher: IScheduleFetcher;
 
     public constructor(params: IPublishScheduleActionParams) {
         this.service = params.service;
@@ -47,6 +50,7 @@ export class PublishScheduleAction implements IScheduleAction {
         this.targetModel = params.targetModel;
         this.scheduleModel = params.scheduleModel;
         this.getIdentity = params.getIdentity;
+        this.fetcher = params.fetcher;
     }
 
     public canHandle(input: ISchedulerInput): boolean {
@@ -107,7 +111,7 @@ export class PublishScheduleAction implements IScheduleAction {
             });
         }
 
-        const scheduleEntry = await this.cms.createEntry<IScheduleEntryValues>(this.scheduleModel, {
+        const values = {
             id: scheduleRecordId,
             targetId,
             targetModelId: this.targetModel.modelId,
@@ -116,7 +120,12 @@ export class PublishScheduleAction implements IScheduleAction {
             scheduledOn: dateToISOString(input.scheduleOn),
             dateOn: input.dateOn ? dateToISOString(input.dateOn) : undefined,
             scheduledBy: identity
-        });
+        };
+
+        const scheduleEntry = await this.cms.createEntry<IScheduleEntryValues>(
+            this.scheduleModel,
+            values
+        );
 
         try {
             await this.service.create({
@@ -149,6 +158,13 @@ export class PublishScheduleAction implements IScheduleAction {
 
         const targetEntry = await this.getUpdateableTargetEntry(targetId);
 
+        console.log({
+            original,
+            reschedule: input,
+            scheduleOn: input.scheduleOn,
+            scheduleOnType: typeof input.scheduleOn
+        });
+
         /**
          * There are two cases when we can immediately publish the entry:
          * 1. If the user requested it.
@@ -163,6 +179,9 @@ export class PublishScheduleAction implements IScheduleAction {
                     lastPublishedBy: this.getIdentity()
                 }
             );
+            console.log({
+                updatedTargetEntry
+            });
 
             const publishedEntry = await this.cms.publishEntry(
                 this.targetModel,
@@ -189,12 +208,16 @@ export class PublishScheduleAction implements IScheduleAction {
             };
         }
 
-        await this.cms.updateEntry<
+        const updatedEntry = await this.cms.updateEntry<
             Pick<IScheduleEntryValues, "scheduledOn" | "dateOn" | "scheduledBy">
         >(this.scheduleModel, original.id, {
             scheduledBy: this.getIdentity(),
             scheduledOn: dateToISOString(input.scheduleOn),
             dateOn: input.dateOn ? dateToISOString(input.dateOn) : undefined
+        });
+
+        console.log({
+            updatedEntry
         });
 
         try {
@@ -217,27 +240,33 @@ export class PublishScheduleAction implements IScheduleAction {
         /**
          * No need to do anything if the record does not exist.
          */
+        let scheduleEntry: IScheduleRecord | null = null;
         try {
-            await this.cms.getEntryById(this.scheduleModel, id);
+            scheduleEntry = await this.fetcher.getScheduled(id);
+            if (!scheduleEntry) {
+                return;
+            }
         } catch {
             return;
         }
 
         try {
-            await this.cms.deleteEntry(this.scheduleModel, id);
+            await this.cms.deleteEntry(this.scheduleModel, scheduleEntry.id);
         } catch (ex) {
             if (ex.code === "NOT_FOUND" || ex instanceof NotFoundError) {
                 return;
             }
-            console.error(`Error while deleting schedule entry: ${id}.`);
+            console.error(`Error while deleting schedule entry: ${scheduleEntry.id}.`);
             console.log(convertException(ex));
             throw ex;
         }
 
         try {
-            await this.service.delete(id);
+            await this.service.delete(scheduleEntry.id);
         } catch (ex) {
-            console.error(`Error while deleting service event for schedule entry: ${id}.`);
+            console.error(
+                `Error while deleting service event for schedule entry: ${scheduleEntry.id}.`
+            );
             console.log(convertException(ex));
             throw ex;
         }

@@ -1,11 +1,12 @@
-import {
-    type IScheduleAction,
-    type IScheduleActionScheduleParams,
-    type IScheduleEntryValues,
-    type IScheduleRecord,
-    type ISchedulerInput,
-    ScheduleType
+import type {
+    IScheduleAction,
+    IScheduleActionScheduleParams,
+    IScheduleEntryValues,
+    IScheduleFetcher,
+    IScheduleRecord,
+    ISchedulerInput
 } from "~/scheduler/types.js";
+import { ScheduleType } from "~/scheduler/types.js";
 import { createScheduleRecord, transformScheduleEntry } from "~/scheduler/ScheduleRecord.js";
 import { convertException } from "@webiny/utils";
 import type {
@@ -32,6 +33,7 @@ export interface IUnpublishScheduleActionParams {
     targetModel: CmsModel;
     scheduleModel: CmsModel;
     getIdentity: () => CmsIdentity;
+    fetcher: IScheduleFetcher;
 }
 
 export class UnpublishScheduleAction implements IScheduleAction {
@@ -40,6 +42,7 @@ export class UnpublishScheduleAction implements IScheduleAction {
     private readonly targetModel: CmsModel;
     private readonly scheduleModel: CmsModel;
     private readonly getIdentity: () => CmsIdentity;
+    private readonly fetcher: IScheduleFetcher;
 
     public constructor(params: IUnpublishScheduleActionParams) {
         this.service = params.service;
@@ -47,6 +50,7 @@ export class UnpublishScheduleAction implements IScheduleAction {
         this.targetModel = params.targetModel;
         this.scheduleModel = params.scheduleModel;
         this.getIdentity = params.getIdentity;
+        this.fetcher = params.fetcher;
     }
 
     public canHandle(input: ISchedulerInput): boolean {
@@ -200,27 +204,33 @@ export class UnpublishScheduleAction implements IScheduleAction {
         /**
          * No need to do anything if the record does not exist.
          */
+        let scheduleRecord: IScheduleRecord | null = null;
         try {
-            await this.cms.getEntryById(this.scheduleModel, id);
+            scheduleRecord = await this.fetcher.getScheduled(id);
+            if (!scheduleRecord) {
+                return;
+            }
         } catch {
             return;
         }
 
         try {
-            await this.cms.deleteEntry(this.scheduleModel, id);
+            await this.cms.deleteEntry(this.scheduleModel, scheduleRecord.id);
         } catch (ex) {
             if (ex.code === "NOT_FOUND" || ex instanceof NotFoundError) {
                 return;
             }
-            console.error(`Error while deleting schedule entry: ${id}.`);
+            console.error(`Error while deleting schedule entry: ${scheduleRecord.id}.`);
             console.log(convertException(ex));
             throw ex;
         }
 
         try {
-            await this.service.delete(id);
+            await this.service.delete(scheduleRecord.id);
         } catch (ex) {
-            console.error(`Error while deleting service event for schedule entry: ${id}.`);
+            console.error(
+                `Error while deleting service event for schedule entry: ${scheduleRecord.id}.`
+            );
             console.log(convertException(ex));
 
             throw ex;

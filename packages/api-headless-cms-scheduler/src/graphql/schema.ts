@@ -15,39 +15,43 @@ const publishAndUnpublishSchemaType = zod.nativeEnum(ScheduleType);
 
 export const listScheduleSchema = zod.object({
     modelId: zod.string(),
-    where: zod.object({
-        targetId: zod.string().optional(),
-        targetEntryId: zod.string().optional(),
-        type: publishAndUnpublishSchemaType.optional(),
-        scheduledBy: zod.string().optional(),
-        scheduledOn: zod
-            .date()
-            .optional()
-            .transform(value => {
-                if (!value) {
-                    return undefined;
-                }
-                return dateToISOString(value);
-            }),
-        scheduledOn_gte: zod
-            .date()
-            .optional()
-            .transform(value => {
-                if (!value) {
-                    return undefined;
-                }
-                return dateToISOString(value);
-            }),
-        scheduledOn_lte: zod
-            .date()
-            .optional()
-            .transform(value => {
-                if (!value) {
-                    return undefined;
-                }
-                return dateToISOString(value);
-            })
-    }),
+    where: zod
+        .object({
+            targetId: zod.string().optional(),
+            targetEntryId: zod.string().optional(),
+            title_contains: zod.string().optional(),
+            title_not_contains: zod.string().optional(),
+            type: publishAndUnpublishSchemaType.optional(),
+            scheduledBy: zod.string().optional(),
+            scheduledOn: zod
+                .date()
+                .optional()
+                .transform(value => {
+                    if (!value) {
+                        return undefined;
+                    }
+                    return dateToISOString(value);
+                }),
+            scheduledOn_gte: zod
+                .date()
+                .optional()
+                .transform(value => {
+                    if (!value) {
+                        return undefined;
+                    }
+                    return dateToISOString(value);
+                }),
+            scheduledOn_lte: zod
+                .date()
+                .optional()
+                .transform(value => {
+                    if (!value) {
+                        return undefined;
+                    }
+                    return dateToISOString(value);
+                })
+        })
+        .optional(),
     sort: zod
         .array(
             zod.string().refine((value): value is CmsEntryListSortAsc | CmsEntryListSortDesc => {

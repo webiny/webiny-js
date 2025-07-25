@@ -100,6 +100,8 @@ export const createSchedulerGraphQL = () => {
 
             input CmsListSchedulesWhereInput {
                 targetId: ID
+                title_contains: String
+                title_not_contains: String
                 targetEntryId: ID
                 type: CmsScheduleRecordType
                 scheduledBy: ID
@@ -162,7 +164,7 @@ export const createSchedulerGraphQL = () => {
                         const scheduler = context.cms.scheduler(model);
 
                         return scheduler.listScheduled({
-                            where: validated.data.where,
+                            where: validated.data.where || {},
                             sort: validated.data.sort,
                             limit: validated.data.limit,
                             after: validated.data.after

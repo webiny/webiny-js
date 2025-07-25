@@ -11,7 +11,7 @@ import { createScheduleRecordId } from "~/scheduler/createScheduleRecordId.js";
 import { transformScheduleEntry } from "~/scheduler/ScheduleRecord.js";
 import { convertException } from "@webiny/utils";
 
-export type ScheduleFetcherCms = Pick<HeadlessCms, "getEntryById" | "listEntries">;
+export type ScheduleFetcherCms = Pick<HeadlessCms, "getEntryById" | "listLatestEntries">;
 
 export interface IScheduleFetcherParams {
     cms: ScheduleFetcherCms;
@@ -31,8 +31,8 @@ export class ScheduleFetcher implements IScheduleFetcher {
     }
 
     public async getScheduled(targetId: string): Promise<IScheduleRecord | null> {
+        const scheduleRecordId = createScheduleRecordId(targetId);
         try {
-            const scheduleRecordId = createScheduleRecordId(targetId);
             const entry = await this.cms.getEntryById<IScheduleEntryValues>(
                 this.scheduleModel,
                 scheduleRecordId
@@ -49,21 +49,24 @@ export class ScheduleFetcher implements IScheduleFetcher {
     }
 
     public async listScheduled(params: ISchedulerListParams): Promise<ISchedulerListResponse> {
-        const result = await this.cms.listEntries<IScheduleEntryValues>(this.scheduleModel, {
-            sort: params.sort,
-            limit: params.limit,
-            /**
-             * When params
-             */
-            where: {
-                ...params.where
-            },
-            after: params.after
-        });
+        const [data, meta] = await this.cms.listLatestEntries<IScheduleEntryValues>(
+            this.scheduleModel,
+            {
+                sort: params.sort,
+                limit: params.limit,
+                /**
+                 * When params
+                 */
+                where: {
+                    ...params.where
+                },
+                after: params.after
+            }
+        );
 
         return {
-            data: result[0].map(item => transformScheduleEntry(this.targetModel, item)),
-            meta: result[1]
+            data: data.map(item => transformScheduleEntry(this.targetModel, item)),
+            meta
         };
     }
 }

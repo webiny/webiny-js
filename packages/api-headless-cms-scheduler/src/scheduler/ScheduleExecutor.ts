@@ -1,4 +1,3 @@
-import type { CmsModel } from "@webiny/api-headless-cms/types";
 import {
     type IScheduleAction,
     type IScheduleExecutor,
@@ -8,7 +7,6 @@ import {
     ScheduleType
 } from "~/scheduler/types.js";
 import { createScheduleRecordId } from "~/scheduler/createScheduleRecordId.js";
-import type { ISchedulerService } from "~/service/types.js";
 import type { PublishScheduleActionCms } from "~/scheduler/actions/PublishScheduleAction.js";
 import type { UnpublishScheduleActionCms } from "~/scheduler/actions/UnpublishScheduleAction.js";
 import { WebinyError } from "@webiny/error";
@@ -17,24 +15,15 @@ export type ScheduleExecutorCms = UnpublishScheduleActionCms & PublishScheduleAc
 
 export interface IScheduleExecutorParams {
     actions: IScheduleAction[];
-    cms: ScheduleExecutorCms;
-    scheduleModel: CmsModel;
-    service: ISchedulerService;
     fetcher: IScheduleFetcher;
 }
 
 export class ScheduleExecutor implements IScheduleExecutor {
     private readonly actions: IScheduleAction[];
-    private readonly cms: Pick<ScheduleExecutorCms, "deleteEntry">;
-    private readonly scheduleModel: CmsModel;
-    private readonly service: Pick<ISchedulerService, "delete">;
     private readonly fetcher: Pick<IScheduleFetcher, "getScheduled">;
 
     constructor(params: IScheduleExecutorParams) {
         this.actions = params.actions;
-        this.cms = params.cms;
-        this.scheduleModel = params.scheduleModel;
-        this.service = params.service;
         this.fetcher = params.fetcher;
     }
 

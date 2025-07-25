@@ -11,5 +11,5 @@ export const createScheduleRecordId = (input: string): string => {
     }
 
     const { id, version } = parseIdentifier(input);
-    return `${SCHEDULE_ID_PREFIX}${id}-${zeroPad(version || 1)}`;
+    return `${SCHEDULE_ID_PREFIX}${id}-${zeroPad(version || 1)}#0001`;
 };

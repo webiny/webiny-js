@@ -25,6 +25,7 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import { dateInTheFuture } from "~/utils/dateInTheFuture.js";
 import { SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
 import type { IWebinyScheduledCmsActionEventValues } from "~/handler/Handler.js";
+import { parseIdentifier } from "@webiny/utils";
 
 export interface ISchedulerServiceParams {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
@@ -48,7 +49,10 @@ export class SchedulerService implements ISchedulerService {
     public async create(
         params: ISchedulerServiceCreateInput
     ): Promise<ISchedulerServiceCreateResponse> {
-        const { id, scheduleOn } = params;
+        const { id: initialId, scheduleOn } = params;
+
+        const { id } = parseIdentifier(initialId);
+
         if (dateInTheFuture(scheduleOn) === false) {
             throw new WebinyError(
                 `Cannot create a schedule for "${id}" with date in the past: ${scheduleOn.toISOString()}`,
@@ -81,7 +85,10 @@ export class SchedulerService implements ISchedulerService {
     public async update(
         params: ISchedulerServiceUpdateInput
     ): Promise<ISchedulerServiceUpdateResponse> {
-        const { id, scheduleOn } = params;
+        const { id: initialId, scheduleOn } = params;
+
+        const { id } = parseIdentifier(initialId);
+
         if (dateInTheFuture(scheduleOn) === false) {
             throw new WebinyError(
                 `Cannot update an existing schedule for "${id}" with date in the past: ${scheduleOn.toISOString()}`,
@@ -110,7 +117,9 @@ export class SchedulerService implements ISchedulerService {
         }
     }
 
-    public async delete(id: string): Promise<ISchedulerServiceDeleteResponse> {
+    public async delete(initialId: string): Promise<ISchedulerServiceDeleteResponse> {
+        const { id } = parseIdentifier(initialId);
+
         const exists = await this.exists(id);
         if (!exists) {
             throw new NotFoundError(`Cannot delete schedule "${id}" because it does not exist.`);
@@ -127,7 +136,9 @@ export class SchedulerService implements ISchedulerService {
         }
     }
 
-    public async exists(id: string): Promise<boolean> {
+    public async exists(initialId: string): Promise<boolean> {
+        const { id } = parseIdentifier(initialId);
+
         const input: GetScheduleCommandInput = {
             Name: id
         };
@@ -149,9 +160,11 @@ export class SchedulerService implements ISchedulerService {
     }
 
     private getInput(
-        id: string,
+        initialId: string,
         scheduleOn: Date
     ): CreateScheduleCommandInput | UpdateScheduleCommandInput {
+        const { id } = parseIdentifier(initialId);
+
         const values: IWebinyScheduledCmsActionEventValues = {
             id,
             scheduleOn: scheduleOn.toISOString()

@@ -31,34 +31,34 @@ export const createScheduler = async (
             return identity;
         };
 
+        const fetcher = new ScheduleFetcher({
+            targetModel,
+            scheduleModel,
+            cms
+        });
+
         const actions = [
             new PublishScheduleAction({
                 cms,
                 scheduleModel,
                 targetModel,
                 service,
-                getIdentity
+                getIdentity,
+                fetcher
             }),
             new UnpublishScheduleAction({
                 cms,
                 scheduleModel,
                 targetModel,
                 service,
-                getIdentity
+                getIdentity,
+                fetcher
             })
         ];
 
-        const fetcher = new ScheduleFetcher({
-            targetModel,
-            scheduleModel,
-            cms
-        });
         const executor = new ScheduleExecutor({
             actions,
-            service,
-            fetcher,
-            cms,
-            scheduleModel
+            fetcher
         });
         return new Scheduler({
             fetcher,
