@@ -11,7 +11,7 @@ describe("ScheduleFetcher", () => {
     function createMockCms(overrides: Partial<HeadlessCms> = {}) {
         return {
             getEntryById: jest.fn(),
-            listEntries: jest.fn(),
+            listLatestEntries: jest.fn(),
             ...overrides
         } as unknown as HeadlessCms;
     }
@@ -69,7 +69,7 @@ describe("ScheduleFetcher", () => {
             savedBy: { id: "user-1" }
         };
         const cms = createMockCms({
-            listEntries: jest.fn().mockResolvedValue([[entry], entryMeta])
+            listLatestEntries: jest.fn().mockResolvedValue([[entry], entryMeta])
         });
         const fetcher = new ScheduleFetcher({ cms, targetModel, scheduleModel });
         const params: ISchedulerListParams = {

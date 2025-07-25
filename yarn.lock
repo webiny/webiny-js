@@ -16107,6 +16107,7 @@ __metadata:
     "@webiny/app-form-builder": "npm:0.0.0"
     "@webiny/app-graphql-playground": "npm:0.0.0"
     "@webiny/app-headless-cms": "npm:0.0.0"
+    "@webiny/app-headless-cms-scheduler": "npm:0.0.0"
     "@webiny/app-i18n": "npm:0.0.0"
     "@webiny/app-i18n-content": "npm:0.0.0"
     "@webiny/app-mailer": "npm:0.0.0"

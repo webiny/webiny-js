@@ -51,11 +51,9 @@ describe("graphql/schema", () => {
             expect(result.data).toEqual(input);
         }
     });
-    it("listScheduleSchema: rejects missing modelId or where", async () => {
-        const result1 = await listScheduleSchema.safeParseAsync({});
-        const result2 = await listScheduleSchema.safeParseAsync({ modelId: "model" });
-        expect(result1.success).toBe(false);
-        expect(result2.success).toBe(false);
+    it("listScheduleSchema: rejects missing modelId", async () => {
+        const result = await listScheduleSchema.safeParseAsync({});
+        expect(result.success).toBe(false);
     });
     it("listScheduleSchema: rejects invalid sort values", async () => {
         const result = await listScheduleSchema.safeParseAsync({

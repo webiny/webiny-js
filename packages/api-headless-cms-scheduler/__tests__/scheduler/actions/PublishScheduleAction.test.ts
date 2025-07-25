@@ -7,14 +7,19 @@ import { PublishScheduleAction } from "~/scheduler/actions/PublishScheduleAction
 import type { CmsEntry, CmsEntryValues } from "@webiny/api-headless-cms/types/index.js";
 import { ScheduleRecord } from "~/scheduler/ScheduleRecord.js";
 import { type IScheduleEntryValues, ScheduleType } from "~/scheduler/types.js";
-import { createScheduleRecordId } from "~/scheduler/createScheduleRecordId.js";
+import {
+    createScheduleRecordId,
+    createScheduleRecordIdWithVersion
+} from "~/scheduler/createScheduleRecordId.js";
 import { dateToISOString } from "~/scheduler/dates.js";
 import { SchedulerService } from "~/service/SchedulerService.js";
 import { CreateScheduleCommand, SchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { mockClient } from "aws-sdk-client-mock";
+import { createMockFetcher } from "~tests/mocks/fetcher";
 
 describe("PublishScheduleAction", () => {
     const service = createMockService();
+    const fetcher = createMockFetcher();
     const getIdentity = createMockGetIdentity();
     const scheduleModel = createMockScheduleModel();
     const targetModel = createMockTargetModel();
@@ -42,7 +47,8 @@ describe("PublishScheduleAction", () => {
             getIdentity,
             targetModel,
             scheduleModel,
-            cms
+            cms,
+            fetcher
         });
 
         const result = await action.schedule({
@@ -51,12 +57,12 @@ describe("PublishScheduleAction", () => {
                 type: ScheduleType.publish
             },
             targetId: "target-id#0002",
-            scheduleRecordId: createScheduleRecordId(`target-id#0002`)
+            scheduleRecordId: createScheduleRecordIdWithVersion(`target-id#0002`)
         });
 
         expect(result).toBeInstanceOf(ScheduleRecord);
         expect(result).toEqual({
-            id: createScheduleRecordId(`target-id#0002`),
+            id: createScheduleRecordIdWithVersion(`target-id#0002`),
             targetId: "target-id#0002",
             model: targetModel,
             scheduledBy: getIdentity(),
@@ -95,7 +101,8 @@ describe("PublishScheduleAction", () => {
             getIdentity,
             targetModel,
             scheduleModel,
-            cms
+            cms,
+            fetcher
         });
 
         const scheduleOn = new Date(Date.now() - 1000000);
@@ -105,12 +112,12 @@ describe("PublishScheduleAction", () => {
                 type: ScheduleType.publish
             },
             targetId: "target-id#0002",
-            scheduleRecordId: createScheduleRecordId(`target-id#0002`)
+            scheduleRecordId: createScheduleRecordIdWithVersion(`target-id#0002`)
         });
 
         expect(result).toBeInstanceOf(ScheduleRecord);
         expect(result).toEqual({
-            id: createScheduleRecordId(`target-id#0002`),
+            id: createScheduleRecordIdWithVersion(`target-id#0002`),
             targetId: "target-id#0002",
             model: targetModel,
             scheduledBy: getIdentity(),
@@ -148,7 +155,7 @@ describe("PublishScheduleAction", () => {
 
         const crateEntryMock = jest.fn(async () => {
             const entry: Pick<CmsEntry<IScheduleEntryValues>, "id" | "values" | "savedBy"> = {
-                id: createScheduleRecordId(`target-id#0002`),
+                id: createScheduleRecordIdWithVersion(`target-id#0002`),
                 values: {
                     targetId: "target-id#0002",
                     type: ScheduleType.publish,
@@ -186,7 +193,8 @@ describe("PublishScheduleAction", () => {
             getIdentity,
             targetModel,
             scheduleModel,
-            cms
+            cms,
+            fetcher
         });
 
         const result = await action.schedule({
@@ -195,12 +203,12 @@ describe("PublishScheduleAction", () => {
                 type: ScheduleType.publish
             },
             targetId: "target-id#0002",
-            scheduleRecordId: createScheduleRecordId(`target-id#0002`)
+            scheduleRecordId: createScheduleRecordIdWithVersion(`target-id#0002`)
         });
 
         expect(result).toBeInstanceOf(ScheduleRecord);
         expect(result).toEqual({
-            id: createScheduleRecordId(`target-id#0002`),
+            id: createScheduleRecordIdWithVersion(`target-id#0002`),
             targetId: "target-id#0002",
             model: targetModel,
             scheduledBy: getIdentity(),

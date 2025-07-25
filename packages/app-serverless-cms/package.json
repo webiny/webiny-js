@@ -22,6 +22,7 @@
     "@webiny/app-form-builder": "0.0.0",
     "@webiny/app-graphql-playground": "0.0.0",
     "@webiny/app-headless-cms": "0.0.0",
+    "@webiny/app-headless-cms-scheduler": "0.0.0",
     "@webiny/app-i18n": "0.0.0",
     "@webiny/app-i18n-content": "0.0.0",
     "@webiny/app-mailer": "0.0.0",

@@ -7,7 +7,7 @@ import type {
     ISchedulerListResponse
 } from "~/scheduler/types.js";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { createScheduleRecordId } from "~/scheduler/createScheduleRecordId.js";
+import { createScheduleRecordIdWithVersion } from "~/scheduler/createScheduleRecordId.js";
 import { transformScheduleEntry } from "~/scheduler/ScheduleRecord.js";
 import { convertException } from "@webiny/utils";
 
@@ -31,7 +31,7 @@ export class ScheduleFetcher implements IScheduleFetcher {
     }
 
     public async getScheduled(targetId: string): Promise<IScheduleRecord | null> {
-        const scheduleRecordId = createScheduleRecordId(targetId);
+        const scheduleRecordId = createScheduleRecordIdWithVersion(targetId);
         try {
             const entry = await this.cms.getEntryById<IScheduleEntryValues>(
                 this.scheduleModel,

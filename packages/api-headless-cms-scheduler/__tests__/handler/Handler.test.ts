@@ -6,14 +6,17 @@ import type { ScheduleContext } from "~/types.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { type IScheduleEntryValues, ScheduleType } from "~/scheduler/types.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
-import { createScheduleRecordId } from "~/scheduler/createScheduleRecordId.js";
+import {
+    createScheduleRecordId,
+    createScheduleRecordIdWithVersion
+} from "~/scheduler/createScheduleRecordId.js";
 import { MOCK_TARGET_MODEL_ID } from "~tests/mocks/targetModel.js";
 import { dateToISOString } from "~/scheduler/dates.js";
 import { UnpublishHandlerAction } from "~/handler/actions/UnpublishHandlerAction.js";
 import { PublishHandlerAction } from "~/handler/actions/PublishHandlerAction.js";
 
 const createEventScheduleRecordId = (targetId: string): string => {
-    return `${createScheduleRecordId(targetId)}#0001`;
+    return `${createScheduleRecordIdWithVersion(targetId)}`;
 };
 
 describe("Handler", () => {

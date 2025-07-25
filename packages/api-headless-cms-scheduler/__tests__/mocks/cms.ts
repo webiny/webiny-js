@@ -5,7 +5,7 @@ export const createMockCms = (
     cms?: Partial<ScheduleExecutorCms & ScheduleFetcherCms>
 ): ScheduleExecutorCms & ScheduleFetcherCms => {
     return {
-        listEntries: jest.fn(),
+        listLatestEntries: jest.fn(),
         publishEntry: jest.fn(),
         unpublishEntry: jest.fn(),
         updateEntry: jest.fn(),

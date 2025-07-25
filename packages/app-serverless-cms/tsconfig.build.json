@@ -14,6 +14,7 @@
     { "path": "../app-form-builder/tsconfig.build.json" },
     { "path": "../app-graphql-playground/tsconfig.build.json" },
     { "path": "../app-headless-cms/tsconfig.build.json" },
+    { "path": "../app-headless-cms-scheduler/tsconfig.build.json" },
     { "path": "../app-i18n/tsconfig.build.json" },
     { "path": "../app-i18n-content/tsconfig.build.json" },
     { "path": "../app-mailer/tsconfig.build.json" },

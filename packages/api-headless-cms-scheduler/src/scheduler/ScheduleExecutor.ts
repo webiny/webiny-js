@@ -6,7 +6,7 @@ import {
     type ISchedulerInput,
     ScheduleType
 } from "~/scheduler/types.js";
-import { createScheduleRecordId } from "~/scheduler/createScheduleRecordId.js";
+import { createScheduleRecordIdWithVersion } from "~/scheduler/createScheduleRecordId.js";
 import type { PublishScheduleActionCms } from "~/scheduler/actions/PublishScheduleAction.js";
 import type { UnpublishScheduleActionCms } from "~/scheduler/actions/UnpublishScheduleAction.js";
 import { WebinyError } from "@webiny/error";
@@ -28,7 +28,7 @@ export class ScheduleExecutor implements IScheduleExecutor {
     }
 
     public async schedule(targetId: string, input: ISchedulerInput): Promise<IScheduleRecord> {
-        const scheduleRecordId = createScheduleRecordId(targetId);
+        const scheduleRecordId = createScheduleRecordIdWithVersion(targetId);
         const original = await this.fetcher.getScheduled(targetId);
 
         const action = this.getAction(input.type);
@@ -45,7 +45,7 @@ export class ScheduleExecutor implements IScheduleExecutor {
     }
 
     public async cancel(initialId: string): Promise<void> {
-        const id = createScheduleRecordId(initialId);
+        const id = createScheduleRecordIdWithVersion(initialId);
         const original = await this.fetcher.getScheduled(id);
         if (!original) {
             throw new WebinyError(
