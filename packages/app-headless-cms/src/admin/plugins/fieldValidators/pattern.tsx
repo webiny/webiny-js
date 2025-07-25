@@ -1,7 +1,5 @@
 import React from "react";
-import { Cell } from "@webiny/ui/Grid";
-import { Input } from "@webiny/ui/Input";
-import { Select } from "@webiny/ui/Select";
+import { Grid, Input, Select } from "@webiny/admin-ui";
 import { plugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
 import { CmsModelFieldValidatorPlugin, CmsModelFieldRegexValidatorExpressionPlugin } from "~/types";
@@ -18,15 +16,14 @@ const PatternSettings = () => {
         setValue("message", message);
     };
 
-    const selectOptions: any = presetPlugins.map(item => (
-        <option key={item.pattern.name} value={item.pattern.name}>
-            {item.pattern.label}
-        </option>
-    ));
+    const selectOptions: any = presetPlugins.map(item => ({
+        label: item.pattern.label,
+        value: item.pattern.name
+    }));
 
     return (
         <>
-            <Cell span={3}>
+            <Grid.Column span={3}>
                 <Bind
                     name={"settings.preset"}
                     validators={validation.create("required")}
@@ -50,26 +47,32 @@ const PatternSettings = () => {
                         setMessage(selectedPatternPlugin.pattern.message);
                     }}
                 >
-                    <Select label={"Preset"}>
-                        <option value={"custom"}>Custom</option>
-                        {selectOptions}
-                    </Select>
+                    <Select
+                        label={"Preset"}
+                        description={"Choose a regex pattern."}
+                        options={[{ value: "custom", label: "Custom" }, ...selectOptions]}
+                        displayResetAction={false}
+                    />
                 </Bind>
-            </Cell>
-            <Cell span={7}>
+            </Grid.Column>
+            <Grid.Column span={7}>
                 <Bind name={"settings.regex"} validators={validation.create("required")}>
                     <Input
                         disabled={inputsDisabled}
                         label={"Regex"}
-                        description={"Regex to test the value"}
+                        description={"Enter the regex pattern to test."}
                     />
                 </Bind>
-            </Cell>
-            <Cell span={2}>
+            </Grid.Column>
+            <Grid.Column span={2}>
                 <Bind name={"settings.flags"} validators={validation.create("required")}>
-                    <Input disabled={inputsDisabled} label={"Flags"} description={"Regex flags"} />
+                    <Input
+                        disabled={inputsDisabled}
+                        label={"Flags"}
+                        description={"Add regex flags."}
+                    />
                 </Bind>
-            </Cell>
+            </Grid.Column>
         </>
     );
 };
