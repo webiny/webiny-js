@@ -10,26 +10,14 @@ import type {
 } from "@webiny/app-headless-cms-scheduler/index.js";
 import type { SchedulerEntry } from "@webiny/app-headless-cms-scheduler/types.js";
 import { ScheduleType } from "@webiny/app-headless-cms-scheduler/types.js";
+import { createSchedulerEntryFields } from "./graphql/fields.js";
 
 const createSchedulerUnpublishMutation = () => {
     return gql`
-        mutation SchedulerUnpublish($modelId: ID!, $id: ID!, $input: CmsCreateScheduleInput!) {
+        mutation SchedulerUnpublish($modelId: String!, $id: ID!, $input: CmsCreateScheduleInput!) {
             createCmsSchedule(modelId: $modelId, id: $id, input: $input) {
                 data {
-                    id
-                    targetId
-                    model {
-                        modelId
-                    }
-                    scheduledBy {
-                        id
-                        displayName
-                        type
-                    }
-                    publishOn
-                    unpublishOn
-                    type
-                    title
+                    ${createSchedulerEntryFields()}
                 }
                 error {
                     message
@@ -70,11 +58,11 @@ export class SchedulerUnpublishGraphQLGateway implements ISchedulerUnpublishGate
     }
 
     public async execute(params: ISchedulerUnpublishExecuteParams) {
-        const { data: response, errors } = await this.client.query<
+        const { data: response, errors } = await this.client.mutate<
             SchedulerUnpublishGraphQLMutationResponse,
             SchedulerUnpublishGraphQLMutationVariables
         >({
-            query: createSchedulerUnpublishMutation(),
+            mutation: createSchedulerUnpublishMutation(),
             variables: {
                 modelId: params.modelId,
                 id: params.id,
@@ -86,7 +74,7 @@ export class SchedulerUnpublishGraphQLGateway implements ISchedulerUnpublishGate
             fetchPolicy: "network-only"
         });
 
-        const result = response.createCmsSchedule;
+        const result = response?.createCmsSchedule;
         if (!result || errors?.length) {
             console.error({
                 errors

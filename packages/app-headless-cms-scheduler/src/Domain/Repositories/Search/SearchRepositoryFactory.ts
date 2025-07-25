@@ -1,9 +1,9 @@
 import { SearchRepository } from "./SearchRepository";
 
 export class SearchRepositoryFactory {
-    private cache: Map<string, SearchRepository> = new Map();
+    private readonly cache: Map<string, SearchRepository> = new Map();
 
-    getRepository() {
+    public getRepository() {
         const cacheKey = this.getCacheKey();
 
         if (!this.cache.has(cacheKey)) {

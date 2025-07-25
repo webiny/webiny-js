@@ -5,10 +5,10 @@ import { LoadingActions } from "~/types";
 import type { ISchedulerListExecuteParams } from "~/Gateways/index.js";
 
 export class SchedulerItemsRepositoryWithLoading implements ISchedulerItemsRepository {
-    private loadingRepository: ILoadingRepository;
-    private schedulerItemsRepository: ISchedulerItemsRepository;
+    private readonly loadingRepository: ILoadingRepository;
+    private readonly schedulerItemsRepository: ISchedulerItemsRepository;
 
-    constructor(
+    public constructor(
         loadingRepository: ILoadingRepository,
         schedulerItemsRepository: ISchedulerItemsRepository
     ) {
@@ -17,47 +17,47 @@ export class SchedulerItemsRepositoryWithLoading implements ISchedulerItemsRepos
         makeAutoObservable(this);
     }
 
-    getItems() {
+    public getItems() {
         return this.schedulerItemsRepository.getItems();
     }
 
-    getMeta() {
+    public getMeta() {
         return this.schedulerItemsRepository.getMeta();
     }
 
-    getLoading() {
+    public getLoading() {
         return this.loadingRepository.get();
     }
 
-    async listItems(params: Omit<ISchedulerListExecuteParams, "modelId">) {
+    public async listItems(params: Omit<ISchedulerListExecuteParams, "modelId">) {
         await this.loadingRepository.runCallBack(
             this.schedulerItemsRepository.listItems(params),
             LoadingActions.list
         );
     }
 
-    async listMoreItems() {
+    public async listMoreItems() {
         await this.loadingRepository.runCallBack(
             this.schedulerItemsRepository.listMoreItems(),
             LoadingActions.listMore
         );
     }
 
-    async scheduleCancelItem(id: string) {
+    public async scheduleCancelItem(id: string) {
         await this.loadingRepository.runCallBack(
             this.schedulerItemsRepository.scheduleCancelItem(id),
             LoadingActions.delete
         );
     }
 
-    async schedulePublishItem(id: string) {
+    public async schedulePublishItem(id: string) {
         await this.loadingRepository.runCallBack(
             this.schedulerItemsRepository.scheduleCancelItem(id),
             LoadingActions.create
         );
     }
 
-    async scheduleUnpublishItem(id: string) {
+    public async scheduleUnpublishItem(id: string) {
         await this.loadingRepository.runCallBack(
             this.schedulerItemsRepository.scheduleCancelItem(id),
             LoadingActions.create

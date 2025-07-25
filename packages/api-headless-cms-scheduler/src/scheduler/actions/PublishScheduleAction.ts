@@ -21,6 +21,7 @@ import { dateToISOString } from "~/scheduler/dates.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { dateInTheFuture } from "~/utils/dateInTheFuture.js";
 import { WebinyError } from "@webiny/error/index";
+import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 
 export type PublishScheduleActionCms = Pick<
     HeadlessCms,
@@ -111,8 +112,9 @@ export class PublishScheduleAction implements IScheduleAction {
             });
         }
 
-        const values = {
-            id: scheduleRecordId,
+        const { id: scheduleEntryId } = parseIdentifier(scheduleRecordId);
+        const scheduleEntry = await this.cms.createEntry<IScheduleEntryValues>(this.scheduleModel, {
+            id: scheduleEntryId,
             targetId,
             targetModelId: this.targetModel.modelId,
             title,
@@ -120,12 +122,7 @@ export class PublishScheduleAction implements IScheduleAction {
             scheduledOn: dateToISOString(input.scheduleOn),
             dateOn: input.dateOn ? dateToISOString(input.dateOn) : undefined,
             scheduledBy: identity
-        };
-
-        const scheduleEntry = await this.cms.createEntry<IScheduleEntryValues>(
-            this.scheduleModel,
-            values
-        );
+        });
 
         try {
             await this.service.create({

@@ -31,7 +31,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
     private params: ISchedulerListExecuteParams;
     private readonly model: Pick<CmsModel, "modelId">;
 
-    constructor(params: ISchedulerItemsRepositoryParams) {
+    public constructor(params: ISchedulerItemsRepositoryParams) {
         this.metaRepository = params.metaRepository;
         this.listGateway = params.listGateway;
         this.cancelGateway = params.cancelGateway;
@@ -44,19 +44,19 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         makeAutoObservable(this);
     }
 
-    getItems() {
+    public getItems() {
         return this.items;
     }
 
-    getMeta() {
+    public getMeta() {
         return this.metaRepository.get();
     }
 
-    getLoading() {
+    public getLoading() {
         return {};
     }
 
-    async listItems(params: Omit<ISchedulerListExecuteParams, "modelId">) {
+    public async listItems(params: Omit<ISchedulerListExecuteParams, "modelId">) {
         this.params = {
             ...params,
             modelId: this.model.modelId
@@ -74,7 +74,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         });
     }
 
-    async listMoreItems() {
+    public async listMoreItems() {
         const { cursor } = this.metaRepository.get();
 
         if (!cursor) {
@@ -93,8 +93,9 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         });
     }
 
-    async scheduleCancelItem(id: string) {
+    public async scheduleCancelItem(id: string) {
         await this.cancelGateway.execute({
+            modelId: this.model.modelId,
             id
         });
 
@@ -104,7 +105,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         });
     }
 
-    async schedulePublishItem(id: string, scheduleOn: Date) {
+    public async schedulePublishItem(id: string, scheduleOn: Date) {
         const { item } = await this.publishGateway.execute({
             modelId: this.model.modelId,
             id,
@@ -121,7 +122,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
         });
     }
 
-    async scheduleUnpublishItem(id: string, scheduleOn: Date) {
+    public async scheduleUnpublishItem(id: string, scheduleOn: Date) {
         const { item } = await this.unpublishGateway.execute({
             modelId: this.model.modelId,
             id,

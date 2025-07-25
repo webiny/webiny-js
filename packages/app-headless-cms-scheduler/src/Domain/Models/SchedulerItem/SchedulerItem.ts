@@ -22,7 +22,7 @@ export class SchedulerItem {
         this.unpublishOn = item.unpublishOn;
     }
 
-    static create(item: SchedulerEntry) {
+    public static create(item: SchedulerEntry) {
         return new SchedulerItem(item);
     }
 }

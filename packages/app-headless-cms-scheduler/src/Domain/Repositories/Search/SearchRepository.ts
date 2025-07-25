@@ -4,15 +4,15 @@ import { ISearchRepository } from "./ISearchRepository";
 export class SearchRepository implements ISearchRepository {
     private query = "";
 
-    constructor() {
+    public constructor() {
         makeAutoObservable(this);
     }
 
-    get() {
+    public get() {
         return this.query;
     }
 
-    async set(query: string) {
+    public async set(query: string) {
         this.query = query;
     }
 }

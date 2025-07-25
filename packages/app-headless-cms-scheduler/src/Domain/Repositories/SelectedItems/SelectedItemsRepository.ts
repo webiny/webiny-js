@@ -6,28 +6,28 @@ export class SelectedItemsRepository implements ISelectedItemsRepository {
     private items: SchedulerItem[] = [];
     private selectedAll = false;
 
-    constructor() {
+    public constructor() {
         makeAutoObservable(this);
     }
 
-    getSelectedItems() {
+    public getSelectedItems() {
         return this.items;
     }
 
-    getSelectedAllItems() {
+    public getSelectedAllItems() {
         return this.selectedAll;
     }
 
-    async selectItems(items: SchedulerItem[]) {
+    public async selectItems(items: SchedulerItem[]) {
         this.items = items;
         this.selectedAll = false;
     }
 
-    async selectAllItems() {
+    public async selectAllItems() {
         this.selectedAll = true;
     }
 
-    async unselectAllItems() {
+    public async unselectAllItems() {
         this.items = [];
         this.selectedAll = false;
     }

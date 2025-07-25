@@ -1,4 +1,5 @@
 export interface IScheduleCancelExecuteParams {
+    modelId: string;
     id: string;
 }
 

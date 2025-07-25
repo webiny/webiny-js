@@ -8,8 +8,8 @@ import type {
 
 const createSchedulerCancelMutation = () => {
     return gql`
-        mutation SchedulerCancel($id: ID!) {
-            cancelCmsSchedule(id: $id) {
+        mutation SchedulerCancel($modelId: String!, $id: ID!) {
+            cancelCmsSchedule(modelId: $modelId, id: $id) {
                 data
                 error {
                     message
@@ -23,6 +23,7 @@ const createSchedulerCancelMutation = () => {
 };
 
 interface SchedulerCancelGraphQLMutationVariables {
+    modelId: string;
     id: string;
 }
 
@@ -41,18 +42,19 @@ export class SchedulerCancelGraphQLGateway implements ISchedulerCancelGateway {
     }
 
     public async execute(params: IScheduleCancelExecuteParams) {
-        const { data: response, errors } = await this.client.query<
+        const { data: response, errors } = await this.client.mutate<
             SchedulerCancelGraphQLMutationResponse,
             SchedulerCancelGraphQLMutationVariables
         >({
-            query: createSchedulerCancelMutation(),
+            mutation: createSchedulerCancelMutation(),
             variables: {
+                modelId: params.modelId,
                 id: params.id
             },
             fetchPolicy: "network-only"
         });
 
-        const result = response.cancelCmsSchedule;
+        const result = response?.cancelCmsSchedule;
         if (!result || errors?.length) {
             console.error({
                 errors

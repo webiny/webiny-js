@@ -44,7 +44,8 @@ export class ScheduleExecutor implements IScheduleExecutor {
         });
     }
 
-    public async cancel(id: string): Promise<void> {
+    public async cancel(initialId: string): Promise<void> {
+        const id = createScheduleRecordId(initialId);
         const original = await this.fetcher.getScheduled(id);
         if (!original) {
             throw new WebinyError(

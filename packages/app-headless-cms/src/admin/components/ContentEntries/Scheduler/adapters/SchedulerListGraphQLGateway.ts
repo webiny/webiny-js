@@ -10,6 +10,7 @@ import type {
     ISchedulerListGatewayResponse
 } from "@webiny/app-headless-cms-scheduler/index.js";
 import type { SchedulerEntry } from "@webiny/app-headless-cms-scheduler/types.js";
+import { createSchedulerEntryFields } from "./graphql/fields.js";
 
 const createSchedulerListQuery = () => {
     return gql`
@@ -28,20 +29,7 @@ const createSchedulerListQuery = () => {
                 after: $after
             ) {
                 data {
-                    id
-                    targetId
-                    model {
-                        modelId
-                    }
-                    scheduledBy {
-                        id
-                        displayName
-                        type
-                    }
-                    publishOn
-                    unpublishOn
-                    type
-                    title
+                    ${createSchedulerEntryFields()}
                 }
                 meta {
                     totalCount

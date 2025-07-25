@@ -9,26 +9,14 @@ import type {
     ISchedulerGetGateway
 } from "@webiny/app-headless-cms-scheduler/index.js";
 import type { SchedulerEntry } from "@webiny/app-headless-cms-scheduler/types.js";
+import { createSchedulerEntryFields } from "./graphql/fields.js";
 
 const createSchedulerGetQuery = () => {
     return gql`
         query SchedulerGetQuery($modelId: ID!, $id: ID!) {
             getCmsSchedule(modelId: $modelId, id: $id) {
                 data {
-                    id
-                    targetId
-                    model {
-                        modelId
-                    }
-                    scheduledBy {
-                        id
-                        displayName
-                        type
-                    }
-                    publishOn
-                    unpublishOn
-                    type
-                    title
+                    ${createSchedulerEntryFields()}
                 }
                 error {
                     message

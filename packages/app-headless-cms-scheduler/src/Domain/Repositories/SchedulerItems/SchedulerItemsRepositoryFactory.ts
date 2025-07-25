@@ -18,9 +18,9 @@ export interface ISchedulerItemsRepositoryFactoryGetParams {
 }
 
 export class SchedulerItemsRepositoryFactory {
-    private cache: Map<string, SchedulerItemsRepository> = new Map();
+    private readonly cache: Map<string, SchedulerItemsRepository> = new Map();
 
-    getRepository(params: ISchedulerItemsRepositoryFactoryGetParams) {
+    public getRepository(params: ISchedulerItemsRepositoryFactoryGetParams) {
         const cacheKey = this.getCacheKey();
 
         if (!this.cache.has(cacheKey)) {

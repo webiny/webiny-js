@@ -1,9 +1,9 @@
 import { SelectedItemsRepository } from "./SelectedItemsRepository";
 
 export class SelectedItemsRepositoryFactory {
-    private cache: Map<string, SelectedItemsRepository> = new Map();
+    private readonly cache: Map<string, SelectedItemsRepository> = new Map();
 
-    getRepository() {
+    public getRepository() {
         const cacheKey = this.getCacheKey();
 
         if (!this.cache.has(cacheKey)) {

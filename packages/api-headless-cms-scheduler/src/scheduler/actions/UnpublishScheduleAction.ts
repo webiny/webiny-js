@@ -21,6 +21,7 @@ import { dateToISOString } from "~/scheduler/dates.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { dateInTheFuture } from "~/utils/dateInTheFuture.js";
 import { WebinyError } from "@webiny/error";
+import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 
 export type UnpublishScheduleActionCms = Pick<
     HeadlessCms,
@@ -102,8 +103,10 @@ export class UnpublishScheduleAction implements IScheduleAction {
         /**
          * If the entry is scheduled for a future date, we need to create a schedule entry and a service event.
          */
+
+        const { id: scheduleEntryId } = parseIdentifier(scheduleRecordId);
         const scheduleEntry = await this.cms.createEntry<IScheduleEntryValues>(this.scheduleModel, {
-            id: scheduleRecordId,
+            id: scheduleEntryId,
             targetId,
             targetModelId: this.targetModel.modelId,
             title,
