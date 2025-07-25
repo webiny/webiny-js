@@ -26,7 +26,7 @@ export type FilePreviewRendererProps = Omit<FilePreviewDefaultProps, "type"> & R
  * Default properties of a trigger component.
  * They are shared between the default and custom renderers.
  */
-export interface TriggerDefaultProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "onClick"> {
+export interface TriggerDefaultProps extends React.HTMLAttributes<HTMLButtonElement> {
     disabled?: boolean;
     text?: string;
     onSelectItem: () => void;

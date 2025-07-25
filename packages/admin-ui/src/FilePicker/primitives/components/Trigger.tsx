@@ -1,21 +1,28 @@
 import * as React from "react";
 import { ReactComponent as ImageIcon } from "@webiny/icons/image.svg";
-import { Button } from "~/Button";
 import { cn, cva, type VariantProps } from "~/utils";
 import type { TriggerDefaultProps } from "~/FilePicker/primitives/components/types";
+import { Icon } from "~/Icon";
+import { Text } from "~/Text";
 
 const triggerVariants = cva(
-    ["wby-flex wby-w-full", "data-[disabled=true]:wby-cursor-not-allowed"],
+    [
+        "wby-w-full wby-flex wby-items-center wby-justify-center",
+        "data-[disabled=true]:wby-cursor-not-allowed data-[disabled=true]:wby-bg-neutral-disabled",
+        "focus-visible:wby-outline-none  focus-visible:wby-ring-primary-dimmed",
+        "wby-text-neutral-strong data-[disabled=true]:wby-text-neutral-disabled",
+        "wby-fill-neutral-strong data-[disabled=true]:wby-fill-neutral-disabled"
+    ],
     {
         variants: {
             type: {
-                area: ["wby-justify-center", "wby-px-xl wby-py-md-extra"],
-                compact: "wby-w-full [&>span]:!wby-flex-1 [&_button]:!wby-w-full"
+                area: "wby-px-xs wby-py-md-extra wby-rounded-md focus-visible:wby-ring-lg",
+                compact: "wby-px-sm wby-py-xs wby-rounded-sm focus-visible:wby-ring-md"
             },
             variant: {
-                primary: "",
-                secondary: "",
-                ghost: ""
+                primary: ["wby-bg-neutral-subtle", "hover:wby-bg-neutral-light"],
+                secondary: ["wby-bg-neutral-base", "hover:wby-bg-neutral-base"],
+                ghost: ["wby-bg-neutral-subtle", "hover:wby-bg-neutral-light"]
             }
         },
         compoundVariants: [
@@ -23,20 +30,12 @@ const triggerVariants = cva(
             {
                 type: "area",
                 variant: "primary",
-                className: [
-                    "wby-bg-neutral-subtle",
-                    "hover:wby-bg-neutral-light",
-                    "data-[disabled=true]:wby-bg-neutral-disabled"
-                ]
+                className: ["wby-bg-neutral-subtle", "hover:wby-bg-neutral-light"]
             },
             {
                 type: "area",
                 variant: "secondary",
-                className: [
-                    "wby-bg-neutral-base",
-                    "hover:wby-bg-neutral-base",
-                    "data-[disabled=true]:wby-bg-neutral-disabled"
-                ]
+                className: ["wby-bg-neutral-base", "hover:wby-bg-neutral-base"]
             },
             {
                 type: "area",
@@ -73,22 +72,28 @@ const Trigger = ({
         return renderTrigger({ disabled, text, onSelectItem, ...props });
     }
 
+    const label = text ?? "Select from library";
+
     return (
-        <div
+        <button
             data-role={"select-image"}
             data-disabled={disabled}
+            disabled={disabled}
+            onClick={onSelectItem}
             className={cn(triggerVariants({ type, variant }), className)}
             {...props}
         >
-            <Button
-                disabled={disabled}
-                icon={<ImageIcon />}
-                onClick={onSelectItem}
-                size={"sm"}
-                text={text ?? "Select from library"}
-                variant={"ghost"}
-            />
-        </div>
+            <span
+                className={
+                    "wby-inline-flex wby-items-center wby-justify-center wby-whitespace-nowrap wby-gap-xs"
+                }
+            >
+                <Icon icon={<ImageIcon />} label={label} color={"inherit"} />
+                <Text size={"sm"} className={"wby-leading-none"}>
+                    {label}
+                </Text>
+            </span>
+        </button>
     );
 };
 

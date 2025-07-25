@@ -99,6 +99,7 @@ const FieldRenderer = ({ getBind, field }: CmsModelFieldRendererProps) => {
                                                     editFile(value.url);
                                                 }}
                                                 placeholder={field.placeholderText}
+                                                type={"compact"}
                                                 data-testid={`fr.input.filefields.${field.label}`}
                                             />
                                         );

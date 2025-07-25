@@ -22,7 +22,7 @@ const filePickerVariants = cva(
                     "wby-px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))] wby-py-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
                 ],
                 compact: [
-                    "wby-py-[calc(theme(padding.sm)-theme(borderWidth.sm))] wby-px-[calc(theme(padding.sm)-theme(borderWidth.sm))]"
+                    "wby-py-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] wby-px-[calc(theme(padding.sm)-theme(borderWidth.sm))]"
                 ]
             },
             variant: {
@@ -130,7 +130,11 @@ const BaseFilePickerPrimitive = ({
                     {label && (
                         <div className={"wby-mb-xs"}>
                             {typeof label === "string" ? (
-                                <FormPickerLabel label={label} className={"wby-m-0"} />
+                                <FormPickerLabel
+                                    label={label}
+                                    className={"wby-m-0"}
+                                    disabled={disabled}
+                                />
                             ) : (
                                 label
                             )}
