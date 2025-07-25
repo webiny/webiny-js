@@ -12,7 +12,7 @@ export const useCancelSchedulerItem = ({ item }: UseCancelScheduleItemParams) =>
     const { showSnackbar } = useSnackbar();
 
     const { showConfirmation } = useConfirmationDialog({
-        title: "Cancel scheduled action",
+        title: "Cancel scheduled action?",
         message: (
             <p>
                 You are about to cancel scheduled action for this item!

@@ -10,7 +10,7 @@ type EntryActionProps = React.ComponentProps<typeof AcoConfig.Record.Action>;
 
 const BaseEntryAction = (props: EntryActionProps) => {
     return (
-        <CompositionScope name={"trash"}>
+        <CompositionScope name={"scheduler"}>
             <AcoConfig>
                 <Record.Action {...props} />
             </AcoConfig>

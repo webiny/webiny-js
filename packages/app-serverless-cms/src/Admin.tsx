@@ -31,6 +31,7 @@ import { Module as MailerSettings } from "@webiny/app-mailer";
 import { Websockets } from "@webiny/app-websockets";
 import { RecordLocking } from "@webiny/app-record-locking";
 import { TrashBinConfigs } from "@webiny/app-trash-bin";
+import { SchedulerConfigs } from "@webiny/app-headless-cms-scheduler";
 import { DynamicPages } from "@webiny/app-dynamic-pages/admin";
 import { AdvancedContentOrganisation } from "@webiny/app-aco";
 
@@ -69,6 +70,7 @@ const App = (props: AdminProps) => {
             <AuditLogs />
             <MailerSettings />
             <TrashBinConfigs />
+            <SchedulerConfigs />
             <DynamicPages />
             <AdvancedContentOrganisation />
             {props.children}

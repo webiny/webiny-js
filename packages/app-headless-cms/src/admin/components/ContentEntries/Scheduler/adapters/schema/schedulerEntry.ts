@@ -17,8 +17,8 @@ export const schedulerEntrySchema = zod.object({
         displayName: zod.string(),
         type: zod.string()
     }),
-    publishOn: zod.date().optional(),
-    unpublishOn: zod.date().optional(),
+    publishOn: zod.coerce.date().optional(),
+    unpublishOn: zod.coerce.date().optional(),
     type: zod.nativeEnum(ScheduleType),
     title: zod.string()
 });

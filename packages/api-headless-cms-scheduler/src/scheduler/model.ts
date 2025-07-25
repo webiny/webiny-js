@@ -54,6 +54,13 @@ export const createSchedulerModel = () => {
                 }
             },
             {
+                id: "scheduledOn",
+                fieldId: "scheduledOn",
+                storageId: "date@scheduledOn",
+                type: "datetime",
+                label: "Scheduled On"
+            },
+            {
                 id: "dateOn",
                 fieldId: "dateOn",
                 storageId: "date@dateOn",

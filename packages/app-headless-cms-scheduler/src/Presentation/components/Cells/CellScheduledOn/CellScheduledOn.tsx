@@ -8,7 +8,7 @@ export const CellScheduledOn = () => {
 
     const dateTime = row.publishOn || row.unpublishOn;
     if (!dateTime) {
-        return "Missing publish or unpublish date";
+        return <>Missing publish or unpublish date.</>;
     }
 
     return <TimeAgo datetime={dateTime} />;

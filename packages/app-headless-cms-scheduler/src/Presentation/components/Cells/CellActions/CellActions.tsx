@@ -13,7 +13,7 @@ export const CellActions = () => {
         <SchedulerItemProvider item={row}>
             <OptionsMenu
                 actions={recordConfig.actions}
-                data-testid={"table.row.trash.entry.menu-action"}
+                data-testid={"table.row.scheduler.entry.menu-action"}
             />
         </SchedulerItemProvider>
     );

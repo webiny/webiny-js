@@ -7,7 +7,7 @@ const base = createConfigurableComponent<SchedulerListConfig>("SchedulerListConf
 
 const ScopedSchedulerListConfig = ({ children }: { children: React.ReactNode }) => {
     return (
-        <CompositionScope name={"trash"}>
+        <CompositionScope name={"scheduler"}>
             <base.Config>{children}</base.Config>
         </CompositionScope>
     );

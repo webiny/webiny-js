@@ -27,17 +27,20 @@ export const SchedulerConfigs = () => {
                     name={"scheduledBy"}
                     header={"Author"}
                     cell={<CellScheduledBy />}
-                />
-                <Browser.Table.Column
-                    name={"scheduledOn"}
-                    header={"Scheduled on"}
-                    cell={<CellScheduledOn />}
+                    hideable={false}
                 />
                 <Browser.Table.Column
                     name={"type"}
                     header={"Action Type"}
                     cell={<CellType />}
+                    hideable={false}
+                />
+                <Browser.Table.Column
+                    name={"scheduledOn"}
+                    header={"Action Date"}
+                    cell={<CellScheduledOn />}
                     sortable={true}
+                    hideable={false}
                 />
                 <Browser.Table.Column
                     name={"actions"}

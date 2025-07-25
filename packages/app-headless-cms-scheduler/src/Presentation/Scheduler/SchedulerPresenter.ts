@@ -15,12 +15,12 @@ export interface ISchedulerPresenterParams {
 }
 
 export class SchedulerPresenter {
-    private itemsRepository: ISchedulerItemsRepository;
-    private selectedRepository: ISelectedItemsRepository;
-    private sortingRepository: ISortingRepository;
-    private searchRepository: ISearchRepository;
+    private readonly itemsRepository: ISchedulerItemsRepository;
+    private readonly selectedRepository: ISelectedItemsRepository;
+    private readonly sortingRepository: ISortingRepository;
+    private readonly searchRepository: ISearchRepository;
 
-    constructor(params: ISchedulerPresenterParams) {
+    public constructor(params: ISchedulerPresenterParams) {
         this.itemsRepository = params.itemsRepository;
         this.selectedRepository = params.selectedRepository;
         this.sortingRepository = params.sortingRepository;
@@ -28,7 +28,7 @@ export class SchedulerPresenter {
         makeAutoObservable(this);
     }
 
-    get vm() {
+    public get vm() {
         return {
             items: this.itemsRepository.getItems(),
             selectedItems: this.selectedRepository.getSelectedItems(),
