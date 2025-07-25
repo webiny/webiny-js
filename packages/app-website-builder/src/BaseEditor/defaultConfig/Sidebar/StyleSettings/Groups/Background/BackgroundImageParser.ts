@@ -61,7 +61,7 @@ export class BackgroundImageParser {
         const rules: BackgroundImageRule[] = [];
         const parts = this.splitTopLevelCommaSeparated(this.input);
 
-        for (let part of parts) {
+        for (const part of parts) {
             const raw = part.trim();
 
             // url(...)
@@ -128,8 +128,8 @@ export class BackgroundImageParser {
                 parts.push(current.trim());
                 current = "";
             } else {
-                if (char === "(") depth++;
-                if (char === ")") depth--;
+                if (char === "(") {depth++;}
+                if (char === ")") {depth--;}
                 current += char;
             }
         }

@@ -33,6 +33,7 @@
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-graphql-playground": "0.0.0",
     "@webiny/app-headless-cms-common": "0.0.0",
+    "@webiny/app-headless-cms-scheduler": "0.0.0",
     "@webiny/app-i18n": "0.0.0",
     "@webiny/app-plugin-admin-welcome-screen": "0.0.0",
     "@webiny/app-security": "0.0.0",
@@ -75,7 +76,8 @@
     "react-dom": "18.2.0",
     "react-helmet": "^6.1.0",
     "react-hotkeyz": "^1.0.4",
-    "use-deep-compare-effect": "^1.8.1"
+    "use-deep-compare-effect": "^1.8.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.11.0",

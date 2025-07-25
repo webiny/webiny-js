@@ -1,9 +1,9 @@
 import type {
-    AttributeValue,
-    DynamoDBRecord,
     APIGatewayEvent,
     APIGatewayEventRequestContextWithAuthorizer,
+    AttributeValue,
     Context as LambdaContext,
+    DynamoDBRecord,
     DynamoDBStreamEvent,
     EventBridgeEvent,
     S3Event,
@@ -13,6 +13,7 @@ import type {
 import "fastify";
 import type { CreateHandlerParams as BaseCreateHandlerParams } from "@webiny/handler";
 import type { LambdaFastifyOptions as LambdaOptions } from "@fastify/aws-lambda";
+import type { GenericRecord } from "@webiny/utils";
 
 export type { AttributeValue, DynamoDBRecord };
 
@@ -28,7 +29,8 @@ export type HandlerEvent =
     | SQSEvent
     | S3Event
     | EventBridgeEvent<string, string>
-    | DynamoDBStreamEvent;
+    | DynamoDBStreamEvent
+    | GenericRecord<string>;
 
 export interface EventResolver<T = any> {
     (event: HandlerEvent, context: LambdaContext): T;
@@ -64,9 +66,6 @@ export enum Base64EncodeHeader {
 }
 
 declare module "fastify" {
-    interface FastifyInstance {
-        __webiny_raw_result: any;
-    }
     interface FastifyRequest {
         awsLambda: {
             event: APIGatewayEvent;

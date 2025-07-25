@@ -34,6 +34,7 @@ import { TrashBinConfigs } from "@webiny/app-trash-bin";
 import { DynamicPages } from "@webiny/app-dynamic-pages/admin";
 import { AdvancedContentOrganisation } from "@webiny/app-aco";
 import { WebsiteBuilder } from "@webiny/app-website-builder/App";
+import { SchedulerConfigs } from "@webiny/app-headless-cms-scheduler/index.js";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
     createApolloClient?: BaseAdminProps["createApolloClient"];
@@ -69,6 +70,7 @@ const App = (props: AdminProps) => {
             <TenantManager />
             <AuditLogs />
             <MailerSettings />
+            <SchedulerConfigs />
             <TrashBinConfigs />
             <DynamicPages />
             <AdvancedContentOrganisation />

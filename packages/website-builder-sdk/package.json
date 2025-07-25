@@ -14,6 +14,7 @@
   "dependencies": {
     "csstype": "^3.0.2",
     "deep-equal": "^2.2.3",
+    "deepmerge": "^4.3.1",
     "fast-json-patch": "^3.1.1",
     "fast-json-stable-stringify": "^2.1.0",
     "is-hotkey": "^0.2.0",

@@ -1,0 +1,51 @@
+{
+  "name": "@webiny/app-headless-cms-scheduler",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "author": "Webiny Ltd",
+  "license": "MIT",
+  "dependencies": {
+    "@emotion/react": "11.10.8",
+    "@emotion/styled": "11.10.6",
+    "@material-design-icons/svg": "^0.14.15",
+    "@webiny/app-aco": "0.0.0",
+    "@webiny/app-admin": "0.0.0",
+    "@webiny/app-headless-cms-common": "0.0.0",
+    "@webiny/app-utils": "0.0.0",
+    "@webiny/react-composition": "0.0.0",
+    "@webiny/react-properties": "0.0.0",
+    "@webiny/ui": "0.0.0",
+    "apollo-client": "^2.6.10",
+    "lodash": "^4.17.21",
+    "mobx": "^6.9.0",
+    "mobx-react-lite": "^3.4.3",
+    "prop-types": "^15.8.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@emotion/babel-plugin": "^11.11.0",
+    "@types/react": "18.2.79",
+    "@webiny/project-utils": "0.0.0",
+    "rimraf": "^6.0.1",
+    "typescript": "5.3.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "node ../cli/bin.js run build",
+    "watch": "node ../cli/bin.js run watch"
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
+  },
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+}

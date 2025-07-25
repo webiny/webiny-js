@@ -1,0 +1,44 @@
+{
+  "name": "@webiny/api-headless-cms-scheduler",
+  "version": "0.0.0",
+  "main": "index.js",
+  "description": "Schedule for Webiny Headless CMS",
+  "keywords": [
+    "api-headless-cms-scheduler:base"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-headless-cms-scheduler"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/aws-sdk": "0.0.0",
+    "@webiny/error": "0.0.0",
+    "@webiny/handler-graphql": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@webiny/api-i18n": "0.0.0",
+    "@webiny/api-security": "0.0.0",
+    "@webiny/api-tenancy": "0.0.0",
+    "@webiny/api-wcp": "0.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/handler-aws": "0.0.0",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "aws-sdk-client-mock": "^4.1.0",
+    "typescript": "5.3.3"
+  },
+  "scripts": {
+    "build": "node ../cli/bin.js run build",
+    "watch": "node ../cli/bin.js run watch"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  }
+}

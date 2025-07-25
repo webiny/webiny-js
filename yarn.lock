@@ -990,6 +990,55 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-scheduler@npm:3.734.0":
+  version: 3.734.0
+  resolution: "@aws-sdk/client-scheduler@npm:3.734.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": "npm:5.2.0"
+    "@aws-crypto/sha256-js": "npm:5.2.0"
+    "@aws-sdk/core": "npm:3.734.0"
+    "@aws-sdk/credential-provider-node": "npm:3.734.0"
+    "@aws-sdk/middleware-host-header": "npm:3.734.0"
+    "@aws-sdk/middleware-logger": "npm:3.734.0"
+    "@aws-sdk/middleware-recursion-detection": "npm:3.734.0"
+    "@aws-sdk/middleware-user-agent": "npm:3.734.0"
+    "@aws-sdk/region-config-resolver": "npm:3.734.0"
+    "@aws-sdk/types": "npm:3.734.0"
+    "@aws-sdk/util-endpoints": "npm:3.734.0"
+    "@aws-sdk/util-user-agent-browser": "npm:3.734.0"
+    "@aws-sdk/util-user-agent-node": "npm:3.734.0"
+    "@smithy/config-resolver": "npm:^4.0.1"
+    "@smithy/core": "npm:^3.1.1"
+    "@smithy/fetch-http-handler": "npm:^5.0.1"
+    "@smithy/hash-node": "npm:^4.0.1"
+    "@smithy/invalid-dependency": "npm:^4.0.1"
+    "@smithy/middleware-content-length": "npm:^4.0.1"
+    "@smithy/middleware-endpoint": "npm:^4.0.2"
+    "@smithy/middleware-retry": "npm:^4.0.3"
+    "@smithy/middleware-serde": "npm:^4.0.1"
+    "@smithy/middleware-stack": "npm:^4.0.1"
+    "@smithy/node-config-provider": "npm:^4.0.1"
+    "@smithy/node-http-handler": "npm:^4.0.2"
+    "@smithy/protocol-http": "npm:^5.0.1"
+    "@smithy/smithy-client": "npm:^4.1.2"
+    "@smithy/types": "npm:^4.1.0"
+    "@smithy/url-parser": "npm:^4.0.1"
+    "@smithy/util-base64": "npm:^4.0.0"
+    "@smithy/util-body-length-browser": "npm:^4.0.0"
+    "@smithy/util-body-length-node": "npm:^4.0.0"
+    "@smithy/util-defaults-mode-browser": "npm:^4.0.3"
+    "@smithy/util-defaults-mode-node": "npm:^4.0.3"
+    "@smithy/util-endpoints": "npm:^3.0.1"
+    "@smithy/util-middleware": "npm:^4.0.1"
+    "@smithy/util-retry": "npm:^4.0.1"
+    "@smithy/util-utf8": "npm:^4.0.0"
+    "@types/uuid": "npm:^9.0.1"
+    tslib: "npm:^2.6.2"
+    uuid: "npm:^9.0.1"
+  checksum: 10/e64f1142ecc552912cffd2ca4a308e5a47c81adf7374a5e9fef4265b064be6e532eccb6efa012b159698d604dc780337dc69cc537a5b7da54c0ebb78ff20cbf1
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-sfn@npm:3.734.0":
   version: 3.734.0
   resolution: "@aws-sdk/client-sfn@npm:3.734.0"
@@ -15479,6 +15528,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-headless-cms-scheduler@workspace:packages/api-headless-cms-scheduler":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-headless-cms-scheduler@workspace:packages/api-headless-cms-scheduler"
+  dependencies:
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-i18n": "npm:0.0.0"
+    "@webiny/api-security": "npm:0.0.0"
+    "@webiny/api-tenancy": "npm:0.0.0"
+    "@webiny/api-wcp": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/handler-aws": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    aws-sdk-client-mock: "npm:^4.1.0"
+    typescript: "npm:5.3.3"
+    zod: "npm:^3.23.8"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-headless-cms-tasks-ddb-es@workspace:packages/api-headless-cms-tasks-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-tasks-ddb-es@workspace:packages/api-headless-cms-tasks-ddb-es"
@@ -16887,6 +16960,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/app-headless-cms-scheduler@npm:0.0.0, @webiny/app-headless-cms-scheduler@workspace:packages/app-headless-cms-scheduler":
+  version: 0.0.0-use.local
+  resolution: "@webiny/app-headless-cms-scheduler@workspace:packages/app-headless-cms-scheduler"
+  dependencies:
+    "@emotion/babel-plugin": "npm:^11.11.0"
+    "@emotion/react": "npm:11.10.8"
+    "@emotion/styled": "npm:11.10.6"
+    "@material-design-icons/svg": "npm:^0.14.15"
+    "@types/react": "npm:18.2.79"
+    "@webiny/app-aco": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
+    "@webiny/app-headless-cms-common": "npm:0.0.0"
+    "@webiny/app-utils": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/react-composition": "npm:0.0.0"
+    "@webiny/react-properties": "npm:0.0.0"
+    "@webiny/ui": "npm:0.0.0"
+    apollo-client: "npm:^2.6.10"
+    lodash: "npm:^4.17.21"
+    mobx: "npm:^6.9.0"
+    mobx-react-lite: "npm:^3.4.3"
+    prop-types: "npm:^15.8.1"
+    react: "npm:18.2.0"
+    react-dom: "npm:18.2.0"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.3.3"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/app-headless-cms@npm:0.0.0, @webiny/app-headless-cms@workspace:packages/app-headless-cms":
   version: 0.0.0-use.local
   resolution: "@webiny/app-headless-cms@workspace:packages/app-headless-cms"
@@ -16912,6 +17014,7 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-graphql-playground": "npm:0.0.0"
     "@webiny/app-headless-cms-common": "npm:0.0.0"
+    "@webiny/app-headless-cms-scheduler": "npm:0.0.0"
     "@webiny/app-i18n": "npm:0.0.0"
     "@webiny/app-plugin-admin-welcome-screen": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
@@ -16959,6 +17062,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.3.3"
     use-deep-compare-effect: "npm:^1.8.1"
+    zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
 
@@ -17287,6 +17391,7 @@ __metadata:
     "@webiny/app-form-builder": "npm:0.0.0"
     "@webiny/app-graphql-playground": "npm:0.0.0"
     "@webiny/app-headless-cms": "npm:0.0.0"
+    "@webiny/app-headless-cms-scheduler": "npm:0.0.0"
     "@webiny/app-i18n": "npm:0.0.0"
     "@webiny/app-i18n-content": "npm:0.0.0"
     "@webiny/app-mailer": "npm:0.0.0"
@@ -17681,6 +17786,7 @@ __metadata:
     "@aws-sdk/client-iot": "npm:3.734.0"
     "@aws-sdk/client-lambda": "npm:3.734.0"
     "@aws-sdk/client-s3": "npm:3.735.0"
+    "@aws-sdk/client-scheduler": "npm:3.734.0"
     "@aws-sdk/client-sfn": "npm:3.734.0"
     "@aws-sdk/client-sqs": "npm:3.734.0"
     "@aws-sdk/client-sts": "npm:3.734.0"
@@ -18159,7 +18265,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    fastify: "npm:4.29.0"
+    fastify: "npm:4.29.1"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.3.3"
   languageName: unknown
@@ -18234,7 +18340,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    fastify: "npm:4.29.0"
+    fastify: "npm:4.29.1"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.3.3"
   languageName: unknown
@@ -18318,7 +18424,6 @@ __metadata:
     "@emotion/styled": "npm:11.10.6"
     "@lexical/selection": "npm:0.23.1"
     "@types/react-color": "npm:^2.17.11"
-    "@webiny/app-page-builder-elements": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
@@ -18978,9 +19083,11 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     csstype: "npm:^3.0.2"
     deep-equal: "npm:^2.2.3"
+    deepmerge: "npm:^4.3.1"
     fast-json-patch: "npm:^3.1.1"
     fast-json-stable-stringify: "npm:^2.1.0"
     is-hotkey: "npm:^0.2.0"
+    lexical: "npm:0.23.1"
     lodash: "npm:^4.17.21"
     micromatch: "npm:^4.0.8"
     mobx: "npm:^6.9.0"
@@ -26870,9 +26977,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fastify@npm:4.29.0":
-  version: 4.29.0
-  resolution: "fastify@npm:4.29.0"
+"fastify@npm:4.29.1":
+  version: 4.29.1
+  resolution: "fastify@npm:4.29.1"
   dependencies:
     "@fastify/ajv-compiler": "npm:^3.5.0"
     "@fastify/error": "npm:^3.4.0"
@@ -26890,7 +26997,7 @@ __metadata:
     secure-json-parse: "npm:^2.7.0"
     semver: "npm:^7.5.4"
     toad-cache: "npm:^3.3.0"
-  checksum: 10/e3ffa740fc1ec149d55cbf8caa52f3013becf181aaa40231f1d6f97ce54120ca40ee48497c00f4f0995d63692306e220f109bdcafffee0e616c65565de97c381
+  checksum: 10/7190c9a9f23b81ec4792deeef90eaa7325054770dfb4a6a165247d4180341562411fa85a1b0ea1d0f69a293893f890253569b9bf86291bb6956a49f0fb00fd74
   languageName: node
   linkType: hard
 
@@ -39446,7 +39553,7 @@ __metadata:
     "@babel/preset-react": "npm:^7.26.3"
     "@babel/preset-typescript": "npm:^7.26.0"
     "@babel/register": "npm:^7.25.9"
-    "@babel/runtime": "npm:7.26.7"
+    "@babel/runtime": "npm:7.26.10"
     "@babel/template": "npm:^7.25.9"
     "@babel/traverse": "npm:7.26.7"
     "@babel/types": "npm:7.26.7"

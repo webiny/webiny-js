@@ -18,7 +18,7 @@
     "@webiny/handler-client": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "fastify": "4.29.0"
+    "fastify": "4.29.1"
   },
   "devDependencies": {
     "@webiny/project-utils": "0.0.0",

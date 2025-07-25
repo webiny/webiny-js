@@ -367,7 +367,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         context
     });
 
-    const getEntryById: CmsEntryContext["getEntryById"] = async (model, id) => {
+    const getEntryById = async <T = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ): Promise<CmsEntry<T>> => {
         const where: CmsEntryListWhere = {
             id
         };
@@ -379,7 +382,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         if (!entry) {
             throw new NotFoundError(`Entry by ID "${id}" not found.`);
         }
-        return entry;
+        // TODO figure out without casting
+        return entry as CmsEntry<T>;
     };
     const createEntry: CmsEntryContext["createEntry"] = async <T = CmsEntryValues>(
         model: CmsModel,

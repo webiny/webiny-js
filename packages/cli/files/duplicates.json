@@ -1,1 +1,1 @@
-[{"name":"@babel/runtime","versions":[{"version":"7.26.7","files":[{"file":"/package.json","types":["devDependencies"]}]},{"version":"7.26.10","files":[{"file":"/package.json","types":["resolutions"]},{"file":"/packages/cli-plugin-dependencies/package.json","types":["dependencies"]},{"file":"/packages/cli-plugin-extensions/package.json","types":["dependencies"]},{"file":"/packages/project-utils/package.json","types":["dependencies"]}]}]}]
+[]

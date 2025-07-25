@@ -1,5 +1,6 @@
 export * from "~/parseIdentifier";
 export * from "~/zeroPad";
+export * from "~/exception.js";
 export * from "~/createIdentifier";
 export * from "~/cursor";
 export * from "~/headers";

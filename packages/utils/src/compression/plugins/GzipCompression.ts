@@ -23,6 +23,10 @@ export class GzipCompression extends CompressionPlugin {
     }
 
     public override async compress(data: any): Promise<ICompressedValue> {
+        if (data === null || data === undefined) {
+            return data;
+        }
+        // This stringifies both regular strings and JSON objects.
         const value = await gzip(JSON.stringify(data));
 
         return {
@@ -42,6 +46,11 @@ export class GzipCompression extends CompressionPlugin {
     }
 
     public override async decompress(data: ICompressedValue): Promise<any> {
+        if (!data) {
+            return data;
+        } else if (!data.value) {
+            return null;
+        }
         try {
             const buf = await ungzip(convertToBuffer(data.value));
             const value = buf.toString(FROM_STORAGE_ENCODING);
