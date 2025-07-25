@@ -275,9 +275,9 @@ const WithActionsExample = () => {
 export default WithActionsExample;
 ` } } />
 
-### With Handle
+### With Draggable Item
 
-<Canvas of={AccordionStories.WithHandleIcon} source={ { code: `
+<Canvas of={AccordionStories.WithDraggableItem} source={ { code: `
 import React from "react";
 import { Accordion } from "@webiny/admin-ui";
 import { ReactComponent as WarningIcon } from "@webiny/icons/insert_chart.svg";
@@ -289,7 +289,7 @@ const WithHandleExample = () => {
                 title="Accordion item 1"
                 description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
                 icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                handle={<Accordion.Item.Handle />}
+                 draggable={true}
             >
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
                 convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
@@ -297,7 +297,14 @@ const WithHandleExample = () => {
             <Accordion.Item
                 title="Accordion item 2"
                 description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                handle={<Accordion.Item.Handle />}
+                 draggable={true}
+            >
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
+                convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
+            </Accordion.Item>
+             <Accordion.Item
+                title="Accordion item 3"
+                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
             >
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed elit sem, pretium sit amet
                 convallis nec, consequat non nulla. Nunc sit amet sagittis tellus.
