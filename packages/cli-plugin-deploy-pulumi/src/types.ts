@@ -31,6 +31,7 @@ export interface IUserCommandInput {
     function?: string | string[];
     allowProduction?: boolean;
     increaseTimeout?: number;
+    increaseHandshakeTimeout?: number;
     deploymentLogs?: boolean;
     _: (string | boolean | number)[];
 }

@@ -80,6 +80,10 @@ export interface IDefaultStackOutput extends IStackOutput {
     apiDomain: string;
     apiUrl: string;
     graphqlLambdaRole: string;
+    graphqlLambdaRoleName: string;
+    fileManagerManageLambdaArn: string;
+    fileManagerManageLambdaRole: string;
+    fileManagerManageLambdaRoleName: string;
     apwSchedulerEventRule: string | undefined;
     apwSchedulerEventTargetId: string | undefined;
     apwSchedulerExecuteAction: string | undefined;
@@ -90,6 +94,7 @@ export interface IDefaultStackOutput extends IStackOutput {
     cognitoUserPoolPasswordPolicy: string;
     websocketApiUrl: string;
     fileManagerBucketId: string;
+    fileManagerBucketArn: string;
     primaryDynamodbTableArn: string;
     primaryDynamodbTableName: string;
     primaryDynamodbTableHashKey: string;
@@ -105,6 +110,8 @@ export interface IDefaultStackOutput extends IStackOutput {
     vpcSecurityGroupIds: string[] | undefined;
     elasticsearchDomainArn: string | undefined;
     elasticsearchDomainEndpoint: string | undefined;
+    elasticsearchDynamodbTableHashKey: string;
+    elasticsearchDynamodbTableRangeKey: string;
     elasticsearchDynamodbTableArn: string | undefined;
     elasticsearchDynamodbTableName: string | undefined;
     appStorage: string;

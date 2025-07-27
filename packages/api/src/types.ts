@@ -5,6 +5,10 @@ export type GenericRecord<K extends PropertyKey = PropertyKey, V = any> = Record
 
 export type NonEmptyArray<T> = [T, ...T[]];
 
+export type PossiblyUndefinedProperties<T> = {
+    [K in keyof T]: T[K] extends undefined ? T[K] : T[K] | undefined;
+};
+
 export type BenchmarkRuns = GenericRecord<string, number>;
 
 export interface BenchmarkMeasurement {

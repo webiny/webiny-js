@@ -22,6 +22,7 @@ export interface IReplaceLambdaFunctionsParams {
     sessionId: number;
     functionsList: ReturnType<typeof listLambdaFunctions>;
     increaseTimeout?: number;
+    localExecutionHandshakeTimeout?: number;
     context: Context;
 }
 
@@ -34,6 +35,7 @@ export const replaceLambdaFunctions = async ({
     sessionId,
     functionsList,
     increaseTimeout,
+    localExecutionHandshakeTimeout,
     context
 }: IReplaceLambdaFunctionsParams) => {
     const stackExport = getStackExport({ folder, env, variant });
@@ -76,6 +78,7 @@ export const replaceLambdaFunctions = async ({
                             ...lambdaFnConfiguration.Environment?.Variables,
                             WEBINY_WATCH: JSON.stringify({
                                 enabled: true,
+                                localExecutionHandshakeTimeout,
                                 sessionId,
                                 iotEndpoint,
                                 iotEndpointTopic,

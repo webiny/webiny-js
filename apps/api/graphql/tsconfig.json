@@ -51,6 +51,9 @@
       "path": "../../../packages/api-headless-cms-ddb/tsconfig.build.json"
     },
     {
+      "path": "../../../packages/api-headless-cms-scheduler/tsconfig.build.json"
+    },
+    {
       "path": "../../../packages/api-i18n/tsconfig.build.json"
     },
     {
@@ -130,9 +133,6 @@
     },
     {
       "path": "../../../packages/api-log/tsconfig.build.json"
-    },
-    {
-      "path": "../../../packages/api-website-builder/tsconfig.build.json"
     }
   ],
   "compilerOptions": {
@@ -164,6 +164,10 @@
       "@webiny/api-headless-cms-tasks": ["../../../packages/api-headless-cms-tasks/src"],
       "@webiny/api-headless-cms-ddb/*": ["../../../packages/api-headless-cms-ddb/src/*"],
       "@webiny/api-headless-cms-ddb": ["../../../packages/api-headless-cms-ddb/src"],
+      "@webiny/api-headless-cms-scheduler/*": [
+        "../../../packages/api-headless-cms-scheduler/src/*"
+      ],
+      "@webiny/api-headless-cms-scheduler": ["../../../packages/api-headless-cms-scheduler/src"],
       "@webiny/api-record-locking/*": ["../../../packages/api-record-locking/src/*"],
       "@webiny/api-record-locking": ["../../../packages/api-record-locking/src"],
       "@webiny/api-i18n/*": ["../../../packages/api-i18n/src/*"],
@@ -223,12 +227,12 @@
       "@webiny/api-background-tasks-ddb": ["../../../packages/api-background-tasks-ddb/src"],
       "@webiny/tasks/*": ["../../../packages/tasks/src/*"],
       "@webiny/tasks": ["../../../packages/tasks/src"],
-      "@webiny/api-website-builder/*": ["../../../packages/api-website-builder/src/*"],
-      "@webiny/api-website-builder": ["../../../packages/api-website-builder/src"],
       "@webiny/api-websockets/*": ["../../../packages/api-websockets/src/*"],
       "@webiny/api-websockets": ["../../../packages/api-websockets/src"],
       "@webiny/api-log/*": ["../../../packages/api-log/src/*"],
-      "@webiny/api-log": ["../../../packages/api-log/src"]
+      "@webiny/api-log": ["../../../packages/api-log/src"],
+      "@webiny/api-sync-system/*": ["../../../packages/api-sync-system/src/*"],
+      "@webiny/api-sync-system": ["../../../packages/api-sync-system/src"]
     },
     "baseUrl": "."
   }

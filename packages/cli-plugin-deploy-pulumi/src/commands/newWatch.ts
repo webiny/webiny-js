@@ -181,6 +181,7 @@ export const newWatch = async (inputs: IUserCommandInput, context: Context) => {
     });
     const sessionId = new Date().getTime();
     const increaseTimeout = inputs.increaseTimeout;
+    const localExecutionHandshakeTimeout = inputs.increaseHandshakeTimeout || 5; // Default to 5 seconds.
 
     // We want to ensure a Pulumi refresh is made before the next deploy.
     setMustRefreshBeforeDeploy(context);
@@ -196,7 +197,8 @@ export const newWatch = async (inputs: IUserCommandInput, context: Context) => {
         iotEndpointTopic,
         sessionId,
         functionsList,
-        increaseTimeout
+        increaseTimeout,
+        localExecutionHandshakeTimeout
     });
 
     let inspector: typeof inspectorType | undefined = undefined;

@@ -6,6 +6,7 @@ import type { listLambdaFunctions } from "~/commands/newWatch/listLambdaFunction
 
 const WEBINY_WATCH_FN_INVOCATION_EVENT = "webiny.watch.functionInvocation";
 const WEBINY_WATCH_FN_INVOCATION_RESULT_EVENT = "webiny.watch.functionInvocationResult";
+const WEBINY_WATCH_FN_INVOCATION_HANDSHAKE_EVENT = "webiny.watch.functionInvocationHandshake";
 
 const WATCH_WORKER_PATH = path.join(__dirname, "localInvocationWorker.js");
 
@@ -57,6 +58,19 @@ export const initInvocationForwarding = async ({
         if (payload.data.sessionId !== sessionId) {
             return;
         }
+
+        await client.publish(
+            iotEndpointTopic,
+            JSON.stringify({
+                eventType: WEBINY_WATCH_FN_INVOCATION_HANDSHAKE_EVENT,
+                eventId: new Date().getTime(),
+                data: {
+                    originalEventId: payload.eventId,
+                    compressedResult: null,
+                    compressedError: null
+                }
+            })
+        );
 
         const invokedLambdaFunction = functionsList.list.find(
             lambdaFunction => lambdaFunction.name === payload.data.functionName

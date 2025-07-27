@@ -99,7 +99,8 @@ const createLog = ({ context, packageName }: ICreateLogParams) => {
             }
         }
 
-        console.log(send);
+        // Trim new lines.
+        console.log(send.replace(/\n/g, "").trim());
     };
 };
 

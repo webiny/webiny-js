@@ -44,6 +44,7 @@
     "@webiny/api-prerendering-service-so-ddb": "0.0.0",
     "@webiny/api-security": "0.0.0",
     "@webiny/api-security-so-ddb": "0.0.0",
+    "@webiny/api-sync-system": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",
     "@webiny/api-tenancy-so-ddb": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",

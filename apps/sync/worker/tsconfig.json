@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tsconfig.json",
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../../../packages/api-sync-system/tsconfig.build.json"
+    }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/api-sync-system/*": ["../../../packages/api-sync-system/src/*"],
+      "@webiny/api-sync-system": ["../../../packages/api-sync-system/src"]
+    },
+    "baseUrl": "."
+  }
+}

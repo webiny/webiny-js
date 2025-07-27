@@ -251,6 +251,11 @@ export const commands: CliCommandPlugin[] = [
                             describe: `Increase AWS Lambda function timeout (passed as number of seconds, used with local AWS Lambda development)`,
                             type: "number"
                         });
+                        yargs.option("increase-handshake-timeout", {
+                            default: 5,
+                            describe: `Increase timeout for the initial handshake between a single AWS Lambda invocation and local code execution (passed as number of seconds, used with local AWS Lambda development)`,
+                            type: "number"
+                        });
                         yargs.option("allow-production", {
                             default: false,
                             describe: `Enables running the watch command with "prod" and "production" environments (not recommended).`,

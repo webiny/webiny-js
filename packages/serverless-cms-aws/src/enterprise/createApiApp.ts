@@ -8,6 +8,7 @@ import {
     generateDdbHandlers,
     injectWcpTelemetryClientCode
 } from "~/api/plugins";
+import { createSyncSystemPlugins } from "./sync/plugins.js";
 
 export { ApiOutput } from "@webiny/pulumi-aws";
 
@@ -20,7 +21,8 @@ export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
         ensureCoreDeployed,
         injectWcpTelemetryClientCode,
         generateCommonHandlers,
-        executeDataMigrations
+        executeDataMigrations,
+        createSyncSystemPlugins()
     ];
 
     if (projectAppParams.elasticSearch || projectAppParams.openSearch) {

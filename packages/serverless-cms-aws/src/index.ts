@@ -10,4 +10,5 @@ export * from "./createWebsiteAppConfig";
 
 //
 
-export * from "./createBlueGreenApp";
+export * from "./createBlueGreenApp.js";
+export * from "./createSyncSystemApp.js";
