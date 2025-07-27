@@ -1,10 +1,9 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import { PulumiApp } from "@webiny/pulumi";
+import { VpcConfig } from "./common";
 
 export * from "../utils/lambdaEnvVariables";
-
-import { VpcConfig } from "./common";
 
 interface LambdaRoleParams {
     name: string;
@@ -12,7 +11,7 @@ interface LambdaRoleParams {
     executionRole?: pulumi.Input<string>;
 }
 
-export function createLambdaRole(app: PulumiApp, params: LambdaRoleParams) {
+const createLambdaRoleWithoutExecution = (app: PulumiApp, params: LambdaRoleParams) => {
     const role = app.addResource(aws.iam.Role, {
         name: params.name,
         config: {
@@ -52,6 +51,11 @@ export function createLambdaRole(app: PulumiApp, params: LambdaRoleParams) {
             }
         });
     }
+    return role;
+};
+
+export function createLambdaRole(app: PulumiApp, params: LambdaRoleParams) {
+    const role = createLambdaRoleWithoutExecution(app, params);
 
     // Add default execution role.
     const vpc = app.getModule(VpcConfig);
@@ -70,3 +74,17 @@ export function createLambdaRole(app: PulumiApp, params: LambdaRoleParams) {
 
     return role;
 }
+
+export const createLambdaRoleWithoutVpc = (app: PulumiApp, params: LambdaRoleParams) => {
+    const role = createLambdaRoleWithoutExecution(app, params);
+
+    app.addResource(aws.iam.RolePolicyAttachment, {
+        name: `${params.name}-default-execution-role`,
+        config: {
+            role: role.output,
+            policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
+        }
+    });
+
+    return role;
+};

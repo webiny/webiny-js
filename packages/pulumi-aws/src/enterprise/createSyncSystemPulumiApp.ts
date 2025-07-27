@@ -20,7 +20,7 @@ export interface CreateSyncSystemPulumiAppParams
     vpc?: PulumiAppParam<boolean | SyncSystemPulumiAppAdvancedVpcParams>;
 }
 
-export function createSyncSystemPulumiApp(projectAppParams: CreateSyncSystemPulumiAppParams = {}) {
+export function createSyncSystemPulumiApp(projectAppParams: CreateSyncSystemPulumiAppParams) {
     return baseCreateSyncSystemPulumiApp({
         ...projectAppParams,
         // If using existing VPC, we ensure `vpc` param is set to `false`.

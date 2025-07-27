@@ -1,5 +1,10 @@
 import * as aws from "@pulumi/aws";
-import { createPulumiApp, PulumiAppParam, PulumiAppParamCallback } from "@webiny/pulumi";
+import {
+    createPulumiApp,
+    type PulumiApp,
+    PulumiAppParam,
+    PulumiAppParamCallback
+} from "@webiny/pulumi";
 import {
     ApiApwScheduler,
     ApiBackgroundTask,
@@ -26,6 +31,10 @@ import { getEnvVariableWebinyVariant } from "~/env/variant";
 import { getEnvVariableWebinyEnv } from "~/env/env";
 import { getEnvVariableWebinyProjectName } from "~/env/projectName";
 import { getEnvVariableAwsRegion } from "~/env/awsRegion";
+import { attachSyncSystem } from "../syncSystem/api/index.js";
+import { getAwsAccountId } from "~/apps/awsUtils";
+import type { WithServiceManifest } from "~/utils/withServiceManifest.js";
+import { ApiScheduler } from "~/apps/api/ApiScheduler.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -87,7 +96,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
         name: "api",
         path: "apps/api",
         config: projectAppParams,
-        program: async app => {
+        program: async (app: PulumiApp & WithServiceManifest) => {
             let searchEngineParams:
                 | CreateCorePulumiAppParams["openSearch"]
                 | CreateCorePulumiAppParams["elasticSearch"]
@@ -253,6 +262,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             const cloudfront = app.addModule(ApiCloudfront);
             const backgroundTask = app.addModule(ApiBackgroundTask);
             const migration = app.addModule(ApiMigration);
+            const scheduler = app.addModule(ApiScheduler);
 
             const domains = app.getParam(projectAppParams.domains);
             if (domains) {
@@ -260,6 +270,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             }
 
             app.addOutputs({
+                awsAccountId: getAwsAccountId(app),
                 region: aws.config.region,
                 cognitoUserPoolId: core.cognitoUserPoolId,
                 cognitoAppClientId: core.cognitoAppClientId,
@@ -272,10 +283,16 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 migrationLambdaArn: migration.function.output.arn,
                 graphqlLambdaName: graphql.functions.graphql.output.name,
                 graphqlLambdaRole: graphql.role.output.arn,
+                graphqlLambdaRoleName: graphql.role.output.name,
                 backgroundTaskLambdaArn: backgroundTask.backgroundTask.output.arn,
                 backgroundTaskStepFunctionArn: backgroundTask.stepFunction.output.arn,
+                fileManagerManageLambdaArn: fileManager.functions.manage.output.arn,
+                fileManagerManageLambdaRole: fileManager.roles.manage.output.arn,
+                fileManagerManageLambdaRoleName: fileManager.roles.manage.output.name,
+                fileManagerDownloadLambdaArn: fileManager.functions.download.output.arn,
                 websocketApiId: websocket.websocketApi.output.id,
-                websocketApiUrl: websocket.websocketApiUrl
+                websocketApiUrl: websocket.websocketApiUrl,
+                schedulerLambdaInvokeRole: scheduler.invokeRole.output.arn
             });
 
             // Only add `dynamoDbElasticsearchTable` output if using search engine (ES/OS).
@@ -297,6 +314,14 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     }
                 });
             });
+            /**
+             * We need to attach the Sync System if it exists.
+             */
+            attachSyncSystem({
+                app,
+                core,
+                env: app.params.run.env
+            });
 
             tagResources({
                 WbyProjectName: getEnvVariableWebinyProjectName(),
@@ -312,7 +337,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 cloudfront,
                 apwScheduler,
                 migration,
-                backgroundTask
+                backgroundTask,
+                scheduler
             };
         }
     });
@@ -327,6 +353,14 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 cloudfront: {
                     distributionId: baseApp.resources.cloudfront.output.id
                 }
+            }
+        });
+
+        app.addServiceManifest({
+            name: "scheduler",
+            manifest: {
+                lambdaArn: baseApp.resources.graphql.functions.graphql.output.arn,
+                roleArn: baseApp.resources.scheduler.invokeRole.output.arn
             }
         });
     });

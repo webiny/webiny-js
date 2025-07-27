@@ -21,6 +21,7 @@ export const ApiOutput = createAppModule({
                 apiDomain: output["apiDomain"],
                 apiUrl: output["apiUrl"],
                 graphqlLambdaRole: output["graphqlLambdaRole"],
+                graphqlLambdaRoleName: output["graphqlLambdaRoleName"],
                 apwSchedulerEventRule: output["apwSchedulerEventRule"],
                 apwSchedulerEventTargetId: output["apwSchedulerEventTargetId"],
                 apwSchedulerExecuteAction: output["apwSchedulerExecuteAction"],
@@ -30,7 +31,16 @@ export const ApiOutput = createAppModule({
                 cognitoUserPoolPasswordPolicy: output["cognitoUserPoolPasswordPolicy"],
                 dynamoDbTable: output["dynamoDbTable"],
                 region: output["region"],
-                websocketApiUrl: output["websocketApiUrl"]
+                websocketApiId: output["websocketApiId"],
+                websocketApiUrl: output["websocketApiUrl"],
+                migrationLambdaArn: output["migrationLambdaArn"],
+                graphqlLambdaName: output["graphqlLambdaName"],
+                backgroundTaskLambdaArn: output["backgroundTaskLambdaArn"],
+                backgroundTaskStepFunctionArn: output["backgroundTaskStepFunctionArn"],
+                fileManagerManageLambdaArn: output["fileManagerManageLambdaArn"],
+                fileManagerManageLambdaRole: output["fileManagerManageLambdaRole"],
+                fileManagerManageLambdaRoleName: output["fileManagerManageLambdaRoleName"],
+                fileManagerDownloadLambdaArn: output["fileManagerDownloadLambdaArn"]
             };
         });
     }
