@@ -74,7 +74,7 @@ export class SchedulerPublishGraphQLGateway implements ISchedulerPublishGateway 
                     type: ScheduleType.publish
                 }
             },
-            fetchPolicy: "network-only"
+            fetchPolicy: "no-cache"
         });
 
         const result = response?.createCmsSchedule;

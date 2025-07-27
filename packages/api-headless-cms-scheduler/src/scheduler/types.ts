@@ -73,7 +73,7 @@ export interface ISchedulerListParams {
 
 export interface IScheduler {
     schedule(id: string, input: ISchedulerInput): Promise<IScheduleRecord>;
-    cancel(id: string): Promise<void>;
+    cancel(id: string): Promise<IScheduleRecord>;
     getScheduled(id: string): Promise<IScheduleRecord | null>;
     listScheduled(params: ISchedulerListParams): Promise<ISchedulerListResponse>;
 }
@@ -91,7 +91,7 @@ export interface IScheduleEntryValues {
 
 export interface IScheduleExecutor {
     schedule(targetId: string, input: ISchedulerInput): Promise<IScheduleRecord>;
-    cancel(id: string): Promise<void>;
+    cancel(id: string): Promise<IScheduleRecord>;
 }
 
 export interface IScheduleFetcher {

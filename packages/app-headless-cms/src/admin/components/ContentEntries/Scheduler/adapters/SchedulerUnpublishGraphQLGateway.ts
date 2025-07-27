@@ -71,7 +71,7 @@ export class SchedulerUnpublishGraphQLGateway implements ISchedulerUnpublishGate
                     type: ScheduleType.unpublish
                 }
             },
-            fetchPolicy: "network-only"
+            fetchPolicy: "no-cache"
         });
 
         const result = response?.createCmsSchedule;

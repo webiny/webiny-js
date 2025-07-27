@@ -34,7 +34,7 @@ export class Scheduler implements IScheduler {
         return this.executor.schedule(targetId, input);
     }
 
-    public async cancel(id: string): Promise<void> {
+    public async cancel(id: string): Promise<IScheduleRecord> {
         return this.executor.cancel(id);
     }
 }

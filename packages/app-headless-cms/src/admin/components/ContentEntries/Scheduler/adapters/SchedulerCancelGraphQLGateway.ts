@@ -51,7 +51,7 @@ export class SchedulerCancelGraphQLGateway implements ISchedulerCancelGateway {
                 modelId: params.modelId,
                 id: params.id
             },
-            fetchPolicy: "network-only"
+            fetchPolicy: "no-cache"
         });
 
         const result = response?.cancelCmsSchedule;

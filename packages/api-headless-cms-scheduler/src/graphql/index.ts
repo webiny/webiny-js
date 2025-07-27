@@ -207,7 +207,8 @@ export const createSchedulerGraphQL = () => {
                         const model = await context.cms.getModel(validated.data.modelId);
                         const scheduler = context.cms.scheduler(model);
 
-                        return scheduler.cancel(validated.data.id);
+                        await scheduler.cancel(validated.data.id);
+                        return true;
                     });
                 }
             }

@@ -44,7 +44,7 @@ export class ScheduleExecutor implements IScheduleExecutor {
         });
     }
 
-    public async cancel(initialId: string): Promise<void> {
+    public async cancel(initialId: string): Promise<IScheduleRecord> {
         const id = createScheduleRecordIdWithVersion(initialId);
         const original = await this.fetcher.getScheduled(id);
         if (!original) {
@@ -58,7 +58,8 @@ export class ScheduleExecutor implements IScheduleExecutor {
         }
 
         const action = this.getAction(original.type);
-        return action.cancel(original.id);
+        await action.cancel(original.id);
+        return original;
     }
 
     private getAction(type: ScheduleType): IScheduleAction {
