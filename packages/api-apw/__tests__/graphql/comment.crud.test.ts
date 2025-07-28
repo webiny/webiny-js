@@ -53,7 +53,7 @@ const updatedRichText = [
     }
 ];
 
-jest.mock("~/plugins/hooks/notifications/appUrl", () => {
+jest.mock("~/plugins/hooks/notifications/getAppUrl", () => {
     return {
         getAppUrl: async () => {
             return {

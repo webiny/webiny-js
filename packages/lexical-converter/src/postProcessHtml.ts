@@ -1,7 +1,7 @@
-import * as cheerio from "cheerio";
+import { load } from "cheerio";
 
 export const postProcessHtml = (html: string) => {
-    const $ = cheerio.load(html);
+    const $ = load(html);
 
     // Replace <b> elements with their text content (unwrap them)
     $("b").each((_, el) => {

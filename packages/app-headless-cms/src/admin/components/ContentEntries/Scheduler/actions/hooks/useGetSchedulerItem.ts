@@ -1,10 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
-import { SchedulerGetGraphQLGateway } from "~/admin/components/ContentEntries/Scheduler/adapters/SchedulerGetGraphQLGateway.js";
-import { useApolloClient } from "~/admin/hooks/index.js";
+import { useEffect, useState } from "react";
 import type { SchedulerEntry } from "@webiny/app-headless-cms-scheduler/types.js";
-import type { ISchedulerGetExecuteParams } from "@webiny/app-headless-cms-scheduler";
+import type {
+    ISchedulerGetExecuteParams,
+    ISchedulerGetGateway
+} from "@webiny/app-headless-cms-scheduler";
 
-export interface IUseGetItemParams extends ISchedulerGetExecuteParams {}
+export interface IUseGetItemParams extends ISchedulerGetExecuteParams {
+    gateway: ISchedulerGetGateway;
+}
 
 interface IState {
     item: SchedulerEntry | null;
@@ -12,16 +15,11 @@ interface IState {
 }
 
 export const useGetSchedulerItem = (params: IUseGetItemParams) => {
-    const client = useApolloClient();
-
+    const { gateway } = params;
     const [state, setState] = useState<IState>({
         item: null,
         error: null
     });
-
-    const gateway = useMemo(() => {
-        return new SchedulerGetGraphQLGateway(client);
-    }, [client]);
 
     useEffect(() => {
         if (!params.id || !params.modelId) {

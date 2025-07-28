@@ -19,7 +19,7 @@ export const attachChangeRequestAfterCreate = (context: ApwContext): void => {
                 });
             }
 
-            const settings = await getAppUrl();
+            const settings = await getAppUrl(context);
             if (!settings) {
                 return;
             }

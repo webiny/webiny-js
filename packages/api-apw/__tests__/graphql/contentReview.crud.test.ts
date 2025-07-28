@@ -3,7 +3,7 @@ import { createSetupForPageContentReview } from "../utils/helpers";
 import { useGraphQlHandler } from "~tests/utils/useGraphQlHandler";
 import { createTransport } from "@webiny/api-mailer";
 
-jest.mock("~/plugins/hooks/notifications/appUrl", () => {
+jest.mock("~/plugins/hooks/notifications/getAppUrl", () => {
     return {
         getAppUrl: async () => {
             return {
