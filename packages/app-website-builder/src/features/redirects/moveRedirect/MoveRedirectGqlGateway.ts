@@ -40,7 +40,10 @@ export class MoveRedirectGqlGateway implements IMoveRedirectGateway {
     }
 
     async execute(id: string, folderId: string) {
-        const { data: response } = await this.client.mutate<MoveRedirectResponse, MoveRedirectVariables>({
+        const { data: response } = await this.client.mutate<
+            MoveRedirectResponse,
+            MoveRedirectVariables
+        >({
             mutation: MOVE_MUTATION,
             variables: {
                 id,

@@ -8,7 +8,11 @@ export class DeleteRedirectRepository implements IDeleteRedirectRepository {
     private meta: IMetaRepository;
     private gateway: IDeleteRedirectGateway;
 
-    constructor(cache: IListCache<Redirect>, meta: IMetaRepository, gateway: IDeleteRedirectGateway) {
+    constructor(
+        cache: IListCache<Redirect>,
+        meta: IMetaRepository,
+        gateway: IDeleteRedirectGateway
+    ) {
         this.cache = cache;
         this.meta = meta;
         this.gateway = gateway;
