@@ -20,7 +20,11 @@ interface MoveRedirectUseCasesParams {
 
 export const getMoveRedirectUseCase = (params: MoveRedirectUseCasesParams) => {
     const moveRedirect = new MoveRedirect(params.moveOperation);
-    const moveRedirectUseCase = new MoveRedirectWithEvents(params.topics, params.getOperation, moveRedirect);
+    const moveRedirectUseCase = new MoveRedirectWithEvents(
+        params.topics,
+        params.getOperation,
+        moveRedirect
+    );
 
     return {
         moveRedirectUseCase

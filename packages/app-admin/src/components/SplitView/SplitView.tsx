@@ -67,7 +67,7 @@ const RightPanel = ({ children, className, ...props }: SplitViewPanelProps) => {
             id="rightPanel"
             className={cn("webiny-split-view__right-panel", className)}
             {...props}
-            style={{ overflowY: "scroll"}}
+            style={{ overflowY: "scroll" }}
         >
             {children}
         </Panel>

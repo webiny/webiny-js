@@ -9,7 +9,11 @@ import { observer } from "mobx-react-lite";
 const monacoTheme = "vs-light";
 const monacoOptions = { minimap: { enabled: false } };
 
-function BaseStateInspector<TDocument extends EditorDocument>({ editor }: { editor: Editor<TDocument> }) {
+function BaseStateInspector<TDocument extends EditorDocument>({
+    editor
+}: {
+    editor: Editor<TDocument>;
+}) {
     const document = editor.getDocumentState().read();
     const editorState = editor.getEditorState().read();
 

@@ -21,7 +21,10 @@ export function DropLine({ label, top, visible, dimmed }: DropLineProps) {
                 opacity: dimmed ? 0.5 : 1
             }}
         >
-            <span className={"wby-absolute wby-bg-primary-default wby-text-neutral-light"} style={{ top: -10, padding: "2px 8px"}}>
+            <span
+                className={"wby-absolute wby-bg-primary-default wby-text-neutral-light"}
+                style={{ top: -10, padding: "2px 8px" }}
+            >
                 {label}
             </span>
         </div>

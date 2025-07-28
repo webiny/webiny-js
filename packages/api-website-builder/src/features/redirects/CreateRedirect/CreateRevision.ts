@@ -1,5 +1,8 @@
 import type { ICreateRedirect } from "./ICreateRedirect";
-import type { CreateWbRedirectData, WbRedirectsStorageOperations } from "~/context/redirects/redirects.types";
+import type {
+    CreateWbRedirectData,
+    WbRedirectsStorageOperations
+} from "~/context/redirects/redirects.types";
 
 export class CreateRevision implements ICreateRedirect {
     private readonly createOperation: WbRedirectsStorageOperations["create"];

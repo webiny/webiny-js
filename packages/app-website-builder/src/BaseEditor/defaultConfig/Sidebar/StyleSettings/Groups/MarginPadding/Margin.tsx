@@ -35,7 +35,9 @@ export const Margin = observer(({ elementId, children }: MarginProps) => {
         onChange(({ styles, metadata }) => {
             if (linked) {
                 const isKeyword = marginTop.isKeyword;
-                const value = isKeyword ? marginTop.value : `${marginTop.value ?? 0}${marginTop.unit}`;
+                const value = isKeyword
+                    ? marginTop.value
+                    : `${marginTop.value ?? 0}${marginTop.unit}`;
                 styles.set("marginRight", value);
                 styles.set("marginBottom", value);
                 styles.set("marginLeft", value);

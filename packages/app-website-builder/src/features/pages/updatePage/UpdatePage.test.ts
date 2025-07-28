@@ -3,7 +3,7 @@ import { WbPageStatus } from "~/constants";
 import { Page, pageListCache } from "~/domain/Page/index.js";
 
 describe("UpdatePage", () => {
-    const pagesCache = pageListCache
+    const pagesCache = pageListCache;
 
     beforeEach(() => {
         jest.clearAllMocks();

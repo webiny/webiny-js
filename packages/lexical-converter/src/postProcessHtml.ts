@@ -8,5 +8,5 @@ export const postProcessHtml = (html: string) => {
         $(el).replaceWith($(el).html() ?? "");
     });
 
-    return $('body').html() ?? html;
+    return $("body").html() ?? html;
 };

@@ -19,7 +19,7 @@ export class PathType {
             boolean: ["boolean"],
             array: ["array"],
             object: ["object"],
-            json: ["object"],
+            json: ["object"]
         };
 
         const allowed = map[expected] || [];

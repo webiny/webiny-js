@@ -1,5 +1,8 @@
 import type { IDeleteRedirect } from "./IDeleteRedirect";
-import type { DeleteWbRedirectParams, WbRedirectsStorageOperations } from "~/context/redirects/redirects.types";
+import type {
+    DeleteWbRedirectParams,
+    WbRedirectsStorageOperations
+} from "~/context/redirects/redirects.types";
 
 export class DeleteRedirect implements IDeleteRedirect {
     private readonly deleteOperation: WbRedirectsStorageOperations["delete"];

@@ -128,8 +128,12 @@ export class BackgroundImageParser {
                 parts.push(current.trim());
                 current = "";
             } else {
-                if (char === "(") {depth++;}
-                if (char === ")") {depth--;}
+                if (char === "(") {
+                    depth++;
+                }
+                if (char === ")") {
+                    depth--;
+                }
                 current += char;
             }
         }

@@ -1,4 +1,10 @@
-import { GetPageOptions, IContentSdk, IDataProvider, ListPagesOptions, PublicPage } from "~/types.js";
+import {
+    GetPageOptions,
+    IContentSdk,
+    IDataProvider,
+    ListPagesOptions,
+    PublicPage
+} from "~/types.js";
 import { documentStoreManager } from "~/DocumentStoreManager";
 
 export class LiveSdk implements IContentSdk {

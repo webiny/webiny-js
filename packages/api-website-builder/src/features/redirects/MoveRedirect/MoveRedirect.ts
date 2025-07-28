@@ -1,5 +1,8 @@
 import type { IMoveRedirect } from "./IMoveRedirect";
-import type { MoveWbRedirectParams, WbRedirectsStorageOperations } from "~/context/redirects/redirects.types";
+import type {
+    MoveWbRedirectParams,
+    WbRedirectsStorageOperations
+} from "~/context/redirects/redirects.types";
 
 export class MoveRedirect implements IMoveRedirect {
     private readonly moveOperation: WbRedirectsStorageOperations["move"];

@@ -1,4 +1,7 @@
-import type { GetPageRevisionsParams, IGetPageRevisionsUseCase } from "./IGetPageRevisionsUseCase.js";
+import type {
+    GetPageRevisionsParams,
+    IGetPageRevisionsUseCase
+} from "./IGetPageRevisionsUseCase.js";
 import type { IGetPageRevisionsRepository } from "./IGetPageRevisionsRepository.js";
 
 export class GetPageRevisionsUseCase implements IGetPageRevisionsUseCase {

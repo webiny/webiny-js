@@ -11,7 +11,11 @@ import { Commands } from "~/BaseEditor";
 import { Editor } from "~/editorSdk/Editor";
 import { autorun, makeAutoObservable, runInAction } from "mobx";
 import { type InheritanceInfo, InheritanceProcessor } from "@webiny/website-builder-sdk";
-import { BindingsProcessor, type DocumentElementBindings, type Document } from "@webiny/website-builder-sdk";
+import {
+    BindingsProcessor,
+    type DocumentElementBindings,
+    type Document
+} from "@webiny/website-builder-sdk";
 import { $getComponentManifestByElementId } from "~/editorSdk/utils";
 import { ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
 import { BASE_BREAKPOINT } from "~/constants";
@@ -133,7 +137,7 @@ export class StylesStore {
 
         const inheritanceMap = this.inheritanceProcessor.getInheritanceMap(bindings, breakpoint);
 
-            this.inheritanceMap = inheritanceMap.styles;
+        this.inheritanceMap = inheritanceMap.styles;
 
         this.stylesProcessor = new StylesBindingsProcessor(
             this.elementId,

@@ -8,6 +8,5 @@ interface AwaitIframeUrlProps {
 export const AwaitIframeUrl = ({ children }: AwaitIframeUrlProps) => {
     const url = useIframeUrl();
 
-
     return url ? <>{children({ url })}</> : null;
 };

@@ -11,9 +11,7 @@ interface CreateCommerceInputRenderersProps {
     pluginName: string;
 }
 
-export const CreateInputRenderers = ({
-    pluginName
-}: CreateCommerceInputRenderersProps) => {
+export const CreateInputRenderers = ({ pluginName }: CreateCommerceInputRenderersProps) => {
     const { api } = useEcommerceApi(pluginName);
 
     if (!api) {

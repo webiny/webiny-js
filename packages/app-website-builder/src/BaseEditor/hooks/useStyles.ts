@@ -1,1 +1,1 @@
-export * from "../defaultConfig/Sidebar/StyleSettings/useStyles"
+export * from "../defaultConfig/Sidebar/StyleSettings/useStyles";

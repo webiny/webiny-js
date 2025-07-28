@@ -57,13 +57,7 @@ export const createDefaultLexicalTheme = (): LexicalEditorTheme => {
             nested: {
                 listitem: "wb-lx-nestedListItem"
             },
-            olDepth: [
-                "wb-lx-ol1",
-                "wb-lx-ol2",
-                "wb-lx-ol3",
-                "wb-lx-ol4",
-                "wb-lx-ol5"
-            ],
+            olDepth: ["wb-lx-ol1", "wb-lx-ol2", "wb-lx-ol3", "wb-lx-ol4", "wb-lx-ol5"],
             ul: "wb-lx-ul"
         },
         ltr: "wb-lx-ltr",

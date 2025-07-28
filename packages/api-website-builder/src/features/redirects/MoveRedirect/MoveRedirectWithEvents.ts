@@ -1,5 +1,8 @@
 import type { MoveRedirectUseCasesTopics } from "./index";
-import type { MoveWbRedirectParams, WbRedirectsStorageOperations } from "~/context/redirects/redirects.types";
+import type {
+    MoveWbRedirectParams,
+    WbRedirectsStorageOperations
+} from "~/context/redirects/redirects.types";
 import type { IMoveRedirect } from "~/features/redirects/MoveRedirect/IMoveRedirect";
 import { WebinyError } from "@webiny/error";
 

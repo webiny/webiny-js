@@ -7,7 +7,7 @@ import { Sidebar } from "./Sidebar";
 const SidebarContainer = styled.div`
     background-color: #ffffff;
     border-left: 1px solid var(--mdc-theme-on-background);
-`
+`;
 
 export const Layout = makeDecoratable("SidebarLayout", () => {
     return (

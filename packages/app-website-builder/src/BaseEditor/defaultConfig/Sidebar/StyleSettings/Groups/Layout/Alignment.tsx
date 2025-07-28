@@ -106,7 +106,9 @@ export const Alignment = observer(({ elementId }: { elementId: string }) => {
         inheritanceMap.marginRight,
         inheritanceMap.marginBottom,
         inheritanceMap.marginLeft
-    ].filter(Boolean).some(item => item.overridden);
+    ]
+        .filter(Boolean)
+        .some(item => item.overridden);
 
     return (
         <div>

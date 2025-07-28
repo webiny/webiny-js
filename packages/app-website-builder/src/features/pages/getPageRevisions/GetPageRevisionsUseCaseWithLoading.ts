@@ -1,5 +1,8 @@
 import { ILoadingRepository } from "@webiny/app-utils";
-import type { GetPageRevisionsParams, IGetPageRevisionsUseCase } from "./IGetPageRevisionsUseCase.js";
+import type {
+    GetPageRevisionsParams,
+    IGetPageRevisionsUseCase
+} from "./IGetPageRevisionsUseCase.js";
 import { loadingActions } from "~/constants.js";
 
 export class GetPageRevisionsUseCaseWithLoading implements IGetPageRevisionsUseCase {

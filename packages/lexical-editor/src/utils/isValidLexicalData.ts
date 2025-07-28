@@ -15,7 +15,9 @@ export const parseLexicalState = (
     }
 };
 
-export const isValidLexicalData = (editorStateValue: LexicalValue | null): editorStateValue is LexicalValue => {
+export const isValidLexicalData = (
+    editorStateValue: LexicalValue | null
+): editorStateValue is LexicalValue => {
     if (!editorStateValue) {
         return false;
     }

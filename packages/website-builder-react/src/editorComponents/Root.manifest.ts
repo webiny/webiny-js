@@ -7,4 +7,4 @@ export const Root = createComponent(RootComponent, {
     label: "Main Content",
     acceptsChildren: true,
     hideFromToolbar: true
-})
+});

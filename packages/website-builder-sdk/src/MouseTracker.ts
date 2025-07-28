@@ -109,4 +109,5 @@ class NullMouseTracker implements IMouseTracker {
     }
 }
 
-export const mouseTracker = typeof window !== "undefined" ? new MouseTracker(window) : new NullMouseTracker();
+export const mouseTracker =
+    typeof window !== "undefined" ? new MouseTracker(window) : new NullMouseTracker();

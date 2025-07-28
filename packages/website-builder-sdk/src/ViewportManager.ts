@@ -76,7 +76,6 @@ export class ViewportManager {
         }
     }
 
-
     private handleResize(): void {
         this.handleViewportChange();
     }

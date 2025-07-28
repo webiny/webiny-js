@@ -59,7 +59,9 @@ function flattenElements(elements: Record<string, ElementNodeData>, activeElemen
                 parent: node.parent,
                 icon: node.image ? (
                     <InlineSvg src={node.image} className={"wby-fill-neutral-strong"} />
-                ) : <></>,
+                ) : (
+                    <></>
+                ),
                 draggable: node.canDrag
             }
         });

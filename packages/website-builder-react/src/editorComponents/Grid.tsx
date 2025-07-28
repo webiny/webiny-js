@@ -1,7 +1,11 @@
 import React from "react";
 import type { ComponentProps, ComponentPropsWithChildren } from "~/types";
 
-export const GridColumnComponent = ({ inputs }: { inputs: ComponentPropsWithChildren["inputs"] }) => {
+export const GridColumnComponent = ({
+    inputs
+}: {
+    inputs: ComponentPropsWithChildren["inputs"];
+}) => {
     return <>{inputs.children}</>;
 };
 

@@ -1,1 +1,1 @@
-export * from "../defaultConfig/Sidebar/ElementSettings/useInputValue"
+export * from "../defaultConfig/Sidebar/ElementSettings/useInputValue";

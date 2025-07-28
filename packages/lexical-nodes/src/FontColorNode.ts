@@ -48,7 +48,7 @@ export type SerializedFontColorNode = Spread<
     {
         themeColor: string;
         color: string;
-        type: "font-color"
+        type: "font-color";
     },
     SerializedTextNode
 >;

@@ -22,17 +22,21 @@ export const ExpressionRenderer = ({
         const repeat = document.bindings[element.id]?.$repeat;
 
         if (repeat) {
-            return new StatePathsExtractor(document.state)
-                .getChildPaths(repeat.expression)
+            return (
+                new StatePathsExtractor(document.state)
+                    .getChildPaths(repeat.expression)
+                    // TODO: implement data type adapters
+                    // .filter(option => option.type.matches(input.dataType))
+                    .values()
+            );
+        }
+        return (
+            new StatePathsExtractor(document.state)
+                .getPaths()
                 // TODO: implement data type adapters
                 // .filter(option => option.type.matches(input.dataType))
-                .values();
-        }
-        return new StatePathsExtractor(document.state)
-            .getPaths()
-            // TODO: implement data type adapters
-            // .filter(option => option.type.matches(input.dataType))
-            .values();
+                .values()
+        );
     });
 
     return (

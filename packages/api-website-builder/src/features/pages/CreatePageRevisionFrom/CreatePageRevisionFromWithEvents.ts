@@ -1,5 +1,8 @@
 import type { CreatePageRevisionFromUseCasesTopics } from "./index";
-import type { CreateWbPageRevisionFromParams, WbPagesStorageOperations } from "~/context/pages/pages.types";
+import type {
+    CreateWbPageRevisionFromParams,
+    WbPagesStorageOperations
+} from "~/context/pages/pages.types";
 import type { ICreatePageRevisionFrom } from "./ICreatePageRevisionFrom";
 import { WebinyError } from "@webiny/error";
 

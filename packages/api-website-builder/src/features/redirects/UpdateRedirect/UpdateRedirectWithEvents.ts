@@ -1,6 +1,9 @@
 import type { IUpdateRedirect } from "./IUpdateRedirect";
 import type { UpdateRedirectUseCasesTopics } from "./index";
-import type { UpdateWbRedirectData, WbRedirectsStorageOperations } from "~/context/redirects/redirects.types";
+import type {
+    UpdateWbRedirectData,
+    WbRedirectsStorageOperations
+} from "~/context/redirects/redirects.types";
 import { WebinyError } from "@webiny/error";
 
 export class UpdateRedirectWithEvents implements IUpdateRedirect {
@@ -22,7 +25,10 @@ export class UpdateRedirectWithEvents implements IUpdateRedirect {
         const original = await this.getOperation(id);
 
         if (!original) {
-            throw new WebinyError(`Redirect with id ${id} not found`, "UPDATE_REDIRECT_WITH_EVENTS_ERROR");
+            throw new WebinyError(
+                `Redirect with id ${id} not found`,
+                "UPDATE_REDIRECT_WITH_EVENTS_ERROR"
+            );
         }
 
         await this.topics.onRedirectBeforeUpdate.publish({
