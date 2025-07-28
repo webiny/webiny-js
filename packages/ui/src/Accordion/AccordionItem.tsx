@@ -77,7 +77,6 @@ const AccordionItemBase = (props: AccordionItemProps) => {
 export const AccordionItem = withStaticProps(AccordionItemBase, {
     Divider: AdminUiAccordion.Item.Action.Separator,
     Action: AdminUiAccordion.Item.Action,
-    Handle: AdminUiAccordion.Item.Handle,
     Icon: AdminUiAccordion.Item.Icon,
     Actions: (props: any) => <>{props.children}</>,
     Element: (props: any) => <div data-role={"accordion-element"} {...props} />
