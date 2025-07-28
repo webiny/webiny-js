@@ -1,3 +1,4 @@
+/* eslint-disable */
 const document = {
     id: "id#revision",
     status: "",

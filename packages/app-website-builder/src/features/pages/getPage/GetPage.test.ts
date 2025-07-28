@@ -1,6 +1,6 @@
 import { GetPage } from "~/features/pages/getPage/GetPage.js";
 import { WbPageStatus } from "~/constants.js";
-import { pageListCache } from "~/domain/Page/index.js";
+import { fullPageCache } from "~/domain/Page/index.js";
 
 describe("GetPage", () => {
     const gateway = {
@@ -25,54 +25,53 @@ describe("GetPage", () => {
             }
         })
     };
-    const pagesCache = pageListCache;
 
     beforeEach(() => {
-        pagesCache.clear();
+        fullPageCache.clear();
         jest.clearAllMocks();
     });
 
     it("should be able to get a page", async () => {
         const getPage = GetPage.getInstance(gateway);
 
-        expect(pagesCache.hasItems()).toBeFalse();
+        expect(fullPageCache.hasItems()).toBeFalse();
 
         await getPage.useCase.execute({ id: "page-1#0001" });
 
         expect(gateway.execute).toHaveBeenCalledTimes(1);
         expect(gateway.execute).toHaveBeenLastCalledWith("page-1#0001");
-        expect(pagesCache.hasItems()).toBeTrue();
+        expect(fullPageCache.hasItems()).toBeTrue();
 
-        const items = pagesCache.getItems();
+        const items = fullPageCache.getItems();
         expect(items.length).toEqual(1);
 
-        const item = pagesCache.getItem(p => p.entryId === "page-1");
+        const item = fullPageCache.getItem(p => p.entryId === "page-1");
         expect(item).toBeDefined();
         expect(item?.id).toEqual("page-1#0001");
         expect(item?.entryId).toEqual("page-1");
     });
 
-    it("should be able to get a page more than once", async () => {
+    it("should be able to get a page more than once (returned from cache)", async () => {
         const getPage = GetPage.getInstance(gateway);
 
-        expect(pagesCache.hasItems()).toBeFalse();
+        expect(fullPageCache.hasItems()).toBeFalse();
 
         // execute the first time
         await getPage.useCase.execute({ id: "page-1#0001" });
         expect(gateway.execute).toHaveBeenCalledTimes(1);
         expect(gateway.execute).toHaveBeenLastCalledWith("page-1#0001");
-        expect(pagesCache.hasItems()).toBeTrue();
+        expect(fullPageCache.hasItems()).toBeTrue();
 
         // execute the second time
         await getPage.useCase.execute({ id: "page-1#0001" });
-        expect(gateway.execute).toHaveBeenCalledTimes(2);
+        expect(gateway.execute).toHaveBeenCalledTimes(1);
         expect(gateway.execute).toHaveBeenLastCalledWith("page-1#0001");
-        expect(pagesCache.hasItems()).toBeTrue();
+        expect(fullPageCache.hasItems()).toBeTrue();
 
-        const items = pagesCache.getItems();
+        const items = fullPageCache.getItems();
         expect(items.length).toEqual(1);
 
-        const item = pagesCache.getItem(p => p.entryId === "page-1");
+        const item = fullPageCache.getItem(p => p.entryId === "page-1");
         expect(item).toBeDefined();
         expect(item?.id).toEqual("page-1#0001");
         expect(item?.entryId).toEqual("page-1");
@@ -84,13 +83,13 @@ describe("GetPage", () => {
         };
         const getPage = GetPage.getInstance(errorGateway);
 
-        expect(pagesCache.hasItems()).toBeFalse();
+        expect(fullPageCache.hasItems()).toBeFalse();
 
         await expect(getPage.useCase.execute({ id: "page-1#0001" })).rejects.toThrow(
             "Gateway error"
         );
 
         expect(errorGateway.execute).toHaveBeenCalledTimes(1);
-        expect(pagesCache.hasItems()).toBeFalse();
+        expect(fullPageCache.hasItems()).toBeFalse();
     });
 });

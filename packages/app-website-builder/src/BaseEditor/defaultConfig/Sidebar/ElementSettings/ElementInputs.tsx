@@ -1,14 +1,7 @@
-// @ts-nocheck We're not using this file, but it's here for reference.
 import React, { useMemo } from "react";
-import { Grid, Select } from "@webiny/admin-ui";
-import type { ComponentInput, DocumentElement } from "@webiny/website-builder-sdk";
+import { Grid } from "@webiny/admin-ui";
+import type { DocumentElement } from "@webiny/website-builder-sdk";
 import { useComponent } from "~/BaseEditor/hooks/useComponent";
-import { useInputRenderer } from "./useInputRenderer";
-import { useInputValue } from "./useInputValue";
-// import { ExpressionRenderer } from "./ExpressionRenderer";
-// import { WithBindingToggle } from "./WithBindingToggle";
-import { useStateArrays } from "~/BaseEditor/defaultConfig/Sidebar/ElementSettings/useStateArrays";
-import { useRepeatValue } from "./useRepeatValue";
 import { InputRenderer } from "./InputRenderer";
 import { ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument";
@@ -20,8 +13,7 @@ interface ElementInputsProps {
 
 export const ElementInputs = ({ element }: ElementInputsProps) => {
     const component = useComponent(element.component.name);
-    const repeat = useRepeatValue(element.id);
-    const arrayOptions = useStateArrays();
+
     const bindings = useSelectFromDocument(
         document => {
             return document.bindings[element.id] ?? { inputs: {} };

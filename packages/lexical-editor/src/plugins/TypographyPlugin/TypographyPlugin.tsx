@@ -6,7 +6,7 @@ import { useRichTextEditor } from "~/hooks";
 import { ADD_TYPOGRAPHY_COMMAND, TypographyPayload } from "~/commands";
 
 export const TypographyPlugin = () => {
-    const { editor, theme } = useRichTextEditor();
+    const { editor } = useRichTextEditor();
 
     useEffect(() => {
         return editor.registerCommand<TypographyPayload>(

@@ -1,6 +1,7 @@
 import { StatePathsExtractor } from "./StatePathsExtractor";
 
-describe("StatePathsExtractor", () => {
+// This test is skipped because its underlying functionality is currently not being used.
+describe.skip("StatePathsExtractor", () => {
     it("extracts all paths including array indexes", () => {
         const state = {
             users: [

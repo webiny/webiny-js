@@ -1,3 +1,4 @@
+/* eslint-disable */
 export const staticPage = {
     properties: {
         title: "Untitled",
@@ -30,7 +31,7 @@ export const staticPage = {
         // Static pages
         documentType: "page",
         pageType: "static",
-        lastPreviewUrl: "",
+        lastPreviewUrl: ""
         // Product pages
         // documentType: "page",
         // pageType: "kibo-product",

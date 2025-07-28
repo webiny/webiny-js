@@ -1,7 +1,6 @@
 import React from "react";
 import {
     TypographyAction,
-    FontSizeAction,
     FontColorAction,
     Divider,
     BoldAction,

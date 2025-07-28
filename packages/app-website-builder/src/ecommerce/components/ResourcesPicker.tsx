@@ -3,7 +3,7 @@ import { runInAction, action } from "mobx";
 import { observer, useLocalObservable } from "mobx-react-lite";
 import pluralize from "pluralize";
 import throttle from "lodash/throttle";
-import { useDialogs, useSnackbar } from "@webiny/app-admin";
+import { useDialogs } from "@webiny/app-admin";
 import {
     Avatar,
     Button,

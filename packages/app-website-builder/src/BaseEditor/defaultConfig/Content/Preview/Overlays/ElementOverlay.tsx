@@ -18,14 +18,7 @@ interface ElementOverlayProps {
 }
 
 export const ElementOverlay = React.memo(
-    ({
-        previewBox,
-        editorBox,
-        elementId,
-        isSelected,
-        isHighlighted,
-        children
-    }: ElementOverlayProps) => {
+    ({ previewBox, elementId, isSelected, isHighlighted, children }: ElementOverlayProps) => {
         const editor = useDocumentEditor();
         const componentManifest = useElementComponentManifest(previewBox.id);
 

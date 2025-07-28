@@ -13,6 +13,17 @@ export class MovePageRepository implements IMovePageRepository {
 
     async execute(id: string, folderId: string): Promise<void> {
         await this.gateway.execute(id, folderId);
-        this.cache.removeItems(p => p.id === id);
+        this.cache.updateItems(p => {
+            if (p.id === id) {
+                return Page.create({
+                    ...p,
+                    location: {
+                        folderId
+                    }
+                });
+            }
+
+            return p;
+        });
     }
 }

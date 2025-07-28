@@ -14,7 +14,7 @@ export class FilterPagesUseCase implements IFilterPagesUseCase {
 
     async execute(params: FilterPagesUseCaseParams) {
         const cleanFilters = Object.fromEntries(
-            Object.entries(params.filters).filter(([_, value]) => value !== undefined)
+            Object.entries(params.filters).filter(([, value]) => value !== undefined)
         );
 
         // If the filters object is empty, we want to retrieve all documents in the folder.

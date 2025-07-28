@@ -17,7 +17,7 @@ export const DropBox = React.memo(
     ({ box, onDrop }: DropBoxProps) => {
         const isDragging = useIsDragging();
 
-        const [{ item, isOver }, dropRef] = useDrop<
+        const [{ isOver }, dropRef] = useDrop<
             any,
             unknown,
             { item: { name: string }; isOver: boolean }

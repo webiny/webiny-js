@@ -1,10 +1,6 @@
 "use client";
-import React, { useContext, useEffect, useMemo } from "react";
-import {
-    type Document,
-    documentStoreManager,
-    DocumentStore
-} from "@webiny/website-builder-sdk";
+import React, { useContext, useMemo } from "react";
+import { type Document, documentStoreManager, DocumentStore } from "@webiny/website-builder-sdk";
 
 const DocumentStoreContext = React.createContext<DocumentStore | undefined>(undefined);
 

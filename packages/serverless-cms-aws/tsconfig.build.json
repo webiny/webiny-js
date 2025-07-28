@@ -31,6 +31,7 @@
     { "path": "../api-prerendering-service-so-ddb/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../api-security-so-ddb/tsconfig.build.json" },
+    { "path": "../api-sync-system/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
