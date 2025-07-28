@@ -1,5 +1,3 @@
-import { LexicalValue } from "~/types";
-
 const defaultLexicalValue = JSON.stringify({
     root: {
         children: [
@@ -9,7 +7,7 @@ const defaultLexicalValue = JSON.stringify({
                 format: "",
                 indent: 0,
                 styles: [],
-                type: "paragraph",
+                type: "wby-paragraph",
                 version: 1
             }
         ],
@@ -24,6 +22,6 @@ const defaultLexicalValue = JSON.stringify({
 /**
  * @description Basic JSON data string that will initialize the editor.
  */
-export const generateInitialLexicalValue = (): LexicalValue => {
+export const generateInitialLexicalValue = (): string => {
     return defaultLexicalValue;
 };

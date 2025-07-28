@@ -64,7 +64,7 @@ export class LinkNode extends ElementNode {
     __alt: null | string;
 
     static override getType(): string {
-        return "link";
+        return "wby-link";
     }
 
     static override clone(node: LinkNode): LinkNode {
@@ -194,7 +194,7 @@ export class LinkNode extends ElementNode {
             target: this.getTarget(),
             title: this.getTitle(),
             alt: this.getAlt(),
-            type: "link",
+            type: "wby-link",
             url: this.getURL()
         };
     }

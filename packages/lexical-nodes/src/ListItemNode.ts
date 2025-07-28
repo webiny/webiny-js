@@ -24,7 +24,7 @@ import {
 import { $createParagraphNode, $isParagraphNode } from "~/ParagraphNode";
 import { isNestedListNode } from "~/utils/listNode";
 
-export const LIST_ITEM_TYPE = "list-item";
+export const LIST_ITEM_TYPE = "wby-list-item";
 
 export type SerializedWebinyListItemNode = Spread<
     {

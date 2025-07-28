@@ -26,7 +26,7 @@ export type SerializedWebinyListNode = Spread<
         listType: ListType;
         start: number;
         tag: ListNodeTagType;
-        type: "list";
+        type: "wby-list";
     },
     SerializedElementNode
 >;
@@ -61,7 +61,7 @@ export class ListNode extends ElementNode implements TypographyStylesNode {
     }
 
     static override getType() {
-        return "list";
+        return "wby-list";
     }
 
     override createDOM(config: EditorConfig): HTMLElement {
@@ -141,7 +141,7 @@ export class ListNode extends ElementNode implements TypographyStylesNode {
             listType: this.getListType(),
             start: this.getStart(),
             tag: this.getTag(),
-            type: "list"
+            type: "wby-list"
         };
     }
 

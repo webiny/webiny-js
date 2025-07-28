@@ -44,7 +44,7 @@ describe("Lexical State Transformer", () => {
             },
             {
                 node: expect.any(QuoteNode),
-                html: `<blockquote dir="ltr"><span style=\"white-space: pre-wrap;\">Test quote from lexical </span><b><strong style=\"white-space: pre-wrap;\">CMS</strong></b></blockquote>`
+                html: `<blockquote dir="ltr"><span style=\"white-space: pre-wrap;\">Test quote from lexical </span><strong style=\"white-space: pre-wrap;\">CMS</strong></blockquote>`
             },
             {
                 node: expect.any(ParagraphNode),
@@ -52,7 +52,7 @@ describe("Lexical State Transformer", () => {
             },
             {
                 node: expect.any(ListNode),
-                html: `<ul data-theme-list-style-id="list"><li value="1"><span style=\"white-space: pre-wrap;\">List item 1</span></li><li value="2"><span style=\"white-space: pre-wrap;\">List item 2</span></li><li value="3"><span style=\"white-space: pre-wrap;\">List item 3</span></li></ul>`
+                html: `<ul><li value="1"><span style=\"white-space: pre-wrap;\">List item 1</span></li><li value="2"><span style=\"white-space: pre-wrap;\">List item 2</span></li><li value="3"><span style=\"white-space: pre-wrap;\">List item 3</span></li></ul>`
             },
             {
                 node: expect.any(ParagraphNode),
@@ -67,13 +67,13 @@ describe("Lexical State Transformer", () => {
         const nodeToType = (node: LexicalNode) => {
             switch (true) {
                 case $isHeadingNode(node):
-                    return "heading";
+                    return "wby-heading";
                 case $isParagraphNode(node):
-                    return "paragraph";
+                    return "wby-paragraph";
                 case $isQuoteNode(node):
-                    return "quote";
+                    return "wby-quote";
                 case $isListNode(node):
-                    return "list";
+                    return "wby-list";
                 default:
                     return "unknown";
             }
@@ -91,47 +91,47 @@ describe("Lexical State Transformer", () => {
             {
                 order: 1,
                 text: `<h1 dir="ltr"><span style=\"white-space: pre-wrap;\">Test CMS Title</span></h1>`,
-                type: "heading"
+                type: "wby-heading"
             },
             {
                 order: 2,
                 text: `<p dir="ltr"><br></p>`,
-                type: "paragraph"
+                type: "wby-paragraph"
             },
             {
                 order: 3,
                 text: `<p dir="ltr"><span style=\"white-space: pre-wrap;\">Testing a </span><a href="https://space.com" rel="noreferrer"><span style=\"white-space: pre-wrap;\">link</span></a><span style=\"white-space: pre-wrap;\"> for parsing</span></p>`,
-                type: "paragraph"
+                type: "wby-paragraph"
             },
             {
                 order: 4,
                 text: `<p dir="ltr"><span style=\"white-space: pre-wrap;\">Test CMS Paragraph</span></p>`,
-                type: "paragraph"
+                type: "wby-paragraph"
             },
             {
                 order: 5,
                 text: `<p dir="ltr"><br></p>`,
-                type: "paragraph"
+                type: "wby-paragraph"
             },
             {
                 order: 6,
-                text: `<blockquote dir="ltr"><span style=\"white-space: pre-wrap;\">Test quote from lexical </span><b><strong style=\"white-space: pre-wrap;\">CMS</strong></b></blockquote>`,
-                type: "quote"
+                text: `<blockquote dir="ltr"><span style=\"white-space: pre-wrap;\">Test quote from lexical </span><strong style=\"white-space: pre-wrap;\">CMS</strong></blockquote>`,
+                type: "wby-quote"
             },
             {
                 order: 7,
                 text: `<p dir="ltr"><br></p>`,
-                type: "paragraph"
+                type: "wby-paragraph"
             },
             {
                 order: 8,
-                text: `<ul data-theme-list-style-id="list"><li value="1"><span style=\"white-space: pre-wrap;\">List item 1</span></li><li value="2"><span style=\"white-space: pre-wrap;\">List item 2</span></li><li value="3"><span style=\"white-space: pre-wrap;\">List item 3</span></li></ul>`,
-                type: "list"
+                text: `<ul><li value="1"><span style=\"white-space: pre-wrap;\">List item 1</span></li><li value="2"><span style=\"white-space: pre-wrap;\">List item 2</span></li><li value="3"><span style=\"white-space: pre-wrap;\">List item 3</span></li></ul>`,
+                type: "wby-list"
             },
             {
                 order: 9,
                 text: `<p><br></p>`,
-                type: "paragraph"
+                type: "wby-paragraph"
             }
         ]);
     });
@@ -142,7 +142,7 @@ describe("Lexical State Transformer", () => {
         const output = transformer.toHtml(stateMock);
 
         expect(output).toEqual(
-            `<h1 dir="ltr"><span style=\"white-space: pre-wrap;\">Test CMS Title</span></h1><p dir="ltr"><br></p><p dir="ltr"><span style=\"white-space: pre-wrap;\">Testing a </span><a href="https://space.com" rel="noreferrer"><span style=\"white-space: pre-wrap;\">link</span></a><span style=\"white-space: pre-wrap;\"> for parsing</span></p><p dir="ltr"><span style=\"white-space: pre-wrap;\">Test CMS Paragraph</span></p><p dir="ltr"><br></p><blockquote dir="ltr"><span style=\"white-space: pre-wrap;\">Test quote from lexical </span><b><strong style=\"white-space: pre-wrap;\">CMS</strong></b></blockquote><p dir="ltr"><br></p><ul data-theme-list-style-id="list"><li value="1"><span style=\"white-space: pre-wrap;\">List item 1</span></li><li value="2"><span style=\"white-space: pre-wrap;\">List item 2</span></li><li value="3"><span style=\"white-space: pre-wrap;\">List item 3</span></li></ul><p><br></p>`
+            `<h1 dir="ltr"><span style=\"white-space: pre-wrap;\">Test CMS Title</span></h1><p dir="ltr"><br></p><p dir="ltr"><span style=\"white-space: pre-wrap;\">Testing a </span><a href="https://space.com" rel="noreferrer"><span style=\"white-space: pre-wrap;\">link</span></a><span style=\"white-space: pre-wrap;\"> for parsing</span></p><p dir="ltr"><span style=\"white-space: pre-wrap;\">Test CMS Paragraph</span></p><p dir="ltr"><br></p><blockquote dir="ltr"><span style=\"white-space: pre-wrap;\">Test quote from lexical </span><strong style=\"white-space: pre-wrap;\">CMS</strong></blockquote><p dir="ltr"><br></p><ul><li value="1"><span style=\"white-space: pre-wrap;\">List item 1</span></li><li value="2"><span style=\"white-space: pre-wrap;\">List item 2</span></li><li value="3"><span style=\"white-space: pre-wrap;\">List item 3</span></li></ul><p><br></p>`
         );
     });
 });

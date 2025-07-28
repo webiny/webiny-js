@@ -23,7 +23,7 @@ export type SerializedQuoteNode = Spread<
         styleId?: string;
         styles?: ThemeStyleValue[];
         className?: string;
-        type: "quote";
+        type: "wby-quote";
     },
     BaseSerializedQuoteNode
 >;
@@ -74,7 +74,7 @@ export class QuoteNode extends BaseQuoteNode implements TypographyStylesNode {
     }
 
     static override getType(): string {
-        return "quote";
+        return "wby-quote";
     }
 
     static override clone(node: QuoteNode): QuoteNode {
@@ -136,7 +136,7 @@ export class QuoteNode extends BaseQuoteNode implements TypographyStylesNode {
     override exportJSON(): SerializedQuoteNode {
         return {
             ...super.exportJSON(),
-            type: "quote",
+            type: "wby-quote",
             className: this.__className,
             styleId: this.__styleId
         };

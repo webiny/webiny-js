@@ -39,7 +39,6 @@ export { ListPlugin } from "~/plugins/ListPLugin/ListPlugin";
 export { ImagesPlugin } from "~/plugins/ImagesPlugin/ImagesPlugin";
 export { StateHandlingPlugin } from "~/plugins/StateHandlingPlugin";
 // utils
-export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 export { isValidLexicalData } from "~/utils/isValidLexicalData";
 // Commands
 export * from "~/commands";

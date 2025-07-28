@@ -65,7 +65,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     __captionsEnabled: boolean;
 
     static override getType(): string {
-        return "image";
+        return "wby-image";
     }
 
     static override clone(node: ImageNode): ImageNode {
@@ -150,7 +150,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
             maxWidth: this.__maxWidth,
             showCaption: this.__showCaption,
             src: this.getSrc(),
-            type: "image",
+            type: "wby-image",
             width: this.__width === "inherit" ? 0 : this.__width,
             version: 1
         };

@@ -48,7 +48,7 @@ export type SerializedFontColorNode = Spread<
     {
         themeColor: string;
         color: string;
-        type: "font-color";
+        type: "wby-font-color";
     },
     SerializedTextNode
 >;
@@ -66,7 +66,7 @@ export class FontColorNode extends TextNode {
     }
 
     static override getType(): string {
-        return "font-color";
+        return "wby-font-color";
     }
 
     static override clone(node: FontColorNode): FontColorNode {
@@ -128,7 +128,7 @@ export class FontColorNode extends TextNode {
             ...super.exportJSON(),
             themeColor: this.__color.getName(),
             color: this.__color.getValue(),
-            type: "font-color"
+            type: "wby-font-color"
         };
     }
 

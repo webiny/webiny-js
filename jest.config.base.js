@@ -34,7 +34,7 @@ module.exports = function ({ path }, presets = []) {
                     }
                 ]
             },
-            transformIgnorePatterns: ["/node_modules/(?!(nanoid)/)"],
+            transformIgnorePatterns: ["/node_modules/(?!(nanoid|cheerio)/)"],
             moduleDirectories: ["node_modules"],
             moduleNameMapper: {
                 "~tests/(.*)": `${path}/__tests__/$1`,

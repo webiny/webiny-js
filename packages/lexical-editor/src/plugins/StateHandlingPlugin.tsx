@@ -3,12 +3,11 @@ import debounce from "lodash/debounce";
 import { OnChangePlugin as BaseOnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { EditorState, LexicalEditor } from "lexical";
 import { $isRootTextContentEmpty } from "@lexical/text";
+import { generateInitialLexicalValue, prepareLexicalState } from "@webiny/lexical-nodes";
 import { normalizeInputValue } from "~/components/Editor/normalizeInputValue";
-import { prepareLexicalState } from "~/utils/prepareLexicalState";
 import type { LexicalValue } from "~/types";
 import { useRichTextEditor } from "~/hooks";
 import { parseLexicalState } from "~/utils/isValidLexicalData";
-import { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 
 interface OnChangeProps {
     value: string | null | undefined;

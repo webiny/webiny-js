@@ -6,7 +6,9 @@ import {
     RangeSelection,
     Spread,
     LexicalEditor,
-    DOMExportOutput
+    DOMExportOutput,
+    setNodeIndentFromDOM,
+    DOMConversionMap
 } from "lexical";
 import { addClassNamesToElement } from "@lexical/utils";
 import {
@@ -24,7 +26,7 @@ export type SerializeHeadingNode = Spread<
         styles?: ThemeStyleValue[];
         styleId?: string;
         className?: string;
-        type: "heading";
+        type: "wby-heading";
     },
     BaseSerializedHeadingNode
 >;
@@ -33,6 +35,34 @@ interface HeadingNodeOptions {
     className?: string;
     styleId?: string;
     key?: NodeKey;
+}
+
+function isGoogleDocsTitle(domNode: HTMLElement) {
+    if (domNode.nodeName.toLowerCase() === "span") {
+        return domNode.style.fontSize === "26pt";
+    }
+    return false;
+}
+function $convertHeadingElement(element: HTMLElement) {
+    const nodeName = element.nodeName.toLowerCase();
+    let node = null;
+    if (
+        nodeName === "h1" ||
+        nodeName === "h2" ||
+        nodeName === "h3" ||
+        nodeName === "h4" ||
+        nodeName === "h5" ||
+        nodeName === "h6"
+    ) {
+        node = $createHeadingNode(nodeName);
+        if (element.style !== null) {
+            setNodeIndentFromDOM(element, node);
+            node.setFormat(element.style.textAlign as any);
+        }
+    }
+    return {
+        node
+    };
 }
 
 export class HeadingNode extends BaseHeadingNode implements TypographyStylesNode {
@@ -65,7 +95,7 @@ export class HeadingNode extends BaseHeadingNode implements TypographyStylesNode
     }
 
     static override getType(): string {
-        return "heading";
+        return "wby-heading";
     }
 
     static override clone(node: HeadingNode): HeadingNode {
@@ -92,6 +122,61 @@ export class HeadingNode extends BaseHeadingNode implements TypographyStylesNode
         return { ...base, element };
     }
 
+    static override importDOM(): DOMConversionMap | null {
+        return {
+            h1: () => ({
+                conversion: $convertHeadingElement,
+                priority: 0
+            }),
+            h2: () => ({
+                conversion: $convertHeadingElement,
+                priority: 0
+            }),
+            h3: () => ({
+                conversion: $convertHeadingElement,
+                priority: 0
+            }),
+            h4: () => ({
+                conversion: $convertHeadingElement,
+                priority: 0
+            }),
+            h5: () => ({
+                conversion: $convertHeadingElement,
+                priority: 0
+            }),
+            h6: () => ({
+                conversion: $convertHeadingElement,
+                priority: 0
+            }),
+            p: node => {
+                // domNode is a <p> since we matched it by nodeName
+                const firstChild = node.firstChild as HTMLElement;
+                if (firstChild !== null && isGoogleDocsTitle(firstChild)) {
+                    return {
+                        conversion: () => ({
+                            node: null
+                        }),
+                        priority: 3
+                    };
+                }
+                return null;
+            },
+            span: node => {
+                if (isGoogleDocsTitle(node)) {
+                    return {
+                        conversion: () => {
+                            return {
+                                node: $createHeadingNode("h1")
+                            };
+                        },
+                        priority: 3
+                    };
+                }
+                return null;
+            }
+        };
+    }
+
     static override importJSON(serializedNode: SerializeHeadingNode): BaseHeadingNode {
         const node = $createHeadingNode(serializedNode.tag);
         node.setFormat(serializedNode.format);
@@ -112,7 +197,7 @@ export class HeadingNode extends BaseHeadingNode implements TypographyStylesNode
     override exportJSON(): SerializeHeadingNode {
         return {
             ...super.exportJSON(),
-            type: "heading",
+            type: "wby-heading",
             styleId: this.__styleId,
             className: this.__className
         };

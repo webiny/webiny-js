@@ -1,5 +1,4 @@
 import {
-    $applyNodeReplacement,
     DOMConversionMap,
     DOMConversionOutput,
     ElementFormatType,
@@ -18,12 +17,21 @@ import { addClassNamesToElement } from "@lexical/utils";
 import { TypographyStylesNode, ThemeStyleValue } from "~/types";
 import { getStyleId } from "./utils/getStyleId";
 
+function convertParagraphElement(element: HTMLElement): DOMConversionOutput {
+    const node = $createParagraphNode();
+    if (element.style) {
+        node.setFormat(element.style.textAlign as ElementFormatType);
+    }
+
+    return { node };
+}
+
 export type SerializeParagraphNode = Spread<
     {
         styles?: ThemeStyleValue[];
         styleId?: string;
         className?: string;
-        type: "paragraph";
+        type: "wby-paragraph";
     },
     SerializedBaseParagraphNode
 >;
@@ -63,7 +71,7 @@ export class ParagraphNode extends BaseParagraphNode implements TypographyStyles
     }
 
     static override getType(): string {
-        return "paragraph";
+        return "wby-paragraph";
     }
 
     static override clone(node: ParagraphNode): ParagraphNode {
@@ -161,7 +169,7 @@ export class ParagraphNode extends BaseParagraphNode implements TypographyStyles
             ...super.exportJSON(),
             styleId: this.__styleId,
             className: this.__className,
-            type: "paragraph"
+            type: "wby-paragraph"
         };
     }
 
@@ -190,17 +198,8 @@ export class ParagraphNode extends BaseParagraphNode implements TypographyStyles
     }
 }
 
-function convertParagraphElement(element: HTMLElement): DOMConversionOutput {
-    const node = $createParagraphNode();
-    if (element.style) {
-        node.setFormat(element.style.textAlign as ElementFormatType);
-    }
-
-    return { node };
-}
-
 export function $createParagraphNode(styleId?: string): ParagraphNode {
-    return $applyNodeReplacement(new ParagraphNode({ styleId }));
+    return new ParagraphNode({ styleId });
 }
 
 export function $isParagraphNode(node: LexicalNode | null | undefined): node is ParagraphNode {

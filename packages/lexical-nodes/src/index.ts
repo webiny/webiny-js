@@ -1,4 +1,10 @@
-import { type Klass, type LexicalNode, type LexicalNodeReplacement } from "lexical";
+import {
+    type Klass,
+    type LexicalNode,
+    type LexicalNodeReplacement,
+    ParagraphNode as BaseParagraphNode
+} from "lexical";
+import { HeadingNode as BaseHeadingNode, QuoteNode as BaseQuoteNode } from "@lexical/rich-text";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { HashtagNode } from "@lexical/hashtag";
 import { MarkNode } from "@lexical/mark";
@@ -29,10 +35,32 @@ export * from "./utils/formatToHeading";
 export * from "./utils/formatToParagraph";
 export * from "./utils/clearNodeFormating";
 export * from "./utils/toggleLink";
+export * from "./prepareLexicalState";
+export * from "./generateInitialLexicalValue";
 
 // This is a list of all the nodes that our Lexical implementation supports OOTB.
 export const allNodes: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement> = [
     ParagraphNode,
+    {
+        replace: BaseParagraphNode,
+        with: () => {
+            return new ParagraphNode();
+        }
+    },
+    HeadingNode,
+    {
+        replace: BaseHeadingNode,
+        with: (node: BaseHeadingNode) => {
+            return new HeadingNode(node.getTag());
+        }
+    },
+    QuoteNode,
+    {
+        replace: BaseQuoteNode,
+        with: () => {
+            return new QuoteNode();
+        }
+    },
     ImageNode,
     ListNode,
     ListItemNode,
@@ -43,7 +71,6 @@ export const allNodes: ReadonlyArray<Klass<LexicalNode> | LexicalNodeReplacement
     OverflowNode,
     MarkNode,
     FontColorNode,
-    HeadingNode,
     QuoteNode,
     LinkNode
 ];

@@ -9,7 +9,7 @@ import {
 } from "lexical";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import { createHeadlessEditor } from "@lexical/headless";
-import { allNodes } from "@webiny/lexical-nodes";
+import { allNodes, prepareLexicalState } from "@webiny/lexical-nodes";
 import { postProcessHtml } from "./postProcessHtml";
 
 interface LexicalStateTransformerConfig {
@@ -29,7 +29,7 @@ class LexicalStateTransformer {
     }
 
     public flatten(state: string | SerializedEditorState) {
-        const editorState = this.editor.parseEditorState(state);
+        const editorState = this.editor.parseEditorState(prepareLexicalState(state));
         this.editor.setEditorState(editorState);
 
         let flattenedNodes: FlatStateWithHTML = [];
@@ -58,7 +58,8 @@ class LexicalStateTransformer {
     }
 
     public toHtml(state: string | SerializedEditorState) {
-        const editorState = this.editor.parseEditorState(state);
+        const preparedState = prepareLexicalState(state);
+        const editorState = this.editor.parseEditorState(preparedState);
         this.editor.setEditorState(editorState);
 
         let html = "";
