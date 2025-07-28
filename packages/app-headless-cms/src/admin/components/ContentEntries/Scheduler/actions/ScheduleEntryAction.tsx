@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/index.js";
 import { usePermission } from "~/admin/hooks/index.js";
 import { ContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
@@ -24,8 +24,12 @@ export const ScheduleEntryMenuItem = () => {
         setShow(!show);
     }, []);
 
-    const scheduleEntry = useCallback(() => {
-        // TODO
+    const scheduleEntry = useMemo(() => {
+        if (scheduled.error) {
+            console.error(scheduled.error);
+            return null;
+        }
+        return scheduled.item;
     }, [scheduled]);
 
     if (!canPublish("cms.contentEntry") && !canUnpublish("cms.contentEntry")) {
@@ -41,7 +45,7 @@ export const ScheduleEntryMenuItem = () => {
                 disabled={!entry?.id || loading}
                 data-testid={"cms.content-form.header.schedule"}
             />
-            <ScheduleDialog show={show}>
+            <ScheduleDialog show={show} schedulerEntry={scheduleEntry}>
                 {() => {
                     return <>a</>;
                 }}

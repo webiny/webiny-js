@@ -1,8 +1,10 @@
 import React, { useEffect } from "react";
+import type { SchedulerEntry } from "~/types.js";
 
 export interface IScheduleDialogProps {
     show: boolean;
     children: () => React.ReactNode;
+    schedulerEntry: SchedulerEntry | null;
 }
 
 export const ScheduleDialog = ({ show, children }: IScheduleDialogProps) => {
