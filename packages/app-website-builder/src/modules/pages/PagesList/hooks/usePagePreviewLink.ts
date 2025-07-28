@@ -6,7 +6,7 @@ export const usePagePreviewLink = (pageDto: PageDto) => {
     const { previewDomain } = usePreviewDomain();
 
     return useMemo(() => {
-        if (!previewDomain) {
+        if (!previewDomain || !pageDto.properties.path) {
             return null;
         }
 

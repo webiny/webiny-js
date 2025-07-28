@@ -5,20 +5,23 @@ import { validation } from "@webiny/validation";
 import { pagePathFromTitle } from "~/shared/pagePathFromTitle";
 
 const generatePath = (form: FormAPI) => () => {
-    if (form.data.path) {
+    if (form.getValue("properties.path")) {
         return;
     }
-    const titlePath = pagePathFromTitle(form.data.title) ?? "";
-    form.setValue("path", `/${titlePath}`);
+    const titlePath = pagePathFromTitle(form.getValue("properties.title")) ?? "";
+    form.setValue("properties.path", `/${titlePath}`);
 };
 
 export const StaticPageForm = () => {
     const form = useForm();
     const titleBind = useBind({
-        name: "title",
+        name: "properties.title",
         validators: [validation.create("required")]
     });
-    const pathBind = useBind({ name: "path", validators: [validation.create("required")] });
+    const pathBind = useBind({
+        name: "properties.path",
+        validators: [validation.create("required")]
+    });
 
     return (
         <>

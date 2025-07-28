@@ -64,7 +64,7 @@ export class PagesContext extends BaseContext {
                     type: "searchable-json"
                 }),
                 createModelField({
-                    label: "Properties",
+                    label: "Metadata",
                     type: "searchable-json"
                 }),
                 createModelField({
