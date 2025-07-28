@@ -1,6 +1,7 @@
 import { IMetaRepository } from "@webiny/app-utils";
 import {
     type ISchedulerCancelGateway,
+    type ISchedulerGetGateway,
     ISchedulerListGateway,
     type ISchedulerPublishGateway,
     type ISchedulerUnpublishGateway
@@ -10,6 +11,7 @@ import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 
 export interface ISchedulerItemsRepositoryFactoryGetParams {
     metaRepository: IMetaRepository;
+    getGateway: ISchedulerGetGateway;
     listGateway: ISchedulerListGateway;
     cancelGateway: ISchedulerCancelGateway;
     publishGateway: ISchedulerPublishGateway;

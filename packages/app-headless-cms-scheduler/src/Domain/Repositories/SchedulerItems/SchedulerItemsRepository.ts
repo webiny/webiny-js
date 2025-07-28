@@ -3,6 +3,8 @@ import uniqBy from "lodash/uniqBy";
 import { SchedulerItem } from "~/Domain";
 import {
     ISchedulerCancelGateway,
+    type ISchedulerGetExecuteParams,
+    type ISchedulerGetGateway,
     type ISchedulerListExecuteParams,
     ISchedulerListGateway,
     ISchedulerPublishGateway,
@@ -14,6 +16,7 @@ import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 
 export interface ISchedulerItemsRepositoryParams {
     metaRepository: IMetaRepository;
+    getGateway: ISchedulerGetGateway;
     listGateway: ISchedulerListGateway;
     cancelGateway: ISchedulerCancelGateway;
     unpublishGateway: ISchedulerUnpublishGateway;
@@ -22,18 +25,20 @@ export interface ISchedulerItemsRepositoryParams {
 }
 
 export class SchedulerItemsRepository implements ISchedulerItemsRepository {
-    private metaRepository: IMetaRepository;
-    private listGateway: ISchedulerListGateway;
-    private cancelGateway: ISchedulerCancelGateway;
-    private unpublishGateway: ISchedulerUnpublishGateway;
-    private publishGateway: ISchedulerPublishGateway;
+    private readonly metaRepository: IMetaRepository;
+    private readonly getGateway: ISchedulerGetGateway;
+    private readonly listGateway: ISchedulerListGateway;
+    private readonly cancelGateway: ISchedulerCancelGateway;
+    private readonly unpublishGateway: ISchedulerUnpublishGateway;
+    private readonly publishGateway: ISchedulerPublishGateway;
+    private readonly model: Pick<CmsModel, "modelId">;
     private items: SchedulerItem[] = [];
     private params: ISchedulerListExecuteParams;
-    private readonly model: Pick<CmsModel, "modelId">;
 
     public constructor(params: ISchedulerItemsRepositoryParams) {
         this.metaRepository = params.metaRepository;
         this.listGateway = params.listGateway;
+        this.getGateway = params.getGateway;
         this.cancelGateway = params.cancelGateway;
         this.unpublishGateway = params.unpublishGateway;
         this.publishGateway = params.publishGateway;
@@ -54,6 +59,27 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
 
     public getLoading() {
         return {};
+    }
+
+    public async getItem(params: Omit<ISchedulerGetExecuteParams, "modelId">) {
+        const response = await this.getGateway.execute({
+            ...params,
+            modelId: this.model.modelId
+        });
+        /**
+         * TODO Do we want to reset the items list?
+         */
+        runInAction(() => {
+            this.items = [];
+        });
+
+        if (!response?.item) {
+            return;
+        }
+
+        runInAction(() => {
+            this.items = [response.item];
+        });
     }
 
     public async listItems(params: Omit<ISchedulerListExecuteParams, "modelId">) {

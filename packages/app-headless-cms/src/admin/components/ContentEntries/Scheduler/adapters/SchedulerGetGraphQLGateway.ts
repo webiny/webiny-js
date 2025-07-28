@@ -13,7 +13,7 @@ import { createSchedulerEntryFields } from "./graphql/fields.js";
 
 const createSchedulerGetQuery = () => {
     return gql`
-        query SchedulerGetQuery($modelId: ID!, $id: ID!) {
+        query SchedulerGetQuery($modelId: String!, $id: ID!) {
             getCmsSchedule(modelId: $modelId, id: $id) {
                 data {
                     ${createSchedulerEntryFields()}

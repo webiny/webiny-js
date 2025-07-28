@@ -1,14 +1,15 @@
-import {
+import type {
     ICancelItemController,
+    IGetItemController,
     IListItemsController,
     IListMoreItemsController,
     IPublishItemController,
+    ISearchItemsController,
     ISelectAllItemsController,
     ISelectItemsController,
     ISortItemsController,
     IUnpublishItemController,
-    IUnselectAllItemsController,
-    ISearchItemsController
+    IUnselectAllItemsController
 } from "~/Presentation/Scheduler/controllers";
 
 export interface ISchedulerControllers {
@@ -16,6 +17,7 @@ export interface ISchedulerControllers {
     schedulePublishItem: IPublishItemController;
     scheduleUnpublishItem: IUnpublishItemController;
     listMoreItems: IListMoreItemsController;
+    getItem: IGetItemController;
     listItems: IListItemsController;
     selectItems: ISelectItemsController;
     selectAllItems: ISelectAllItemsController;

@@ -7,6 +7,13 @@ export enum ScheduleType {
     unpublish = "unpublish"
 }
 
+export interface CmsErrorResponse {
+    code: string;
+    message: string;
+    data?: Record<string, any>;
+    stack?: string;
+}
+
 export interface SchedulerMetaResponse {
     totalCount: number;
     cursor: string | null;
@@ -25,6 +32,7 @@ export interface SchedulerEntry {
 }
 
 export enum LoadingActions {
+    get = "GET",
     list = "LIST",
     listMore = "LIST_MORE",
     delete = "DELETE",

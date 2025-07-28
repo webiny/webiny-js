@@ -1,8 +1,9 @@
 import { Meta } from "@webiny/app-utils";
 import { SchedulerItem } from "~/Domain";
-import type { ISchedulerListExecuteParams } from "~/Gateways/index.js";
+import type { ISchedulerGetExecuteParams, ISchedulerListExecuteParams } from "~/Gateways/index.js";
 
 export interface ISchedulerItemsRepository {
+    getItem(params: Omit<ISchedulerGetExecuteParams, "modelId">): Promise<void>;
     listItems: (params: Omit<ISchedulerListExecuteParams, "modelId">) => Promise<void>;
     listMoreItems: () => Promise<void>;
     scheduleCancelItem: (id: string) => Promise<void>;

@@ -1,6 +1,7 @@
 export * from "./CancelItem";
 export * from "./PublishItem";
 export * from "./UnpublishItem";
+export * from "./GetItem";
 export * from "./ListItems";
 export * from "./ListMoreItems";
 export * from "./SelectItems";

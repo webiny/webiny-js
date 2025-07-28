@@ -2,6 +2,7 @@ export * from "./PublishItem";
 export * from "./UnpublishItem";
 export * from "./CancelItem";
 export * from "./ListItems";
+export * from "./GetItem";
 export * from "./ListMoreItems";
 export * from "./SortItems";
 export * from "./SearchItems";

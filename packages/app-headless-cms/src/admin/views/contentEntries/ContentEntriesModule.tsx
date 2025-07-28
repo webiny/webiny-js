@@ -36,6 +36,7 @@ import { ShowConfirmationOnDeleteRevision } from "~/admin/components/Decorators/
 import { FullScreenContentEntry } from "~/admin/views/contentEntries/ContentEntry/FullScreenContentEntry";
 import { ShowRevisionList } from "~/admin/components/ContentEntryForm/Header/ShowRevisionsList";
 import { cmsLegacyEntryEditor } from "~/utils/cmsLegacyEntryEditor";
+import { ScheduleEntryMenuItem } from "~/admin/components/ContentEntries/Scheduler/actions/ScheduleEntryAction";
 
 const { Browser } = ContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
@@ -114,6 +115,7 @@ export const ContentEntriesModule = () => {
                 <Actions.ButtonAction name={"save"} element={<SaveContentButton />} />
                 <Actions.ButtonAction name={"publish"} element={<SaveAndPublishButton />} />
                 <Actions.MenuItemAction name={"delete"} element={<DeleteEntryMenuItem />} />
+                <Actions.MenuItemAction name={"schedule"} element={<ScheduleEntryMenuItem />} />
                 {/*
                     The following Menu Action registration is needed
                     only when the 'cmsLegacyEntryEditor' feature is NOT enabled.

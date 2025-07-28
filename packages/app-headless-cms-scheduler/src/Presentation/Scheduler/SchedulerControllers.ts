@@ -1,7 +1,25 @@
-import { ISortingRepository } from "@webiny/app-utils";
-import { ISchedulerItemsRepository, ISearchRepository, ISelectedItemsRepository } from "~/Domain";
+import type { ISortingRepository } from "@webiny/app-utils";
+import type {
+    ISchedulerItemsRepository,
+    ISearchRepository,
+    ISelectedItemsRepository
+} from "~/Domain";
+import type {
+    ICancelItemController,
+    IGetItemController,
+    IListItemsController,
+    IListMoreItemsController,
+    IPublishItemController,
+    ISearchItemsController,
+    ISelectAllItemsController,
+    ISelectItemsController,
+    ISortItemsController,
+    IUnpublishItemController,
+    IUnselectAllItemsController
+} from "~/Presentation/Scheduler/controllers";
 import {
     CancelItemController,
+    GetItemController,
     ListItemsController,
     ListMoreItemsController,
     PublishItemController,
@@ -13,6 +31,7 @@ import {
     UnselectAllItemsController
 } from "~/Presentation/Scheduler/controllers";
 import {
+    GetItemUseCase,
     ListItemsUseCase,
     ListItemsUseCaseWithSearch,
     ListItemsUseCaseWithSorting,
@@ -34,6 +53,20 @@ export interface ISchedulerControllersParams {
     searchRepository: ISearchRepository;
 }
 
+export interface ISchedulerControllersResponse {
+    listItems: IListItemsController;
+    getItem: IGetItemController;
+    listMoreItems: IListMoreItemsController;
+    selectItems: ISelectItemsController;
+    selectAllItems: ISelectAllItemsController;
+    unselectAllItems: IUnselectAllItemsController;
+    sortItems: ISortItemsController;
+    searchItems: ISearchItemsController;
+    scheduleCancelItem: ICancelItemController;
+    schedulePublishItem: IPublishItemController;
+    scheduleUnpublishItem: IUnpublishItemController;
+}
+
 export class SchedulerControllers {
     private readonly itemsRepository: ISchedulerItemsRepository;
     private readonly selectedRepository: ISelectedItemsRepository;
@@ -47,7 +80,7 @@ export class SchedulerControllers {
         this.searchRepository = params.searchRepository;
     }
 
-    public getControllers() {
+    public getControllers(): ISchedulerControllersResponse {
         // Select Items UseCase
         const selectItemsUseCase = () => new SelectItemsUseCase(this.selectedRepository);
 
@@ -73,6 +106,10 @@ export class SchedulerControllers {
             return new ListItemsUseCaseWithSorting(this.sortingRepository, listItemsWithSearch);
         };
 
+        const getItemUseCase = () => {
+            return new GetItemUseCase(this.itemsRepository);
+        };
+
         // List More Items UseCase
         const listMoreItemsUseCase = () => new ListMoreItemsUseCase(this.itemsRepository);
 
@@ -83,6 +120,7 @@ export class SchedulerControllers {
 
         // Create controllers
         const listItems = new ListItemsController(listItemsUseCase);
+        const getItem = new GetItemController(getItemUseCase);
         const listMoreItems = new ListMoreItemsController(listMoreItemsUseCase);
         const cancelItem = new CancelItemController(cancelItemUseCase);
         const publishItem = new PublishItemController(publishItemUseCase);
@@ -95,6 +133,7 @@ export class SchedulerControllers {
 
         return {
             listItems,
+            getItem,
             listMoreItems,
             selectItems,
             selectAllItems,

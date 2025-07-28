@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx";
 import { ILoadingRepository } from "@webiny/app-utils";
 import { ISchedulerItemsRepository } from "./ISchedulerItemsRepository";
 import { LoadingActions } from "~/types";
-import type { ISchedulerListExecuteParams } from "~/Gateways/index.js";
+import type { ISchedulerGetExecuteParams, ISchedulerListExecuteParams } from "~/Gateways/index.js";
 
 export class SchedulerItemsRepositoryWithLoading implements ISchedulerItemsRepository {
     private readonly loadingRepository: ILoadingRepository;
@@ -27,6 +27,13 @@ export class SchedulerItemsRepositoryWithLoading implements ISchedulerItemsRepos
 
     public getLoading() {
         return this.loadingRepository.get();
+    }
+
+    public async getItem(params: Omit<ISchedulerGetExecuteParams, "modelId">) {
+        await this.loadingRepository.runCallBack(
+            this.schedulerItemsRepository.getItem(params),
+            LoadingActions.get
+        );
     }
 
     public async listItems(params: Omit<ISchedulerListExecuteParams, "modelId">) {

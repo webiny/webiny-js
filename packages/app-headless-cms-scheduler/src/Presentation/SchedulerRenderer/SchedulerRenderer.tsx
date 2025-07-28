@@ -11,9 +11,9 @@ export type SchedulerRendererProps = Omit<SchedulerProps, "render"> & {
 export const SchedulerRenderer = ({ title = "Scheduler", ...props }: SchedulerRendererProps) => {
     const { table } = useAcoConfig();
 
-    // if (!table.sorting.length) {
-    //     return null;
-    // }
+    if (!table.sorting?.length) {
+        return null;
+    }
 
     return (
         <Scheduler

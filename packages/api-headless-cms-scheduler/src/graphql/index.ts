@@ -111,6 +111,8 @@ export const createSchedulerGraphQL = () => {
             }
 
             enum CmsListSchedulesSorter {
+                title_ASC
+                title_DESC
                 scheduledOn_ASC
                 scheduledOn_DESC
             }

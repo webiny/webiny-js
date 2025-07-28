@@ -16,8 +16,9 @@ import {
     selectedItemsRepositoryFactory,
     SortingRepositoryWithDefaults
 } from "~/Domain";
-import {
+import type {
     ISchedulerCancelGateway,
+    ISchedulerGetGateway,
     ISchedulerListGateway,
     ISchedulerPublishGateway,
     ISchedulerUnpublishGateway
@@ -27,6 +28,7 @@ import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 
 export interface SchedulerProps {
     model: Pick<CmsModel, "modelId">;
+    getGateway: ISchedulerGetGateway;
     listGateway: ISchedulerListGateway;
     cancelGateway: ISchedulerCancelGateway;
     publishGateway: ISchedulerPublishGateway;
@@ -61,6 +63,7 @@ export const Scheduler = observer((props: SchedulerProps) => {
     const itemsRepository = useMemo(() => {
         const schedulerItemsRepository = schedulerItemsRepositoryFactory.getRepository({
             metaRepository,
+            getGateway: props.getGateway,
             cancelGateway: props.cancelGateway,
             publishGateway: props.publishGateway,
             unpublishGateway: props.unpublishGateway,

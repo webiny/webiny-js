@@ -43,6 +43,14 @@ export const useScheduler = () => {
         () => context.controllers.listItems.execute(),
         [context.controllers.listItems]
     );
+    const getItem = useCallback(
+        (id: string) => {
+            return context.controllers.getItem.execute({
+                id
+            });
+        },
+        [context.controllers.getItem]
+    );
 
     const listMoreItems = useCallback(
         () => context.controllers.listMoreItems.execute(),
@@ -81,6 +89,7 @@ export const useScheduler = () => {
         cancelItem,
         publishItem,
         unpublishItem,
+        getItem,
         listItems,
         listMoreItems,
         selectItems,
