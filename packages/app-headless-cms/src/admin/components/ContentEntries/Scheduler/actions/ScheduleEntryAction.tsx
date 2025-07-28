@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/index.js";
 import { usePermission } from "~/admin/hooks/index.js";
 import { ContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
-import { ReactComponent as ScheduleIcon } from "@material-design-icons/svg/outlined/cell_tower.svg";
+import { ReactComponent as ScheduleIcon } from "@webiny/icons/cell_tower.svg";
 import { useGetSchedulerItem } from "./hooks/useGetSchedulerItem.js";
 import { ScheduleDialog } from "@webiny/app-headless-cms-scheduler/Presentation/components/ScheduleDialog/ScheduleDialog.js";
 

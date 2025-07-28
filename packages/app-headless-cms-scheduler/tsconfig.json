@@ -4,6 +4,7 @@
   "references": [
     { "path": "../app-aco" },
     { "path": "../app-admin" },
+    { "path": "../admin-ui" },
     { "path": "../app-headless-cms-common" },
     { "path": "../app-utils" },
     { "path": "../react-composition" },
@@ -21,6 +22,8 @@
       "@webiny/app-aco": ["../app-aco/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/admin-ui/*": ["../admin-ui/src/*"],
+      "@webiny/admin-ui": ["../admin-ui/src"],
       "@webiny/app-headless-cms-common/*": ["../app-headless-cms-common/src/*"],
       "@webiny/app-headless-cms-common": ["../app-headless-cms-common/src"],
       "@webiny/app-utils/*": ["../app-utils/src/*"],

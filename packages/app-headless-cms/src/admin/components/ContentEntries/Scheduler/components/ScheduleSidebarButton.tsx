@@ -1,6 +1,6 @@
 import React from "react";
 import { Sidebar } from "@webiny/admin-ui";
-import { ReactComponent as ScheduleIcon } from "@material-design-icons/svg/outlined/cell_tower.svg";
+import { ReactComponent as ScheduleIcon } from "@webiny/icons/cell_tower.svg";
 
 export interface ScheduleButtonProps {
     onClick: () => void;
