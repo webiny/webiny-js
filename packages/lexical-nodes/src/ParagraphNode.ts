@@ -9,7 +9,8 @@ import {
     SerializedParagraphNode as SerializedBaseParagraphNode,
     Spread,
     LexicalEditor,
-    DOMExportOutput
+    DOMExportOutput,
+    RangeSelection
 } from "lexical";
 import { EditorConfig } from "lexical";
 import { EditorTheme, ThemeEmotionMap, findTypographyStyleByHtmlTag } from "@webiny/lexical-theme";
@@ -69,8 +70,23 @@ export class ParagraphNode extends BaseParagraphNode implements TypographyStyles
         return new ParagraphNode({
             styleId: node.getStyleId(),
             className: node.getClassName(),
-            key: node.getKey()
+            key: node.__key
         });
+    }
+
+    override insertNewAfter(
+        rangeSelection: RangeSelection,
+        restoreSelection: boolean
+    ): ParagraphNode {
+        const newElement = $createParagraphNode();
+        newElement.setTextFormat(rangeSelection.format);
+        newElement.setTextStyle(rangeSelection.style);
+        const direction = this.getDirection();
+        newElement.setDirection(direction);
+        newElement.setFormat(this.getFormatType());
+        newElement.setStyle(this.getStyle());
+        this.insertAfter(newElement, restoreSelection);
+        return newElement;
     }
 
     override createDOM(config: EditorConfig): HTMLElement {
@@ -85,8 +101,6 @@ export class ParagraphNode extends BaseParagraphNode implements TypographyStyles
         if (element && this.__className) {
             element.classList.add(this.__className);
         }
-
-        console.log("PNode", this);
 
         return { ...base, element };
     }

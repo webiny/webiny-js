@@ -5,6 +5,7 @@
     "@lexical/headless": "0.23.1",
     "@lexical/html": "0.23.1",
     "@webiny/lexical-nodes": "0.0.0",
+    "cheerio": "^1.1.2",
     "lexical": "0.23.1"
   },
   "devDependencies": {

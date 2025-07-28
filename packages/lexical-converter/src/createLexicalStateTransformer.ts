@@ -10,6 +10,7 @@ import {
 import { $generateHtmlFromNodes } from "@lexical/html";
 import { createHeadlessEditor } from "@lexical/headless";
 import { allNodes } from "@webiny/lexical-nodes";
+import { postProcessHtml } from "./postProcessHtml";
 
 interface LexicalStateTransformerConfig {
     editorConfig?: Pick<CreateEditorArgs, "nodes" | "theme">;
@@ -48,7 +49,7 @@ class LexicalStateTransformer {
 
                 return {
                     node: childNode,
-                    html
+                    html: postProcessHtml(html)
                 };
             });
         });
@@ -66,7 +67,7 @@ class LexicalStateTransformer {
             html = $generateHtmlFromNodes(this.editor);
         });
 
-        return html;
+        return postProcessHtml(html);
     }
 
     private getNodeDescendants(node: LexicalNode): LexicalNode[] {

@@ -14,9 +14,8 @@ import {
     toTypographyEmotionMap
 } from "@webiny/lexical-theme";
 import { LexicalValue } from "~/types";
-import { UpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin";
 import { RichTextEditorProvider } from "~/context/RichTextEditorContext";
-import { prepareLexicalState } from "~/utils/prepareLexicalState";
+import { StateHandlingPlugin } from "~/plugins/StateHandlingPlugin";
 
 interface LexicalHtmlRendererProps {
     nodes?: Klass<LexicalNode>[];
@@ -31,10 +30,8 @@ export const LexicalHtmlRenderer = ({ nodes, value, ...props }: LexicalHtmlRende
     const themeEmotionMap =
         props?.themeEmotionMap ?? toTypographyEmotionMap(css, theme, props.themeStylesTransformer);
     const editorTheme = useRef(createTheme(theme));
-    const editorValue = prepareLexicalState(value);
 
     const initialConfig = {
-        // We update the state via the `<LexicalUpdateStatePlugin/>`.
         editorState: null,
         namespace: "webiny",
         onError: () => {
@@ -58,7 +55,7 @@ export const LexicalHtmlRenderer = ({ nodes, value, ...props }: LexicalHtmlRende
                     ErrorBoundary={LexicalErrorBoundary}
                     placeholder={null}
                 />
-                <UpdateStatePlugin value={editorValue} />
+                <StateHandlingPlugin value={value} />
             </RichTextEditorProvider>
         </LexicalComposer>
     );

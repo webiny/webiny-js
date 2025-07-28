@@ -19,7 +19,8 @@ const styles: React.CSSProperties = {
     border: "1px solid #e1e1e1",
     padding: "10px 14px",
     minHeight: 200,
-    maxHeight: 350
+    maxHeight: 350,
+    fontFamily: "var(--wb-theme-font-family)"
 };
 
 const toolbar = <StaticToolbar className={"wb-static-toolbar"} />;

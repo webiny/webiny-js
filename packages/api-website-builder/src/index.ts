@@ -1,19 +1,17 @@
-import { ContextPlugin } from "@webiny/api";
-import { WebsiteBuilderContextSetup } from "~/WebsiteBuilderContextSetup";
-import type { WebsiteBuilderContext } from "~/types";
-import { createWebsiteBuilderGraphQL } from "~/createWebsiteBuilderGraphQL";
+import { createContextPlugin } from "@webiny/api";
+import { WebsiteBuilderContext } from "./context/types";
+import { WebsiteBuilder } from "./context/WebsiteBuilder";
+import { createGraphQL } from "~/graphql/createGraphQL";
 
-const createWebsiteBuilderContext = () => {
-    const plugin = new ContextPlugin<WebsiteBuilderContext>(async context => {
-        const websiteBuilder = new WebsiteBuilderContextSetup(context);
-        context.websiteBuilder = await websiteBuilder.setupContext();
-    });
-
-    plugin.name = "wb.createContext";
-
-    return plugin;
+const createContext = () => {
+    return createContextPlugin<WebsiteBuilderContext>(
+        async context => {
+            context.websiteBuilder = await WebsiteBuilder.create(context);
+        },
+        { name: "wb.createContext" }
+    );
 };
 
 export const createWebsiteBuilder = () => {
-    return [createWebsiteBuilderContext(), createWebsiteBuilderGraphQL()];
+    return [createContext(), createGraphQL()];
 };

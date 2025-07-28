@@ -15,8 +15,7 @@ import { ComponentInputTraverser } from "./ComponentInputTraverser";
 
 const defaultStyles = {
     display: "flex",
-    flexDirection: "column",
-    overflow: "hidden"
+    flexDirection: "column"
 };
 
 const withDefaultStyles = (styles: CssProperties) => {

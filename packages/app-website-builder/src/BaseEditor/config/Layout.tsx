@@ -32,8 +32,6 @@ export const Layout = makeDecoratable("EditorLayout", () => {
                     <EditorConfig.Ui.Sidebar />
                 </div>
             </div>
-
-            <EditorConfig.Ui.Sidebar />
             <EditorConfig.Ui.Elements group={"overlays"} />
         </EditorLayoutContainer>
     );

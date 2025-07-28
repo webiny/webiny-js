@@ -3,7 +3,7 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { CreatePageGqlGateway } from "./CreatePageGqlGateway.js";
 import { type CreatePageParams } from "./ICreatePageUseCase.js";
 import { CreatePage } from "./CreatePage.js";
-import { useGetPageGraphQLFields } from "../getPageModel/index.js";
+import { useGetPageGraphQLFields } from "~/features/pages";
 
 export const useCreatePage = () => {
     const client = useApolloClient();

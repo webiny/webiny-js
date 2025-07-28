@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { CallbackParams, useButtons, useDialogWithReport, Worker } from "@webiny/app-admin";
 import { Property, useIdGenerator } from "@webiny/react-properties";
-import { useDocumentList } from "~/DocumentList/useDocumentList.js";
+import { useDocumentList } from "~/modules/pages/PagesList/useDocumentList.js";
 import { useSelectPages } from "~/features/pages/selectPages/useSelectPages.js";
 import { Page, type PageDto, PageDtoMapper } from "~/domain/Page/index.js";
-import type { DocumentDto } from "~/DocumentList/presenters/index.js";
+import type { DocumentDto } from "~/modules/pages/PagesList/presenters/index.js";
 
 export interface BulkActionConfig {
     name: string;

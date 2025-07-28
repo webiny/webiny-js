@@ -1,6 +1,6 @@
 import React from "react";
 import { AcoConfig, TableColumnConfig as ColumnConfig } from "@webiny/app-aco";
-import type { DocumentDto } from "~/DocumentList/presenters/DocumentListMapper.js";
+import type { DocumentDto } from "~/modules/pages/PagesList/presenters/DocumentListMapper.js";
 import { makeDecoratable } from "@webiny/react-composition";
 
 const { Table } = AcoConfig;

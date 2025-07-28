@@ -33,7 +33,7 @@ import { RecordLocking } from "@webiny/app-record-locking";
 import { TrashBinConfigs } from "@webiny/app-trash-bin";
 import { DynamicPages } from "@webiny/app-dynamic-pages/admin";
 import { AdvancedContentOrganisation } from "@webiny/app-aco";
-import { WebsiteBuilder } from "@webiny/app-website-builder/App";
+import { Extension as WebsiteBuilder } from "@webiny/app-website-builder/Extension";
 import { SchedulerConfigs } from "@webiny/app-headless-cms-scheduler/index.js";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {

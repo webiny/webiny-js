@@ -32,12 +32,12 @@ export { LinkPlugin } from "~/plugins/LinkPlugin/LinkPlugin";
 export { FloatingLinkEditorPlugin } from "~/plugins/FloatingLinkEditorPlugin/FloatingLinkEditorPlugin";
 export { CodeHighlightPlugin } from "~/plugins/CodeHighlightPlugin/CodeHighlightPlugin";
 export { BlurEventPlugin } from "~/plugins/BlurEventPlugin/BlurEventPlugin";
-export { UpdateStatePlugin } from "~/plugins/LexicalUpdateStatePlugin/UpdateStatePlugin";
 export { FontColorPlugin } from "~/plugins/FontColorPlugin/FontColorPlugin";
 export { TypographyPlugin } from "~/plugins/TypographyPlugin/TypographyPlugin";
 export { QuotePlugin } from "~/plugins/QuoteNodePlugin/QuoteNodePlugin";
 export { ListPlugin } from "~/plugins/ListPLugin/ListPlugin";
 export { ImagesPlugin } from "~/plugins/ImagesPlugin/ImagesPlugin";
+export { StateHandlingPlugin } from "~/plugins/StateHandlingPlugin";
 // utils
 export { generateInitialLexicalValue } from "~/utils/generateInitialLexicalValue";
 export { isValidLexicalData } from "~/utils/isValidLexicalData";
