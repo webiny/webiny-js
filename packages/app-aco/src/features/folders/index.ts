@@ -4,6 +4,7 @@ export * from "./createFolder";
 export * from "./deleteFolder";
 export * from "./getDescendantFolders";
 export * from "./getFolder";
+export * from "./getFolderAncestors";
 export * from "./getFolderExtensionsFields";
 export * from "./getFolderHierarchy";
 export * from "./getFolderLevelPermission";

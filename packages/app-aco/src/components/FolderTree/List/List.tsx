@@ -1,9 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Tree, type NodeDto, type TreeProps, type WithDefaultNodeData } from "@webiny/admin-ui";
+import {
+    Tree,
+    type NodeDto,
+    type TreeProps,
+    type WithDefaultNodeData,
+    type DropOptions
+} from "@webiny/admin-ui";
 import { useSnackbar } from "@webiny/app-admin";
 import { Node } from "../Node";
 import { createInitialOpenList, createTreeData } from "./utils";
 import {
+    useGetFolderAncestors,
     useGetFolderLevelPermission,
     useListFoldersByParentIds,
     useUpdateFolder
@@ -31,6 +38,7 @@ export const List = ({
     const { updateFolder } = useUpdateFolder();
     const { getFolderLevelPermission: canManageStructure } =
         useGetFolderLevelPermission("canManageStructure");
+    const { getFolderAncestors } = useGetFolderAncestors();
     const { showSnackbar } = useSnackbar();
 
     const [treeData, setTreeData] = useState<NodeDto<FolderItem>[]>([]);
@@ -87,6 +95,14 @@ export const List = ({
         [canManageStructure]
     );
 
+    const canDrop: TreeProps<FolderItem>["canDrop"] = (_, options: DropOptions<FolderItem>) => {
+        const { dragSourceId, dropTargetId } = options;
+        const dropTagetAncestorIds = getFolderAncestors(dropTargetId).map(item => item.id);
+
+        // Prevent dropping a folder into itself or its descendants
+        return !(dragSourceId && dropTagetAncestorIds.includes(dragSourceId));
+    };
+
     const nodeRenderer: TreeProps<FolderItem>["renderer"] = node => {
         const folder = folders.find(folder => folder.id === node.id);
         return (
@@ -113,6 +129,7 @@ export const List = ({
             onNodeClick={handleNodeClick}
             sort={sort}
             canDrag={canDrag}
+            canDrop={canDrop}
             renderer={nodeRenderer}
             defaultLockedOpenNodeIds={[ROOT_FOLDER]}
             loadingNodeIds={loading}
