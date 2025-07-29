@@ -30,12 +30,8 @@ const FieldRenderer = ({ field, getBind }: CmsModelFieldRendererProps) => {
                                                 {...bind}
                                                 label={field.label}
                                                 validation={validation}
-                                                description={[
-                                                    field.helpText,
-                                                    getSupportedExtensionsLabelHint(imagesOnly)
-                                                ]
-                                                    .filter(Boolean)
-                                                    .join(" ")}
+                                                description={field.helpText}
+                                                note={getSupportedExtensionsLabelHint(imagesOnly)}
                                                 value={value}
                                                 onSelectItem={() =>
                                                     showFileManager(file => onChange(file.src))

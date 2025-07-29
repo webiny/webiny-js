@@ -74,12 +74,8 @@ const FieldRenderer = ({ getBind, field }: CmsModelFieldRendererProps) => {
                                                 {...bind}
                                                 label={field.label}
                                                 validation={validation}
-                                                description={[
-                                                    field.helpText,
-                                                    getSupportedExtensionsLabelHint(imagesOnly)
-                                                ]
-                                                    .filter(Boolean)
-                                                    .join(" ")}
+                                                description={field.helpText}
+                                                note={getSupportedExtensionsLabelHint(imagesOnly)}
                                                 values={values}
                                                 onSelectItem={() => selectFiles()}
                                                 onReplaceItem={(_, index) => selectFiles(index)}
