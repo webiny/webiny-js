@@ -5,5 +5,9 @@ export const CellDeletedBy = () => {
     const { useTableRow } = TrashBinListConfig.Browser.Table.Column;
     const { row } = useTableRow();
 
+    if (!row.deletedBy) {
+        return <>{"-"}</>;
+    }
+
     return <>{row.deletedBy.displayName}</>;
 };
