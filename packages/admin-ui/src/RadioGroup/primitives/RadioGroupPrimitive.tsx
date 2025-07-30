@@ -9,6 +9,8 @@ import { useRadioGroup } from "./useRadioGroup";
  * Radio Group Root
  */
 const RadioGroupRoot = ({ className, ...props }: RadioGroupPrimitives.RadioGroupProps) => {
+    console.log("RadioGroupRoot", props);
+
     return (
         <RadioGroupPrimitives.Root
             className={cn("wby-grid wby-gap-sm-extra wby-py-xs-plus", className)}
@@ -48,7 +50,7 @@ interface RadioGroupRendererProps extends Omit<RadioGroupPrimitiveProps, "onChan
 const RadioGroupRenderer = ({ items, changeValue, value, disabled }: RadioGroupRendererProps) => {
     return (
         <RadioGroupRoot
-            value={value}
+            value={value ?? ""}
             onValueChange={value => changeValue(value)}
             disabled={disabled}
         >
