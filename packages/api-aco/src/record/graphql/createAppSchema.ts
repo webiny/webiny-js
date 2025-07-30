@@ -80,9 +80,9 @@ export const createAppSchema = (params: Params): string => {
             createdOn: DateTime!
             modifiedOn: DateTime
             savedOn: DateTime!
-            createdBy: AcoUser!
+            createdBy: AcoUser
             modifiedBy: AcoUser
-            savedBy: AcoUser!
+            savedBy: AcoUser
             ${fieldTypes.map(f => f.fields).join("\n")}
         }
 

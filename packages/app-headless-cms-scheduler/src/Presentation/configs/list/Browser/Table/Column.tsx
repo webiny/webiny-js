@@ -1,10 +1,10 @@
 import React from "react";
-import { AcoConfig, TableColumnConfig as ColumnConfig } from "@webiny/app-aco";
+import { AcoConfig, type TableColumnConfig as ColumnConfig } from "@webiny/app-aco";
 import type { SchedulerEntry } from "~/types";
 
 const { Table } = AcoConfig;
 
-export { ColumnConfig };
+export type { ColumnConfig };
 
 type ColumnProps = React.ComponentProps<typeof AcoConfig.Table.Column>;
 

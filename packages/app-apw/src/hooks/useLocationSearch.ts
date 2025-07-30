@@ -3,7 +3,7 @@ import { ApwWorkflowApplications } from "~/types";
 export const useCurrentApp = (): ApwWorkflowApplications => {
     let app = new URLSearchParams(location.search).get("app");
     if (!app) {
-        app = ApwWorkflowApplications.PB;
+        app = ApwWorkflowApplications.CMS;
     }
     return app as ApwWorkflowApplications;
 };

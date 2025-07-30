@@ -7,7 +7,7 @@ module.exports = {
     create({ yargs, context }) {
         yargs.command(
             "open <app>",
-            `Quickly open Admin application or public website in your default browser`,
+            `Quickly open Admin application in your default browser`,
             yargs => {
                 yargs.option("env", {
                     describe: `Environment`,
@@ -21,23 +21,14 @@ module.exports = {
                 });
             },
             async args => {
-                const appName = args.app === "website" ? "public website" : "Admin app";
+                const appName = "Admin app";
                 context.info(`Opening ${appName}...`);
 
-                let appOutput;
-                if (args.app === "website") {
-                    appOutput = getStackOutput({
-                        folder: "website",
-                        env: args.env,
-                        variant: args.variant
-                    });
-                } else {
-                    appOutput = getStackOutput({
-                        folder: "admin",
-                        env: args.env,
-                        variant: args.variant
-                    });
-                }
+                let appOutput = getStackOutput({
+                    folder: "admin",
+                    env: args.env,
+                    variant: args.variant
+                });
 
                 if (!appOutput) {
                     throw new Error(

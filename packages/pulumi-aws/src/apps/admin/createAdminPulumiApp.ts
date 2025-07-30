@@ -37,6 +37,8 @@ export const createAdminPulumiApp = (projectAppParams: CreateAdminPulumiAppParam
     adminApp.addHandler(() => {
         const cdn = adminApp.resources.cloudfront;
 
+        cdn.config.waitForDeployment(true);
+
         adminApp.addServiceManifest({
             name: "admin",
             manifest: {

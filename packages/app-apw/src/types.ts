@@ -28,7 +28,7 @@ export enum ApwContentReviewStepStatus {
 }
 
 export enum ApwWorkflowApplications {
-    PB = "pageBuilder",
+    // PB = "pageBuilder",
     CMS = "cms"
 }
 

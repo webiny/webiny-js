@@ -6,8 +6,17 @@ declare global {
     // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
-            "pb-editor-ui-elements": React.HTMLProps<HTMLDivElement>;
-            "pb-editor-ui-element": React.HTMLProps<HTMLDivElement>;
+            "wb-editor-ui-elements": {
+                class?: string;
+                "data-scope"?: string;
+                "data-group"?: string;
+                [key: string]: any;
+            };
+            "wb-editor-ui-element": {
+                class?: string;
+                "data-name"?: string;
+                [key: string]: any;
+            };
         }
     }
 }
@@ -37,12 +46,16 @@ export const Elements = ({ group, scope, transform = defaultTransform }: Element
     }, [elements, group, scope]);
 
     return (
-        <pb-editor-ui-elements data-scope={scope} data-group={group}>
+        <wb-editor-ui-elements data-scope={scope} data-group={group} class={"wby-contents"}>
             {transform(groupElements).map(element => (
-                <pb-editor-ui-element key={element.name} data-name={element.name}>
+                <wb-editor-ui-element
+                    key={element.name}
+                    data-name={element.name}
+                    class={"wby-contents"}
+                >
                     {element.element}
-                </pb-editor-ui-element>
+                </wb-editor-ui-element>
             ))}
-        </pb-editor-ui-elements>
+        </wb-editor-ui-elements>
     );
 };

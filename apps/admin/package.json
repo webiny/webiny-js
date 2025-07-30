@@ -27,7 +27,6 @@
     "react-dom": "18.2.0",
     "regenerator-runtime": "^0.13.11",
     "sample-ecommerce": "1.0.0",
-    "theme": "^1.0.0",
     "tslib": "^2.8.1"
   },
   "devDependencies": {

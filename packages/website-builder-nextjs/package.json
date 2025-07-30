@@ -17,7 +17,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/website-builder-react": "0.0.0"
+    "@webiny/website-builder-react": "0.0.0",
+    "postcss": "^8.4.38"
   },
   "peerDependencies": {
     "next": "^15"
@@ -37,6 +38,7 @@
   "adio": {
     "ignore": {
       "dependencies": [
+        "postcss",
         "next",
         "@webiny/website-builder-react"
       ]

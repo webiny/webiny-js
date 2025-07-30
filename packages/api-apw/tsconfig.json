@@ -6,7 +6,6 @@
     { "path": "../api-headless-cms" },
     { "path": "../api-i18n" },
     { "path": "../api-mailer" },
-    { "path": "../api-page-builder" },
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
     { "path": "../api-wcp" },
@@ -21,6 +20,7 @@
     { "path": "../pubsub" },
     { "path": "../utils" },
     { "path": "../handler-aws" },
+    { "path": "../api-page-builder" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -38,8 +38,6 @@
       "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-mailer/*": ["../api-mailer/src/*"],
       "@webiny/api-mailer": ["../api-mailer/src"],
-      "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
-      "@webiny/api-page-builder": ["../api-page-builder/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
@@ -68,6 +66,8 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
+      "@webiny/api-page-builder": ["../api-page-builder/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     },

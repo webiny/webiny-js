@@ -49,7 +49,7 @@
     "typescript": "5.3.3"
   },
   "workspaces": {
-    "packages": ["apps/admin", "apps/website", "apps/api/graphql", "packages/*", "extensions/theme"]
+    "packages": ["apps/admin", "apps/api/graphql", "packages/*"]
   },
   "scripts": {
     "test": "jest --config jest.config.js --passWithNoTests",

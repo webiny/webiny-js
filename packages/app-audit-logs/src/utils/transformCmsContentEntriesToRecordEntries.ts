@@ -55,7 +55,7 @@ export const transformCmsContentEntriesToRecordEntries = (
             initiator: {
                 id: data.initiator,
                 name: `${user?.firstName} ${user?.lastName}`,
-                role: user?.group?.name || ""
+                role: user?.groups?.[0]?.name || ""
             }
         };
     });

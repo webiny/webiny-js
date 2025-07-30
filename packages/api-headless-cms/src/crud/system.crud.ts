@@ -134,6 +134,16 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
                     tenant: getTenant().id,
                     locale: getLocale().code
                 });
+
+                /**
+                 * TODO: Implement this event in a better way, because this is easy to overlook and forget to update
+                 * when new apps are added and have their own installers.
+                 *
+                 * Headless CMS is the last app that has an installer. Once its installation is finished,
+                 * we need to notify the system that tenant is now ready to use, because many external plugins
+                 * insert initial tenant data into various apps, copy data from other tenants, etc.
+                 */
+                await context.tenancy.onTenantAfterInstall.publish({});
             } catch (ex) {
                 await onSystemInstallError.publish({
                     error: ex,

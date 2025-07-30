@@ -5,16 +5,7 @@ import type {
     OnEntryAfterUnpublishTopicParams,
     CmsEntryListSort
 } from "@webiny/api-headless-cms/types";
-import type {
-    Page,
-    OnPageBeforeCreateTopicParams,
-    OnPageBeforeCreateFromTopicParams,
-    OnPageBeforeUpdateTopicParams,
-    OnPageBeforePublishTopicParams,
-    PageSettings
-} from "@webiny/api-page-builder/types";
 import type { Context } from "@webiny/api/types";
-import type { PageBuilderContextObject } from "@webiny/api-page-builder/graphql/types";
 import type { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import type { I18NLocale } from "@webiny/api-i18n/types";
 import type { Tenant } from "@webiny/api-tenancy/types";
@@ -86,26 +77,6 @@ export enum ApwContentTypes {
     PAGE = "page",
     CMS_ENTRY = "cms_entry"
 }
-
-export interface PageSettingsWithWorkflow extends PageSettings {
-    apw: {
-        workflowId: string;
-        contentReviewId: string | null;
-    };
-}
-
-export interface PageWithWorkflow extends Page {
-    settings: PageSettingsWithWorkflow;
-}
-
-export type ApwOnPageBeforeCreateTopicParams = OnPageBeforeCreateTopicParams<PageWithWorkflow>;
-
-export type ApwOnPageBeforeCreateFromTopicParams =
-    OnPageBeforeCreateFromTopicParams<PageWithWorkflow>;
-
-export type ApwOnPageBeforeUpdateTopicParams = OnPageBeforeUpdateTopicParams<PageWithWorkflow>;
-
-export type ApwOnPageBeforePublishTopicParams = OnPageBeforePublishTopicParams<PageWithWorkflow>;
 
 export enum WorkflowScopeTypes {
     DEFAULT = "default",
@@ -471,7 +442,7 @@ export interface ApwContentReviewCrud
 export type ContentGetter = (
     id: string,
     settings: { modelId?: string }
-) => Promise<PageWithWorkflow | ApwCmsEntry | null>;
+) => Promise<ApwCmsEntry | null>;
 
 export type ContentPublisher = (
     id: string,
@@ -500,7 +471,6 @@ export interface AdvancedPublishingWorkflow {
 
 export interface ApwContext extends Context, MailerContext {
     apw: AdvancedPublishingWorkflow;
-    pageBuilder: PageBuilderContextObject;
     wcp: WcpContextObject;
     scheduleAction: ScheduleActionContext["scheduleAction"];
 }

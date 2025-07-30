@@ -26,7 +26,7 @@ export interface User {
     id: string;
     firstName: string;
     lastName: string;
-    group?: {
+    groups?: {
         name: string;
-    };
+    }[];
 }

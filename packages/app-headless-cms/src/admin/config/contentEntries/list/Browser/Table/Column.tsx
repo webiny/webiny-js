@@ -1,12 +1,12 @@
 import React from "react";
 import { makeDecoratable } from "@webiny/react-composition";
-import { AcoConfig, TableColumnConfig as ColumnConfig } from "@webiny/app-aco";
+import { AcoConfig, type TableColumnConfig as ColumnConfig } from "@webiny/app-aco";
 import type { TableItem } from "~/types";
 import { IsApplicableToCurrentModel } from "~/admin/config/IsApplicableToCurrentModel";
 
 const { Table } = AcoConfig;
 
-export { ColumnConfig };
+export type { ColumnConfig };
 
 export interface ColumnProps extends React.ComponentProps<typeof AcoConfig.Table.Column> {
     modelIds?: string[];

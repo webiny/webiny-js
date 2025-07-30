@@ -6,8 +6,6 @@ import { Tenancy } from "@webiny/app-tenancy";
 import { Security } from "@webiny/app-security";
 import { I18N } from "@webiny/app-i18n";
 import { I18NContent } from "@webiny/app-i18n-content";
-import { PageBuilder } from "@webiny/app-page-builder";
-import { FormBuilder } from "@webiny/app-form-builder";
 import { HeadlessCMS } from "@webiny/app-headless-cms";
 import { AdminUI } from "@webiny/app-admin-ui";
 import { FileManager } from "@webiny/app-file-manager/app";
@@ -21,13 +19,11 @@ import { createViewCompositionProvider } from "@webiny/app-admin/base/providers/
 import { AdvancedPublishingWorkflow } from "@webiny/app-apw";
 import { TenantManager } from "@webiny/app-tenant-manager";
 import { AuditLogs } from "@webiny/app-audit-logs";
-import { LexicalEditorPlugin } from "@webiny/lexical-editor-pb-element";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Module as MailerSettings } from "@webiny/app-mailer";
 import { Websockets } from "@webiny/app-websockets";
 import { RecordLocking } from "@webiny/app-record-locking";
 import { TrashBinConfigs } from "@webiny/app-trash-bin";
-import { DynamicPages } from "@webiny/app-dynamic-pages/admin";
 import { AdvancedContentOrganisation } from "@webiny/app-aco";
 import { Extension as WebsiteBuilder } from "@webiny/app-website-builder/Extension";
 import { SchedulerConfigs } from "@webiny/app-headless-cms-scheduler/index.js";
@@ -57,10 +53,7 @@ const App = (props: AdminProps) => {
             <Provider hoc={ViewCompositionProvider} />
             <Websockets />
             <RecordLocking />
-            <PageBuilder />
-            <LexicalEditorPlugin />
             <LexicalEditorActions />
-            <FormBuilder />
             <HeadlessCMS createApolloClient={createApolloClient} />
             <AdvancedPublishingWorkflow />
             <TenantManager />
@@ -68,7 +61,6 @@ const App = (props: AdminProps) => {
             <MailerSettings />
             <SchedulerConfigs />
             <TrashBinConfigs />
-            <DynamicPages />
             <AdvancedContentOrganisation />
             <WebsiteBuilder />
             {props.children}

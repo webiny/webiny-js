@@ -37,7 +37,7 @@ import { createAcoPageBuilderContext } from "@webiny/api-page-builder-aco";
 import { createAuditLogs } from "@webiny/api-audit-logs";
 import { createAcoHcmsContext } from "@webiny/api-headless-cms-aco";
 import { createHcmsTasks } from "@webiny/api-headless-cms-tasks";
-import { createApwGraphQL, createApwPageBuilderContext } from "@webiny/api-apw";
+import { createApwGraphQL, createApwContext } from "@webiny/api-apw";
 import type { ApwScheduleActionStorageOperations } from "@webiny/api-apw/scheduler/types";
 import { createBackgroundTaskContext, createBackgroundTaskGraphQL } from "@webiny/tasks";
 import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
@@ -154,7 +154,7 @@ export const createCore = (params: ICreateCoreParams): ICreateCoreResult => {
                     documentClient
                 })
             }),
-            createApwPageBuilderContext({
+            createApwContext({
                 storageOperations: apwScheduleStorage.storageOperations
             }),
             createAco({ documentClient }),

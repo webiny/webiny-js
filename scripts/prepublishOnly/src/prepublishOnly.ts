@@ -134,9 +134,7 @@ const extraFiles: string[] = [
     "packages/cwp-template-aws/template/ddb/apps/api/graphql/package.json",
     "packages/cwp-template-aws/template/ddb-es/apps/api/graphql/package.json",
     "packages/cwp-template-aws/template/ddb-os/apps/api/graphql/package.json",
-    "packages/cwp-template-aws/template/common/apps/admin/package.json",
-    "packages/cwp-template-aws/template/common/extensions/theme/package.json",
-    "packages/cwp-template-aws/template/common/apps/website/package.json"
+    "packages/cwp-template-aws/template/common/apps/admin/package.json"
 ];
 
 export const prepublishOnly = async () => {

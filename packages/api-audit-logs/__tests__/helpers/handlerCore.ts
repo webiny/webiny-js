@@ -17,14 +17,8 @@ import type { AuditLogsContext } from "~/types";
 import { createAco } from "@webiny/api-aco";
 import { createAuditLogs } from "~/index";
 import { createContextPlugin } from "@webiny/handler";
-import { createFormBuilder } from "@webiny/api-form-builder";
-import type { FormBuilderStorageOperations } from "@webiny/api-form-builder/types";
 import type { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
-import type { PageBuilderStorageOperations } from "@webiny/api-page-builder/types";
-import { createPageBuilderContext } from "@webiny/api-page-builder";
 import { createFileManagerContext } from "@webiny/api-file-manager";
-import pageBuilderImportExportPlugins from "@webiny/api-page-builder-import-export/graphql";
-import type { ImportExportTaskStorageOperations } from "@webiny/api-page-builder-import-export/types";
 import type { AdminUsersStorageOperations } from "@webiny/api-admin-users/types";
 import createAdminUsersApp from "@webiny/api-admin-users";
 import { createMailerContext } from "@webiny/api-mailer";
@@ -60,11 +54,7 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
     const documentClient = getDocumentClient();
     const i18nStorage = getStorageOps("i18n");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
-    const pageBuilderStorage = getStorageOps<PageBuilderStorageOperations>("pageBuilder");
-    const formBuilderStorage = getStorageOps<FormBuilderStorageOperations>("formBuilder");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const pageBuilderImportExport =
-        getStorageOps<ImportExportTaskStorageOperations>("pageBuilderImportExport");
     const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
 
     const enableContextPlugin = createContextPlugin<AuditLogsContext>(async context => {
@@ -142,17 +132,8 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
             }),
             createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
             createMailerContext(),
-            createPageBuilderContext({
-                storageOperations: pageBuilderStorage.storageOperations
-            }),
-            pageBuilderImportExportPlugins({
-                storageOperations: pageBuilderImportExport.storageOperations
-            }),
             createFileManagerContext({
                 storageOperations: fileManagerStorage.storageOperations
-            }),
-            createFormBuilder({
-                storageOperations: formBuilderStorage.storageOperations
             }),
             createHeadlessCmsGraphQL(),
             createAco({ documentClient }),

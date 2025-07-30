@@ -8,7 +8,7 @@ export interface ContainerProps {
 
 const Container = makeDecoratable("ViewContainer", ({ children }: ContainerProps) => {
     return (
-        <div className={"wby-w-screen wby-h-screen wby-bg-neutral-light wby-flex-1"}>
+        <div className={"wby-w-full wby-h-screen wby-bg-neutral-light wby-flex-1"}>
             <section
                 className={"wby-m-auto wby-flex wby-flex-col wby-justify-center wby-min-h-screen"}
             >

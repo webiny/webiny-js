@@ -51,31 +51,13 @@ context("Admin Installation", () => {
             cy.findByText("en-US").click();
             cy.findByTestId("install-i18n-button").click();
 
-            // 3. File Manager installation (happens automatically, nothing to type / select here).
+            // 3. Headless CMS installation (happens automatically, nothing to type / select here).
 
+            // 4. File Manager installation (happens automatically, nothing to type / select here).
             // Wait for the File Manager installation to finish.
             cy.get(".react-spinner-material").should("not.exist");
 
-            // 4. Page Builder and Form Builder Installation.
-
-            // Let's ensure we've reached this step (useful when in CI/CD, to see if we even reached this screen).
-            cy.findByText(/Name of your website/i).should("exist");
-
-            cy.findByTestId("install-pb-button").click();
-
-            cy.findByText("Value is required.").should("exist");
-
-            cy.findByLabelText("Site Name").type(Cypress.env("WEBSITE_NAME"));
-            cy.findByTestId("install-pb-button").click();
-
-            // Wait for the Page Builder installation to finish.
-            cy.get(".react-spinner-material", { timeout: 30000 * 3 }).should("not.exist");
-
-            // 5. Form Builder installation (happens automatically, nothing to type / select here).
-
-            // 6. Headless CMS installation (happens automatically, nothing to type / select here).
-
-            // 7. Installation complete, click the button and check if the dashboard is loaded.
+            // 5. Installation complete, click the button and check if the dashboard is loaded.
             cy.findByTestId("open-webiny-cms-admin-button").click();
             // cy.findByText(/Get to know Webiny team members/i).should("exist");
         }

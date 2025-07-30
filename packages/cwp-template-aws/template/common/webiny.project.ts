@@ -5,8 +5,6 @@ import cliExtensions from "@webiny/cli-plugin-extensions";
 
 // Scaffolds.
 import cliScaffold from "@webiny/cli-plugin-scaffold";
-import cliScaffoldExtendGraphQlApi from "@webiny/cli-plugin-scaffold-graphql-service";
-import cliScaffoldAdminModule from "@webiny/cli-plugin-scaffold-admin-app-module";
 import cliScaffoldExtensions from "@webiny/cli-plugin-scaffold-extensions";
 import cliScaffoldWorkspaces from "@webiny/cli-plugin-scaffold-workspaces";
 import cliScaffoldCiCd from "@webiny/cli-plugin-scaffold-ci";
@@ -23,18 +21,18 @@ export default {
 
             // Scaffolds.
             cliScaffold(),
-            cliScaffoldExtendGraphQlApi(),
-            cliScaffoldAdminModule(),
             cliScaffoldExtensions(),
             cliScaffoldWorkspaces(),
             cliScaffoldCiCd()
         ]
     },
     appAliases: {
-        blueGreen: "apps/blueGreen",
         core: "apps/core",
         api: "apps/api",
-        admin: "apps/admin",
-        website: "apps/website"
+        admin: "apps/admin"
+    },
+    featureFlags: {
+        newWatchCommand: true,
+        rspack: true
     }
 };

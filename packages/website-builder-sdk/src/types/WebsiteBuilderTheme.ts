@@ -10,7 +10,9 @@ export type Breakpoint = {
 };
 
 export type WebsiteBuilderTheme = {
-    themeUrl: string | undefined;
+    css?: string;
+    cssVariables?: Record<string, string>;
+    fonts?: string[];
     breakpoints: Breakpoint[];
     styles: {
         colors: Record<string, any>;
@@ -45,7 +47,18 @@ export type TypographyStyle = {
 export type Typography = Partial<Record<TypographyType, Readonly<TypographyStyle[]>>>;
 
 export type WebsiteBuilderThemeInput = {
-    themeUrl?: string;
+    /**
+     * CSS to include in the editor.
+     */
+    css?: string;
+    /**
+     * CSS variables to define in the editor.
+     */
+    cssVariables?: Record<string, string>;
+    /**
+     * Fonts to load when the editor loads.
+     */
+    fonts?: string[];
     /**
      * {
      *   title: "Desktop",

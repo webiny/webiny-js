@@ -14,7 +14,7 @@ export const LIST_USERS: any = gql`
                     id
                     firstName
                     lastName
-                    group {
+                    groups {
                         name
                     }
                 }

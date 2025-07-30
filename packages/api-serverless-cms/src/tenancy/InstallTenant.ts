@@ -26,16 +26,10 @@ export interface FileManagerInstallationConfig {
     assetDeliveryDomain: string;
 }
 
-export interface PageBuilderInstallationConfig {
-    websiteName: string;
-    insertDemoData: boolean;
-}
-
 export interface TenantConfig {
     i18n: I18nInstallationConfig;
     adminUsers?: AdminUsersInstallationConfig;
     fileManager?: FileManagerInstallationConfig;
-    pageBuilder?: PageBuilderInstallationConfig;
 }
 
 export class InstallTenant {
@@ -115,27 +109,6 @@ export class InstallTenant {
 
                 await this.context.fileManager.install({ srcPrefix: srcPrefix || "" });
             }, "FILE_MANAGER_INSTALL");
-
-            // PAGE BUILDER: Create Page Builder settings.
-            await this.runOrThrow(async () => {
-                const isInstalled = await this.context.pageBuilder.getSystemVersion();
-                if (isInstalled) {
-                    return;
-                }
-                await this.context.pageBuilder.installSystem({
-                    name: config.pageBuilder?.websiteName ?? tenant.name,
-                    insertDemoData: config.pageBuilder?.insertDemoData ?? false
-                });
-            }, "PAGE_BUILDER_INSTALL");
-
-            // FORM BUILDER
-            await this.runOrThrow(async () => {
-                const isInstalled = await this.context.formBuilder.getSystemVersion();
-                if (isInstalled) {
-                    return;
-                }
-                await this.context.formBuilder.installSystem({});
-            }, "FORM_BUILDER_INSTALL");
         } finally {
             this.context.tenancy.setCurrentTenant(currentTenant);
         }

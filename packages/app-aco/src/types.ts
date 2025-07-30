@@ -6,7 +6,7 @@ import type {
 } from "@webiny/app-headless-cms-common/types";
 import type { FolderPermission } from "@webiny/shared-aco/types";
 
-export { CmsIdentity } from "@webiny/app-headless-cms-common/types";
+export type { CmsIdentity } from "@webiny/app-headless-cms-common/types";
 export * from "@webiny/shared-aco/flp/flp.types";
 export * from "~/graphql/records/types";
 export * from "~/table.types";

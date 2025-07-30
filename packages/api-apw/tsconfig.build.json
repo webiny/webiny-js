@@ -6,7 +6,6 @@
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },
     { "path": "../api-mailer/tsconfig.build.json" },
-    { "path": "../api-page-builder/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../api-wcp/tsconfig.build.json" },
@@ -21,6 +20,7 @@
     { "path": "../pubsub/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
+    { "path": "../api-page-builder/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {

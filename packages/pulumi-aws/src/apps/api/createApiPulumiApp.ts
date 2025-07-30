@@ -10,7 +10,6 @@ import {
     ApiGateway,
     ApiGraphql,
     ApiMigration,
-    ApiPageBuilder,
     ApiWebsocket,
     CoreOutput,
     VpcConfig
@@ -152,23 +151,23 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             const vpcEnabled = app.getParam(projectAppParams?.vpc) ?? isProduction;
             app.addModule(VpcConfig, { enabled: vpcEnabled });
 
-            const pageBuilder = app.addModule(ApiPageBuilder, {
-                env: {
-                    COGNITO_REGION: getEnvVariableAwsRegion(),
-                    COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
-                    DB_TABLE: core.primaryDynamodbTableName,
-                    DB_TABLE_LOG: core.logDynamodbTableName,
-                    DB_TABLE_ELASTICSEARCH: core.elasticsearchDynamodbTableName,
-                    ELASTIC_SEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
-
-                    // Not required. Useful for testing purposes / ephemeral environments.
-                    // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
-                    ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
-                    ELASTICSEARCH_SHARED_INDEXES: process.env.ELASTICSEARCH_SHARED_INDEXES,
-
-                    S3_BUCKET: core.fileManagerBucketId
-                }
-            });
+            // const pageBuilder = app.addModule(ApiPageBuilder, {
+            //     env: {
+            //         COGNITO_REGION: getEnvVariableAwsRegion(),
+            //         COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
+            //         DB_TABLE: core.primaryDynamodbTableName,
+            //         DB_TABLE_LOG: core.logDynamodbTableName,
+            //         DB_TABLE_ELASTICSEARCH: core.elasticsearchDynamodbTableName,
+            //         ELASTIC_SEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
+            //
+            //         // Not required. Useful for testing purposes / ephemeral environments.
+            //         // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
+            //         ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
+            //         ELASTICSEARCH_SHARED_INDEXES: process.env.ELASTICSEARCH_SHARED_INDEXES,
+            //
+            //         S3_BUCKET: core.fileManagerBucketId
+            //     }
+            // });
 
             const apwScheduler = app.addModule(ApiApwScheduler, {
                 primaryDynamodbTableArn: core.primaryDynamodbTableArn,
@@ -198,8 +197,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
 
                     S3_BUCKET: core.fileManagerBucketId,
                     EVENT_BUS: core.eventBusArn,
-                    IMPORT_CREATE_HANDLER: pageBuilder.import.functions.create.output.arn,
-                    EXPORT_PROCESS_HANDLER: pageBuilder.export.functions.process.output.arn,
+                    // IMPORT_CREATE_HANDLER: pageBuilder.import.functions.create.output.arn,
+                    // EXPORT_PROCESS_HANDLER: pageBuilder.export.functions.process.output.arn,
                     // TODO: move to okta plugin
                     OKTA_ISSUER: process.env["OKTA_ISSUER"],
                     APW_SCHEDULER_SCHEDULE_ACTION_HANDLER:

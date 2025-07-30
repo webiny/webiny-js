@@ -76,13 +76,6 @@ module.exports = async (inputs, context) => {
             context,
             isFirstDeployment
         });
-        await deployApp({
-            name: "Website",
-            folder: "apps/website",
-            inputs,
-            context,
-            isFirstDeployment
-        });
 
         if (isFirstDeployment) {
             context.success(`Congratulations! You've just deployed a brand new project!`);

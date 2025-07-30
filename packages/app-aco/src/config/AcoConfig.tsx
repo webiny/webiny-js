@@ -9,11 +9,11 @@ import { Folder } from "./folder";
 import type { TableConfig } from "~/config/table";
 import { Table } from "~/config/table";
 
-export { FieldRendererConfig as AdvancedSearchFieldRendererConfig } from "./advanced-search/FieldRenderer";
-export { ActionConfig as RecordActionConfig } from "./record/Action";
-export { ActionConfig as FolderActionConfig } from "./folder/Action";
-export { ColumnConfig as TableColumnConfig } from "./table/Column";
-export { SortingConfig as TableSortingConfig } from "./table/Sorting";
+export type { FieldRendererConfig as AdvancedSearchFieldRendererConfig } from "./advanced-search/FieldRenderer";
+export type { ActionConfig as RecordActionConfig } from "./record/Action";
+export type { ActionConfig as FolderActionConfig } from "./folder/Action";
+export type { ColumnConfig as TableColumnConfig } from "./table/Column";
+export type { SortingConfig as TableSortingConfig } from "./table/Sorting";
 
 const base = createConfigurableComponent<AcoConfig>("AcoConfig");
 

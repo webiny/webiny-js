@@ -27,7 +27,9 @@ export class Theme {
         });
 
         return {
-            themeUrl: input?.themeUrl,
+            css: input.css,
+            cssVariables: input.cssVariables,
+            fonts: input.fonts,
             breakpoints: breakpoints.sort((a, b) => b.maxWidth - a.maxWidth),
             lexical: createLexicalTheme(input?.lexical),
             styles: {

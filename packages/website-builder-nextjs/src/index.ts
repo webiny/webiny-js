@@ -1,4 +1,5 @@
 export * from "@webiny/website-builder-react";
+export * from "./useCss";
 
 import { setHeadersProvider } from "@webiny/website-builder-react";
 

@@ -31,17 +31,7 @@ const getInfo = async params => {
         );
     });
 
-    const websiteOutputPromise = new Promise(resolve => {
-        resolve(
-            getStackOutput({
-                folder: "apps/website",
-                env,
-                variant
-            })
-        );
-    });
-
-    const outputs = await Promise.all([apiOutputPromise, adminOutputPromise, websiteOutputPromise]);
+    const outputs = await Promise.all([apiOutputPromise, adminOutputPromise]);
 
     const stacksDeployedCount = outputs.filter(Boolean).length;
 
@@ -53,7 +43,7 @@ const getInfo = async params => {
         ].join(" ");
     }
 
-    const [api, admin, website] = outputs;
+    const [api, admin] = outputs;
 
     const output = [];
 
@@ -87,17 +77,6 @@ const getInfo = async params => {
         output.push(`‣ Admin app: ${admin.appUrl}`);
     } else {
         output.push(`‣ Admin app: -`);
-    }
-
-    // Website.
-    if (website) {
-        output.push(
-            `‣ Public website:`,
-            `   · Website URL: ${website.deliveryUrl}`,
-            `   · Website preview URL: ${website.appUrl}`
-        );
-    } else {
-        output.push(`‣ Public website:`, `   · Website URL: -`, `   · Website preview URL: -`);
     }
 
     return output.join("\n");

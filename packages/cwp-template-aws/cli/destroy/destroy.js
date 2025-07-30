@@ -39,15 +39,6 @@ module.exports = async (inputs, context) => {
     const hasCore = fs.existsSync(path.join(context.project.root, "apps", "core"));
 
     console.log();
-    context.info(`Destroying ${green("Website")} project application...`);
-    await destroy({
-        stack: "apps/website",
-        env,
-        variant,
-        inputs
-    });
-
-    console.log();
     context.info(`Destroying ${green("Admin")} project application...`);
     await destroy({
         stack: "apps/admin",

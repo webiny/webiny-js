@@ -78,7 +78,7 @@ const listStyles = css`
 `;
 
 const scopes: Record<ApwWorkflowApplications, string> = {
-    [ApwWorkflowApplications.PB]: "Page Builder",
+    // [ApwWorkflowApplications.PB]: "Page Builder",
     [ApwWorkflowApplications.CMS]: "Headless CMS"
 };
 
@@ -96,7 +96,7 @@ const PublishingWorkflowsDataList = () => {
 
     const scopedWorkflows = useMemo(() => {
         const initialScopes: ApwWorkflowScoped = {
-            [ApwWorkflowApplications.PB]: [],
+            // [ApwWorkflowApplications.PB]: [],
             [ApwWorkflowApplications.CMS]: []
         };
         return workflows.reduce<ApwWorkflowScoped>((collection, workflow) => {

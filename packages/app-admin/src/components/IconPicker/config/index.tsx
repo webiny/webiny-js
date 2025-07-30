@@ -33,7 +33,7 @@ interface IconTypeInterface {
     name: string;
 }
 
-export { IconTypeInterface as IconType };
+export type { IconTypeInterface as IconType };
 
 interface IconPickerConfig {
     iconTypes: IconTypeInterface[];

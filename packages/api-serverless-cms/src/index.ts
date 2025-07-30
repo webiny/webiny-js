@@ -3,13 +3,10 @@ import type { TenancyContext } from "@webiny/api-tenancy/types";
 import type { SecurityContext } from "@webiny/api-security/types";
 import type { I18NContext } from "@webiny/api-i18n/types";
 import type { I18NContentContext } from "@webiny/api-i18n-content/types";
-import type { PbContext } from "@webiny/api-page-builder/graphql/types";
 import type { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 import type { FileManagerContext } from "@webiny/api-file-manager/types";
-import type { FormBuilderContext } from "@webiny/api-form-builder/types";
 import type { CmsContext } from "@webiny/api-headless-cms/types";
 import type { AcoContext } from "@webiny/api-aco/types";
-import type { PbAcoContext } from "@webiny/api-page-builder-aco/types";
 import type { ContextPluginCallable } from "@webiny/api";
 import { createContextPlugin as baseCreateContextPlugin } from "@webiny/api";
 import type { GraphQLSchemaPluginConfig } from "@webiny/handler-graphql";
@@ -25,12 +22,9 @@ export interface Context
         SecurityContext,
         I18NContext,
         I18NContentContext,
-        PbContext,
         PrerenderingServiceClientContext,
         FileManagerContext,
-        FormBuilderContext,
         AcoContext,
-        PbAcoContext,
         LoggerContext,
         CmsContext {}
 
