@@ -560,6 +560,151 @@ describe("`folder` CRUD", () => {
         }
     });
 
+    it("should be able to list folders with `slug` filter", async () => {
+        const type = "page";
+
+        const [folderAResponse] = await aco.createFolder({ data: folderMocks.folderA });
+        const folderA = folderAResponse.data.aco.createFolder.data;
+
+        const [folderBResponse] = await aco.createFolder({
+            data: {
+                ...folderMocks.folderB,
+                parentId: folderA.id
+            }
+        });
+        const folderB = folderBResponse.data.aco.createFolder.data;
+
+        const [folderCResponse] = await aco.createFolder({
+            data: {
+                ...folderMocks.folderC,
+                parentId: folderB.id
+            }
+        });
+        const folderC = folderCResponse.data.aco.createFolder.data;
+
+        // Let's query the folder using the exact `slug` filter.
+        {
+            const [listResponse] = await aco.listFolders({
+                where: { type, slug: `${folderA.slug}` }
+            });
+            expect(listResponse.data.aco.listFolders.data).toMatchObject([
+                {
+                    slug: folderA.slug
+                }
+            ]);
+        }
+
+        // Let's query the folder using the `slug_not` filter.
+        {
+            const [listResponse] = await aco.listFolders({
+                where: { type, slug_not: folderA.slug }
+            });
+            expect(listResponse.data.aco.listFolders.data).toMatchObject([
+                {
+                    slug: folderB.slug
+                },
+                {
+                    slug: folderC.slug
+                }
+            ]);
+        }
+
+        // Let's query the folder using the `slug_contains` filter.
+        {
+            const [listResponse] = await aco.listFolders({
+                where: { type, slug_contains: "folder-" }
+            });
+            expect(listResponse.data.aco.listFolders.data).toMatchObject([
+                {
+                    slug: folderA.slug
+                },
+                {
+                    slug: folderB.slug
+                },
+                {
+                    slug: folderC.slug
+                }
+            ]);
+        }
+
+        // Let's query the folder using the `slug_not_contains` filter.
+        {
+            const [listResponse] = await aco.listFolders({
+                where: { type, slug_not_contains: folderB.slug }
+            });
+            expect(listResponse.data.aco.listFolders.data).toMatchObject([
+                {
+                    slug: folderA.slug
+                },
+                {
+                    slug: folderC.slug
+                }
+            ]);
+        }
+
+        // Let's query the folder using the `slug_in` filter.
+        {
+            const [listResponse] = await aco.listFolders({
+                where: {
+                    type,
+                    slug_in: [folderB.slug, folderA.slug]
+                }
+            });
+            expect(listResponse.data.aco.listFolders.data).toMatchObject([
+                {
+                    slug: folderA.slug
+                },
+                {
+                    slug: folderB.slug
+                }
+            ]);
+        }
+
+        // Let's query the folder using the `slug_not_in` filter.
+        {
+            const [listResponse] = await aco.listFolders({
+                where: {
+                    type,
+                    slug_not_in: [folderA.slug, folderB.slug]
+                }
+            });
+            expect(listResponse.data.aco.listFolders.data).toMatchObject([
+                {
+                    slug: folderC.slug
+                }
+            ]);
+        }
+
+        // Let's query the folder using the `slug_startsWith` filter.
+        {
+            const [listResponse] = await aco.listFolders({
+                where: { type, slug_startsWith: `folder-` }
+            });
+            expect(listResponse.data.aco.listFolders.data).toMatchObject([
+                {
+                    slug: folderA.slug
+                },
+                {
+                    slug: folderB.slug
+                },
+                {
+                    slug: folderC.slug
+                }
+            ]);
+        }
+
+        // Let's query the folder using the `slug_not_startsWith` filter.
+        {
+            const [listResponse] = await aco.listFolders({
+                where: {
+                    type,
+                    slug_not_startsWith: `folder-`
+                }
+            });
+            expect(listResponse.data.aco.listFolders.data).toMatchObject([]);
+        }
+    });
+
     it("should NOT delete folder in case has child folders", async () => {
         // Let's create a parent folders.
         const [parentResponse] = await aco.createFolder({ data: folderMocks.folderA });
