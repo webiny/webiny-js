@@ -5,6 +5,7 @@ export interface CreatePathCallableParams<T = any> {
     field: CmsModelField;
     key: string;
     value: T;
+    originalValue: any;
 }
 
 export interface CreatePathCallable<T = any> {

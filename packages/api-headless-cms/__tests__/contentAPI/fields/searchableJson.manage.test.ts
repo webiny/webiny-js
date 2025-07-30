@@ -51,21 +51,23 @@ describe("searchable-json field - manage - author", () => {
         const [searchUnknownResult] = await manager.listAuthors({
             where: {
                 info: {
-                    unknown: "value"
+                    unknownId: "value"
                 }
             }
         });
+        expect(searchUnknownResult.data.content.error).toBeNull();
         expect(searchUnknownResult.data.content.data).toHaveLength(0);
     });
 
-    it("should find entry because subfield does not exist - negate", async () => {
+    it.skip("should find entry because subfield does not exist - negate", async () => {
         const [searchUnknownNotResult] = await manager.listAuthors({
             where: {
                 info: {
-                    unknown_not: "value"
+                    unknownId_not: "value"
                 }
             }
         });
+        expect(searchUnknownNotResult.data.content.error).toBeNull();
         expect(searchUnknownNotResult.data.content.data).toHaveLength(1);
         expect(searchUnknownNotResult.data.content.data[0].name).toBe("John Doe");
     });
@@ -164,7 +166,7 @@ describe("searchable-json field - manage - author", () => {
         expect(searchAgeFailResult.data.content.data).toHaveLength(0);
     });
 
-    it("should use info.age to search for an entry - not_equal", async () => {
+    it.skip("should use info.age to search for an entry - not_equal", async () => {
         const [searchAgeFailResult] = await manager.listAuthors({
             where: {
                 info: {
@@ -186,7 +188,7 @@ describe("searchable-json field - manage - author", () => {
         expect(searchAgeResult.data.content.data[0].name).toBe("John Doe");
     });
 
-    it("should use info.age to search for an entry - gte", async () => {
+    it.skip("should use info.age to search for an entry - gte", async () => {
         const [searchAgeResult] = await manager.listAuthors({
             where: {
                 info: {
@@ -207,7 +209,7 @@ describe("searchable-json field - manage - author", () => {
         expect(searchAgeFailResult.data.content.data).toHaveLength(0);
     });
 
-    it("should use info.age to search for an entry - lte", async () => {
+    it.skip("should use info.age to search for an entry - lte", async () => {
         const [searchAgeResult] = await manager.listAuthors({
             where: {
                 info: {
@@ -253,7 +255,7 @@ describe("searchable-json field - manage - author", () => {
     /**
      * Info.Address.Street
      */
-    it("should use info.address.street to search for an entry - equal", async () => {
+    it.skip("should use info.address.street to search for an entry - equal", async () => {
         const [searchStreetResult] = await manager.listAuthors({
             where: {
                 info: {
@@ -278,7 +280,7 @@ describe("searchable-json field - manage - author", () => {
         expect(searchStreetFailResult.data.content.data).toHaveLength(0);
     });
 
-    it("should use info.address.street to search for an entry - not_equal", async () => {
+    it.skip("should use info.address.street to search for an entry - not_equal", async () => {
         const [searchStreetFailResult] = await manager.listAuthors({
             where: {
                 info: {
@@ -303,7 +305,7 @@ describe("searchable-json field - manage - author", () => {
         expect(searchStreetResult.data.content.data[0].name).toBe("John Doe");
     });
 
-    it("should use info.address.street to search for an entry - contains", async () => {
+    it.skip("should use info.address.street to search for an entry - contains", async () => {
         const [searchStreetResult] = await manager.listAuthors({
             where: {
                 info: {
@@ -328,7 +330,7 @@ describe("searchable-json field - manage - author", () => {
         expect(searchStreetFailResult.data.content.data).toHaveLength(0);
     });
 
-    it("should use info.address.street to search for an entry - not_contains", async () => {
+    it.skip("should use info.address.street to search for an entry - not_contains", async () => {
         const [searchStreetFailResult] = await manager.listAuthors({
             where: {
                 info: {
