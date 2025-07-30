@@ -24,14 +24,12 @@ export type DateOnType = Date;
 export interface ISchedulerInputImmediately {
     immediately: true;
     scheduleOn?: never;
-    dateOn?: DateOnType;
     type: ScheduleType;
 }
 
 export interface ISchedulerInputScheduled {
     immediately?: false;
     scheduleOn: ScheduledOnType;
-    dateOn?: DateOnType;
     type: ScheduleType;
 }
 
@@ -42,7 +40,7 @@ export interface IScheduleRecord {
     targetId: string;
     model: CmsModel;
     scheduledBy: CmsIdentity;
-    dateOn: DateOnType | undefined;
+    // dateOn: DateOnType | undefined;
     publishOn: ScheduledOnType | undefined;
     unpublishOn: ScheduledOnType | undefined;
     type: ScheduleType;
@@ -82,7 +80,7 @@ export interface IScheduleEntryValues {
     targetId: string;
     targetModelId: string;
     scheduledBy: CmsIdentity;
-    dateOn: DateISOString | undefined;
+    // dateOn: DateISOString | undefined;
     scheduledOn: DateISOString;
     type: string;
     title: string;

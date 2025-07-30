@@ -102,9 +102,7 @@ export class SchedulerListGraphQLGateway implements ISchedulerListGateway {
         const validated = await schema.safeParseAsync(result);
         if (!validated.success) {
             const err = createZodError(validated.error);
-            console.log({
-                err
-            });
+            console.error(err);
             throw err;
         }
 

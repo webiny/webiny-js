@@ -5,9 +5,7 @@ export interface ISchedulerGetExecuteParams {
     id: string;
 }
 
-export interface ISchedulerGetGatewayResponse {
-    item: SchedulerEntry;
-}
+export type ISchedulerGetGatewayResponse = SchedulerEntry | null;
 
 export interface ISchedulerGetGateway {
     execute(params: ISchedulerGetExecuteParams): Promise<ISchedulerGetGatewayResponse>;

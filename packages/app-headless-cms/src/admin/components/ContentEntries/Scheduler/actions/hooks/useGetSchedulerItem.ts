@@ -27,9 +27,12 @@ export const useGetSchedulerItem = (params: IUseGetItemParams) => {
         }
         (async () => {
             try {
-                const result = await gateway.execute(params);
+                const result = await gateway.execute({
+                    id: params.id,
+                    modelId: params.modelId
+                });
                 setState({
-                    item: result.item,
+                    item: result,
                     error: null
                 });
             } catch (ex) {

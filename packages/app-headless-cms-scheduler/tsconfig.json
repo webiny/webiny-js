@@ -7,9 +7,11 @@
     { "path": "../app-admin" },
     { "path": "../app-headless-cms-common" },
     { "path": "../app-utils" },
+    { "path": "../form" },
     { "path": "../react-composition" },
     { "path": "../react-properties" },
-    { "path": "../ui" }
+    { "path": "../ui" },
+    { "path": "../validation" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -28,12 +30,16 @@
       "@webiny/app-headless-cms-common": ["../app-headless-cms-common/src"],
       "@webiny/app-utils/*": ["../app-utils/src/*"],
       "@webiny/app-utils": ["../app-utils/src"],
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
       "@webiny/react-composition/*": ["../react-composition/src/*"],
       "@webiny/react-composition": ["../react-composition/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],
       "@webiny/react-properties": ["../react-properties/src"],
       "@webiny/ui/*": ["../ui/src/*"],
-      "@webiny/ui": ["../ui/src"]
+      "@webiny/ui": ["../ui/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
     },
     "baseUrl": "."
   }

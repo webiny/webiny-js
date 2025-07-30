@@ -67,19 +67,22 @@ export class SchedulerGetGraphQLGateway implements ISchedulerGetGateway {
                 errors
             });
             throw new Error("Network error while getting schedule entry.");
-        }
-
-        if (!result.data) {
-            throw new Error(result.error?.message || "Could not fetch scheduled entry.");
+        } else if (result.error) {
+            console.error({
+                error: result.error
+            });
+            throw new Error(result.error.message || "Could not fetch scheduled entry.");
+        } else if (!result.data) {
+            return null;
         }
 
         const validated = await schema.safeParseAsync(result);
         if (!validated.success) {
-            throw createZodError(validated.error);
+            const err = createZodError(validated.error);
+            console.error(err);
+            throw err;
         }
 
-        return {
-            item: validated.data.data
-        };
+        return validated.data.data;
     }
 }

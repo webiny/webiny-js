@@ -1,21 +1,23 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/index.js";
 import { useApolloClient, usePermission } from "~/admin/hooks/index.js";
 import { ContentEntryEditorConfig } from "~/admin/config/contentEntries/index.js";
 import { ReactComponent as ScheduleIcon } from "@webiny/icons/cell_tower.svg";
 import { useGetSchedulerItem } from "./hooks/useGetSchedulerItem.js";
-import { ScheduleDialog } from "@webiny/app-headless-cms-scheduler/Presentation/components/ScheduleDialog/ScheduleDialog.js";
-import { SchedulerGetGraphQLGateway } from "~/admin/components/ContentEntries/Scheduler/adapters/SchedulerGetGraphQLGateway.js";
-import { SchedulerCancelGraphQLGateway } from "~/admin/components/ContentEntries/Scheduler/adapters/SchedulerCancelGraphQLGateway.js";
-import { SchedulerPublishGraphQLGateway } from "~/admin/components/ContentEntries/Scheduler/adapters/SchedulerPublishGraphQLGateway.js";
-import { SchedulerUnpublishGraphQLGateway } from "~/admin/components/ContentEntries/Scheduler/adapters/SchedulerUnpublishGraphQLGateway.js";
+import {
+    SchedulerCancelGraphQLGateway,
+    SchedulerGetGraphQLGateway,
+    SchedulerPublishGraphQLGateway,
+    SchedulerUnpublishGraphQLGateway
+} from "../adapters/index.js";
+import { ScheduleDialogAction, useScheduleDialog } from "@webiny/app-headless-cms-scheduler";
 
 export const ScheduleEntryMenuItem = () => {
-    const { entry, loading, ...contentEntry } = useContentEntry();
+    const { entry, loading, contentModel } = useContentEntry();
     const { canPublish, canUnpublish } = usePermission();
     const client = useApolloClient();
 
-    const [show, setShow] = useState(false);
+    const { showDialog: showSchedulerDialog } = useScheduleDialog();
 
     const getGateway = useMemo(() => {
         return new SchedulerGetGraphQLGateway(client);
@@ -33,20 +35,24 @@ export const ScheduleEntryMenuItem = () => {
         return new SchedulerUnpublishGraphQLGateway(client);
     }, [client]);
 
+    const scheduleAction = useMemo(() => {
+        return new ScheduleDialogAction({
+            cancelGateway,
+            publishGateway,
+            unpublishGateway
+        });
+    }, [publishGateway, unpublishGateway]);
+
     const scheduled = useGetSchedulerItem({
         gateway: getGateway,
         id: entry.id,
-        modelId: contentEntry.contentModel.modelId
+        modelId: contentModel.modelId
     });
 
     const { OptionsMenuItem } =
         ContentEntryEditorConfig.Actions.MenuItemAction.useOptionsMenuItem();
 
-    const toggle = useCallback(() => {
-        setShow(!show);
-    }, []);
-
-    const scheduleEntry = useMemo(() => {
+    const schedulerEntry = useMemo(() => {
         if (scheduled.error) {
             console.error(scheduled.error);
             return null;
@@ -54,26 +60,33 @@ export const ScheduleEntryMenuItem = () => {
         return scheduled.item;
     }, [scheduled]);
 
+    const showDialog = useCallback(() => {
+        showSchedulerDialog({
+            entry: {
+                id: entry.id,
+                title: entry.meta.title,
+                modelId: contentModel.modelId,
+                status: entry.meta.status
+            },
+            schedulerEntry,
+            action: scheduleAction
+        });
+    }, [entry, schedulerEntry, scheduleAction, showSchedulerDialog, contentModel]);
+
     if (!canPublish("cms.contentEntry") && !canUnpublish("cms.contentEntry")) {
         return null;
     }
+
+    const action = entry.meta.status === "published" ? "unpublish" : "publish";
 
     return (
         <>
             <OptionsMenuItem
                 icon={<ScheduleIcon />}
-                label={"Schedule entry"}
-                onAction={toggle}
+                label={`Schedule ${action}`}
+                onAction={showDialog}
                 disabled={!entry?.id || loading}
                 data-testid={"cms.content-form.header.schedule"}
-            />
-            <ScheduleDialog
-                show={show}
-                schedulerEntry={scheduleEntry}
-                cancelGateway={cancelGateway}
-                publishGateway={publishGateway}
-                unpublishGateway={unpublishGateway}
-                entry={entry}
             />
         </>
     );

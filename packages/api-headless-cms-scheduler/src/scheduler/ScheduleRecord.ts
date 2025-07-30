@@ -1,5 +1,4 @@
 import {
-    type DateOnType,
     type IScheduleEntryValues,
     type IScheduleRecord,
     type ScheduledOnType,
@@ -7,7 +6,6 @@ import {
 } from "~/scheduler/types.js";
 import type { CmsEntry, CmsIdentity, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { WebinyError } from "@webiny/error";
-import { isoStringToDate } from "~/scheduler/dates.js";
 
 export interface IScheduleRecordParams {
     id: string;
@@ -22,7 +20,7 @@ export interface IScheduleRecordParams {
      * The date when the action is to be set as done.
      * User can set publishedOn (and other relevant dates) with this parameter.
      */
-    dateOn: DateOnType | undefined;
+    // dateOn: DateOnType | undefined;
     type: ScheduleType;
     title: string;
 }
@@ -34,7 +32,7 @@ export class ScheduleRecord implements IScheduleRecord {
     public readonly scheduledBy: CmsIdentity;
     public readonly publishOn: ScheduledOnType | undefined;
     public readonly unpublishOn: ScheduledOnType | undefined;
-    public readonly dateOn: DateOnType | undefined;
+    // public readonly dateOn: DateOnType | undefined;
     public readonly type: ScheduleType;
     public readonly title: string;
 
@@ -43,7 +41,7 @@ export class ScheduleRecord implements IScheduleRecord {
         this.targetId = record.targetId;
         this.model = record.model;
         this.scheduledBy = record.scheduledBy;
-        this.dateOn = record.dateOn;
+        // this.dateOn = record.dateOn;
         this.publishOn = record.type === ScheduleType.publish ? record.scheduledOn : undefined;
         this.unpublishOn = record.type === ScheduleType.unpublish ? record.scheduledOn : undefined;
         this.type = record.type;
@@ -83,7 +81,7 @@ export const transformScheduleEntry = (
         title: entry.values.title,
         targetId: entry.values.targetId,
         scheduledOn: new Date(entry.values.scheduledOn),
-        dateOn: isoStringToDate(entry.values.dateOn),
+        // dateOn: isoStringToDate(entry.values.dateOn),
         scheduledBy: entry.savedBy,
         model: targetModel
     });

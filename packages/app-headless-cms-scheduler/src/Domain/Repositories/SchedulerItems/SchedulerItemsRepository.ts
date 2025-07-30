@@ -65,7 +65,7 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
     }
 
     public async getItem(params: Omit<ISchedulerGetExecuteParams, "modelId">) {
-        const response = await this.getGateway.execute({
+        const item = await this.getGateway.execute({
             ...params,
             modelId: this.model.modelId
         });
@@ -76,12 +76,12 @@ export class SchedulerItemsRepository implements ISchedulerItemsRepository {
             this.items = [];
         });
 
-        if (!response?.item) {
+        if (!item) {
             return;
         }
 
         runInAction(() => {
-            this.items = [response.item];
+            this.items = [item];
         });
     }
 

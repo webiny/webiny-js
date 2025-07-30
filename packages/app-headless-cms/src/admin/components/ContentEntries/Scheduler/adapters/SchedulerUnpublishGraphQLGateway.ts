@@ -86,9 +86,11 @@ export class SchedulerUnpublishGraphQLGateway implements ISchedulerUnpublishGate
             throw new Error(result.error?.message || "Could not schedule entry to be unpublished.");
         }
 
-        const validated = await schema.safeParseAsync(result.data);
+        const validated = await schema.safeParseAsync(result);
         if (!validated.success) {
-            throw createZodError(validated.error);
+            const err = createZodError(validated.error);
+            console.error(err);
+            throw err;
         }
         return {
             item: validated.data.data

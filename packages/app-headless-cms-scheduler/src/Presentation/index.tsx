@@ -12,7 +12,8 @@ import type {
 } from "~/Gateways/index.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 
-export * from "~/Presentation/SchedulerConfigs";
+export * from "./components/ScheduleDialog/index.js";
+export * from "~/Presentation/SchedulerConfigs/index.js";
 
 export interface SchedulerRenderPropParams {
     showScheduler: () => void;
