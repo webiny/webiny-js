@@ -58,6 +58,14 @@ const entryStorageTransform = async (
 
     const transformedValues: Record<string, any> = {};
     for (const field of model.fields) {
+        /**
+         * We can safely skip fields that are not present in the entry values.
+         */
+        const value = entry.values[field.fieldId];
+        if (value === undefined || value === null) {
+            continue;
+        }
+
         const baseType = getBaseFieldType(field);
         const plugin = getStoragePlugin(baseType);
         // TODO: remove this once plugins are converted into classes
@@ -71,7 +79,7 @@ const entryStorageTransform = async (
             plugins: context.plugins,
             model,
             field,
-            value: entry.values[field.fieldId],
+            value,
             getStoragePlugin
         });
     }

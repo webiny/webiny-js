@@ -42,7 +42,9 @@ describe("entry values modifier", () => {
          * Check that we are getting everything properly out of the DynamoDB
          */
         const getResult = await manager.get(createResult.id);
-        expect(getResult).toMatchObject(createExpectedGetResult());
+        expect(getResult).toMatchObject({
+            values: createEntryRawData()
+        });
         await elasticsearch.indices.refresh({
             index: indexName
         });
@@ -71,7 +73,9 @@ describe("entry values modifier", () => {
          * Check that we are getting everything properly out of the DynamoDB
          */
         const getResult = await manager.get(createResult.id);
-        expect(getResult).toMatchObject(createExpectedGetResult());
+        expect(getResult).toMatchObject({
+            values: createEntryRawData()
+        });
         await elasticsearch.indices.refresh({
             index: indexName
         });
@@ -100,7 +104,9 @@ describe("entry values modifier", () => {
          * Check that we are getting everything properly out of the DynamoDB
          */
         const getResult = await manager.get(createResult.id);
-        expect(getResult).toMatchObject(createExpectedGetResult());
+        expect(getResult).toMatchObject({
+            values: createEntryRawData()
+        });
         await elasticsearch.indices.refresh({
             index: indexName
         });
@@ -136,7 +142,9 @@ describe("entry values modifier", () => {
          * Check that we are getting everything properly out of the DynamoDB
          */
         const getResult = await manager.get(createResult.id);
-        expect(getResult).toMatchObject(createExpectedGetResult());
+        expect(getResult).toMatchObject({
+            values: createEntryRawData()
+        });
         await elasticsearch.indices.refresh({
             index: indexName
         });
@@ -192,7 +200,9 @@ describe("entry values modifier", () => {
          * Check that we are getting everything properly out of the DynamoDB
          */
         const getResult = await manager.get(createResult.id);
-        expect(getResult).toMatchObject(createExpectedGetResult());
+        expect(getResult).toMatchObject({
+            values: createEntryRawData()
+        });
         await elasticsearch.indices.refresh({
             index: indexName
         });
