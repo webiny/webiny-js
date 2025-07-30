@@ -6,14 +6,14 @@ import type { CmsEntryListParams } from "~/types/index.js";
 import {
     createGetQuery,
     createListQuery
-} from "~tests/__helpers/handler/authorWithSearchableJson/graphql/queries.manage.js";
+} from "~tests/__helpers/handler/authorWithSearchableJson/graphql/queries.read.js";
 import { createDefaultGroup } from "~tests/__helpers/groups/defaultGroup.js";
 import { createAuthorWithSearchableJson } from "~tests/__helpers/models/authorWithSearchableJson.js";
 
-export const useAuthorWithSearchableJsonManager = (params?: GraphQLHandlerParams) => {
+export const useAuthorWithSearchableJsonReader = (params?: GraphQLHandlerParams) => {
     const modelPlugin = createAuthorWithSearchableJson();
     const contentHandler = useGraphQLHandler({
-        path: "manage/en-US",
+        path: "read/en-US",
         plugins: [createDefaultGroup(), modelPlugin],
         ...params
     });

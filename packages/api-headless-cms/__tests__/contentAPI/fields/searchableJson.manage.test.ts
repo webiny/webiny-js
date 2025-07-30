@@ -4,7 +4,7 @@ import { AUTHOR_WITH_SEARCHABLE_JSON_MODEL_ID } from "~tests/__helpers/models/au
 import { useAuthorWithSearchableJsonManager } from "~tests/__helpers/handler/authorWithSearchableJson/manager.js";
 import type { CmsEntry } from "~/types/index.js";
 
-describe("searchable-json field - author", () => {
+describe("searchable-json field - manage - author", () => {
     const manager = useAuthorWithSearchableJsonManager();
 
     const values: IAuthorWithSearchableJsonCmsEntryValues = Object.freeze({

@@ -1,4 +1,4 @@
-import type { CmsContext, CmsEntry, CmsModel } from "~/types";
+import type { CmsContext, CmsEntry, CmsEntryValues, CmsModel } from "~/types";
 import { STATUS_UNPUBLISHED } from "./statuses";
 import type { SecurityIdentity } from "@webiny/api-security/types";
 import { getIdentity } from "~/utils/identity";
@@ -11,16 +11,16 @@ type CreateRepublishEntryDataParams = {
     originalEntry: CmsEntry;
 };
 
-export const createUnpublishEntryData = async ({
+export const createUnpublishEntryData = async <T extends CmsEntryValues = CmsEntryValues>({
     getIdentity: getSecurityIdentity,
     originalEntry
 }: CreateRepublishEntryDataParams): Promise<{
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
 }> => {
     const currentDateTime = new Date().toISOString();
     const currentIdentity = getSecurityIdentity();
 
-    const entry: CmsEntry = {
+    const entry: CmsEntry<T> = {
         ...originalEntry,
         status: STATUS_UNPUBLISHED,
 
@@ -39,7 +39,7 @@ export const createUnpublishEntryData = async ({
         revisionModifiedOn: getDate(currentDateTime),
         revisionSavedBy: getIdentity(currentIdentity),
         revisionModifiedBy: getIdentity(currentIdentity)
-    };
+    } as CmsEntry<T>;
 
     return { entry };
 };

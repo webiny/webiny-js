@@ -984,7 +984,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         return await deleteEntryUseCase.execute(model, id, options);
     };
-    const publishEntry: CmsEntryContext["publishEntry"] = async (model, id) => {
+    const publishEntry = async <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ) => {
         await accessControl.ensureCanAccessEntry({ model, pw: "p" });
 
         const originalStorageEntry = await getRevisionByIdUseCase.execute(model, { id });
@@ -1008,7 +1011,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const latestEntry = await entryFromStorageTransform(context, model, latestStorageEntry);
 
-        const { entry } = await createPublishEntryData({
+        const { entry } = await createPublishEntryData<T>({
             context,
             model,
             originalEntry,
@@ -1058,7 +1061,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
     };
-    const unpublishEntry: CmsEntryContext["unpublishEntry"] = async (model, id) => {
+    const unpublishEntry = async <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ) => {
         await accessControl.ensureCanAccessEntry({ model, pw: "u" });
 
         const { id: entryId } = parseIdentifier(id);
@@ -1081,7 +1087,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         await accessControl.ensureCanAccessEntry({ model, entry: originalEntry, pw: "u" });
 
-        const { entry } = await createUnpublishEntryData({
+        const { entry } = await createUnpublishEntryData<T>({
             context,
             model,
             originalEntry,
