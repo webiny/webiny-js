@@ -17,7 +17,7 @@ import {
     UPDATE_WORKFLOW_MUTATION
 } from "./graphql/workflow";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
-import { createApwGraphQL, createApwContext } from "~/index";
+import { createApwContext, createApwGraphQL } from "~/index";
 import {
     CmsParametersPlugin,
     createHeadlessCmsContext,
