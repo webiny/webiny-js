@@ -61,10 +61,10 @@ const entryStorageTransform = async (
         /**
          * We can safely skip fields that are not present in the entry values.
          */
-        const value = entry.values[field.fieldId];
-        if (value === undefined || value === null) {
+        if (entry.values.hasOwnProperty(field.fieldId) === false) {
             continue;
         }
+        const value = entry.values[field.fieldId];
 
         const baseType = getBaseFieldType(field);
         const plugin = getStoragePlugin(baseType);
