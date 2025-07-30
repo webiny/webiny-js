@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { IconButton, Tooltip } from "@webiny/admin-ui";
 
 export interface ActionButtonProps {
@@ -10,6 +10,15 @@ export interface ActionButtonProps {
 }
 
 export const ActionButton = ({ icon, label, onAction, disabled, ...props }: ActionButtonProps) => {
+    const onClick = useCallback(
+        (event: React.MouseEvent<HTMLButtonElement>) => {
+            // Prevent the click event from propagating to the grid item component.
+            event.stopPropagation();
+            onAction && onAction();
+        },
+        [onAction]
+    );
+
     return (
         <Tooltip
             content={label ?? "Custom action"}
@@ -18,7 +27,7 @@ export const ActionButton = ({ icon, label, onAction, disabled, ...props }: Acti
                     variant={"tertiary"}
                     size={"sm"}
                     icon={icon}
-                    onClick={onAction}
+                    onClick={onClick}
                     disabled={disabled}
                     data-testid={props["data-testid"]}
                 />
