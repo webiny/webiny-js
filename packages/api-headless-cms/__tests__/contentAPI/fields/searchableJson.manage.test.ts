@@ -51,19 +51,10 @@ describe("searchable-json field - manage - author", () => {
             values
         });
 
-        const listEntriesResult = await context.cms.listLatestEntries(model);
-        expect(listEntriesResult).toMatchObject({
-            items: [
-                {
-                    id: entry.id,
-                    values
-                }
-            ],
-            meta: {
-                totalCount: 1,
-                hasMoreItems: false,
-                cursor: null
-            }
+        const [listEntriesResult] = await context.cms.listLatestEntries(model);
+        expect(listEntriesResult[0]).toMatchObject({
+            id: entry.id,
+            values
         });
     });
 

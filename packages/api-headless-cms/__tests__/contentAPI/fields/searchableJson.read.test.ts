@@ -1,7 +1,7 @@
 import { createAuthorWithSearchableJsonContextHandler } from "~tests/__helpers/handler/authorWithSearchableJson/context.js";
 import type { IAuthorWithSearchableJsonCmsEntryValues } from "~tests/__helpers/models/authorWithSearchableJson.js";
 import { AUTHOR_WITH_SEARCHABLE_JSON_MODEL_ID } from "~tests/__helpers/models/authorWithSearchableJson.js";
-import type { CmsEntry } from "~/types/index.js";
+import type { CmsContext, CmsEntry, CmsModel } from "~/types/index.js";
 import { useAuthorWithSearchableJsonReader } from "~tests/__helpers/handler/authorWithSearchableJson/reader";
 
 describe("searchable-json field - read - author", () => {
@@ -20,15 +20,17 @@ describe("searchable-json field - read - author", () => {
         }
     });
 
+    let context: CmsContext;
+    let model: CmsModel;
     let entry: CmsEntry<IAuthorWithSearchableJsonCmsEntryValues>;
     /**
      *
      */
     beforeEach(async () => {
         const contextHandler = createAuthorWithSearchableJsonContextHandler();
-        const context = await contextHandler.handler();
+        context = await contextHandler.handler();
 
-        const model = await context.cms.getModel(AUTHOR_WITH_SEARCHABLE_JSON_MODEL_ID);
+        model = await context.cms.getModel(AUTHOR_WITH_SEARCHABLE_JSON_MODEL_ID);
 
         const createdEntry = await context.cms.createEntry<IAuthorWithSearchableJsonCmsEntryValues>(
             model,
@@ -46,6 +48,24 @@ describe("searchable-json field - read - author", () => {
             values
         });
         expect(entry.values).toEqual(values);
+
+        const getEntryResult = await context.cms.getEntryById(model, entry.id);
+        expect(getEntryResult).toMatchObject({
+            id: entry.id,
+            values
+        });
+
+        const [listLatestEntriesResult] = await context.cms.listLatestEntries(model);
+        expect(listLatestEntriesResult[0]).toMatchObject({
+            id: entry.id,
+            values
+        });
+
+        const [listPublishedEntriesResult] = await context.cms.listPublishedEntries(model);
+        expect(listPublishedEntriesResult[0]).toMatchObject({
+            id: entry.id,
+            values
+        });
     });
 
     /**

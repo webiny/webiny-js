@@ -46,7 +46,13 @@ const entryStorageTransform = async (
     operation: "toStorage" | "fromStorage",
     entry: CmsEntry
 ): Promise<CmsEntry> => {
-    // TODO make checks if its actually required to transform the entry
+    /**
+     * We use this property to skip unnecessary operations.
+     */
+    // @ts-expect-error
+    if (entry.__DO_NOT_TOUCH_AS_WE_USE_IT_TO_SKIP_UNNECESSARY_OPERATIONS === operation) {
+        return entry;
+    }
 
     const getStoragePlugin = getStoragePluginFactory(context);
 
@@ -70,7 +76,15 @@ const entryStorageTransform = async (
         });
     }
 
-    return { ...entry, values: transformedValues };
+    return {
+        ...entry,
+        values: transformedValues,
+        /**
+         * We need to assign the variable so that we can skip unnecessary operations next time.
+         */
+        // @ts-expect-error
+        __DO_NOT_TOUCH_AS_WE_USE_IT_TO_SKIP_UNNECESSARY_OPERATIONS: operation
+    };
 };
 
 /**

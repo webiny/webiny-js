@@ -43,6 +43,7 @@ describe("object storage transform", () => {
             entry
         );
         expect(entryResult).toEqual({
+            __DO_NOT_TOUCH_AS_WE_USE_IT_TO_SKIP_UNNECESSARY_OPERATIONS: "toStorage",
             values: {
                 textWithDefaultFieldId: "field with default value",
                 titleFieldId: "Some title",
