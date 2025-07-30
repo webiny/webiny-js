@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import pick from "lodash/pick";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
@@ -72,8 +71,8 @@ export const GroupsForm = () => {
     const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
 
     const onSubmit = useCallback(
-        async (formData: Group) => {
-            if (!formData.permissions || !formData.permissions.length) {
+        async ({ id, name, description, slug, permissions, createdOn }: Group) => {
+            if (!permissions || !permissions.length) {
                 showSnackbar(t`You must configure permissions before saving!`, {
                     timeout: 60000,
                     dismissesOnAction: true
@@ -81,14 +80,18 @@ export const GroupsForm = () => {
                 return;
             }
 
-            const isUpdate = formData.createdOn;
+            const isUpdate = createdOn;
             const [operation, args] = isUpdate
                 ? [
                       update,
                       {
                           variables: {
-                              id: formData.id,
-                              data: pick(formData, ["name", "description", "permissions"])
+                              id,
+                              data: {
+                                  name,
+                                  permissions,
+                                  ...(description && { description })
+                              }
                           }
                       }
                   ]
@@ -96,7 +99,12 @@ export const GroupsForm = () => {
                       create,
                       {
                           variables: {
-                              data: pick(formData, ["name", "slug", "description", "permissions"])
+                              data: {
+                                  name,
+                                  slug,
+                                  description,
+                                  permissions
+                              }
                           }
                       }
                   ];
