@@ -19,7 +19,7 @@ export const SingletonContentEntry = makeDecoratable("SingletonContentEntry", ()
 
     return (
         <Container>
-            <div className={"wby-container wby-pt-lg"}>
+            <div className={"wby-container wby-py-lg"}>
                 <Grid>
                     <Grid.Column span={10} offset={1}>
                         <div className="wby-border-sm wby-border-neutral-dimmed-darker wby-rounded-t-3xl wby-rounded-b-3xl">
