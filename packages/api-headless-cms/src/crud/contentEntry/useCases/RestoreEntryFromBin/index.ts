@@ -14,6 +14,7 @@ import { RestoreEntryFromBinOperationWithEvents } from "./RestoreEntryFromBinOpe
 import { TransformEntryRestoreFromBin } from "./TransformEntryRestoreFromBin";
 import { RestoreEntryFromBin } from "./RestoreEntryFromBin";
 import { RestoreEntryFromBinSecure } from "./RestoreEntryFromBinSecure";
+import type { ITransformEntryCallable } from "~/utils/entryStorage.js";
 
 export interface RestoreEntryFromBinUseCasesTopics {
     onEntryBeforeRestoreFromBin: Topic<OnEntryBeforeRestoreFromBinTopicParams>;
@@ -28,10 +29,14 @@ interface RestoreEntryFromBinUseCasesParams {
     topics: RestoreEntryFromBinUseCasesTopics;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
+    transform: ITransformEntryCallable;
 }
 
 export const restoreEntryFromBinUseCases = (params: RestoreEntryFromBinUseCasesParams) => {
-    const restoreEntryOperation = new RestoreEntryFromBinOperation(params.restoreOperation);
+    const restoreEntryOperation = new RestoreEntryFromBinOperation(
+        params.restoreOperation,
+        params.transform
+    );
     const restoreEntryOperationWithEvents = new RestoreEntryFromBinOperationWithEvents(
         params.topics,
         restoreEntryOperation

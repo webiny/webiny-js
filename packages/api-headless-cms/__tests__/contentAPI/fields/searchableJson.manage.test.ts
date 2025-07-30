@@ -2,7 +2,7 @@ import { createAuthorWithSearchableJsonContextHandler } from "~tests/__helpers/h
 import type { IAuthorWithSearchableJsonCmsEntryValues } from "~tests/__helpers/models/authorWithSearchableJson.js";
 import { AUTHOR_WITH_SEARCHABLE_JSON_MODEL_ID } from "~tests/__helpers/models/authorWithSearchableJson.js";
 import { useAuthorWithSearchableJsonManager } from "~tests/__helpers/handler/authorWithSearchableJson/manager.js";
-import type { CmsEntry } from "~/types/index.js";
+import type { CmsContext, CmsEntry, CmsModel } from "~/types/index.js";
 
 describe("searchable-json field - manage - author", () => {
     const manager = useAuthorWithSearchableJsonManager();
@@ -20,15 +20,17 @@ describe("searchable-json field - manage - author", () => {
         }
     });
 
+    let context: CmsContext;
+    let model: CmsModel;
     let entry: CmsEntry<IAuthorWithSearchableJsonCmsEntryValues>;
     /**
      *
      */
     beforeEach(async () => {
         const contextHandler = createAuthorWithSearchableJsonContextHandler();
-        const context = await contextHandler.handler();
+        context = await contextHandler.handler();
 
-        const model = await context.cms.getModel(AUTHOR_WITH_SEARCHABLE_JSON_MODEL_ID);
+        model = await context.cms.getModel(AUTHOR_WITH_SEARCHABLE_JSON_MODEL_ID);
 
         entry = await context.cms.createEntry<IAuthorWithSearchableJsonCmsEntryValues>(
             model,
@@ -42,6 +44,27 @@ describe("searchable-json field - manage - author", () => {
             values
         });
         expect(entry.values).toEqual(values);
+
+        const getEntryResult = await context.cms.getEntryById(model, entry.id);
+        expect(getEntryResult).toMatchObject({
+            id: entry.id,
+            values
+        });
+
+        const listEntriesResult = await context.cms.listLatestEntries(model);
+        expect(listEntriesResult).toMatchObject({
+            items: [
+                {
+                    id: entry.id,
+                    values
+                }
+            ],
+            meta: {
+                totalCount: 1,
+                hasMoreItems: false,
+                cursor: null
+            }
+        });
     });
 
     /**

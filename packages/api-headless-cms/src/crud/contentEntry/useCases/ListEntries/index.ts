@@ -16,6 +16,7 @@ import { ListEntries } from "./ListEntries";
 import { GetEntry } from "./GetEntry";
 import { GetEntrySecure } from "./GetEntrySecure";
 import type { SecurityIdentity } from "@webiny/api-security/types";
+import type { ITransformEntryCallable } from "~/utils/entryStorage.js";
 
 export interface ListEntriesUseCasesTopics {
     onEntryBeforeList: Topic<EntryBeforeListTopicParams>;
@@ -27,10 +28,11 @@ interface ListEntriesUseCasesParams {
     topics: ListEntriesUseCasesTopics;
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
+    transform: ITransformEntryCallable;
 }
 
 export const listEntriesUseCases = (params: ListEntriesUseCasesParams) => {
-    const listOperation = new ListEntriesOperation(params.operation);
+    const listOperation = new ListEntriesOperation(params.operation, params.transform);
     const listOperationWithEvents = new ListEntriesOperationWithEvents(
         params.topics,
         listOperation

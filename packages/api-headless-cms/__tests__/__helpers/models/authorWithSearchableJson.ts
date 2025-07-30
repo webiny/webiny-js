@@ -22,7 +22,7 @@ export const createAuthorWithSearchableJson = (params?: ICreateAuthorWithSearcha
         name: "Author with Searchable JSON",
         titleFieldId: "name",
         description: "Author model with searchable JSON field.",
-        layout: [["name"], ["info"]],
+        layout: [["name"], ["info"], ["nonSearchableJson"]],
         fields: [
             {
                 id: "name",
@@ -38,6 +38,14 @@ export const createAuthorWithSearchableJson = (params?: ICreateAuthorWithSearcha
                 fieldId: "info",
                 type: "searchable-json",
                 label: "Info",
+                multipleValues: false
+            },
+            {
+                id: "nonSearchableJson",
+                storageId: "json@nonSearchableJson",
+                fieldId: "nonSearchableJson",
+                type: "json",
+                label: "Non Searchable JSON",
                 multipleValues: false
             }
         ],

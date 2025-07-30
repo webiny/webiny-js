@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
 import { StorageTransformPlugin } from "~/plugins/StorageTransformPlugin";
-import type { CmsContext, CmsEntry, CmsModel, CmsModelField } from "~/types";
+import type { CmsContext, CmsEntry, CmsEntryValues, CmsModel, CmsModelField } from "~/types";
 import { getBaseFieldType } from "~/utils/getBaseFieldType";
 
 export interface GetStoragePluginFactory {
@@ -46,6 +46,8 @@ const entryStorageTransform = async (
     operation: "toStorage" | "fromStorage",
     entry: CmsEntry
 ): Promise<CmsEntry> => {
+    // TODO make checks if its actually required to transform the entry
+
     const getStoragePlugin = getStoragePluginFactory(context);
 
     const transformedValues: Record<string, any> = {};
@@ -125,4 +127,22 @@ export const entryFieldFromStorageTransform = async <T = any>(
         value,
         getStoragePlugin
     });
+};
+
+export interface ICreateTransformEntryCallable {
+    context: Pick<CmsContext, "plugins">;
+}
+
+export interface ITransformEntryCallable<T extends CmsEntryValues = CmsEntryValues> {
+    (model: CmsModel, entry: CmsEntry): Promise<CmsEntry<T>>;
+}
+
+export const createTransformEntryCallable = (
+    params: ICreateTransformEntryCallable
+): ITransformEntryCallable => {
+    const { context } = params;
+
+    return async (model, entry) => {
+        return entryFromStorageTransform(context, model, entry);
+    };
 };

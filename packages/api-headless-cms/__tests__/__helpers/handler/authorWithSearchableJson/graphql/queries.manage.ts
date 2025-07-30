@@ -54,6 +54,7 @@ const authorWithSearchableJsonFields = `
     # user defined fields
     name
     info
+    nonSearchableJson
 `;
 
 export const createGetQuery = (model: Pick<CmsModel, "singularApiName" | "pluralApiName">) => {

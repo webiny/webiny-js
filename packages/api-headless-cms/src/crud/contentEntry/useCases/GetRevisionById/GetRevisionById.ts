@@ -4,15 +4,25 @@ import type {
     CmsEntryStorageOperationsGetRevisionParams,
     CmsModel
 } from "~/types";
+import type { ITransformEntryCallable } from "~/utils/entryStorage.js";
 
 export class GetRevisionById implements IGetRevisionById {
-    private operation: CmsEntryStorageOperations["getRevisionById"];
+    private readonly operation: CmsEntryStorageOperations["getRevisionById"];
+    private readonly transform: ITransformEntryCallable;
 
-    constructor(operation: CmsEntryStorageOperations["getRevisionById"]) {
+    public constructor(
+        operation: CmsEntryStorageOperations["getRevisionById"],
+        transform: ITransformEntryCallable
+    ) {
         this.operation = operation;
+        this.transform = transform;
     }
 
-    async execute(model: CmsModel, params: CmsEntryStorageOperationsGetRevisionParams) {
-        return await this.operation(model, params);
+    public async execute(model: CmsModel, params: CmsEntryStorageOperationsGetRevisionParams) {
+        const result = await this.operation(model, params);
+        if (!result) {
+            return null;
+        }
+        return await this.transform(model, result);
     }
 }
