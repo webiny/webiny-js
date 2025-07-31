@@ -14797,6 +14797,7 @@ __metadata:
     css-loader: "npm:^6.10.0"
     file-loader: "npm:6.2.0"
     lodash: "npm:^4.17.21"
+    minimatch: "npm:^5.1.6"
     mobx: "npm:^6.9.0"
     postcss-loader: "npm:^6.2.1"
     prettier: "npm:^2.8.8"

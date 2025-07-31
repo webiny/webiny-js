@@ -1,11 +1,7 @@
-import type { SyntheticEvent } from "react";
-import React, { useCallback, useState } from "react";
-import keycode from "keycode";
-import minimatch from "minimatch";
-import type { InputProps } from "~/Input";
-import { Input } from "~/Input";
-import { Chips, Chip } from "~/Chips";
-import type { FormComponentProps } from "~/types";
+import type { FocusEventHandler } from "react";
+import React from "react";
+import { Tags as AdminTags } from "@webiny/admin-ui";
+import type { FormComponentProps } from "~/types.js";
 
 interface TagsProps extends FormComponentProps {
     /**
@@ -46,7 +42,7 @@ interface TagsProps extends FormComponentProps {
     /**
      * Callback that gets executed when the input is focused.
      */
-    onFocus?: (ev: Event) => void;
+    onFocus?: FocusEventHandler<HTMLInputElement> | undefined;
 
     /**
      * Automatically focus on the tags input.
@@ -59,79 +55,12 @@ interface TagsProps extends FormComponentProps {
     protectedTags?: string[];
 }
 
+/**
+ * @deprecated This component is deprecated and will be removed in future releases.
+ * Please use the `Tags` component from the `@webiny/admin-ui` package instead.
+ */
 export const Tags = (props: TagsProps) => {
-    const [inputValue, setInputValue] = useState("");
-
-    const { value, disabled, onChange, protectedTags = [], ...otherInputProps } = props;
-
-    const isProtected = useCallback(
-        (tag: string) => protectedTags.some(pattern => minimatch(tag, pattern)),
-        [protectedTags]
-    );
-
-    const inputProps: InputProps<string> = {
-        ...otherInputProps,
-        value: inputValue,
-        onChange: inputValue => {
-            setInputValue(inputValue);
-        },
-        onKeyDown: (ev: SyntheticEvent) => {
-            if (!onChange) {
-                return;
-            }
-
-            const newValue = Array.isArray(value) ? [...value] : [];
-
-            /**
-             * We must cast as keycode only works with Event | string type.
-             */
-            switch (keycode(ev as unknown as Event)) {
-                case "enter":
-                    if (inputValue) {
-                        newValue.push(inputValue);
-                        onChange(newValue);
-                        setInputValue("");
-                    }
-                    break;
-                case "backspace":
-                    if (newValue.length && !inputValue) {
-                        newValue.splice(-1, 1);
-                        onChange(newValue);
-                        break;
-                    }
-            }
-        }
-    };
-
-    return (
-        <div>
-            <Input {...inputProps} />
-            {Array.isArray(value) && value.length ? (
-                <Chips disabled={disabled}>
-                    {value.map((item, index) => {
-                        return (
-                            <Chip
-                                label={item}
-                                key={`${item}-${index}`}
-                                onRemove={
-                                    !isProtected(item)
-                                        ? () => {
-                                              // On removal, let's update the value and call "onChange" callback.
-                                              if (onChange) {
-                                                  const newValue = [...value];
-                                                  newValue.splice(index, 1);
-                                                  onChange(newValue);
-                                              }
-                                          }
-                                        : undefined
-                                }
-                            />
-                        );
-                    })}
-                </Chips>
-            ) : null}
-        </div>
-    );
+    return <AdminTags {...props} />;
 };
 
 export default Tags;
