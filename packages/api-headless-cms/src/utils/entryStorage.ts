@@ -37,6 +37,8 @@ export const getStoragePluginFactory: GetStoragePluginFactory = context => {
     };
 };
 
+const doNotTouchProperty = Symbol("__DO_NOT_TOUCH_AS_WE_USE_IT_TO_SKIP_UNNECESSARY_OPERATIONS");
+
 /**
  * This should be used when transforming the whole entry.
  */
@@ -50,7 +52,7 @@ const entryStorageTransform = async (
      * We use this property to skip unnecessary operations.
      */
     // @ts-expect-error
-    if (entry.__DO_NOT_TOUCH_AS_WE_USE_IT_TO_SKIP_UNNECESSARY_OPERATIONS === operation) {
+    if (entry[doNotTouchProperty] === operation) {
         return entry;
     }
 
@@ -84,15 +86,20 @@ const entryStorageTransform = async (
         });
     }
 
-    return {
+    const result = {
         ...entry,
-        values: transformedValues,
-        /**
-         * We need to assign the variable so that we can skip unnecessary operations next time.
-         */
-        // @ts-expect-error
-        __DO_NOT_TOUCH_AS_WE_USE_IT_TO_SKIP_UNNECESSARY_OPERATIONS: operation
+        values: transformedValues
     };
+    /**
+     * We need to assign the variable so that we can skip unnecessary operations next time.
+     */
+    Object.defineProperty(result, doNotTouchProperty, {
+        enumerable: false,
+        value: operation,
+        configurable: true
+    });
+
+    return result;
 };
 
 /**
