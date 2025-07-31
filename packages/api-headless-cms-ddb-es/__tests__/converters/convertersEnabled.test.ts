@@ -1,7 +1,11 @@
 import type { SearchBody } from "@webiny/api-elasticsearch/types";
 import { useHandler } from "~tests/graphql/handler";
 import { createMockPlugins } from "./mocks";
-import { createElasticsearchEntryConvertedData, createEntryRawData } from "./mocks/data";
+import {
+    createElasticsearchEntryConvertedData,
+    createEntryExpectedTransformedDatesData,
+    createEntryRawData
+} from "./mocks/data";
 import { configurations } from "~/configurations";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { get } from "@webiny/db-dynamodb";
@@ -48,48 +52,7 @@ describe("storage field path converters enabled", () => {
          */
         const getResult = await manager.get(createResult.id);
         expect(getResult).toMatchObject({
-            values: {
-                title: "Title level 0",
-                age: 123,
-                isMarried: true,
-                dateOfBirth: "2020-01-01",
-                description: {
-                    compression: "gzip",
-                    value: expect.any(String)
-                },
-                body: {
-                    compression: "gzip",
-                    value: expect.any(String)
-                },
-                information: {
-                    subtitle: "Title level 1",
-                    subAge: 234,
-                    subIsMarried: false,
-                    subDateOfBirth: "2020-01-02",
-                    subDescription: {
-                        compression: "gzip",
-                        value: expect.any(String)
-                    },
-                    subBody: {
-                        compression: "gzip",
-                        value: expect.any(String)
-                    },
-                    subInformation: {
-                        subSecondSubtitle: "Title level 2",
-                        subSecondSubAge: 345,
-                        subSecondSubIsMarried: false,
-                        subSecondSubDateOfBirth: "2020-01-03",
-                        subSecondSubDescription: {
-                            compression: "gzip",
-                            value: expect.any(String)
-                        },
-                        subSecondSubBody: {
-                            compression: "gzip",
-                            value: expect.any(String)
-                        }
-                    }
-                }
-            }
+            values: createEntryRawData()
         });
         await elasticsearch.indices.refresh({
             index: indexName
@@ -104,39 +67,7 @@ describe("storage field path converters enabled", () => {
         });
         const [[listResult]] = result;
         expect(listResult).toMatchObject({
-            values: {
-                title: "Title level 0",
-                age: 123,
-                isMarried: true,
-                dateOfBirth: new Date("2020-01-01").toISOString(),
-                description: "Description level 0",
-                body: {
-                    compression: "gzip",
-                    value: expect.any(String)
-                },
-                information: {
-                    subtitle: "Title level 1",
-                    subAge: 234,
-                    subIsMarried: false,
-                    subDateOfBirth: new Date("2020-01-02").toISOString(),
-                    subDescription: "Description level 1",
-                    subBody: {
-                        compression: "gzip",
-                        value: expect.any(String)
-                    },
-                    subInformation: {
-                        subSecondSubtitle: "Title level 2",
-                        subSecondSubAge: 345,
-                        subSecondSubIsMarried: false,
-                        subSecondSubDateOfBirth: new Date("2020-01-03").toISOString(),
-                        subSecondSubDescription: "Description level 2",
-                        subSecondSubBody: {
-                            compression: "gzip",
-                            value: expect.any(String)
-                        }
-                    }
-                }
-            }
+            values: createEntryExpectedTransformedDatesData()
         });
         /**
          * Load the Elasticsearch record directly and check the structure.

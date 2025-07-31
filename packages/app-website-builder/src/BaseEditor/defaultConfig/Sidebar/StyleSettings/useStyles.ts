@@ -13,8 +13,9 @@ export function useStyles(elementId: string) {
     const { breakpoints } = useBreakpoint();
 
     const store = useMemo(() => {
+        const cacheKey = [elementId, ...breakpoints].join(";");
         // Create or get existing store for this element
-        let store = stylesStores.get(elementId);
+        let store = stylesStores.get(cacheKey);
 
         if (!store) {
             store = new StylesStore(
@@ -22,11 +23,11 @@ export function useStyles(elementId: string) {
                 elementId,
                 breakpoints.map(bp => bp.name)
             );
-            stylesStores.set(elementId, store);
+            stylesStores.set(cacheKey, store);
         }
 
         return store;
-    }, [elementId]);
+    }, [elementId, breakpoints.length]);
 
     return {
         store,

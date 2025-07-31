@@ -1,10 +1,10 @@
 import type { css as EmotionCSS } from "emotion";
-import type { ThemeEmotionMap, TypographyHTMLTag } from "~/types";
+import type { ThemeEmotionMap } from "~/types";
 import type { EditorTheme } from "~/createTheme";
 
 type StyleItem = {
     id: string;
-    tag: TypographyHTMLTag;
+    tag: string;
     name: string;
     styles?: Record<string, any>;
     className?: string;

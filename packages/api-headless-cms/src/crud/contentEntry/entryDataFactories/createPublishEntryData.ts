@@ -1,4 +1,4 @@
-import type { CmsContext, CmsEntry, CmsModel } from "~/types";
+import type { CmsContext, CmsEntry, CmsEntryValues, CmsModel } from "~/types";
 import { STATUS_PUBLISHED } from "./statuses";
 import type { SecurityIdentity } from "@webiny/api-security/types";
 import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation";
@@ -13,14 +13,14 @@ type CreatePublishEntryDataParams = {
     latestEntry: CmsEntry;
 };
 
-export const createPublishEntryData = async ({
+export const createPublishEntryData = async <T extends CmsEntryValues = CmsEntryValues>({
     model,
     context,
     getIdentity: getSecurityIdentity,
     originalEntry,
     latestEntry
 }: CreatePublishEntryDataParams): Promise<{
-    entry: CmsEntry;
+    entry: CmsEntry<T>;
 }> => {
     await validateModelEntryDataOrThrow({
         context,
@@ -32,7 +32,7 @@ export const createPublishEntryData = async ({
     const currentDateTime = new Date().toISOString();
     const currentIdentity = getSecurityIdentity();
 
-    const entry: CmsEntry = {
+    const entry: CmsEntry<T> = {
         ...originalEntry,
         status: STATUS_PUBLISHED,
         locked: true,
@@ -67,7 +67,7 @@ export const createPublishEntryData = async ({
             currentIdentity
         ),
         revisionLastPublishedBy: getIdentity(currentIdentity)
-    };
+    } as CmsEntry<T>;
 
     return { entry };
 };

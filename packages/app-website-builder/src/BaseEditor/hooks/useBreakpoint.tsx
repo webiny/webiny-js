@@ -1,16 +1,8 @@
-import type React from "react";
 import { useCallback, useMemo } from "react";
 import { useDocumentEditor } from "~/DocumentEditor";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor";
-import type { Breakpoint } from "@webiny/website-builder-sdk";
 import { BASE_BREAKPOINT } from "~/constants";
 import { useWebsiteBuilderTheme } from "~/BaseEditor/components";
-
-export type EditorBreakpoint = Breakpoint & {
-    title: string;
-    description: string;
-    icon: React.ReactNode;
-};
 
 export const useBreakpoint = () => {
     const { theme } = useWebsiteBuilderTheme();
@@ -26,10 +18,14 @@ export const useBreakpoint = () => {
         return (
             bp ?? {
                 name: BASE_BREAKPOINT,
+                title: "Base Breakpoint",
+                description: "",
+                icon: "",
+                minWidth: 0,
                 maxWidth: 4000
             }
         );
-    }, [activeBreakpoint, breakpoints]);
+    }, [activeBreakpoint, breakpoints.length]);
 
     const setBreakpoint = useCallback(
         (mode: string) => {

@@ -14,6 +14,7 @@ import { createGraphQLSchemaPlugin as baseCreateGraphQLSchemaPlugin } from "@web
 import { createSecurityRolePlugin, createSecurityTeamPlugin } from "@webiny/api-security";
 import type { MailerContext } from "@webiny/api-mailer/types";
 import type { Context as LoggerContext } from "@webiny/api-log/types";
+import type { WebsiteBuilderContext } from "@webiny/api-website-builder";
 
 export interface Context
     extends ClientContext,
@@ -26,7 +27,8 @@ export interface Context
         FileManagerContext,
         AcoContext,
         LoggerContext,
-        CmsContext {}
+        CmsContext,
+        WebsiteBuilderContext {}
 
 export const createContextPlugin = <T extends Context = Context>(
     callable: ContextPluginCallable<T>

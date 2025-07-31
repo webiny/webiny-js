@@ -1,11 +1,9 @@
-import type { Context as BaseContext } from "@webiny/api-serverless-cms";
 import type { ISaveSettingsFeature, SettingsDto } from "./abstractions/ISaveSettings.feature";
 import { Settings } from "~/domain/Settings";
 import type { ISaveSettingsRepository } from "./abstractions/ISaveSettings.repository";
 import { SaveSettingsGateway } from "~/infrastructure/SaveSettings.gateway";
 import { SaveSettingsRepository } from "~/features/saveSettings/SaveSettings.repository";
-
-type Context = Pick<BaseContext, "db" | "tenancy">;
+import type { Context } from "~/types";
 
 export class SaveSettings implements ISaveSettingsFeature {
     private repository: ISaveSettingsRepository;

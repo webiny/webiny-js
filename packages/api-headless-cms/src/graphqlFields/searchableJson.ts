@@ -33,6 +33,9 @@ export const createSearchableJsonField = (): CmsModelFieldToGraphQLPlugin => {
             },
             createInputField({ field }) {
                 return createGraphQLInputField(field, "JSON");
+            },
+            createListFilters({ field }) {
+                return `${field.fieldId}: JSON`;
             }
         }
     };

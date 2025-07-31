@@ -15,3 +15,5 @@ const createContext = () => {
 export const createWebsiteBuilder = () => {
     return [createContext(), createGraphQL()];
 };
+
+export type { WebsiteBuilderContext };

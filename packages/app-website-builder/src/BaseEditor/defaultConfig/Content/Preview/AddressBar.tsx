@@ -19,7 +19,7 @@ export const AddressBar = () => {
         }
 
         setAddressBarUrl(`${previewDomain}${path}`);
-    }, [previewDomain]);
+    }, [path, previewDomain]);
 
     return (
         <div className="wby-w-full wby-h-[49px] wby-flex wby-flex-row wby-p-sm wby-bg-neutral-base wby-border-solid wby-border-b-sm wby-border-neutral-dimmed">

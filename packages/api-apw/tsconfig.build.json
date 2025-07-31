@@ -19,8 +19,8 @@
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../pubsub/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
-    { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../api-page-builder/tsconfig.build.json" },
+    { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {

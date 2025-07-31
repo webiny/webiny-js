@@ -25,6 +25,14 @@ export interface ListFoldersWhere {
     id_not_in?: string[];
     parentId?: string | null;
     parentId_in?: string[];
+    slug?: string;
+    slug_not?: string;
+    slug_contains?: string;
+    slug_not_contains?: string;
+    slug_in?: string[];
+    slug_not_in?: string[];
+    slug_startsWith?: string;
+    slug_not_startsWith?: string;
     path?: string;
     path_not?: string;
     path_contains?: string;

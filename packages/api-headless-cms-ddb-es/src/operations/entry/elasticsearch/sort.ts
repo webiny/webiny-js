@@ -6,6 +6,7 @@ import type { ModelFields } from "./types";
 import { hasKeyword } from "~/operations/entry/elasticsearch/keyword";
 import { createSearchPluginList } from "~/operations/entry/elasticsearch/plugins/search";
 import { createFieldPathFactory } from "~/operations/entry/elasticsearch/filtering/path";
+import { NoValueContainer } from "~/values/NoValueContainer.js";
 
 interface Params {
     plugins: PluginsContainer;
@@ -51,8 +52,9 @@ export const createElasticsearchSort = (params: Params): esSort => {
             const { path } = createFieldPath({
                 key: storageId,
                 field,
-                value: "",
-                keyword: false
+                value: NoValueContainer.create(),
+                keyword: false,
+                originalValue: NoValueContainer.create()
             });
             /**
              * Plugins must be stored with fieldId as key because it is later used to find the sorting plugin.

@@ -24,6 +24,9 @@ export class ViewportManager {
     private breakpoints: Breakpoint[] = [
         {
             name: "desktop",
+            title: "",
+            description: "",
+            icon: "",
             minWidth: 0,
             maxWidth: 4000
         }

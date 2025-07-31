@@ -58,7 +58,11 @@ import { assignBeforeEntryCreate } from "./contentEntry/beforeCreate";
 import { assignBeforeEntryUpdate } from "./contentEntry/beforeUpdate";
 import { assignAfterEntryDelete } from "./contentEntry/afterDelete";
 import type { Tenant } from "@webiny/api-tenancy/types";
-import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage";
+import {
+    createTransformEntryCallable,
+    entryFromStorageTransform,
+    entryToStorageTransform
+} from "~/utils/entryStorage";
 import { getSearchableFields } from "./contentEntry/searchableFields";
 import type { I18NLocale } from "@webiny/api-i18n/types";
 import { filterAsync } from "~/utils/filterAsync";
@@ -254,6 +258,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         onEntryAfterDelete
     });
 
+    const transformEntryFromStorageCallable = createTransformEntryCallable({
+        context
+    });
     /**
      * List entries
      */
@@ -264,7 +271,8 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         listPublishedUseCase,
         getEntryUseCase
     } = listEntriesUseCases({
-        operation: storageOperations.entries["list"],
+        transform: transformEntryFromStorageCallable,
+        operation: storageOperations.entries.list,
         accessControl,
         topics: { onEntryBeforeList },
         context,
@@ -275,6 +283,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
      * Get entries by ids
      */
     const { getEntriesByIdsUseCase } = getEntriesByIdsUseCases({
+        transform: transformEntryFromStorageCallable,
         operation: storageOperations.entries.getByIds,
         accessControl
     });
@@ -283,6 +292,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
      * Get latest entries by ids
      */
     const { getLatestEntriesByIdsUseCase } = getLatestEntriesByIdsUseCases({
+        transform: transformEntryFromStorageCallable,
         operation: storageOperations.entries.getLatestByIds,
         accessControl
     });
@@ -291,6 +301,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
      * Get published entries by ids
      */
     const { getPublishedEntriesByIdsUseCase } = getPublishedEntriesByIdsUseCases({
+        transform: transformEntryFromStorageCallable,
         operation: storageOperations.entries.getPublishedByIds,
         accessControl
     });
@@ -299,6 +310,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
      * Get revisions by entryId
      */
     const { getRevisionsByEntryIdUseCase } = getRevisionsByEntryIdUseCases({
+        transform: transformEntryFromStorageCallable,
         operation: storageOperations.entries.getRevisions,
         accessControl
     });
@@ -307,6 +319,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
      * Get revision by id
      */
     const { getRevisionByIdUseCase } = getRevisionByIdUseCases({
+        transform: transformEntryFromStorageCallable,
         operation: storageOperations.entries.getRevisionById
     });
 
@@ -318,6 +331,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         getLatestRevisionByEntryIdWithDeletedUseCase,
         getLatestRevisionByEntryIdDeletedUseCase
     } = getLatestRevisionByEntryIdUseCases({
+        transform: transformEntryFromStorageCallable,
         operation: storageOperations.entries.getLatestRevisionByEntryId
     });
 
@@ -325,6 +339,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
      * Get previous revision by entryId
      */
     const { getPreviousRevisionByEntryIdUseCase } = getPreviousRevisionByEntryIdUseCases({
+        transform: transformEntryFromStorageCallable,
         operation: storageOperations.entries.getPreviousRevision
     });
 
@@ -332,6 +347,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
      * Get published revision by entryId
      */
     const { getPublishedRevisionByEntryIdUseCase } = getPublishedRevisionByEntryIdUseCases({
+        transform: transformEntryFromStorageCallable,
         operation: storageOperations.entries.getPublishedRevisionByEntryId
     });
 
@@ -355,9 +371,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
      * Restore entry from bin
      */
     const { restoreEntryFromBinUseCase } = restoreEntryFromBinUseCases({
-        restoreOperation: storageOperations.entries.restoreFromBin,
+        transform: transformEntryFromStorageCallable,
         getEntry: getLatestRevisionByEntryIdDeletedUseCase,
         getIdentity: getSecurityIdentity,
+        restoreOperation: storageOperations.entries.restoreFromBin,
         topics: {
             onEntryBeforeRestoreFromBin,
             onEntryAfterRestoreFromBin,
@@ -984,7 +1001,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         return await deleteEntryUseCase.execute(model, id, options);
     };
-    const publishEntry: CmsEntryContext["publishEntry"] = async (model, id) => {
+    const publishEntry = async <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ) => {
         await accessControl.ensureCanAccessEntry({ model, pw: "p" });
 
         const originalStorageEntry = await getRevisionByIdUseCase.execute(model, { id });
@@ -1008,7 +1028,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         const latestEntry = await entryFromStorageTransform(context, model, latestStorageEntry);
 
-        const { entry } = await createPublishEntryData({
+        const { entry } = await createPublishEntryData<T>({
             context,
             model,
             originalEntry,
@@ -1058,7 +1078,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
     };
-    const unpublishEntry: CmsEntryContext["unpublishEntry"] = async (model, id) => {
+    const unpublishEntry = async <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ) => {
         await accessControl.ensureCanAccessEntry({ model, pw: "u" });
 
         const { id: entryId } = parseIdentifier(id);
@@ -1081,7 +1104,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         await accessControl.ensureCanAccessEntry({ model, entry: originalEntry, pw: "u" });
 
-        const { entry } = await createUnpublishEntryData({
+        const { entry } = await createUnpublishEntryData<T>({
             context,
             model,
             originalEntry,

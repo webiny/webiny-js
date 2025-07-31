@@ -48,6 +48,24 @@ export const createEntryRawData = () => {
     };
 };
 
+export const createEntryExpectedTransformedDatesData = () => {
+    const raw = createEntryRawData();
+    return {
+        ...raw,
+        dateOfBirth: new Date(raw.dateOfBirth).toISOString(),
+        information: {
+            ...raw.information,
+            subDateOfBirth: new Date(raw.information.subDateOfBirth).toISOString(),
+            subInformation: {
+                ...raw.information.subInformation,
+                subSecondSubDateOfBirth: new Date(
+                    raw.information.subInformation.subSecondSubDateOfBirth
+                ).toISOString()
+            }
+        }
+    };
+};
+
 export const createElasticsearchEntryConvertedData = async () => {
     return {
         values: {

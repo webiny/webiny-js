@@ -14,13 +14,12 @@ import {
     $isListNode,
     ListNode
 } from "@webiny/lexical-nodes";
-import type { TypographyStyle } from "@webiny/theme/types";
-import type { TypographyValue } from "@webiny/lexical-theme";
-import { useTheme } from "@webiny/app-admin";
+import { useWebsiteBuilderTheme } from "~/BaseEditor/components";
+import type { TypographyStyle } from "@webiny/website-builder-sdk/types/WebsiteBuilderTheme";
 
 export const TypographyDropDown = () => {
     const { value, applyTypography } = useTypographyAction();
-    const { theme } = useTheme();
+    const { theme } = useWebsiteBuilderTheme();
     const [styles, setStyles] = useState<TypographyStyle[]>([]);
     const { element } = useCurrentElement();
     const { rangeSelection } = useCurrentSelection();
@@ -76,7 +75,7 @@ export const TypographyDropDown = () => {
                 setStyles(getListStyles("ol"));
             }
         } else if ($isQuoteNode(element)) {
-            setStyles(theme?.styles.typography?.quotes || []);
+            setStyles(theme?.styles?.typography?.quotes || []);
         } else {
             setStyles([]);
         }
@@ -98,12 +97,7 @@ export const TypographyDropDown = () => {
                             className={`item typography-item ${
                                 value?.id === option.id ? "active dropdown-item-active" : ""
                             }`}
-                            onClick={() =>
-                                applyTypography({
-                                    ...option,
-                                    css: option.styles
-                                } as TypographyValue)
-                            }
+                            onClick={() => applyTypography(option)}
                             key={option.id}
                         >
                             <span className="text">{option.name}</span>

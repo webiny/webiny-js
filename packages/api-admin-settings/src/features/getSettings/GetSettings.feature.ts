@@ -1,11 +1,9 @@
-import type { Context as BaseContext } from "@webiny/api-serverless-cms";
 import type { IGetSettingsFeature } from "./abstractions/IGetSettings.feature";
 import type { IGetSettingsRepository } from "./abstractions/IGetSettings.repository";
 import type { Settings } from "~/domain/Settings";
 import { GetSettingsRepository } from "./GetSettings.repository";
 import { GetSettingsGateway } from "~/infrastructure/GetSettings.gateway";
-
-type Context = Pick<BaseContext, "db" | "tenancy">;
+import type { Context } from "~/types";
 
 export class GetSettings implements IGetSettingsFeature {
     private repository: IGetSettingsRepository;

@@ -1,7 +1,7 @@
 import type * as CSS from "csstype";
 import type { BindingsApi } from "~/BindingsApi";
 import type { ShorthandCssProperties } from "./types/ShorthandCssProperties";
-export type { WebsiteBuilderTheme } from "./types/WebsiteBuilderTheme";
+export type { WebsiteBuilderTheme, Breakpoint } from "./types/WebsiteBuilderTheme";
 
 interface CSSProperties extends CSS.Properties<string | number> {}
 
@@ -269,12 +269,6 @@ export interface IContentSdk {
     getPage(path: string): Promise<PublicPage | null>;
     listPages(options?: ListPagesOptions): Promise<PublicPage[]>;
 }
-
-export type Breakpoint = {
-    name: string;
-    minWidth: number;
-    maxWidth: number;
-};
 
 // Input types
 

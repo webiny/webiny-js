@@ -24,6 +24,6 @@ export const useBindingsForElement = (elementId: string) => {
                 inheritanceMap: inheritanceProcessor.getInheritanceMap(bindings, breakpoint.name)
             };
         },
-        [elementId, breakpoint.name]
+        [elementId, breakpoint.name, breakpoints.length]
     );
 };

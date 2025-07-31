@@ -47,8 +47,8 @@ export class StylesStore {
         const manifest = $getComponentManifestByElementId(editor, elementId ?? "");
         const inputsAst = ComponentManifestToAstConverter.convert(manifest?.inputs ?? []);
 
-        this.bindingsProcessor = new BindingsProcessor(this.breakpointNames);
-        this.inheritanceProcessor = new InheritanceProcessor(this.breakpointNames, inputsAst);
+        this.bindingsProcessor = new BindingsProcessor(breakpointNames);
+        this.inheritanceProcessor = new InheritanceProcessor(breakpointNames, inputsAst);
 
         const document = this.editor.getDocumentState().read();
         const editorState = this.editor.getEditorState().read();
@@ -95,12 +95,12 @@ export class StylesStore {
             this.currentBreakpoint
         );
 
-        this.localPreviewStyles = undefined;
-
         this.editor.updateDocument(document => {
             updatedStyles.applyToDocument(document);
             this.elementMetadata.applyToDocument(document);
         });
+
+        this.localPreviewStyles = undefined;
     };
 
     onPreviewChange = (

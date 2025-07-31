@@ -19,8 +19,8 @@
     { "path": "../plugins" },
     { "path": "../pubsub" },
     { "path": "../utils" },
-    { "path": "../handler-aws" },
     { "path": "../api-page-builder" },
+    { "path": "../handler-aws" },
     { "path": "../wcp" }
   ],
   "compilerOptions": {
@@ -64,10 +64,10 @@
       "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
-      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/api-page-builder/*": ["../api-page-builder/src/*"],
       "@webiny/api-page-builder": ["../api-page-builder/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     },

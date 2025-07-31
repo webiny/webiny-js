@@ -44,7 +44,7 @@ export type TypographyStyle = {
     className: string;
 };
 
-export type Typography = Partial<Record<TypographyType, Readonly<TypographyStyle[]>>>;
+export type Typography = Partial<Record<TypographyType, TypographyStyle[]>>;
 
 export type WebsiteBuilderThemeInput = {
     /**

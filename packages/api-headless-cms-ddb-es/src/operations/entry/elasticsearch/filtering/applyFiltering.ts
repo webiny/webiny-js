@@ -46,6 +46,7 @@ export const createApplyFiltering = ({
         const { basePath, path } = createFieldPath({
             field,
             value,
+            originalValue: initialValue,
             key,
             keyword
         });

@@ -8,8 +8,9 @@ import {
     DropdownMenu,
     FormComponentLabel
 } from "@webiny/admin-ui";
-import type { EditorBreakpoint } from "~/BaseEditor/hooks/useBreakpoint";
 import { useBreakpoint } from "~/BaseEditor/hooks/useBreakpoint";
+import { InlineSvg } from "~/BaseEditor/defaultConfig/Toolbar/InsertElements/InlineSvg";
+import type { Breakpoint } from "@webiny/website-builder-sdk";
 
 export interface InheritanceLabelProps {
     text: React.ReactNode;
@@ -18,9 +19,9 @@ export interface InheritanceLabelProps {
     inheritedFrom?: string;
 }
 
-const getBreakpointIcon = (breakpoints: EditorBreakpoint[], name: string) => {
+const getBreakpointIcon = (breakpoints: Breakpoint[], name: string) => {
     const bp = breakpoints.find(breakpoint => breakpoint.name === name);
-    return bp ? bp.icon : null;
+    return bp ? <InlineSvg src={bp.icon} /> : null;
 };
 
 const iconClassName = "wby-cursor-pointer wby-mr-xs wby-mb-[2px]";

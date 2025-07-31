@@ -1,7 +1,7 @@
 import { createContextHandler } from "./contextHandler";
 import { GetSettings } from "~/features/getSettings/GetSettings.feature";
-import type { Context } from "@webiny/api-serverless-cms";
 import { SaveSettings } from "~/features/saveSettings/SaveSettings.feature";
+import type { Context } from "./types";
 
 describe("Settings", () => {
     const { handle } = createContextHandler();

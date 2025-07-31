@@ -5,7 +5,7 @@ import type { CmsContext } from "~/types";
 import { defaultIdentity } from "~tests/testHelpers/tenancySecurity";
 import type { LambdaContext } from "@webiny/handler-aws/types";
 
-interface CmsHandlerEvent {
+export interface CmsHandlerEvent {
     path: string;
     headers: {
         ["x-tenant"]: string;
@@ -13,8 +13,8 @@ interface CmsHandlerEvent {
     };
 }
 
-type Params = CreateHandlerCoreParams;
-export const useHandler = (params: Params) => {
+export type UseHandlerParams = CreateHandlerCoreParams;
+export const useHandler = (params: UseHandlerParams) => {
     const core = createHandlerCore(params);
 
     const plugins = [...core.plugins].concat([

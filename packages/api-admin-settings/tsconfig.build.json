@@ -4,16 +4,15 @@
   "references": [
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },
-    { "path": "../api-serverless-cms/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-db/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
-    { "path": "../handler-db/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" }
   ],
   "compilerOptions": {

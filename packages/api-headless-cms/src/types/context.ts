@@ -181,11 +181,17 @@ export interface CmsEntryContext {
     /**
      * Publish entry.
      */
-    publishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
+    publishEntry: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ) => Promise<CmsEntry<T>>;
     /**
      * Unpublish entry.
      */
-    unpublishEntry: (model: CmsModel, id: string) => Promise<CmsEntry>;
+    unpublishEntry: <T extends CmsEntryValues = CmsEntryValues>(
+        model: CmsModel,
+        id: string
+    ) => Promise<CmsEntry<T>>;
     /**
      * Get all entry revisions.
      */
