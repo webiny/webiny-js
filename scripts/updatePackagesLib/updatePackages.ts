@@ -5,6 +5,7 @@ import { LatestVersionPackages } from "./LatestVersionPackages";
 import { ResolutionPackages } from "./ResolutionPackages";
 import { UpPackages } from "./UpPackages";
 import type { IUserInputResponse } from "./getUserInput";
+import { crateIsPackageExcluded } from "./crateIsPackageExcluded";
 
 const getAllPackages = (): string[] => {
     const workspaces = allWorkspaces() as string[];
@@ -37,7 +38,8 @@ export const updatePackages = async (params: IUpdatePackagesParams) => {
     const latestVersionPackages = await LatestVersionPackages.create();
 
     const updatable = await latestVersionPackages.getUpdatable({
-        packages: packages.packages
+        packages: packages.packages,
+        isPackageExcluded: crateIsPackageExcluded(params.input.exclude)
     });
     if (updatable.length === 0) {
         console.log("All packages are up-to-date. Exiting...");

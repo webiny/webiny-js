@@ -4,20 +4,26 @@ import type { IBasicPackage, IVersionedPackage } from "./types";
 
 export interface IGetUpdatableParams {
     packages: IBasicPackage[];
+    isPackageExcluded: (name: string) => boolean;
 }
 
 export class LatestVersionPackages {
     private readonly cache: WeakMap<IBasicPackage[], IVersionedPackage[]> = new WeakMap();
 
     public async getUpdatable(params: IGetUpdatableParams): Promise<IVersionedPackage[]> {
-        const cache = this.cache.get(params.packages);
+        const { isPackageExcluded } = params;
+
+        const targetPackages = params.packages.filter(pkg => {
+            return !isPackageExcluded(pkg.name);
+        });
+        const cache = this.cache.get(targetPackages);
         if (cache) {
             return cache;
         }
 
         const results: IVersionedPackage[] = [];
         await Promise.allSettled(
-            params.packages.map(async pkg => {
+            targetPackages.map(async pkg => {
                 try {
                     const result = await execa("npm", ["show", pkg.name, "version"]);
                     if (!result.stdout) {
@@ -45,7 +51,7 @@ export class LatestVersionPackages {
             })
         );
 
-        this.cache.set(params.packages, results);
+        this.cache.set(targetPackages, results);
         return results;
     }
 
