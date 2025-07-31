@@ -19004,7 +19004,6 @@ __metadata:
     babel-loader: "npm:9.2.1"
     classnames: "npm:^2.5.1"
     execa: "npm:^5.1.1"
-    keycode: "npm:^2.2.0"
     lodash: "npm:^4.17.21"
     ncp: "npm:^2.0.0"
     raw-loader: "npm:^4.0.2"
@@ -31747,13 +31746,6 @@ __metadata:
     jwa: "npm:^1.4.1"
     safe-buffer: "npm:^5.0.1"
   checksum: 10/70b016974af8a76d25030c80a0097b24ed5b17a9cf10f43b163c11cb4eb248d5d04a3fe48c0d724d2884c32879d878ccad7be0663720f46b464f662f7ed778fe
-  languageName: node
-  linkType: hard
-
-"keycode@npm:^2.2.0":
-  version: 2.2.1
-  resolution: "keycode@npm:2.2.1"
-  checksum: 10/049fddd666a6ce57c94f1e8fd0ad76692f4042ee2eed99801c4f41ca8749f979a05a8a092b5577c261cc750922ac29e147de2217bd705b50dc90df8324c840ad
   languageName: node
   linkType: hard
 
