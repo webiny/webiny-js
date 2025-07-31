@@ -31,7 +31,7 @@ export interface IPublishScheduleActionParams {
     service: ISchedulerService;
     cms: PublishScheduleActionCms;
     targetModel: CmsModel;
-    scheduleModel: CmsModel;
+    schedulerModel: CmsModel;
     getIdentity: () => CmsIdentity;
     fetcher: IScheduleFetcher;
 }
@@ -40,7 +40,7 @@ export class PublishScheduleAction implements IScheduleAction {
     private readonly service: ISchedulerService;
     private readonly cms: PublishScheduleActionCms;
     private readonly targetModel: CmsModel;
-    private readonly scheduleModel: CmsModel;
+    private readonly schedulerModel: CmsModel;
     private readonly getIdentity: () => CmsIdentity;
     private readonly fetcher: IScheduleFetcher;
 
@@ -48,7 +48,7 @@ export class PublishScheduleAction implements IScheduleAction {
         this.service = params.service;
         this.cms = params.cms;
         this.targetModel = params.targetModel;
-        this.scheduleModel = params.scheduleModel;
+        this.schedulerModel = params.schedulerModel;
         this.getIdentity = params.getIdentity;
         this.fetcher = params.fetcher;
     }
@@ -111,15 +111,18 @@ export class PublishScheduleAction implements IScheduleAction {
         }
 
         const { id: scheduleEntryId } = parseIdentifier(scheduleRecordId);
-        const scheduleEntry = await this.cms.createEntry<IScheduleEntryValues>(this.scheduleModel, {
-            id: scheduleEntryId,
-            targetId,
-            targetModelId: this.targetModel.modelId,
-            title,
-            type: ScheduleType.publish,
-            scheduledOn: dateToISOString(input.scheduleOn),
-            scheduledBy: identity
-        });
+        const scheduleEntry = await this.cms.createEntry<IScheduleEntryValues>(
+            this.schedulerModel,
+            {
+                id: scheduleEntryId,
+                targetId,
+                targetModelId: this.targetModel.modelId,
+                title,
+                type: ScheduleType.publish,
+                scheduledOn: dateToISOString(input.scheduleOn),
+                scheduledBy: identity
+            }
+        );
 
         try {
             await this.service.create({
@@ -132,7 +135,7 @@ export class PublishScheduleAction implements IScheduleAction {
             );
             console.log(convertException(ex));
             try {
-                await this.cms.deleteEntry(this.scheduleModel, scheduleRecordId);
+                await this.cms.deleteEntry(this.schedulerModel, scheduleRecordId);
             } catch (err) {
                 console.error(`Error while deleting schedule entry: ${scheduleRecordId}.`);
                 console.log(convertException(err));
@@ -181,7 +184,7 @@ export class PublishScheduleAction implements IScheduleAction {
         }
 
         await this.cms.updateEntry<Pick<IScheduleEntryValues, "scheduledOn" | "scheduledBy">>(
-            this.scheduleModel,
+            this.schedulerModel,
             original.id,
             {
                 scheduledBy: this.getIdentity(),
@@ -219,7 +222,7 @@ export class PublishScheduleAction implements IScheduleAction {
         }
 
         try {
-            await this.cms.deleteEntry(this.scheduleModel, scheduleEntry.id);
+            await this.cms.deleteEntry(this.schedulerModel, scheduleEntry.id);
         } catch (ex) {
             if (ex.code === "NOT_FOUND" || ex instanceof NotFoundError) {
                 return;

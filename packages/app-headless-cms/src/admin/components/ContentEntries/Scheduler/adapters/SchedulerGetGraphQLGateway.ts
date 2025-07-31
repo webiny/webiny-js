@@ -80,6 +80,12 @@ export class SchedulerGetGraphQLGateway implements ISchedulerGetGateway {
         if (!validated.success) {
             const err = createZodError(validated.error);
             console.error(err);
+            console.log(
+                JSON.stringify({
+                    err,
+                    ex: validated.error
+                })
+            );
             throw err;
         }
 

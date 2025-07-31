@@ -5,7 +5,8 @@ import {
     CellScheduledBy,
     CellScheduledOn,
     CellTitle,
-    CellType
+    CellType,
+    CellRevision
 } from "~/Presentation/components/Cells";
 import { CancelItemAction } from "~/Presentation/components/Actions";
 
@@ -22,6 +23,12 @@ export const SchedulerConfigs = () => {
                     sortable={true}
                     hideable={false}
                     size={200}
+                />
+                <Browser.Table.Column
+                    name={"revision"}
+                    header={"Revision"}
+                    cell={<CellRevision />}
+                    hideable={false}
                 />
                 <Browser.Table.Column
                     name={"scheduledBy"}

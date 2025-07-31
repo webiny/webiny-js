@@ -7,6 +7,8 @@ import type { SchedulerEntry } from "~/types";
 import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
 import type { IScheduleDialogAction } from "./types";
 import { ScheduleType } from "~/types.js";
+import type { Validator } from "@webiny/validation/types.js";
+import ValidationError from "@webiny/validation/validationError.js";
 
 export interface ShowDialogParamsEntry {
     id: string;
@@ -31,6 +33,16 @@ interface FormComponentProps {
     onCancel: OnCancelCallable;
 }
 
+const dateToLocaleStringFormatter = new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: undefined,
+    hour12: false
+});
+
 const ReschedulingAlert = ({ scheduleOn, type }: FormComponentProps) => {
     if (!scheduleOn || !type) {
         return null;
@@ -39,9 +51,9 @@ const ReschedulingAlert = ({ scheduleOn, type }: FormComponentProps) => {
     return (
         <Alert type={"danger"}>
             <>
-                There already is scheduled {actionName} on
+                A {actionName} is already scheduled at
                 <br />
-                <strong>{scheduleOn.toLocaleString()}</strong>.
+                <strong>{dateToLocaleStringFormatter.format(scheduleOn)}</strong>.
             </>
         </Alert>
     );
@@ -64,13 +76,31 @@ const formatDateForDateTimeLocal = (date?: Date): string | undefined => {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
+const minDateValidator: Validator = (input: string) => {
+    const value = new Date(input);
+    const minDate = new Date(new Date().getTime() + 120 * 1000);
+    if (minDate < value) {
+        return;
+    }
+    throw new ValidationError(
+        `The date must be at least 2 minutes in the future. Current minimum date is ${dateToLocaleStringFormatter.format(
+            minDate
+        )}.`
+    );
+};
+
+minDateValidator.validatorName = "minDateValidator";
+
 const FormComponent = ({ scheduleOn, onCancel, type }: FormComponentProps) => {
     return (
         <>
             {<ReschedulingAlert type={type} scheduleOn={scheduleOn} onCancel={onCancel} />}
             <Grid>
                 <Grid.Column span={12}>
-                    <Bind name={"scheduleOn"} validators={[validation.create("required")]}>
+                    <Bind
+                        name={"scheduleOn"}
+                        validators={[validation.create("required"), minDateValidator]}
+                    >
                         <Input
                             title={"Schedule On"}
                             label={"Schedule On"}
@@ -156,7 +186,7 @@ export const useScheduleDialog = (): UseShowScheduleDialogResponse => {
         const scheduleOnValue = schedulerEntry?.publishOn || schedulerEntry?.unpublishOn;
 
         dialogClose.current = dialog.showDialog({
-            title: `Scheduling "${entry.title}"`,
+            title: `Schedule "${entry.title}"`,
             content: (
                 <FormComponent
                     type={schedulerEntry?.type}

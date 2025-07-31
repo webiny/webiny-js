@@ -17,7 +17,7 @@ export class Scheduler implements IScheduler {
     private readonly fetcher: IScheduleFetcher;
     private readonly executor: IScheduleExecutor;
 
-    constructor(params: ISchedulerParams) {
+    public constructor(params: ISchedulerParams) {
         this.fetcher = params.fetcher;
         this.executor = params.executor;
     }

@@ -77,7 +77,7 @@ export const ScheduleEntryMenuItem = () => {
         return null;
     }
 
-    const action = entry.meta.status === "published" ? "unpublish" : "publish";
+    const action = entry.meta?.status === "published" ? "unpublish" : "publish";
 
     return (
         <>
@@ -85,7 +85,7 @@ export const ScheduleEntryMenuItem = () => {
                 icon={<ScheduleIcon />}
                 label={`Schedule ${action}`}
                 onAction={showDialog}
-                disabled={!entry?.id || loading}
+                disabled={!entry?.meta?.status || loading}
                 data-testid={"cms.content-form.header.schedule"}
             />
         </>

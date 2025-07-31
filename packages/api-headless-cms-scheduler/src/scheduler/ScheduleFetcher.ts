@@ -16,17 +16,17 @@ export type ScheduleFetcherCms = Pick<HeadlessCms, "getEntryById" | "listLatestE
 export interface IScheduleFetcherParams {
     cms: ScheduleFetcherCms;
     targetModel: CmsModel;
-    scheduleModel: CmsModel;
+    schedulerModel: CmsModel;
 }
 
 export class ScheduleFetcher implements IScheduleFetcher {
     private readonly cms: ScheduleFetcherCms;
     private readonly targetModel: CmsModel;
-    private readonly scheduleModel: CmsModel;
+    private readonly schedulerModel: CmsModel;
 
     constructor(params: IScheduleFetcherParams) {
         this.cms = params.cms;
-        this.scheduleModel = params.scheduleModel;
+        this.schedulerModel = params.schedulerModel;
         this.targetModel = params.targetModel;
     }
 
@@ -34,7 +34,7 @@ export class ScheduleFetcher implements IScheduleFetcher {
         const scheduleRecordId = createScheduleRecordIdWithVersion(targetId);
         try {
             const entry = await this.cms.getEntryById<IScheduleEntryValues>(
-                this.scheduleModel,
+                this.schedulerModel,
                 scheduleRecordId
             );
             return transformScheduleEntry(this.targetModel, entry);
@@ -50,7 +50,7 @@ export class ScheduleFetcher implements IScheduleFetcher {
 
     public async listScheduled(params: ISchedulerListParams): Promise<ISchedulerListResponse> {
         const [data, meta] = await this.cms.listLatestEntries<IScheduleEntryValues>(
-            this.scheduleModel,
+            this.schedulerModel,
             {
                 sort: params.sort,
                 limit: params.limit,

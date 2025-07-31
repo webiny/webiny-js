@@ -31,7 +31,7 @@ export interface IUnpublishScheduleActionParams {
     service: ISchedulerService;
     cms: UnpublishScheduleActionCms;
     targetModel: CmsModel;
-    scheduleModel: CmsModel;
+    schedulerModel: CmsModel;
     getIdentity: () => CmsIdentity;
     fetcher: IScheduleFetcher;
 }
@@ -40,7 +40,7 @@ export class UnpublishScheduleAction implements IScheduleAction {
     private readonly service: ISchedulerService;
     private readonly cms: UnpublishScheduleActionCms;
     private readonly targetModel: CmsModel;
-    private readonly scheduleModel: CmsModel;
+    private readonly schedulerModel: CmsModel;
     private readonly getIdentity: () => CmsIdentity;
     private readonly fetcher: IScheduleFetcher;
 
@@ -48,7 +48,7 @@ export class UnpublishScheduleAction implements IScheduleAction {
         this.service = params.service;
         this.cms = params.cms;
         this.targetModel = params.targetModel;
-        this.scheduleModel = params.scheduleModel;
+        this.schedulerModel = params.schedulerModel;
         this.getIdentity = params.getIdentity;
         this.fetcher = params.fetcher;
     }
@@ -104,16 +104,19 @@ export class UnpublishScheduleAction implements IScheduleAction {
          */
 
         const { id: scheduleEntryId } = parseIdentifier(scheduleRecordId);
-        const scheduleEntry = await this.cms.createEntry<IScheduleEntryValues>(this.scheduleModel, {
-            id: scheduleEntryId,
-            targetId,
-            targetModelId: this.targetModel.modelId,
-            title,
-            type: ScheduleType.unpublish,
-            // dateOn: input.dateOn ? dateToISOString(input.dateOn) : undefined,
-            scheduledBy: identity,
-            scheduledOn: dateToISOString(input.scheduleOn)
-        });
+        const scheduleEntry = await this.cms.createEntry<IScheduleEntryValues>(
+            this.schedulerModel,
+            {
+                id: scheduleEntryId,
+                targetId,
+                targetModelId: this.targetModel.modelId,
+                title,
+                type: ScheduleType.unpublish,
+                // dateOn: input.dateOn ? dateToISOString(input.dateOn) : undefined,
+                scheduledBy: identity,
+                scheduledOn: dateToISOString(input.scheduleOn)
+            }
+        );
 
         try {
             await this.service.create({
@@ -126,7 +129,7 @@ export class UnpublishScheduleAction implements IScheduleAction {
             );
             console.log(convertException(ex));
             try {
-                await this.cms.deleteEntry(this.scheduleModel, scheduleRecordId);
+                await this.cms.deleteEntry(this.schedulerModel, scheduleRecordId);
             } catch (err) {
                 console.error(`Error while deleting schedule entry: ${scheduleRecordId}.`);
                 console.log(convertException(err));
@@ -175,7 +178,7 @@ export class UnpublishScheduleAction implements IScheduleAction {
         }
 
         await this.cms.updateEntry<Pick<IScheduleEntryValues, "scheduledOn">>(
-            this.scheduleModel,
+            this.schedulerModel,
             original.id,
             {
                 scheduledOn: dateToISOString(input.scheduleOn)
@@ -217,7 +220,7 @@ export class UnpublishScheduleAction implements IScheduleAction {
         }
 
         try {
-            await this.cms.deleteEntry(this.scheduleModel, scheduleRecord.id);
+            await this.cms.deleteEntry(this.schedulerModel, scheduleRecord.id);
         } catch (ex) {
             if (ex.code === "NOT_FOUND" || ex instanceof NotFoundError) {
                 return;

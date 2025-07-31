@@ -9,20 +9,30 @@ import type { ScheduleExecutorCms } from "./ScheduleExecutor.js";
 import { ScheduleExecutor } from "./ScheduleExecutor.js";
 import { PublishScheduleAction } from "~/scheduler/actions/PublishScheduleAction.js";
 import { UnpublishScheduleAction } from "~/scheduler/actions/UnpublishScheduleAction.js";
+import { WebinyError } from "@webiny/error";
 
 export interface ICreateSchedulerParams {
     security: Pick<CmsContext["security"], "getIdentity">;
     cms: ScheduleExecutorCms & ScheduleFetcherCms;
     service: ISchedulerService;
-    scheduleModel: CmsModel;
+    schedulerModel: CmsModel;
 }
 
 export const createScheduler = async (
     params: ICreateSchedulerParams
 ): Promise<CmsScheduleCallable> => {
-    const { cms, security, scheduleModel, service } = params;
+    const { cms, security, schedulerModel, service } = params;
 
     return (targetModel): IScheduler => {
+        if (targetModel.isPrivate) {
+            throw new WebinyError(
+                "Cannot create a scheduler for private models.",
+                "PRIVATE_MODEL_ERROR",
+                {
+                    modelId: targetModel.modelId
+                }
+            );
+        }
         const getIdentity = () => {
             const identity = security.getIdentity();
             if (!identity) {
@@ -33,14 +43,14 @@ export const createScheduler = async (
 
         const fetcher = new ScheduleFetcher({
             targetModel,
-            scheduleModel,
+            schedulerModel,
             cms
         });
 
         const actions = [
             new PublishScheduleAction({
                 cms,
-                scheduleModel,
+                schedulerModel,
                 targetModel,
                 service,
                 getIdentity,
@@ -48,7 +58,7 @@ export const createScheduler = async (
             }),
             new UnpublishScheduleAction({
                 cms,
-                scheduleModel,
+                schedulerModel,
                 targetModel,
                 service,
                 getIdentity,
