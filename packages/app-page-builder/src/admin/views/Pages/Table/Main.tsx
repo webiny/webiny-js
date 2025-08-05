@@ -113,6 +113,7 @@ export const Main = ({ folderId: initialFolderId }: Props) => {
                     onCreateFolder={onCreateFolder}
                     selected={list.selected}
                     searchValue={list.search}
+                    searchPlaceholder={"Search..."}
                     onSearchChange={list.setSearch}
                 />
                 <BulkActions />

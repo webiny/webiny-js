@@ -19,6 +19,7 @@ export interface HeaderProps {
     onCreateFolder: (event?: React.SyntheticEvent) => void;
     selected: SearchRecordItem<PbPageDataItem>[];
     searchValue: string;
+    searchPlaceholder: string;
     onSearchChange: (value: string) => void;
 }
 
@@ -31,6 +32,7 @@ export const Header = ({
     title,
     selected,
     searchValue,
+    searchPlaceholder,
     onSearchChange
 }: HeaderProps) => {
     return (
@@ -41,7 +43,11 @@ export const Header = ({
                 </Cell>
                 <Cell span={8}>
                     <WrapperActions>
-                        <Search value={searchValue} onChange={onSearchChange} />
+                        <Search
+                            placeholder={searchPlaceholder}
+                            value={searchValue}
+                            onChange={onSearchChange}
+                        />
                         <Divider />
                         <TableActions selected={selected} onImportPage={onImportPage} />
                         <Divider />
