@@ -6,5 +6,9 @@ export const CellModified = () => {
     const { useTableRow } = PageListConfig.Browser.Table.Column;
     const { row } = useTableRow();
 
+    if (!row.savedOn) {
+        return <>{"-"}</>;
+    }
+
     return <TimeAgo datetime={row.savedOn} />;
 };

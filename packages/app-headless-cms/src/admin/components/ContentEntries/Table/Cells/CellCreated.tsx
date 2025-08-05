@@ -6,5 +6,9 @@ export const CellCreated = () => {
     const { useTableRow } = ContentEntryListConfig.Browser.Table.Column;
     const { row } = useTableRow();
 
+    if (!row.createdOn) {
+        return <>{"-"}</>;
+    }
+
     return <TimeAgo datetime={row.createdOn} />;
 };
