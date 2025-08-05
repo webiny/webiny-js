@@ -5,13 +5,14 @@ import { SearchWrapper } from "./styled";
 
 interface SearchProps {
     value: string;
+    placeholder: string;
     onChange: (value: string) => void;
 }
 
-export const Search = ({ value, onChange }: SearchProps) => {
+export const Search = ({ value, placeholder, onChange }: SearchProps) => {
     return (
         <SearchWrapper>
-            <SearchUI value={value} onChange={onChange} />
+            <SearchUI value={value} inputPlaceholder={placeholder} onChange={onChange} />
         </SearchWrapper>
     );
 };
