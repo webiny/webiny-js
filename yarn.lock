@@ -18531,7 +18531,7 @@ __metadata:
   dependencies:
     "@webiny/di-container": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    typescript: "npm:5.3.3"
+    typescript: "npm:5.5.4"
   languageName: unknown
   linkType: soft
 
