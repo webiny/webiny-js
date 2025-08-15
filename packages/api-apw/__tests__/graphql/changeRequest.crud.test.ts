@@ -362,6 +362,6 @@ describe("ChangeRequest crud test", () => {
         /**
          * Test expects the mock function to be called as it represents creating notification text and body.
          */
-        expect(fn).toBeCalledTimes(1);
+        expect(fn).toHaveBeenCalledTimes(1);
     });
 });

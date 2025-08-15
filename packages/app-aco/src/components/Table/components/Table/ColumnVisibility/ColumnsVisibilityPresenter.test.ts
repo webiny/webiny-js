@@ -75,7 +75,7 @@ describe("ColumnsVisibilityPresenter", () => {
         // Let's init the ColumnsPresenter
         await columnsPresenter.init();
 
-        expect(defaultGateway.get).toBeCalledTimes(1);
+        expect(defaultGateway.get).toHaveBeenCalledTimes(1);
 
         expect(columnsVisibilityPresenter.vm).toEqual({
             columnsVisibility: {
@@ -105,7 +105,7 @@ describe("ColumnsVisibilityPresenter", () => {
         // Let's init the ColumnsPresenter
         await columnsPresenter.init();
 
-        expect(gateway.get).toBeCalledTimes(1);
+        expect(gateway.get).toHaveBeenCalledTimes(1);
 
         expect(columnsVisibilityPresenter.vm).toEqual({
             columnsVisibility: {

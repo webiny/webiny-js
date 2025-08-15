@@ -88,7 +88,7 @@ describe("AdvancedSearchPresenter", () => {
         // let's load some filters
         await presenter.load();
 
-        expect(gateway.list).toBeCalledTimes(1);
+        expect(gateway.list).toHaveBeenCalledTimes(1);
 
         expect(presenter.vm).toEqual({
             appliedFilter: null,
@@ -312,7 +312,7 @@ describe("AdvancedSearchPresenter", () => {
 
         await persistPromise;
 
-        expect(gateway.create).toBeCalledTimes(1);
+        expect(gateway.create).toHaveBeenCalledTimes(1);
         expect(gateway.create).toHaveBeenCalledWith({
             id: expect.any(String),
             name: "Draft filter",
@@ -418,7 +418,7 @@ describe("AdvancedSearchPresenter", () => {
 
         await persistPromise;
 
-        expect(gateway.update).toBeCalledTimes(1);
+        expect(gateway.update).toHaveBeenCalledTimes(1);
         expect(gateway.update).toHaveBeenCalledWith({
             id: "filter-1",
             name: "Filter 1",
@@ -497,7 +497,7 @@ describe("AdvancedSearchPresenter", () => {
 
         await persistPromise;
 
-        expect(gateway.update).toBeCalledTimes(1);
+        expect(gateway.update).toHaveBeenCalledTimes(1);
         expect(gateway.update).toHaveBeenCalledWith({
             id: "filter-1",
             name: `${filter1.name} - Edit`,
@@ -593,7 +593,7 @@ describe("AdvancedSearchPresenter", () => {
 
         await persistPromise;
 
-        expect(gateway.create).toBeCalledTimes(1);
+        expect(gateway.create).toHaveBeenCalledTimes(1);
         expect(gateway.create).toHaveBeenCalledWith({
             id: expect.any(String),
             name: `Clone of ${filter1.name}`,
@@ -637,7 +637,7 @@ describe("AdvancedSearchPresenter", () => {
 
         // Let's delete a filter
         await presenter.deleteFilter("filter-1");
-        expect(gateway.delete).toBeCalledTimes(1);
+        expect(gateway.delete).toHaveBeenCalledTimes(1);
         expect(gateway.delete).toHaveBeenCalledWith("filter-1");
         expect(presenter.vm).toMatchObject({
             currentFilter: null,

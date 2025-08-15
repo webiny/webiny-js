@@ -367,7 +367,7 @@ describe("BatchEditorDialogPresenter", () => {
 
         presenter.onApply(onSuccess, onError);
 
-        expect(onError).toBeCalledTimes(1);
+        expect(onError).toHaveBeenCalledTimes(1);
         expect(Object.keys(presenter.vm.invalidFields).length).toBe(1);
 
         presenter.setBatch({
@@ -390,7 +390,7 @@ describe("BatchEditorDialogPresenter", () => {
 
         presenter.onApply(onSuccess, onError);
 
-        expect(onSuccess).toBeCalledTimes(1);
+        expect(onSuccess).toHaveBeenCalledTimes(1);
         expect(presenter.vm.invalidFields).toEqual({});
     });
 });

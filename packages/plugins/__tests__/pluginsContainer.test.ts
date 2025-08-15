@@ -151,8 +151,8 @@ describe("plugins", () => {
             expect(found).toHaveLength(5);
         }
 
-        expect(findByTypeSpy).toBeCalledTimes(1);
-        expect(byTypeSpy).toBeCalledTimes(50);
+        expect(findByTypeSpy).toHaveBeenCalledTimes(1);
+        expect(byTypeSpy).toHaveBeenCalledTimes(50);
 
         jest.restoreAllMocks();
     });
@@ -187,8 +187,8 @@ describe("plugins", () => {
             }
         }
 
-        expect(findByTypeSpy).toBeCalledTimes(register.length + 1);
-        expect(byTypeSpy).toBeCalledTimes(51);
+        expect(findByTypeSpy).toHaveBeenCalledTimes(register.length + 1);
+        expect(byTypeSpy).toHaveBeenCalledTimes(51);
 
         jest.restoreAllMocks();
     });
@@ -231,8 +231,8 @@ describe("plugins", () => {
         }
 
         // we have mock registration and then first search
-        expect(findByTypeSpy).toBeCalledTimes(unregister.length + 2);
-        expect(byTypeSpy).toBeCalledTimes(endId + 1);
+        expect(findByTypeSpy).toHaveBeenCalledTimes(unregister.length + 2);
+        expect(byTypeSpy).toHaveBeenCalledTimes(endId + 1);
 
         jest.restoreAllMocks();
     });

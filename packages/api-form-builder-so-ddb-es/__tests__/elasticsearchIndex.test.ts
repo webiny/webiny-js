@@ -55,9 +55,7 @@ describe("Elasticsearch index", () => {
                 tenant: null,
                 locale: "en-US"
             });
-        }).toThrowError(
-            `Missing "tenant" parameter when trying to create Elasticsearch index name.`
-        );
+        }).toThrow(`Missing "tenant" parameter when trying to create Elasticsearch index name.`);
     });
 
     it("should throw error when missing locale but it is required", async () => {
@@ -73,9 +71,7 @@ describe("Elasticsearch index", () => {
                 // @ts-expect-error
                 locale: null
             });
-        }).toThrowError(
-            `Missing "locale" parameter when trying to create Elasticsearch index name.`
-        );
+        }).toThrow(`Missing "locale" parameter when trying to create Elasticsearch index name.`);
     });
 
     it.each(withLocaleItems)(

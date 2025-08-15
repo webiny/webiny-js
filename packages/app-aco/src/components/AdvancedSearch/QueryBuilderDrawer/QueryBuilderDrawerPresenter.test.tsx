@@ -300,7 +300,7 @@ describe("QueryBuilderDrawerPresenter", () => {
 
         presenter.onApply(onSuccess, onError);
 
-        expect(onError).toBeCalledTimes(1);
+        expect(onError).toHaveBeenCalledTimes(1);
         expect(Object.keys(presenter.vm.invalidFields).length).toBe(1);
         expect(presenter.vm.invalidMessage.length).toBeGreaterThanOrEqual(1);
 
@@ -326,7 +326,7 @@ describe("QueryBuilderDrawerPresenter", () => {
 
         presenter.onApply(onSuccess, onError);
 
-        expect(onSuccess).toBeCalledTimes(1);
+        expect(onSuccess).toHaveBeenCalledTimes(1);
         expect(presenter.vm.invalidFields).toEqual({});
         expect(presenter.vm.invalidMessage.length).toBe(0);
     });
@@ -360,7 +360,7 @@ describe("QueryBuilderDrawerPresenter", () => {
 
         presenter.onSave(onSuccess, onError);
 
-        expect(onError).toBeCalledTimes(1);
+        expect(onError).toHaveBeenCalledTimes(1);
         expect(Object.keys(presenter.vm.invalidFields).length).toBe(1);
         expect(presenter.vm.invalidMessage.length).toBeGreaterThanOrEqual(1);
 
@@ -386,7 +386,7 @@ describe("QueryBuilderDrawerPresenter", () => {
 
         presenter.onSave(onSuccess, onError);
 
-        expect(onSuccess).toBeCalledTimes(1);
+        expect(onSuccess).toHaveBeenCalledTimes(1);
         expect(presenter.vm.invalidFields).toEqual({});
         expect(presenter.vm.invalidMessage.length).toBe(0);
     });

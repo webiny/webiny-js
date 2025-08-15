@@ -7,7 +7,6 @@
     { "path": "../api-i18n" },
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
-    { "path": "../api-tenant-manager" },
     { "path": "../error" },
     { "path": "../handler-graphql" }
   ],
@@ -28,8 +27,6 @@
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
-      "@webiny/api-tenant-manager/*": ["../api-tenant-manager/src/*"],
-      "@webiny/api-tenant-manager": ["../api-tenant-manager/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
