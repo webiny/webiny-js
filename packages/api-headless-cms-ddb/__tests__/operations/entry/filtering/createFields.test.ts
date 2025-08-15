@@ -444,6 +444,7 @@ const expectedSystemFields: Record<string, Field> = {
         transform: expect.any(Function),
         label: "Version"
     },
+
     status: {
         id: "status",
         parents: [],
@@ -503,6 +504,18 @@ describe("create system and model fields", () => {
 
         const expected: ExpectedFields = {
             ...expectedSystemFields,
+            settings: {
+                createPath: expect.any(Function),
+                fieldId: "settings",
+                id: "settings",
+                label: "Settings",
+                multipleValues: false,
+                parents: [],
+                storageId: "searchableJson@settings",
+                system: false,
+                transform: expect.any(Function),
+                type: "searchable-json"
+            },
             title: {
                 id: "title",
                 parents: [],
