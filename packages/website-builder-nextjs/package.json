@@ -27,7 +27,7 @@
     "@webiny/project-utils": "0.0.0",
     "next": "^15",
     "typescript": "5.3.3",
-    "webpack": "^5"
+    "webpack": "^5.97.0"
   },
   "publishConfig": {
     "access": "public",
