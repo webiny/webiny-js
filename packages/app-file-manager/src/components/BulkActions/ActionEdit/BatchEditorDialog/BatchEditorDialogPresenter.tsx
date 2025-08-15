@@ -57,7 +57,7 @@ export class BatchEditorDialogPresenter implements IBatchEditorDialogPresenter {
 
     get vm() {
         const operations = this.getOperations();
-        const canAddOperation = operations[operations.length - 1]?.fieldOptions.length > 1 ?? false;
+        const canAddOperation = operations[operations.length - 1]?.fieldOptions.length > 1 || false;
 
         return {
             invalidFields: this.invalidFields,

@@ -81,7 +81,7 @@ export class PageSettingsView extends OverlayView {
     public getActiveSection(): PageSettingsTabElementConfig | null {
         const { activeSection } = this.getPageSettingsHook();
         if (!activeSection) {
-            return this._sections.values().next().value;
+            return this._sections.values().next().value || null;
         }
         return this._sections.get(activeSection) || null;
     }

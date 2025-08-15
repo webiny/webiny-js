@@ -56,7 +56,10 @@ const ElementInputUi = ({ inputName, label }: ElementInputUiProps) => {
     return (
         <>
             <DelayedOnChange value={value} onChange={onChange}>
-                {({ value, onChange }) => <Input label={label} value={value} onChange={onChange} />}
+                {({ value, onChange }) => {
+                    // @ts-expect-error TODO
+                    return <Input label={label} value={value} onChange={onChange} />;
+                }}
             </DelayedOnChange>
         </>
     );

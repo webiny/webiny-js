@@ -32,7 +32,7 @@
     "pirates": "^4.0.6",
     "semver": "^7.6.3",
     "ts-morph": "^11.0.0",
-    "typescript": "5.5.4",
+    "typescript": "5.6.3",
     "uniqid": "^5.4.0",
     "yargs": "^17.7.2"
   },

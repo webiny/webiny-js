@@ -41,7 +41,8 @@ export const createFilterOperations = (
                     ...params,
                     sort: createListSort(sort),
                     where: {
-                        ...({ ...where, createdBy } || {})
+                        ...where,
+                        createdBy
                     }
                 });
 

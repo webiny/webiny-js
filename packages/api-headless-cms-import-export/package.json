@@ -45,7 +45,7 @@
     "adm-zip": "^0.5.14",
     "aws-sdk-client-mock": "^4.1.0",
     "graphql": "^15.9.0",
-    "typescript": "5.5.4"
+    "typescript": "5.6.3"
   },
   "scripts": {
     "build": "node ../cli/bin.js run build",
