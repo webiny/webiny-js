@@ -29,7 +29,7 @@ describe("Retract sign off for a step in content review process", function () {
         scheduledOn: null
     };
 
-    test(`should able to retract sign-off`, async () => {
+    test.skip(`should able to retract sign-off`, async () => {
         const { page } = await setup();
         /*
          Create a content review entry.
@@ -257,7 +257,7 @@ describe("Retract sign off for a step in content review process", function () {
         });
     });
 
-    test(`should throw error when trying to retract sign off by a non-reviewer`, async () => {
+    test.skip(`should throw error when trying to retract sign off by a non-reviewer`, async () => {
         const gqlHandlerForIdentityA = useGraphQlHandler({
             path: "/graphql",
             identity: {

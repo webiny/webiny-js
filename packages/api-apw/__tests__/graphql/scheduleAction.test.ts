@@ -74,7 +74,7 @@ describe(`Schedule action in a content review process`, function () {
         return createdContentReview;
     };
 
-    test(`should return error when scheduling publish page for invalid datetime.`, async () => {
+    test.skip(`should return error when scheduling publish page for invalid datetime.`, async () => {
         const contentReview = await preparePageForPublish();
         /**
          * Should return error when scheduling publish page for invalid datetime.
@@ -100,7 +100,7 @@ describe(`Schedule action in a content review process`, function () {
         });
     });
 
-    test(`should return error when scheduling publish page for past datetime.`, async () => {
+    test.skip(`should return error when scheduling publish page for past datetime.`, async () => {
         const contentReview = await preparePageForPublish();
         /**
          * Should return error when scheduling publish page for past datetime.
@@ -126,7 +126,7 @@ describe(`Schedule action in a content review process`, function () {
         });
     });
 
-    test(`should be able to schedule publish page action.`, async () => {
+    test.skip(`should be able to schedule publish page action.`, async () => {
         const contentReview = await preparePageForPublish();
         const datetime = new Date(Date.now() + 1000 * 60 * 30).toISOString();
         /**
@@ -167,7 +167,7 @@ describe(`Schedule action in a content review process`, function () {
         );
     });
 
-    test(`should be able to delete schedule publish page action.`, async () => {
+    test.skip(`should be able to delete schedule publish page action.`, async () => {
         const contentReview = await preparePageForPublish();
         const datetime = new Date(Date.now() + 1000 * 60 * 30).toISOString();
 

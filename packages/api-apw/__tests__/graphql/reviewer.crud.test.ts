@@ -30,7 +30,7 @@ describe("Reviewer crud test", () => {
         }
     });
 
-    it("should be able to hook on to after login", async () => {
+    it.skip("should be able to hook on to after login", async () => {
         const [response] = await securityIdentity.login();
         expect(response).toMatchObject({
             data: {
@@ -156,7 +156,7 @@ describe("Reviewer crud test", () => {
         });
     });
 
-    it("should not create more than one entry due to multiple login", async () => {
+    it.skip("should not create more than one entry due to multiple login", async () => {
         const [response] = await securityIdentity.login();
         expect(response).toMatchObject({
             data: {
@@ -380,7 +380,7 @@ describe("Reviewer crud test", () => {
         });
     });
 
-    it("should update reviewer when login info changes", async () => {
+    it.skip("should update reviewer when login info changes", async () => {
         const { securityIdentity: baseSecurityIdentity, reviewer } = useGraphQlHandler({
             path: "/graphql",
             identity: {

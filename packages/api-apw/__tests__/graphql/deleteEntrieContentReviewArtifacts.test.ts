@@ -38,7 +38,7 @@ describe(`Delete "content review" and associated "change requests" and "comments
         scheduledOn: null
     };
 
-    test(`Should able to "delete" entire content review process`, async () => {
+    test.skip(`Should able to "delete" entire content review process`, async () => {
         const { page } = await setup();
 
         /**

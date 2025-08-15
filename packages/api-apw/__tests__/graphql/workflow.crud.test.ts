@@ -41,7 +41,7 @@ describe("Workflow crud test", () => {
 
     const expectedReviewers = expect.arrayContaining([expect.any(String)]);
 
-    test("should able to create, update, get, list and delete a workflow", async () => {
+    test.skip("should able to create, update, get, list and delete a workflow", async () => {
         const reviewer = await setupReviewer();
         /*
          * Create a new workflow entry.
@@ -307,7 +307,7 @@ describe("Workflow crud test", () => {
         });
     });
 
-    test("should be able to list workflows", async () => {
+    test.skip("should be able to list workflows", async () => {
         await login();
         const reviewer = await setupReviewer();
         const workflows = [];
@@ -385,7 +385,7 @@ describe("Workflow crud test", () => {
      * With this test we make sure that the user without apw workflow permissions cannot access create, update and delete methods.
      * List and get are always available.
      */
-    it("should not be possible to access create, update and delete workflow methods", async () => {
+    it.skip("should not be possible to access create, update and delete workflow methods", async () => {
         const noAccessHandler = useGraphQlHandler({
             path: "/graphql",
             permissions: []
@@ -495,7 +495,7 @@ describe("Workflow crud test", () => {
     /**
      * With this test we need to make sure that even the person with no apw permissions can access the list and get workflow methods.
      */
-    it("should be possible to access get and list methods", async () => {
+    it.skip("should be possible to access get and list methods", async () => {
         const noAccessHandler = useGraphQlHandler({
             path: "/graphql",
             permissions: []

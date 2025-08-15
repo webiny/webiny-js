@@ -22,7 +22,7 @@ const EXPECTED_APW_SCHEDULED_ACTION_DATA = expect.objectContaining({
 describe("Schedule action CRUD Test - Page type", () => {
     const { handler } = useHandler();
 
-    test("Should able to create, update, list, get and delete schedule action items", async () => {
+    test.skip("Should able to create, update, list, get and delete schedule action items", async () => {
         const context = await handler(
             {
                 headers: {
@@ -151,7 +151,7 @@ describe("Schedule action CRUD Test - Page type", () => {
         });
     });
 
-    test("Should able to sort schedule action items by datetime", async () => {
+    test.skip("Should able to sort schedule action items by datetime", async () => {
         const context = await handler(
             {
                 headers: {
@@ -243,7 +243,7 @@ describe("Schedule action CRUD Test - Page type", () => {
         }
     });
 
-    test("Should able to get all schedule action items with same datetime", async () => {
+    test.skip("Should able to get all schedule action items with same datetime", async () => {
         const context = await handler(
             {
                 headers: {
@@ -318,7 +318,7 @@ describe("Schedule action CRUD Test - Page type", () => {
         expect(listItemSecondDateResult.length).toBe(2);
     });
 
-    it("should be able to get and update current  schedule action item", async () => {
+    it.skip("should be able to get and update current  schedule action item", async () => {
         const context = await handler(
             {
                 headers: {

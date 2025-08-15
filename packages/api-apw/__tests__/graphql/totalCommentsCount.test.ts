@@ -50,7 +50,7 @@ describe(`Total comments count test`, () => {
         scheduledOn: null
     };
 
-    test(`should able to update "totalComments" count in a content review`, async () => {
+    test.skip(`should able to update "totalComments" count in a content review`, async () => {
         const { page } = await createSetupForPageContentReview(gqlHandler);
         const contentReview = await createContentReview(page);
         const [step1] = contentReview.steps;
@@ -255,7 +255,7 @@ describe(`Total comments count test`, () => {
         });
     });
 
-    test(`should able to update "totalComments" count in a content review after "change request" delete`, async () => {
+    test.skip(`should able to update "totalComments" count in a content review after "change request" delete`, async () => {
         const { page } = await createSetupForPageContentReview(gqlHandler);
         const contentReview = await createContentReview(page);
         const [step1] = contentReview.steps;

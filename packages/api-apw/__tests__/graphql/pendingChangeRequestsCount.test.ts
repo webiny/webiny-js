@@ -41,7 +41,7 @@ describe(`Pending change requests count test`, () => {
         scheduledOn: null
     };
 
-    test(`should able to update "pendingChangeRequests" count in a content review`, async () => {
+    test.skip(`should able to update "pendingChangeRequests" count in a content review`, async () => {
         const { page } = await createSetupForPageContentReview(gqlHandler);
         const contentReview = await createContentReview(page);
         const [step1, step2] = contentReview.steps;

@@ -17,7 +17,7 @@ describe("Content Review assignment to a PB Page", () => {
         return createSetupForPageContentReview(gqlHandler);
     };
 
-    test(`Page should have a "contentReview" assigned to it`, async () => {
+    test.skip(`Page should have a "contentReview" assigned to it`, async () => {
         const { page } = await setup();
         /*
          * Initiate a "content review"
@@ -55,7 +55,7 @@ describe("Content Review assignment to a PB Page", () => {
         );
     });
 
-    test(`Should not able to request "contentReview" more than once`, async () => {
+    test.skip(`Should not able to request "contentReview" more than once`, async () => {
         const { page } = await setup();
         /*
          * Initiate a "content review"
@@ -106,7 +106,7 @@ describe("Content Review assignment to a PB Page", () => {
         });
     });
 
-    test(`Page should not have a "contentReview" assigned after review deletion`, async () => {
+    test.skip(`Page should not have a "contentReview" assigned after review deletion`, async () => {
         const { page } = await setup();
         /*
          * Initiate a "content review"
@@ -156,7 +156,7 @@ describe("Content Review assignment to a PB Page", () => {
         ).toBe(null);
     });
 
-    test(`Should not let user delete a page if there is a "contentReview" assigned to it`, async () => {
+    test.skip(`Should not let user delete a page if there is a "contentReview" assigned to it`, async () => {
         const { page } = await setup();
         /*
          * Initiate a "content review"

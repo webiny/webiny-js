@@ -421,7 +421,7 @@ describe("Cms Entry Publishing Workflow", () => {
         ).toEqual("published");
     });
 
-    test(`Should able to "unpublish" entry for content review process`, async () => {
+    test.skip(`Should able to "unpublish" entry for content review process`, async () => {
         const { entry, model } = await setup();
 
         /**

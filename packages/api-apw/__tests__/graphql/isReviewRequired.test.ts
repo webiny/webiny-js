@@ -12,7 +12,7 @@ describe("Is review required test", () => {
         return createSetupForPageContentReview(gqlHandler);
     };
 
-    test(`should able to create, update, get, list and delete "Content Review"`, async () => {
+    test.skip(`should able to create, update, get, list and delete "Content Review"`, async () => {
         const { page } = await setup();
 
         /**

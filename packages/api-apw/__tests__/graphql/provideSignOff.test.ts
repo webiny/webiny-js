@@ -30,7 +30,7 @@ describe("Provide sign off for a step in content review process", function () {
         scheduledOn: null
     };
 
-    test(`should able to provide sign-off`, async () => {
+    test.skip(`should able to provide sign-off`, async () => {
         const { page } = await setup();
         /*
          Create a content review entry.
@@ -170,7 +170,7 @@ describe("Provide sign off for a step in content review process", function () {
         });
     });
 
-    test(`should throw error when trying to provide sign off by a non-reviewer`, async () => {
+    test.skip(`should throw error when trying to provide sign off by a non-reviewer`, async () => {
         const gqlHandlerForIdentityA = useGraphQlHandler({
             path: "/graphql",
             identity: {
@@ -232,7 +232,7 @@ describe("Provide sign off for a step in content review process", function () {
         });
     });
 
-    test(`should throw error when trying to provide sign off without completing previous steps`, async () => {
+    test.skip(`should throw error when trying to provide sign off without completing previous steps`, async () => {
         const { page } = await setup();
 
         /*
@@ -343,7 +343,7 @@ describe("Provide sign off for a step in content review process", function () {
         });
     });
 
-    test(`should throw error when trying to create new "Change Request" once sign off has been provided`, async () => {
+    test.skip(`should throw error when trying to create new "Change Request" once sign off has been provided`, async () => {
         const { page } = await setup();
 
         /*

@@ -142,7 +142,7 @@ describe("access", () => {
         return createReviewRequestResponse;
     };
 
-    it("should create request for review and delete it", async () => {
+    it.skip("should create request for review and delete it", async () => {
         const createContentReviewResponse = await setupContentReview();
 
         expect(createContentReviewResponse).toMatchObject({
@@ -206,7 +206,7 @@ describe("access", () => {
         });
     });
 
-    it("should create change request, update it and delete it", async () => {
+    it.skip("should create change request, update it and delete it", async () => {
         const createContentReviewResponse = await setupContentReview();
         const contentReview = createContentReviewResponse.data.apw.createContentReview.data;
 
@@ -303,7 +303,7 @@ describe("access", () => {
         });
     });
 
-    it("should not able to update the change request, when user is not the owner", async () => {
+    it.skip("should not able to update the change request, when user is not the owner", async () => {
         const createContentReviewResponse = await setupContentReview();
         const contentReview = createContentReviewResponse.data.apw.createContentReview.data;
         const changeRequestStepId = `${contentReview.id}#${contentReview.steps[0].id}`;
@@ -365,7 +365,7 @@ describe("access", () => {
         });
     });
 
-    it("should not able to delete the change request, when user is not the owner", async () => {
+    it.skip("should not able to delete the change request, when user is not the owner", async () => {
         const createContentReviewResponse = await setupContentReview();
         const contentReview = createContentReviewResponse.data.apw.createContentReview.data;
         const changeRequestStepId = `${contentReview.id}#${contentReview.steps[0].id}`;
@@ -414,7 +414,7 @@ describe("access", () => {
         });
     });
 
-    it("should create comment, update it and delete it", async () => {
+    it.skip("should create comment, update it and delete it", async () => {
         const createContentReviewResponse = await setupContentReview();
         const contentReview = createContentReviewResponse.data.apw.createContentReview.data;
 

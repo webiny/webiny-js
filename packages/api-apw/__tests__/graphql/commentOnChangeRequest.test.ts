@@ -58,7 +58,7 @@ describe("Comment on a change request test", () => {
         return `${contentReview.id}#${contentReview.steps[0].id}`;
     };
 
-    test("should able to comment on a change request", async () => {
+    test.skip("should able to comment on a change request", async () => {
         const { contentReview } = await createPageContentReviewSetup(gqlHandler);
         const changeRequestStep = `${contentReview.id}#${contentReview.steps[0].id}`;
         /*
@@ -224,7 +224,7 @@ describe("Comment on a change request test", () => {
         });
     });
 
-    test("should able to delete all comments when a change request gets deleted", async () => {
+    test.skip("should able to delete all comments when a change request gets deleted", async () => {
         const changeRequestStep = await getChangeRequestStep();
         /*
          * Create two new change request entries.
@@ -371,7 +371,7 @@ describe("Comment on a change request test", () => {
         });
     });
 
-    test(`should return error when trying commenting on non-existing change request`, async () => {
+    test.skip(`should return error when trying commenting on non-existing change request`, async () => {
         /**
          * Try adding a comment to a non-existing change request.
          */

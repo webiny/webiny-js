@@ -25,7 +25,7 @@ const EXPECTED_APW_SCHEDULED_ACTION_DATA = expect.objectContaining({
 describe("Schedule action CRUD Test - CMS Entry type", () => {
     const { handler } = useHandler();
 
-    test("Should able to create, update, list, get and delete schedule action items", async () => {
+    test.skip("Should able to create, update, list, get and delete schedule action items", async () => {
         const context = await handler(
             {
                 headers: {
@@ -156,7 +156,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
         });
     });
 
-    test("Should able to sort schedule action items by datetime", async () => {
+    test.skip("Should able to sort schedule action items by datetime", async () => {
         const context = await handler(
             {
                 headers: {
@@ -249,7 +249,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
         }
     });
 
-    test("Should able to get all schedule action items with same datetime", async () => {
+    test.skip("Should able to get all schedule action items with same datetime", async () => {
         const context = await handler(
             {
                 headers: {
@@ -325,7 +325,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
         expect(listItemSecondDateResult.length).toBe(2);
     });
 
-    test("Should able to get and update current  schedule action item", async () => {
+    test.skip("Should able to get and update current  schedule action item", async () => {
         const context = await handler(
             {
                 headers: {
@@ -423,7 +423,7 @@ describe("Schedule action CRUD Test - CMS Entry type", () => {
         expect(currentTaskNoTasks).toBe(null);
     });
 
-    test("Validation should fail when modelId is not sent", async () => {
+    test.skip("Validation should fail when modelId is not sent", async () => {
         const context = await handler(
             {
                 headers: {

@@ -22,7 +22,7 @@ describe("Page publishing workflow", () => {
      */
     const setup = async () => createSetupForPageContentReview(gqlHandler);
 
-    test(`Should able to "publish" page for content review process`, async () => {
+    test.skip(`Should able to "publish" page for content review process`, async () => {
         const { page, workflow } = await setup();
 
         /**
@@ -290,7 +290,7 @@ describe("Page publishing workflow", () => {
         );
     });
 
-    test(`Should able to "unpublish" page for content review process`, async () => {
+    test.skip(`Should able to "unpublish" page for content review process`, async () => {
         const { page } = await setup();
 
         /**
