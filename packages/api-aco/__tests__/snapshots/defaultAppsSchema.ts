@@ -101,9 +101,9 @@ export const createDefaultAppsSchemaSnapshot = () => {
           createdOn: DateTime!
           modifiedOn: DateTime
           savedOn: DateTime!
-          createdBy: AcoUser!
+          createdBy: AcoUser
           modifiedBy: AcoUser
-          savedBy: AcoUser!
+          savedBy: AcoUser
           type: String
           title: String
           content: String
