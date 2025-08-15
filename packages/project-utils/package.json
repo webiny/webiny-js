@@ -83,7 +83,7 @@
     "terser-webpack-plugin": "^5.3.10",
     "ts-checker-rspack-plugin": "^1.0.3",
     "ts-patch": "^3.3.0",
-    "typescript": "5.4.5",
+    "typescript": "5.5.4",
     "url": "^0.11.4",
     "url-loader": "4.1.1",
     "utf-8-validate": ">=5.0.2",
