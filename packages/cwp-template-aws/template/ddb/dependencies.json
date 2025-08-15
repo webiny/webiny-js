@@ -26,8 +26,8 @@
     "@types/node": "^20.17.10",
     "@types/react": "18.2.79",
     "@types/react-dom": "18.2.25",
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "babel-plugin-module-resolver": "^5.0.2",
     "chalk": "^4.1.2",
@@ -46,7 +46,7 @@
     "merge": "^2.1.1",
     "prettier": "^2.8.8",
     "ts-jest": "^29.1.5",
-    "typescript": "5.3.3"
+    "typescript": "5.4.5"
   },
   "workspaces": {
     "packages": ["apps/admin", "apps/api/graphql", "packages/*"]

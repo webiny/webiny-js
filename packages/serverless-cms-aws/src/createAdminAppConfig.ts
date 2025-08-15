@@ -2,8 +2,6 @@ import type { ReactAppConfigModifier } from "~/createReactAppConfig";
 import { createReactAppConfig } from "~/createReactAppConfig";
 import type { ApiOutput } from "@webiny/pulumi-aws";
 import tailwindcss from "tailwindcss";
-
-// @ts-expect-error No types available for this package yet.
 import { traverseLoaders } from "@webiny/project-utils/traverseLoaders";
 
 export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {

@@ -22,7 +22,7 @@
     "@webiny/project-utils": "0.0.0",
     "execa": "^5.1.1",
     "rimraf": "^6.0.1",
-    "typescript": "5.3.3"
+    "typescript": "5.4.5"
   },
   "publishConfig": {
     "access": "public",

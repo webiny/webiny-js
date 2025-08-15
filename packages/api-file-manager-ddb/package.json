@@ -33,7 +33,7 @@
     "jest-dynalite": "^3.6.1",
     "jsonpack": "^1.1.5",
     "rimraf": "^6.0.1",
-    "typescript": "5.3.3"
+    "typescript": "5.4.5"
   },
   "publishConfig": {
     "access": "public",

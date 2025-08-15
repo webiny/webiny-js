@@ -67,6 +67,9 @@ const useMultiSelect = (params: UseMultiSelectParams) => {
         select(item) {
             const query = new URLSearchParams(location ? location.search : "");
             query.set("id", item.id);
+            if (!history) {
+                return;
+            }
             history.push({ search: query.toString() });
         },
         isMultiSelected(item) {

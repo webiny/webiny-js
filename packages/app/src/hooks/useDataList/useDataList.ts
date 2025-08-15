@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { useRouter } from "@webiny/react-router";
 import get from "lodash/get";
@@ -184,6 +184,9 @@ const useDataList = (params: UseDataListParams) => {
         select(item) {
             const query = new URLSearchParams(location.search);
             query.set("id", item.id);
+            if (!history) {
+                return;
+            }
             history.push({ search: query.toString() });
         },
         isMultiSelected(item) {
