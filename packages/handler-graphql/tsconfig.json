@@ -6,6 +6,7 @@
     { "path": "../error" },
     { "path": "../handler" },
     { "path": "../plugins" },
+    { "path": "../utils" },
     { "path": "../handler-aws" }
   ],
   "compilerOptions": {
@@ -23,6 +24,8 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"]
     },

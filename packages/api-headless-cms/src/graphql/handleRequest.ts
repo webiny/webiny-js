@@ -1,11 +1,11 @@
 import type { ApiEndpoint, CmsContext } from "~/types";
 import { checkEndpointAccess } from "./checkEndpointAccess";
-import { createRequestBody } from "./createRequestBody";
 import { formatErrorPayload } from "./formatErrorPayload";
 import { getSchema } from "./getSchema";
 import type { Reply, Request } from "@webiny/handler/types";
 import { processRequestBody } from "@webiny/handler-graphql";
 import type { ExecutionResult } from "graphql";
+import { createRequestBody } from "@webiny/handler-graphql/createRequestBody.js";
 
 export interface HandleRequestParams {
     context: CmsContext;

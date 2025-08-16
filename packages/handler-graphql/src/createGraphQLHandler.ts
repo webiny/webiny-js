@@ -8,6 +8,7 @@ import type { GraphQLRequestBody, HandlerGraphQLOptions } from "./types";
 import { createGraphQLSchema, getSchemaPlugins } from "./createGraphQLSchema";
 import debugPlugins from "./debugPlugins";
 import { processRequestBody } from "./processRequestBody";
+import { createRequestBody } from "~/createRequestBody.js";
 
 const DEFAULT_CACHE_MAX_AGE = 30758400; // 1 year
 
@@ -31,14 +32,6 @@ const createCacheKey = (context: Context) => {
     ]
         .filter(Boolean)
         .join("#");
-};
-
-const createRequestBody = (body: unknown): GraphQLRequestBody | GraphQLRequestBody[] => {
-    /**
-     * We are trusting that the body payload is correct.
-     * The `processRequestBody` will fail if it is not.
-     */
-    return typeof body === "string" ? JSON.parse(body) : body;
 };
 
 const formatErrorPayload = (error: Error): string => {

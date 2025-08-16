@@ -62,7 +62,7 @@
     "sass": "1.44.0",
     "storybook": "7.6.20",
     "tailwindcss": "^3.4.6",
-    "typescript": "5.7.3"
+    "typescript": "5.8.3"
   },
   "publishConfig": {
     "access": "public",

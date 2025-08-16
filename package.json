@@ -134,7 +134,7 @@
     "ts-jest-resolver": "^2.0.1",
     "ts-node": "^10.9.2",
     "type-fest": "4.14.0",
-    "typescript": "5.7.3",
+    "typescript": "5.8.3",
     "typescript-transform-paths": "^3.5.3",
     "verdaccio": "^6.0.5",
     "write-json-file": "^4.3.0",
