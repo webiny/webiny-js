@@ -58,7 +58,7 @@ export interface GraphQLSchemaPlugin<TContext extends Context = Context> extends
 
 export interface GraphQLRequestBody {
     query: string;
-    variables?: Record<string, any>;
+    variables?: Record<string, any> | null;
     operationName?: string;
 }
 

@@ -4,7 +4,7 @@ import zod from "zod";
 
 const requestBodySchema = zod.object({
     query: zod.string(),
-    variables: zod.record(zod.any()).optional(),
+    variables: zod.record(zod.any()).nullish().optional(),
     operationName: zod.string().optional()
 });
 
