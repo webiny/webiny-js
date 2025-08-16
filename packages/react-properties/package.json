@@ -12,7 +12,7 @@
   "dependencies": {
     "@types/react": "18.2.79",
     "@webiny/react-composition": "0.0.0",
-    "nanoid": "^3.3.8",
+    "nanoid": "^3.3.11",
     "react": "18.2.0"
   },
   "devDependencies": {
