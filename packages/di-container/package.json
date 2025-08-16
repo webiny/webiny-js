@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@webiny/project-utils": "0.0.0",
-    "typescript": "5.6.3"
+    "typescript": "5.7.3"
   },
   "publishConfig": {
     "access": "public",

@@ -43,10 +43,11 @@ const ContentEntriesMultiAutocomplete = ({ bind, field }: ContentEntriesMultiAut
         );
     };
 
-    let warning = entries.filter(item => !item.published);
-    if (warning.length > 0) {
+    const warnings = entries.filter(item => !item.published);
+    let warning: React.ReactElement | null = null;
+    if (warnings.length > 0) {
         warning = warn({
-            entries: <>{warning.map(entryWarning)}</>
+            entries: <>{warnings.map(entryWarning)}</>
         });
     }
 

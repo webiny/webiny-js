@@ -21,7 +21,7 @@
   "devDependencies": {
     "@testing-library/react": "^15.0.7",
     "@webiny/project-utils": "0.0.0",
-    "typescript": "5.6.3"
+    "typescript": "5.7.3"
   },
   "publishConfig": {
     "access": "public",

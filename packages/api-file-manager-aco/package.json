@@ -40,6 +40,6 @@
     "@webiny/wcp": "0.0.0",
     "graphql": "^15.9.0",
     "ttypescript": "^1.5.15",
-    "typescript": "5.6.3"
+    "typescript": "5.7.3"
   }
 }
