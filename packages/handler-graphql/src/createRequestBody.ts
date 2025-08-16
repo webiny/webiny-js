@@ -4,11 +4,11 @@ import zod from "zod";
 
 const requestBodySchema = zod.object({
     query: zod.string(),
-    variables: zod.record(zod.any()),
-    operationName: zod.string()
+    variables: zod.record(zod.any()).optional(),
+    operationName: zod.string().optional()
 });
 
-const schema = requestBodySchema.or(zod.array(requestBodySchema));
+const schema = zod.union([requestBodySchema, zod.array(requestBodySchema)]);
 
 export const createRequestBody = (input: unknown): GraphQLRequestBody | GraphQLRequestBody[] => {
     const body = typeof input === "string" ? JSON.parse(input) : input;
