@@ -31,7 +31,7 @@
     "@webiny/project-utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
     "graphql": "^15.9.0",
-    "typescript": "5.8.3"
+    "typescript": "5.9.2"
   },
   "scripts": {
     "build": "node ../cli/bin.js run build",

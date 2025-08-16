@@ -15105,7 +15105,7 @@ __metadata:
     tailwindcss: "npm:^3.4.6"
     tailwindcss-animate: "npm:^1.0.7"
     timeago-react: "npm:^3.0.6"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15143,7 +15143,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     prettier: "npm:^2.8.8"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15169,7 +15169,7 @@ __metadata:
     jest-dynalite: "npm:^3.6.1"
     prettier: "npm:^2.8.8"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15185,7 +15185,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15209,7 +15209,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     md5: "npm:^2.3.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -15232,7 +15232,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15267,7 +15267,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     prettier: "npm:^2.8.8"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -15296,7 +15296,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^15.9.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15309,7 +15309,7 @@ __metadata:
     "@webiny/api-cognito-authenticator": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15322,7 +15322,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15334,7 +15334,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15348,7 +15348,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15362,7 +15362,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15378,7 +15378,7 @@ __metadata:
     jwk-to-pem: "npm:^2.0.1"
     node-fetch: "npm:2.6.7"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15396,7 +15396,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     p-retry: "npm:^4.6.2"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15427,7 +15427,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
     type-fest: "npm:4.14.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15443,7 +15443,7 @@ __metadata:
     aws-elasticsearch-connector: "patch:aws-elasticsearch-connector@npm%3A9.2.0#~/.yarn/patches/aws-elasticsearch-connector-npm-9.2.0-e1245671b1.patch"
     elastic-ts: "npm:^0.12.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15467,7 +15467,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^15.9.0"
     ttypescript: "npm:^1.5.15"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15486,7 +15486,7 @@ __metadata:
     jest-dynalite: "npm:^3.6.1"
     jsonpack: "npm:^1.1.5"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15519,7 +15519,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     sanitize-filename: "npm:^1.6.3"
     sharp: "npm:^0.32.6"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15547,7 +15547,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     object-hash: "npm:^3.0.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -15575,7 +15575,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15596,7 +15596,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15634,7 +15634,7 @@ __metadata:
     node-fetch: "npm:2.6.7"
     rimraf: "npm:^6.0.1"
     slugify: "npm:^1.6.6"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -15659,7 +15659,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^15.9.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15683,7 +15683,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^15.9.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15720,7 +15720,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     prettier: "npm:^2.8.8"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15745,7 +15745,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-dynalite: "npm:^3.6.1"
     lodash: "npm:^4.17.21"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15769,7 +15769,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15803,7 +15803,7 @@ __metadata:
     aws-sdk-client-mock: "npm:^4.1.0"
     bytes: "npm:^3.1.2"
     graphql: "npm:^15.9.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     uniqid: "npm:^5.4.0"
     unzipper: "npm:^0.12.3"
     zod: "npm:^3.23.8"
@@ -15829,7 +15829,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     aws-sdk-client-mock: "npm:^4.1.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -15842,7 +15842,7 @@ __metadata:
     "@webiny/api-headless-cms-import-export": "npm:0.0.0"
     "@webiny/api-headless-cms-tasks": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15868,7 +15868,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -15914,7 +15914,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     semver: "npm:^7.6.3"
     slugify: "npm:^1.6.6"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     write-json-file: "npm:^4.3.0"
     zod: "npm:^3.23.8"
   languageName: unknown
@@ -15930,7 +15930,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     graphql: "npm:^15.9.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15954,7 +15954,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -15979,7 +15979,7 @@ __metadata:
     i18n-locales: "npm:^0.0.5"
     jest: "npm:^29.7.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16004,7 +16004,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -16036,7 +16036,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     nodemailer: "npm:^6.9.16"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -16063,7 +16063,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^15.9.0"
     lodash: "npm:^4.17.21"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16083,7 +16083,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16124,7 +16124,7 @@ __metadata:
     node-fetch: "npm:2.6.7"
     rimraf: "npm:^6.0.1"
     stream: "npm:^0.0.3"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     uniqid: "npm:^5.4.0"
     yauzl: "npm:^2.10.0"
     zod: "npm:^3.23.8"
@@ -16170,7 +16170,7 @@ __metadata:
     jest-dynalite: "npm:^3.6.1"
     lodash: "npm:^4.17.21"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16195,7 +16195,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16238,7 +16238,7 @@ __metadata:
     prettier: "npm:^2.8.8"
     rimraf: "npm:^6.0.1"
     stream: "npm:^0.0.3"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     uniqid: "npm:^5.4.0"
     zod: "npm:^3.23.8"
   languageName: unknown
@@ -16259,7 +16259,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     lodash: "npm:^4.17.21"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16277,7 +16277,7 @@ __metadata:
     jest-dynalite: "npm:^3.6.1"
     prettier: "npm:^2.8.8"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16308,7 +16308,7 @@ __metadata:
     puppeteer-core: "npm:^23.11.1"
     rimraf: "npm:^6.0.1"
     srcset: "npm:^4.0.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16334,7 +16334,7 @@ __metadata:
     graphql: "npm:^15.9.0"
     rimraf: "npm:^6.0.1"
     type-fest: "npm:4.14.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16357,7 +16357,7 @@ __metadata:
     jwk-to-pem: "npm:^2.0.1"
     node-fetch: "npm:2.6.7"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16383,7 +16383,7 @@ __metadata:
     deep-equal: "npm:^2.2.3"
     md5: "npm:^2.3.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16404,7 +16404,7 @@ __metadata:
     jwk-to-pem: "npm:^2.0.1"
     node-fetch: "npm:2.6.7"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16420,7 +16420,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16449,7 +16449,7 @@ __metadata:
     jsonwebtoken: "npm:^9.0.1"
     minimatch: "npm:^5.1.6"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -16494,7 +16494,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^15.9.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16520,7 +16520,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     rimraf: "npm:^6.0.1"
     semver: "npm:^7.6.3"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -16537,7 +16537,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16559,7 +16559,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16579,7 +16579,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16593,7 +16593,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     jest: "npm:^29.7.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16610,7 +16610,7 @@ __metadata:
     jest-dynalite: "npm:^3.6.1"
     node-fetch: "npm:2.6.7"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16643,7 +16643,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     prettier: "npm:^2.8.8"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16670,7 +16670,7 @@ __metadata:
     graphql: "npm:^15.9.0"
     rimraf: "npm:^6.0.1"
     type-fest: "npm:4.14.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -16685,7 +16685,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16726,7 +16726,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     slugify: "npm:^1.6.6"
     store: "npm:^2.0.12"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -16762,7 +16762,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16787,7 +16787,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16823,7 +16823,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16848,7 +16848,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16881,7 +16881,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -16954,7 +16954,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     store: "npm:^2.0.12"
     tinycolor2: "npm:^1.6.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     unicode-emoji-json: "npm:^0.4.0"
   languageName: unknown
   linkType: soft
@@ -16999,7 +16999,7 @@ __metadata:
     react-helmet: "npm:^6.1.0"
     react-spinner-material: "npm:1.1.4"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17030,7 +17030,7 @@ __metadata:
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.21"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   peerDependencies:
     react: 18.2.0
   languageName: unknown
@@ -17047,7 +17047,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17079,7 +17079,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
     slugify: "npm:^1.6.6"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17092,7 +17092,7 @@ __metadata:
     graphql-tag: "npm:^2.12.6"
     p-retry: "npm:^4.6.2"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17149,7 +17149,7 @@ __metadata:
     react-hotkeyz: "npm:^1.0.4"
     react-lazy-load: "npm:^3.1.14"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -17207,7 +17207,7 @@ __metadata:
     react-google-recaptcha: "npm:^1.1.0"
     react-hotkeyz: "npm:^1.0.4"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17236,7 +17236,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17267,7 +17267,7 @@ __metadata:
     prop-types: "npm:^15.8.1"
     react: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17301,7 +17301,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17376,7 +17376,7 @@ __metadata:
     react-helmet: "npm:^6.1.0"
     react-hotkeyz: "npm:^1.0.4"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     use-deep-compare-effect: "npm:^1.8.1"
     zod: "npm:^3.23.8"
   languageName: unknown
@@ -17399,7 +17399,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17432,7 +17432,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17461,7 +17461,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17480,7 +17480,7 @@ __metadata:
     facepaint: "npm:^1.2.1"
     lodash: "npm:^4.17.21"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   peerDependencies:
     "@editorjs/editorjs": 2.26.5
     aos: ^2.3.4
@@ -17595,7 +17595,7 @@ __metadata:
     slugify: "npm:^1.6.6"
     store: "npm:^2.0.12"
     swiper: "npm:^9.3.2"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     uniqid: "npm:^5.4.0"
   languageName: unknown
   linkType: soft
@@ -17609,7 +17609,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17640,7 +17640,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17669,7 +17669,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17685,7 +17685,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17729,7 +17729,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17752,7 +17752,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
     store: "npm:^2.0.12"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17784,7 +17784,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17819,7 +17819,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17834,7 +17834,7 @@ __metadata:
     "@webiny/theme": "npm:0.0.0"
     execa: "npm:^5.1.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   peerDependencies:
     react: 18.2.0
   languageName: unknown
@@ -17863,7 +17863,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17874,7 +17874,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     mobx: "npm:^6.9.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17894,7 +17894,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17969,7 +17969,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
     slugify: "npm:^1.6.6"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -17999,7 +17999,7 @@ __metadata:
     react-helmet: "npm:^6.1.0"
     reset-css: "npm:^5.0.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18016,7 +18016,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18056,7 +18056,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
     ts-invariant: "npm:^0.10.3"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     warning: "npm:^4.0.2"
   languageName: unknown
   linkType: soft
@@ -18110,7 +18110,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18130,7 +18130,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     semver: "npm:^7.6.3"
     type-fest: "npm:4.14.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     write-json-file: "npm:^4.3.0"
   languageName: unknown
   linkType: soft
@@ -18169,7 +18169,7 @@ __metadata:
     replace-in-path: "npm:^1.1.0"
     rimraf: "npm:^6.0.1"
     serialize-error: "npm:^8.0.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     yargs: "npm:^17.7.2"
   languageName: unknown
   linkType: soft
@@ -18199,7 +18199,7 @@ __metadata:
     replace-in-path: "npm:^1.1.0"
     rimraf: "npm:^6.0.1"
     ts-morph: "npm:^11.0.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     validate-npm-package-name: "npm:^3.0.0"
     write-json-file: "npm:^4.3.0"
   languageName: unknown
@@ -18224,7 +18224,7 @@ __metadata:
     replace-in-path: "npm:^1.1.0"
     rimraf: "npm:^6.0.1"
     terminal-link: "npm:^2.1.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18248,7 +18248,7 @@ __metadata:
     open: "npm:^8.4.2"
     rimraf: "npm:^6.0.1"
     terminal-link: "npm:^2.1.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     validate-npm-package-name: "npm:^3.0.0"
   languageName: unknown
   linkType: soft
@@ -18265,7 +18265,7 @@ __metadata:
     "@webiny/cli-plugin-scaffold": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18290,7 +18290,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     terminal-link: "npm:^2.1.1"
     ts-morph: "npm:^11.0.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     write-json-file: "npm:^4.3.0"
   languageName: unknown
   linkType: soft
@@ -18316,7 +18316,7 @@ __metadata:
     pluralize: "npm:^8.0.0"
     replace-in-path: "npm:^1.1.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     validate-npm-package-name: "npm:^3.0.0"
     write-json-file: "npm:^4.3.0"
   languageName: unknown
@@ -18340,7 +18340,7 @@ __metadata:
     ncp: "npm:^2.0.0"
     replace-in-path: "npm:^1.1.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     validate-npm-package-name: "npm:^3.0.0"
     write-json-file: "npm:^4.3.0"
   languageName: unknown
@@ -18364,7 +18364,7 @@ __metadata:
     prettier: "npm:^2.8.8"
     rimraf: "npm:^6.0.1"
     ts-morph: "npm:^11.0.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     write-json-file: "npm:^4.3.0"
   languageName: unknown
   linkType: soft
@@ -18407,7 +18407,7 @@ __metadata:
     pirates: "npm:^4.0.6"
     semver: "npm:^7.6.3"
     ts-morph: "npm:^11.0.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     uniqid: "npm:^5.4.0"
     yargs: "npm:^17.7.2"
   bin:
@@ -18462,7 +18462,7 @@ __metadata:
     pino-pretty: "npm:^9.4.0"
     rimraf: "npm:^6.0.1"
     semver: "npm:^7.6.3"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18486,7 +18486,7 @@ __metadata:
     jest-dynalite: "npm:^3.6.1"
     lodash: "npm:^4.17.21"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18498,7 +18498,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
     type-fest: "npm:4.14.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18508,7 +18508,7 @@ __metadata:
   dependencies:
     "@webiny/project-utils": "npm:0.0.0"
     reflect-metadata: "npm:^0.2.2"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18518,7 +18518,7 @@ __metadata:
   dependencies:
     "@webiny/project-utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18529,7 +18529,7 @@ __metadata:
     "@types/uniqid": "npm:^5.3.2"
     "@webiny/project-utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18539,7 +18539,7 @@ __metadata:
   dependencies:
     "@webiny/di-container": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18558,7 +18558,7 @@ __metadata:
     mobx: "npm:^6.9.0"
     mobx-react-lite: "npm:^3.4.3"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   peerDependencies:
     react: 18.2.0
   languageName: unknown
@@ -18587,7 +18587,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     fastify: "npm:4.29.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18601,7 +18601,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     jest: "npm:^29.7.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18613,7 +18613,7 @@ __metadata:
     "@webiny/db": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18639,7 +18639,7 @@ __metadata:
     jest: "npm:^29.7.0"
     jest-mock-console: "npm:^2.0.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -18664,7 +18664,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     fastify: "npm:4.29.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18676,7 +18676,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     lodash: "npm:^4.17.21"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   peerDependencies:
     react: 18.2.0
   languageName: unknown
@@ -18696,7 +18696,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     rimraf: "npm:^6.0.1"
     short-hash: "npm:^1.0.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     yargs: "npm:^17.7.2"
   peerDependencies:
     react: 18.2.0
@@ -18720,7 +18720,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     inversify: "npm:^6.1.6"
     reflect-metadata: "npm:^0.2.2"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -18845,7 +18845,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     pino: "npm:^8.21.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18871,7 +18871,7 @@ __metadata:
     elastic-ts: "npm:^0.12.0"
     jest-dynalite: "npm:^3.6.1"
     lodash: "npm:^4.17.21"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -18882,7 +18882,7 @@ __metadata:
     "@types/uniqid": "npm:^5.3.2"
     "@webiny/project-utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     uniqid: "npm:^5.4.0"
   languageName: unknown
   linkType: soft
@@ -18968,7 +18968,7 @@ __metadata:
     terser-webpack-plugin: "npm:^5.3.10"
     ts-checker-rspack-plugin: "npm:^1.0.3"
     ts-patch: "npm:^3.3.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     url: "npm:^0.11.4"
     url-loader: "npm:4.1.1"
     utf-8-validate: "npm:>=5.0.2"
@@ -18992,7 +18992,7 @@ __metadata:
   dependencies:
     "@webiny/project-utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -19019,7 +19019,7 @@ __metadata:
     mime: "npm:^3.0.0"
     node-fetch: "npm:2.6.7"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -19040,7 +19040,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     semver: "npm:^7.6.3"
     tar: "npm:^6.2.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -19054,7 +19054,7 @@ __metadata:
     find-up: "npm:^5.0.0"
     lodash: "npm:^4.17.21"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -19067,7 +19067,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -19115,7 +19115,7 @@ __metadata:
     react: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
     sanitize-html: "npm:2.12.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -19133,7 +19133,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     react-router-dom: "npm:6.3.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   peerDependencies:
     react: 18.2.0
   languageName: unknown
@@ -19198,7 +19198,7 @@ __metadata:
     node-fetch: "npm:2.6.7"
     ora: "npm:^4.1.1"
     tailwindcss: "npm:^3.4.6"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     webpack: "npm:^5.97.0"
   languageName: unknown
   linkType: soft
@@ -19208,7 +19208,7 @@ __metadata:
   resolution: "@webiny/shared-aco@workspace:packages/shared-aco"
   dependencies:
     "@webiny/project-utils": "npm:0.0.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -19248,7 +19248,7 @@ __metadata:
     object-sizeof: "npm:^2.6.4"
     rimraf: "npm:^6.0.1"
     type-fest: "npm:4.14.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -19275,7 +19275,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     execa: "npm:^5.1.1"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   peerDependencies:
     react: 18.2.0
   languageName: unknown
@@ -19291,7 +19291,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -19314,7 +19314,7 @@ __metadata:
     ncp: "npm:^2.0.0"
     raw-loader: "npm:^4.0.2"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   peerDependencies:
     minimatch: ^5.1.6
     react: 18.2.0
@@ -19335,7 +19335,7 @@ __metadata:
     nanoid-dictionary: "npm:^4.3.0"
     p-retry: "npm:^4.6.2"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   peerDependencies:
     zod: ^3.23.8
   languageName: unknown
@@ -19351,7 +19351,7 @@ __metadata:
     jest: "npm:^29.7.0"
     lodash: "npm:^4.17.21"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -19362,7 +19362,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     node-fetch: "npm:2.6.7"
     rimraf: "npm:^6.0.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -19376,7 +19376,7 @@ __metadata:
     next: "npm:^15"
     postcss: "npm:^8.4.38"
     postcss-import: "npm:^16.1.1"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     webpack: "npm:^5.97.0"
   languageName: unknown
   linkType: soft
@@ -19394,7 +19394,7 @@ __metadata:
     mobx-react-lite: "npm:^3.4.3"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -19421,7 +19421,7 @@ __metadata:
     nanoid-dictionary: "npm:^4.3.0"
     pino: "npm:^8.21.0"
     pino-pretty: "npm:^9.4.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
@@ -24190,7 +24190,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     nanoid: "npm:^3.3.8"
     node-fetch: "npm:2.6.7"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     uniqid: "npm:^5.4.0"
   languageName: unknown
   linkType: soft
@@ -39965,7 +39965,7 @@ __metadata:
     ts-jest-resolver: "npm:^2.0.1"
     ts-node: "npm:^10.9.2"
     type-fest: "npm:4.14.0"
-    typescript: "npm:5.8.3"
+    typescript: "npm:5.9.2"
     typescript-transform-paths: "npm:^3.5.3"
     verdaccio: "npm:^6.0.5"
     write-json-file: "npm:^4.3.0"
@@ -43339,17 +43339,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.8.3":
-  version: 5.8.3
-  resolution: "typescript@npm:5.8.3"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10/65c40944c51b513b0172c6710ee62e951b70af6f75d5a5da745cb7fab132c09ae27ffdf7838996e3ed603bb015dadd099006658046941bd0ba30340cc563ae92
-  languageName: node
-  linkType: hard
-
-"typescript@npm:>=3 < 6":
+"typescript@npm:5.9.2, typescript@npm:>=3 < 6":
   version: 5.9.2
   resolution: "typescript@npm:5.9.2"
   bin:
@@ -43359,17 +43349,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>":
-  version: 5.8.3
-  resolution: "typescript@patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10/b9b1e73dabac5dc730c041325dbd9c99467c1b0d239f1b74ec3b90d831384af3e2ba973946232df670519147eb51a2c20f6f96163cea2b359f03de1e2091cc4f
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A>=3 < 6#optional!builtin<compat/typescript>":
+"typescript@patch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>, typescript@patch:typescript@npm%3A>=3 < 6#optional!builtin<compat/typescript>":
   version: 5.9.2
   resolution: "typescript@patch:typescript@npm%3A5.9.2#optional!builtin<compat/typescript>::version=5.9.2&hash=5786d5"
   bin:

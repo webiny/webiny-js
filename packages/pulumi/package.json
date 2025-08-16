@@ -22,7 +22,7 @@
     "@types/lodash": "^4.17.13",
     "@webiny/project-utils": "0.0.0",
     "rimraf": "^6.0.1",
-    "typescript": "5.8.3"
+    "typescript": "5.9.2"
   },
   "scripts": {
     "build": "node ../cli/bin.js run build",

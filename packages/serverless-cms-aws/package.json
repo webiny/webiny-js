@@ -71,7 +71,7 @@
   "devDependencies": {
     "@webiny/migrations": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "typescript": "5.8.3"
+    "typescript": "5.9.2"
   },
   "scripts": {
     "build": "node ../cli/bin.js run build",
