@@ -3,7 +3,7 @@ import type { BindingsApi } from "~/BindingsApi.js";
 import type { ShorthandCssProperties } from "./types/ShorthandCssProperties.js";
 export type { WebsiteBuilderTheme, Breakpoint } from "./types/WebsiteBuilderTheme.js";
 
-interface CSSProperties extends CSS.Properties<string | number> {}
+type CSSProperties = CSS.Properties<string | number>;
 
 export type ElementMap = Record<string, DocumentElement>;
 

@@ -39,11 +39,11 @@ type Props = FormComponentProps & {
  * Please use the `Slider` component from the `@webiny/admin-ui` package instead.
  */
 class Slider extends React.Component<Props> {
-    onValueCommit = (value: number) => {
+    onValueCommit = (value: number): void => {
         this.props.onChange && this.props.onChange(value);
     };
 
-    onValueChange = (value: number) => {
+    onValueChange = (value: number): void => {
         this.props.onInput && this.props.onInput(value);
     };
 

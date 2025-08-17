@@ -8,7 +8,7 @@ import {
 } from "./graphql/locales";
 import { GET_VERSION, INSTALL } from "./graphql/system";
 import type { GenericRecord } from "@webiny/api/types.js";
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-restricted-types
 export const apiCallsFactory = (invoke: Function) => {
     return {
         async createI18NLocale(variables: GenericRecord, fields: string[] = []) {

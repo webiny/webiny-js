@@ -45,7 +45,7 @@ module.exports = {
                 "ts-expect-error": false
             }
         ],
-        //"@typescript-eslint/no-restricted-types": "error",
+        "@typescript-eslint/no-restricted-types": "error",
         "@typescript-eslint/no-use-before-define": 0,
         "@typescript-eslint/no-unused-vars": getNoUnusedVars(),
         "@typescript-eslint/no-var-requires": 0,
@@ -71,9 +71,9 @@ module.exports = {
                     }
                 ]
             }
-        ]
-        // TODO remove eventually in v6.0.0
-        //"@typescript-eslint/no-require-imports": 0
+        ],
+        "@typescript-eslint/no-require-imports": 0,
+        "@typescript-eslint/no-unused-expressions": 0
     },
     settings: {
         react: {

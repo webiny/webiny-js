@@ -20,7 +20,7 @@ export type ElementInputType =
     | "svgIcon"
     | "color"
     // We want to allow custom strings as well.
-    // eslint-disable-next-line @typescript-eslint/ban-types
+    // eslint-disable-next-line @typescript-eslint/no-restricted-types
     | (string & {});
 
 export interface ElementInputParams<TValue, TElementData> {

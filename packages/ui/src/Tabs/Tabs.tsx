@@ -55,7 +55,7 @@ export const Tabs = ({ value, onActivate, ...props }: TabsProps) => {
     const activeIndex = value !== undefined ? value : activeTabIndex;
 
     const onValueChange = useCallback(
-        (value: string) => {
+        (value: string): void => {
             const parts = value.split(VALUE_PREFIX);
             const index = parseInt(parts[1]);
 

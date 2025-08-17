@@ -1,13 +1,13 @@
 import { toJS } from "mobx";
 import type {
+    ComponentInput,
     DocumentElement,
+    DocumentElementBindings,
+    DocumentElementStyleBindings,
     DocumentState,
     ResolvedElement,
-    ComponentInput,
-    ValueBinding,
-    DocumentElementBindings,
     SerializableCSSStyleDeclaration,
-    DocumentElementStyleBindings
+    ValueBinding
 } from "~/types.js";
 import type { InputAstNode } from "./ComponentManifestToAstConverter.js";
 
@@ -197,7 +197,7 @@ export class BindingsResolver {
 
             const scopedFn = new Function(...Object.keys(context), `return ${finalExpression};`);
             return scopedFn(...Object.values(context));
-        } catch (e) {
+        } catch {
             return undefined;
         }
     }

@@ -68,7 +68,8 @@ export const getUserInput = async ({
                 }
                 new RegExp(input);
                 return true;
-            } catch (e) {
+            } catch (ex) {
+                console.error(ex);
                 return `Invalid regex: ${input}`;
             }
         }

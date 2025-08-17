@@ -7,7 +7,7 @@ export default (value: any) => {
 
     try {
         JSON.parse(value);
-    } catch (e) {
+    } catch {
         throw new ValidationError("Value needs to be a valid JSON.");
     }
 };
