@@ -42,7 +42,7 @@ Cypress.Commands.add("pbDeleteBlocks", () => {
                     };
 
                     return client
-                        .request(MUTATION, variables)
+                        .request<any>(MUTATION, variables)
                         .then(response => response.pageBuilder.deletePageBlock);
                 })
             );
