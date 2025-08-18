@@ -14,7 +14,7 @@
   ],
   "description": "A tool to generate and verify dependency sync files for Webiny.",
   "dependencies": {
-    "@babel/runtime": "7.26.10",
+    "@babel/runtime": "7.28.3",
     "@webiny/cli": "0.0.0",
     "chalk": "^4.1.2",
     "get-yarn-workspaces": "^1.0.2",
