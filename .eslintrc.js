@@ -72,8 +72,8 @@ module.exports = {
                 ]
             }
         ],
-        "@typescript-eslint/no-require-imports": 0,
-        "@typescript-eslint/no-unused-expressions": 0
+        "@typescript-eslint/no-unused-expressions": 0,
+        "@typescript-eslint/no-require-imports": 0
     },
     settings: {
         react: {
