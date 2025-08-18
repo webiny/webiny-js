@@ -43,7 +43,7 @@ Cypress.Commands.add("reloadUntil", (callback, options = {}) => {
                         }
                     }
                     return cy.log("Condition met, moving on...");
-                } catch (err) {
+                } catch {
                     if (retries > MAX_RETRIES) {
                         throw new Error(`retried too many times (${--retries})`);
                     }

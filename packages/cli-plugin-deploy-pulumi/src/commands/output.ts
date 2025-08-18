@@ -27,7 +27,7 @@ export const outputCommand = createPulumiCommand({
                     })
                 }
             });
-        } catch (e) {
+        } catch {
             stackExists = false;
         }
 

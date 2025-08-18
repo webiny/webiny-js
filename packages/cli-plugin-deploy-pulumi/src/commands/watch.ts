@@ -153,7 +153,7 @@ export const watchCommand = async (inputs: IUserCommandInput, context: Context) 
                     })
                 }
             });
-        } catch (e) {
+        } catch {
             stackExists = false;
         }
 
@@ -257,7 +257,7 @@ export const watchCommand = async (inputs: IUserCommandInput, context: Context) 
                                 message
                             });
                         }
-                    } catch (e) {
+                    } catch {
                         output.log({
                             type: "deploy",
                             message: line

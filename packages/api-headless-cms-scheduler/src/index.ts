@@ -5,9 +5,7 @@ import { createSchedulerModel } from "~/scheduler/model.js";
 import { createSchedulerGraphQL } from "~/graphql/index.js";
 import { createScheduledCmsActionEventHandler } from "~/handler/index.js";
 
-export interface ICreateHeadlessCmsScheduleParams extends ICreateHeadlessCmsSchedulerContextParams {
-    //
-}
+export type ICreateHeadlessCmsScheduleParams = ICreateHeadlessCmsSchedulerContextParams;
 
 /**
  * This will register both API and Handler plugins for the Headless CMS Scheduler.

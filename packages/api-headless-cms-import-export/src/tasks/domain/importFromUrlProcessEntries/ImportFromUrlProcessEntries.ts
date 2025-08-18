@@ -57,7 +57,7 @@ export class ImportFromUrlProcessEntries<
         let entryManager: ICmsEntryManager;
         try {
             entryManager = await context.cms.getEntryManager(input.modelId);
-        } catch (ex) {
+        } catch {
             return response.error({
                 message: `Model "${input.modelId}" not found.`,
                 code: "MODEL_NOT_FOUND"

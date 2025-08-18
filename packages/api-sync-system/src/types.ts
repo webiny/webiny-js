@@ -11,7 +11,7 @@ export enum DynamoDBTableType {
     UNKNOWN = "unknown"
 }
 
-export interface Context extends BaseContext {}
+export type Context = BaseContext;
 
 export interface IFileLambdaPayloadInfo {
     bucket: string;

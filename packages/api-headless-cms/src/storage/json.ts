@@ -19,7 +19,7 @@ export const createJsonStorageTransform = (): StorageTransformPlugin => {
 
             try {
                 compressor = plugins.oneByType<CompressorPlugin>(CompressorPlugin.type);
-            } catch (ex) {
+            } catch {
                 return storageValue;
             }
 

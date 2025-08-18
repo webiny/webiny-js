@@ -8,8 +8,20 @@ import {
 } from "./graphql/locales";
 import { GET_VERSION, INSTALL } from "./graphql/system";
 import type { GenericRecord } from "@webiny/api/types.js";
-// eslint-disable-next-line @typescript-eslint/no-restricted-types
-export const apiCallsFactory = (invoke: Function) => {
+
+export interface IApiCallsFactoryInvokeParams {
+    httpMethod?: string;
+    body: {
+        query: string;
+        variables?: GenericRecord | null;
+    };
+    headers?: Record<string, string>;
+}
+export interface IApiCallsFactoryInvoke {
+    (params: IApiCallsFactoryInvokeParams): Promise<[unknown, unknown]>;
+}
+
+export const apiCallsFactory = (invoke: IApiCallsFactoryInvoke) => {
     return {
         async createI18NLocale(variables: GenericRecord, fields: string[] = []) {
             return invoke({ body: { query: CREATE_LOCALE(fields), variables } });

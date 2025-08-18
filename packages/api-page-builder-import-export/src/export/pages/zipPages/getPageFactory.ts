@@ -13,7 +13,7 @@ export const getPageFactory = (
                 return await context.pageBuilder.getPublishedPageById({
                     id: pageId
                 });
-            } catch (ex) {
+            } catch {
                 /**
                  * We do not need to do anything on exception because we will fetch the latest version.
                  */

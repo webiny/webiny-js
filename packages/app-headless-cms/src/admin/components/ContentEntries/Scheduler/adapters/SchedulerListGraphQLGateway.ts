@@ -47,7 +47,7 @@ const createSchedulerListQuery = () => {
     `;
 };
 
-interface SchedulerListGraphQLQueryVariables extends ISchedulerListExecuteParams {}
+type SchedulerListGraphQLQueryVariables = ISchedulerListExecuteParams;
 
 interface SchedulerListGraphQLQueryResponse {
     listCmsSchedules: {

@@ -59,7 +59,7 @@ export const createPruneLogsTask = () => {
                         }
                         try {
                             return new Date(value).toISOString();
-                        } catch (ex) {
+                        } catch {
                             return undefined;
                         }
                     }),

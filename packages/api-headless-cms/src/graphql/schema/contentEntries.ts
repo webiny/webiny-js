@@ -414,7 +414,7 @@ export const createContentEntriesSchema = ({
                             return null;
                         }
                         return createCmsEntryRecord(model, entry);
-                    } catch (ex) {
+                    } catch {
                         return null;
                     }
                 },

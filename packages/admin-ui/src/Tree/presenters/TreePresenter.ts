@@ -69,7 +69,7 @@ class TreePresenter<TData = unknown> implements ITreePresenter<TData> {
                     data: item.data
                 })
             );
-        } catch (error) {
+        } catch {
             this.nodes = [...oldNodes]; // Revert to old nodes in case of error
         }
     };

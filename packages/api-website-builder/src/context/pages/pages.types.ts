@@ -73,7 +73,7 @@ export interface CreateWbPageRevisionFromParams {
     id: string;
 }
 
-export interface WbPagesStorageOperationsGetParams extends CmsEntryGetParams {}
+export type WbPagesStorageOperationsGetParams = CmsEntryGetParams;
 
 export interface WbPagesStorageOperationsCreateParams {
     data: CreateWbPageData;

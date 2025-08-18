@@ -37,7 +37,7 @@ const indexExists = async (params: ExistsIndexParams): Promise<boolean> => {
             onExists();
         }
         return true;
-    } catch (ex) {
+    } catch {
         console.error(`Could not determine if the index "${index}" exists.`);
     }
     return false;

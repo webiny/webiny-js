@@ -50,7 +50,7 @@ const runPulumiStackExport = ({
         }
         cache[cacheKey] = parsed;
         return structuredClone(cache[cacheKey]);
-    } catch (e) {
+    } catch {
         return null;
     }
 };

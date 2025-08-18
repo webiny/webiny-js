@@ -147,7 +147,7 @@ export class RecordHandler implements IRecordHandler {
 
         try {
             return targetDeployment.getTable(bundle.table.type);
-        } catch (ex) {
+        } catch {
             return null;
         }
     }

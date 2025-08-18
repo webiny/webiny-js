@@ -20,7 +20,7 @@ export class BuildDependencyTree {
                     json,
                     ignore
                 });
-            } catch (ex) {
+            } catch {
                 console.log(`Failed to load "${file}".`);
             }
         }

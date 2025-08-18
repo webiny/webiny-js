@@ -45,7 +45,7 @@ describe("translate test with namespaces", () => {
     test("translate method should throw an error if namespace is not set", () => {
         try {
             i18n.translate("Test");
-        } catch (e) {
+        } catch {
             return;
         }
 

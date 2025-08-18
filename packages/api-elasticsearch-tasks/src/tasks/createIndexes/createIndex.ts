@@ -11,7 +11,7 @@ export const createIndexFactory = (manager: IndexManager) => {
                 if (exists) {
                     return;
                 }
-            } catch (ex) {
+            } catch {
                 return;
             }
 

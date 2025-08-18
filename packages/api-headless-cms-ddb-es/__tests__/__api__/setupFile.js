@@ -61,7 +61,7 @@ module.exports = () => {
                                 ...baseIndexConfigurationPlugin.body
                             }
                         });
-                    } catch (ex) {}
+                    } catch {}
                 });
             });
         });

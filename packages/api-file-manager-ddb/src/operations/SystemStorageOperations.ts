@@ -67,7 +67,7 @@ export class SystemStorageOperations implements FileManagerSystemStorageOperatio
                     SK: SORT_KEY
                 }
             });
-        } catch (ex) {
+        } catch {
             throw new WebinyError(
                 "Could not insert new system data into DynamoDB",
                 "CREATE_SYSTEM_ERROR",
@@ -93,7 +93,7 @@ export class SystemStorageOperations implements FileManagerSystemStorageOperatio
                     SK: SORT_KEY
                 }
             });
-        } catch (ex) {
+        } catch {
             throw new WebinyError(
                 "Could not update system data in the DynamoDB.",
                 "UPDATE_SYSTEM_ERROR",

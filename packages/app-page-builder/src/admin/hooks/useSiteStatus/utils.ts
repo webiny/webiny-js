@@ -41,7 +41,7 @@ export async function fetchWithCache(params: FetchWithCacheParams): Promise<Cach
                     cacheTimer: getCacheTimer(time)
                 };
             }
-        } catch (e) {
+        } catch {
             CACHE[url] = {
                 active: false
             };

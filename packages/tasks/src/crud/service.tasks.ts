@@ -165,7 +165,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
             let taskLog: ITaskLog | null = null;
             try {
                 taskLog = await context.tasks.getLatestLog(task.id);
-            } catch (ex) {}
+            } catch {}
             if (!taskLog) {
                 taskLog = await context.tasks.createLog(task, {
                     iteration: 1,

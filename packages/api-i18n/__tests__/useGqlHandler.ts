@@ -3,7 +3,7 @@ import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import type { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import i18nPlugins from "~/graphql";
-import { apiCallsFactory } from "./helpers";
+import { apiCallsFactory, type IApiCallsFactoryInvoke } from "./helpers";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import type { I18NContext } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
@@ -47,7 +47,12 @@ export default (params: UseGqlHandlerParams = {}) => {
     });
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
-    const invoke = async ({ httpMethod = "POST", body = {}, headers = {}, ...rest }) => {
+    const invoke: IApiCallsFactoryInvoke = async ({
+        httpMethod = "POST",
+        body = {},
+        headers = {},
+        ...rest
+    }) => {
         const response = await handler(
             {
                 path: "/graphql",

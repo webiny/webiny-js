@@ -22,7 +22,7 @@ export const createRichTextStorageTransformPlugin = () => {
 
             try {
                 compressor = plugins.oneByType<CompressorPlugin>(CompressorPlugin.type);
-            } catch (ex) {
+            } catch {
                 return storageValue;
             }
 
@@ -37,7 +37,7 @@ export const createRichTextStorageTransformPlugin = () => {
 
             try {
                 compressor = plugins.oneByType<CompressorPlugin>(CompressorPlugin.type);
-            } catch (ex) {
+            } catch {
                 return value;
             }
             try {

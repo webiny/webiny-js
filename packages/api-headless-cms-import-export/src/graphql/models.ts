@@ -9,7 +9,7 @@ export const listModels = async (context: Context): Promise<CmsModel[]> => {
             return models.filter(model => {
                 return !model.isPrivate;
             });
-        } catch (ex) {
+        } catch {
             return [];
         }
     });

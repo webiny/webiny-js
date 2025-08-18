@@ -36,7 +36,7 @@ export class FileFetcher implements IFileFetcher {
             });
 
             return await this.client.send(cmd);
-        } catch (ex) {
+        } catch {
             return null;
         }
     }
@@ -51,7 +51,7 @@ export class FileFetcher implements IFileFetcher {
                 return false;
             }
             return result.$metadata?.httpStatusCode === 200;
-        } catch (ex) {
+        } catch {
             return false;
         }
     }

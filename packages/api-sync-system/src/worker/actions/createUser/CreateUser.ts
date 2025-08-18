@@ -110,7 +110,7 @@ export class CreateUser {
             if (result.$metadata?.httpStatusCode === 200) {
                 return result;
             }
-        } catch (ex) {
+        } catch {
             //
         }
         return null;

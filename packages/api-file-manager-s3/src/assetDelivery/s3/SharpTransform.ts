@@ -76,7 +76,7 @@ export class SharpTransform implements AssetTransformationStrategy {
                 });
 
                 return newAsset;
-            } catch (e) {
+            } catch {
                 const optimizedImage = await this.optimizeAsset(asset);
 
                 const widths = new WidthCollection(this.params.imageResizeWidths);
@@ -150,7 +150,7 @@ export class SharpTransform implements AssetTransformationStrategy {
             newAsset.setContentsReader(new CallableContentsReader(() => buffer));
 
             return newAsset;
-        } catch (e) {
+        } catch {
             console.log("Create an optimized version of the original asset", asset.getKey());
             // If not found, create an optimized version of the original asset.
             const buffer = await asset.getContents();

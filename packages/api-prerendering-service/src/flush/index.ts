@@ -111,7 +111,7 @@ export default (configuration: Params) => {
                             await storageOperations.deleteRender({
                                 render
                             });
-                        } catch (ex) {
+                        } catch {
                             throw new WebinyError(
                                 "Error while deleting render.",
                                 "DELETE_RENDER_ERROR",
@@ -134,7 +134,7 @@ export default (configuration: Params) => {
                                 render,
                                 settings
                             });
-                        } catch (ex) {
+                        } catch {
                             throw new WebinyError(
                                 "Error while running after flush.",
                                 "AFTER_FLUSH_ERROR",

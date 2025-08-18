@@ -36,7 +36,7 @@ export const destroyCommand = createPulumiCommand({
                     })
                 }
             });
-        } catch (e) {
+        } catch {
             stackExists = false;
         }
 

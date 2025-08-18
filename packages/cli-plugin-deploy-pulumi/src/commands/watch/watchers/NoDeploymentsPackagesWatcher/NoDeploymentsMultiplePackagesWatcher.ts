@@ -116,7 +116,7 @@ const createLog = ({ context }: ICreateLogParams) => {
 const parseMessage = (message: string) => {
     try {
         return JSON.parse(message);
-    } catch (e) {
+    } catch {
         return {
             type: "error",
             message: `Could not parse received watch result (JSON): ${message}`

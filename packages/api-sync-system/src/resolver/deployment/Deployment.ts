@@ -3,7 +3,7 @@ import type { IDeployment, IDeploymentServices } from "./types";
 import type { DynamoDBTableType } from "~/types.js";
 import type { ITable } from "~/sync/types.js";
 
-export interface IDeploymentParams extends Omit<IDeployment, "getTable"> {}
+export type IDeploymentParams = Omit<IDeployment, "getTable">;
 
 export class Deployment implements IDeployment {
     public readonly name: string;

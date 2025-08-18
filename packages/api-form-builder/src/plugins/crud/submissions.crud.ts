@@ -211,7 +211,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                     if (validationResponse.success) {
                         responseIsValid = true;
                     }
-                } catch (e) {}
+                } catch {}
 
                 if (!responseIsValid) {
                     throw new Error("reCAPTCHA verification failed.");
@@ -255,7 +255,7 @@ export const createSubmissionsCrud = (params: CreateSubmissionsCrudParams): Subm
                                 validator
                             );
                             isInvalid = result === false;
-                        } catch (e) {
+                        } catch {
                             isInvalid = true;
                         }
 

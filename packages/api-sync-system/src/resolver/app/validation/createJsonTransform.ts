@@ -4,7 +4,7 @@ export const createJsonTransform = (name: string) => {
     return zod.string().transform((value, ctx) => {
         try {
             return JSON.parse(value);
-        } catch (e) {
+        } catch {
             ctx.addIssue({
                 code: zod.ZodIssueCode.custom,
                 message: `${name} must be a valid JSON string.`

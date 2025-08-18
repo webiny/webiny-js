@@ -765,7 +765,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 entry,
                 storageEntry
             });
-        } catch (ex) {
+        } catch {
             throw new WebinyError(
                 "Could not update existing entry with new data while re-publishing.",
                 "REPUBLISH_UPDATE_ERROR",

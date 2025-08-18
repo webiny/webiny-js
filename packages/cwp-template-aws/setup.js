@@ -84,7 +84,7 @@ const setup = async args => {
             execa.sync("git", ["commit", "-m", `chore: initialize .gitignore`], {
                 cwd: projectRoot
             });
-        } catch (e) {
+        } catch {
             console.log(
                 yellow(
                     "Failed to commit .gitignore. You will have to do it manually once the project is created."

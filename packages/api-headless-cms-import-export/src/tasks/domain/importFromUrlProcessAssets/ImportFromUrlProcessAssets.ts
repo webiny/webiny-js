@@ -66,7 +66,7 @@ export class ImportFromUrlProcessAssets<
             try {
                 const result = await context.fileManager.getFile(id);
                 return !!result;
-            } catch (ex) {
+            } catch {
                 return false;
             }
         };

@@ -19,7 +19,7 @@ export default (): Promise<string> => {
             xhr.ontimeout = function () {
                 resolve("0.0.0.0");
             };
-        } catch (e) {
+        } catch {
             resolve("0.0.0.0");
         }
     });

@@ -39,7 +39,7 @@ export const NavigatorDrawer = () => {
         try {
             const elementTree = await eventHandler.getElementTree();
             setElementTree(elementTree);
-        } catch (e) {}
+        } catch {}
     };
 
     useEffect(() => {

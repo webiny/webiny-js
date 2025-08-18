@@ -10,7 +10,7 @@ import type { SimpleOutput } from "./output/simpleOutput";
 const parseMessage = (message: string) => {
     try {
         return JSON.parse(message);
-    } catch (e) {
+    } catch {
         return {
             type: "error",
             message: `Could not parse received watch result (JSON): ${message}`

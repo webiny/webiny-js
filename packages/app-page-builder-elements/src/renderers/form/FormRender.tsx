@@ -128,7 +128,7 @@ const FormRender = (props: FormRenderProps) => {
                         try {
                             const result = await fieldValidator.validate(value, item);
                             isInvalid = result === false;
-                        } catch (e) {
+                        } catch {
                             isInvalid = true;
                         }
 

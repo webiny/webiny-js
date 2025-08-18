@@ -34,7 +34,7 @@ export function createSystemMethods({ storageOperations }: CreateSystemMethodsPa
                 try {
                     await storageOperations.updateSystemData(data);
                     return;
-                } catch (ex) {
+                } catch {
                     throw new WebinyError(
                         "Could not update the system data.",
                         "SYSTEM_UPDATE_ERROR",
@@ -49,7 +49,7 @@ export function createSystemMethods({ storageOperations }: CreateSystemMethodsPa
             try {
                 await storageOperations.createSystemData(data);
                 return;
-            } catch (ex) {
+            } catch {
                 throw new WebinyError("Could not create the system data.", "SYSTEM_CREATE_ERROR", {
                     data
                 });

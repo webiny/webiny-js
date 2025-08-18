@@ -51,7 +51,7 @@ export const parseImportUrlData = (input: string | GenericRecord): IParseImportU
     let json: unknown;
     try {
         json = typeof input === "string" ? JSON.parse(input) : input;
-    } catch (ex) {
+    } catch {
         throw new WebinyError("Invalid input data provided.", "INVALID_INPUT_DATA");
     }
 

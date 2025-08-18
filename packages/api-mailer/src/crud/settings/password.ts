@@ -22,7 +22,7 @@ export const decrypt = (params: Params): string => {
             return "";
         }
         return result;
-    } catch (ex) {
+    } catch {
         console.log(`Could not decrypt given encrypted password.`);
     }
     return "";
@@ -38,7 +38,7 @@ export const encrypt = (params: Params): string => {
     }
     try {
         return CryptoJS.AES.encrypt(value, secret).toString();
-    } catch (ex) {
+    } catch {
         console.log(`Could not encrypt given password.`);
     }
     return "";

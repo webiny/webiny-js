@@ -48,7 +48,7 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
 
         try {
             return await this.entity.getClean<I18NSystem>(keys);
-        } catch (ex) {
+        } catch {
             throw new WebinyError(
                 "Could not load system data from the database.",
                 "GET_SYSTEM_ERROR",
@@ -68,7 +68,7 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
                 ...keys
             });
             return system;
-        } catch (ex) {
+        } catch {
             throw new WebinyError(
                 "Could not create system data in the database.",
                 "CREATE_SYSTEM_ERROR",
@@ -88,7 +88,7 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
                 ...keys
             });
             return system;
-        } catch (ex) {
+        } catch {
             throw new WebinyError(
                 "Could not update system data in the database.",
                 "UPDATE_VERSION_ERROR",

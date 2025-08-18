@@ -146,7 +146,7 @@ export class SchedulerService implements ISchedulerService {
         try {
             const result = await this.getClient().send(command);
             return result.$metadata?.httpStatusCode === 200;
-        } catch (ex) {
+        } catch {
             return false;
         }
     }

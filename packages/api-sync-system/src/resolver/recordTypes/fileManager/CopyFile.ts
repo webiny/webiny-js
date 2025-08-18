@@ -80,7 +80,7 @@ export class CopyFile implements ICopyFile {
         try {
             const result = await client.send(cmd);
             return result.$metadata?.httpStatusCode === 200 && !!result.ETag;
-        } catch (ex) {
+        } catch {
             /**
              * TODO What happens if this fails? To we continue with the copy or end the process?
              * Do we log the error?

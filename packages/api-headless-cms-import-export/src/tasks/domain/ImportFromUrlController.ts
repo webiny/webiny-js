@@ -46,7 +46,7 @@ export class ImportFromUrlController<
 
         try {
             await context.cms.getModel(input.modelId);
-        } catch (ex) {
+        } catch {
             return response.error({
                 message: `Model "${input.modelId}" not found.`,
                 code: "MODEL_NOT_FOUND"

@@ -214,7 +214,7 @@ class DynamoDbDriver implements DbDriver<DynamoDBDocument> {
                 try {
                     // @ts-expect-error
                     collection[item.key] = JSON.parse(item.value);
-                } catch (ex) {
+                } catch {
                     // @ts-expect-error
                     collection[item.key] = null;
                 }

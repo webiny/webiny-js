@@ -29,7 +29,7 @@ const createSchedulerGetQuery = () => {
     `;
 };
 
-interface SchedulerGetGraphQLQueryVariables extends ISchedulerGetExecuteParams {}
+type SchedulerGetGraphQLQueryVariables = ISchedulerGetExecuteParams;
 
 interface SchedulerGetGraphQLQueryResponse {
     getCmsSchedule: {

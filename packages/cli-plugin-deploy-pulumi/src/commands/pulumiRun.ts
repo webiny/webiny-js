@@ -38,7 +38,7 @@ export const pulumiRunCommand = createPulumiCommand({
                         })
                     }
                 });
-            } catch (e) {
+            } catch {
                 stackExists = false;
             }
 

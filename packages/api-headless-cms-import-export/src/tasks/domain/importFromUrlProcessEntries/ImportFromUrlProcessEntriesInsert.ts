@@ -151,7 +151,7 @@ export class ImportFromUrlProcessEntriesInsert<
         let parsed: Partial<ICmsEntryEntriesJson>;
         try {
             parsed = JSON.parse(data);
-        } catch (ex) {
+        } catch {
             const message = `Failed to parse JSON for file "${key}".`;
             console.error(message);
             result.insert = {

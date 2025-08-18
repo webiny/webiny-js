@@ -66,7 +66,7 @@ export const StateHandlingPlugin = (props: OnChangeProps) => {
 
         try {
             newState = editor.parseEditorState(parsedState || generateInitialLexicalValue());
-        } catch (err) {
+        } catch {
             // Ignore errors
         }
 

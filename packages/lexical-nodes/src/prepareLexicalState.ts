@@ -52,7 +52,7 @@ export const prepareLexicalState = (
     try {
         deepReplaceType(value.root);
         return JSON.stringify(value);
-    } catch (e) {
+    } catch {
         return generateInitialLexicalValue();
     }
 };

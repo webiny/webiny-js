@@ -47,7 +47,7 @@ export class ExportContentEntriesController<
         let model: CmsModel;
         try {
             model = await context.cms.getModel(modelId);
-        } catch (ex) {
+        } catch {
             return response.error({
                 message: `Model "${modelId}" not found.`,
                 code: "MODEL_NOT_FOUND"
@@ -274,7 +274,7 @@ export class ExportContentEntriesController<
                 return result;
             }
             return null;
-        } catch (ex) {
+        } catch {
             return null;
         }
     }
@@ -289,7 +289,7 @@ export class ExportContentEntriesController<
                 return result;
             }
             return null;
-        } catch (ex) {
+        } catch {
             return null;
         }
     }

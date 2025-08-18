@@ -9,7 +9,7 @@ export class IngestorResult implements IIngestorResult {
         let table: ITable;
         try {
             table = source.getTable(item.tableType);
-        } catch (ex) {
+        } catch {
             console.error(
                 `Could not find table for SQS Record source: ${item.tableName} / ${item.tableType}. More info in next log line.`
             );

@@ -100,7 +100,7 @@ module.exports = async function createProject({
                 ""
             ].join("\n")
         );
-    } catch (err) {
+    } catch {
         // @webiny/cli is not installed globally
     }
 

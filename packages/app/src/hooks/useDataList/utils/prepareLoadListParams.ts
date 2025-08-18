@@ -40,7 +40,7 @@ export default (location?: Location): Params => {
         }
         try {
             params[key] = JSON.parse(value);
-        } catch (e) {
+        } catch {
             /**
              * If we can't parse the value, it means it's a string.
              */

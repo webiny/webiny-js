@@ -73,7 +73,7 @@ export class DeleteModelRunner<
                         permanently: true,
                         force: true
                     });
-                } catch (ex) {
+                } catch {
                     console.error("Failed to delete entry.", {
                         model: model.modelId,
                         id: item.id

@@ -1,10 +1,11 @@
 import React from "react";
-import { useRenderer, Elements, ElementInput } from "@webiny/app-page-builder-elements";
+import { ElementInput, Elements, useRenderer } from "@webiny/app-page-builder-elements";
 import { PeGrid } from "@webiny/app-page-builder/editor/plugins/elements/grid/PeGrid";
 import { useElementWithChildren } from "@webiny/app-page-builder/editor";
 import type { GenericRecord } from "@webiny/app/types";
 import { DataSourceDataProvider } from "@webiny/app-page-builder/dataInjection";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const elementInputs = {
     dataSource: ElementInput.create<GenericRecord[]>({
         name: "dataSource",

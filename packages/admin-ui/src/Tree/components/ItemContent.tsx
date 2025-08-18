@@ -1,7 +1,7 @@
 import React from "react";
 import { cn, makeDecoratable } from "~/utils";
 
-interface ItemContentProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type ItemContentProps = React.HTMLAttributes<HTMLDivElement>;
 
 const BaseItemContent = ({ children, className, ...props }: ItemContentProps) => {
     return (
@@ -17,6 +17,4 @@ const BaseItemContent = ({ children, className, ...props }: ItemContentProps) =>
     );
 };
 
-const ItemContent = makeDecoratable("TreeItemContent", BaseItemContent);
-
-export { ItemContent, type ItemContentProps };
+export const ItemContent = makeDecoratable("TreeItemContent", BaseItemContent);

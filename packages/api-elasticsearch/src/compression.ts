@@ -11,7 +11,7 @@ export const compress = async (
     let plugin: CompressorPlugin;
     try {
         plugin = pluginsContainer.oneByType<CompressorPlugin>(CompressorPlugin.type);
-    } catch (ex) {
+    } catch {
         return data;
     }
     return plugin.getCompressor().compress(data);
@@ -24,7 +24,7 @@ export const decompress = async (
     let plugin: CompressorPlugin;
     try {
         plugin = pluginsContainer.oneByType<CompressorPlugin>(CompressorPlugin.type);
-    } catch (ex) {
+    } catch {
         return data;
     }
     return plugin.getCompressor().decompress(data);

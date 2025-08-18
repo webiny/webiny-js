@@ -25,7 +25,7 @@ export const NumberScalar = new GraphQLScalarType({
     serialize: (value: any) => {
         try {
             return parseValue(value);
-        } catch (ex) {
+        } catch {
             console.log({
                 message: "Value sent must be a number.",
                 code: "INVALID_VALUE",

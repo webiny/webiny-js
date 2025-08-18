@@ -56,7 +56,7 @@ export const createSettingsCrud = async (
     let secret: string | null = null;
     try {
         secret = getSecret();
-    } catch (ex) {}
+    } catch {}
 
     const getModel = async (): Promise<CmsModel> => {
         return context.security.withoutAuthorization(async () => {
