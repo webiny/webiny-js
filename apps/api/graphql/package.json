@@ -47,7 +47,7 @@
   },
   "devDependencies": {
     "@webiny/cli-plugin-deploy-pulumi": "0.0.0",
-    "graphql-request": "^3.7.0"
+    "graphql-request": "^7.2.0"
   },
   "adio": {
     "ignore": {

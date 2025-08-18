@@ -15,7 +15,7 @@
     "cypress-mailosaur": "^2.7.0",
     "cypress-wait-until": "^1.7.1",
     "del": "^6.0.0",
-    "graphql-request": "^3.7.0",
+    "graphql-request": "^7.2.0",
     "lodash": "^4.17.21",
     "nanoid": "^3.3.11",
     "node-fetch": "2.6.7",
