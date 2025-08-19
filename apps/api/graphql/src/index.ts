@@ -135,7 +135,9 @@ export const handler = createHandler({
                 }
             });
         }),
-        createAuditLogs(),
+        createAuditLogs({
+            deleteLogsAfterDays: 30
+        }),
         createCountDynamoDbTask(),
         createContinuingTask(),
         createHeadlessCmsScheduler({

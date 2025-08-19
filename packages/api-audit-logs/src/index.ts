@@ -3,7 +3,11 @@ import { createSubscriptionHooks } from "~/subscriptions";
 import type { AuditLogsContext } from "~/types";
 import { createAcoAuditLogsContext } from "~/app";
 
-export const createAuditLogs = () => {
+export interface ICreateAuditLogsParams {
+    deleteLogsAfterDays: number;
+}
+
+export const createAuditLogs = (params?: ICreateAuditLogsParams) => {
     const subscriptionsPlugin = new ContextPlugin<AuditLogsContext>(async context => {
         if (!context.wcp.canUseFeature("auditLogs")) {
             return;
@@ -13,7 +17,7 @@ export const createAuditLogs = () => {
 
     subscriptionsPlugin.name = "auditLogs.context.subscriptions";
 
-    return [subscriptionsPlugin, createAcoAuditLogsContext()];
+    return [subscriptionsPlugin, createAcoAuditLogsContext(params)];
 };
 
 export * from "~/config";

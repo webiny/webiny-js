@@ -141,11 +141,39 @@ export type IAcoAppOnEntryList<T extends GenericSearchData = GenericSearchData> 
 export type AcoRequestAction = "create" | "update" | "delete" | "move" | "fetch";
 export type IAcoAppOnAnyRequest = (context: AcoContext, action: AcoRequestAction) => Promise<void>;
 
+export interface IAcoAppOnBeforeCreateParams {
+    input: SearchRecord;
+    context: AcoContext;
+}
+export interface IAcoAppOnBeforeCreate {
+    (params: IAcoAppOnBeforeCreateParams): Promise<void>;
+}
+export interface IAcoAppOnBeforeUpdateParams {
+    id: string;
+    input: Partial<SearchRecord>;
+    original: SearchRecord;
+    context: AcoContext;
+}
+export interface IAcoAppOnBeforeUpdate {
+    (params: IAcoAppOnBeforeUpdateParams): Promise<void>;
+}
+export interface IAcoAppOnBeforeDeleteParams {
+    id: string;
+    original: SearchRecord;
+    context: AcoContext;
+}
+export interface IAcoAppOnBeforeDelete {
+    (params: IAcoAppOnBeforeDeleteParams): Promise<void>;
+}
+
 export interface IAcoAppParams {
     name: string;
     apiName: string;
     model: CmsModel;
     fields: CmsModelField[];
+    onBeforeCreate?: IAcoAppOnBeforeCreate;
+    onBeforeUpdate?: IAcoAppOnBeforeUpdate;
+    onBeforeDelete?: IAcoAppOnBeforeDelete;
     onEntry?: IAcoAppOnEntry;
     onEntryList?: IAcoAppOnEntryList;
     onAnyRequest?: IAcoAppOnAnyRequest;

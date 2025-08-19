@@ -40,6 +40,7 @@
     "@webiny/api-mailer": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",
+    "@webiny/pubsub": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0"
   }

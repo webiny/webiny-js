@@ -83,7 +83,7 @@ export const createSearchRecordOperations = (
             const { createdBy, createdOn, modifiedBy, modifiedOn, savedBy, savedOn } =
                 pickEntryMetaFields(data);
 
-            const entry = await cms.createEntry(model, {
+            const input = {
                 tags,
                 data,
                 ...rest,
@@ -100,7 +100,9 @@ export const createSearchRecordOperations = (
                 revisionSavedBy: savedBy,
                 revisionSavedOn: savedOn,
                 id: attachAcoRecordPrefix(rest.id)
-            });
+            };
+
+            const entry = await cms.createEntry(model, input);
 
             return pickEntryFieldValues<SearchRecord<any>>(entry);
         },

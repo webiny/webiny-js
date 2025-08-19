@@ -3,6 +3,8 @@ import type { MailerContext } from "@webiny/api-mailer/types";
 import type { SecurityContext } from "@webiny/api-security/types";
 import type { ApwContext } from "@webiny/api-apw/types";
 import type { Context as BaseContext } from "@webiny/handler/types";
+import type { ICmsEntryLocation } from "@webiny/api-headless-cms/types/index.js";
+import { GenericRecord } from "@webiny/api/types";
 
 export * from "~/app/types";
 
@@ -64,4 +66,20 @@ export interface AuditAction {
     app: App;
     entity: Entity;
     action: Action;
+}
+
+export type AuditLogType = "AuditLogs";
+
+export interface AuditLogValuesData extends GenericRecord {
+    data: GenericRecord;
+}
+
+export interface AuditLogValues {
+    id: string;
+    title: string;
+    content: string;
+    tags: string[];
+    type: AuditLogType;
+    location: ICmsEntryLocation;
+    data: AuditLogValuesData;
 }

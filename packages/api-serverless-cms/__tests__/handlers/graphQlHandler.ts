@@ -12,7 +12,7 @@ import { createMutationFactory } from "~tests/handlers/helpers/factory/mutation"
 export interface IGraphQlHandlerParams {
     path: PathType;
     plugins?: Plugin[];
-    features?: boolean | string[];
+    features?: boolean;
 }
 
 export const useGraphQlHandler = (params: IGraphQlHandlerParams) => {
