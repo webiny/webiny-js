@@ -84,7 +84,7 @@ describe("create audit log", () => {
         const partitionKey = `#CME#wby-aco-${result!.id}`;
 
         const scanned = await client.scan({
-            TableName: process.env.DB_TABLE
+            TableName: process.env.DB_TABLE_AUDIT_LOGS
         });
 
         for (const item of scanned.Items || []) {
@@ -149,7 +149,7 @@ describe("create audit log", () => {
         const { id: partitionKey } = parseIdentifier(`${result!.id}`);
 
         const scanned = await client.scan({
-            TableName: process.env.DB_TABLE
+            TableName: process.env.DB_TABLE_AUDIT_LOGS
         });
 
         for (const item of scanned.Items || []) {

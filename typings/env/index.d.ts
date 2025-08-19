@@ -2,15 +2,9 @@ declare namespace NodeJS {
     export interface ProcessEnv {
         NODE_ENV?: "test" | "prod" | "dev" | string;
         DB_TABLE?: string;
-        DB_TABLE_TENANCY?: string;
-        DB_TABLE_PRERENDERING_SERVICE?: string;
         DB_TABLE_ELASTICSEARCH?: string;
-        DB_TABLE_ADMIN_USERS?: string;
-        DB_TABLE_FILE_MANGER?: string;
-        DB_TABLE_HEADLESS_CMS?: string;
-        DB_PAGE_BUILDER?: string;
-        DB_TABLE_PAGE_BUILDER?: string;
         DB_TABLE_LOG?: string;
+        DB_TABLE_AUDIT_LOGS?: string;
         ELASTICSEARCH_SHARED_INDEXES?: "true" | "false" | string;
         WEBINY_VERSION?: string;
         WEBINY_IS_PRE_529?: "true" | "false";
