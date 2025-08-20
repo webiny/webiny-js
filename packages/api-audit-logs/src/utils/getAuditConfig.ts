@@ -1,16 +1,16 @@
 import WebinyError from "@webiny/error";
 import { mdbid } from "@webiny/utils";
-import type { IAcoApp } from "@webiny/api-aco/types";
+import type { IAcoApp, SearchRecord } from "@webiny/api-aco/types";
 import type { AuditAction, AuditLogPayload, AuditLogsContext, AuditLogValues } from "~/types";
 import type { GenericRecord } from "@webiny/api/types";
 
-interface CreateAuditLogParams {
+interface CreateAuditLogParams<T = GenericRecord> {
     app: IAcoApp<AuditLogsContext>;
-    payload: AuditLogPayload;
+    payload: AuditLogPayload<T>;
     deleteLogsAfterDays: number | undefined;
 }
 
-const createAuditLog = async (params: CreateAuditLogParams) => {
+const createAuditLog = async <T = GenericRecord>(params: CreateAuditLogParams<T>) => {
     const { app, payload: input, deleteLogsAfterDays } = params;
 
     const compressor = app.context.compressor;
@@ -21,6 +21,10 @@ const createAuditLog = async (params: CreateAuditLogParams) => {
 
     try {
         await app.context.auditLogsAco.onBeforeCreate.publish({
+            /**
+             * We will assume that the payload is structured correctly.
+             */
+            // @ts-expect-error
             payload,
             setPayload(values) {
                 Object.assign(payload, values);
@@ -52,7 +56,7 @@ const createAuditLog = async (params: CreateAuditLogParams) => {
             }
         };
         await app.search.create(entry);
-        return entry;
+        return values;
     } catch (error) {
         throw WebinyError.from(error, {
             message: "Error while creating new audit log",
@@ -61,9 +65,9 @@ const createAuditLog = async (params: CreateAuditLogParams) => {
     }
 };
 
-interface CreateOrMergeAuditLogParams {
+interface CreateOrMergeAuditLogParams<T = GenericRecord> {
     app: IAcoApp<AuditLogsContext>;
-    payload: AuditLogPayload;
+    payload: AuditLogPayload<T>;
     delay: number;
     deleteLogsAfterDays: number | undefined;
 }
@@ -77,7 +81,28 @@ const createExpiresAt = (deleteLogsAfterDays: number | undefined) => {
     };
 };
 
-const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams) => {
+interface IShouldCreateNewAuditLogParams<T = GenericRecord> {
+    original?: SearchRecord;
+    payload: AuditLogPayload<T>;
+    delay: number;
+}
+
+const shouldCreateNewAuditLog = <T = GenericRecord>(
+    params: IShouldCreateNewAuditLogParams<T>
+): boolean => {
+    const { original, payload, delay } = params;
+    if (!original) {
+        return true;
+    }
+    const existingLogDate = Date.parse(original.savedOn);
+    const newLogDate = new Date(payload.timestamp).getTime();
+    if (newLogDate - existingLogDate < delay * 1000) {
+        return false;
+    }
+    return true;
+};
+
+const createOrMergeAuditLog = async <T = GenericRecord>(params: CreateOrMergeAuditLogParams<T>) => {
     const { app, payload, delay, deleteLogsAfterDays } = params;
 
     const expireAtObj = createExpiresAt(deleteLogsAfterDays);
@@ -94,55 +119,56 @@ const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams) => {
         },
         limit: 1
     });
-    const existingLog = records?.[0];
+    const original = records[0];
 
-    if (existingLog) {
-        const existingLogDate = Date.parse(existingLog.savedOn);
-        const newLogDate = new Date(payload.timestamp).getTime();
-
-        // Check if the latest audit log is saved within delay range.
-        if (newLogDate - existingLogDate < delay * 1000) {
-            const existingLogData = (await compressor.decompress(
-                existingLog.data
-            )) as unknown as GenericRecord;
-            // Update latest audit log with new "after" payload.
-            const beforePayloadData = JSON.parse(existingLogData?.data.data)?.before;
-            const afterPayloadData = payload.data?.after;
-            const updatedPayloadData = beforePayloadData
-                ? JSON.stringify({ before: beforePayloadData, after: afterPayloadData })
-                : JSON.stringify(payload.data);
-
-            const data = await compressor.compress(updatedPayloadData);
-            try {
-                await app.search.update(existingLog.id, {
-                    data: {
-                        ...payload,
-                        data
-                    },
-                    ...expireAtObj
-                });
-
-                return {
-                    ...existingLog,
-                    data: updatedPayloadData,
-                    ...expireAtObj
-                };
-            } catch (error) {
-                throw WebinyError.from(error, {
-                    message: "Error while updating audit log",
-                    code: "UPDATE_AUDIT_LOG"
-                });
-            }
-        }
+    if (shouldCreateNewAuditLog({ original, payload, delay })) {
+        return createAuditLog(params);
     }
+    /**
+     * Update the existing audit log if it was created within the delay range.
+     */
+    const existingLogData = await compressor.decompress<GenericRecord>(original.data);
+    // Update latest audit log with new "after" payload.
+    const beforePayloadData = JSON.parse(existingLogData?.data.data)?.before;
+    /**
+     * We can assume that there is a possible "after" in the payload data.
+     */
+    // @ts-expect-error
+    const afterPayloadData = payload.data?.after;
+    const updatedPayloadData = beforePayloadData
+        ? JSON.stringify({
+              before: beforePayloadData,
+              after: afterPayloadData
+          })
+        : JSON.stringify(payload.data);
 
-    return createAuditLog(params);
+    const data = await compressor.compress(updatedPayloadData);
+    try {
+        await app.search.update(original.id, {
+            data: {
+                ...payload,
+                data
+            },
+            ...expireAtObj
+        });
+
+        return {
+            ...original,
+            data: updatedPayloadData,
+            ...expireAtObj
+        };
+    } catch (error) {
+        throw WebinyError.from(error, {
+            message: "Error while updating audit log",
+            code: "UPDATE_AUDIT_LOG"
+        });
+    }
 };
 
 export const getAuditConfig = (audit: AuditAction) => {
-    return async (
+    return async <T = GenericRecord>(
         message: string,
-        data: Record<string, any>,
+        data: T,
         entityId: string,
         context: AuditLogsContext
     ) => {
@@ -155,7 +181,7 @@ export const getAuditConfig = (audit: AuditAction) => {
 
         const identity = security.getIdentity();
 
-        const auditLogPayload: AuditLogPayload = {
+        const auditLogPayload: AuditLogPayload<T> = {
             message,
             app: audit.app.app,
             entity: audit.entity.type,
@@ -172,7 +198,7 @@ export const getAuditConfig = (audit: AuditAction) => {
         // Check if there is delay on audit log creation for this action.
         if (delay) {
             try {
-                return await createOrMergeAuditLog({
+                return await createOrMergeAuditLog<T>({
                     app,
                     payload: auditLogPayload,
                     delay,
@@ -184,7 +210,7 @@ export const getAuditConfig = (audit: AuditAction) => {
                 return JSON.stringify({});
             }
         }
-        return await createAuditLog({
+        return await createAuditLog<T>({
             app,
             payload: auditLogPayload,
             deleteLogsAfterDays: context.auditLogsAco.deleteLogsAfterDays

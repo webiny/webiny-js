@@ -49,7 +49,7 @@ describe("create audit log", () => {
         }
     };
 
-    it.skip("should create a new audit log", async () => {
+    it("should create a new audit log", async () => {
         expect.assertions(3);
 
         const createAuditLog = getAuditConfig(audit);
@@ -59,7 +59,7 @@ describe("create audit log", () => {
 
         const message = "Some Meaningful Message.";
         const entityId = "abcdefgh0001";
-        const data = {
+        const data: ITestPayloadData = {
             auditLogData: {
                 someData: true
             },
@@ -69,7 +69,7 @@ describe("create audit log", () => {
 
         const result = await createAuditLog(message, data, entityId, context);
 
-        expect(result).toEqual({
+        expect(result).toMatchObject({
             id: expect.any(String),
             title: message,
             content: message,
@@ -78,7 +78,7 @@ describe("create audit log", () => {
                 app: "cms",
                 entity: "user",
                 initiator: "id-12345678",
-                timestamp: expect.any(Date),
+                timestamp: expect.toBeDateString(),
                 entityId,
                 message,
                 data: JSON.stringify(data)
@@ -94,7 +94,7 @@ describe("create audit log", () => {
         const partitionKey = `#CME#wby-aco-${result!.id}`;
 
         const scanned = await client.scan({
-            TableName: process.env.DB_TABLE_AUDIT_LOGS
+            TableName: process.env.DB_TABLE
         });
 
         for (const item of scanned.Items || []) {
@@ -112,7 +112,7 @@ describe("create audit log", () => {
         }
     });
 
-    it.skip("should list created logs", async () => {
+    it("should list created logs", async () => {
         expect.assertions(3);
 
         const createAuditLog = getAuditConfig(audit);
@@ -159,7 +159,7 @@ describe("create audit log", () => {
         const { id: partitionKey } = parseIdentifier(`${result!.id}`);
 
         const scanned = await client.scan({
-            TableName: process.env.DB_TABLE_AUDIT_LOGS
+            TableName: process.env.DB_TABLE
         });
 
         for (const item of scanned.Items || []) {
@@ -216,7 +216,7 @@ describe("create audit log", () => {
                 app: "cms",
                 entity: "user",
                 initiator: "id-12345678",
-                timestamp: expect.any(Date),
+                timestamp: expect.toBeDateString(),
                 entityId,
                 message,
                 data: JSON.stringify({
@@ -235,10 +235,9 @@ describe("create audit log", () => {
             type: "AuditLogs"
         });
 
-        const decompressedData = JSON.parse(
+        const decompressedData =
             // @ts-expect-error
-            await context.compressor.decompress(JSON.parse(result.data.data))
-        );
+            JSON.parse(result.data.data);
 
         expect(decompressedData).toEqual({
             auditLogData: {
