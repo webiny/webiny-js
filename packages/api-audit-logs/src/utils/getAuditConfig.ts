@@ -82,7 +82,7 @@ const createExpiresAt = (deleteLogsAfterDays: number | undefined) => {
 };
 
 interface IShouldCreateNewAuditLogParams<T = GenericRecord> {
-    original?: SearchRecord;
+    original?: SearchRecord<AuditLogPayload<T>>;
     payload: AuditLogPayload<T>;
     delay: number;
 }
@@ -109,7 +109,7 @@ const createOrMergeAuditLog = async <T = GenericRecord>(params: CreateOrMergeAud
 
     const compressor = app.context.compressor;
     // Get the latest audit log of this entry.
-    const [records] = await app.search.list({
+    const [records] = await app.search.list<AuditLogPayload<T>>({
         where: {
             type: "AuditLogs",
             data: {
@@ -119,17 +119,14 @@ const createOrMergeAuditLog = async <T = GenericRecord>(params: CreateOrMergeAud
         },
         limit: 1
     });
-    const original = records[0];
+    const original = records[0] as SearchRecord<AuditLogPayload<T>>;
 
-    if (shouldCreateNewAuditLog({ original, payload, delay })) {
+    if (shouldCreateNewAuditLog<T>({ original, payload, delay })) {
         return createAuditLog(params);
     }
-    /**
-     * Update the existing audit log if it was created within the delay range.
-     */
-    const existingLogData = await compressor.decompress<GenericRecord>(original.data);
     // Update latest audit log with new "after" payload.
-    const beforePayloadData = JSON.parse(existingLogData?.data.data)?.before;
+    // @ts-expect-error
+    const beforePayloadData = JSON.parse(original?.data.data)?.before;
     /**
      * We can assume that there is a possible "after" in the payload data.
      */
@@ -142,12 +139,21 @@ const createOrMergeAuditLog = async <T = GenericRecord>(params: CreateOrMergeAud
           })
         : JSON.stringify(payload.data);
 
+    await app.context.auditLogsAco.onBeforeUpdate.publish({
+        payload: payload as AuditLogPayload,
+        original: original.data as AuditLogPayload,
+        context: app.context,
+        setPayload(input) {
+            Object.assign(payload, input);
+        }
+    });
+
     const data = await compressor.compress(updatedPayloadData);
     try {
         await app.search.update(original.id, {
             data: {
                 ...payload,
-                data
+                data: JSON.stringify(data)
             },
             ...expireAtObj
         });
@@ -193,10 +199,10 @@ export const getAuditConfig = (audit: AuditAction) => {
         };
 
         const app = aco.getApp<AuditLogsContext>("AuditLogs");
-        const delay = audit.action.newEntryDelay;
+        const delay = audit.action.newEntryDelay || 0;
 
         // Check if there is delay on audit log creation for this action.
-        if (delay) {
+        if (delay > 0) {
             try {
                 return await createOrMergeAuditLog<T>({
                     app,
@@ -207,7 +213,7 @@ export const getAuditConfig = (audit: AuditAction) => {
             } catch {
                 // Don't care at this point!
             } finally {
-                return JSON.stringify({});
+                return null;
             }
         }
         return await createAuditLog<T>({
