@@ -15,10 +15,10 @@ export class AcoApps implements IAcoApps {
         this.options = options;
     }
 
-    public get(name: string): IAcoApp {
+    public get<C extends AcoContext = AcoContext>(name: string): IAcoApp<C> {
         const app = this.apps.get(name);
         if (app) {
-            return app;
+            return app as IAcoApp<C>;
         }
         throw new WebinyError(`App "${name}" is not registered.`, "APP_NOT_REGISTERED", {
             name,

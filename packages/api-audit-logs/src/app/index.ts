@@ -1,54 +1,48 @@
 import { ContextPlugin } from "@webiny/api";
 import { createTopic } from "@webiny/pubsub";
 import type {
-    AuditLogsAcoContext,
+    AuditLogsContext,
     OnAuditLogBeforeCreateTopicParams,
-    OnAuditLogBeforeDeleteTopicParams,
     OnAuditLogBeforeUpdateTopicParams
-} from "./types.js";
+} from "~/types.js";
 import { createApp } from "./app";
 
 export * from "./createAppModifier";
 
-const setupContext = async (context: AuditLogsAcoContext): Promise<void> => {
+export interface ISetupContextOptions {
+    deleteLogsAfterDays: number;
+}
+
+const setupContext = async (
+    context: AuditLogsContext,
+    options?: ISetupContextOptions
+): Promise<void> => {
     const onBeforeCreate = createTopic<OnAuditLogBeforeCreateTopicParams>(
         "auditLogs.onBeforeCreate"
     );
     const onBeforeUpdate = createTopic<OnAuditLogBeforeUpdateTopicParams>(
         "auditLogs.onBeforeUpdate"
     );
-    const onBeforeDelete = createTopic<OnAuditLogBeforeDeleteTopicParams>(
-        "auditLogs.onBeforeDelete"
-    );
 
-    const app = await context.aco.registerApp(
-        createApp({
-            onBeforeCreate,
-            onBeforeUpdate,
-            onBeforeDelete
-        })
-    );
+    const app = await context.aco.registerApp(createApp());
 
     context.auditLogsAco = {
         app,
+        deleteLogsAfterDays: options?.deleteLogsAfterDays,
         onBeforeCreate,
-        onBeforeUpdate,
-        onBeforeDelete
+        onBeforeUpdate
     };
 };
-export interface ICreateAcoAuditLogsContextParams {
-    deleteLogsAfterDays: number;
-}
 
-export const createAcoAuditLogsContext = (params?: ICreateAcoAuditLogsContextParams) => {
-    const plugin = new ContextPlugin<AuditLogsAcoContext>(async context => {
+export const createAcoAuditLogsContext = (params?: ISetupContextOptions) => {
+    const plugin = new ContextPlugin<AuditLogsContext>(async context => {
         if (!context.aco) {
             console.log(
                 `There is no ACO initialized so we will not initialize the Audit Logs ACO.`
             );
             return;
         }
-        await setupContext(context);
+        await setupContext(context, params);
     });
 
     plugin.name = "audit-logs-aco.createContext";

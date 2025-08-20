@@ -94,6 +94,7 @@ module.exports = function ({ path }, presets = []) {
 process.env.DB_TABLE = "DynamoDB";
 process.env.DB_TABLE_ELASTICSEARCH = "ElasticsearchStream";
 process.env.DB_TABLE_LOG = "DynamoDBLog";
+process.env.DB_TABLE_AUDIT_LOGS = "DynamoDBAuditLogs";
 process.env.WEBINY_VERSION = version;
 process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
 

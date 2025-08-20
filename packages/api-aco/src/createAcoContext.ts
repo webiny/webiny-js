@@ -101,7 +101,7 @@ const setupAcoContext = async (
         filter: createFilterCrudMethods(params),
         flp: flpCrudMethods,
         apps,
-        getApp: (name: string) => apps.get(name),
+        getApp: <C extends AcoContext = AcoContext>(name: string) => apps.get<C>(name),
         listApps: () => apps.list(),
         registerApp: async (params: IAcoAppRegisterParams) => {
             return apps.register({

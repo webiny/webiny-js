@@ -64,7 +64,7 @@ export interface AdvancedContentOrganisation {
     folderLevelPermissions: FolderLevelPermissions;
     apps: IAcoApps;
     registerApp: (params: IAcoAppRegisterParams) => Promise<IAcoApp>;
-    getApp: (name: string) => IAcoApp;
+    getApp: <C extends AcoContext = AcoContext>(name: string) => IAcoApp<C>;
     listApps: () => IAcoApp[];
 }
 
@@ -118,8 +118,8 @@ export interface IAcoAppModifyFieldCallable {
     (id: string, cb: IAcoAppModifyFieldCallableCallback): void;
 }
 
-export interface IAcoApp {
-    context: AcoContext;
+export interface IAcoApp<C extends AcoContext = AcoContext> {
+    context: C;
     search: AcoSearchRecordCrudBase;
     folder: AcoFolderCrud;
     name: string;
@@ -141,39 +141,11 @@ export type IAcoAppOnEntryList<T extends GenericSearchData = GenericSearchData> 
 export type AcoRequestAction = "create" | "update" | "delete" | "move" | "fetch";
 export type IAcoAppOnAnyRequest = (context: AcoContext, action: AcoRequestAction) => Promise<void>;
 
-export interface IAcoAppOnBeforeCreateParams {
-    input: SearchRecord;
-    context: AcoContext;
-}
-export interface IAcoAppOnBeforeCreate {
-    (params: IAcoAppOnBeforeCreateParams): Promise<void>;
-}
-export interface IAcoAppOnBeforeUpdateParams {
-    id: string;
-    input: Partial<SearchRecord>;
-    original: SearchRecord;
-    context: AcoContext;
-}
-export interface IAcoAppOnBeforeUpdate {
-    (params: IAcoAppOnBeforeUpdateParams): Promise<void>;
-}
-export interface IAcoAppOnBeforeDeleteParams {
-    id: string;
-    original: SearchRecord;
-    context: AcoContext;
-}
-export interface IAcoAppOnBeforeDelete {
-    (params: IAcoAppOnBeforeDeleteParams): Promise<void>;
-}
-
 export interface IAcoAppParams {
     name: string;
     apiName: string;
     model: CmsModel;
     fields: CmsModelField[];
-    onBeforeCreate?: IAcoAppOnBeforeCreate;
-    onBeforeUpdate?: IAcoAppOnBeforeUpdate;
-    onBeforeDelete?: IAcoAppOnBeforeDelete;
     onEntry?: IAcoAppOnEntry;
     onEntryList?: IAcoAppOnEntryList;
     onAnyRequest?: IAcoAppOnAnyRequest;

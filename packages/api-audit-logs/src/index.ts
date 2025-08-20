@@ -19,6 +19,6 @@ export const createAuditLogs = (params?: ICreateAuditLogsParams) => {
 
     return [subscriptionsPlugin, createAcoAuditLogsContext(params)];
 };
-
 export * from "~/config";
 export * from "~/app/createAppModifier";
+export * from "~/app/lifecycle.js";

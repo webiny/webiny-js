@@ -1,13 +1,6 @@
 import type { AcoContext, IAcoAppRegisterParams, SearchRecord } from "@webiny/api-aco/types";
 import { AUDIT_LOGS_TYPE } from "./contants";
 import { NotAuthorizedError } from "@webiny/api-security";
-import type { Topic } from "@webiny/pubsub/types.js";
-import type {
-    OnAuditLogBeforeCreateTopicParams,
-    OnAuditLogBeforeDeleteTopicParams,
-    OnAuditLogBeforeUpdateTopicParams
-} from "./types.js";
-import type { AuditLogValues } from "~/types.js";
 
 const toDate = (value: string | Date) => {
     if (value instanceof Date) {
@@ -38,23 +31,7 @@ const decompressData = async (
     };
 };
 
-export interface ICreateAppParams {
-    onBeforeCreate: Topic<OnAuditLogBeforeCreateTopicParams>;
-    onBeforeUpdate: Topic<OnAuditLogBeforeUpdateTopicParams>;
-    onBeforeDelete: Topic<OnAuditLogBeforeDeleteTopicParams>;
-}
-
-const createValuesSetter = (input: AuditLogValues) => {
-    return (values: Partial<AuditLogValues>): AuditLogValues => {
-        return {
-            ...input,
-            ...values
-        };
-    };
-};
-
-export const createApp = (params: ICreateAppParams): IAcoAppRegisterParams => {
-    const { onBeforeCreate, onBeforeUpdate, onBeforeDelete } = params;
+export const createApp = (): IAcoAppRegisterParams => {
     return {
         name: AUDIT_LOGS_TYPE,
         apiName: "AuditLogs",
@@ -126,34 +103,6 @@ export const createApp = (params: ICreateAppParams): IAcoAppRegisterParams => {
                 label: "Initiator"
             }
         ],
-        onBeforeCreate: async params => {
-            const values = params.input as unknown as AuditLogValues;
-            const setValues = createValuesSetter(values);
-
-            await onBeforeCreate.publish({
-                context: params.context,
-                values,
-                setValues
-            });
-        },
-        onBeforeUpdate: async params => {
-            const values = params.input as unknown as AuditLogValues;
-            const setValues = createValuesSetter(values);
-
-            await onBeforeUpdate.publish({
-                context: params.context,
-                original: params.original as unknown as AuditLogValues,
-                values,
-                setValues
-            });
-        },
-        onBeforeDelete: async params => {
-            await onBeforeDelete.publish({
-                id: params.id,
-                context: params.context,
-                original: params.original as unknown as AuditLogValues
-            });
-        },
         onEntry: async (entry, context) => {
             return decompressData(entry, context);
         },

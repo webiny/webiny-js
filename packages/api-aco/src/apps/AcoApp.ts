@@ -8,9 +8,6 @@ import type {
     IAcoApp,
     IAcoAppModifyFieldCallableCallback,
     IAcoAppOnAnyRequest,
-    IAcoAppOnBeforeCreate,
-    IAcoAppOnBeforeDelete,
-    IAcoAppOnBeforeUpdate,
     IAcoAppOnEntry,
     IAcoAppOnEntryList,
     IAcoAppParams,
@@ -36,9 +33,6 @@ export class AcoApp implements IAcoApp {
     private readonly onEntry?: IAcoAppOnEntry;
     private readonly onEntryList?: IAcoAppOnEntryList;
     private readonly onAnyRequest?: IAcoAppOnAnyRequest;
-    private readonly onBeforeCreate?: IAcoAppOnBeforeCreate;
-    private readonly onBeforeUpdate?: IAcoAppOnBeforeUpdate;
-    private readonly onBeforeDelete?: IAcoAppOnBeforeDelete;
 
     public get search(): AcoSearchRecordCrudBase {
         const getOne = async <TData extends GenericSearchData = GenericSearchData>(id: string) => {
@@ -55,13 +49,6 @@ export class AcoApp implements IAcoApp {
                 data: CreateSearchRecordParams<TData>
             ) => {
                 await this.execOnAnyRequest("create");
-                if (this.onBeforeCreate) {
-                    await this.onBeforeCreate({
-                        // @ts-expect-error
-                        input: data,
-                        context: this.context
-                    });
-                }
 
                 const result = await this.context.aco.search.create<TData>(this.getModel(), data);
                 if (!this.onEntry) {
@@ -75,16 +62,6 @@ export class AcoApp implements IAcoApp {
             ) => {
                 await this.execOnAnyRequest("update");
 
-                const original = await getOne(id);
-
-                if (this.onBeforeUpdate) {
-                    await this.onBeforeUpdate({
-                        id,
-                        input: data,
-                        original,
-                        context: this.context
-                    });
-                }
                 const result = await this.context.aco.search.update<TData>(
                     this.getModel(),
                     id,
@@ -116,16 +93,6 @@ export class AcoApp implements IAcoApp {
             delete: async (id: string): Promise<boolean> => {
                 await this.execOnAnyRequest("delete");
 
-                const original = await getOne(id);
-
-                if (this.onBeforeDelete) {
-                    await this.onBeforeDelete({
-                        id,
-                        original,
-                        context: this.context
-                    });
-                }
-
                 return this.context.aco.search.delete(this.getModel(), id);
             },
             listTags: async (params: ListSearchRecordTagsParams) => {
@@ -149,9 +116,6 @@ export class AcoApp implements IAcoApp {
     private constructor(context: AcoContext, params: IAcoAppParams) {
         this.context = context;
         this.name = params.name;
-        this.onBeforeCreate = params.onBeforeCreate;
-        this.onBeforeUpdate = params.onBeforeUpdate;
-        this.onBeforeDelete = params.onBeforeDelete;
         this.onEntry = params.onEntry;
         this.onEntryList = params.onEntryList;
         this.model = structuredClone(params.model);

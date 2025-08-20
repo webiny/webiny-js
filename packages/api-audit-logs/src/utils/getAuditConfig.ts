@@ -1,46 +1,57 @@
 import WebinyError from "@webiny/error";
 import { mdbid } from "@webiny/utils";
 import type { IAcoApp } from "@webiny/api-aco/types";
-import type { AuditAction, AuditLog, AuditLogsContext } from "~/types";
+import type { AuditAction, AuditLogPayload, AuditLogsContext, AuditLogValues } from "~/types";
 import type { GenericRecord } from "@webiny/api/types";
 
-interface AuditLogPayload extends Omit<AuditLog, "id" | "data"> {
-    data: Record<string, any>;
-}
-
 interface CreateAuditLogParams {
-    app: IAcoApp;
+    app: IAcoApp<AuditLogsContext>;
     payload: AuditLogPayload;
+    deleteLogsAfterDays: number | undefined;
 }
 
 const createAuditLog = async (params: CreateAuditLogParams) => {
-    const { app, payload } = params;
+    const { app, payload: input, deleteLogsAfterDays } = params;
 
     const compressor = app.context.compressor;
 
-    const payloadData = JSON.stringify(payload.data);
+    const expiresAtObj = createExpiresAt(deleteLogsAfterDays);
+
+    const payload = structuredClone(input);
 
     try {
-        const entry = {
+        await app.context.auditLogsAco.onBeforeCreate.publish({
+            payload,
+            setPayload(values) {
+                Object.assign(payload, values);
+            },
+            context: app.context
+        });
+        const values: AuditLogValues = {
             id: mdbid(),
             title: payload.message,
             content: payload.message,
             tags: [],
             type: "AuditLogs",
-            location: { folderId: "root" },
+            location: {
+                folderId: "root"
+            },
             data: {
                 ...payload,
-                data: payloadData
-            }
+                data: JSON.stringify(payload.data)
+            },
+            ...expiresAtObj
         };
-        const data = await compressor.compress(entry.data.data);
-        await app.search.create({
-            ...entry,
+
+        const data = await compressor.compress(values.data.data);
+        const entry = {
+            ...values,
             data: {
-                ...entry.data,
+                ...values.data,
                 data: JSON.stringify(data)
             }
-        });
+        };
+        await app.search.create(entry);
         return entry;
     } catch (error) {
         throw WebinyError.from(error, {
@@ -51,13 +62,25 @@ const createAuditLog = async (params: CreateAuditLogParams) => {
 };
 
 interface CreateOrMergeAuditLogParams {
-    app: IAcoApp;
+    app: IAcoApp<AuditLogsContext>;
     payload: AuditLogPayload;
     delay: number;
+    deleteLogsAfterDays: number | undefined;
 }
 
+const createExpiresAt = (deleteLogsAfterDays: number | undefined) => {
+    if (!deleteLogsAfterDays || deleteLogsAfterDays <= 0) {
+        return {};
+    }
+    return {
+        expireAt: Math.floor(Date.now() + (deleteLogsAfterDays * 24 * 60 * 60 * 1000) / 1000)
+    };
+};
+
 const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams) => {
-    const { app, payload, delay } = params;
+    const { app, payload, delay, deleteLogsAfterDays } = params;
+
+    const expireAtObj = createExpiresAt(deleteLogsAfterDays);
 
     const compressor = app.context.compressor;
     // Get the latest audit log of this entry.
@@ -75,7 +98,7 @@ const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams) => {
 
     if (existingLog) {
         const existingLogDate = Date.parse(existingLog.savedOn);
-        const newLogDate = payload.timestamp.getTime();
+        const newLogDate = new Date(payload.timestamp).getTime();
 
         // Check if the latest audit log is saved within delay range.
         if (newLogDate - existingLogDate < delay * 1000) {
@@ -95,12 +118,14 @@ const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams) => {
                     data: {
                         ...payload,
                         data
-                    }
+                    },
+                    ...expireAtObj
                 });
 
                 return {
                     ...existingLog,
-                    data: updatedPayloadData
+                    data: updatedPayloadData,
+                    ...expireAtObj
                 };
             } catch (error) {
                 throw WebinyError.from(error, {
@@ -130,18 +155,18 @@ export const getAuditConfig = (audit: AuditAction) => {
 
         const identity = security.getIdentity();
 
-        const auditLogPayload = {
+        const auditLogPayload: AuditLogPayload = {
             message,
             app: audit.app.app,
             entity: audit.entity.type,
             entityId,
             action: audit.action.type,
             data,
-            timestamp: new Date(),
+            timestamp: new Date().toISOString(),
             initiator: identity?.id
         };
 
-        const app = aco.getApp("AuditLogs");
+        const app = aco.getApp<AuditLogsContext>("AuditLogs");
         const delay = audit.action.newEntryDelay;
 
         // Check if there is delay on audit log creation for this action.
@@ -150,7 +175,8 @@ export const getAuditConfig = (audit: AuditAction) => {
                 return await createOrMergeAuditLog({
                     app,
                     payload: auditLogPayload,
-                    delay
+                    delay,
+                    deleteLogsAfterDays: context.auditLogsAco.deleteLogsAfterDays
                 });
             } catch {
                 // Don't care at this point!
@@ -160,7 +186,8 @@ export const getAuditConfig = (audit: AuditAction) => {
         }
         return await createAuditLog({
             app,
-            payload: auditLogPayload
+            payload: auditLogPayload,
+            deleteLogsAfterDays: context.auditLogsAco.deleteLogsAfterDays
         });
     };
 };
