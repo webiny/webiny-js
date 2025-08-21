@@ -7,7 +7,7 @@ export const CellRevision = () => {
     const { useTableRow } = SchedulerListConfig.Browser.Table.Column;
     const { row } = useTableRow();
 
-    const { version } = parseIdentifier(row.id);
+    const { version } = parseIdentifier(row.data.targetId);
     return (
         <RowTitle>
             <RowText use={"subtitle2"}>{version}</RowText>
