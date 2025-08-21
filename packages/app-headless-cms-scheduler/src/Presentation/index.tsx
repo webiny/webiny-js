@@ -15,6 +15,11 @@ import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 export * from "./components/ScheduleDialog/index.js";
 export * from "~/Presentation/SchedulerConfigs/index.js";
 
+/**
+ * Decoratable Cells.
+ */
+export * from "./components/Cells/CellScheduledOn/index.js";
+
 export interface SchedulerRenderPropParams {
     showScheduler: () => void;
 }

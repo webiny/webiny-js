@@ -44,7 +44,7 @@ export const SchedulerConfigs = () => {
                 />
                 <Browser.Table.Column
                     name={"scheduledOn"}
-                    header={"Action Date"}
+                    header={"Action Time"}
                     cell={<CellScheduledOn />}
                     sortable={true}
                     hideable={false}
