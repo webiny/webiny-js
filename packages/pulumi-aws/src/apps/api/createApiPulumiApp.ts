@@ -31,7 +31,6 @@ import { attachSyncSystem } from "../syncSystem/api/index.js";
 import { getAwsAccountId } from "~/apps/awsUtils";
 import type { WithServiceManifest } from "~/utils/withServiceManifest.js";
 import { ApiScheduler } from "~/apps/api/ApiScheduler.js";
-import { AuditLogsDynamo } from "~/apps/api/AuditLogsDynamo.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -158,8 +157,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             const vpcEnabled = app.getParam(projectAppParams?.vpc) ?? isProduction;
             app.addModule(VpcConfig, { enabled: vpcEnabled });
 
-            const protect = app.getParam(projectAppParams.protect) ?? isProduction;
-
             // const pageBuilder = app.addModule(ApiPageBuilder, {
             //     env: {
             //         COGNITO_REGION: getEnvVariableAwsRegion(),
@@ -178,10 +175,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             //     }
             // });
 
-            const auditLogsDynamo = app.addModule(AuditLogsDynamo, {
-                protect
-            });
-
             const apwScheduler = app.addModule(ApiApwScheduler, {
                 primaryDynamodbTableArn: core.primaryDynamodbTableArn,
 
@@ -190,7 +183,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
                     DB_TABLE: core.primaryDynamodbTableName,
                     DB_TABLE_LOG: core.logDynamodbTableName,
-                    DB_TABLE_AUDIT_LOGS: auditLogsDynamo.output.name,
                     S3_BUCKET: core.fileManagerBucketId
                 }
             });
@@ -201,7 +193,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
                     DB_TABLE: core.primaryDynamodbTableName,
                     DB_TABLE_LOG: core.logDynamodbTableName,
-                    DB_TABLE_AUDIT_LOGS: auditLogsDynamo.output.name,
                     DB_TABLE_ELASTICSEARCH: core.elasticsearchDynamodbTableName,
                     ELASTIC_SEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
 
@@ -301,7 +292,6 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventRule: apwScheduler.eventRule.output.name,
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
-                auditLogsDynamoDbTable: auditLogsDynamo.output.name,
                 migrationLambdaArn: migration.function.output.arn,
                 graphqlLambdaName: graphql.functions.graphql.output.name,
                 graphqlLambdaRole: graphql.role.output.arn,

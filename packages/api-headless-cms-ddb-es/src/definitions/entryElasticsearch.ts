@@ -32,6 +32,9 @@ export const createEntryElasticsearchEntity = (
             TYPE: {
                 type: "string"
             },
+            expiresAt: {
+                type: "number"
+            },
             ...(attributes || {})
         }
     });

@@ -32,6 +32,19 @@ type CreateEntryDataParams = {
     accessControl: AccessControl;
 };
 
+const getExpiresAt = (expiresAt: number | undefined | null): number | undefined => {
+    if (!expiresAt) {
+        return undefined;
+    }
+    const value = Number(expiresAt);
+    if (isNaN(value)) {
+        return undefined;
+    } else if (value <= 0) {
+        return undefined;
+    }
+    return value;
+};
+
 export const createEntryData = async ({
     model,
     rawInput,
@@ -175,7 +188,8 @@ export const createEntryData = async ({
         values: input,
         location: {
             folderId: rawInput.wbyAco_location?.folderId || ROOT_FOLDER
-        }
+        },
+        expiresAt: getExpiresAt(rawInput.expiresAt)
     };
 
     if (status !== STATUS_DRAFT) {

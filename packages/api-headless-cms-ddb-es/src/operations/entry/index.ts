@@ -217,7 +217,8 @@ export const createEntriesStorageOperations = (
                 {
                     ...latestKeys,
                     index: esIndex,
-                    data: esLatestData
+                    data: esLatestData,
+                    expiresAt: entry.expiresAt
                 }
             ]
         });
@@ -227,7 +228,8 @@ export const createEntriesStorageOperations = (
             elasticsearchEntityBatch.put({
                 ...publishedKeys,
                 index: esIndex,
-                data: esPublishedData
+                data: esPublishedData,
+                expiresAt: entry.expiresAt
             });
         }
 
@@ -300,12 +302,14 @@ export const createEntriesStorageOperations = (
                 {
                     ...storageEntry,
                     TYPE: createRecordType(),
-                    ...revisionKeys
+                    ...revisionKeys,
+                    expiresAt: entry.expiresAt
                 },
                 {
                     ...storageEntry,
                     TYPE: createLatestRecordType(),
-                    ...latestKeys
+                    ...latestKeys,
+                    expiresAt: entry.expiresAt
                 }
             ]
         });
@@ -314,7 +318,8 @@ export const createEntriesStorageOperations = (
             entityBatch.put({
                 ...storageEntry,
                 TYPE: createPublishedRecordType(),
-                ...publishedKeys
+                ...publishedKeys,
+                expiresAt: entry.expiresAt
             });
 
             // Unpublish previously published revision (if any).
@@ -335,7 +340,8 @@ export const createEntriesStorageOperations = (
                     }),
                     SK: createRevisionSortKey(publishedRevisionStorageEntry),
                     TYPE: createRecordType(),
-                    status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                    status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
+                    expiresAt: entry.expiresAt
                 });
             }
         }
@@ -368,7 +374,8 @@ export const createEntriesStorageOperations = (
                 {
                     ...latestKeys,
                     index: esIndex,
-                    data: esLatestData
+                    data: esLatestData,
+                    expiresAt: entry.expiresAt
                 }
             ]
         });
@@ -378,7 +385,8 @@ export const createEntriesStorageOperations = (
             elasticsearchEntityBatch.put({
                 ...publishedKeys,
                 index: esIndex,
-                data: esPublishedData
+                data: esPublishedData,
+                expiresAt: entry.expiresAt
             });
         }
 
@@ -462,7 +470,8 @@ export const createEntriesStorageOperations = (
                     ...storageEntry,
                     locked,
                     ...revisionKeys,
-                    TYPE: createRecordType()
+                    TYPE: createRecordType(),
+                    expiresAt: entry.expiresAt
                 }
             ]
         });
@@ -472,7 +481,8 @@ export const createEntriesStorageOperations = (
                 ...storageEntry,
                 locked,
                 ...publishedKeys,
-                TYPE: createPublishedRecordType()
+                TYPE: createPublishedRecordType(),
+                expiresAt: entry.expiresAt
             });
         }
 
@@ -496,7 +506,8 @@ export const createEntriesStorageOperations = (
                 entityBatch.put({
                     ...storageEntry,
                     ...latestKeys,
-                    TYPE: createLatestRecordType()
+                    TYPE: createLatestRecordType(),
+                    expiresAt: entry.expiresAt
                 });
 
                 /**
@@ -507,7 +518,8 @@ export const createEntriesStorageOperations = (
                 elasticsearchEntityBatch.put({
                     ...latestKeys,
                     index: esIndex,
-                    data: elasticsearchLatestData
+                    data: elasticsearchLatestData,
+                    expiresAt: entry.expiresAt
                 });
             } else {
                 /**
@@ -538,12 +550,14 @@ export const createEntriesStorageOperations = (
                         tenant: model.tenant
                     }),
                     SK: createRevisionSortKey(latestStorageEntry),
-                    TYPE: createRecordType()
+                    TYPE: createRecordType(),
+                    expiresAt: entry.expiresAt
                 });
 
                 entityBatch.put({
                     ...updatedLatestStorageEntry,
-                    TYPE: createLatestRecordType()
+                    TYPE: createLatestRecordType(),
+                    expiresAt: entry.expiresAt
                 });
 
                 /**
@@ -568,7 +582,8 @@ export const createEntriesStorageOperations = (
                     elasticsearchEntityBatch.put({
                         ...latestKeys,
                         index: esIndex,
-                        data: updatedLatestEntry
+                        data: updatedLatestEntry,
+                        expiresAt: entry.expiresAt
                     });
                 }
             }
@@ -580,7 +595,8 @@ export const createEntriesStorageOperations = (
             elasticsearchEntityBatch.put({
                 ...publishedKeys,
                 index: esIndex,
-                data: elasticsearchPublishedData
+                data: elasticsearchPublishedData,
+                expiresAt: entry.expiresAt
             });
         }
         try {
@@ -1594,12 +1610,14 @@ export const createEntriesStorageOperations = (
                 {
                     ...storageEntry,
                     ...revisionKeys,
-                    TYPE: createRecordType()
+                    TYPE: createRecordType(),
+                    expiresAt: entry.expiresAt
                 },
                 {
                     ...storageEntry,
                     ...publishedKeys,
-                    TYPE: createPublishedRecordType()
+                    TYPE: createPublishedRecordType(),
+                    expiresAt: entry.expiresAt
                 }
             ]
         });
@@ -1621,7 +1639,8 @@ export const createEntriesStorageOperations = (
             // 2.1 If we're publishing the latest revision, we first need to update the L record.
             entityBatch.put({
                 ...storageEntry,
-                ...latestKeys
+                ...latestKeys,
+                expiresAt: entry.expiresAt
             });
 
             // 2.2 Additionally, if we have a previously published entry, we need to mark it as unpublished.
@@ -1639,7 +1658,8 @@ export const createEntriesStorageOperations = (
                         status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
                         TYPE: createRecordType(),
                         PK: createPartitionKey(publishedStorageEntry),
-                        SK: createRevisionSortKey(publishedStorageEntry)
+                        SK: createRevisionSortKey(publishedStorageEntry),
+                        expiresAt: entry.expiresAt
                     });
                 }
             }
@@ -1669,7 +1689,8 @@ export const createEntriesStorageOperations = (
                 ...latestStorageEntryFields,
                 PK: createPartitionKey(latestStorageEntry),
                 SK: createLatestSortKey(),
-                TYPE: createLatestRecordType()
+                TYPE: createLatestRecordType(),
+                expiresAt: entry.expiresAt
             });
 
             // 2.5 Update REV# record.
@@ -1677,7 +1698,8 @@ export const createEntriesStorageOperations = (
                 ...latestStorageEntryFields,
                 PK: createPartitionKey(latestStorageEntry),
                 SK: createRevisionSortKey(latestStorageEntry),
-                TYPE: createRecordType()
+                TYPE: createRecordType(),
+                expiresAt: entry.expiresAt
             });
 
             // 2.6 Additionally, if we have a previously published entry, we need to mark it as unpublished.
@@ -1695,7 +1717,8 @@ export const createEntriesStorageOperations = (
                         PK: createPartitionKey(publishedStorageEntry),
                         SK: createRevisionSortKey(publishedStorageEntry),
                         TYPE: createRecordType(),
-                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+                        status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
+                        expiresAt: entry.expiresAt
                     });
                 }
             }
@@ -1710,7 +1733,8 @@ export const createEntriesStorageOperations = (
         elasticsearchEntityBatch.put({
             ...publishedKeys,
             index: esIndex,
-            data: esPublishedData
+            data: esPublishedData,
+            expiresAt: entry.expiresAt
         });
 
         /**
@@ -1742,7 +1766,8 @@ export const createEntriesStorageOperations = (
                 index: esIndex,
                 PK: createPartitionKey(latestEsEntryDataDecompressed),
                 SK: createLatestSortKey(),
-                data: await latestTransformer.getElasticsearchLatestEntryData()
+                data: await latestTransformer.getElasticsearchLatestEntryData(),
+                expiresAt: entry.expiresAt
             });
         } else {
             const updatedEntryLevelMetaFields = pickEntryMetaFields(
@@ -1778,7 +1803,8 @@ export const createEntriesStorageOperations = (
                 elasticsearchEntityBatch.put({
                     ...latestKeys,
                     index: esIndex,
-                    data: updatedLatestEntry
+                    data: updatedLatestEntry,
+                    expiresAt: entry.expiresAt
                 });
             }
         }

@@ -126,6 +126,9 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             meta: {
                 type: "map"
             },
+            expiresAt: {
+                type: "number"
+            },
             ...(attributes || {})
         }
     });
