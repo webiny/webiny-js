@@ -1,0 +1,80 @@
+import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import { Entity, Table } from "@webiny/db-dynamodb/toolbox.js";
+import type { GenericRecord } from "@webiny/api/types.js";
+
+export interface ICreateEntityParams {
+    client: DynamoDBDocument;
+    gsiAmount: number;
+    tableName: string | undefined;
+}
+
+export interface ICreateEntityResult {
+    entity: Entity;
+    table: Table<string, string, string>;
+}
+
+const createTableGSIIndexes = (count: number) => {
+    const result: GenericRecord = {};
+    for (let i = 1; i <= count; i++) {
+        result[`GSI${i}`] = {
+            partitionKey: `GSI${i}_PK`,
+            sortKey: `GSI${i}_SK`
+        };
+    }
+    return result;
+};
+
+const createEntityGSIAttributes = (count: number) => {
+    const result: GenericRecord<string> = {};
+    for (let i = 1; i <= count; i++) {
+        result[`GSI${i}_PK`] = {
+            type: "string",
+            required: true
+        };
+        result[`GSI${i}_SK`] = {
+            type: "string",
+            required: true
+        };
+    }
+    return result;
+};
+
+export const createEntity = (params: ICreateEntityParams): ICreateEntityResult => {
+    const { gsiAmount, client, tableName } = params;
+    const name = tableName || process.env.DB_TABLE_AUDIT_LOGS;
+    if (!name) {
+        throw new Error("Missing env.DB_TABLE_AUDIT_LOGS environment variable.");
+    }
+    const table = new Table({
+        name,
+        partitionKey: "PK",
+        sortKey: "SK",
+        DocumentClient: client,
+        indexes: createTableGSIIndexes(gsiAmount),
+        autoExecute: true,
+        autoParse: true
+    });
+
+    const entity = new Entity({
+        name: "AuditLogs",
+        table,
+        attributes: {
+            PK: {
+                partitionKey: true
+            },
+            SK: {
+                sortKey: true
+            },
+            ...createEntityGSIAttributes(gsiAmount),
+            data: {
+                type: "map",
+                required: true
+            }
+        }
+    });
+
+    return {
+        entity,
+        table
+    };
+};
