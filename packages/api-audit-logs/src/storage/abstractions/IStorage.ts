@@ -1,4 +1,4 @@
-import type { AuditLogValues } from "~/types.js";
+import type { IAuditLog } from "~/storage/types.js";
 
 export interface IStorageFetchParams {
     id: string;
@@ -11,7 +11,7 @@ export interface IStorageFetchErrorResult {
 }
 
 export interface IStorageFetchSuccessResult {
-    data: AuditLogValues;
+    data: IAuditLog;
     success: true;
     error?: never;
 }
@@ -19,7 +19,7 @@ export interface IStorageFetchSuccessResult {
 export type IStorageFetchResult = IStorageFetchErrorResult | IStorageFetchSuccessResult;
 
 export interface IStorageStoreParams {
-    data: AuditLogValues;
+    data: IAuditLog;
 }
 
 export interface IStorageStoreErrorResult {
@@ -29,7 +29,7 @@ export interface IStorageStoreErrorResult {
 }
 
 export interface IStorageStoreSuccessResult {
-    data: AuditLogValues;
+    data: IAuditLog;
     success: true;
     error?: never;
 }
@@ -50,7 +50,7 @@ export interface IStorageListSuccessResultMeta {
 }
 
 export interface IStorageListSuccessResult {
-    data: AuditLogValues[];
+    data: IAuditLog[];
     meta: IStorageListSuccessResultMeta;
     success: true;
 }

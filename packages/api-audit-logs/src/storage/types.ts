@@ -1,14 +1,25 @@
-export interface IStorageAuditLogCreatedBy {
+import type { GenericRecord } from "@webiny/api/types.js";
+
+export interface IAuditLogCreatedBy {
     id: string;
     type: string;
     displayName: string;
 }
 
-export interface IStorageAuditLog {
+export interface IAuditLog {
     id: string;
     tenant: string;
-    createdBy: IStorageAuditLogCreatedBy;
+    createdBy: IAuditLogCreatedBy;
     createdOn: Date;
+    app: string;
+    action: string;
+    title: string;
+    message: string;
     targetId: string;
-    targetEntityId: string;
+    content: string;
+    tags: string[];
+}
+
+export interface IStorageAuditLog extends Omit<IAuditLog, "createdOn"> {
+    createdOn: string;
 }

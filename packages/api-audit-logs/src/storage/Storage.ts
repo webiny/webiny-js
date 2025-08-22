@@ -1,5 +1,4 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { AuditLogValues } from "~/types.js";
 import { put } from "@webiny/db-dynamodb/utils/put.js";
 import { getClean } from "@webiny/db-dynamodb/utils/get.js";
 import { createEntity } from "~/storage/entity.js";
@@ -11,8 +10,11 @@ import type {
     IStorageStoreResult
 } from "~/storage/abstractions/IStorage.js";
 import type { Topic } from "@webiny/pubsub/types.js";
+import type { IAuditLog, IStorageAuditLog } from "~/storage/types.js";
+import type { ICompressor } from "@webiny/utils/compression/index.js";
 
 export interface IStorageParams {
+    compressor: ICompressor;
     client: DynamoDBDocument;
     tableName: string | undefined;
     onBeforeCreate: Topic<any>;
@@ -33,7 +35,7 @@ interface IStorageItem {
     GSI5_PK: string;
     GSI5_SK: string;
 
-    data: AuditLogValues;
+    data: IStorageAuditLog;
 }
 
 export class Storage implements IStorage {
@@ -41,6 +43,7 @@ export class Storage implements IStorage {
     private readonly table;
     private readonly onBeforeCreate;
     private readonly onBeforeUpdate;
+    private readonly compressor;
 
     public constructor(params: IStorageParams) {
         const { entity, table } = createEntity({
@@ -48,6 +51,7 @@ export class Storage implements IStorage {
             tableName: params.tableName,
             gsiAmount: 5
         });
+        this.compressor = params.compressor;
         this.table = table;
         this.entity = entity;
         this.onBeforeCreate = params.onBeforeCreate;
@@ -72,7 +76,7 @@ export class Storage implements IStorage {
                 };
             }
             return {
-                data: result.data,
+                data: await this.fromStorage(result.data),
                 success: true
             };
         } catch (ex) {
@@ -84,28 +88,30 @@ export class Storage implements IStorage {
     }
 
     public async store(params: IStorageStoreParams): Promise<IStorageStoreResult> {
-        const data = structuredClone(params.data);
+        const auditLog = structuredClone(params.data);
 
+        await this.onBeforeCreate.publish({
+            auditLog
+        });
+        const time = auditLog.createdOn.getTime();
         try {
             await put({
                 entity: this.entity,
                 item: {
-                    PK: `AUDIT_LOG`,
-                    SK: `${data.id}`,
+                    PK: `T#${auditLog.tenant}#AUDIT_LOG`,
+                    SK: `${auditLog.id}`,
                     // By Log Type
-                    GSI1_PK: "AUDIT_LOG#TYPE",
-                    GSI1_SK: `${data.type}`,
-                    GSI2_PK: `AUDIT_LOG#USER`,
-                    GSI2_SK: `${data.createdBy.id}`,
-                    GSI3_PK: `AUDIT_LOG#DATE`,
-                    GSI3_SK: `${data.createdOn.getTime()}`,
-                    GSI4_PK: "AUDIT_LOG#ACTION",
-                    GSI4_SK: `${data.data.action}`,
-                    GSI5_PK: `AUDIT_LOG#ENTITY`,
-                    GSI5_SK: `${data.data.entityId}`,
-                    data: {
-                        ...data
-                    }
+                    GSI1_PK: `T#${auditLog.tenant}#AUDIT_LOG#APP#${auditLog.app}`,
+                    GSI1_SK: time,
+                    GSI2_PK: `T#${auditLog.tenant}#AUDIT_LOG#USER#${auditLog.createdBy.id}`,
+                    GSI2_SK: time,
+                    GSI3_PK: `T#${auditLog.tenant}#AUDIT_LOG#TIME`,
+                    GSI3_SK: time,
+                    GSI4_PK: `T#${auditLog.tenant}#AUDIT_LOG#ACTION#${auditLog.app}#${auditLog.action}`,
+                    GSI4_SK: time,
+                    GSI5_PK: `T#${auditLog.tenant}#AUDIT_LOG#TARGET`,
+                    GSI5_SK: `${auditLog.targetId}`,
+                    data: await this.toStorage(auditLog)
                 }
             });
         } catch (ex) {
@@ -117,7 +123,23 @@ export class Storage implements IStorage {
 
         return {
             success: true,
-            data
+            data: auditLog
+        };
+    }
+
+    private async toStorage(auditLog: IAuditLog): Promise<IStorageAuditLog> {
+        return {
+            ...auditLog,
+            content: JSON.stringify(await this.compressor.compress(auditLog.content)),
+            createdOn: auditLog.createdOn.toISOString()
+        };
+    }
+
+    private async fromStorage(auditLog: IStorageAuditLog): Promise<IAuditLog> {
+        return {
+            ...auditLog,
+            content: await this.compressor.decompress(JSON.parse(auditLog.content)),
+            createdOn: new Date(auditLog.createdOn)
         };
     }
 }
