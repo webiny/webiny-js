@@ -65,7 +65,46 @@ export const createEntity = (params: ICreateEntityParams): ICreateEntityResult =
             SK: {
                 sortKey: true
             },
-            ...createEntityGSIAttributes(gsiAmount),
+            GSI1_PK: {
+                type: "string",
+                required: true
+            },
+            GSI1_SK: {
+                type: "string",
+                required: true
+            },
+            GSI2_PK: {
+                type: "string",
+                required: true
+            },
+            GSI2_SK: {
+                type: "string",
+                required: true
+            },
+            GSI3_PK: {
+                type: "string",
+                required: true
+            },
+            GSI3_SK: {
+                type: "number",
+                required: true
+            },
+            GSI4_PK: {
+                type: "string",
+                required: true
+            },
+            GSI4_SK: {
+                type: "string",
+                required: true
+            },
+            GSI5_PK: {
+                type: "string",
+                required: true
+            },
+            GSI5_SK: {
+                type: "string",
+                required: true
+            },
             data: {
                 type: "map",
                 required: true

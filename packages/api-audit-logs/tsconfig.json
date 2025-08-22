@@ -18,6 +18,7 @@
     { "path": "../api-security" },
     { "path": "../api-tenancy" },
     { "path": "../api-wcp" },
+    { "path": "../db-dynamodb" },
     { "path": "../handler-aws" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" }
@@ -61,6 +62,8 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],
       "@webiny/api-wcp": ["../api-wcp/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
