@@ -1,7 +1,7 @@
 import React, { useCallback, useRef } from "react";
 import { Alert, Grid, Input } from "@webiny/admin-ui";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
-import { Bind } from "@webiny/form";
+import { Bind, type BindComponentRenderProp } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import type { SchedulerEntry } from "~/types";
 import type { CmsContentEntry } from "@webiny/app-headless-cms-common/types";
@@ -9,6 +9,7 @@ import type { IScheduleDialogAction } from "./types";
 import { ScheduleType } from "~/types.js";
 import type { Validator } from "@webiny/validation/types.js";
 import ValidationError from "@webiny/validation/validationError.js";
+import { makeDecoratable } from "@webiny/react-composition";
 
 export interface ShowDialogParamsEntry {
     id: string;
@@ -58,20 +59,25 @@ const ReschedulingAlert = ({ scheduleOn, type }: FormComponentProps) => {
         </Alert>
     );
 };
+/**
+ * DO NOT use a library for this!
+ */
+const padLeft = (num: number) => {
+    return String(num).padStart(2, "0");
+};
 
-const formatDateForDateTimeLocal = (date?: Date): string | undefined => {
+const formatDateForDateTimeLocal = (date?: Date | string): string | undefined => {
     if (!date) {
         return undefined;
+    } else if (typeof date === "string") {
+        date = new Date(date);
     }
-    const pad = (num: number) => {
-        return String(num).padStart(2, "0");
-    };
 
     const year = date.getFullYear();
-    const month = pad(date.getMonth() + 1);
-    const day = pad(date.getDate());
-    const hours = pad(date.getHours());
-    const minutes = pad(date.getMinutes());
+    const month = padLeft(date.getMonth() + 1);
+    const day = padLeft(date.getDate());
+    const hours = padLeft(date.getHours());
+    const minutes = padLeft(date.getMinutes());
 
     return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
@@ -91,6 +97,30 @@ const minDateValidator: Validator = (input: string) => {
 
 minDateValidator.validatorName = "minDateValidator";
 
+export interface ISchedulerDialogFormComponentDateTimeInputProps {
+    bind: BindComponentRenderProp<Date>;
+}
+
+export const SchedulerDialogFormComponentDateTimeInput = makeDecoratable(
+    "SchedulerDialogFormComponentDateTimeInput",
+    (props: ISchedulerDialogFormComponentDateTimeInputProps) => {
+        const { bind } = props;
+
+        return (
+            <Input
+                {...bind}
+                value={formatDateForDateTimeLocal(bind.value)}
+                title={"Schedule On"}
+                label={"Schedule On"}
+                size={"lg"}
+                type={"datetime-local"}
+                required
+                autoFocus
+            />
+        );
+    }
+);
+
 const FormComponent = ({ scheduleOn, onCancel, type }: FormComponentProps) => {
     return (
         <>
@@ -101,14 +131,9 @@ const FormComponent = ({ scheduleOn, onCancel, type }: FormComponentProps) => {
                         name={"scheduleOn"}
                         validators={[validation.create("required"), minDateValidator]}
                     >
-                        <Input
-                            title={"Schedule On"}
-                            label={"Schedule On"}
-                            size={"lg"}
-                            type={"datetime-local"}
-                            required
-                            autoFocus
-                        />
+                        {bind => {
+                            return <SchedulerDialogFormComponentDateTimeInput bind={bind} />;
+                        }}
                     </Bind>
                 </Grid.Column>
             </Grid>
@@ -183,19 +208,19 @@ export const useScheduleDialog = (): UseShowScheduleDialogResponse => {
     const showDialog = (params: ShowDialogParams) => {
         const { schedulerEntry, entry } = params;
 
-        const scheduleOnValue = schedulerEntry?.publishOn || schedulerEntry?.unpublishOn;
+        const scheduleOn = schedulerEntry?.publishOn || schedulerEntry?.unpublishOn;
 
         dialogClose.current = dialog.showDialog({
             title: `Schedule "${entry.title}"`,
             content: (
                 <FormComponent
                     type={schedulerEntry?.type}
-                    scheduleOn={scheduleOnValue}
+                    scheduleOn={scheduleOn}
                     onCancel={onCancel}
                 />
             ),
             formData: {
-                scheduleOn: formatDateForDateTimeLocal(scheduleOnValue)
+                scheduleOn
             },
             acceptLabel: entry.status === "published" ? "Schedule Unpublish" : "Schedule Publish",
             cancelLabel: "Discard",
@@ -215,7 +240,9 @@ export const useScheduleDialog = (): UseShowScheduleDialogResponse => {
                 try {
                     scheduleOn = new Date(data.scheduleOn);
                 } catch (ex) {
-                    showSnackbar(`Invalid "Schedule On" date!`);
+                    showSnackbar(`Invalid "Schedule On" date!`, {
+                        value: data.scheduleOn
+                    });
                     console.error(ex);
                     return;
                 }
