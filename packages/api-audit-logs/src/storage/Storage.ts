@@ -17,6 +17,7 @@ import type { ICompressor } from "@webiny/utils/compression/index.js";
 import { Converter } from "~/storage/Converter.js";
 import { createAccessPatterns } from "~/storage/accessPatterns/index.js";
 import { AccessPatternHandler } from "~/storage/AccessPatternHandler.js";
+import { ListSuccessResult } from "~/storage/results/index.js";
 
 export interface IStorageParams {
     compressor: ICompressor;
@@ -45,21 +46,17 @@ export class Storage implements IStorage {
         this.onBeforeCreate = params.onBeforeCreate;
         this.onBeforeUpdate = params.onBeforeUpdate;
 
+        const patterns = createAccessPatterns({
+            entity: this.entity
+        });
         this.patternHandler = new AccessPatternHandler({
-            patterns: []
+            patterns
         });
 
         this.converter = new Converter({
             compressor: params.compressor,
             patternHandler: this.patternHandler
         });
-
-        const patterns = createAccessPatterns({
-            entity: this.entity,
-            converter: this.converter
-        });
-
-        this.patternHandler.addPatterns(patterns);
     }
 
     public async fetch(params: IStorageFetchParams): Promise<IStorageFetchResult> {
@@ -117,6 +114,18 @@ export class Storage implements IStorage {
     }
 
     public async list(params: IStorageListParams): Promise<IStorageListResult> {
-        return await this.patternHandler.handle(params);
+        try {
+            const result = await this.patternHandler.handle(params);
+
+            return ListSuccessResult.create({
+                data: await this.converter.listFromStorage(result.items),
+                lastEvaluatedKey: result.lastEvaluatedKey
+            });
+        } catch (ex) {
+            return {
+                error: ex,
+                success: false
+            };
+        }
     }
 }

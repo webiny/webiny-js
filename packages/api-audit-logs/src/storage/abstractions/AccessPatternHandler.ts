@@ -1,9 +1,15 @@
+import type { GenericRecord } from "@webiny/api/types.js";
+import type { IStorageItem } from "../types.js";
 import type { IAccessPattern } from "./AccessPattern.js";
-import type { IStorageListParams, IStorageListResult } from "./Storage.js";
+import type { IStorageListParams } from "./Storage.js";
+
+export interface IAccessPatternHandlerHandleResult {
+    items: IStorageItem[];
+    lastEvaluatedKey?: GenericRecord;
+}
 
 export interface IAccessPatternHandler {
-    addPatterns(patterns: IAccessPattern<unknown>[]): void;
-    handle(params: IStorageListParams): Promise<IStorageListResult>;
+    handle(params: IStorageListParams): Promise<IAccessPatternHandlerHandleResult>;
     getDefaultPattern(): IAccessPattern<unknown>;
     listIndexPatterns(): IAccessPattern<unknown>[];
 }

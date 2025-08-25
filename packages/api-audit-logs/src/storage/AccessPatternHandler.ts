@@ -1,6 +1,9 @@
 import { WebinyError } from "@webiny/error";
-import type { IStorageListParams, IStorageListResult } from "~/storage/abstractions/Storage.js";
-import type { IAccessPatternHandler } from "~/storage/abstractions/AccessPatternHandler.js";
+import type { IStorageListParams } from "~/storage/abstractions/Storage.js";
+import type {
+    IAccessPatternHandler,
+    IAccessPatternHandlerHandleResult
+} from "~/storage/abstractions/AccessPatternHandler.js";
 import type { IAccessPattern } from "~/storage/abstractions/AccessPattern.js";
 
 export interface IAccessPatternHandlerParams {
@@ -14,11 +17,7 @@ export class AccessPatternHandler implements IAccessPatternHandler {
         this.patterns = params.patterns;
     }
 
-    public addPatterns(patterns: IAccessPattern<unknown>[]) {
-        this.patterns.push(...patterns);
-    }
-
-    public async handle(params: IStorageListParams): Promise<IStorageListResult> {
+    public async handle(params: IStorageListParams): Promise<IAccessPatternHandlerHandleResult> {
         const pattern = this.find(params);
         if (!pattern) {
             throw new WebinyError({
@@ -30,14 +29,7 @@ export class AccessPatternHandler implements IAccessPatternHandler {
             });
         }
 
-        try {
-            return await pattern.list(params);
-        } catch (ex) {
-            return {
-                error: ex,
-                success: false
-            };
-        }
+        return await pattern.list(params);
     }
 
     public getDefaultPattern(): IAccessPattern<unknown> {
