@@ -23,3 +23,20 @@ export interface IAuditLog {
 export interface IStorageAuditLog extends Omit<IAuditLog, "createdOn"> {
     createdOn: string;
 }
+
+export interface IStorageItem {
+    PK: string;
+    SK: string;
+    GSI1_PK: string;
+    GSI1_SK: number;
+    GSI2_PK: string;
+    GSI2_SK: number;
+    GSI3_PK: string;
+    GSI3_SK: number;
+    GSI4_PK: string;
+    GSI4_SK: number;
+    GSI5_PK: string;
+    GSI5_SK: string;
+
+    data: IStorageAuditLog;
+}

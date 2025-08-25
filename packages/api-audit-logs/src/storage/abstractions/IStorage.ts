@@ -36,23 +36,112 @@ export interface IStorageStoreSuccessResult {
 
 export type IStorageStoreResult = IStorageStoreErrorResult | IStorageStoreSuccessResult;
 
-export interface IStorageListParams {
-    type?: string;
-    userId?: string;
-    limit?: number;
+// PK / SK
+export interface IStorageListDefaultParams {
+    tenant: string;
     after?: string;
+    app?: never;
+    createdBy?: never;
+    action?: never;
+    entryId?: never;
+    version?: never;
 }
+
+// GSI1_PK / GSI1_SK
+export interface IStorageListByAppParams {
+    tenant: string;
+    app: string;
+    after?: string;
+    order?: "ASC" | "DESC";
+    createdOn_gte?: Date;
+    createdOn_lte?: Date;
+    id?: never;
+    createdBy?: never;
+    action?: never;
+    entryId?: never;
+    version?: never;
+}
+
+// GSI2_PK / GSI2_SK
+export interface IStorageListByAppAndActionParams {
+    tenant: string;
+    app: string;
+    action: string;
+    after?: string;
+    order?: "ASC" | "DESC";
+
+    createdOn_gte?: Date;
+    createdOn_lte?: Date;
+    id?: never;
+    createdBy?: never;
+    entryId?: never;
+    version?: never;
+}
+
+// GSI3_PK / GSI3_SK
+export interface IStorageListByCreatedByParams {
+    tenant: string;
+    createdBy: {
+        id: string;
+    };
+    after?: string;
+    order?: "ASC" | "DESC";
+    createdOn_gte?: Date;
+    createdOn_lte?: Date;
+    id?: never;
+    app?: never;
+    action?: never;
+    entryId?: never;
+    version?: never;
+}
+
+// GSI4_PK / GSI4_SK
+export interface IStorageListByCreatedOnParams {
+    tenant: string;
+    createdOn_gte: Date;
+    createdOn_lte: Date;
+    after?: string;
+    order?: "ASC" | "DESC";
+    id?: never;
+    app?: never;
+    createdBy?: never;
+    action?: never;
+    entryId?: never;
+    version?: never;
+}
+
+// GSI5_PK / GSI5_SK
+export interface IStorageListByTargetParams {
+    tenant: string;
+    app: string;
+    entryId: string;
+    after?: string;
+    order?: "ASC" | "DESC";
+    version?: never;
+    createdOn_gte?: Date;
+    createdOn_lte?: Date;
+    id?: never;
+    createdBy?: never;
+    action?: never;
+}
+
+export type IStorageListParams =
+    | IStorageListByAppParams
+    | IStorageListByCreatedByParams
+    | IStorageListByCreatedOnParams
+    | IStorageListByAppAndActionParams
+    | IStorageListByTargetParams;
 
 export interface IStorageListSuccessResultMeta {
     after?: string;
     hasMoreItems: boolean;
-    totalCount: number;
 }
 
 export interface IStorageListSuccessResult {
     data: IAuditLog[];
     meta: IStorageListSuccessResultMeta;
     success: true;
+    error?: never;
 }
 
 export interface IStorageListErrorResult {

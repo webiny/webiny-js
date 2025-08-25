@@ -6,12 +6,27 @@ import type {
     IStorage,
     IStorageFetchParams,
     IStorageFetchResult,
+    IStorageListByAppAndActionParams,
+    IStorageListByAppParams,
+    IStorageListByCreatedByParams,
+    IStorageListByCreatedOnParams,
+    IStorageListDefaultParams,
+    IStorageListParams,
+    IStorageListResult,
+    IStorageListSuccessResult,
     IStorageStoreParams,
     IStorageStoreResult
 } from "~/storage/abstractions/IStorage.js";
 import type { Topic } from "@webiny/pubsub/types.js";
-import type { IAuditLog, IStorageAuditLog } from "~/storage/types.js";
+import type { IAuditLog, IStorageItem } from "~/storage/types.js";
 import type { ICompressor } from "@webiny/utils/compression/index.js";
+import { queryPerPage } from "@webiny/db-dynamodb";
+import type { EntityQueryOptions } from "@webiny/db-dynamodb/toolbox.js";
+import type { GenericRecord } from "@webiny/api/types.js";
+import { ListSuccessResult } from "~/storage/ListSuccessResult.js";
+import type { IConverter } from "~/storage/abstractions/IConverter.js";
+import { Converter } from "~/storage/Converter.js";
+import { createStartKey } from "~/storage/startKey.js";
 
 export interface IStorageParams {
     compressor: ICompressor;
@@ -21,21 +36,9 @@ export interface IStorageParams {
     onBeforeUpdate: Topic<any>;
 }
 
-interface IStorageItem {
-    PK: string;
-    SK: string;
-    GSI1_PK: string;
-    GSI1_SK: string;
-    GSI2_PK: string;
-    GSI2_SK: string;
-    GSI3_PK: string;
-    GSI3_SK: string;
-    GSI4_PK: string;
-    GSI4_SK: string;
-    GSI5_PK: string;
-    GSI5_SK: string;
-
-    data: IStorageAuditLog;
+interface ICreateListSuccessResult {
+    data: IAuditLog[];
+    lastEvaluatedKey?: GenericRecord;
 }
 
 export class Storage implements IStorage {
@@ -43,7 +46,7 @@ export class Storage implements IStorage {
     private readonly table;
     private readonly onBeforeCreate;
     private readonly onBeforeUpdate;
-    private readonly compressor;
+    private readonly converter: IConverter;
 
     public constructor(params: IStorageParams) {
         const { entity, table } = createEntity({
@@ -51,11 +54,11 @@ export class Storage implements IStorage {
             tableName: params.tableName,
             gsiAmount: 5
         });
-        this.compressor = params.compressor;
         this.table = table;
         this.entity = entity;
         this.onBeforeCreate = params.onBeforeCreate;
         this.onBeforeUpdate = params.onBeforeUpdate;
+        this.converter = new Converter(params.compressor);
     }
 
     public async fetch(params: IStorageFetchParams): Promise<IStorageFetchResult> {
@@ -76,7 +79,7 @@ export class Storage implements IStorage {
                 };
             }
             return {
-                data: await this.fromStorage(result.data),
+                data: await this.converter.oneFromStorage(result),
                 success: true
             };
         } catch (ex) {
@@ -95,24 +98,10 @@ export class Storage implements IStorage {
         });
         const time = auditLog.createdOn.getTime();
         try {
+            const item = await this.converter.oneToStorage(auditLog);
             await put({
                 entity: this.entity,
-                item: {
-                    PK: `T#${auditLog.tenant}#AUDIT_LOG`,
-                    SK: `${auditLog.id}`,
-                    // By Log Type
-                    GSI1_PK: `T#${auditLog.tenant}#AUDIT_LOG#APP#${auditLog.app}`,
-                    GSI1_SK: time,
-                    GSI2_PK: `T#${auditLog.tenant}#AUDIT_LOG#USER#${auditLog.createdBy.id}`,
-                    GSI2_SK: time,
-                    GSI3_PK: `T#${auditLog.tenant}#AUDIT_LOG#TIME`,
-                    GSI3_SK: time,
-                    GSI4_PK: `T#${auditLog.tenant}#AUDIT_LOG#ACTION#${auditLog.app}#${auditLog.action}`,
-                    GSI4_SK: time,
-                    GSI5_PK: `T#${auditLog.tenant}#AUDIT_LOG#TARGET`,
-                    GSI5_SK: `${auditLog.targetId}`,
-                    data: await this.toStorage(auditLog)
-                }
+                item
             });
         } catch (ex) {
             return {
@@ -127,19 +116,165 @@ export class Storage implements IStorage {
         };
     }
 
-    private async toStorage(auditLog: IAuditLog): Promise<IStorageAuditLog> {
-        return {
-            ...auditLog,
-            content: JSON.stringify(await this.compressor.compress(auditLog.content)),
-            createdOn: auditLog.createdOn.toISOString()
-        };
+    public async list(params: IStorageListParams): Promise<IStorageListResult> {
+        const {
+            version,
+            app,
+            action,
+            createdBy,
+            tenant,
+            createdOn_gte,
+            createdOn_lte,
+            entryId,
+            order
+        } = params;
+
+        /**
+         * List by App.
+         * GSI 1
+         */
+        if (app && !action) {
+            return this.listByApp({
+                tenant,
+                app,
+                order
+            });
+        }
+        /**
+         * List by time.
+         * GSI 2
+         */
+        //
+        else if (createdOn_gte || createdOn_lte) {
+            return this.listByCreatedOn({
+                tenant,
+                createdOn_gte,
+                createdOn_lte,
+                order
+            });
+        }
+        /**
+         * List by Created By.
+         * GSI 3
+         */
+        //
+        else if (createdBy) {
+            return this.listByCreatedBy({
+                tenant,
+                createdBy,
+                createdOn_lte,
+                createdOn_gte,
+                order
+            });
+        }
+
+        return this.listDefault({
+            tenant
+        });
     }
 
-    private async fromStorage(auditLog: IStorageAuditLog): Promise<IAuditLog> {
-        return {
-            ...auditLog,
-            content: await this.compressor.decompress(JSON.parse(auditLog.content)),
-            createdOn: new Date(auditLog.createdOn)
+    private async listByCreatedOn(
+        params: IStorageListByCreatedOnParams
+    ): Promise<IStorageListSuccessResult> {
+        const options: EntityQueryOptions = {
+            limit: 25,
+            startKey: createStartKey(params),
+            index: "GSI4",
+            reverse: params.order === "DESC"
         };
+
+        const result = await queryPerPage<IStorageItem>({
+            entity: this.entity,
+            partitionKey: `T#${params.tenant}#AUDIT_LOG#TIME`,
+            options
+        });
+
+        return ListSuccessResult.create({
+            data: await this.converter.listFromStorage(result.items),
+            lastEvaluatedKey: result.lastEvaluatedKey
+        });
+    }
+
+    private async listByCreatedBy(
+        params: IStorageListByCreatedByParams
+    ): Promise<IStorageListSuccessResult> {
+        const options: EntityQueryOptions = {
+            limit: 25,
+            startKey: createStartKey(params),
+            index: "GSI3",
+            reverse: params.order === "DESC"
+        };
+        const result = await queryPerPage<IStorageItem>({
+            entity: this.entity,
+            partitionKey: `T#${params.tenant}#AUDIT_LOG#USER#${params.createdBy.id}`,
+            options
+        });
+
+        return ListSuccessResult.create({
+            data: await this.converter.listFromStorage(result.items),
+            lastEvaluatedKey: result.lastEvaluatedKey
+        });
+    }
+
+    private async listByAppAndAction(
+        params: IStorageListByAppAndActionParams
+    ): Promise<IStorageListSuccessResult> {
+        const options: EntityQueryOptions = {
+            limit: 25,
+            startKey: createStartKey(params),
+            index: "GSI2",
+            reverse: params.order === "DESC"
+        };
+
+        const result = await queryPerPage<IStorageItem>({
+            entity: this.entity,
+            partitionKey: `T#${params.tenant}#AUDIT_LOG#APP#${params.app}#ACTION#${params.action}`,
+            options
+        });
+
+        return ListSuccessResult.create({
+            data: await this.converter.listFromStorage(result.items),
+            lastEvaluatedKey: result.lastEvaluatedKey
+        });
+    }
+
+    private async listByApp(params: IStorageListByAppParams): Promise<IStorageListSuccessResult> {
+        const options: EntityQueryOptions = {
+            limit: 25,
+            startKey: createStartKey(params),
+            index: "GSI1",
+            reverse: params.order === "DESC"
+        };
+
+        const result = await queryPerPage<IStorageItem>({
+            entity: this.entity,
+            partitionKey: `T#${params.tenant}#AUDIT_LOG#APP#${params.app}`,
+            options
+        });
+
+        return ListSuccessResult.create({
+            data: await this.converter.listFromStorage(result.items),
+            lastEvaluatedKey: result.lastEvaluatedKey
+        });
+    }
+
+    private async listDefault(
+        params: IStorageListDefaultParams
+    ): Promise<IStorageListSuccessResult> {
+        const options: EntityQueryOptions = {
+            limit: 25,
+            startKey: createStartKey(params)
+        };
+
+        const result = await queryPerPage<IStorageItem>({
+            entity: this.entity,
+            partitionKey: `T#${params.tenant}#AUDIT_LOG`,
+            options
+        });
+
+        return ListSuccessResult.create({
+            data: await this.converter.listFromStorage(result.items),
+            lastEvaluatedKey: result.lastEvaluatedKey
+        });
     }
 }
