@@ -677,10 +677,6 @@ export interface CmsEntry<T = CmsEntryValues> {
      * The value is utilized when restoring the entry from the trash bin.
      */
     binOriginalFolderId?: string | null;
-    /**
-     * Expiration unix timestamp for the entry.
-     */
-    expiresAt?: number;
 }
 
 export interface CmsStorageEntry extends CmsEntry {

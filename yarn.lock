@@ -15496,6 +15496,7 @@ __metadata:
     "@webiny/api-security": "npm:0.0.0"
     "@webiny/api-tenancy": "npm:0.0.0"
     "@webiny/api-wcp": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
@@ -15508,6 +15509,7 @@ __metadata:
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^15.9.0"
     typescript: "npm:5.9.2"
+    zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
 

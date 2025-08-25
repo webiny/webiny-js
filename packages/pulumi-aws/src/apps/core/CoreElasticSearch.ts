@@ -144,11 +144,7 @@ export const ElasticSearch = createAppModule({
                 streamViewType: "NEW_AND_OLD_IMAGES",
                 billingMode: "PAY_PER_REQUEST",
                 hashKey: "PK",
-                rangeKey: "SK",
-                ttl: {
-                    attributeName: "expiresAt",
-                    enabled: true
-                }
+                rangeKey: "SK"
             },
             opts: { protect: params.protect }
         });

@@ -1,4 +1,4 @@
-import type { IStorageListParams } from "~/storage/abstractions/IStorage.js";
+import type { IStorageListParams } from "~/storage/abstractions/Storage.js";
 import { fetchCursor } from "~/storage/cursorSchema.js";
 
 export interface ICreateStartKeyResult {

@@ -175,8 +175,7 @@ export const createEntriesStorageOperations = (
                     SK: createRevisionSortKey(entry),
                     TYPE: createType(),
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(storageEntry),
-                    expiresAt: entry.expiresAt
+                    GSI1_SK: createGSISortKey(storageEntry)
                 },
                 {
                     ...storageEntry,
@@ -185,8 +184,7 @@ export const createEntriesStorageOperations = (
                     SK: createLatestSortKey(),
                     TYPE: createLatestType(),
                     GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(storageEntry),
-                    expiresAt: entry.expiresAt
+                    GSI1_SK: createGSISortKey(storageEntry)
                 }
             ]
         });
@@ -202,8 +200,7 @@ export const createEntriesStorageOperations = (
                 SK: createPublishedSortKey(),
                 TYPE: createLatestType(),
                 GSI1_PK: createGSIPartitionKey(model, "P"),
-                GSI1_SK: createGSISortKey(storageEntry),
-                expiresAt: entry.expiresAt
+                GSI1_SK: createGSISortKey(storageEntry)
             });
         }
 
@@ -261,8 +258,7 @@ export const createEntriesStorageOperations = (
                     SK: createRevisionSortKey(storageEntry),
                     TYPE: createType(),
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(storageEntry),
-                    expiresAt: entry.expiresAt
+                    GSI1_SK: createGSISortKey(storageEntry)
                 },
                 {
                     ...storageEntry,
@@ -270,8 +266,7 @@ export const createEntriesStorageOperations = (
                     SK: createLatestSortKey(),
                     TYPE: createLatestType(),
                     GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(storageEntry),
-                    expiresAt: entry.expiresAt
+                    GSI1_SK: createGSISortKey(storageEntry)
                 }
             ]
         });
@@ -284,8 +279,7 @@ export const createEntriesStorageOperations = (
                 SK: createPublishedSortKey(),
                 TYPE: createPublishedType(),
                 GSI1_PK: createGSIPartitionKey(model, "P"),
-                GSI1_SK: createGSISortKey(storageEntry),
-                expiresAt: entry.expiresAt
+                GSI1_SK: createGSISortKey(storageEntry)
             });
 
             // Unpublish previously published revision (if any).
@@ -304,8 +298,7 @@ export const createEntriesStorageOperations = (
                     TYPE: createType(),
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(publishedRevisionStorageEntry),
-                    expiresAt: entry.expiresAt
+                    GSI1_SK: createGSISortKey(publishedRevisionStorageEntry)
                 });
             }
         }
@@ -365,8 +358,7 @@ export const createEntriesStorageOperations = (
                     SK: createRevisionSortKey(storageEntry),
                     TYPE: createType(),
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(storageEntry),
-                    expiresAt: entry.expiresAt
+                    GSI1_SK: createGSISortKey(storageEntry)
                 }
             ]
         });
@@ -379,8 +371,7 @@ export const createEntriesStorageOperations = (
                 SK: createPublishedSortKey(),
                 TYPE: createPublishedType(),
                 GSI1_PK: createGSIPartitionKey(model, "P"),
-                GSI1_SK: createGSISortKey(storageEntry),
-                expiresAt: entry.expiresAt
+                GSI1_SK: createGSISortKey(storageEntry)
             });
         }
 
@@ -399,8 +390,7 @@ export const createEntriesStorageOperations = (
                     SK: createLatestSortKey(),
                     TYPE: createLatestType(),
                     GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(entry),
-                    expiresAt: entry.expiresAt
+                    GSI1_SK: createGSISortKey(entry)
                 });
             } else {
                 /**
@@ -424,8 +414,7 @@ export const createEntriesStorageOperations = (
                     SK: createRevisionSortKey(latestStorageEntry),
                     TYPE: createType(),
                     GSI1_PK: createGSIPartitionKey(model, "A"),
-                    GSI1_SK: createGSISortKey(latestStorageEntry),
-                    expiresAt: entry.expiresAt
+                    GSI1_SK: createGSISortKey(latestStorageEntry)
                 });
 
                 entityBatch.put({
@@ -435,8 +424,7 @@ export const createEntriesStorageOperations = (
                     SK: createLatestSortKey(),
                     TYPE: createLatestType(),
                     GSI1_PK: createGSIPartitionKey(model, "L"),
-                    GSI1_SK: createGSISortKey(latestStorageEntry),
-                    expiresAt: entry.expiresAt
+                    GSI1_SK: createGSISortKey(latestStorageEntry)
                 });
             }
         }

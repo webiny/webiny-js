@@ -1,10 +1,10 @@
 import type {
     IStorageListSuccessResult,
     IStorageListSuccessResultMeta
-} from "~/storage/abstractions/IStorage.js";
-import { IAuditLog } from "./types";
+} from "~/storage/abstractions/Storage.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { encodeCursor } from "@webiny/db-dynamodb";
+import type { IAuditLog } from "~/storage/types.js";
 
 export interface IListSuccessResultParams {
     data: IAuditLog[];
@@ -14,7 +14,7 @@ export interface IListSuccessResultParams {
 export class ListSuccessResult implements IStorageListSuccessResult {
     public readonly data: IAuditLog[];
     public readonly meta: IStorageListSuccessResultMeta;
-    public success: true = true;
+    public readonly success = true;
 
     protected constructor(params: IListSuccessResultParams) {
         this.data = params.data;

@@ -24,21 +24,6 @@ const createTableGSIIndexes = (count: number) => {
     return result;
 };
 
-const createEntityGSIAttributes = (count: number) => {
-    const result: GenericRecord<string> = {};
-    for (let i = 1; i <= count; i++) {
-        result[`GSI${i}_PK`] = {
-            type: "string",
-            required: true
-        };
-        result[`GSI${i}_SK`] = {
-            type: "string",
-            required: true
-        };
-    }
-    return result;
-};
-
 export const createEntity = (params: ICreateEntityParams): ICreateEntityResult => {
     const { gsiAmount, client, tableName } = params;
     const name = tableName || process.env.DB_TABLE_AUDIT_LOGS;
@@ -70,7 +55,7 @@ export const createEntity = (params: ICreateEntityParams): ICreateEntityResult =
                 required: true
             },
             GSI1_SK: {
-                type: "string",
+                type: "number",
                 required: true
             },
             GSI2_PK: {
@@ -78,7 +63,7 @@ export const createEntity = (params: ICreateEntityParams): ICreateEntityResult =
                 required: true
             },
             GSI2_SK: {
-                type: "string",
+                type: "number",
                 required: true
             },
             GSI3_PK: {
@@ -94,7 +79,7 @@ export const createEntity = (params: ICreateEntityParams): ICreateEntityResult =
                 required: true
             },
             GSI4_SK: {
-                type: "string",
+                type: "number",
                 required: true
             },
             GSI5_PK: {
@@ -102,7 +87,7 @@ export const createEntity = (params: ICreateEntityParams): ICreateEntityResult =
                 required: true
             },
             GSI5_SK: {
-                type: "string",
+                type: "number",
                 required: true
             },
             data: {

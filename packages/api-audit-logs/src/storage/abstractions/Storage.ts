@@ -2,6 +2,7 @@ import type { IAuditLog } from "~/storage/types.js";
 
 export interface IStorageFetchParams {
     id: string;
+    tenant: string;
 }
 
 export interface IStorageFetchErrorResult {
@@ -39,7 +40,9 @@ export type IStorageStoreResult = IStorageStoreErrorResult | IStorageStoreSucces
 // PK / SK
 export interface IStorageListDefaultParams {
     tenant: string;
+    order?: "ASC" | "DESC";
     after?: string;
+
     app?: never;
     createdBy?: never;
     action?: never;
@@ -55,6 +58,7 @@ export interface IStorageListByAppParams {
     order?: "ASC" | "DESC";
     createdOn_gte?: Date;
     createdOn_lte?: Date;
+
     id?: never;
     createdBy?: never;
     action?: never;
@@ -69,9 +73,9 @@ export interface IStorageListByAppAndActionParams {
     action: string;
     after?: string;
     order?: "ASC" | "DESC";
-
     createdOn_gte?: Date;
     createdOn_lte?: Date;
+
     id?: never;
     createdBy?: never;
     entryId?: never;
@@ -88,6 +92,7 @@ export interface IStorageListByCreatedByParams {
     order?: "ASC" | "DESC";
     createdOn_gte?: Date;
     createdOn_lte?: Date;
+
     id?: never;
     app?: never;
     action?: never;
@@ -102,6 +107,7 @@ export interface IStorageListByCreatedOnParams {
     createdOn_lte: Date;
     after?: string;
     order?: "ASC" | "DESC";
+
     id?: never;
     app?: never;
     createdBy?: never;
@@ -111,7 +117,7 @@ export interface IStorageListByCreatedOnParams {
 }
 
 // GSI5_PK / GSI5_SK
-export interface IStorageListByTargetParams {
+export interface IStorageListByAppAndTargetParams {
     tenant: string;
     app: string;
     entryId: string;
@@ -130,7 +136,7 @@ export type IStorageListParams =
     | IStorageListByCreatedByParams
     | IStorageListByCreatedOnParams
     | IStorageListByAppAndActionParams
-    | IStorageListByTargetParams;
+    | IStorageListByAppAndTargetParams;
 
 export interface IStorageListSuccessResultMeta {
     after?: string;

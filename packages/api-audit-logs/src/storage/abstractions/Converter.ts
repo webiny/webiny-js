@@ -1,4 +1,4 @@
-import type { IAuditLog, IStorageAuditLog, IStorageItem } from "~/storage/types.js";
+import type { IAuditLog, IStorageItem } from "~/storage/types.js";
 
 export interface IConverter {
     oneFromStorage(item: IStorageItem): Promise<IAuditLog>;

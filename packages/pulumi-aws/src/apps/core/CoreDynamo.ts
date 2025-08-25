@@ -34,11 +34,7 @@ export const CoreDynamo = createAppModule({
                         rangeKey: "GSI2_SK",
                         projectionType: "ALL"
                     }
-                ],
-                ttl: {
-                    attributeName: "expiresAt",
-                    enabled: true
-                }
+                ]
             },
             opts: {
                 protect: params.protect

@@ -1,5 +1,3 @@
-import type { GenericRecord } from "@webiny/api/types.js";
-
 export interface IAuditLogCreatedBy {
     id: string;
     type: string;
@@ -18,6 +16,7 @@ export interface IAuditLog {
     targetId: string;
     content: string;
     tags: string[];
+    expiresAt?: Date;
 }
 
 export interface IStorageAuditLog extends Omit<IAuditLog, "createdOn"> {
@@ -36,7 +35,8 @@ export interface IStorageItem {
     GSI4_PK: string;
     GSI4_SK: number;
     GSI5_PK: string;
-    GSI5_SK: string;
+    GSI5_SK: number;
 
     data: IStorageAuditLog;
+    expiresAt: number | undefined;
 }
