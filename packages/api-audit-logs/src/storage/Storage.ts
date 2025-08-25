@@ -29,19 +29,18 @@ export interface IStorageParams {
 
 export class Storage implements IStorage {
     private readonly entity;
-    private readonly table;
     private readonly onBeforeCreate;
     private readonly onBeforeUpdate;
     private readonly converter;
     private readonly patternHandler;
 
     public constructor(params: IStorageParams) {
-        const { entity, table } = createEntity({
+        const { entity } = createEntity({
             client: params.client,
             tableName: params.tableName,
             gsiAmount: 5
         });
-        this.table = table;
+
         this.entity = entity;
         this.onBeforeCreate = params.onBeforeCreate;
         this.onBeforeUpdate = params.onBeforeUpdate;
@@ -129,3 +128,7 @@ export class Storage implements IStorage {
         }
     }
 }
+
+export const createStorage = (params: IStorageParams): IStorage => {
+    return new Storage(params);
+};
