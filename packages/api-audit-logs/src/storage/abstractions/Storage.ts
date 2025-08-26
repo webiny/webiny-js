@@ -1,4 +1,5 @@
 import type { IAuditLog } from "~/storage/types.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface IStorageFetchParams {
     id: string;

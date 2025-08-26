@@ -1,8 +1,8 @@
 import type { IConverter } from "~/storage/abstractions/Converter.js";
 import type { ICompressor } from "@webiny/utils/compression/index.js";
 import type { IAuditLog, IStorageItem } from "~/storage/types.js";
-import { createExpiresAt } from "./expiresAt";
 import type { IAccessPatternHandler } from "~/storage/abstractions/AccessPatternHandler.js";
+import { convertExpiresAtToUnixTimestamp } from "~/utils/expiresAt.js";
 
 export interface IConverterParams {
     compressor: ICompressor;
@@ -24,11 +24,11 @@ export class Converter implements IConverter {
         this.patternHandler = params.patternHandler;
     }
 
-    public async oneFromStorage(input: IStorageItem): Promise<IAuditLog> {
+    public async oneFromStorage(item: IStorageItem): Promise<IAuditLog> {
         return {
-            ...input.data,
-            content: await this.compressor.decompress(JSON.parse(input.data.content)),
-            createdOn: new Date(input.data.createdOn)
+            ...item.data,
+            content: await this.compressor.decompress(JSON.parse(item.data.content)),
+            createdOn: new Date(item.data.createdOn)
         };
     }
 
@@ -79,7 +79,7 @@ export class Converter implements IConverter {
                 content: JSON.stringify(await this.compressor.compress(auditLog.content)),
                 createdOn: auditLog.createdOn.toISOString()
             },
-            expiresAt: createExpiresAt(auditLog.expiresAt)
+            expiresAt: convertExpiresAtToUnixTimestamp(auditLog.expiresAt)
         };
     }
 }

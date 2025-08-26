@@ -1,10 +1,13 @@
-import type { AcoContext, IAcoApp } from "@webiny/api-aco/types";
-import type { MailerContext } from "@webiny/api-mailer/types";
-import type { SecurityContext } from "@webiny/api-security/types";
-import type { ApwContext } from "@webiny/api-apw/types";
-import type { Context as BaseContext } from "@webiny/handler/types";
-import type { GenericRecord } from "@webiny/api/types";
+import type { SecurityContext } from "@webiny/api-security/types.js";
+import type { Context as BaseContext } from "@webiny/handler/types.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 import type { Topic } from "@webiny/pubsub/types.js";
+import type { MailerContext } from "@webiny/api-mailer/types.js";
+import type { ApwContext } from "@webiny/api-apw/types.js";
+import type { IAuditLog } from "~/storage/types.js";
+import type { FileManagerContext } from "@webiny/api-file-manager/types.js";
+import type { AcoContext } from "@webiny/api-aco/types.js";
+import type { IStorageListParams } from "~/storage/abstractions/Storage.js";
 
 export interface Action {
     type: string;
@@ -29,45 +32,65 @@ export interface App {
     entities: Entity[];
 }
 
-export interface AuditLog {
-    id: string;
-    message: string;
-    app: string;
-    entity: string;
-    entityId: string;
-    action: string;
-    data: GenericRecord;
-    timestamp: string;
-    initiator: string;
-}
-export interface AuditLogPayload<T = GenericRecord> extends Omit<AuditLog, "id" | "data"> {
-    data: T;
+// export interface AuditLog {
+//     id: string;
+//     message: string;
+//     app: string;
+//     entity: string;
+//     entityId: string;
+//     action: string;
+//     data: GenericRecord;
+//     timestamp: string;
+//     initiator: string;
+// }
+export interface AuditLogPayload
+    extends Omit<IAuditLog, "id" | "tenant" | "createdOn" | "createdBy" | "expiresAt" | "content"> {
+    content: GenericRecord;
 }
 
-export interface OnAuditLogBeforeCreateTopicParams<T = GenericRecord> {
-    payload: AuditLogPayload<T>;
-    context: AcoContext;
-    setPayload(payload: Partial<AuditLogPayload<T>>): void;
+export interface OnAuditLogBeforeCreateTopicParams {
+    auditLog: IAuditLog;
+    context: AuditLogsContext;
+    setAuditLog(auditLog: Partial<IAuditLog>): void;
 }
-export interface OnAuditLogBeforeUpdateTopicParams<T = GenericRecord> {
-    payload: AuditLogPayload<T>;
-    original: AuditLogPayload<T>;
-    context: AcoContext;
-    setPayload(payload: Partial<AuditLogPayload<T>>): void;
+export interface OnAuditLogBeforeUpdateTopicParams {
+    auditLog: IAuditLog;
+    original: IAuditLog;
+    context: AuditLogsContext;
+    setAuditLog(auditLog: Partial<IAuditLog>): void;
+}
+
+export type IListAuditLogsParams = IStorageListParams;
+
+export interface IListAuditLogsResultMeta {
+    cursor: string | null;
+    hasMoreItems: boolean;
+}
+export interface IListAuditLogsResult {
+    items?: IAuditLog[];
+    meta?: IListAuditLogsResultMeta;
+    error?: Error;
+}
+
+export interface AuditLogsContextValue {
+    deleteLogsAfterDays: number | undefined;
+    onBeforeCreate: Topic<OnAuditLogBeforeCreateTopicParams>;
+    onBeforeUpdate: Topic<OnAuditLogBeforeUpdateTopicParams>;
+
+    createAuditLog(payload: AuditLogPayload): Promise<IAuditLog>;
+    updateAuditLog(original: IAuditLog, payload: Partial<AuditLogPayload>): Promise<IAuditLog>;
+    getAuditLog(id: string): Promise<IAuditLog | null>;
+    listAuditLogs(params: IListAuditLogsParams): Promise<IListAuditLogsResult>;
 }
 
 export interface AuditLogsContext
     extends BaseContext,
         AcoContext,
+        FileManagerContext,
         MailerContext,
         SecurityContext,
         ApwContext {
-    auditLogsAco: {
-        app: IAcoApp;
-        deleteLogsAfterDays: number | undefined;
-        onBeforeCreate: Topic<OnAuditLogBeforeCreateTopicParams>;
-        onBeforeUpdate: Topic<OnAuditLogBeforeUpdateTopicParams>;
-    };
+    auditLogs: AuditLogsContextValue;
 }
 
 export interface AuditObject {
@@ -88,20 +111,20 @@ export interface AuditAction {
     action: Action;
 }
 
-export type AuditLogType = "AuditLogs";
+// export type AuditLogType = "AuditLogs";
 
-export interface AuditLogValuesData extends GenericRecord {
-    data: string;
-}
+// export interface AuditLogValuesData extends GenericRecord {
+//     data: string;
+// }
 
-export interface AuditLogValues {
-    id: string;
-    title: string;
-    content: string;
-    tags: string[];
-    type: AuditLogType;
-    location: {
-        folderId: string;
-    };
-    data: AuditLogValuesData;
-}
+// export interface AuditLogValues {
+//     id: string;
+//     title: string;
+//     content: string;
+//     tags: string[];
+//     type: AuditLogType;
+//     location: {
+//         folderId: string;
+//     };
+//     data: AuditLogValuesData;
+// }

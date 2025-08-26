@@ -11,16 +11,17 @@ export interface IAuditLog {
     createdOn: Date;
     app: string;
     action: string;
-    title: string;
     message: string;
-    targetId: string;
-    content: string;
+    entity: string;
+    entityId: string;
     tags: string[];
-    expiresAt?: Date;
+    expiresAt: Date | undefined;
+    content: string;
 }
 
-export interface IStorageAuditLog extends Omit<IAuditLog, "createdOn"> {
+export interface IStorageAuditLog extends Omit<IAuditLog, "createdOn" | "content"> {
     createdOn: string;
+    content: string;
 }
 
 export interface IStorageItem {

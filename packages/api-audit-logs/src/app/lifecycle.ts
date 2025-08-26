@@ -5,35 +5,35 @@ import type {
 } from "~/types.js";
 import { ContextPlugin } from "@webiny/api";
 
-export const attachAuditLogOnCreateEvent = <T>(
-    cb: (params: OnAuditLogBeforeCreateTopicParams<T>) => Promise<void>
+export const attachAuditLogOnCreateEvent = (
+    cb: (params: OnAuditLogBeforeCreateTopicParams) => Promise<void>
 ) => {
     return new ContextPlugin<AuditLogsContext>(async context => {
-        if (!context.auditLogsAco) {
+        if (!context.auditLogs) {
             console.log(
                 `There is no Audit Logs ACO initialized so we will not attach the "onBeforeCreate" event.`
             );
             return;
         }
 
-        context.auditLogsAco.onBeforeCreate.subscribe(async params => {
+        context.auditLogs.onBeforeCreate.subscribe(async params => {
             await cb(params);
         });
     });
 };
 
-export const attachAuditLogOnUpdateEvent = <T>(
-    cb: (params: OnAuditLogBeforeUpdateTopicParams<T>) => Promise<void>
+export const attachAuditLogOnUpdateEvent = (
+    cb: (params: OnAuditLogBeforeUpdateTopicParams) => Promise<void>
 ) => {
     return new ContextPlugin<AuditLogsContext>(async context => {
-        if (!context.auditLogsAco) {
+        if (!context.auditLogs) {
             console.log(
                 `There is no Audit Logs ACO initialized so we will not attach the "onBeforeUpdate" event.`
             );
             return;
         }
 
-        context.auditLogsAco.onBeforeUpdate.subscribe(async params => {
+        context.auditLogs.onBeforeUpdate.subscribe(async params => {
             await cb(params);
         });
     });

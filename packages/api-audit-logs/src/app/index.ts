@@ -1,38 +1,14 @@
 import { ContextPlugin } from "@webiny/api";
-import { createTopic } from "@webiny/pubsub";
-import type {
-    AuditLogsContext,
-    OnAuditLogBeforeCreateTopicParams,
-    OnAuditLogBeforeUpdateTopicParams
-} from "~/types.js";
-import { createApp } from "./app";
-
-export * from "./createAppModifier";
+import type { AuditLogsContext } from "~/types.js";
+import { createAuditLogsContextValue } from "./AuditLogsContextValue.js";
+import { createStorage } from "~/storage/Storage.js";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
 export interface ISetupContextOptions {
-    deleteLogsAfterDays: number;
+    deleteLogsAfterDays?: number;
+    tableName?: string;
+    documentClient?: DynamoDBDocument;
 }
-
-const setupContext = async (
-    context: AuditLogsContext,
-    options?: ISetupContextOptions
-): Promise<void> => {
-    const onBeforeCreate = createTopic<OnAuditLogBeforeCreateTopicParams>(
-        "auditLogs.onBeforeCreate"
-    );
-    const onBeforeUpdate = createTopic<OnAuditLogBeforeUpdateTopicParams>(
-        "auditLogs.onBeforeUpdate"
-    );
-
-    const app = await context.aco.registerApp(createApp());
-
-    context.auditLogsAco = {
-        app,
-        deleteLogsAfterDays: options?.deleteLogsAfterDays,
-        onBeforeCreate,
-        onBeforeUpdate
-    };
-};
 
 export const createAcoAuditLogsContext = (params?: ISetupContextOptions) => {
     const plugin = new ContextPlugin<AuditLogsContext>(async context => {
@@ -42,10 +18,21 @@ export const createAcoAuditLogsContext = (params?: ISetupContextOptions) => {
             );
             return;
         }
-        await setupContext(context, params);
+
+        const storage = createStorage({
+            tableName: params?.tableName,
+            client: params?.documentClient || (context.db.driver.getClient() as DynamoDBDocument),
+            compressor: context.compressor
+        });
+
+        context.auditLogs = createAuditLogsContextValue({
+            getContext: () => context,
+            deleteLogsAfterDays: params?.deleteLogsAfterDays,
+            storage
+        });
     });
 
-    plugin.name = "audit-logs-aco.createContext";
+    plugin.name = "audit-logs.createContext";
 
     return plugin;
 };
