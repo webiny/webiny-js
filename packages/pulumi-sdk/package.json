@@ -14,8 +14,8 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@pulumi/aws": "6.67.0",
-    "@pulumi/pulumi": "3.147.0",
+    "@pulumi/aws": "^6.83.0",
+    "@pulumi/pulumi": "^3.191.0",
     "decompress": "^4.2.1",
     "execa": "^5.1.1",
     "fs-extra": "^11.2.0",

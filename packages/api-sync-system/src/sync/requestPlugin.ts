@@ -20,6 +20,9 @@ export const createSyncSystemHandlerOnRequestPlugin = (
     return createHandlerOnRequest(async (_, __, context) => {
         const { data: manifest, error } = await getManifest(params);
         if (error) {
+            if (process.env.DEBUG !== "true") {
+                return;
+            }
             console.error("Error happened when fetching manifest.");
             console.log(
                 JSON.stringify({
@@ -28,6 +31,9 @@ export const createSyncSystemHandlerOnRequestPlugin = (
             );
             return;
         } else if (!manifest?.sync?.region) {
+            if (process.env.DEBUG !== "true") {
+                return;
+            }
             console.error("There is no manifest.");
             console.log(
                 JSON.stringify({
