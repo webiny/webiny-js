@@ -2,7 +2,7 @@ import { ContextPlugin } from "@webiny/api";
 import type { AuditLogsContext } from "~/types.js";
 import { createAuditLogsContextValue } from "./AuditLogsContextValue.js";
 import { createStorage } from "~/storage/Storage.js";
-import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
+import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
 export interface ISetupContextOptions {
     deleteLogsAfterDays?: number;

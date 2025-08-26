@@ -62,7 +62,7 @@ export class AppAndTargetAccessPattern<
     }
 
     public createKeys(item: IAuditLog): IAccessPatternCreateKeysResult {
-        const { id: targetEntryId, version } = parseIdentifier(item.targetId);
+        const { id: targetEntryId, version } = parseIdentifier(item.entityId);
         return {
             partitionKey: `T#${item.tenant}#AUDIT_LOG#APP#${item.app}#TARGET#${targetEntryId}`,
             sortKey: version || 1

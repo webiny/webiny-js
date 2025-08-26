@@ -11,13 +11,12 @@ import type {
     IStorageStoreParams,
     IStorageStoreResult
 } from "~/storage/abstractions/Storage.js";
-import type { IAuditLog, IStorageItem } from "~/storage/types.js";
+import type { IStorageItem } from "~/storage/types.js";
 import type { ICompressor } from "@webiny/utils/compression/index.js";
 import { Converter } from "~/storage/Converter.js";
 import { createAccessPatterns } from "~/storage/accessPatterns/index.js";
 import { AccessPatternHandler } from "~/storage/AccessPatternHandler.js";
 import { ListSuccessResult } from "~/storage/results/index.js";
-import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface IStorageParams {
     compressor: ICompressor;

@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import type { AuditAction, AuditLogPayload, AuditLogsContext } from "~/types";
+import type { AuditAction, AuditLogPayload, AuditLogsContext } from "~/types.js";
 import type { IAuditLog } from "~/storage/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
@@ -86,10 +86,10 @@ export const getAuditConfig = (audit: AuditAction) => {
         content: GenericRecord,
         entityId: string,
         context: AuditLogsContext
-    ) => {
+    ): Promise<IAuditLog | null> => {
         if (!context.auditLogs) {
             console.log("No AuditLogs defined.");
-            return;
+            return null;
         }
 
         const payload: AuditLogPayload = {
