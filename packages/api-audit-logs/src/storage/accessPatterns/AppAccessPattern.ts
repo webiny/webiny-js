@@ -47,7 +47,7 @@ export class AppAccessPattern<
             limit: 25,
             startKey: createStartKey(params),
             index: this.index,
-            reverse: params.order === "DESC"
+            reverse: params.sort === "DESC"
         };
 
         return await queryPerPage<IStorageItem>({

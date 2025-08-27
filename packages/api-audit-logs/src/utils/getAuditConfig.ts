@@ -49,7 +49,7 @@ const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams): Promi
         entryId: payload.entityId,
         limit: 1,
         createdOn_gte: createAuditLogDelayDate(delay),
-        order: "DESC"
+        sort: "DESC"
     });
     if (results.error) {
         throw WebinyError.from(results.error);

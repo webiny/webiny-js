@@ -33,7 +33,7 @@ export class DefaultAccessPattern<
         const options = this.createOptions({
             limit: params.limit,
             after: params.after,
-            order: params.order,
+            sort: params.sort,
             sortKey: undefined
         });
 

@@ -8,7 +8,7 @@ export const listValidationSchema = zod.object({
     app: zod.string().min(1, "App is required."),
     entryId: zod.string().min(1, "Entry ID is required."),
     after: zod.string().optional(),
-    order: zod.enum(["ASC", "DESC"]).optional(),
+    sort: zod.enum(["ASC", "DESC"]).optional(),
     version: zod.never().optional(),
     createdOn_gte: zod.preprocess(input => {
         if (typeof input == "string" || input instanceof Date) {

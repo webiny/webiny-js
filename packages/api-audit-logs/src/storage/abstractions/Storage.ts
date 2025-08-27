@@ -40,7 +40,7 @@ export type IStorageStoreResult = IStorageStoreErrorResult | IStorageStoreSucces
 // PK / SK
 export interface IStorageListDefaultParams {
     tenant: string;
-    order?: "ASC" | "DESC";
+    sort?: "ASC" | "DESC";
     after?: string;
     limit: number | undefined;
 
@@ -56,7 +56,7 @@ export interface IStorageListByAppParams {
     tenant: string;
     app: string;
     after?: string;
-    order?: "ASC" | "DESC";
+    sort?: "ASC" | "DESC";
     createdOn_gte?: Date;
     createdOn_lte?: Date;
     limit: number | undefined;
@@ -73,7 +73,7 @@ export interface IStorageListByAppAndActionParams {
     app: string;
     action: string;
     after?: string;
-    order?: "ASC" | "DESC";
+    sort?: "ASC" | "DESC";
     createdOn_gte?: Date;
     createdOn_lte?: Date;
     limit: number | undefined;
@@ -88,7 +88,7 @@ export interface IStorageListByCreatedByParams {
     tenant: string;
     createdBy: string;
     after?: string;
-    order?: "ASC" | "DESC";
+    sort?: "ASC" | "DESC";
     createdOn_gte?: Date;
     createdOn_lte?: Date;
     limit: number | undefined;
@@ -105,7 +105,7 @@ export interface IStorageListByCreatedOnParams {
     createdOn_gte: Date;
     createdOn_lte: Date;
     after?: string;
-    order?: "ASC" | "DESC";
+    sort?: "ASC" | "DESC";
     limit: number | undefined;
 
     app?: never;
@@ -121,7 +121,7 @@ export interface IStorageListByAppAndTargetParams {
     app: string;
     entryId: string;
     after?: string;
-    order?: "ASC" | "DESC";
+    sort?: "ASC" | "DESC";
     version?: never;
     createdOn_gte?: Date;
     createdOn_lte?: Date;

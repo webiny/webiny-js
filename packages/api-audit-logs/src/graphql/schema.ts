@@ -56,24 +56,32 @@ export const createGraphQLSchema = () => {
                 DESC
             }
             
-            extend type Query {
+            input ListAuditLogsWhere {
+                app: String
+                action: String
+                createdBy: String
+                entryId: String
+                version: Number
+                createdOn_gte: DateTime
+                createdOn_lte: DateTime
+            }
+            
+            type AuditLogsQuery {
                 getAuditLog(id: ID!): AuditLogGetResponse
                 listAuditLogs(
-                    app: String
-                    createdBy: String
-                    action: String
-                    entryId: String
-                    after: String
-                    order: AuditLogsSort
-                    version: Number
-                    createdOn_gte: DateTime
-                    createdOn_lte: DateTime
+                    where: ListAuditLogsWhere!
+                    sort: AuditLogsSort
                     limit: Number
+                    after: String
                 ): AuditLogListResponse!
+            }
+            
+            extend type Query {
+                auditLogs: AuditLogsQuery
             }
         `,
         resolvers: {
-            Query: {
+            AuditLogsQuery: {
                 async getAuditLog(_, args, context) {
                     return resolve(async () => {
                         const validation = await getValidationSchema.safeParseAsync(args);

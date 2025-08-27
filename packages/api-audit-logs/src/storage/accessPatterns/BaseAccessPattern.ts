@@ -10,7 +10,7 @@ import type {
 
 export interface ICreateOptionsParams {
     limit: number | undefined;
-    order: "ASC" | "DESC" | undefined;
+    sort: "ASC" | "DESC" | undefined;
     after: string | undefined;
     sortKey: string | number | undefined;
     createdOn_gte?: Date;
@@ -41,7 +41,7 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
             startKey: createStartKey({
                 after: params.after
             }),
-            reverse: params.order === "DESC" ? true : false,
+            reverse: params.sort === "DESC" ? true : false,
             index: this.index
         };
         if (params.createdOn_gte) {
