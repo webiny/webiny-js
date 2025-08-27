@@ -47,9 +47,9 @@ const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams): Promi
     const results = await context.auditLogs.listAuditLogs({
         app: payload.app,
         entryId: payload.entityId,
-        tenant: context.tenancy.getCurrentTenant().id,
         limit: 1,
-        createdOn_gte: createAuditLogDelayDate(delay)
+        createdOn_gte: createAuditLogDelayDate(delay),
+        order: "DESC"
     });
     if (results.error) {
         throw WebinyError.from(results.error);

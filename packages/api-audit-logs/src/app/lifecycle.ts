@@ -11,7 +11,7 @@ export const attachAuditLogOnCreateEvent = (
     return new ContextPlugin<AuditLogsContext>(async context => {
         if (!context.auditLogs) {
             console.log(
-                `There is no Audit Logs ACO initialized so we will not attach the "onBeforeCreate" event.`
+                `There is no Audit Logs initialized so we will not attach the "onBeforeCreate" event.`
             );
             return;
         }
@@ -28,7 +28,7 @@ export const attachAuditLogOnUpdateEvent = (
     return new ContextPlugin<AuditLogsContext>(async context => {
         if (!context.auditLogs) {
             console.log(
-                `There is no Audit Logs ACO initialized so we will not attach the "onBeforeUpdate" event.`
+                `There is no Audit Logs initialized so we will not attach the "onBeforeUpdate" event.`
             );
             return;
         }

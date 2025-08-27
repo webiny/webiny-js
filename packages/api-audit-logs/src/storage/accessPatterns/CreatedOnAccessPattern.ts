@@ -28,9 +28,7 @@ export class CreatedOnAccessPattern<
     }
 
     public canHandle(params: IStorageListParams): boolean {
-        if (params.id) {
-            return false;
-        } else if (params.app) {
+        if (params.app) {
             return false;
         } else if (params.createdBy) {
             return false;

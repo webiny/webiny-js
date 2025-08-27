@@ -28,9 +28,7 @@ export class CreatedByAccessPattern<
     }
 
     public canHandle(params: IStorageListParams): boolean {
-        if (params.id) {
-            return false;
-        } else if (params.app) {
+        if (params.app) {
             return false;
         } else if (params.action) {
             return false;
@@ -51,7 +49,7 @@ export class CreatedByAccessPattern<
         };
         return await queryPerPage<IStorageItem>({
             entity: this.entity,
-            partitionKey: `T#${params.tenant}#AUDIT_LOG#USER#${params.createdBy.id}`,
+            partitionKey: `T#${params.tenant}#AUDIT_LOG#USER#${params.createdBy}`,
             options
         });
     }

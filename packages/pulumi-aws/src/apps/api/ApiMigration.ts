@@ -9,6 +9,7 @@ import { CoreOutput, VpcConfig } from "../common";
 import { ApiBackgroundTask, ApiGraphql } from "~/apps";
 import { LAMBDA_RUNTIME } from "~/constants";
 import { getEnvVariableAwsRegion } from "~/env/awsRegion";
+import { AuditLogsDynamo } from "~/apps/api/AuditLogsDynamo.js";
 
 export type ApiMigration = PulumiAppModule<typeof ApiMigration>;
 
@@ -18,6 +19,7 @@ export const ApiMigration = createAppModule({
         const core = app.getModule(CoreOutput);
         const graphql = app.getModule(ApiGraphql);
         const backgroundTask = app.getModule(ApiBackgroundTask);
+        const auditLogsDynamoDb = app.getModule(AuditLogsDynamo);
 
         const role = createLambdaRole(app, {
             name: "migration-lambda-role",
@@ -45,6 +47,7 @@ export const ApiMigration = createAppModule({
                         COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
                         DB_TABLE: core.primaryDynamodbTableName,
                         DB_TABLE_LOG: core.logDynamodbTableName,
+                        DB_TABLE_AUDIT_LOGS: auditLogsDynamoDb.output.name,
                         DB_TABLE_ELASTICSEARCH: core.elasticsearchDynamodbTableName,
                         ELASTIC_SEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
                         ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,

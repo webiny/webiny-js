@@ -11,7 +11,7 @@ import { createTopic } from "@webiny/pubsub";
 import { convertExpiresAtDaysToDate } from "~/utils/expiresAt.js";
 import type { IAuditLog, IAuditLogCreatedBy } from "~/storage/types.js";
 import { mdbid } from "@webiny/utils/mdbid.js";
-import type { IStorage } from "~/storage/abstractions/Storage.js";
+import type { IStorage, IStorageListParams } from "~/storage/abstractions/Storage.js";
 import { NotAuthorizedError } from "@webiny/api-security";
 
 export interface IAuditLogsContextValueParams {
@@ -114,7 +114,10 @@ export class AuditLogsContextValueImpl implements AuditLogsContextValue {
     }
 
     public async listAuditLogs(params: IListAuditLogsParams): Promise<IListAuditLogsResult> {
-        const result = await this.storage.list(params);
+        const result = await this.storage.list({
+            ...params,
+            tenant: this.getTenantId()
+        } as unknown as IStorageListParams);
         if (result.success) {
             return {
                 items: result.data,

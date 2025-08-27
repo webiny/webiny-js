@@ -31,6 +31,7 @@ import { attachSyncSystem } from "../syncSystem/api/index.js";
 import { getAwsAccountId } from "~/apps/awsUtils";
 import type { WithServiceManifest } from "~/utils/withServiceManifest.js";
 import { ApiScheduler } from "~/apps/api/ApiScheduler.js";
+import { AuditLogsDynamo } from "~/apps/api/AuditLogsDynamo.js";
 
 export type ApiPulumiApp = ReturnType<typeof createApiPulumiApp>;
 
@@ -153,6 +154,11 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             // Register core output as a module available to all the other modules
             const core = app.addModule(CoreOutput);
 
+            const protect = app.getParam(projectAppParams.protect) ?? isProduction;
+            const auditLogsDynamoDb = app.addModule(AuditLogsDynamo, {
+                protect
+            });
+
             // Register VPC config module to be available to other modules.
             const vpcEnabled = app.getParam(projectAppParams?.vpc) ?? isProduction;
             app.addModule(VpcConfig, { enabled: vpcEnabled });
@@ -183,6 +189,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
                     DB_TABLE: core.primaryDynamodbTableName,
                     DB_TABLE_LOG: core.logDynamodbTableName,
+                    DB_TABLE_AUDIT_LOGS: auditLogsDynamoDb.output.name,
                     S3_BUCKET: core.fileManagerBucketId
                 }
             });
@@ -193,6 +200,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                     COGNITO_USER_POOL_ID: core.cognitoUserPoolId,
                     DB_TABLE: core.primaryDynamodbTableName,
                     DB_TABLE_LOG: core.logDynamodbTableName,
+                    DB_TABLE_AUDIT_LOGS: auditLogsDynamoDb.output.name,
                     DB_TABLE_ELASTICSEARCH: core.elasticsearchDynamodbTableName,
                     ELASTIC_SEARCH_ENDPOINT: core.elasticsearchDomainEndpoint,
 
@@ -219,7 +227,8 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
             const fileManager = app.addModule(ApiFileManager, {
                 env: {
                     DB_TABLE: core.primaryDynamodbTableName,
-                    DB_TABLE_LOG: core.logDynamodbTableName
+                    DB_TABLE_LOG: core.logDynamodbTableName,
+                    DB_TABLE_AUDIT_LOGS: auditLogsDynamoDb.output.name
                 }
             });
 
@@ -292,6 +301,7 @@ export const createApiPulumiApp = (projectAppParams: CreateApiPulumiAppParams = 
                 apwSchedulerEventRule: apwScheduler.eventRule.output.name,
                 apwSchedulerEventTargetId: apwScheduler.eventTarget.output.targetId,
                 dynamoDbTable: core.primaryDynamodbTableName,
+                auditLogsDynamoDbTable: auditLogsDynamoDb.output.name,
                 migrationLambdaArn: migration.function.output.arn,
                 graphqlLambdaName: graphql.functions.graphql.output.name,
                 graphqlLambdaRole: graphql.role.output.arn,

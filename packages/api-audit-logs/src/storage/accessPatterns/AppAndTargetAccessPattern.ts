@@ -33,8 +33,6 @@ export class AppAndTargetAccessPattern<
             return false;
         } else if (!params.action) {
             return false;
-        } else if (params.id) {
-            return false;
         } else if (params.createdBy) {
             return false;
         } else if (params.entryId) {

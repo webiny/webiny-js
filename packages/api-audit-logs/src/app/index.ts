@@ -5,20 +5,13 @@ import { createStorage } from "~/storage/Storage.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
 export interface ISetupContextOptions {
-    deleteLogsAfterDays?: number;
-    tableName?: string;
-    documentClient?: DynamoDBDocument;
+    deleteLogsAfterDays: number | undefined;
+    tableName: string | undefined;
+    documentClient: DynamoDBDocument | undefined;
 }
 
 export const createAcoAuditLogsContext = (params?: ISetupContextOptions) => {
     const plugin = new ContextPlugin<AuditLogsContext>(async context => {
-        if (!context.aco) {
-            console.log(
-                `There is no ACO initialized so we will not initialize the Audit Logs ACO.`
-            );
-            return;
-        }
-
         const storage = createStorage({
             tableName: params?.tableName,
             client: params?.documentClient || (context.db.driver.getClient() as DynamoDBDocument),

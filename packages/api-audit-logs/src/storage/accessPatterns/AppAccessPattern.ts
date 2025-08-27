@@ -30,8 +30,6 @@ export class AppAccessPattern<
     public canHandle(params: IStorageListParams): boolean {
         if (!params.app) {
             return false;
-        } else if (params.id) {
-            return false;
         } else if (params.createdBy) {
             return false;
         } else if (params.action) {

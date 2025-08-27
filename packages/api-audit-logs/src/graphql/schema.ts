@@ -1,5 +1,5 @@
 import { GraphQLSchemaPlugin, NotFoundError, resolve, resolveList } from "@webiny/handler-graphql";
-import type { AuditLogsContext, IListAuditLogsParams } from "~/types.js";
+import type { AuditLogsContext } from "~/types.js";
 import { getValidationSchema, listValidationSchema } from "./validation.js";
 import { createZodError } from "@webiny/utils";
 
