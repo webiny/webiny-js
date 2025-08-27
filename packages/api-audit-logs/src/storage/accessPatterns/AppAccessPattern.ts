@@ -61,7 +61,6 @@ export class AppAccessPattern<
 
     public createKeys(item: IAuditLog): IAccessPatternCreateKeysResult {
         const time = item.createdOn.getTime();
-
         return {
             partitionKey: `T#${item.tenant}#AUDIT_LOG#APP#${item.app}`,
             sortKey: time

@@ -61,7 +61,6 @@ export interface IStorageListByAppParams {
     createdOn_lte?: Date;
     limit: number | undefined;
 
-    id?: never;
     createdBy?: never;
     action?: never;
     entryId?: never;
@@ -79,7 +78,6 @@ export interface IStorageListByAppAndActionParams {
     createdOn_lte?: Date;
     limit: number | undefined;
 
-    id?: never;
     createdBy?: never;
     entryId?: never;
     version?: never;
@@ -88,16 +86,13 @@ export interface IStorageListByAppAndActionParams {
 // GSI3_PK / GSI3_SK
 export interface IStorageListByCreatedByParams {
     tenant: string;
-    createdBy: {
-        id: string;
-    };
+    createdBy: string;
     after?: string;
     order?: "ASC" | "DESC";
     createdOn_gte?: Date;
     createdOn_lte?: Date;
     limit: number | undefined;
 
-    id?: never;
     app?: never;
     action?: never;
     entryId?: never;
@@ -113,7 +108,6 @@ export interface IStorageListByCreatedOnParams {
     order?: "ASC" | "DESC";
     limit: number | undefined;
 
-    id?: never;
     app?: never;
     createdBy?: never;
     action?: never;
@@ -133,7 +127,6 @@ export interface IStorageListByAppAndTargetParams {
     createdOn_lte?: Date;
     limit: number | undefined;
 
-    id?: never;
     createdBy?: never;
     action?: never;
 }

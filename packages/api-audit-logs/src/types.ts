@@ -9,6 +9,10 @@ import type { FileManagerContext } from "@webiny/api-file-manager/types.js";
 import type { AcoContext } from "@webiny/api-aco/types.js";
 import type { IStorageListParams } from "~/storage/abstractions/Storage.js";
 
+export type IWithErrorResult<TSuccess> =
+    | (TSuccess & { error?: never })
+    | { [K in keyof TSuccess]?: never };
+
 export interface Action {
     type: string;
     displayName: string;
@@ -60,17 +64,26 @@ export interface OnAuditLogBeforeUpdateTopicParams {
     setAuditLog(auditLog: Partial<IAuditLog>): void;
 }
 
-export type IListAuditLogsParams = IStorageListParams;
+export type IListAuditLogsParams = Omit<IStorageListParams, "tenant">;
 
 export interface IListAuditLogsResultMeta {
     cursor: string | null;
     hasMoreItems: boolean;
 }
-export interface IListAuditLogsResult {
-    items?: IAuditLog[];
-    meta?: IListAuditLogsResultMeta;
-    error?: Error;
+
+export interface IListAuditLogsSuccessResult {
+    items: IAuditLog[];
+    meta: IListAuditLogsResultMeta;
+    error?: never;
 }
+
+export interface IListAuditLogsErrorResult {
+    items?: never;
+    meta?: never;
+    error: Error;
+}
+
+export type IListAuditLogsResult = IListAuditLogsSuccessResult | IListAuditLogsErrorResult;
 
 export interface AuditLogsContextValue {
     deleteLogsAfterDays: number | undefined;
