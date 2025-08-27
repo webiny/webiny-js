@@ -8,33 +8,7 @@ import type { IAuditLog } from "~/storage/types.js";
 import type { FileManagerContext } from "@webiny/api-file-manager/types.js";
 import type { AcoContext } from "@webiny/api-aco/types.js";
 import type { IStorageListParams } from "~/storage/abstractions/Storage.js";
-
-export type IWithErrorResult<TSuccess> =
-    | (TSuccess & { error?: never })
-    | { [K in keyof TSuccess]?: never };
-
-export interface Action {
-    type: string;
-    displayName: string;
-    /**
-     * Delay in seconds before a new audit log can be created.
-     * During this delay actions will update existing audit log instead of creating new ones.
-     */
-    newEntryDelay?: number;
-}
-
-export interface Entity {
-    type: string;
-    displayName: string;
-    linkToEntity?: (id: string) => string;
-    actions: Action[];
-}
-
-export interface App {
-    app: string;
-    displayName: string;
-    entities: Entity[];
-}
+import type { App, Entity, Action } from "@webiny/common-audit-logs/types.js";
 
 // export interface AuditLog {
 //     id: string;

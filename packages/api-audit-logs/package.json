@@ -41,6 +41,7 @@
     "@webiny/api-aco": "0.0.0",
     "@webiny/api-apw": "0.0.0",
     "@webiny/api-mailer": "0.0.0",
+    "@webiny/common-audit-logs": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/pubsub": "0.0.0",

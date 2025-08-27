@@ -1,3 +1,5 @@
+import type { GenericRecord } from "@webiny/app/types.js";
+
 export enum ActionType {
     CREATE = "CREATE",
     UPDATE = "UPDATE",
@@ -10,18 +12,6 @@ export enum ActionType {
     EXPORT = "EXPORT"
 }
 
-export interface AuditLog {
-    id: string;
-    message: string;
-    app: string;
-    entity: string;
-    entityId: string;
-    action: ActionType;
-    data: string;
-    timestamp: Date;
-    initiator: string;
-}
-
 export interface User {
     id: string;
     firstName: string;
@@ -29,4 +19,58 @@ export interface User {
     groups?: {
         name: string;
     }[];
+}
+
+export interface IAuditLogCreatedByRaw {
+    id: string;
+    displayName?: string;
+    type?: string;
+}
+
+export interface IAuditLogCreatedBy extends IAuditLogCreatedByRaw {
+    role: string;
+}
+
+export interface IAuditLogRaw {
+    id: string;
+    tenant: string;
+    createdBy: IAuditLogCreatedByRaw;
+    createdOn: Date;
+    app: string;
+    action: ActionType;
+    message: string;
+    entity: string;
+    entityId: string;
+    tags: string[];
+    expiresAt: Date | undefined;
+    content: string;
+}
+
+export interface IAuditLogEntity {
+    value: string;
+    label: string;
+    link?: string;
+}
+
+export interface IAuditLogAction {
+    value: ActionType;
+    label: string;
+}
+
+export interface IAuditLog extends Omit<IAuditLogRaw, "entity" | "action" | "createdBy"> {
+    entity: IAuditLogEntity;
+    action: IAuditLogAction;
+    createdBy: IAuditLogCreatedBy;
+}
+
+export interface IAuditLogsMeta {
+    hasMoreItems: boolean;
+    cursor: string | null;
+}
+
+export interface IAuditLogsError {
+    message: string;
+    code: string;
+    data?: GenericRecord;
+    stack?: string;
 }

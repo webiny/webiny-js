@@ -7,7 +7,6 @@ import { DataTable } from "@webiny/ui/DataTable";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 
-import type { Entry } from "~/utils/transformCmsContentEntriesToRecordEntries";
 import { Text } from "~/components/Text";
 import {
     ActionWrapper,
@@ -18,11 +17,12 @@ import {
     previewColumn
 } from "./styled";
 import type { ActionType } from "~/types";
+import type { IAuditLog } from "~/types.js";
 
-type ActionProps = {
+interface ActionProps {
     label: string;
     value: ActionType;
-};
+}
 
 export const Action = ({ label, value }: ActionProps) => {
     return (
@@ -33,15 +33,15 @@ export const Action = ({ label, value }: ActionProps) => {
 };
 
 export interface TableProps {
-    records: Entry[];
+    records: IAuditLog[];
     loading?: boolean;
-    handleRecordSelect: (auditLog: Entry) => void;
+    handleRecordSelect: (auditLog: IAuditLog) => void;
     sorting: Sorting;
     onSortingChange: OnSortingChange;
     hasAccessToUsers: boolean;
 }
 
-export interface EntryWithPreview extends Entry {
+export interface EntryWithPreview extends IAuditLog {
     /**
      * We need the preview property because data table is expecting it in columns.
      */
@@ -53,10 +53,10 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         props;
 
     const columns: Columns<EntryWithPreview> = {
-        savedOn: {
+        createdOn: {
             header: "Timestamp",
-            cell: ({ savedOn }) => {
-                const date = new Date(savedOn);
+            cell: ({ createdOn }) => {
+                const date = new Date(createdOn);
 
                 return (
                     <Tooltip
@@ -94,7 +94,9 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
         },
         action: {
             header: "Action",
-            cell: ({ action }) => <Action label={action.label} value={action.value} />
+            cell: ({ action }) => {
+                return <Action label={action.label} value={action.value} />;
+            }
         },
         message: {
             header: "Message",
@@ -102,11 +104,11 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
             className: wideColumn
         },
         ...(hasAccessToUsers && {
-            initiator: {
+            createdBy: {
                 header: "Initiator",
-                cell: ({ initiator }) => (
-                    <a href={`/admin-users?id=${initiator.id}`} target={"blank"}>
-                        <Text use={"subtitle1"}>{initiator.name}</Text>
+                cell: ({ createdBy }) => (
+                    <a href={`/admin-users?id=${createdBy.id}`} target={"blank"}>
+                        <Text use={"subtitle1"}>{createdBy.displayName || "-"}</Text>
                     </a>
                 )
             }

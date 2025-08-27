@@ -3,9 +3,6 @@ import { useApolloClient } from "@apollo/react-hooks";
 import { ReactComponent as Icon } from "@webiny/icons/manage_search.svg";
 import { Layout, useWcp } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-security";
-import { AcoProvider } from "@webiny/app-aco";
-
-import { AuditLogsListWithConfig } from "~/config/list";
 import { LogsModule } from "~/views/Logs/LogsModule";
 import { AuditLogsPermissions } from "~/plugins/permissionRenderer";
 import AuditLogsView from "~/views/Logs/Logs";
@@ -47,17 +44,7 @@ export const AuditLogs = () => {
                         path={"/audit-logs"}
                         element={
                             <Layout title={"Audit Logs - Logs"}>
-                                <AuditLogsListWithConfig>
-                                    <AcoProvider
-                                        id="AuditLogs"
-                                        client={client}
-                                        createNavigateFolderStorageKey={
-                                            createNavigateFolderStorageKey
-                                        }
-                                    >
-                                        <AuditLogsView />
-                                    </AcoProvider>
-                                </AuditLogsListWithConfig>
+                                <AuditLogsView />
                             </Layout>
                         }
                     />

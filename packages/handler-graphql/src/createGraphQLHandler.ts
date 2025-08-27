@@ -40,7 +40,8 @@ const formatErrorPayload = (error: Error): string => {
             type: "CoreGraphQLWebinyError",
             message: error.message,
             code: error.code,
-            data: error.data
+            data: error.data,
+            stack: error.stack
         });
     }
 

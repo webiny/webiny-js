@@ -5,8 +5,8 @@ export const getValidationSchema = zod.object({
 });
 
 export const listValidationSchema = zod.object({
-    app: zod.string().min(1, "App is required."),
-    entryId: zod.string().min(1, "Entry ID is required."),
+    app: zod.string().min(1, "App is required.").optional(),
+    entryId: zod.string().min(1, "Entry ID is required.").optional(),
     after: zod.string().optional(),
     sort: zod.enum(["ASC", "DESC"]).optional(),
     version: zod.never().optional(),

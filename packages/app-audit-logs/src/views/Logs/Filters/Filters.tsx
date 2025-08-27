@@ -2,14 +2,14 @@ import React, { useMemo } from "react";
 import type { FiltersOnSubmit } from "@webiny/app-admin";
 import { Filters as BaseFilters } from "@webiny/app-admin";
 import { useAuditLogsListConfig } from "~/config/list";
+import type { IListAuditLogsVariablesWhere } from "~/hooks/graphql.js";
 
-type FiltersProps = {
+interface FiltersProps {
     showingFilters: boolean;
-    setFilters: (data: Record<string, any>) => void;
-    hasAccessToUsers: boolean;
-};
+    setWhere: (where: Partial<IListAuditLogsVariablesWhere>) => void;
+}
 
-export const Filters = ({ showingFilters, setFilters, hasAccessToUsers }: FiltersProps) => {
+export const Filters = ({ showingFilters, setWhere }: FiltersProps) => {
     const { browser } = useAuditLogsListConfig();
 
     const applyFilters: FiltersOnSubmit = data => {
@@ -22,16 +22,12 @@ export const Filters = ({ showingFilters, setFilters, hasAccessToUsers }: Filter
             data
         );
 
-        setFilters(convertedFilters);
+        setWhere(convertedFilters);
     };
 
     const filters = useMemo(() => {
-        if (hasAccessToUsers) {
-            return browser.filters;
-        }
-
         return browser.filters.filter(filter => filter.name !== "initiator");
-    }, [browser, hasAccessToUsers]);
+    }, [browser]);
 
     return <BaseFilters filters={filters} show={showingFilters} onChange={applyFilters} />;
 };

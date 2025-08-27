@@ -1,0 +1,25 @@
+{
+  "name": "@webiny/common-audit-logs",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@webiny/project-utils": "0.0.0",
+    "execa": "^5.1.1",
+    "rimraf": "^6.0.1",
+    "typescript": "5.3.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "node ../cli/bin.js run build",
+    "watch": "node ../cli/bin.js run watch"
+  }
+}

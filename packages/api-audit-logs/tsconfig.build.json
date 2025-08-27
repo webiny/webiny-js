@@ -6,6 +6,7 @@
     { "path": "../api-aco/tsconfig.build.json" },
     { "path": "../api-apw/tsconfig.build.json" },
     { "path": "../api-mailer/tsconfig.build.json" },
+    { "path": "../common-audit-logs/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../pubsub/tsconfig.build.json" },
