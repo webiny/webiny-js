@@ -82,7 +82,7 @@ export const createGraphQLSchema = () => {
         `,
         resolvers: {
             Query: {
-                auditLogs: () => ({}),
+                auditLogs: () => ({})
             },
             AuditLogsQuery: {
                 async getAuditLog(_, args, context) {

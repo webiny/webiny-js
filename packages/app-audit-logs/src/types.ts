@@ -33,7 +33,6 @@ export interface IAuditLogCreatedBy extends IAuditLogCreatedByRaw {
 
 export interface IAuditLogRaw {
     id: string;
-    tenant: string;
     createdBy: IAuditLogCreatedByRaw;
     createdOn: Date;
     app: string;
@@ -42,7 +41,7 @@ export interface IAuditLogRaw {
     entity: string;
     entityId: string;
     tags: string[];
-    expiresAt: Date | undefined;
+    expiresAt?: Date;
     content: string;
 }
 

@@ -1,4 +1,4 @@
-import type { Entity, EntityQueryOptions } from "@webiny/db-dynamodb/toolbox.js";
+import type { EntityQueryOptions } from "@webiny/db-dynamodb/toolbox.js";
 import type { IAuditLog, IStorageItem } from "~/storage/types.js";
 import type {
     IStorageListByAppAndTargetParams,
@@ -13,31 +13,17 @@ import type {
     IAccessPatternListResult
 } from "../abstractions/AccessPattern.js";
 
-export interface IAppAndTargetAccessPatternParams {
-    index: string;
-    entity: Entity;
-}
-
 export class AppAndTargetAccessPattern<
     T extends IStorageListByAppAndTargetParams = IStorageListByAppAndTargetParams
 > extends BaseAccessPattern<T> {
-    public constructor(params: IAppAndTargetAccessPatternParams) {
-        super({
-            index: params.index,
-            entity: params.entity
-        });
-    }
-
     public canHandle(params: IStorageListParams): boolean {
         if (!params.app) {
             return false;
-        } else if (!params.action) {
-            return false;
         } else if (params.createdBy) {
             return false;
-        } else if (params.entryId) {
+        } else if (!params.entryId) {
             return false;
-        } else if (params.version) {
+        } else if (params.action) {
             return false;
         }
 
@@ -52,9 +38,11 @@ export class AppAndTargetAccessPattern<
             reverse: params.sort === "DESC"
         };
 
+        const { id: targetEntryId } = parseIdentifier(params.entryId);
+
         return await queryPerPage<IStorageItem>({
             entity: this.entity,
-            partitionKey: `T#${params.tenant}#AUDIT_LOG#APP#${params.app}#ACTION#${params.action}`,
+            partitionKey: `T#${params.tenant}#AUDIT_LOG#APP#${params.app}#TARGET#${targetEntryId}`,
             options
         });
     }

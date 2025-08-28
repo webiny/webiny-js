@@ -4,6 +4,17 @@ import type { IAuditLog, IStorageItem } from "~/storage/types.js";
 import type { IAccessPatternHandler } from "~/storage/abstractions/AccessPatternHandler.js";
 import { convertExpiresAtToUnixTimestamp } from "~/utils/expiresAt.js";
 
+const convertToDateTime = (value?: string | unknown): Date | undefined => {
+    if (!value || typeof value !== "string") {
+        return undefined;
+    }
+    try {
+        return new Date(value);
+    } catch {
+        return undefined;
+    }
+};
+
 export interface IConverterParams {
     compressor: ICompressor;
     patternHandler: IAccessPatternHandler;
@@ -27,6 +38,7 @@ export class Converter implements IConverter {
     public async oneFromStorage(item: IStorageItem): Promise<IAuditLog> {
         return {
             ...item.data,
+            expiresAt: convertToDateTime(item.data.expiresAt),
             content: await this.compressor.decompress(JSON.parse(item.data.content)),
             createdOn: new Date(item.data.createdOn)
         };
@@ -48,10 +60,11 @@ export class Converter implements IConverter {
         const patterns = this.patternHandler.listIndexPatterns();
 
         const keys = patterns.reduce<PickedGSIKeys>((output, pattern) => {
+            const patternKeys = pattern.createKeys(auditLog);
             return {
                 ...output,
-                [`${pattern.index}_PK`]: defaultKeys.partitionKey,
-                [`${pattern.index}_SK`]: defaultKeys.sortKey
+                [`${pattern.index}_PK`]: patternKeys.partitionKey,
+                [`${pattern.index}_SK`]: patternKeys.sortKey
             };
         }, {} as PickedGSIKeys);
 
@@ -59,23 +72,9 @@ export class Converter implements IConverter {
             PK: defaultKeys.partitionKey,
             SK: defaultKeys.sortKey as unknown as string,
             ...keys,
-            // By App Type
-            // GSI1_PK: `T#${auditLog.tenant}#AUDIT_LOG#APP#${auditLog.app}`,
-            // GSI1_SK: time,
-            // // By App And Action
-            // GSI2_PK: `T#${auditLog.tenant}#AUDIT_LOG#APP#${auditLog.app}#ACTION#${auditLog.action}`,
-            // GSI2_SK: time,
-            // // By User
-            // GSI3_PK: `T#${auditLog.tenant}#AUDIT_LOG#USER#${auditLog.createdBy.id}`,
-            // GSI3_SK: time,
-            // // By Time
-            // GSI4_PK: `T#${auditLog.tenant}#AUDIT_LOG#TIME`,
-            // GSI4_SK: time,
-            // // By App And Target
-            // GSI5_PK: `T#${auditLog.tenant}#AUDIT_LOG#APP#${auditLog.app}#TARGET`,
-            // GSI5_SK: auditLog.targetId,
             data: {
                 ...auditLog,
+                expiresAt: auditLog.expiresAt ? auditLog.expiresAt.toISOString() : undefined,
                 content: JSON.stringify(await this.compressor.compress(auditLog.content)),
                 createdOn: auditLog.createdOn.toISOString()
             },

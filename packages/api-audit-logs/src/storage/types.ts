@@ -19,7 +19,8 @@ export interface IAuditLog {
     content: string;
 }
 
-export interface IStorageAuditLog extends Omit<IAuditLog, "createdOn" | "content"> {
+export interface IStorageAuditLog extends Omit<IAuditLog, "createdOn" | "content" | "expiresAt"> {
+    expiresAt: string | undefined;
     createdOn: string;
     content: string;
 }

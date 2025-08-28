@@ -136,6 +136,9 @@ export class AuditLogsContextValueImpl implements AuditLogsContextValue {
         }
         const permissions = await this.getContext().security.getPermissions("al.*");
         for (const permission of permissions) {
+            if (permission.name === "*") {
+                return;
+            }
             if (permission.name === "al.*") {
                 return;
             } else if (permission.name === `al.${auditLog.action}`) {
@@ -157,7 +160,7 @@ export class AuditLogsContextValueImpl implements AuditLogsContextValue {
         return {
             id: identity.id,
             type: identity.type,
-            displayName: "unknown"
+            displayName: identity.displayName || "unknown"
         };
     }
 }

@@ -1,18 +1,18 @@
-import React, {useCallback, useEffect, useRef, useState} from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import debounce from "lodash/debounce";
-import {i18n} from "@webiny/app/i18n";
+import { i18n } from "@webiny/app/i18n";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
-import {Scrollbar} from "@webiny/ui/Scrollbar";
-import {LoadingMore} from "~/views/Logs/LoadingMore";
-import {LoadMoreButton} from "~/views/Logs/LoadMoreButton";
-import {Header} from "~/views/Logs/Header";
-import {Filters} from "~/views/Logs/Filters";
-import {Table} from "~/views/Logs/Table";
-import {Preview} from "~/views/Logs/Preview";
-import {useAuditLogsList} from "~/hooks";
-import {MainContainer, Wrapper} from "./styled";
-import type {IAuditLog} from "~/types.js";
-import {useSecurity} from "@webiny/app-security/index";
+import { Scrollbar } from "@webiny/ui/Scrollbar";
+import { LoadingMore } from "~/views/Logs/LoadingMore";
+import { LoadMoreButton } from "~/views/Logs/LoadMoreButton";
+import { Header } from "~/views/Logs/Header";
+import { Filters } from "~/views/Logs/Filters";
+import { Table } from "~/views/Logs/Table";
+import { Preview } from "~/views/Logs/Preview";
+import { useAuditLogsList } from "~/hooks";
+import { MainContainer, Wrapper } from "./styled";
+import type { IAuditLog } from "~/types.js";
+import { useSecurity } from "@webiny/app-security/index";
 
 const t = i18n.ns("app-audit-logs/views/logs");
 
@@ -29,7 +29,7 @@ const AuditLogsView = () => {
     const tableRef = useRef<HTMLDivElement>(null);
     const { getPermissions } = useSecurity();
     const hasAccessToUsers = Boolean(getPermissions("adminUsers").length);
-    
+
     const list = useAuditLogsList();
 
     useEffect(() => {
@@ -56,7 +56,7 @@ const AuditLogsView = () => {
                     hideFilters={list.hideFilters}
                 />
                 <Wrapper>
-                    <Filters showingFilters={list.showingFilters} setWhere={list.setWhere}/>
+                    <Filters showingFilters={list.showingFilters} setWhere={list.setWhere} />
                     {list.records.length === 0 && !list.isListLoading ? (
                         <EmptyView title={t`No results found.`} action={null} />
                     ) : (

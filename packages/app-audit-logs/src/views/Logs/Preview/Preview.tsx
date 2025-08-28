@@ -1,13 +1,13 @@
 import React from "react";
-import {addMinutes, format} from "date-fns";
-import {Cell, Grid} from "@webiny/ui/Grid";
-import {Dialog, DialogActions, DialogCancel, DialogContent, DialogTitle} from "@webiny/ui/Dialog";
-import {CodeEditor} from "@webiny/ui/CodeEditor";
-import {Tooltip} from "@webiny/ui/Tooltip";
-import {Action} from "~/views/Logs/Table";
-import {Text} from "~/components/Text";
-import {PayloadWrapper, previewDialog} from "./styled";
-import type {IAuditLog} from "~/types.js";
+import { addMinutes, format } from "date-fns";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { Dialog, DialogActions, DialogCancel, DialogContent, DialogTitle } from "@webiny/ui/Dialog";
+import { CodeEditor } from "@webiny/ui/CodeEditor";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import { Action } from "~/views/Logs/Table";
+import { Text } from "~/components/Text";
+import { PayloadWrapper, previewDialog } from "./styled";
+import type { IAuditLog } from "~/types.js";
 
 interface HeaderProps {
     auditLog: IAuditLog | null;
@@ -19,11 +19,14 @@ export const Preview = ({ auditLog, onClose, hasAccessToUsers }: HeaderProps) =>
     if (!auditLog) {
         return null;
     }
-    
+    console.log({
+        auditLog
+    });
+
     const date = new Date(auditLog.createdOn);
 
     return (
-        <Dialog open={!!auditLog} onClose={onClose} className={previewDialog}>
+        <Dialog open={!!auditLog} onClose={onClose} className={previewDialog} size={"xl"}>
             <DialogTitle>
                 {auditLog.message}
                 <div className="title-actions" tabIndex={0}></div>

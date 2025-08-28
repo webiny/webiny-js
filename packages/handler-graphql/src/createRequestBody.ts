@@ -1,14 +1,18 @@
-import type {GraphQLRequestBody} from "~/types.js";
-import {createZodError} from "@webiny/utils/createZodError.js";
+import type { GraphQLRequestBody } from "~/types.js";
+import { createZodError } from "@webiny/utils/createZodError.js";
 import zod from "zod";
 
 const requestBodySchema = zod
     .object({
         query: zod.string(),
         variables: zod.record(zod.any()).nullish().optional(),
-        operationName: zod.string().nullish().optional().transform(value => {
-            return value || undefined;
-        })
+        operationName: zod
+            .string()
+            .nullish()
+            .optional()
+            .transform(value => {
+                return value || undefined;
+            })
     })
     .passthrough();
 

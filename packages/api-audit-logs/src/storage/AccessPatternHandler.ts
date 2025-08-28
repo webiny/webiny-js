@@ -63,8 +63,6 @@ export class AccessPatternHandler implements IAccessPatternHandler {
         /**
          * If none can handle, let's find one which has index set to undefined (default pattern).
          */
-        return this.patterns.find(pattern => {
-            return pattern.index === undefined;
-        });
+        return this.getDefaultPattern();
     }
 }

@@ -15286,7 +15286,7 @@ __metadata:
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-router": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    ace-builds: "npm:^1.37.1"
+    ace-builds: "npm:^1.43.2"
     bytes: "npm:^3.1.2"
     chalk: "npm:^4.1.2"
     class-variance-authority: "npm:^0.7.0"
@@ -17243,6 +17243,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.2"
+    zod: "npm:^3.23.8"
   peerDependencies:
     react: 18.2.0
   languageName: unknown
@@ -19846,10 +19847,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ace-builds@npm:^1.36.3, ace-builds@npm:^1.37.1":
-  version: 1.37.5
-  resolution: "ace-builds@npm:1.37.5"
-  checksum: 10/cf8e0d0fe2a3cfbf69cf3e441c32523f8ec4a6ad5341cdfbeaf669f3ceed2ea136bfc60170f4b0757a98dab74f98a0e446984aff09a0a45f203aa02d6d031157
+"ace-builds@npm:^1.36.3, ace-builds@npm:^1.43.2":
+  version: 1.43.2
+  resolution: "ace-builds@npm:1.43.2"
+  checksum: 10/37a1cd3a8e9e03a1c34b26acdc8becfd804ce77dcc716d05d5a058817b2c9a081b73492e714691c5e607f959adbda8e03a9b9fe2af17378de3b6b6e1b2931259
   languageName: node
   linkType: hard
 

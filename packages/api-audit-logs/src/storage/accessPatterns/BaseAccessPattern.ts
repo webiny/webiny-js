@@ -26,7 +26,7 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
     public readonly index;
     protected readonly entity;
 
-    protected constructor(params: IBaseAccessPatternParams) {
+    public constructor(params: IBaseAccessPatternParams) {
         this.index = params.index;
         this.entity = params.entity;
     }

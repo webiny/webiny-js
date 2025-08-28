@@ -1,23 +1,15 @@
-import React, { useCallback } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
+import React from "react";
 import { ReactComponent as Icon } from "@webiny/icons/manage_search.svg";
-import { Layout, useWcp } from "@webiny/app-admin";
+import { AdminConfig, Layout, useWcp } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-security";
 import { LogsModule } from "~/views/Logs/LogsModule";
 import { AuditLogsPermissions } from "~/plugins/permissionRenderer";
 import AuditLogsView from "~/views/Logs/Logs";
-import { LOCAL_STORAGE_LATEST_VISITED_FOLDER } from "~/constants";
-import { AdminConfig } from "@webiny/app-admin";
 
 const { Menu, Route } = AdminConfig;
 
 export const AuditLogs = () => {
-    const client = useApolloClient();
     const wcp = useWcp();
-
-    const createNavigateFolderStorageKey = useCallback(() => {
-        return LOCAL_STORAGE_LATEST_VISITED_FOLDER;
-    }, []);
 
     if (!wcp.canUseAuditLogs()) {
         return null;

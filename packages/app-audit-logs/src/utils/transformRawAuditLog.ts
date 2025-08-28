@@ -1,13 +1,13 @@
-import {apps} from "@webiny/common-audit-logs/index.js";
-import type {IAuditLog, IAuditLogRaw} from "~/types.js";
+import { apps } from "@webiny/common-audit-logs/index.js";
+import type { IAuditLog, IAuditLogRaw } from "~/types.js";
 
 export interface ITransformRawAuditLogParams {
     auditLog: IAuditLogRaw;
 }
 
 export const transformRawAuditLog = (params: ITransformRawAuditLogParams): IAuditLog => {
-    const {auditLog} = params;
-    
+    const { auditLog } = params;
+
     const app = apps.find(app => app.app === auditLog.app);
     const entity = app?.entities?.find(entity => entity.type === auditLog.entity);
     const action = entity?.actions?.find(action => action.type === auditLog.action);
@@ -16,7 +16,7 @@ export const transformRawAuditLog = (params: ITransformRawAuditLogParams): IAudi
         createdBy: {
             ...auditLog.createdBy,
             // TODO load users?
-            role: "-",
+            role: "-"
         },
         action: {
             label: action?.displayName || "-",

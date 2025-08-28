@@ -1,4 +1,4 @@
-import type { Entity, EntityQueryOptions } from "@webiny/db-dynamodb/toolbox.js";
+import type { EntityQueryOptions } from "@webiny/db-dynamodb/toolbox.js";
 import type { IAuditLog, IStorageItem } from "~/storage/types.js";
 import type {
     IStorageListByCreatedByParams,
@@ -12,21 +12,9 @@ import type {
     IAccessPatternListResult
 } from "~/storage/abstractions/AccessPattern.js";
 
-export interface ICreatedByAccessPatternParams {
-    index: string;
-    entity: Entity;
-}
-
 export class CreatedByAccessPattern<
     T extends IStorageListByCreatedByParams = IStorageListByCreatedByParams
 > extends BaseAccessPattern<T> {
-    public constructor(params: ICreatedByAccessPatternParams) {
-        super({
-            index: params.index,
-            entity: params.entity
-        });
-    }
-
     public canHandle(params: IStorageListParams): boolean {
         if (params.app) {
             return false;
@@ -35,6 +23,8 @@ export class CreatedByAccessPattern<
         } else if (params.entryId) {
             return false;
         } else if (params.version) {
+            return false;
+        } else if (!params.createdBy) {
             return false;
         }
         return true;

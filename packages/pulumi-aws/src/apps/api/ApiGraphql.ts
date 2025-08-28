@@ -9,6 +9,7 @@ import { createLambdaRole, getCommonLambdaEnvVariables } from "../lambdaUtils";
 import { CoreOutput, VpcConfig } from "~/apps";
 import { getAwsAccountId, getAwsRegion } from "../awsUtils";
 import { LAMBDA_RUNTIME } from "~/constants";
+import { AuditLogsDynamo } from "~/apps/api/AuditLogsDynamo.js";
 
 interface GraphqlParams {
     env: Record<string, any>;
@@ -154,6 +155,7 @@ export const ApiGraphql = createAppModule({
 
 function createGraphqlLambdaPolicy(app: PulumiApp) {
     const coreOutput = app.getModule(CoreOutput);
+    const auditLogsDynamoDb = app.getModule(AuditLogsDynamo);
     const awsAccountId = getAwsAccountId(app);
     const awsRegion = getAwsRegion(app);
 
@@ -162,138 +164,142 @@ function createGraphqlLambdaPolicy(app: PulumiApp) {
         config: {
             description: "This policy enables access to Dynamodb, S3, Lambda and Cognito IDP",
             // Core is pulumi.Output, so we need to run apply() to resolve policy based on it
-            policy: coreOutput.apply(core => {
-                const policy: aws.iam.PolicyDocument = {
-                    Version: "2012-10-17",
-                    Statement: [
-                        {
-                            Sid: "PermissionForDynamodb",
-                            Effect: "Allow",
-                            Action: [
-                                "dynamodb:BatchGetItem",
-                                "dynamodb:BatchWriteItem",
-                                "dynamodb:ConditionCheckItem",
-                                "dynamodb:CreateBackup",
-                                "dynamodb:CreateTable",
-                                "dynamodb:CreateTableReplica",
-                                "dynamodb:DeleteBackup",
-                                "dynamodb:DeleteItem",
-                                "dynamodb:DeleteTable",
-                                "dynamodb:DeleteTableReplica",
-                                "dynamodb:DescribeBackup",
-                                "dynamodb:DescribeContinuousBackups",
-                                "dynamodb:DescribeContributorInsights",
-                                "dynamodb:DescribeExport",
-                                "dynamodb:DescribeKinesisStreamingDestination",
-                                "dynamodb:DescribeLimits",
-                                "dynamodb:DescribeReservedCapacity",
-                                "dynamodb:DescribeReservedCapacityOfferings",
-                                "dynamodb:DescribeStream",
-                                "dynamodb:DescribeTable",
-                                "dynamodb:DescribeTableReplicaAutoScaling",
-                                "dynamodb:DescribeTimeToLive",
-                                "dynamodb:DisableKinesisStreamingDestination",
-                                "dynamodb:EnableKinesisStreamingDestination",
-                                "dynamodb:ExportTableToPointInTime",
-                                "dynamodb:GetItem",
-                                "dynamodb:GetRecords",
-                                "dynamodb:GetShardIterator",
-                                "dynamodb:ListBackups",
-                                "dynamodb:ListContributorInsights",
-                                "dynamodb:ListExports",
-                                "dynamodb:ListStreams",
-                                "dynamodb:ListTables",
-                                "dynamodb:ListTagsOfResource",
-                                "dynamodb:PartiQLDelete",
-                                "dynamodb:PartiQLInsert",
-                                "dynamodb:PartiQLSelect",
-                                "dynamodb:PartiQLUpdate",
-                                "dynamodb:PurchaseReservedCapacityOfferings",
-                                "dynamodb:PutItem",
-                                "dynamodb:Query",
-                                "dynamodb:RestoreTableFromBackup",
-                                "dynamodb:RestoreTableToPointInTime",
-                                "dynamodb:Scan",
-                                "dynamodb:UpdateContinuousBackups",
-                                "dynamodb:UpdateContributorInsights",
-                                "dynamodb:UpdateItem",
-                                "dynamodb:UpdateTable",
-                                "dynamodb:UpdateTableReplicaAutoScaling",
-                                "dynamodb:UpdateTimeToLive"
-                            ],
-                            Resource: [
-                                `${core.primaryDynamodbTableArn}`,
-                                `${core.primaryDynamodbTableArn}/*`,
-                                `${core.logDynamodbTableArn}`,
-                                `${core.logDynamodbTableArn}/*`,
-                                // Attach permissions for elastic search dynamo as well (if ES is enabled).
-                                ...(core.elasticsearchDynamodbTableArn
-                                    ? [
-                                          `${core.elasticsearchDynamodbTableArn}`,
-                                          `${core.elasticsearchDynamodbTableArn}/*`
-                                      ]
-                                    : [])
-                            ]
-                        },
-                        {
-                            Sid: "PermissionForS3",
-                            Effect: "Allow",
-                            Action: [
-                                "s3:ListBucket",
-                                "s3:GetObjectAcl",
-                                "s3:DeleteObject",
-                                "s3:PutObjectAcl",
-                                "s3:PutObject",
-                                "s3:GetObject"
-                            ],
-                            Resource: [
-                                pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}`,
-                                pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}/*`
-                            ]
-                        },
-                        {
-                            Sid: "PermissionForLambda",
-                            Effect: "Allow",
-                            Action: ["lambda:InvokeFunction"],
-                            Resource: pulumi.interpolate`arn:aws:lambda:${awsRegion}:${awsAccountId}:function:*`
-                        },
-                        {
-                            Sid: "PermissionForCognitoIdp",
-                            Effect: "Allow",
-                            Action: "cognito-idp:*",
-                            Resource: `${core.cognitoUserPoolArn}`
-                        },
-                        {
-                            Sid: "PermissionForEventBus",
-                            Effect: "Allow",
-                            Action: "events:PutEvents",
-                            Resource: core.eventBusArn
-                        },
-                        {
-                            Sid: "PermissionForCloudfront",
-                            Effect: "Allow",
-                            Action: "cloudfront:CreateInvalidation",
-                            Resource: pulumi.interpolate`arn:aws:cloudfront::${awsAccountId}:distribution/*`
-                        },
-                        // Attach permissions for elastic search domain as well (if ES is enabled).
-                        ...(core.elasticsearchDomainArn
-                            ? [
-                                  {
-                                      Sid: "PermissionForES",
-                                      Effect: "Allow" as const,
-                                      Action: "es:*",
-                                      Resource: [
-                                          `${core.elasticsearchDomainArn}`,
-                                          `${core.elasticsearchDomainArn}/*`
-                                      ]
-                                  }
-                              ]
-                            : [])
-                    ]
-                };
+            policy: pulumi
+                .all([coreOutput, auditLogsDynamoDb.output.arn])
+                .apply(([core, auditLogsDynamoDbTableArn]) => {
+                    const policy: aws.iam.PolicyDocument = {
+                        Version: "2012-10-17",
+                        Statement: [
+                            {
+                                Sid: "PermissionForDynamodb",
+                                Effect: "Allow",
+                                Action: [
+                                    "dynamodb:BatchGetItem",
+                                    "dynamodb:BatchWriteItem",
+                                    "dynamodb:ConditionCheckItem",
+                                    "dynamodb:CreateBackup",
+                                    "dynamodb:CreateTable",
+                                    "dynamodb:CreateTableReplica",
+                                    "dynamodb:DeleteBackup",
+                                    "dynamodb:DeleteItem",
+                                    "dynamodb:DeleteTable",
+                                    "dynamodb:DeleteTableReplica",
+                                    "dynamodb:DescribeBackup",
+                                    "dynamodb:DescribeContinuousBackups",
+                                    "dynamodb:DescribeContributorInsights",
+                                    "dynamodb:DescribeExport",
+                                    "dynamodb:DescribeKinesisStreamingDestination",
+                                    "dynamodb:DescribeLimits",
+                                    "dynamodb:DescribeReservedCapacity",
+                                    "dynamodb:DescribeReservedCapacityOfferings",
+                                    "dynamodb:DescribeStream",
+                                    "dynamodb:DescribeTable",
+                                    "dynamodb:DescribeTableReplicaAutoScaling",
+                                    "dynamodb:DescribeTimeToLive",
+                                    "dynamodb:DisableKinesisStreamingDestination",
+                                    "dynamodb:EnableKinesisStreamingDestination",
+                                    "dynamodb:ExportTableToPointInTime",
+                                    "dynamodb:GetItem",
+                                    "dynamodb:GetRecords",
+                                    "dynamodb:GetShardIterator",
+                                    "dynamodb:ListBackups",
+                                    "dynamodb:ListContributorInsights",
+                                    "dynamodb:ListExports",
+                                    "dynamodb:ListStreams",
+                                    "dynamodb:ListTables",
+                                    "dynamodb:ListTagsOfResource",
+                                    "dynamodb:PartiQLDelete",
+                                    "dynamodb:PartiQLInsert",
+                                    "dynamodb:PartiQLSelect",
+                                    "dynamodb:PartiQLUpdate",
+                                    "dynamodb:PurchaseReservedCapacityOfferings",
+                                    "dynamodb:PutItem",
+                                    "dynamodb:Query",
+                                    "dynamodb:RestoreTableFromBackup",
+                                    "dynamodb:RestoreTableToPointInTime",
+                                    "dynamodb:Scan",
+                                    "dynamodb:UpdateContinuousBackups",
+                                    "dynamodb:UpdateContributorInsights",
+                                    "dynamodb:UpdateItem",
+                                    "dynamodb:UpdateTable",
+                                    "dynamodb:UpdateTableReplicaAutoScaling",
+                                    "dynamodb:UpdateTimeToLive"
+                                ],
+                                Resource: [
+                                    `${core.primaryDynamodbTableArn}`,
+                                    `${core.primaryDynamodbTableArn}/*`,
+                                    `${core.logDynamodbTableArn}`,
+                                    `${core.logDynamodbTableArn}/*`,
+                                    `${auditLogsDynamoDbTableArn}`,
+                                    `${auditLogsDynamoDbTableArn}/*`,
+                                    // Attach permissions for elastic search dynamo as well (if ES is enabled).
+                                    ...(core.elasticsearchDynamodbTableArn
+                                        ? [
+                                              `${core.elasticsearchDynamodbTableArn}`,
+                                              `${core.elasticsearchDynamodbTableArn}/*`
+                                          ]
+                                        : [])
+                                ]
+                            },
+                            {
+                                Sid: "PermissionForS3",
+                                Effect: "Allow",
+                                Action: [
+                                    "s3:ListBucket",
+                                    "s3:GetObjectAcl",
+                                    "s3:DeleteObject",
+                                    "s3:PutObjectAcl",
+                                    "s3:PutObject",
+                                    "s3:GetObject"
+                                ],
+                                Resource: [
+                                    pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}`,
+                                    pulumi.interpolate`arn:aws:s3:::${core.fileManagerBucketId}/*`
+                                ]
+                            },
+                            {
+                                Sid: "PermissionForLambda",
+                                Effect: "Allow",
+                                Action: ["lambda:InvokeFunction"],
+                                Resource: pulumi.interpolate`arn:aws:lambda:${awsRegion}:${awsAccountId}:function:*`
+                            },
+                            {
+                                Sid: "PermissionForCognitoIdp",
+                                Effect: "Allow",
+                                Action: "cognito-idp:*",
+                                Resource: `${core.cognitoUserPoolArn}`
+                            },
+                            {
+                                Sid: "PermissionForEventBus",
+                                Effect: "Allow",
+                                Action: "events:PutEvents",
+                                Resource: core.eventBusArn
+                            },
+                            {
+                                Sid: "PermissionForCloudfront",
+                                Effect: "Allow",
+                                Action: "cloudfront:CreateInvalidation",
+                                Resource: pulumi.interpolate`arn:aws:cloudfront::${awsAccountId}:distribution/*`
+                            },
+                            // Attach permissions for elastic search domain as well (if ES is enabled).
+                            ...(core.elasticsearchDomainArn
+                                ? [
+                                      {
+                                          Sid: "PermissionForES",
+                                          Effect: "Allow" as const,
+                                          Action: "es:*",
+                                          Resource: [
+                                              `${core.elasticsearchDomainArn}`,
+                                              `${core.elasticsearchDomainArn}/*`
+                                          ]
+                                      }
+                                  ]
+                                : [])
+                        ]
+                    };
 
-                return policy;
-            })
+                    return policy;
+                })
         }
     });
 }

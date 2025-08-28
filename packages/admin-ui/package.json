@@ -18,7 +18,7 @@
     "@webiny/react-composition": "0.0.0",
     "@webiny/react-router": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "ace-builds": "^1.37.1",
+    "ace-builds": "^1.43.2",
     "bytes": "^3.1.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

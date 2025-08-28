@@ -85,6 +85,9 @@ export class Storage implements IStorage {
 
         try {
             const item = await this.converter.oneToStorage(auditLog);
+            console.log({
+                item
+            });
             await put({
                 entity: this.entity,
                 item
