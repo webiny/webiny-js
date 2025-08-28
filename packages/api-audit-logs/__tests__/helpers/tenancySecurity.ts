@@ -54,7 +54,7 @@ export const createTenancyAndSecurity = ({
                     return null;
                 }
 
-                return permissions || [{ name: "*" }];
+                return permissions?.length ? permissions : [{ name: "*" }];
             });
         }),
         new BeforeHandlerPlugin<AuditLogsContext>(context => {

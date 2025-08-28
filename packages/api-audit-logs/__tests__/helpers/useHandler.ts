@@ -1,7 +1,7 @@
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import type { CreateHandlerCoreParams } from "./handlerCore";
 import { createHandlerCore } from "./handlerCore";
-import type { AuditLogsContext, AuditLogsAcoContext } from "~/types";
+import type { AuditLogsContext } from "~/types";
 import type { LambdaContext } from "@webiny/handler-aws/types";
 
 export const useHandler = (params?: CreateHandlerCoreParams) => {
@@ -13,7 +13,7 @@ export const useHandler = (params?: CreateHandlerCoreParams) => {
         })
     ]);
 
-    const handler = createRawHandler<any, AuditLogsContext & AuditLogsAcoContext>({
+    const handler = createRawHandler<any, AuditLogsContext>({
         plugins,
         debug: process.env.DEBUG === "true"
     });

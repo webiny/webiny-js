@@ -191,11 +191,20 @@ const createDynaliteTables = (options = {}) => {
                 AttributeDefinitions: [
                     { AttributeName: "PK", AttributeType: "S" },
                     { AttributeName: "SK", AttributeType: "S" },
-                    ...createGlobalSecondaryIndexesAttributeDefinitions(2)
+                    { AttributeName: `GSI1_PK`, AttributeType: "S" },
+                    { AttributeName: `GSI1_SK`, AttributeType: "N" },
+                    { AttributeName: `GSI2_PK`, AttributeType: "S" },
+                    { AttributeName: `GSI2_SK`, AttributeType: "N" },
+                    { AttributeName: `GSI3_PK`, AttributeType: "S" },
+                    { AttributeName: `GSI3_SK`, AttributeType: "N" },
+                    { AttributeName: `GSI4_PK`, AttributeType: "S" },
+                    { AttributeName: `GSI4_SK`, AttributeType: "N" },
+                    { AttributeName: `GSI5_PK`, AttributeType: "S" },
+                    { AttributeName: `GSI5_SK`, AttributeType: "N" }
                 ],
                 ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 },
                 GlobalSecondaryIndexes: createGlobalSecondaryIndexes({
-                    amount: 2
+                    amount: 5
                 }),
                 data: options.data || [],
                 ttl: {

@@ -20,7 +20,7 @@ export interface IAuditLogsContextValueParams {
     storage: IStorage;
 }
 
-export class AuditLogsContextValueImpl implements AuditLogsContextValue {
+class AuditLogsContextValueImpl implements AuditLogsContextValue {
     private readonly getContext;
     public readonly deleteLogsAfterDays;
     public readonly onBeforeCreate;

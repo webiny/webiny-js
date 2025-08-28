@@ -4,7 +4,7 @@ import type { IAuditLog } from "~/storage/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 interface CreateAuditLogParams {
-    context: AuditLogsContext;
+    context: Pick<AuditLogsContext, "auditLogs">;
     payload: AuditLogPayload;
 }
 

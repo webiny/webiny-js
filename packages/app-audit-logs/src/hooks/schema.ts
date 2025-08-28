@@ -21,7 +21,12 @@ export const auditLogSchema = zod.object({
     entityId: zod.string(),
     tags: zod.array(zod.string()),
     expiresAt: zod
-        .date()
+        .preprocess(value => {
+            if (typeof value === "string" || value instanceof Date) {
+                return new Date(value);
+            }
+            return undefined;
+        }, zod.date().optional().nullish())
         .optional()
         .nullish()
         .transform(value => {

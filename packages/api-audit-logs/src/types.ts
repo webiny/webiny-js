@@ -10,17 +10,6 @@ import type { AcoContext } from "@webiny/api-aco/types.js";
 import type { IStorageListParams } from "~/storage/abstractions/Storage.js";
 import type { App, Entity, Action } from "@webiny/common-audit-logs/types.js";
 
-// export interface AuditLog {
-//     id: string;
-//     message: string;
-//     app: string;
-//     entity: string;
-//     entityId: string;
-//     action: string;
-//     data: GenericRecord;
-//     timestamp: string;
-//     initiator: string;
-// }
 export interface AuditLogPayload
     extends Omit<IAuditLog, "id" | "tenant" | "createdOn" | "createdBy" | "expiresAt" | "content"> {
     content: GenericRecord;
@@ -38,7 +27,9 @@ export interface OnAuditLogBeforeUpdateTopicParams {
     setAuditLog(auditLog: Partial<IAuditLog>): void;
 }
 
-export type IListAuditLogsParams = Omit<IStorageListParams, "tenant">;
+export interface IListAuditLogsParams extends Omit<IStorageListParams, "tenant" | "limit"> {
+    limit?: number;
+}
 
 export interface IListAuditLogsResultMeta {
     cursor: string | null;

@@ -19,10 +19,6 @@ export const Preview = ({ auditLog, onClose, hasAccessToUsers }: HeaderProps) =>
     if (!auditLog) {
         return null;
     }
-    console.log({
-        auditLog
-    });
-
     const date = new Date(auditLog.createdOn);
 
     return (

@@ -24,10 +24,13 @@ const getSecurityIdentity = () => {
 };
 
 export const createPermissions = (permissions?: PermissionsArg[]): PermissionsArg[] => {
-    if (permissions) {
+    if (permissions?.length) {
         return permissions;
     }
     return [
+        {
+            name: "*"
+        },
         {
             name: "cms.settings"
         },

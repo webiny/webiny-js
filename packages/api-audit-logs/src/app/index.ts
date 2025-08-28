@@ -19,7 +19,9 @@ export const createAcoAuditLogsContext = (params?: ISetupContextOptions) => {
         });
 
         context.auditLogs = createAuditLogsContextValue({
-            getContext: () => context,
+            getContext: () => {
+                return context;
+            },
             deleteLogsAfterDays: params?.deleteLogsAfterDays,
             storage
         });
