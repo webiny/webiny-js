@@ -24,7 +24,7 @@ import createAdminUsersApp from "@webiny/api-admin-users";
 import { createMailerContext } from "@webiny/api-mailer";
 import { NullLicense } from "@webiny/wcp";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
-import { createAcoAuditLogsContext } from "~/app";
+import { createAcoAuditLogsContext } from "~/context/index.js";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
