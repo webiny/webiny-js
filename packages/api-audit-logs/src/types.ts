@@ -3,12 +3,18 @@ import type { Context as BaseContext } from "@webiny/handler/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { Topic } from "@webiny/pubsub/types.js";
 import type { MailerContext } from "@webiny/api-mailer/types.js";
+import type { TenancyContext } from "@webiny/api-tenancy/types.js";
 import type { ApwContext } from "@webiny/api-apw/types.js";
 import type { IAuditLog } from "~/storage/types.js";
 import type { FileManagerContext } from "@webiny/api-file-manager/types.js";
 import type { AcoContext } from "@webiny/api-aco/types.js";
 import type { IStorageListParams } from "~/storage/abstractions/Storage.js";
 import type { App, Entity, Action } from "@webiny/common-audit-logs/types.js";
+import type { DbContext } from "@webiny/handler-db/types.js";
+import type { AdminUsersContext } from "@webiny/api-admin-users/types.js";
+import type { I18NContext } from "@webiny/api-i18n/types.js";
+import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
+import type { WcpContext } from "@webiny/api-wcp/types.js";
 
 export interface AuditLogPayload
     extends Omit<IAuditLog, "id" | "tenant" | "createdOn" | "createdBy" | "expiresAt" | "content"> {
@@ -63,11 +69,17 @@ export interface AuditLogsContextValue {
 
 export interface AuditLogsContext
     extends BaseContext,
-        AcoContext,
-        FileManagerContext,
-        MailerContext,
-        SecurityContext,
-        ApwContext {
+        Pick<CmsContext, "cms">,
+        Pick<WcpContext, "wcp">,
+        Pick<AdminUsersContext, "adminUsers">,
+        Pick<I18NContext, "i18n">,
+        Pick<DbContext, "db">,
+        Pick<AcoContext, "aco">,
+        Pick<MailerContext, "mailer">,
+        Pick<FileManagerContext, "fileManager">,
+        Pick<SecurityContext, "security">,
+        Pick<TenancyContext, "tenancy">,
+        Pick<ApwContext, "apw"> {
     auditLogs: AuditLogsContextValue;
 }
 

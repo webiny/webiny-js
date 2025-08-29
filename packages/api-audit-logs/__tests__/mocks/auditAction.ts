@@ -1,4 +1,4 @@
-import type {AuditAction} from "~/types.js";
+import type { AuditAction } from "~/types.js";
 
 export const auditAction: AuditAction = {
     app: {

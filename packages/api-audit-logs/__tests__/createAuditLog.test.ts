@@ -1,9 +1,9 @@
-import {getAuditConfig} from "~/utils/getAuditConfig";
-import {useHandler} from "./helpers/useHandler";
-import {ActionType} from "@webiny/common-audit-logs/index.js";
-import {getDocumentClient} from "@webiny/project-utils/testing/dynamodb/index";
-import {attachAuditLogOnCreateEvent} from "~/app/lifecycle.js";
-import {auditAction} from "~tests/mocks/auditAction.js";
+import { getAuditConfig } from "~/utils/getAuditConfig";
+import { useHandler } from "./helpers/useHandler";
+import { ActionType } from "@webiny/common-audit-logs/index.js";
+import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index";
+import { attachAuditLogOnCreateEvent } from "~/app/lifecycle.js";
+import { auditAction } from "~tests/mocks/auditAction.js";
 
 interface ITestPayloadData {
     auditLogData: {
@@ -16,8 +16,7 @@ interface ITestPayloadData {
 
 describe("create audit log", () => {
     const client = getDocumentClient();
-    
-    
+
     it("should create a new audit log", async () => {
         const createAuditLog = getAuditConfig(auditAction);
 
@@ -73,7 +72,7 @@ describe("create audit log", () => {
             });
         }
     });
-    
+
     it("should list created logs", async () => {
         const createAuditLog = getAuditConfig(auditAction);
 
@@ -133,7 +132,7 @@ describe("create audit log", () => {
             });
         }
     });
-    
+
     it("should trigger onBeforeCreate", async () => {
         const createAuditLog = getAuditConfig(auditAction);
 
@@ -202,6 +201,4 @@ describe("create audit log", () => {
             additionalData: "something else"
         });
     });
-    
-    
 });
