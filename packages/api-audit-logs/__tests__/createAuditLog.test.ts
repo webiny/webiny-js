@@ -4,6 +4,14 @@ import { ActionType } from "@webiny/common-audit-logs/index.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index";
 import { attachAuditLogOnCreateEvent } from "~/context/lifecycle.js";
 import { auditAction } from "~tests/mocks/auditAction.js";
+import type { IAuditLog } from "~/storage/types.js";
+
+const convertCreatedOn = (item: IAuditLog | null) => {
+    return {
+        ...item,
+        createdOn: new Date(item!.createdOn.getTime())
+    } as IAuditLog;
+};
 
 interface ITestPayloadData {
     auditLogData: {
@@ -35,10 +43,7 @@ describe("create audit log", () => {
 
         const result = await createAuditLog(message, data, entityId, context);
 
-        expect({
-            ...result,
-            createdOn: new Date(result!.createdOn.getTime())
-        }).toMatchObject({
+        expect(convertCreatedOn(result)).toMatchObject({
             id: expect.any(String),
             message,
             tenant: "root",
@@ -95,10 +100,7 @@ describe("create audit log", () => {
         expect(items).toHaveLength(1);
 
         const result = items![0];
-        expect({
-            ...result,
-            createdOn: new Date(result!.createdOn.getTime())
-        }).toMatchObject({
+        expect(convertCreatedOn(result)).toMatchObject({
             id: expect.any(String),
             message,
             tenant: "root",
@@ -164,10 +166,7 @@ describe("create audit log", () => {
 
         const result = await createAuditLog(message, data, entityId, context);
 
-        expect({
-            ...result,
-            createdOn: new Date(result!.createdOn.getTime())
-        }).toMatchObject({
+        expect(convertCreatedOn(result)).toMatchObject({
             id: expect.any(String),
             message,
             tenant: "root",
