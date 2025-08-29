@@ -28,7 +28,7 @@
     "@webiny/utils": "0.0.0",
     "@webiny/validation": "0.0.0",
     "dot-prop-immutable": "^2.1.1",
-    "graphql": "^15.9.0",
+    "graphql": "^15.10.1",
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.21",
     "mobx": "^6.9.0",

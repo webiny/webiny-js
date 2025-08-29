@@ -46,7 +46,7 @@
     "dot-prop-immutable": "^2.1.1",
     "emotion": "10.0.27",
     "graphlib": "^2.1.8",
-    "graphql": "^15.9.0",
+    "graphql": "^15.10.1",
     "graphql-tag": "^2.12.6",
     "is-hotkey": "^0.2.0",
     "lodash": "^4.17.21",

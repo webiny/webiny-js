@@ -19,7 +19,7 @@
     "@webiny/react-composition": "0.0.0",
     "@webiny/react-properties": "0.0.0",
     "@webiny/ui": "0.0.0",
-    "graphql": "^15.9.0",
+    "graphql": "^15.10.1",
     "lodash": "4.17.21",
     "mobx": "^6.9.0",
     "mobx-react-lite": "^3.4.3",

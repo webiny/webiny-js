@@ -37,7 +37,7 @@ export async function importPage({
     const readStream = await s3Stream.readStream(pageDataFileKey);
     const writeStream = createWriteStream(PAGE_DATA_FILE_PATH);
 
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
         readStream.on("error", reject).pipe(writeStream).on("finish", resolve).on("error", reject);
     });
 

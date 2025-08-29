@@ -40,7 +40,7 @@
     "dataurl-to-blob": "^0.0.1",
     "dayjs": "^1.11.13",
     "dot-prop-immutable": "^2.1.1",
-    "graphql": "^15.9.0",
+    "graphql": "^15.10.1",
     "graphql-tag": "^2.12.6",
     "load-script": "^1.0.0",
     "lodash": "^4.17.21",

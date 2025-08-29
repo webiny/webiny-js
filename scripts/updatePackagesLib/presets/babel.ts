@@ -4,6 +4,7 @@ export const babel = createPreset(() => {
     return {
         name: "babel",
         matching: /^@babel\/|^babel\-/,
-        skipResolutions: false
+        skipResolutions: false,
+        caret: true
     };
 });

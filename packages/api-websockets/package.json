@@ -23,7 +23,7 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "type-fest": "4.14.0",
+    "type-fest": "^4.41.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -32,7 +32,7 @@
     "@webiny/handler-db": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "graphql": "^15.9.0",
+    "graphql": "^15.10.1",
     "rimraf": "^6.0.1",
     "typescript": "5.9.2"
   },

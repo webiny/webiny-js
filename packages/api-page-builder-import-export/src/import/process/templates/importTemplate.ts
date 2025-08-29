@@ -41,7 +41,7 @@ export async function importTemplate({
     const readStream = await s3Stream.readStream(templateDataFileKey);
     const writeStream = createWriteStream(TEMPLATE_DATA_FILE_PATH);
 
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
         readStream.on("error", reject).pipe(writeStream).on("finish", resolve).on("error", reject);
     });
 

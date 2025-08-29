@@ -13,7 +13,7 @@
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "execa": "^5.1.1",
-    "semver": "^7.6.3"
+    "semver": "^7.7.2"
   },
   "license": "MIT",
   "publishConfig": {

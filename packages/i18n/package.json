@@ -23,7 +23,7 @@
     "react": "18.2.0"
   },
   "devDependencies": {
-    "@babel/register": "7.28.3",
+    "@babel/register": "^7.28.3",
     "@types/accounting": "^0.4.2",
     "@types/lodash": "^4.17.13",
     "@webiny/project-utils": "0.0.0",

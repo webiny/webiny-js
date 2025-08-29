@@ -14,7 +14,7 @@
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
     "@webiny/cli": "0.0.0",
-    "inquirer": "8.2.6",
+    "inquirer": "^8.2.7",
     "load-json-file": "^6.2.0",
     "ora": "4.1.1",
     "ts-morph": "^11.0.0",

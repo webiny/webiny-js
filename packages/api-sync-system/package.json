@@ -19,7 +19,7 @@
     "@webiny/utils": "0.0.0",
     "bytes": "^3.1.2",
     "lodash": "^4.17.21",
-    "semver": "^7.6.3",
+    "semver": "^7.7.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -28,7 +28,7 @@
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "aws-sdk-client-mock": "^4.1.0",
-    "jest": "^30.0.5",
+    "jest": "30.1.1",
     "jest-dynalite": "^3.6.1",
     "rimraf": "^6.0.1",
     "typescript": "5.9.2"

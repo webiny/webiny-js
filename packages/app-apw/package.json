@@ -34,7 +34,7 @@
     "dayjs": "^1.11.13",
     "dot-prop-immutable": "^2.1.1",
     "emotion": "10.0.27",
-    "graphql": "^15.9.0",
+    "graphql": "^15.10.1",
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.21",
     "prop-types": "^15.8.1",

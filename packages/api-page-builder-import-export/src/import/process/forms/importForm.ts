@@ -33,7 +33,7 @@ export async function importForm({
     const readStream = await s3Stream.readStream(formDataFileKey);
     const writeStream = createWriteStream(FORM_DATA_FILE_PATH);
 
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
         readStream.on("error", reject).pipe(writeStream).on("finish", resolve).on("error", reject);
     });
 

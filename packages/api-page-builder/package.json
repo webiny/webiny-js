@@ -33,7 +33,7 @@
     "archiver": "^7.0.1",
     "dataloader": "^2.2.2",
     "extract-zip": "^1.6.7",
-    "fs-extra": "^11.2.0",
+    "fs-extra": "^11.3.1",
     "jsonpack": "^1.1.5",
     "load-json-file": "^6.2.0",
     "lodash": "^4.17.21",
@@ -50,7 +50,7 @@
     "@webiny/api-wcp": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "bytes": "^3.1.2",
-    "jest": "^30.0.5",
+    "jest": "30.1.1",
     "prettier": "^2.8.8",
     "rimraf": "^6.0.1",
     "typescript": "5.9.2"

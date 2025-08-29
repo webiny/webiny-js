@@ -26,7 +26,7 @@
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/validation": "0.0.0",
-    "babel-loader": "10.0.0",
+    "babel-loader": "^10.0.0",
     "execa": "^5.1.1",
     "ncp": "^2.0.0",
     "raw-loader": "^4.0.2",

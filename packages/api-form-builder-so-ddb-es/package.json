@@ -43,7 +43,7 @@
     "@webiny/handler-db": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "csvtojson": "^2.0.10",
-    "jest": "^30.0.5",
+    "jest": "30.1.1",
     "jest-dynalite": "^3.6.1",
     "rimraf": "^6.0.1",
     "typescript": "5.9.2"

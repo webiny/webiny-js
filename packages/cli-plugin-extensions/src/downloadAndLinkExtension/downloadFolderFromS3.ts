@@ -35,7 +35,7 @@ export const downloadFolderFromS3 = async (params: DownloadFolderFromS3Params) =
 
         const response = await s3Client.send(command);
 
-        return new Promise((resolve, reject) => {
+        return new Promise<void>((resolve, reject) => {
             const fileStream = fs.createWriteStream(localPath);
             // @ts-expect-error
             response.Body.pipe(fileStream);
