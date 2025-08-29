@@ -2,20 +2,28 @@ import { type ITagsPresenter, TagsPresenter } from "./TagsPresenter";
 import { TagsValuesPresenter } from "./TagsValuesPresenter";
 import { TagsInputPresenter } from "./TagsInputPresenter";
 
+const createPresenter = (): ITagsPresenter => {
+    const tagsInputPresenter = new TagsInputPresenter();
+    const tagsValuesPresenter = new TagsValuesPresenter();
+    return new TagsPresenter(tagsInputPresenter, tagsValuesPresenter);
+};
+
 describe("TagsPresenter", () => {
-    let presenter: ITagsPresenter;
     const onValueChange = jest.fn();
     const onValueInput = jest.fn();
     const onValueAdd = jest.fn();
     const onValueRemove = jest.fn();
 
     beforeEach(() => {
-        const tagsInputPresenter = new TagsInputPresenter();
-        const tagsValuesPresenter = new TagsValuesPresenter();
-        presenter = new TagsPresenter(tagsInputPresenter, tagsValuesPresenter);
+        jest.clearAllMocks();
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
     });
 
     it("should return the compatible `vm.inputVm` based on", () => {
+        const presenter = createPresenter();
         presenter.init({
             placeholder: "Custom placeholder"
         });
@@ -24,6 +32,7 @@ describe("TagsPresenter", () => {
     });
 
     it("should return the compatible `vm.valuesVm` based on", () => {
+        const presenter = createPresenter();
         presenter.init({
             values: ["tag1", "tag2"]
         });
@@ -43,6 +52,7 @@ describe("TagsPresenter", () => {
     });
 
     it("should call `onValueInput` and add the new value when input a value", () => {
+        const presenter = createPresenter();
         presenter.init({
             onValueInput
         });
@@ -60,6 +70,7 @@ describe("TagsPresenter", () => {
     });
 
     it("should call `onValueAdd` and add the new value when adding a value", () => {
+        const presenter = createPresenter();
         presenter.init({
             onValueAdd,
             onValueChange
@@ -140,6 +151,7 @@ describe("TagsPresenter", () => {
     });
 
     it("should call `onValueRemove` and remove the value when removing a value", () => {
+        const presenter = createPresenter();
         const initialValues = ["tag1", "tag2"];
         presenter.init({
             values: initialValues,
@@ -162,6 +174,7 @@ describe("TagsPresenter", () => {
     });
 
     it("should not remove a protected value", () => {
+        const presenter = createPresenter();
         const initialValues = ["tag1", "tag2"];
         const protectedValues = ["tag1"];
         presenter.init({
@@ -204,6 +217,7 @@ describe("TagsPresenter", () => {
     });
 
     it("should not remove a value based on a pattern", () => {
+        const presenter = createPresenter();
         const initialValues = ["tag1", "tag2", "another-tag"];
         const protectedValues = ["tag*"];
         presenter.init({
