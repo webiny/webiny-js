@@ -44,7 +44,7 @@
     "@webiny/wcp": "0.0.0",
     "adm-zip": "^0.5.14",
     "aws-sdk-client-mock": "^4.1.0",
-    "graphql": "^15.10.1",
+    "graphql": "^16.11.0",
     "typescript": "5.9.2"
   },
   "scripts": {

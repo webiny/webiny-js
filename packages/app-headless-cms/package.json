@@ -61,7 +61,7 @@
     "classnames": "^2.5.1",
     "dnd-core": "^16.0.1",
     "dot-prop-immutable": "^2.1.1",
-    "graphql": "^15.10.1",
+    "graphql": "^16.11.0",
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.21",
     "mobx": "^6.9.0",

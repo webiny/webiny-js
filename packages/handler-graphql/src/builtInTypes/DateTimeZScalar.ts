@@ -46,7 +46,7 @@ export const DateTimeZScalar = new GraphQLScalarType({
     parseValue: value => {
         // this serves as validator
         DateTimeResolver.parseValue(value);
-        validateTimeZone(value);
+        validateTimeZone(value as string);
         return value;
     },
     serialize: value => {

@@ -1,8 +1,11 @@
 import { DateResolver } from "graphql-scalars";
 import { GraphQLScalarType } from "graphql";
-export const DateScalar = new GraphQLScalarType({
+export const DateScalar = new GraphQLScalarType<Date | string, string>({
     ...DateResolver,
-    serialize: value => {
+    /**
+     * We can set value as any because we are handling it.
+     */
+    serialize: (value: any) => {
         if (!value) {
             return null;
         }

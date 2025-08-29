@@ -3,8 +3,9 @@ import WebinyError from "@webiny/error";
 
 const re = /^([0-9]{2}):([0-9]{2})(:([0-9]{2}))?$/;
 
-const parseTime = (value?: string) => {
-    if (!value || value.match(re) === null) {
+const parseTime = (value?: unknown) => {
+    
+    if (typeof value !== "string" || !value || value.match(re) === null) {
         throw new WebinyError("Value does not look like time.", "TIME_VALIDATION_ERROR", { value });
     }
     const parsed = value.split(":").map(Number);
@@ -32,7 +33,7 @@ const parseTime = (value?: string) => {
     };
 };
 
-const convertToTime = (value: string): string => {
+const convertToTime = (value: unknown): string => {
     const { hours, minutes, seconds } = parseTime(value);
     return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(
         seconds

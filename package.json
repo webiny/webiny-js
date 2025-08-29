@@ -106,7 +106,7 @@
     "git-cz": "^1.8.4",
     "github-actions-wac": "^1.4.1",
     "glob": "^7.2.3",
-    "graphql": "^15.10.1",
+    "graphql": "^16.11.0",
     "husky": "^4.2.5",
     "inquirer": "^8.2.7",
     "inquirer-autocomplete-prompt": "^1.4.0",

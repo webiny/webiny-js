@@ -1,7 +1,14 @@
-import type { IPresetExclude } from "./createPreset.js";
+import type {IPresetExclude} from "./createPreset.js";
+
+const webinyPackages = [
+    "@webiny/"
+]
 
 export const crateIsPackageExcluded = (input?: IPresetExclude) => {
     return (name: string): boolean => {
+        if(webinyPackages.some(pkg => name.startsWith(pkg))) {
+            return true;
+        }
         if (!input) {
             return false;
         } else if (typeof input === "string") {

@@ -5928,57 +5928,57 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@graphql-tools/merge@npm:^9.0.4, @graphql-tools/merge@npm:^9.0.8":
-  version: 9.0.8
-  resolution: "@graphql-tools/merge@npm:9.0.8"
+"@graphql-tools/merge@npm:^9.1.1":
+  version: 9.1.1
+  resolution: "@graphql-tools/merge@npm:9.1.1"
   dependencies:
-    "@graphql-tools/utils": "npm:^10.5.5"
+    "@graphql-tools/utils": "npm:^10.9.1"
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10/3ef324614378d04945af86ca63e224efacfb5ca7f600b6e55d1d844ef96cddc6b1ff5d6818c2ebcd0d0318d3b6d66417fb1d1eefa890a962bc39921f8532dfe3
+  checksum: 10/182acbd25f6999161b475071d8e1b1443fc300a6b75a68f18667d4a0a7ce38fff64b2416a9288c51c965d7e9d9f2c5163057676956de8752b150214b58338cf4
   languageName: node
   linkType: hard
 
-"@graphql-tools/resolvers-composition@npm:^7.0.1":
-  version: 7.0.2
-  resolution: "@graphql-tools/resolvers-composition@npm:7.0.2"
+"@graphql-tools/resolvers-composition@npm:^7.0.20":
+  version: 7.0.20
+  resolution: "@graphql-tools/resolvers-composition@npm:7.0.20"
   dependencies:
-    "@graphql-tools/utils": "npm:^10.5.5"
+    "@graphql-tools/utils": "npm:^10.9.1"
     lodash: "npm:4.17.21"
     micromatch: "npm:^4.0.8"
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10/6f318e1b31c80fba4fcd417eb7077f2c2d13ef0c63a75b21efa7c7ffa5586b3e6e7c997f16ec13499df73eff6929c11172d0b6f282860a50034afa427a973ad1
+  checksum: 10/4e3aff84bbd91485858759fd2483f0b2b0c6488143bd898eb023604700dfbaf950bd3c320fa70f73e7c595d5a427f59d88d83054c8e72bf6ff9dcdb7e080966a
   languageName: node
   linkType: hard
 
-"@graphql-tools/schema@npm:^10.0.6":
-  version: 10.0.7
-  resolution: "@graphql-tools/schema@npm:10.0.7"
+"@graphql-tools/schema@npm:^10.0.25":
+  version: 10.0.25
+  resolution: "@graphql-tools/schema@npm:10.0.25"
   dependencies:
-    "@graphql-tools/merge": "npm:^9.0.8"
-    "@graphql-tools/utils": "npm:^10.5.5"
+    "@graphql-tools/merge": "npm:^9.1.1"
+    "@graphql-tools/utils": "npm:^10.9.1"
     tslib: "npm:^2.4.0"
-    value-or-promise: "npm:^1.0.12"
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10/363db25c96aa33a66907a3a3938f899506435ef1b6d27a5fd85e04993cb48b4012144a8b24e279464399a36a2fb87488e6a70a872d6c24a055323ff7afd39455
+  checksum: 10/44f37905d180fc40fbafeaf2972bbabb0287c21987450a997bc0afef82fc8b61621de7695f929ec756426a315cd1dfffe8d1342b1ea14408320488b911744d0e
   languageName: node
   linkType: hard
 
-"@graphql-tools/utils@npm:^10.3.1, @graphql-tools/utils@npm:^10.5.5":
-  version: 10.5.5
-  resolution: "@graphql-tools/utils@npm:10.5.5"
+"@graphql-tools/utils@npm:^10.9.1":
+  version: 10.9.1
+  resolution: "@graphql-tools/utils@npm:10.9.1"
   dependencies:
     "@graphql-typed-document-node/core": "npm:^3.1.1"
+    "@whatwg-node/promise-helpers": "npm:^1.0.0"
     cross-inspect: "npm:1.0.1"
-    dset: "npm:^3.1.2"
+    dset: "npm:^3.1.4"
     tslib: "npm:^2.4.0"
   peerDependencies:
     graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10/22632365d40a049bd5db319493b0c28ee56b4dd128d8b95598b5726ef8acf3cacb7fa7c735d1d982ccbc070c84838c162e933b12eca38ce8a19959d3895a461e
+  checksum: 10/89e117f1c21664a387359b26ac1b07ef24c5760df24d8205d43466b64ccc9708cea5d37ba2f60c4d652a477323390072460084449249e037e216d0ddcb26718c
   languageName: node
   linkType: hard
 
@@ -15516,7 +15516,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     lodash: "npm:^4.17.21"
     prettier: "npm:^2.8.8"
     rimraf: "npm:^6.0.1"
@@ -15541,7 +15541,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    apollo-graphql: "npm:^0.9.5"
+    apollo-graphql: "npm:^0.9.7"
     jest: "npm:30.1.1"
     jest-dynalite: "npm:^3.6.1"
     prettier: "npm:^2.8.8"
@@ -15639,7 +15639,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     dayjs: "npm:^1.11.13"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     jest: "npm:30.1.1"
     lodash: "npm:^4.17.21"
     prettier: "npm:^2.8.8"
@@ -15677,7 +15677,7 @@ __metadata:
     "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     typescript: "npm:5.9.2"
     zod: "npm:^3.23.8"
   languageName: unknown
@@ -15848,7 +15848,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     ttypescript: "npm:^1.5.15"
     typescript: "npm:5.9.2"
   languageName: unknown
@@ -16041,7 +16041,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
@@ -16065,7 +16065,7 @@ __metadata:
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
@@ -16185,7 +16185,7 @@ __metadata:
     archiver: "npm:^7.0.1"
     aws-sdk-client-mock: "npm:^4.1.0"
     bytes: "npm:^3.1.2"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     typescript: "npm:5.9.2"
     uniqid: "npm:^5.4.0"
     unzipper: "npm:^0.12.3"
@@ -16261,8 +16261,8 @@ __metadata:
   resolution: "@webiny/api-headless-cms@workspace:packages/api-headless-cms"
   dependencies:
     "@babel/code-frame": "npm:^7.27.1"
-    "@graphql-tools/merge": "npm:^9.0.4"
-    "@graphql-tools/schema": "npm:^10.0.6"
+    "@graphql-tools/merge": "npm:^9.1.1"
+    "@graphql-tools/schema": "npm:^10.0.25"
     "@types/babel__code-frame": "npm:^7.0.6"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-i18n": "npm:0.0.0"
@@ -16283,9 +16283,9 @@ __metadata:
     "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
-    apollo-graphql: "npm:^0.9.5"
+    apollo-graphql: "npm:^0.9.7"
     dot-prop: "npm:^6.0.1"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     jest: "npm:30.1.1"
     jsdom: "npm:^25.0.1"
@@ -16311,7 +16311,7 @@ __metadata:
     "@webiny/api-i18n": "npm:0.0.0"
     "@webiny/api-security": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.2"
   languageName: unknown
@@ -16413,7 +16413,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/pubsub": "npm:0.0.0"
     crypto-js: "npm:^4.2.0"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     jest: "npm:30.1.1"
     jest-dynalite: "npm:^3.6.1"
     lodash: "npm:^4.17.21"
@@ -16444,7 +16444,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     lodash: "npm:^4.17.21"
     typescript: "npm:5.9.2"
   languageName: unknown
@@ -16548,7 +16548,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     dataloader: "npm:^2.2.2"
     elastic-ts: "npm:^0.12.0"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     jest: "npm:30.1.1"
     jest-dynalite: "npm:^3.6.1"
     lodash: "npm:^4.17.21"
@@ -16714,7 +16714,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     rimraf: "npm:^6.0.1"
     type-fest: "npm:^4.41.0"
     typescript: "npm:5.9.2"
@@ -16875,7 +16875,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.2"
   languageName: unknown
@@ -17022,7 +17022,7 @@ __metadata:
     "@webiny/pubsub": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     lodash: "npm:^4.17.21"
     prettier: "npm:^2.8.8"
     rimraf: "npm:^6.0.1"
@@ -17050,7 +17050,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     rimraf: "npm:^6.0.1"
     type-fest: "npm:^4.41.0"
     typescript: "npm:5.9.2"
@@ -17097,7 +17097,7 @@ __metadata:
     apollo-client: "npm:^2.6.10"
     apollo-link: "npm:^1.2.14"
     dot-prop-immutable: "npm:^2.1.1"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.21"
     mobx: "npm:^6.9.0"
@@ -17138,7 +17138,7 @@ __metadata:
     apollo-client: "npm:^2.6.10"
     apollo-link-context: "npm:^1.0.20"
     emotion: "npm:10.0.27"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.21"
     react: "npm:18.2.0"
@@ -17199,7 +17199,7 @@ __metadata:
     apollo-client: "npm:^2.6.10"
     apollo-link-context: "npm:^1.0.20"
     emotion: "npm:10.0.27"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.21"
     react: "npm:18.2.0"
@@ -17257,7 +17257,7 @@ __metadata:
     "@webiny/validation": "npm:0.0.0"
     apollo-client: "npm:^2.6.10"
     emotion: "npm:10.0.27"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.21"
     react: "npm:18.2.0"
@@ -17318,7 +17318,7 @@ __metadata:
     dot-prop-immutable: "npm:^2.1.1"
     emotion: "npm:10.0.27"
     graphlib: "npm:^2.1.8"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     is-hotkey: "npm:^0.2.0"
     lodash: "npm:^4.17.21"
@@ -17373,7 +17373,7 @@ __metadata:
     dayjs: "npm:^1.11.13"
     dot-prop-immutable: "npm:^2.1.1"
     emotion: "npm:10.0.27"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.21"
     prop-types: "npm:^15.8.1"
@@ -17455,7 +17455,7 @@ __metadata:
     "@webiny/ui": "npm:0.0.0"
     apollo-client: "npm:^2.6.10"
     emotion: "npm:10.0.27"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     mobx: "npm:^6.9.0"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
@@ -17515,7 +17515,7 @@ __metadata:
     dataurl-to-blob: "npm:^0.0.1"
     dayjs: "npm:^1.11.13"
     dot-prop-immutable: "npm:^2.1.1"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     load-script: "npm:^1.0.0"
     lodash: "npm:^4.17.21"
@@ -17576,7 +17576,7 @@ __metadata:
     dnd-core: "npm:^16.0.1"
     dot-prop-immutable: "npm:^2.1.1"
     emotion: "npm:10.0.27"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     history: "npm:^5.3.0"
     json2csv: "npm:^4.5.4"
@@ -17612,7 +17612,7 @@ __metadata:
     apollo-link: "npm:^1.2.14"
     apollo-link-context: "npm:^1.0.20"
     apollo-utilities: "npm:^1.3.4"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     load-script: "npm:^1.0.0"
     prop-types: "npm:^15.8.1"
     react: "npm:18.2.0"
@@ -17643,7 +17643,7 @@ __metadata:
     "@webiny/validation": "npm:0.0.0"
     babel-plugin-module-resolver: "npm:^5.0.2"
     dnd-core: "npm:^16.0.1"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.21"
     prop-types: "npm:^15.8.1"
@@ -17742,7 +17742,7 @@ __metadata:
     classnames: "npm:^2.5.1"
     dnd-core: "npm:^16.0.1"
     dot-prop-immutable: "npm:^2.1.1"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.21"
     mobx: "npm:^6.9.0"
@@ -17807,7 +17807,7 @@ __metadata:
     apollo-link: "npm:^1.2.14"
     apollo-link-context: "npm:^1.0.20"
     apollo-utilities: "npm:^1.3.4"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.21"
     prop-types: "npm:^15.8.1"
@@ -17836,7 +17836,7 @@ __metadata:
     apollo-link: "npm:^1.2.14"
     apollo-utilities: "npm:^1.3.4"
     dot-prop-immutable: "npm:^2.1.1"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     prop-types: "npm:^15.8.1"
     react: "npm:18.2.0"
@@ -17949,7 +17949,7 @@ __metadata:
     dot-prop-immutable: "npm:^2.1.1"
     emotion: "npm:10.0.27"
     execa: "npm:^5.1.1"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     history: "npm:^5.3.0"
     invariant: "npm:^2.2.4"
@@ -18159,7 +18159,7 @@ __metadata:
     apollo-client: "npm:^2.6.10"
     apollo-link: "npm:^1.2.14"
     apollo-utilities: "npm:^1.3.4"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.21"
     prop-types: "npm:^15.8.1"
@@ -18194,7 +18194,7 @@ __metadata:
     apollo-link: "npm:^1.2.14"
     apollo-utilities: "npm:^1.3.4"
     babel-plugin-named-asset-import: "npm:^1.0.0-next.3e165448"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     lodash: "npm:^4.17.21"
     prop-types: "npm:^15.8.1"
@@ -18238,7 +18238,7 @@ __metadata:
     "@webiny/ui": "npm:0.0.0"
     apollo-client: "npm:^2.6.10"
     apollo-link: "npm:^1.2.14"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     lodash: "npm:4.17.21"
     mobx: "npm:^6.9.0"
     mobx-react-lite: "npm:^3.4.3"
@@ -18336,7 +18336,7 @@ __metadata:
     deep-equal: "npm:^2.2.3"
     emotion: "npm:10.0.27"
     execa: "npm:^5.1.1"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
     is-hotkey: "npm:^0.2.0"
     lodash: "npm:^4.17.21"
@@ -18429,7 +18429,7 @@ __metadata:
     apollo-utilities: "npm:^1.3.4"
     boolean: "npm:^3.2.0"
     bytes: "npm:^3.1.2"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     invariant: "npm:^2.2.4"
     lodash: "npm:^4.17.21"
     minimatch: "npm:^5.1.6"
@@ -19014,10 +19014,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/handler-graphql@workspace:packages/handler-graphql"
   dependencies:
-    "@graphql-tools/merge": "npm:^9.0.4"
-    "@graphql-tools/resolvers-composition": "npm:^7.0.1"
-    "@graphql-tools/schema": "npm:^10.0.6"
-    "@graphql-tools/utils": "npm:^10.3.1"
+    "@graphql-tools/merge": "npm:^9.1.1"
+    "@graphql-tools/resolvers-composition": "npm:^7.0.20"
+    "@graphql-tools/schema": "npm:^10.0.25"
+    "@graphql-tools/utils": "npm:^10.9.1"
     "@webiny/api": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
@@ -19026,8 +19026,8 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     boolean: "npm:^3.2.0"
-    graphql: "npm:^15.10.1"
-    graphql-scalars: "npm:1.12.0"
+    graphql: "npm:^16.11.0"
+    graphql-scalars: "npm:^1.24.2"
     graphql-tag: "npm:^2.12.6"
     jest: "npm:30.1.1"
     jest-mock-console: "npm:^2.0.0"
@@ -19520,7 +19520,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     apollo-client: "npm:^2.6.10"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     history: "npm:^5.3.0"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
@@ -19817,6 +19817,15 @@ __metadata:
     typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
+
+"@whatwg-node/promise-helpers@npm:^1.0.0":
+  version: 1.3.2
+  resolution: "@whatwg-node/promise-helpers@npm:1.3.2"
+  dependencies:
+    tslib: "npm:^2.6.3"
+  checksum: 10/22513e7075d2e6e067399f6b3065a1f280d77aab2cc8699fe5bf9496a76ea7ede2cf4d46fad6f033d0ad686f974c52f85335c3dcddd656d1c8700636713f94a9
+  languageName: node
+  linkType: hard
 
 "@wry/context@npm:^0.4.0":
   version: 0.4.4
@@ -20704,7 +20713,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"apollo-graphql@npm:^0.9.5":
+"apollo-graphql@npm:^0.9.7":
   version: 0.9.7
   resolution: "apollo-graphql@npm:0.9.7"
   dependencies:
@@ -25828,7 +25837,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dset@npm:^3.1.2":
+"dset@npm:^3.1.4":
   version: 3.1.4
   resolution: "dset@npm:3.1.4"
   checksum: 10/6268c9e2049c8effe6e5a1952f02826e8e32468b5ced781f15f8f3b1c290da37626246fec014fbdd1503413f981dff6abd8a4c718ec9952fd45fccb6ac9de43f
@@ -29253,14 +29262,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-scalars@npm:1.12.0":
-  version: 1.12.0
-  resolution: "graphql-scalars@npm:1.12.0"
+"graphql-scalars@npm:^1.24.2":
+  version: 1.24.2
+  resolution: "graphql-scalars@npm:1.24.2"
   dependencies:
-    tslib: "npm:~2.3.0"
+    tslib: "npm:^2.5.0"
   peerDependencies:
-    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
-  checksum: 10/2f3c78594216a4a9400cce37117a99ff4a8eb3f94ecc7953a6f2c4722eca8c48540e702607096162bea184a6e08ebaf63186381db697a70bac41370df3109b94
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+  checksum: 10/740747ca0191d17f593ea747b02df5fedd778a1376ea235a815bd80b69356efacf5b32412b2461d9ae3edadd1a56bfba8df0a75ae2c5ea2932a126b3e513cca6
   languageName: node
   linkType: hard
 
@@ -29275,10 +29284,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql@npm:^15.10.1":
-  version: 15.10.1
-  resolution: "graphql@npm:15.10.1"
-  checksum: 10/49177f52c1fbac022866d39bb15040122da4c3ccd12644233b20edfcb1f76aa92aa92f2a82af4668101d8f726112fda111cb11a12feb05635cd689443a7aafb8
+"graphql@npm:^16.11.0":
+  version: 16.11.0
+  resolution: "graphql@npm:16.11.0"
+  checksum: 10/e3e1633d0b464bbb3fa41283fae938bd3bac801c350555b3f1a129d99fb3cfe157fa69c1389229dba902731942eb08bdea4b29f1271965feee8779576b26ef01
   languageName: node
   linkType: hard
 
@@ -40658,7 +40667,7 @@ __metadata:
     git-cz: "npm:^1.8.4"
     github-actions-wac: "npm:^1.4.1"
     glob: "npm:^7.2.3"
-    graphql: "npm:^15.10.1"
+    graphql: "npm:^16.11.0"
     husky: "npm:^4.2.5"
     inquirer: "npm:^8.2.7"
     inquirer-autocomplete-prompt: "npm:^1.4.0"
@@ -43790,17 +43799,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.8.0, tslib@npm:^2.8.1":
+"tslib@npm:^2.6.3, tslib@npm:^2.8.0, tslib@npm:^2.8.1":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10/3e2e043d5c2316461cb54e5c7fe02c30ef6dccb3384717ca22ae5c6b5bc95232a6241df19c622d9c73b809bea33b187f6dbc73030963e29950c2141bc32a79f7
-  languageName: node
-  linkType: hard
-
-"tslib@npm:~2.3.0":
-  version: 2.3.1
-  resolution: "tslib@npm:2.3.1"
-  checksum: 10/5e7de59ed9f2b705b399bda28326b7c3e7526deb48bbe1716e2e17fbd4cecbb610253d09c7b8fd0a6e76cfed9304e2e608cdb81bb1ee812d69e5089d1a94c71a
   languageName: node
   linkType: hard
 
@@ -44806,13 +44808,6 @@ __metadata:
   version: 13.12.0
   resolution: "validator@npm:13.12.0"
   checksum: 10/db6eb0725e2b67d60d30073ae8573982713b5903195d031dc3c7db7e82df8b74e8c13baef8e2106d146d979599fd61a06cde1fec5c148e4abd53d52817ff0fd9
-  languageName: node
-  linkType: hard
-
-"value-or-promise@npm:^1.0.12":
-  version: 1.0.12
-  resolution: "value-or-promise@npm:1.0.12"
-  checksum: 10/a4cc31fc9c3826b8a216ef2037b676904324c00c4acd903aaec2fe0c08516a189345261dd3cc822ec108532b2ea36b7c99bbdee1c3ddcb7f4b3d57d7e61b2064
   languageName: node
   linkType: hard
 

@@ -39,14 +39,20 @@ export const RefInputScalar = new GraphQLScalarType({
     name: "RefInput",
     description:
         "A custom input type to be used with references. Supports plain ID and `{ id: ID }` Object literal.",
-    serialize: value => {
+    /**
+     * We can set value as any because we are handling it.
+     */
+    serialize: (value: any) => {
         if (!value || value.id === null) {
             return null;
         }
 
         return typeof value === "string" ? value : value.id;
     },
-    parseValue: value => {
+    /**
+     * We can set value as any because we are handling it.
+     */
+    parseValue: (value: any) => {
         if (!value || value.id === null) {
             return null;
         }

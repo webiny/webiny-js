@@ -7,5 +7,6 @@ import { fastify } from "./fastify";
 import { rmwc } from "./rmwc";
 import { lexical } from "./lexical";
 import { ts } from "./ts";
+import { graphql } from "./graphql";
 
-export const presets = [react, babel, awsSdk, jest, pulumi, fastify, rmwc, lexical, ts];
+export const presets = [react, babel, awsSdk, jest, pulumi, fastify, rmwc, lexical, ts, graphql];
