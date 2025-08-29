@@ -11,10 +11,11 @@ import crypto from "crypto";
 function getFileChecksum(file: string): Promise<string> {
     const hash = crypto.createHash("md5");
 
-    return new Promise(resolve => {
+    return new Promise<string>(resolve => {
         const stream = fs.createReadStream(file);
-        stream.on("data", function (data: string) {
-            hash.update(data, "utf8");
+        stream.on("data", function (data) {
+            const value = typeof data === "string" ? data : data.toString("utf8");
+            hash.update(value, "utf8");
         });
 
         stream.on("end", function () {

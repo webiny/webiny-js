@@ -142,7 +142,8 @@ export const createDeleteModelGraphQl = <T extends HcmsTasksContext = HcmsTasksC
                 ["Query.listContentModels"]: [
                     createResolverDecorator<any, any, HcmsTasksContext>(
                         resolver => async (parent, args, context, info) => {
-                            const result = await resolver(parent, args, context, info);
+                            // TODO @bruno figure out how to fix these types
+                            const result = (await resolver(parent, args, context, info)) as any;
                             if (result.error || !Array.isArray(result.data)) {
                                 return result;
                             }

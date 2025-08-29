@@ -4,7 +4,6 @@ import WebinyError from "@webiny/error";
 const re = /^([0-9]{2}):([0-9]{2})(:([0-9]{2}))?$/;
 
 const parseTime = (value?: unknown) => {
-    
     if (typeof value !== "string" || !value || value.match(re) === null) {
         throw new WebinyError("Value does not look like time.", "TIME_VALIDATION_ERROR", { value });
     }
