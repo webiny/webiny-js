@@ -1,9 +1,9 @@
-import { getAuditConfig } from "~/utils/getAuditConfig";
-import type { AuditAction } from "~/types";
-import { useHandler } from "./helpers/useHandler";
-import { ActionType } from "@webiny/common-audit-logs/index.js";
-import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index";
-import { attachAuditLogOnCreateEvent } from "~/app/lifecycle.js";
+import {getAuditConfig} from "~/utils/getAuditConfig";
+import {useHandler} from "./helpers/useHandler";
+import {ActionType} from "@webiny/common-audit-logs/index.js";
+import {getDocumentClient} from "@webiny/project-utils/testing/dynamodb/index";
+import {attachAuditLogOnCreateEvent} from "~/app/lifecycle.js";
+import {auditAction} from "~tests/mocks/auditAction.js";
 
 interface ITestPayloadData {
     auditLogData: {
@@ -16,39 +16,10 @@ interface ITestPayloadData {
 
 describe("create audit log", () => {
     const client = getDocumentClient();
-
-    const audit: AuditAction = {
-        app: {
-            app: "cms",
-            displayName: "CMS",
-            entities: []
-        },
-        action: {
-            type: "CREATE",
-            displayName: "Create"
-        },
-        entity: {
-            type: "user",
-            displayName: "Users",
-            actions: [
-                {
-                    type: "CREATE",
-                    displayName: "Create"
-                },
-                {
-                    type: "UPDATE",
-                    displayName: "Update"
-                },
-                {
-                    type: "DELETE",
-                    displayName: "Delete"
-                }
-            ]
-        }
-    };
-
+    
+    
     it("should create a new audit log", async () => {
-        const createAuditLog = getAuditConfig(audit);
+        const createAuditLog = getAuditConfig(auditAction);
 
         const { handler } = useHandler();
         const context = await handler();
@@ -102,9 +73,9 @@ describe("create audit log", () => {
             });
         }
     });
-
+    
     it("should list created logs", async () => {
-        const createAuditLog = getAuditConfig(audit);
+        const createAuditLog = getAuditConfig(auditAction);
 
         const { handler } = useHandler();
         const context = await handler();
@@ -162,9 +133,9 @@ describe("create audit log", () => {
             });
         }
     });
-
+    
     it("should trigger onBeforeCreate", async () => {
-        const createAuditLog = getAuditConfig(audit);
+        const createAuditLog = getAuditConfig(auditAction);
 
         const { handler } = useHandler({
             plugins: [
@@ -231,4 +202,6 @@ describe("create audit log", () => {
             additionalData: "something else"
         });
     });
+    
+    
 });

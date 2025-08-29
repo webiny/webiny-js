@@ -12,15 +12,7 @@ const createAuditLog = async (params: CreateAuditLogParams): Promise<IAuditLog> 
     const { context, payload } = params;
 
     try {
-        return await context.auditLogs.createAuditLog({
-            content: payload.content,
-            tags: payload.tags,
-            action: payload.action,
-            app: payload.app,
-            entity: payload.entity,
-            entityId: payload.entityId,
-            message: payload.message
-        });
+        return await context.auditLogs.createAuditLog(payload);
     } catch (error) {
         throw WebinyError.from(error);
     }
@@ -73,6 +65,7 @@ const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams): Promi
 
     try {
         return await context.auditLogs.updateAuditLog(original, {
+            ...payload,
             content: updatedPayloadData
         });
     } catch (ex) {
