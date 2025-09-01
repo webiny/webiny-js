@@ -37,9 +37,11 @@ describe("introspect", () => {
                     __schema: {
                         directives: expect.any(Array),
                         mutationType: {
+                            kind: "OBJECT",
                             name: "Mutation"
                         },
                         queryType: {
+                            kind: "OBJECT",
                             name: "Query"
                         },
                         subscriptionType: null,

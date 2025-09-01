@@ -197,8 +197,8 @@ describe("Handler", () => {
         expect(detail).toBeDefined();
 
         expect(detail.items).toHaveLength(3);
-
-        expect(detail.items).toContainValues([
+        
+        expect(detail.items).toEqual([
             {
                 tableName: "DynamoDB",
                 command: "put",

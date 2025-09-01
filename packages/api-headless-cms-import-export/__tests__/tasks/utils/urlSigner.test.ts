@@ -30,7 +30,7 @@ describe("url signer", () => {
         });
         expect(result).toEqual({
             bucket: getBucket(),
-            expiresOn: expect.toBeDateString(),
+            expiresOn: expect.toBeValidDate(),
             key: "a-key.zip",
             url: expect.toBeString()
         });
@@ -52,7 +52,7 @@ describe("url signer", () => {
         });
         expect(result).toEqual({
             bucket: getBucket(),
-            expiresOn: expect.toBeDateString(),
+            expiresOn: expect.toBeValidDate(),
             key: "a-key.zip",
             url: expect.toBeString()
         });
