@@ -9,9 +9,11 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@editorjs/editorjs": "2.26.5",
+    "@editorjs/editorjs": "^2.30.8",
     "@types/react": "18.2.79",
     "classnames": "^2.5.1",
+    "codex-notifier": "^1.1.2",
+    "codex-tooltip": "^1.0.5",
     "react": "18.2.0",
     "sanitize-html": "2.12.1"
   },
@@ -28,5 +30,13 @@
   "scripts": {
     "build": "node ../cli/bin.js run build",
     "watch": "node ../cli/bin.js run watch"
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "codex-notifier",
+        "codex-tooltip"
+      ]
+    }
   }
 }

@@ -12,7 +12,7 @@
   "dependencies": {
     "@apollo/react-components": "^3.1.5",
     "@apollo/react-hooks": "^3.1.5",
-    "@editorjs/editorjs": "2.26.5",
+    "@editorjs/editorjs": "^2.30.8",
     "@emotion/react": "11.10.8",
     "@emotion/styled": "11.10.6",
     "@iconify/json": "^2.2.142",

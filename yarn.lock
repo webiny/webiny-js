@@ -3956,13 +3956,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codexteam/icons@npm:0.1.0":
-  version: 0.1.0
-  resolution: "@codexteam/icons@npm:0.1.0"
-  checksum: 10/99645b6a4b1902dfd7744b0f3c64143c97acc10e33adb195cffc7222c208f997bf7ac9126299225b98ce90ea2c56f2ce819c5f2d1a6a49fa62115ee43e63f638
-  languageName: node
-  linkType: hard
-
 "@codexteam/icons@npm:^0.0.4":
   version: 0.0.4
   resolution: "@codexteam/icons@npm:0.0.4"
@@ -4749,16 +4742,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@editorjs/editorjs@npm:2.26.5":
-  version: 2.26.5
-  resolution: "@editorjs/editorjs@npm:2.26.5"
-  dependencies:
-    "@codexteam/icons": "npm:0.1.0"
-    codex-notifier: "npm:^1.1.2"
-    codex-tooltip: "npm:^1.0.5"
-    html-janitor: "npm:^2.0.4"
-    nanoid: "npm:^3.1.22"
-  checksum: 10/7b3af3f00e85a071f13f68483a3c240d05a5fb610aa9fdc9735aa6d6d7d8bda89aa15ce69c1c5dc13f6ce6bf32bc1a0b8ebd0984b4061b3c3609fa1dcd0abdbe
+"@editorjs/editorjs@npm:^2.30.8":
+  version: 2.30.8
+  resolution: "@editorjs/editorjs@npm:2.30.8"
+  checksum: 10/83fd2d536201071c1daca5202241e1f479ce79fa89b03a3467e08432bba6b779f4d5b3ce32cfb269106dbef088649618689aad8670f7203739d3c54d472c4643
   languageName: node
   linkType: hard
 
@@ -4778,7 +4765,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@editorjs/quote@npm:^2.7.2":
+"@editorjs/quote@npm:^2.7.6":
   version: 2.7.6
   resolution: "@editorjs/quote@npm:2.7.6"
   dependencies:
@@ -14045,7 +14032,7 @@ __metadata:
   dependencies:
     "@apollo/react-components": "npm:^3.1.5"
     "@apollo/react-hooks": "npm:^3.1.5"
-    "@editorjs/editorjs": "npm:2.26.5"
+    "@editorjs/editorjs": "npm:^2.30.8"
     "@emotion/babel-plugin": "npm:^11.11.0"
     "@emotion/react": "npm:11.10.8"
     "@emotion/styled": "npm:11.10.6"
@@ -14316,7 +14303,7 @@ __metadata:
     "@dnd-kit/core": "npm:^6.1.0"
     "@dnd-kit/sortable": "npm:^8.0.0"
     "@dnd-kit/utilities": "npm:^3.2.2"
-    "@editorjs/editorjs": "npm:2.26.5"
+    "@editorjs/editorjs": "npm:^2.30.8"
     "@emotion/babel-plugin": "npm:^11.11.0"
     "@emotion/react": "npm:11.10.8"
     "@emotion/styled": "npm:11.10.6"
@@ -14602,7 +14589,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.3.3"
   peerDependencies:
-    "@editorjs/editorjs": 2.26.5
+    "@editorjs/editorjs": ^2.30.8
     aos: ^2.3.4
     react: 18.2.0
     react-columned: ^1.1.3
@@ -16130,11 +16117,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/react-rich-text-renderer@workspace:packages/react-rich-text-renderer"
   dependencies:
-    "@editorjs/editorjs": "npm:2.26.5"
+    "@editorjs/editorjs": "npm:^2.30.8"
     "@types/react": "npm:18.2.79"
     "@types/sanitize-html": "npm:^2.9.0"
     "@webiny/project-utils": "npm:0.0.0"
     classnames: "npm:^2.5.1"
+    codex-notifier: "npm:^1.1.2"
+    codex-tooltip: "npm:^1.0.5"
     react: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
     sanitize-html: "npm:2.12.1"
@@ -16321,7 +16310,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/ui@workspace:packages/ui"
   dependencies:
-    "@editorjs/editorjs": "npm:2.26.5"
+    "@editorjs/editorjs": "npm:^2.30.8"
     "@emotion/babel-plugin": "npm:^11.11.0"
     "@emotion/react": "npm:11.10.8"
     "@emotion/styled": "npm:11.10.6"
@@ -16747,7 +16736,7 @@ __metadata:
   dependencies:
     "@editorjs/delimiter": "npm:^1.4.2"
     "@editorjs/list": "npm:^1.10.0"
-    "@editorjs/quote": "npm:^2.7.2"
+    "@editorjs/quote": "npm:^2.7.6"
     "@editorjs/underline": "npm:^1.2.1"
     "@types/react": "npm:18.2.79"
     "@webiny/app-admin": "npm:0.0.0"
@@ -19141,38 +19130,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001449":
-  version: 1.0.30001450
-  resolution: "caniuse-lite@npm:1.0.30001450"
-  checksum: 10/0edfa19abf651a0eae0e5848480ff2fe7bf4fa2bb61573b78a15584ce6fa083928b418d671accbf607b25e14b00a11c850baef7069873148550435f47e4c22a5
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001503":
-  version: 1.0.30001514
-  resolution: "caniuse-lite@npm:1.0.30001514"
-  checksum: 10/da7983e260ec2c13f1f7727f1ffd0f7b76b6922a3fdab7b8ff752a3bb6b8f367979185c42c43d56b8ee84dccfba816eb2b35a0576f127c54009730fd1b15ff30
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001587, caniuse-lite@npm:^1.0.30001599":
-  version: 1.0.30001600
-  resolution: "caniuse-lite@npm:1.0.30001600"
-  checksum: 10/4c52f83ed71bc5f6e443bd17923460f1c77915adc2c2aa79ddaedceccc690b5917054b0c41b79e9138cbbd9abcdc0db9e224e79e3e734e581dfec06505f3a2b4
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001616":
-  version: 1.0.30001696
-  resolution: "caniuse-lite@npm:1.0.30001696"
-  checksum: 10/7230d3258e73daf769d1dcc46546282343970218b357b097a868176306d0ce1dd45f57d3a9ea09817dca0fc70effd3408bf4555d33238c14bb4b54b8e88d213c
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001669":
-  version: 1.0.30001680
-  resolution: "caniuse-lite@npm:1.0.30001680"
-  checksum: 10/38ec7e06e18ef1040740f93dff65dc4c9a7593376a783a96370f3845c586ed1d464e26b992d97919938fb07b68a4f2fb1609f66c586c3f1e7310e6511b81793f
+"caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001449, caniuse-lite@npm:^1.0.30001503, caniuse-lite@npm:^1.0.30001587, caniuse-lite@npm:^1.0.30001599, caniuse-lite@npm:^1.0.30001616, caniuse-lite@npm:^1.0.30001669":
+  version: 1.0.30001739
+  resolution: "caniuse-lite@npm:1.0.30001739"
+  checksum: 10/bdee0d0ba7b54dd619c3cd1a32d4e4aaeeda50625d24f020d6e148480b97e4cd5f7877e5eb41a25306583d494c206328a8eff300c752580baff4e57d78574ab5
   languageName: node
   linkType: hard
 
@@ -25692,13 +25653,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-janitor@npm:^2.0.4":
-  version: 2.0.4
-  resolution: "html-janitor@npm:2.0.4"
-  checksum: 10/e2fa14741f1801c4d486223d3c3074a280a18210b2bd6db3f0cca918f5356d351572773225953066734ee9b139bdbf86123e658cdf816ff795eabf6f7259e1c6
-  languageName: node
-  linkType: hard
-
 "html-minifier-terser@npm:^6.0.2":
   version: 6.1.0
   resolution: "html-minifier-terser@npm:6.1.0"
@@ -30455,7 +30409,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^3.1.22, nanoid@npm:^3.3.7, nanoid@npm:^3.3.8":
+"nanoid@npm:^3.3.7, nanoid@npm:^3.3.8":
   version: 3.3.8
   resolution: "nanoid@npm:3.3.8"
   bin:

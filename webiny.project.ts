@@ -60,6 +60,7 @@ export default {
         experimentalAdminOmniSearch: true,
         experimentalDynamicPages: false,
         newWatchCommand: true,
-        rspack: true
+        rspack: true,
+        allowCmsLegacyRichTextInput: true
     }
 };
