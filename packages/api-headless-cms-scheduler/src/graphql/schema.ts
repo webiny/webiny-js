@@ -1,8 +1,4 @@
 import zod from "zod";
-import type {
-    CmsEntryListSortAsc,
-    CmsEntryListSortDesc
-} from "@webiny/api-headless-cms/types/index.js";
 import { type DateOnType, ScheduleType } from "~/scheduler/types.js";
 import { dateToISOString } from "~/scheduler/dates.js";
 
@@ -54,7 +50,7 @@ export const listScheduleSchema = zod.object({
         .optional(),
     sort: zod
         .array(
-            zod.string().refine((value): value is CmsEntryListSortAsc | CmsEntryListSortDesc => {
+            zod.string().refine(value => {
                 const [field, direction] = value.split("_");
                 if (!field) {
                     return false;

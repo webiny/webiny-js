@@ -163,19 +163,12 @@ const apiNameRefinementValidation = (value: string): boolean => {
     }
     return value === upperFirst(camelCase(value));
 };
-const refinementSingularValidationMessage = (value?: string) => {
-    return {
-        message: `The Singular API Name value "${
-            value || "undefined"
-        }" is not valid. It must in Upper First + Camel Cased form. For example: "ArticleCategory" or "CarMake".`
-    };
+const refinementSingularValidationMessage = {
+    error: `The Singular API Name value  is not valid. It must in Upper First + Camel Cased form. For example: "ArticleCategory" or "CarMake".`
 };
-const refinementPluralValidationMessage = (value?: string) => {
-    return {
-        message: `The Plural API Name value "${
-            value || "undefined"
-        }" is not valid. It must in Upper First + Camel Cased form. For example: "ArticleCategories" or "CarMakes".`
-    };
+
+const refinementPluralValidationMessage = {
+    error: `The Plural API Name value is not valid. It must in Upper First + Camel Cased form. For example: "ArticleCategories" or "CarMakes".`
 };
 
 const refinementModelIdValidation = (value?: string) => {
@@ -187,17 +180,8 @@ const refinementModelIdValidation = (value?: string) => {
     const camelCasedValue = camelCase(value).toLowerCase();
     return camelCasedValue === value.toLowerCase();
 };
-const refinementModelIdValidationMessage = (value?: string) => {
-    if (!value) {
-        return {};
-    } else if (value.match(/^[a-zA-Z]/) === null) {
-        return {
-            message: `The modelId "${value}" is not valid. It must start with a A-Z or a-z.`
-        };
-    }
-    return {
-        message: `The modelId "${value}" is not valid.`
-    };
+const refinementModelIdValidationMessage = {
+    error: `The modelId is not valid.`
 };
 
 const modelIdTransformation = (value?: string) => {
@@ -240,10 +224,8 @@ export const createModelImportValidation = () => {
             value => {
                 return value.match(/[a-zA-Z]/) !== null;
             },
-            value => {
-                return {
-                    message: `The name "${value}" is not valid.`
-                };
+            {
+                error: `The name is not valid.`
             }
         ),
         modelId: shortString

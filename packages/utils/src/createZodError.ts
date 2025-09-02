@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import type { ZodError } from "zod/lib/ZodError";
+import type { $ZodError } from "zod/v4/core/errors.js";
 import { generateAlphaNumericId } from "~/generateId.js";
 
 interface OutputError {
@@ -12,7 +12,7 @@ export interface OutputErrors {
     [key: string]: OutputError;
 }
 
-const createValidationErrorData = (error: ZodError) => {
+const createValidationErrorData = (error: $ZodError) => {
     return {
         invalidFields: error.issues.reduce<OutputErrors>((collection, issue) => {
             const name = issue.path.join(".");
@@ -30,7 +30,7 @@ const createValidationErrorData = (error: ZodError) => {
                 code: issue.code,
                 message: issue.message,
                 data: {
-                    fatal: issue.fatal,
+                    input: issue.input,
                     path: issue.path
                 }
             };
@@ -40,7 +40,7 @@ const createValidationErrorData = (error: ZodError) => {
     };
 };
 
-export const createZodError = (error: ZodError) => {
+export const createZodError = (error: $ZodError) => {
     return new WebinyError({
         message: `Validation failed.`,
         code: "VALIDATION_FAILED_INVALID_FIELDS",

@@ -14,16 +14,9 @@ export const createBlockCategoryCreateValidation = () => {
                     }
                     return true;
                 },
-                value => {
-                    if (!value) {
-                        return {
-                            message: "Value is required."
-                        };
-                    }
-                    return {
-                        message:
-                            "Slug must consist of only 'a-z', '0-9' and '-' and be max 100 characters long (for example: 'some-slug' or 'some-slug-2')"
-                    };
+                {
+                    message:
+                        "Slug must consist of only 'a-z', '0-9' and '-' and be max 100 characters long (for example: 'some-slug' or 'some-slug-2')"
                 }
             ),
         name: zod.string().min(1).max(100),

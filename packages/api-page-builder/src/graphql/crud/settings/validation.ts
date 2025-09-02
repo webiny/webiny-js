@@ -108,7 +108,13 @@ export const createSettingsCreateValidation = () => {
                 })
                 .passthrough()
                 .nullish()
-                .default({})
+                .default({
+                    facebook: undefined,
+                    twitter: undefined,
+                    instagram: undefined,
+                    linkedIn: undefined,
+                    image: undefined
+                })
                 .optional()
                 .transform(value => value || undefined),
             htmlTags: zod

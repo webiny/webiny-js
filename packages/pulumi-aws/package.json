@@ -24,7 +24,7 @@
     "form-data": "^4.0.0",
     "lodash": "^4.17.21",
     "node-fetch": "2.6.7",
-    "zod": "^3.23.8"
+    "zod": "^4.1.5"
   },
   "devDependencies": {
     "@webiny/api-page-builder": "0.0.0",

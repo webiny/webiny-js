@@ -68,11 +68,8 @@ export const FormSettingsModel = zod.object({
             secretKey: zod.string().optional().nullish().default("").nullable(),
             siteKey: zod.string().optional().nullish().default("").nullable()
         })
-        .passthrough()
+        .loose()
         .optional()
-        .default({
-            enabled: null
-        })
 });
 
 export const FormCreateDataModel = zod.object({
@@ -102,7 +99,11 @@ export const FormSubmissionCreateDataModel = zod.object({
                 .default({})
         })
         .optional()
-        .default({}),
+        .default({
+            ip: "",
+            submittedOn: new Date().toISOString(),
+            url: {}
+        }),
     form: zod.object({
         id: zod.string(),
         parent: zod.string(),

@@ -23,6 +23,7 @@ import { createValidation, updateValidation } from "~/crud/settings/validation";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import { attachPasswordObfuscatingHooks } from "~/crud/settings/hooks";
 import { NotAuthorizedError } from "@webiny/api-security";
+import { createZodError } from "@webiny/utils";
 
 const defaultPort = 25;
 /**
@@ -192,9 +193,7 @@ export const createSettingsCrud = async (
             const result = createValidation.safeParse(input);
 
             if (!result.success) {
-                throw new WebinyError("Validation failed!", "VALIDATION_ERROR", {
-                    errors: result.error.errors
-                });
+                throw createZodError(result.error);
             }
 
             const { password, ...settings } = result.data;
@@ -250,9 +249,7 @@ export const createSettingsCrud = async (
             const result = updateValidation.safeParse(input);
 
             if (!result.success) {
-                throw new WebinyError("Validation failed!", "VALIDATION_ERROR", {
-                    errors: result.error.errors
-                });
+                throw createZodError(result.error);
             }
 
             let dbOriginal: ExtendedTransportSettings | null = null;

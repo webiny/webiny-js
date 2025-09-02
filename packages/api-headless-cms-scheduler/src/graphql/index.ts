@@ -1,7 +1,11 @@
 import { CmsGraphQLSchemaPlugin } from "@webiny/api-headless-cms/plugins/index.js";
 import type { ScheduleContext } from "~/types.js";
 import { ErrorResponse, ListErrorResponse, ListResponse, Response } from "@webiny/handler-graphql";
-import type { CmsEntryMeta } from "@webiny/api-headless-cms/types/index.js";
+import type {
+    CmsEntryListSortAsc,
+    CmsEntryListSortDesc,
+    CmsEntryMeta
+} from "@webiny/api-headless-cms/types/index.js";
 import {
     cancelScheduleSchema,
     createScheduleSchema,
@@ -167,7 +171,12 @@ export const createSchedulerGraphQL = () => {
 
                         return scheduler.listScheduled({
                             where: validated.data.where || {},
-                            sort: validated.data.sort,
+                            /**
+                             * We can safely cast this because of the zod refinement in the schema.
+                             */
+                            sort: validated.data.sort as
+                                | CmsEntryListSortAsc[]
+                                | CmsEntryListSortDesc[],
                             limit: validated.data.limit,
                             after: validated.data.after
                         });

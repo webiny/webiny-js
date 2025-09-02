@@ -1,8 +1,8 @@
 import WebinyError from "@webiny/error";
+import type { ZodSafeParseResult } from "zod";
 import zod from "zod";
 import type { Topic } from "@webiny/pubsub/types";
 import type { OnTransportBeforeSendParams } from "~/types";
-import type { SafeParseReturnType } from "zod/lib/types";
 
 const requiredString = zod.string();
 const requiredEmail = requiredString.email();
@@ -31,7 +31,7 @@ export const attachOnTransportBeforeSend = (params: Params) => {
     const { onTransportBeforeSend } = params;
 
     onTransportBeforeSend.subscribe(async ({ data: input }) => {
-        let result: SafeParseReturnType<SchemaType, SchemaType>;
+        let result: ZodSafeParseResult<SchemaType>;
         try {
             result = schema.safeParse(input);
 

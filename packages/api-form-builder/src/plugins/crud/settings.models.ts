@@ -9,7 +9,11 @@ export const createSettingsValidation = zod.object({
             secretKey: zod.string().max(100).optional().nullish().default(null)
         })
         .passthrough()
-        .default({})
+        .default({
+            enabled: null,
+            siteKey: null,
+            secretKey: null
+        })
 });
 
 export const updateSettingsValidation = zod.object({
@@ -21,5 +25,4 @@ export const updateSettingsValidation = zod.object({
             secretKey: zod.string().max(100).optional().nullish().default(null)
         })
         .passthrough()
-        .default({})
 });

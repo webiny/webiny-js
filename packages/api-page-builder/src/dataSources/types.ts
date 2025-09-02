@@ -10,7 +10,7 @@ export interface IDataLoader {
 
 export interface IDataSource<TConfig extends GenericRecord = GenericRecord> {
     getType(): string;
-    getConfigSchema(): zod.Schema;
+    getConfigSchema(): zod.ZodType<TConfig>;
     load(request: DataLoaderRequest<TConfig>): Promise<DataLoaderResult>;
 }
 

@@ -37,7 +37,7 @@
     "lodash": "^4.17.21",
     "node-fetch": "2.6.7",
     "slugify": "^1.6.6",
-    "zod": "^3.23.8"
+    "zod": "^4.1.5"
   },
   "devDependencies": {
     "@types/json2csv": "^4.5.1",

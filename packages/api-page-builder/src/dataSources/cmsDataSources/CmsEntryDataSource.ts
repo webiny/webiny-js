@@ -19,7 +19,7 @@ export class CmsEntryDataSource implements IDataSource<CmsEntryDataSourceConfig>
         return "cms.entry";
     }
 
-    getConfigSchema(): zod.Schema {
+    getConfigSchema(): zod.Schema<CmsEntryDataSourceConfig> {
         return zod.object({
             modelId: zod.string(),
             entryId: zod.string()

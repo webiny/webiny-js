@@ -45,7 +45,7 @@
     "pluralize": "^8.0.0",
     "semver": "^7.7.2",
     "slugify": "^1.6.6",
-    "zod": "^3.23.8"
+    "zod": "^4.1.5"
   },
   "devDependencies": {
     "@types/babel__code-frame": "^7.0.6",
