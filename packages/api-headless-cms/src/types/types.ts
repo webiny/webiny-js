@@ -648,6 +648,11 @@ export interface CmsEntry<T = CmsEntryValues> {
      */
     status: CmsEntryStatus;
     /**
+     * With v6 we have added a status step. We have some default ones, but users can add their own.
+     * Note that the status step does not need to be defined.
+     */
+    statusStep: string | null;
+    /**
      * A mapped storageId -> value object.
      *
      * @see CmsModelField
@@ -982,6 +987,10 @@ export interface CmsEntryListWhere {
     status_not?: CmsEntryStatus;
     status_in?: CmsEntryStatus[];
     status_not_in?: CmsEntryStatus[];
+    statusStep?: string;
+    statusStep_not?: string;
+    statusStep_in?: string[];
+    statusStep_not_in?: string[];
 
     /**
      * Revision-level meta fields. 👇
@@ -1421,6 +1430,7 @@ export interface EntryBeforeListTopicParams {
 export type CreateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
     id?: string;
     status?: CmsEntryStatus;
+    statusStep?: string | null;
 
     /**
      * Entry-level meta fields. 👇

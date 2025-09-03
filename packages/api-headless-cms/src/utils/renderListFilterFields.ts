@@ -66,7 +66,11 @@ export const renderListFilterFields: RenderListFilterFields = (params): string =
             "status: String",
             "status_not: String",
             "status_in: [String!]",
-            "status_not_in: [String!]"
+            "status_not_in: [String!]",
+            "statusStep: String",
+            "statusStep_not: String",
+            "statusStep_in: [String!]",
+            "statusStep_not_in: [String!]"
         );
     }
 

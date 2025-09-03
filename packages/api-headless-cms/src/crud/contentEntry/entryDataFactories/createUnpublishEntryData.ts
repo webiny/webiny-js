@@ -23,6 +23,7 @@ export const createUnpublishEntryData = async <T extends CmsEntryValues = CmsEnt
     const entry: CmsEntry<T> = {
         ...originalEntry,
         status: STATUS_UNPUBLISHED,
+        statusStep: null,
 
         /**
          * Entry-level meta fields. 👇

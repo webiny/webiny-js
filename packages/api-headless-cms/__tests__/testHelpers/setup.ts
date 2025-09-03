@@ -1,5 +1,5 @@
 import type { CmsGroup } from "~/types";
-import models from "../contentAPI/mocks/contentModels";
+import allModels from "../contentAPI/mocks/contentModels";
 import type { useGraphQLHandler } from "./useGraphQLHandler";
 import type { CmsModel } from "../types";
 
@@ -50,7 +50,7 @@ export const setupContentModel = async (params: SetupContentModelParams) => {
 
 export const getModel = (item: CmsModel | string): CmsModel => {
     if (typeof item === "string") {
-        const model = models.find(m => m.modelId === item);
+        const model = allModels.find(m => m.modelId === item);
         if (!model) {
             console.log(`[setupContentModel] There is no model "${name}" defined.`);
             process.exit(1);
@@ -62,12 +62,14 @@ export const getModel = (item: CmsModel | string): CmsModel => {
 
 interface SetupGroupAndModelsParams {
     manager: ReturnType<typeof useGraphQLHandler>;
-    models: (CmsModel | string)[];
+    models: (CmsModel | string)[] | undefined;
 }
 
 export const setupGroupAndModels = async (params: SetupGroupAndModelsParams) => {
-    const { manager, models } = params;
+    const { manager, models: initialModels } = params;
     const group = await setupContentModelGroup(manager);
+
+    const models = initialModels || allModels.map(m => m.modelId);
 
     const results: CmsModel[] = [];
     for (const item of models) {
@@ -130,7 +132,7 @@ export const setupContentModels = async (
         if (items.hasOwnProperty(name) === false) {
             continue;
         }
-        const model = models.find(m => m.modelId === name);
+        const model = allModels.find(m => m.modelId === name);
         if (!model) {
             console.log(`[setupContentModel] There is no model "${name}" defined.`);
             process.exit(1);

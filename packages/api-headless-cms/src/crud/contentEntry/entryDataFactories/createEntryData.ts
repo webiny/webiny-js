@@ -86,6 +86,7 @@ export const createEntryData = async ({
             await accessControl.ensureCanAccessEntry({ model, pw: "u" });
         }
     }
+    const statusStep = rawInput.statusStep || null;
 
     const locked = status !== STATUS_DRAFT;
 
@@ -171,6 +172,7 @@ export const createEntryData = async ({
 
         version,
         status,
+        statusStep,
         locked,
         values: input,
         location: {

@@ -138,7 +138,8 @@ export const createUpdateEntryData = async ({
 
         values,
         meta,
-        status: transformEntryStatus(originalEntry.status)
+        status: transformEntryStatus(originalEntry.status),
+        statusStep: rawInput.statusStep ?? originalEntry.statusStep
     };
 
     const folderId = rawInput.wbyAco_location?.folderId;

@@ -174,6 +174,7 @@ export const createEntryRevisionFromData = async ({
 
         locked,
         status,
+        statusStep: null,
         values
     };
 

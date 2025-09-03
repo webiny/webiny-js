@@ -33,6 +33,7 @@ export const createRepublishEntryData = async ({
     const entry: CmsEntry = {
         ...originalEntry,
         status: STATUS_PUBLISHED,
+        statusStep: null,
 
         /**
          * Entry-level meta fields. 👇

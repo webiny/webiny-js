@@ -108,21 +108,21 @@ __metadata:
   linkType: hard
 
 "@auth0/auth0-react@npm:^2.2.4":
-  version: 2.2.4
-  resolution: "@auth0/auth0-react@npm:2.2.4"
+  version: 2.4.0
+  resolution: "@auth0/auth0-react@npm:2.4.0"
   dependencies:
-    "@auth0/auth0-spa-js": "npm:^2.1.3"
+    "@auth0/auth0-spa-js": "npm:^2.2.0"
   peerDependencies:
-    react: ^16.11.0 || ^17 || ^18
-    react-dom: ^16.11.0 || ^17 || ^18
-  checksum: 10/90974eadf39161dea33757bbdc2a1bda92015a7687915196b1e4b6adb92af910c566cab3b5d0b3e5d3d3ce7fa5591843f1926e2306b33b67a50e1a250bcb828b
+    react: ^16.11.0 || ^17 || ^18 || ^19
+    react-dom: ^16.11.0 || ^17 || ^18 || ^19
+  checksum: 10/4b69e694176056c9d119972cc49ced7c9b516abc0782c5e53b6f25af09356ea86526109174c626352cfd5a4839cc0df932529e5c0923a220a4e9f608ef962153
   languageName: node
   linkType: hard
 
-"@auth0/auth0-spa-js@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "@auth0/auth0-spa-js@npm:2.1.3"
-  checksum: 10/c0585a7f6c8f8929bf6c7402f2d049cda2c64f82c1736e700cc6ca668d3e23c2c0d22722e8f2aa2d24478e5e6676349e3d5f7ec197a44d093c5607ea8a831adc
+"@auth0/auth0-spa-js@npm:^2.2.0":
+  version: 2.3.0
+  resolution: "@auth0/auth0-spa-js@npm:2.3.0"
+  checksum: 10/f48e1a2a314c7cf30287dc63ef4fee33c4d6fc078c33a0b091bf7a0c09778a3bd7dbf2c395b6556996c1bd6560f6444a1736dce0ea68f5e8cb51a82c3011833a
   languageName: node
   linkType: hard
 

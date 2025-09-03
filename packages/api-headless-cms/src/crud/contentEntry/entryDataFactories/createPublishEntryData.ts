@@ -35,6 +35,7 @@ export const createPublishEntryData = async <T extends CmsEntryValues = CmsEntry
     const entry: CmsEntry<T> = {
         ...originalEntry,
         status: STATUS_PUBLISHED,
+        statusStep: null,
         locked: true,
 
         /**

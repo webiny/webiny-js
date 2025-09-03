@@ -104,6 +104,9 @@ export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> 
             status: {
                 type: "string"
             },
+            statusStep: {
+                type: "string"
+            },
             location: {
                 type: "map"
             },

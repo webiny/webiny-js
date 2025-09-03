@@ -95,6 +95,13 @@ export const createSystemFields = (): Field[] => {
             label: "Status"
         },
         {
+            id: "statusStep",
+            type: "text",
+            storageId: "statusStep",
+            fieldId: "statusStep",
+            label: "Status Step"
+        },
+        {
             id: "wbyDeleted",
             type: "boolean",
             storageId: "wbyDeleted",
