@@ -433,6 +433,17 @@ const expectedSystemFields: Record<string, Field> = {
             path: "location.folderId"
         }
     },
+    statusStep: {
+        createPath: expect.any(Function),
+        transform: expect.any(Function),
+        fieldId: "statusStep",
+        id: "statusStep",
+        label: "Status Step",
+        parents: [],
+        storageId: "statusStep",
+        system: true,
+        type: "text"
+    },
     version: {
         id: "version",
         parents: [],
@@ -522,9 +533,9 @@ describe("create system and model fields", () => {
                 type: "text",
                 storageId: "text@titleStorageId",
                 fieldId: "title",
-                createPath: expect.any(Function),
                 system: false,
                 multipleValues: false,
+                createPath: expect.any(Function),
                 transform: expect.any(Function),
                 label: "Title"
             },
