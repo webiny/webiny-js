@@ -433,16 +433,34 @@ const expectedSystemFields: Record<string, Field> = {
             path: "location.folderId"
         }
     },
-    statusStep: {
+    state: {
         createPath: expect.any(Function),
         transform: expect.any(Function),
-        fieldId: "statusStep",
-        id: "statusStep",
-        label: "Status Step",
+        fieldId: "state",
+        id: "state",
+        label: "State",
         parents: [],
-        storageId: "statusStep",
+        storageId: "object@state",
         system: true,
-        type: "text"
+        type: "object",
+        settings: {
+            fields: [
+                {
+                    id: "name",
+                    fieldId: "name",
+                    label: "Name",
+                    storageId: "text@name",
+                    type: "text"
+                },
+                {
+                    id: "comment",
+                    fieldId: "comment",
+                    label: "Comment",
+                    storageId: "text@comment",
+                    type: "long-text"
+                }
+            ]
+        }
     },
     version: {
         id: "version",

@@ -131,6 +131,25 @@ const createSchema = (plugins: PluginsContainer): IGraphQLSchemaPlugin<CmsContex
                 data: [CmsEntryValidationResponseData!]
                 error: CmsError
             }
+
+            input CmsEntryStateWhereInput {
+                name: String
+                name_in: [String!]
+                name_not: String
+                name_not_in: [String!]
+                comment_contains: String
+                comment_not_contains: String
+            }
+
+            input CmsEntryStateInput {
+                name: String
+                comment: String
+            }
+
+            type CmsEntryState {
+                name: String
+                comment: String
+            }
         `,
         resolvers: {}
     });

@@ -174,6 +174,60 @@ const createSystemFields = (): ModelFields => {
             }),
             parents: []
         },
+        state: {
+            type: "object",
+            unmappedType: undefined,
+            keyword: false,
+            systemField: true,
+            searchable: false,
+            sortable: false,
+            field: createSystemField({
+                storageId: "state",
+                fieldId: "state",
+                type: "object"
+            }),
+            parents: []
+        },
+        ["state.name"]: {
+            type: "text",
+            unmappedType: undefined,
+            keyword: true,
+            systemField: true,
+            searchable: true,
+            sortable: false,
+            field: createSystemField({
+                storageId: "name",
+                fieldId: "name",
+                type: "text"
+            }),
+            parents: [
+                {
+                    fieldId: "state",
+                    storageId: "state",
+                    type: "object"
+                }
+            ]
+        },
+        ["state.comment"]: {
+            type: "text",
+            unmappedType: undefined,
+            keyword: true,
+            systemField: true,
+            searchable: true,
+            sortable: false,
+            field: createSystemField({
+                storageId: "comment",
+                fieldId: "comment",
+                type: "text"
+            }),
+            parents: [
+                {
+                    fieldId: "state",
+                    storageId: "state",
+                    type: "object"
+                }
+            ]
+        },
         wbyDeleted: {
             type: "boolean",
             unmappedType: undefined,

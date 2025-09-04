@@ -3,9 +3,9 @@ import { setupGroupAndModels } from "~tests/testHelpers/setup.js";
 
 const title = "Category Regular Identity";
 const slug = "category-regular-identity";
-const statusStep = "beforeTranslation";
+const stateName = "beforeTranslation";
 
-describe("entry status step", () => {
+describe("entry state", () => {
     const manager = useCategoryManageHandler({
         path: "manage/en-US"
     });
@@ -13,16 +13,18 @@ describe("entry status step", () => {
     beforeEach(async () => {
         await setupGroupAndModels({
             manager,
-            models: undefined
+            models: ["category"]
         });
     });
 
-    it("should create a category in draft with status step and update it accordingly", async () => {
+    it("should create a category in draft with state status and update it accordingly", async () => {
         const [result] = await manager.createCategory({
             data: {
                 title,
                 slug,
-                statusStep
+                state: {
+                    name: stateName
+                }
             }
         });
 
@@ -34,7 +36,10 @@ describe("entry status step", () => {
                         slug,
                         meta: {
                             status: "draft",
-                            statusStep
+                            state: {
+                                name: stateName,
+                                comment: null
+                            }
                         }
                     },
                     error: null
@@ -46,7 +51,10 @@ describe("entry status step", () => {
         const [updateStatusStepResult] = await manager.updateCategory({
             revision: id,
             data: {
-                statusStep: "afterTranslation"
+                state: {
+                    name: "afterTranslation",
+                    comment: "Translated to Spanish"
+                }
             }
         });
 
@@ -58,7 +66,10 @@ describe("entry status step", () => {
                         slug,
                         meta: {
                             status: "draft",
-                            statusStep: "afterTranslation"
+                            state: {
+                                name: "afterTranslation",
+                                comment: "Translated to Spanish"
+                            }
                         }
                     },
                     error: null
@@ -80,8 +91,45 @@ describe("entry status step", () => {
                         slug,
                         meta: {
                             status: "draft",
-                            statusStep: "afterTranslation"
+                            state: {
+                                name: "afterTranslation",
+                                comment: "Translated to Spanish"
+                            }
                         }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listByStateNameResult] = await manager.listCategories({
+            where: {
+                state: {
+                    name: "afterTranslation"
+                }
+            }
+        });
+
+        expect(listByStateNameResult).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            title: "New Title",
+                            slug,
+                            meta: {
+                                status: "draft",
+                                state: {
+                                    name: "afterTranslation",
+                                    comment: "Translated to Spanish"
+                                }
+                            }
+                        }
+                    ],
+                    meta: {
+                        totalCount: 1,
+                        hasMoreItems: false,
+                        cursor: null
                     },
                     error: null
                 }
@@ -89,12 +137,14 @@ describe("entry status step", () => {
         });
     });
 
-    it("should remove a status step when publishing, unpublishing or republishing an entry", async () => {
+    it("should remove a state status when publishing, unpublishing or republishing an entry", async () => {
         const [result] = await manager.createCategory({
             data: {
                 title,
                 slug,
-                statusStep
+                state: {
+                    name: stateName
+                }
             }
         });
         const id = result.data.createCategory.data.id;
@@ -110,7 +160,10 @@ describe("entry status step", () => {
                         slug,
                         meta: {
                             status: "published",
-                            statusStep: null
+                            state: {
+                                name: null,
+                                comment: null
+                            }
                         }
                     },
                     error: null
@@ -129,7 +182,10 @@ describe("entry status step", () => {
                         slug,
                         meta: {
                             status: "published",
-                            statusStep: null
+                            state: {
+                                name: null,
+                                comment: null
+                            }
                         }
                     },
                     error: null
@@ -148,7 +204,10 @@ describe("entry status step", () => {
                         slug,
                         meta: {
                             status: "unpublished",
-                            statusStep: null
+                            state: {
+                                name: null,
+                                comment: null
+                            }
                         }
                     },
                     error: null

@@ -4,6 +4,7 @@ import type { SecurityIdentity } from "@webiny/api-security/types";
 import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataValidation";
 import { getIdentity } from "~/utils/identity";
 import { getDate } from "~/utils/date";
+import { createState } from "~/crud/contentEntry/entryDataFactories/state.js";
 
 type CreatePublishEntryDataParams = {
     model: CmsModel;
@@ -35,7 +36,7 @@ export const createPublishEntryData = async <T extends CmsEntryValues = CmsEntry
     const entry: CmsEntry<T> = {
         ...originalEntry,
         status: STATUS_PUBLISHED,
-        statusStep: null,
+        state: createState(undefined),
         locked: true,
 
         /**
