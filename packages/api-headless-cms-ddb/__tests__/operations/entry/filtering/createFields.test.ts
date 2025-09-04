@@ -473,6 +473,38 @@ const expectedSystemFields: Record<string, Field> = {
         transform: expect.any(Function),
         label: "Version"
     },
+    "state.comment": {
+        createPath: expect.any(Function),
+        fieldId: "comment",
+        id: "comment",
+        label: "Comment",
+        parents: [
+            {
+                fieldId: "state",
+                multipleValues: undefined
+            }
+        ],
+        storageId: "text@comment",
+        system: true,
+        transform: expect.any(Function),
+        type: "long-text"
+    },
+    "state.name": {
+        createPath: expect.any(Function),
+        fieldId: "name",
+        id: "name",
+        label: "Name",
+        parents: [
+            {
+                fieldId: "state",
+                multipleValues: undefined
+            }
+        ],
+        storageId: "text@name",
+        system: true,
+        transform: expect.any(Function),
+        type: "text"
+    },
 
     status: {
         id: "status",
