@@ -19,7 +19,7 @@
     "@webiny/error": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "zod": "^3.23.8"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@webiny/api-i18n": "0.0.0",

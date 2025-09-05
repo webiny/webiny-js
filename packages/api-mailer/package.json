@@ -23,7 +23,7 @@
     "crypto-js": "^4.2.0",
     "lodash": "^4.17.21",
     "nodemailer": "^6.9.16",
-    "zod": "^3.23.8"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",

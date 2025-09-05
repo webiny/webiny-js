@@ -27,7 +27,7 @@
     "graphql": "^16.11.0",
     "graphql-scalars": "^1.24.2",
     "graphql-tag": "^2.12.6",
-    "zod": "^3.23.8"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@webiny/handler-aws": "0.0.0",

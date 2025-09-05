@@ -37,7 +37,7 @@
     "stream": "^0.0.3",
     "uniqid": "^5.4.0",
     "yauzl": "^2.10.0",
-    "zod": "^3.23.8"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@types/archiver": "^5.3.1",

@@ -39,7 +39,7 @@
     "react-hotkeyz": "^1.0.4",
     "slugify": "^1.6.6",
     "store": "^2.0.12",
-    "zod": "^3.23.8"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@types/react": "18.2.79",

@@ -33,7 +33,7 @@
     "@webiny/utils": "0.0.0",
     "dayjs": "^1.11.13",
     "lodash": "^4.17.21",
-    "zod": "^3.23.8"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@webiny/api-page-builder": "0.0.0",

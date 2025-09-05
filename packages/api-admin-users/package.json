@@ -22,7 +22,7 @@
     "dataloader": "^2.2.2",
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
-    "zod": "^3.23.8"
+    "zod": "3.23.8"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.2",
