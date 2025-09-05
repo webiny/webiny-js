@@ -15,12 +15,12 @@ export interface IAuditLog {
     entity: string;
     entityId: string;
     tags: string[];
-    expiresAt: Date | undefined;
+    expiresAt: Date;
     content: string;
 }
 
 export interface IStorageAuditLog extends Omit<IAuditLog, "createdOn" | "content" | "expiresAt"> {
-    expiresAt: string | undefined;
+    expiresAt: string;
     createdOn: string;
     content: string;
 }
@@ -40,5 +40,5 @@ export interface IStorageItem {
     GSI5_SK: number;
 
     data: IStorageAuditLog;
-    expiresAt: number | undefined;
+    expiresAt: number;
 }

@@ -10,7 +10,7 @@ export interface ISetupContextOptions {
     documentClient: DynamoDBDocument | undefined;
 }
 
-const getDeleteLogsAfterDays = (days?: number): number | undefined => {
+const getDeleteLogsAfterDays = (days?: number): number => {
     if (days && days > 0) {
         return days;
     }

@@ -6,9 +6,10 @@ import { attachAuditLogOnCreateEvent } from "~/context/lifecycle.js";
 import { auditAction } from "~tests/mocks/auditAction.js";
 import type { IAuditLog } from "~/storage/types.js";
 
-const convertCreatedOn = (item: IAuditLog | null) => {
+const convertDates = (item: IAuditLog | null) => {
     return {
         ...item,
+        expiresAt: new Date(item!.expiresAt.getTime()),
         createdOn: new Date(item!.createdOn.getTime())
     } as IAuditLog;
 };
@@ -43,11 +44,11 @@ describe("create audit log", () => {
 
         const result = await createAuditLog(message, data, entityId, context);
 
-        expect(convertCreatedOn(result)).toMatchObject({
+        expect(convertDates(result)).toMatchObject({
             id: expect.any(String),
             message,
             tenant: "root",
-            expiresAt: undefined,
+            expiresAt: expect.any(Date),
             entityId,
             action: ActionType.CREATE,
             app: "cms",
@@ -100,11 +101,11 @@ describe("create audit log", () => {
         expect(items).toHaveLength(1);
 
         const result = items![0];
-        expect(convertCreatedOn(result)).toMatchObject({
+        expect(convertDates(result)).toMatchObject({
             id: expect.any(String),
             message,
             tenant: "root",
-            expiresAt: undefined,
+            expiresAt: expect.any(Date),
             entityId,
             action: ActionType.CREATE,
             app: "cms",
@@ -166,11 +167,11 @@ describe("create audit log", () => {
 
         const result = await createAuditLog(message, data, entityId, context);
 
-        expect(convertCreatedOn(result)).toMatchObject({
+        expect(convertDates(result)).toMatchObject({
             id: expect.any(String),
             message,
             tenant: "root",
-            expiresAt: undefined,
+            expiresAt: expect.any(Date),
             entityId,
             action: ActionType.CREATE,
             app: "cms",

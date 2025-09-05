@@ -1,18 +1,11 @@
-export const convertExpiresAtDaysToDate = (days: number | undefined | null): Date | undefined => {
-    if (!days) {
-        return undefined;
-    }
+export const convertExpiresAtDaysToDate = (days: number): Date => {
     const date = new Date();
     date.setTime(days * 24 * 60 * 60 * 1000 + date.getTime());
     return date;
 };
 
-export const convertExpiresAtToUnixTimestamp = (
-    expiresAt: Date | string | null | undefined
-): number | undefined => {
-    if (!expiresAt) {
-        return undefined;
-    } else if (typeof expiresAt === "string") {
+export const convertExpiresAtToUnixTimestamp = (expiresAt: Date | string): number => {
+    if (typeof expiresAt === "string") {
         expiresAt = new Date(expiresAt);
     }
     return Math.floor(expiresAt.getTime() / 1000);

@@ -24,7 +24,7 @@ export const createGraphQLSchema = () => {
                 entity: String!
                 entityId: String!
                 tags: [String!]!
-                expiresAt: DateTime
+                expiresAt: DateTime!
                 content: String
             }
             

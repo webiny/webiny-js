@@ -16,7 +16,7 @@ import { NotAuthorizedError } from "@webiny/api-security";
 
 export interface IAuditLogsContextValueParams {
     getContext: () => AuditLogsContext;
-    deleteLogsAfterDays?: number;
+    deleteLogsAfterDays: number;
     storage: IStorage;
 }
 

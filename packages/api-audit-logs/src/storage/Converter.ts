@@ -4,15 +4,8 @@ import type { IAuditLog, IStorageItem } from "~/storage/types.js";
 import type { IAccessPatternHandler } from "~/storage/abstractions/AccessPatternHandler.js";
 import { convertExpiresAtToUnixTimestamp } from "~/utils/expiresAt.js";
 
-const convertToDateTime = (value?: string | unknown): Date | undefined => {
-    if (!value || typeof value !== "string") {
-        return undefined;
-    }
-    try {
-        return new Date(value);
-    } catch {
-        return undefined;
-    }
+const convertToDateTime = (value: string): Date => {
+    return new Date(value);
 };
 
 export interface IConverterParams {
@@ -74,7 +67,7 @@ export class Converter implements IConverter {
             ...keys,
             data: {
                 ...auditLog,
-                expiresAt: auditLog.expiresAt ? auditLog.expiresAt.toISOString() : undefined,
+                expiresAt: auditLog.expiresAt.toISOString(),
                 content: JSON.stringify(await this.compressor.compress(auditLog.content)),
                 createdOn: auditLog.createdOn.toISOString()
             },
