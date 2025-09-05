@@ -21,7 +21,7 @@
     "write-json-file": "^4.3.0"
   },
   "devDependencies": {
-    "@types/inquirer": "8.2.10",
+    "@types/inquirer": "^8.2.12",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "chalk": "^4.1.2",

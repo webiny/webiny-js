@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.3.0",
-    "@types/lodash": "^4.17.13",
+    "@types/lodash": "^4.17.20",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "aws-sdk-client-mock": "^4.1.0",

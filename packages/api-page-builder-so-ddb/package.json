@@ -25,7 +25,7 @@
     "@webiny/error": "0.0.0",
     "@webiny/handler-db": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "dataloader": "^2.2.2"
+    "dataloader": "^2.2.3"
   },
   "devDependencies": {
     "@webiny/api-security": "0.0.0",

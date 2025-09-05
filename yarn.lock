@@ -12880,17 +12880,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/inquirer@npm:8.2.10":
-  version: 8.2.10
-  resolution: "@types/inquirer@npm:8.2.10"
-  dependencies:
-    "@types/through": "npm:*"
-    rxjs: "npm:^7.2.0"
-  checksum: 10/d7c0c5ec95af583191942ac33f8af2eb1fe839da6b4560277a8c251fa289f2dd3a5d14850baf910343700646200258ecff89dc9e1d57df29c16a1082d91a5ae3
-  languageName: node
-  linkType: hard
-
-"@types/inquirer@npm:^8.2.10":
+"@types/inquirer@npm:^8.2.12":
   version: 8.2.12
   resolution: "@types/inquirer@npm:8.2.12"
   dependencies:
@@ -13001,7 +12991,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:^9.0.0, @types/jsonwebtoken@npm:^9.0.2":
+"@types/jsonwebtoken@npm:^9.0.0, @types/jsonwebtoken@npm:^9.0.10":
   version: 9.0.10
   resolution: "@types/jsonwebtoken@npm:9.0.10"
   dependencies:
@@ -13037,14 +13027,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:^4.14.167, @types/lodash@npm:^4.17.13":
+"@types/lodash@npm:^4.14.167, @types/lodash@npm:^4.17.20":
   version: 4.17.20
   resolution: "@types/lodash@npm:4.17.20"
   checksum: 10/8cd8ad3bd78d2e06a93ae8d6c9907981d5673655fec7cb274a4d9a59549aab5bb5b3017361280773b8990ddfccf363e14d1b37c97af8a9fe363de677f9a61524
   languageName: node
   linkType: hard
 
-"@types/md5@npm:^2.3.2":
+"@types/md5@npm:^2.3.5":
   version: 2.3.5
   resolution: "@types/md5@npm:2.3.5"
   checksum: 10/a86baf0521006e3072488bd79089b84831780866102e5e4b4f7afabfab17e0270a3791f3331776b73efb2cc9317efd56a334fd3d2698c7929e9b18593ca3fd39
@@ -13123,7 +13113,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/ncp@npm:^2.0.4":
+"@types/ncp@npm:^2.0.8":
   version: 2.0.8
   resolution: "@types/ncp@npm:2.0.8"
   dependencies:
@@ -13242,10 +13232,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pluralize@npm:^0.0.29":
-  version: 0.0.29
-  resolution: "@types/pluralize@npm:0.0.29"
-  checksum: 10/c43e10b0ec6ed5778913d7cd04ca49efe63a661cd45efcfdfa85be1fbd8708f270ba31fd13cff5f5a5f4b62345efe715e598c4c99d6714a7b038fe7dc3572fad
+"@types/pluralize@npm:^0.0.33":
+  version: 0.0.33
+  resolution: "@types/pluralize@npm:0.0.33"
+  checksum: 10/282d42dc0187e5e0912f9f36ee0f5615bfd273a08d40afe5bf5881cb28daf1977abe10564543032aa0f42352ebba739ff3d86bf5562ac4691c6d1761fcc7cf39
   languageName: node
   linkType: hard
 
@@ -13641,7 +13631,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/warning@npm:^3.0.0":
+"@types/warning@npm:^3.0.3":
   version: 3.0.3
   resolution: "@types/warning@npm:3.0.3"
   checksum: 10/862b71c918283d2ace5cab4e9f0167507a15ee9cf4d46035c858bdd4bf1ee83cbfb42bcfd4da6e7e254a2efa32200b6521f3719c729e39e88e336309d53bb4c4
@@ -14525,8 +14515,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-admin-users@workspace:packages/api-admin-users"
   dependencies:
-    "@types/jsonwebtoken": "npm:^9.0.2"
-    "@types/md5": "npm:^2.3.2"
+    "@types/md5": "npm:^2.3.5"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-i18n": "npm:0.0.0"
     "@webiny/api-security": "npm:0.0.0"
@@ -14537,7 +14526,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    dataloader: "npm:^2.2.2"
+    dataloader: "npm:^2.2.3"
     lodash: "npm:^4.17.21"
     md5: "npm:^2.3.0"
     rimraf: "npm:^6.0.1"
@@ -14593,7 +14582,7 @@ __metadata:
     "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    dayjs: "npm:^1.11.13"
+    dayjs: "npm:^1.11.18"
     graphql: "npm:^16.11.0"
     jest: "npm:^30.1.3"
     lodash: "npm:^4.17.21"
@@ -14708,7 +14697,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-cognito-authenticator@workspace:packages/api-cognito-authenticator"
   dependencies:
-    "@types/jsonwebtoken": "npm:^9.0.2"
+    "@types/jsonwebtoken": "npm:^9.0.10"
     "@types/jwk-to-pem": "npm:^2.0.1"
     "@types/node-fetch": "npm:^2.6.1"
     "@webiny/project-utils": "npm:0.0.0"
@@ -15052,7 +15041,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    dataloader: "npm:^2.2.2"
+    dataloader: "npm:^2.2.3"
     jest: "npm:^30.1.3"
     jest-dynalite: "npm:^3.6.1"
     lodash: "npm:^4.17.21"
@@ -15077,7 +15066,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    dataloader: "npm:^2.2.2"
+    dataloader: "npm:^2.2.3"
     dot-object: "npm:^2.1.5"
     dot-prop: "npm:^6.0.1"
     jest: "npm:^30.1.3"
@@ -15501,7 +15490,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    dataloader: "npm:^2.2.2"
+    dataloader: "npm:^2.2.3"
     elastic-ts: "npm:^0.12.0"
     graphql: "npm:^16.11.0"
     jest: "npm:^30.1.3"
@@ -15529,7 +15518,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    dataloader: "npm:^2.2.2"
+    dataloader: "npm:^2.2.3"
     jest: "npm:^30.1.3"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
@@ -15565,7 +15554,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     archiver: "npm:^7.0.1"
     bytes: "npm:^3.1.2"
-    dataloader: "npm:^2.2.2"
+    dataloader: "npm:^2.2.3"
     extract-zip: "npm:^1.6.7"
     fs-extra: "npm:^11.3.1"
     jest: "npm:^30.1.3"
@@ -15680,7 +15669,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-auth0@workspace:packages/api-security-auth0"
   dependencies:
-    "@types/jsonwebtoken": "npm:^9.0.2"
+    "@types/jsonwebtoken": "npm:^9.0.10"
     "@types/jwk-to-pem": "npm:^2.0.1"
     "@types/node-fetch": "npm:^2.6.1"
     "@webiny/api-admin-users": "npm:0.0.0"
@@ -15703,7 +15692,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-cognito@workspace:packages/api-security-cognito"
   dependencies:
-    "@types/jsonwebtoken": "npm:^9.0.2"
+    "@types/jsonwebtoken": "npm:^9.0.10"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-admin-users": "npm:0.0.0"
     "@webiny/api-cognito-authenticator": "npm:0.0.0"
@@ -15766,7 +15755,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-security@workspace:packages/api-security"
   dependencies:
-    "@types/jsonwebtoken": "npm:^9.0.2"
+    "@types/jsonwebtoken": "npm:^9.0.10"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-authentication": "npm:0.0.0"
     "@webiny/api-tenancy": "npm:0.0.0"
@@ -15841,7 +15830,7 @@ __metadata:
   resolution: "@webiny/api-sync-system@workspace:packages/api-sync-system"
   dependencies:
     "@faker-js/faker": "npm:^9.3.0"
-    "@types/lodash": "npm:^4.17.13"
+    "@types/lodash": "npm:^4.17.20"
     "@webiny/api": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/cli": "npm:0.0.0"
@@ -15893,7 +15882,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    dataloader: "npm:^2.2.2"
+    dataloader: "npm:^2.2.3"
     jest: "npm:^30.1.3"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
@@ -16325,7 +16314,7 @@ __metadata:
     apollo-client: "npm:^2.6.10"
     apollo-link: "npm:^1.2.14"
     apollo-utilities: "npm:^1.3.4"
-    dayjs: "npm:^1.11.13"
+    dayjs: "npm:^1.11.18"
     dot-prop-immutable: "npm:^2.1.1"
     emotion: "npm:10.0.27"
     graphql: "npm:^16.11.0"
@@ -16378,7 +16367,7 @@ __metadata:
   resolution: "@webiny/app-cognito-authenticator@workspace:packages/app-cognito-authenticator"
   dependencies:
     "@aws-amplify/auth": "npm:^5.6.15"
-    "@types/lodash": "npm:^4.17.13"
+    "@types/lodash": "npm:^4.17.20"
     "@webiny/project-utils": "npm:0.0.0"
     lodash: "npm:^4.17.21"
     react: "npm:18.2.0"
@@ -16468,7 +16457,7 @@ __metadata:
     bytes: "npm:^3.1.2"
     cropperjs: "npm:^1.4.3"
     dataurl-to-blob: "npm:^0.0.1"
-    dayjs: "npm:^1.11.13"
+    dayjs: "npm:^1.11.18"
     dot-prop-immutable: "npm:^2.1.1"
     graphql: "npm:^16.11.0"
     graphql-tag: "npm:^2.12.6"
@@ -17363,9 +17352,9 @@ __metadata:
   dependencies:
     "@apollo/react-hooks": "npm:^3.1.5"
     "@emotion/styled": "npm:11.10.6"
-    "@types/lodash": "npm:^4.17.13"
+    "@types/lodash": "npm:^4.17.20"
     "@types/react": "npm:18.2.79"
-    "@types/warning": "npm:^3.0.0"
+    "@types/warning": "npm:^3.0.3"
     "@webiny/i18n": "npm:0.0.0"
     "@webiny/i18n-react": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
@@ -17516,7 +17505,7 @@ __metadata:
   resolution: "@webiny/cli-plugin-extensions@workspace:packages/cli-plugin-extensions"
   dependencies:
     "@babel/runtime": "npm:^7.28.3"
-    "@types/inquirer": "npm:8.2.10"
+    "@types/inquirer": "npm:^8.2.12"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/cli": "npm:0.0.0"
     "@webiny/cli-plugin-scaffold": "npm:0.0.0"
@@ -17546,9 +17535,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold-admin-app-module@workspace:packages/cli-plugin-scaffold-admin-app-module"
   dependencies:
-    "@types/inquirer": "npm:^8.2.10"
-    "@types/ncp": "npm:^2.0.4"
-    "@types/pluralize": "npm:^0.0.29"
+    "@types/inquirer": "npm:^8.2.12"
+    "@types/ncp": "npm:^2.0.8"
+    "@types/pluralize": "npm:^0.0.33"
     "@webiny/cli-plugin-scaffold": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
@@ -17569,9 +17558,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold-ci@workspace:packages/cli-plugin-scaffold-ci"
   dependencies:
-    "@types/inquirer": "npm:8.2.10"
-    "@types/ncp": "npm:^2.0.4"
-    "@types/pluralize": "npm:^0.0.29"
+    "@types/inquirer": "npm:^8.2.12"
+    "@types/ncp": "npm:^2.0.8"
+    "@types/pluralize": "npm:^0.0.33"
     "@types/validate-npm-package-name": "npm:^3.0.3"
     "@webiny/cli": "npm:0.0.0"
     "@webiny/cli-plugin-scaffold": "npm:0.0.0"
@@ -17594,9 +17583,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold-extensions@workspace:packages/cli-plugin-scaffold-extensions"
   dependencies:
-    "@types/inquirer": "npm:8.2.10"
-    "@types/ncp": "npm:^2.0.4"
-    "@types/pluralize": "npm:^0.0.29"
+    "@types/inquirer": "npm:^8.2.12"
+    "@types/ncp": "npm:^2.0.8"
+    "@types/pluralize": "npm:^0.0.33"
     "@types/validate-npm-package-name": "npm:^3.0.3"
     "@webiny/cli-plugin-extensions": "npm:0.0.0"
     "@webiny/cli-plugin-scaffold": "npm:0.0.0"
@@ -17610,9 +17599,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold-graphql-service@workspace:packages/cli-plugin-scaffold-graphql-service"
   dependencies:
-    "@types/inquirer": "npm:8.2.10"
-    "@types/ncp": "npm:^2.0.4"
-    "@types/pluralize": "npm:^0.0.29"
+    "@types/inquirer": "npm:^8.2.12"
+    "@types/ncp": "npm:^2.0.8"
+    "@types/pluralize": "npm:^0.0.33"
     "@webiny/cli-plugin-scaffold": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
@@ -17636,9 +17625,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold-react-component@workspace:packages/cli-plugin-scaffold-react-component"
   dependencies:
-    "@types/inquirer": "npm:8.2.10"
-    "@types/ncp": "npm:^2.0.4"
-    "@types/pluralize": "npm:^0.0.29"
+    "@types/inquirer": "npm:^8.2.12"
+    "@types/ncp": "npm:^2.0.8"
+    "@types/pluralize": "npm:^0.0.33"
     "@types/validate-npm-package-name": "npm:^3.0.3"
     "@webiny/cli": "npm:0.0.0"
     "@webiny/cli-plugin-scaffold": "npm:0.0.0"
@@ -17663,9 +17652,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold-workspaces@workspace:packages/cli-plugin-scaffold-workspaces"
   dependencies:
-    "@types/inquirer": "npm:8.2.10"
-    "@types/ncp": "npm:^2.0.4"
-    "@types/pluralize": "npm:^0.0.29"
+    "@types/inquirer": "npm:^8.2.12"
+    "@types/ncp": "npm:^2.0.8"
+    "@types/pluralize": "npm:^0.0.33"
     "@types/validate-npm-package-name": "npm:^3.0.3"
     "@webiny/cli": "npm:0.0.0"
     "@webiny/cli-plugin-scaffold": "npm:0.0.0"
@@ -17687,7 +17676,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold@workspace:packages/cli-plugin-scaffold"
   dependencies:
-    "@types/inquirer": "npm:8.2.10"
+    "@types/inquirer": "npm:^8.2.12"
     "@webiny/cli": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
@@ -17898,7 +17887,7 @@ __metadata:
     "@testing-library/react": "npm:^15.0.7"
     "@testing-library/user-event": "npm:^14.5.2"
     "@types/invariant": "npm:^2.2.35"
-    "@types/lodash": "npm:^4.17.13"
+    "@types/lodash": "npm:^4.17.20"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/react-composition": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
@@ -18036,7 +18025,7 @@ __metadata:
   dependencies:
     "@babel/register": "npm:^7.28.3"
     "@types/accounting": "npm:^0.4.2"
-    "@types/lodash": "npm:^4.17.13"
+    "@types/lodash": "npm:^4.17.20"
     "@webiny/project-utils": "npm:0.0.0"
     accounting: "npm:^0.4.1"
     fecha: "npm:^2.3.3"
@@ -18378,7 +18367,7 @@ __metadata:
   dependencies:
     "@pulumi/aws": "npm:^6.83.0"
     "@pulumi/pulumi": "npm:^3.193.0"
-    "@types/lodash": "npm:^4.17.13"
+    "@types/lodash": "npm:^4.17.20"
     "@webiny/project-utils": "npm:0.0.0"
     decompress: "npm:^4.2.1"
     execa: "npm:^5.1.1"
@@ -18397,7 +18386,7 @@ __metadata:
   resolution: "@webiny/pulumi@workspace:packages/pulumi"
   dependencies:
     "@pulumi/pulumi": "npm:^3.193.0"
-    "@types/lodash": "npm:^4.17.13"
+    "@types/lodash": "npm:^4.17.20"
     "@webiny/project-utils": "npm:0.0.0"
     find-up: "npm:^5.0.0"
     lodash: "npm:^4.17.21"
@@ -18693,7 +18682,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/validation@workspace:packages/validation"
   dependencies:
-    "@types/lodash": "npm:^4.17.13"
+    "@types/lodash": "npm:^4.17.20"
     "@webiny/project-utils": "npm:0.0.0"
     isnumeric: "npm:^0.3.3"
     jest: "npm:^30.1.3"
@@ -23407,7 +23396,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dataloader@npm:^2.2.2":
+"dataloader@npm:^2.2.3":
   version: 2.2.3
   resolution: "dataloader@npm:2.2.3"
   checksum: 10/83fe6259abe00ae64c5f48252ef59d8e5fcabda9fd4d26685f14a76eeca596bf6f9500d9f22a0094c50c3ea782a0977728f9367e232dfa0fdb5c9d646de279b2
@@ -23467,7 +23456,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dayjs@npm:^1.10.4, dayjs@npm:^1.11.13, dayjs@npm:~1.11.5":
+"dayjs@npm:^1.10.4, dayjs@npm:^1.11.18, dayjs@npm:~1.11.5":
   version: 1.11.18
   resolution: "dayjs@npm:1.11.18"
   checksum: 10/7d29a90834cf4da2feb437c2f34b8235c3f94493a06d2f1bf9f506f1fa49eadf796f26e1d685b9fe8cb5e75ce6ee067825115e196f1af3d07b3552ff857bfc39

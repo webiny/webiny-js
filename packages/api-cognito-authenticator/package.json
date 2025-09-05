@@ -17,7 +17,7 @@
     "node-fetch": "2.6.7"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.2",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/jwk-to-pem": "^2.0.1",
     "@types/node-fetch": "^2.6.1",
     "@webiny/project-utils": "0.0.0",

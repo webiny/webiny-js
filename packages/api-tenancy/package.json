@@ -19,7 +19,7 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/pubsub": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "dataloader": "^2.2.2"
+    "dataloader": "^2.2.3"
   },
   "devDependencies": {
     "@webiny/project-utils": "0.0.0",

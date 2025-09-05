@@ -23,9 +23,9 @@
     "@webiny/cli-plugin-scaffold": "0.0.0"
   },
   "devDependencies": {
-    "@types/inquirer": "8.2.10",
-    "@types/ncp": "^2.0.4",
-    "@types/pluralize": "^0.0.29",
+    "@types/inquirer": "^8.2.12",
+    "@types/ncp": "^2.0.8",
+    "@types/pluralize": "^0.0.33",
     "@types/validate-npm-package-name": "^3.0.3",
     "@webiny/project-utils": "0.0.0",
     "rimraf": "^6.0.1",

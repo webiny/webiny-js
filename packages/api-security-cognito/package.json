@@ -24,7 +24,7 @@
     "deep-equal": "^2.2.3"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.2",
+    "@types/jsonwebtoken": "^9.0.10",
     "@webiny/api-wcp": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
