@@ -135,7 +135,10 @@ export class PublishScheduleAction implements IScheduleAction {
             );
             console.log(convertException(ex));
             try {
-                await this.cms.deleteEntry(this.schedulerModel, scheduleRecordId);
+                await this.cms.deleteEntry(this.schedulerModel, scheduleRecordId, {
+                    force: true,
+                    permanently: true
+                });
             } catch (err) {
                 console.error(`Error while deleting schedule entry: ${scheduleRecordId}.`);
                 console.log(convertException(err));
@@ -222,7 +225,10 @@ export class PublishScheduleAction implements IScheduleAction {
         }
 
         try {
-            await this.cms.deleteEntry(this.schedulerModel, scheduleEntry.id);
+            await this.cms.deleteEntry(this.schedulerModel, scheduleEntry.id, {
+                force: true,
+                permanently: true
+            });
         } catch (ex) {
             if (ex.code === "NOT_FOUND" || ex instanceof NotFoundError) {
                 return;

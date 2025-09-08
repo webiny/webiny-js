@@ -85,7 +85,6 @@ describe("Handler", () => {
             targetId,
             type: ScheduleType.publish,
             title: "Test Entry",
-            dateOn: dateToISOString(new Date()),
             scheduledOn: dateToISOString(new Date()),
             scheduledBy: context.security.getIdentity()
         });
@@ -120,7 +119,9 @@ describe("Handler", () => {
             ]
         });
 
-        const targetEntryManager = await context.cms.getEntryManager(MOCK_TARGET_MODEL_ID);
+        const targetModel = await context.cms.getModel(MOCK_TARGET_MODEL_ID);
+
+        const targetEntryManager = await context.cms.getEntryManager(targetModel);
 
         const targetEntry = await targetEntryManager.create({
             id: "target-id",
@@ -133,12 +134,25 @@ describe("Handler", () => {
             targetId,
             type: ScheduleType.publish,
             title: "Test Entry",
-            dateOn: dateToISOString(new Date()),
             scheduledOn: dateToISOString(new Date()),
             scheduledBy: context.security.getIdentity()
         });
 
         expect(scheduleEntry.entryId).toEqual(`${createScheduleRecordId(targetId)}`);
+
+        const scheduler = context.cms.scheduler(targetModel);
+
+        const getScheduleEntry = await scheduler.getScheduled(createScheduleRecordId(targetId));
+
+        expect(getScheduleEntry).toMatchObject({
+            id: expect.any(String),
+            targetId,
+            model: targetModel,
+            title: "Test Entry",
+            publishOn: expect.any(Date),
+            unpublishOn: undefined,
+            type: ScheduleType.publish
+        });
 
         await handler.handle({
             cms: context.cms,
@@ -195,7 +209,6 @@ describe("Handler", () => {
             targetId,
             type: ScheduleType.publish,
             title: "Test Entry",
-            dateOn: dateToISOString(new Date()),
             scheduledOn: dateToISOString(new Date()),
             scheduledBy: context.security.getIdentity()
         });

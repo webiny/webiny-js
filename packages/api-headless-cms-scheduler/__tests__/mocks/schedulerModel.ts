@@ -1,7 +1,7 @@
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { createSchedulerModel } from "~/scheduler/model.js";
 
-export const createMockScheduleModel = (input?: Partial<CmsModel>): CmsModel => {
+export const createMockSchedulerModel = (input?: Partial<CmsModel>): CmsModel => {
     const model = createSchedulerModel();
     return {
         ...model.contentModel,

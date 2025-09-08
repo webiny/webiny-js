@@ -1,10 +1,10 @@
 import { createMockService } from "~tests/mocks/service.js";
 import { createMockGetIdentity } from "~tests/mocks/getIdentity.js";
-import { createMockScheduleModel } from "~tests/mocks/scheduleModel.js";
+import { createMockSchedulerModel } from "~tests/mocks/schedulerModel.js";
 import { createMockCms } from "~tests/mocks/cms.js";
 import { createMockTargetModel } from "~tests/mocks/targetModel.js";
 import { UnpublishScheduleAction } from "~/scheduler/actions/UnpublishScheduleAction.js";
-import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsEntry, CmsEntryValues } from "@webiny/api-headless-cms/types/index.js";
 import { ScheduleRecord } from "~/scheduler/ScheduleRecord.js";
 import { type IScheduleEntryValues, ScheduleType } from "~/scheduler/types.js";
 import {
@@ -21,7 +21,7 @@ describe("UnpublishScheduleAction", () => {
     const service = createMockService();
     const fetcher = createMockFetcher();
     const getIdentity = createMockGetIdentity();
-    const scheduleModel = createMockScheduleModel();
+    const schedulerModel = createMockSchedulerModel();
     const targetModel = createMockTargetModel();
 
     it("should unpublish an entry immediately if input.immediately is true", async () => {
@@ -34,11 +34,11 @@ describe("UnpublishScheduleAction", () => {
                     }
                 } as CmsEntry<T>;
             },
-            async unpublishEntry() {
+            async unpublishEntry<T extends CmsEntryValues = CmsEntryValues>() {
                 return {
                     savedBy: getIdentity(),
                     savedOn: new Date().toISOString()
-                } as CmsEntry;
+                } as CmsEntry<T>;
             }
         });
 
@@ -46,7 +46,7 @@ describe("UnpublishScheduleAction", () => {
             service,
             getIdentity,
             targetModel,
-            scheduleModel,
+            schedulerModel,
             cms,
             fetcher
         });
@@ -66,7 +66,6 @@ describe("UnpublishScheduleAction", () => {
             targetId: "target-id#0002",
             model: targetModel,
             scheduledBy: getIdentity(),
-            dateOn: expect.any(Date),
             publishOn: undefined,
             unpublishOn: expect.any(Date),
             type: ScheduleType.unpublish,
@@ -84,11 +83,11 @@ describe("UnpublishScheduleAction", () => {
                     }
                 } as CmsEntry<T>;
             },
-            async unpublishEntry() {
+            async unpublishEntry<T extends CmsEntryValues = CmsEntryValues>() {
                 return {
                     savedBy: getIdentity(),
                     savedOn: new Date().toISOString()
-                } as CmsEntry;
+                } as CmsEntry<T>;
             }
         });
 
@@ -96,7 +95,7 @@ describe("UnpublishScheduleAction", () => {
             service,
             getIdentity,
             targetModel,
-            scheduleModel,
+            schedulerModel,
             cms,
             fetcher
         });
@@ -119,7 +118,6 @@ describe("UnpublishScheduleAction", () => {
             scheduledBy: getIdentity(),
             publishOn: undefined,
             unpublishOn: scheduleOn,
-            dateOn: undefined,
             type: ScheduleType.unpublish,
             title: "Test Entry"
         });
@@ -150,7 +148,6 @@ describe("UnpublishScheduleAction", () => {
                     targetId: "target-id#0002",
                     type: ScheduleType.unpublish,
                     scheduledOn: dateToISOString(scheduleOn),
-                    dateOn: dateToISOString(scheduleOn),
                     title: "Test Entry",
                     targetModelId: targetModel.modelId,
                     scheduledBy: getIdentity()
@@ -170,11 +167,11 @@ describe("UnpublishScheduleAction", () => {
                     }
                 } as CmsEntry<T>;
             },
-            async unpublishEntry() {
+            async unpublishEntry<T extends CmsEntryValues = CmsEntryValues>() {
                 return {
                     savedBy: getIdentity(),
                     savedOn: new Date().toISOString()
-                } as CmsEntry;
+                } as CmsEntry<T>;
             }
         });
 
@@ -182,7 +179,7 @@ describe("UnpublishScheduleAction", () => {
             service,
             getIdentity,
             targetModel,
-            scheduleModel,
+            schedulerModel,
             cms,
             fetcher
         });
@@ -204,15 +201,13 @@ describe("UnpublishScheduleAction", () => {
             scheduledBy: getIdentity(),
             publishOn: undefined,
             unpublishOn: scheduleOn,
-            dateOn: scheduleOn,
             type: ScheduleType.unpublish,
             title: "Test Entry"
         });
 
         expect(createEntryMock).toHaveBeenCalledTimes(1);
-        expect(createEntryMock).toHaveBeenCalledWith(scheduleModel, {
+        expect(createEntryMock).toHaveBeenCalledWith(schedulerModel, {
             id: createScheduleRecordId(`target-id#0002`),
-            dateOn: undefined,
             scheduledOn: scheduleOn.toISOString(),
             scheduledBy: getIdentity(),
             targetId: "target-id#0002",

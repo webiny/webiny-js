@@ -1,3 +1,8 @@
+/**
+ * We are attaching hooks so we can make sure that the scheduled jobs are removed.
+ * This is due the possibility that the user publishes/unpublishes/deletes entry which is scheduled.
+ * At that point, there is no need to run the scheduled job as the user already did the action manually.
+ */
 import type { CmsModel } from "@webiny/api-headless-cms/types/model.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/types.js";
 import type { ScheduleContext } from "~/types.js";

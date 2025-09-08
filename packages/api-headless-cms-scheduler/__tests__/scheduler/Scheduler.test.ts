@@ -1,5 +1,5 @@
 import { Scheduler } from "~/scheduler/Scheduler.js";
-import type { ISchedulerInput } from "~/scheduler/types.js";
+import { type ISchedulerInput, ScheduleType } from "~/scheduler/types.js";
 
 describe("Scheduler", () => {
     const fetcher = {
@@ -41,7 +41,7 @@ describe("Scheduler", () => {
             sort: undefined,
             after: undefined,
             limit: undefined,
-            where: undefined
+            where: {}
         });
         expect(fetcher.listScheduled).toHaveBeenCalled();
         expect(result).toEqual(expectedResult);
@@ -51,8 +51,8 @@ describe("Scheduler", () => {
         const scheduler = new Scheduler({ fetcher, executor });
         const targetId = "target-id#0001";
         const input: ISchedulerInput = {
-            type: "publish",
-            dateOn: new Date()
+            type: ScheduleType.publish,
+            scheduleOn: new Date()
         };
         await scheduler.schedule(targetId, input);
         expect(executor.schedule).toHaveBeenCalledWith(targetId, input);

@@ -94,6 +94,13 @@ export class Handler {
         /**
          * Everything is ok. Delete the schedule record.
          */
-        await scheduleEntryManager.delete(scheduleEntryId);
+        try {
+            await scheduleEntryManager.delete(scheduleEntryId, {
+                force: true,
+                permanently: true
+            });
+        } catch {
+            // Does not matter if it fails.
+        }
     }
 }

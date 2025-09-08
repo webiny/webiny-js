@@ -1,6 +1,6 @@
 import { createMockService } from "~tests/mocks/service.js";
 import { createMockGetIdentity } from "~tests/mocks/getIdentity.js";
-import { createMockScheduleModel } from "~tests/mocks/scheduleModel.js";
+import { createMockSchedulerModel } from "~tests/mocks/schedulerModel.js";
 import { createMockCms } from "~tests/mocks/cms.js";
 import { createMockTargetModel } from "~tests/mocks/targetModel.js";
 import { PublishScheduleAction } from "~/scheduler/actions/PublishScheduleAction.js";
@@ -21,7 +21,7 @@ describe("PublishScheduleAction", () => {
     const service = createMockService();
     const fetcher = createMockFetcher();
     const getIdentity = createMockGetIdentity();
-    const scheduleModel = createMockScheduleModel();
+    const schedulerModel = createMockSchedulerModel();
     const targetModel = createMockTargetModel();
 
     it("should schedule a publish action immediately", async () => {
@@ -34,11 +34,11 @@ describe("PublishScheduleAction", () => {
                     }
                 } as CmsEntry<T>;
             },
-            async publishEntry() {
+            async publishEntry<T extends CmsEntryValues = CmsEntryValues>() {
                 return {
                     savedBy: getIdentity(),
                     savedOn: new Date().toISOString()
-                } as CmsEntry;
+                } as CmsEntry<T>;
             }
         });
 
@@ -46,7 +46,7 @@ describe("PublishScheduleAction", () => {
             service,
             getIdentity,
             targetModel,
-            scheduleModel,
+            schedulerModel,
             cms,
             fetcher
         });
@@ -68,7 +68,6 @@ describe("PublishScheduleAction", () => {
             scheduledBy: getIdentity(),
             publishOn: expect.any(Date),
             unpublishOn: undefined,
-            dateOn: expect.any(Date),
             type: ScheduleType.publish,
             title: "Test Entry"
         });
@@ -88,11 +87,11 @@ describe("PublishScheduleAction", () => {
                     }
                 } as CmsEntry<T>;
             },
-            async publishEntry() {
+            async publishEntry<T extends CmsEntryValues = CmsEntryValues>() {
                 return {
                     savedBy: getIdentity(),
                     savedOn: new Date().toISOString()
-                } as CmsEntry;
+                } as CmsEntry<T>;
             }
         });
 
@@ -100,7 +99,7 @@ describe("PublishScheduleAction", () => {
             service,
             getIdentity,
             targetModel,
-            scheduleModel,
+            schedulerModel,
             cms,
             fetcher
         });
@@ -160,7 +159,6 @@ describe("PublishScheduleAction", () => {
                     targetId: "target-id#0002",
                     type: ScheduleType.publish,
                     scheduledOn: dateToISOString(scheduleOn),
-                    dateOn: dateToISOString(scheduleOn),
                     title: "Test Entry",
                     targetModelId: targetModel.modelId,
                     scheduledBy: getIdentity()
@@ -180,11 +178,11 @@ describe("PublishScheduleAction", () => {
                     }
                 } as CmsEntry<T>;
             },
-            async publishEntry() {
+            async publishEntry<T extends CmsEntryValues = CmsEntryValues>() {
                 return {
                     savedBy: getIdentity(),
                     savedOn: new Date().toISOString()
-                } as CmsEntry;
+                } as CmsEntry<T>;
             }
         });
 
@@ -192,7 +190,7 @@ describe("PublishScheduleAction", () => {
             service,
             getIdentity,
             targetModel,
-            scheduleModel,
+            schedulerModel,
             cms,
             fetcher
         });
@@ -214,15 +212,13 @@ describe("PublishScheduleAction", () => {
             scheduledBy: getIdentity(),
             publishOn: scheduleOn,
             unpublishOn: undefined,
-            dateOn: scheduleOn,
             type: ScheduleType.publish,
             title: "Test Entry"
         });
 
         expect(crateEntryMock).toHaveBeenCalledTimes(1);
-        expect(crateEntryMock).toHaveBeenCalledWith(scheduleModel, {
+        expect(crateEntryMock).toHaveBeenCalledWith(schedulerModel, {
             id: createScheduleRecordId(`target-id#0002`),
-            dateOn: undefined,
             scheduledBy: getIdentity(),
             scheduledOn: dateToISOString(scheduleOn),
             targetId: "target-id#0002",
