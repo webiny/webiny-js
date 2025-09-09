@@ -20,6 +20,7 @@
     "@webiny/pubsub": "0.0.0",
     "@webiny/utils": "0.0.0",
     "deep-equal": "^2.2.3",
+    "jose": "^5.10.0",
     "jsonwebtoken": "^9.0.1",
     "minimatch": "^5.1.6",
     "zod": "^3.23.8"

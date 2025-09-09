@@ -19,7 +19,6 @@
     "@webiny/error": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
     "jsonwebtoken": "^9.0.1",
-    "jwk-to-pem": "^2.0.1",
     "node-fetch": "2.6.7"
   },
   "devDependencies": {
