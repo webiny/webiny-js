@@ -1,4 +1,5 @@
-// @ts-expect-error `mdbid` package has no types
-import generateId from "mdbid";
+import ObjectID from "bson-objectid";
 
-export const mdbid = (): string => generateId();
+export const mdbid = () => {
+    return ObjectID().toHexString();
+};

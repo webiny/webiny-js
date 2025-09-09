@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "references": [],
+  "references": [{ "path": "../api-security/tsconfig.build.json" }],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",

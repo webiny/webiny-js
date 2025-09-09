@@ -1,12 +1,9 @@
 import jwt from "jsonwebtoken";
-import jwkToPem from "jwk-to-pem";
 import fetch from "node-fetch";
-import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
+import { isJwt, verifyJwtUsingJwk } from "@webiny/api-security";
+import type { SecurityContext, SecurityIdentity, Jwk } from "@webiny/api-security/types";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler";
-
-// All JWTs are split into 3 parts by two periods
-const isJwt = (token: string) => token.split(".").length === 3;
 
 type Context = SecurityContext;
 
@@ -17,14 +14,10 @@ export interface AuthenticatorConfig {
     getIdentity(params: { token: { [key: string]: any } }): SecurityIdentity;
 }
 
-const jwksCache = new Map<string, jwkToPem.JWK[]>();
-
-type WithKid<T> = T & {
-    kid: string;
-};
+const jwksCache = new Map<string, Jwk[]>();
 
 export const createAuthenticator = (config: AuthenticatorConfig) => {
-    const getJWKs = async (): Promise<WithKid<jwkToPem.JWK>[]> => {
+    const getJwks = async (): Promise<Jwk[]> => {
         const key = config.domain;
 
         if (!jwksCache.has(key)) {
@@ -34,13 +27,13 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
             jwksCache.set(key, response.keys);
         }
 
-        return jwksCache.get(key) as WithKid<jwkToPem.JWK>[];
+        return jwksCache.get(key) as Jwk[];
     };
 
     const auth0Authenticator = async (idToken?: string) => {
         if (typeof idToken === "string" && isJwt(idToken)) {
             try {
-                const jwks = await getJWKs();
+                const jwks = await getJwks();
                 const decoded = jwt.decode(idToken, { complete: true });
                 if (!decoded) {
                     return null;
@@ -52,7 +45,7 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
                     return null;
                 }
 
-                return jwt.verify(idToken, jwkToPem(jwk)) as Record<string, any>;
+                return verifyJwtUsingJwk(idToken, jwk);
             } catch (err) {
                 throw new WebinyError(err.message, "SECURITY_AUTH0_INVALID_TOKEN");
             }

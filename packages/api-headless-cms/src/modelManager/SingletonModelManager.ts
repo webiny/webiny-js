@@ -40,10 +40,7 @@ export class SingletonModelManager<T extends CmsEntryValues> implements ISinglet
     }
 
     public async get(): Promise<CmsEntry<T>> {
-        const id = createCacheKey(this.manager.model.modelId, {
-            algorithm: "sha256",
-            encoding: "hex"
-        });
+        const id = createCacheKey(this.manager.model.modelId);
         try {
             return await this.manager.get(`${id}#0001`);
         } catch {

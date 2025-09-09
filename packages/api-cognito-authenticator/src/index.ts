@@ -1,23 +1,14 @@
 import jwt from "jsonwebtoken";
-import jwkToPem from "jwk-to-pem";
 import fetch from "node-fetch";
-import util from "util";
-
-const verify = util.promisify<string, string, Record<string, any>>(jwt.verify);
-
-// All JWTs are split into 3 parts by two periods
-const isJwt = (token: string): boolean => token.split(".").length === 3;
+import { isJwt, verifyJwtUsingJwk } from "@webiny/api-security";
+import type { Jwk } from "@webiny/api-security/types";
 
 export interface Config {
     region: string;
     userPoolId: string;
 }
 
-const jwksCache = new Map<string, Record<string, any>[]>();
-
-interface Key {
-    kid?: string;
-}
+const jwksCache = new Map<string, Jwk[]>();
 
 export interface TokenData {
     token_use: string;
@@ -35,7 +26,7 @@ export const createAuthenticator = (config: Config) => {
             return `https://cognito-idp.${region}.amazonaws.com/${userPoolId}/.well-known/jwks.json`;
         };
 
-        const getJWKs = async (): Promise<Key[] | undefined> => {
+        const getJwks = async (): Promise<Jwk[] | undefined> => {
             const { region, userPoolId } = config;
             const key = `${region}:${userPoolId}`;
 
@@ -51,7 +42,7 @@ export const createAuthenticator = (config: Config) => {
             return null;
         }
 
-        const jwks = await getJWKs();
+        const jwks = await getJwks();
         if (!jwks) {
             return null;
         }
@@ -60,22 +51,15 @@ export const createAuthenticator = (config: Config) => {
             return null;
         }
         const { header } = decodedData;
-        /**
-         * TODO: figure out which type is the jwk variable.
-         */
-        const jwk: any = jwks.find(key => key.kid === header.kid);
+
+        const jwk = jwks.find(key => key.kid === header.kid);
 
         if (!jwk) {
             return null;
         }
-        /**
-         * TODO @ts-refactor @pavel
-         * Figure out correct types for the verify method. Maybe write your own, without using utils.promisify?
-         */
-        const token = (await (verify as unknown as typeof jwt.verify)(
-            idToken,
-            jwkToPem(jwk)
-        )) as unknown as TTokenData;
+
+        const token = (await verifyJwtUsingJwk(idToken, jwk)) as unknown as TTokenData;
+
         if (token.token_use !== "id") {
             const error: any = new Error("idToken is invalid!");
             error.code = "SECURITY_COGNITO_INVALID_TOKEN";

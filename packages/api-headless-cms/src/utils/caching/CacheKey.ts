@@ -7,10 +7,7 @@ class CacheKey implements ICacheKey {
 
     private constructor(keys: ICacheKeyKeys) {
         this.keys = keys;
-        this.key = createCacheKeyValue(keys, {
-            algorithm: "sha1",
-            encoding: "hex"
-        });
+        this.key = createCacheKeyValue(keys);
     }
 
     public static create(key: ICacheKeyKeys): ICacheKey {
