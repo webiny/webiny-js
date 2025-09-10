@@ -25,6 +25,7 @@ import { createMailerContext } from "@webiny/api-mailer";
 import { NullLicense } from "@webiny/wcp";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb";
 import { createAcoAuditLogsContext } from "~/context/index.js";
+import { createWebsiteBuilder } from "@webiny/api-website-builder/index.js";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -136,6 +137,7 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
                 storageOperations: fileManagerStorage.storageOperations
             }),
             createHeadlessCmsGraphQL(),
+            createWebsiteBuilder(),
             createAco({ documentClient }),
             createAuditLogs(),
             createAcoAuditLogsContext(),
