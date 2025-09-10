@@ -76,7 +76,7 @@
     "@types/tinycolor2": "^1.4.6",
     "@webiny/cli": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "monaco-editor": "^0.52.2",
+    "monaco-editor": "^0.53.0",
     "rimraf": "^6.0.1",
     "typescript": "5.9.2"
   },

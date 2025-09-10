@@ -367,7 +367,7 @@ export const apps: App[] = [
                 type: "PAGE",
                 displayName: "Page",
                 linkToEntity(id) {
-                    return `/website-builder/pages/editor/${encodeURIComponent(id)}`;
+                    return `/website-builder/pages/editor/${id}`;
                 },
                 actions: [
                     commonActions.CREATE,
@@ -384,7 +384,7 @@ export const apps: App[] = [
                 type: "REDIRECT",
                 displayName: "Redirect",
                 linkToEntity(id) {
-                    return `/website-builder/redirects?id=${encodeURIComponent(id)}`;
+                    return `/website-builder/redirects?id=${id}`;
                 },
                 actions: [
                     commonActions.CREATE,
