@@ -9,13 +9,22 @@ export enum ActionType {
     PUBLISH = "PUBLISH",
     UNPUBLISH = "UNPUBLISH",
     IMPORT = "IMPORT",
-    EXPORT = "EXPORT"
+    EXPORT = "EXPORT",
+    MOVE = "MOVE",
+    CREATE_REVISION_FROM = "CREATE_REVISION_FROM",
+    DUPLICATE = "DUPLICATE"
 }
 
 const commonActions = {
     CREATE: { type: ActionType.CREATE, displayName: "Create" },
     UPDATE: { type: ActionType.UPDATE, displayName: "Update" },
-    DELETE: { type: ActionType.DELETE, displayName: "Delete" }
+    DELETE: { type: ActionType.DELETE, displayName: "Delete" },
+    MOVE: { type: ActionType.MOVE, displayName: "Move" },
+    CREATE_REVISION_FROM: {
+        type: ActionType.CREATE_REVISION_FROM,
+        displayName: "Create revision from"
+    },
+    DUPLICATE: { type: ActionType.DUPLICATE, displayName: "Duplicate" }
 };
 
 const publishActions = {
@@ -347,6 +356,42 @@ export const apps: App[] = [
                     return `/admin-users?id=${id}`;
                 },
                 actions: [commonActions.CREATE, commonActions.UPDATE, commonActions.DELETE]
+            }
+        ]
+    },
+    {
+        app: "WEBSITE_BUILDER",
+        displayName: "Website Builder",
+        entities: [
+            {
+                type: "PAGE",
+                displayName: "Page",
+                linkToEntity(id) {
+                    return `/website-builder/pages/editor/${encodeURIComponent(id)}`;
+                },
+                actions: [
+                    commonActions.CREATE,
+                    commonActions.UPDATE,
+                    commonActions.DELETE,
+                    commonActions.MOVE,
+                    commonActions.CREATE_REVISION_FROM,
+                    commonActions.DUPLICATE,
+                    publishActions.PUBLISH,
+                    publishActions.UNPUBLISH
+                ]
+            },
+            {
+                type: "REDIRECT",
+                displayName: "Redirect",
+                linkToEntity(id) {
+                    return `/website-builder/redirects?id=${encodeURIComponent(id)}`;
+                },
+                actions: [
+                    commonActions.CREATE,
+                    commonActions.UPDATE,
+                    commonActions.DELETE,
+                    commonActions.MOVE
+                ]
             }
         ]
     }

@@ -13,6 +13,7 @@
     { "path": "../api-security/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../api-wcp/tsconfig.build.json" },
+    { "path": "../api-website-builder/tsconfig.build.json" },
     { "path": "../common-audit-logs/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },

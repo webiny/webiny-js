@@ -15,6 +15,7 @@ import type { AdminUsersContext } from "@webiny/api-admin-users/types.js";
 import type { I18NContext } from "@webiny/api-i18n/types.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import type { WcpContext } from "@webiny/api-wcp/types.js";
+import type { WebsiteBuilderContext } from "@webiny/api-website-builder/index.js";
 
 export interface AuditLogPayload
     extends Omit<IAuditLog, "id" | "tenant" | "createdOn" | "createdBy" | "expiresAt" | "content"> {
@@ -79,7 +80,8 @@ export interface AuditLogsContext
         Pick<FileManagerContext, "fileManager">,
         Pick<SecurityContext, "security">,
         Pick<TenancyContext, "tenancy">,
-        Pick<ApwContext, "apw"> {
+        Pick<ApwContext, "apw">,
+        Pick<WebsiteBuilderContext, "websiteBuilder"> {
     auditLogs: AuditLogsContextValue;
 }
 

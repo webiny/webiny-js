@@ -14608,6 +14608,7 @@ __metadata:
     "@webiny/api-security": "npm:0.0.0"
     "@webiny/api-tenancy": "npm:0.0.0"
     "@webiny/api-wcp": "npm:0.0.0"
+    "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/common-audit-logs": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"

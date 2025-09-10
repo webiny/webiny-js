@@ -6,6 +6,7 @@ import { createMailerHooks } from "./mailer";
 import { createAcoHooks } from "./aco";
 import { createApwHooks } from "./apw";
 import type { AuditLogsContext } from "~/types";
+import { createWebsiteBuilderHooks } from "~/subscriptions/websiteBuilder/index.js";
 
 export const createSubscriptionHooks = (context: AuditLogsContext) => {
     createFileManagerHooks(context);
@@ -14,5 +15,6 @@ export const createSubscriptionHooks = (context: AuditLogsContext) => {
     createI18NHooks(context);
     createMailerHooks(context);
     createAcoHooks(context);
+    createWebsiteBuilderHooks(context);
     context.wcp.canUseFeature("advancedPublishingWorkflow") && createApwHooks(context);
 };
