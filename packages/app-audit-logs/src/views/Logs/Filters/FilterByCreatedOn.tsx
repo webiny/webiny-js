@@ -22,16 +22,16 @@ const getValidFilterValue = (value: string): Date | undefined => {
     return new Date(value);
 };
 
-export const FilterByTimestamp = () => {
+export const FilterByCreatedOn = () => {
     const bindFrom = useBind({
-        name: "data.timestamp_gte",
+        name: "data.createdOn_gte",
         beforeChange(value, cb) {
             cb(getValidFilterValue(value));
         }
     });
 
     const bindTo = useBind({
-        name: "data.timestamp_lte",
+        name: "data.createdOn_lte",
         beforeChange(value, cb) {
             cb(getValidFilterValue(value));
         }

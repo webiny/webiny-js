@@ -60,6 +60,7 @@ export const createGraphQLSchema = () => {
                 app: String
                 action: String
                 createdBy: String
+                entity: String
                 entryId: String
                 version: Number
                 createdOn_gte: DateTime

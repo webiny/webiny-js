@@ -14,6 +14,7 @@
     "@emotion/styled": "11.10.6",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",
+    "@webiny/utils": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-security": "0.0.0",
     "@webiny/common-audit-logs": "0.0.0",

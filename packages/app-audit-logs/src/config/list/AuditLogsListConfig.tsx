@@ -1,9 +1,20 @@
-import { useMemo } from "react";
-import { createConfigurableComponent } from "@webiny/react-properties";
-import type { BrowserConfig } from "./Browser";
-import { Browser } from "./Browser";
+import React, {useMemo} from "react";
+import {createConfigurableComponent} from "@webiny/react-properties";
+import type {BrowserConfig} from "./Browser";
+import {Browser} from "./Browser";
+import {CompositionScope} from "@webiny/react-composition";
 
 const base = createConfigurableComponent<AuditLogsListConfig>("AuditLogsListConfig");
+
+const ScopedAuditLogsListConfig = ({children}: {children: React.ReactNode}) => {
+    return (
+        <CompositionScope name={"cms"}>
+            <base.Config>{children}</base.Config>
+        </CompositionScope>
+    );
+};
+
+ScopedAuditLogsListConfig.displayName = "AuditLogsListConfig";
 
 export const AuditLogsListConfig = Object.assign(base.Config, { Browser });
 export const AuditLogsListWithConfig = base.WithConfig;
@@ -16,7 +27,7 @@ export function useAuditLogsListConfig() {
     const config = base.useConfig();
 
     const browser = config.browser || {};
-
+    
     return useMemo(
         () => ({
             browser: {
