@@ -14,7 +14,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@editorjs/editorjs": "2.26.5",
+    "@editorjs/editorjs": "^2.30.8",
     "@emotion/react": "11.10.8",
     "@emotion/styled": "11.10.6",
     "@material-design-icons/svg": "^0.14.13",

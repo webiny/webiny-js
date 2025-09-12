@@ -5,7 +5,7 @@
   "dependencies": {
     "@editorjs/delimiter": "^1.4.2",
     "@editorjs/list": "^1.10.0",
-    "@editorjs/quote": "^2.7.2",
+    "@editorjs/quote": "^2.7.6",
     "@editorjs/underline": "^1.2.1",
     "@types/react": "18.2.79",
     "@webiny/app-admin": "latest",

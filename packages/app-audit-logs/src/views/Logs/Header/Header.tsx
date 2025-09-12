@@ -60,7 +60,11 @@ export const Header = ({
                 </Cell>
                 <Cell span={8}>
                     <WrapperActions>
-                        <Search value={searchValue} onChange={onSearchChange} placeholder={"Search..."} />
+                        <Search
+                            value={searchValue}
+                            onChange={onSearchChange}
+                            placeholder={"Search..."}
+                        />
                         <ButtonFilters
                             showingFilters={showingFilters}
                             hideFilters={hideFilters}

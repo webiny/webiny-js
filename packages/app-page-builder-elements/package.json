@@ -22,7 +22,7 @@
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
-    "@editorjs/editorjs": "2.26.5",
+    "@editorjs/editorjs": "^2.30.8",
     "aos": "^2.3.4",
     "react": "18.2.0",
     "react-columned": "^1.1.3",
