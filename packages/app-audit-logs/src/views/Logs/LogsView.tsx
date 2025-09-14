@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import debounce from "lodash/debounce";
 import { i18n } from "@webiny/app/i18n";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
+import { useSecurity } from "@webiny/app-security";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { LoadingMore } from "~/views/Logs/LoadingMore";
 import { LoadMoreButton } from "~/views/Logs/LoadMoreButton";
@@ -12,11 +13,10 @@ import { Preview } from "~/views/Logs/Preview";
 import { useAuditLogsList } from "~/hooks";
 import { MainContainer, Wrapper } from "./styled";
 import type { IAuditLog } from "~/types.js";
-import { useSecurity } from "@webiny/app-security/index";
 
 const t = i18n.ns("app-audit-logs/views/logs");
 
-const AuditLogsView = () => {
+export const LogsView = () => {
     const [selectedAuditLog, setSelectedAuditLog] = useState<IAuditLog | null>(null);
     const handleAuditLogSelect = useCallback(
         (auditLog: IAuditLog) => setSelectedAuditLog(auditLog),
@@ -95,5 +95,3 @@ const AuditLogsView = () => {
         </>
     );
 };
-
-export default AuditLogsView;

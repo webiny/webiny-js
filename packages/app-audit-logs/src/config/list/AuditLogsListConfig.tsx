@@ -8,7 +8,7 @@ const base = createConfigurableComponent<AuditLogsListConfig>("AuditLogsListConf
 
 const ScopedAuditLogsListConfig = ({ children }: { children: React.ReactNode }) => {
     return (
-        <CompositionScope name={"cms"}>
+        <CompositionScope name={"auditLogs"}>
             <base.Config>{children}</base.Config>
         </CompositionScope>
     );
@@ -16,8 +16,14 @@ const ScopedAuditLogsListConfig = ({ children }: { children: React.ReactNode }) 
 
 ScopedAuditLogsListConfig.displayName = "AuditLogsListConfig";
 
-export const AuditLogsListConfig = Object.assign(base.Config, { Browser });
-export const AuditLogsListWithConfig = base.WithConfig;
+export const AuditLogsListConfig = Object.assign(ScopedAuditLogsListConfig, { Browser });
+export const AuditLogsListWithConfig = ({ children }: { children: React.ReactNode }) => {
+    return (
+        <CompositionScope name={"auditLogs"}>
+            <base.WithConfig>{children}</base.WithConfig>
+        </CompositionScope>
+    );
+};
 
 interface AuditLogsListConfig {
     browser: BrowserConfig;
