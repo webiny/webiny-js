@@ -19,7 +19,11 @@ const ScopedFileManagerViewConfig = ({ children }: { children: React.ReactNode }
 
 ScopedFileManagerViewConfig.displayName = "FileManagerViewConfig";
 
-export const FileManagerViewConfig = Object.assign(base.Config, { Browser, FileDetails });
+export const FileManagerViewConfig = Object.assign(ScopedFileManagerViewConfig, {
+    Browser,
+    FileDetails
+});
+
 export const FileManagerViewWithConfig = base.WithConfig;
 
 interface FileManagerViewConfigData {
