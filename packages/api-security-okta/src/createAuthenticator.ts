@@ -1,18 +1,9 @@
 import jwt from "jsonwebtoken";
-import jwkToPem from "jwk-to-pem";
 import fetch from "node-fetch";
-import util from "util";
-import { SecurityContext, SecurityIdentity } from "@webiny/api-security/types";
-import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
-const verify = util.promisify<string, string, Record<string, any>>(jwt.verify);
-
-interface VerifyResponse {
-    jti?: string;
-}
-
-// All JWTs are split into 3 parts by two periods
-const isJwt = (token: string) => token.split(".").length === 3;
+import { isJwt, verifyJwtUsingJwk } from "@webiny/api-security";
+import type { SecurityContext, SecurityIdentity, Jwk } from "@webiny/api-security/types";
+import WebinyError from "@webiny/error";
 
 type Context = SecurityContext;
 
@@ -23,14 +14,10 @@ export interface AuthenticatorConfig {
     getIdentity(params: { token: { [key: string]: any } }): SecurityIdentity;
 }
 
-interface JwksCacheItem {
-    kid: string;
-    [key: string]: string;
-}
-const jwksCache = new Map<string, JwksCacheItem[]>();
+const jwksCache = new Map<string, Jwk[]>();
 
 export const createAuthenticator = (config: AuthenticatorConfig) => {
-    const getJWKs = async (): Promise<JwksCacheItem[]> => {
+    const getJwks = async (): Promise<Jwk[]> => {
         const key = config.issuer;
 
         if (!jwksCache.has(key)) {
@@ -38,13 +25,13 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
             jwksCache.set(key, response.keys);
         }
 
-        return jwksCache.get(key) as JwksCacheItem[];
+        return jwksCache.get(key) as Jwk[];
     };
 
     const oktaAuthenticator = async (idToken?: string) => {
         if (typeof idToken === "string" && isJwt(idToken)) {
             try {
-                const jwks = await getJWKs();
+                const jwks = await getJwks();
                 const decoded = jwt.decode(idToken, { complete: true });
                 if (!decoded) {
                     return null;
@@ -55,12 +42,8 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
                 if (!jwk) {
                     return null;
                 }
-                /**
-                 * Figure out the types.
-                 * TODO @ts-refactor
-                 */
-                // @ts-expect-error
-                const token = (await verify(idToken, jwkToPem(jwk))) as VerifyResponse;
+
+                const token = await verifyJwtUsingJwk(idToken, jwk);
                 if (!token.jti || !token.jti.startsWith("ID.")) {
                     throw new WebinyError("idToken is invalid!", "SECURITY_OKTA_INVALID_TOKEN");
                 }

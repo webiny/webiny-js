@@ -30,6 +30,8 @@ export * from "./utils/AppPermissions";
 export * from "./utils/getPermissionsFromSecurityGroupsForLocale";
 export * from "./utils/IdentityValue";
 export * from "./utils/createGroupsTeamsAuthorizer";
+export { verifyJwtUsingJwk } from "./utils/verifyJwtUsingJwk";
+export { isJwt } from "./utils/isJwt";
 
 type Context = SecurityContext & TenancyContext & WcpContext;
 

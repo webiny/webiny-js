@@ -6,6 +6,8 @@ import { GetTenant } from "~/createSecurity";
 import { ProjectPackageFeatures } from "@webiny/wcp/types";
 import { TenancyContext } from "@webiny/api-tenancy/types";
 
+export type { Jwk, Jwt } from "./utils/verifyJwtUsingJwk";
+
 // Backwards compatibility - START
 export type SecurityIdentity = Identity;
 

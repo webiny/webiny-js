@@ -32,7 +32,7 @@ export class GetDefaultPermissionsWithTeams implements IGetDefaultPermissions {
 
         const permissions = [...originalPermissions]; // Clone the original permissions to avoid mutation.
 
-        if (identityTeams.length) {
+        if (identity && identityTeams.length) {
             for (const identityTeam of identityTeams) {
                 // Check if the team has permissions for the folder.
                 const teamPermission = permissions.find(
