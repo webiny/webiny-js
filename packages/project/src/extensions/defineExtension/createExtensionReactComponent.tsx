@@ -1,5 +1,5 @@
 import React from "react";
-import { Property, useIdGenerator, useParentProperty } from "@webiny/react-properties";
+import { Property, useIdGenerator } from "@webiny/react-properties";
 import { type DefineExtensionParams } from "./types.js";
 import { type z } from "zod";
 
