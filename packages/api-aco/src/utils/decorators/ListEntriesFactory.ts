@@ -37,8 +37,8 @@ export class ListEntriesFactory {
         const params = { ...initialParams, limit };
         const hasRootFolder = hasRootFolderId({ model, where });
 
-        // If we're querying the root folder, skip permission checks
-        if (hasRootFolder) {
+        // If FLP should be skipped, or we're querying the root folder, skip permission checks
+        if (!this.folderLevelPermissions.canUseFolderLevelPermissions() || hasRootFolder) {
             return await decoratee(model, params);
         }
 
