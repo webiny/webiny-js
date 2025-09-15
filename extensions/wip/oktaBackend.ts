@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/di-container";
 import { ApiBeforeBuild, UiService } from "@webiny/extensions/project";
-import Okta from "@webiny/okta";
+import type Okta from "@webiny/okta";
 
 class MyOktaIdentityProvider implements Okta.Backend.Interface {
     constructor(private ui: UiService.Interface) {}
