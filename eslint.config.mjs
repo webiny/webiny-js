@@ -59,6 +59,7 @@ export default defineConfig([
       //"plugin:vitest/recommended"
     ),
     rules: {
+      "@typescript-eslint/no-misused-this": "error",
       "react/prop-types": 0,
       "import/no-unresolved": 0,
       "@typescript-eslint/no-namespace":"off",
@@ -169,6 +170,10 @@ export default defineConfig([
   
   // Global ignore patterns
   globalIgnores([
+    ".idea/**/*",
+    ".nx/**/*",
+    ".yarn/**/*",
+    ".webiny/**/*",
     "**/node_modules/",
     "**/dist/",
     "**/lib/",
