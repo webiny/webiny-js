@@ -7,5 +7,6 @@ import { register } from "tsx/esm/api";
 register();
 
 (async () => {
+    //eslint-disable-next-line import/dynamic-import-chunkname
     await import("./renderConfigWorker.js");
 })();

@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { createRecordHandler, RecordHandler } from "~/resolver/app/RecordHandler.js";
 import { createMockTransformHandler } from "~tests/mocks/transformHandler.js";
 import { createMockCommandBundler, createMockTableBundler } from "~tests/mocks/bundler.js";

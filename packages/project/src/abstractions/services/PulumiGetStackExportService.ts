@@ -2,7 +2,7 @@ import { Abstraction } from "@webiny/di-container";
 import { type IAppModel } from "~/abstractions/models/IAppModel.js";
 import { type IBaseAppParams } from "~/abstractions/types.js";
 
-export interface IPulumiGetStackExportServiceParams extends Omit<IBaseAppParams, "app"> {}
+export type IPulumiGetStackExportServiceParams = Omit<IBaseAppParams, "app">;
 
 export interface IPulumiGetStackExportService {
     execute<TOutput extends Record<string, any> = Record<string, any>>(

@@ -5,7 +5,7 @@ import { getDuplicatesFilePath, getReferencesFilePath } from "../paths.js";
 import fs from "fs";
 import { createDependencyTree } from "../createDependencyTree.js";
 
-export class VerifyDepsCommand implements Command.Interface<{}> {
+export class VerifyDepsCommand implements Command.Interface<unknown> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface

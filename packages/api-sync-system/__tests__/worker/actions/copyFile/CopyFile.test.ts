@@ -11,7 +11,7 @@ import {
     createMockSourceDeployment,
     createMockTargetDeployment
 } from "~tests/mocks/deployments.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("CopyFile", () => {
     const targetDeployment = createMockTargetDeployment();

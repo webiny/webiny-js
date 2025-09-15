@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { getTableType } from "~/sync/utils/getTableType.js";
 
 describe("getTableType", () => {

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { assignEntryEvents, pubSubTracker } from "./mocks/lifecycleHooks";
 import models from "./mocks/contentModels";

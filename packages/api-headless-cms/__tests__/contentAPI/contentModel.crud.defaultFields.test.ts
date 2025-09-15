@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { CmsGroup } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 

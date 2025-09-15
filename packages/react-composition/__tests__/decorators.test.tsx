@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { describe, it } from "vitest";
 import React from "react";
 import { makeDecoratable, withDecoratorFactory } from "~/index";
@@ -22,7 +21,7 @@ describe("Built-in decorator factory", () => {
                 return <Original {...props} />;
             };
         });
-
+        // @ts-expect-error
         <GenericComponentDecorator name={"*"} />;
 
         const FinalComponent = withDecoratorFactory<{ modelIds?: string[] }>()(BaseComponent);
@@ -32,13 +31,13 @@ describe("Built-in decorator factory", () => {
                 return <Original {...props} />;
             };
         });
-
+        // @ts-expect-error
         <CustomComponentDecorator modelIds={["model1"]} />;
     });
 
     it("with built-in augmentation", async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const WithDefaultDecorator = withDecoratorFactory<{ name: string }>()(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             makeDecoratable("BaseComponent", (_: BaseComponentProps) => {
                 return <span>BaseComponent</span>;
             })
@@ -49,7 +48,7 @@ describe("Built-in decorator factory", () => {
                 return <Original {...props} />;
             };
         });
-
+        // @ts-expect-error
         <GenericComponentDecorator name={"123"} />;
 
         const FinalComponent = withDecoratorFactory<{ modelIds?: string[] }>()(
@@ -62,6 +61,7 @@ describe("Built-in decorator factory", () => {
             };
         });
 
+        // @ts-expect-error
         <CustomComponentDecorator modelIds={["*"]} />;
     });
 });

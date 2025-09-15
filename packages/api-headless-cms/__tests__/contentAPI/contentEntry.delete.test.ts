@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { setupContentModelGroup, setupContentModels } from "~tests/testHelpers/setup";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
 import type { CmsEntry } from "~/types";

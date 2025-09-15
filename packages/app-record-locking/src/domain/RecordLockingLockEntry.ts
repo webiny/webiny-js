@@ -11,7 +11,7 @@ interface Params {
 }
 
 export class RecordLockingLockEntry implements IRecordLockingLockEntry {
-    // eslint-disable-next-line
+     
     private readonly client: IRecordLockingClient;
 
     public constructor(params: Params) {

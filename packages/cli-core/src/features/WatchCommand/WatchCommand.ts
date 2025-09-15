@@ -5,7 +5,7 @@ import chalk from "chalk";
 import { getRandomColorForString } from "./getRandomColorForString.js";
 import { createPrefixer } from "./createPrefixer.js";
 
-export interface IWatchCommandParams extends IBaseAppParams {}
+export type IWatchCommandParams = IBaseAppParams;
 
 export class WatchCommand implements Command.Interface<IWatchCommandParams> {
     constructor(

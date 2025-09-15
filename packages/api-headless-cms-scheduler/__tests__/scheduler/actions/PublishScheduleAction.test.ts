@@ -1,3 +1,4 @@
+import { describe, expect, it, vi } from "vitest";
 import { createMockService } from "~tests/mocks/service.js";
 import { createMockGetIdentity } from "~tests/mocks/getIdentity.js";
 import { createMockSchedulerModel } from "~tests/mocks/schedulerModel.js";

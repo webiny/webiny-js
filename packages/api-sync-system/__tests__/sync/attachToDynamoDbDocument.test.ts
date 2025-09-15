@@ -22,7 +22,7 @@ import {
     PutEventsCommand
 } from "@webiny/aws-sdk/client-eventbridge/index.js";
 import { mockClient } from "aws-sdk-client-mock";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("attachToDynamoDbDocument", () => {
     it("should not have attached decorator", async () => {

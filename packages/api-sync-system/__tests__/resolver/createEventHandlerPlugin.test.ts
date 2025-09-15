@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from "vitest";
 import { createEventHandlerPlugin } from "~/resolver/createEventHandlerPlugin.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { SQSEventHandler } from "@webiny/handler-aws/sqs/index.js";

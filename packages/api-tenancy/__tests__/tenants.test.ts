@@ -1,3 +1,4 @@
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { Tenancy, TenancyStorageOperations } from "~/types.js";
 import { createTenancy } from "~/createTenancy.js";
@@ -25,7 +26,7 @@ describe(`Test "Tenancy" tenants`, () => {
         });
     });
 
-    test(`should create/update/list/delete tenants`, async () => {
+    it(`should create/update/list/delete tenants`, async () => {
         const tenant1Data = {
             id: "1",
             name: "Tenant #1",

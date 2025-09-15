@@ -5,7 +5,7 @@ import type {
 } from "~/resolver/recordTypes/fileManager/types.js";
 import { createRegularMockTable } from "~tests/mocks/table.js";
 import { createMockDeployment } from "~tests/mocks/deployments.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("fileManagerOnDelete", () => {
     it("should check if the plugin can handle the delete command", () => {

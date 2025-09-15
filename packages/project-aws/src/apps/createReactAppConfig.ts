@@ -118,7 +118,7 @@ function createEmptyReactConfig(options: RunCommandOptions): ReactAppConfig {
 
                 invariant(output, appNotDeployedMessage(app, options.env));
 
-                // @ts-ignore
+                // @ts-expect-error
                 outputCache.set(app, output);
             }
 

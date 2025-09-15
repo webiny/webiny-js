@@ -1,7 +1,7 @@
 import { PutCommand } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createHandlerConverter, HandlerConverter } from "~/sync/handler/HandlerConverter.js";
 import { NullCommandValue } from "~/sync/handler/converter/commands/NullCommandValue.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("HandlerConverter", () => {
     beforeEach(() => {

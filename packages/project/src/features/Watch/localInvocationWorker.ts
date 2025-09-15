@@ -3,6 +3,7 @@ import { parentPort, workerData } from "worker_threads";
 const { handler: handlerParams } = workerData;
 
 try {
+    //eslint-disable-next-line import/dynamic-import-chunkname
     const { default: importedCode } = await import(handlerParams.path);
     const { handler } = importedCode;
 

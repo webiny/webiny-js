@@ -1,7 +1,5 @@
 import { createImplementation } from "@webiny/di-container";
-import {
-    GetPulumiVersionService,
-} from "~/abstractions/index.js";
+import { GetPulumiVersionService } from "~/abstractions/index.js";
 import execa from "execa";
 
 export class DefaultGetPulumiVersion implements GetPulumiVersionService.Interface {
@@ -40,7 +38,7 @@ export class DefaultGetPulumiVersion implements GetPulumiVersionService.Interfac
                     result[1] = match[1];
                 }
             }
-        } catch (err) {
+        } catch {
             // Do nothing.
         }
 

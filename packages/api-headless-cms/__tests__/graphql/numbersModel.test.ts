@@ -20,7 +20,7 @@ const float12Value = 0.300700700108;
 const float13Value = 0.0007007005008;
 const float14Value = 0.01070070050078;
 const float15Value = 0.062900000982458;
-// eslint-disable-next-line
+ 
 const float20Value = 0.02753098762000982458;
 
 describe("numbers model", () => {

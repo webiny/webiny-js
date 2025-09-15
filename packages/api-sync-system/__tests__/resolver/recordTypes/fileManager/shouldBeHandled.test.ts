@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { shouldBeHandled } from "~/resolver/recordTypes/fileManager/shouldBeHandled.js";
 import type { IStorerAfterEachPluginCanHandleParams } from "~/resolver/plugins/StorerAfterEachPlugin.js";
 import { createElasticsearchMockTable, createRegularMockTable } from "~tests/mocks/table.js";

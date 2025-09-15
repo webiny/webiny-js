@@ -12,7 +12,7 @@ import {
     LambdaClient
 } from "@webiny/aws-sdk/client-lambda/index.js";
 import { mockClient } from "aws-sdk-client-mock";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("DeleteUser", () => {
     it("should delete a user from the target user pool", async () => {

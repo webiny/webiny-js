@@ -7,11 +7,11 @@ export {
     InvokeCommand,
     GetFunctionConfigurationCommand,
     UpdateFunctionConfigurationCommand,
-    UpdateFunctionCodeCommand
+    UpdateFunctionCodeCommand,
+    InvocationType
 } from "@aws-sdk/client-lambda";
 
 export type {
-    InvocationType,
     InvokeCommandInput,
     LambdaClientConfig,
     InvokeCommandOutput,

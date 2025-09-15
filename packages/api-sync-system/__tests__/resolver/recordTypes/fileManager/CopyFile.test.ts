@@ -11,7 +11,7 @@ import {
     LambdaClient
 } from "@webiny/aws-sdk/client-lambda/index.js";
 import { LambdaTrigger } from "~/resolver/lambda/LambdaTrigger.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("CopyFile", () => {
     it("should return null if file already exists", async () => {

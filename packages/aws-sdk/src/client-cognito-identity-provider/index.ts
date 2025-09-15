@@ -8,8 +8,6 @@ export {
     AdminCreateUserCommand,
     AdminDeleteUserCommand,
     AdminUpdateUserAttributesCommand,
-    AdminCreateUserRequest,
-    AdminGetUserRequest,
     CognitoIdentityProvider,
     CognitoIdentityProviderClient
 } from "@aws-sdk/client-cognito-identity-provider";
@@ -17,6 +15,8 @@ export {
 export type {
     AttributeType,
     ListUsersResponse,
+    AdminCreateUserRequest,
+    AdminGetUserRequest,
     UserType,
     CognitoIdentityProviderClientConfig,
     AdminGetUserCommandInput,

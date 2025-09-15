@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 
 // Template
 const template = {

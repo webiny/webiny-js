@@ -18,7 +18,7 @@ import {
     createMockTargetDeployment
 } from "~tests/mocks/deployments.js";
 import { mockClient } from "aws-sdk-client-mock";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("usersOnDelete", () => {
     it("should be able to handle target record", async () => {

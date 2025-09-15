@@ -1,8 +1,7 @@
-// @ts-nocheck
 import { createImplementation } from "@webiny/di-container";
 import { Command, GetProjectSdkService } from "~/abstractions/index.js";
 
-export class InfoCommand implements Command.Interface {
+export class InfoCommand implements Command.Interface<void> {
     constructor(private getProjectSdkService: GetProjectSdkService.Interface) {}
 
     execute(): Command.CommandDefinition<void> {
@@ -22,8 +21,8 @@ export class InfoCommand implements Command.Interface {
                 }
             ],
 
-            handler: async (args: any) => {
-                console.log('TODO!')
+            handler: async () => {
+                console.log("TODO!");
             }
         };
     }

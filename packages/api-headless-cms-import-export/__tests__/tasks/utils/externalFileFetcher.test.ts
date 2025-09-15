@@ -20,7 +20,7 @@ const createFetcherResponse = (params: Partial<Response>): Response => {
         json: vi.fn(),
         text: vi.fn(),
         ...params
-    };
+    } as Response;
 };
 
 describe("external file fetcher", () => {

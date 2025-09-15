@@ -3,12 +3,12 @@ import { EventBridgeClient } from "@aws-sdk/client-eventbridge";
 
 export {
     EventBridgeClient,
-    PutEventsRequestEntry,
     PutEventsCommand
 } from "@aws-sdk/client-eventbridge";
 
 export type {
     EventBridgeClientConfig,
+    PutEventsRequestEntry,
     PutEventsCommandInput,
     PutEventsCommandOutput
 } from "@aws-sdk/client-eventbridge";

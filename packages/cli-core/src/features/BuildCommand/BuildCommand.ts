@@ -4,7 +4,7 @@ import { IBaseAppParams } from "~/abstractions/features/types.js";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
 import { HandledError } from "~/utils/HandledError.js";
 
-export interface IBuildCommandParams extends IBaseAppParams {}
+export type IBuildCommandParams = IBaseAppParams;
 
 export class BuildCommand implements Command.Interface<IBuildCommandParams> {
     constructor(

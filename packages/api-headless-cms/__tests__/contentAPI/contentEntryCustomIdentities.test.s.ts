@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
 import { setupGroupAndModels } from "~tests/testHelpers/setup";
 import type { SecurityIdentity } from "@webiny/api-security/types";

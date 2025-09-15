@@ -7,7 +7,7 @@ import {
 } from "@webiny/aws-sdk/client-s3/index.js";
 import { mockClient } from "aws-sdk-client-mock";
 import { createDeleteFileAction } from "~/worker/actions/deleteFile/deleteFileAction.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("deleteFileAction", () => {
     beforeEach(() => {

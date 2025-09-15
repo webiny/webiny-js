@@ -1,6 +1,6 @@
 import { Scheduler } from "~/scheduler/Scheduler.js";
 import { type ISchedulerInput, ScheduleType } from "~/scheduler/types.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("Scheduler", () => {
     const fetcher = {

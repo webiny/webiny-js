@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { createWorkerHandler } from "~/index.js";
 import {
     CognitoIdentityProvider,

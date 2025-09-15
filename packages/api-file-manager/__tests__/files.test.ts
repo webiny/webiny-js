@@ -365,7 +365,7 @@ describe("Files CRUD test", { timeout: 100_000, retry: 3 }, () => {
      * Unfortunately this test is skipped because it is not passing on the CI (DDB+ES package).
      * Testing the search locally and on deployed system shows that searching works.
      */
-    // eslint-disable-next-line
+     
     it("should find files by name", async () => {
         const [createResponse] = await createFiles({
             data: [fileAData, fileBData, fileCData]

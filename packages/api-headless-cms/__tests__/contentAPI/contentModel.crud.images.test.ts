@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "~tests/testHelpers/useGraphQLHandler";
 import { CmsGroupPlugin } from "~/plugins";
 import { createContentModelGroup } from "~tests/contentAPI/mocks/contentModelGroup";
@@ -17,7 +17,7 @@ describe("Content Model Nested Object Images", () => {
             data: {
                 ...model,
                 icon: model.icon || undefined,
-                description: undefined,
+                description: undefined
             }
         });
 

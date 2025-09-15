@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/helpers/useHandler";
 import { createValidateImportFromUrlTask } from "~/tasks";
 import { TaskDataStatus } from "@webiny/tasks";

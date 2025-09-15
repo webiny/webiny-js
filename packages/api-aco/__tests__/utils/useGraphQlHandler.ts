@@ -127,9 +127,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
              * Mock physical file storage plugin.
              */
             new FilePhysicalStoragePlugin({
-                // eslint-disable-next-line
+                 
                 upload: async () => {},
-                // eslint-disable-next-line
+                 
                 delete: async () => {}
             }),
             createHeadlessCmsGraphQL(),

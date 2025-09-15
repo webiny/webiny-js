@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import type { SQSEvent } from "@webiny/aws-sdk/types/index.js";
 import { createResolverHandler } from "~/resolver/createResolverHandler.js";
 import { createMockSQSEventRecord } from "~tests/mocks/sqsEvent.js";

@@ -4,7 +4,7 @@ import { Command, GetProjectSdkService, UiService } from "~/abstractions/index.j
 import { createDependencyTree } from "../createDependencyTree.js";
 import { createReferenceFile } from "../createReferenceFile.js";
 
-export class SyncDepsCommand implements Command.Interface<{}> {
+export class SyncDepsCommand implements Command.Interface<unknown> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface

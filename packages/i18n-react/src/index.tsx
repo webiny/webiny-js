@@ -3,7 +3,7 @@ import lodashTrim from "lodash/trim.js";
 import type { I18NDataValues, Modifier, Processor } from "@webiny/i18n/types.js";
 
 declare global {
-    // eslint-disable-next-line
+     
     namespace JSX {
         interface IntrinsicElements {
             "i18n-text": {

@@ -104,14 +104,13 @@ context("Security -> API Key", () => {
         // Verify success message
         cy.findByText("API key saved successfully.").should("exist");
 
-        // eslint-disable-next-line jest/valid-expect-in-promise
+        
         cy.location("search").then(search => {
             const searchParams = new URLSearchParams(search);
             const id = searchParams.get("id");
             // Verify API key permissions
-            // eslint-disable-next-line jest/valid-expect-in-promise
+            
             cy.securityReadApiKey({ id }).then(({ permissions }) => {
-                // eslint-disable-next-line jest/valid-expect
                 expect(permissions).to.deep.eq([
                     {
                         name: "content.i18n"

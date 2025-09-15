@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
 import type { SecurityIdentity } from "@webiny/api-security/types";
 import { pickEntryMetaFields } from "~/constants";

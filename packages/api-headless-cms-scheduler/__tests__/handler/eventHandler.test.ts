@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { RawEventHandler } from "@webiny/handler-aws/raw/index.js";
 import { createScheduledCmsActionEventHandler } from "~/handler/index.js";
 import { registry } from "@webiny/handler-aws/registry.js";

@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { createEventValidation } from "~/resolver/app/validation/event.js";
 import { createZodError } from "@webiny/utils/createZodError.js";
 

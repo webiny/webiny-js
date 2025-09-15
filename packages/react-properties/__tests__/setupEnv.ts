@@ -1,16 +1,18 @@
 // noinspection JSConstantReassignment
 
 // This is why this file is necessary: https://github.com/ai/nanoid/issues/363
+import { randomFillSync } from "crypto";
+import { TextEncoder, TextDecoder } from "util";
 
-const { randomFillSync } = require("crypto");
 // @ts-expect-error
-const { TextEncoder, TextDecoder } = require("util");
-
 global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
 // @ts-expect-error
+global.TextDecoder = TextDecoder;
+
 window.crypto = {
+    // @ts-expect-error
     getRandomValues(buffer) {
+        // @ts-expect-error
         return randomFillSync(buffer);
     }
 };

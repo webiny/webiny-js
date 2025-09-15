@@ -173,7 +173,8 @@ export const createProjectSdkContainer = async (
             // If the path is not absolute, we assume it's relative to the current working directory.
             importPath = project.paths.rootFolder.join(filePath).toString();
         }
-
+        
+        //eslint-disable-next-line import/dynamic-import-chunkname
         return import(importPath);
     };
 

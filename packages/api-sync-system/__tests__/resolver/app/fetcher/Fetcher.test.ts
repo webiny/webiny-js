@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { createFetcher } from "~/resolver/app/fetcher/Fetcher.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { createMockSourceDeployment } from "~tests/mocks/deployments.js";

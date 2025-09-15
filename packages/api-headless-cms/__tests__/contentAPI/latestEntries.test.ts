@@ -1,15 +1,14 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { CmsModel, CmsGroup } from "~/types";
+import { CmsGroup, CmsModel } from "~/types";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useArticleManageHandler } from "../testHelpers/useArticleManageHandler";
 import { useArticleReadHandler } from "../testHelpers/useArticleReadHandler";
 
-
 vi.setConfig({
-    testTimeout: 100_000,
-})
+    testTimeout: 100_000
+});
 
 describe("latest entries", function () {
     const manageOpts = { path: "manage/en-US" };

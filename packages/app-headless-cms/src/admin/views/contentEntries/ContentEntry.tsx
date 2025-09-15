@@ -10,7 +10,7 @@ import { ValidationIndicators } from "./ValidationIndicators.js";
 import { OverlayLoader, Tabs } from "@webiny/admin-ui";
 
 declare global {
-    // eslint-disable-next-line
+     
     namespace JSX {
         interface IntrinsicElements {
             "test-id": {

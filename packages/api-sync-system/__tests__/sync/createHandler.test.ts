@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { createHandler } from "~/sync/createHandler.js";
 import { createMockSystem } from "~tests/mocks/system.js";
 import { createMockManifest } from "~tests/mocks/manifest.js";

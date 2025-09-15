@@ -14,7 +14,7 @@ import {
 } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createCommandBundle } from "~/resolver/app/bundler/CommandBundle.js";
 import { mockClient } from "aws-sdk-client-mock";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 const item1 = createMockTableItemData({
     order: 1,

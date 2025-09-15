@@ -6,7 +6,7 @@ context("Security Users", () => {
         let password = "12345678";
         // Create a user with `full-access` group
 
-        // eslint-disable-next-line jest/valid-expect-in-promise
+        
         cy.securityReadRole({ slug: "full-access" }).then(group => {
             return cy
                 .securityCreateUser({
@@ -42,7 +42,7 @@ context("Security Users", () => {
                     });
 
                     // Delete user
-                    // eslint-disable-next-line jest/valid-expect-in-promise
+                    
                     cy.securityDeleteUser({
                         id: fullAccessGroupUser.id
                     }).then(data => assert.isTrue(data));
@@ -54,7 +54,7 @@ context("Security Users", () => {
     it.skip('should verify user access for a "anonymous" user', () => {
         let password = "12345678";
         // Create a user with `full-access` group
-        // eslint-disable-next-line jest/valid-expect-in-promise
+        
         cy.securityReadRole({ slug: "anonymous" }).then(group => {
             return cy
                 .securityCreateUser({
@@ -83,7 +83,7 @@ context("Security Users", () => {
                     cy.findByTestId("admin-welcome-screen-widget-headless-cms").should("not.exist");
 
                     // Delete user
-                    // eslint-disable-next-line jest/valid-expect-in-promise
+                    
                     cy.securityDeleteUser({
                         id: user.id
                     }).then(data => {

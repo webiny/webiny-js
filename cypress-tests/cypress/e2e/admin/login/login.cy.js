@@ -36,7 +36,7 @@ context("Login Page", () => {
         const newUserAccountEmail = uniqid("cypress_", "@z1fihlo8.mailosaur.net");
         const password = "12345678";
 
-        // eslint-disable-next-line jest/valid-expect-in-promise
+        
         cy.securityReadRole({ slug: "full-access" }).then(group => {
             return cy
                 .securityCreateUser({
@@ -73,7 +73,7 @@ context("Login Page", () => {
         const newUserAccountEmail = uniqid("cypress_", "@z1fihlo8.mailosaur.net");
         const password = "12345678";
 
-        // eslint-disable-next-line jest/valid-expect-in-promise
+        
         cy.securityReadRole({ slug: "full-access" }).then(group => {
             return cy
                 .securityCreateUser({
@@ -118,7 +118,7 @@ context("Login Page", () => {
         const password = "12345678";
         const newPassword = "12345678910";
 
-        // eslint-disable-next-line jest/valid-expect-in-promise
+        
         cy.securityReadRole({ slug: "full-access" }).then(group => {
             return cy
                 .securityCreateUser({

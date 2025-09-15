@@ -18,6 +18,7 @@ export class AppBundler extends BaseAppBundler {
     }
 
     async getBundlerClass() {
+        //eslint-disable-next-line import/dynamic-import-chunkname
         const { RspackBundler } = await import("./RspackBundler.js");
         return RspackBundler;
     }

@@ -6,7 +6,7 @@ import type { FormAPI } from "@webiny/form";
 import { useForm } from "@webiny/form";
 
 declare global {
-    // eslint-disable-next-line
+     
     namespace JSX {
         interface IntrinsicElements {
             "hcms-parent-field-provider": React.HTMLProps<HTMLDivElement>;

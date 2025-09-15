@@ -2,9 +2,9 @@ import { Abstraction } from "@webiny/di-container";
 import { type IBaseAppParams } from "~/abstractions/types.js";
 import { type ExecaChildProcess } from "execa";
 
-type IPulumiProcess = ExecaChildProcess<string>;
+export type IPulumiProcess = ExecaChildProcess<string>;
 
-interface IRefreshAppParams extends IBaseAppParams {}
+export type IRefreshAppParams = IBaseAppParams;
 
 interface IRefreshApp {
     execute(params: IRefreshAppParams): Promise<{ pulumiProcess: IPulumiProcess }>;

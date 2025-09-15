@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck @adrian
 import { getStackOutput } from "@webiny/project";
 
 const NO_DEPLOYMENT_CHECKS_FLAG_NAME = "--no-deployment-checks";

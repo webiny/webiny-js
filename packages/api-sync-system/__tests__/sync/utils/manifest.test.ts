@@ -2,7 +2,7 @@ import { ServiceDiscovery } from "@webiny/api";
 import { getManifest } from "~/sync/utils/manifest.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("manifest", () => {
     let client: DynamoDBDocument;

@@ -114,11 +114,13 @@ async function getModules(paths) {
     // TypeScript project and set up the config
     // based on tsconfig.json
     if (hasTsConfig) {
+        //eslint-disable-next-line import/dynamic-import-chunkname
         const ts = await import("typescript").then(m => m.default ?? m);
         config = ts.readConfigFile(paths.appTsConfig, ts.sys.readFile).config;
         // Otherwise we'll check if there is jsconfig.json
         // for non TS projects.
     } else if (hasJsConfig) {
+        //eslint-disable-next-line import/dynamic-import-chunkname
         config = await import(paths.appJsConfig);
     }
 

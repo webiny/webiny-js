@@ -123,9 +123,8 @@ context("Security -> Role", () => {
         cy.findByText("Role saved successfully!").should("exist");
 
         // Verify role permissions
-        // eslint-disable-next-line jest/valid-expect-in-promise
+        
         cy.securityReadRole({ slug }).then(group => {
-            // eslint-disable-next-line jest/valid-expect
             expect(group.permissions).to.deep.eq([
                 {
                     name: "content.i18n"

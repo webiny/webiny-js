@@ -12,7 +12,7 @@ import {
     SchedulerClient,
     UpdateScheduleCommand
 } from "@webiny/aws-sdk/client-scheduler/index.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("SchedulerService", () => {
     const lambdaArn = "arn:aws:lambda:us-east-1:123456789012:function:test";

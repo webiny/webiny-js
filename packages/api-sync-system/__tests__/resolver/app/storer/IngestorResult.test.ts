@@ -1,5 +1,5 @@
 import { createIngestorResult, IngestorResult } from "~/resolver/app/ingestor/IngestorResult.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("IngestorResult", () => {
     it("should create result and have no items", async () => {

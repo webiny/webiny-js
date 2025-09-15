@@ -12,6 +12,7 @@ export class RspackDevServer {
     }
 
     async start() {
+        //eslint-disable-next-line import/dynamic-import-chunkname
         const { default: createDevServerConfig } = await import("./config/devServer.config.js");
 
         const host = this.getHost();
@@ -29,7 +30,8 @@ export class RspackDevServer {
             allowedHost: urls.lanUrlForConfig,
             paths: this.options.paths
         });
-
+        
+        //eslint-disable-next-line import/dynamic-import-chunkname
         const { RspackDevServer } = await import("@rspack/dev-server");
 
         console.log(chalk.cyan("Starting the development server..."));

@@ -2,7 +2,7 @@ import { createFileManagerOnPutPlugin } from "~/resolver/recordTypes/fileManager
 import { createRegularMockTable } from "~tests/mocks/table.js";
 import type { ICopyFile, ICopyFileHandleParams } from "~/resolver/recordTypes/fileManager/types.js";
 import { createMockDeployment } from "~tests/mocks/deployments.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("fileManagerOnPut", () => {
     it("should check if the plugin can handle the put command", () => {

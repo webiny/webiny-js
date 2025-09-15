@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin";
-import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";
+import { createPrivateModelPlugin } from "~/plugins/CmsModelPlugin";
 import type { CmsGroup, CmsGroupCreateInput, CmsModel } from "~/types";
 import type { CreateContentModelMutationVariables } from "~tests/testHelpers/graphql/contentModel";
 
@@ -14,24 +14,24 @@ const privateGroup = new CmsGroupPlugin({
     id: "privateGroupId123456789"
 });
 
-const privateAuthorsModel = new CmsModelPlugin({
-    isPrivate: true,
+const privateAuthorsModel = createPrivateModelPlugin({
     modelId: "author",
     name: "Authors",
-    layout: [["title"]],
+    // layout: [["title"]],
     fields: [
         {
             id: "title",
+            storageId: "text@title",
             fieldId: "title",
             type: "text",
             label: "Title"
         }
     ],
     titleFieldId: "title",
-    group: {
-        id: privateGroup.contentModelGroup.id,
-        name: privateGroup.contentModelGroup.name
-    },
+    // group: {
+    //     id: privateGroup.contentModelGroup.id,
+    //     name: privateGroup.contentModelGroup.name
+    // },
 });
 
 describe("Private Groups and Models", function () {

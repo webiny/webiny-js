@@ -1,5 +1,5 @@
-
-import { describe, it, expect, beforeEach, vi } from "vitest";import { setupContentModelGroup, setupContentModels } from "~tests/testHelpers/setup";
+import { describe, expect, it, vi } from "vitest";
+import { setupContentModelGroup, setupContentModels } from "~tests/testHelpers/setup";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "~tests/testHelpers/useCategoryReadHandler";
 import type { CmsEntry } from "~/types";
@@ -7,8 +7,8 @@ import { toSlug } from "~/utils/toSlug";
 import { ROOT_FOLDER } from "~/constants";
 
 vi.setConfig({
-    testTimeout: 100_000,
-})
+    testTimeout: 100_000
+});
 
 interface CreateCategoryParams {
     title: string;

@@ -12,7 +12,7 @@ import { ErrorBoundary } from "./ErrorBoundary.js";
 const t = i18n.ns("app-headless-cms/admin/components/content-form");
 
 declare global {
-    // eslint-disable-next-line
+     
     namespace JSX {
         interface IntrinsicElements {
             "hcms-model-field": {

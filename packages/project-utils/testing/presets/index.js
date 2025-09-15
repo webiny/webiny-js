@@ -92,6 +92,7 @@ const getPackagesPresets = async targetKeywords => {
          * We expect presets file to contain an array of presets.
          * We do not check for the actual contents of the presets arrays since they can be quite different per package.
          */
+        //eslint-disable-next-line import/dynamic-import-chunkname
         const presets = await import(presetsPath).then(m => m.default ?? m);
         if (Array.isArray(presets) === false) {
             throw new Error(`Presets in package "${pkg.name}" must be defined as an array.`);

@@ -8,7 +8,7 @@ import {
     createCognitoIdentityProviderClient
 } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
 import { mockClient } from "aws-sdk-client-mock";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("createUserAction", () => {
     beforeEach(() => {

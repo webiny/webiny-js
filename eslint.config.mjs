@@ -13,14 +13,12 @@ import { dirname, resolve } from "node:path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Compat helper for legacy configs/plugins
 const compat = new FlatCompat({
   baseDirectory: __dirname,
   recommendedConfig: js.configs.recommended,
   allConfig: js.configs.all,
 });
 
-// Helper to control TS no-unused-vars dynamically
 function getNoUnusedVars() {
   if ("ESLINT_NO_UNUSED_VARS" in process.env) {
     return parseInt(process.env["ESLINT_NO_UNUSED_VARS"]);
@@ -29,7 +27,6 @@ function getNoUnusedVars() {
 }
 
 export default defineConfig([
-  // TypeScript files (packages/**/*.{ts,tsx})
   {
     files: ["packages/**/*.{ts,tsx}"],
     languageOptions: {
@@ -59,7 +56,6 @@ export default defineConfig([
       //"plugin:vitest/recommended"
     ),
     rules: {
-      "@typescript-eslint/no-misused-this": "error",
       "react/prop-types": 0,
       "import/no-unresolved": 0,
       "@typescript-eslint/no-namespace":"off",
@@ -104,15 +100,18 @@ export default defineConfig([
           allowEmpty: false,
         },
       ],
+      /**
+       * Example of code: onOpen && onOpen();
+       * Basically, this is instead of an if statement.
+       */
+      "@typescript-eslint/no-unused-expressions": "off",
     },
     settings: {
       react: {
-        version: "detect", // fixes React version warning
+        version: "18.2.0",
       },
     },
   },
-  
-  // JavaScript files (packages/**/*.{js,jsx})
   {
     files: ["packages/**/*.{js,jsx}"],
     languageOptions: {
@@ -163,12 +162,16 @@ export default defineConfig([
     },
     settings: {
       react: {
-        version: "detect",
+        version: "18.2.0",
       },
     },
   },
-  
-  // Global ignore patterns
+  {
+    files: ["packages/aws-sdk/**/*.{ts,tsx,js,jsx}"],
+    rules: {
+      "no-restricted-imports": "off"
+    }
+  },
   globalIgnores([
     ".idea/**/*",
     ".nx/**/*",
@@ -182,6 +185,8 @@ export default defineConfig([
     "**/*.d.ts",
     "idea.js",
     "scripts/**/*.js",
-    "packages/create-webiny-project/utils/binaries/**",
+    "packages/admin-ui/.storybook/**/*",
+    "packages/create-webiny-project/**/*",
+    "packages/create-webiny-project/_templates/**/*",
   ]),
 ]);

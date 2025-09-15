@@ -24,7 +24,8 @@ export const zodPathToAbstraction = (
                 });
                 return;
             }
-
+            
+            //eslint-disable-next-line import/dynamic-import-chunkname
             const { default: exportedImplementation } = await import(absoluteSrcPath);
 
             if (!exportedImplementation) {

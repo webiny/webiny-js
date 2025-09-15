@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { validateSystemInput } from "~/sync/utils/validateSystemInput.js";
 
 describe("validateSystemInput", () => {

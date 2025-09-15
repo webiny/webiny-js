@@ -140,7 +140,7 @@ describe("DIContainer", () => {
         class LoggerDecorator implements ILogger {
             constructor(private decoratee: ILogger) {}
 
-            log(...args: unknown[]): void {
+            log(): void {
                 numberOfLogCalls++;
             }
         }
@@ -412,7 +412,7 @@ describe("DIContainer", () => {
         class LoggerDecorator implements ILogger {
             constructor(private decoratee: ILogger) {}
 
-            log(...args: unknown[]): void {}
+            log(): void {}
         }
 
         const loggerDecorator = createDecorator({
@@ -484,7 +484,7 @@ describe("DIContainer", () => {
         class LoggerDecorator implements ILogger {
             constructor(private decoratee: ILogger) {}
 
-            log(...args: unknown[]): void {}
+            log(): void {}
         }
 
         const loggerDecorator = createDecorator({
@@ -500,7 +500,7 @@ describe("DIContainer", () => {
         class RequiredLogger implements ILogger {
             constructor(public logger: ILogger) {}
 
-            log(...args: unknown[]): void {}
+            log(): void {}
         }
 
         createImplementation({
@@ -532,7 +532,7 @@ describe("DIContainer", () => {
         class OptionalLogger implements ILogger {
             constructor(public logger?: ILogger) {}
 
-            log(...args: unknown[]): void {}
+            log(): void {}
         }
 
         createImplementation({
@@ -552,7 +552,7 @@ describe("DIContainer", () => {
         class RequiredLogger implements ILogger {
             constructor(public logger: ILogger[]) {}
 
-            log(...args: unknown[]): void {}
+            log(): void {}
         }
 
         createImplementation({
@@ -572,7 +572,7 @@ describe("DIContainer", () => {
         class RequiredLogger implements ILogger {
             constructor(public logger?: ILogger[]) {}
 
-            log(...args: unknown[]): void {}
+            log(): void {}
         }
 
         createImplementation({

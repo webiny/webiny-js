@@ -51,7 +51,7 @@ function handleRequest(request, active) {
 
     return request;
 }
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 async function handler(event) {
     const context = event.context;
     const request = event.request;

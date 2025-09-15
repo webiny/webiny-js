@@ -14157,7 +14157,7 @@ __metadata:
     minimatch: "npm:^5.1.6"
     mobx: "npm:^6.9.0"
     monaco-editor: "npm:^0.53.0"
-    postcss-loader: "npm:^6.2.1"
+    postcss-loader: "npm:^8.2.0"
     prettier: "npm:^2.8.8"
     radix-ui: "npm:^1.4.2"
     react: "npm:18.2.0"
@@ -27694,7 +27694,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"klona@npm:^2.0.4, klona@npm:^2.0.5":
+"klona@npm:^2.0.4":
   version: 2.0.6
   resolution: "klona@npm:2.0.6"
   checksum: 10/ed7e2c9af58cb646e758e60b75dec24bf72466066290f78c515a2bae23a06fa280f11ff3210c43b94a18744954aa5358f9d46583d5e4c36da073ecc3606355c4
@@ -32049,20 +32049,6 @@ __metadata:
     ts-node:
       optional: true
   checksum: 10/e2c2ed9b7998a5b123e1ce0c124daf6504b1454c67dcc1c8fdbcc5ffb2597b7de245e3ac34f63afc928d3fd3260b1e36492ebbdb01a9ff63f16b3c8b7b925d1b
-  languageName: node
-  linkType: hard
-
-"postcss-loader@npm:^6.2.1":
-  version: 6.2.1
-  resolution: "postcss-loader@npm:6.2.1"
-  dependencies:
-    cosmiconfig: "npm:^7.0.0"
-    klona: "npm:^2.0.5"
-    semver: "npm:^7.3.5"
-  peerDependencies:
-    postcss: ^7.0.0 || ^8.0.1
-    webpack: ^5.0.0
-  checksum: 10/ab4e4ffa1903611a6ee63bd77ac0fd02b17cf472037a3d6050b383ab3b3def5e4c3a49de5bb552e020e70d2ebde95400f49e4c423ad2a1c76675afda8d627911
   languageName: node
   linkType: hard
 

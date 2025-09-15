@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { createEventHandlerPlugin } from "~/worker/handler/eventHandler.js";
 import { RawEventHandler } from "@webiny/handler-aws/raw/index.js";
 import { createMockContext } from "~tests/mocks/context.js";

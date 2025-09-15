@@ -20,6 +20,7 @@ export class DefaultProjectInfoService implements ProjectInfoService.Interface {
     async execute() {
         const wcpProjectId = process.env.WCP_PROJECT_ID || "";
         // const wcpUser = await getUser().catch(() => null);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const wcpUsingProjectEnvironmentApiKey = Boolean(process.env.WCP_ENVIRONMENT_API_KEY);
 
         const isCI = this.getIsCi.execute();

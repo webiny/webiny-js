@@ -1,5 +1,5 @@
 import { middleware } from "~/resolver/app/transform/middleware.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("middleware", () => {
     it("should not have any middlewares to call - return default value", async () => {

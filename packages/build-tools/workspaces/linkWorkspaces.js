@@ -53,11 +53,13 @@ const defaults = {
 
 export const linkWorkspaces = async ({ whitelist, blacklist } = defaults) => {
     console.log(`Linking project workspaces...`);
+    //eslint-disable-next-line import/dynamic-import-chunkname
     const { PackageJson } = await import("../utils/PackageJson.js");
 
     whitelist = (whitelist || []).map(p => path.resolve(p));
     blacklist = (blacklist || []).map(p => path.resolve(p));
     // Filter packages to only those in the whitelisted folders
+    //eslint-disable-next-line import/dynamic-import-chunkname
     const getYarnWorkspaces = await import("get-yarn-workspaces").then(m => m.default ?? m);
     const packages = getYarnWorkspaces(process.cwd())
         .map(pkg => pkg.replace(/\//g, path.sep))

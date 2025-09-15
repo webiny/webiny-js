@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import models from "./mocks/contentModels";
 import type { CmsEntry, CmsGroup, CmsModel } from "~/types";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";

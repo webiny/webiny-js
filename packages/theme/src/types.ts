@@ -29,7 +29,7 @@ export type ThemeBreakpoints = {
  * Typography section
  * We want to allow custom strings as well, thus the (string & {}).
  */
-// eslint-disable-next-line @typescript-eslint/no-restricted-types
+ 
 export type TypographyType = "headings" | "paragraphs" | "quotes" | "lists" | (string & {});
 export type TypographyStyle = {
     id: string;

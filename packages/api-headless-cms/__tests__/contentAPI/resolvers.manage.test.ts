@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import WebinyError from "@webiny/error";
 import type { CmsEntry, CmsEntryListParams, CmsGroup, CmsModel } from "~/types/index.js";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";

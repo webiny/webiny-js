@@ -1,4 +1,4 @@
-const { version: webinyVersion } = require("@webiny/api/package.json");
+import { version as webinyVersion } from "@webiny/api/package.json";
 import type {
     CmsModel as BaseCmsModel,
     CmsModelField as BaseCmsModelField,

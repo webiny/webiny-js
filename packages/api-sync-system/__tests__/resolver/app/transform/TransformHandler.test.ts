@@ -9,7 +9,7 @@ import { createMockTableItemData } from "~tests/mocks/tableItem.js";
 import { SemVer } from "semver";
 import { DynamoDBTableType } from "~/types.js";
 import { createMockPluginsContainer } from "~tests/mocks/plugins.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 const item1 = createMockTableItemData({
     order: 1

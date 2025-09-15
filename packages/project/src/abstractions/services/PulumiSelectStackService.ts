@@ -2,7 +2,7 @@ import { Abstraction } from "@webiny/di-container";
 import { type IAppModel } from "~/abstractions/models/IAppModel.js";
 import { type IBaseAppParams } from "~/abstractions/types.js";
 
-export interface IDeployParams extends IBaseAppParams {}
+export type IDeployParams = IBaseAppParams;
 
 export interface IPulumiSelectStackService {
     execute(app: IAppModel, params: Omit<IDeployParams, "app">): Promise<void>;

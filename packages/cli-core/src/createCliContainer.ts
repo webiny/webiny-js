@@ -97,6 +97,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
         const commands = projectConfig.extensionsByType<any>("Cli/Command");
         for (const command of commands) {
             const importPath = project.paths.rootFolder.join(command.params.src).toString();
+            //eslint-disable-next-line import/dynamic-import-chunkname
             const { default: commandImplementation } = await import(importPath);
             container.register(commandImplementation).inSingletonScope();
         }

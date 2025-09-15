@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { CmsGroup, CmsModel } from "~/types";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin";

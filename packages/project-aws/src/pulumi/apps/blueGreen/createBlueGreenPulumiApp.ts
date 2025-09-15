@@ -14,9 +14,6 @@ import { applyCustomDomain } from "~/pulumi/apps/customDomain.js";
 import { attachDomainsToOutput } from "~/pulumi/apps/blueGreen/domains/attachDomainsToOutput.js";
 import { BLUE_GREEN_ROUTER_STORE_KEY } from "./constants.js";
 import { getProjectSdk } from "@webiny/project";
-import { getVpcConfigFromExtension } from "~/pulumi/apps/extensions/getVpcConfigFromExtension.js";
-import { getOsConfigFromExtension } from "~/pulumi/apps/extensions/getOsConfigFromExtension.js";
-import { getEsConfigFromExtension } from "~/pulumi/apps/extensions/getEsConfigFromExtension.js";
 import { applyAwsResourceTags } from "~/pulumi/apps/awsUtils.js";
 
 export type BlueGreenRouterPulumiApp = ReturnType<typeof createBlueGreenPulumiApp>;

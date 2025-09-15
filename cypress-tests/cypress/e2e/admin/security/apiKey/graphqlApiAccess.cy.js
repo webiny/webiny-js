@@ -32,7 +32,6 @@ context("Security -> API Key -> GraphQL API Access", () => {
     it("should able to read from CMS Manage GraphQL API using API key", () => {
         return cy.cmsListContentModelGroup({}, apiKey.token).then(groups => {
             assert.isArray(groups);
-            // eslint-disable-next-line jest/valid-expect
             expect(groups).to.have.length.of.at.least(1);
         });
     });

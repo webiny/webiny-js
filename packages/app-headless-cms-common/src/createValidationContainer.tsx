@@ -2,7 +2,7 @@ import React from "react";
 import { useModelField } from "./ModelFieldProvider/index.js";
 
 declare global {
-    // eslint-disable-next-line
+     
     namespace JSX {
         interface IntrinsicElements {
             "hcms-field-validation": {

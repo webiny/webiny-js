@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { createIngestor, Ingestor } from "~/resolver/app/ingestor/Ingestor.js";
 import { createIngestorResult, IngestorResult } from "~/resolver/app/ingestor/IngestorResult.js";
 import { createMockSourceDeployment } from "~tests/mocks/deployments.js";

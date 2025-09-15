@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { createScheduler } from "~/scheduler/createScheduler.js";
 import { createMockService } from "~tests/mocks/service.js";
 import { createMockSchedulerModel } from "~tests/mocks/schedulerModel.js";
@@ -8,7 +9,7 @@ import { Scheduler } from "~/scheduler/Scheduler.js";
 
 describe("createScheduler", () => {
     const service = createMockService();
-    const scheduleModel = createMockSchedulerModel();
+    const schedulerModel = createMockSchedulerModel();
     const targetModel = createMockTargetModel();
     const cms = createMockCms();
     const security = createMockSecurity();
@@ -18,7 +19,7 @@ describe("createScheduler", () => {
             service,
             cms,
             security,
-            scheduleModel
+            schedulerModel
         });
         expect(result).toBeInstanceOf(Function);
 

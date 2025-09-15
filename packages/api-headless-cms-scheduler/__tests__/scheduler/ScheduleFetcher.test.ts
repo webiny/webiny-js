@@ -8,7 +8,7 @@ import type {
 import type { ISchedulerListParams } from "~/scheduler/types.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { dateToISOString } from "~/scheduler/dates.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("ScheduleFetcher", () => {
     const targetModel: CmsModel = { modelId: "targetModel", titleFieldId: "title" } as any;

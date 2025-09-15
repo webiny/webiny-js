@@ -20,7 +20,7 @@ import {
 } from "@webiny/aws-sdk/client-eventbridge/index.js";
 import { generateAlphaNumericId } from "@webiny/utils";
 import { mockClient } from "aws-sdk-client-mock";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("Handler", () => {
     const tableName = process.env.DB_TABLE as string;

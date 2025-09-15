@@ -3,8 +3,8 @@ export {
     DeleteRuleCommand,
     RemoveTargetsCommand,
     PutRuleCommand,
-    PutTargetsCommand,
-    type PutRuleCommandInput
+    PutTargetsCommand
 } from "@aws-sdk/client-cloudwatch-events";
+export type { PutRuleCommandInput } from "@aws-sdk/client-cloudwatch-events";
 
 export { CloudWatchLogs, type GetLogEventsRequest } from "@aws-sdk/client-cloudwatch-logs";

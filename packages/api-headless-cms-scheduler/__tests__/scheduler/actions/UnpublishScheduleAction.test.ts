@@ -16,7 +16,7 @@ import { dateToISOString } from "~/scheduler/dates.js";
 import { CreateScheduleCommand, SchedulerClient } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { SchedulerService } from "~/service/SchedulerService.js";
 import { createMockFetcher } from "~tests/mocks/fetcher.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("UnpublishScheduleAction", () => {
     const service = createMockService();

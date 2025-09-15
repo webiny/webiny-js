@@ -22,6 +22,7 @@ export interface IRequireConfigParams {
 export const requireConfig = async <T extends IRequireConfigResult = IRequireConfigResult>(
     input: string
 ): Promise<T> => {
+    //eslint-disable-next-line import/dynamic-import-chunkname
     return await import(input).then(m => m.default ?? m);
 };
 
@@ -31,6 +32,7 @@ export const requireConfigWithExecute = async <
     configPath: string,
     params: IRequireConfigParams
 ): Promise<T> => {
+    //eslint-disable-next-line import/dynamic-import-chunkname
     const module = await import(configPath);
 
     // TODO: https://github.com/orgs/webiny/projects/32/views/2?pane=issue&itemId=125453089

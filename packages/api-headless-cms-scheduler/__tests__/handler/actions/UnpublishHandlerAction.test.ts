@@ -4,7 +4,7 @@ import { createMockScheduleClient } from "~tests/mocks/scheduleClient.js";
 import { MOCK_TARGET_MODEL_ID } from "~tests/mocks/targetModel.js";
 import type { ScheduleContext } from "~/types.js";
 import { ScheduleType } from "~/scheduler/types.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("UnpublishHandlerAction", () => {
     it("should only handle unpublish action", async () => {

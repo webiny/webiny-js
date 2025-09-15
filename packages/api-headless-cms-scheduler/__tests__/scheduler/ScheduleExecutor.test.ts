@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { ScheduleExecutor } from "~/scheduler/ScheduleExecutor.js";
 import { createMockFetcher } from "~tests/mocks/fetcher.js";
 import { type IScheduleRecord, ScheduleType } from "~/scheduler/types.js";

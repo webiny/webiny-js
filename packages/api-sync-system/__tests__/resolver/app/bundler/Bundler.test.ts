@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { Bundler, createBundler } from "~/resolver/app/bundler/Bundler.js";
 import { createBundles } from "~/resolver/app/bundler/Bundles.js";
 import { BaseBundle } from "~/resolver/app/bundler/BaseBundle.js";

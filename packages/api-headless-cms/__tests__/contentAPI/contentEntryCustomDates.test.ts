@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { setupGroupAndModels } from "~tests/testHelpers/setup";
 

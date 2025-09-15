@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { SourceDataContainer } from "~/resolver/app/data/SourceDataContainer.js";
 import type { IInputItem } from "~/resolver/app/data/types.js";
 import { createMockSourceDeployment } from "~tests/mocks/deployments.js";

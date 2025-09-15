@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from "vitest";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { Tenancy, TenancyStorageOperations } from "~/types.js";
 import { createTenancy } from "~/createTenancy.js";
@@ -19,12 +20,12 @@ describe(`Test "Tenancy" install`, () => {
         });
     });
 
-    test(`should return null for "version"`, async () => {
+    it(`should return null for "version"`, async () => {
         const version = await tenancy.getVersion();
         expect(version).toBe(null);
     });
 
-    test(`should run "install" successfully`, async () => {
+    it(`should run "install" successfully`, async () => {
         let version = await tenancy.getVersion();
         expect(version).toEqual(null);
 
@@ -55,7 +56,7 @@ describe(`Test "Tenancy" install`, () => {
         return expect(tenancy.getVersion()).resolves.toEqual(process.env.WEBINY_VERSION);
     });
 
-    test(`should prevent "install" from being executed twice`, async () => {
+    it(`should prevent "install" from being executed twice`, async () => {
         await tenancy.install();
         expect.assertions(2);
 

@@ -1,7 +1,7 @@
 import { createDeploymentsFetcher } from "~/resolver/deployment/DeploymentsFetcher.js";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { createMockDeploymentData, storeDeployment } from "~tests/mocks/deployments.js";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 describe("DeploymentsFetcher", () => {
     const table = process.env.DB_TABLE as string;

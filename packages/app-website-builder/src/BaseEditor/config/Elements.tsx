@@ -3,7 +3,7 @@ import { useEditorConfig } from "./EditorConfig.js";
 import type { ElementConfig } from "./Element.js";
 
 declare global {
-    // eslint-disable-next-line
+     
     namespace JSX {
         interface IntrinsicElements {
             "wb-editor-ui-elements": {

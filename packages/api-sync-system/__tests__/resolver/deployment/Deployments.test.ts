@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { createDeployments, Deployments } from "~/resolver/deployment/Deployments.js";
 import { createMockDeployment } from "~tests/mocks/deployments.js";
 

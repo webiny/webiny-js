@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { DynamoDBTableType } from "~/types.js";
 import { createDeployment } from "~/resolver/deployment/Deployment.js";
 import SemVer from "semver/classes/semver.js";

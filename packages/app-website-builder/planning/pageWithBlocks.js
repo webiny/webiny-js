@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 const block = {
     // When block elements are linked, their input definitions are hoisted here.
     // This is only important for the Editor. It will be removed when rendering the actual document.
