@@ -24,14 +24,14 @@ const getValidFilterValue = (value: string): Date | undefined => {
 
 export const FilterByCreatedOn = () => {
     const bindFrom = useBind({
-        name: "data.createdOn_gte",
+        name: "createdOn_gte",
         beforeChange(value, cb) {
             cb(getValidFilterValue(value));
         }
     });
 
     const bindTo = useBind({
-        name: "data.createdOn_lte",
+        name: "createdOn_lte",
         beforeChange(value, cb) {
             cb(getValidFilterValue(value));
         }

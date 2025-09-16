@@ -14,10 +14,10 @@ const getValidFilterValue = (value: string): string | undefined => {
 export const FilterByApp = () => {
     const { setValue } = useForm();
     const bind = useBind({
-        name: "data.app",
+        name: "app",
         beforeChange(value, cb) {
-            setValue("data.entity", undefined);
-            setValue("data.action", undefined);
+            setValue("entity", undefined);
+            setValue("action", undefined);
             cb(getValidFilterValue(value));
         }
     });

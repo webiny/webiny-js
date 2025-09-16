@@ -6,10 +6,10 @@ import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 export const FilterByEntryId = () => {
     const { setValue } = useForm();
     const bind = useBind({
-        name: "data.entryId",
+        name: "entryId",
         beforeChange(value, cb) {
             const { id, version } = parseIdentifier(value);
-            setValue("data.version", version || undefined);
+            setValue("version", version || undefined);
             cb(id);
         }
     });

@@ -14,9 +14,9 @@ const getValidFilterValue = (value: string): string | undefined => {
 export const FilterByEntity = () => {
     const { data, setValue } = useForm();
     const bind = useBind({
-        name: "data.entity",
+        name: "entity",
         beforeChange(value, cb) {
-            setValue("data.action", undefined);
+            setValue("action", undefined);
             cb(getValidFilterValue(value));
         }
     });
