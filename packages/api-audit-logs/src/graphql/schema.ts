@@ -1,7 +1,23 @@
-import { GraphQLSchemaPlugin, NotFoundError, resolve, resolveList } from "@webiny/handler-graphql";
-import type { AuditLogsContext } from "~/types.js";
-import { getValidationSchema, listValidationSchema } from "./validation.js";
-import { createZodError } from "@webiny/utils";
+import {GraphQLSchemaPlugin, NotFoundError, resolve, resolveList} from "@webiny/handler-graphql";
+import type {AuditLogsContext} from "~/types.js";
+import {getValidationSchema, listValidationSchema} from "./validation.js";
+import {createZodError} from "@webiny/utils";
+
+interface IListAuditLogsArgs {
+    where?: {
+        app?: string
+        action?: string
+        createdBy?: string
+        entity?: string
+        entryId?: string
+        version?: number
+        createdOn_gte?: Date
+        createdOn_lte?: Date
+    }
+    sort?: "ASC" | "DESC"
+    limit?: number
+    after?: string;
+}
 
 export const createGraphQLSchema = () => {
     return new GraphQLSchemaPlugin<AuditLogsContext>({
@@ -103,7 +119,7 @@ export const createGraphQLSchema = () => {
                         return result;
                     });
                 },
-                async listAuditLogs(_, args, context) {
+                async listAuditLogs(_, args: IListAuditLogsArgs, context) {
                     return resolveList(async () => {
                         const validation = await listValidationSchema.safeParseAsync(args);
                         if (!validation.success) {

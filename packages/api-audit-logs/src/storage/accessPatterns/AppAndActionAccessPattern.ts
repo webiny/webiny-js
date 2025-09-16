@@ -1,16 +1,8 @@
-import type { EntityQueryOptions } from "@webiny/db-dynamodb/toolbox.js";
-import type { IAuditLog, IStorageItem } from "~/storage/types.js";
-import type {
-    IStorageListByAppAndActionParams,
-    IStorageListParams
-} from "~/storage/abstractions/Storage.js";
-import { createStartKey } from "~/storage/startKey.js";
-import { queryPerPage } from "@webiny/db-dynamodb";
-import { BaseAccessPattern } from "~/storage/accessPatterns/BaseAccessPattern.js";
-import type {
-    IAccessPatternCreateKeysResult,
-    IAccessPatternListResult
-} from "../abstractions/AccessPattern.js";
+import type {IAuditLog, IStorageItem} from "~/storage/types.js";
+import type {IStorageListByAppAndActionParams, IStorageListParams} from "~/storage/abstractions/Storage.js";
+import {queryPerPage} from "@webiny/db-dynamodb";
+import {BaseAccessPattern} from "~/storage/accessPatterns/BaseAccessPattern.js";
+import type {IAccessPatternCreateKeysResult, IAccessPatternListResult} from "../abstractions/AccessPattern.js";
 
 export class AppAndActionAccessPattern<
     T extends IStorageListByAppAndActionParams = IStorageListByAppAndActionParams
@@ -31,12 +23,9 @@ export class AppAndActionAccessPattern<
     }
 
     public async list(params: T): Promise<IAccessPatternListResult> {
-        const options: EntityQueryOptions = {
-            limit: 25,
-            startKey: createStartKey(params),
-            index: this.index,
-            reverse: params.sort === "DESC"
-        };
+        const options = this.createOptions({
+            ...params,
+        })
 
         return await queryPerPage<IStorageItem>({
             entity: this.entity,

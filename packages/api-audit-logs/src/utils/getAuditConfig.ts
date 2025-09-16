@@ -83,6 +83,13 @@ export const getAuditConfig = (audit: AuditAction) => {
         if (!context.auditLogs) {
             console.log("No AuditLogs defined.");
             return null;
+        } else if (!audit) {
+            console.log(`No Audit Action defined!`);
+            console.log({
+                message,
+                entityId
+            });
+            return null;
         }
 
         const payload: AuditLogPayload = {

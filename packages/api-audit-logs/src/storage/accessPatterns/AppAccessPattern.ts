@@ -1,46 +1,58 @@
-import type { EntityQueryOptions } from "@webiny/db-dynamodb/toolbox.js";
-import type { IAuditLog, IStorageItem } from "~/storage/types.js";
-import type {
-    IStorageListByAppParams,
-    IStorageListParams
-} from "~/storage/abstractions/Storage.js";
-import { createStartKey } from "~/storage/startKey.js";
-import { queryPerPage } from "@webiny/db-dynamodb";
-import { BaseAccessPattern } from "~/storage/accessPatterns/BaseAccessPattern.js";
+import type {IAuditLog, IStorageItem} from "~/storage/types.js";
+import type {IStorageListByAppParams} from "~/storage/abstractions/Storage.js";
+import {queryPerPage} from "@webiny/db-dynamodb";
+import {BaseAccessPattern} from "~/storage/accessPatterns/BaseAccessPattern.js";
 import type {
     IAccessPatternCreateKeysResult,
+    IAccessPatternHandles,
     IAccessPatternListResult
 } from "~/storage/abstractions/AccessPattern.js";
+
+interface ICreatePartitionKeyParams {
+    tenant: string;
+    app: string;
+}
+
+const createPartitionKey = (params: ICreatePartitionKeyParams) => {
+    return `T#${params.tenant}#AUDIT_LOG#APP#${params.app}`;
+}
 
 export class AppAccessPattern<
     T extends IStorageListByAppParams = IStorageListByAppParams
 > extends BaseAccessPattern<T> {
-    public canHandle(params: IStorageListParams): boolean {
-        if (!params.app) {
-            return false;
-        } else if (params.createdBy) {
-            return false;
-        } else if (params.action) {
-            return false;
-        } else if (params.entryId) {
-            return false;
-        } else if (params.version) {
-            return false;
+    
+    public override handles(): IAccessPatternHandles {
+        return {
+            mustInclude: ["app"],
+            mustNotInclude: [
+                "createdBy",
+                "action",
+                "entryId",
+                "version",
+            ]
         }
-        return true;
     }
+    // public canHandle(params: IStorageListParams): boolean {
+    //     if (!params.app) {
+    //         return false;
+    //     } else if (params.createdBy) {
+    //         return false;
+    //     } else if (params.action) {
+    //         return false;
+    //     } else if (params.entryId) {
+    //         return false;
+    //     } else if (params.version) {
+    //         return false;
+    //     }
+    //     return true;
+    // }
 
     public async list(params: T): Promise<IAccessPatternListResult> {
-        const options: EntityQueryOptions = {
-            limit: 25,
-            startKey: createStartKey(params),
-            index: this.index,
-            reverse: params.sort === "DESC"
-        };
+        const options = this.createOptions(params)
 
         return await queryPerPage<IStorageItem>({
             entity: this.entity,
-            partitionKey: `T#${params.tenant}#AUDIT_LOG#APP#${params.app}`,
+            partitionKey: createPartitionKey(params),
             options
         });
     }
@@ -48,7 +60,7 @@ export class AppAccessPattern<
     public createKeys(item: IAuditLog): IAccessPatternCreateKeysResult {
         const time = item.createdOn.getTime();
         return {
-            partitionKey: `T#${item.tenant}#AUDIT_LOG#APP#${item.app}`,
+            partitionKey: createPartitionKey(item),
             sortKey: time
         };
     }

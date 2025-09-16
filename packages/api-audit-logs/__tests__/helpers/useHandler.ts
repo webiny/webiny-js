@@ -1,8 +1,8 @@
-import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
-import type { CreateHandlerCoreParams } from "./handlerCore";
-import { createHandlerCore } from "./handlerCore";
-import type { AuditLogsContext } from "~/types";
-import type { LambdaContext } from "@webiny/handler-aws/types";
+import {createRawEventHandler, createRawHandler} from "@webiny/handler-aws";
+import type {CreateHandlerCoreParams} from "./handlerCore";
+import {createHandlerCore} from "./handlerCore";
+import type {AuditLogsContext} from "~/types";
+import type {LambdaContext} from "@webiny/handler-aws/types";
 
 export const useHandler = (params?: CreateHandlerCoreParams) => {
     const core = createHandlerCore(params);
@@ -12,11 +12,11 @@ export const useHandler = (params?: CreateHandlerCoreParams) => {
             return context;
         })
     ]);
-
     const handler = createRawHandler<any, AuditLogsContext>({
         plugins,
         debug: process.env.DEBUG === "true"
     });
+    
     return {
         plugins,
         tenant: core.tenant,

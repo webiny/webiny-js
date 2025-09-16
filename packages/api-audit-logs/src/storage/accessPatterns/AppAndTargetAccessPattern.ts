@@ -31,14 +31,12 @@ export class AppAndTargetAccessPattern<
     }
 
     public async list(params: T): Promise<IAccessPatternListResult> {
-        const options: EntityQueryOptions = {
-            limit: 25,
-            startKey: createStartKey(params),
-            index: this.index,
-            reverse: params.sort === "DESC"
-        };
-
-        const { id: targetEntryId } = parseIdentifier(params.entryId);
+        const { id: targetEntryId, version } = parseIdentifier(params.entryId);
+        
+        const options = this.createOptions({
+            ...params,
+            sortKey: version || undefined,
+        })
 
         return await queryPerPage<IStorageItem>({
             entity: this.entity,

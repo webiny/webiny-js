@@ -1,6 +1,6 @@
-import type { IAuditLog, IStorageItem } from "~/storage/types.js";
-import type { IStorageListParams } from "./Storage.js";
-import type { GenericRecord } from "@webiny/api/types.js";
+import type {IAuditLog, IStorageItem} from "~/storage/types.js";
+import type {IStorageListParams} from "./Storage.js";
+import type {GenericRecord} from "@webiny/api/types.js";
 
 export interface IAccessPatternCreateKeysResult {
     partitionKey: string;
@@ -12,8 +12,16 @@ export interface IAccessPatternListResult {
     lastEvaluatedKey?: GenericRecord;
 }
 
+export type IAccessPatternHandlesKeys = keyof IStorageListParams;
+
+export interface IAccessPatternHandles {
+    mustInclude: IAccessPatternHandlesKeys[];
+    mustNotInclude: IAccessPatternHandlesKeys[];
+}
+
 export interface IAccessPattern<T> {
     index: string | undefined;
+    handles(): IAccessPatternHandles;
     canHandle(params: IStorageListParams): boolean;
     list(params: T): Promise<IAccessPatternListResult>;
     createKeys(item: IAuditLog): IAccessPatternCreateKeysResult;
