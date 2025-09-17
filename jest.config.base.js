@@ -121,7 +121,7 @@ const createGlobalSecondaryIndexes = options => {
                 { AttributeName: `GSI${current}_SK`, KeyType: "RANGE" }
             ],
             Projection: {
-                ProjectionType: "ALL"
+                ProjectionType: options.projectionType || "ALL"
             },
             ProvisionedThroughput: {
                 ReadCapacityUnits: 1,
@@ -214,7 +214,8 @@ const createDynaliteTables = (options = {}) => {
                 ],
                 ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 },
                 GlobalSecondaryIndexes: createGlobalSecondaryIndexes({
-                    amount: 10
+                    amount: 10,
+                    projectionType: "KEYS_ONLY"
                 }),
                 data: options.data || [],
                 ttl: {

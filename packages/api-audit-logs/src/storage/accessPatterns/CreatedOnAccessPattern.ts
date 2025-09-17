@@ -1,4 +1,4 @@
-import type { IAuditLog } from "~/storage/types.js";
+import type { IAuditLog, IIndexStorageItem } from "~/storage/types.js";
 import { BaseAccessPattern } from "~/storage/accessPatterns/BaseAccessPattern.js";
 import type {
     IAccessPatternCreateKeysResult,
@@ -21,7 +21,7 @@ export class CreatedOnAccessPattern<
 > extends BaseAccessPattern<T> {
     public override handles(): IAccessPatternHandles {
         return {
-            mustInclude: [],
+            mustInclude: ["createdOn_gte", "createdOn_lte"],
             mustNotInclude: ["app", "createdBy", "action", "entityId", "entity"]
         };
     }
@@ -29,10 +29,11 @@ export class CreatedOnAccessPattern<
     public async list(params: T): Promise<IAccessPatternListResult> {
         const options = this.createOptions(params);
 
-        return this.query({
+        const result = await this.query<IIndexStorageItem>({
             partitionKey: createPartitionKey(params),
             options
         });
+        return this.populateResult(result);
     }
 
     public createKeys(item: IAuditLog): IAccessPatternCreateKeysResult {

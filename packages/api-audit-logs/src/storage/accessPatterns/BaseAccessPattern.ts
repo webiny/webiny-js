@@ -1,4 +1,4 @@
-import type { IAuditLog, IStorageItem } from "~/storage/types.js";
+import type { IAuditLog, IIndexStorageItem, IStorageItem } from "~/storage/types.js";
 import type { Entity, EntityQueryOptions } from "@webiny/db-dynamodb/toolbox.js";
 import { createStartKey } from "~/storage/startKey.js";
 import type { IStorageListParams } from "../abstractions/Storage.js";
@@ -8,7 +8,7 @@ import type {
     IAccessPatternHandles,
     IAccessPatternListResult
 } from "../abstractions/AccessPattern.js";
-import { queryPerPage } from "@webiny/db-dynamodb";
+import { createEntityReadBatch, type IQueryPageResponse, queryPerPage } from "@webiny/db-dynamodb";
 
 const toGteTime = (date?: Date): number => {
     if (!date) {
@@ -67,12 +67,38 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
         return true;
     }
 
-    protected async query(params: IAccessPatternQueryParams) {
-        return queryPerPage<IStorageItem>({
+    protected async query<T = IStorageItem>(params: IAccessPatternQueryParams) {
+        return queryPerPage<T>({
             entity: this.entity,
             partitionKey: params.partitionKey,
             options: params.options
         });
+    }
+
+    protected async populateResult(
+        input: IQueryPageResponse<IIndexStorageItem>
+    ): Promise<IQueryPageResponse<IStorageItem>> {
+        const reader = createEntityReadBatch({
+            entity: this.entity,
+            read: input.items.map(item => {
+                return {
+                    PK: item.PK,
+                    SK: item.SK
+                };
+            })
+        });
+        const result = await reader.execute<IStorageItem>();
+
+        return {
+            ...input,
+            items: input.items
+                .map(item => {
+                    return result.find(i => {
+                        return i.PK === item.PK && i.SK === item.SK;
+                    });
+                })
+                .filter((item): item is IStorageItem => !!item)
+        };
     }
 
     public abstract list(params: T): Promise<IAccessPatternListResult>;

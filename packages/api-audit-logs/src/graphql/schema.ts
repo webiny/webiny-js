@@ -60,7 +60,7 @@ export const createGraphQLSchema = () => {
             
             type AuditLogListResponse {
                 data: [AuditLog!]
-                meta: AuditLogListMeta!
+                meta: AuditLogListMeta
                 error: AuditLogError
             }
             
@@ -88,7 +88,7 @@ export const createGraphQLSchema = () => {
             type AuditLogsQuery {
                 getAuditLog(id: ID!): AuditLogGetResponse
                 listAuditLogs(
-                    where: ListAuditLogsWhere!
+                    where: ListAuditLogsWhere
                     sort: AuditLogsSort
                     limit: Number
                     after: String
