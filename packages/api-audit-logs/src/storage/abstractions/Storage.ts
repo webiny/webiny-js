@@ -1,4 +1,5 @@
 import type { IAuditLog } from "~/storage/types.js";
+import {AppCreatedByAccessPattern} from "~/storage/accessPatterns/AppCreatedByAccessPattern.js";
 
 export interface IStorageFetchParams {
     id: string;
@@ -47,7 +48,7 @@ export interface IStorageListDefaultParams {
     app?: never;
     createdBy?: never;
     action?: never;
-    entryId?: never;
+    entityId?: never;
     version?: never;
 }
 
@@ -61,11 +62,34 @@ export interface IStorageListByAppParams {
     createdOn_lte?: Date;
     limit: number | undefined;
 
+    entity?: never;
     createdBy?: never;
     action?: never;
-    entryId?: never;
+    entityId?: never;
     version?: never;
 }
+
+/**
+ * // GSI2_PK / GSI2_SK
+ */
+export interface IStorageListByAppCreatedByParams extends Omit<IStorageListByAppParams, "createdBy"> {
+    createdBy: string;
+}
+
+// GSI3_PK / GSI3_SK
+export interface IStorageListByAppEntityParams extends Omit<IStorageListByAppParams, "entity"> {
+    entity: string;
+}
+// GSI4_PK / GSI4_SK
+export interface IStorageListByEntityIdParams extends Omit<IStorageListByAppParams, "entityId"> {
+    entityId: string;
+}
+// GSI5_PK / GSI5_SK
+export interface IStorageListByActionParams extends Omit<IStorageListByAppParams, "action"> {
+    action: string;
+}
+
+/*
 
 // GSI2_PK / GSI2_SK
 export interface IStorageListByAppAndActionParams {
@@ -77,9 +101,10 @@ export interface IStorageListByAppAndActionParams {
     createdOn_gte?: Date;
     createdOn_lte?: Date;
     limit: number | undefined;
+    entity?: string;
 
     createdBy?: never;
-    entryId?: never;
+    entityId?: never;
     version?: never;
 }
 
@@ -92,10 +117,11 @@ export interface IStorageListByCreatedByParams {
     createdOn_gte?: Date;
     createdOn_lte?: Date;
     limit: number | undefined;
+    entity?: string;
 
     app?: never;
     action?: never;
-    entryId?: never;
+    entityId?: never;
     version?: never;
 }
 
@@ -107,11 +133,12 @@ export interface IStorageListByCreatedOnParams {
     after?: string;
     sort?: "ASC" | "DESC";
     limit: number | undefined;
+    entity?: string;
 
     app?: never;
     createdBy?: never;
     action?: never;
-    entryId?: never;
+    entityId?: never;
     version?: never;
 }
 
@@ -119,7 +146,8 @@ export interface IStorageListByCreatedOnParams {
 export interface IStorageListByAppAndTargetParams {
     tenant: string;
     app: string;
-    entryId: string;
+    entityId: string;
+    entity?: string;
     after?: string;
     sort?: "ASC" | "DESC";
     version?: never;
@@ -130,13 +158,17 @@ export interface IStorageListByAppAndTargetParams {
     createdBy?: never;
     action?: never;
 }
+*/
 
 export type IStorageListParams =
     | IStorageListByAppParams
-    | IStorageListByCreatedByParams
-    | IStorageListByCreatedOnParams
-    | IStorageListByAppAndActionParams
-    | IStorageListByAppAndTargetParams;
+    | IStorageListByAppCreatedByParams
+    | IStorageListByAppEntityParams
+    | IStorageListByEntityIdParams
+    | IStorageListByActionParams;
+    // | IStorageListByCreatedOnParams
+    // | IStorageListByAppAndActionParams
+    // | IStorageListByAppAndTargetParams;
 
 export interface IStorageListSuccessResultMeta {
     after?: string;

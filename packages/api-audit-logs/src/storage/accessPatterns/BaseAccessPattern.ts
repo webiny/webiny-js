@@ -70,7 +70,7 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
             startKey: createStartKey({
                 after: params.after
             }),
-            reverse: params.sort === "DESC" ? true : false,
+            reverse: params.sort === "DESC",
             index: this.index
         };
         
