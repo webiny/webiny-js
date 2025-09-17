@@ -38,7 +38,7 @@ const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams): Promi
 
     const results = await context.auditLogs.listAuditLogs({
         app: payload.app,
-        entryId: payload.entityId,
+        entityId: payload.entityId,
         limit: 1,
         createdOn_gte: createAuditLogDelayDate(delay),
         sort: "DESC"

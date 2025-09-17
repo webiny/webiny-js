@@ -7,7 +7,7 @@ export const getValidationSchema = zod.object({
 export const listValidationSchema = zod.object({
     where: zod.object({
         app: zod.string().min(1, "App is required.").optional(),
-        entryId: zod.string().min(1, "Entry ID is required.").optional(),
+        entityId: zod.string().min(1, "Entity ID is required.").optional(),
         version: zod.never().optional(),
         createdOn_gte: zod.preprocess(input => {
             if(typeof input == "string" || input instanceof Date) {

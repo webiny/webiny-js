@@ -1,10 +1,11 @@
-import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
-import type { IAuditLog, IStorageItem } from "~/storage/types.js";
-import type { IStorageListDefaultParams } from "~/storage/abstractions/Storage.js";
-import { queryPerPage } from "@webiny/db-dynamodb";
-import { BaseAccessPattern } from "./BaseAccessPattern.js";
+import type {Entity} from "@webiny/db-dynamodb/toolbox.js";
+import type {IAuditLog, IStorageItem} from "~/storage/types.js";
+import type {IStorageListDefaultParams} from "~/storage/abstractions/Storage.js";
+import {queryPerPage} from "@webiny/db-dynamodb";
+import {BaseAccessPattern} from "./BaseAccessPattern.js";
 import type {
     IAccessPatternCreateKeysResult,
+    IAccessPatternHandles,
     IAccessPatternListResult
 } from "~/storage/abstractions/AccessPattern.js";
 
@@ -15,27 +16,27 @@ export interface IDefaultAccessPatternParams {
 export class DefaultAccessPattern<
     T extends IStorageListDefaultParams = IStorageListDefaultParams
 > extends BaseAccessPattern<T> {
+    
     public constructor(params: IDefaultAccessPatternParams) {
         super({
             index: undefined,
             entity: params.entity
         });
     }
-
-    public canHandle(): boolean {
-        /**
-         * Default must have always false so it is skipped until the end.
-         */
+    
+    public override handles(): IAccessPatternHandles {
+        return {
+            mustInclude: [],
+            mustNotInclude: [],
+        };
+    }
+    
+    public override canHandle(): boolean {
         return false;
     }
-
+    
     public async list(params: T): Promise<IAccessPatternListResult> {
-        const options = this.createOptions({
-            limit: params.limit,
-            after: params.after,
-            sort: params.sort,
-            sortKey: undefined
-        });
+        const options = this.createOptions(params);
 
         return await queryPerPage<IStorageItem>({
             entity: this.entity,

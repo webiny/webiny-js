@@ -3,17 +3,19 @@ import type {AuditLogsContext} from "~/types.js";
 import {getValidationSchema, listValidationSchema} from "./validation.js";
 import {createZodError} from "@webiny/utils";
 
+interface IListAuditLogsWhere {
+    app?: string
+    action?: string
+    createdBy?: string
+    entity?: string
+    entityId?: string
+    version?: number
+    createdOn_gte?: Date
+    createdOn_lte?: Date
+}
+
 interface IListAuditLogsArgs {
-    where?: {
-        app?: string
-        action?: string
-        createdBy?: string
-        entity?: string
-        entryId?: string
-        version?: number
-        createdOn_gte?: Date
-        createdOn_lte?: Date
-    }
+    where?: IListAuditLogsWhere;
     sort?: "ASC" | "DESC"
     limit?: number
     after?: string;
@@ -77,7 +79,7 @@ export const createGraphQLSchema = () => {
                 action: String
                 createdBy: String
                 entity: String
-                entryId: String
+                entityId: String
                 version: Number
                 createdOn_gte: DateTime
                 createdOn_lte: DateTime
