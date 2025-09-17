@@ -34,7 +34,8 @@ export interface OnAuditLogBeforeUpdateTopicParams {
     setAuditLog(auditLog: Partial<IAuditLog>): void;
 }
 
-export interface IListAuditLogsParams extends Omit<IStorageListParams, "tenant" | "limit"> {
+export interface IListAuditLogsParams extends Omit<IStorageListParams, "tenant" | "limit" | "app"> {
+    app?: string;
     limit?: number;
 }
 

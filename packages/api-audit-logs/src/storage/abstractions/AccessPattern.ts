@@ -1,6 +1,6 @@
-import type {IAuditLog, IStorageItem} from "~/storage/types.js";
-import type {IStorageListParams} from "./Storage.js";
-import type {GenericRecord} from "@webiny/api/types.js";
+import type { IAuditLog, IStorageItem } from "~/storage/types.js";
+import type { IStorageListParams } from "./Storage.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface IAccessPatternCreateKeysResult {
     partitionKey: string;

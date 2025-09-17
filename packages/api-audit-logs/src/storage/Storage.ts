@@ -33,7 +33,7 @@ export class Storage implements IStorage {
         const { entity } = createEntity({
             client: params.client,
             tableName: params.tableName,
-            gsiAmount: 5
+            gsiAmount: 10
         });
 
         this.entity = entity;

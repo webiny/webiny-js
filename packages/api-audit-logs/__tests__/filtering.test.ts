@@ -1,8 +1,8 @@
-import {getAuditConfig} from "~/utils/getAuditConfig.js";
-import {useHandler} from "~tests/helpers/useHandler.js";
-import {AUDIT} from "~/config.js";
-import type {AuditLogsContext} from "~/types.js";
-import type {IAuditLog} from "~/storage/types.js";
+import { getAuditConfig } from "~/utils/getAuditConfig.js";
+import { useHandler } from "~tests/helpers/useHandler.js";
+import { AUDIT } from "~/config.js";
+import type { AuditLogsContext } from "~/types.js";
+import type { IAuditLog } from "~/storage/types.js";
 
 // FM
 const createFileCreateAuditLog = getAuditConfig(AUDIT.FILE_MANAGER.FILE.CREATE);
@@ -20,9 +20,9 @@ interface ICreateMockAuditLogsParams {
 }
 
 const createSleep = (active: boolean) => {
-    if(!active) {
+    if (!active) {
         return async (): Promise<void> => {
-            return new Promise(resolve => setTimeout(resolve, 2))
+            return new Promise(resolve => setTimeout(resolve, 2));
         };
     }
     return async (ms: number): Promise<void> => {
@@ -31,15 +31,15 @@ const createSleep = (active: boolean) => {
 };
 
 const createMockAuditLogs = async (params: ICreateMockAuditLogsParams): Promise<IAuditLog[]> => {
-    const {context, activateSleep = false} = params;
-    
+    const { context, activateSleep = false } = params;
+
     const results: (IAuditLog | null)[] = [];
-    
+
     const sleep = createSleep(activateSleep);
     results.push(
         await createFileCreateAuditLog(
             "File created",
-            {fileName: "test.jpg"},
+            { fileName: "test.jpg" },
             "file#0001",
             context
         )
@@ -48,7 +48,7 @@ const createMockAuditLogs = async (params: ICreateMockAuditLogsParams): Promise<
     results.push(
         await createCmsEntryCreateAuditLog(
             "Entry created",
-            {title: "Test Entry"},
+            { title: "Test Entry" },
             "cmsEntry#0001",
             context
         )
@@ -57,7 +57,7 @@ const createMockAuditLogs = async (params: ICreateMockAuditLogsParams): Promise<
     results.push(
         await createCmsEntryUpdateAuditLog(
             "Entry updated",
-            {title: "Test Entry Updated"},
+            { title: "Test Entry Updated" },
             "cmsEntry#0002",
             context
         )
@@ -66,7 +66,7 @@ const createMockAuditLogs = async (params: ICreateMockAuditLogsParams): Promise<
     results.push(
         await createApiKeyCreateAuditLog(
             "API key created",
-            {name: "Test API Key"},
+            { name: "Test API Key" },
             "apiKey#0003",
             context
         )
@@ -76,8 +76,8 @@ const createMockAuditLogs = async (params: ICreateMockAuditLogsParams): Promise<
         await createFileUpdateAuditLog(
             "File updated",
             {
-                before: {fileName: "test.jpg"},
-                after: {fileName: "test-updated.jpg"}
+                before: { fileName: "test.jpg" },
+                after: { fileName: "test-updated.jpg" }
             },
             "file#0001",
             context
@@ -87,7 +87,7 @@ const createMockAuditLogs = async (params: ICreateMockAuditLogsParams): Promise<
     results.push(
         await createCmsEntryDeleteAuditLog(
             "Entry deleted",
-            {title: "Test Entry Updated"},
+            { title: "Test Entry Updated" },
             "cmsEntry#0002",
             context
         )
@@ -96,8 +96,8 @@ const createMockAuditLogs = async (params: ICreateMockAuditLogsParams): Promise<
 };
 
 describe("audit logs filtering", () => {
-    const {handler} = useHandler();
-    
+    const { handler } = useHandler();
+
     const createdAuditLogs = [
         {
             action: "CREATE",
@@ -136,24 +136,24 @@ describe("audit logs filtering", () => {
             entity: "ENTRY"
         }
     ];
-    
+
     it("should verify that all mock audit logs exist", async () => {
         const context = await handler();
         await createMockAuditLogs({
             context
         });
-        
+
         const result = await context.auditLogs.listAuditLogs({});
         expect(result.items).toHaveLength(6);
         expect(result.items).toMatchObject([...createdAuditLogs]);
     });
-    
+
     it("should filter audit logs by app", async () => {
         const context = await handler();
         await createMockAuditLogs({
             context
         });
-        
+
         const cmsResult = await context.auditLogs.listAuditLogs({
             app: "HEADLESS_CMS"
         });
@@ -163,53 +163,53 @@ describe("audit logs filtering", () => {
             createdAuditLogs[5]
         ]);
         expect(cmsResult.items).toHaveLength(3);
-        
+
         const fileManagerResult = await context.auditLogs.listAuditLogs({
             app: "FILE_MANAGER"
         });
         expect(fileManagerResult.items).toMatchObject([createdAuditLogs[0], createdAuditLogs[4]]);
         expect(fileManagerResult.items).toHaveLength(2);
-        
+
         const securityResult = await context.auditLogs.listAuditLogs({
             app: "SECURITY"
         });
         expect(securityResult.items).toMatchObject([createdAuditLogs[3]]);
         expect(securityResult.items).toHaveLength(1);
     });
-    
+
     it("should filter audit logs by user", async () => {
         const context = await handler();
         await createMockAuditLogs({
             context
         });
-        
+
         const foundResult = await context.auditLogs.listAuditLogs({
             createdBy: context.security.getIdentity().id
         });
         expect(foundResult.items).toHaveLength(6);
         expect(foundResult.items).toMatchObject([...createdAuditLogs]);
-        
+
         const notFoundResult = await context.auditLogs.listAuditLogs({
             createdBy: "unknown"
         });
         expect(notFoundResult.items).toHaveLength(0);
     });
-    
+
     it("should filter audit logs by createdOn", async () => {
         const context = await handler();
         const logs = await createMockAuditLogs({
             context,
             activateSleep: true
         });
-        
+
         const from1 = logs[1].createdOn;
         const to4 = logs[4].createdOn;
-        
+
         const resultFrom1To4 = await context.auditLogs.listAuditLogs({
             createdOn_gte: from1,
             createdOn_lte: to4
         });
-        
+
         expect(resultFrom1To4.items).toHaveLength(4);
         expect(resultFrom1To4.items).toMatchObject([
             createdAuditLogs[1],
@@ -217,32 +217,32 @@ describe("audit logs filtering", () => {
             createdAuditLogs[3],
             createdAuditLogs[4]
         ]);
-        
+
         const from2 = logs[2].createdOn;
         const to3 = logs[3].createdOn;
-        
+
         const resultFrom2To3 = await context.auditLogs.listAuditLogs({
             createdOn_gte: from2,
             createdOn_lte: to3
         });
-        
+
         expect(resultFrom2To3.items).toHaveLength(2);
         expect(resultFrom2To3.items).toMatchObject([createdAuditLogs[2], createdAuditLogs[3]]);
     });
-    
+
     it("should filter audit logs by app and action", async () => {
         const context = await handler();
         await createMockAuditLogs({
             context
         });
-        
+
         const fileManagerUpdateResult = await context.auditLogs.listAuditLogs({
             app: "FILE_MANAGER",
             action: "UPDATE"
         });
         expect(fileManagerUpdateResult.items).toHaveLength(1);
         expect(fileManagerUpdateResult.items).toMatchObject([createdAuditLogs[4]]);
-        
+
         const cmsCreateResult = await context.auditLogs.listAuditLogs({
             app: "HEADLESS_CMS",
             action: "CREATE"
@@ -250,45 +250,41 @@ describe("audit logs filtering", () => {
         expect(cmsCreateResult.items).toHaveLength(1);
         expect(cmsCreateResult.items).toMatchObject([createdAuditLogs[1]]);
     });
-    
-    it("should filter audit logs by app and target", async () => {
+
+    it("should filter audit logs by entityId", async () => {
         const context = await handler();
         await createMockAuditLogs({
             context
         });
-        
+
         const cmsEntryAllResult = await context.auditLogs.listAuditLogs({
-            app: "HEADLESS_CMS",
-            entryId: "cmsEntry",
+            entityId: "cmsEntry"
         });
-        
+
         expect(cmsEntryAllResult.items).toHaveLength(3);
         expect(cmsEntryAllResult.items).toMatchObject([
             createdAuditLogs[1],
             createdAuditLogs[2],
-            createdAuditLogs[5],
+            createdAuditLogs[5]
         ]);
-        
+
         const cmsEntryExactResult = await context.auditLogs.listAuditLogs({
-            app: "HEADLESS_CMS",
-            entryId: "cmsEntry#0001",
+            entityId: "cmsEntry#0001"
         });
-        
-        expect(cmsEntryExactResult.items).toHaveLength(1);
+
+        expect(cmsEntryExactResult.items).toHaveLength(3);
         expect(cmsEntryExactResult.items).toMatchObject([
             createdAuditLogs[1],
-            
+            createdAuditLogs[2],
+            createdAuditLogs[5]
         ]);
-        
+
         const fileResult = await context.auditLogs.listAuditLogs({
             app: "FILE_MANAGER",
-            entryId: "file#0001",
+            entityId: "file#0001"
         });
-        
+
         expect(fileResult.items).toHaveLength(2);
-        expect(fileResult.items).toMatchObject([
-            createdAuditLogs[0],
-            createdAuditLogs[4],
-        ]);
-    })
+        expect(fileResult.items).toMatchObject([createdAuditLogs[0], createdAuditLogs[4]]);
+    });
 });

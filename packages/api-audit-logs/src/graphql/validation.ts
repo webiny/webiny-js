@@ -10,13 +10,13 @@ export const listValidationSchema = zod.object({
         entityId: zod.string().min(1, "Entity ID is required.").optional(),
         version: zod.never().optional(),
         createdOn_gte: zod.preprocess(input => {
-            if(typeof input == "string" || input instanceof Date) {
+            if (typeof input == "string" || input instanceof Date) {
                 return new Date(input);
             }
             return undefined;
         }, zod.date().optional()),
         createdOn_lte: zod.preprocess(input => {
-            if(typeof input == "string" || input instanceof Date) {
+            if (typeof input == "string" || input instanceof Date) {
                 return new Date(input);
             }
             return undefined;
@@ -33,5 +33,5 @@ export const listValidationSchema = zod.object({
             }
             return input;
         }, zod.number().min(1).max(100).optional())
-        .default(25),
+        .default(25)
 });

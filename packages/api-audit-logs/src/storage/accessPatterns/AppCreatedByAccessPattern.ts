@@ -1,11 +1,11 @@
-import type {IAuditLog} from "~/storage/types.js";
-import {BaseAccessPattern} from "~/storage/accessPatterns/BaseAccessPattern.js";
+import type { IAuditLog } from "~/storage/types.js";
+import { BaseAccessPattern } from "~/storage/accessPatterns/BaseAccessPattern.js";
 import type {
     IAccessPatternCreateKeysResult,
     IAccessPatternHandles,
     IAccessPatternListResult
 } from "~/storage/abstractions/AccessPattern.js";
-import type {IStorageListByAppCreatedByParams} from "~/storage/abstractions/Storage.js";
+import type { IStorageListByAppCreatedByParams } from "~/storage/abstractions/Storage.js";
 
 interface ICreatePartitionKeyParams {
     tenant: string;
@@ -17,30 +17,29 @@ const createPartitionKey = (params: ICreatePartitionKeyParams) => {
     return `T#${params.tenant}#AUDIT_LOG#APP#${params.app}#CREATEDBY#${params.createdBy}`;
 };
 
-
+// GSI2_PK / GSI2_SK
 export class AppCreatedByAccessPattern<
     T extends IStorageListByAppCreatedByParams = IStorageListByAppCreatedByParams
 > extends BaseAccessPattern<T> {
-    
     public override handles(): IAccessPatternHandles {
         return {
             mustInclude: ["app", "createdBy"],
-            mustNotInclude: ["action", "entityId", "version", "entity"]
+            mustNotInclude: ["action", "entityId", "entity"]
         };
     }
-    
+
     public async list(params: T): Promise<IAccessPatternListResult> {
         const options = this.createOptions(params);
-        
+
         return this.query({
             partitionKey: createPartitionKey(params),
             options
         });
     }
-    
+
     public createKeys(item: IAuditLog): IAccessPatternCreateKeysResult {
         const time = item.createdOn.getTime();
-        
+
         return {
             partitionKey: createPartitionKey({
                 ...item,

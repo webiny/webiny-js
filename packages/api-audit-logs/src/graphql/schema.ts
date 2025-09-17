@@ -1,23 +1,23 @@
-import {GraphQLSchemaPlugin, NotFoundError, resolve, resolveList} from "@webiny/handler-graphql";
-import type {AuditLogsContext} from "~/types.js";
-import {getValidationSchema, listValidationSchema} from "./validation.js";
-import {createZodError} from "@webiny/utils";
+import { GraphQLSchemaPlugin, NotFoundError, resolve, resolveList } from "@webiny/handler-graphql";
+import type { AuditLogsContext } from "~/types.js";
+import { getValidationSchema, listValidationSchema } from "./validation.js";
+import { createZodError } from "@webiny/utils";
 
 interface IListAuditLogsWhere {
-    app?: string
-    action?: string
-    createdBy?: string
-    entity?: string
-    entityId?: string
-    version?: number
-    createdOn_gte?: Date
-    createdOn_lte?: Date
+    app?: string;
+    action?: string;
+    createdBy?: string;
+    entity?: string;
+    entityId?: string;
+    version?: number;
+    createdOn_gte?: Date;
+    createdOn_lte?: Date;
 }
 
 interface IListAuditLogsArgs {
     where?: IListAuditLogsWhere;
-    sort?: "ASC" | "DESC"
-    limit?: number
+    sort?: "ASC" | "DESC";
+    limit?: number;
     after?: string;
 }
 
@@ -127,7 +127,10 @@ export const createGraphQLSchema = () => {
                         if (!validation.success) {
                             throw createZodError(validation.error);
                         }
-                        const result = await context.auditLogs.listAuditLogs(validation.data);
+                        const result = await context.auditLogs.listAuditLogs({
+                            ...validation.data,
+                            ...validation.data.where
+                        });
                         if (result.error) {
                             throw result.error;
                         }
