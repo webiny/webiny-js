@@ -1,4 +1,4 @@
-import type {IAuditLog} from "~/storage/types.js";
+import type {IAuditLog, IStorageItem} from "~/storage/types.js";
 import type {Entity, EntityQueryOptions} from "@webiny/db-dynamodb/toolbox.js";
 import {createStartKey} from "~/storage/startKey.js";
 import type {IStorageListParams} from "../abstractions/Storage.js";
@@ -6,8 +6,9 @@ import type {
     IAccessPattern,
     IAccessPatternCreateKeysResult,
     IAccessPatternHandles,
-    IAccessPatternListResult
+    IAccessPatternListResult,
 } from "../abstractions/AccessPattern.js";
+import {queryPerPage} from "@webiny/db-dynamodb";
 
 const toGteTime = (date?: Date): number => {
     if(!date) {
@@ -26,7 +27,6 @@ export interface ICreateOptionsParams {
     limit?: number;
     sort?: "ASC" | "DESC";
     after?: string;
-    // sortKey?: string | number;
     createdOn_gte?: Date;
     createdOn_lte?: Date;
 }
@@ -34,6 +34,11 @@ export interface ICreateOptionsParams {
 export interface IBaseAccessPatternParams {
     index: string | undefined;
     entity: Entity;
+}
+
+export interface IAccessPatternQueryParams {
+    partitionKey: string;
+    options: EntityQueryOptions;
 }
 
 export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
@@ -61,6 +66,15 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
         }
         return true;
     }
+    
+    protected async query(params: IAccessPatternQueryParams) {
+        return queryPerPage<IStorageItem>({
+            entity: this.entity,
+            partitionKey: params.partitionKey,
+            options: params.options,
+        });
+    }
+    
     public abstract list(params: T): Promise<IAccessPatternListResult>;
     public abstract createKeys(item: IAuditLog): IAccessPatternCreateKeysResult;
 

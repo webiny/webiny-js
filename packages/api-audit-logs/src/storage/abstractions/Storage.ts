@@ -1,5 +1,4 @@
-import type { IAuditLog } from "~/storage/types.js";
-import {AppCreatedByAccessPattern} from "~/storage/accessPatterns/AppCreatedByAccessPattern.js";
+import type {IAuditLog} from "~/storage/types.js";
 
 export interface IStorageFetchParams {
     id: string;
@@ -89,6 +88,21 @@ export interface IStorageListByActionParams extends Omit<IStorageListByAppParams
     action: string;
 }
 
+// GSI6_PK / GSI6_SK
+export interface IStorageListByAppAndActionParams extends Omit<IStorageListByAppParams, "action"> {
+    action: string;
+}
+// GSI7_PK / GSI7_SK
+export interface IStorageListByAppEntityActionParams extends Omit<IStorageListByAppParams, "entity" | "action"> {
+    entity: string;
+    action: string;
+}
+// GSI8_PK / GSI8_SK
+export interface IStorageListByAppCreatedByActionParams extends Omit<IStorageListByAppParams, "createdBy" | "action"> {
+    createdBy: string;
+    action: string;
+}
+
 /*
 
 // GSI2_PK / GSI2_SK
@@ -165,7 +179,10 @@ export type IStorageListParams =
     | IStorageListByAppCreatedByParams
     | IStorageListByAppEntityParams
     | IStorageListByEntityIdParams
-    | IStorageListByActionParams;
+    | IStorageListByActionParams
+    | IStorageListByAppAndActionParams
+    | IStorageListByAppEntityActionParams
+    | IStorageListByAppCreatedByActionParams;
     // | IStorageListByCreatedOnParams
     // | IStorageListByAppAndActionParams
     // | IStorageListByAppAndTargetParams;

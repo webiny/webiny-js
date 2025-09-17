@@ -1,7 +1,6 @@
 import type {Entity} from "@webiny/db-dynamodb/toolbox.js";
-import type {IAuditLog, IStorageItem} from "~/storage/types.js";
+import type {IAuditLog} from "~/storage/types.js";
 import type {IStorageListDefaultParams} from "~/storage/abstractions/Storage.js";
-import {queryPerPage} from "@webiny/db-dynamodb";
 import {BaseAccessPattern} from "./BaseAccessPattern.js";
 import type {
     IAccessPatternCreateKeysResult,
@@ -12,6 +11,14 @@ import type {
 export interface IDefaultAccessPatternParams {
     entity: Entity;
 }
+
+interface ICreatePartitionKeyParams {
+    tenant: string;
+}
+
+const createPartitionKey = (params: ICreatePartitionKeyParams) => {
+    return `T#${params.tenant}#AUDIT_LOG`;
+};
 
 export class DefaultAccessPattern<
     T extends IStorageListDefaultParams = IStorageListDefaultParams
@@ -37,17 +44,16 @@ export class DefaultAccessPattern<
     
     public async list(params: T): Promise<IAccessPatternListResult> {
         const options = this.createOptions(params);
-
-        return await queryPerPage<IStorageItem>({
-            entity: this.entity,
-            partitionKey: `T#${params.tenant}#AUDIT_LOG`,
+        
+        return await this.query({
+            partitionKey: createPartitionKey(params),
             options
         });
     }
 
     public createKeys(item: IAuditLog): IAccessPatternCreateKeysResult {
         return {
-            partitionKey: `T#${item.tenant}#AUDIT_LOG`,
+            partitionKey: createPartitionKey(item),
             sortKey: `${item.id}`
         };
     }

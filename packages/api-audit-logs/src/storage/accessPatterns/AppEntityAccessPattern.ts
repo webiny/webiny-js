@@ -1,6 +1,5 @@
-import type {IAuditLog, IStorageItem} from "~/storage/types.js";
+import type {IAuditLog} from "~/storage/types.js";
 import type {IStorageListByAppEntityParams} from "~/storage/abstractions/Storage.js";
-import {queryPerPage} from "@webiny/db-dynamodb";
 import {BaseAccessPattern} from "~/storage/accessPatterns/BaseAccessPattern.js";
 import type {
     IAccessPatternCreateKeysResult,
@@ -30,36 +29,19 @@ export class AppEntityAccessPattern<
     }
     
     public async list(params: T): Promise<IAccessPatternListResult> {
-        if(!params.entity) {
-            throw new Error("entity is required for this access pattern");
-        }
-        
         const options = this.createOptions(params);
         
-        return queryPerPage<IStorageItem>({
-            entity: this.entity,
-            partitionKey: createPartitionKey({
-                tenant: params.tenant,
-                app: params.app,
-                entity: params.entity
-            }),
+        return this.query({
+            partitionKey: createPartitionKey(params),
             options
         });
     }
     
     public createKeys(item: IAuditLog): IAccessPatternCreateKeysResult {
-        if(!item.entity) {
-            throw new Error("entity is required to create keys");
-        }
-        
         const time = item.createdOn.getTime();
         
         return {
-            partitionKey: createPartitionKey({
-                tenant: item.tenant,
-                app: item.app,
-                entity: item.entity
-            }),
+            partitionKey: createPartitionKey(item),
             sortKey: time
         };
     }

@@ -1,6 +1,5 @@
-import type {IAuditLog, IStorageItem} from "~/storage/types.js";
+import type {IAuditLog} from "~/storage/types.js";
 import type {IStorageListByActionParams} from "~/storage/abstractions/Storage.js";
-import {queryPerPage} from "@webiny/db-dynamodb";
 import {BaseAccessPattern} from "~/storage/accessPatterns/BaseAccessPattern.js";
 import type {
     IAccessPatternCreateKeysResult,
@@ -31,8 +30,7 @@ export class ActionAccessPattern<
     public async list(params: T): Promise<IAccessPatternListResult> {
         const options = this.createOptions(params);
         
-        return queryPerPage<IStorageItem>({
-            entity: this.entity,
+        return this.query({
             partitionKey: createPartitionKey(params),
             options
         });
