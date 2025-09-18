@@ -9,12 +9,12 @@ import type {
     OnAuditLogBeforeCreateTopicParams,
     OnAuditLogBeforeUpdateTopicParams
 } from "~/types";
-import {createTopic} from "@webiny/pubsub";
-import {convertExpiresAtDaysToDate} from "~/utils/expiresAt.js";
-import type {IAuditLog, IAuditLogCreatedBy} from "~/storage/types.js";
-import {mdbid} from "@webiny/utils/mdbid.js";
-import type {IStorage, IStorageListParams} from "~/storage/abstractions/Storage.js";
-import {NotAuthorizedError} from "@webiny/api-security";
+import { createTopic } from "@webiny/pubsub";
+import { convertExpiresAtDaysToDate } from "~/utils/expiresAt.js";
+import type { IAuditLog, IAuditLogCreatedBy } from "~/storage/types.js";
+import { mdbid } from "@webiny/utils/mdbid.js";
+import type { IStorage, IStorageListParams } from "~/storage/abstractions/Storage.js";
+import { NotAuthorizedError } from "@webiny/api-security";
 
 export interface IAuditLogsContextValueParams {
     getContext: () => AuditLogsContext;
@@ -37,15 +37,13 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
         this.onBeforeCreate = createTopic<OnAuditLogBeforeCreateTopicParams>(
             "auditLogs.onBeforeCreate"
         );
-        this.onAfterCreate = createTopic<OnAuditLogAfterCreateTopicParams>(
-            "auditLogs.onAfterCreate"
-        );
+        this.onAfterCreate =
+            createTopic<OnAuditLogAfterCreateTopicParams>("auditLogs.onAfterCreate");
         this.onBeforeUpdate = createTopic<OnAuditLogBeforeUpdateTopicParams>(
             "auditLogs.onBeforeUpdate"
         );
-        this.onAfterUpdate = createTopic<OnAuditLogAfterUpdateTopicParams>(
-            "auditLogs.onAfterUpdate"
-        );
+        this.onAfterUpdate =
+            createTopic<OnAuditLogAfterUpdateTopicParams>("auditLogs.onAfterUpdate");
         this.storage = params.storage;
     }
 
@@ -78,7 +76,7 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
         if (result.success) {
             await this.onAfterCreate.publish({
                 auditLog: Object.freeze(auditLog),
-                context,
+                context
             });
             return result.data;
         }
@@ -113,7 +111,7 @@ class AuditLogsContextValueImpl implements AuditLogsContextValue {
             await this.onAfterUpdate.publish({
                 original: Object.freeze(original),
                 auditLog: Object.freeze(auditLog),
-                context,
+                context
             });
             return result.data;
         }
