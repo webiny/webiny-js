@@ -19,7 +19,7 @@
   "devDependencies": {
     "@testing-library/react": "^15.0.7",
     "@webiny/build-tools": "0.0.0",
-    "prettier": "^2.8.8",
+    "prettier": "^3.6.2",
     "vitest": "^3.2.4"
   },
   "publishConfig": {

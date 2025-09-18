@@ -1,14 +1,21 @@
-import { updatePackages, presets, getUserInput } from "./updatePackagesLib/index.ts";
+import { getUserInput, presets, updatePackages } from "./updatePackagesLib/index.ts";
 
 (async () => {
-    const input = await getUserInput({
-        presets
-    });
-    if (!input) {
-        return;
-    }
+    try {
+        const input = await getUserInput({
+            presets
+        });
+        if (!input) {
+            return;
+        }
 
-    return updatePackages({
-        input
-    });
+        return await updatePackages({
+            input
+        });
+    } catch (ex) {
+        if (ex.name === "ExitPromptError") {
+            process.exit();
+        }
+        throw ex;
+    }
 })();

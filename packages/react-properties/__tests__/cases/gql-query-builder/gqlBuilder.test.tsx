@@ -8,7 +8,9 @@ import type { Operation } from "./components";
 import { Query, Field, Variable, InlineFragment } from "./components";
 import { generateQuery } from "./generateQuery";
 
-const prettyGql = (query: string) => prettier.format(query.trim(), { parser: "graphql" });
+const prettyGql = async (query: string) => {
+    return await prettier.format(query.trim(), { parser: "graphql" });
+};
 
 const ListPagesQuery = () => {
     return (
@@ -208,8 +210,8 @@ describe("GQL Query Builder", () => {
 
         const query = generateQuery(listPagesQueryDefinition);
 
-        expect(prettyGql(query)).toEqual(
-            prettyGql(/* GraphQL */ `
+        expect(await prettyGql(query)).toEqual(
+            await prettyGql(/* GraphQL */ `
                 query ListPages($listPagesWhere: ListPagesWhereInput, $limit: Number!) {
                     listPages(where: $listPagesWhere) {
                         data {

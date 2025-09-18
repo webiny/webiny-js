@@ -4,7 +4,7 @@ const prettier = require("prettier");
 const formatCode = async filePath => {
     const options = await prettier.resolveConfig(filePath);
     const fileContentRaw = fs.readFileSync(filePath).toString("utf8");
-    const fileContentFormatted = prettier.format(fileContentRaw, {
+    const fileContentFormatted = await prettier.format(fileContentRaw, {
         ...options,
         filepath: filePath
     });
