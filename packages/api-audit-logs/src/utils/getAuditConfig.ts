@@ -85,10 +85,6 @@ export const getAuditConfig = (audit: AuditAction) => {
             return null;
         } else if (!audit) {
             console.log(`No Audit Action defined!`);
-            console.log({
-                message,
-                entityId
-            });
             return null;
         }
 

@@ -9,7 +9,6 @@ interface IListAuditLogsWhere {
     createdBy?: string;
     entity?: string;
     entityId?: string;
-    version?: number;
     createdOn_gte?: Date;
     createdOn_lte?: Date;
 }
@@ -80,7 +79,6 @@ export const createGraphQLSchema = () => {
                 createdBy: String
                 entity: String
                 entityId: String
-                version: Number
                 createdOn_gte: DateTime
                 createdOn_lte: DateTime
             }

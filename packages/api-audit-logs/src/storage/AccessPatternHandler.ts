@@ -34,11 +34,6 @@ export class AccessPatternHandler implements IAccessPatternHandler {
                 }
             });
         }
-        console.log({
-            usingPattern: pattern.handles(),
-            params,
-            index: pattern.index
-        });
 
         return await pattern.list(params);
     }

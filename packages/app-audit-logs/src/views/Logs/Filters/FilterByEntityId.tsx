@@ -1,7 +1,6 @@
 import React from "react";
 import { useBind, useForm } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
-import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 import type { IFilterFormData } from "~/views/Logs/Filters/types.js";
 
 export const FilterByEntityId = () => {
@@ -13,9 +12,11 @@ export const FilterByEntityId = () => {
                 cb(undefined);
                 return;
             }
-            const { id, version } = parseIdentifier(value);
-            setValue("version", version || undefined);
-            cb(id);
+            setValue("app", undefined);
+            setValue("entity", undefined);
+            setValue("action", undefined);
+            setValue("createdBy", undefined);
+            cb(value);
         }
     });
 

@@ -77,10 +77,6 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
     }
 
     protected async query<T = IStorageItem>(params: IAccessPatternQueryParams) {
-        console.log({
-            partitionKey: params.partitionKey,
-            options: params.options
-        });
         return queryPerPage<T>({
             entity: this.entity,
             partitionKey: params.partitionKey,
