@@ -115,9 +115,12 @@ const Menu = (props: MenuProps) => {
             className={className}
             onOpenChange={open => {
                 if (open) {
-                    onOpen && onOpen();
-                } else {
-                    onClose && onClose();
+                    if (!onOpen) {
+                        return;
+                    }
+                    onOpen();
+                } else if (onClose) {
+                    onClose();
                 }
             }}
             data-testid={props["data-testid"]}
@@ -163,6 +166,7 @@ const MenuItem = ({ children, ...rest }: MenuItemProps) => {
         const foundIcon = React.Children.toArray(children).find(isIconElement);
         // Handles this usage: packages/app-admin/src/components/OptionsMenu/OptionsMenuItem.tsx
         if (React.isValidElement(foundIcon) && foundIcon.type === ListItemGraphic) {
+            // @ts-expect-error
             return foundIcon.props.children;
         }
         return foundIcon;

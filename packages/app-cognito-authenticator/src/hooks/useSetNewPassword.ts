@@ -17,20 +17,22 @@ interface State {
     error: string | null;
     loading: boolean;
 }
-interface Reducer {
-    (prev: State, next: Partial<State>): State;
-}
+
 
 interface SetPasswordParams {
     code: string;
     password: string;
 }
 
+const defaultState: State = {
+    error: null,
+    loading: false
+};
+
 export function useSetNewPassword(): UseSetNewPassword {
-    const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
-        error: null,
-        loading: false
-    });
+    const [state, setState] = useReducer((prev, next) => {
+        return { ...prev, ...next };
+    }, defaultState);
     const { authState, authData, changeState } = useAuthenticator();
 
     const setPassword = useCallback(

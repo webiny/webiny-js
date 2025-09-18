@@ -6,9 +6,9 @@
  *
  */
 
-import type { ReactNode } from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode, RefObject } from "react";
 import * as React from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 type DropDownContextType = {
     registerItem: (ref: React.RefObject<HTMLButtonElement>) => void;
@@ -38,9 +38,11 @@ export function DropDownItem({
     const { registerItem } = dropDownContext;
 
     useEffect(() => {
-        if (ref && ref.current) {
-            registerItem(ref);
+        if (!ref.current) {
+            return;
         }
+
+        registerItem(ref as RefObject<HTMLButtonElement>);
     }, [ref, registerItem]);
 
     return (

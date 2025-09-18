@@ -1,7 +1,7 @@
 import type * as React from "react";
+import type { CSSProperties } from "react";
 import { Plugin } from "@webiny/plugins/types.js";
 import type { ApolloClient } from "apollo-client";
-import type { CSSProperties } from "react";
 
 export type GenericRecordKey = string | number | symbol;
 
@@ -31,7 +31,7 @@ export type FileUploaderPlugin = Plugin & {
     upload(file: File, options: UploadOptions): Promise<UploadedFile>;
 };
 
-export { Plugin };
+export type { Plugin };
 
 export interface ImageProps {
     src: string;
@@ -66,5 +66,5 @@ export type ImageComponentPlugin = Plugin & {
  */
 export type RoutePlugin = Plugin & {
     type: "route";
-    route: React.ReactElement;
+    route: React.ReactElement<{ path: string }>;
 };

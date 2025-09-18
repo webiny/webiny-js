@@ -23,16 +23,17 @@ interface State {
     error: string | null;
     loading: boolean;
 }
-interface Reducer {
-    (prev: State, next: Partial<State>): State;
-}
+
+const defaultState: State = {
+    codeSent: null,
+    error: null,
+    loading: false
+};
 
 export function useForgotPassword(): ForgotPassword {
-    const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
-        codeSent: null,
-        error: null,
-        loading: false
-    });
+    const [state, setState] = useReducer((prev, next) => {
+        return { ...prev, ...next };
+    }, defaultState);
 
     const { authState, changeState } = useAuthenticator();
 

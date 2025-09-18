@@ -19,7 +19,7 @@ interface DropdownMenuProps
 }
 
 const DropdownMenuBase = React.forwardRef<
-    React.ElementRef<typeof DropdownMenuRoot>,
+    React.ComponentRef<typeof DropdownMenuRoot>,
     DropdownMenuProps
 >((props, ref) => {
     const { rootProps, triggerProps, contentProps } = React.useMemo(() => {

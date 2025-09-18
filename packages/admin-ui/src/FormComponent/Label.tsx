@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { cn, makeDecoratable } from "~/utils.js";
 import type { LabelProps } from "~/Label/index.js";
 import { Label } from "~/Label/index.js";
+import type { GenericRecord } from "@webiny/app/types.js";
 
 interface FormComponentLabelProps extends React.HTMLAttributes<HTMLDivElement> {
     text?: React.ReactElement<typeof Label> | React.ReactNode;
@@ -29,13 +30,14 @@ const DecoratableFormComponentLabel = ({
         }
 
         if (React.isValidElement(text) && text.type === Label) {
+            const textProps = text.props as GenericRecord;
             return React.cloneElement(text as React.ReactElement<LabelProps>, {
-                ...text.props,
-                htmlFor: text.props.htmlFor ?? htmlFor,
-                required: text.props.required ?? required,
-                disabled: text.props.disabled ?? disabled,
-                hint: text.props.hint ?? hint,
-                invalid: text.props.invalid ?? invalid
+                ...textProps,
+                htmlFor: textProps.htmlFor ?? htmlFor,
+                required: textProps.required ?? required,
+                disabled: textProps.disabled ?? disabled,
+                hint: textProps.hint ?? hint,
+                invalid: textProps.invalid ?? invalid
             });
         }
 

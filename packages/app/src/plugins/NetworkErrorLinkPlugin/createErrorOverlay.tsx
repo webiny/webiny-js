@@ -1,9 +1,5 @@
 import type React from "react";
-/**
- * TODO fix with react 19
- */
-// eslint-disable-next-line react/no-deprecated
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 
 interface CreateErrorOverlayParams {
     element: React.ReactElement;
@@ -23,7 +19,8 @@ const createErrorOverlay = (params: CreateErrorOverlayParams): void => {
     const body: HTMLBodyElement = document.getElementsByTagName("body")[0];
     body.appendChild(container);
     // Mount the ErrorOverlay component into root element.
-    render(element, container);
+    const root = createRoot(container);
+    root.render(element);
 };
 
 export default createErrorOverlay;

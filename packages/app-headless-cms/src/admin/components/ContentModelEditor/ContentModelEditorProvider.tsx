@@ -103,17 +103,21 @@ interface ContentModelEditorProviderProps {
     children: React.ReactElement;
 }
 
+const createDefaultState = (modelId?: string): State => {
+    return {
+        modelId: modelId || null,
+        isPristine: true,
+        data: null as unknown as CmsModel,
+        activeTabIndex: 0
+    };
+};
+
 export const ContentModelEditorProvider = ({
     children,
     apolloClient,
     modelId
 }: ContentModelEditorProviderProps) => {
-    const [state, dispatch] = useReducer<Reducer>(contentModelEditorReducer, {
-        modelId: modelId || null,
-        isPristine: true,
-        data: null as unknown as CmsModel,
-        activeTabIndex: 0
-    });
+    const [state, dispatch] = useReducer(contentModelEditorReducer, createDefaultState(modelId));
 
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();

@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { Icon as BaseIcon } from "~/Icon/index.js";
-import { cn, cva, type VariantProps, makeDecoratable } from "~/utils.js";
+import { cn, cva, makeDecoratable, type VariantProps } from "~/utils.js";
 
 interface InputIconProps extends React.HTMLAttributes<HTMLDivElement> {
     icon: React.ReactElement;
@@ -11,6 +11,7 @@ const InputIcon = ({ icon, inputSize, className }: InputIconProps) => {
     return (
         <div className={cn("wby-fill-inherit", className)}>
             {React.cloneElement(icon, {
+                // @ts-expect-error
                 ...icon.props,
                 size: inputSize === "xl" ? "lg" : "sm" // Map icon size based on the input size.
             })}

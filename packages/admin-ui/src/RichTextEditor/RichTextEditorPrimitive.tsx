@@ -182,7 +182,7 @@ const RichTextEditorPrimitive = ({
     ...props
 }: RichTextEditorPrimitiveProps) => {
     const elementId = useRef("rte-" + generateId());
-    const editorRef = useRef<EditorJSType>();
+    const editorRef = useRef<EditorJSType>(null);
 
     useEffect(() => {
         const { value, context, onReady, ...nativeProps } = props;

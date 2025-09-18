@@ -1,5 +1,5 @@
-import { useCallback, useReducer, useEffect } from "react";
-import { Graph, alg } from "graphlib";
+import { useCallback, useEffect, useReducer } from "react";
+import { alg, Graph } from "graphlib";
 import { useApolloClient } from "@apollo/react-hooks";
 import { plugins } from "@webiny/plugins";
 import type { AdminInstallationPlugin } from "~/types.js";
@@ -32,18 +32,18 @@ interface State {
     showLogin: boolean;
 }
 
-interface Reducer {
-    (prev: State, next: Partial<State>): State;
-}
+const defaultState: State = {
+    loading: true,
+    installers: [],
+    installerIndex: -1,
+    showLogin: false
+};
 
 export const useInstaller = (params: UseInstallerParams) => {
     const { isInstalled } = params;
-    const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
-        loading: true,
-        installers: [],
-        installerIndex: -1,
-        showLogin: false
-    });
+    const [state, setState] = useReducer((prev, next) => {
+        return { ...prev, ...next };
+    }, defaultState);
     const { loading, installers, installerIndex, showLogin } = state;
 
     const client = useApolloClient();

@@ -9,7 +9,7 @@ import { cn } from "~/utils.js";
 interface IconPickerInputProps {
     value: string;
     onChange: (value: string) => void;
-    inputRef: React.RefObject<HTMLInputElement>;
+    inputRef: React.RefObject<HTMLInputElement | null>;
 }
 
 const IconPickerInput = (props: IconPickerInputProps) => {

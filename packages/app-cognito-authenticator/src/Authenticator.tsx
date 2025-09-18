@@ -64,22 +64,25 @@ interface State {
     message: AuthMessage | null;
     checkingUser: boolean;
 }
-interface Reducer {
-    (prev: State, next: Partial<State>): State;
-}
+
+
 
 interface QueryData {
     state?: AuthState;
     [key: string]: string | undefined;
 }
 
+const defaultState: State = {
+    authState: "signIn",
+    authData: null,
+    message: null,
+    checkingUser: false
+};
+
 export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
-    const [state, setState] = useReducer<Reducer>((prev, next) => ({ ...prev, ...next }), {
-        authState: "signIn",
-        authData: null,
-        message: null,
-        checkingUser: false
-    });
+    const [state, setState] = useReducer((prev, next) => {
+        return { ...prev, ...next };
+    }, defaultState);
 
     const checkUrl = async () => {
         const query = new URLSearchParams(window.location.search);

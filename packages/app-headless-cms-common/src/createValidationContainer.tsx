@@ -1,8 +1,7 @@
 import React from "react";
 import { useModelField } from "./ModelFieldProvider/index.js";
 
-declare global {
-     
+declare module "react" {
     namespace JSX {
         interface IntrinsicElements {
             "hcms-field-validation": {

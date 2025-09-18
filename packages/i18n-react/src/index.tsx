@@ -2,14 +2,13 @@ import React from "react";
 import lodashTrim from "lodash/trim.js";
 import type { I18NDataValues, Modifier, Processor } from "@webiny/i18n/types.js";
 
-declare global {
-     
+declare module "react" {
     namespace JSX {
         interface IntrinsicElements {
             "i18n-text": {
+                default?: string;
                 children?: React.ReactNode;
             };
-
             "i18n-text-part": {
                 key?: string;
                 children?: React.ReactNode;
@@ -17,6 +16,7 @@ declare global {
         }
     }
 }
+
 
 const processTextPart = (
     part: string,

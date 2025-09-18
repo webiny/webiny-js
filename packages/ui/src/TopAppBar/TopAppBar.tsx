@@ -1,5 +1,6 @@
 import React from "react";
 import { HeaderBar } from "@webiny/admin-ui";
+import type { GenericRecord } from "@webiny/utils";
 
 /*********************************************************************
  * TopAppBar
@@ -51,9 +52,10 @@ const TopAppBar = (props: TopAppBarProps) => {
             return;
         }
 
-        if (child.props.alignStart) {
+        const { alignStart, alignEnd } = child.props as GenericRecord;
+        if (alignStart) {
             start = child;
-        } else if (child.props.alignEnd) {
+        } else if (alignEnd) {
             end = child;
         } else {
             middle = child;

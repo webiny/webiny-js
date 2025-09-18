@@ -76,21 +76,21 @@ export interface UseCmsDataResponseRecords {
 interface State {
     [key: string]: UseCmsDataResponseRecords;
 }
-interface Reducer {
-    (prev: State, next: State): State;
-}
+
+
+const defaultState: State = {};
 
 export interface UseCmsDataResponse {
     [locale: string]: UseCmsDataResponseRecords;
 }
 export const useCmsData = (locales: string[]): UseCmsDataResponse => {
     const { getApolloClient } = useCms();
-    const [state, setState] = useReducer<Reducer>((prev, next) => {
+    const [state, setState] = useReducer((prev, next) => {
         return {
             ...prev,
             ...next
         };
-    }, {});
+    }, defaultState);
 
     const loadData = async () => {
         for (const code of locales) {

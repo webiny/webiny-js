@@ -6,13 +6,12 @@ import Label from "./Label.js";
 import { useBind } from "./useBind.js";
 import { useRenderPlugins } from "./useRenderPlugins.js";
 import { ModelFieldProvider, useModelField } from "../ModelFieldProvider/index.js";
-import type { CmsModelField, CmsEditorContentModel, BindComponent } from "~/types/index.js";
+import type { BindComponent, CmsEditorContentModel, CmsModelField } from "~/types/index.js";
 import { ErrorBoundary } from "./ErrorBoundary.js";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-form");
 
-declare global {
-     
+declare module "react" {
     namespace JSX {
         interface IntrinsicElements {
             "hcms-model-field": {

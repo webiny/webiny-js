@@ -45,7 +45,7 @@ const displayErrors = (errors?: ValidationError[]) => {
 export const Settings = () => {
     const { showSnackbar } = useSnackbar();
 
-    const password = useRef<HTMLInputElement>();
+    const password = useRef<HTMLInputElement>(null);
 
     const [errors, setErrors] = useState<ValidationError[] | undefined>();
 
@@ -207,7 +207,6 @@ export const Settings = () => {
                                                                 type="password"
                                                                 autoComplete="new-password"
                                                                 value={""}
-                                                                // @ts-expect-error
                                                                 inputRef={password}
                                                             />
                                                         </Bind>
