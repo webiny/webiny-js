@@ -23,15 +23,24 @@ export interface AuditLogPayload
 }
 
 export interface OnAuditLogBeforeCreateTopicParams {
-    auditLog: IAuditLog;
+    readonly auditLog: IAuditLog;
     context: AuditLogsContext;
     setAuditLog(auditLog: Partial<IAuditLog>): void;
 }
+export interface OnAuditLogAfterCreateTopicParams {
+    readonly auditLog: IAuditLog;
+    context: AuditLogsContext;
+}
 export interface OnAuditLogBeforeUpdateTopicParams {
-    auditLog: IAuditLog;
-    original: IAuditLog;
+    readonly auditLog: IAuditLog;
+    readonly original: IAuditLog;
     context: AuditLogsContext;
     setAuditLog(auditLog: Partial<IAuditLog>): void;
+}
+export interface OnAuditLogAfterUpdateTopicParams {
+    readonly auditLog: IAuditLog;
+    readonly original: IAuditLog;
+    context: AuditLogsContext;
 }
 
 export interface IListAuditLogsParams extends Omit<IStorageListParams, "tenant" | "limit" | "app"> {
@@ -61,7 +70,9 @@ export type IListAuditLogsResult = IListAuditLogsSuccessResult | IListAuditLogsE
 export interface AuditLogsContextValue {
     deleteLogsAfterDays: number | undefined;
     onBeforeCreate: Topic<OnAuditLogBeforeCreateTopicParams>;
+    onAfterCreate: Topic<OnAuditLogAfterCreateTopicParams>;
     onBeforeUpdate: Topic<OnAuditLogBeforeUpdateTopicParams>;
+    onAfterUpdate: Topic<OnAuditLogAfterUpdateTopicParams>;
 
     createAuditLog(payload: AuditLogPayload): Promise<IAuditLog>;
     updateAuditLog(original: IAuditLog, payload: Partial<AuditLogPayload>): Promise<IAuditLog>;
