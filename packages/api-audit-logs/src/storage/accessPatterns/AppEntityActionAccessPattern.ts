@@ -18,7 +18,6 @@ const createPartitionKey = (params: ICreatePartitionKeyParams) => {
     return `T#${params.tenant}#AUDIT_LOG#APP#${params.app}#ENTITY#${params.entity}#ACTION#${params.action}`;
 };
 
-// GSI7_PK / GSI7_SK
 export class AppEntityActionAccessPattern<
     T extends IStorageListByAppEntityActionParams = IStorageListByAppEntityActionParams
 > extends BaseAccessPattern<T> {

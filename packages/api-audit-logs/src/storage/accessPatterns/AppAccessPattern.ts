@@ -15,14 +15,14 @@ interface ICreatePartitionKeyParams {
 const createPartitionKey = (params: ICreatePartitionKeyParams) => {
     return `T#${params.tenant}#AUDIT_LOG#APP#${params.app}`;
 };
-// GSI1_PK / GSI1_SK
+
 export class AppAccessPattern<
     T extends IStorageListByAppParams = IStorageListByAppParams
 > extends BaseAccessPattern<T> {
     public override handles(): IAccessPatternHandles {
         return {
             mustInclude: ["app"],
-            mustNotInclude: ["createdBy", "action", "entityId"]
+            mustNotInclude: ["createdBy", "action", "entityId", "entity"]
         };
     }
 

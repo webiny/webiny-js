@@ -64,10 +64,23 @@ export abstract class BaseAccessPattern<T> implements IAccessPattern<T> {
                 return false;
             }
         }
-        return true;
+        if (!handles.shouldInclude?.length) {
+            return true;
+        }
+
+        for (const key of handles.shouldInclude) {
+            if (!!params[key]) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected async query<T = IStorageItem>(params: IAccessPatternQueryParams) {
+        console.log({
+            partitionKey: params.partitionKey,
+            options: params.options
+        });
         return queryPerPage<T>({
             entity: this.entity,
             partitionKey: params.partitionKey,

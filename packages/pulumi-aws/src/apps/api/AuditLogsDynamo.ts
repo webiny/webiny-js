@@ -30,9 +30,7 @@ export const AuditLogsDynamo = createAppModule({
                     { name: "GSI8_PK", type: "S" },
                     { name: "GSI8_SK", type: "N" },
                     { name: "GSI9_PK", type: "S" },
-                    { name: "GSI9_SK", type: "N" },
-                    { name: "GSI10_PK", type: "S" },
-                    { name: "GSI10_SK", type: "N" }
+                    { name: "GSI9_SK", type: "N" }
                 ],
                 billingMode: "PAY_PER_REQUEST",
                 hashKey: "PK",
@@ -90,12 +88,6 @@ export const AuditLogsDynamo = createAppModule({
                         name: "GSI9",
                         hashKey: "GSI9_PK",
                         rangeKey: "GSI9_SK",
-                        projectionType: "KEYS_ONLY"
-                    },
-                    {
-                        name: "GSI10",
-                        hashKey: "GSI10_PK",
-                        rangeKey: "GSI10_SK",
                         projectionType: "KEYS_ONLY"
                     }
                 ],

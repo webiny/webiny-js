@@ -1,6 +1,6 @@
 import { AccessPatternHandler } from "~/storage/AccessPatternHandler.js";
 import { AppAccessPattern } from "~/storage/accessPatterns/AppAccessPattern.js";
-import { AppActionAccessPattern } from "~/storage/accessPatterns/AppActionAccessPattern.js";
+import { AppEntityActionCreatedByAccessPattern } from "~/storage/accessPatterns/AppActionAccessPattern.js";
 
 describe("AccessPatternHandler", () => {
     it("should throw an error if no patterns are provided", async () => {
@@ -40,7 +40,7 @@ describe("AccessPatternHandler", () => {
                     entity: {} as any,
                     index: "GSI1"
                 }),
-                new AppActionAccessPattern({
+                new AppEntityActionCreatedByAccessPattern({
                     entity: {} as any,
                     index: "GSI2"
                 })

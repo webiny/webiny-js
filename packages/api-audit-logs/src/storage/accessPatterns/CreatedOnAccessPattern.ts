@@ -12,16 +12,16 @@ interface ICreatePartitionKeyParams {
 }
 
 const createPartitionKey = (params: ICreatePartitionKeyParams) => {
-    return `T#${params.tenant}#AUDIT_LOG`;
+    return `T#${params.tenant}#AUDIT_LOG#CREATED_ON`;
 };
 
-// GSI10_PK / GSI10_SK
 export class CreatedOnAccessPattern<
     T extends IStorageListByCreatedOnParams = IStorageListByCreatedOnParams
 > extends BaseAccessPattern<T> {
     public override handles(): IAccessPatternHandles {
         return {
-            mustInclude: ["createdOn_gte", "createdOn_lte"],
+            shouldInclude: ["createdOn_gte", "createdOn_lte"],
+            mustInclude: [],
             mustNotInclude: ["app", "createdBy", "action", "entityId", "entity"]
         };
     }

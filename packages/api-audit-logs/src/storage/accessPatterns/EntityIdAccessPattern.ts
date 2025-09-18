@@ -15,10 +15,9 @@ interface ICreatePartitionKeyParams {
 
 const createPartitionKey = (params: ICreatePartitionKeyParams) => {
     const { id } = parseIdentifier(params.entityId);
-    return `T#${params.tenant}#AUDIT_LOG#ENTRY_ID#${id}`;
+    return `T#${params.tenant}#AUDIT_LOG#ENTITY_ID#${id}`;
 };
 
-// GSI4_PK / GSI4_SK
 export class EntityIdGlobalAccessPattern<
     T extends IStorageListByEntityIdParams = IStorageListByEntityIdParams
 > extends BaseAccessPattern<T> {

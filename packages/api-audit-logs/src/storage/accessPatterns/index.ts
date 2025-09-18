@@ -2,17 +2,12 @@ import type { IAccessPattern } from "../abstractions/AccessPattern.js";
 import type { Entity } from "@webiny/db-dynamodb/toolbox";
 import { DefaultAccessPattern } from "~/storage/accessPatterns/DefaultAccessPattern.js";
 import { AppAccessPattern } from "~/storage/accessPatterns/AppAccessPattern.js";
-// import { AppAndActionAccessPattern } from "~/storage/accessPatterns/AppAndActionAccessPattern.js";
-// import { AppAndTargetAccessPattern } from "~/storage/accessPatterns/AppAndTargetAccessPattern.js";
-// import { CreatedByAccessPattern } from "~/storage/accessPatterns/CreatedByAccessPattern.js";
-// import { CreatedOnAccessPattern } from "~/storage/accessPatterns/CreatedOnAccessPattern.js";
 import { AppCreatedByAccessPattern } from "~/storage/accessPatterns/AppCreatedByAccessPattern.js";
-import { AppActionAccessPattern } from "~/storage/accessPatterns/AppActionAccessPattern.js";
-import { AppCreatedByActionAccessPattern } from "~/storage/accessPatterns/AppCreatedByActionAccessPattern.js";
+import { AppEntityActionCreatedByAccessPattern } from "~/storage/accessPatterns/AppEntityActionCreatedByAccessPattern.js";
+import { AppEntityCreatedByAccessPattern } from "~/storage/accessPatterns/AppEntityCreatedByAccessPattern.js";
 import { AppEntityAccessPattern } from "~/storage/accessPatterns/AppEntityAccessPattern.js";
 import { AppEntityActionAccessPattern } from "~/storage/accessPatterns/AppEntityActionAccessPattern.js";
 import { EntityIdGlobalAccessPattern } from "~/storage/accessPatterns/EntityIdAccessPattern.js";
-import { ActionAccessPattern } from "~/storage/accessPatterns/ActionAccessPattern.js";
 import { CreatedByAccessPattern } from "~/storage/accessPatterns/CreatedByAccessPattern.js";
 import { CreatedOnAccessPattern } from "~/storage/accessPatterns/CreatedOnAccessPattern.js";
 
@@ -44,29 +39,25 @@ export const createAccessPatterns = (
             entity,
             index: "GSI4"
         }),
-        new ActionAccessPattern({
+        new AppEntityActionCreatedByAccessPattern({
             entity,
             index: "GSI5"
         }),
-        new AppActionAccessPattern({
+        new AppEntityActionAccessPattern({
             entity,
             index: "GSI6"
         }),
-        new AppEntityActionAccessPattern({
+        new AppEntityCreatedByAccessPattern({
             entity,
             index: "GSI7"
         }),
-        new AppCreatedByActionAccessPattern({
+        new CreatedByAccessPattern({
             entity,
             index: "GSI8"
         }),
-        new CreatedByAccessPattern({
-            entity,
-            index: "GSI9"
-        }),
         new CreatedOnAccessPattern({
             entity,
-            index: "GSI10"
+            index: "GSI9"
         })
     ];
 };

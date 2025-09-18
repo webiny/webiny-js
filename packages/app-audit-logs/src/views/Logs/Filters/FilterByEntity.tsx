@@ -3,6 +3,7 @@ import React, { useMemo } from "react";
 import { useBind, useForm } from "@webiny/form";
 import { Select } from "@webiny/ui/Select";
 import { apps as auditLogsApps } from "@webiny/common-audit-logs/index.js";
+import type { IFilterFormData } from "./types.js";
 
 const getValidFilterValue = (value: string): string | undefined => {
     if (value === "all" || value === "") {
@@ -12,7 +13,7 @@ const getValidFilterValue = (value: string): string | undefined => {
 };
 
 export const FilterByEntity = () => {
-    const { data, setValue } = useForm();
+    const { data, setValue } = useForm<IFilterFormData>();
     const bind = useBind({
         name: "entity",
         beforeChange(value, cb) {
@@ -21,22 +22,20 @@ export const FilterByEntity = () => {
         }
     });
 
-    const appValue = data?.data?.app;
-
     const options = useMemo(() => {
-        if (!appValue) {
+        if (!data.app) {
             return [];
         }
 
-        const entities = auditLogsApps.find(app => app.app === appValue)?.entities || [];
+        const entities = auditLogsApps.find(app => app.app === data.app)?.entities || [];
 
         return [
             { label: "All", value: "all" },
             ...entities.map(entity => ({ label: entity.displayName, value: entity.type }))
         ];
-    }, [appValue]);
+    }, [data.app]);
 
-    if (!appValue) {
+    if (options.length === 0) {
         return null;
     }
 

@@ -16,7 +16,6 @@ interface ICreatePartitionKeyParams {
 const createPartitionKey = (params: ICreatePartitionKeyParams) => {
     return `T#${params.tenant}#AUDIT_LOG#APP#${params.app}#ENTITY#${params.entity}`;
 };
-// GSI3_PK / GSI3_SK
 export class AppEntityAccessPattern<
     T extends IStorageListByAppEntityParams = IStorageListByAppEntityParams
 > extends BaseAccessPattern<T> {

@@ -6,7 +6,7 @@ export interface IListAuditLogsVariablesWhere {
     action?: string;
     createdBy?: string;
     entity?: string;
-    entryId?: string;
+    entityId?: string;
     version?: number;
     createdOn_gte?: Date;
     createdOn_lte?: Date;

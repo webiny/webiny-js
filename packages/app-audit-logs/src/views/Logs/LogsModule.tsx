@@ -6,7 +6,7 @@ import {
     FilterByCreatedBy,
     FilterByCreatedOn,
     FilterByEntity,
-    FilterByEntryId
+    FilterByEntityId
 } from "~/views/Logs/Filters";
 
 const { Browser } = AuditLogsListConfig;
@@ -16,10 +16,10 @@ export const LogsModule = () => {
         <>
             <AuditLogsListConfig>
                 <Browser.Filter name={"app"} element={<FilterByApp />} />
+                <Browser.Filter name={"entity"} element={<FilterByEntity />} />
                 <Browser.Filter name={"action"} element={<FilterByAction />} />
                 <Browser.Filter name={"createdBy"} element={<FilterByCreatedBy />} />
-                <Browser.Filter name={"entity"} element={<FilterByEntity />} />
-                <Browser.Filter name={"entryId"} element={<FilterByEntryId />} />
+                <Browser.Filter name={"entityId"} element={<FilterByEntityId />} />
                 <Browser.Filter name={"createdOn"} element={<FilterByCreatedOn />} />
             </AuditLogsListConfig>
         </>

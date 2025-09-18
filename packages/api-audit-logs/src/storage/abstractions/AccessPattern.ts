@@ -15,6 +15,7 @@ export interface IAccessPatternListResult {
 export type IAccessPatternHandlesKeys = keyof IStorageListParams;
 
 export interface IAccessPatternHandles {
+    shouldInclude?: IAccessPatternHandlesKeys[];
     mustInclude: IAccessPatternHandlesKeys[];
     mustNotInclude: IAccessPatternHandlesKeys[];
 }

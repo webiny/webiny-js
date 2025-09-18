@@ -122,14 +122,6 @@ export const createEntity = (params: ICreateEntityParams): ICreateEntityResult =
                 type: "number",
                 required: true
             },
-            GSI10_PK: {
-                type: "string",
-                required: true
-            },
-            GSI10_SK: {
-                type: "number",
-                required: true
-            },
             data: {
                 type: "map",
                 required: true

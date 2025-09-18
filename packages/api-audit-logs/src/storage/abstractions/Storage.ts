@@ -86,7 +86,10 @@ export interface IStorageListByActionParams extends Omit<IStorageListByAppParams
 }
 
 // GSI6_PK / GSI6_SK
-export interface IStorageListByAppAndActionParams extends Omit<IStorageListByAppParams, "action"> {
+export interface IStorageListByAppEntityActionCreatedByParams
+    extends Omit<IStorageListByAppParams, "action" | "entity" | "createdBy"> {
+    createdBy: string;
+    entity: string;
     action: string;
 }
 // GSI7_PK / GSI7_SK
@@ -96,10 +99,10 @@ export interface IStorageListByAppEntityActionParams
     action: string;
 }
 // GSI8_PK / GSI8_SK
-export interface IStorageListByAppCreatedByActionParams
-    extends Omit<IStorageListByAppParams, "createdBy" | "action"> {
+export interface IStorageListByAppEntityCreatedByParams
+    extends Omit<IStorageListByAppParams, "createdBy" | "entity"> {
     createdBy: string;
-    action: string;
+    entity: string;
 }
 
 // GSI9_PK / GSI9_SK
@@ -119,9 +122,9 @@ export type IStorageListParams =
     | IStorageListByAppEntityParams
     | IStorageListByEntityIdParams
     | IStorageListByActionParams
-    | IStorageListByAppAndActionParams
+    | IStorageListByAppEntityActionCreatedByParams
     | IStorageListByAppEntityActionParams
-    | IStorageListByAppCreatedByActionParams
+    | IStorageListByAppEntityCreatedByParams
     | IStorageListByCreatedByParams
     | IStorageListByCreatedOnParams;
 

@@ -1,7 +1,7 @@
 import WebinyError from "@webiny/error";
-import type { AuditAction, AuditLogPayload, AuditLogsContext } from "~/types.js";
-import type { IAuditLog } from "~/storage/types.js";
-import type { GenericRecord } from "@webiny/api/types.js";
+import type {AuditAction, AuditLogPayload, AuditLogsContext} from "~/types.js";
+import type {IAuditLog} from "~/storage/types.js";
+import type {GenericRecord} from "@webiny/api/types.js";
 
 interface CreateAuditLogParams {
     context: Pick<AuditLogsContext, "auditLogs">;
@@ -103,23 +103,30 @@ export const getAuditConfig = (audit: AuditAction) => {
         };
 
         const delay = audit.action.newEntryDelay || 0;
-
-        // Check if there is delay on audit log creation for this action.
-        if (delay > 0) {
-            try {
-                return await createOrMergeAuditLog({
-                    context,
-                    payload,
-                    delay
-                });
-            } catch {
-                // Don't care at this point!
-            }
+        
+        if(!context.security.getIdentity()?.id) {
+            console.log("No identity - skipping audit log creation.");
             return null;
         }
-        return await createAuditLog({
-            context,
-            payload
-        });
+        
+        return await context.security.withoutAuthorization(async () => {
+            // Check if there is delay on audit log creation for this action.
+            if(delay > 0) {
+                try {
+                    return await createOrMergeAuditLog({
+                        context,
+                        payload,
+                        delay
+                    });
+                } catch {
+                    // Don't care at this point!
+                }
+                return null;
+            }
+            return await createAuditLog({
+                context,
+                payload
+            });
+        })
     };
 };
