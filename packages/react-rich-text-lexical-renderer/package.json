@@ -10,10 +10,10 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@types/react": "18.2.79",
+    "@types/react": "19.1.13",
     "@webiny/lexical-editor": "0.0.0",
     "@webiny/lexical-theme": "0.0.0",
-    "react": "18.2.0"
+    "react": "19.1.1"
   },
   "devDependencies": {
     "@emotion/react": "11.10.8",

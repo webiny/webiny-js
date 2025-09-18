@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@types/react": "18.2.79",
+    "@types/react": "19.1.13",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
@@ -35,8 +35,8 @@
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.21",
     "prop-types": "^15.8.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

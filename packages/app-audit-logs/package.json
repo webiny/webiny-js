@@ -30,10 +30,10 @@
     "zod": "^3.25.76"
   },
   "peerDependencies": {
-    "react": "18.2.0"
+    "react": "19.1.1"
   },
   "devDependencies": {
-    "@types/react": "18.2.79",
+    "@types/react": "19.1.13",
     "@webiny/build-tools": "0.0.0",
     "execa": "^5.1.1",
     "rimraf": "^6.0.1",

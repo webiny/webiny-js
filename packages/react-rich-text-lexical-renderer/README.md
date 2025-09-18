@@ -137,7 +137,7 @@ the `resolutions` field in the root `package.json` file.
 {
   ...
   "resolutions": {
-    "react": "18.x.x"
+    "react": "19.x.x"
   },
   ...
 }
@@ -157,7 +157,7 @@ field in `package.json` file.
 {
   ...
   "overrides": {
-    "react": "^18.x.x"
+    "react": "^19.x.x"
   },
   ...
 }

@@ -23,11 +23,11 @@
     "deep-equal": "^2.2.3",
     "mobx": "^6.9.0",
     "mobx-react-lite": "^3.4.3",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
   },
   "devDependencies": {
-    "@types/react": "18.2.79",
+    "@types/react": "19.1.13",
     "@webiny/build-tools": "0.0.0",
     "typescript": "5.9.2"
   },

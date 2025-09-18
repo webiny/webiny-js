@@ -16,7 +16,7 @@
     "@lexical/utils": "0.23.1",
     "@monaco-editor/react": "^4.7.0",
     "@svgr/webpack": "^6.1.1",
-    "@types/react": "18.2.79",
+    "@types/react": "19.1.13",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-aco": "0.0.0",
@@ -56,10 +56,10 @@
     "mobx-react-lite": "^3.4.3",
     "pluralize": "^8.0.0",
     "prop-types": "^15.8.1",
-    "react": "18.2.0",
+    "react": "19.1.1",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
-    "react-dom": "18.2.0",
+    "react-dom": "19.1.1",
     "slugify": "^1.6.6"
   },
   "devDependencies": {

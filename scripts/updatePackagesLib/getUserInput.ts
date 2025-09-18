@@ -51,7 +51,7 @@ export const getUserInput = async ({
         }
         return {
             ...matching,
-            useCaret: matching.caret || true,
+            useCaret: matching.caret === false ? false : true,
             shouldUpdate,
             exclude: matching.exclude
         };

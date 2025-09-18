@@ -10,7 +10,7 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@types/react": "18.2.79",
+    "@types/react": "19.1.13",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
@@ -19,8 +19,8 @@
     "@webiny/icons": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/react-router": "0.0.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
     "react-helmet": "^6.1.0"
   },
   "devDependencies": {

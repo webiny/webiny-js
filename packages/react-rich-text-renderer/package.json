@@ -11,9 +11,9 @@
   "license": "MIT",
   "dependencies": {
     "@editorjs/editorjs": "2.26.5",
-    "@types/react": "18.2.79",
+    "@types/react": "19.1.13",
     "classnames": "^2.5.1",
-    "react": "18.2.0",
+    "react": "19.1.1",
     "sanitize-html": "2.12.1"
   },
   "devDependencies": {

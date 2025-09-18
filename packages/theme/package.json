@@ -14,11 +14,11 @@
     "@emotion/react": "11.10.8"
   },
   "peerDependencies": {
-    "react": "18.2.0"
+    "react": "19.1.1"
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.11.0",
-    "@types/react": "18.2.79",
+    "@types/react": "19.1.13",
     "@webiny/build-tools": "0.0.0",
     "execa": "^5.1.1",
     "rimraf": "^6.0.1",
