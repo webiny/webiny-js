@@ -19,7 +19,7 @@ function getRelativePath(a, b) {
 
 async function output(target, content) {
     const options = await prettier.resolveConfig(target);
-    const fileContentFormatted = prettier.format(content, {
+    const fileContentFormatted = await prettier.format(content, {
         ...options,
         filepath: target
     });

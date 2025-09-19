@@ -4,7 +4,8 @@
   "references": [
     { "path": "../react-composition" },
     { "path": "../react-router" },
-    { "path": "../utils" }
+    { "path": "../utils" },
+    { "path": "../project" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -18,7 +19,9 @@
       "@webiny/react-router/*": ["../react-router/src/*"],
       "@webiny/react-router": ["../react-router/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"]
     },
     "baseUrl": "."
   }

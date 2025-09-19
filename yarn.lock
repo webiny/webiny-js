@@ -8009,7 +8009,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/rest@npm:^20.0.2":
+"@octokit/rest@npm:^20.1.2":
   version: 20.1.2
   resolution: "@octokit/rest@npm:20.1.2"
   dependencies:
@@ -15183,8 +15183,8 @@ __metadata:
     "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
-    graphql: "npm:^16.11.0"
     typescript: "npm:5.9.2"
+    vitest: "npm:^3.2.4"
     zod: "npm:^3.25.76"
   languageName: unknown
   linkType: soft
@@ -15631,7 +15631,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms-scheduler@workspace:packages/api-headless-cms-scheduler":
+"@webiny/api-headless-cms-scheduler@npm:0.0.0, @webiny/api-headless-cms-scheduler@workspace:packages/api-headless-cms-scheduler":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-scheduler@workspace:packages/api-headless-cms-scheduler"
   dependencies:
@@ -16708,7 +16708,6 @@ __metadata:
     "@lexical/utils": "npm:0.23.1"
     "@svgr/webpack": "npm:^6.5.1"
     "@types/react": "npm:19.1.13"
-    "@types/react-dom": "npm:19.1.9"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-aco": "npm:0.0.0"
@@ -17864,6 +17863,7 @@ __metadata:
     "@webiny/api-headless-cms-aco": "npm:0.0.0"
     "@webiny/api-headless-cms-ddb": "npm:0.0.0"
     "@webiny/api-headless-cms-ddb-es": "npm:0.0.0"
+    "@webiny/api-headless-cms-scheduler": "npm:0.0.0"
     "@webiny/api-headless-cms-tasks": "npm:0.0.0"
     "@webiny/api-headless-cms-tasks-ddb-es": "npm:0.0.0"
     "@webiny/api-i18n": "npm:0.0.0"
@@ -21674,6 +21674,7 @@ __metadata:
     ora: "npm:4.1.1"
     os: "npm:0.1.2"
     rimraf: "npm:^6.0.1"
+    type-fest: "npm:^4.41.0"
     uuid: "npm:^9.0.1"
     validate-npm-package-name: "npm:^6.0.2"
     write-json-file: "npm:^4.3.0"

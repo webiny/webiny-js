@@ -232,7 +232,7 @@
 	"resolutions": {
 		"systeminformation": "^5.23.18",
 		"@emotion/react": "11.10.8",
-		"@octokit/rest": "^20.0.2",
+		"@octokit/rest": "^20.1.2",
 		"@types/jsdom": "link:./typings/void",
 		"@types/react": "19.1.13",
 		"@types/react-dom": "19.1.9",

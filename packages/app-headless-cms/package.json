@@ -28,7 +28,6 @@
     "@lexical/utils": "0.23.1",
     "@svgr/webpack": "^6.5.1",
     "@types/react": "19.1.13",
-    "@types/react-dom": "19.1.9",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-aco": "0.0.0",

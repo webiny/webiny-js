@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-const { dirname, resolve, relative, join } = require("path");
-const { getPackages, getPackage, rootPackageJson, PROJECT_ROOT } = require("./utils/getPackages");
-const { yellow, cyan, gray, red, green } = require("chalk");
-const argv = require("yargs").argv;
-const minimatch = require("minimatch");
+import { dirname, join, relative, resolve } from "path";
+import { getPackage, getPackages, PROJECT_ROOT, rootPackageJson } from "./utils/getPackages.js";
+import chalk from "chalk";
+import yargs from "yargs";
+import minimatch from "minimatch";
 
-const { _: packagesToCheck } = argv;
+const { cyan, gray, green, red, yellow } = chalk;
+const { _: packagesToCheck } = yargs().argv;
 
 // If a package reference is pointing to a package that is a part of a workspace, return true;
 const pathPointsToWorkspacePackage = packageAbsolutePath => {
