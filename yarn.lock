@@ -17882,6 +17882,7 @@ __metadata:
     "@webiny/api-i18n": "npm:0.0.0"
     "@webiny/api-i18n-ddb": "npm:0.0.0"
     "@webiny/api-log": "npm:0.0.0"
+    "@webiny/api-mailer": "npm:0.0.0"
     "@webiny/api-record-locking": "npm:0.0.0"
     "@webiny/api-security": "npm:0.0.0"
     "@webiny/api-security-cognito": "npm:0.0.0"
