@@ -17877,6 +17877,7 @@ __metadata:
     "@webiny/api-tenancy-so-ddb": "npm:0.0.0"
     "@webiny/api-tenant-manager": "npm:0.0.0"
     "@webiny/api-wcp": "npm:0.0.0"
+    "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-admin-users-cognito": "npm:0.0.0"
