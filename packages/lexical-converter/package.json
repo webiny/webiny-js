@@ -3,11 +3,11 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
-    "@lexical/headless": "0.23.1",
-    "@lexical/html": "0.23.1",
+    "@lexical/headless": "^0.35.0",
+    "@lexical/html": "^0.35.0",
     "@webiny/lexical-nodes": "0.0.0",
     "cheerio": "^1.1.2",
-    "lexical": "0.23.1"
+    "lexical": "^0.35.0"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.7",

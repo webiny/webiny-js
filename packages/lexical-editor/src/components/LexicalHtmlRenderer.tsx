@@ -48,6 +48,7 @@ export const LexicalHtmlRenderer = ({ nodes, value, ...props }: LexicalHtmlRende
                             <ContentEditable />
                         </div>
                     }
+                    // @ts-expect-error @pavel check this out
                     ErrorBoundary={LexicalErrorBoundary}
                     placeholder={null}
                 />
