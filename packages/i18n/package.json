@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@babel/register": "^7.28.3",
-    "@types/accounting": "^0.4.2",
+    "@types/accounting": "^0.4.5",
     "@types/glob": "^7.2.0",
     "@types/lodash": "^4.17.20",
     "@webiny/build-tools": "0.0.0",

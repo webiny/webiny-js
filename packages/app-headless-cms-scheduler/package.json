@@ -27,14 +27,14 @@
     "@webiny/validation": "0.0.0",
     "apollo-client": "^2.6.10",
     "lodash": "^4.17.21",
-    "mobx": "^6.9.0",
+    "mobx": "^6.13.7",
     "mobx-react-lite": "^3.4.3",
     "prop-types": "^15.8.1",
     "react": "19.1.1",
     "react-dom": "19.1.1"
   },
   "devDependencies": {
-    "@emotion/babel-plugin": "^11.11.0",
+    "@emotion/babel-plugin": "^11.13.5",
     "@types/react": "19.1.13",
     "@webiny/build-tools": "0.0.0",
     "rimraf": "^6.0.1",

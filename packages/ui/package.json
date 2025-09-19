@@ -15,14 +15,14 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@svgr/webpack": "^6.1.1",
+    "@svgr/webpack": "^6.5.1",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/utils": "0.0.0",
     "classnames": "^2.5.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@emotion/babel-plugin": "^11.11.0",
+    "@emotion/babel-plugin": "^11.13.5",
     "@testing-library/react": "^15.0.7",
     "@webiny/build-tools": "0.0.0",
     "@webiny/validation": "0.0.0",

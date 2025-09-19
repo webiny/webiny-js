@@ -14,7 +14,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@smithy/node-http-handler": "^2.1.6",
+    "@smithy/node-http-handler": "^2.5.0",
     "@webiny/api-file-manager": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
@@ -31,9 +31,9 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/adm-zip": "^0.5.5",
+    "@types/adm-zip": "^0.5.7",
     "@types/archiver": "^6.0.3",
-    "@types/unzipper": "^0.10.10",
+    "@types/unzipper": "^0.10.11",
     "@webiny/api": "0.0.0",
     "@webiny/api-admin-users": "0.0.0",
     "@webiny/api-i18n": "0.0.0",
@@ -45,7 +45,7 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/wcp": "0.0.0",
-    "adm-zip": "^0.5.14",
+    "adm-zip": "^0.5.16",
     "aws-sdk-client-mock": "^4.1.0",
     "graphql": "^16.11.0",
     "typescript": "5.9.2",

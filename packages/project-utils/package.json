@@ -24,7 +24,7 @@
     "listr2": "^5.0.8",
     "load-json-file": "6.2.0",
     "pino": "^8.21.0",
-    "pino-pretty": "^9.4.0",
+    "pino-pretty": "^9.4.1",
     "vitest": "^3.2.4",
     "yargs": "^17.7.2"
   },

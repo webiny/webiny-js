@@ -43,7 +43,7 @@
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "ts-invariant": "^0.10.3",
-    "warning": "^4.0.2"
+    "warning": "^4.0.3"
   },
   "devDependencies": {
     "@types/lodash": "4.17.20",

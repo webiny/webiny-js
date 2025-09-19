@@ -32,7 +32,7 @@
     "graphql": "^16.11.0",
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.21",
-    "mobx": "^6.9.0",
+    "mobx": "^6.13.7",
     "mobx-react-lite": "^3.4.3",
     "pako": "^2.1.0",
     "react": "19.1.1",

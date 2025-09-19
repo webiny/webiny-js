@@ -12,7 +12,7 @@
   "license": "Webiny Enterprise",
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
-    "@auth0/auth0-react": "^2.2.4",
+    "@auth0/auth0-react": "^2.5.0",
     "@emotion/styled": "11.10.6",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",

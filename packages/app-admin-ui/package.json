@@ -24,10 +24,10 @@
     "react-helmet": "^6.1.0"
   },
   "devDependencies": {
-    "@emotion/babel-plugin": "^11.11.0",
+    "@emotion/babel-plugin": "^11.13.5",
     "@types/react-helmet": "^6.1.11",
     "@webiny/build-tools": "0.0.0",
-    "babel-plugin-named-asset-import": "^1.0.0-next.3e165448",
+    "babel-plugin-named-asset-import": "^1.0.0-next.fb6e6f70",
     "rimraf": "^6.0.1",
     "typescript": "5.9.2"
   },

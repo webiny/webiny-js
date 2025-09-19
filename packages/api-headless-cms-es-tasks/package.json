@@ -23,7 +23,7 @@
     "@webiny/utils": "0.0.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^9.3.0",
+    "@faker-js/faker": "^9.9.0",
     "@webiny/api": "0.0.0",
     "@webiny/api-i18n": "0.0.0",
     "@webiny/api-security": "0.0.0",

@@ -192,6 +192,11 @@ const RichTextEditorPrimitive = ({
         const clearWait = waitForDom(elementId.current, () => {
             editorRef.current = new EditorJS({
                 ...nativeProps,
+                style: {
+                    ...nativeProps.style,
+                    // @ts-expect-error
+                    nonce: nativeProps.style?.nonce || nativeProps.nonce
+                },
                 holder: elementId.current,
                 logLevel: "ERROR" as LogLevels.ERROR,
                 data: initialData,
@@ -211,21 +216,24 @@ const RichTextEditorPrimitive = ({
                     }
                     onReady({ editor: editorRef.current, initialData });
                 },
-                tools: Object.keys(props.tools || {}).reduce((tools, name) => {
-                    const tool = props.tools ? props.tools[name] : null;
-                    if (!tool) {
+                tools: Object.keys(props.tools || {}).reduce(
+                    (tools, name) => {
+                        const tool = props.tools ? props.tools[name] : null;
+                        if (!tool) {
+                            return tools;
+                        }
+                        tools[name] = tool;
+                        if (!tool.config) {
+                            tool.config = { context };
+                        } else if (typeof tool.config === "function") {
+                            tool.config = tool.config();
+                        } else {
+                            tool.config = { ...tool.config, context };
+                        }
                         return tools;
-                    }
-                    tools[name] = tool;
-                    if (!tool.config) {
-                        tool.config = { context };
-                    } else if (typeof tool.config === "function") {
-                        tool.config = tool.config();
-                    } else {
-                        tool.config = { ...tool.config, context };
-                    }
-                    return tools;
-                }, {} as Record<string, ToolSettings>)
+                    },
+                    {} as Record<string, ToolSettings>
+                )
             });
         });
 

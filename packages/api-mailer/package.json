@@ -23,12 +23,12 @@
     "@webiny/pubsub": "0.0.0",
     "crypto-js": "^4.2.0",
     "lodash": "^4.17.21",
-    "nodemailer": "^6.9.16",
+    "nodemailer": "^6.10.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
-    "@types/nodemailer": "^6.4.17",
+    "@types/nodemailer": "^6.4.19",
     "@webiny/api-i18n": "0.0.0",
     "@webiny/api-security": "0.0.0",
     "@webiny/api-tenancy": "0.0.0",

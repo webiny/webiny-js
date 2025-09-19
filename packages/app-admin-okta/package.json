@@ -13,9 +13,9 @@
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
     "@emotion/styled": "11.10.6",
-    "@okta/okta-auth-js": "^5.3.1",
-    "@okta/okta-react": "^6.1.0",
-    "@okta/okta-signin-widget": "^5.9.4",
+    "@okta/okta-auth-js": "^5.11.0",
+    "@okta/okta-react": "^6.10.0",
+    "@okta/okta-signin-widget": "^5.16.1",
     "@webiny/admin-ui": "0.0.0",
     "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",

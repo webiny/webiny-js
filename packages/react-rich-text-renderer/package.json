@@ -10,14 +10,14 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@editorjs/editorjs": "2.26.5",
+    "@editorjs/editorjs": "2.31.0",
     "@types/react": "19.1.13",
     "classnames": "^2.5.1",
     "react": "19.1.1",
-    "sanitize-html": "2.12.1"
+    "sanitize-html": "2.17.0"
   },
   "devDependencies": {
-    "@types/sanitize-html": "^2.9.0",
+    "@types/sanitize-html": "^2.16.0",
     "@webiny/build-tools": "0.0.0",
     "rimraf": "^6.0.1",
     "typescript": "5.9.2"

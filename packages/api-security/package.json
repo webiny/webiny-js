@@ -22,7 +22,7 @@
     "@webiny/utils": "0.0.0",
     "deep-equal": "^2.2.3",
     "jose": "^5.10.0",
-    "jsonwebtoken": "^9.0.1",
+    "jsonwebtoken": "^9.0.2",
     "minimatch": "^5.1.6",
     "zod": "^3.25.76"
   },

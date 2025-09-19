@@ -20,16 +20,16 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/website-builder-react": "0.0.0",
-    "postcss": "^8.4.38",
+    "postcss": "^8.5.6",
     "postcss-import": "^16.1.1"
   },
   "devDependencies": {
     "@types/postcss-import": "^14.0.3",
     "@webiny/build-tools": "0.0.0",
-    "next": "^15",
+    "next": "^15.5.3",
     "typescript": "5.9.2",
     "vitest": "^3.2.4",
-    "webpack": "^5.97.0"
+    "webpack": "^5.101.3"
   },
   "publishConfig": {
     "access": "public",

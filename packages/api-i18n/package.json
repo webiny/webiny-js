@@ -25,7 +25,7 @@
     "i18n-locales": "^0.0.5"
   },
   "devDependencies": {
-    "@types/accept-language-parser": "^1.5.3",
+    "@types/accept-language-parser": "^1.5.8",
     "@webiny/api-wcp": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/handler": "0.0.0",

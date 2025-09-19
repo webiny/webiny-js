@@ -23,7 +23,7 @@
     "@webiny/plugins": "0.0.0",
     "@webiny/react-properties": "0.0.0",
     "@webiny/ui": "0.0.0",
-    "date-fns": "^2.22.1",
+    "date-fns": "^2.30.0",
     "emotion": "10.0.27",
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.21",

@@ -21,7 +21,7 @@
     "@webiny/lexical-editor": "0.0.0",
     "@webiny/website-builder-sdk": "0.0.0",
     "deep-equal": "^2.2.3",
-    "mobx": "^6.9.0",
+    "mobx": "^6.13.7",
     "mobx-react-lite": "^3.4.3",
     "react": "19.1.1",
     "react-dom": "19.1.1"

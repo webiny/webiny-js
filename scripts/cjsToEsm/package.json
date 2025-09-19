@@ -8,12 +8,12 @@
   "main": "./src/bin.js",
   "dependencies": {
     "cli-progress": "^3.12.0",
-    "fast-glob": "^3.2.7",
+    "fast-glob": "^3.3.3",
     "find-up": "5.0.0",
     "p-limit": "^6.2.0",
     "read-json-sync": "2.0.1",
     "ts-morph": "^24.0.0",
-    "tsx": "^4.16.2"
+    "tsx": "^4.20.5"
   },
   "devDependencies": {
     "@types/cli-progress": "^3.11.6"

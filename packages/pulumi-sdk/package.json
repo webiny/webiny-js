@@ -16,11 +16,11 @@
   },
   "dependencies": {
     "@pulumi/aws": "^6.83.0",
-    "@pulumi/pulumi": "^3.195.0",
+    "@pulumi/pulumi": "^3.197.0",
     "decompress": "^4.2.1",
     "execa": "^5.1.1",
     "find-up": "5.0.0",
-    "fs-extra": "^11.3.1",
+    "fs-extra": "^11.3.2",
     "lodash": "^4.17.21",
     "node-fetch": "2.6.7",
     "read-json-sync": "2.0.1",
