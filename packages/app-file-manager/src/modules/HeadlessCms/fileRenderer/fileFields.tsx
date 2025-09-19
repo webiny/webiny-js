@@ -16,7 +16,7 @@ const t = i18n.ns("app-headless-cms/admin/fields/file");
 
 const FieldRenderer = ({ getBind, field }: CmsModelFieldRendererProps) => {
     const Bind = getBind();
-    const editFileRef = useRef<{ index: number; url: string } | undefined>();
+    const editFileRef = useRef<{ index: number; url: string }>(null);
 
     const imagesOnly = field.settings && field.settings.imagesOnly;
 
@@ -33,7 +33,7 @@ const FieldRenderer = ({ getBind, field }: CmsModelFieldRendererProps) => {
                 ...newValue.slice(editFileRef.current.index + 1)
             ]);
 
-            editFileRef.current = undefined;
+            editFileRef.current = null;
         };
     };
 

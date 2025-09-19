@@ -3,7 +3,7 @@ import type React from "react";
 export type ToolbarTool = "crop" | "flip" | "rotate" | "filter";
 
 interface RenderFormParams {
-    canvas: React.RefObject<HTMLCanvasElement>;
+    canvas: React.RefObject<HTMLCanvasElement | null>;
     image: HTMLImageElement;
     renderApplyCancel?: () => void;
     options?: { [key: string]: any };
@@ -11,7 +11,7 @@ interface RenderFormParams {
 
 interface OnActivateParams {
     options: any;
-    canvas: React.RefObject<HTMLCanvasElement>;
+    canvas: React.RefObject<HTMLCanvasElement | null>;
 }
 
 interface IconParams {
@@ -19,11 +19,11 @@ interface IconParams {
 }
 
 interface ApplyParams {
-    canvas: React.RefObject<HTMLCanvasElement>;
+    canvas: React.RefObject<HTMLCanvasElement | null>;
 }
 
 interface CancelParams {
-    canvas: React.RefObject<HTMLCanvasElement>;
+    canvas: React.RefObject<HTMLCanvasElement | null>;
 }
 
 export interface ImageEditorTool {

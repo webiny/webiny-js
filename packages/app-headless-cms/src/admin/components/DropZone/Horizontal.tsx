@@ -46,6 +46,7 @@ const Horizontal = ({ last, onDrop, isVisible, ...rest }: HorizontalProps) => {
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (
                 <div
+                    // @ts-expect-error
                     ref={drop}
                     data-testid={rest["data-testid"]}
                     style={{

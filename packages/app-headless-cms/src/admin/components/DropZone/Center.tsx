@@ -42,6 +42,7 @@ const Center = ({ onDrop, children, style, isDroppable }: CenterProps) => {
         <Droppable onDrop={onDrop} isDroppable={isDroppable}>
             {({ isOver, drop, isDroppable }) => (
                 <div
+                    // @ts-expect-error
                     ref={drop}
                     style={{ width: "100%", height: "100%", ...style }}
                     data-testid={"cms-editor-first-field-area"}

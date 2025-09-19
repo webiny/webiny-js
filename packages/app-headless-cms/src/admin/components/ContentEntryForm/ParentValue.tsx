@@ -5,8 +5,7 @@ import { useModelField } from "~/admin/components/ModelFieldProvider/index.js";
 import type { FormAPI } from "@webiny/form";
 import { useForm } from "@webiny/form";
 
-declare global {
-     
+declare module "react" {
     namespace JSX {
         interface IntrinsicElements {
             "hcms-parent-field-provider": React.HTMLProps<HTMLDivElement>;
@@ -43,7 +42,7 @@ interface ParentFieldProviderProps {
 export const ParentFieldProvider = ({ path, value, children }: ParentFieldProviderProps) => {
     const parent = useContext(ParentField);
     const form = useForm();
-    const formRef = useRef<FormAPI>();
+    const formRef = useRef<FormAPI>(null);
 
     let field: CmsModelField | undefined;
     try {

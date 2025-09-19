@@ -9,8 +9,7 @@ import type { FormValidation } from "@webiny/form";
 import { ValidationIndicators } from "./ValidationIndicators.js";
 import { OverlayLoader, Tabs } from "@webiny/admin-ui";
 
-declare global {
-     
+declare module "react" {
     namespace JSX {
         interface IntrinsicElements {
             "test-id": {

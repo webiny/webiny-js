@@ -4,7 +4,7 @@ import { MessageOrigin, Messenger } from "@webiny/website-builder-sdk";
 import type { usePreviewData } from "~/BaseEditor/hooks/usePreviewData.js";
 
 type ConnectEditorToPreviewProps = {
-    iframeRef: React.RefObject<HTMLIFrameElement>;
+    iframeRef: React.RefObject<HTMLIFrameElement | null>;
     onConnected: (
         messenger: Messenger,
         elementPositionsHook?: ReturnType<typeof usePreviewData>

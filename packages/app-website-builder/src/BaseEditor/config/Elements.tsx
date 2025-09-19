@@ -2,8 +2,7 @@ import React, { useMemo } from "react";
 import { useEditorConfig } from "./EditorConfig.js";
 import type { ElementConfig } from "./Element.js";
 
-declare global {
-     
+declare module "react" {
     namespace JSX {
         interface IntrinsicElements {
             "wb-editor-ui-elements": {
