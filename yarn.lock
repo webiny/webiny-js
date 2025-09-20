@@ -14018,13 +14018,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/retry@npm:0.12.0":
-  version: 0.12.0
-  resolution: "@types/retry@npm:0.12.0"
-  checksum: 10/bbd0b88f4b3eba7b7acfc55ed09c65ef6f2e1bcb4ec9b4dca82c66566934351534317d294a770a7cc6c0468d5573c5350abab6e37c65f8ef254443e1b028e44d
-  languageName: node
-  linkType: hard
-
 "@types/retry@npm:0.12.2":
   version: 0.12.2
   resolution: "@types/retry@npm:0.12.2"
@@ -14975,7 +14968,7 @@ __metadata:
     cli-progress: "npm:^3.12.0"
     fast-glob: "npm:^3.3.3"
     find-up: "npm:5.0.0"
-    p-limit: "npm:^6.2.0"
+    p-limit: "npm:^7.1.1"
     read-json-sync: "npm:2.0.1"
     ts-morph: "npm:^24.0.0"
     tsx: "npm:^4.20.5"
@@ -15298,7 +15291,7 @@ __metadata:
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
-    p-retry: "npm:^4.6.2"
+    p-retry: "npm:^7.0.0"
     typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
@@ -15422,8 +15415,8 @@ __metadata:
     mime: "npm:^3.0.0"
     node-fetch: "npm:2.6.7"
     object-hash: "npm:^3.0.0"
-    p-map: "npm:4.0.0"
-    p-reduce: "npm:2.1.0"
+    p-map: "npm:^7.0.3"
+    p-reduce: "npm:^3.0.0"
     rimraf: "npm:^6.0.1"
     sanitize-filename: "npm:^1.6.3"
     sharp: "npm:^0.34.4"
@@ -15747,8 +15740,8 @@ __metadata:
     graphql-tag: "npm:^2.12.6"
     jsdom: "npm:^25.0.1"
     lodash: "npm:^4.17.21"
-    p-map: "npm:^4.0.0"
-    p-reduce: "npm:^2.1.0"
+    p-map: "npm:^7.0.3"
+    p-reduce: "npm:^3.0.0"
     pluralize: "npm:^8.0.0"
     prettier: "npm:^3.6.2"
     rimraf: "npm:^6.0.1"
@@ -16544,7 +16537,7 @@ __metadata:
     "@webiny/app": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     graphql-tag: "npm:^2.12.6"
-    p-retry: "npm:^4.6.2"
+    p-retry: "npm:^7.0.0"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.2"
   languageName: unknown
@@ -17989,7 +17982,7 @@ __metadata:
     minimatch: "npm:^5.1.6"
     mqtt: "npm:^5.14.1"
     neverthrow: "npm:^8.2.0"
-    p-retry: "npm:^4.6.2"
+    p-retry: "npm:^7.0.0"
     react: "npm:19.1.1"
     react-dom: "npm:19.1.1"
     read-json-sync: "npm:2.0.1"
@@ -18221,7 +18214,7 @@ __metadata:
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
-    p-wait-for: "npm:^4.1.0"
+    p-wait-for: "npm:^5.0.2"
     react: "npm:19.1.1"
     react-dom: "npm:19.1.1"
     rimraf: "npm:^6.0.1"
@@ -18267,7 +18260,7 @@ __metadata:
     jsonpack: "npm:^1.1.5"
     nanoid: "npm:^3.3.11"
     nanoid-dictionary: "npm:^4.3.0"
-    p-retry: "npm:^4.6.2"
+    p-retry: "npm:^7.0.0"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.2"
     vitest: "npm:^3.2.4"
@@ -27294,6 +27287,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-network-error@npm:^1.1.0":
+  version: 1.3.0
+  resolution: "is-network-error@npm:1.3.0"
+  checksum: 10/56dc0b8ed9c0bb72202058f172ad0c3121cf68772e8cbba343d3775f6e2ec7877d423cbcea45f4cedcd345de8693de1b52dfe0c6fc15d652c4aa98c2abf0185a
+  languageName: node
+  linkType: hard
+
 "is-number-object@npm:^1.1.1":
   version: 1.1.1
   resolution: "is-number-object@npm:1.1.1"
@@ -31160,12 +31160,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-limit@npm:^6.2.0":
-  version: 6.2.0
-  resolution: "p-limit@npm:6.2.0"
+"p-limit@npm:^7.1.1":
+  version: 7.1.1
+  resolution: "p-limit@npm:7.1.1"
   dependencies:
-    yocto-queue: "npm:^1.1.1"
-  checksum: 10/70e8df3e5f1c173c9bd9fa8390a3c5c2797505240ae42973536992b1f5f59a922153c2f35ff1bf36fb72a0f025b0f13fca062a4233e830adad446960d56b4d84
+    yocto-queue: "npm:^1.2.1"
+  checksum: 10/4539596f3425b2067fb1778725d902e367b1d9cd4dca3cd73f4883df5a889b84b21ca893cb0da5e601dd0102e570a2bf75a0f9905977b3226a29112891cda46d
   languageName: node
   linkType: hard
 
@@ -31237,7 +31237,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-map@npm:^7.0.2":
+"p-map@npm:^7.0.2, p-map@npm:^7.0.3":
   version: 7.0.3
   resolution: "p-map@npm:7.0.3"
   checksum: 10/2ef48ccfc6dd387253d71bf502604f7893ed62090b2c9d73387f10006c342606b05233da0e4f29388227b61eb5aeface6197e166520c465c234552eeab2fe633
@@ -31268,13 +31268,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-retry@npm:^4.6.2":
-  version: 4.6.2
-  resolution: "p-retry@npm:4.6.2"
-  dependencies:
-    "@types/retry": "npm:0.12.0"
-    retry: "npm:^0.13.1"
-  checksum: 10/45c270bfddaffb4a895cea16cb760dcc72bdecb6cb45fef1971fa6ea2e91ddeafddefe01e444ac73e33b1b3d5d29fb0dd18a7effb294262437221ddc03ce0f2e
+"p-reduce@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "p-reduce@npm:3.0.0"
+  checksum: 10/387de355e906c07159d5e6270f3b58b7c7c7349ec7294ba0a9cff2a2e2faa8c602b841b079367685d3fa166a3ee529db7aaa73fadc936987c35e90f0ba64d955
   languageName: node
   linkType: hard
 
@@ -31289,6 +31286,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"p-retry@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "p-retry@npm:7.0.0"
+  dependencies:
+    is-network-error: "npm:^1.1.0"
+  checksum: 10/d5fabc7c1875038109e3214dcf88a43e7d925f43c412e9f48a9edc7b38a387134ca673f6dbf83db172e68ceb152cad6b93a0cf32fa81236e4fbb4660d8b9acac
+  languageName: node
+  linkType: hard
+
 "p-timeout@npm:^3.2.0":
   version: 3.2.0
   resolution: "p-timeout@npm:3.2.0"
@@ -31298,10 +31304,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-timeout@npm:^5.0.0":
-  version: 5.1.0
-  resolution: "p-timeout@npm:5.1.0"
-  checksum: 10/f5cd4e17301ff1ff1d8dbf2817df0ad88c6bba99349fc24d8d181827176ad4f8aca649190b8a5b1a428dfd6ddc091af4606835d3e0cb0656e04045da5c9e270c
+"p-timeout@npm:^6.0.0":
+  version: 6.1.4
+  resolution: "p-timeout@npm:6.1.4"
+  checksum: 10/5ee0df408ba353cc2d7036af90d2eb1724c428fd1cf67cd9110c03f0035077c29f6506bff7198dfbef4910ec558c711f21f9741d89d043a6f2c2ff82064afcaf
   languageName: node
   linkType: hard
 
@@ -31319,12 +31325,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-wait-for@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "p-wait-for@npm:4.1.0"
+"p-wait-for@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "p-wait-for@npm:5.0.2"
   dependencies:
-    p-timeout: "npm:^5.0.0"
-  checksum: 10/f1c3a6c659c54f13c6fd93f642493adf29ecd1df9ccf9d7ce08b1b61ac702d4862195f883e990483d0c8fc0bfe1dd598bd35208ec86977e1178c7d62f90985b0
+    p-timeout: "npm:^6.0.0"
+  checksum: 10/29075bbeba40702752299021bdf111d57c38ecc1225f2ec4a23cc7546734c39ea486f984422b9d824a2b8ae388005060a377d9afce549a6e3c2f3d08c7d34af1
   languageName: node
   linkType: hard
 
@@ -39268,7 +39274,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yocto-queue@npm:^1.0.0, yocto-queue@npm:^1.1.1":
+"yocto-queue@npm:^1.0.0, yocto-queue@npm:^1.2.1":
   version: 1.2.1
   resolution: "yocto-queue@npm:1.2.1"
   checksum: 10/0843d6c2c0558e5c06e98edf9c17942f25c769e21b519303a5c2adefd5b738c9b2054204dc856ac0cd9d134b1bc27d928ce84fd23c9e2423b7e013d5a6f50577

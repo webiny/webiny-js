@@ -19,7 +19,7 @@
     "@webiny/error": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "p-retry": "^4.6.2"
+    "p-retry": "^7.0.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

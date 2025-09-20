@@ -51,17 +51,17 @@ export const executeWithRetry = async (params: IExecuteWithRetryParams) => {
                 retries,
                 minTimeout,
                 maxTimeout,
-                onFailedAttempt: error => {
+                onFailedAttempt: ({ error, attemptNumber }) => {
                     if (params.timer.getRemainingSeconds() < minRemainingSecondsToTimeout) {
                         throw new NotEnoughRemainingTimeError(error);
                     }
                     /**
                      * We will only log attempts which are after 3/4 of total attempts.
                      */
-                    if (error.attemptNumber < retries * 0.75) {
+                    if (attemptNumber < retries * 0.75) {
                         return;
                     }
-                    console.error(`Attempt #${error.attemptNumber} failed.`);
+                    console.error(`Attempt #${attemptNumber} failed.`);
                     console.error(error);
                 }
             }

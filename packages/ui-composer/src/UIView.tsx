@@ -102,8 +102,13 @@ export class UIView<TConfig extends UIElementConfig = UIElementConfig> extends U
         this._events.set(event, callbacks);
     }
 
-    public override async isRendered() {
-        return pWaitFor(() => this._isRendered, { interval: 50 });
+    public override async isRendered(): Promise<boolean> {
+        return pWaitFor<boolean>(
+            () => {
+                return this._isRendered;
+            },
+            { interval: 50 }
+        );
     }
 
     public override render(props?: UIViewProps): React.ReactNode {

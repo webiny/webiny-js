@@ -47,14 +47,15 @@ export class InvalidateCloudfrontCacheTask {
         try {
             await executeWithRetry(invalidateCache, {
                 minTimeout: 2000,
-                forever: true,
-                onFailedAttempt: err => {
-                    if (this.continueIfCode.includes(err.name)) {
+                // instead of forever: true
+                retries: 10000,
+                onFailedAttempt: ({ error }) => {
+                    if (this.continueIfCode.includes(error.name)) {
                         throw new ReturnContinue();
                     }
 
-                    if (err.message.includes("not authorized to perform")) {
-                        throw err;
+                    if (error.message.includes("not authorized to perform")) {
+                        throw error;
                     }
 
                     if (isCloseToTimeout()) {

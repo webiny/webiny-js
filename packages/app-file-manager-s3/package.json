@@ -13,7 +13,7 @@
   "dependencies": {
     "@webiny/app": "0.0.0",
     "graphql-tag": "^2.12.6",
-    "p-retry": "^4.6.2"
+    "p-retry": "^7.0.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

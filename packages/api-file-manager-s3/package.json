@@ -29,8 +29,8 @@
     "mime": "^3.0.0",
     "node-fetch": "2.6.7",
     "object-hash": "^3.0.0",
-    "p-map": "4.0.0",
-    "p-reduce": "2.1.0",
+    "p-map": "^7.0.3",
+    "p-reduce": "^3.0.0",
     "sanitize-filename": "^1.6.3",
     "sharp": "^0.34.4"
   },

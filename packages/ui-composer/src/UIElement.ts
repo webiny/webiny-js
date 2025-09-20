@@ -302,7 +302,7 @@ export class UIElement<TConfig extends UIElementConfig = UIElementConfig> {
         this._layout.removeElement(element);
     }
 
-    async isRendered(): Promise<void> {
+    async isRendered(): Promise<boolean> {
         return pWaitFor(() => this.getView() !== undefined, { interval: 50 });
     }
 
