@@ -6,7 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "load-json-file": "6.2.0",
-    "uuid": "^9.0.1",
+    "uuid": "^13.0.0",
     "write-json-file": "^4.3.0"
   },
   "publishConfig": {

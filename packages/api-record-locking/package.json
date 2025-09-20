@@ -33,7 +33,7 @@
     "@webiny/project-utils": "0.0.0",
     "graphql": "^16.11.0",
     "rimraf": "^6.0.1",
-    "type-fest": "^4.41.0",
+    "type-fest": "^5.0.1",
     "typescript": "5.9.2",
     "vitest": "^3.2.4"
   },

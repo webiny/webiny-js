@@ -24,7 +24,7 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/utils": "0.0.0",
-    "type-fest": "^4.41.0",
+    "type-fest": "^5.0.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {
