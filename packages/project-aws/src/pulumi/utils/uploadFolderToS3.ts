@@ -1,6 +1,4 @@
 import fs from "fs";
-import fetch from "node-fetch";
-import FormData from "form-data";
 import type { PresignedPostOptions } from "@webiny/aws-sdk/client-s3/index.js";
 import { S3Client, HeadObjectCommand } from "@webiny/aws-sdk/client-s3/index.js";
 import mime from "mime";
@@ -152,9 +150,10 @@ export const uploadFolderToS3 = async ({
                             }
 
                             const formData = new FormData();
-                            Object.keys(data).forEach(key => {
-                                formData.append(key, data[key]);
-                            });
+                            for (const key in data) {
+                                const value = new Blob([Buffer.from(data[key])]);
+                                formData.append(key, value);
+                            }
 
                             const res = await fetch(url, {
                                 method: "POST",

@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import fetch from "node-fetch";
 import { isJwt, verifyJwtUsingJwk } from "@webiny/api-security";
 import type { Jwk } from "@webiny/api-security/types";
 

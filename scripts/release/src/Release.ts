@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import pRetry from "p-retry";
 import semver, { SemVer } from "semver";
 import execa from "execa";

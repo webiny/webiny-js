@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import type { DecryptedWcpProjectLicense, EncryptedWcpProjectLicense } from "./types.js";
 import { decrypt } from "./encryption.js";
 import { getWcpApiUrl } from "./urls.js";

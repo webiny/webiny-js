@@ -27,7 +27,6 @@
     "@webiny/validation": "0.0.0",
     "form-data": "^4.0.4",
     "mime": "^3.0.0",
-    "node-fetch": "2.6.7",
     "object-hash": "^3.0.0",
     "p-map": "^7.0.3",
     "p-reduce": "^3.0.0",
@@ -35,7 +34,6 @@
     "sharp": "^0.34.4"
   },
   "devDependencies": {
-    "@types/node-fetch": "^2.6.13",
     "@webiny/build-tools": "0.0.0",
     "rimraf": "^6.0.1",
     "typescript": "5.9.2",

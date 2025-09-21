@@ -76,7 +76,6 @@
     "invariant": "^2.2.4",
     "lodash": "^4.17.21",
     "mime": "^3.0.0",
-    "node-fetch": "2.6.7",
     "react": "19.1.1",
     "regenerator-runtime": "^0.14.1",
     "replace-in-path": "^1.1.0",

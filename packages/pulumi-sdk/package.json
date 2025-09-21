@@ -22,7 +22,6 @@
     "find-up": "5.0.0",
     "fs-extra": "^11.3.2",
     "lodash": "^4.17.21",
-    "node-fetch": "2.6.7",
     "read-json-sync": "2.0.1",
     "semver": "^7.7.2",
     "tar": "^6.2.1"

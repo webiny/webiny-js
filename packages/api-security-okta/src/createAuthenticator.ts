@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import fetch from "node-fetch";
 import { ContextPlugin } from "@webiny/api";
 import { isJwt, verifyJwtUsingJwk } from "@webiny/api-security";
 import type { SecurityContext, SecurityIdentity, Jwk } from "@webiny/api-security/types.js";
