@@ -3,7 +3,7 @@ import { defineExtension } from "@webiny/project/defineExtension/index.js";
 
 const domainsSchema = z.object({
     acmCertificateArn: z.string(),
-    sslSupportMethod: z.string(), // could also be z.enum(["sni-only", "vip"]) if you want stricter validation
+    sslSupportMethod: z.enum(["sni-only", "vip"]),
     domains: z.object({
         api: z.array(z.string()).nonempty(),
         admin: z.array(z.string()).nonempty(),

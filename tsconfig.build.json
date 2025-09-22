@@ -48,7 +48,7 @@
     "experimentalDecorators": true,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
-    "allowImportingTsExtensions": true,
+    "allowImportingTsExtensions": false,
     /**
      * Maybe switch to true at some point? There would need to be A LOT of error handling changes.
      * https://www.typescriptlang.org/tsconfig#useUnknownInCatchVariables

@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/di-container";
 import { Command, GetProjectSdkService, UiService } from "~/abstractions/index.js";
-import { IBaseAppParams } from "~/abstractions/features/types.ts";
+import { IBaseAppParams } from "~/abstractions/features/types.js";
 import { PrintInfoForEnv } from "./PrintInfoForEnv.js";
 
 export type IInfoCommandParams = Omit<IBaseAppParams, "app">;

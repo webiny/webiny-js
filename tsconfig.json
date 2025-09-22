@@ -5,6 +5,7 @@
     "noEmit": true,
     "noUnusedParameters": false,
     "noUnusedLocals": false,
-    "emitDeclarationOnly": false
+    "emitDeclarationOnly": false,
+      "allowImportingTsExtensions": true
   }
 }
