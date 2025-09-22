@@ -40,7 +40,7 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
     const { getIdToken } = useSecurity();
     const locale = getCurrentLocale("default");
 
-    const socketsRef = useRef<IWebsocketsManager>(null);
+    const socketsRef = useRef<IWebsocketsManager>();
 
     const [current, setCurrent] = useState<ICurrentData>({});
 
@@ -136,7 +136,7 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
                 });
                 return;
             }
-
+            
             socketsRef.current = createWebsocketsManager(
                 createWebsocketsConnection({
                     subscriptionManager,

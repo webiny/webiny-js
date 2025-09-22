@@ -30,11 +30,11 @@
     "graphql-tag": "^2.12.6",
     "lodash": "^4.17.21",
     "prop-types": "^15.8.1",
-    "react": "19.1.1"
+    "react": "18.2.0"
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.13.5",
-    "@types/react": "19.1.13",
+    "@types/react": "18.2.79",
     "@webiny/build-tools": "0.0.0",
     "babel-plugin-module-resolver": "^5.0.2",
     "rimraf": "^6.0.1",

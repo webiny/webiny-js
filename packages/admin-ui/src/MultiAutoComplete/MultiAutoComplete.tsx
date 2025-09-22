@@ -25,7 +25,7 @@ const DecoratableMultiAutoComplete = ({
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
 
     // Retrieve the internally generated ID from cmdk's <Command.Input> to sync with the external <label>
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement | null>(null);
     const [inputId, setInputId] = useState<string>();
 
     useEffect(() => {

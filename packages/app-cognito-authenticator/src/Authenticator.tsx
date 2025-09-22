@@ -80,7 +80,7 @@ const defaultState: State = {
 };
 
 export const Authenticator = ({ onToken, children }: AuthenticatorProps) => {
-    const [state, setState] = useReducer((prev, next) => {
+    const [state, setState] = useReducer((prev: State, next: Partial<State>) => {
         return { ...prev, ...next };
     }, defaultState);
 

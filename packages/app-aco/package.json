@@ -35,15 +35,15 @@
     "mobx": "^6.13.7",
     "mobx-react-lite": "^3.4.3",
     "pako": "^2.1.0",
-    "react": "19.1.1",
-    "react-dom": "19.1.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "react-hotkeyz": "^1.0.4",
     "slugify": "^1.6.6",
     "store": "^2.0.12",
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/react": "19.1.13",
+    "@types/react": "18.2.79",
     "@webiny/build-tools": "0.0.0",
     "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",

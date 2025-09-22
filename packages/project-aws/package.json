@@ -75,7 +75,7 @@
     "invariant": "^2.2.4",
     "lodash": "^4.17.21",
     "mime": "^3.0.0",
-    "react": "19.1.1",
+    "react": "18.2.0",
     "regenerator-runtime": "^0.14.1",
     "replace-in-path": "^1.1.0",
     "zod": "^3.25.76"

@@ -47,7 +47,6 @@ const Vertical = ({ depth, last, onDrop, isVisible }: VerticalProps) => {
         <Droppable onDrop={onDrop} isVisible={isVisible}>
             {({ isOver, isDragging, drop }) => (
                 <div
-                    // @ts-expect-error
                     ref={drop}
                     style={{
                         /* For dropzone debugging: border: "1px solid blue",*/

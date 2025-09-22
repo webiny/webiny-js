@@ -41,7 +41,7 @@ const defaultState: State = {
 
 export const useInstaller = (params: UseInstallerParams) => {
     const { isInstalled } = params;
-    const [state, setState] = useReducer((prev, next) => {
+    const [state, setState] = useReducer((prev: State, next: Partial<State>) => {
         return { ...prev, ...next };
     }, defaultState);
     const { loading, installers, installerIndex, showLogin } = state;

@@ -14,9 +14,14 @@ import { MultiFilePicker } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
+interface EditFileRef {
+    index: number;
+    url: string;
+}
+
 const FieldRenderer = ({ getBind, field }: CmsModelFieldRendererProps) => {
     const Bind = getBind();
-    const editFileRef = useRef<{ index: number; url: string }>(null);
+    const editFileRef = useRef<EditFileRef | null>(null);
 
     const imagesOnly = field.settings && field.settings.imagesOnly;
 

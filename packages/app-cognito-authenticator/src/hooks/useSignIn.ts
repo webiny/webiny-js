@@ -25,7 +25,7 @@ const defaultState: State = {
 };
 
 export function useSignIn(): UseSignIn {
-    const [state, setState] = useReducer((prev, next) => {
+    const [state, setState] = useReducer((prev: State, next: Partial<State>) => {
         return { ...prev, ...next };
     }, defaultState);
     const { authState, changeState } = useAuthenticator();

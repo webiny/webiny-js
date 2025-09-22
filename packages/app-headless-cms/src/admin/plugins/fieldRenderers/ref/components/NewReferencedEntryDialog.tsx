@@ -198,7 +198,7 @@ const ContentEntryProviderWithCurrentFolderId = ({
     onClose,
     onCreate
 }: ContentEntryProviderWithCurrentFolderIdProps) => {
-    const saveEntryRef = useRef<SaveEntry>(null);
+    const saveEntryRef = useRef<SaveEntry | null>(null);
     const { currentFolderId } = useNavigateFolder();
 
     return (

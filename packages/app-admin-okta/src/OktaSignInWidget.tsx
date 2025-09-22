@@ -26,7 +26,7 @@ export const LoginContent = styled("div")({
 
 const OktaSignInWidget = ({ oktaSignIn }: OktaSignInWidgetProps) => {
     const { oktaAuth } = useOktaAuth();
-    const widgetRef = useRef<HTMLDivElement>(null);
+    const widgetRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         if (!widgetRef.current) {

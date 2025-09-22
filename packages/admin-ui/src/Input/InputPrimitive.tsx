@@ -11,7 +11,6 @@ const InputIcon = ({ icon, inputSize, className }: InputIconProps) => {
     return (
         <div className={cn("wby-fill-inherit", className)}>
             {React.cloneElement(icon, {
-                // @ts-expect-error
                 ...icon.props,
                 size: inputSize === "xl" ? "lg" : "sm" // Map icon size based on the input size.
             })}

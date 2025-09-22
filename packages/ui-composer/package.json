@@ -12,8 +12,8 @@
   "dependencies": {
     "@webiny/plugins": "0.0.0",
     "p-wait-for": "^5.0.2",
-    "react": "19.1.1",
-    "react-dom": "19.1.1"
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

@@ -32,6 +32,9 @@ export function createExtensionReactComponent<TParamsSchema extends z.ZodTypeAny
         const placeAfter = after !== undefined ? getId(after) : undefined;
         const placeBefore = before !== undefined ? getId(before) : undefined;
 
+        // @ts-expect-error move KeyValues back inside the Property component to avoid this error
+        const KeyValuesComponent = parentProps => <KeyValues {...parentProps} {...keyValues} />;
+
         return (
             <Property
                 id={propertyId}
@@ -41,7 +44,7 @@ export function createExtensionReactComponent<TParamsSchema extends z.ZodTypeAny
                 before={placeBefore}
                 after={placeAfter}
             >
-                <KeyValues {...keyValues} />
+                <KeyValuesComponent />
             </Property>
         );
     };

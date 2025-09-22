@@ -166,7 +166,6 @@ const MenuItem = ({ children, ...rest }: MenuItemProps) => {
         const foundIcon = React.Children.toArray(children).find(isIconElement);
         // Handles this usage: packages/app-admin/src/components/OptionsMenu/OptionsMenuItem.tsx
         if (React.isValidElement(foundIcon) && foundIcon.type === ListItemGraphic) {
-            // @ts-expect-error
             return foundIcon.props.children;
         }
         return foundIcon;

@@ -31,7 +31,7 @@ const defaultState: State = {
 };
 
 export function useForgotPassword(): ForgotPassword {
-    const [state, setState] = useReducer((prev, next) => {
+    const [state, setState] = useReducer((prev: State, next: Partial<State>) => {
         return { ...prev, ...next };
     }, defaultState);
 

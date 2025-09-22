@@ -30,7 +30,7 @@ const defaultState: State = {
 };
 
 export function useSetNewPassword(): UseSetNewPassword {
-    const [state, setState] = useReducer((prev, next) => {
+    const [state, setState] = useReducer((prev: State, next: Partial<State>) => {
         return { ...prev, ...next };
     }, defaultState);
     const { authState, authData, changeState } = useAuthenticator();

@@ -130,7 +130,6 @@ const Editor = () => {
                                     "wby-cursor-grab",
                                     "wby-absolute wby-left-sm-plus wby-top-sm-plus wby-z-10"
                                 ])}
-                                // @ts-expect-error
                                 ref={drag}
                             >
                                 <Icon
@@ -174,7 +173,6 @@ const Editor = () => {
                                                         "wby-flex-1 wby-basis-full",
                                                         "wby-mx-sm"
                                                     ])}
-                                                    // @ts-expect-error
                                                     ref={drag}
                                                 >
                                                     <Vertical

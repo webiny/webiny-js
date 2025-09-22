@@ -42,7 +42,7 @@ interface ParentFieldProviderProps {
 export const ParentFieldProvider = ({ path, value, children }: ParentFieldProviderProps) => {
     const parent = useContext(ParentField);
     const form = useForm();
-    const formRef = useRef<FormAPI>(null);
+    const formRef = useRef<FormAPI>();
 
     let field: CmsModelField | undefined;
     try {

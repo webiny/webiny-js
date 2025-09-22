@@ -46,7 +46,7 @@ const MultiAutoCompleteInput = ({
     ...props
 }: MultiAutoCompleteInputProps) => {
     const [focused, setFocused] = React.useState<boolean>(false);
-    const inputRef = React.useMemo<React.RefObject<HTMLInputElement | null>>(
+    const inputRef = React.useMemo<React.RefObject<HTMLInputElement>>(
         () =>
             parentInputRef && typeof parentInputRef !== "function"
                 ? parentInputRef
