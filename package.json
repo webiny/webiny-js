@@ -185,6 +185,7 @@
 		"verdaccio:start": "yarn verdaccio -c ./.verdaccio.yaml",
 		"verdaccio:start:detached": "yarn pm2 start \"yarn verdaccio:start\"",
 		"webiny": "./node_modules/.bin/webiny",
+		"verify-dependencies": "yarn webiny verify-dependencies",
 		"system:verify": "yarn eslint && yarn prettier:check && yarn adio && yarn check-ts-configs && yarn webiny verify-dependencies",
 		"system:build": "yarn && yarn ghawac build && yarn webiny sync-dependencies && yarn build",
 		"wby": "./node_modules/.bin/wby",
