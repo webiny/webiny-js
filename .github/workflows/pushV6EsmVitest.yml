@@ -6,7 +6,7 @@ name: V6-esm-vitest Branch - Push
 'on':
   push:
     branches:
-      - "feat/v6-esm-vitest"
+      - v6-esm-vitest
 jobs:
   constants:
     name: Create constants
@@ -611,9 +611,6 @@ jobs:
       - name: Deploy Admin Area
         working-directory: new-webiny-project
         run: yarn webiny deploy apps/admin --env dev
-      - name: Deploy Website
-        working-directory: new-webiny-project
-        run: yarn webiny deploy apps/website --env dev
       - name: Deployment Summary
         run: >-
           node
@@ -824,9 +821,6 @@ jobs:
       - name: Deploy Admin Area
         working-directory: new-webiny-project
         run: yarn webiny deploy apps/admin --env dev
-      - name: Deploy Website
-        working-directory: new-webiny-project
-        run: yarn webiny deploy apps/website --env dev
       - name: Deployment Summary
         run: >-
           node
@@ -1042,9 +1036,6 @@ jobs:
       - name: Deploy Admin Area
         working-directory: new-webiny-project
         run: yarn webiny deploy apps/admin --env dev
-      - name: Deploy Website
-        working-directory: new-webiny-project
-        run: yarn webiny deploy apps/website --env dev
       - name: Deployment Summary
         run: >-
           node
