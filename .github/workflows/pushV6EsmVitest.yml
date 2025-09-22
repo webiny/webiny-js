@@ -6,7 +6,7 @@ name: V6-esm-vitest Branch - Push
 'on':
   push:
     branches:
-      - v6-esm-vitest
+      - feat/v6-esm-vitest
 jobs:
   constants:
     name: Create constants
