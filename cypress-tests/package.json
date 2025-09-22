@@ -1,6 +1,7 @@
 {
   "name": "cypress-tests",
   "private": true,
+  "type": "module",
   "version": "0.0.0",
   "description": "A package that contains Cypress tests for Webiny.",
   "author": "Webiny Ltd.",

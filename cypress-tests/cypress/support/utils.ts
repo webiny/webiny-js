@@ -83,7 +83,7 @@ interface GqlQueryOptions {
     user?: User;
 }
 
-type GqlQueryFunction<TReturn, TVariables> = (
+export type GqlQueryFunction<TReturn, TVariables> = (
     variables: TVariables,
     options?: GqlQueryOptions
 ) => Promise<TReturn>;
