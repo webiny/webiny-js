@@ -157,7 +157,7 @@ field in `package.json` file.
 {
   ...
   "overrides": {
-    "react": "^19.x.x"
+    "react": "^18.x.x"
   },
   ...
 }
