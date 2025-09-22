@@ -1,5 +1,4 @@
 import * as AmazonCognitoIdentity from "amazon-cognito-identity-js";
-import fetch from "node-fetch";
 
 // @ts-expect-error
 global.fetch = fetch;

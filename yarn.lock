@@ -21975,7 +21975,6 @@ __metadata:
     graphql-request: "npm:^7.2.0"
     lodash: "npm:^4.17.21"
     nanoid: "npm:^3.3.11"
-    node-fetch: "npm:2.6.7"
     typescript: "npm:5.9.2"
     uniqid: "npm:^5.4.0"
   languageName: unknown
