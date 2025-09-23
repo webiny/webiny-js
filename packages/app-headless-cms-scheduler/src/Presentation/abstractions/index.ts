@@ -1,2 +1,2 @@
-export type * from "./ISchedulerControllers.js";
-export type * from "./ISchedulerPresenter.js";
+export type { ISchedulerControllers } from "./ISchedulerControllers.js";
+export type { ISchedulerPresenter, SchedulerPresenterViewModel } from "./ISchedulerPresenter.js";
