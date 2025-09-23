@@ -100,6 +100,9 @@ export const createModelEntity = (params: CreateModelEntityParams): Entity<any> 
                 type: "string",
                 required: true
             },
+            settings: {
+                type: "map"
+            },
             ...(attributes || {})
         }
     });
