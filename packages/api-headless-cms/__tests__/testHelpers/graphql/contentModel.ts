@@ -56,6 +56,20 @@ const DATA_FIELD = /* GraphQL*/ `
             displayName
             type
         }
+        settings {
+            steps {
+                id
+                title
+                color
+                description
+                teams {
+                    id
+                }
+                notifications {
+                    id
+                }
+            }
+        }
     }
 `;
 const ERROR_FIELD = /* GraphQL */ `

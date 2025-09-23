@@ -1,6 +1,28 @@
 import type { CmsIdentity } from "./identity.js";
 import type { CmsModelField, CmsModelFieldInput, LockedField } from "./modelField.js";
 import type { CmsModelGroup } from "./modelGroup.js";
+import type { NonEmptyArray } from "@webiny/api/types.js";
+
+export interface CmsModelSettingsStepNotification {
+    id: string;
+}
+
+export interface CmsModelSettingsStepTeam {
+    id: string;
+}
+
+export interface CmsModelSettingsStep {
+    id: string;
+    title: string;
+    color: string;
+    description?: string;
+    teams: NonEmptyArray<CmsModelSettingsStepTeam>;
+    notifications?: CmsModelSettingsStepNotification[];
+}
+
+export interface CmsModelSettings {
+    steps?: CmsModelSettingsStep[];
+}
 
 /**
  * Base CMS Model. Should not be exported and used outside of this package.
@@ -127,6 +149,8 @@ export interface CmsModel {
      * Is this model created via plugin?
      */
     isPlugin?: boolean;
+
+    settings?: CmsModelSettings;
 }
 
 export interface CmsModelAuthorization {

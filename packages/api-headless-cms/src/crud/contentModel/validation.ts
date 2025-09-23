@@ -1,6 +1,8 @@
 import zod from "zod";
 import upperFirst from "lodash/upperFirst.js";
 import camelCase from "lodash/camelCase.js";
+import type { NonEmptyArray } from "@webiny/api/types.js";
+import type { CmsModelSettingsStepTeam } from "~/types/index.js";
 
 const fieldSystemFields: string[] = [
     "id",
@@ -97,6 +99,7 @@ const fieldSchema = zod.object({
             enabled: false,
             values: []
         })
+        .nullish()
         .optional(),
     renderer: zod
         .object({
@@ -211,6 +214,37 @@ const modelIdTransformation = (value?: string) => {
     return camelCasedValue;
 };
 
+const modelSettingsStepValidation = zod.object({
+    id: zod.string(),
+    title: zod.string(),
+    color: zod.string(),
+    description: zod.string().optional(),
+    teams: zod
+        .array(
+            zod.object({
+                id: zod.string()
+            })
+        )
+        .min(1, "You must select at least one team.")
+        .transform(value => {
+            return value as NonEmptyArray<CmsModelSettingsStepTeam>;
+        }),
+    notifications: zod
+        .array(
+            zod.object({
+                id: zod.string()
+            })
+        )
+        .optional()
+});
+
+const modelSettingsValidation = zod
+    .object({
+        steps: zod.array(modelSettingsStepValidation).optional()
+    })
+    .passthrough()
+    .optional();
+
 export const createModelCreateValidation = () => {
     return zod.object({
         name: shortString,
@@ -221,7 +255,9 @@ export const createModelCreateValidation = () => {
         pluralApiName: shortString
             .min(1)
             .refine(apiNameRefinementValidation, refinementPluralValidationMessage),
-        description: optionalNullishShortString,
+        description: optionalNullishShortString.transform(value => {
+            return value || "";
+        }),
         group: shortString,
         icon: optionalNullishShortString,
         fields: zod.array(fieldSchema).default([]),
@@ -230,7 +266,8 @@ export const createModelCreateValidation = () => {
         titleFieldId: optionalShortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
         imageFieldId: optionalShortString.nullish(),
-        defaultFields: zod.boolean().nullish()
+        defaultFields: zod.boolean().nullish(),
+        settings: modelSettingsValidation
     });
 };
 
@@ -264,7 +301,8 @@ export const createModelImportValidation = () => {
         tags: zod.array(shortString).optional(),
         titleFieldId: shortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
-        imageFieldId: optionalShortString.nullish()
+        imageFieldId: optionalShortString.nullish(),
+        settings: modelSettingsValidation
     });
 };
 
@@ -283,7 +321,8 @@ export const createModelCreateFromValidation = () => {
         description: optionalNullishShortString,
         group: shortString,
         icon: optionalNullishShortString,
-        locale: optionalShortString
+        locale: optionalShortString,
+        settings: modelSettingsValidation
     });
 };
 
@@ -310,6 +349,7 @@ export const createModelUpdateValidation = () => {
         titleFieldId: optionalShortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
         imageFieldId: optionalShortString.nullish(),
-        tags: zod.array(shortString).optional()
+        tags: zod.array(shortString).optional(),
+        settings: modelSettingsValidation
     });
 };

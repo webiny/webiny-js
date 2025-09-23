@@ -1,6 +1,6 @@
 import fs from "fs";
 import * as rimraf from "rimraf";
-import { join, dirname, extname, relative, parse } from "path";
+import { dirname, extname, join, parse, relative } from "path";
 import * as babel from "@babel/core";
 import ts from "ts-patch/compiler/typescript.js";
 import glob from "fast-glob";
@@ -21,8 +21,20 @@ export default async options => {
         options.overrides = JSON.parse(options.overrides);
     }
 
-    await babelCompile(options);
-    await tsCompile(options);
+    try {
+        await babelCompile(options);
+    } catch (ex) {
+        console.log("Babel error!");
+        console.log(ex);
+        throw ex;
+    }
+    try {
+        await tsCompile(options);
+    } catch (ex) {
+        console.log("TypeScript error!");
+        console.log(ex);
+        throw ex;
+    }
 
     options.logs !== false && console.log("Copying meta files...");
     copyToDist("package.json", options);

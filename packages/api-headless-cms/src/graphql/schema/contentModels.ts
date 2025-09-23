@@ -173,6 +173,27 @@ export const createModelsSchema = ({
                 settings: JSON
             }
 
+            input CmsContentModelSettingsStepNotificationInput {
+                id: String!
+            }
+
+            input CmsContentModelSettingsStepTeamInput {
+                id: String!
+            }
+
+            input CmsContentModelSettingsStepInput {
+                id: String!
+                title: String!
+                color: String!
+                description: String
+                teams: [CmsContentModelSettingsStepTeamInput!]!
+                notifications: [CmsContentModelSettingsStepNotificationInput!]
+            }
+
+            input CmsContentModelSettingsInput {
+                steps: [CmsContentModelSettingsStepInput!]
+            }
+
             input CmsContentModelCreateInput {
                 name: String!
                 singularApiName: String!
@@ -188,6 +209,7 @@ export const createModelsSchema = ({
                 imageFieldId: String
                 tags: [String!]
                 defaultFields: Boolean
+                settings: CmsContentModelSettingsInput
             }
 
             input CmsContentModelCreateFromInput {
@@ -214,6 +236,7 @@ export const createModelsSchema = ({
                 descriptionFieldId: String
                 imageFieldId: String
                 tags: [String!]
+                settings: CmsContentModelSettingsInput
             }
 
             type InitializeModelResponse {
@@ -285,6 +308,27 @@ export const createModelsSchema = ({
                 settings: JSON
             }
 
+            type CmsContentModelSettingsStepNotification {
+                id: String!
+            }
+            
+            type CmsContentModelSettingsStepTeam {
+                id: String!
+            }
+
+            type CmsContentModelSettingsStep {
+                id: String!
+                title: String!
+                color: String!
+                description: String
+                teams: [CmsContentModelSettingsStepTeam!]!
+                notifications: [CmsContentModelSettingsStepNotification!]
+            }
+
+            type CmsContentModelSettings {
+                steps: [CmsContentModelSettingsStep!]
+            }
+
             type CmsContentModel {
                 name: String!
                 singularApiName: String!
@@ -305,6 +349,7 @@ export const createModelsSchema = ({
                 tags: [String!]!
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!
+                settings: CmsContentModelSettings
             }
 
             type CmsContentModelResponse {

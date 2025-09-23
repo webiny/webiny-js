@@ -1462,4 +1462,116 @@ describe("content model test", () => {
             }
         });
     });
+    
+    it("should create and update a model with steps in settings", async () => {
+        const { createContentModelMutation, getContentModelQuery, updateContentModelMutation } =
+            useGraphQLHandler(manageHandlerOpts);
+        const field = {
+            id: "testId",
+            fieldId: "testFieldId",
+            type: "file",
+            label: "Test Field",
+            settings: {
+                imagesOnly: true
+            }
+        };
+
+        const initialSteps = [
+            {
+                id: "translation",
+                title: "Translation",
+                color: "#00FF00",
+                description: "",
+                teams: [
+                    {
+                        id: "team-1"
+                    }
+                ],
+                notifications: [
+                    {
+                        id: "slack"
+                    },
+                    {
+                        id: "ms-teams"
+                    }
+                ]
+            },
+            {
+                id: "seo",
+                title: "SEO",
+                color: "#0000FF",
+                description: "",
+                teams: [
+                    {
+                        id: "team-2"
+                    }
+                ],
+                notifications: [
+                    {
+                        id: "email"
+                    },
+                    {
+                        id: "slack"
+                    }
+                ]
+            }
+        ];
+
+        const [createModelResponse] = await createContentModelMutation({
+            data: {
+                name: "Test Content model",
+                modelId: "test-content-model",
+                singularApiName: `TestContentModel`,
+                pluralApiName: `TestContentModels`,
+                group: contentModelGroup.id,
+                fields: [field],
+                layout: [["testId"]],
+                settings: {
+                    steps: initialSteps
+                }
+            }
+        });
+
+        expect(createModelResponse).toMatchObject({
+            data: {
+                createContentModel: {
+                    data: {
+                        modelId: "testContentModel",
+                        settings: {
+                            steps: initialSteps
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+        const model = createModelResponse.data.createContentModel.data;
+
+        const [updateModelEmptyResponse] = await updateContentModelMutation({
+            modelId: model.modelId,
+            data: {
+                fields: model.fields,
+                layout: model.layout,
+                settings: {
+                    steps: []
+                }
+            }
+        });
+        expect(updateModelEmptyResponse).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        modelId: "testContentModel",
+                        settings: {
+                            steps: []
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+        expect(updateModelEmptyResponse.data.updateContentModel.data.settings.steps).toHaveLength(
+            0
+        );
+    });
 });
