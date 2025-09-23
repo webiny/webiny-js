@@ -49,13 +49,15 @@ export default meta;
 type Story = StoryObj<typeof Sidebar>;
 
 export const MainMenu: Story = {
-    render: () => (
-        <BrowserRouter history={history}>
-            <Routes>
-                <Route path={"*"} element={<SidebarComponent />} />
-            </Routes>
-        </BrowserRouter>
-    )
+    render: () => {
+        return (
+            <BrowserRouter>
+                <Routes>
+                    <Route path={"*"} element={<SidebarComponent />} />
+                </Routes>
+            </BrowserRouter>
+        );
+    }
 };
 
 const SidebarComponent = () => {

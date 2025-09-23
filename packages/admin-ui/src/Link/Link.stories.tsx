@@ -11,11 +11,13 @@ const meta: Meta<typeof Link> = {
     title: "Components/Link",
     component: Link,
     decorators: [
-        (Story: React.ComponentType) => (
-            <BrowserRouter history={history}>
-                <Story />
-            </BrowserRouter>
-        )
+        (Story: React.ComponentType) => {
+            return (
+                <BrowserRouter>
+                    <Story />
+                </BrowserRouter>
+            );
+        }
     ],
     argTypes: {
         size: { control: "select", options: ["sm", "md", "lg", "xl"] },
