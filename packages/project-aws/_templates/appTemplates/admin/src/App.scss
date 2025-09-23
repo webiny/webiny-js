@@ -1,2 +1,2 @@
 // Import admin app styles
-@import "~@webiny/app-serverless-cms/styles.scss";
+@use "~@webiny/app-serverless-cms/styles.scss" as *;

@@ -1,16 +1,16 @@
 // Import `app-admin-ui` styles
-@import "~@webiny/app-admin-ui/styles.scss";
+@use "~@webiny/app-admin-ui/styles.scss" as *;
 
 // Import `ui` styles
 // ⚠️ DEPRECATED but needed for backward compatibility ⚠️
-@import "~@webiny/ui/styles.scss";
+@use "~@webiny/ui/styles.scss" as *;
 
 // Import `RichTextEditor` styles
-@import "~@webiny/app-admin/components/RichTextEditor/styles.scss";
-@import "~@webiny/app-admin/components/RichTextEditor/tools/header/styles.scss";
-@import "~@webiny/app-admin/components/RichTextEditor/tools/paragraph/styles.scss";
-@import "~@webiny/app-admin/components/RichTextEditor/tools/textColor/styles.scss";
-@import "~@webiny/app-admin/components/RichTextEditor/tools/image/styles.scss";
+@use "~@webiny/app-admin/components/RichTextEditor/styles.scss" as *;
+@use "~@webiny/app-admin/components/RichTextEditor/tools/header/styles.scss" as *;
+@use "~@webiny/app-admin/components/RichTextEditor/tools/paragraph/styles.scss" as *;
+@use "~@webiny/app-admin/components/RichTextEditor/tools/textColor/styles.scss" as *;
+@use "~@webiny/app-admin/components/RichTextEditor/tools/image/styles.scss" as *;
 
 // Import Lexical theme styles
 @import "~@webiny/lexical-theme/theme.css";
