@@ -21,20 +21,8 @@ export default async options => {
         options.overrides = JSON.parse(options.overrides);
     }
 
-    try {
-        await babelCompile(options);
-    } catch (ex) {
-        console.log("Babel error!");
-        console.log(ex);
-        throw ex;
-    }
-    try {
-        await tsCompile(options);
-    } catch (ex) {
-        console.log("TypeScript error!");
-        console.log(ex);
-        throw ex;
-    }
+    await babelCompile(options);
+    await tsCompile(options);
 
     options.logs !== false && console.log("Copying meta files...");
     copyToDist("package.json", options);

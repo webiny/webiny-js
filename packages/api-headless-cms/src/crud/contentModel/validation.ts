@@ -100,7 +100,10 @@ const fieldSchema = zod.object({
             values: []
         })
         .nullish()
-        .optional(),
+        .optional()
+        .transform(value => {
+            return value || undefined;
+        }),
     renderer: zod
         .object({
             name: shortString,

@@ -6,6 +6,7 @@ import { pageModel } from "~tests/contentAPI/mocks/pageWithDynamicZonesModel";
 import type { CmsModelToAstConverter } from "~/utils/contentModelAst";
 import type { CmsModelInput } from "~/plugins";
 import { createCmsModelPlugin } from "~/plugins";
+import { beforeEach, describe, expect, it } from "vitest";
 
 describe("model field traverser", () => {
     const { handler } = useHandler({

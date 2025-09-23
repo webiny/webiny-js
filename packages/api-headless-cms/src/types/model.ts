@@ -159,6 +159,26 @@ export interface CmsModelAuthorization {
     [key: string]: any;
 }
 
+export interface CmsModelCreateSettingsStepTeamInput {
+    id: string;
+}
+
+export interface CmsModelCreateSettingsStepNotificationInput {
+    id: string;
+}
+
+export interface CmsModelCreateSettingsStepInput {
+    id: string;
+    title: string;
+    color: string;
+    description?: string;
+    teams: NonEmptyArray<CmsModelCreateSettingsStepTeamInput>;
+    notifications?: CmsModelCreateSettingsStepNotificationInput[];
+}
+
+export interface CmsModelCreateSettingsInput {
+    steps?: CmsModelCreateSettingsStepInput[];
+}
 /**
  * A GraphQL `params.data` parameter received when creating content model.
  *
@@ -215,6 +235,7 @@ export interface CmsModelCreateInput {
     titleFieldId?: string | null;
     descriptionFieldId?: string | null;
     imageFieldId?: string | null;
+    settings?: CmsModelCreateSettingsInput;
 }
 
 /**

@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { CmsGroup, CmsModel, CmsModelField, CmsModelFieldInput } from "~/types";
+import {
+    CmsGroup,
+    CmsModel,
+    type CmsModelCreateSettingsStepInput,
+    CmsModelField,
+    CmsModelFieldInput
+} from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import * as helpers from "../testHelpers/helpers";
 import models from "./mocks/contentModels";
@@ -158,7 +164,8 @@ describe("content model test", () => {
                             name: contentModelGroup.name,
                             slug: contentModelGroup.slug
                         },
-                        icon: "fa/fas"
+                        icon: "fa/fas",
+                        settings: null,
                     },
                     error: null
                 }
@@ -617,6 +624,7 @@ describe("content model test", () => {
                 updateContentModel: {
                     data: {
                         ...modelData,
+                        settings: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: helpers.identity,
                         createdOn: expect.stringMatching(/^20/),
@@ -1476,7 +1484,7 @@ describe("content model test", () => {
             }
         };
 
-        const initialSteps = [
+        const initialSteps: CmsModelCreateSettingsStepInput[] = [
             {
                 id: "translation",
                 title: "Translation",
@@ -1573,5 +1581,30 @@ describe("content model test", () => {
         expect(updateModelEmptyResponse.data.updateContentModel.data.settings.steps).toHaveLength(
             0
         );
+        
+        const [updateModelResponse] = await updateContentModelMutation({
+            modelId: model.modelId,
+            data: {
+                fields: model.fields,
+                layout: model.layout,
+                settings: {
+                    steps: [initialSteps[0]]
+                }
+            }
+        });
+        expect(updateModelResponse).toMatchObject({
+            data: {
+                updateContentModel: {
+                    data: {
+                        modelId: "testContentModel",
+                        settings: {
+                            steps: [initialSteps[0]]
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+        expect(updateModelResponse.data.updateContentModel.data.settings.steps).toHaveLength(1);
     });
 });

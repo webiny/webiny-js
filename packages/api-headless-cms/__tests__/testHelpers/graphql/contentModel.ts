@@ -1,4 +1,4 @@
-import type { CmsModel, CmsModelField } from "~/types";
+import type { CmsModel, CmsModelCreateSettingsInput, CmsModelField } from "~/types";
 
 const DATA_FIELD = /* GraphQL*/ `
     {
@@ -111,6 +111,7 @@ export interface CreateContentModelMutationVariables {
         titleFieldId?: string;
         defaultFields?: boolean;
         icon?: string;
+        settings?: CmsModelCreateSettingsInput;
     };
 }
 export interface CreateContentModelFromMutationVariables {

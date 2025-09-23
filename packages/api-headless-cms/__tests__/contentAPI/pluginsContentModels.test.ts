@@ -276,6 +276,7 @@ describe("content model plugins", () => {
             data: {
                 getContentModel: {
                     data: {
+                        settings: null,
                         createdBy: null,
                         createdOn: null,
                         description: "",
@@ -370,6 +371,7 @@ describe("content model plugins", () => {
                 listContentModels: {
                     data: [
                         {
+                            settings: null,
                             createdBy: null,
                             createdOn: null,
                             description: "",
