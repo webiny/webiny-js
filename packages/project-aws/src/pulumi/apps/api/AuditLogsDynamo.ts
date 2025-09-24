@@ -22,7 +22,15 @@ export const AuditLogsDynamo = createAppModule({
                     { name: "GSI4_PK", type: "S" },
                     { name: "GSI4_SK", type: "N" },
                     { name: "GSI5_PK", type: "S" },
-                    { name: "GSI5_SK", type: "N" }
+                    { name: "GSI5_SK", type: "N" },
+                    { name: "GSI6_PK", type: "S" },
+                    { name: "GSI6_SK", type: "N" },
+                    { name: "GSI7_PK", type: "S" },
+                    { name: "GSI7_SK", type: "N" },
+                    { name: "GSI8_PK", type: "S" },
+                    { name: "GSI8_SK", type: "N" },
+                    { name: "GSI9_PK", type: "S" },
+                    { name: "GSI9_SK", type: "N" }
                 ],
                 billingMode: "PAY_PER_REQUEST",
                 hashKey: "PK",
@@ -32,31 +40,55 @@ export const AuditLogsDynamo = createAppModule({
                         name: "GSI1",
                         hashKey: "GSI1_PK",
                         rangeKey: "GSI1_SK",
-                        projectionType: "ALL"
+                        projectionType: "KEYS_ONLY"
                     },
                     {
                         name: "GSI2",
                         hashKey: "GSI2_PK",
                         rangeKey: "GSI2_SK",
-                        projectionType: "ALL"
+                        projectionType: "KEYS_ONLY"
                     },
                     {
                         name: "GSI3",
                         hashKey: "GSI3_PK",
                         rangeKey: "GSI3_SK",
-                        projectionType: "ALL"
+                        projectionType: "KEYS_ONLY"
                     },
                     {
                         name: "GSI4",
                         hashKey: "GSI4_PK",
                         rangeKey: "GSI4_SK",
-                        projectionType: "ALL"
+                        projectionType: "KEYS_ONLY"
                     },
                     {
                         name: "GSI5",
                         hashKey: "GSI5_PK",
                         rangeKey: "GSI5_SK",
-                        projectionType: "ALL"
+                        projectionType: "KEYS_ONLY"
+                    },
+                    {
+                        name: "GSI6",
+                        hashKey: "GSI6_PK",
+                        rangeKey: "GSI6_SK",
+                        projectionType: "KEYS_ONLY"
+                    },
+                    {
+                        name: "GSI7",
+                        hashKey: "GSI7_PK",
+                        rangeKey: "GSI7_SK",
+                        projectionType: "KEYS_ONLY"
+                    },
+                    {
+                        name: "GSI8",
+                        hashKey: "GSI8_PK",
+                        rangeKey: "GSI8_SK",
+                        projectionType: "KEYS_ONLY"
+                    },
+                    {
+                        name: "GSI9",
+                        hashKey: "GSI9_PK",
+                        rangeKey: "GSI9_SK",
+                        projectionType: "KEYS_ONLY"
                     }
                 ],
                 ttl: {
