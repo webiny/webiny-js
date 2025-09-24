@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import styled from "@emotion/styled";
-
 import { ReactComponent as FilterIcon } from "@webiny/icons/filter_list.svg";
 import { ReactComponent as CloseFilterIcon } from "@webiny/icons/filter_list_off.svg";
 import { IconButton } from "@webiny/ui/Button/index.js";

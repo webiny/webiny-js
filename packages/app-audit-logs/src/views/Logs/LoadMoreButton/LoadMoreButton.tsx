@@ -1,9 +1,7 @@
 import type { ReactElement } from "react";
 import React from "react";
-
-import { i18n } from "@webiny/app/i18n/index.js";
+import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary } from "@webiny/ui/Button/index.js";
-
 import { Container } from "./styled.js";
 
 const t = i18n.ns("app-audit-logs/views/logs/load-more-button");

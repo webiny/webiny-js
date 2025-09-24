@@ -1,11 +1,11 @@
 import React, { Fragment, useCallback, useMemo } from "react";
-import { Grid, Cell } from "@webiny/ui/Grid/index.js";
+import { Cell, Grid } from "@webiny/ui/Grid/index.js";
 import { Select } from "@webiny/ui/Select/index.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import {
     CannotUseAaclAlert,
-    PermissionInfo,
-    gridWithPaddingClass
+    gridWithPaddingClass,
+    PermissionInfo
 } from "@webiny/app-admin/components/Permissions/index.js";
 import { Form } from "@webiny/form";
 import { useSecurity } from "@webiny/app-security";

@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { Cell, Grid } from "@webiny/ui/Grid/index.js";
-
 import { ButtonFilters } from "~/views/Logs/Header/ButtonFilters/index.js";
 import { Text } from "~/components/Text.js";
 

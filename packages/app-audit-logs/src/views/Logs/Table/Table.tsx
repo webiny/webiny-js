@@ -1,5 +1,5 @@
 import React, { forwardRef, useMemo } from "react";
-import { format, addMinutes } from "date-fns";
+import { addMinutes, format } from "date-fns";
 
 import { ReactComponent as PreviewIcon } from "@webiny/icons/info.svg";
 import type { Columns, OnSortingChange, Sorting } from "@webiny/ui/DataTable/index.js";
@@ -10,14 +10,13 @@ import { Tooltip } from "@webiny/ui/Tooltip/index.js";
 import { Text } from "~/components/Text.js";
 import {
     ActionWrapper,
+    appColumn,
+    previewColumn,
     TextGray,
     TimezoneText,
-    wideColumn,
-    appColumn,
-    previewColumn
+    wideColumn
 } from "./styled.js";
-import type { ActionType } from "~/types.js";
-import type { IAuditLog } from "~/types.js";
+import type { ActionType, IAuditLog } from "~/types.js";
 
 interface ActionProps {
     label: string;

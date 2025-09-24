@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback } from "react";
 import type { FiltersOnSubmit } from "@webiny/app-admin";
 import { Filters as BaseFilters } from "@webiny/app-admin";
 import { useAuditLogsListConfig } from "~/config/list/index.js";
@@ -12,22 +12,21 @@ interface FiltersProps {
 export const Filters = ({ showingFilters, setWhere }: FiltersProps) => {
     const { browser } = useAuditLogsListConfig();
 
-    const applyFilters: FiltersOnSubmit = data => {
-        if (!Object.keys(data).length) {
-            return;
-        }
+    const applyFilters: FiltersOnSubmit = useCallback(
+        data => {
+            if (!Object.keys(data).length) {
+                return;
+            }
 
-        const convertedFilters = browser.filtersToWhere.reduce(
-            (data, converter) => converter(data),
-            data
-        );
+            const convertedFilters = browser.filtersToWhere.reduce(
+                (data, converter) => converter(data),
+                data
+            );
 
-        setWhere(convertedFilters);
-    };
+            setWhere(convertedFilters);
+        },
+        [browser.filtersToWhere]
+    );
 
-    const filters = useMemo(() => {
-        return browser.filters.filter(filter => filter.name !== "initiator");
-    }, [browser]);
-
-    return <BaseFilters filters={filters} show={showingFilters} onChange={applyFilters} />;
+    return <BaseFilters filters={browser.filters} show={showingFilters} onChange={applyFilters} />;
 };

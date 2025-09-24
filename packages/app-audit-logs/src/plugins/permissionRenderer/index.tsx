@@ -1,11 +1,9 @@
 import React, { useEffect } from "react";
 import { ReactComponent as PermissionsIcon } from "@webiny/icons/manage_search.svg";
-
 import { i18n } from "@webiny/app/i18n/index.js";
 import { plugins } from "@webiny/plugins";
 import { Accordion } from "@webiny/admin-ui";
 import type { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types.js";
-
 import { AuditLogsPermissions as AuditLogsPermissionsComponent } from "./AuditLogsPermissions.js";
 
 const t = i18n.ns("app-audit-logs/plugins/permissionRenderer");

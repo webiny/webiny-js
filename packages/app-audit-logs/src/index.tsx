@@ -4,7 +4,8 @@ import { AdminConfig, Layout, useWcp } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-security";
 import { LogsModule } from "~/views/Logs/LogsModule.js";
 import { AuditLogsPermissions } from "~/plugins/permissionRenderer/index.js";
-import AuditLogsView from "~/views/Logs/Logs.js";
+import { LogsView } from "~/views/Logs/LogsView.js";
+import { AuditLogsListWithConfig } from "~/config/list/index.js";
 
 const { Menu, Route } = AdminConfig;
 
@@ -35,7 +36,9 @@ export const AuditLogs = () => {
                         path={"/audit-logs"}
                         element={
                             <Layout title={"Audit Logs - Logs"}>
-                                <AuditLogsView />
+                                <AuditLogsListWithConfig>
+                                    <LogsView />
+                                </AuditLogsListWithConfig>
                             </Layout>
                         }
                     />

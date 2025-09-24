@@ -12,10 +12,10 @@ const getValidFilterValue = (value: string): string | undefined => {
     return value;
 };
 
-export const FilterByInitiator = () => {
+export const FilterByCreatedBy = () => {
     const { data: listUsers } = useQuery(LIST_USERS);
     const bind = useBind({
-        name: "data.initiator",
+        name: "createdBy",
         beforeChange(value, cb) {
             cb(getValidFilterValue(value));
         }

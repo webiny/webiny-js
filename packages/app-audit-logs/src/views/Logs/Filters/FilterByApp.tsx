@@ -1,8 +1,8 @@
 import React from "react";
-
 import { useBind, useForm } from "@webiny/form";
 import { Select } from "@webiny/ui/Select/index.js";
 import { apps as auditLogsApps } from "@webiny/common-audit-logs";
+import type { IFilterFormData } from "~/views/Logs/Filters/types.js";
 
 const getValidFilterValue = (value: string): string | undefined => {
     if (value === "all" || value === "") {
@@ -12,12 +12,12 @@ const getValidFilterValue = (value: string): string | undefined => {
 };
 
 export const FilterByApp = () => {
-    const { setValue } = useForm();
+    const { setValue } = useForm<IFilterFormData>();
     const bind = useBind({
-        name: "data.app",
+        name: "app",
         beforeChange(value, cb) {
-            setValue("data.entity", undefined);
-            setValue("data.action", undefined);
+            setValue("entity", undefined);
+            setValue("action", undefined);
             cb(getValidFilterValue(value));
         }
     });

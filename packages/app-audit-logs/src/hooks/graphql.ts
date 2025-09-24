@@ -2,13 +2,13 @@ import gql from "graphql-tag";
 import type { IAuditLogRaw, IAuditLogsError, IAuditLogsMeta } from "~/types.js";
 
 export interface IListAuditLogsVariablesWhere {
-    app: string;
-    createdBy: string;
-    action: string;
-    entryId: string;
-    version: number;
-    createdOn_gte: Date;
-    createdOn_lte: Date;
+    app?: string;
+    action?: string;
+    createdBy?: string;
+    entity?: string;
+    entityId?: string;
+    createdOn_gte?: Date;
+    createdOn_lte?: Date;
 }
 
 export interface IListAuditLogsVariables {
