@@ -15261,7 +15261,6 @@ __metadata:
     "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
     "@webiny/common-audit-logs": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
@@ -15274,8 +15273,8 @@ __metadata:
     "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
+    graphql: "npm:^16.11.0"
     typescript: "npm:5.9.2"
-    vitest: "npm:^3.2.4"
     zod: "npm:^3.25.76"
   languageName: unknown
   linkType: soft
@@ -16570,14 +16569,16 @@ __metadata:
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
     "@webiny/common-audit-logs": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/react-composition": "npm:0.0.0"
     "@webiny/react-properties": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
-    date-fns: "npm:^2.30.0"
+    "@webiny/utils": "npm:0.0.0"
+    date-fns: "npm:^2.22.1"
     emotion: "npm:10.0.27"
     execa: "npm:^5.1.1"
     graphql-tag: "npm:^2.12.6"
@@ -22318,7 +22319,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.30.0":
+"date-fns@npm:^2.22.1, date-fns@npm:^2.30.0":
   version: 2.30.0
   resolution: "date-fns@npm:2.30.0"
   dependencies:

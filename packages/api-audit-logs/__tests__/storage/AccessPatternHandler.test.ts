@@ -1,6 +1,7 @@
+import { describe, expect, it } from "vitest";
 import { AccessPatternHandler } from "~/storage/AccessPatternHandler.js";
 import { AppAccessPattern } from "~/storage/accessPatterns/AppAccessPattern.js";
-import { AppAndActionAccessPattern } from "~/storage/accessPatterns/AppAndActionAccessPattern.js";
+import { AppEntityActionCreatedByAccessPattern } from "~/storage/accessPatterns/AppEntityActionCreatedByAccessPattern.js";
 
 describe("AccessPatternHandler", () => {
     it("should throw an error if no patterns are provided", async () => {
@@ -40,7 +41,7 @@ describe("AccessPatternHandler", () => {
                     entity: {} as any,
                     index: "GSI1"
                 }),
-                new AppAndActionAccessPattern({
+                new AppEntityActionCreatedByAccessPattern({
                     entity: {} as any,
                     index: "GSI2"
                 })
@@ -62,6 +63,7 @@ describe("AccessPatternHandler", () => {
                     })
                 ]
             });
+            // @ts-expect-error
             await handler.handle({
                 createdBy: "123",
                 limit: 20,

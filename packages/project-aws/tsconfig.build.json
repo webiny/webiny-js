@@ -47,7 +47,6 @@
     { "path": "../handler-db/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../migrations/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
     { "path": "../pulumi/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },

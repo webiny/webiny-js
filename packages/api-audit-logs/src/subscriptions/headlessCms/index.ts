@@ -1,5 +1,5 @@
-import { onModelAfterCreateHook, onModelAfterDeleteHook, onModelAfterUpdateHook } from "./models.js";
-import { onGroupAfterCreateHook, onGroupAfterDeleteHook, onGroupAfterUpdateHook } from "./groups.js";
+import { onModelAfterCreateHook, onModelAfterDeleteHook, onModelAfterUpdateHook } from "./models";
+import { onGroupAfterCreateHook, onGroupAfterDeleteHook, onGroupAfterUpdateHook } from "./groups";
 import {
     onEntryAfterCreateHook,
     onEntryAfterUpdateHook,
@@ -9,8 +9,8 @@ import {
     onEntryRevisionAfterCreateHook,
     onEntryRevisionAfterDeleteHook,
     onEntryAfterRestoreFromTrashHook
-} from "./entries.js";
-import type { AuditLogsContext } from "~/types.js";
+} from "./entries";
+import type { AuditLogsContext } from "~/types";
 
 export const createHeadlessCmsHooks = (context: AuditLogsContext) => {
     // groups

@@ -1,8 +1,8 @@
 import WebinyError from "@webiny/error";
-import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import { isSearchModelEntry } from "./utils/isSearchModelEntry.js";
-import type { AuditLogsContext } from "~/types.js";
+import { AUDIT } from "~/config";
+import { getAuditConfig } from "~/utils/getAuditConfig";
+import { isSearchModelEntry } from "./utils/isSearchModelEntry";
+import type { AuditLogsContext } from "~/types";
 
 export const onEntryAfterCreateHook = (context: AuditLogsContext) => {
     context.cms.onEntryAfterCreate.subscribe(async ({ model, entry }) => {

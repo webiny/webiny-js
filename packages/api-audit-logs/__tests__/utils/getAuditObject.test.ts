@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { getAuditObject } from "~/utils/getAuditObject";
 import { apps as auditLogsApps } from "@webiny/common-audit-logs";
 

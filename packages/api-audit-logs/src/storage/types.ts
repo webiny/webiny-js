@@ -42,3 +42,8 @@ export interface IStorageItem {
     data: IStorageAuditLog;
     expiresAt: number;
 }
+
+export interface IIndexStorageItem {
+    PK: string;
+    SK: string;
+}

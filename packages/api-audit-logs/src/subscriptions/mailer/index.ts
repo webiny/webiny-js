@@ -1,6 +1,6 @@
-import { onSettingsAfterUpdateHook } from "./settings.js";
+import { onSettingsAfterUpdateHook } from "./settings";
 
-import type { AuditLogsContext } from "~/types.js";
+import type { AuditLogsContext } from "~/types";
 
 export const createMailerHooks = (context: AuditLogsContext) => {
     onSettingsAfterUpdateHook(context);

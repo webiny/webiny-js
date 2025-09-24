@@ -9,6 +9,9 @@ import merge from "lodash/merge.js";
 export default async options => {
     const start = new Date();
 
+    if (!options.cwd) {
+        options.cwd = "";
+    }
     const { cwd = "" } = options;
     options.logs !== false && console.log("Deleting existing build files...");
     rimraf.sync(join(cwd, "./dist"));

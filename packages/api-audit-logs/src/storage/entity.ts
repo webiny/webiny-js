@@ -90,6 +90,38 @@ export const createEntity = (params: ICreateEntityParams): ICreateEntityResult =
                 type: "number",
                 required: true
             },
+            GSI6_PK: {
+                type: "string",
+                required: true
+            },
+            GSI6_SK: {
+                type: "number",
+                required: true
+            },
+            GSI7_PK: {
+                type: "string",
+                required: true
+            },
+            GSI7_SK: {
+                type: "number",
+                required: true
+            },
+            GSI8_PK: {
+                type: "string",
+                required: true
+            },
+            GSI8_SK: {
+                type: "number",
+                required: true
+            },
+            GSI9_PK: {
+                type: "string",
+                required: true
+            },
+            GSI9_SK: {
+                type: "number",
+                required: true
+            },
             data: {
                 type: "map",
                 required: true

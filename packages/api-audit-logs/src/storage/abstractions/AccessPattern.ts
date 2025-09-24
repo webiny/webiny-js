@@ -12,8 +12,17 @@ export interface IAccessPatternListResult {
     lastEvaluatedKey?: GenericRecord;
 }
 
+export type IAccessPatternHandlesKeys = keyof IStorageListParams;
+
+export interface IAccessPatternHandles {
+    shouldInclude?: IAccessPatternHandlesKeys[];
+    mustInclude: IAccessPatternHandlesKeys[];
+    mustNotInclude: IAccessPatternHandlesKeys[];
+}
+
 export interface IAccessPattern<T> {
     index: string | undefined;
+    handles(): IAccessPatternHandles;
     canHandle(params: IStorageListParams): boolean;
     list(params: T): Promise<IAccessPatternListResult>;
     createKeys(item: IAuditLog): IAccessPatternCreateKeysResult;

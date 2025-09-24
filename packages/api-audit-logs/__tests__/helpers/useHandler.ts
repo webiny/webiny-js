@@ -12,11 +12,11 @@ export const useHandler = (params?: CreateHandlerCoreParams) => {
             return context;
         })
     ]);
-
     const handler = createRawHandler<any, AuditLogsContext>({
         plugins,
         debug: process.env.DEBUG === "true"
     });
+
     return {
         plugins,
         tenant: core.tenant,

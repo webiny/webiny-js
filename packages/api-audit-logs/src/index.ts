@@ -1,6 +1,6 @@
 import { ContextPlugin } from "@webiny/api";
-import { createSubscriptionHooks } from "~/subscriptions/index.js";
-import type { AuditLogsContext } from "~/types.js";
+import { createSubscriptionHooks } from "~/subscriptions";
+import type { AuditLogsContext } from "~/types";
 import { createAcoAuditLogsContext } from "~/context/index.js";
 import { createGraphQLSchema } from "~/graphql/schema.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
@@ -31,5 +31,5 @@ export const createAuditLogs = (params?: ICreateAuditLogsParams) => {
         })
     ];
 };
-export * from "~/config.js";
+export * from "~/config";
 export * from "~/context/lifecycle.js";

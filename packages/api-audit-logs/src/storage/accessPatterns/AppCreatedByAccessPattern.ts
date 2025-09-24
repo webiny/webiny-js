@@ -5,24 +5,25 @@ import type {
     IAccessPatternHandles,
     IAccessPatternListResult
 } from "~/storage/abstractions/AccessPattern.js";
-import type { IStorageListByCreatedByParams } from "~/storage/abstractions/Storage.js";
+import type { IStorageListByAppCreatedByParams } from "~/storage/abstractions/Storage.js";
 
 interface ICreatePartitionKeyParams {
     tenant: string;
+    app: string;
     createdBy: string;
 }
 
 const createPartitionKey = (params: ICreatePartitionKeyParams) => {
-    return `T#${params.tenant}#AUDIT_LOG#CREATEDBY#${params.createdBy}`;
+    return `T#${params.tenant}#AUDIT_LOG#APP#${params.app}#CREATEDBY#${params.createdBy}`;
 };
 
-export class CreatedByAccessPattern<
-    T extends IStorageListByCreatedByParams = IStorageListByCreatedByParams
+export class AppCreatedByAccessPattern<
+    T extends IStorageListByAppCreatedByParams = IStorageListByAppCreatedByParams
 > extends BaseAccessPattern<T> {
     public override handles(): IAccessPatternHandles {
         return {
-            mustInclude: ["createdBy"],
-            mustNotInclude: ["app", "action", "entityId", "entity"]
+            mustInclude: ["app", "createdBy"],
+            mustNotInclude: ["action", "entityId", "entity"]
         };
     }
 

@@ -2,9 +2,9 @@ import {
     onFolderAfterCreateHook,
     onFolderAfterUpdateHook,
     onFolderAfterDeleteHook
-} from "./folders.js";
+} from "./folders";
 
-import type { AuditLogsContext } from "~/types.js";
+import type { AuditLogsContext } from "~/types";
 
 export const createAcoHooks = (context: AuditLogsContext) => {
     if (!context.aco) {

@@ -38,7 +38,7 @@ const createOrMergeAuditLog = async (params: CreateOrMergeAuditLogParams): Promi
 
     const results = await context.auditLogs.listAuditLogs({
         app: payload.app,
-        entryId: payload.entityId,
+        entityId: payload.entityId,
         limit: 1,
         createdOn_gte: createAuditLogDelayDate(delay),
         sort: "DESC"
@@ -83,6 +83,9 @@ export const getAuditConfig = (audit: AuditAction) => {
         if (!context.auditLogs) {
             console.log("No AuditLogs defined.");
             return null;
+        } else if (!audit) {
+            console.log(`No Audit Action defined!`);
+            return null;
         }
 
         const payload: AuditLogPayload = {
@@ -97,22 +100,29 @@ export const getAuditConfig = (audit: AuditAction) => {
 
         const delay = audit.action.newEntryDelay || 0;
 
-        // Check if there is delay on audit log creation for this action.
-        if (delay > 0) {
-            try {
-                return await createOrMergeAuditLog({
-                    context,
-                    payload,
-                    delay
-                });
-            } catch {
-                // Don't care at this point!
-            }
+        if (!context.security.getIdentity()?.id) {
+            console.log("No identity - skipping audit log creation.");
             return null;
         }
-        return await createAuditLog({
-            context,
-            payload
+
+        return await context.security.withoutAuthorization(async () => {
+            // Check if there is delay on audit log creation for this action.
+            if (delay > 0) {
+                try {
+                    return await createOrMergeAuditLog({
+                        context,
+                        payload,
+                        delay
+                    });
+                } catch {
+                    // Don't care at this point!
+                }
+                return null;
+            }
+            return await createAuditLog({
+                context,
+                payload
+            });
         });
     };
 };

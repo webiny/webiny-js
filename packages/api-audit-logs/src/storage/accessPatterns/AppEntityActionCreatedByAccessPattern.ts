@@ -1,28 +1,31 @@
 import type { IAuditLog, IIndexStorageItem } from "~/storage/types.js";
+import type { IStorageListByAppEntityActionCreatedByParams } from "~/storage/abstractions/Storage.js";
 import { BaseAccessPattern } from "~/storage/accessPatterns/BaseAccessPattern.js";
 import type {
     IAccessPatternCreateKeysResult,
     IAccessPatternHandles,
     IAccessPatternListResult
 } from "~/storage/abstractions/AccessPattern.js";
-import type { IStorageListByCreatedByParams } from "~/storage/abstractions/Storage.js";
 
 interface ICreatePartitionKeyParams {
     tenant: string;
+    app: string;
+    action: string;
+    entity: string;
     createdBy: string;
 }
 
 const createPartitionKey = (params: ICreatePartitionKeyParams) => {
-    return `T#${params.tenant}#AUDIT_LOG#CREATEDBY#${params.createdBy}`;
+    return `T#${params.tenant}#AUDIT_LOG#APP#${params.app}#ENTITY#${params.entity}#ACTION#${params.action}#CREATEDBY#${params.createdBy}`;
 };
 
-export class CreatedByAccessPattern<
-    T extends IStorageListByCreatedByParams = IStorageListByCreatedByParams
+export class AppEntityActionCreatedByAccessPattern<
+    T extends IStorageListByAppEntityActionCreatedByParams = IStorageListByAppEntityActionCreatedByParams
 > extends BaseAccessPattern<T> {
     public override handles(): IAccessPatternHandles {
         return {
-            mustInclude: ["createdBy"],
-            mustNotInclude: ["app", "action", "entityId", "entity"]
+            mustInclude: ["app", "action", "entity", "createdBy"],
+            mustNotInclude: ["entityId"]
         };
     }
 

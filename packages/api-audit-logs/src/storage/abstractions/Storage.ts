@@ -47,8 +47,7 @@ export interface IStorageListDefaultParams {
     app?: never;
     createdBy?: never;
     action?: never;
-    entryId?: never;
-    version?: never;
+    entityId?: never;
 }
 
 // GSI1_PK / GSI1_SK
@@ -61,82 +60,73 @@ export interface IStorageListByAppParams {
     createdOn_lte?: Date;
     limit: number | undefined;
 
+    entity?: never;
     createdBy?: never;
     action?: never;
-    entryId?: never;
-    version?: never;
+    entityId?: never;
 }
 
 // GSI2_PK / GSI2_SK
-export interface IStorageListByAppAndActionParams {
-    tenant: string;
-    app: string;
-    action: string;
-    after?: string;
-    sort?: "ASC" | "DESC";
-    createdOn_gte?: Date;
-    createdOn_lte?: Date;
-    limit: number | undefined;
-
-    createdBy?: never;
-    entryId?: never;
-    version?: never;
+export interface IStorageListByAppCreatedByParams
+    extends Omit<IStorageListByAppParams, "createdBy"> {
+    createdBy: string;
 }
 
 // GSI3_PK / GSI3_SK
-export interface IStorageListByCreatedByParams {
-    tenant: string;
-    createdBy: string;
-    after?: string;
-    sort?: "ASC" | "DESC";
-    createdOn_gte?: Date;
-    createdOn_lte?: Date;
-    limit: number | undefined;
-
-    app?: never;
-    action?: never;
-    entryId?: never;
-    version?: never;
+export interface IStorageListByAppEntityParams extends Omit<IStorageListByAppParams, "entity"> {
+    entity: string;
 }
-
 // GSI4_PK / GSI4_SK
-export interface IStorageListByCreatedOnParams {
-    tenant: string;
-    createdOn_gte: Date;
-    createdOn_lte: Date;
-    after?: string;
-    sort?: "ASC" | "DESC";
-    limit: number | undefined;
-
-    app?: never;
-    createdBy?: never;
-    action?: never;
-    entryId?: never;
-    version?: never;
+export interface IStorageListByEntityIdParams extends Omit<IStorageListByAppParams, "entityId"> {
+    entityId: string;
+}
+// GSI5_PK / GSI5_SK
+export interface IStorageListByActionParams extends Omit<IStorageListByAppParams, "action"> {
+    action: string;
 }
 
-// GSI5_PK / GSI5_SK
-export interface IStorageListByAppAndTargetParams {
-    tenant: string;
-    app: string;
-    entryId: string;
-    after?: string;
-    sort?: "ASC" | "DESC";
-    version?: never;
+// GSI6_PK / GSI6_SK
+export interface IStorageListByAppEntityActionCreatedByParams
+    extends Omit<IStorageListByAppParams, "action" | "entity" | "createdBy"> {
+    createdBy: string;
+    entity: string;
+    action: string;
+}
+// GSI7_PK / GSI7_SK
+export interface IStorageListByAppEntityActionParams
+    extends Omit<IStorageListByAppParams, "entity" | "action"> {
+    entity: string;
+    action: string;
+}
+// GSI8_PK / GSI8_SK
+export interface IStorageListByAppEntityCreatedByParams
+    extends Omit<IStorageListByAppParams, "createdBy" | "entity"> {
+    createdBy: string;
+    entity: string;
+}
+
+// GSI9_PK / GSI9_SK
+export interface IStorageListByCreatedByParams extends Omit<IStorageListByAppParams, "createdBy"> {
+    createdBy: string;
+}
+
+// GSI10_PK / GSI10_SK
+export interface IStorageListByCreatedOnParams extends IStorageListByAppParams {
     createdOn_gte?: Date;
     createdOn_lte?: Date;
-    limit: number | undefined;
-
-    createdBy?: never;
-    action?: never;
 }
 
 export type IStorageListParams =
     | IStorageListByAppParams
+    | IStorageListByAppCreatedByParams
+    | IStorageListByAppEntityParams
+    | IStorageListByEntityIdParams
+    | IStorageListByActionParams
+    | IStorageListByAppEntityActionCreatedByParams
+    | IStorageListByAppEntityActionParams
+    | IStorageListByAppEntityCreatedByParams
     | IStorageListByCreatedByParams
-    | IStorageListByCreatedOnParams
-    | IStorageListByAppAndActionParams
-    | IStorageListByAppAndTargetParams;
+    | IStorageListByCreatedOnParams;
 
 export interface IStorageListSuccessResultMeta {
     after?: string;

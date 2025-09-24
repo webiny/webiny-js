@@ -2,12 +2,12 @@ import {
     onApiKeyAfterCreateHook,
     onApiKeyAfterUpdateHook,
     onApiKeyAfterDeleteHook
-} from "./apiKeys.js";
-import { onRoleAfterCreateHook, onRoleAfterUpdateHook, onRoleAfterDeleteHook } from "./roles.js";
-import { onTeamAfterCreateHook, onTeamAfterUpdateHook, onTeamAfterDeleteHook } from "./teams.js";
-import { onUserAfterCreateHook, onUserAfterUpdateHook, onUserAfterDeleteHook } from "./users.js";
+} from "./apiKeys";
+import { onRoleAfterCreateHook, onRoleAfterUpdateHook, onRoleAfterDeleteHook } from "./roles";
+import { onTeamAfterCreateHook, onTeamAfterUpdateHook, onTeamAfterDeleteHook } from "./teams";
+import { onUserAfterCreateHook, onUserAfterUpdateHook, onUserAfterDeleteHook } from "./users";
 
-import type { AuditLogsContext } from "~/types.js";
+import type { AuditLogsContext } from "~/types";
 
 export const createSecurityHooks = (context: AuditLogsContext) => {
     onApiKeyAfterCreateHook(context);

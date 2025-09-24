@@ -3,6 +3,23 @@ import type { AuditLogsContext } from "~/types.js";
 import { getValidationSchema, listValidationSchema } from "./validation.js";
 import { createZodError } from "@webiny/utils";
 
+interface IListAuditLogsWhere {
+    app?: string;
+    action?: string;
+    createdBy?: string;
+    entity?: string;
+    entityId?: string;
+    createdOn_gte?: Date;
+    createdOn_lte?: Date;
+}
+
+interface IListAuditLogsArgs {
+    where?: IListAuditLogsWhere;
+    sort?: "ASC" | "DESC";
+    limit?: number;
+    after?: string;
+}
+
 export const createGraphQLSchema = () => {
     return new GraphQLSchemaPlugin<AuditLogsContext>({
         isApplicable: context => {
@@ -42,7 +59,7 @@ export const createGraphQLSchema = () => {
             
             type AuditLogListResponse {
                 data: [AuditLog!]
-                meta: AuditLogListMeta!
+                meta: AuditLogListMeta
                 error: AuditLogError
             }
             
@@ -60,8 +77,8 @@ export const createGraphQLSchema = () => {
                 app: String
                 action: String
                 createdBy: String
-                entryId: String
-                version: Number
+                entity: String
+                entityId: String
                 createdOn_gte: DateTime
                 createdOn_lte: DateTime
             }
@@ -69,7 +86,7 @@ export const createGraphQLSchema = () => {
             type AuditLogsQuery {
                 getAuditLog(id: ID!): AuditLogGetResponse
                 listAuditLogs(
-                    where: ListAuditLogsWhere!
+                    where: ListAuditLogsWhere
                     sort: AuditLogsSort
                     limit: Number
                     after: String
@@ -102,13 +119,16 @@ export const createGraphQLSchema = () => {
                         return result;
                     });
                 },
-                async listAuditLogs(_, args, context) {
+                async listAuditLogs(_, args: IListAuditLogsArgs, context) {
                     return resolveList(async () => {
                         const validation = await listValidationSchema.safeParseAsync(args);
                         if (!validation.success) {
                             throw createZodError(validation.error);
                         }
-                        const result = await context.auditLogs.listAuditLogs(validation.data);
+                        const result = await context.auditLogs.listAuditLogs({
+                            ...validation.data,
+                            ...validation.data.where
+                        });
                         if (result.error) {
                             throw result.error;
                         }

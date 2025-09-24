@@ -1,55 +1,46 @@
-import type { EntityQueryOptions } from "@webiny/db-dynamodb/toolbox.js";
-import type { IAuditLog, IStorageItem } from "~/storage/types.js";
-import type {
-    IStorageListByCreatedOnParams,
-    IStorageListParams
-} from "~/storage/abstractions/Storage.js";
-import { createStartKey } from "~/storage/startKey.js";
-import { queryPerPage } from "@webiny/db-dynamodb";
+import type { IAuditLog, IIndexStorageItem } from "~/storage/types.js";
 import { BaseAccessPattern } from "~/storage/accessPatterns/BaseAccessPattern.js";
 import type {
     IAccessPatternCreateKeysResult,
+    IAccessPatternHandles,
     IAccessPatternListResult
 } from "~/storage/abstractions/AccessPattern.js";
+import type { IStorageListByCreatedOnParams } from "~/storage/abstractions/Storage.js";
+
+interface ICreatePartitionKeyParams {
+    tenant: string;
+}
+
+const createPartitionKey = (params: ICreatePartitionKeyParams) => {
+    return `T#${params.tenant}#AUDIT_LOG#CREATED_ON`;
+};
 
 export class CreatedOnAccessPattern<
     T extends IStorageListByCreatedOnParams = IStorageListByCreatedOnParams
 > extends BaseAccessPattern<T> {
-    public canHandle(params: IStorageListParams): boolean {
-        if (params.app) {
-            return false;
-        } else if (params.createdBy) {
-            return false;
-        } else if (params.action) {
-            return false;
-        } else if (params.entryId) {
-            return false;
-        } else if (params.version) {
-            return false;
-        } else if (!params.createdOn_lte && !params.createdOn_gte) {
-            return false;
-        }
-        return true;
+    public override handles(): IAccessPatternHandles {
+        return {
+            shouldInclude: ["createdOn_gte", "createdOn_lte"],
+            mustInclude: [],
+            mustNotInclude: ["app", "createdBy", "action", "entityId", "entity"]
+        };
     }
 
     public async list(params: T): Promise<IAccessPatternListResult> {
-        const options: EntityQueryOptions = {
-            limit: 25,
-            startKey: createStartKey(params),
-            index: this.index,
-            reverse: params.sort === "DESC"
-        };
-        return await queryPerPage<IStorageItem>({
-            entity: this.entity,
-            partitionKey: `T#${params.tenant}#AUDIT_LOG#TIME`,
+        const options = this.createOptions(params);
+
+        const result = await this.query<IIndexStorageItem>({
+            partitionKey: createPartitionKey(params),
             options
         });
+        return this.populateResult(result);
     }
 
     public createKeys(item: IAuditLog): IAccessPatternCreateKeysResult {
         const time = item.createdOn.getTime();
+
         return {
-            partitionKey: `T#${item.tenant}#AUDIT_LOG#TIME`,
+            partitionKey: createPartitionKey(item),
             sortKey: time
         };
     }
