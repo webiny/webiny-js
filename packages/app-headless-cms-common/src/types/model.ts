@@ -77,6 +77,29 @@ export interface CmsGroup {
     plugin?: boolean;
 }
 
+export interface IWorkflowStepNotification {
+    id: string;
+}
+
+export interface IWorkflowStepTeam {
+    id: string;
+}
+
+export interface IWorkflowStep {
+    id: string;
+    title: string;
+    color: string;
+    description?: string;
+    teams: IWorkflowStepTeam[];
+    notifications?: IWorkflowStepNotification[];
+}
+
+export interface IWorkflow {
+    id: string;
+    name: string;
+    steps: IWorkflowStep[];
+}
+
 export interface CmsModel {
     id: string;
     group: Pick<CmsGroup, "id" | "name">;
@@ -93,9 +116,6 @@ export interface CmsModel {
     titleFieldId: string | null;
     descriptionFieldId: string | null;
     imageFieldId: string | null;
-    settings: {
-        [key: string]: any;
-    };
     status: string;
     savedOn: string;
     meta: any;
@@ -109,4 +129,8 @@ export interface CmsModel {
      * Is model currently being deleted?
      */
     isBeingDeleted?: boolean;
+    settings: {
+        workflows?: IWorkflow[];
+        [key: string]: any;
+    };
 }

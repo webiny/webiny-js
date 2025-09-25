@@ -5,6 +5,7 @@ import defaultBar from "./editor/defaultBar/index.js";
 import formSettings from "./editor/formSettings/index.js";
 import permissionRenderer from "./permissionRenderer/index.js";
 import getObjectId from "./getObjectId.js";
+import { publishingWorkflowsEditorFormSettingsPlugin } from "./editor/publishingWorkflows/index.js";
 
 export default () => [
     install,
@@ -12,6 +13,7 @@ export default () => [
     contentFormTransformers(),
     defaultBar,
     formSettings,
+    publishingWorkflowsEditorFormSettingsPlugin,
     permissionRenderer,
     getObjectId
 ];

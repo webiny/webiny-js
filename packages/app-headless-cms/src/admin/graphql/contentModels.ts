@@ -68,6 +68,24 @@ export const MODEL_FIELDS = `
     }
     plugin
     isBeingDeleted
+    settings {
+        workflows {
+            id
+            name
+            steps {
+                id
+                title
+                color
+                description
+                teams {
+                    id
+                }
+                notifications {
+                    id
+                }
+            }
+        }
+    }
 `;
 /**
  * ############################

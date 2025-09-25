@@ -7,6 +7,8 @@ export type GenericRecordKey = string | number | symbol;
 
 export type GenericRecord<K extends GenericRecordKey = GenericRecordKey, V = any> = Record<K, V>;
 
+export type NonEmptyArray<T> = [T, ...T[]];
+
 export type UploadOptions = {
     apolloClient: ApolloClient<object>;
     onProgress?: (params: { sent: number; total: number; percentage: number }) => void;
