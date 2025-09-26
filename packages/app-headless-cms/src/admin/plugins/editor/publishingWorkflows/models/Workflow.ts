@@ -14,10 +14,13 @@ export class Workflow implements IWorkflowModel {
         this.id = data.id;
         this.name = data.name;
         this.steps = observable.array<IWorkflowStepModel>();
+        
+        this.steps.replace(
+            data.steps.map(step => {
+                return new WorkflowStep(step, this.steps);
+            })
+        );
 
-        for (const step of data.steps) {
-            this.addStep(step);
-        }
         makeAutoObservable(this);
     }
 

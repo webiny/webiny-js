@@ -13,7 +13,7 @@ export class WorkflowsRepository implements IWorkflowsRepository {
 
     public constructor(params: IWorkflowsRepositoryParams) {
         this.workflows = observable.array(params.workflows.map(w => new Workflow(w)));
-        makeAutoObservable(this, {}, { autoBind: true });
+        makeAutoObservable(this);
     }
     
     public find(id: string): IWorkflowModel | null {
