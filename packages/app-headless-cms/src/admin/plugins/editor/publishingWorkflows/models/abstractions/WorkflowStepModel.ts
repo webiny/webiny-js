@@ -5,4 +5,9 @@ export interface IWorkflowStepModel extends IWorkflowStep {
     removeTeam(id: string): void;
     addNotification(notification: IWorkflowStepNotification): void;
     removeNotification(id: string): void;
+    updateStep(input: Partial<IWorkflowStep>): void;
+    moveUp(): void;
+    canMoveUp(): boolean;
+    moveDown(): void;
+    canMoveDown(): boolean;
 }

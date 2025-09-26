@@ -1,21 +1,19 @@
 import React, { useCallback, useMemo } from "react";
-import type { IWorkflowInput } from "./types.js";
 import type {
-    IWorkflow,
     IWorkflowStep,
     IWorkflowStepTeam
 } from "@webiny/app-headless-cms-common/types/index.js";
 import { NewStep } from "./Step/NewStep.js";
-import { generateAlphaNumericId } from "@webiny/utils/generateId.js";
 import { Accordion } from "@webiny/admin-ui";
 import type { NonEmptyArray } from "@webiny/app/types.js";
 import type { IInactiveStep } from "./Step/InactiveStep.js";
 import { InactiveStep } from "./Step/InactiveStep.js";
 import { Step } from "./Step/Step.js";
+import { observer } from "mobx-react-lite";
+import type { IWorkflowModel } from "~/admin/plugins/editor/publishingWorkflows/models/abstractions/WorkflowModel.js";
 
 export interface IPublishingWorkflowProps {
-    workflow: IWorkflow | null;
-    setWorkflow: (data: IWorkflowInput) => void;
+    workflow: IWorkflowModel;
 }
 
 const draftStep: IInactiveStep = {
@@ -31,105 +29,41 @@ const publishedStep: IInactiveStep = {
     description: "The final state for any publish content."
 };
 
-export const PublishingWorkflow = (props: IPublishingWorkflowProps) => {
-    const { workflow, setWorkflow } = props;
+export const PublishingWorkflow = observer((props: IPublishingWorkflowProps) => {
+    const { workflow } = props;
 
     const addWorkflowStep = useCallback(
         (input: IWorkflowStep) => {
-            const id = workflow?.id || generateAlphaNumericId(10);
-            const name = workflow?.name || "";
-            const steps: IWorkflowStep[] = Array.from(workflow?.steps || []);
-            steps.push(input);
-            setWorkflow({
-                id,
-                name,
-                steps
-            });
+            workflow.addStep(input);
         },
         [workflow]
     );
 
-    const steps = useMemo((): IWorkflowStep[] => {
-        return (
-            workflow?.steps || [
-                {
-                    id: "id",
-                    title: "Testing",
-                    teams: [] as unknown as NonEmptyArray<IWorkflowStepTeam>,
-                    color: "blue",
-                    description: "A description",
-                    notifications: []
-                }
-            ]
-        );
-    }, [workflow?.steps]);
+    const steps = useMemo(() => {
+        if (workflow.steps.length > 0) {
+            return workflow.steps;
+        }
+        workflow.addStep({
+            id: "id",
+            title: "Testing",
+            teams: [] as unknown as NonEmptyArray<IWorkflowStepTeam>,
+            color: "blue",
+            description: "A description",
+            notifications: []
+        });
+        return workflow.steps;
+    }, [workflow.steps]);
 
     const onSave = useCallback(
         (input: IWorkflowStep) => {
-            if (!workflow?.steps) {
-                console.error("Workflow steps not defined. Please check the data.");
+            const step = workflow.findStep(input.id);
+            if (!step) {
+                console.error("Step not found. Please check the data.");
                 return;
             }
-            const steps = Array.from(workflow.steps || []);
-            const step = steps.findIndex(s => s.id === input.id);
-            if (step >= 0) {
-                steps[step] = input;
-                setWorkflow({
-                    ...workflow,
-                    steps
-                });
-                return;
-            }
-            setWorkflow({
-                ...workflow,
-                steps: [input]
-            });
+            step.updateStep(input);
         },
-        [steps, setWorkflow]
-    );
-
-    const moveUp = useCallback(
-        (input: Pick<IWorkflowStep, "id">) => {
-            if (!workflow?.steps) {
-                console.error("Workflow steps not defined. Please check the data.");
-                return;
-            }
-            const steps = Array.from(workflow.steps || []);
-            const index = steps.findIndex(s => s.id === input.id);
-            if (index < 1) {
-                return;
-            }
-            const step = steps[index];
-            steps[index] = steps[index - 1];
-            steps[index - 1] = step;
-            setWorkflow({
-                ...workflow,
-                steps
-            });
-        },
-        [steps, setWorkflow]
-    );
-
-    const moveDown = useCallback(
-        (input: Pick<IWorkflowStep, "id">) => {
-            if (!workflow?.steps) {
-                console.error("Workflow steps not defined. Please check the data.");
-                return;
-            }
-            const steps = Array.from(workflow.steps || []);
-            const index = steps.findIndex(s => s.id === input.id);
-            if (index === -1 || index === steps.length - 1) {
-                return;
-            }
-            const step = steps[index];
-            steps[index] = steps[index + 1];
-            steps[index + 1] = step;
-            setWorkflow({
-                ...workflow,
-                steps
-            });
-        },
-        [steps, setWorkflow]
+        [workflow]
     );
 
     return (
@@ -137,15 +71,7 @@ export const PublishingWorkflow = (props: IPublishingWorkflowProps) => {
             <InactiveStep step={draftStep} />
             <Accordion>
                 {steps.map(step => {
-                    return (
-                        <Step
-                            key={`step-${step.id}`}
-                            step={step}
-                            onSave={onSave}
-                            moveUp={moveUp}
-                            moveDown={moveDown}
-                        />
-                    );
+                    return <Step key={`step-${step.id}`} step={step} onSave={onSave} />;
                 })}
             </Accordion>
             <NewStep onAdd={addWorkflowStep} />
@@ -153,4 +79,4 @@ export const PublishingWorkflow = (props: IPublishingWorkflowProps) => {
             <InactiveStep step={publishedStep} />
         </>
     );
-};
+});

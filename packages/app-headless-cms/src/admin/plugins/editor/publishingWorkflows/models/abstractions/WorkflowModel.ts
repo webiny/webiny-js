@@ -2,7 +2,8 @@ import { IWorkflow, IWorkflowStep } from "~/types.js";
 import { IWorkflowStepModel } from "./WorkflowStepModel.js";
 
 export interface IWorkflowModel extends IWorkflow {
+    steps: IWorkflowStepModel[];
     addStep(step: IWorkflowStep): void;
-    removeStep(stepId: string): void;
-    findStep(stepId: string): IWorkflowStepModel | undefined;
+    removeStep(id: string): void;
+    findStep(id: string): IWorkflowStepModel | undefined;
 }

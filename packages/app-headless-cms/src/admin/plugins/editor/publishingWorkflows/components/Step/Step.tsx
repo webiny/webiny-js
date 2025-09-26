@@ -7,27 +7,26 @@ import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as TrashIcon } from "@webiny/icons/delete.svg";
+import { IWorkflowStepModel } from "../../models/abstractions/WorkflowStepModel.js";
 
 export interface IStepProps {
-    step: IWorkflowStep;
+    step: IWorkflowStepModel;
     onSave: (input: IWorkflowStep) => void;
-    moveUp: ((input: Pick<IWorkflowStep, "id">) => void) | null;
-    moveDown: ((input: Pick<IWorkflowStep, "id">) => void) | null;
 }
 
-export const Step = ({ step, onSave, moveUp: up, moveDown: down }: IStepProps) => {
+export const Step = ({ step, onSave }: IStepProps) => {
     const moveUp = useCallback(() => {
-        if (!up) {
+        if (!step.canMoveDown()) {
             return;
         }
-        up(step);
-    }, [step, up]);
+        step.moveUp();
+    }, [step]);
     const moveDown = useCallback(() => {
-        if (!down) {
+        if (!step.canMoveDown()) {
             return;
         }
-        down(step);
-    }, [step, down]);
+        step.moveDown();
+    }, [step]);
 
     return (
         <Accordion.Item
@@ -37,10 +36,14 @@ export const Step = ({ step, onSave, moveUp: up, moveDown: down }: IStepProps) =
             icon={<Color color={step.color} />}
             actions={
                 <>
-                    <Accordion.Item.Action onClick={moveUp} disabled={!up} icon={<ArrowUp />} />
+                    <Accordion.Item.Action
+                        onClick={moveUp}
+                        disabled={!step.canMoveUp()}
+                        icon={<ArrowUp />}
+                    />
                     <Accordion.Item.Action
                         onClick={moveDown}
-                        disabled={!down}
+                        disabled={!step.canMoveDown()}
                         icon={<ArrowDown />}
                     />
                     <Accordion.Item.Action.Separator />

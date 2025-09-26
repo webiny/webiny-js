@@ -15,9 +15,17 @@ export class WorkflowsRepository implements IWorkflowsRepository {
         this.workflows = observable.array(params.workflows.map(w => new Workflow(w)));
         makeAutoObservable(this, {}, { autoBind: true });
     }
-
+    
     public find(id: string): IWorkflowModel | null {
         return this.workflows.find(w => w.id === id) || null;
+    }
+
+    public findOne(id: string): IWorkflowModel {
+        const workflow = this.find(id);
+        if (!workflow) {
+            throw new Error(`Workflow with id "${id}" was not found!`);
+        }
+        return workflow;
     }
 
     public save(input: IWorkflow): void {
@@ -42,7 +50,7 @@ export class WorkflowsRepository implements IWorkflowsRepository {
         });
     }
 
-    public list(): IWorkflow[] {
+    public list(): IWorkflowModel[] {
         // Return the observable array directly if consumer expects reactivity
         return this.workflows;
     }
