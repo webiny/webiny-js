@@ -1,11 +1,11 @@
 import type { IObservableArray } from "mobx";
 import { makeAutoObservable, observable, runInAction } from "mobx";
-import { WorkflowStep } from "./WorkflowStep.js";
+import { WorkflowStepModel } from "./WorkflowStepModel.js";
 import type { IWorkflowModel } from "./abstractions/WorkflowModel.js";
-import { IWorkflowStepModel } from "./abstractions/WorkflowStepModel.js";
-import { IWorkflow, type IWorkflowStep } from "~/types.js";
+import type { IWorkflowStepModel } from "./abstractions/WorkflowStepModel.js";
+import type { IWorkflow, IWorkflowStep } from "~/types.js";
 
-export class Workflow implements IWorkflowModel {
+export class WorkflowModel implements IWorkflowModel {
     public id: string;
     public name: string;
     public steps: IObservableArray<IWorkflowStepModel>;
@@ -17,7 +17,7 @@ export class Workflow implements IWorkflowModel {
         
         this.steps.replace(
             data.steps.map(step => {
-                return new WorkflowStep(step, this.steps);
+                return new WorkflowStepModel(step, this.steps);
             })
         );
 
@@ -26,7 +26,7 @@ export class Workflow implements IWorkflowModel {
 
     public addStep(step: IWorkflowStep) {
         runInAction(() => {
-            this.steps.push(new WorkflowStep(step, this.steps));
+            this.steps.push(new WorkflowStepModel(step, this.steps));
         });
     }
 

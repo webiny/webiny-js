@@ -75,7 +75,6 @@ export const PublishingWorkflow = observer((props: IPublishingWorkflowProps) => 
                 })}
             </Accordion>
             <NewStep onAdd={addWorkflowStep} />
-
             <InactiveStep step={publishedStep} />
         </>
     );

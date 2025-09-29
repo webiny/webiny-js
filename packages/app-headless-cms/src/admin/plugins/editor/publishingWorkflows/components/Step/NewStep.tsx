@@ -4,6 +4,7 @@ import { StepForm } from "./StepForm.js";
 import type { IWorkflowStepInput } from "../types.js";
 import { generateAlphaNumericId } from "@webiny/utils/generateId.js";
 import type { IWorkflowStep } from "@webiny/app-headless-cms-common/types/index.js";
+import { Button, Grid } from "@webiny/admin-ui";
 
 export interface IAddNewStepProps {
     onAdd: (step: IWorkflowStep) => void;
@@ -12,30 +13,40 @@ export interface IAddNewStepProps {
 const createWorkflowStep = (): IWorkflowStepInput => {
     return {
         id: generateAlphaNumericId(),
-        title: "New Step",
+        title: "",
         notifications: [],
         description: "",
-        color: "white",
+        color: "#E28743",
         teams: []
     };
 };
 
 export const NewStep = (props: IAddNewStepProps) => {
     const { onAdd } = props;
-    const [adding, setAdding] = useState<IWorkflowStepInput | null>(null);
+    const [step, setStep] = useState<IWorkflowStepInput | null>(null);
 
     const onClick = useCallback(() => {
-        setAdding(createWorkflowStep());
-    }, [setAdding]);
+        setStep(createWorkflowStep());
+    }, [setStep]);
 
-    if (adding) {
-        return <StepForm onSave={onAdd} step={adding} />;
+    if (step) {
+        return <StepForm onSave={onAdd} step={step} />;
     }
 
     return (
-        <div onClick={onClick}>
-            <Add />
-            Add new custom step
-        </div>
+        <Grid>
+            <Grid.Column span={12} className={"wby-text-center wby-p-md"}>
+                <Button
+                    variant={"ghost"}
+                    onClick={onClick}
+                    text={
+                        <>
+                            <Add />
+                            Add new custom step
+                        </>
+                    }
+                />
+            </Grid.Column>
+        </Grid>
     );
 };

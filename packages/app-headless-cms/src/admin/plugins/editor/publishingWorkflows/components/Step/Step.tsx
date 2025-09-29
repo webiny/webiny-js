@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Accordion } from "@webiny/admin-ui";
 import { Color } from "./Color.js";
 import { StepForm } from "./StepForm.js";
@@ -8,15 +8,16 @@ import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as TrashIcon } from "@webiny/icons/delete.svg";
 import { IWorkflowStepModel } from "../../models/abstractions/WorkflowStepModel.js";
+import { observer } from "mobx-react-lite";
 
 export interface IStepProps {
     step: IWorkflowStepModel;
     onSave: (input: IWorkflowStep) => void;
 }
 
-export const Step = ({ step, onSave }: IStepProps) => {
+export const Step = observer(({ step, onSave }: IStepProps) => {
     const moveUp = useCallback(() => {
-        if (!step.canMoveDown()) {
+        if (!step.canMoveUp()) {
             return;
         }
         step.moveUp();
@@ -26,6 +27,17 @@ export const Step = ({ step, onSave }: IStepProps) => {
             return;
         }
         step.moveDown();
+    }, [step]);
+
+    const stepData = useMemo((): IWorkflowStep => {
+        return {
+            id: step.id,
+            title: step.title,
+            description: step.description,
+            color: step.color,
+            teams: step.teams,
+            notifications: step.notifications
+        };
     }, [step]);
 
     return (
@@ -52,7 +64,7 @@ export const Step = ({ step, onSave }: IStepProps) => {
                 </>
             }
         >
-            <StepForm onSave={onSave} step={step} />;
+            <StepForm onSave={onSave} step={stepData} />
         </Accordion.Item>
     );
-};
+});

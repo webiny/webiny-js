@@ -18,6 +18,7 @@ import type { CmsModel, CmsModelField } from "./model.js";
 import type { CmsIdentity } from "~/types/shared.js";
 import type { SourceType } from "dnd-core";
 import type { IconPickerIconDto } from "@webiny/admin-ui";
+import { GenericRecord } from "@webiny/app/types.js";
 
 export type DragObjectWithType = {
     type: SourceType;
@@ -448,16 +449,16 @@ export interface FieldLayoutPosition {
     index: number | null;
 }
 
-export interface CmsEditorFormSettingsPlugin extends Plugin {
+export interface CmsEditorFormSettingsPlugin<T = GenericRecord> extends Plugin {
     type: "cms-editor-form-settings";
     title: string;
     description: string;
     icon: React.ReactElement;
-    render(props: { Bind: BaseBindComponent; form: FormAPI; formData: any }): React.ReactNode;
+    render(props: { Bind: BaseBindComponent; form: FormAPI<T>; formData: T }): React.ReactNode;
     renderHeaderActions?(props: {
         Bind: BaseBindComponent;
-        form: FormAPI;
-        formData: any;
+        form: FormAPI<T>;
+        formData: T;
     }): React.ReactNode;
 }
 

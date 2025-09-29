@@ -1,21 +1,15 @@
 import type { IWorkflowStep, IWorkflowStepNotification, IWorkflowStepTeam } from "~/types.js";
 import type { IObservableArray } from "mobx";
-import { makeAutoObservable, observable, runInAction } from "mobx";
-import { WorkflowStepTeam } from "./WorkflowStepTeam.js";
-import { WorkflowStepNotification } from "./WorkflowStepNotification.js";
-import type { IWorkflowStepTeamModel } from "./abstractions/WorkflowStepTeamModel.js";
-import type { IWorkflowStepNotificationModel } from "./abstractions/WorkflowStepNotificationModel.js";
-import {
-    IWorkflowStepModel
-} from "~/admin/plugins/editor/publishingWorkflows/models/abstractions/WorkflowStepModel.js";
+import { makeAutoObservable, runInAction } from "mobx";
+import type { IWorkflowStepModel } from "./abstractions/WorkflowStepModel.js";
 
-export class WorkflowStep {
+export class WorkflowStepModel {
     public id: string;
     public title: string;
     public color: string;
     public description?: string;
-    public teams: IObservableArray<IWorkflowStepTeamModel>;
-    public notifications: IObservableArray<IWorkflowStepNotificationModel>;
+    public teams: IWorkflowStepTeam[];
+    public notifications: IWorkflowStepNotification[];
 
     private readonly parentSteps: IObservableArray<IWorkflowStepModel>;
 
@@ -25,10 +19,8 @@ export class WorkflowStep {
         this.color = data.color;
         this.description = data.description;
         this.parentSteps = parentSteps;
-        this.teams = observable.array(data.teams.map(t => new WorkflowStepTeam(t)));
-        this.notifications = observable.array(
-            (data.notifications || []).map(n => new WorkflowStepNotification(n))
-        );
+        this.teams = data.teams;
+        this.notifications = data.notifications || [];
 
         makeAutoObservable(this);
     }
@@ -45,24 +37,22 @@ export class WorkflowStep {
                 this.description = input.description;
             }
             if (input.teams !== undefined) {
-                this.teams.replace(input.teams.map(t => new WorkflowStepTeam(t)));
+                this.teams = input.teams;
             }
             if (input.notifications !== undefined) {
-                this.notifications.replace(
-                    input.notifications.map(n => new WorkflowStepNotification(n))
-                );
+                this.notifications = input.notifications;
             }
         });
     }
 
     public addTeam(team: IWorkflowStepTeam) {
         runInAction(() => {
-            this.teams.push(new WorkflowStepTeam(team));
+            this.teams.push(team);
         });
     }
 
-    public removeTeam(teamId: string) {
-        const index = this.teams.findIndex(t => t.id === teamId);
+    public removeTeam(id: string) {
+        const index = this.teams.findIndex(t => t.id === id);
         if (index === -1) {
             return;
         }
@@ -73,7 +63,7 @@ export class WorkflowStep {
 
     public addNotification(notification: IWorkflowStepNotification) {
         runInAction(() => {
-            this.notifications.push(new WorkflowStepNotification(notification));
+            this.notifications.push(notification);
         });
     }
 
