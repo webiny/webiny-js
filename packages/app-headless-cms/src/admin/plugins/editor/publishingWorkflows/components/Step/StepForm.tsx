@@ -6,6 +6,7 @@ import { Button, Grid } from "@webiny/admin-ui";
 import { StepFormTitle } from "./form/StepFormTitle.js";
 import { StepFormColor } from "./form/StepFormColor.js";
 import { StepFormDescription } from "./form/StepFormDescription.js";
+import { StepFormNotifications } from "./form/StepFormNotifications.js";
 
 export interface IStepFormProps {
     step: IWorkflowStep | null;
@@ -50,7 +51,7 @@ export const StepForm = ({ step, onSave, onCancel }: IStepFormProps) => {
                             <StepFormDescription />
                         </Grid.Column>
                         {/*<StepFormTeams />*/}
-                        {/*<StepFormNotifications />*/}
+                        <StepFormNotifications />
                     </Grid>
                 );
             }}
