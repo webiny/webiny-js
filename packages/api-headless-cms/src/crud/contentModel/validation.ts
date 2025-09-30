@@ -273,7 +273,11 @@ const modelSettingsValidation = zod
             })
     })
     .passthrough()
-    .optional();
+    .nullish()
+    .optional()
+    .transform(value => {
+        return value || undefined;
+    });
 
 export const createModelCreateValidation = () => {
     return zod.object({

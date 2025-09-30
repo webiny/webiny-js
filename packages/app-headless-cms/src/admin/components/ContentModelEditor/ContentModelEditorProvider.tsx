@@ -184,7 +184,6 @@ export const ContentModelEditorProvider = ({
      */
     const setData = async (setter: (value: any) => any, saveModel = false): Promise<void> => {
         const data = setter(state.data);
-        console.log({ data });
         const existingHash = await hashModel(state.data);
         const newHash = await hashModel(data);
         if (existingHash === newHash) {

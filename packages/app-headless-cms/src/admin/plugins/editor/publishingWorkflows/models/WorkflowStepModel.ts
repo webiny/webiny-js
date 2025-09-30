@@ -1,9 +1,9 @@
 import type { IWorkflowStep, IWorkflowStepNotification, IWorkflowStepTeam } from "~/types.js";
 import type { IObservableArray } from "mobx";
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, runInAction, toJS } from "mobx";
 import type { IWorkflowStepModel } from "./abstractions/WorkflowStepModel.js";
 
-export class WorkflowStepModel {
+export class WorkflowStepModel implements IWorkflowStepModel {
     public id: string;
     public title: string;
     public color: string;
@@ -18,11 +18,22 @@ export class WorkflowStepModel {
         this.title = data.title;
         this.color = data.color;
         this.description = data.description;
-        this.parentSteps = parentSteps;
         this.teams = data.teams;
         this.notifications = data.notifications || [];
+        this.parentSteps = parentSteps;
 
         makeAutoObservable(this);
+    }
+
+    public toJS(): IWorkflowStep {
+        return toJS({
+            id: this.id,
+            title: this.title,
+            color: this.color,
+            description: this.description,
+            teams: this.teams,
+            notifications: this.notifications
+        });
     }
 
     public updateStep(input: Partial<IWorkflowStep>) {

@@ -1,7 +1,7 @@
-import type { IWorkflowsRepository } from "./abstractions/WorkflowsRepiository.js";
+import type { IWorkflowsRepository } from "./abstractions/index.js";
 import type { IWorkflowModel } from "../models/index.js";
 import type { IWorkflow } from "~/types.js";
-import { makeAutoObservable, observable, runInAction, toJS } from "mobx";
+import { makeAutoObservable, observable, runInAction } from "mobx";
 import { WorkflowModel } from "../models/WorkflowModel.js";
 import type { IWorkflowsGateway } from "../gateways/index.js";
 
@@ -35,15 +35,15 @@ export class WorkflowsRepository implements IWorkflowsRepository {
 
     public save(input: IWorkflow): void {
         runInAction(() => {
-            const index = this.workflows.findIndex(w => w.id === input.id);
-            if (index >= 0) {
-                // Replace with a new Workflow model to keep it reactive
-                this.workflows[index] = new WorkflowModel(input);
-                return;
+            const workflow = this.workflows.find(w => w.id === input.id);
+            if (!workflow) {
+                this.workflows.push(new WorkflowModel(input));
+            } else {
+                workflow.id = input.id;
+                workflow.name = input.name;
+                workflow.setSteps(input.steps);
             }
-            this.workflows.push(new WorkflowModel(input));
-
-            this.gateway.storeWorkflows(toJS(this.workflows));
+            this.gateway.storeWorkflows(this.workflows);
         });
     }
 
@@ -55,7 +55,7 @@ export class WorkflowsRepository implements IWorkflowsRepository {
             }
             this.workflows.splice(index, 1);
 
-            this.gateway.storeWorkflows(toJS(this.workflows));
+            this.gateway.storeWorkflows(this.workflows);
         });
     }
 

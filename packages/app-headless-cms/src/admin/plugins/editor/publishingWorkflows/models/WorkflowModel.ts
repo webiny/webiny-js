@@ -1,5 +1,5 @@
 import type { IObservableArray } from "mobx";
-import { makeAutoObservable, observable, runInAction } from "mobx";
+import { makeAutoObservable, observable, runInAction, toJS } from "mobx";
 import { WorkflowStepModel } from "./WorkflowStepModel.js";
 import type { IWorkflowModel } from "./abstractions/WorkflowModel.js";
 import type { IWorkflowStepModel } from "./abstractions/WorkflowStepModel.js";
@@ -14,7 +14,7 @@ export class WorkflowModel implements IWorkflowModel {
         this.id = data.id;
         this.name = data.name;
         this.steps = observable.array<IWorkflowStepModel>();
-        
+
         this.steps.replace(
             data.steps.map(step => {
                 return new WorkflowStepModel(step, this.steps);
@@ -24,10 +24,38 @@ export class WorkflowModel implements IWorkflowModel {
         makeAutoObservable(this);
     }
 
+    public toJS(): IWorkflow {
+        return toJS({
+            id: this.id,
+            name: this.name,
+            steps: this.steps.map(step => {
+                return step.toJS();
+            })
+        });
+    }
+
+    public setSteps(steps: IWorkflowStep[]) {
+        runInAction(() => {
+            this.steps.replace(
+                steps.map(step => {
+                    return new WorkflowStepModel(step, this.steps);
+                })
+            );
+        });
+    }
+
     public addStep(step: IWorkflowStep) {
         runInAction(() => {
             this.steps.push(new WorkflowStepModel(step, this.steps));
         });
+    }
+
+    public updateStep(step: IWorkflowStep) {
+        const existingStep = this.findStep(step.id);
+        if (!existingStep) {
+            return;
+        }
+        existingStep.updateStep(step);
     }
 
     public removeStep(id: string) {

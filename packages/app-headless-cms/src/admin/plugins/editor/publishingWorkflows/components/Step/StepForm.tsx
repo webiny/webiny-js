@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import type { IWorkflowStep } from "~/types.js";
 import type { IWorkflowStepInput } from "../types.js";
 import { Form } from "@webiny/form";
@@ -8,49 +8,37 @@ import { StepFormColor } from "./form/StepFormColor.js";
 import { StepFormDescription } from "./form/StepFormDescription.js";
 
 export interface IStepFormProps {
-    step: IWorkflowStepInput;
+    step: IWorkflowStep | null;
     onSave: (input: IWorkflowStep) => void;
+    onCancel: () => void;
 }
 
-export const StepForm = ({ step, onSave }: IStepFormProps) => {
-    /**
-     * We need to convert IWorkflowStep
-     */
-    const data = useMemo((): IWorkflowStep => {
-        return {
-            id: step.id,
-            title: step.title,
-            description: step.description,
-            color: step.color,
-            teams: step.teams,
-            notifications: step.notifications
-        };
-    }, [step]);
-
+export const StepForm = ({ step, onSave, onCancel }: IStepFormProps) => {
     const onSubmit = useCallback(
         (input: IWorkflowStepInput) => {
-            console.log({
-                input
+            onSave({
+                ...step,
+                ...input
             });
-
-            console.log({
-                step
-            });
-            // onSave({
-            //     ...step,
-            //     ...input
-            // });
         },
         [step, onSave]
     );
+    if (!step) {
+        return null;
+    }
     return (
-        <Form<IWorkflowStep> data={data} onSubmit={onSubmit}>
-            {({ submit }) => {
+        <Form<IWorkflowStep> data={step} onSubmit={onSubmit}>
+            {({ submit: onFormSubmit }) => {
                 return (
                     <Grid gap={"comfortable"}>
                         <Grid.Column span={12}>
-                            <Button text={"Cancel"} variant={"ghost"} size={"md"} />
-                            <Button text={"Save"} variant={"primary"} onClick={submit} />
+                            <Button
+                                text={"Cancel"}
+                                variant={"ghost"}
+                                size={"md"}
+                                onClick={onCancel}
+                            />
+                            <Button text={"Save"} variant={"primary"} onClick={onFormSubmit} />
                         </Grid.Column>
                         <Grid.Column span={10}>
                             <StepFormTitle />

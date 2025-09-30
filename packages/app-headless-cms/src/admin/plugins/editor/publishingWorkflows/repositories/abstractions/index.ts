@@ -1,1 +1,1 @@
-export type { IWorkflowsRepository } from "./WorkflowsRepiository.js";
+export type { IWorkflowsRepository } from "./WorkflowsRepository.js";
