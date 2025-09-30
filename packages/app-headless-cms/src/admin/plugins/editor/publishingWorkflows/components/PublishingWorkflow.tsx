@@ -28,9 +28,7 @@ const publishedStep: IInactiveStep = {
 export const PublishingWorkflow = observer((props: IPublishingWorkflowProps) => {
     const { presenter } = props;
 
-    const workflow = useMemo(() => {
-        return presenter.vm.getWorkflow();
-    }, [presenter]);
+    const workflow = presenter.vm.workflow;
 
     return (
         <>
@@ -41,13 +39,17 @@ export const PublishingWorkflow = observer((props: IPublishingWorkflowProps) => 
                         <Step
                             key={`step-${step.id}`}
                             step={step}
-                            onSave={presenter.vm.updateStep}
-                            onRemove={presenter.vm.removeStep}
+                            onSave={presenter.updateStep}
+                            onRemove={presenter.removeStep}
+                            onMoveUp={presenter.moveStepUp}
+                            canMoveDown={presenter.canMoveStepDown}
+                            onMoveDown={presenter.moveStepDown}
+                            canMoveUp={presenter.canMoveStepUp}
                         />
                     );
                 })}
             </Accordion>
-            <NewStep onAdd={presenter.vm.addStep} />
+            <NewStep onAdd={presenter.addStep} />
             <InactiveStep step={publishedStep} />
         </>
     );

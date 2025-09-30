@@ -8,16 +8,27 @@ import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
 import { ReactComponent as EditIcon } from "@webiny/icons/edit.svg";
 import { ReactComponent as TrashIcon } from "@webiny/icons/delete.svg";
 import { observer } from "mobx-react-lite";
-import type { IWorkflowStepModel } from "../../models/index.js";
 
 export interface IStepProps {
-    step: IWorkflowStepModel;
+    step: IWorkflowStep;
     onSave: (input: IWorkflowStep) => void;
     onRemove: (step: Pick<IWorkflowStep, "id">) => void;
+    onMoveUp: (step: Pick<IWorkflowStep, "id">) => void;
+    canMoveUp: (step: Pick<IWorkflowStep, "id">) => boolean;
+    onMoveDown: (step: Pick<IWorkflowStep, "id">) => void;
+    canMoveDown: (step: Pick<IWorkflowStep, "id">) => boolean;
 }
 
 export const Step = observer(
-    ({ step, onSave: initialOnSave, onRemove: initialOnRemove }: IStepProps) => {
+    ({
+        step,
+        onSave: initialOnSave,
+        onRemove: initialOnRemove,
+        onMoveUp,
+        canMoveUp,
+        onMoveDown,
+        canMoveDown
+    }: IStepProps) => {
         const [data, setData] = useState<IWorkflowStep | null>(null);
         const onEdit = useCallback(() => {
             setData(step);
@@ -39,6 +50,20 @@ export const Step = observer(
             initialOnRemove(step);
         }, [step]);
 
+        const moveUp = useCallback(() => {
+            if (canMoveUp(step) === false) {
+                return;
+            }
+            onMoveUp(step);
+        }, [onMoveUp, step]);
+
+        const moveDown = useCallback(() => {
+            if (canMoveDown(step) === false) {
+                return;
+            }
+            onMoveDown(step);
+        }, [onMoveDown, step]);
+
         return (
             <Accordion.Item
                 key={`step-${step.id}`}
@@ -50,13 +75,13 @@ export const Step = observer(
                 actions={
                     <>
                         <Accordion.Item.Action
-                            onClick={() => step.moveUp()}
-                            disabled={!step.canMoveUp()}
+                            onClick={moveUp}
+                            disabled={!canMoveUp(step)}
                             icon={<ArrowUp />}
                         />
                         <Accordion.Item.Action
-                            onClick={() => step.moveDown()}
-                            disabled={!step.canMoveDown()}
+                            onClick={moveDown}
+                            disabled={!canMoveDown(step)}
                             icon={<ArrowDown />}
                         />
                         <Accordion.Item.Action.Separator />

@@ -21,6 +21,7 @@ export class WorkflowsGateway implements IWorkflowsGateway {
         const workflows = input.map(workflow => {
             return workflow.toJS();
         });
+
         this.form.setValue("settings.workflows", workflows);
     }
 

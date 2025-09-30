@@ -1,7 +1,11 @@
 import type { IWorkflowsPresenter, IWorkflowsViewModel } from "./abstractions/index.js";
 import type { IWorkflowsRepository } from "../repositories/index.js";
 import { makeAutoObservable } from "mobx";
-import type { IWorkflowModel } from "~/admin/plugins/editor/publishingWorkflows/models/index.js";
+import type {
+    IWorkflowModel,
+    IWorkflowStepModel
+} from "~/admin/plugins/editor/publishingWorkflows/models/index.js";
+import type { IWorkflowStep } from "@webiny/app-headless-cms-common/types/index.js";
 
 export interface IWorkflowsPresenterParams {
     repository: IWorkflowsRepository;
@@ -13,30 +17,7 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
 
     get vm(): IWorkflowsViewModel {
         return {
-            updateWorkflow: workflow => {
-                this.repository.save(workflow);
-            },
-            setCurrentWorkflow: id => {
-                this.setCurrentWorkflow(id);
-            },
-            getWorkflow: () => {
-                return this.getCurrentWorkflow();
-            },
-            addStep: step => {
-                const workflow = this.getCurrentWorkflow();
-                workflow.addStep(step);
-                this.repository.save(workflow.toJS());
-            },
-            updateStep: step => {
-                const workflow = this.getCurrentWorkflow();
-                workflow.updateStep(step);
-                this.repository.save(workflow);
-            },
-            removeStep: ({ id }) => {
-                const workflow = this.getCurrentWorkflow();
-                workflow.removeStep(id);
-                this.repository.save(workflow);
-            }
+            workflow: this.current.toJS()
         };
     }
 
@@ -58,7 +39,78 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
         return this.current;
     }
 
-    private setCurrentWorkflow(id: string): void {
+    private _setCurrentWorkflow(id: string): void {
         this.current = this.repository.findOne(id);
     }
+
+    updateWorkflow = (workflow: IWorkflowModel): void => {
+        this.repository.save(workflow.toJS());
+    };
+
+    setCurrentWorkflow = (id: string): void => {
+        this._setCurrentWorkflow(id);
+    };
+
+    getWorkflow = () => {
+        return this.getCurrentWorkflow();
+    };
+
+    addStep = (step: IWorkflowStepModel): void => {
+        const workflow = this.getCurrentWorkflow();
+        workflow.addStep(step);
+        this.repository.save(workflow.toJS());
+    };
+
+    updateStep = (step: IWorkflowStep): void => {
+        const workflow = this.getCurrentWorkflow();
+        workflow.updateStep(step);
+        this.repository.save(workflow.toJS());
+    };
+
+    removeStep = ({ id }: Pick<IWorkflowStep, "id">): void => {
+        const workflow = this.getCurrentWorkflow();
+        workflow.removeStep(id);
+        this.repository.save(workflow.toJS());
+    };
+
+    canMoveStepUp = (step: Pick<IWorkflowStep, "id">): boolean => {
+        const workflow = this.getCurrentWorkflow();
+        const stepIndex = workflow.steps.findIndex(s => s.id === step.id);
+        return stepIndex > 0;
+    };
+
+    moveStepUp = (step: Pick<IWorkflowStep, "id">): void => {
+        const workflow = this.getCurrentWorkflow();
+        if (this.canMoveStepUp(step) === false) {
+            return;
+        }
+        const stepIndex = workflow.steps.findIndex(s => s.id === step.id);
+        const steps = [...workflow.steps];
+        const temp = steps[stepIndex - 1];
+        steps[stepIndex - 1] = steps[stepIndex];
+        steps[stepIndex] = temp;
+        workflow.steps.replace(steps);
+
+        this.repository.save(workflow.toJS());
+    };
+
+    canMoveStepDown = (step: Pick<IWorkflowStep, "id">): boolean => {
+        const workflow = this.getCurrentWorkflow();
+        const stepIndex = workflow.steps.findIndex(s => s.id === step.id);
+        return stepIndex < workflow.steps.length - 1;
+    };
+
+    moveStepDown = (step: Pick<IWorkflowStep, "id">): void => {
+        const workflow = this.getCurrentWorkflow();
+        if (this.canMoveStepDown(step) === false) {
+            return;
+        }
+        const stepIndex = workflow.steps.findIndex(s => s.id === step.id);
+        const steps = [...workflow.steps];
+        const temp = steps[stepIndex + 1];
+        steps[stepIndex + 1] = steps[stepIndex];
+        steps[stepIndex] = temp;
+        workflow.steps.replace(steps);
+        this.repository.save(workflow.toJS());
+    };
 }
