@@ -7,6 +7,7 @@ import { StepFormTitle } from "./form/StepFormTitle.js";
 import { StepFormColor } from "./form/StepFormColor.js";
 import { StepFormDescription } from "./form/StepFormDescription.js";
 import { StepFormNotifications } from "./form/StepFormNotifications.js";
+import { StepFormTeams } from "./form/StepFormTeams.js";
 
 export interface IStepFormProps {
     step: IWorkflowStep | null;
@@ -50,7 +51,7 @@ export const StepForm = ({ step, onSave, onCancel }: IStepFormProps) => {
                         <Grid.Column span={12}>
                             <StepFormDescription />
                         </Grid.Column>
-                        {/*<StepFormTeams />*/}
+                        <StepFormTeams />
                         <StepFormNotifications />
                     </Grid>
                 );
