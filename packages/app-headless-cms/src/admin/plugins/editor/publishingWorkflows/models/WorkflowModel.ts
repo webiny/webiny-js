@@ -17,7 +17,7 @@ export class WorkflowModel implements IWorkflowModel {
 
         this.steps.replace(
             data.steps.map(step => {
-                return new WorkflowStepModel(step, this.steps);
+                return new WorkflowStepModel(step);
             })
         );
 
@@ -38,7 +38,7 @@ export class WorkflowModel implements IWorkflowModel {
         runInAction(() => {
             this.steps.replace(
                 steps.map(step => {
-                    return new WorkflowStepModel(step, this.steps);
+                    return new WorkflowStepModel(step);
                 })
             );
         });
@@ -46,7 +46,7 @@ export class WorkflowModel implements IWorkflowModel {
 
     public addStep(step: IWorkflowStep) {
         runInAction(() => {
-            this.steps.push(new WorkflowStepModel(step, this.steps));
+            this.steps.push(new WorkflowStepModel(step));
         });
     }
 
