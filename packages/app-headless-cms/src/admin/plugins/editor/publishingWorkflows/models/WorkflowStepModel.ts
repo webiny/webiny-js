@@ -22,14 +22,7 @@ export class WorkflowStepModel implements IWorkflowStepModel {
     }
 
     public toJS(): IWorkflowStep {
-        return toJS({
-            id: this.id,
-            title: this.title,
-            color: this.color,
-            description: this.description,
-            teams: this.teams,
-            notifications: this.notifications
-        });
+        return toJS(this);
     }
 
     public updateStep(input: Partial<IWorkflowStep>) {

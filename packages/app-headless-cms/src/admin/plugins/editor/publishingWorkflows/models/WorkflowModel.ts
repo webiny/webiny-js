@@ -25,13 +25,7 @@ export class WorkflowModel implements IWorkflowModel {
     }
 
     public toJS(): IWorkflow {
-        return toJS({
-            id: this.id,
-            name: this.name,
-            steps: this.steps.map(step => {
-                return step.toJS();
-            })
-        });
+        return toJS(this);
     }
 
     public setSteps(steps: IWorkflowStep[]) {
