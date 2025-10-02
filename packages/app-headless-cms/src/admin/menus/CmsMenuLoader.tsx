@@ -1,6 +1,6 @@
 import React from "react";
 import { AdminConfig, useRouter } from "@webiny/app-admin";
-import { ReactComponent as HeadlessCmsIcon } from "~/admin/icons/devices_other-black-24px.svg";
+import { ReactComponent as HeadlessCmsIcon } from "@webiny/icons/web.svg";
 import { ReactComponent as HeadlessCmsContentIcon } from "@webiny/icons/wysiwyg.svg";
 import { usePermission } from "~/admin/hooks/usePermission.js";
 import { ContentGroupsMenuItems } from "./ContentGroupsMenuItems.js";
