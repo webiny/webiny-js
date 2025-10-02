@@ -58,7 +58,7 @@ const CmsMainMenu = () => (
         after="home"
         element={
             <Menu.Item
-                text="Headless CMS"
+                text="Content Modeling"
                 icon={<Menu.Link.Icon label="Headless CMS" element={<HeadlessCmsIcon />} />}
             />
         }
