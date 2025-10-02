@@ -1,34 +1,6 @@
 import type { CmsIdentity } from "./identity.js";
 import type { CmsModelField, CmsModelFieldInput, LockedField } from "./modelField.js";
 import type { CmsModelGroup } from "./modelGroup.js";
-import type { NonEmptyArray } from "@webiny/api/types.js";
-
-export interface CmsModelSettingsStepWorkflowNotification {
-    id: string;
-}
-
-export interface CmsModelSettingsWorkflowStepTeam {
-    id: string;
-}
-
-export interface CmsModelSettingsWorkflowStep {
-    id: string;
-    title: string;
-    color: string;
-    description?: string;
-    teams: NonEmptyArray<CmsModelSettingsWorkflowStepTeam>;
-    notifications?: CmsModelSettingsStepWorkflowNotification[];
-}
-
-export interface CmsModelSettingsWorkflow {
-    id: string;
-    name: string;
-    steps: NonEmptyArray<CmsModelSettingsWorkflowStep>;
-}
-
-export interface CmsModelSettings {
-    workflows?: CmsModelSettingsWorkflow[];
-}
 
 /**
  * Base CMS Model. Should not be exported and used outside of this package.
@@ -155,8 +127,6 @@ export interface CmsModel {
      * Is this model created via plugin?
      */
     isPlugin?: boolean;
-
-    settings?: CmsModelSettings;
 }
 
 export interface CmsModelAuthorization {
@@ -165,32 +135,6 @@ export interface CmsModelAuthorization {
     [key: string]: any;
 }
 
-export interface CmsModelCreateSettingsWorkflowStepTeamInput {
-    id: string;
-}
-
-export interface CmsModelCreateSettingsStepWorkflowNotificationInput {
-    id: string;
-}
-
-export interface CmsModelCreateSettingsWorkflowStepInput {
-    id: string;
-    title: string;
-    color: string;
-    description?: string;
-    teams: NonEmptyArray<CmsModelCreateSettingsWorkflowStepTeamInput>;
-    notifications?: CmsModelCreateSettingsStepWorkflowNotificationInput[];
-}
-
-export interface CmsModelCreateSettingsWorkflowInput {
-    id: string;
-    name: string;
-    steps: NonEmptyArray<CmsModelCreateSettingsWorkflowStepInput>;
-}
-
-export interface CmsModelCreateSettingsInput {
-    workflows?: CmsModelCreateSettingsWorkflowInput[];
-}
 /**
  * A GraphQL `params.data` parameter received when creating content model.
  *
@@ -247,7 +191,6 @@ export interface CmsModelCreateInput {
     titleFieldId?: string | null;
     descriptionFieldId?: string | null;
     imageFieldId?: string | null;
-    settings?: CmsModelCreateSettingsInput;
 }
 
 /**

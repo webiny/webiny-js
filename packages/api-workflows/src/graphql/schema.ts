@@ -1,0 +1,154 @@
+import { GraphQLSchemaPlugin, resolveList } from "@webiny/handler-graphql";
+import { listWorkflowsValidation } from "~/graphql/validation/listWorkflows.js";
+import { createZodError } from "@webiny/utils";
+import { getWorkflowValidation } from "~/graphql/validation/getWorkflow.js";
+import { createWorkflowValidation } from "~/graphql/validation/createWorkflow.js";
+import type { Context } from "~/types.js";
+
+export const createSchema = () => {
+    return new GraphQLSchemaPlugin<Context>({
+        typeDefs: /* GraphQL */ `
+            type WorkflowError {
+                code: String
+                message: String
+                data: JSON
+                stack: String
+            }
+
+            input WorkflowStepNotificationInput {
+                id: String!
+            }
+
+            input WorkflowStepTeamInput {
+                id: String!
+            }
+
+            input WorkflowStepInput {
+                id: String!
+                title: String!
+                color: String!
+                description: String
+                teams: [WorkflowStepTeamInput!]!
+                notifications: [WorkflowStepNotificationInput!]
+            }
+
+            input WorkflowInput {
+                id: String!
+                name: String!
+                steps: [WorkflowStepInput!]!
+            }
+
+            type WorkflowStepNotification {
+                id: String!
+            }
+
+            type WorkflowStepTeam {
+                id: String!
+            }
+
+            type WorkflowStep {
+                id: String!
+                title: String!
+                color: String!
+                description: String
+                teams: [WorkflowStepTeam!]!
+                notifications: [WorkflowStepNotification!]
+            }
+
+            type Workflow {
+                id: String!
+                name: String!
+                steps: [WorkflowStep!]!
+            }
+
+            type ListWorkflowsResponse {
+                data: [Workflow!]
+                error: WorkflowError
+            }
+
+            type GetWorkflowResponse {
+                data: Workflow
+                error: WorkflowError
+            }
+
+            type WorkflowsQuery {
+                listWorkflows(app: ID!): ListWorkflowsResponse!
+                getWorkflow(app: ID!, id: ID!): GetWorkflowResponse!
+            }
+
+            type CreateWorkflowResponse {
+                data: Workflow
+                error: WorkflowError
+            }
+
+            type UpdateWorkflowResponse {
+                data: Workflow
+                error: WorkflowError
+            }
+
+            type DeleteWorkflowResponse {
+                data: Boolean
+                error: WorkflowError
+            }
+
+            type WorkflowsMutation {
+                createWorkflow(app: ID!, data: WorkflowInput!): CreateWorkflowResponse!
+                updateWorkflow(app: ID!, id: ID!, data: WorkflowInput!): UpdateWorkflowResponse!
+                deleteWorkflow(app: ID!, id: ID!): DeleteWorkflowResponse!
+            }
+
+            extend type Query {
+                workflows: WorkflowsQuery
+            }
+
+            extend type Mutation {
+                workflows: WorkflowsMutation
+            }
+        `,
+        resolvers: {
+            Query: {
+                workflows: () => ({})
+            },
+            Mutation: {
+                workflows: () => ({})
+            },
+            WorkflowsQuery: {
+                getWorkflow: async (_, args, context) => {
+                    const result = await getWorkflowValidation.safeParseAsync(args);
+                    if (!result.success) {
+                        throw createZodError(result.error);
+                    }
+
+                    return context.workflows.getWorkflow(args);
+                },
+                listWorkflows: async (_, args, context) => {
+                    return resolveList(async () => {
+                        const result = await listWorkflowsValidation.safeParseAsync(args);
+                        if (!result.success) {
+                            throw createZodError(result.error);
+                        }
+                        const items = await context.workflows.listWorkflows(result.data);
+
+                        return {
+                            items,
+                            meta: {
+                                totalCount: items.length,
+                                hasMoreItems: false,
+                                cursor: null
+                            }
+                        };
+                    });
+                }
+            },
+            WorkflowsMutation: {
+                createWorkflow: async (_, args, context) => {
+                    const result = await createWorkflowValidation.safeParseAsync(args);
+                    if (!result.success) {
+                        throw createZodError(result.error);
+                    }
+                    return context.workflows.createWorkflow(result.data.app, result.data.data)
+                }
+            }
+        }
+    });
+};
