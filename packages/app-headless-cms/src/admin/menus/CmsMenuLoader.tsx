@@ -44,6 +44,63 @@ const CmsContentGroupsMenu = ({ canAccess }: ChildMenuProps) => {
     );
 };
 
+// Helper components for clarity and DRY
+
+/**
+ * Renders the main "Headless CMS" menu item in the admin sidebar.
+ * This is the top-level entry point for all CMS-related navigation.
+ * The menu item includes a custom icon and is positioned after the "home" menu.
+ */
+const CmsMainMenu = () => (
+    <Menu
+        name="headlessCMS"
+        after="home"
+        element={
+            <Menu.Item
+                text="Headless CMS"
+                icon={<Menu.Link.Icon label="Headless CMS" element={<HeadlessCmsIcon />} />}
+            />
+        }
+    />
+);
+
+/**
+ * Displays the "Content" submenu under the Headless CMS section.
+ * This menu item provides access to content management features within the CMS.
+ * It uses the same icon as the main CMS menu for visual consistency.
+ */
+const CmsContentMenu = () => (
+    <Menu
+        name="headlessCMSContent"
+        after="headlessCMS"
+        element={
+            <Menu.Item
+                text="Content"
+                icon={<Menu.Link.Icon label="Content" element={<HeadlessCmsIcon />} />}
+            />
+        }
+    />
+);
+
+/**
+ * Conditionally renders menu items for managing content models and content model groups.
+ * These menu entries are only shown if the user has the appropriate permissions.
+ * This component helps keep the menu structure dynamic and secure by hiding options
+ * that the user cannot access.
+ */
+const CmsCreateMenus = ({
+    canCreateContentModels,
+    canCreateContentModelGroups
+}: {
+    canCreateContentModels: boolean;
+    canCreateContentModelGroups: boolean;
+}) => (
+    <>
+        <CmsContentModelsMenu canAccess={canCreateContentModels} />
+        <CmsContentGroupsMenu canAccess={canCreateContentModelGroups} />
+    </>
+);
+
 const CmsMenuLoaderComponent = () => {
     const {
         canAccessManageEndpoint,
@@ -62,30 +119,13 @@ const CmsMenuLoaderComponent = () => {
 
     return (
         <>
-            <Menu
-                name={"headlessCMS"}
-                after={"home"}
-                element={
-                    <Menu.Item
-                        text={"Headless CMS"}
-                        icon={
-                            <Menu.Link.Icon label={"Headless CMS"} element={<HeadlessCmsIcon />} />
-                        }
-                    />
-                }
-            />
-
+            <CmsMainMenu />
+            <CmsContentMenu />
             {(canCreateContentModels || canCreateContentModelGroups) && (
-                <>
-                    <Menu
-                        name={"headlessCMS.contentModels"}
-                        parent={"headlessCMS"}
-                        element={<Menu.Group text={"Content Models"} />}
-                    />
-
-                    <CmsContentModelsMenu canAccess={canCreateContentModels} />
-                    <CmsContentGroupsMenu canAccess={canCreateContentModelGroups} />
-                </>
+                <CmsCreateMenus
+                    canCreateContentModels={canCreateContentModels}
+                    canCreateContentModelGroups={canCreateContentModelGroups}
+                />
             )}
             <ContentGroupsMenuItems />
         </>
