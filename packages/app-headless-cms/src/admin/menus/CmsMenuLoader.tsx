@@ -1,6 +1,7 @@
 import React from "react";
 import { AdminConfig, useRouter } from "@webiny/app-admin";
 import { ReactComponent as HeadlessCmsIcon } from "~/admin/icons/devices_other-black-24px.svg";
+import { ReactComponent as HeadlessCmsContentIcon } from "@webiny/icons/wysiwyg.svg";
 import { usePermission } from "~/admin/hooks/usePermission.js";
 import { ContentGroupsMenuItems } from "./ContentGroupsMenuItems.js";
 import { Routes } from "~/routes.js";
@@ -76,7 +77,7 @@ const CmsContentMenu = () => (
         element={
             <Menu.Item
                 text="Content"
-                icon={<Menu.Link.Icon label="Content" element={<HeadlessCmsIcon />} />}
+                icon={<Menu.Link.Icon label="Content" element={<HeadlessCmsContentIcon />} />}
             />
         }
     />
