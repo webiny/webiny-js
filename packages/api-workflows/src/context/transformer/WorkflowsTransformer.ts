@@ -1,9 +1,10 @@
 import { CmsEntry } from "@webiny/api-headless-cms/types/types.js";
 import { IWorkflow, type IWorkflowInput } from "~/types.js";
 import type { IWorkflowsTransformer } from "./abstractions/WorkflowsTransformer.js";
+import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 
 export class WorkflowsTransformer implements IWorkflowsTransformer {
-    public toCmsEntry(input: IWorkflowInput ): IWorkflow {
+    public toCmsEntry(input: IWorkflowInput): IWorkflow {
         return {
             id: input.id,
             app: input.app,
@@ -11,10 +12,11 @@ export class WorkflowsTransformer implements IWorkflowsTransformer {
             steps: input.steps
         };
     }
-    
+
     public fromCmsEntry(input: CmsEntry<Omit<IWorkflow, "id">>): IWorkflow {
+        const { id } = parseIdentifier(input.id);
         return {
-            id: input.id,
+            id,
             app: input.values.app,
             name: input.values.name,
             steps: input.values.steps

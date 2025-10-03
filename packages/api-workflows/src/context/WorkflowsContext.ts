@@ -11,6 +11,7 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { IWorkflowsTransformer } from "./transformer/index.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
+import { createIdentifier } from "@webiny/utils";
 
 export interface IWorkflowsContextParams {
     context: Pick<Context, "cms" | "security">;
@@ -72,8 +73,12 @@ export class WorkflowsContext implements IWorkflowsContext {
             id,
             app
         });
+        const targetId = createIdentifier({
+            id,
+            version: 1
+        });
         return this.context.security.withoutAuthorization(async () => {
-            await this.context.cms.updateEntry(this.model, id, values);
+            await this.context.cms.updateEntry(this.model, targetId, values);
 
             return {
                 ...values,
@@ -91,24 +96,37 @@ export class WorkflowsContext implements IWorkflowsContext {
         if (!workflow) {
             throw new NotFoundError(`Workflow in app "${app}" with id "${id}" was not found!`);
         }
+        const targetId = createIdentifier({
+            id,
+            version: 1
+        });
         return this.context.security.withoutAuthorization(async () => {
-            await this.context.cms.deleteEntry(this.model, id);
+            await this.context.cms.deleteEntry(this.model, targetId);
             return true;
         });
     }
 
     public async getWorkflow(params: IWorkflowsContextGetParams): Promise<IWorkflow | null> {
-        const entry = await this.context.cms.getEntry<Omit<IWorkflow, "id">>(this.model, {
-            where: {
+        try {
+            const id = createIdentifier({
                 id: params.id,
-                app: params.app
-            }
-        });
+                version: 1
+            });
+            const entry = await this.context.cms.getEntryById<Omit<IWorkflow, "id">>(
+                this.model,
+                id
+            );
 
-        if (!entry) {
-            return null;
+            if (entry?.values?.app === params.app) {
+                return this.transformer.fromCmsEntry(entry);
+            }
+        } catch (ex) {
+            if (ex instanceof NotFoundError || ex.code === "NOT_FOUND") {
+                return null;
+            }
+            throw ex;
         }
-        return this.transformer.fromCmsEntry(entry);
+        return null;
     }
 
     public async listWorkflows(params: IWorkflowsContextListParams): Promise<IWorkflow[]> {

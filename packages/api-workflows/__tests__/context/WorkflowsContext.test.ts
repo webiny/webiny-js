@@ -18,7 +18,7 @@ describe("Workflows Context", () => {
         expect(result).toEqual([]);
     });
 
-    it("should create a workflow", async () => {
+    it("should create, update, list, get and delete a workflow", async () => {
         const { context, model } = await createContextHandler();
         const workflowsContext = new WorkflowsContext({
             context,
@@ -57,5 +57,32 @@ describe("Workflows Context", () => {
             ]
         };
         expect(workflow).toEqual(expected);
+
+        const updatedWorkflow = await workflowsContext.updateWorkflow("test", workflow.id, {
+            name: `${workflow.name} Updated`,
+            steps: workflow.steps
+        });
+        expect(updatedWorkflow).toEqual({
+            ...expected,
+            name: `${workflow.name} Updated`
+        });
+
+        const list = await workflowsContext.listWorkflows({});
+        expect(list).toEqual([updatedWorkflow]);
+
+        const get = await workflowsContext.getWorkflow({
+            app: "test",
+            id: workflow.id
+        });
+        expect(get).toEqual(updatedWorkflow);
+
+        const deleteResult = await workflowsContext.deleteWorkflow("test", workflow.id);
+        expect(deleteResult).toEqual(true);
+
+        const listAfterDelete = await workflowsContext.listWorkflows({});
+        expect(listAfterDelete).toEqual([]);
+
+        const getAfterDelete = await workflowsContext.getWorkflow(workflow);
+        expect(getAfterDelete).toBeNull();
     });
 });
