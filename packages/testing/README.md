@@ -1,10 +1,10 @@
-# @webiny/tasks
-[![](https://img.shields.io/npm/dw/@webiny/tasks.svg)](https://www.npmjs.com/package/@webiny/tasks) 
-[![](https://img.shields.io/npm/v/@webiny/tasks.svg)](https://www.npmjs.com/package/@webiny/tasks)
+# @webiny/testing
+[![](https://img.shields.io/npm/dw/@webiny/testing.svg)](https://www.npmjs.com/package/@webiny/testing) 
+[![](https://img.shields.io/npm/v/@webiny/testing.svg)](https://www.npmjs.com/package/@webiny/testing)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 ## Install
 ```
-yarn add @webiny/tasks
+yarn add @webiny/testing
 ```

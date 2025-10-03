@@ -32,7 +32,7 @@ export class WorkflowsContext implements IWorkflowsContext {
 
     public async ensureAccess(): Promise<void> {
         const permissions = await this.context.security.getPermissions("workflows");
-        if (permissions) {
+        if (permissions?.length) {
             return;
         }
         throw new NotAuthorizedError({
