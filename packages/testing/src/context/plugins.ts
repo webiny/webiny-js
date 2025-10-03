@@ -50,7 +50,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
 
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<any[]>("i18n");
-    
+
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
     return {
         storageOperations: cmsStorage.storageOperations,

@@ -8,12 +8,12 @@
     { "path": "../api-wcp" },
     { "path": "../handler" },
     { "path": "../handler-graphql" },
-      {
-          "path": "../utils"
-      },
-      {
-          "path": "../testing"
-      }
+    {
+      "path": "../utils"
+    },
+    {
+      "path": "../testing"
+    }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -35,15 +35,9 @@
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-        "@webiny/utils": [
-            "../utils/src"
-        ],
-        "@webiny/testing/*": [
-            "../testing/src/*"
-        ],
-        "@webiny/testing": [
-            "../testing/src"
-        ]
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/testing/*": ["../testing/src/*"],
+      "@webiny/testing": ["../testing/src"]
     },
     "baseUrl": "."
   }
