@@ -16,6 +16,8 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment/index.j
 import { createBackgroundTaskContext } from "@webiny/tasks";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types/index.js";
 import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
+import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -25,6 +27,7 @@ export interface CreateHandlerCoreParams {
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     bottomPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     path?: `manage/${string}-${string}}` | `read/${string}-${string}}` | string;
+    testProjectLicense?: DecryptedWcpProjectLicense;
 }
 
 process.env.S3_BUCKET = "my-mock-s3-bucket";
@@ -47,14 +50,17 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
 
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<any[]>("i18n");
-
+    
+    const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
     return {
         storageOperations: cmsStorage.storageOperations,
         tenant,
         locale,
         plugins: [
             topPlugins,
-            createWcpContext(),
+            createWcpContext({
+                testProjectLicense
+            }),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: setupTenancyAndSecurityGraphQL,

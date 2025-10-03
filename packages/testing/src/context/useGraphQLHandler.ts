@@ -4,7 +4,7 @@ import { createHandler } from "@webiny/handler-aws";
 import { defaultIdentity } from "./tenancySecurity.js";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types.js";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
-import { getIntrospectionQuery } from "graphql/index.js";
+import { getIntrospectionQuery } from "graphql";
 
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";

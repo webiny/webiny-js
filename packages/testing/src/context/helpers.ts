@@ -1,4 +1,4 @@
-import type { SecurityIdentity } from "@webiny/api-security/types";
+import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import { ContextPlugin } from "@webiny/api";
 import type { Context } from "~/types.js";
 

@@ -1,14 +1,14 @@
 import type {
     Context,
+    ICreateWorkflowInput,
+    IUpdateWorkflowInput,
     IWorkflow,
-    IWorkflowInput,
     IWorkflowsContext,
     IWorkflowsContextGetParams,
     IWorkflowsContextListParams
 } from "~/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { IWorkflowsTransformer } from "./transformer/index.js";
-import { mdbid } from "@webiny/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 
@@ -40,31 +40,24 @@ export class WorkflowsContext implements IWorkflowsContext {
         });
     }
 
-    public async createWorkflow(app: string, input: IWorkflowInput): Promise<IWorkflow> {
+    public async createWorkflow(app: string, input: ICreateWorkflowInput): Promise<IWorkflow> {
         await this.ensureAccess();
-        const id = mdbid();
         const values = this.transformer.toCmsEntry({
             ...input,
             app
         });
 
         return this.context.security.withoutAuthorization(async () => {
-            await this.context.cms.createEntry(this.model, {
-                id,
-                ...values
-            });
+            await this.context.cms.createEntry(this.model, values);
 
-            return {
-                ...values,
-                id
-            };
+            return values;
         });
     }
 
     public async updateWorkflow(
         app: string,
         id: string,
-        input: IWorkflowInput
+        input: IUpdateWorkflowInput
     ): Promise<IWorkflow> {
         await this.ensureAccess();
         const workflow = await this.getWorkflow({
@@ -72,10 +65,11 @@ export class WorkflowsContext implements IWorkflowsContext {
             id
         });
         if (!workflow) {
-            throw new NotFoundError(`Workflow with id "${id}" was not found!`);
+            throw new NotFoundError(`Workflow in app "${app}" with id "${id}" was not found!`);
         }
         const values = this.transformer.toCmsEntry({
             ...input,
+            id,
             app
         });
         return this.context.security.withoutAuthorization(async () => {
@@ -95,7 +89,7 @@ export class WorkflowsContext implements IWorkflowsContext {
             id
         });
         if (!workflow) {
-            throw new NotFoundError(`Workflow with id "${id}" was not found!`);
+            throw new NotFoundError(`Workflow in app "${app}" with id "${id}" was not found!`);
         }
         return this.context.security.withoutAuthorization(async () => {
             await this.context.cms.deleteEntry(this.model, id);
@@ -118,13 +112,16 @@ export class WorkflowsContext implements IWorkflowsContext {
     }
 
     public async listWorkflows(params: IWorkflowsContextListParams): Promise<IWorkflow[]> {
-        const [entries] = await this.context.cms.listEntries<Omit<IWorkflow, "id">>(this.model, {
-            where: {
-                app: params.app
-            },
-            sort: ["createdOn_ASC"],
-            limit: 10000
-        });
+        const [entries] = await this.context.cms.listLatestEntries<Omit<IWorkflow, "id">>(
+            this.model,
+            {
+                where: {
+                    app: params.app
+                },
+                sort: ["createdOn_ASC"],
+                limit: 10000
+            }
+        );
         return entries.map(entry => {
             return this.transformer.fromCmsEntry(entry);
         });

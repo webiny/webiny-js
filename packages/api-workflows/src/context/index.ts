@@ -1,7 +1,7 @@
 import type { Context } from "~/types.js";
 import { WorkflowsContext } from "./WorkflowsContext";
-import { WORKFLOW_MODEL_ID } from "~/context/model.js";
 import { WorkflowsTransformer } from "~/context/transformer/index.js";
+import { WORKFLOW_MODEL_ID } from "~/constants.js";
 
 export const createContext = async (context: Context) => {
     const model = await context.cms.getModel(WORKFLOW_MODEL_ID);

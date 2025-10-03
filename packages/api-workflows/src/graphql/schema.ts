@@ -1,10 +1,10 @@
-import { GraphQLSchemaPlugin, resolve, resolveList } from "@webiny/handler-graphql";
-import { listWorkflowsValidation } from "~/graphql/validation/listWorkflows.js";
-import { createZodError } from "@webiny/utils";
-import { getWorkflowValidation } from "~/graphql/validation/getWorkflow.js";
-import { createWorkflowValidation } from "~/graphql/validation/createWorkflow.js";
 import type { Context } from "~/types.js";
-import { updateWorkflowValidation } from "~/graphql/validation/updateWorkflow.js";
+import { GraphQLSchemaPlugin, resolve, resolveList } from "@webiny/handler-graphql";
+import { listWorkflowsValidation } from "~/validation/listWorkflows.js";
+import { createZodError } from "@webiny/utils";
+import { getWorkflowValidation } from "~/validation/getWorkflow.js";
+import { createWorkflowValidation } from "~/validation/createWorkflow.js";
+import { updateWorkflowValidation } from "~/validation/updateWorkflow.js";
 
 export const createSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -73,7 +73,7 @@ export const createSchema = () => {
             }
 
             type WorkflowsQuery {
-                listWorkflows(app: ID!): ListWorkflowsResponse!
+                listWorkflows(app: ID): ListWorkflowsResponse!
                 getWorkflow(app: ID!, id: ID!): GetWorkflowResponse!
             }
 

@@ -14,10 +14,16 @@ export interface HandlerEvent {
     };
 }
 
-export type UseContextHandlerParams = CreateHandlerCoreParams;
+export interface UseContextHandlerParams extends CreateHandlerCoreParams {
+    debug?: boolean;
+}
 export const useContextHandler = <C extends Context = Context>(
     params: UseContextHandlerParams = {}
 ) => {
+    const debug = params.debug || process.env.DEBUG === "true";
+    if (debug) {
+        process.env.DEBUG = "true";
+    }
     const core = createHandlerCore(params);
 
     const plugins = [...core.plugins].concat([
@@ -25,10 +31,6 @@ export const useContextHandler = <C extends Context = Context>(
             return context;
         })
     ]);
-    const handler = createRawHandler<HandlerEvent, C>({
-        plugins,
-        debug: process.env.DEBUG === "true"
-    });
 
     const { elasticsearchClient } = getElasticsearchClient({ name: "testing-ddb-es" });
 
@@ -39,6 +41,10 @@ export const useContextHandler = <C extends Context = Context>(
         locale: core.locale,
         elasticsearch: elasticsearchClient,
         context: (input?: HandlerEvent) => {
+            const handler = createRawHandler<HandlerEvent, C>({
+                plugins,
+                debug
+            });
             const payload: HandlerEvent = {
                 path: "/cms/manage/en-US",
                 headers: {

@@ -1,6 +1,5 @@
 import { createPrivateModelPlugin } from "@webiny/api-headless-cms";
-
-export const WORKFLOW_MODEL_ID = "workflow";
+import { WORKFLOW_MODEL_ID } from "~/constants.js";
 
 export const createWorkflowModel = () => {
     return createPrivateModelPlugin({

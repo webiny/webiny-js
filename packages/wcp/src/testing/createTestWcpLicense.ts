@@ -45,7 +45,7 @@ export const createTestWcpLicense = (): DecryptedWcpProjectLicense => {
                     }
                 },
                 [PROJECT_PACKAGE_FEATURE_NAME.WORKFLOWS]: {
-                    enabled: false
+                    enabled: true
                 }
             }
         }

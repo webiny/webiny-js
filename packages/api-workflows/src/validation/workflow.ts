@@ -4,8 +4,7 @@ import type { WorkflowStep } from "~/types.js";
 import { stepValidation } from "./step.js";
 
 export const workflowValidation = zod.object({
-    id: zod.string(),
-    name: zod.string(),
+    name: zod.string().min(1, "Name is required."),
     steps: zod
         .array(stepValidation)
         .min(1, "You must add at least one step.")

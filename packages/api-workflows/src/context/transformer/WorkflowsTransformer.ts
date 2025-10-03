@@ -1,16 +1,17 @@
 import { CmsEntry } from "@webiny/api-headless-cms/types/types.js";
-import { IWorkflow } from "~/types.js";
+import { IWorkflow, type IWorkflowInput } from "~/types.js";
 import type { IWorkflowsTransformer } from "./abstractions/WorkflowsTransformer.js";
 
 export class WorkflowsTransformer implements IWorkflowsTransformer {
-    public toCmsEntry(input: IWorkflow): Omit<IWorkflow, "id"> {
+    public toCmsEntry(input: IWorkflowInput ): IWorkflow {
         return {
+            id: input.id,
             app: input.app,
             name: input.name,
             steps: input.steps
         };
     }
-
+    
     public fromCmsEntry(input: CmsEntry<Omit<IWorkflow, "id">>): IWorkflow {
         return {
             id: input.id,
