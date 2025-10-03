@@ -52,7 +52,7 @@ const CmsContentGroupsMenu = ({ canAccess }: ChildMenuProps) => {
  * This is the top-level entry point for all CMS-related navigation.
  * The menu item includes a custom icon and is positioned after the "home" menu.
  */
-const CmsMainMenu = () => (
+const CmsContentModelingMenu = () => (
     <Menu
         name="headlessCMS"
         after="home"
@@ -83,25 +83,6 @@ const CmsContentMenu = () => (
     />
 );
 
-/**
- * Conditionally renders menu items for managing content models and content model groups.
- * These menu entries are only shown if the user has the appropriate permissions.
- * This component helps keep the menu structure dynamic and secure by hiding options
- * that the user cannot access.
- */
-const CmsCreateMenus = ({
-    canCreateContentModels,
-    canCreateContentModelGroups
-}: {
-    canCreateContentModels: boolean;
-    canCreateContentModelGroups: boolean;
-}) => (
-    <>
-        <CmsContentModelsMenu canAccess={canCreateContentModels} />
-        <CmsContentGroupsMenu canAccess={canCreateContentModelGroups} />
-    </>
-);
-
 const CmsMenuLoaderComponent = () => {
     const {
         canAccessManageEndpoint,
@@ -120,13 +101,13 @@ const CmsMenuLoaderComponent = () => {
 
     return (
         <>
-            <CmsMainMenu />
+            <CmsContentModelingMenu />
             <CmsContentMenu />
             {(canCreateContentModels || canCreateContentModelGroups) && (
-                <CmsCreateMenus
-                    canCreateContentModels={canCreateContentModels}
-                    canCreateContentModelGroups={canCreateContentModelGroups}
-                />
+                <>
+                    <CmsContentModelsMenu canAccess={canCreateContentModels} />
+                    <CmsContentGroupsMenu canAccess={canCreateContentModelGroups} />
+                </>
             )}
             <ContentGroupsMenuItems />
         </>
