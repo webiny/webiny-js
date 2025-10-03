@@ -1,0 +1,55 @@
+{
+  "private": true,
+  "type": "module",
+  "name": "@webiny/testing",
+  "version": "0.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "Core testing for API packages.",
+  "license": "MIT",
+  "devDependencies": {
+    "@webiny/api": "0.0.0",
+    "@webiny/api-aco": "0.0.0",
+    "@webiny/api-admin-users": "0.0.0",
+    "@webiny/api-audit-logs": "0.0.0",
+    "@webiny/api-file-manager": "0.0.0",
+    "@webiny/api-headless-cms": "0.0.0",
+    "@webiny/api-headless-cms-aco": "0.0.0",
+    "@webiny/api-headless-cms-tasks": "0.0.0",
+    "@webiny/api-i18n": "0.0.0",
+    "@webiny/api-i18n-content": "0.0.0",
+    "@webiny/api-log": "0.0.0",
+    "@webiny/api-mailer": "0.0.0",
+    "@webiny/api-record-locking": "0.0.0",
+    "@webiny/api-security": "0.0.0",
+    "@webiny/api-tenancy": "0.0.0",
+    "@webiny/api-wcp": "0.0.0",
+    "@webiny/api-website-builder": "0.0.0",
+    "@webiny/api-websockets": "0.0.0",
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/error": "0.0.0",
+    "@webiny/handler": "0.0.0",
+    "@webiny/handler-aws": "0.0.0",
+    "@webiny/handler-client": "0.0.0",
+    "@webiny/handler-graphql": "0.0.0",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "@webiny/tasks": "0.0.0",
+    "@webiny/wcp": "0.0.0",
+    "graphql": "^16.11.0",
+    "rimraf": "^6.0.1",
+    "typescript": "5.9.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "node ../cli/bin.js run build",
+    "watch": "node ../cli/bin.js run watch"
+  },
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+}

@@ -14531,7 +14531,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-i18n-content@workspace:packages/api-i18n-content":
+"@webiny/api-i18n-content@npm:0.0.0, @webiny/api-i18n-content@workspace:packages/api-i18n-content":
   version: 0.0.0-use.local
   resolution: "@webiny/api-i18n-content@workspace:packages/api-i18n-content"
   dependencies:
@@ -16858,6 +16858,44 @@ __metadata:
     load-json-file: "npm:6.2.0"
     strip-ansi: "npm:^6.0.1"
     wts-client: "npm:^2.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/testing@workspace:packages/testing":
+  version: 0.0.0-use.local
+  resolution: "@webiny/testing@workspace:packages/testing"
+  dependencies:
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-admin-users": "npm:0.0.0"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-file-manager": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-aco": "npm:0.0.0"
+    "@webiny/api-headless-cms-tasks": "npm:0.0.0"
+    "@webiny/api-i18n": "npm:0.0.0"
+    "@webiny/api-i18n-content": "npm:0.0.0"
+    "@webiny/api-log": "npm:0.0.0"
+    "@webiny/api-mailer": "npm:0.0.0"
+    "@webiny/api-record-locking": "npm:0.0.0"
+    "@webiny/api-security": "npm:0.0.0"
+    "@webiny/api-tenancy": "npm:0.0.0"
+    "@webiny/api-wcp": "npm:0.0.0"
+    "@webiny/api-website-builder": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/handler-aws": "npm:0.0.0"
+    "@webiny/handler-client": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/tasks": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
+    graphql: "npm:^16.11.0"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 
