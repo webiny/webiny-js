@@ -17,6 +17,7 @@ export interface ILicense {
     canUseFileManagerThreatDetection: () => boolean;
     canUseFolderLevelPermissions: () => boolean;
     canUseRecordLocking: () => boolean;
+    canUseWorkflows: () => boolean;
 }
 
 export declare type WcpProjectEnvironment = {
@@ -47,7 +48,8 @@ export enum PROJECT_PACKAGE_FEATURE_NAME {
     // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
     AUDIT_LOGS = "auditLogs",
     RECORD_LOCKING = "recordLocking",
-    FILE_MANAGER = "fileManager"
+    FILE_MANAGER = "fileManager",
+    WORKFLOWS = "workflows"
 }
 
 export enum MT_OPTIONS_MAX_COUNT_TYPE {
@@ -92,6 +94,9 @@ export interface ProjectPackageFeatures {
     [PROJECT_PACKAGE_FEATURE_NAME.FILE_MANAGER]: {
         enabled: boolean;
         options: { threatDetection: boolean };
+    };
+    [PROJECT_PACKAGE_FEATURE_NAME.WORKFLOWS]: {
+        enabled: boolean;
     };
 }
 

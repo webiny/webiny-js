@@ -285,8 +285,6 @@ export const createModelsSchema = ({
                 settings: JSON
             }
 
-            
-
             type CmsContentModel {
                 name: String!
                 singularApiName: String!

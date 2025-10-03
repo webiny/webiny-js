@@ -90,4 +90,8 @@ export class License implements ILicense {
     canUseFileManagerThreatDetection() {
         return this.license.package.features.fileManager?.options.threatDetection ?? false;
     }
+
+    public canUseWorkflows(): boolean {
+        return this.canUseFeature("workflows");
+    }
 }

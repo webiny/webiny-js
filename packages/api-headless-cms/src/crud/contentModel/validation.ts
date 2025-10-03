@@ -270,7 +270,7 @@ export const createModelImportValidation = () => {
         tags: zod.array(shortString).optional(),
         titleFieldId: shortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
-        imageFieldId: optionalShortString.nullish(),
+        imageFieldId: optionalShortString.nullish()
     });
 };
 
@@ -289,7 +289,7 @@ export const createModelCreateFromValidation = () => {
         description: optionalNullishShortString,
         group: shortString,
         icon: optionalNullishShortString,
-        locale: optionalShortString,
+        locale: optionalShortString
     });
 };
 
@@ -316,6 +316,6 @@ export const createModelUpdateValidation = () => {
         titleFieldId: optionalShortString.nullish(),
         descriptionFieldId: optionalShortString.nullish(),
         imageFieldId: optionalShortString.nullish(),
-        tags: zod.array(shortString).optional(),
+        tags: zod.array(shortString).optional()
     });
 };

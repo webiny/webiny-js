@@ -10,9 +10,10 @@ import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { IWorkflowsTransformer } from "./transformer/index.js";
 import { mdbid } from "@webiny/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
+import { NotAuthorizedError } from "@webiny/api-security";
 
 export interface IWorkflowsContextParams {
-    context: Context;
+    context: Pick<Context, "cms" | "security">;
     model: CmsModel;
     transformer: IWorkflowsTransformer;
 }
@@ -28,22 +29,36 @@ export class WorkflowsContext implements IWorkflowsContext {
         this.transformer = params.transformer;
     }
 
+    public async ensureAccess(): Promise<void> {
+        const permissions = await this.context.security.getPermissions("workflows");
+        if (permissions) {
+            return;
+        }
+        throw new NotAuthorizedError({
+            message: "You have no access to workflows.",
+            code: "WORKFLOWS_ACCESS_DENIED"
+        });
+    }
+
     public async createWorkflow(app: string, input: IWorkflowInput): Promise<IWorkflow> {
+        await this.ensureAccess();
         const id = mdbid();
         const values = this.transformer.toCmsEntry({
             ...input,
             app
         });
 
-        await this.context.cms.createEntry(this.model, {
-            id,
-            ...values
-        });
+        return this.context.security.withoutAuthorization(async () => {
+            await this.context.cms.createEntry(this.model, {
+                id,
+                ...values
+            });
 
-        return {
-            ...values,
-            id
-        };
+            return {
+                ...values,
+                id
+            };
+        });
     }
 
     public async updateWorkflow(
@@ -51,6 +66,7 @@ export class WorkflowsContext implements IWorkflowsContext {
         id: string,
         input: IWorkflowInput
     ): Promise<IWorkflow> {
+        await this.ensureAccess();
         const workflow = await this.getWorkflow({
             app,
             id
@@ -62,15 +78,18 @@ export class WorkflowsContext implements IWorkflowsContext {
             ...input,
             app
         });
-        await this.context.cms.updateEntry(this.model, id, values);
+        return this.context.security.withoutAuthorization(async () => {
+            await this.context.cms.updateEntry(this.model, id, values);
 
-        return {
-            ...values,
-            id
-        };
+            return {
+                ...values,
+                id
+            };
+        });
     }
 
     public async deleteWorkflow(app: string, id: string): Promise<boolean> {
+        await this.ensureAccess();
         const workflow = await this.getWorkflow({
             app,
             id
@@ -78,8 +97,10 @@ export class WorkflowsContext implements IWorkflowsContext {
         if (!workflow) {
             throw new NotFoundError(`Workflow with id "${id}" was not found!`);
         }
-        await this.context.cms.deleteEntry(this.model, id);
-        return true;
+        return this.context.security.withoutAuthorization(async () => {
+            await this.context.cms.deleteEntry(this.model, id);
+            return true;
+        });
     }
 
     public async getWorkflow(params: IWorkflowsContextGetParams): Promise<IWorkflow | null> {
@@ -104,6 +125,8 @@ export class WorkflowsContext implements IWorkflowsContext {
             sort: ["createdOn_ASC"],
             limit: 10000
         });
-        return entries.map(entry => this.transformer.fromCmsEntry(entry));
+        return entries.map(entry => {
+            return this.transformer.fromCmsEntry(entry);
+        });
     }
 }

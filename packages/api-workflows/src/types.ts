@@ -1,5 +1,7 @@
 import type { NonEmptyArray } from "@webiny/api/types.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
+import type { WcpContext } from "@webiny/api-wcp/types.js";
+import type { Context as ContextInterface } from "@webiny/handler/types.js";
 
 export interface IWorkflowStepNotification {
     id: string;
@@ -56,6 +58,8 @@ export interface IWorkflowsContextListParams {
 }
 
 export interface IWorkflowsContext {
+    ensureAccess(): Promise<void>;
+
     createWorkflow(app: string, input: IWorkflowInput): Promise<IWorkflow>;
     updateWorkflow(app: string, id: string, input: IWorkflowInput): Promise<IWorkflow>;
     deleteWorkflow(app: string, id: string): Promise<boolean>;
@@ -64,6 +68,9 @@ export interface IWorkflowsContext {
     listWorkflows(params: IWorkflowsContextListParams): Promise<IWorkflow[]>;
 }
 
-export interface Context extends CmsContext {
+export interface Context
+    extends ContextInterface,
+        Pick<CmsContext, "security" | "cms" | "plugins">,
+        Pick<WcpContext, "wcp"> {
     workflows: IWorkflowsContext;
 }

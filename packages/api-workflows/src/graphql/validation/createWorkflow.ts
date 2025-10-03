@@ -3,5 +3,5 @@ import { workflowValidation } from "~/validation/workflow.js";
 
 export const createWorkflowValidation = zod.object({
     app: zod.string(),
-    data: workflowValidation,
+    data: workflowValidation
 });
