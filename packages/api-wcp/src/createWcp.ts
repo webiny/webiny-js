@@ -1,14 +1,15 @@
 import type { WCP_FEATURE_LABEL } from "@webiny/wcp";
 import {
-    getWcpProjectLicense,
-    getWcpAppUrl,
     getWcpApiUrl,
-    getWcpProjectEnvironment
+    getWcpAppUrl,
+    getWcpProjectEnvironment,
+    getWcpProjectLicense,
+    License,
+    NullLicense
 } from "@webiny/wcp";
 import WError from "@webiny/error";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
-import { License, NullLicense } from "@webiny/wcp";
-import type { WcpContextObject, CachedWcpProjectLicense } from "./types.js";
+import type { CachedWcpProjectLicense, WcpContextObject } from "./types.js";
 import { getWcpProjectLicenseCacheKey, wcpFetch } from "./utils.js";
 
 const wcpProjectEnvironment = getWcpProjectEnvironment();
@@ -161,6 +162,10 @@ export const createWcp = async (params: CreateWcpParams = {}): Promise<WcpContex
 
         canUseFileManagerThreatDetection() {
             return cachedWcpProjectLicense.license.canUseFileManagerThreatDetection();
+        },
+
+        canUseWorkflows(): boolean {
+            return cachedWcpProjectLicense.license.canUseWorkflows();
         },
 
         ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL) {

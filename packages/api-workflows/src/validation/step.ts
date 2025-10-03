@@ -3,7 +3,7 @@ import type { NonEmptyArray } from "@webiny/api/types.js";
 import type { IWorkflowStepTeam } from "~/types.js";
 
 export const stepValidation = zod.object({
-    id: zod.string(),
+    id: zod.string().min(1),
     title: zod.string(),
     color: zod.string(),
     description: zod
@@ -16,7 +16,7 @@ export const stepValidation = zod.object({
     teams: zod
         .array(
             zod.object({
-                id: zod.string()
+                id: zod.string().min(1)
             })
         )
         .min(1, "You must select at least one team.")
@@ -26,7 +26,7 @@ export const stepValidation = zod.object({
     notifications: zod
         .array(
             zod.object({
-                id: zod.string()
+                id: zod.string().min(1)
             })
         )
         .optional()
