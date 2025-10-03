@@ -146,7 +146,7 @@ describe("step validation", () => {
             notifications: [{ id: "notification1" }]
         });
         expect(result.success).toBeFalse();
-        expect(result.error!.errors[0].message).toBe("Team ID is required.");
+        expect(result.error!.errors[0].message).toBe("String must contain at least 1 character(s)");
     });
 
     it("should fail validation if 'notifications' contains an invalid entry", async () => {
@@ -159,6 +159,6 @@ describe("step validation", () => {
             notifications: [{ id: "" }]
         });
         expect(result.success).toBeFalse();
-        expect(result.error!.errors[0].message).toBe("Notification ID is required.");
+        expect(result.error!.errors[0].message).toBe("String must contain at least 1 character(s)");
     });
 });
