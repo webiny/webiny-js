@@ -1,14 +1,43 @@
-import { useContextHandler, type UseContextHandlerParams } from "@webiny/testing";
+import {
+    useContextHandler,
+    type UseContextHandlerParams,
+    useGraphQLHandler,
+    type UseGraphQLHandlerParams
+} from "@webiny/testing";
 import { Context } from "~/types.js";
 import { createWorkflows } from "~/index.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { WORKFLOW_MODEL_ID } from "~/constants.js";
+import type {
+    ICreateWorkflowResponse,
+    ICreateWorkflowVariables,
+    IDeleteWorkflowResponse,
+    IDeleteWorkflowVariables,
+    IGetWorkflowResponse,
+    IGetWorkflowVariables,
+    IListWorkflowResponse,
+    IListWorkflowVariables,
+    IUpdateWorkflowResponse,
+    IUpdateWorkflowVariables
+} from "./graphql.js";
+import {
+    CREATE_WORKFLOW_MUTATION,
+    DELETE_WORKFLOW_MUTATION,
+    GET_WORKFLOW_QUERY,
+    LIST_WORKFLOWS_QUERY,
+    UPDATE_WORKFLOW_MUTATION
+} from "./graphql.js";
 
 export const createContextHandler = async (params: UseContextHandlerParams = {}) => {
     const plugins = new PluginsContainer(params.plugins || []);
     plugins.register(createWorkflows());
     const handler = useContextHandler<Context>({
         ...params,
+        permissions: [
+            {
+                name: "*"
+            }
+        ],
         debug: params.debug === undefined ? true : params.debug,
         plugins: plugins.all()
     });
@@ -18,5 +47,38 @@ export const createContextHandler = async (params: UseContextHandlerParams = {})
         handler,
         context,
         model
+    };
+};
+
+export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
+    const plugins = new PluginsContainer(params.plugins || []);
+    plugins.register(createWorkflows());
+    const handler = useGraphQLHandler({
+        ...params,
+        permissions: [
+            {
+                name: "*"
+            }
+        ],
+        debug: params.debug === undefined ? true : params.debug,
+        plugins: plugins.all()
+    });
+    return {
+        handler,
+        createWorkflow: handler.createMutation<ICreateWorkflowVariables, ICreateWorkflowResponse>(
+            CREATE_WORKFLOW_MUTATION
+        ),
+        updateWorkflow: handler.createMutation<IUpdateWorkflowVariables, IUpdateWorkflowResponse>(
+            UPDATE_WORKFLOW_MUTATION
+        ),
+        deleteWorkflow: handler.createMutation<IDeleteWorkflowVariables, IDeleteWorkflowResponse>(
+            DELETE_WORKFLOW_MUTATION
+        ),
+        getWorkflow: handler.createQuery<IGetWorkflowVariables, IGetWorkflowResponse>(
+            GET_WORKFLOW_QUERY
+        ),
+        listWorkflows: handler.createQuery<IListWorkflowVariables, IListWorkflowResponse>(
+            LIST_WORKFLOWS_QUERY
+        )
     };
 };

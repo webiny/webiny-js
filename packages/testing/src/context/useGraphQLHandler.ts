@@ -5,6 +5,7 @@ import { defaultIdentity } from "./tenancySecurity.js";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types.js";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/index.js";
 import { getIntrospectionQuery } from "graphql";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";
@@ -15,7 +16,13 @@ export interface InvokeParams {
     headers?: Record<string, string>;
 }
 
-export type UseGraphQLHandlerParams = CreateHandlerCoreParams;
+interface IResponse {
+    body: string;
+}
+
+export interface UseGraphQLHandlerParams extends CreateHandlerCoreParams {
+    debug?: boolean;
+}
 export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     const { path } = params;
     const core = createHandlerCore(params);
@@ -32,7 +39,7 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         headers = {},
         ...rest
     }: InvokeParams): Promise<[T, any]> => {
-        const response = await handler(
+        const response: IResponse = await handler(
             {
                 /**
                  * If no path defined, use /graphql as we want to make request to main api
@@ -55,6 +62,40 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
 
     const { elasticsearchClient } = getElasticsearchClient({ name: "testing-ddb-es" });
 
+    const createQuery = <
+        T extends GenericRecord = GenericRecord,
+        R extends GenericRecord = GenericRecord
+    >(
+        query: string
+    ) => {
+        return (variables: T, headers: GenericRecord = {}) => {
+            return invoke<R>({
+                body: {
+                    query,
+                    variables: variables || undefined
+                },
+                headers
+            });
+        };
+    };
+
+    const createMutation = <
+        T extends GenericRecord = GenericRecord,
+        R extends GenericRecord = GenericRecord
+    >(
+        mutation: string
+    ) => {
+        return (variables: T, headers: GenericRecord = {}) => {
+            return invoke<R>({
+                body: {
+                    query: mutation,
+                    variables: variables || undefined
+                },
+                headers
+            });
+        };
+    };
+
     return {
         plugins,
         invoke,
@@ -64,6 +105,8 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         elasticsearch: elasticsearchClient,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });
-        }
+        },
+        createQuery,
+        createMutation
     };
 };

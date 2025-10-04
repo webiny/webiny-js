@@ -12,7 +12,7 @@ export const createWorkflows = () => {
 
         context.plugins.register(createWorkflowModel());
         await createContext(context);
-        context.plugins.register([createSchema()]);
+        context.plugins.register(createSchema());
     });
 
     plugin.name = "workflows.context";

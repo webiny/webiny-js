@@ -1,10 +1,11 @@
 import type { Context } from "~/types.js";
-import { GraphQLSchemaPlugin, resolve, resolveList } from "@webiny/handler-graphql";
+import { GraphQLSchemaPlugin, NotFoundError, resolve, resolveList } from "@webiny/handler-graphql";
 import { listWorkflowsValidation } from "~/validation/listWorkflows.js";
 import { createZodError } from "@webiny/utils";
 import { getWorkflowValidation } from "~/validation/getWorkflow.js";
 import { createWorkflowValidation } from "~/validation/createWorkflow.js";
 import { updateWorkflowValidation } from "~/validation/updateWorkflow.js";
+import { deleteWorkflowValidation } from "~/validation/deleteWorkflow.js";
 
 export const createSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -33,8 +34,13 @@ export const createSchema = () => {
                 notifications: [WorkflowStepNotificationInput!]
             }
 
-            input WorkflowInput {
+            input CreateWorkflowInput {
                 id: String!
+                name: String!
+                steps: [WorkflowStepInput!]!
+            }
+
+            input UpdateWorkflowInput {
                 name: String!
                 steps: [WorkflowStepInput!]!
             }
@@ -73,8 +79,8 @@ export const createSchema = () => {
             }
 
             type WorkflowsQuery {
-                listWorkflows(app: ID): ListWorkflowsResponse!
-                getWorkflow(app: ID!, id: ID!): GetWorkflowResponse!
+                listWorkflows(app: String): ListWorkflowsResponse!
+                getWorkflow(app: String!, id: ID!): GetWorkflowResponse!
             }
 
             type CreateWorkflowResponse {
@@ -93,9 +99,13 @@ export const createSchema = () => {
             }
 
             type WorkflowsMutation {
-                createWorkflow(app: ID!, data: WorkflowInput!): CreateWorkflowResponse!
-                updateWorkflow(app: ID!, id: ID!, data: WorkflowInput!): UpdateWorkflowResponse!
-                deleteWorkflow(app: ID!, id: ID!): DeleteWorkflowResponse!
+                createWorkflow(app: String!, data: CreateWorkflowInput!): CreateWorkflowResponse!
+                updateWorkflow(
+                    app: String!
+                    id: ID!
+                    data: UpdateWorkflowInput!
+                ): UpdateWorkflowResponse!
+                deleteWorkflow(app: String!, id: ID!): DeleteWorkflowResponse!
             }
 
             extend type Query {
@@ -121,7 +131,13 @@ export const createSchema = () => {
                             throw createZodError(result.error);
                         }
 
-                        return context.workflows.getWorkflow(args);
+                        const workflow = await context.workflows.getWorkflow(args);
+                        if (workflow) {
+                            return workflow;
+                        }
+                        throw new NotFoundError(
+                            `Workflow in app "${args.app}" with id "${args.id}" was not found!`
+                        );
                     });
                 },
                 listWorkflows: async (_, args, context) => {
@@ -168,7 +184,7 @@ export const createSchema = () => {
                 },
                 deleteWorkflow: async (_, args, context) => {
                     return resolve(async () => {
-                        const result = await getWorkflowValidation.safeParseAsync(args);
+                        const result = await deleteWorkflowValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
