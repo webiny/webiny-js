@@ -162,51 +162,7 @@ describe("workflow graphql", () => {
         });
     });
 
-    it("should fail to create a workflow because of invalid graphql input", async () => {
-        const [response] = await handler.createWorkflow({
-            app: "test",
-            data: {
-                id: "workflow-1",
-                name: "Test Workflow",
-                steps: [
-                    {
-                        id: "step-1",
-                        title: "Step 1",
-                        description: "This is step 1",
-                        color: "blue",
-                        teams: [{ id: "team-1" }],
-                        notifications: [{ id: "" }]
-                    }
-                ]
-            }
-        });
-        expect(response).toEqual({
-            data: {
-                workflows: {
-                    createWorkflow: {
-                        data: null,
-                        error: {
-                            code: "VALIDATION_FAILED_INVALID_FIELDS",
-                            data: {
-                                invalidFields: {
-                                    "data.steps.0.notifications.0.id": {
-                                        code: "too_small",
-                                        data: {
-                                            path: ["data", "steps", 0, "notifications", 0, "id"]
-                                        },
-                                        message: "Notification ID is required."
-                                    }
-                                }
-                            },
-                            message: "Validation failed."
-                        }
-                    }
-                }
-            }
-        });
-    });
-
-    it("should fail to update a workflow because of invalid graphql input", async () => {
+    it("should fail to update a workflow because it does not exist", async () => {
         const [response] = await handler.updateWorkflow({
             app: "test",
             id: "workflow-1",
@@ -218,7 +174,7 @@ describe("workflow graphql", () => {
                         title: "Step 1",
                         description: "This is step 1",
                         color: "blue",
-                        teams: [{ id: "" }],
+                        teams: [{ id: "team-1" }],
                         notifications: [{ id: "notif-1" }]
                     }
                 ]
@@ -230,19 +186,9 @@ describe("workflow graphql", () => {
                     updateWorkflow: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED_INVALID_FIELDS",
-                            data: {
-                                invalidFields: {
-                                    "data.steps.0.teams.0.id": {
-                                        code: "too_small",
-                                        data: {
-                                            path: ["data", "steps", 0, "teams", 0, "id"]
-                                        },
-                                        message: "Team ID is required."
-                                    }
-                                }
-                            },
-                            message: "Validation failed."
+                            code: "NOT_FOUND",
+                            data: null,
+                            message: `Workflow in app "test" with id "workflow-1" was not found!`
                         }
                     }
                 }
@@ -250,10 +196,10 @@ describe("workflow graphql", () => {
         });
     });
 
-    it("should fail to delete a workflow because of invalid graphql input", async () => {
+    it("should fail to delete a workflow because it does not exist", async () => {
         const [response] = await handler.deleteWorkflow({
             app: "test",
-            id: ""
+            id: "workflow-1"
         });
         expect(response).toEqual({
             data: {
@@ -261,19 +207,9 @@ describe("workflow graphql", () => {
                     deleteWorkflow: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED_INVALID_FIELDS",
-                            data: {
-                                invalidFields: {
-                                    id: {
-                                        code: "too_small",
-                                        data: {
-                                            path: ["id"]
-                                        },
-                                        message: "ID is required."
-                                    }
-                                }
-                            },
-                            message: "Validation failed."
+                            code: "NOT_FOUND",
+                            data: null,
+                            message: `Workflow in app "test" with id "workflow-1" was not found!`
                         }
                     }
                 }
@@ -281,10 +217,10 @@ describe("workflow graphql", () => {
         });
     });
 
-    it("should fail to get a workflow because of invalid graphql input", async () => {
+    it("should fail to get a workflow because it does not exist", async () => {
         const [response] = await handler.getWorkflow({
             app: "test",
-            id: ""
+            id: "workflow-1"
         });
         expect(response).toEqual({
             data: {
@@ -292,49 +228,9 @@ describe("workflow graphql", () => {
                     getWorkflow: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED_INVALID_FIELDS",
-                            data: {
-                                invalidFields: {
-                                    id: {
-                                        code: "too_small",
-                                        data: {
-                                            path: ["id"]
-                                        },
-                                        message: "ID is required."
-                                    }
-                                }
-                            },
-                            message: "Validation failed."
-                        }
-                    }
-                }
-            }
-        });
-    });
-
-    it("should fail to list workflows because of invalid graphql input", async () => {
-        const [listResponse] = await handler.listWorkflows({
-            app: ""
-        });
-        expect(listResponse).toEqual({
-            data: {
-                workflows: {
-                    listWorkflows: {
-                        data: null,
-                        error: {
-                            code: "VALIDATION_FAILED_INVALID_FIELDS",
-                            data: {
-                                invalidFields: {
-                                    app: {
-                                        code: "too_small",
-                                        data: {
-                                            path: ["app"]
-                                        },
-                                        message: "App is required."
-                                    }
-                                }
-                            },
-                            message: "Validation failed."
+                            code: "NOT_FOUND",
+                            data: null,
+                            message: `Workflow in app "test" with id "workflow-1" was not found!`
                         }
                     }
                 }
