@@ -9,9 +9,9 @@
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
-    { "path": "../testing/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../tasks/tsconfig.build.json" }
+    { "path": "../tasks/tsconfig.build.json" },
+    { "path": "../testing/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

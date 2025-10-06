@@ -5,10 +5,10 @@ describe("workflows graphql validation", () => {
     const handler = createGraphQLHandler();
 
     it("should fail to create a workflow because of invalid graphql input", async () => {
-        const [response] = await handler.createWorkflow({
+        const [response] = await handler.storeWorkflow({
             app: "test",
+            id: "workflow-1",
             data: {
-                id: "workflow-1",
                 name: "Test Workflow",
                 steps: [
                     {
@@ -25,7 +25,7 @@ describe("workflows graphql validation", () => {
         expect(response).toEqual({
             data: {
                 workflows: {
-                    createWorkflow: {
+                    storeWorkflow: {
                         data: null,
                         error: {
                             code: "VALIDATION_FAILED_INVALID_FIELDS",
@@ -49,7 +49,7 @@ describe("workflows graphql validation", () => {
     });
 
     it("should fail to update a workflow because of invalid graphql input", async () => {
-        const [response] = await handler.updateWorkflow({
+        const [response] = await handler.storeWorkflow({
             app: "test",
             id: "workflow-1",
             data: {
@@ -69,7 +69,7 @@ describe("workflows graphql validation", () => {
         expect(response).toEqual({
             data: {
                 workflows: {
-                    updateWorkflow: {
+                    storeWorkflow: {
                         data: null,
                         error: {
                             code: "VALIDATION_FAILED_INVALID_FIELDS",

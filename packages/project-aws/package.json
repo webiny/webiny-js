@@ -51,6 +51,7 @@
     "@webiny/api-wcp": "0.0.0",
     "@webiny/api-website-builder": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
+    "@webiny/api-workflows": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-admin-users-cognito": "0.0.0",
     "@webiny/app-serverless-cms": "0.0.0",

@@ -6,9 +6,9 @@ import type { Context } from "~/types.js";
 
 export const createWorkflows = () => {
     const plugin = new ContextPlugin<Context>(async context => {
-        if (!context.wcp.canUseWorkflows()) {
-            return;
-        }
+        // if (!context.wcp.canUseWorkflows()) {
+        //     return;
+        // }
 
         context.plugins.register(createWorkflowModel());
         await createContext(context);

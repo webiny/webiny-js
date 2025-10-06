@@ -1,10 +1,10 @@
-import { GraphQLSchemaPlugin, resolve, resolveList } from "@webiny/handler-graphql";
-import { listWorkflowsValidation } from "~/graphql/validation/listWorkflows.js";
-import { createZodError } from "@webiny/utils";
-import { getWorkflowValidation } from "~/graphql/validation/getWorkflow.js";
-import { createWorkflowValidation } from "~/graphql/validation/createWorkflow.js";
 import type { Context } from "~/types.js";
-import { updateWorkflowValidation } from "~/graphql/validation/updateWorkflow.js";
+import { GraphQLSchemaPlugin, NotFoundError, resolve, resolveList } from "@webiny/handler-graphql";
+import { listWorkflowsValidation } from "~/validation/listWorkflows.js";
+import { createZodError } from "@webiny/utils";
+import { getWorkflowValidation } from "~/validation/getWorkflow.js";
+import { storeWorkflowValidation } from "~/validation/storeWorkflow.js";
+import { deleteWorkflowValidation } from "~/validation/deleteWorkflow.js";
 
 export const createSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -32,14 +32,8 @@ export const createSchema = () => {
                 teams: [WorkflowStepTeamInput!]!
                 notifications: [WorkflowStepNotificationInput!]
             }
-
-            input CreateWorkflowInput {
-                id: String!
-                name: String!
-                steps: [WorkflowStepInput!]!
-            }
-
-            input UpdateWorkflowInput {
+            
+            input StoreWorkflowInput {
                 name: String!
                 steps: [WorkflowStepInput!]!
             }
@@ -63,6 +57,7 @@ export const createSchema = () => {
 
             type Workflow {
                 id: String!
+                app: String!
                 name: String!
                 steps: [WorkflowStep!]!
             }
@@ -78,8 +73,8 @@ export const createSchema = () => {
             }
 
             type WorkflowsQuery {
-                listWorkflows(app: ID!): ListWorkflowsResponse!
-                getWorkflow(app: ID!, id: ID!): GetWorkflowResponse!
+                listWorkflows(app: String): ListWorkflowsResponse!
+                getWorkflow(app: String!, id: ID!): GetWorkflowResponse!
             }
 
             type CreateWorkflowResponse {
@@ -87,7 +82,7 @@ export const createSchema = () => {
                 error: WorkflowError
             }
 
-            type UpdateWorkflowResponse {
+            type StoreWorkflowResponse {
                 data: Workflow
                 error: WorkflowError
             }
@@ -98,9 +93,12 @@ export const createSchema = () => {
             }
 
             type WorkflowsMutation {
-                createWorkflow(app: ID!, data: WorkflowInput!): CreateWorkflowResponse!
-                updateWorkflow(app: ID!, id: ID!, data: WorkflowInput!): UpdateWorkflowResponse!
-                deleteWorkflow(app: ID!, id: ID!): DeleteWorkflowResponse!
+                storeWorkflow(
+                    app: String!
+                    id: ID!
+                    data: StoreWorkflowInput!
+                ): StoreWorkflowResponse!
+                deleteWorkflow(app: String!, id: ID!): DeleteWorkflowResponse!
             }
 
             extend type Query {
@@ -155,22 +153,13 @@ export const createSchema = () => {
                 }
             },
             WorkflowsMutation: {
-                createWorkflow: async (_, args, context) => {
+                storeWorkflow: async (_, args, context) => {
                     return resolve(async () => {
-                        const result = await createWorkflowValidation.safeParseAsync(args);
+                        const result = await storeWorkflowValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return context.workflows.createWorkflow(result.data.app, result.data.data);
-                    });
-                },
-                updateWorkflow: async (_, args, context) => {
-                    return resolve(async () => {
-                        const result = await updateWorkflowValidation.safeParseAsync(args);
-                        if (!result.success) {
-                            throw createZodError(result.error);
-                        }
-                        return context.workflows.updateWorkflow(
+                        return context.workflows.storeWorkflow(
                             result.data.app,
                             result.data.id,
                             result.data.data
@@ -179,7 +168,7 @@ export const createSchema = () => {
                 },
                 deleteWorkflow: async (_, args, context) => {
                     return resolve(async () => {
-                        const result = await getWorkflowValidation.safeParseAsync(args);
+                        const result = await deleteWorkflowValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }

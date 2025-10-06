@@ -35,6 +35,7 @@
     { "path": "../api-wcp/tsconfig.build.json" },
     { "path": "../api-website-builder/tsconfig.build.json" },
     { "path": "../api-websockets/tsconfig.build.json" },
+    { "path": "../api-workflows/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-admin-users-cognito/tsconfig.build.json" },
     { "path": "../app-serverless-cms/tsconfig.build.json" },

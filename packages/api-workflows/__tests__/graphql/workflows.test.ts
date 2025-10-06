@@ -6,10 +6,11 @@ describe("workflow graphql", () => {
     const handler = createGraphQLHandler();
 
     it("should create, get, list and delete a workflow", async () => {
-        const [response] = await handler.createWorkflow({
+        const id = `workflow-1`;
+        const [response] = await handler.storeWorkflow({
             app: "test",
+            id,
             data: {
-                id: "workflow-1",
                 name: "Test Workflow",
                 steps: [
                     {
@@ -23,11 +24,11 @@ describe("workflow graphql", () => {
                 ]
             }
         });
-        const workflow = response.data?.workflows?.createWorkflow?.data as IWorkflow;
+        const workflow = response.data?.workflows?.storeWorkflow?.data as IWorkflow;
         expect(response).toEqual({
             data: {
                 workflows: {
-                    createWorkflow: {
+                    storeWorkflow: {
                         data: {
                             id: "workflow-1",
                             name: "Test Workflow",
@@ -77,7 +78,7 @@ describe("workflow graphql", () => {
             }
         });
 
-        const [updateResponse] = await handler.updateWorkflow({
+        const [updateResponse] = await handler.storeWorkflow({
             app: "test",
             id: "workflow-1",
             data: {
@@ -92,7 +93,7 @@ describe("workflow graphql", () => {
         expect(updateResponse).toEqual({
             data: {
                 workflows: {
-                    updateWorkflow: {
+                    storeWorkflow: {
                         data: updatedWorkflow,
                         error: null
                     }
@@ -156,40 +157,6 @@ describe("workflow graphql", () => {
                     deleteWorkflow: {
                         data: true,
                         error: null
-                    }
-                }
-            }
-        });
-    });
-
-    it("should fail to update a workflow because it does not exist", async () => {
-        const [response] = await handler.updateWorkflow({
-            app: "test",
-            id: "workflow-1",
-            data: {
-                name: "Test Workflow",
-                steps: [
-                    {
-                        id: "step-1",
-                        title: "Step 1",
-                        description: "This is step 1",
-                        color: "blue",
-                        teams: [{ id: "team-1" }],
-                        notifications: [{ id: "notif-1" }]
-                    }
-                ]
-            }
-        });
-        expect(response).toEqual({
-            data: {
-                workflows: {
-                    updateWorkflow: {
-                        data: null,
-                        error: {
-                            code: "NOT_FOUND",
-                            data: null,
-                            message: `Workflow in app "test" with id "workflow-1" was not found!`
-                        }
                     }
                 }
             }

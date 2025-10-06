@@ -9,9 +9,9 @@
     { "path": "../handler" },
     { "path": "../handler-graphql" },
     { "path": "../utils" },
-    { "path": "../testing" },
     { "path": "../plugins" },
-    { "path": "../tasks" }
+    { "path": "../tasks" },
+    { "path": "../testing" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -34,12 +34,12 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
-      "@webiny/testing/*": ["../testing/src/*"],
-      "@webiny/testing": ["../testing/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/tasks/*": ["../tasks/src/*"],
-      "@webiny/tasks": ["../tasks/src"]
+      "@webiny/tasks": ["../tasks/src"],
+      "@webiny/testing/*": ["../testing/src/*"],
+      "@webiny/testing": ["../testing/src"]
     },
     "baseUrl": "."
   }
