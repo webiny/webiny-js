@@ -16,8 +16,8 @@ export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
         [menuItems]
     );
 
-    const pinnableItems = useLocalStorageValues(pinnableNames);
-    const pinnedItems = menuItems.filter(menu => pinnableItems[getPinnedKey(menu.name)] === true);
+    const pinnableStates = useLocalStorageValues(pinnableNames);
+    const pinnedItems = menuItems.filter(menu => pinnableStates[getPinnedKey(menu.name)] === true);
 
     return (
         <>
