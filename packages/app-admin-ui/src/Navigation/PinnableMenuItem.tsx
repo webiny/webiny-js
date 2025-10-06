@@ -22,7 +22,9 @@ export const PinnableMenuItem = (props: PinnableMenuItemProps) => {
     return (
         <div className="wby-relative">
             {props.children}
-            <div className="wby-absolute wby-right-sm wby-top-1/2 -wby-translate-y-1/2 wby-cursor-pointer">
+            <div
+                className={`wby-opacity-0 hover:wby-opacity-100 wby-absolute wby-right-sm wby-top-1/2 -wby-translate-y-1/2 wby-cursor-pointeri ${isPinned ? "wby-opacity-100" : ""}`}
+            >
                 <Icon
                     label={isPinned ? "Unpin menu item" : "Pin menu item"}
                     onClick={isPinned ? unpinMenuItem : pinMenuItem}

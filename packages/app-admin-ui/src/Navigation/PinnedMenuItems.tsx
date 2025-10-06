@@ -1,6 +1,6 @@
-import React, { Fragment, useMemo } from "react";
+import React, { useMemo } from "react";
 import { AdminConfig, useLocalStorageValues, useAdminConfig } from "@webiny/app-admin";
-import { getPinnedKey } from "./PinnableMenuItem.js";
+import { getPinnedKey, PinnableMenuItem } from "./PinnableMenuItem.js";
 
 const { Menu } = AdminConfig;
 
@@ -23,7 +23,9 @@ export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
         <>
             {pinnedItems.length > 0 ? <Menu.Group text="Pinned" /> : null}
             {pinnedItems.map(menu => (
-                <Fragment key={menu.name}>{menu.element}</Fragment>
+                <PinnableMenuItem key={menu.name} name={menu.name}>
+                    {menu.element}
+                </PinnableMenuItem>
             ))}
         </>
     );
