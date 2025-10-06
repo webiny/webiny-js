@@ -32,7 +32,7 @@ export const createSchema = () => {
                 teams: [WorkflowStepTeamInput!]!
                 notifications: [WorkflowStepNotificationInput!]
             }
-            
+
             input StoreWorkflowInput {
                 name: String!
                 steps: [WorkflowStepInput!]!
@@ -123,7 +123,7 @@ export const createSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-
+                        
                         const workflow = await context.workflows.getWorkflow(args);
                         if (workflow) {
                             return workflow;
@@ -140,7 +140,7 @@ export const createSchema = () => {
                             throw createZodError(result.error);
                         }
                         const items = await context.workflows.listWorkflows(result.data);
-
+                        
                         return {
                             items,
                             meta: {

@@ -39,17 +39,19 @@ export class WorkflowsRepository implements IWorkflowsRepository {
         try {
             runInAction(() => {
                 this._loading = true;
+                this._error = null;
             })
             workflows = await this.gateway.listWorkflows();
-            this._error = null;
         } catch (ex) {
-            this._error = ex;
+            runInAction(() => {
+                this._error = ex;
+            });
         }
         if (!workflows.length) {
             workflows = [this.defaultWorkflow];
         }
-        this._loading = false;
         runInAction(() => {
+            this._loading = false;
             this.workflows.replace(workflows.map(w => new WorkflowModel(w)));
         });
     }
@@ -68,15 +70,16 @@ export class WorkflowsRepository implements IWorkflowsRepository {
 
     public save(input: IWorkflow): void {
         runInAction(() => {
-            const workflow = this.workflows.find(w => w.id === input.id);
+            let workflow = this.workflows.find(w => w.id === input.id);
             if (!workflow) {
-                this.workflows.push(new WorkflowModel(input));
+                workflow = new WorkflowModel(input);
+                this.workflows.push(workflow);
             } else {
                 workflow.id = input.id;
                 workflow.name = input.name;
                 workflow.setSteps(input.steps);
             }
-            this.gateway.storeWorkflows(this.workflows);
+            this.gateway.storeWorkflow(workflow);
         });
     }
 
@@ -86,9 +89,10 @@ export class WorkflowsRepository implements IWorkflowsRepository {
             if (index === -1) {
                 return;
             }
+            const workflow = this.workflows[index];
             this.workflows.splice(index, 1);
 
-            this.gateway.storeWorkflows(this.workflows);
+            this.gateway.deleteWorkflow(workflow);
         });
     }
 

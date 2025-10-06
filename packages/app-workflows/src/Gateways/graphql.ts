@@ -1,6 +1,7 @@
-import type { GenericRecord, NonEmptyArray } from "@webiny/app/types.js";
+import type { NonEmptyArray } from "@webiny/app/types.js";
 import type { IWorkflow } from "~/types.js";
 import gql from "graphql-tag";
+import type { IWorkflowError } from "~/Gateways/abstraction/WorkflowsGateway.js";
 
 export interface IWorkflowStepTeamInput {
     id: string;
@@ -17,12 +18,6 @@ export interface IWorkflowStepInput {
     description?: string;
     teams: NonEmptyArray<IWorkflowStepTeamInput>;
     notifications?: IWorkflowStepNotificationInput[];
-}
-
-export interface IWorkflowError {
-    code: string;
-    message: string;
-    data?: GenericRecord;
 }
 
 const ERROR_FIELD = /* GraphQL */ `
@@ -66,12 +61,10 @@ export interface IStoreWorkflowVariables {
 }
 
 export interface IStoreWorkflowResponse {
-    data: {
-        workflows: {
-            updateWorkflow: {
-                data: IWorkflow | null;
-                error: IWorkflowError | null;
-            };
+    workflows: {
+        storeWorkflow: {
+            data: IWorkflow | null;
+            error: IWorkflowError | null;
         };
     };
 }
@@ -87,28 +80,25 @@ export const STORE_WORKFLOW_MUTATION = gql`
     }
 `;
 
-
-export interface IGetWorkflowVariables {
+export interface IDeleteWorkflowVariables {
     app: string;
     id: string;
 }
 
-export interface IGetWorkflowResponse {
-    data: {
-        workflows: {
-            getWorkflow: {
-                data: IWorkflow | null;
-                error: IWorkflowError | null;
-            };
-        };
-    };
+export interface IDeleteWorkflowResponse {
+    workflows: {
+        deleteWorkflow: {
+            data: boolean | null;
+            error: IWorkflowError | null;
+        }
+    }
 }
 
-export const GET_WORKFLOW_QUERY = gql`
-    query GetWorkflow($app: String!, $id: ID!) {
+export const DELETE_WORKFLOW_MUTATION = gql`
+    mutation DeleteWorkflow($app: String!, $id: ID!) {
         workflows {
-            getWorkflow(app: $app, id: $id) {
-                data ${WORKFLOW}
+            deleteWorkflow(app: $app, id: $id) {
+                data
                 ${ERROR_FIELD}
             }
         }

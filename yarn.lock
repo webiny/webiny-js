@@ -14531,7 +14531,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-i18n-content@workspace:packages/api-i18n-content":
+"@webiny/api-i18n-content@npm:0.0.0, @webiny/api-i18n-content@workspace:packages/api-i18n-content":
   version: 0.0.0-use.local
   resolution: "@webiny/api-i18n-content@workspace:packages/api-i18n-content"
   dependencies:
@@ -14977,6 +14977,7 @@ __metadata:
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     typescript: "npm:5.9.2"
     vitest: "npm:^3.2.4"
@@ -15012,7 +15013,6 @@ __metadata:
     "@webiny/app-headless-cms-common": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-utils": "npm:0.0.0"
-    "@webiny/app-wcp": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
@@ -15054,7 +15054,6 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-serverless-cms": "npm:0.0.0"
-    "@webiny/app-tenancy": "npm:0.0.0"
     "@webiny/app-tenant-manager": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
@@ -15115,7 +15114,6 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-serverless-cms": "npm:0.0.0"
-    "@webiny/app-tenancy": "npm:0.0.0"
     "@webiny/app-tenant-manager": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
@@ -15173,7 +15171,6 @@ __metadata:
     "@webiny/app-admin-cognito": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-security-access-management": "npm:0.0.0"
-    "@webiny/app-tenancy": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
@@ -15216,7 +15213,6 @@ __metadata:
     "@types/tinycolor2": "npm:^1.4.6"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
-    "@webiny/app-wcp": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di-container": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
@@ -15230,6 +15226,7 @@ __metadata:
     "@webiny/telemetry": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
     apollo-cache: "npm:^1.3.5"
     apollo-client: "npm:^2.6.10"
     apollo-link: "npm:^1.2.14"
@@ -15346,7 +15343,6 @@ __metadata:
     "@webiny/app-headless-cms-common": "npm:0.0.0"
     "@webiny/app-i18n": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
-    "@webiny/app-tenancy": "npm:0.0.0"
     "@webiny/app-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
@@ -15511,7 +15507,6 @@ __metadata:
     "@webiny/app-i18n": "npm:0.0.0"
     "@webiny/app-plugin-admin-welcome-screen": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
-    "@webiny/app-tenancy": "npm:0.0.0"
     "@webiny/app-trash-bin": "npm:0.0.0"
     "@webiny/app-workflows": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -15640,7 +15635,6 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-headless-cms": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
-    "@webiny/app-wcp": "npm:0.0.0"
     "@webiny/app-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
@@ -15724,7 +15718,6 @@ __metadata:
     "@webiny/app-record-locking": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-security-access-management": "npm:0.0.0"
-    "@webiny/app-tenancy": "npm:0.0.0"
     "@webiny/app-tenant-manager": "npm:0.0.0"
     "@webiny/app-trash-bin": "npm:0.0.0"
     "@webiny/app-website-builder": "npm:0.0.0"
@@ -15745,29 +15738,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-tenancy@npm:0.0.0, @webiny/app-tenancy@workspace:packages/app-tenancy":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-tenancy@workspace:packages/app-tenancy"
-  dependencies:
-    "@apollo/react-hooks": "npm:^3.1.5"
-    "@emotion/babel-plugin": "npm:^11.13.5"
-    "@emotion/styled": "npm:11.10.6"
-    "@types/react": "npm:18.2.79"
-    "@webiny/app": "npm:0.0.0"
-    "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
-    "@webiny/ui": "npm:0.0.0"
-    apollo-client: "npm:^2.6.10"
-    graphql-tag: "npm:^2.12.6"
-    react: "npm:18.2.0"
-    react-dom: "npm:18.2.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.2"
-    vitest: "npm:^3.2.4"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/app-tenant-manager@npm:0.0.0, @webiny/app-tenant-manager@workspace:packages/app-tenant-manager":
   version: 0.0.0-use.local
   resolution: "@webiny/app-tenant-manager@workspace:packages/app-tenant-manager"
@@ -15778,7 +15748,6 @@ __metadata:
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
-    "@webiny/app-tenancy": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
@@ -15838,26 +15807,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-wcp@npm:0.0.0, @webiny/app-wcp@workspace:packages/app-wcp":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-wcp@workspace:packages/app-wcp"
-  dependencies:
-    "@apollo/react-hooks": "npm:^3.1.5"
-    "@emotion/react": "npm:11.10.8"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/wcp": "npm:0.0.0"
-    apollo-cache: "npm:^1.3.5"
-    apollo-client: "npm:^2.6.10"
-    apollo-link: "npm:^1.2.14"
-    apollo-utilities: "npm:^1.3.4"
-    graphql-tag: "npm:^2.12.6"
-    react: "npm:18.2.0"
-    react-dom: "npm:18.2.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.2"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/app-website-builder@npm:0.0.0, @webiny/app-website-builder@workspace:packages/app-website-builder":
   version: 0.0.0-use.local
   resolution: "@webiny/app-website-builder@workspace:packages/app-website-builder"
@@ -15887,7 +15836,6 @@ __metadata:
     "@webiny/app-headless-cms-common": "npm:0.0.0"
     "@webiny/app-i18n": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
-    "@webiny/app-tenancy": "npm:0.0.0"
     "@webiny/app-utils": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
@@ -15936,9 +15884,9 @@ __metadata:
   resolution: "@webiny/app-websockets@workspace:packages/app-websockets"
   dependencies:
     "@webiny/app": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-i18n": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
-    "@webiny/app-tenancy": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     react: "npm:18.2.0"
@@ -15952,6 +15900,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-workflows@workspace:packages/app-workflows"
   dependencies:
+    "@apollo/react-hooks": "npm:^3.1.5"
     "@types/react": "npm:18.2.79"
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
@@ -16939,6 +16888,44 @@ __metadata:
     load-json-file: "npm:6.2.0"
     strip-ansi: "npm:^6.0.1"
     wts-client: "npm:^2.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/testing@workspace:packages/testing":
+  version: 0.0.0-use.local
+  resolution: "@webiny/testing@workspace:packages/testing"
+  dependencies:
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-admin-users": "npm:0.0.0"
+    "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-file-manager": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-headless-cms-aco": "npm:0.0.0"
+    "@webiny/api-headless-cms-tasks": "npm:0.0.0"
+    "@webiny/api-i18n": "npm:0.0.0"
+    "@webiny/api-i18n-content": "npm:0.0.0"
+    "@webiny/api-log": "npm:0.0.0"
+    "@webiny/api-mailer": "npm:0.0.0"
+    "@webiny/api-record-locking": "npm:0.0.0"
+    "@webiny/api-security": "npm:0.0.0"
+    "@webiny/api-tenancy": "npm:0.0.0"
+    "@webiny/api-wcp": "npm:0.0.0"
+    "@webiny/api-website-builder": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/handler-aws": "npm:0.0.0"
+    "@webiny/handler-client": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/tasks": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
+    graphql: "npm:^16.11.0"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.9.2"
   languageName: unknown
   linkType: soft
 

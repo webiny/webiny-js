@@ -6,12 +6,11 @@ import { WorkflowsPresenter } from "../Presenters/index.js";
 import { WorkflowsGateway } from "../Gateways/index.js";
 import type { NonEmptyArray } from "@webiny/app/types.js";
 import { mdbid } from "@webiny/utils/mdbid.js";
-import type ApolloClient from "apollo-client";
 import { Button, Grid } from "@webiny/admin-ui";
+import { useApolloClient } from "@apollo/react-hooks";
 
 interface WorkflowViewProps {
     app: string;
-    client: ApolloClient<object>;
 }
 
 const createDefaultWorkflow = (options: Pick<IWorkflow, "app"> & Partial<IWorkflow>): IWorkflow => {
@@ -24,7 +23,8 @@ const createDefaultWorkflow = (options: Pick<IWorkflow, "app"> & Partial<IWorkfl
 };
 
 export const WorkflowView = (props: WorkflowViewProps) => {
-    const { app, client } = props;
+    const { app } = props;
+    const client = useApolloClient();
 
     const presenter = useMemo(() => {
         const defaultWorkflow = createDefaultWorkflow({

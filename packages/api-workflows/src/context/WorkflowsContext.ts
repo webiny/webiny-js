@@ -136,7 +136,7 @@ export class WorkflowsContext implements IWorkflowsContext {
         });
     }
 
-    private async createWorkflow(params: IUpdateWorkflowParams): Promise<IWorkflow> {
+    private async createWorkflow(params: ICreateWorkflowParams): Promise<IWorkflow> {
         const { app, id, input } = params;
         const values = this.transformer.toCmsEntry({
             ...input,

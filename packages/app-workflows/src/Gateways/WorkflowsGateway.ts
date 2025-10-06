@@ -3,12 +3,17 @@ import type { IWorkflow } from "~/types.js";
 import { IWorkflowModel } from "~/Models/index.js";
 import ApolloClient from "apollo-client";
 import {
+    DELETE_WORKFLOW_MUTATION,
     type IStoreWorkflowResponse,
     type IStoreWorkflowVariables,
     LIST_WORKFLOWS_QUERY,
     STORE_WORKFLOW_MUTATION
 } from "./graphql.js";
 import { WebinyError } from "@webiny/error";
+import type {
+    IWorkflowsGatewayDeleteWorkflowResponse,
+    IWorkflowsGatewayStoreWorkflowResponse
+} from "~/Gateways/abstraction/WorkflowsGateway.js";
 
 export interface IWorkflowsGatewayParams {
     app: string;
@@ -24,22 +29,56 @@ export class WorkflowsGateway implements IWorkflowsGateway {
         this.client = params.client;
     }
 
-    // TODO there will only be one workflow, for now, but later we will have more.
-    // Leave the loop, as it is easiest to do atm - later implement proper store workflows.
-    public async storeWorkflows(input: IWorkflowModel[]): Promise<void> {
-        for (const w of input) {
-            const workflow = w.toJS();
-            try {
-                await this.client.mutate<IStoreWorkflowResponse, IStoreWorkflowVariables>({
-                    mutation: STORE_WORKFLOW_MUTATION,
-                    variables: {
-                        app: workflow.app,
-                        id: workflow.id,
-                        data: workflow
+    public async storeWorkflow(
+        input: IWorkflowModel
+    ): Promise<IWorkflowsGatewayStoreWorkflowResponse> {
+        const workflow = input.toJS();
+        try {
+            const result = await this.client.mutate<
+                IStoreWorkflowResponse,
+                IStoreWorkflowVariables
+            >({
+                mutation: STORE_WORKFLOW_MUTATION,
+                variables: {
+                    app: workflow.app,
+                    id: workflow.id,
+                    data: {
+                        name: workflow.name,
+                        steps: workflow.steps
                     }
-                });
-            } catch (ex) {
-                console.error(ex);
+                }
+            });
+            return {
+                data: result.data?.workflows.storeWorkflow.data || null,
+                error: result.data?.workflows.storeWorkflow.error || null
+            };
+        } catch (ex) {
+            console.error(ex);
+            return {
+                data: null,
+                error: WebinyError.from(ex)
+            };
+        }
+    }
+    
+    public async deleteWorkflow(input: IWorkflowModel): Promise<IWorkflowsGatewayDeleteWorkflowResponse> {
+        const workflow = input.toJS();
+        try {
+            const result = await this.client.mutate({
+                mutation: DELETE_WORKFLOW_MUTATION,
+                variables: {
+                    app: workflow.app,
+                    id: workflow.id
+                }
+            });
+            return {
+                data: result.data?.workflows.deleteWorkflow.data || null,
+                error: result.data?.workflows.deleteWorkflow.error || null
+            }
+        } catch(ex) {
+            return {
+                data: null,
+                error: WebinyError.from(ex)
             }
         }
     }
