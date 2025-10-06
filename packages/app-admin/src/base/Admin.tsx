@@ -1,4 +1,5 @@
 import React from "react";
+import { plugins } from "@webiny/plugins";
 import { App, DiContainerProvider } from "@webiny/app";
 import type { ApolloClientFactory } from "./providers/ApolloProvider.js";
 import { createApolloProvider } from "./providers/ApolloProvider.js";
@@ -12,6 +13,7 @@ import { DefaultIcons, IconPickerConfigProvider } from "~/components/IconPicker/
 import { createRootContainer } from "~/base/createRootContainer.js";
 import { WcpProvider } from "~/presentation/wcp/WcpProvider.js";
 import { createTenancyProvider } from "~/presentation/tenancy/createTenancyProvider.js";
+import { tenancyInstallation } from "~/presentation/tenancy/installation.js";
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
@@ -21,6 +23,10 @@ export interface AdminProps {
 const container = createRootContainer();
 
 export const Admin = ({ children, createApolloClient }: AdminProps) => {
+    // Legacy plugins
+    plugins.register(tenancyInstallation);
+
+    // Various providers
     const ApolloProvider = createApolloProvider(createApolloClient);
     const TelemetryProvider = createTelemetryProvider();
     const UIProviders = createUiProviders();
