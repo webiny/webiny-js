@@ -14,21 +14,19 @@ export const HasContentEntryPermissions = ({
 }: HasContentEntryPermissionsProps) => {
     const { canReadEntries } = usePermission();
 
-    if (contentModel) {
-        if (!canReadEntries({ contentModelGroup: group, contentModel })) {
-            return null;
-        }
-    } else {
-        const hasContentEntryPermission = group.contentModels.some(contentModel =>
-            canReadEntries({
-                contentModelGroup: group,
-                contentModel
-            })
-        );
+    if (contentModel && !canReadEntries({ contentModelGroup: group, contentModel })) {
+        return null;
+    }
 
-        if (group.contentModels.length > 0 && !hasContentEntryPermission) {
-            return null;
-        }
+    const hasContentEntryPermission = group.contentModels.some(contentModel =>
+        canReadEntries({
+            contentModelGroup: group,
+            contentModel
+        })
+    );
+
+    if (group.contentModels.length > 0 && !hasContentEntryPermission) {
+        return null;
     }
 
     return children;
