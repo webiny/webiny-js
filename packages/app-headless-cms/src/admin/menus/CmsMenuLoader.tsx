@@ -23,6 +23,7 @@ const CmsContentModelsMenu = ({ canAccess }: ChildMenuProps) => {
         <Menu
             name={"headlessCMS.contentModels.models"}
             parent={"headlessCMS"}
+            pinnable={true}
             element={<Menu.Link text={"Models"} to={router.getLink(Routes.ContentModels.List)} />}
         />
     );
