@@ -7,7 +7,7 @@ interface IconProps {
     group: CmsGroup;
 }
 
-const Icon = ({ group }: IconProps) => {
+export const Icon = ({ group }: IconProps) => {
     return (
         <FontAwesomeIcon
             style={{ color: "var(--mdc-theme-text-secondary-on-background)" }}
@@ -15,5 +15,3 @@ const Icon = ({ group }: IconProps) => {
         />
     );
 };
-
-export default Icon;

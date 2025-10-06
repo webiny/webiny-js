@@ -1,7 +1,7 @@
 import React from "react";
 import type { CmsGroup } from "~/types.js";
 import { AdminConfig } from "@webiny/app-admin";
-import Icon from "./Icon.js";
+import { Icon } from "./Icon.js";
 
 const { Menu } = AdminConfig;
 
@@ -9,7 +9,7 @@ const { Menu } = AdminConfig;
  * Renders a menu item for a given content group.
  * Displays the group's name and icon in the menu.
  */
-const GroupMenu = ({ group }: { group: CmsGroup }) => (
+export const GroupMenu = ({ group }: { group: CmsGroup }) => (
     <Menu
         name={group.id}
         parent="headlessCMSContent"
@@ -21,5 +21,3 @@ const GroupMenu = ({ group }: { group: CmsGroup }) => (
         }
     />
 );
-
-export default GroupMenu;

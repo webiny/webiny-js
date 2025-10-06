@@ -7,7 +7,7 @@ interface HasContentEntryPermissionsProps {
     children: JSX.Element;
 }
 
-const HasContentEntryPermissions = ({
+export const HasContentEntryPermissions = ({
     group,
     contentModel,
     children
@@ -33,5 +33,3 @@ const HasContentEntryPermissions = ({
 
     return children;
 };
-
-export default HasContentEntryPermissions;
