@@ -45,6 +45,7 @@ export class WorkflowsGateway implements IWorkflowsGateway {
     }
 
     public async listWorkflows(): Promise<IWorkflow[]> {
+        await new Promise(resolve => setTimeout(resolve, 2000));
         const result = await this.client.query({
             query: LIST_WORKFLOWS_QUERY,
             variables: {

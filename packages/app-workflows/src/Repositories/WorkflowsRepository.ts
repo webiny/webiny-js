@@ -37,7 +37,9 @@ export class WorkflowsRepository implements IWorkflowsRepository {
     public async init() {
         let workflows: IWorkflow[] = [];
         try {
-            this._loading = true;
+            runInAction(() => {
+                this._loading = true;
+            })
             workflows = await this.gateway.listWorkflows();
             this._error = null;
         } catch (ex) {

@@ -87,9 +87,7 @@ const FormSettings = ({ onExited }: FormSettingsProps) => {
                                 <SimpleFormFooter>
                                     <Button
                                         text={t`Save`}
-                                        onClick={ev => {
-                                            submit(ev);
-                                        }}
+                                        onClick={submit}
                                     />
                                 </SimpleFormFooter>
                             </SimpleForm>

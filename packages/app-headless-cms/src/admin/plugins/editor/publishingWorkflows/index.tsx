@@ -15,6 +15,7 @@ export const publishingWorkflowsEditorFormSettingsPlugin: CmsEditorFormSettingsP
         if (!formData.modelId) {
             return <></>;
         }
+
         return <WorkflowView app={`cms:${formData.modelId}`} client={client} />;
     }
 };

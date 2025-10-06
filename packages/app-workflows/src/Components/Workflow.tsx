@@ -1,6 +1,6 @@
 import React from "react";
 import { NewStep } from "./Step/NewStep.js";
-import { Accordion } from "@webiny/admin-ui";
+import { Accordion, Loader } from "@webiny/admin-ui";
 import type { IInactiveStep } from "./Step/InactiveStep.js";
 import { InactiveStep } from "./Step/InactiveStep.js";
 import { Step } from "./Step/Step.js";
@@ -28,7 +28,7 @@ export const Workflow = observer((props: IPublishingWorkflowProps) => {
     const { presenter } = props;
 
     if (presenter.vm.loading) {
-        return <div>Loading...</div>;
+        return <Loader size="md" variant="accent" indeterminate={true} text="Loading..." />;
     }
 
     const workflow = presenter.vm.workflow;

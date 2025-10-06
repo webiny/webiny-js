@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import type { IWorkflow, IWorkflowStep } from "~/types.js";
 import { Workflow } from "./Workflow.js";
 import { WorkflowsRepository } from "../Repositories/index.js";
@@ -7,6 +7,7 @@ import { WorkflowsGateway } from "../Gateways/index.js";
 import type { NonEmptyArray } from "@webiny/app/types.js";
 import { mdbid } from "@webiny/utils/mdbid.js";
 import type ApolloClient from "apollo-client";
+import { Button, Grid } from "@webiny/admin-ui";
 
 interface WorkflowViewProps {
     app: string;
@@ -42,17 +43,21 @@ export const WorkflowView = (props: WorkflowViewProps) => {
             repository
         });
     }, []);
-
-    console.log({
-        renderingWorkflowView: true,
-        presenter
-    });
+    
+    const saveWorkflow = useCallback(() => {
+        presenter.updateWorkflow(presenter.vm.workflow);
+    }, [presenter.vm.workflow]);
     /**
      * Should be fairly simple to extend this to multiple workflows per model, if needed in the future.
      */
     return (
-        <>
-            <Workflow presenter={presenter} />
-        </>
+        <Grid>
+            <Grid.Column span={12}>
+                <Workflow presenter={presenter} />
+            </Grid.Column>
+            <Grid.Column span={12}>
+                <Button text={"Save"} variant={"primary"} onClick={saveWorkflow} />
+            </Grid.Column>
+        </Grid>
     );
 };
