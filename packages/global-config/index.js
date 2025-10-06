@@ -3,6 +3,7 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import readJson from "load-json-file";
 import writeJson from "write-json-file";
+import { isCI } from "ci-info";
 
 const GLOBAL_CONFIG_PATH = path.join(os.homedir(), ".webiny", "config");
 
@@ -25,7 +26,8 @@ export const globalConfig = {
                 // This flag is set to `false` the moment user successfully
                 // deploys a Webiny project for the first time. Once they do,
                 // they're considered no longer a "new user".
-                newUser: true
+                // Also, in CI environments, we always set this to `false`.
+                newUser: isCI ? false : true
             };
             writeJson.sync(GLOBAL_CONFIG_PATH, this.__globalConfig);
         }

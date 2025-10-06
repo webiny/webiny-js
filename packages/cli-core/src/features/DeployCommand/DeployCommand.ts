@@ -3,6 +3,12 @@ import { Command, GetProjectSdkService, StdioService, UiService } from "~/abstra
 import { DeployOutput } from "./deployOutputs/DeployOutput.js";
 import { AppName } from "@webiny/project";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
+import { setTimeout } from "node:timers/promises";
+import ora from "ora";
+import open from "open";
+
+// TODO: convert to a real service.
+import { PrintInfoForEnv } from "~/features/InfoCommand/PrintInfoForEnv.js";
 
 export interface IDeployNoAppParams {
     variant?: string;
@@ -18,6 +24,8 @@ export interface IDeployWithAppParams extends IDeployNoAppParams {
 }
 
 export type IDeployCommandParams = IDeployNoAppParams | IDeployWithAppParams;
+
+const sleep = (ms: number = 1500) => setTimeout(ms);
 
 export class DeployCommand implements Command.Interface<IDeployCommandParams> {
     constructor(
@@ -106,6 +114,26 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
                 if ("app" in params) {
                     await this.deployApp(params);
                 } else {
+                    const isCi = projectSdk.isCi();
+                    const coreStack = await projectSdk.getAppStackOutput({
+                        app: "core",
+                        env: params.env,
+                        variant: params.variant
+                    });
+
+                    const isFirstDeployment = !isCi && !coreStack?.deploymentId;
+                    if (isFirstDeployment) {
+                        ui.info(`Looks like this is your first time deploying the project.`);
+                        ui.info(
+                            `Note that the initial deployment can take up to %s, so please be patient.`,
+                            "10 minutes"
+                        );
+                        await sleep();
+                    }
+
+                    // 3. Start deploying apps one-by-one.
+                    isFirstDeployment && ui.newLine();
+
                     // Deploy all apps in the project.
                     ui.info("Deploying %s app...", "Core");
                     await this.deployApp({ ...params, app: "core" });
@@ -116,6 +144,52 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
                     ui.newLine();
                     ui.info("Deploying %s app...", "Admin");
                     await this.deployApp({ ...params, app: "admin" });
+
+                    if (isFirstDeployment) {
+                        ui.success(`Congratulations! You've just deployed a brand new project!`);
+                    } else {
+                        ui.success(`Project deployed.`);
+                    }
+
+                    const printInfoForEnv = new PrintInfoForEnv({
+                        getProjectSdkService: this.getProjectSdkService,
+                        uiService: this.uiService
+                    });
+
+                    ui.newLine();
+                    ui.textBold("Project Details");
+                    await printInfoForEnv.execute(params);
+
+                    const adminAppOutput = await projectSdk.getAppStackOutput({
+                        ...params,
+                        app: "admin"
+                    });
+
+                    if (isFirstDeployment && adminAppOutput) {
+                        ui.newLine();
+                        ui.info(
+                            "The final step is to open the %s app in your browser and complete the installation wizard.",
+                            "Admin"
+                        );
+
+                        const spinner = ora(`Opening Admin in your browser...`).start();
+
+                        try {
+                            await sleep(7000);
+                            open(adminAppOutput.appUrl as string);
+                            spinner.succeed(`Successfully opened Admin app in your browser.`);
+                        } catch {
+                            spinner.fail(`Failed to open Admin in your browser.`);
+
+                            await sleep(1000);
+                            ui.newLine();
+                            ui.warning(
+                                `Failed to open %s app in your browser. To finish the setup and start using the project, please visit %s and complete the installation wizard.`,
+                                "Admin",
+                                adminAppOutput.appUrl
+                            );
+                        }
+                    }
                 }
             }
         };

@@ -7,7 +7,6 @@
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-serverless-cms/tsconfig.build.json" },
-    { "path": "../app-tenancy/tsconfig.build.json" },
     { "path": "../app-tenant-manager/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },

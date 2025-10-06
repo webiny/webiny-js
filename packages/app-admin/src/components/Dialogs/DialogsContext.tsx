@@ -89,6 +89,18 @@ export const DialogsProvider = ({ children }: DialogsProviderProps) => {
     };
 
     const closeDialog = (id: string) => {
+        const dialog = dialogs.get(id);
+
+        // Call the onClose callback if it exists
+        if (dialog?.onClose && typeof dialog.onClose === "function") {
+            try {
+                dialog.onClose();
+            } catch (error) {
+                // Log error but don't prevent dialog cleanup
+                console.error("Error in dialog onClose callback:", error);
+            }
+        }
+
         setDialogs(dialogs => {
             const newDialogs = new Map(dialogs);
             newDialogs.delete(id);

@@ -1,7 +1,7 @@
 import React from "react";
 import { makeDecoratable } from "@webiny/react-composition";
-import { useContainer } from "~/di/DiContainerProvider.js";
 import { RouterGateway } from "~/features/router/abstractions.js";
+import { useContainer } from "~/shared/di/DiContainerProvider.js";
 
 type BaseAnchorAttributes = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href">;
 

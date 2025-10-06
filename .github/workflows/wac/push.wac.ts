@@ -78,6 +78,7 @@ const createPushWorkflow = (branchName: string) => {
 
         const projectSetupJob: NormalJob = createJob({
             needs: ["constants", "build", jobNames.constants],
+            "runs-on": BUILD_PACKAGES_RUNNER,
             name: `E2E (${storageOps.displayName}) - Project setup`,
             outputs: {
                 "cypress-config": "${{ steps.save-cypress-config.outputs.cypress-config }}"
@@ -284,20 +285,17 @@ const createPushWorkflow = (branchName: string) => {
                 },
                 "runs-on": "${{ matrix.os }}",
                 env,
-                awsAuth:
-                    storageOps &&
-                    (storageOps.id === "ddb-es,ddb" || storageOps.id === "ddb-os,ddb"),
+                awsAuth: !!storageOps,
                 checkout: { path: DIR_WEBINY_JS },
                 steps: [
                     ...yarnCacheSteps,
                     ...runBuildCacheSteps,
                     ...installBuildSteps,
-                    ...withCommonParams(
-                        [{ name: "Run tests", run: "${{ matrix.testCommand.cmd }}" }],
-                        {
-                            "working-directory": DIR_WEBINY_JS
-                        }
-                    )
+                    {
+                        name: "Run tests",
+                        run: "${{ matrix.testCommand.cmd }}",
+                        "working-directory": DIR_WEBINY_JS
+                    }
                 ]
             })
         };

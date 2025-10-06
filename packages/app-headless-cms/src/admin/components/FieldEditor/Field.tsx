@@ -7,10 +7,9 @@ import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg"
 import { plugins } from "@webiny/plugins";
 import type { CmsModelField, CmsEditorFieldOptionPlugin, CmsModel } from "~/types.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar.js";
 import { useModelEditor } from "~/admin/hooks/index.js";
 import { useModelFieldEditor } from "~/admin/components/FieldEditor/useModelFieldEditor.js";
-import { useConfirmationDialog } from "@webiny/app-admin";
+import { useSnackbar, useConfirmationDialog } from "@webiny/app-admin";
 import { IconButton, Heading, Text, DropdownMenu, Tag } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/components/editor/field");

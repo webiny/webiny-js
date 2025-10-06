@@ -277,6 +277,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
       - uses: actions/checkout@v4
         with:
           path: feat_v6-esm-vitest
@@ -297,6 +302,8 @@ jobs:
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
         working-directory: feat_v6-esm-vitest
+    permissions:
+      id-token: write
   vitest-ddbEs-constants:
     needs:
       - build
@@ -486,6 +493,7 @@ jobs:
       - constants
       - build
       - e2eTests-ddb-constants
+    runs-on: webiny-build-packages
     name: E2E (DDB) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -598,7 +606,6 @@ jobs:
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
         working-directory: feat_v6-esm-vitest
-    runs-on: ubuntu-latest
     permissions:
       id-token: write
   e2eTests-ddbEs-constants:
@@ -632,6 +639,7 @@ jobs:
       - constants
       - build
       - e2eTests-ddbEs-constants
+    runs-on: webiny-build-packages
     name: E2E (DDB+ES) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -747,7 +755,6 @@ jobs:
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
         working-directory: feat_v6-esm-vitest
-    runs-on: ubuntu-latest
     permissions:
       id-token: write
   e2eTests-ddbOs-constants:
@@ -781,6 +788,7 @@ jobs:
       - constants
       - build
       - e2eTests-ddbOs-constants
+    runs-on: webiny-build-packages
     name: E2E (DDB+OS) - Project setup
     outputs:
       cypress-config: ${{ steps.save-cypress-config.outputs.cypress-config }}
@@ -896,6 +904,5 @@ jobs:
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
         working-directory: feat_v6-esm-vitest
-    runs-on: ubuntu-latest
     permissions:
       id-token: write

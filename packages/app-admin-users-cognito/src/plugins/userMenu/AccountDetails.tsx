@@ -1,6 +1,6 @@
 import React from "react";
 import { useSecurity } from "@webiny/app-security";
-import { useTenancy } from "@webiny/app-tenancy";
+import { useTenancy } from "@webiny/app-admin";
 import { useIsDefaultTenant } from "./useIsDefaultTenant.js";
 import { ReactComponent as AccountIcon } from "@webiny/icons/account_circle.svg";
 import { ReactComponent as SignOutIcon } from "@webiny/icons/logout.svg";

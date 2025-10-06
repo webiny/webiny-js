@@ -14,7 +14,7 @@ import { useAuth0, Auth0Provider } from "@auth0/auth0-react";
 import { plugins } from "@webiny/plugins";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin.js";
 import { useSecurity } from "@webiny/app-serverless-cms";
-import { useTenancy, withTenant } from "@webiny/app-tenancy";
+import { useTenancy, withTenant } from "@webiny/app-admin";
 import type { SecurityPermission } from "@webiny/app-security/types.js";
 import type { GetIdentityDataCallable } from "./createGetIdentityData/index.js";
 import { createGetIdentityData, LOGIN_MT, LOGIN_ST } from "./createGetIdentityData/index.js";

@@ -1,7 +1,5 @@
-import { createBrowserHistory } from "history";
-import React, { useMemo } from "react";
-import { App } from "@webiny/app";
-import { WcpProvider } from "@webiny/app-wcp";
+import React from "react";
+import { App, DiContainerProvider } from "@webiny/app";
 import type { ApolloClientFactory } from "./providers/ApolloProvider.js";
 import { createApolloProvider } from "./providers/ApolloProvider.js";
 import { Base } from "./Base.js";
@@ -11,33 +9,25 @@ import { createAdminUiStateProvider } from "./providers/AdminUiStateProvider.js"
 import { createUiProviders } from "./providers/UiProviders.js";
 import { createDialogsProvider } from "~/components/Dialogs/DialogsContext.js";
 import { DefaultIcons, IconPickerConfigProvider } from "~/components/IconPicker/config/index.js";
-import { DiContainerProvider } from "@webiny/app/di/DiContainerProvider.js";
-import { Container } from "@webiny/di-container";
-import { RouterFeature } from "@webiny/app/features/router/feature.js";
-import { DefaultRouteElementRegistry } from "@webiny/app/presentation/router/RouteElementRegistry.js";
-import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
-import { HistoryRouterGateway } from "@webiny/app/features/router/HistoryRouterGateway.js";
-
-const history = createBrowserHistory();
+import { createRootContainer } from "~/base/createRootContainer.js";
+import { WcpProvider } from "~/presentation/wcp/WcpProvider.js";
+import { createTenancyProvider } from "~/presentation/tenancy/createTenancyProvider.js";
 
 export interface AdminProps {
     createApolloClient: ApolloClientFactory;
     children?: React.ReactNode;
 }
 
+const container = createRootContainer();
+
 export const Admin = ({ children, createApolloClient }: AdminProps) => {
-    const container = useMemo(() => new Container(), []);
     const ApolloProvider = createApolloProvider(createApolloClient);
     const TelemetryProvider = createTelemetryProvider();
     const UIProviders = createUiProviders();
     const UiStateProvider = createUiStateProvider();
     const AdminUiStateProvider = createAdminUiStateProvider();
     const DialogsProvider = createDialogsProvider();
-
-    container.registerInstance(RouterGateway, new HistoryRouterGateway(history, ""));
-
-    container.register(DefaultRouteElementRegistry).inSingletonScope();
-    RouterFeature.register(container);
+    const TenancyProvider = createTenancyProvider();
 
     return (
         <DiContainerProvider container={container}>
@@ -51,7 +41,8 @@ export const Admin = ({ children, createApolloClient }: AdminProps) => {
                             UiStateProvider,
                             DialogsProvider,
                             IconPickerConfigProvider,
-                            AdminUiStateProvider
+                            AdminUiStateProvider,
+                            TenancyProvider
                         ]}
                     >
                         <Base />

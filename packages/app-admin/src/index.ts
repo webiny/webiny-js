@@ -36,10 +36,15 @@ export type {
     FileManagerOnChange
 } from "./base/ui/FileManager.js";
 
+// Feature types
+export type { AaclPermission } from "./features/wcp/types.js";
+export type { Tenant } from "./features/tenancy/types.js";
+
 // Hooks
 export * from "./hooks/index.js";
-export { useWcp } from "@webiny/app-wcp";
-export type { AaclPermission } from "@webiny/app-wcp/types.js";
+export { useWcp } from "./presentation/wcp/useWcp.js";
+export { useTenancy } from "./presentation/tenancy/useTenancy.js";
+export { withTenant } from "./presentation/tenancy/withTenant.js";
 
 export * from "@webiny/app/renderApp.js";
 

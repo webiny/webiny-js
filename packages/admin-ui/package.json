@@ -10,7 +10,6 @@
   "description": "The UI component library for Webiny's Admin app.",
   "license": "MIT",
   "dependencies": {
-    "@editorjs/editorjs": "2.31.0",
     "@fortawesome/fontawesome-svg-core": "^1.3.0",
     "@fortawesome/react-fontawesome": "^0.1.19",
     "@minoru/react-dnd-treeview": "^3.5.3",

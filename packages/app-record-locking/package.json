@@ -21,7 +21,6 @@
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-headless-cms": "0.0.0",
     "@webiny/app-security": "0.0.0",
-    "@webiny/app-wcp": "0.0.0",
     "@webiny/app-websockets": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/form": "0.0.0",

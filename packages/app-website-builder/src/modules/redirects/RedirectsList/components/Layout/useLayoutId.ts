@@ -1,5 +1,5 @@
 import { useI18N } from "@webiny/app-i18n";
-import { useTenancy } from "@webiny/app-tenancy";
+import { useTenancy } from "@webiny/app-admin";
 
 /**
  * Generates a `layoutId` to be used with the `<SplitView />` component.

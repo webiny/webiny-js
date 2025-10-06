@@ -21,7 +21,6 @@
     "@webiny/app-admin-cognito": "0.0.0",
     "@webiny/app-security": "0.0.0",
     "@webiny/app-security-access-management": "0.0.0",
-    "@webiny/app-tenancy": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/plugins": "0.0.0",

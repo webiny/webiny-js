@@ -19,10 +19,7 @@ import {
     ListItemTextPrimary
 } from "@webiny/ui/List/index.js";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons/index.js";
-import { useRouter } from "@webiny/app-admin";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar.js";
-import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog.js";
-import { SearchUI } from "@webiny/app-admin";
+import { useRouter, useSnackbar, useConfirmationDialog, SearchUI } from "@webiny/app-admin";
 import { DELETE_USER, LIST_USERS } from "./graphql.js";
 import { deserializeSorters } from "../utils.js";
 import type { UserItem } from "~/UserItem.js";

@@ -1,16 +1,15 @@
-import { createFeature } from "~/di/createFeature.js";
 import { RouterRepository } from "~/features/router/RouterRepository.js";
 import { RouterPresenter } from "~/features/router/RouterPresenter.js";
 import * as Abstractions from "~/features/router/abstractions.js";
+import { createFeature } from "~/shared/di/createFeature.js";
 
 export const RouterFeature = createFeature({
-    name: "RouterFeature",
-    tokens: {},
+    name: "Router",
     register(container) {
         container.register(RouterRepository).inSingletonScope();
         container.register(RouterPresenter).inSingletonScope();
     },
-    init(container) {
+    resolve(container) {
         return {
             presenter: container.resolve(Abstractions.RouterPresenter)
         };

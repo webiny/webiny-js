@@ -10,7 +10,6 @@
     { "path": "../app-headless-cms-common/tsconfig.build.json" },
     { "path": "../app-i18n/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
-    { "path": "../app-tenancy/tsconfig.build.json" },
     { "path": "../app-websockets/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },

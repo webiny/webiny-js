@@ -1,3 +1,4 @@
+import React from "react";
 import { Abstraction } from "@webiny/di-container";
 
 interface IRouteElementRegistry {

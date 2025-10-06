@@ -6,7 +6,6 @@
     { "path": "../app" },
     { "path": "../app-admin" },
     { "path": "../app-security" },
-    { "path": "../app-tenancy" },
     { "path": "../form" },
     { "path": "../ui" },
     { "path": "../validation" }
@@ -26,8 +25,6 @@
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
-      "@webiny/app-tenancy/*": ["../app-tenancy/src/*"],
-      "@webiny/app-tenancy": ["../app-tenancy/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/ui/*": ["../ui/src/*"],

@@ -1,10 +1,8 @@
 import { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import isEmpty from "lodash/isEmpty.js";
-import { useRoute, useRouter } from "@webiny/app-admin";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar.js";
+import { useRoute, useRouter, useSnackbar, useWcp } from "@webiny/app-admin";
 import { CREATE_USER, LIST_USERS, READ_USER, UPDATE_USER } from "~/ui/views/Users/graphql.js";
-import { useWcp } from "@webiny/app-admin";
 import omit from "lodash/omit.js";
 import { Routes } from "~/routes.js";
 

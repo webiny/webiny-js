@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { LeftPanel, RightPanel, SplitView, useRoute, useRouter } from "@webiny/app-admin";
 import { AcoProvider, useNavigateFolder } from "@webiny/app-aco";
 import { useI18N } from "@webiny/app-i18n";
-import { useTenancy } from "@webiny/app-tenancy";
+import { useTenancy } from "@webiny/app-admin";
 import { Sidebar } from "./Sidebar.js";
 import { Main } from "./Main.js";
 import { ContentEntryProvider } from "~/admin/views/contentEntries/ContentEntry/ContentEntryContext.js";

@@ -85,7 +85,7 @@ export async function createRspackConfig(webpackEnv, { paths, options }) {
                     "scheduler/tracing": require.resolve("scheduler/tracing-profiling")
                 }),
                 // This is a temporary fix, until we sort out the `react-butterfiles` dependency.
-                "react-butterfiles": require.resolve("@webiny/app/react-butterfiles"),
+                "react-butterfiles": require.resolve("@webiny/app/react-butterfiles/index.js"),
                 ...(modules.webpackAliases || {})
             }
         },

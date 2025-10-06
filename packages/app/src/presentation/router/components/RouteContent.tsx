@@ -1,6 +1,6 @@
 import React from "react";
 import { RouteElementRegistry, useRoute } from "~/presentation/router/index.js";
-import { useContainer } from "~/di/DiContainerProvider.js";
+import { useContainer } from "~/shared/di/DiContainerProvider.js";
 
 export const RouteContent = () => {
     const { route } = useRoute();

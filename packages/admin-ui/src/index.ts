@@ -37,7 +37,6 @@ export * from "./ProgressBar/index.js";
 export * from "./Providers/index.js";
 export * from "./RadioGroup/index.js";
 export * from "./RangeSlider/index.js";
-export * from "./RichTextEditor/index.js";
 export * from "./Scrollbar/index.js";
 export * from "./Select/index.js";
 export * from "./Separator/index.js";

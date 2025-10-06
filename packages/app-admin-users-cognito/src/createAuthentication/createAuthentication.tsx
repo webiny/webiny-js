@@ -3,7 +3,7 @@ import type { DocumentNode } from "graphql";
 import type { AuthenticationFactoryConfig as BaseConfig } from "@webiny/app-admin-cognito";
 import { createAuthentication as baseCreateAuthentication } from "@webiny/app-admin-cognito";
 import { useTags } from "@webiny/app-admin";
-import { useTenancy, withTenant } from "@webiny/app-tenancy";
+import { useTenancy, withTenant } from "@webiny/app-admin";
 import { NotAuthorizedError } from "./NotAuthorizedError/index.js";
 import { createGetIdentityData, LOGIN_ST, LOGIN_MT } from "~/createGetIdentityData/index.js";
 import type { GetIdentityDataCallable } from "~/createGetIdentityData/createGetIdentityData.js";

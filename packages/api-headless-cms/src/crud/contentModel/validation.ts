@@ -224,7 +224,13 @@ const modelSettingsWorkflowStepValidation = zod.object({
     id: zod.string(),
     title: zod.string(),
     color: zod.string(),
-    description: zod.string().optional(),
+    description: zod
+        .string()
+        .nullish()
+        .optional()
+        .transform(value => {
+            return value || undefined;
+        }),
     teams: zod
         .array(
             zod.object({

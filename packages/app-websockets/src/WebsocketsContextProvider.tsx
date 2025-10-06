@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useTenancy } from "@webiny/app-tenancy";
+import { useTenancy } from "@webiny/app-admin";
 import { useI18N } from "@webiny/app-i18n";
 import { useSecurity } from "@webiny/app-security";
 import type {

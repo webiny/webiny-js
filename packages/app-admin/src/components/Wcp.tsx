@@ -1,5 +1,5 @@
 import React from "react";
-import { useWcp } from "@webiny/app-wcp";
+import { useWcp } from "~/presentation/wcp/useWcp.js";
 
 interface ChildrenProps {
     children: React.ReactNode;

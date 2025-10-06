@@ -3,7 +3,7 @@ import Helmet from "react-helmet";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography/index.js";
-import { useTenancy } from "@webiny/app-tenancy/hooks/useTenancy.js";
+import { useTenancy } from "@webiny/app-admin";
 import { useSecurity } from "@webiny/app-security";
 import { makeDecoratable } from "@webiny/app-admin";
 import authErrorImg from "./SecureRouteError.svg";

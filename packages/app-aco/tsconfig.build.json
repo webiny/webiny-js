@@ -8,7 +8,6 @@
     { "path": "../app-headless-cms-common/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-utils/tsconfig.build.json" },
-    { "path": "../app-wcp/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../react-properties/tsconfig.build.json" },

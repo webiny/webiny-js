@@ -1,15 +1,10 @@
 import React, { useMemo } from "react";
 import type { FormAPI } from "@webiny/form";
-import type {
-    CmsModel,
-    IWorkflow,
-    IWorkflowStepTeam
-} from "@webiny/app-headless-cms-common/types/index.js";
+import type { CmsModel, IWorkflow } from "~/types.js";
 import { PublishingWorkflow } from "./PublishingWorkflow.js";
 import { WorkflowsRepository } from "../repositories/index.js";
 import { WorkflowsPresenter } from "../presenters/WorkflowsPresenter.js";
-import { WorkflowsGateway } from "~/admin/plugins/editor/publishingWorkflows/gateways/index.js";
-import type { NonEmptyArray } from "@webiny/app/types.js";
+import { WorkflowsGateway } from "../gateways/index.js";
 
 interface ViewProps {
     form: FormAPI<Pick<CmsModel, "settings">>;
@@ -18,16 +13,7 @@ interface ViewProps {
 const defaultWorkflow: IWorkflow = {
     id: "default",
     name: "Default Workflow",
-    steps: [
-        {
-            id: "id",
-            title: "Testing",
-            teams: [] as unknown as NonEmptyArray<IWorkflowStepTeam>,
-            color: "blue",
-            description: "A description",
-            notifications: []
-        }
-    ]
+    steps: []
 };
 
 export const View = (props: ViewProps) => {

@@ -2,8 +2,7 @@ import React, { useCallback, useEffect, useMemo, useReducer } from "react";
 import get from "lodash/get.js";
 import pick from "lodash/pick.js";
 import type { ApolloClient } from "apollo-client";
-import { useRouter } from "@webiny/app-admin";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar.js";
+import { useSnackbar, useRouter } from "@webiny/app-admin";
 import type {
     GetCmsModelQueryResponse,
     GetCmsModelQueryVariables,

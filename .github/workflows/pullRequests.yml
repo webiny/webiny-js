@@ -254,40 +254,43 @@ jobs:
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  jestTestsNoStorageConstants:
+  vitest-constants:
     needs:
       - constants
       - build
-    name: Create Jest tests constants
-    runs-on: ubuntu-latest
+    name: Vitest (No storage) - Constants
     outputs:
-      packages-to-jest-test: ${{ steps.list-packages-to-jest-test.outputs.packages-to-jest-test }}
+      vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - uses: actions/checkout@v4
-      - name: List packages to test with Jest
-        id: list-packages-to-jest-test
+        with:
+          path: ${{ github.base_ref }}
+      - id: list-vitest-test-commands
+        name: List Vitest Test Commands
+        working-directory: ${{ github.base_ref }}
         run: >-
-          echo "packages-to-jest-test=$(node
-          .github/workflows/wac/utils/runNodeScripts/listPackagesToJestTest.js
-          '[[], ${{ needs.constants.outputs.changed-packages }}]')" >>
+          echo "vitest-test-commands=$(node
+          .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
+          '[, ${{ needs.constants.outputs.changed-packages }}]')" >>
           $GITHUB_OUTPUT
-      - name: Packages to test with Jest
+      - name: Packages to test with Vitest
         id: list-packages
         run: >-
-          echo '${{
-          steps.list-packages-to-jest-test.outputs.packages-to-jest-test }}'
+          echo '${{ steps.list-vitest-test-commands.outputs.vitest-test-commands
+          }}'
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  jestTestsundefinedRun:
+  vitest-run:
     needs:
       - constants
       - build
-      - jestTestsNoStorageConstants
-    name: ${{ matrix.package.cmd }}
+      - vitest-constants
+    name: ${{ matrix.testCommand.title }}
     strategy:
       fail-fast: false
       matrix:
@@ -295,16 +298,13 @@ jobs:
           - ubuntu-latest
         node:
           - 22
-        package: >-
-          ${{
-          fromJson(needs.jestTestsNoStorageConstants.outputs.packages-to-jest-test)
-          }}
+        testCommand: ${{ fromJSON(needs.vitest-constants.outputs.vitest-test-commands) }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
-    if: needs.jestTestsNoStorageConstants.outputs.packages-to-jest-test != '[]'
+    if: needs.vitest-constants.outputs.vitest-test-commands != '[]'
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -327,42 +327,45 @@ jobs:
         run: yarn build
         working-directory: ${{ github.base_ref }}
       - name: Run tests
-        run: yarn test ${{ matrix.package.cmd }}
+        run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ github.base_ref }}
-  jestTestsddbConstants:
+  vitest-ddb-constants:
     needs:
       - constants
       - build
-    name: Create Jest tests constants
-    runs-on: ubuntu-latest
+    name: Vitest (DDB) - Constants
     outputs:
-      packages-to-jest-test: ${{ steps.list-packages-to-jest-test.outputs.packages-to-jest-test }}
+      vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - uses: actions/checkout@v4
-      - name: List packages to test with Jest
-        id: list-packages-to-jest-test
+        with:
+          path: ${{ github.base_ref }}
+      - id: list-vitest-test-commands
+        name: List Vitest Test Commands
+        working-directory: ${{ github.base_ref }}
         run: >-
-          echo "packages-to-jest-test=$(node
-          .github/workflows/wac/utils/runNodeScripts/listPackagesToJestTest.js
-          '[[], ${{ needs.constants.outputs.changed-packages }}]')" >>
+          echo "vitest-test-commands=$(node
+          .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
+          '[ddb, ${{ needs.constants.outputs.changed-packages }}]')" >>
           $GITHUB_OUTPUT
-      - name: Packages to test with Jest
+      - name: Packages to test with Vitest
         id: list-packages
         run: >-
-          echo '${{
-          steps.list-packages-to-jest-test.outputs.packages-to-jest-test }}'
+          echo '${{ steps.list-vitest-test-commands.outputs.vitest-test-commands
+          }}'
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  jestTestsddbRun:
+  vitest-ddb-run:
     needs:
       - constants
       - build
-      - jestTestsddbConstants
-    name: ${{ matrix.package.cmd }}
+      - vitest-ddb-constants
+    name: ${{ matrix.testCommand.title }}
     strategy:
       fail-fast: false
       matrix:
@@ -370,19 +373,24 @@ jobs:
           - ubuntu-latest
         node:
           - 22
-        package: >-
-          ${{
-          fromJson(needs.jestTestsddbConstants.outputs.packages-to-jest-test) }}
+        testCommand: >-
+          ${{ fromJSON(needs.vitest-ddb-constants.outputs.vitest-test-commands)
+          }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
-    if: needs.jestTestsddbConstants.outputs.packages-to-jest-test != '[]'
+    if: needs.vitest-ddb-constants.outputs.vitest-test-commands != '[]'
     steps:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::726952677045:role/GitHubActionsWebinyJs
+          aws-region: eu-central-1
       - uses: actions/checkout@v4
         with:
           path: ${{ github.base_ref }}
@@ -401,42 +409,47 @@ jobs:
         run: yarn build
         working-directory: ${{ github.base_ref }}
       - name: Run tests
-        run: yarn test ${{ matrix.package.cmd }}
+        run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ github.base_ref }}
-  jestTestsddb-es_ddbConstants:
+    permissions:
+      id-token: write
+  vitest-ddbEs-constants:
     needs:
       - constants
       - build
-    name: Create Jest tests constants
-    runs-on: ubuntu-latest
+    name: Vitest (DDB+ES) - Constants
     outputs:
-      packages-to-jest-test: ${{ steps.list-packages-to-jest-test.outputs.packages-to-jest-test }}
+      vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - uses: actions/checkout@v4
-      - name: List packages to test with Jest
-        id: list-packages-to-jest-test
+        with:
+          path: ${{ github.base_ref }}
+      - id: list-vitest-test-commands
+        name: List Vitest Test Commands
+        working-directory: ${{ github.base_ref }}
         run: >-
-          echo "packages-to-jest-test=$(node
-          .github/workflows/wac/utils/runNodeScripts/listPackagesToJestTest.js
-          '[[], ${{ needs.constants.outputs.changed-packages }}]')" >>
+          echo "vitest-test-commands=$(node
+          .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
+          '[ddb-es,ddb, ${{ needs.constants.outputs.changed-packages }}]')" >>
           $GITHUB_OUTPUT
-      - name: Packages to test with Jest
+      - name: Packages to test with Vitest
         id: list-packages
         run: >-
-          echo '${{
-          steps.list-packages-to-jest-test.outputs.packages-to-jest-test }}'
+          echo '${{ steps.list-vitest-test-commands.outputs.vitest-test-commands
+          }}'
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  jestTestsddb-es,ddbRun:
+  vitest-ddbEs-run:
     needs:
       - constants
       - build
-      - jestTestsddb-es_ddbConstants
-    name: ${{ matrix.package.cmd }}
+      - vitest-ddbEs-constants
+    name: ${{ matrix.testCommand.title }}
     strategy:
       fail-fast: false
       matrix:
@@ -444,10 +457,9 @@ jobs:
           - ubuntu-latest
         node:
           - 22
-        package: >-
+        testCommand: >-
           ${{
-          fromJson(needs.jestTestsddb-es_ddbConstants.outputs.packages-to-jest-test)
-          }}
+          fromJSON(needs.vitest-ddbEs-constants.outputs.vitest-test-commands) }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -457,8 +469,8 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
     if: >-
-      needs.jestTestsddb-es_ddbConstants.outputs.packages-to-jest-test != '[]'
-      && needs.constants.outputs.is-fork-pr != 'true'
+      needs.vitest-ddbEs-constants.outputs.vitest-test-commands != '[]' &&
+      needs.constants.outputs.is-fork-pr != 'true'
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -486,44 +498,47 @@ jobs:
         run: yarn build
         working-directory: ${{ github.base_ref }}
       - name: Run tests
-        run: yarn test ${{ matrix.package.cmd }}
+        run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ github.base_ref }}
     permissions:
       id-token: write
-  jestTestsddb-os_ddbConstants:
+  vitest-ddbOs-constants:
     needs:
       - constants
       - build
-    name: Create Jest tests constants
-    runs-on: ubuntu-latest
+    name: Vitest (DDB+OS) - Constants
     outputs:
-      packages-to-jest-test: ${{ steps.list-packages-to-jest-test.outputs.packages-to-jest-test }}
+      vitest-test-commands: ${{ steps.list-vitest-test-commands.outputs.vitest-test-commands }}
     steps:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - uses: actions/checkout@v4
-      - name: List packages to test with Jest
-        id: list-packages-to-jest-test
+        with:
+          path: ${{ github.base_ref }}
+      - id: list-vitest-test-commands
+        name: List Vitest Test Commands
+        working-directory: ${{ github.base_ref }}
         run: >-
-          echo "packages-to-jest-test=$(node
-          .github/workflows/wac/utils/runNodeScripts/listPackagesToJestTest.js
-          '[[], ${{ needs.constants.outputs.changed-packages }}]')" >>
+          echo "vitest-test-commands=$(node
+          .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
+          '[ddb-os,ddb, ${{ needs.constants.outputs.changed-packages }}]')" >>
           $GITHUB_OUTPUT
-      - name: Packages to test with Jest
+      - name: Packages to test with Vitest
         id: list-packages
         run: >-
-          echo '${{
-          steps.list-packages-to-jest-test.outputs.packages-to-jest-test }}'
+          echo '${{ steps.list-vitest-test-commands.outputs.vitest-test-commands
+          }}'
+    runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
-  jestTestsddb-os,ddbRun:
+  vitest-ddbOs-run:
     needs:
       - constants
       - build
-      - jestTestsddb-os_ddbConstants
-    name: ${{ matrix.package.cmd }}
+      - vitest-ddbOs-constants
+    name: ${{ matrix.testCommand.title }}
     strategy:
       fail-fast: false
       matrix:
@@ -531,10 +546,9 @@ jobs:
           - ubuntu-latest
         node:
           - 22
-        package: >-
+        testCommand: >-
           ${{
-          fromJson(needs.jestTestsddb-os_ddbConstants.outputs.packages-to-jest-test)
-          }}
+          fromJSON(needs.vitest-ddbOs-constants.outputs.vitest-test-commands) }}
     runs-on: ${{ matrix.os }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -544,8 +558,8 @@ jobs:
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
     if: >-
-      needs.jestTestsddb-os_ddbConstants.outputs.packages-to-jest-test != '[]'
-      && needs.constants.outputs.is-fork-pr != 'true'
+      needs.vitest-ddbOs-constants.outputs.vitest-test-commands != '[]' &&
+      needs.constants.outputs.is-fork-pr != 'true'
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -573,7 +587,7 @@ jobs:
         run: yarn build
         working-directory: ${{ github.base_ref }}
       - name: Run tests
-        run: yarn test ${{ matrix.package.cmd }}
+        run: ${{ matrix.testCommand.cmd }}
         working-directory: ${{ github.base_ref }}
     permissions:
       id-token: write

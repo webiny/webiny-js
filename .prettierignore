@@ -6,7 +6,6 @@
 **/.out/
 **/.pulumi/
 .webiny/**
-packages/ui/src/RichTextEditor/editorjs/**
 packages/admin-ui/scripts/importFromFigma/exports/Alias tokens.json
 lerna.json
 coverage/**

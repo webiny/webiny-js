@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useTenancy } from "@webiny/app-tenancy";
+import { useTenancy } from "@webiny/app-admin";
 import { useSelectFromDocument } from "~/BaseEditor/hooks/useSelectFromDocument.js";
 import { usePreviewDomain } from "./usePreviewDomain.js";
 

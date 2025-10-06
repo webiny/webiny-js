@@ -14,7 +14,7 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
 
     get vm(): IWorkflowsViewModel {
         return {
-            workflow: this.current.toJS()
+            workflow: this.current
         };
     }
 

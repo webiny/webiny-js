@@ -5,7 +5,6 @@ import type { CmsModelField, CmsModelFieldRendererPlugin } from "~/types.js";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
 import DynamicSection from "../DynamicSection.js";
 import { LexicalCmsEditor } from "~/admin/components/LexicalCmsEditor/LexicalCmsEditor.js";
-import { modelHasLegacyRteField } from "~/admin/plugins/fieldRenderers/richText/utils.js";
 import { useForm } from "@webiny/form";
 import { MultiValueRendererSettings } from "~/admin/plugins/fieldRenderers/MultiValueRendererSettings.js";
 import { FormComponentNote, DelayedOnChange, IconButton } from "@webiny/admin-ui";
@@ -24,17 +23,12 @@ const plugin: CmsModelFieldRendererPlugin = {
         rendererName: "lexical-text-inputs",
         name: t`Lexical Text Inputs`,
         description: t`Renders a list of lexical editors.`,
-        canUse({ field, model }) {
-            const canUse =
+        canUse({ field }) {
+            return (
                 field.type === "rich-text" &&
                 !!field.multipleValues &&
-                !get(field, "predefinedValues.enabled");
-
-            if (canUse && modelHasLegacyRteField(model)) {
-                return false;
-            }
-
-            return canUse;
+                !get(field, "predefinedValues.enabled")
+            );
         },
         render(props) {
             const { field } = props;

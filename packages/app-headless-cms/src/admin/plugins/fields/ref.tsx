@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import type { ListCmsModelsQueryResponse } from "../../viewsGraphql.js";
 import { LIST_CONTENT_MODELS, withoutBeingDeletedModels } from "../../viewsGraphql.js";
 import { validation, ValidationError } from "@webiny/validation";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar.js";
+import { useSnackbar } from "@webiny/app-admin";
 import type { CmsModel, CmsModelFieldTypePlugin } from "~/types.js";
 import { ReactComponent as RefIcon } from "@webiny/icons/link.svg";
 import { i18n } from "@webiny/app/i18n/index.js";

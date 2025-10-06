@@ -9,7 +9,7 @@ type TeamsMultiAutocompleteProps = Partial<MultiAutoCompleteProps>;
 export const TeamsMultiAutocomplete = (props: TeamsMultiAutocompleteProps) => {
     const { data, loading } = useQuery(LIST_TEAMS);
 
-    const options = loading || !data ? [] : data.security.teams.data;
+    const options = loading || !data?.security?.teams?.data ? [] : data.security.teams.data;
 
     return (
         <MultiAutoComplete

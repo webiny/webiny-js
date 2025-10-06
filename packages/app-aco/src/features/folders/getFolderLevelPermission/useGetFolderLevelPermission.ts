@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useWcp } from "@webiny/app-wcp";
+import { useWcp } from "@webiny/app-admin";
 import { GetFolderLevelPermission } from "./GetFolderLevelPermission.js";
 import type { FolderPermissionName } from "./FolderPermissionName.js";
 import { useFoldersType } from "~/hooks/index.js";

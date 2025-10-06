@@ -24,11 +24,10 @@ export const listVitestPackages = storageOps => {
 };
 
 const args = process.argv.slice(2); // Removes the first two elements
-const [paramsString] = args;
-
-const { storageOps } = JSON.parse(paramsString);
+const [storageOps = ""] = args;
 
 const testCommands = listVitestPackages(storageOps)
     .map(pkg => pkg.getTestCommands())
     .flat();
+
 console.log(JSON.stringify(testCommands));

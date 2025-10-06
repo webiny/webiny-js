@@ -1,6 +1,6 @@
 import React from "react";
 // Note: in a real project, these would be imported from `@webiny/extensions`
-import { Admin, Cli, Project, Webiny, Infra } from "./packages/project-aws/dist/index.js";
+import { Admin, Cli, Webiny, Infra } from "./packages/project-aws/dist/index.js";
 
 // import { Okta } from "@webiny/okta";
 
@@ -10,14 +10,7 @@ export default () => {
             {/*Webiny AWS built-in extensions. Always here, must not be removed.*/}
             <Webiny />
 
-            {/* No need for this this as we're setting WCP things via .env file. */}
-            {/*<Project.Id id={"webiny-test-project-without-fm-td"} />*/}
-
-            {/*Project-lvl settings. All within the `Project.` namespace. */}
-            <Project.Telemetry enabled={false} />
-
             {/* Cloud infrastructure related extensions. All within the `Infra.` namespace. */}
-
             {/* For some of the extensions, we expect the user to be familiar with the
             Core, API, and Admin Pulumi apps that we deploy by default. */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />

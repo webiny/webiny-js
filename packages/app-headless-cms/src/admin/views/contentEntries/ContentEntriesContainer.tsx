@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import get from "lodash/get.js";
-import { useRoute, useRouter } from "@webiny/app-admin";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar.js";
+import { useRoute, useRouter, useSnackbar } from "@webiny/app-admin";
 import { i18n } from "@webiny/app/i18n/index.js";
 import type {
     GetCmsModelQueryResponse,

@@ -1,5 +1,5 @@
 import { createReactAppConfig, type ReactAppConfigModifier } from "./createReactAppConfig.js";
-import { type ApiOutput } from "~/pulumi/index.js";
+import { type ApiOutput, type CoreOutput } from "~/pulumi/index.js";
 
 export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
     return createReactAppConfig(baseParams => {
@@ -12,6 +12,17 @@ export const createAdminAppConfig = (modifier?: ReactAppConfigModifier) => {
             WEBINY_ADMIN_TRASH_BIN_RETENTION_PERIOD_DAYS: process.env
                 .WEBINY_TRASH_BIN_RETENTION_PERIOD_DAYS as string
         }));
+
+        config.pulumiOutputToEnv<CoreOutput>("core", ({ output, env }) => {
+            if (!output) {
+                return env;
+            }
+
+            return {
+                ...env,
+                WEBINY_ADMIN_DEPLOYMENT_ID: output.deploymentId
+            };
+        });
 
         config.pulumiOutputToEnv<ApiOutput>("api", ({ output, env }) => {
             if (!output) {

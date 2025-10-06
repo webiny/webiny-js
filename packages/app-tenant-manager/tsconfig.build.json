@@ -6,7 +6,6 @@
     { "path": "../app/tsconfig.build.json" },
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
-    { "path": "../app-tenancy/tsconfig.build.json" },
     { "path": "../form/tsconfig.build.json" },
     { "path": "../ui/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" }

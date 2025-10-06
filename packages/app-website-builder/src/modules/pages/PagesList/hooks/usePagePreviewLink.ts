@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useTenancy } from "@webiny/app-tenancy";
+import { useTenancy } from "@webiny/app-admin";
 import type { PageDto } from "~/domain/Page/index.js";
 import { usePreviewDomain } from "~/BaseEditor/defaultConfig/Content/Preview/usePreviewDomain.js";
 

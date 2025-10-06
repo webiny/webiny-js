@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { ReactComponent as Add } from "@webiny/icons/add.svg";
-import { StepForm } from "./StepForm.js";
-import type { IWorkflowStepInput } from "../types.js";
+import { Step } from "./Step.js";
 import { generateAlphaNumericId } from "@webiny/utils/generateId.js";
 import type { IWorkflowStep } from "@webiny/app-headless-cms-common/types/index.js";
 import { Button, Grid } from "@webiny/admin-ui";
@@ -10,7 +9,7 @@ export interface IAddNewStepProps {
     onAdd: (step: IWorkflowStep) => void;
 }
 
-const createWorkflowStep = (): IWorkflowStepInput => {
+const createWorkflowStep = (): IWorkflowStep => {
     return {
         id: generateAlphaNumericId(),
         title: "",
@@ -23,14 +22,14 @@ const createWorkflowStep = (): IWorkflowStepInput => {
 
 export const NewStep = (props: IAddNewStepProps) => {
     const { onAdd } = props;
-    const [step, setStep] = useState<IWorkflowStepInput | null>(null);
+    const [step, setStep] = useState<IWorkflowStep | null>(null);
 
     const onClick = useCallback(() => {
         setStep(createWorkflowStep());
     }, [setStep]);
 
     const onSave = useCallback(
-        (step: IWorkflowStepInput) => {
+        (step: IWorkflowStep) => {
             onAdd(step);
             setStep(null);
         },
@@ -42,7 +41,15 @@ export const NewStep = (props: IAddNewStepProps) => {
     }, [setStep]);
 
     if (step) {
-        return <StepForm onCancel={onCancel} onSave={onSave} step={step} />;
+        return (
+            <Step
+                title={"New Workflow Step"}
+                onCancel={onCancel}
+                onSave={onSave}
+                step={step}
+                open={true}
+            />
+        );
     }
 
     return (

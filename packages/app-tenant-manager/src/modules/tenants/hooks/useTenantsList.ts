@@ -1,10 +1,8 @@
 import { useCallback, useState } from "react";
 import orderBy from "lodash/orderBy.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { useRouter } from "@webiny/app-admin";
+import { useConfirmationDialog, useRouter, useSnackbar } from "@webiny/app-admin";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar.js";
-import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog.js";
 import { DELETE_TENANT, LIST_TENANTS } from "~/graphql/index.js";
 import { useCurrentTenantId } from "./useCurrentTenantId.js";
 import type { TenantItem } from "~/types.js";

@@ -5,7 +5,7 @@ import type { IInactiveStep } from "./Step/InactiveStep.js";
 import { InactiveStep } from "./Step/InactiveStep.js";
 import { Step } from "./Step/Step.js";
 import { observer } from "mobx-react-lite";
-import type { IWorkflowsPresenter } from "~/admin/plugins/editor/publishingWorkflows/presenters/index.js";
+import type { IWorkflowsPresenter } from "../presenters/index.js";
 
 export interface IPublishingWorkflowProps {
     presenter: IWorkflowsPresenter;
@@ -32,7 +32,7 @@ export const PublishingWorkflow = observer((props: IPublishingWorkflowProps) => 
     return (
         <>
             <InactiveStep step={draftStep} />
-            <Accordion>
+            <Accordion variant={"container"}>
                 {workflow.steps.map(step => {
                     return (
                         <Step

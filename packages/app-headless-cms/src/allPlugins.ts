@@ -13,7 +13,6 @@ import searchableJsonField from "~/admin/plugins/fields/searchableJson.js";
 import numberFieldRenderer from "~/admin/plugins/fieldRenderers/number/index.js";
 import textFieldRenderer from "~/admin/plugins/fieldRenderers/text/index.js";
 import longTextFieldRenderer from "~/admin/plugins/fieldRenderers/longText/index.js";
-import { createLegacyRichTextInput } from "~/admin/plugins/fieldRenderers/richText/index.js";
 import { createLexicalInput } from "~/admin/plugins/fieldRenderers/lexicalText/index.js";
 import booleanFieldRenderer from "~/admin/plugins/fieldRenderers/boolean/index.js";
 import dateTimeFieldRenderer from "~/admin/plugins/fieldRenderers/dateTime/index.js";
@@ -58,7 +57,6 @@ export default [
     numberFieldRenderer,
     textFieldRenderer,
     longTextFieldRenderer,
-    createLegacyRichTextInput(),
     booleanFieldRenderer,
     dateTimeFieldRenderer,
     radioButtonsFieldRenderer,

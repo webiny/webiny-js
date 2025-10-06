@@ -3,7 +3,7 @@ import fs from "fs";
 import chalk from "chalk";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { ProjectSdk } from "@webiny/project";
+import { execSync } from "child_process";
 
 const { green, red } = chalk;
 const argv = yargs(hideBin(process.argv)).argv;
@@ -30,9 +30,6 @@ const args = {
         }
     }
 
-    const cwd = args.projectFolder ? path.resolve(args.projectFolder) : process.cwd();
-    const projectSdk = await ProjectSdk.init({ cwd: path.resolve(cwd) });
-
     const cypressExampleConfigPath = path.resolve("example.cypress.config.ts");
     const cypressConfigPath = path.resolve("cypress-tests/cypress.config.ts");
     if (fs.existsSync(cypressConfigPath)) {
@@ -49,11 +46,13 @@ const args = {
 
     let cypressConfig = fs.readFileSync(cypressConfigPath, "utf8");
 
-    const apiOutput = await projectSdk.getAppStackOutput({
-        app: "api",
-        env: args.env,
-        cwd: args.projectFolder
+    const stdout = execSync(`yarn webiny output api --env ${args.env} --json`, {
+        encoding: "utf-8",
+        stdio: "pipe",
+        cwd: args.projectFolder || process.cwd()
     });
+
+    const apiOutput = JSON.parse(stdout);
 
     cypressConfig = cypressConfig.replaceAll("{API_URL}", apiOutput.apiUrl);
 
@@ -71,11 +70,13 @@ const args = {
         const adminUrl = "http://localhost:3001";
         cypressConfig = cypressConfig.replaceAll("{ADMIN_URL}", adminUrl);
     } else {
-        const adminOutput = await projectSdk.getAppStackOutput({
-            app: "admin",
-            env: args.env,
-            cwd: args.projectFolder
+        const stdout = execSync(`yarn webiny output admin --env ${args.env} --json`, {
+            encoding: "utf-8",
+            stdio: "pipe",
+            cwd: args.projectFolder || process.cwd()
         });
+
+        const adminOutput = JSON.parse(stdout);
 
         cypressConfig = cypressConfig.replaceAll("{ADMIN_URL}", adminOutput.appUrl);
     }

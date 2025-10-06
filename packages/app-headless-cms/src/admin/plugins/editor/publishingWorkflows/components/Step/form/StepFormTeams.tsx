@@ -1,50 +1,47 @@
-import React from "react";
+import React, { useCallback } from "react";
+import type { BindComponentRenderProp } from "@webiny/form";
 import { Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import type { CheckboxItemDto } from "@webiny/admin-ui";
-import { CheckboxGroup } from "@webiny/admin-ui";
-import type { IWorkflowStepNotification } from "~/types.js";
+import { TeamsMultiAutocomplete } from "@webiny/app-security-access-management";
 
-const items: CheckboxItemDto[] = [
-    {
-        id: "blue",
-        value: "blue",
-        label: "Blue Team"
-    },
-    {
-        id: "red",
-        value: "red",
-        label: "Red Team"
-    },
-    {
-        id: "green",
-        value: "green",
-        label: "Green Team"
-    }
-];
+interface IInput {
+    id?: string;
+}
 
-const convertInputValue = (value?: IWorkflowStepNotification[]): string[] => {
-    if (!value?.length) {
+const mapInput = (input?: IInput[]): Required<IInput>[] => {
+    if (!input?.length) {
         return [];
     }
-    return value.map(v => v.id);
+    return input
+        .filter((item): item is Required<IInput> => {
+            return !!item.id;
+        })
+        .map(item => {
+            return {
+                id: item.id
+            };
+        });
+};
+
+interface IAutocompleteProps {
+    bind: BindComponentRenderProp;
+}
+const Autocomplete = ({ bind }: IAutocompleteProps) => {
+    const onChange = useCallback(
+        (input?: IInput[]) => {
+            return bind.onChange(mapInput(input));
+        },
+        [bind.onChange]
+    );
+
+    return <TeamsMultiAutocomplete {...bind} onChange={onChange} />;
 };
 
 export const StepFormTeams = () => {
     return (
         <Bind name={"teams"} validators={validation.create("required,minLength:1")}>
-            {({ value, onChange }) => {
-                return (
-                    <CheckboxGroup
-                        label={"Teams"}
-                        // TODO figure out how to add possible teams
-                        items={items}
-                        value={convertInputValue(value)}
-                        onChange={(input: string[]) => {
-                            onChange(input.map(id => ({ id })));
-                        }}
-                    />
-                );
+            {bind => {
+                return <Autocomplete bind={bind} />;
             }}
         </Bind>
     );

@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["src", "./vitest.config.ts"],
+  "include": ["src", "__tests__"],
   "references": [{ "path": "../lexical-editor" }, { "path": "../website-builder-sdk" }],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],

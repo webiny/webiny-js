@@ -3,7 +3,7 @@ import { Provider } from "@webiny/app";
 import { RecordLockingProvider as RecordLockingProviderComponent } from "~/components/RecordLockingProvider.js";
 import { HeadlessCmsActionsAcoCell } from "~/components/HeadlessCmsActionsAcoCell.js";
 import { HeadlessCmsContentEntry } from "~/components/HeadlessCmsContentEntry/index.js";
-import { useWcp } from "@webiny/app-wcp";
+import { useWcp } from "@webiny/app-admin";
 import { plugins } from "@webiny/plugins";
 import { recordLockingPermissionRenderer } from "~/components/permissionRenderer/index.js";
 

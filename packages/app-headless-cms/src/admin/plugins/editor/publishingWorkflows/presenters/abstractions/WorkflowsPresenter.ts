@@ -2,7 +2,7 @@ import type { IWorkflow, IWorkflowStep } from "@webiny/app-headless-cms-common/t
 import type { IWorkflowModel } from "~/admin/plugins/editor/publishingWorkflows/models/index.js";
 
 export interface IWorkflowsViewModel {
-    workflow: IWorkflow;
+    workflow: IWorkflowModel;
 }
 
 export interface IWorkflowsPresenter {

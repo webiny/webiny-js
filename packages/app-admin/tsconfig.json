@@ -4,7 +4,6 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-security" },
-    { "path": "../app-wcp" },
     { "path": "../di-container" },
     { "path": "../form" },
     { "path": "../lexical-editor" },
@@ -14,7 +13,8 @@
     { "path": "../react-composition" },
     { "path": "../react-properties" },
     { "path": "../ui" },
-    { "path": "../utils" }
+    { "path": "../utils" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -27,8 +27,6 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
-      "@webiny/app-wcp/*": ["../app-wcp/src/*"],
-      "@webiny/app-wcp": ["../app-wcp/src"],
       "@webiny/di-container/*": ["../di-container/src/*"],
       "@webiny/di-container": ["../di-container/src"],
       "@webiny/form/*": ["../form/src/*"],
@@ -48,7 +46,9 @@
       "@webiny/ui/*": ["../ui/src/*"],
       "@webiny/ui": ["../ui/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     },
     "baseUrl": "."
   }

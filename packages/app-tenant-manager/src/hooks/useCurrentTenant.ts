@@ -1,6 +1,6 @@
 import get from "lodash/get.js";
 import { useQuery } from "@apollo/react-hooks";
-import { useTenancy } from "@webiny/app-tenancy";
+import { useTenancy } from "@webiny/app-admin";
 import type { GetTenantQueryResponse, GetTenantQueryVariables } from "~/graphql/index.js";
 import { GET_TENANT } from "~/graphql/index.js";
 import type { TenantItem } from "~/types.js";
