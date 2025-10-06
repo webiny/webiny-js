@@ -3,8 +3,9 @@ import type { IWorkflowModel } from "../../Models/abstractions/WorkflowModel.js"
 import type { IWorkflowError } from "~/Gateways/abstraction/WorkflowsGateway.js";
 
 export interface IWorkflowsRepository {
-    error: IWorkflowError | null;
-    loading: boolean;
+    readonly error: IWorkflowError | null;
+    readonly loading: boolean;
+    readonly workflows: IWorkflowModel[];
     init(): Promise<void>;
     find(id: string): IWorkflowModel | null;
     findOne(id: string): IWorkflowModel;

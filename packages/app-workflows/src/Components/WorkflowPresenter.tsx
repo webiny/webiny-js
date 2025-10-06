@@ -7,7 +7,6 @@ import type { NonEmptyArray } from "@webiny/app/types.js";
 import { mdbid } from "@webiny/utils/mdbid.js";
 import { useApolloClient } from "@apollo/react-hooks";
 import { WorkflowView } from "~/Components/WorkflowView.js";
-import { Loader } from "@webiny/admin-ui";
 
 interface WorkflowViewProps {
     app: string;

@@ -9,12 +9,11 @@ interface WorkflowViewProps {
     presenter: IWorkflowsPresenter;
 }
 
-
 export const WorkflowView = observer((props: WorkflowViewProps) => {
     const { presenter } = props;
 
     const saveWorkflow = useCallback(() => {
-        if (!presenter.vm.dirty) {
+        if (!presenter.vm.dirty || !presenter.vm.workflow) {
             return;
         }
         presenter.updateWorkflow(presenter.vm.workflow);

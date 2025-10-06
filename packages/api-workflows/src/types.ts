@@ -66,7 +66,7 @@ export interface IWorkflowsContextListParams {
 
 export interface IWorkflowsContext {
     ensureAccess(): Promise<void>;
-    
+
     storeWorkflow(app: string, id: string, input: IStoreWorkflowInput): Promise<IWorkflow>;
     deleteWorkflow(app: string, id: string): Promise<boolean>;
 

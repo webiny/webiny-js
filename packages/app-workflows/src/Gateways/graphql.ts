@@ -48,7 +48,6 @@ const WORKFLOW = /* GraphQL */ `
     }
 `;
 
-
 export interface IStoreWorkflowInput {
     name: string;
     steps: NonEmptyArray<IWorkflowStepInput>;
@@ -90,8 +89,8 @@ export interface IDeleteWorkflowResponse {
         deleteWorkflow: {
             data: boolean | null;
             error: IWorkflowError | null;
-        }
-    }
+        };
+    };
 }
 
 export const DELETE_WORKFLOW_MUTATION = gql`

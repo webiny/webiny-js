@@ -7,9 +7,11 @@
     { "path": "../api-security" },
     { "path": "../api-wcp" },
     { "path": "../handler" },
-    { "path": "../tasks" },
     { "path": "../handler-graphql" },
-    { "path": "../utils" }
+    { "path": "../tasks" },
+    { "path": "../utils" },
+    { "path": "../plugins" },
+    { "path": "../testing" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -28,12 +30,16 @@
       "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
-      "@webiny/tasks/*": ["../tasks/src/*"],
-      "@webiny/tasks": ["../tasks/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/tasks/*": ["../tasks/src/*"],
+      "@webiny/tasks": ["../tasks/src"],
       "@webiny/utils/*": ["../utils/src/*"],
-      "@webiny/utils": ["../utils/src"]
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/testing/*": ["../testing/src/*"],
+      "@webiny/testing": ["../testing/src"]
     },
     "baseUrl": "."
   }

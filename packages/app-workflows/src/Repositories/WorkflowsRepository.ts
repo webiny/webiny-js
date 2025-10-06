@@ -12,10 +12,10 @@ export interface IWorkflowsRepositoryParams {
 }
 
 export class WorkflowsRepository implements IWorkflowsRepository {
+    public readonly workflows;
     private _loading: boolean = true;
     private _error: IWorkflowError | null = null;
     private readonly gateway;
-    private readonly workflows;
     private readonly defaultWorkflow;
 
     public get error(): IWorkflowError | null {

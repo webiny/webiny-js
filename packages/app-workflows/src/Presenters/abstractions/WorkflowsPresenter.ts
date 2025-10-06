@@ -3,15 +3,15 @@ import type { IWorkflowModel } from "~/Models/index.js";
 import type { IWorkflowError } from "~/Gateways/index.js";
 
 export interface IWorkflowsViewModel {
+    workflows: IWorkflowModel[];
+    workflow: IWorkflowModel | null;
     dirty: boolean;
-    workflow: IWorkflowModel;
     loading: boolean;
     error: IWorkflowError | null;
 }
 
 export interface IWorkflowsPresenter {
     vm: IWorkflowsViewModel;
-    setCurrentWorkflow(id: string): void;
     getWorkflow(): IWorkflowModel;
     updateWorkflow(workflow: IWorkflowModel): void;
     removeStep(step: Pick<IWorkflowStep, "id">): void;

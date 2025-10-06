@@ -28,6 +28,9 @@ export const Workflow = observer((props: IPublishingWorkflowProps) => {
     const { presenter } = props;
 
     const workflow = presenter.vm.workflow;
+    if (!workflow) {
+        return null;
+    }
 
     return (
         <>
