@@ -1,19 +1,23 @@
-import type { IWorkflowsGateway } from "./abstraction/index.js";
-import type { IWorkflow } from "~/types.js";
+import type {
+    IWorkflowsGateway,
+    IWorkflowsGatewayDeleteWorkflowResponse,
+    IWorkflowsGatewayListWorkflowsResponse,
+    IWorkflowsGatewayStoreWorkflowResponse
+} from "./abstraction/WorkflowsGateway.js";
 import { IWorkflowModel } from "~/Models/index.js";
 import ApolloClient from "apollo-client";
+import type {
+    IListWorkflowResponse,
+    IListWorkflowVariables,
+    IStoreWorkflowResponse,
+    IStoreWorkflowVariables
+} from "./graphql.js";
 import {
     DELETE_WORKFLOW_MUTATION,
-    type IStoreWorkflowResponse,
-    type IStoreWorkflowVariables,
     LIST_WORKFLOWS_QUERY,
     STORE_WORKFLOW_MUTATION
 } from "./graphql.js";
 import { WebinyError } from "@webiny/error";
-import type {
-    IWorkflowsGatewayDeleteWorkflowResponse,
-    IWorkflowsGatewayStoreWorkflowResponse
-} from "~/Gateways/abstraction/WorkflowsGateway.js";
 
 export interface IWorkflowsGatewayParams {
     app: string;
@@ -53,15 +57,16 @@ export class WorkflowsGateway implements IWorkflowsGateway {
                 error: result.data?.workflows.storeWorkflow.error || null
             };
         } catch (ex) {
-            console.error(ex);
             return {
                 data: null,
                 error: WebinyError.from(ex)
             };
         }
     }
-    
-    public async deleteWorkflow(input: IWorkflowModel): Promise<IWorkflowsGatewayDeleteWorkflowResponse> {
+
+    public async deleteWorkflow(
+        input: IWorkflowModel
+    ): Promise<IWorkflowsGatewayDeleteWorkflowResponse> {
         const workflow = input.toJS();
         try {
             const result = await this.client.mutate({
@@ -74,28 +79,35 @@ export class WorkflowsGateway implements IWorkflowsGateway {
             return {
                 data: result.data?.workflows.deleteWorkflow.data || null,
                 error: result.data?.workflows.deleteWorkflow.error || null
-            }
-        } catch(ex) {
+            };
+        } catch (ex) {
             return {
                 data: null,
                 error: WebinyError.from(ex)
-            }
+            };
         }
     }
 
-    public async listWorkflows(): Promise<IWorkflow[]> {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        const result = await this.client.query({
-            query: LIST_WORKFLOWS_QUERY,
-            variables: {
-                app: this.app
-            },
-            fetchPolicy: "no-cache"
-        });
-        const error = result.data?.workflows?.listWorkflows?.error;
-        if (error) {
-            throw WebinyError.from(error);
+    public async listWorkflows(): Promise<IWorkflowsGatewayListWorkflowsResponse> {
+        try {
+            const result = await this.client.query<IListWorkflowResponse, IListWorkflowVariables>({
+                query: LIST_WORKFLOWS_QUERY,
+                variables: {
+                    app: this.app
+                },
+                fetchPolicy: "no-cache"
+            });
+            const error = result.data?.workflows?.listWorkflows?.error || null;
+            const data = result.data?.workflows?.listWorkflows?.data || null;
+            return {
+                data,
+                error
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: WebinyError.from(ex)
+            };
         }
-        return result.data?.workflows?.listWorkflows?.data || [];
     }
 }

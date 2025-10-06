@@ -69,9 +69,6 @@ export const Step = observer(
             if (!initialOnRemove) {
                 return;
             }
-            console.log({
-                removingStep: step
-            });
             initialOnRemove(step);
         }, [step]);
 
@@ -90,10 +87,6 @@ export const Step = observer(
         }, [onMoveDown, step]);
 
         const onOpenChange = useCallback(() => {
-            console.log({
-                triggeringOnOpenChange: true,
-                step: step
-            });
             if (editing) {
                 stopEditing();
                 return;

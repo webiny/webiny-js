@@ -110,12 +110,10 @@ export interface IListWorkflowVariables {
 }
 
 export interface IListWorkflowResponse {
-    data: {
-        workflows: {
-            listWorkflows: {
-                data: IWorkflow[] | null;
-                error: IWorkflowError | null;
-            };
+    workflows: {
+        listWorkflows: {
+            data: IWorkflow[] | null;
+            error: IWorkflowError | null;
         };
     };
 }

@@ -13,6 +13,11 @@ export interface IWorkflowsGatewayDeleteWorkflowResponse {
     error: IWorkflowError | null;
 }
 
+export interface IWorkflowsGatewayListWorkflowsResponse {
+    data: IWorkflow[] | null;
+    error: IWorkflowError | null;
+}
+
 export interface IWorkflowsGatewayStoreWorkflowResponse {
     data: IWorkflow | null;
     error: IWorkflowError | null;
@@ -21,5 +26,5 @@ export interface IWorkflowsGatewayStoreWorkflowResponse {
 export interface IWorkflowsGateway {
     deleteWorkflow(workflow: IWorkflowModel): Promise<IWorkflowsGatewayDeleteWorkflowResponse>;
     storeWorkflow(workflow: IWorkflowModel): Promise<IWorkflowsGatewayStoreWorkflowResponse>;
-    listWorkflows(): Promise<IWorkflow[]>;
+    listWorkflows(): Promise<IWorkflowsGatewayListWorkflowsResponse>;
 }

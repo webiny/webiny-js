@@ -1,4 +1,4 @@
-import type { IWorkflowsPresenter, IWorkflowsViewModel } from "./abstractions/index.js";
+import type { IWorkflowsPresenter, IWorkflowsViewModel } from "./abstractions/WorkflowsPresenter.js";
 import type { IWorkflowsRepository } from "../Repositories/index.js";
 import { makeAutoObservable, runInAction } from "mobx";
 import type { IWorkflowModel } from "~/Models/index.js";
@@ -14,8 +14,10 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
 
     get vm(): IWorkflowsViewModel {
         return {
+            dirty: this.current.steps.length > 0,
             workflow: this.current,
-            loading: this.repository.loading
+            loading: this.repository.loading,
+            error: this.repository.error,
         };
     }
 
@@ -44,9 +46,7 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
     }
 
     updateWorkflow = (workflow: IWorkflowModel): void => {
-        runInAction(() => {
-            this.repository.save(workflow.toJS());
-        });
+        this.repository.save(workflow.toJS());
     };
 
     setCurrentWorkflow = (id: string): void => {
@@ -59,31 +59,17 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
 
     addStep = (step: IWorkflowStep): void => {
         const workflow = this.getCurrentWorkflow();
-        console.log({
-            WorkflowsPresenter: true,
-            addStep: true,
-            step
-        });
         workflow.addStep(step);
-        runInAction(() => {
-            this.repository.save(workflow.toJS());
-        });
     };
 
     updateStep = (step: IWorkflowStep): void => {
         const workflow = this.getCurrentWorkflow();
         workflow.updateStep(step);
-        runInAction(() => {
-            this.repository.save(workflow.toJS());
-        });
     };
 
     removeStep = ({ id }: Pick<IWorkflowStep, "id">): void => {
         const workflow = this.getCurrentWorkflow();
         workflow.removeStep(id);
-        runInAction(() => {
-            this.repository.save(workflow.toJS());
-        });
     };
 
     canMoveStepUp = (step: Pick<IWorkflowStep, "id">): boolean => {
@@ -104,8 +90,6 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
         steps[stepIndex] = temp;
         runInAction(() => {
             workflow.steps.replace(steps);
-
-            this.repository.save(workflow.toJS());
         });
     };
 
@@ -127,7 +111,6 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
         steps[stepIndex] = temp;
         runInAction(() => {
             workflow.steps.replace(steps);
-            this.repository.save(workflow.toJS());
         });
     };
 }

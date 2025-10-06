@@ -1,63 +1,45 @@
-import React, { useCallback, useMemo } from "react";
-import type { IWorkflow, IWorkflowStep } from "~/types.js";
+import React, { useCallback } from "react";
 import { Workflow } from "./Workflow.js";
-import { WorkflowsRepository } from "../Repositories/index.js";
-import { WorkflowsPresenter } from "../Presenters/index.js";
-import { WorkflowsGateway } from "../Gateways/index.js";
-import type { NonEmptyArray } from "@webiny/app/types.js";
-import { mdbid } from "@webiny/utils/mdbid.js";
-import { Button, Grid } from "@webiny/admin-ui";
-import { useApolloClient } from "@apollo/react-hooks";
+import type { IWorkflowsPresenter } from "../Presenters/index.js";
+import { Button, Grid, Loader } from "@webiny/admin-ui";
+import { observer } from "mobx-react-lite";
+import { WorkflowError } from "./WorkflowError.js";
 
 interface WorkflowViewProps {
-    app: string;
+    presenter: IWorkflowsPresenter;
 }
 
-const createDefaultWorkflow = (options: Pick<IWorkflow, "app"> & Partial<IWorkflow>): IWorkflow => {
-    return {
-        id: mdbid(),
-        name: "Default Workflow",
-        steps: [] as unknown as NonEmptyArray<IWorkflowStep>,
-        ...options
-    };
-};
 
-export const WorkflowView = (props: WorkflowViewProps) => {
-    const { app } = props;
-    const client = useApolloClient();
+export const WorkflowView = observer((props: WorkflowViewProps) => {
+    const { presenter } = props;
 
-    const presenter = useMemo(() => {
-        const defaultWorkflow = createDefaultWorkflow({
-            app
-        });
-        const gateway = new WorkflowsGateway({
-            app,
-            client
-        });
-        const repository = new WorkflowsRepository({
-            gateway,
-            defaultWorkflow
-        });
-        repository.init();
-        return new WorkflowsPresenter({
-            repository
-        });
-    }, []);
-    
     const saveWorkflow = useCallback(() => {
+        if (!presenter.vm.dirty) {
+            return;
+        }
         presenter.updateWorkflow(presenter.vm.workflow);
     }, [presenter.vm.workflow]);
+
+    if (presenter.vm.loading) {
+        return <Loader size="md" variant="accent" indeterminate={true} text="Loading..." />;
+    }
     /**
      * Should be fairly simple to extend this to multiple workflows per model, if needed in the future.
      */
     return (
         <Grid>
+            <WorkflowError error={presenter.vm.error} />
             <Grid.Column span={12}>
                 <Workflow presenter={presenter} />
             </Grid.Column>
             <Grid.Column span={12}>
-                <Button text={"Save"} variant={"primary"} onClick={saveWorkflow} />
+                <Button
+                    disabled={!presenter.vm.dirty}
+                    text={"Save"}
+                    variant={"primary"}
+                    onClick={saveWorkflow}
+                />
             </Grid.Column>
         </Grid>
     );
-};
+});

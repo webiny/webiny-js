@@ -1,6 +1,6 @@
 import React from "react";
 import type { CmsEditorFormSettingsPlugin, CmsModel } from "~/types.js";
-import { WorkflowView } from "@webiny/app-workflows";
+import { WorkflowPresenter } from "@webiny/app-workflows";
 import { ReactComponent as WorkflowIcon } from "@webiny/icons/account_tree.svg";
 
 export const publishingWorkflowsEditorFormSettingsPlugin: CmsEditorFormSettingsPlugin<CmsModel> = {
@@ -14,6 +14,6 @@ export const publishingWorkflowsEditorFormSettingsPlugin: CmsEditorFormSettingsP
             return <></>;
         }
 
-        return <WorkflowView app={`cms:${formData.modelId}`} />;
+        return <WorkflowPresenter app={`cms:${formData.modelId}`} />;
     }
 };

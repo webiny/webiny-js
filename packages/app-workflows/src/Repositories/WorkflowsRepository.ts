@@ -1,9 +1,10 @@
-import type { IWorkflowsRepository } from "./abstractions/index.js";
+import type { IWorkflowsRepository } from "./abstractions/WorkflowsRepository.js";
 import type { IWorkflowModel } from "../Models/index.js";
+import { WorkflowModel } from "../Models/index.js";
 import type { IWorkflow } from "~/types.js";
 import { makeAutoObservable, observable, runInAction } from "mobx";
-import { WorkflowModel } from "../Models/WorkflowModel.js";
 import type { IWorkflowsGateway } from "../Gateways/index.js";
+import type { IWorkflowError } from "~/Gateways/abstraction/WorkflowsGateway.js";
 
 export interface IWorkflowsRepositoryParams {
     gateway: IWorkflowsGateway;
@@ -11,13 +12,13 @@ export interface IWorkflowsRepositoryParams {
 }
 
 export class WorkflowsRepository implements IWorkflowsRepository {
-    private _loading: boolean = false;
-    private _error: Error | null = null;
+    private _loading: boolean = true;
+    private _error: IWorkflowError | null = null;
     private readonly gateway;
     private readonly workflows;
     private readonly defaultWorkflow;
 
-    public get error(): Error | null {
+    public get error(): IWorkflowError | null {
         return this._error;
     }
 
@@ -35,22 +36,14 @@ export class WorkflowsRepository implements IWorkflowsRepository {
     }
 
     public async init() {
-        let workflows: IWorkflow[] = [];
-        try {
-            runInAction(() => {
-                this._loading = true;
-                this._error = null;
-            })
-            workflows = await this.gateway.listWorkflows();
-        } catch (ex) {
-            runInAction(() => {
-                this._error = ex;
-            });
-        }
-        if (!workflows.length) {
-            workflows = [this.defaultWorkflow];
+        const result = await this.gateway.listWorkflows();
+
+        const workflows: IWorkflow[] = result.data || [];
+        if (workflows.length === 0 && !result.error) {
+            workflows.push(this.defaultWorkflow);
         }
         runInAction(() => {
+            this._error = result.error;
             this._loading = false;
             this.workflows.replace(workflows.map(w => new WorkflowModel(w)));
         });
@@ -68,18 +61,25 @@ export class WorkflowsRepository implements IWorkflowsRepository {
         return workflow;
     }
 
-    public save(input: IWorkflow): void {
+    public async save(input: IWorkflow): Promise<void> {
+        const index = this.workflows.findIndex(w => w.id === input.id);
+        const workflow = this.workflows[index] || new WorkflowModel(input);
         runInAction(() => {
-            let workflow = this.workflows.find(w => w.id === input.id);
-            if (!workflow) {
-                workflow = new WorkflowModel(input);
+            this._loading = true;
+            this._error = null;
+            if (index === -1) {
                 this.workflows.push(workflow);
             } else {
                 workflow.id = input.id;
                 workflow.name = input.name;
                 workflow.setSteps(input.steps);
             }
-            this.gateway.storeWorkflow(workflow);
+        });
+        const result = await this.gateway.storeWorkflow(workflow);
+
+        runInAction(() => {
+            this._loading = false;
+            this._error = result.error;
         });
     }
 

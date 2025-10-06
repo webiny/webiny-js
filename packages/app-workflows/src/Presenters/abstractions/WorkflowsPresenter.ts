@@ -1,9 +1,12 @@
 import type { IWorkflowStep } from "~/types.js";
 import type { IWorkflowModel } from "~/Models/index.js";
+import type { IWorkflowError } from "~/Gateways/index.js";
 
 export interface IWorkflowsViewModel {
+    dirty: boolean;
     workflow: IWorkflowModel;
     loading: boolean;
+    error: IWorkflowError | null;
 }
 
 export interface IWorkflowsPresenter {

@@ -1,3 +1,3 @@
-import { WorkflowView } from "./Components/WorkflowView.js";
+import { WorkflowPresenter } from "./Components/WorkflowPresenter.js";
 
-export { WorkflowView };
+export { WorkflowPresenter };
