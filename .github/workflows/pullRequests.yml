@@ -185,9 +185,6 @@ jobs:
       - name: ESLint
         run: yarn eslint
         working-directory: ${{ github.base_ref }}
-      - name: Sync Dependencies Verification
-        run: yarn verify-dependencies
-        working-directory: ${{ github.base_ref }}
       - name: Check Package Node Modules
         run: yarn check-package-dependencies
         working-directory: ${{ github.base_ref }}
@@ -223,9 +220,6 @@ jobs:
         working-directory: ${{ github.base_ref }}
       - name: Sync Dependencies Verification
         run: yarn verify-dependencies
-        working-directory: ${{ github.base_ref }}
-      - name: Check Package Node Modules
-        run: yarn check-package-dependencies
         working-directory: ${{ github.base_ref }}
     runs-on: ubuntu-latest
     env:

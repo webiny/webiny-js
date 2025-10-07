@@ -275,10 +275,6 @@ export const pullRequests = createWorkflow({
                         { name: "Check TS configs", run: "yarn check-ts-configs" },
                         { name: "ESLint", run: "yarn eslint" },
                         {
-                            name: "Sync Dependencies Verification",
-                            run: "yarn verify-dependencies"
-                        },
-                        {
                             name: "Check Package Node Modules",
                             run: "yarn check-package-dependencies"
                         }
@@ -302,11 +298,6 @@ export const pullRequests = createWorkflow({
                 {
                     name: "Sync Dependencies Verification",
                     run: "yarn verify-dependencies",
-                    "working-directory": DIR_WEBINY_JS
-                },
-                {
-                    name: "Check Package Node Modules",
-                    run: "yarn check-package-dependencies",
                     "working-directory": DIR_WEBINY_JS
                 }
             ]
