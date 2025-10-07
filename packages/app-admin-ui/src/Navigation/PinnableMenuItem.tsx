@@ -1,7 +1,6 @@
 import React from "react";
 import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as PinIcon } from "@webiny/icons/push_pin.svg";
-import { ReactComponent as PinOffIcon } from "@webiny/icons/push_pin_off.svg";
 import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
 
 type PinnableMenuItemProps = {
@@ -11,6 +10,25 @@ type PinnableMenuItemProps = {
 
 export const getPinnedKey = (name: string) => `navigation/${name}/pinned`;
 
+/**
+ * PinnableMenuItem component allows any menu item to be "pinned" by the user.
+ * The pinned state is persisted in localStorage, making the menu item visually distinct and easily accessible.
+ *
+ * @param props - Component props.
+ * @param props.name - string. Unique name for the menu item, used for localStorage key.
+ * @param props.children - React.ReactNode. The menu item content to render.
+ * @returns JSX.Element. Renders the children and a pin/unpin icon.
+ *
+ * Side Effects:
+ * - Updates localStorage when pinning/unpinning.
+ *
+ * Example usage:
+ * ```tsx
+ * <PinnableMenuItem name="dashboard">
+ *   <MenuItem label="Dashboard" />
+ * </PinnableMenuItem>
+ * ```
+ */
 export const PinnableMenuItem = (props: PinnableMenuItemProps) => {
     const localStorageKey = getPinnedKey(props.name);
     const isPinned = useLocalStorageValue(localStorageKey);
@@ -28,7 +46,7 @@ export const PinnableMenuItem = (props: PinnableMenuItemProps) => {
                 <Icon
                     label={isPinned ? "Unpin menu item" : "Pin menu item"}
                     onClick={isPinned ? unpinMenuItem : pinMenuItem}
-                    icon={isPinned ? <PinOffIcon /> : <PinIcon />}
+                    icon={<PinIcon />}
                     className="wby-fill-neutral-strong hover:wby-fill-neutral-xstrong"
                 />
             </div>
