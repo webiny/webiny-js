@@ -1,0 +1,47 @@
+{
+  "name": "@webiny/app-workflows",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "author": "Webiny Ltd",
+  "license": "MIT",
+  "dependencies": {
+    "@apollo/react-hooks": "^3.1.5",
+    "@webiny/admin-ui": "0.0.0",
+    "@webiny/app": "0.0.0",
+    "@webiny/app-admin": "0.0.0",
+    "@webiny/app-security-access-management": "0.0.0",
+    "@webiny/error": "0.0.0",
+    "@webiny/form": "0.0.0",
+    "@webiny/icons": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "@webiny/validation": "0.0.0",
+    "apollo-client": "^2.6.10",
+    "graphql-tag": "^2.12.6",
+    "mobx": "^6.15.0",
+    "mobx-react-lite": "^3.4.3",
+    "prop-types": "^15.8.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.79",
+    "@webiny/build-tools": "0.0.0",
+    "rimraf": "^6.0.1",
+    "typescript": "5.9.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "svgo": {
+    "plugins": {
+      "removeViewBox": false
+    }
+  },
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+}

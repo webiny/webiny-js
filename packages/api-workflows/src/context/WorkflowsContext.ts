@@ -1,7 +1,6 @@
 import type {
     Context,
-    ICreateWorkflowInput,
-    IUpdateWorkflowInput,
+    IStoreWorkflowInput,
     IWorkflow,
     IWorkflowsContext,
     IWorkflowsContextGetParams,
@@ -17,6 +16,18 @@ export interface IWorkflowsContextParams {
     context: Pick<Context, "cms" | "security">;
     model: CmsModel;
     transformer: IWorkflowsTransformer;
+}
+
+interface ICreateWorkflowParams {
+    app: string;
+    id: string;
+    input: IStoreWorkflowInput;
+}
+
+interface IUpdateWorkflowParams {
+    app: string;
+    id: string;
+    input: IStoreWorkflowInput;
 }
 
 export class WorkflowsContext implements IWorkflowsContext {
@@ -41,49 +52,29 @@ export class WorkflowsContext implements IWorkflowsContext {
         });
     }
 
-    public async createWorkflow(app: string, input: ICreateWorkflowInput): Promise<IWorkflow> {
-        await this.ensureAccess();
-        const values = this.transformer.toCmsEntry({
-            ...input,
-            app
-        });
-
-        return this.context.security.withoutAuthorization(async () => {
-            await this.context.cms.createEntry(this.model, values);
-
-            return values;
-        });
-    }
-
-    public async updateWorkflow(
+    public async storeWorkflow(
         app: string,
         id: string,
-        input: IUpdateWorkflowInput
+        input: IStoreWorkflowInput
     ): Promise<IWorkflow> {
         await this.ensureAccess();
         const workflow = await this.getWorkflow({
             app,
             id
         });
-        if (!workflow) {
-            throw new NotFoundError(`Workflow in app "${app}" with id "${id}" was not found!`);
-        }
-        const values = this.transformer.toCmsEntry({
-            ...input,
-            id,
-            app
-        });
-        const targetId = createIdentifier({
-            id,
-            version: 1
-        });
         return this.context.security.withoutAuthorization(async () => {
-            await this.context.cms.updateEntry(this.model, targetId, values);
-
-            return {
-                ...values,
-                id
-            };
+            if (!workflow) {
+                return await this.createWorkflow({
+                    app,
+                    id,
+                    input
+                });
+            }
+            return await this.updateWorkflow({
+                app,
+                id,
+                input
+            });
         });
     }
 
@@ -143,5 +134,39 @@ export class WorkflowsContext implements IWorkflowsContext {
         return entries.map(entry => {
             return this.transformer.fromCmsEntry(entry);
         });
+    }
+
+    private async createWorkflow(params: ICreateWorkflowParams): Promise<IWorkflow> {
+        const { app, id, input } = params;
+        const values = this.transformer.toCmsEntry({
+            ...input,
+            id,
+            app
+        });
+        await this.context.cms.createEntry(this.model, values);
+
+        return {
+            ...values,
+            id
+        };
+    }
+
+    private async updateWorkflow(params: IUpdateWorkflowParams): Promise<IWorkflow> {
+        const { app, id, input } = params;
+        const values = this.transformer.toCmsEntry({
+            ...input,
+            id,
+            app
+        });
+        const targetId = createIdentifier({
+            id,
+            version: 1
+        });
+        await this.context.cms.updateEntry(this.model, targetId, values);
+
+        return {
+            ...values,
+            id
+        };
     }
 }

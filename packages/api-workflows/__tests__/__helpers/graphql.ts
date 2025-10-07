@@ -1,5 +1,5 @@
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { ICreateWorkflowInput, IUpdateWorkflowInput, IWorkflow } from "~/types.js";
+import type { IStoreWorkflowInput, IWorkflow } from "~/types.js";
 
 export interface IWorkflowError {
     code: string;
@@ -86,44 +86,16 @@ export const LIST_WORKFLOWS_QUERY = /* GraphQL */ `
         }
     }
 `;
-
-export interface ICreateWorkflowVariables {
-    app: string;
-    data: ICreateWorkflowInput;
-}
-
-export interface ICreateWorkflowResponse {
-    data: {
-        workflows: {
-            createWorkflow: {
-                data: IWorkflow | null;
-                error: IWorkflowError | null;
-            };
-        };
-    };
-}
-
-export const CREATE_WORKFLOW_MUTATION = /* GraphQL */ `
-    mutation CreateWorkflow($app: String!, $data: CreateWorkflowInput!) {
-        workflows {
-            createWorkflow(app: $app, data: $data) {
-                data ${WORKFLOW}
-                ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export interface IUpdateWorkflowVariables {
+export interface IStoreWorkflowVariables {
     app: string;
     id: string;
-    data: IUpdateWorkflowInput;
+    data: IStoreWorkflowInput;
 }
 
-export interface IUpdateWorkflowResponse {
+export interface IStoreWorkflowResponse {
     data: {
         workflows: {
-            createWorkflow: {
+            storeWorkflow: {
                 data: IWorkflow | null;
                 error: IWorkflowError | null;
             };
@@ -131,10 +103,10 @@ export interface IUpdateWorkflowResponse {
     };
 }
 
-export const UPDATE_WORKFLOW_MUTATION = /* GraphQL */ `
-    mutation UpdateWorkflow($app: String!, $id: ID!, $data: UpdateWorkflowInput!) {
+export const STORE_WORKFLOW_MUTATION = /* GraphQL */ `
+    mutation StoreWorkflow($app: String!, $id: ID!, $data: StoreWorkflowInput!) {
         workflows {
-            updateWorkflow(app: $app, id: $id, data: $data) {
+            storeWorkflow(app: $app, id: $id, data: $data) {
                 data ${WORKFLOW}
                 ${ERROR_FIELD}
             }

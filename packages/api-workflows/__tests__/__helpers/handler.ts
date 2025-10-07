@@ -9,23 +9,20 @@ import { createWorkflows } from "~/index.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { WORKFLOW_MODEL_ID } from "~/constants.js";
 import type {
-    ICreateWorkflowResponse,
-    ICreateWorkflowVariables,
     IDeleteWorkflowResponse,
     IDeleteWorkflowVariables,
     IGetWorkflowResponse,
     IGetWorkflowVariables,
     IListWorkflowResponse,
     IListWorkflowVariables,
-    IUpdateWorkflowResponse,
-    IUpdateWorkflowVariables
+    IStoreWorkflowResponse,
+    IStoreWorkflowVariables
 } from "./graphql.js";
 import {
-    CREATE_WORKFLOW_MUTATION,
     DELETE_WORKFLOW_MUTATION,
     GET_WORKFLOW_QUERY,
     LIST_WORKFLOWS_QUERY,
-    UPDATE_WORKFLOW_MUTATION
+    STORE_WORKFLOW_MUTATION
 } from "./graphql.js";
 
 export const createContextHandler = async (params: UseContextHandlerParams = {}) => {
@@ -65,11 +62,8 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     });
     return {
         handler,
-        createWorkflow: handler.createMutation<ICreateWorkflowVariables, ICreateWorkflowResponse>(
-            CREATE_WORKFLOW_MUTATION
-        ),
-        updateWorkflow: handler.createMutation<IUpdateWorkflowVariables, IUpdateWorkflowResponse>(
-            UPDATE_WORKFLOW_MUTATION
+        storeWorkflow: handler.createMutation<IStoreWorkflowVariables, IStoreWorkflowResponse>(
+            STORE_WORKFLOW_MUTATION
         ),
         deleteWorkflow: handler.createMutation<IDeleteWorkflowVariables, IDeleteWorkflowResponse>(
             DELETE_WORKFLOW_MUTATION

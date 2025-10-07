@@ -51,13 +51,7 @@ export interface IWorkflowInput {
     steps: NonEmptyArray<IWorkflowStepInput>;
 }
 
-export interface ICreateWorkflowInput {
-    id: string;
-    name: string;
-    steps: NonEmptyArray<IWorkflowStepInput>;
-}
-
-export interface IUpdateWorkflowInput {
+export interface IStoreWorkflowInput {
     name: string;
     steps: NonEmptyArray<IWorkflowStepInput>;
 }
@@ -73,8 +67,7 @@ export interface IWorkflowsContextListParams {
 export interface IWorkflowsContext {
     ensureAccess(): Promise<void>;
 
-    createWorkflow(app: string, input: ICreateWorkflowInput): Promise<IWorkflow>;
-    updateWorkflow(app: string, id: string, input: IUpdateWorkflowInput): Promise<IWorkflow>;
+    storeWorkflow(app: string, id: string, input: IStoreWorkflowInput): Promise<IWorkflow>;
     deleteWorkflow(app: string, id: string): Promise<boolean>;
 
     getWorkflow(params: IWorkflowsContextGetParams): Promise<IWorkflow | null>;

@@ -1,5 +1,5 @@
 import type { Context } from "~/types.js";
-import { WorkflowsContext } from "./WorkflowsContext";
+import { WorkflowsContext } from "./WorkflowsContext.js";
 import { WorkflowsTransformer } from "~/context/transformer/index.js";
 import { WORKFLOW_MODEL_ID } from "~/constants.js";
 

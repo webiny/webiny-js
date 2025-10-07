@@ -25,9 +25,9 @@ describe("Workflows Context", () => {
             transformer: new WorkflowsTransformer(),
             model
         });
+        const id = `workflow-1`;
 
-        const workflow = await workflowsContext.createWorkflow("test", {
-            id: "workflow-1",
+        const workflow = await workflowsContext.storeWorkflow("test", id, {
             name: "Test Workflow",
             steps: [
                 {
@@ -42,7 +42,7 @@ describe("Workflows Context", () => {
         });
 
         const expected: IWorkflow = {
-            id: "workflow-1",
+            id,
             app: "test",
             name: "Test Workflow",
             steps: [
@@ -58,7 +58,7 @@ describe("Workflows Context", () => {
         };
         expect(workflow).toEqual(expected);
 
-        const updatedWorkflow = await workflowsContext.updateWorkflow("test", workflow.id, {
+        const updatedWorkflow = await workflowsContext.storeWorkflow("test", workflow.id, {
             name: `${workflow.name} Updated`,
             steps: workflow.steps
         });
