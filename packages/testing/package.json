@@ -41,7 +41,7 @@
     "@webiny/wcp": "0.0.0",
     "graphql": "^16.11.0",
     "rimraf": "^6.0.1",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "publishConfig": {
     "access": "public",

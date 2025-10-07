@@ -32,7 +32,7 @@
     "@types/deep-equal": "^1.0.4",
     "@types/is-hotkey": "^0.1.10",
     "@webiny/build-tools": "0.0.0",
-    "typescript": "5.9.2",
+    "typescript": "5.9.3",
     "vitest": "^3.2.4"
   },
   "publishConfig": {

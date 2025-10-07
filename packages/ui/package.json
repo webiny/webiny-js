@@ -31,7 +31,7 @@
     "ncp": "^2.0.0",
     "raw-loader": "^4.0.2",
     "rimraf": "^6.0.1",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "peerDependencies": {
     "minimatch": "^5.1.6",

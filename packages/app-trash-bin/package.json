@@ -34,7 +34,7 @@
     "apollo-client": "^2.6.10",
     "apollo-link": "^1.2.14",
     "rimraf": "^6.0.1",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "publishConfig": {
     "access": "public",
