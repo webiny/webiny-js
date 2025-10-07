@@ -349,7 +349,11 @@ const createPushWorkflow = (branchName: string) => {
                             { name: "Check code formatting", run: "yarn prettier:check" },
                             { name: "Check dependencies", run: "yarn adio" },
                             { name: "Check TS configs", run: "yarn check-ts-configs" },
-                            { name: "ESLint", run: "yarn eslint" }
+                            { name: "ESLint", run: "yarn eslint" },
+                            {
+                                name: "Check Package Node Modules",
+                                run: "yarn check-package-dependencies",
+                            }
                         ],
                         { "working-directory": DIR_WEBINY_JS }
                     )
@@ -369,11 +373,6 @@ const createPushWorkflow = (branchName: string) => {
                     {
                         name: "Sync Dependencies Verification",
                         run: "yarn verify-dependencies",
-                        "working-directory": DIR_WEBINY_JS
-                    },
-                    {
-                        name: "Check Package Node Modules",
-                        run: "yarn check-package-dependencies",
                         "working-directory": DIR_WEBINY_JS
                     }
                 ]

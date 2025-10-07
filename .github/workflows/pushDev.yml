@@ -99,6 +99,9 @@ jobs:
       - name: ESLint
         run: yarn eslint
         working-directory: dev
+      - name: Check Package Node Modules
+        run: yarn check-package-dependencies
+        working-directory: dev
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -131,9 +134,6 @@ jobs:
         working-directory: dev
       - name: Sync Dependencies Verification
         run: yarn verify-dependencies
-        working-directory: dev
-      - name: Check Package Node Modules
-        run: yarn check-package-dependencies
         working-directory: dev
     runs-on: ubuntu-latest
     env:
