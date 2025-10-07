@@ -118,7 +118,7 @@
     "type-fest": "^5.0.1",
     "typescript": "5.9.3",
     "typescript-transform-paths": "^3.5.5",
-    "verdaccio": "^6.1.6",
+    "verdaccio": "^6.2.0",
     "vitest": "^3.2.4",
     "write-json-file": "^4.3.0",
     "yargs": "^17.7.2"
