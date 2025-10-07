@@ -39,6 +39,7 @@ const CmsContentGroupsMenu = ({ canAccess }: ChildMenuProps) => {
         <Menu
             name={"headlessCMS.contentModels.groups"}
             parent={"headlessCMS"}
+            pinnable={true}
             element={
                 <Menu.Link text={"Groups"} to={router.getLink(Routes.ContentModelGroups.List)} />
             }

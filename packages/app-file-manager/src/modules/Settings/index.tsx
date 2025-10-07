@@ -32,6 +32,7 @@ export const SettingsModule = () => {
                 <Menu
                     parent={"settings"}
                     name={"settings.fm.general"}
+                    pinnable={true}
                     element={<Menu.Link text={"General"} to={getLink(Routes.Settings)} />}
                 />
             </HasPermission>
