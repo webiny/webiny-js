@@ -104,6 +104,7 @@ export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
                     {element}
                 </PinnableMenuItem>
             ))}
+            <Menu.Group text="Webiny" />
         </>
     );
 };
