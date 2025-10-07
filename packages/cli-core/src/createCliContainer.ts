@@ -55,7 +55,7 @@ const { bgYellow, bold } = chalk;
 
 export const createCliContainer = async (params: CliParamsService.Params) => {
     const container = new Container();
-    
+
     // Features (commands).
     container.register(aboutCommand).inSingletonScope();
     container.register(buildCommand).inSingletonScope();

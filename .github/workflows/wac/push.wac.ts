@@ -352,7 +352,7 @@ const createPushWorkflow = (branchName: string) => {
                             { name: "ESLint", run: "yarn eslint" },
                             {
                                 name: "Check Package Node Modules",
-                                run: "yarn check-package-dependencies",
+                                run: "yarn check-package-dependencies"
                             }
                         ],
                         { "working-directory": DIR_WEBINY_JS }
