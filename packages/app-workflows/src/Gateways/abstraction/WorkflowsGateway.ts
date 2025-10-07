@@ -1,10 +1,29 @@
 import { IWorkflow } from "~/types.js";
 import { IWorkflowModel } from "../../Models/index.js";
+import type { NonEmptyArray } from "@webiny/app/types.js";
+
+export interface IWorkflowErrorDataInvalidFieldData {
+    path: NonEmptyArray<string>;
+}
+
+export interface IWorkflowErrorDataInvalidField {
+    code: string;
+    message: string;
+    data: IWorkflowErrorDataInvalidFieldData;
+}
+
+export interface IWorkflowErrorDataInvalidFields {
+    [key: string]: IWorkflowErrorDataInvalidField;
+}
+
+export interface IWorkflowErrorData {
+    invalidFields: IWorkflowErrorDataInvalidFields;
+}
 
 export interface IWorkflowError {
     code: string | null;
     message: string;
-    data?: Record<string, any>;
+    data?: IWorkflowErrorData;
     stack?: string;
 }
 

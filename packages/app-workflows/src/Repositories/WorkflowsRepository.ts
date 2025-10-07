@@ -83,21 +83,30 @@ export class WorkflowsRepository implements IWorkflowsRepository {
         });
     }
 
-    public remove(id: string): void {
+    public async remove(id: string): Promise<void> {
+        const index = this.workflows.findIndex(w => w.id === id);
+        if (index === -1) {
+            return;
+        }
+        const workflow = this.workflows[index];
         runInAction(() => {
-            const index = this.workflows.findIndex(w => w.id === id);
-            if (index === -1) {
-                return;
-            }
-            const workflow = this.workflows[index];
+            this._loading = true;
+            this._error = null;
             this.workflows.splice(index, 1);
-
-            this.gateway.deleteWorkflow(workflow);
+        });
+        const result = await this.gateway.deleteWorkflow(workflow);
+        runInAction(() => {
+            this._loading = false;
+            this._error = result.error;
+            if (result.error) {
+                this.workflows.splice(index, 0, workflow);
+            } else if (this.workflows.length === 0) {
+                this.workflows.push(new WorkflowModel(this.defaultWorkflow));
+            }
         });
     }
 
     public list(): IWorkflowModel[] {
-        // Return the observable array directly if consumer expects reactivity
         return this.workflows;
     }
 }

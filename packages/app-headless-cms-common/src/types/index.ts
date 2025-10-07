@@ -454,6 +454,7 @@ export interface CmsEditorFormSettingsPlugin<T = GenericRecord> extends Plugin {
     title: string;
     description: string;
     icon: React.ReactElement;
+    showSave?: boolean;
     render(props: { Bind: BaseBindComponent; form: FormAPI<T>; formData: T }): React.ReactNode;
     renderHeaderActions?(props: {
         Bind: BaseBindComponent;

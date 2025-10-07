@@ -7,7 +7,7 @@ import { Step } from "./Step/Step.js";
 import { observer } from "mobx-react-lite";
 import type { IWorkflowsPresenter } from "../Presenters/index.js";
 
-export interface IPublishingWorkflowProps {
+export interface IWorkflowProps {
     presenter: IWorkflowsPresenter;
 }
 
@@ -24,7 +24,7 @@ const publishedStep: IInactiveStep = {
     description: "The final state for any publish content."
 };
 
-export const Workflow = observer((props: IPublishingWorkflowProps) => {
+export const Workflow = observer((props: IWorkflowProps) => {
     const { presenter } = props;
 
     const workflow = presenter.vm.workflow;

@@ -6,7 +6,7 @@ export class WorkflowStepModel implements IWorkflowStepModel {
     public id;
     public title;
     public color;
-    public description?;
+    public description;
     public teams;
     public notifications;
 

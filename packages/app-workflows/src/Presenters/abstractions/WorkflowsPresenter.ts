@@ -1,11 +1,11 @@
-import type { IWorkflowStep } from "~/types.js";
-import type { IWorkflowModel } from "~/Models/index.js";
+import type { IWorkflow, IWorkflowStep } from "~/types.js";
 import type { IWorkflowError } from "~/Gateways/index.js";
+import type { IWorkflowModel } from "~/Models/index.js";
 
 export interface IWorkflowsViewModel {
-    workflows: IWorkflowModel[];
-    workflow: IWorkflowModel | null;
     dirty: boolean;
+    workflows: IWorkflow[];
+    workflow: IWorkflow | null;
     loading: boolean;
     error: IWorkflowError | null;
 }
@@ -13,7 +13,8 @@ export interface IWorkflowsViewModel {
 export interface IWorkflowsPresenter {
     vm: IWorkflowsViewModel;
     getWorkflow(): IWorkflowModel;
-    updateWorkflow(workflow: IWorkflowModel): void;
+    updateWorkflow(workflow: IWorkflow): void;
+    deleteWorkflow(workflow: IWorkflow): void;
     removeStep(step: Pick<IWorkflowStep, "id">): void;
     updateStep(step: IWorkflowStep): void;
     addStep(step: IWorkflowStep): void;

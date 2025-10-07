@@ -3,9 +3,8 @@ import type {
     IWorkflowsViewModel
 } from "./abstractions/WorkflowsPresenter.js";
 import type { IWorkflowsRepository } from "../Repositories/index.js";
-import { makeAutoObservable, runInAction } from "mobx";
-import type { IWorkflowModel } from "~/Models/index.js";
-import type { IWorkflowStep } from "~/types.js";
+import { makeAutoObservable, runInAction, toJS } from "mobx";
+import type { IWorkflow, IWorkflowStep } from "~/types.js";
 
 export interface IWorkflowsPresenterParams {
     repository: IWorkflowsRepository;
@@ -18,11 +17,11 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
         const workflows = this.repository.workflows;
         const workflow = workflows[0] || null;
         return {
-            workflows,
-            dirty: workflow ? workflow.steps.length > 0 : false,
-            workflow,
+            workflows: workflows.map(w => w.toJS()),
+            dirty: workflow ? workflow.dirty : false,
+            workflow: workflow ? workflow.toJS() : null,
             loading: this.repository.loading,
-            error: this.repository.error
+            error: toJS(this.repository.error)
         };
     }
 
@@ -32,9 +31,13 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
         makeAutoObservable(this);
     }
 
-    updateWorkflow = (workflow: IWorkflowModel): void => {
-        this.repository.save(workflow.toJS());
+    updateWorkflow = (workflow: IWorkflow): void => {
+        this.repository.save(workflow);
     };
+
+    deleteWorkflow(workflow: IWorkflow) {
+        this.repository.remove(workflow.id);
+    }
 
     getWorkflow = () => {
         return this.repository.workflows[0];

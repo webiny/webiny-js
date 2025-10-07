@@ -87,14 +87,16 @@ const FormSettings = ({ onExited }: FormSettingsProps) => {
                                           })
                                         : null}
                                 </SimpleFormContent>
-                                <SimpleFormFooter>
-                                    <Button
-                                        text={t`Save`}
-                                        onClick={ev => {
-                                            submit(ev);
-                                        }}
-                                    />
-                                </SimpleFormFooter>
+                                {activePlugin?.showSave !== false ? (
+                                    <SimpleFormFooter>
+                                        <Button
+                                            text={t`Save`}
+                                            onClick={ev => {
+                                                submit(ev);
+                                            }}
+                                        />
+                                    </SimpleFormFooter>
+                                ) : null}
                             </SimpleForm>
                         )}
                     </Form>

@@ -8,7 +8,7 @@ import { mdbid } from "@webiny/utils/mdbid.js";
 import { useApolloClient } from "@apollo/react-hooks";
 import { WorkflowView } from "~/Components/WorkflowView.js";
 
-interface WorkflowViewProps {
+interface WorkflowPresenterProps {
     app: string;
 }
 
@@ -21,7 +21,7 @@ const createDefaultWorkflow = (options: Pick<IWorkflow, "app"> & Partial<IWorkfl
     };
 };
 
-export const WorkflowPresenter = (props: WorkflowViewProps) => {
+export const WorkflowPresenter = (props: WorkflowPresenterProps) => {
     const { app } = props;
     const client = useApolloClient();
 

@@ -7,6 +7,7 @@ export const publishingWorkflowsEditorFormSettingsPlugin: CmsEditorFormSettingsP
     name: "cms-editor-form-settings-publishing-workflows",
     type: "cms-editor-form-settings",
     title: "Publishing Workflows",
+    showSave: false,
     description: "Manage content model's Publishing Workflows.",
     icon: <WorkflowIcon />,
     render: ({ formData }) => {

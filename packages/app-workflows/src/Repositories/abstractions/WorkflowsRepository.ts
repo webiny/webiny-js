@@ -10,6 +10,6 @@ export interface IWorkflowsRepository {
     find(id: string): IWorkflowModel | null;
     findOne(id: string): IWorkflowModel;
     save(input: IWorkflow): Promise<void>;
-    remove(workflowId: string): void;
+    remove(workflowId: string): Promise<void>;
     list(): IWorkflowModel[];
 }
