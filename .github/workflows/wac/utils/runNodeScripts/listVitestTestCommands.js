@@ -24,7 +24,9 @@ export const listVitestPackages = storageOps => {
 };
 
 const args = process.argv.slice(2); // Removes the first two elements
-const [storageOps = ""] = args;
+
+console.log(args)
+const [storageOps = "", whitelistedPackages] = JSON.parse(args[0]);
 
 const testCommands = listVitestPackages(storageOps)
     .map(pkg => pkg.getTestCommands())
