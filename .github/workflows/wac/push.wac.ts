@@ -264,11 +264,11 @@ const createPushWorkflow = (branchName: string) => {
                         id: "list-vitest-test-commands",
                         name: "List Vitest Test Commands",
                         "working-directory": DIR_WEBINY_JS,
-                      run: runNodeScript(
-                        "listVitestTestCommands",
-                        `["${storageOps?.id || ""}"]`,
-                        { outputAs: "vitest-test-commands" }
-                      )
+                        run: runNodeScript(
+                            "listVitestTestCommands",
+                            `["${storageOps?.id || ""}"]`,
+                            { outputAs: "vitest-test-commands" }
+                        )
                     }
                 ]
             }),
