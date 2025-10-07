@@ -97,8 +97,10 @@ export class TestablePackage {
                 if (this.packageFolderContainsTestFile(fullPath)) {
                     return true;
                 }
-            } else if (entry.isFile() && entry.name.endsWith(".test.ts")) {
-                return true;
+            } else if (entry.isFile()) {
+                if (entry.name.endsWith(".test.ts") || entry.name.endsWith(".test.js")) {
+                    return true;
+                }
             }
         }
 
