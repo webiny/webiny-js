@@ -274,7 +274,7 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '["", ${{ needs.constants.outputs.changed-packages }}]')" >>
+          '[\"\", ${{ needs.constants.outputs.changed-packages }}]')" >>
           $GITHUB_OUTPUT
       - name: Packages to test with Vitest
         id: list-packages
@@ -349,7 +349,7 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '["ddb", ${{ needs.constants.outputs.changed-packages }}]')" >>
+          '[\"ddb\", ${{ needs.constants.outputs.changed-packages }}]')" >>
           $GITHUB_OUTPUT
       - name: Packages to test with Vitest
         id: list-packages
@@ -433,8 +433,8 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '["ddb-es,ddb", ${{ needs.constants.outputs.changed-packages }}]')" >>
-          $GITHUB_OUTPUT
+          '[\"ddb-es,ddb\", ${{ needs.constants.outputs.changed-packages }}]')"
+          >> $GITHUB_OUTPUT
       - name: Packages to test with Vitest
         id: list-packages
         run: >-
@@ -522,8 +522,8 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '["ddb-os,ddb", ${{ needs.constants.outputs.changed-packages }}]')" >>
-          $GITHUB_OUTPUT
+          '[\"ddb-os,ddb\", ${{ needs.constants.outputs.changed-packages }}]')"
+          >> $GITHUB_OUTPUT
       - name: Packages to test with Vitest
         id: list-packages
         run: >-
