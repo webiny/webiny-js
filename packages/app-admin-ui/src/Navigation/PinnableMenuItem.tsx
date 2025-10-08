@@ -2,6 +2,7 @@ import React from "react";
 import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as PinIcon } from "@webiny/icons/push_pin.svg";
 import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
+import { useSidebar } from "@webiny/admin-ui";
 
 /**
  * Props for the PinnableMenuItem component.
@@ -101,11 +102,13 @@ const usePinnedMenuItem = (name: string) => {
  */
 export const PinnableMenuItem = ({ name, children }: PinnableMenuItemProps) => {
     const { isPinned, pin, unpin } = usePinnedMenuItem(name);
+    const { pinned: isSidebarPinned } = useSidebar();
+
     return (
         <div className="wby-relative">
             {children}
             <div
-                className={`wby-opacity-0 hover:wby-opacity-100 wby-absolute wby-right-sm wby-top-1/2 -wby-translate-y-1/2 wby-cursor-pointer ${isPinned ? "wby-opacity-100" : ""}`}
+                className={`wby-opacity-0 hover:wby-opacity-100 wby-absolute wby-right-sm wby-top-1/2 -wby-translate-y-1/2 wby-cursor-pointer ${isPinned && isSidebarPinned ? "wby-opacity-100" : ""}`}
             >
                 <Icon
                     label={isPinned ? "Unpin menu item" : "Pin menu item"}
