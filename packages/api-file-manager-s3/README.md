@@ -1,1 +1,0 @@
-# @webiny/api-file-manager-s3
