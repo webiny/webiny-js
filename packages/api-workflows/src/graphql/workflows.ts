@@ -61,9 +61,16 @@ export const createWorkflowsSchema = () => {
                 name: String!
                 steps: [WorkflowStep!]!
             }
+            
+            type ListWorkflowsMeta {
+                cursor: String
+                hasMoreItems: Boolean!
+                totalCount: Int!
+            }
 
             type ListWorkflowsResponse {
                 data: [Workflow!]
+                meta: ListWorkflowsMeta
                 error: WorkflowError
             }
 

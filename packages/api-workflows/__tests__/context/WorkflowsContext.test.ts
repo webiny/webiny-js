@@ -17,7 +17,14 @@ describe("Workflows Context", () => {
                 app: "test"
             }
         });
-        expect(result).toEqual([]);
+        expect(result).toEqual({
+            items: [],
+            meta: {
+                totalCount: 0,
+                hasMoreItems: false,
+                cursor: null
+            }
+        });
     });
 
     it("should create, update, list, get and delete a workflow", async () => {

@@ -1,5 +1,10 @@
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { IStoreWorkflowInput, IWorkflow } from "~/types.js";
+import type {
+    IStoreWorkflowInput,
+    IWorkflowsContextListParams
+} from "~/context/abstractions/WorkflowsContext.js";
+import type { IMeta } from "~/context/abstractions/types.js";
+import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 
 export interface IWorkflowError {
     code: string;
@@ -61,15 +66,14 @@ export const GET_WORKFLOW_QUERY = /* GraphQL */ `
     }
 `;
 
-export interface IListWorkflowVariables {
-    app: string;
-}
+export type IListWorkflowVariables = IWorkflowsContextListParams;
 
 export interface IListWorkflowResponse {
     data: {
         workflows: {
             listWorkflows: {
                 data: IWorkflow[] | null;
+                meta: IMeta | null;
                 error: IWorkflowError | null;
             };
         };
@@ -77,10 +81,15 @@ export interface IListWorkflowResponse {
 }
 
 export const LIST_WORKFLOWS_QUERY = /* GraphQL */ `
-    query ListWorkflows($app: String!) {
+    query ListWorkflows($where: ListWorkflowsWhereInput, $limit: Number, $sort: [ListWorkflowsSort!], $after: String) {
         workflows {
-            listWorkflows(app: $app) {
+            listWorkflows(where: $where, limit: $limit, sort: $sort, after: $after) {
                 data ${WORKFLOW}
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
                 ${ERROR_FIELD}
             }
         }
