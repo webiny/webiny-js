@@ -46,4 +46,8 @@ export class NullLicense implements ILicense {
     canUseTeams() {
         return false;
     }
+
+    public canUseWorkflows(): boolean {
+        return false;
+    }
 }

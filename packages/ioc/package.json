@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "typescript": "5.9.2",
+    "typescript": "5.9.3",
     "vitest": "^3.2.4",
     "zod": "^3.25.76"
   },

@@ -26,6 +26,7 @@ import { createLogger } from "@webiny/api-log";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
 import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler";
 import { createMailerContext, createMailerGraphQL } from "@webiny/api-mailer";
+import { createWorkflows } from "@webiny/api-workflows";
 
 import { extensions } from "./extensions";
 
@@ -73,6 +74,7 @@ export const handler = createHandler({
         createAco({
             documentClient
         }),
+        createWorkflows(),
         createAuditLogs(),
         createAcoHcmsContext(),
         createHcmsTasks(),

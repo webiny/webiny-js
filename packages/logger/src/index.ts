@@ -1,12 +1,60 @@
-import type {
-    DestinationStream,
-    LevelWithSilent,
-    Logger,
-    LoggerOptions as BaseLoggerOptions
-} from "pino";
+import type { DestinationStream, LevelWithSilent, Logger, LoggerOptions } from "pino";
 import { pino } from "pino";
 
-export * from "pino";
+export {
+    pino,
+    levels,
+    version,
+    stdSerializers,
+    symbols,
+    stdTimeFunctions,
+    multistream,
+    destination,
+    transport
+} from "pino";
+export type {
+    DestinationStream,
+    Logger,
+    LogFn,
+    WriteFn,
+    BaseLogger,
+    TransportTargetOptions,
+    TransportSingleOptions,
+    TransportPipelineOptions,
+    TransportMultiOptions,
+    TransportBaseOptions,
+    TimeFn,
+    ThreadStream,
+    StreamEntry,
+    SerializerFn,
+    SerializedResponse,
+    SerializedRequest,
+    SerializedError,
+    Bindings,
+    ChildLoggerOptions,
+    CustomLevelLogger,
+    LoggerOptions,
+    DestinationStreamHasMetadata,
+    DestinationStreamWithMetadata,
+    Level,
+    LevelChangeEventListener,
+    LevelMapping,
+    LevelOrString,
+    LevelWithSilent,
+    redactOptions,
+    PlaceholderTypeMapping,
+    PlaceholderSpecifier,
+    ParseLogFnArgs,
+    OnChildCallback,
+    MultiStreamRes,
+    MultiStreamOptions,
+    MixinMergeStrategyFn,
+    MixinFn,
+    LoggerExtras,
+    LogEvent,
+    LogDescriptor,
+    LevelWithSilentOrString
+} from "pino";
 
 export interface RedactOptions {
     paths: string[];
@@ -14,9 +62,9 @@ export interface RedactOptions {
     remove?: boolean;
 }
 
-export interface LoggerOptions extends Omit<BaseLoggerOptions, "redact"> {
-    redact?: string[] | RedactOptions;
-}
+// export interface LoggerOptions extends Omit<BaseLoggerOptions, "redact"> {
+//     redact?: string[] | RedactOptions;
+// }
 
 const levels: LevelWithSilent[] = ["fatal", "error", "warn", "info", "debug", "trace", "silent"];
 /**

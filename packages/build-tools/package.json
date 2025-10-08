@@ -30,7 +30,7 @@
     "chalk": "^4.1.2",
     "chokidar": "^4.0.3",
     "css-loader": "^7.1.2",
-    "eslint": "^9.36.0",
+    "eslint": "^9.37.0",
     "eslint-webpack-plugin": "^5.0.2",
     "fast-glob": "^3.3.3",
     "find-up": "^5.0.0",
@@ -58,7 +58,7 @@
     "ts-checker-rspack-plugin": "^1.1.5",
     "ts-patch": "^3.3.0",
     "tsx": "^4.20.5",
-    "typescript": "5.9.2",
+    "typescript": "5.9.3",
     "url-loader": "^4.1.1",
     "utf-8-validate": "^6.0.5"
   },

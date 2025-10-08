@@ -1,0 +1,541 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Creates a single IAM role for CI/CD deployments of a Webiny project, with three managed policies containing required permissions.
+
+Parameters:
+  RoleName:
+    Type: String
+    Default: WebinyDeployRole
+    Description: Name of the pre-created IAM Role for Webiny deployments.
+
+Resources:
+  DeployWebinyPolicy1:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: DeployWebinyPolicy1
+      Roles:
+        - !Ref RoleName
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          # Amazon Cloudfront
+          - Effect: Allow
+            Resource: arn:*:cloudfront::*:distribution/*
+            Action:
+              - cloudfront:CreateDistribution
+              - cloudfront:TagResource
+            Condition:
+              "Null":
+                "aws:RequestTag/WbyProjectName": "false"
+
+          - Effect: Allow
+            Resource: arn:*:cloudfront::*:distribution/*
+            Action:
+              - cloudfront:GetDistribution
+              - cloudfront:UpdateDistribution
+              - cloudfront:DeleteDistribution
+              - cloudfront:ListTagsForResource
+              - cloudfront:UntagResource
+            Condition:
+              "Null":
+                "aws:ResourceTag/WbyProjectName": "false"
+
+          # We had to add this because without it, upon destroying Admin/Website apps, we'd get an error:
+          # > waiting for CloudFront Distribution ({CF-DISTRIBUTION-ID}) delete: operation error CloudFront: GetDistribution
+          # > AccessDenied: User: arn:aws:iam::{X}:user/{Y} is not authorized to perform: cloudfront:GetDistribution on resource
+          # Was trying to resolve it for some time, but ultimately, did not succeed. Might be a Pulumi/Terraform issue.
+          - Effect: Allow
+            Resource: arn:*:cloudfront::*:distribution/*
+            Action:
+              - cloudfront:GetDistribution
+
+          - Effect: Allow
+            Resource: arn:*:cloudfront::*:function/*
+            Action:
+              - cloudfront:CreateFunction
+
+          - Effect: Allow
+            Resource: arn:*:cloudfront::*:function/wby-*
+            Action:
+              - cloudfront:GetFunction
+              - cloudfront:DescribeFunction
+              - cloudfront:PublishFunction
+              - cloudfront:UpdateFunction
+              - cloudfront:DeleteFunction
+
+          - Effect: Allow
+            # Origin access identities cannot be tagged, nor can they be targeted via an ARN.
+            Resource: arn:*:cloudfront::*:origin-access-identity/*
+            Action:
+              - cloudfront:CreateCloudFrontOriginAccessIdentity
+              - cloudfront:GetCloudFrontOriginAccessIdentity
+              - cloudfront:GetCloudFrontOriginAccessIdentityConfig
+              - cloudfront:UpdateCloudFrontOriginAccessIdentity
+              - cloudfront:DeleteCloudFrontOriginAccessIdentity
+
+          # Amazon API Gateway
+          - Effect: Allow
+            Action:
+              - apigateway:POST
+
+              # Note that AWS IAM Management Console will report the following error here:
+              # "Invalid Action: The action apigateway:TagResource does not exist."
+              # Still, without it, we receive an error upon deploying Amazon API Gateway.
+              - apigateway:TagResource
+            Resource:
+              - arn:aws:apigateway:*::/apis
+              - arn:aws:apigateway:*::/apis/*/stages
+            Condition:
+              "Null":
+                "aws:RequestTag/WbyProjectName": "false"
+          - Effect: Allow
+            Action:
+              - apigateway:GET
+              - apigateway:DELETE
+            Resource:
+              - arn:aws:apigateway:*::/apis/*
+              - arn:aws:apigateway:*::/apis/*/stages/*
+            Condition:
+              "Null":
+                "aws:ResourceTag/WbyProjectName": "false"
+          - Effect: Allow
+            Action:
+              - apigateway:POST
+            Resource:
+              # Allows executing the following AWS-internal action:
+              # arn:aws:apigateway:{region}::/tags/arn:aws:apigateway:{region}::/v2/apis/*
+              - arn:aws:apigateway:*::/tags/*
+          - Effect: Allow
+            Action:
+              - apigateway:POST
+            Resource:
+              # Integrations and routes cannot be tagged, nor can they be targeted via an ARN.
+              # https://docs.amazonaws.cn/en_us/apigateway/latest/developerguide/apigateway-tagging-supported-resources.html
+              - arn:aws:apigateway:*::/apis/*/integrations
+              - arn:aws:apigateway:*::/apis/*/routes
+          - Effect: Allow
+            Action:
+              - apigateway:DELETE
+            Resource:
+              # Integrations and routes cannot be tagged, nor can they be targeted via an ARN.
+              # https://docs.amazonaws.cn/en_us/apigateway/latest/developerguide/apigateway-tagging-supported-resources.html
+              - arn:aws:apigateway:*::/apis/*/integrations/*
+              - arn:aws:apigateway:*::/apis/*/routes/*
+
+          # Amazon Cognito
+          # With Amazon Cognito, we've run into an issue where Pulumi is not applying tags to the
+          # user pool. It seems we'll need to upgrade to Pulumi 6 in order to resolve this, but for
+          # now, we'll just allow the user to create a user pool without any tags condition.
+          # See https://github.com/pulumi/pulumi-aws/issues/2533 for more details.
+          - Effect: Allow
+            Action:
+              - cognito-idp:CreateUserPool
+              - cognito-idp:TagResource
+            # Only wildcard can be used here.
+            # https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoncognitouserpools.html
+            Resource: "*"
+
+          # Amazon Cognito
+          - Effect: Allow
+            Action:
+              - cognito-idp:UpdateUserPool
+              - cognito-idp:DeleteUserPool
+              - cognito-idp:DescribeUserPool
+              - cognito-idp:CreateUserPoolDomain
+              - cognito-idp:UpdateUserPoolDomain
+              - cognito-idp:DeleteUserPoolDomain
+              - cognito-idp:DescribeUserPoolDomain
+              - cognito-idp:DescribeIdentityProvider
+              - cognito-idp:CreateIdentityProvider
+              - cognito-idp:UpdateIdentityProvider
+              - cognito-idp:DeleteIdentityProvider
+              - cognito-idp:CreateUserPoolClient
+              - cognito-idp:UpdateUserPoolClient
+              - cognito-idp:DeleteUserPoolClient
+              - cognito-idp:DescribeUserPoolClient
+              - cognito-idp:GetUserPoolMfaConfig
+              - cognito-idp:UntagResource
+            # If the last part of the resource ARN was the user pool name, we could've put a prefix
+            # at least (for example `wby-*`). But, since it's the user pool ID, we can't do that.
+            # https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoncognitouserpools.html#amazoncognitouserpools-userpool
+            Resource: arn:aws:cognito-idp:*:*:userpool/*
+
+          # Amazon DynamoDB
+          - Effect: Allow
+            Action:
+              - dynamodb:CreateTable
+              - dynamodb:DeleteTable
+              - dynamodb:DescribeTable
+              - dynamodb:DescribeContinuousBackups
+              - dynamodb:DescribeTimeToLive
+              - dynamodb:ListTagsOfResource
+              - dynamodb:TagResource
+              - dynamodb:UntagResource
+              - dynamodb:PutItem
+              - dynamodb:GetItem
+              - dynamodb:DeleteItem
+            Resource: arn:aws:dynamodb:*:*:table/wby-*
+
+            # Amazon Elasticsearch
+          - Effect: Allow
+            Action:
+              - es:AddTags
+              - es:CreateElasticsearchDomain
+              - es:DeleteElasticsearchDomain
+              - es:DescribeElasticsearchDomain
+              - es:GetCompatibleElasticsearchVersions
+              - es:ListTags
+              - es:RemoveTags
+              - es:UpdateElasticsearchDomainConfig
+              - es:DescribeElasticsearchDomainConfig
+            Resource: arn:aws:es:*:*:domain/wby-*
+
+          # Amazon EventBridge
+          - Effect: Allow
+            Action:
+              - events:DeleteRule
+              - events:DescribeRule
+              - events:ListTagsForResource
+              - events:ListTargetsByRule
+              - events:PutRule
+              - events:PutTargets
+              - events:RemoveTargets
+              - events:TagResource
+              - events:UntagResource
+              - events:PutEvents
+              - events:CreateEventBus
+              - events:DescribeEventBus
+              - events:DeleteEventBus
+            Resource:
+              - arn:aws:events:*:*:event-bus/wby-*
+              - arn:aws:events:*:*:rule/wby-*
+
+  DeployWebinyPolicy2:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: DeployWebinyPolicy2
+      Roles:
+        - !Ref RoleName
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          # AWS Identity and Access Management (IAM)
+          - Effect: Allow
+            Action:
+              - iam:AttachRolePolicy
+              - iam:CreatePolicy
+              - iam:CreatePolicyVersion
+              - iam:CreateRole
+              - iam:DeleteRole
+              - iam:DeleteRolePolicy
+              - iam:DetachRolePolicy
+              - iam:DeletePolicy
+              - iam:DeletePolicyVersion
+              - iam:GetPolicy
+              - iam:GetPolicyVersion
+              - iam:GetRole
+              - iam:GetRolePolicy
+              - iam:GetUser
+              - iam:ListAttachedRolePolicies
+              - iam:ListInstanceProfilesForRole
+              - iam:ListRolePolicies
+              - iam:ListPolicyVersions
+              - iam:ListRoles
+              - iam:PassRole
+              - iam:PutRolePolicy
+              - iam:TagRole
+              - iam:UntagRole
+            Resource:
+              - arn:aws:iam::*:role/wby-*
+              - arn:aws:iam::*:policy/wby-*
+
+          # AWS Identity and Access Management (IAM) - Service-Linked Roles
+          # Only needed for the "Amazon DynamoDB + Amazon Elasticsearch" database setup.
+          # https://www.webiny.com/docs/architecture/introduction#different-database-setups
+          - Effect: Allow
+            Action:
+              - iam:GetRole
+              - iam:CreateServiceLinkedRole
+            Resource:
+              - arn:aws:iam::*:role/aws-service-role/es.amazonaws.com/AWSServiceRoleForAmazonElasticsearchService
+              - arn:aws:iam::*:role/aws-service-role/opensearchservice.amazonaws.com/AWSServiceRoleForAmazonOpenSearchService
+              # Without these, service-linked role creation would fail
+              - arn:aws:iam::*:role/AWSServiceRoleForAmazonElasticsearchService
+              - arn:aws:iam::*:role/AWSServiceRoleForAmazonOpenSearchService
+
+
+          # AWS Step Functions
+          - Effect: Allow
+            Action:
+              - states:CreateStateMachine
+              - states:DeleteStateMachine
+              - states:DescribeStateMachine
+              - states:ListTagsForResource
+              - states:TagResource
+              - states:UntagResource
+              - states:ListStateMachines
+              - states:UpdateStateMachine
+              - states:ListStateMachineVersions
+            Resource: arn:aws:states:*:*:stateMachine:wby-*
+
+          # AWS Step Functions - ValidateStateMachineDefinition
+          # We needed to set "arn:aws:states:*:*:stateMachine:*" because the action
+          # "states:ValidateStateMachineDefinition" does not support resource-level permissions.
+          # https://docs.aws.amazon.com/service-authorization/latest/reference/list_awsstepfunctions.html#awsstepfunctions-ValidateStateMachineDefinition
+          - Effect: Allow
+            Action:
+              - states:ValidateStateMachineDefinition
+            Resource: arn:aws:states:*:*:stateMachine:*
+
+          # AWS Lambda
+          - Effect: Allow
+            Action:
+              - lambda:CreateFunction
+              - lambda:GetFunction
+              - lambda:ListFunctions
+              - lambda:DeleteFunction
+              - lambda:UpdateFunctionCode
+              - lambda:GetFunctionConfiguration
+              - lambda:UpdateFunctionConfiguration
+              - lambda:PublishVersion
+              - lambda:ListVersionsByFunction
+              - lambda:TagResource
+              - lambda:UntagResource
+              - lambda:ListTags
+              - lambda:AddPermission
+              - lambda:RemovePermission
+              - lambda:GetAccountSettings
+              - lambda:GetAlias
+              - lambda:GetFunctionCodeSigningConfig
+              - lambda:GetPolicy
+              - lambda:InvokeAsync
+              - lambda:InvokeFunction
+              - lambda:ListAliases
+              # For deploying Lambda@Edge.
+              - lambda:EnableReplication
+            Resource:
+              - arn:aws:lambda:*:*:function:wby-*
+
+          - Effect: Allow
+            Action:
+              - lambda:CreateEventSourceMapping
+              - lambda:TagResource
+            Condition:
+              "Null":
+                aws:RequestTag/WbyProjectName: "false"
+
+            # Only wildcard can be used here.
+            # https://docs.aws.amazon.com/service-authorization/latest/reference/list_awslambda.html
+            # https://docs.aws.amazon.com/lambda/latest/dg/lambda-api-permissions-ref.html#permissions-resources-eventsource
+            Resource: "*"
+
+          - Effect: Allow
+            Action:
+              - lambda:ListEventSourceMappings
+            # Only wildcard can be used here.
+            # https://docs.aws.amazon.com/service-authorization/latest/reference/list_awslambda.html
+            # https://docs.aws.amazon.com/lambda/latest/dg/lambda-api-permissions-ref.html#permissions-resources-eventsource
+            Resource: "*"
+
+          - Effect: Allow
+            Action:
+              # Initially, we grouped these with `Resource: arn:aws:lambda:*:*:event-source-mapping:*`, but that
+              # caused several `xyz is not authorized to perform: lambda:GetEventSourceMapping on resource: *`
+              # errors. But still, note that, even if we managed to use the initial resource string, we'd still
+              # be relying on wildcards, which, if we think about it, is essentially the same as `Resource: *`.
+              # Also, there weren't any Condition keys that could've been used here (there is `lambda:FunctionArn`,
+              # but it doesn't help us in this case). We might want to revisit this in the future.
+              - lambda:GetEventSourceMapping
+              - lambda:UpdateEventSourceMapping
+              - lambda:DeleteEventSourceMapping
+              - lambda:ListTags
+            Resource: "*"
+
+          # We want to provide the ability to get different layers.
+          # That's why we don't provide a complete ARN here.
+          - Effect: Allow
+            Action:
+              - lambda:GetLayerVersion
+              - lambda:GetLayerVersionPolicy
+            Resource: arn:aws:lambda:*:*:layer:*
+
+          # Amazon S3
+          - Effect: Allow
+            Action:
+              - s3:CreateBucket
+              - s3:DeleteBucket
+              - s3:ListBucket
+              - s3:ListBucketVersions
+              - s3:PutBucketTagging
+              - s3:GetBucketTagging
+              - s3:PutBucketAcl
+              - s3:GetBucketAcl
+              - s3:GetBucketPolicy
+              - s3:PutBucketPolicy
+              - s3:DeleteBucketPolicy
+              - s3:PutBucketCORS
+              - s3:GetBucketCORS
+              - s3:PutBucketNotification
+              - s3:GetBucketNotification
+              - s3:GetBucketWebsite
+              - s3:GetBucketVersioning
+              - s3:PutBucketVersioning
+              - s3:GetAccelerateConfiguration
+              - s3:GetLifecycleConfiguration
+              - s3:GetReplicationConfiguration
+              - s3:GetEncryptionConfiguration
+              - s3:GetBucketRequestPayment
+              - s3:GetBucketLogging
+              - s3:GetBucketObjectLockConfiguration
+              - s3:GetBucketPublicAccessBlock
+              - s3:PutBucketPublicAccessBlock
+              - s3:PutObject*
+              - s3:GetObject*
+              - s3:DeleteObject*
+            Resource: arn:aws:s3:::wby-*
+
+          # AWS Security Token Service (STS)
+          - Effect: Allow
+            Action:
+              - sts:GetCallerIdentity
+            # Only wildcard can be used here.
+            # https://docs.aws.amazon.com/service-authorization/latest/reference/list_awssecuritytokenservice.html
+            Resource: "*"
+
+          # Amazon SQS
+          - Effect: Allow
+            Action:
+              - sqs:TagQueue
+              - sqs:UntagQueue
+              - sqs:ListQueueTags
+              - sqs:SendMessage
+              - sqs:GetQueueAttributes
+              - sqs:SetQueueAttributes
+              - sqs:CreateQueue
+              - sqs:DeleteQueue
+            Resource: arn:aws:sqs:*:*:wby-*
+
+  DeployWebinyPolicy3:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: DeployWebinyPolicy3
+      Roles:
+        - !Ref RoleName
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          # Amazon EC2 (we need these for custom VPC deployment that's used in production mode).
+          # https://www.webiny.com/docs/architecture/deployment-modes/introduction
+          - Effect: Allow
+
+            # Resource ARNs must include at least 6 fields and include the following structure: arn:partition:service:region:account:resource.
+            Resource: arn:aws:ec2:*:*:*
+            Condition:
+              "Null":
+                aws:RequestTag/WbyProjectName: "false"
+            Action:
+              - ec2:CreateTags
+
+              # arn:*:ec2:*:*:vpc/*
+              - ec2:CreateVpc
+
+              # arn:aws:ec2:*:*:subnet/*
+              - ec2:CreateSubnet
+
+              # arn:aws:ec2:*:*:elastic-ip/*
+              - ec2:AllocateAddress
+
+              # arn:aws:ec2:*:*:internet-gateway/*
+              - ec2:CreateInternetGateway
+
+              # arn:aws:ec2:*:*:natgateway/*
+              - ec2:CreateNatGateway
+
+              # arn:aws:ec2:*:*:route-table/*
+              - ec2:CreateRouteTable
+
+          - Effect: Allow
+            # Resource ARNs must include at least 6 fields and include the following structure: arn:partition:service:region:account:resource.
+            Resource: arn:aws:ec2:*:*:*
+            Condition:
+              "Null":
+                aws:ResourceTag/WbyProjectName: "false"
+            Action:
+              # arn:aws:ec2:*:*:vpc/*
+              - ec2:CreateSubnet
+              - ec2:CreateRouteTable
+              - ec2:DetachInternetGateway
+              - ec2:DeleteVpc
+              - ec2:DescribeVpcAttribute
+              - ec2:AttachInternetGateway
+
+              # arn:aws:ec2:*:*:subnet/*
+              - ec2:CreateNatGateway
+              - ec2:AssociateRouteTable
+              - ec2:DisassociateRouteTable
+              - ec2:DeleteSubnet
+
+              # arn:aws:ec2:*:*:elastic-ip/*
+              - ec2:CreateNatGateway
+              - ec2:ReleaseAddress
+
+              # arn:aws:ec2:*:*:internet-gateway/*
+              - ec2:AttachInternetGateway
+              - ec2:DetachInternetGateway
+              - ec2:DeleteInternetGateway
+
+              # arn:aws:ec2:*:*:natgateway/*
+              - ec2:DeleteNatGateway
+
+              # arn:aws:ec2:*:*:route-table/*
+              - ec2:CreateRoute
+              - ec2:DeleteRouteTable
+
+          - Effect: Allow
+            # Could not use tags.
+            Resource: arn:aws:ec2:*:*:network-interface/*
+            Action:
+              - ec2:DeleteNetworkInterface
+
+          - Effect: Allow
+            # As stated in AWS docs, we must use "*" here:
+            # https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonec2.html
+            Resource: "*"
+            Action:
+              - ec2:DescribeVpcs
+              - ec2:DescribeSubnets
+              - ec2:DescribeAvailabilityZones
+              - ec2:DescribeAddresses
+              - ec2:DescribeInternetGateways
+              - ec2:DescribeNatGateways
+              - ec2:DescribeNetworkInterfaces
+              - ec2:DescribeRouteTables
+              - ec2:DescribeSecurityGroups
+              - ec2:DescribeSecurityGroupReferences
+
+          # We need this to get logs from CloudWatch during data migrations.
+          - Effect: Allow
+            Resource: "arn:aws:logs:*:*:log-group:wby-data-migration-*"
+            Action:
+              - logs:Unmask
+              - logs:GetLogEvents
+
+          # Malware Protection Plan (File Manager Threat Detection)
+          - Effect: Allow
+            Resource: "arn:aws:guardduty:*:*:malware-protection-plan/*"
+            Action:
+              - guardduty:CreateMalwareProtectionPlan
+              - guardduty:GetMalwareProtectionPlan
+              - guardduty:DeleteMalwareProtectionPlan
+              - guardduty:UpdateMalwareProtectionPlan
+
+          # IoT
+          - Effect: Allow
+            Resource: "arn:aws:iot:*:*:authorizer/*"
+            Action:
+              - iot:CreateAuthorizer
+              - iot:DescribeAuthorizer
+              - iot:DescribeDefaultAuthorizer
+              - iot:UpdateAuthorizer
+              - iot:DeleteAuthorizer
+              - iot:ListTagsForResource

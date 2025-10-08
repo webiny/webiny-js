@@ -19,9 +19,21 @@ type CreateTestConfigParams = {
 export const createTestConfig = async ({
     path,
     presets = [],
-    vitestConfig = {}
+    vitestConfig: initialVitestConfig = {}
 }: CreateTestConfigParams): Promise<NonNullable<ViteUserConfig["test"]>> => {
     const name = basename(path);
+    /**
+     * We want to collect coverage only from the package that is currently being tested.
+     * If we do not do this, it will collect coverage from all packages, which is not what we want.
+     *
+     * User can override this by providing their own `vitestConfig` with `coverage` property.
+     */
+    const vitestConfig = {
+        coverage: {
+            include: [`packages/${name}/src/**/*`]
+        },
+        ...initialVitestConfig
+    };
 
     const { PackageJson } = await import("@webiny/build-tools/utils/PackageJson.js");
     const cliPackage = await PackageJson.fromPackage("@webiny/cli");

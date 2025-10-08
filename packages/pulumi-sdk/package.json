@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@pulumi/aws": "^6.83.0",
-    "@pulumi/pulumi": "^3.197.0",
+    "@pulumi/pulumi": "^3.201.0",
     "decompress": "^4.2.1",
     "execa": "^5.1.1",
     "find-up": "^5.0.0",
@@ -30,7 +30,7 @@
     "@types/lodash": "4.17.20",
     "@webiny/build-tools": "0.0.0",
     "rimraf": "^6.0.1",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "adio": {
     "ignore": {

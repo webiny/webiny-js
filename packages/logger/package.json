@@ -14,9 +14,9 @@
   "license": "MIT",
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
-    "pino": "^8.21.0",
+    "pino": "^9.13.1",
     "rimraf": "^6.0.1",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "publishConfig": {
     "access": "public",

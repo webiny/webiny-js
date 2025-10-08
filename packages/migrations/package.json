@@ -28,7 +28,7 @@
     "@webiny/project-utils": "0.0.0",
     "elastic-ts": "^0.12.0",
     "jest-dynalite": "^3.6.1",
-    "typescript": "5.9.2",
+    "typescript": "5.9.3",
     "vitest": "^3.2.4"
   }
 }

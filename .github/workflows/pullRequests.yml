@@ -54,17 +54,17 @@ jobs:
         run: >-
           echo "global-cache-key=${{ github.base_ref }}-${{ runner.os
           }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >>
-          $GITHUB_OUTPUT
+          "$GITHUB_OUTPUT"
       - name: Create workflow run cache key
         id: run-cache-key
         run: >-
           echo "run-cache-key=${{ github.run_id }}-${{ github.run_attempt }}-${{
-          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
+          vars.RANDOM_CACHE_KEY_SUFFIX }}" >> "$GITHUB_OUTPUT"
       - name: Is a PR from a fork
         id: is-fork-pr
         run: >-
           echo "is-fork-pr=${{ github.event.pull_request.head.repo.fork }}" >>
-          $GITHUB_OUTPUT
+          "$GITHUB_OUTPUT"
       - name: Detect changed files
         id: detect-changed-files
         uses: dorny/paths-filter@v3
@@ -79,12 +79,12 @@ jobs:
           echo "changed-packages=$(node
           .github/workflows/wac/utils/runNodeScripts/listChangedPackages.js '${{
           steps.detect-changed-files.outputs.changed_files }}')" >>
-          $GITHUB_OUTPUT
+          "$GITHUB_OUTPUT"
       - name: Get latest Webiny version on NPM
         id: latest-webiny-version
         run: >-
           echo "latest-webiny-version=$(npm view @webiny/cli version)" >>
-          $GITHUB_OUTPUT
+          "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -109,7 +109,7 @@ jobs:
           .github/workflows/wac/utils/runNodeScripts/getMilestoneToAssign.js
           '{"latestWebinyVersion":"${{
           needs.constants.outputs.latest-webiny-version }}","baseBranch":"${{
-          github.base_ref }}"}')" >> $GITHUB_OUTPUT
+          github.base_ref }}"}')" >> "$GITHUB_OUTPUT"
       - uses: zoispag/action-assign-milestone@v1
         if: steps.get-milestone-to-assign.outputs.milestone
         with:
@@ -185,9 +185,6 @@ jobs:
       - name: ESLint
         run: yarn eslint
         working-directory: ${{ github.base_ref }}
-      - name: Sync Dependencies Verification
-        run: yarn verify-dependencies
-        working-directory: ${{ github.base_ref }}
       - name: Check Package Node Modules
         run: yarn check-package-dependencies
         working-directory: ${{ github.base_ref }}
@@ -223,9 +220,6 @@ jobs:
         working-directory: ${{ github.base_ref }}
       - name: Sync Dependencies Verification
         run: yarn verify-dependencies
-        working-directory: ${{ github.base_ref }}
-      - name: Check Package Node Modules
-        run: yarn check-package-dependencies
         working-directory: ${{ github.base_ref }}
     runs-on: ubuntu-latest
     env:
@@ -274,8 +268,8 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '[, ${{ needs.constants.outputs.changed-packages }}]')" >>
-          $GITHUB_OUTPUT
+          '["", ${{ needs.constants.outputs.changed-packages }}]')" >>
+          "$GITHUB_OUTPUT"
       - name: Packages to test with Vitest
         id: list-packages
         run: >-
@@ -349,8 +343,8 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '[ddb, ${{ needs.constants.outputs.changed-packages }}]')" >>
-          $GITHUB_OUTPUT
+          '["ddb", ${{ needs.constants.outputs.changed-packages }}]')" >>
+          "$GITHUB_OUTPUT"
       - name: Packages to test with Vitest
         id: list-packages
         run: >-
@@ -433,8 +427,8 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '[ddb-es,ddb, ${{ needs.constants.outputs.changed-packages }}]')" >>
-          $GITHUB_OUTPUT
+          '["ddb-es,ddb", ${{ needs.constants.outputs.changed-packages }}]')" >>
+          "$GITHUB_OUTPUT"
       - name: Packages to test with Vitest
         id: list-packages
         run: >-
@@ -522,8 +516,8 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '[ddb-os,ddb, ${{ needs.constants.outputs.changed-packages }}]')" >>
-          $GITHUB_OUTPUT
+          '["ddb-os,ddb", ${{ needs.constants.outputs.changed-packages }}]')" >>
+          "$GITHUB_OUTPUT"
       - name: Packages to test with Vitest
         id: list-packages
         run: >-

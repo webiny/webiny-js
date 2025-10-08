@@ -53,4 +53,8 @@ export class ReactLicense implements ILicense {
     getRawLicense(): DecryptedWcpProjectLicense | null {
         return this.license.getRawLicense();
     }
+
+    public canUseWorkflows(): boolean {
+        return this.license.canUseWorkflows();
+    }
 }

@@ -48,10 +48,13 @@ export class Messenger {
         const logicalType = this.stripPrefix(type);
 
         if (!this.isIgnored(logicalType)) {
-            logger.debug(`${this.getTime()} --> [${this.source.origin}][${logicalType}]`, {
-                type,
-                payload
-            });
+            logger.debug(
+                {
+                    type,
+                    payload
+                },
+                `${this.getTime()} --> [${this.source.origin}][${logicalType}]`
+            );
         }
 
         const handlers = this.listeners.get(logicalType);
@@ -87,10 +90,13 @@ export class Messenger {
         const fullType = this.prefixGlob + logicalType;
 
         if (!this.isIgnored(logicalType)) {
-            logger.debug(`${this.getTime()} <-- [${this.source.origin}][${logicalType}]`, {
-                type: fullType,
-                payload
-            });
+            logger.debug(
+                {
+                    type: fullType,
+                    payload
+                },
+                `${this.getTime()} <-- [${this.source.origin}][${logicalType}]`
+            );
         }
 
         this.target.window.postMessage({ type: fullType, payload }, this.target.origin);

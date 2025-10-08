@@ -77,29 +77,6 @@ export interface CmsGroup {
     plugin?: boolean;
 }
 
-export interface IWorkflowStepNotification {
-    id: string;
-}
-
-export interface IWorkflowStepTeam {
-    id: string;
-}
-
-export interface IWorkflowStep {
-    id: string;
-    title: string;
-    color: string;
-    description?: string;
-    teams: IWorkflowStepTeam[];
-    notifications?: IWorkflowStepNotification[];
-}
-
-export interface IWorkflow {
-    id: string;
-    name: string;
-    steps: IWorkflowStep[];
-}
-
 export interface CmsModel {
     id: string;
     group: Pick<CmsGroup, "id" | "name">;
@@ -130,7 +107,6 @@ export interface CmsModel {
      */
     isBeingDeleted?: boolean;
     settings: {
-        workflows?: IWorkflow[];
         [key: string]: any;
     };
 }

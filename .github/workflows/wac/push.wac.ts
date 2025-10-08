@@ -28,7 +28,7 @@ const createPushWorkflow = (branchName: string) => {
     const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
     const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 
-    const createCypressJobs = (storageOps: AbstractStorageOps) => {
+    const createE2EJobs = (storageOps: AbstractStorageOps) => {
         const jobNames = {
             constants: `e2eTests-${storageOps.shortId}-constants`,
             projectSetup: `e2eTests-${storageOps.shortId}-setup`,
@@ -266,7 +266,7 @@ const createPushWorkflow = (branchName: string) => {
                         "working-directory": DIR_WEBINY_JS,
                         run: runNodeScript(
                             "listVitestTestCommands",
-                            JSON.stringify({ storageOps: storageOps?.id || null }),
+                            `["${storageOps?.id || ""}"]`,
                             { outputAs: "vitest-test-commands" }
                         )
                     }
@@ -349,7 +349,11 @@ const createPushWorkflow = (branchName: string) => {
                             { name: "Check code formatting", run: "yarn prettier:check" },
                             { name: "Check dependencies", run: "yarn adio" },
                             { name: "Check TS configs", run: "yarn check-ts-configs" },
-                            { name: "ESLint", run: "yarn eslint" }
+                            { name: "ESLint", run: "yarn eslint" },
+                            {
+                                name: "Check Package Node Modules",
+                                run: "yarn check-package-dependencies"
+                            }
                         ],
                         { "working-directory": DIR_WEBINY_JS }
                     )
@@ -369,11 +373,6 @@ const createPushWorkflow = (branchName: string) => {
                     {
                         name: "Sync Dependencies Verification",
                         run: "yarn verify-dependencies",
-                        "working-directory": DIR_WEBINY_JS
-                    },
-                    {
-                        name: "Check Package Node Modules",
-                        run: "yarn check-package-dependencies",
                         "working-directory": DIR_WEBINY_JS
                     }
                 ]
@@ -402,18 +401,22 @@ const createPushWorkflow = (branchName: string) => {
             ...createVitestTestsJobs(ddbStorageOps),
             ...createVitestTestsJobs(ddbEsStorageOps),
             ...createVitestTestsJobs(ddbOsStorageOps),
-            ...createCypressJobs(ddbStorageOps),
-            ...createCypressJobs(ddbEsStorageOps),
-            ...createCypressJobs(ddbOsStorageOps)
+            ...createE2EJobs(ddbStorageOps),
+            ...createE2EJobs(ddbEsStorageOps),
+            ...createE2EJobs(ddbOsStorageOps)
         }
     });
 
     if (branchName === "next") {
-        const jestJobsNames = Object.keys(workflow.jobs).filter(name => name.startsWith("jest"));
-        const e2eJobsNames = Object.keys(workflow.jobs).filter(name => name.endsWith("cypress"));
+        const vitestJobsNames = Object.keys(workflow.jobs).filter(
+            name => name.startsWith("vitest") && name.endsWith("run")
+        );
+        const e2eJobsNames = Object.keys(workflow.jobs).filter(
+            name => name.startsWith("e2eTests") && name.endsWith("setup")
+        );
 
         workflow.jobs.npmReleaseUnstable = createJob({
-            needs: ["constants", "codeAnalysis", ...jestJobsNames, ...e2eJobsNames],
+            needs: ["constants", "codeAnalysis", ...vitestJobsNames, ...e2eJobsNames],
             name: 'NPM release ("unstable" tag)',
             environment: "release",
             env: {
@@ -447,4 +450,3 @@ const createPushWorkflow = (branchName: string) => {
 };
 export const pushDev = createPushWorkflow("dev");
 export const pushNext = createPushWorkflow("next");
-export const pushV6EsmVitest = createPushWorkflow("feat/v6-esm-vitest");

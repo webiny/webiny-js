@@ -99,6 +99,9 @@ jobs:
       - name: ESLint
         run: yarn eslint
         working-directory: dev
+      - name: Check Package Node Modules
+        run: yarn check-package-dependencies
+        working-directory: dev
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -131,9 +134,6 @@ jobs:
         working-directory: dev
       - name: Sync Dependencies Verification
         run: yarn verify-dependencies
-        working-directory: dev
-      - name: Check Package Node Modules
-        run: yarn check-package-dependencies
         working-directory: dev
     runs-on: ubuntu-latest
     env:
@@ -181,7 +181,7 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '{"storageOps":null}')" >> $GITHUB_OUTPUT
+          '[""]')" >> "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -247,7 +247,7 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '{"storageOps":"ddb"}')" >> $GITHUB_OUTPUT
+          '["ddb"]')" >> "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -323,7 +323,7 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '{"storageOps":"ddb-es,ddb"}')" >> $GITHUB_OUTPUT
+          '["ddb-es,ddb"]')" >> "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -402,7 +402,7 @@ jobs:
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
-          '{"storageOps":"ddb-os,ddb"}')" >> $GITHUB_OUTPUT
+          '["ddb-os,ddb"]')" >> "$GITHUB_OUTPUT"
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'

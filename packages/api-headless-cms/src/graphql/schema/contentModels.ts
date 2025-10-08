@@ -173,33 +173,6 @@ export const createModelsSchema = ({
                 settings: JSON
             }
 
-            input CmsContentModelSettingsWorkflowStepNotificationInput {
-                id: String!
-            }
-
-            input CmsContentModelSettingsWorkflowStepTeamInput {
-                id: String!
-            }
-
-            input CmsContentModelSettingsWorkflowStepInput {
-                id: String!
-                title: String!
-                color: String!
-                description: String
-                teams: [CmsContentModelSettingsWorkflowStepTeamInput!]!
-                notifications: [CmsContentModelSettingsWorkflowStepNotificationInput!]
-            }
-
-            input CmsContentModelSettingsWorkflowInput {
-                id: String!
-                name: String!
-                steps: [CmsContentModelSettingsWorkflowStepInput!]!
-            }
-
-            input CmsContentModelSettingsInput {
-                workflows: [CmsContentModelSettingsWorkflowInput!]
-            }
-
             input CmsContentModelCreateInput {
                 name: String!
                 singularApiName: String!
@@ -215,7 +188,6 @@ export const createModelsSchema = ({
                 imageFieldId: String
                 tags: [String!]
                 defaultFields: Boolean
-                settings: CmsContentModelSettingsInput
             }
 
             input CmsContentModelCreateFromInput {
@@ -242,7 +214,6 @@ export const createModelsSchema = ({
                 descriptionFieldId: String
                 imageFieldId: String
                 tags: [String!]
-                settings: CmsContentModelSettingsInput
             }
 
             type InitializeModelResponse {
@@ -314,33 +285,6 @@ export const createModelsSchema = ({
                 settings: JSON
             }
 
-            type CmsContentModelSettingsWorkflowStepNotification {
-                id: String!
-            }
-
-            type CmsContentModelSettingsWorkflowStepTeam {
-                id: String!
-            }
-
-            type CmsContentModelSettingsWorkflowStep {
-                id: String!
-                title: String!
-                color: String!
-                description: String
-                teams: [CmsContentModelSettingsWorkflowStepTeam!]!
-                notifications: [CmsContentModelSettingsWorkflowStepNotification!]
-            }
-
-            type CmsContentModelSettingsWorkflow {
-                id: String!
-                name: String!
-                steps: [CmsContentModelSettingsWorkflowStep!]!
-            }
-
-            type CmsContentModelSettings {
-                workflows: [CmsContentModelSettingsWorkflow!]
-            }
-
             type CmsContentModel {
                 name: String!
                 singularApiName: String!
@@ -361,7 +305,6 @@ export const createModelsSchema = ({
                 tags: [String!]!
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!
-                settings: CmsContentModelSettings
             }
 
             type CmsContentModelResponse {

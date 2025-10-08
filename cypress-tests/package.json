@@ -20,7 +20,7 @@
     "graphql-request": "^7.2.0",
     "lodash": "^4.17.21",
     "nanoid": "^3.3.11",
-    "typescript": "5.9.2",
+    "typescript": "5.9.3",
     "uniqid": "^5.4.0"
   },
   "scripts": {

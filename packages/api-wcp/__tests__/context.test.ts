@@ -1,6 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { ContextPlugin } from "@webiny/api";
-import { Context } from "@webiny/api";
+import { describe, expect, it } from "vitest";
+import { Context, ContextPlugin } from "@webiny/api";
 import { createWcpContext } from "~/context.js";
 import type { WcpContext } from "~/types.js";
 
@@ -33,7 +32,8 @@ describe("context", () => {
             canUseRecordLocking: expect.any(Function),
             decrementSeats: expect.any(Function),
             incrementTenants: expect.any(Function),
-            decrementTenants: expect.any(Function)
+            decrementTenants: expect.any(Function),
+            canUseWorkflows: expect.any(Function)
         });
     });
 });

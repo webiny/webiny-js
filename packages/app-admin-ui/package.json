@@ -28,7 +28,7 @@
     "@webiny/build-tools": "0.0.0",
     "babel-plugin-named-asset-import": "^1.0.0-next.fb6e6f70",
     "rimraf": "^6.0.1",
-    "typescript": "5.9.2"
+    "typescript": "5.9.3"
   },
   "publishConfig": {
     "access": "public",

@@ -12,5 +12,6 @@ export const WCP_FEATURE_LABEL = {
     advancedAccessControlLayer: "Advanced Access Control Layer (ACL)",
     auditLogs: "Audit Logs",
     recordLocking: "Record Locking",
-    fileManager: "File Manager"
+    fileManager: "File Manager",
+    workflows: "Workflows"
 };

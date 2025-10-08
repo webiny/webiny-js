@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import { plugins } from "@webiny/plugins";
-import { LeftPanel, RightPanel, SplitView, OverlayLayout } from "@webiny/app-admin";
+import {
+    LeftPanel,
+    OverlayLayout,
+    RightPanel,
+    SimpleForm,
+    SimpleFormContent,
+    SimpleFormFooter,
+    SimpleFormHeader,
+    SplitView,
+    useSnackbar
+} from "@webiny/app-admin";
 import { Form } from "@webiny/form";
 import { i18n } from "@webiny/app/i18n/index.js";
-import {
-    useSnackbar,
-    SimpleForm,
-    SimpleFormHeader,
-    SimpleFormContent,
-    SimpleFormFooter
-} from "@webiny/app-admin";
 import type { CmsEditorFormSettingsPlugin } from "~/types.js";
 import { useModelEditor } from "~/admin/hooks/index.js";
 import { Button, Heading, Icon, List } from "@webiny/admin-ui";
@@ -84,14 +87,16 @@ const FormSettings = ({ onExited }: FormSettingsProps) => {
                                           })
                                         : null}
                                 </SimpleFormContent>
-                                <SimpleFormFooter>
-                                    <Button
-                                        text={t`Save`}
-                                        onClick={ev => {
-                                            submit(ev);
-                                        }}
-                                    />
-                                </SimpleFormFooter>
+                                {activePlugin?.showSave !== false ? (
+                                    <SimpleFormFooter>
+                                        <Button
+                                            text={t`Save`}
+                                            onClick={ev => {
+                                                submit(ev);
+                                            }}
+                                        />
+                                    </SimpleFormFooter>
+                                ) : null}
                             </SimpleForm>
                         )}
                     </Form>
