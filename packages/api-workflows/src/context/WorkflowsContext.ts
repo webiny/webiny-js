@@ -1,19 +1,19 @@
-import type {
-    Context,
-    IStoreWorkflowInput,
-    IWorkflow,
-    IWorkflowsContext,
-    IWorkflowsContextGetParams,
-    IWorkflowsContextListParams
-} from "~/types.js";
+import type { Context } from "~/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import type { IWorkflowsTransformer } from "./transformer/index.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { createIdentifier } from "@webiny/utils";
+import type {
+    IStoreWorkflowInput,
+    IWorkflowsContext,
+    IWorkflowsContextGetParams,
+    IWorkflowsContextListParams
+} from "./abstractions/WorkflowsContext.js";
+import type { IWorkflowsTransformer } from "./transformer/abstractions/WorkflowsTransformer.js";
+import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 
 export interface IWorkflowsContextParams {
-    context: Pick<Context, "cms" | "security">;
+    context: Pick<Context, "cms" | "security" | "workflows">;
     model: CmsModel;
     transformer: IWorkflowsTransformer;
 }
@@ -41,23 +41,12 @@ export class WorkflowsContext implements IWorkflowsContext {
         this.transformer = params.transformer;
     }
 
-    public async ensureAccess(): Promise<void> {
-        const permissions = await this.context.security.getPermissions("workflows");
-        if (permissions?.length) {
-            return;
-        }
-        throw new NotAuthorizedError({
-            message: "You have no access to workflows.",
-            code: "WORKFLOWS_ACCESS_DENIED"
-        });
-    }
-
     public async storeWorkflow(
         app: string,
         id: string,
         input: IStoreWorkflowInput
     ): Promise<IWorkflow> {
-        await this.ensureAccess();
+        await this.ensureManageAccess();
         const workflow = await this.getWorkflow({
             app,
             id
@@ -79,7 +68,7 @@ export class WorkflowsContext implements IWorkflowsContext {
     }
 
     public async deleteWorkflow(app: string, id: string): Promise<boolean> {
-        await this.ensureAccess();
+        await this.ensureManageAccess();
         const workflow = await this.getWorkflow({
             app,
             id
@@ -103,10 +92,9 @@ export class WorkflowsContext implements IWorkflowsContext {
                 id: params.id,
                 version: 1
             });
-            const entry = await this.context.cms.getEntryById<Omit<IWorkflow, "id">>(
-                this.model,
-                id
-            );
+            const entry = await this.context.security.withoutAuthorization(async () => {
+                return this.context.cms.getEntryById<Omit<IWorkflow, "id">>(this.model, id);
+            });
 
             if (entry?.values?.app === params.app) {
                 return this.transformer.fromCmsEntry(entry);
@@ -121,18 +109,32 @@ export class WorkflowsContext implements IWorkflowsContext {
     }
 
     public async listWorkflows(params: IWorkflowsContextListParams): Promise<IWorkflow[]> {
-        const [entries] = await this.context.cms.listLatestEntries<Omit<IWorkflow, "id">>(
-            this.model,
-            {
-                where: {
-                    app: params.app
-                },
-                sort: ["createdOn_ASC"],
-                limit: 10000
-            }
-        );
-        return entries.map(entry => {
-            return this.transformer.fromCmsEntry(entry);
+        return this.context.security.withoutAuthorization(async () => {
+            const [entries] = await this.context.cms.listLatestEntries<Omit<IWorkflow, "id">>(
+                this.model,
+                {
+                    sort: ["createdOn_ASC"],
+                    limit: 100,
+                    ...params,
+                    where: {
+                        ...params.where
+                    }
+                }
+            );
+            return entries.map(entry => {
+                return this.transformer.fromCmsEntry(entry);
+            });
+        });
+    }
+
+    private async ensureManageAccess(): Promise<void> {
+        const permissions = await this.context.security.getPermissions("workflows");
+        if (permissions?.length) {
+            return;
+        }
+        throw new NotAuthorizedError({
+            message: "You have no access to workflows.",
+            code: "WORKFLOWS_ACCESS_DENIED"
         });
     }
 
