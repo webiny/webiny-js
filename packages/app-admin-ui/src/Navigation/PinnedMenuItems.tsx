@@ -138,8 +138,8 @@ export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
         <>
             <Menu.Group text="Pinned" />
             {pinnedItems.map(m => (
-                <PinnableMenuItem key={m.name} name={m.name} icon={renderIcon(m)}>
-                    <>{m.element}</>
+                <PinnableMenuItem key={m.name} name={m.name}>
+                    {React.cloneElement(m.element, { icon: renderIcon(m) })}
                 </PinnableMenuItem>
             ))}
             <Menu.Group text="Webiny" />

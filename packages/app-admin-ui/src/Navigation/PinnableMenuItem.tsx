@@ -12,7 +12,6 @@ import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
 type PinnableMenuItemProps = {
     name: string;
     children: React.ReactNode;
-    icon?: React.ReactNode;
 };
 
 /**
@@ -100,15 +99,10 @@ const usePinnedMenuItem = (name: string) => {
  * @sideEffect Persists pinned state and order in localStorage.
  * @note The pin icon appears on hover and toggles the pinned state.
  */
-export const PinnableMenuItem = ({ name, icon, children }: PinnableMenuItemProps) => {
+export const PinnableMenuItem = ({ name, children }: PinnableMenuItemProps) => {
     const { isPinned, pin, unpin } = usePinnedMenuItem(name);
     return (
-        <div className={`wby-relative ${icon ? "wby-pl-[25px]" : ""}`}>
-            {React.isValidElement(icon) && (
-                <span className="wby-absolute wby-left-[15px] wby-top-1/2 wby--translate-y-1/2">
-                    {React.cloneElement(icon)}
-                </span>
-            )}
+        <div className="wby-relative">
             {children}
             <div
                 className={`wby-opacity-0 hover:wby-opacity-100 wby-absolute wby-right-sm wby-top-1/2 -wby-translate-y-1/2 wby-cursor-pointer ${isPinned ? "wby-opacity-100" : ""}`}
