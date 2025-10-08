@@ -1,8 +1,41 @@
 import React, { useMemo } from "react";
 import { AdminConfig, useLocalStorageValues, useLocalStorageValue } from "@webiny/app-admin";
 import { PINNED_KEY, PINNED_ORDER_KEY, PinnableMenuItem } from "./PinnableMenuItem.js";
+import type { MenuConfig } from "@webiny/app-admin/config/AdminConfig/Menu.js";
 
 const { Menu } = AdminConfig;
+
+/**
+ * Retrieves the icon from the parent menu of a given child menu.
+ *
+ * @param childMenu - The menu configuration object representing the child menu.
+ * @param allMenus - An array of all menu configuration objects.
+ * @returns The React node representing the parent's icon, or `undefined` if no parent or icon is found.
+ *
+ * @remarks
+ * - If the child menu does not have a parent, or the parent menu's element is not a valid React element, returns `undefined`.
+ * - Assumes that the parent menu's element has an `icon` prop.
+ *
+ * @example
+ * const icon = getParentIcon(childMenu, allMenus);
+ * if (icon) {
+ *   // Render the icon
+ * }
+ */
+const getParentIcon = (
+    childMenu: MenuConfig,
+    allMenus: MenuConfig[]
+): React.ReactNode | undefined => {
+    if (!childMenu.parent) {
+        return undefined;
+    }
+    const parentMenu = allMenus.find(menu => menu.name === childMenu.parent);
+    if (!parentMenu || !React.isValidElement(parentMenu.element)) {
+        return undefined;
+    }
+    // Type assertion to fix 'unknown' type error
+    return (parentMenu.element.props as { icon?: React.ReactNode }).icon;
+};
 
 /**
  * Props for the PinnedMenuItems component.
@@ -96,12 +129,17 @@ export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
         return null;
     }
 
+    const renderIcon = (m: MenuConfig): React.ReactNode => {
+        const parentIcon = getParentIcon(m, menuItems);
+        return React.isValidElement(parentIcon) ? React.cloneElement(parentIcon) : parentIcon;
+    };
+
     return (
         <>
             <Menu.Group text="Pinned" />
-            {pinnedItems.map(({ name, element }) => (
-                <PinnableMenuItem key={name} name={name}>
-                    {element}
+            {pinnedItems.map(m => (
+                <PinnableMenuItem key={m.name} name={m.name} icon={renderIcon(m)}>
+                    <>{m.element}</>
                 </PinnableMenuItem>
             ))}
             <Menu.Group text="Webiny" />
