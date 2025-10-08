@@ -97,7 +97,6 @@ export const createManageSDL: CreateManageSDL = ({
             locked: Boolean
             
             status: String
-            state: CmsEntryState!
             """
             CAUTION: this field is resolved by making an extra query to DB.
             RECOMMENDATION: Use it only with "get" queries (avoid in "list")
@@ -121,7 +120,6 @@ export const createManageSDL: CreateManageSDL = ({
             
             # Set status of the entry.
             status: String
-            state: CmsEntryStateInput
             
             ${onByMetaInputGqlFields}
             

@@ -18,7 +18,6 @@ import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import type { Tenant } from "@webiny/api-tenancy/types.js";
 import { getIdentity } from "~/utils/identity.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
-import { createState } from "~/crud/contentEntry/entryDataFactories/state.js";
 
 type DefaultValue = boolean | number | string | null;
 
@@ -87,7 +86,6 @@ export const createEntryData = async ({
             await accessControl.ensureCanAccessEntry({ model, pw: "u" });
         }
     }
-    const state = createState(rawInput.state);
 
     const locked = status !== STATUS_DRAFT;
 
@@ -173,7 +171,6 @@ export const createEntryData = async ({
 
         version,
         status,
-        state,
         locked,
         values: input,
         location: {

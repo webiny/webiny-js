@@ -1,32 +1,36 @@
 import type { IWorkflow } from "./Workflow.js";
 
-export interface IWorkflowStateData {
-    step: string;
-}
 
-export interface IWorkflowState {
-    id: string;
-    workflow: IWorkflow;
-    state: IWorkflowStateData;
-}
-
-export enum IWorkflowStateRecordStepsStatus {
+export enum WorkflowStateRecordState {
     pending = "pending",
-    resolving = "resolving",
+    inReview = "inReview",
     approved = "approved",
     rejected = "rejected"
 }
 
-export interface IWorkflowStateRecordSteps {
+export interface IWorkflowStateRecordStep {
     id: string;
-    status: IWorkflowStateRecordStepsStatus;
+    state: WorkflowStateRecordState;
+    comment?: string;
     userId: string;
 }
+
 
 export interface IWorkflowStateRecord {
     id: string;
     app: string;
     workflowId: string;
     targetId: string;
-    steps: IWorkflowStateRecordSteps[];
+    comment?: string;
+    state: WorkflowStateRecordState;
+    steps: IWorkflowStateRecordStep[];
+}
+
+export interface IWorkflowState {
+    readonly workflow: IWorkflow | undefined;
+    readonly done: boolean;
+    readonly record: IWorkflowStateRecord | undefined;
+    approve(message?: string): Promise<void>;
+    reject(message: string): Promise<void>;
+    cancel(): Promise<void>;
 }

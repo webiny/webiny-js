@@ -16,7 +16,6 @@ import { referenceFieldsMapping } from "../referenceFieldsMapping.js";
 import { mapAndCleanUpdatedInputData } from "./mapAndCleanUpdatedInputData.js";
 import lodashMerge from "lodash/merge.js";
 import { removeNullValues, removeUndefinedValues } from "@webiny/utils";
-import { createState } from "~/crud/contentEntry/entryDataFactories/state.js";
 
 type CreateEntryRevisionFromDataParams = {
     metaInput?: Record<string, any>;
@@ -139,8 +138,7 @@ export const createUpdateEntryData = async ({
 
         values,
         meta,
-        status: transformEntryStatus(originalEntry.status),
-        state: createState(rawInput.state ?? originalEntry.state)
+        status: transformEntryStatus(originalEntry.status)
     };
 
     const folderId = rawInput.wbyAco_location?.folderId;

@@ -2,7 +2,7 @@ import type { IWorkflow } from "./Workflow.js";
 import type { NonEmptyArray } from "@webiny/api/types.js";
 import type { IWorkflowStepInput } from "./WorkflowInput.js";
 import type { CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
-import type { IMeta } from "./common.js";
+import type { IMeta } from "./types.js";
 
 export interface IStoreWorkflowInput {
     name: string;
@@ -36,5 +36,5 @@ export interface IWorkflowsContext {
     deleteWorkflow(app: string, id: string): Promise<boolean>;
 
     getWorkflow(params: IWorkflowsContextGetParams): Promise<IWorkflow | null>;
-    listWorkflows(params?: IWorkflowsContextListParams): Promise<IWorkflow[]>;
+    listWorkflows(params?: IWorkflowsContextListParams): Promise<IWorkflowsContextListResponse>;
 }

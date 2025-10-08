@@ -1,10 +1,4 @@
-import type {
-    CmsContext,
-    CmsEntry,
-    CmsFieldTypePlugins,
-    CmsModel,
-    ICmsEntryState
-} from "~/types/index.js";
+import type { CmsContext, CmsEntry, CmsFieldTypePlugins, CmsModel } from "~/types/index.js";
 import { resolveGet } from "./resolvers/manage/resolveGet.js";
 import { resolveList } from "./resolvers/manage/resolveList.js";
 import { resolveListDeleted } from "./resolvers/manage/resolveListDeleted.js";
@@ -121,13 +115,6 @@ export const createManageResolvers: CreateManageResolvers = ({
             },
             status(entry: Pick<CmsEntry, "status">) {
                 return entry.status;
-            },
-            state(entry: Pick<CmsEntry, "state">): ICmsEntryState {
-                return {
-                    comment: null,
-                    name: null,
-                    ...entry.state
-                };
             },
             data: (entry: Pick<CmsEntry, "meta">) => {
                 return entry.meta || {};

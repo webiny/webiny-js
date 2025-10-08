@@ -1,5 +1,118 @@
+import { Context } from "~/types.js";
+import type { IWorkflow } from "../abstractions/Workflow.js";
+import type { IWorkflowState, IWorkflowStateRecord, IWorkflowStateRecordStep } from "../abstractions/WorkflowState.js";
+import { WorkflowStateRecordState } from "../abstractions/WorkflowState.js";
 
+export interface IWorkflowStateParams {
+    workflow: IWorkflow | undefined;
+    record: IWorkflowStateRecord;
+    context: Pick<Context, "workflowState">;
+}
 
 export class WorkflowState implements IWorkflowState {
+    public readonly context;
+    public readonly workflow;
+    public readonly record;
 
+    public get done(): boolean {
+        return this.record.steps.every(step => {
+            return step.state === WorkflowStateRecordState.approved;
+        });
+    }
+
+    public constructor(params: IWorkflowStateParams) {
+        this.context = params.context;
+        this.workflow = params.workflow;
+        this.record = params.record;
+    }
+
+    public async approve(comment?: string): Promise<void> {
+        const step = this.record.steps.find(step => {
+            return step.state === WorkflowStateRecordState.inReview;
+        });
+        /**
+         * Step cannot be found - all steps are either approved or rejected.
+         */
+        if (!step) {
+            const rejected = this.record.steps.some(step => {
+                return step.state === WorkflowStateRecordState.rejected;
+            });
+            const state = rejected
+                ? WorkflowStateRecordState.rejected
+                : WorkflowStateRecordState.approved;
+            this.updateRecord({
+                state
+            });
+            await this.context.workflowState.updateState(this.record.id, this.record);
+            return;
+        }
+
+        this.approveStep(step.id, comment);
+
+        const nextStep = this.getNextStep(step.id);
+        
+        this.updateRecord({
+            state: nextStep ? WorkflowStateRecordState.inReview : WorkflowStateRecordState.approved
+        });
+
+        const record = structuredClone(this.record);
+        /**
+         * We need to remove the id because we do not want update to do anything with it.
+         */
+        // @ts-expect-error
+        delete record.id;
+        await this.context.workflowState.updateState(this.record.id, record);
+    }
+
+    public async reject(comment: string): Promise<void> {
+        const step = this.record.steps.find(step => {
+            return step.state === WorkflowStateRecordState.inReview;
+        });
+        if (!step) {
+            throw new Error(`Cannot reject a workflow that is not in review.`);
+        }
+        this.rejectStep(step.id, comment);
+        this.updateRecord({
+            state: WorkflowStateRecordState.rejected
+        });
+        await this.context.workflowState.updateState(this.record.id, this.record);
+    }
+
+    public async cancel(): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+
+    private updateRecord(record: Partial<Omit<IWorkflowStateRecord, "id">>): void {
+        Object.assign(this.record, record);
+    }
+
+    private updateStep(id: string, input: Partial<Omit<IWorkflowStateRecordStep, "id">>): void {
+        const step = this.record.steps.find(s => s.id === id);
+        if (!step) {
+            throw new Error(`Step with ID "${id}" not found.`);
+        }
+        Object.assign(step, input);
+    }
+
+    private approveStep(id: string, comment?: string): void {
+        this.updateStep(id, {
+            state: WorkflowStateRecordState.approved,
+            comment
+        });
+    }
+
+    private rejectStep(id: string, comment: string): void {
+        this.updateStep(id, {
+            state: WorkflowStateRecordState.rejected,
+            comment
+        });
+    }
+
+    private getNextStep(id: string): IWorkflowStateRecordStep | undefined {
+        const index = this.record.steps.findIndex(s => s.id === id);
+        if (index === -1) {
+            return undefined;
+        }
+        return this.record.steps[index + 1];
+    }
 }

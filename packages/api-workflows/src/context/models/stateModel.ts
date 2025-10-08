@@ -80,6 +80,13 @@ export const createStateModel = () => {
                             fieldId: "userId",
                             storageId: "text@userId",
                             label: "User ID"
+                        },
+                        {
+                            fieldId: "comment",
+                            id: "comment",
+                            storageId: "text@comment",
+                            type: "text",
+                            label: "Comment"
                         }
                     ]
                 }

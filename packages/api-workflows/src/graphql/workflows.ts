@@ -151,16 +151,7 @@ export const createWorkflowsSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        const items = await context.workflows.listWorkflows(result.data);
-
-                        return {
-                            items,
-                            meta: {
-                                totalCount: items.length,
-                                hasMoreItems: false,
-                                cursor: null
-                            }
-                        };
+                        return await context.workflows.listWorkflows(result.data);
                     });
                 }
             },

@@ -14781,6 +14781,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-headless-cms-workflows@workspace:packages/api-headless-cms-workflows":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-headless-cms-workflows@workspace:packages/api-headless-cms-workflows"
+  dependencies:
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-security": "npm:0.0.0"
+    "@webiny/api-wcp": "npm:0.0.0"
+    "@webiny/api-workflows": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/tasks": "npm:0.0.0"
+    "@webiny/testing": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    typescript: "npm:5.9.3"
+    vitest: "npm:^3.2.4"
+    zod: "npm:^3.25.76"
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-headless-cms@npm:0.0.0, @webiny/api-headless-cms@workspace:packages/api-headless-cms":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms@workspace:packages/api-headless-cms"

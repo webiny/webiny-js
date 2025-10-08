@@ -7,13 +7,14 @@ import type {
     IStoreWorkflowInput,
     IWorkflowsContext,
     IWorkflowsContextGetParams,
-    IWorkflowsContextListParams
+    IWorkflowsContextListParams,
+    IWorkflowsContextListResponse
 } from "./abstractions/WorkflowsContext.js";
 import type { IWorkflowsTransformer } from "./transformer/abstractions/WorkflowsTransformer.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 
 export interface IWorkflowsContextParams {
-    context: Pick<Context, "cms" | "security" | "workflows">;
+    context: Pick<Context, "cms" | "security">;
     model: CmsModel;
     transformer: IWorkflowsTransformer;
 }
@@ -96,7 +97,7 @@ export class WorkflowsContext implements IWorkflowsContext {
                 return this.context.cms.getEntryById<Omit<IWorkflow, "id">>(this.model, id);
             });
 
-            if (entry?.values?.app === params.app) {
+            if (entry.values.app === params.app) {
                 return this.transformer.fromCmsEntry(entry);
             }
         } catch (ex) {
@@ -108,9 +109,9 @@ export class WorkflowsContext implements IWorkflowsContext {
         return null;
     }
 
-    public async listWorkflows(params: IWorkflowsContextListParams): Promise<IWorkflow[]> {
+    public async listWorkflows(params: IWorkflowsContextListParams): Promise<IWorkflowsContextListResponse> {
         return this.context.security.withoutAuthorization(async () => {
-            const [entries] = await this.context.cms.listLatestEntries<Omit<IWorkflow, "id">>(
+            const [items, meta] = await this.context.cms.listLatestEntries<Omit<IWorkflow, "id">>(
                 this.model,
                 {
                     sort: ["createdOn_ASC"],
@@ -121,9 +122,12 @@ export class WorkflowsContext implements IWorkflowsContext {
                     }
                 }
             );
-            return entries.map(entry => {
-                return this.transformer.fromCmsEntry(entry);
-            });
+            return {
+                items: items.map(entry => {
+                    return this.transformer.fromCmsEntry(entry);
+                }),
+                meta,
+            };
         });
     }
 

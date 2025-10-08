@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { WorkflowsContext } from "~/context/WorkflowsContext.js";
-import { WorkflowsTransformer } from "~/context/transformer/index.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
-import type { IWorkflow } from "~/types.js";
+import { WorkflowsTransformer } from "~/context/transformer/WorkflowsTransformer.js";
+import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 
 describe("Workflows Context", () => {
     it("should not list any workflows because there are no any", async () => {
@@ -13,7 +13,9 @@ describe("Workflows Context", () => {
             model
         });
         const result = await workflowsContext.listWorkflows({
-            app: "test"
+            where: {
+                app: "test"
+            }
         });
         expect(result).toEqual([]);
     });
@@ -68,7 +70,14 @@ describe("Workflows Context", () => {
         });
 
         const list = await workflowsContext.listWorkflows({});
-        expect(list).toEqual([updatedWorkflow]);
+        expect(list).toEqual({
+            items: [updatedWorkflow],
+            meta: {
+                totalCount: 1,
+                hasMoreItems: false,
+                cursor: null
+            }
+        });
 
         const get = await workflowsContext.getWorkflow({
             app: "test",
@@ -80,7 +89,14 @@ describe("Workflows Context", () => {
         expect(deleteResult).toEqual(true);
 
         const listAfterDelete = await workflowsContext.listWorkflows({});
-        expect(listAfterDelete).toEqual([]);
+        expect(listAfterDelete).toEqual({
+            items: [],
+            meta: {
+                totalCount: 0,
+                hasMoreItems: false,
+                cursor: null
+            }
+        });
 
         const getAfterDelete = await workflowsContext.getWorkflow(workflow);
         expect(getAfterDelete).toBeNull();
