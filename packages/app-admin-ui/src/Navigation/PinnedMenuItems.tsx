@@ -123,12 +123,15 @@ const getSortedPinnedItems = (
  * <PinnedMenuItems menuItems={menus} />
  */
 export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
-    const pinnableMenus = getPinnableMenus(menuItems);
-    const pinnableKeys = getPinnableKeys(pinnableMenus);
-    const pinnedStates = useLocalStorageValues(pinnableKeys);
-    const rawPinnedOrder = useLocalStorageValue(PINNED_ORDER_KEY);
-    const pinnedOrder = useMemo(() => parsePinnedOrder(rawPinnedOrder), [rawPinnedOrder]);
     const { pinned: isSidebarPinned } = useSidebar();
+    const rawPinnedOrder = useLocalStorageValue(PINNED_ORDER_KEY);
+    const [pinnableMenus, pinnableKeys, pinnedOrder] = useMemo(() => {
+        const menus = getPinnableMenus(menuItems);
+        const keys = getPinnableKeys(menus);
+        const order = parsePinnedOrder(rawPinnedOrder);
+        return [menus, keys, order];
+    }, [menuItems, rawPinnedOrder]);
+    const pinnedStates = useLocalStorageValues(pinnableKeys);
 
     const pinnedItems = useMemo(
         () => getSortedPinnedItems(pinnableMenus, pinnedStates, pinnedOrder),
