@@ -2,9 +2,7 @@ import React, { useMemo } from "react";
 import { AdminConfig, useLocalStorageValues, useLocalStorageValue } from "@webiny/app-admin";
 import { createPinnedKey, PINNED_ORDER_KEY, PinnableMenuItem } from "./PinnableMenuItem.js";
 import type { MenuConfig } from "@webiny/app-admin/config/AdminConfig/Menu.js";
-import { useSidebar } from "@webiny/admin-ui";
-
-const { Menu } = AdminConfig;
+import { Separator } from "@webiny/admin-ui";
 
 /**
  * Retrieves the icon from the parent menu of a given child menu.
@@ -123,7 +121,6 @@ const getSortedPinnedItems = (
  * <PinnedMenuItems menuItems={menus} />
  */
 export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
-    const { expanded: isSidebarExpanded } = useSidebar();
     const rawPinnedOrder = useLocalStorageValue(PINNED_ORDER_KEY);
     const [pinnableMenus, pinnableKeys, pinnedOrder] = useMemo(() => {
         const menus = getPinnableMenus(menuItems);
@@ -149,13 +146,12 @@ export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
 
     return (
         <>
-            <Menu.Group text="Pinned" className={`${!isSidebarExpanded ? "wby-hidden" : ""}`} />
             {pinnedItems.map(m => (
                 <PinnableMenuItem key={m.name} name={m.name}>
                     {React.cloneElement(m.element!, { icon: renderIcon(m) })}
                 </PinnableMenuItem>
             ))}
-            <Menu.Group text="Webiny" className={`${!isSidebarExpanded ? "wby-hidden" : ""}`} />
+            <Separator />
         </>
     );
 };
