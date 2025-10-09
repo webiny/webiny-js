@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { AdminConfig, useLocalStorageValues, useLocalStorageValue } from "@webiny/app-admin";
-import { PINNED_KEY, PINNED_ORDER_KEY, PinnableMenuItem } from "./PinnableMenuItem.js";
+import { pinnedKey, PINNED_ORDER_KEY, PinnableMenuItem } from "./PinnableMenuItem.js";
 import type { MenuConfig } from "@webiny/app-admin/config/AdminConfig/Menu.js";
 import { useSidebar } from "@webiny/admin-ui";
 
@@ -60,7 +60,7 @@ const getPinnableMenus = (menuItems: PinnedMenuItemsProps["menuItems"]) =>
  * @returns Array of local storage key strings.
  */
 const getPinnableKeys = (menus: PinnedMenuItemsProps["menuItems"]) =>
-    menus.map(({ name }) => PINNED_KEY(name));
+    menus.map(({ name }) => pinnedKey(name));
 
 /**
  * Parses the pinned order from a raw local storage value.
@@ -98,7 +98,7 @@ const getSortedPinnedItems = (
     pinnedStates: Record<string, boolean>,
     pinnedOrder: string[]
 ) => {
-    const pinned = menus.filter(({ name }) => pinnedStates[PINNED_KEY(name)]);
+    const pinned = menus.filter(({ name }) => pinnedStates[pinnedKey(name)]);
     return pinned.sort((a, b) => pinnedOrder.indexOf(a.name) - pinnedOrder.indexOf(b.name));
 };
 
