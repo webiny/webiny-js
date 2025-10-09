@@ -21,7 +21,7 @@ type PinnableMenuItemProps = {
  * @param name - The unique name of the menu item.
  * @returns The localStorage key string for the pinned state.
  */
-export const pinnedKey = (name: string) => `navigation/${name}/pinned`;
+export const createPinnedKey = (name: string) => `navigation/${name}/pinned`;
 
 /**
  * The localStorage key for the order of pinned menu items.
@@ -61,7 +61,7 @@ const parseOrder = (order: unknown): string[] => {
  * @note The pinned state and order are persisted in localStorage.
  */
 const usePinnedMenuItem = (name: string) => {
-    const pinKey = pinnedKey(name);
+    const pinKey = createPinnedKey(name);
     const pinOrder = useLocalStorageValue(PINNED_ORDER_KEY);
     const isPinned = useLocalStorageValue(pinKey);
     const { set, remove } = useLocalStorage();
