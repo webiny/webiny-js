@@ -99,7 +99,15 @@ const getSortedPinnedItems = (
     pinnedOrder: string[]
 ) => {
     const pinned = menus.filter(({ name }) => pinnedStates[pinnedKey(name)]);
-    return pinned.sort((a, b) => pinnedOrder.indexOf(a.name) - pinnedOrder.indexOf(b.name));
+
+    return pinned.sort((a, b) => {
+        const aIdx = pinnedOrder.indexOf(a.name);
+        const bIdx = pinnedOrder.indexOf(b.name);
+        return (
+            (aIdx === -1 ? Number.MAX_SAFE_INTEGER : aIdx) -
+            (bIdx === -1 ? Number.MAX_SAFE_INTEGER : bIdx)
+        );
+    });
 };
 
 /**
@@ -115,8 +123,8 @@ const getSortedPinnedItems = (
  * <PinnedMenuItems menuItems={menus} />
  */
 export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
-    const pinnableMenus = useMemo(() => getPinnableMenus(menuItems), [menuItems]);
-    const pinnableKeys = useMemo(() => getPinnableKeys(pinnableMenus), [pinnableMenus]);
+    const pinnableMenus = getPinnableMenus(menuItems);
+    const pinnableKeys = getPinnableKeys(pinnableMenus);
     const pinnedStates = useLocalStorageValues(pinnableKeys);
     const rawPinnedOrder = useLocalStorageValue(PINNED_ORDER_KEY);
     const pinnedOrder = useMemo(() => parsePinnedOrder(rawPinnedOrder), [rawPinnedOrder]);
