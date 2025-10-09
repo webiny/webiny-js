@@ -9,25 +9,31 @@ export class WebinyPackage {
         srcFolder: string;
         distFolder: string;
         packageJsonFile: string;
+        distPackageJsonFile: string;
     };
 
-    packageJson: PackageJson | null = null;
+    private packageJson: PackageJson | null = null;
 
     constructor(packageRootFolderPath: string) {
         this.paths = {
             rootFolder: packageRootFolderPath,
             packageJsonFile: path.join(packageRootFolderPath, "package.json"),
             srcFolder: path.join(packageRootFolderPath, "src"),
-            distFolder: path.join(packageRootFolderPath, "dist")
+            distFolder: path.join(packageRootFolderPath, "dist"),
+            distPackageJsonFile: path.join(packageRootFolderPath, "dist", "package.json")
         };
 
         const isBuildable = fs.existsSync(path.join(this.paths.srcFolder));
         if (!isBuildable) {
             this.paths.srcFolder = packageRootFolderPath;
             this.paths.distFolder = packageRootFolderPath;
+            this.paths.distPackageJsonFile = this.paths.packageJsonFile;
         }
     }
 
+    getName() {
+        return this.getPackageJson().name || "unknown-package";
+    }
     getPackageJson() {
         if (this.packageJson) {
             return this.packageJson;
