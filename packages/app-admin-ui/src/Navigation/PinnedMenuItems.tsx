@@ -123,7 +123,7 @@ const getSortedPinnedItems = (
  * <PinnedMenuItems menuItems={menus} />
  */
 export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
-    const { pinned: isSidebarPinned } = useSidebar();
+    const { expanded: isSidebarExpanded } = useSidebar();
     const rawPinnedOrder = useLocalStorageValue(PINNED_ORDER_KEY);
     const [pinnableMenus, pinnableKeys, pinnedOrder] = useMemo(() => {
         const menus = getPinnableMenus(menuItems);
@@ -149,13 +149,13 @@ export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
 
     return (
         <>
-            <Menu.Group text="Pinned" className={`${!isSidebarPinned ? "wby-hidden" : ""}`} />
+            <Menu.Group text="Pinned" className={`${!isSidebarExpanded ? "wby-hidden" : ""}`} />
             {pinnedItems.map(m => (
                 <PinnableMenuItem key={m.name} name={m.name}>
                     {React.cloneElement(m.element!, { icon: renderIcon(m) })}
                 </PinnableMenuItem>
             ))}
-            <Menu.Group text="Webiny" className={`${!isSidebarPinned ? "wby-hidden" : ""}`} />
+            <Menu.Group text="Webiny" className={`${!isSidebarExpanded ? "wby-hidden" : ""}`} />
         </>
     );
 };

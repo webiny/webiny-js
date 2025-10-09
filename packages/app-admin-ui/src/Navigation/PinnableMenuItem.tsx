@@ -102,13 +102,13 @@ const usePinnedMenuItem = (name: string) => {
  */
 export const PinnableMenuItem = ({ name, children }: PinnableMenuItemProps) => {
     const { isPinned, pin, unpin } = usePinnedMenuItem(name);
-    const { pinned: isSidebarPinned } = useSidebar();
+    const { expanded: isSidebarExpanded } = useSidebar();
 
     return (
         <div className="wby-relative">
             {children}
             <div
-                className={`wby-opacity-0 hover:wby-opacity-100 wby-absolute wby-right-sm wby-top-1/2 -wby-translate-y-1/2 wby-cursor-pointer ${isPinned && isSidebarPinned ? "wby-opacity-100" : ""}`}
+                className={`wby-opacity-0 hover:wby-opacity-100 wby-absolute wby-right-sm wby-top-1/2 -wby-translate-y-1/2 wby-cursor-pointer ${isPinned && isSidebarExpanded ? "wby-opacity-100" : ""}`}
             >
                 <Icon
                     label={isPinned ? "Unpin menu item" : "Pin menu item"}
