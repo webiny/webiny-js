@@ -188,6 +188,7 @@ Resources:
               - es:RemoveTags
               - es:UpdateElasticsearchDomainConfig
               - es:DescribeElasticsearchDomainConfig
+              - es:UpgradeDomain
             Resource: arn:aws:es:*:*:domain/wby-*
 
           # Amazon EventBridge
@@ -453,6 +454,15 @@ Resources:
 
               # arn:aws:ec2:*:*:route-table/*
               - ec2:CreateRouteTable
+
+          # Besides the above ec2 permissions, we also need this:
+          - Effect: Allow
+
+            # Had to use "*", as per AWS docs:
+            # https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonec2.html#amazonec2-actions-as-permissions
+            Resource: *
+            Action:
+              - ec2:DescribeAddressesAttribute
 
           - Effect: Allow
             # Resource ARNs must include at least 6 fields and include the following structure: arn:partition:service:region:account:resource.

@@ -1,15 +1,8 @@
-const fs = require("fs");
-const path = require("path");
-const { green } = require("chalk");
-const crypto = require("crypto");
+import fs from "fs";
+import path from "path";
+import chalk from "chalk";
 
-function random(length = 32) {
-    return crypto
-        .randomBytes(Math.ceil(length / 2))
-        .toString("hex")
-        .slice(0, length);
-}
-
+const { green } = chalk;
 const PROJECT_FOLDER = ".";
 
 (async () => {
@@ -23,8 +16,6 @@ const PROJECT_FOLDER = ".";
         fs.copyFileSync(rootExampleEnvFilePath, rootEnvFilePath);
         let content = fs.readFileSync(rootEnvFilePath).toString();
         content = content.replace("{REGION}", "us-east-1");
-        content = content.replace("{PULUMI_CONFIG_PASSPHRASE}", random());
-        content = content.replace("{PULUMI_SECRETS_PROVIDER}", "passphrase");
         fs.writeFileSync(rootEnvFilePath, content);
         console.log(`✅️ ${green(".env")} was created successfully!`);
     }
