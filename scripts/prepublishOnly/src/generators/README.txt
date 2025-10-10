@@ -1,7 +1,5 @@
 # PACKAGE_NAME
 
-DESCRIPTION
-
 > [!NOTE]
 > This package is part of the [Webiny](https://www.webiny.com) monorepo.
 > It’s **included in every Webiny project by default** and is not meant to be used as a standalone package.
