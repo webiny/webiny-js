@@ -61,13 +61,13 @@ describe("Workflow State Context", () => {
     it("should create, update and delete a state", async () => {
         const { workflowStateContext, workflowsContext } = await createContext();
         const app = "testingApp";
-        const targetId = "record-id#0001";
+        const targetRevisionId = "record-id#0001";
         const mockWorkflow = createMockWorkflow({
             app
         });
         const workflow = await workflowsContext.storeWorkflow(app, mockWorkflow.id, mockWorkflow);
 
-        const state = await workflowStateContext.createState(app, targetId);
+        const state = await workflowStateContext.createState(app, targetRevisionId);
 
         expect(state).toBeDefined();
         expect(state.done).toBe(false);
@@ -75,7 +75,8 @@ describe("Workflow State Context", () => {
         expect(state.record).toBeDefined();
         expect(state.record!.app).toBe(app);
         expect(state.record!.workflowId).toBe(workflow.id);
-        expect(state.record!.targetId).toBe("record-id#0001");
+        expect(state.record!.targetRevisionId).toBe("record-id#0001");
+        expect(state.record!.targetId).toBe("record-id");
         expect(state.record?.steps).toEqual([
             ...workflow.steps.map(step => {
                 return {
@@ -87,7 +88,7 @@ describe("Workflow State Context", () => {
             })
         ]);
 
-        const getResponse = await workflowStateContext.getState(app, targetId);
+        const getResponse = await workflowStateContext.getState(app, targetRevisionId);
 
         expect(getResponse.done).toBeFalse();
         expect(getResponse.workflow).toEqual({
@@ -100,11 +101,11 @@ describe("Workflow State Context", () => {
         await workflowStateContext.updateState(state.record!.id, {
             comment: "A comment!"
         });
-        const updatedState = await workflowStateContext.getState(app, targetId);
+        const updatedState = await workflowStateContext.getState(app, targetRevisionId);
         expect(updatedState.record?.comment).toBe("A comment!");
 
-        await workflowStateContext.deleteState(app, targetId);
-        const afterDeleteState = await workflowStateContext.getState(app, targetId);
+        await workflowStateContext.deleteState(app, targetRevisionId);
+        const afterDeleteState = await workflowStateContext.getState(app, targetRevisionId);
         expect(afterDeleteState).toBeInstanceOf(NullWorkflowState);
         expect(afterDeleteState.workflow).toBeUndefined();
         expect(afterDeleteState.record).toBeUndefined();

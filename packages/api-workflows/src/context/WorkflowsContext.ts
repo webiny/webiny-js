@@ -113,9 +113,6 @@ export class WorkflowsContext implements IWorkflowsContext {
         params: IWorkflowsContextListParams
     ): Promise<IWorkflowsContextListResponse> {
         return this.context.security.withoutAuthorization(async () => {
-            console.log({
-                params
-            });
             const [items, meta] = await this.context.cms.listLatestEntries<Omit<IWorkflow, "id">>(
                 this.model,
                 {
