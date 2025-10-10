@@ -17,8 +17,10 @@ import { createIdentifier, parseIdentifier } from "@webiny/utils";
 import WebinyError from "@webiny/error";
 import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "./statuses.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
+import type { GenericRecord } from "@webiny/api/types.js";
+import { getState } from "./state.js";
 
-type CreateEntryRevisionFromDataParams = {
+interface CreateEntryRevisionFromDataParams {
     sourceId: string;
     model: CmsModel;
     rawInput: CreateCmsEntryInput;
@@ -30,7 +32,7 @@ type CreateEntryRevisionFromDataParams = {
     originalEntry: CmsEntry;
     latestStorageEntry: CmsEntry;
     accessControl: AccessControl;
-};
+}
 
 export const createEntryRevisionFromData = async ({
     sourceId,
@@ -44,7 +46,7 @@ export const createEntryRevisionFromData = async ({
     accessControl
 }: CreateEntryRevisionFromDataParams): Promise<{
     entry: CmsEntry;
-    input: Record<string, any>;
+    input: GenericRecord;
 }> => {
     /**
      * Make sure we only work with fields that are defined in the model.
@@ -174,7 +176,11 @@ export const createEntryRevisionFromData = async ({
 
         locked,
         status,
-        values
+        values,
+        state: getState({
+            input: rawInput,
+            original: originalEntry,
+        })
     };
 
     return { entry, input };

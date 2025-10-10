@@ -465,6 +465,11 @@ export interface CmsEntryValues {
 export interface ICmsEntryLocation {
     folderId?: string | null;
 }
+
+export interface ICmsEntryState {
+    id: string;
+    name: string;
+}
 /**
  * A content entry definition for and from the database.
  *
@@ -677,6 +682,8 @@ export interface CmsEntry<T = CmsEntryValues> {
      * The value is utilized when restoring the entry from the trash bin.
      */
     binOriginalFolderId?: string | null;
+
+    state?: ICmsEntryState;
 }
 
 export interface CmsStorageEntry extends CmsEntry {
@@ -1460,6 +1467,8 @@ export type CreateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
     wbyAco_location?: {
         folderId?: string | null;
     };
+    
+    state?: Partial<ICmsEntryState>;
 };
 
 export interface CreateCmsEntryOptionsInput {
@@ -1498,7 +1507,9 @@ export interface CreateFromCmsEntryInput {
     lastPublishedOn?: Date | string;
     firstPublishedBy?: CmsIdentity;
     lastPublishedBy?: CmsIdentity;
-
+    
+    state?: Partial<ICmsEntryState>;
+    
     [key: string]: any;
 }
 
@@ -1550,6 +1561,8 @@ export type UpdateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
     wbyAco_location?: {
         folderId?: string | null;
     };
+    
+    state?: Partial<ICmsEntryState>;
 };
 
 export interface UpdateCmsEntryOptionsInput {

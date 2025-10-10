@@ -119,6 +119,9 @@ export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> 
             meta: {
                 type: "map"
             },
+            state: {
+                type: "map"
+            },
             ...(attributes || {})
         }
     });

@@ -52,6 +52,13 @@ export const createStateModel = () => {
                 label: "App"
             },
             {
+                fieldId: "targetRevisionId",
+                id: "targetRevisionId",
+                storageId: "text@targetRevisionId",
+                type: "text",
+                label: "Target Revision ID"
+            },
+            {
                 fieldId: "targetId",
                 id: "targetId",
                 storageId: "text@targetId",

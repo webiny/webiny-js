@@ -8,6 +8,7 @@ export class WorkflowStateTransformer implements IWorkflowStateTransformer {
             id: input.id,
             workflowId: input.values.workflowId,
             targetId: input.values.targetId,
+            targetRevisionId: input.values.targetRevisionId,
             steps: input.values.steps,
             app: input.values.app,
             state: input.values.state,

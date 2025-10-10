@@ -18,10 +18,11 @@ import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import type { Tenant } from "@webiny/api-tenancy/types.js";
 import { getIdentity } from "~/utils/identity.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
+import { getState } from "./state.js";
 
 type DefaultValue = boolean | number | string | null;
 
-type CreateEntryDataParams = {
+interface CreateEntryDataParams {
     model: CmsModel;
     rawInput: CreateCmsEntryInput;
     options?: CreateCmsEntryOptionsInput;
@@ -175,7 +176,10 @@ export const createEntryData = async ({
         values: input,
         location: {
             folderId: rawInput.wbyAco_location?.folderId || ROOT_FOLDER
-        }
+        },
+        state: getState({
+            input: rawInput
+        })
     };
 
     if (status !== STATUS_DRAFT) {

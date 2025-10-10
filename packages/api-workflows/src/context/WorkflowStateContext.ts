@@ -36,21 +36,21 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         this.transformer = params.transformer;
     }
 
-    public async getState(app: string, targetId: string): Promise<IWorkflowState> {
-        const { version } = parseIdentifier(targetId);
+    public async getState(app: string, targetRevisionId: string): Promise<IWorkflowState> {
+        const { version } = parseIdentifier(targetRevisionId);
         if (!version) {
             throw new WebinyError(
                 "Cannot get a workflow state without version of a target record.",
                 "VERSION_REQUIRED",
                 {
                     app,
-                    targetId,
+                    targetRevisionId,
                     version
                 }
             );
         }
 
-        const state = await this.fetchOneByTargetId(app, targetId);
+        const state = await this.fetchOneByTargetRevisionId(app, targetRevisionId);
         if (!state) {
             return new NullWorkflowState();
         }
@@ -102,15 +102,15 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         };
     }
 
-    public async createState(app: string, targetId: string): Promise<IWorkflowState> {
-        const { version } = parseIdentifier(targetId);
+    public async createState(app: string, targetRevisionId: string): Promise<IWorkflowState> {
+        const { id: targetId, version } = parseIdentifier(targetRevisionId);
         if (!version) {
             throw new WebinyError(
                 "Cannot create a workflow state without version of a target record.",
                 "VERSION_REQUIRED",
                 {
                     app,
-                    targetId,
+                    targetRevisionId,
                     version
                 }
             );
@@ -135,7 +135,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 "WORKFLOW_STATE_ERROR",
                 {
                     app,
-                    targetId,
+                    targetRevisionId,
                     workflows,
                     meta
                 }
@@ -148,6 +148,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             state: WorkflowStateRecordState.pending,
             app,
             targetId,
+            targetRevisionId,
             steps: workflow.steps.map(step => {
                 return {
                     id: step.id,
@@ -223,8 +224,8 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         });
     }
 
-    public async deleteState(app: string, targetId: string): Promise<void> {
-        const state = await this.fetchOneByTargetId(app, targetId);
+    public async deleteState(app: string, targetRevisionId: string): Promise<void> {
+        const state = await this.fetchOneByTargetRevisionId(app, targetRevisionId);
         if (!state) {
             return;
         }
@@ -240,14 +241,14 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         }
     }
 
-    private async fetchOneByTargetId(
+    private async fetchOneByTargetRevisionId(
         app: string,
-        targetId: string
+        targetRevisionId: string
     ): Promise<IWorkflowStateRecord | null> {
         const { items } = await this.fetchAll({
             where: {
                 app,
-                targetId
+                targetRevisionId
             },
             limit: 10000
         });
@@ -262,7 +263,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 "WORKFLOW_STATE_ERROR",
                 {
                     app,
-                    targetId,
+                    targetRevisionId,
                     items
                 }
             );

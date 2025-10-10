@@ -19,6 +19,7 @@ export interface IWorkflowStateRecord {
     app: string;
     workflowId: string;
     targetId: string;
+    targetRevisionId: string;
     comment: string | undefined;
     state: WorkflowStateRecordState;
     steps: IWorkflowStateRecordStep[];

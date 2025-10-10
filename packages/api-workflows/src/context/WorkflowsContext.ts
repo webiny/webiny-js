@@ -77,12 +77,12 @@ export class WorkflowsContext implements IWorkflowsContext {
         if (!workflow) {
             throw new NotFoundError(`Workflow in app "${app}" with id "${id}" was not found!`);
         }
-        const targetId = createIdentifier({
+        const workflowId = createIdentifier({
             id,
             version: 1
         });
         return this.context.security.withoutAuthorization(async () => {
-            await this.context.cms.deleteEntry(this.model, targetId);
+            await this.context.cms.deleteEntry(this.model, workflowId);
             return true;
         });
     }

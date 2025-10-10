@@ -14,6 +14,8 @@ export interface IWorkflowStateContextListStatesWhere {
     workflowId_in?: string[];
     targetId?: string;
     targetId_in?: string[];
+    targetRevisionId?: string;
+    targetRevisionId_in?: string[];
     state?: WorkflowStateRecordState;
     state_in?: WorkflowStateRecordState[];
 }
@@ -35,10 +37,10 @@ export interface IWorkflowStateContext {
     listStates(
         params?: IWorkflowStateContextListStatesParams
     ): Promise<IWorkflowStateContextListStatesResponse>;
-    createState(app: string, targetId: string): Promise<IWorkflowState>;
+    createState(app: string, targetRevisionId: string): Promise<IWorkflowState>;
     updateState(
         id: string,
         record: Partial<Omit<IWorkflowStateRecord, "id">>
     ): Promise<IWorkflowState>;
-    deleteState(app: string, targetId: string): Promise<void>;
+    deleteState(app: string, targetRevisionId: string): Promise<void>;
 }
