@@ -1,14 +1,15 @@
-import { defineConfig, globalIgnores } from "eslint/config";
+import {defineConfig, globalIgnores} from "eslint/config";
 import tsParser from "@typescript-eslint/parser";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import react from "eslint-plugin-react";
 import lodash from "eslint-plugin-lodash";
 import _import from "eslint-plugin-import";
 import vitest from "@vitest/eslint-plugin";
-import { FlatCompat } from "@eslint/eslintrc";
+import {FlatCompat} from "@eslint/eslintrc";
 import js from "@eslint/js";
-import { fileURLToPath } from "node:url";
-import { dirname, resolve } from "node:path";
+import {fileURLToPath} from "node:url";
+import {dirname} from "node:path";
+import noMultiImportFromSameSource from "./eslint/rules/noMultiImportFromSameSource.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -32,9 +33,10 @@ export default defineConfig([
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: resolve(__dirname, "./tsconfig.json"),
+	      //project: resolve(__dirname, "./tsconfig.json"),
+	      project: false,
         tsconfigRootDir: __dirname,
-        sourceType: "module"
+	      sourceType: "module",
       },
       globals: {
         node: true,
@@ -48,7 +50,12 @@ export default defineConfig([
       react,
       lodash,
       import: _import,
-      vitest
+	    vitest,
+	    local: {
+		    rules: {
+			    "no-multi-import-from-same-source": noMultiImportFromSameSource
+		    }
+	    }
     },
     extends: compat.extends(
       "plugin:@typescript-eslint/recommended",
@@ -102,7 +109,8 @@ export default defineConfig([
        * Example of code: onOpen && onOpen();
        * Basically, this is instead of an if statement.
        */
-      "@typescript-eslint/no-unused-expressions": "off"
+      "@typescript-eslint/no-unused-expressions": "off",
+	    "local/no-multi-import-from-same-source": "error"
     },
     settings: {
       react: {
@@ -110,86 +118,97 @@ export default defineConfig([
       }
     }
   },
-  {
-    files: ["packages/**/*.{js,jsx}"],
-    languageOptions: {
-      parserOptions: { sourceType: "module" },
-      globals: {
-        node: true,
-        commonjs: true,
-        window: true,
-        document: true
-      }
-    },
-    plugins: {
-      react,
-      lodash,
-      import: _import,
-      vitest
-    },
-    extends: compat.extends(
-      "plugin:react/recommended"
-      //"plugin:vitest/recommended"
-    ),
-    rules: {
-      "react/prop-types": 0,
-      "lodash/import-scope": [2, "method"],
-      "import/no-unresolved": 0,
-      "@vitest/expect-expect": 0,
-      "@vitest/no-conditional-expect": 0,
-      "@vitest/no-commented-out-tests": 0,
-      "@vitest/no-disabled-tests": 0,
-      "import/dynamic-import-chunkname": [
-        2,
-        {
-          importFunctions: ["dynamicImport"],
-          allowEmpty: false
-        }
-      ],
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            {
-              group: ["@aws-sdk/*"],
-              message: "Please use @webiny/aws-sdk instead."
-            },
-            {
-              group: ["@webiny/*/index.*"],
-              message:
-                "Do not import index.js/ts/* explicitly. Import the package root instead (e.g. `@webiny/utils`)."
-            }
-          ]
-        }
-      ]
-    },
-    settings: {
-      react: {
-        version: "18.2.0"
-      }
-    }
-  },
+	{
+		files: ["packages/**/*.{js,jsx}"],
+		languageOptions: {
+			parserOptions: {sourceType: "module"},
+			globals: {
+				node: true,
+				commonjs: true,
+				window: true,
+				document: true
+			}
+		},
+		plugins: {
+			react,
+			lodash,
+			import: _import,
+			vitest,
+			local: {
+				rules: {
+					"no-multi-import-from-same-source": noMultiImportFromSameSource
+				}
+			}
+		},
+		extends: compat.extends(
+			"plugin:react/recommended"
+			//"plugin:vitest/recommended"
+		),
+		rules: {
+			"react/prop-types": 0,
+			"lodash/import-scope": [2, "method"],
+			"import/no-unresolved": 0,
+			"@vitest/expect-expect": 0,
+			"@vitest/no-conditional-expect": 0,
+			"@vitest/no-commented-out-tests": 0,
+			"@vitest/no-disabled-tests": 0,
+			"import/dynamic-import-chunkname": [
+				2,
+				{
+					importFunctions: ["dynamicImport"],
+					allowEmpty: false
+				}
+			],
+			"no-restricted-imports": [
+				"error",
+				{
+					patterns: [
+						{
+							group: ["@aws-sdk/*"],
+							message: "Please use @webiny/aws-sdk instead."
+						},
+						{
+							group: ["@webiny/*/index.*"],
+							message:
+								"Do not import index.js/ts/* explicitly. Import the package root instead (e.g. `@webiny/utils`)."
+						}
+					]
+				}
+			],
+			"local/no-multi-import-from-same-source": "error"
+		},
+		settings: {
+			react: {
+				version: "18.2.0"
+			}
+		}
+	},
   {
     files: ["packages/aws-sdk/**/*.{ts,tsx,js,jsx}"],
     rules: {
       "no-restricted-imports": "off"
     }
   },
-  globalIgnores([
-    ".idea/**/*",
-    ".nx/**/*",
-    ".yarn/**/*",
-    ".webiny/**/*",
-    "**/node_modules/",
-    "**/dist/",
-    "**/lib/",
-    "**/build/",
-    "**/.out/",
-    "**/*.d.ts",
-    "idea.js",
-    "scripts/**/*.js",
-    "packages/admin-ui/.storybook/**/*",
-    //"packages/create-webiny-project/**/*",
-    "packages/create-webiny-project/_templates/**/*"
-  ])
+	globalIgnores([
+		".verdaccio/**",
+		".swc/**",
+		".stormTests/**",
+		".pulumi/**/*",
+		".webiny/**/*",
+		".idea/**/*",
+		".nx/**/*",
+		".yarn/**/*",
+		"**/node_modules/",
+		"node_modules/**",
+		"coverage/**",
+		"**/dist/",
+		"**/lib/",
+		"**/build/",
+		"**/.out/",
+		"**/*.d.ts",
+		"idea.js",
+		"scripts/**/*.js",
+		"packages/admin-ui/.storybook/**/*",
+		"packages/create-webiny-project/_templates/**/*"
+	])
 ]);
