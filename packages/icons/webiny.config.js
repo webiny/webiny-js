@@ -10,7 +10,6 @@ export default {
 
             copyToDist("package.json");
             copyToDist("LICENSE");
-            copyToDist("README.md");
 
             // Copy all icons from `@material-design-icons/svg/outlined` folder to `dist` folder.
             // We're doing this because simply re-exporting icons from `@material-ui/icons` package
