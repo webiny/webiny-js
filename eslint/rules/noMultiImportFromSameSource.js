@@ -58,8 +58,8 @@ export default {
 					fix(fixer) {
 						const source = node.source.raw;
 						
-						const typeImports: typeof namedSpecifiers = [];
-						const valueImports: typeof namedSpecifiers = [];
+						const typeImports = [];
+						const valueImports = [];
 						
 						for (const s of namedSpecifiers) {
 							if (isTypeOnlyImport(node, s)) {
@@ -69,7 +69,7 @@ export default {
 							}
 						}
 						
-						const mkImport = (specifiers, isType: boolean) =>
+						const mkImport = (specifiers, isType) =>
 							specifiers
 								.map(s => {
 									const alias = s.local.name !== s.imported.name ? ` as ${s.local.name}` : "";
