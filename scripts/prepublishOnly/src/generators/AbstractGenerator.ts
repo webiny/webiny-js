@@ -1,4 +1,5 @@
 import { WebinyPackage } from "../WebinyPackage";
+import chalk from "chalk";
 
 /**
  * Abstract base class for all file or code generators.
@@ -6,6 +7,9 @@ import { WebinyPackage } from "../WebinyPackage";
  * for generators operating on a Webiny package.
  */
 export abstract class AbstractGenerator {
+    static displayName: string = "Abstract Generator";
+
+    protected displayName = 'Abstract Generator';
     protected webinyPackage: WebinyPackage;
 
     constructor(webinyPackage: WebinyPackage) {
@@ -28,6 +32,6 @@ export abstract class AbstractGenerator {
      * Utility: Log a message for visibility when running generators.
      */
     protected log(message: string): void {
-        console.log(message);
+        console.log(`${chalk.gray(this.displayName)}: ${message}`);
     }
 }

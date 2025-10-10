@@ -6,9 +6,14 @@ import findUp from "find-up";
 import { sync } from "load-json-file";
 
 export class LockedDepsGenerator extends AbstractGenerator {
+    static override displayName = "Locked Deps Generator";
+    override displayName = "Locked Deps Generator";
+
     private readonly ignoredPackages = ["@pulumi/pulumi", "@pulumi/aws"];
 
     async generate() {
+        this.log('Locking dependencies...');
+
         const lockedPackageJson = this.webinyPackage.getPackageJson();
         const deps = ["dependencies", "devDependencies", "peerDependencies"] as const;
 
