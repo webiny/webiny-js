@@ -1,7 +1,11 @@
 import type { Context } from "~/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { IWorkflowStateTransformer } from "~/context/transformer/abstractions/WorkflowStateTransformer.js";
-import type { IWorkflowState, IWorkflowStateRecord } from "./abstractions/WorkflowState.js";
+import {
+    type IWorkflowState,
+    type IWorkflowStateRecord,
+    WorkflowStateRecordState
+} from "./abstractions/WorkflowState.js";
 import { WorkflowState } from "./workflowState/WorkflowState.js";
 import type {
     IWorkflowStateContext,
@@ -10,6 +14,9 @@ import type {
 } from "./abstractions/WorkflowStateContext.js";
 import { NullWorkflowState } from "./workflowState/NullWorkflowState.js";
 import { WebinyError } from "@webiny/error";
+import { parseIdentifier } from "@webiny/utils";
+import { NotFoundError } from "@webiny/handler-graphql";
+import { createIdentifier } from "@webiny/utils/createIdentifier.js";
 
 export interface IWorkflowStateContextParams {
     context: Pick<Context, "cms" | "security" | "workflows" | "workflowState">;
@@ -28,32 +35,255 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         this.transformer = params.transformer;
     }
 
-    public async getState(app: string, id: string): Promise<IWorkflowState> {
-        const { items: states } = await this.listStates({
-            where: {
-                app,
-                targetId: id
-            },
-            limit: 2
-        });
-        if (!states.length) {
-            return new NullWorkflowState();
-        } else if (states.length > 1) {
+    public async getState(app: string, targetId: string): Promise<IWorkflowState> {
+        const { version } = parseIdentifier(targetId);
+        if (!version) {
             throw new WebinyError(
-                `Multiple workflow states found for the given app and target ID.`,
-                "WORKFLOW_STATE_ERROR",
+                "Cannot get a workflow state without version of a target record.",
+                "VERSION_REQUIRED",
                 {
                     app,
-                    id
+                    targetId,
+                    version
                 }
             );
         }
-        return states[0];
+
+        const state = await this.fetchOneByTargetId(app, targetId);
+        if (!state) {
+            return new NullWorkflowState();
+        }
+
+        const workflowId = createIdentifier({
+            id: state.workflowId,
+            version: 1
+        });
+
+        const { items: workflows } = await this.context.workflows.listWorkflows({
+            where: {
+                id: workflowId
+            },
+            limit: 1
+        });
+
+        return new WorkflowState({
+            context: this.context,
+            workflow: workflows[0],
+            record: state
+        });
     }
 
     public async listStates(
         params?: IWorkflowStateContextListStatesParams
     ): Promise<IWorkflowStateContextListStatesResponse> {
+        const { items, meta } = await this.fetchAll(params);
+        const workflowIds = Array.from(new Set(items.map(item => item.workflowId)));
+
+        const { items: workflows } = await this.context.workflows.listWorkflows({
+            where: {
+                id_in: workflowIds
+            },
+            limit: 10000
+        });
+
+        return {
+            items: items.map(record => {
+                return new WorkflowState({
+                    context: this.context,
+                    workflow: workflows.find(wf => wf.id === record.workflowId),
+                    record
+                });
+            }),
+            meta
+        };
+    }
+
+    public async createState(app: string, targetId: string): Promise<IWorkflowState> {
+        const { version } = parseIdentifier(targetId);
+        if (!version) {
+            throw new WebinyError(
+                "Cannot create a workflow state without version of a target record.",
+                "VERSION_REQUIRED",
+                {
+                    app,
+                    targetId,
+                    version
+                }
+            );
+        }
+        /**
+         * It may be possible, at some point, to have multiple workflows for a single app.
+         * We will need to find a way to select a workflow for the given target record.
+         * Until then, we will throw an error if multiple workflows are found for the given app.
+         */
+        const { items: workflows, meta } = await this.context.workflows.listWorkflows({
+            where: {
+                app
+            },
+            limit: 1
+        });
+        const workflow = workflows[0];
+        if (!workflow) {
+            return new NullWorkflowState();
+        } else if (meta.totalCount > 1) {
+            throw new WebinyError(
+                `Multiple workflows found for the given app.`,
+                "WORKFLOW_STATE_ERROR",
+                {
+                    app,
+                    targetId,
+                    workflows,
+                    meta
+                }
+            );
+        }
+
+        const entry: Omit<IWorkflowStateRecord, "id"> = {
+            workflowId: workflow.id,
+            comment: undefined,
+            state: WorkflowStateRecordState.pending,
+            app,
+            targetId,
+            steps: workflow.steps.map(step => {
+                return {
+                    id: step.id,
+                    state: WorkflowStateRecordState.pending,
+                    userId: undefined,
+                    comment: undefined
+                };
+            })
+        };
+
+        return this.context.security.withoutAuthorization(async () => {
+            const result = await this.context.cms.createEntry<Omit<IWorkflowStateRecord, "id">>(
+                this.model,
+                entry
+            );
+            const record = this.transformer.fromCmsEntry(result);
+            return new WorkflowState({
+                context: this.context,
+                workflow,
+                record
+            });
+        });
+    }
+
+    public async updateState(
+        id: string,
+        input: Partial<Omit<IWorkflowStateRecord, "id">>
+    ): Promise<IWorkflowState> {
+        const entry = structuredClone(input);
+        // @ts-expect-error
+        delete entry["id"];
+
+        const state = await this.fetchOne(id);
+        if (!state) {
+            throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
+                id,
+                input
+            });
+        }
+        // @ts-expect-error
+        delete state["id"];
+
+        const workflow = await this.context.workflows.getWorkflow({
+            app: state.app,
+            id: state.workflowId
+        });
+        if (!workflow) {
+            throw new WebinyError(
+                `Workflow with ID "${input.workflowId}" was not found.`,
+                "WORKFLOW_NOT_FOUND",
+                {
+                    workflowId: input.workflowId
+                }
+            );
+        }
+
+        return await this.context.security.withoutAuthorization(async () => {
+            const result = await this.context.cms.updateEntry<Omit<IWorkflowStateRecord, "id">>(
+                this.model,
+                id,
+                {
+                    ...state,
+                    ...entry
+                }
+            );
+            const record = this.transformer.fromCmsEntry(result);
+
+            return new WorkflowState({
+                context: this.context,
+                workflow,
+                record
+            });
+        });
+    }
+
+    public async deleteState(app: string, targetId: string): Promise<void> {
+        const state = await this.fetchOneByTargetId(app, targetId);
+        if (!state) {
+            return;
+        }
+        try {
+            await this.context.security.withoutAuthorization(async () => {
+                await this.context.cms.deleteEntry(this.model, state.id);
+            });
+        } catch (ex) {
+            if (ex.code === "NOT_FOUND" || ex instanceof NotFoundError) {
+                return;
+            }
+            throw ex;
+        }
+    }
+
+    private async fetchOneByTargetId(
+        app: string,
+        targetId: string
+    ): Promise<IWorkflowStateRecord | null> {
+        const { items } = await this.fetchAll({
+            where: {
+                app,
+                targetId
+            },
+            limit: 10000
+        });
+        /**
+         * There cannot be more than one workflow. If there is, something is very wrong and all states, except one, must be deleted.
+         */
+        if (items.length === 0) {
+            return null;
+        } else if (items.length > 1) {
+            throw new WebinyError(
+                `Multiple workflow states found for the given app and target ID.`,
+                "WORKFLOW_STATE_ERROR",
+                {
+                    app,
+                    targetId,
+                    items
+                }
+            );
+        }
+        return items[0] || null;
+    }
+
+    private async fetchOne(id: string) {
+        try {
+            const entry = await this.context.security.withoutAuthorization(async () => {
+                return this.context.cms.getEntryById<Omit<IWorkflowStateRecord, "id">>(
+                    this.model,
+                    id
+                );
+            });
+            return this.transformer.fromCmsEntry(entry);
+        } catch (ex) {
+            if (ex.code === "NOT_FOUND" || ex instanceof NotFoundError) {
+                return null;
+            }
+            throw ex;
+        }
+    }
+
+    private async fetchAll(params?: IWorkflowStateContextListStatesParams) {
         const [items, meta] = await this.context.security.withoutAuthorization(async () => {
             return await this.context.cms.listLatestEntries<Omit<IWorkflowStateRecord, "id">>(
                 this.model,
@@ -68,39 +298,9 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             );
         });
         const records = items.map(item => this.transformer.fromCmsEntry(item));
-        const workflowIds = Array.from(new Set(records.map(item => item.workflowId)));
-
-        const { items: workflows } = await this.context.workflows.listWorkflows({
-            where: {
-                id_in: workflowIds
-            },
-            limit: 10000
-        });
-
         return {
-            items: records
-                .map(record => {
-                    const workflow = workflows.find(wf => wf.id === record.workflowId);
-                    return new WorkflowState({
-                        context: this.context,
-                        workflow,
-                        record
-                    });
-                })
-                .filter(item => {
-                    return !!item.workflow;
-                }),
+            items: records,
             meta
         };
-    }
-
-    public async updateState(id: string, input: Omit<IWorkflowStateRecord, "id">): Promise<void> {
-        await this.context.security.withoutAuthorization(async () => {
-            return this.context.cms.updateEntry<Omit<IWorkflowStateRecord, "id">>(
-                this.model,
-                id,
-                input
-            );
-        });
     }
 }

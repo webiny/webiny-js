@@ -96,7 +96,7 @@ export class WorkflowsGateway implements IWorkflowsGateway {
                     where: {
                         app: this.app
                     },
-                    sort: ["createdOn_DESC"],
+                    sort: ["createdOn_DESC"]
                 },
                 fetchPolicy: "no-cache"
             });

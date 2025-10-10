@@ -5,4 +5,4 @@ interface IParams {
 }
 export const createWorkflowAppName = ({ model }: IParams) => {
     return `cms:${model.modelId}`;
-}
+};

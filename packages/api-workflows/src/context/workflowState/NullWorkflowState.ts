@@ -5,6 +5,10 @@ export class NullWorkflowState implements IWorkflowState {
     public readonly workflow = undefined;
     public readonly record = undefined;
 
+    public async review(): Promise<void> {
+        return;
+    }
+
     public async approve(): Promise<void> {
         return;
     }

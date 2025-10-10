@@ -1,12 +1,17 @@
 import { Context } from "~/types.js";
 import type { IWorkflow } from "../abstractions/Workflow.js";
-import type { IWorkflowState, IWorkflowStateRecord, IWorkflowStateRecordStep } from "../abstractions/WorkflowState.js";
+import type {
+    IWorkflowState,
+    IWorkflowStateRecord,
+    IWorkflowStateRecordStep
+} from "../abstractions/WorkflowState.js";
 import { WorkflowStateRecordState } from "../abstractions/WorkflowState.js";
+import { WebinyError } from "@webiny/error";
 
 export interface IWorkflowStateParams {
     workflow: IWorkflow | undefined;
     record: IWorkflowStateRecord;
-    context: Pick<Context, "workflowState">;
+    context: Pick<Context, "workflowState" | "security">;
 }
 
 export class WorkflowState implements IWorkflowState {
@@ -26,6 +31,28 @@ export class WorkflowState implements IWorkflowState {
         this.record = params.record;
     }
 
+    public async review(): Promise<void> {
+        const step = this.record.steps.find(step => {
+            return step.state === WorkflowStateRecordState.pending;
+        });
+        if (!step) {
+            throw new WebinyError({
+                message: `Cannot review a workflow that has no pending steps.`,
+                code: "WORKFLOW_NO_PENDING_STEPS",
+                data: {
+                    ...this.record
+                }
+            });
+        }
+        this.updateStep(step.id, {
+            state: WorkflowStateRecordState.inReview
+        });
+        this.updateRecord({
+            state: WorkflowStateRecordState.inReview
+        });
+        await this.updateState(this.record);
+    }
+
     public async approve(comment?: string): Promise<void> {
         const step = this.record.steps.find(step => {
             return step.state === WorkflowStateRecordState.inReview;
@@ -43,25 +70,25 @@ export class WorkflowState implements IWorkflowState {
             this.updateRecord({
                 state
             });
-            await this.context.workflowState.updateState(this.record.id, this.record);
+            await this.updateState(this.record);
             return;
         }
 
         this.approveStep(step.id, comment);
 
         const nextStep = this.getNextStep(step.id);
-        
+
+        if (nextStep) {
+            this.updateStep(nextStep.id, {
+                state: WorkflowStateRecordState.inReview
+            });
+        }
+
         this.updateRecord({
             state: nextStep ? WorkflowStateRecordState.inReview : WorkflowStateRecordState.approved
         });
 
-        const record = structuredClone(this.record);
-        /**
-         * We need to remove the id because we do not want update to do anything with it.
-         */
-        // @ts-expect-error
-        delete record.id;
-        await this.context.workflowState.updateState(this.record.id, record);
+        await this.updateState(this.record);
     }
 
     public async reject(comment: string): Promise<void> {
@@ -75,7 +102,7 @@ export class WorkflowState implements IWorkflowState {
         this.updateRecord({
             state: WorkflowStateRecordState.rejected
         });
-        await this.context.workflowState.updateState(this.record.id, this.record);
+        await this.updateState(this.record);
     }
 
     public async cancel(): Promise<void> {
@@ -91,7 +118,10 @@ export class WorkflowState implements IWorkflowState {
         if (!step) {
             throw new Error(`Step with ID "${id}" not found.`);
         }
-        Object.assign(step, input);
+        Object.assign(step, {
+            userId: this.context.security.getIdentity().id,
+            ...input
+        });
     }
 
     private approveStep(id: string, comment?: string): void {
@@ -114,5 +144,12 @@ export class WorkflowState implements IWorkflowState {
             return undefined;
         }
         return this.record.steps[index + 1];
+    }
+
+    private async updateState(input: IWorkflowStateRecord): Promise<void> {
+        const record = structuredClone(input);
+        // @ts-expect-error
+        delete record["id"];
+        await this.context.workflowState.updateState(this.record.id, record);
     }
 }

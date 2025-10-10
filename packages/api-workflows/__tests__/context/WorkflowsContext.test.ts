@@ -6,7 +6,7 @@ import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 
 describe("Workflows Context", () => {
     it("should not list any workflows because there are no any", async () => {
-        const { context, model } = await createContextHandler();
+        const { context, workflowModel: model } = await createContextHandler();
         const workflowsContext = new WorkflowsContext({
             context,
             transformer: new WorkflowsTransformer(),
@@ -28,7 +28,7 @@ describe("Workflows Context", () => {
     });
 
     it("should create, update, list, get and delete a workflow", async () => {
-        const { context, model } = await createContextHandler();
+        const { context, workflowModel: model } = await createContextHandler();
         const workflowsContext = new WorkflowsContext({
             context,
             transformer: new WorkflowsTransformer(),

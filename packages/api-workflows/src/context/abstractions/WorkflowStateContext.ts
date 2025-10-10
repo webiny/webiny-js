@@ -1,5 +1,9 @@
 import type { IMeta } from "./types.js";
-import type { IWorkflowState, IWorkflowStateRecord, WorkflowStateRecordState } from "./WorkflowState.js";
+import type {
+    IWorkflowState,
+    IWorkflowStateRecord,
+    WorkflowStateRecordState
+} from "./WorkflowState.js";
 import type { CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
 
 export interface IWorkflowStateContextListStatesWhere {
@@ -27,12 +31,14 @@ export interface IWorkflowStateContextListStatesResponse {
 }
 
 export interface IWorkflowStateContext {
-    getState(
-        app: string,
-        id: string
-    ): Promise<IWorkflowState>;
+    getState(app: string, id: string): Promise<IWorkflowState>;
     listStates(
         params?: IWorkflowStateContextListStatesParams
     ): Promise<IWorkflowStateContextListStatesResponse>;
-    updateState(id: string, record: IWorkflowStateRecord): Promise<void>;
+    createState(app: string, targetId: string): Promise<IWorkflowState>;
+    updateState(
+        id: string,
+        record: Partial<Omit<IWorkflowStateRecord, "id">>
+    ): Promise<IWorkflowState>;
+    deleteState(app: string, targetId: string): Promise<void>;
 }

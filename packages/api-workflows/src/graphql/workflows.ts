@@ -61,7 +61,7 @@ export const createWorkflowsSchema = () => {
                 name: String!
                 steps: [WorkflowStep!]!
             }
-            
+
             type ListWorkflowsMeta {
                 cursor: String
                 hasMoreItems: Boolean!
@@ -92,7 +92,12 @@ export const createWorkflowsSchema = () => {
             }
 
             type WorkflowsQuery {
-                listWorkflows(where: ListWorkflowsWhereInput, limit: Number, sort: [ListWorkflowsSort!], after: String): ListWorkflowsResponse!
+                listWorkflows(
+                    where: ListWorkflowsWhereInput
+                    limit: Number
+                    sort: [ListWorkflowsSort!]
+                    after: String
+                ): ListWorkflowsResponse!
                 getWorkflow(app: String!, id: ID!): GetWorkflowResponse!
             }
 

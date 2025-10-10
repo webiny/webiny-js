@@ -1,20 +1,27 @@
+import { WebinyError } from "@webiny/error";
 import type { Context } from "~/types.js";
 import { createWorkflowAppName } from "~/utils/createWorkflowAppName.js";
 
 interface IParams {
-    context: Context;
+    context: Pick<Context, "workflowState" | "cms">;
 }
 
 export const attachPublishLifecycleEvents = (params: IParams) => {
     const { context } = params;
-    context.cms.onEntryBeforePublish.subscribe(async ({ model, entry, original }) => {
+    context.cms.onEntryBeforePublish.subscribe(async ({ model, entry }) => {
         const app = createWorkflowAppName({ model });
-        const manager = context.workflowState.getState(app, entry.id);
-        // thinking of always returning the state object
-        const state = await manager.getState();
+        const state = await context.workflowState.getState(app, entry.id);
         if (state.done) {
             return;
         }
-        throw new Error("Cannot publish entry because its workflow is not completed.");
+        throw new WebinyError(
+            "Cannot publish entry because its workflow is not completed.",
+            "WORKFLOW_NOT_COMPLETED",
+            {
+                app,
+                entryId: entry.id,
+                workflowId: state.workflow?.id
+            }
+        );
     });
 };

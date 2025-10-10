@@ -1,5 +1,36 @@
 import { createPrivateModelPlugin } from "@webiny/api-headless-cms";
 import { STATE_MODEL_ID } from "~/constants.js";
+import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
+import { WorkflowStateRecordState } from "~/context/abstractions/WorkflowState.js";
+
+const stateField: CmsModelField = {
+    id: "state",
+    type: "text",
+    fieldId: "state",
+    storageId: "text@state",
+    label: "State",
+    predefinedValues: {
+        enabled: true,
+        values: [
+            {
+                label: "Pending",
+                value: WorkflowStateRecordState.pending
+            },
+            {
+                label: "In Review",
+                value: WorkflowStateRecordState.inReview
+            },
+            {
+                label: "Approved",
+                value: WorkflowStateRecordState.approved
+            },
+            {
+                label: "Rejected",
+                value: WorkflowStateRecordState.rejected
+            }
+        ]
+    }
+};
 
 export const createStateModel = () => {
     return createPrivateModelPlugin({
@@ -34,6 +65,7 @@ export const createStateModel = () => {
                 type: "text",
                 label: "Comment"
             },
+            stateField,
             {
                 fieldId: "steps",
                 id: "steps",
@@ -50,30 +82,7 @@ export const createStateModel = () => {
                             storageId: "text@id",
                             label: "Step ID"
                         },
-                        {
-                            id: "status",
-                            type: "text",
-                            fieldId: "status",
-                            storageId: "text@status",
-                            label: "Status",
-                            predefinedValues: {
-                                enabled: true,
-                                values: [
-                                    {
-                                        label: "Pending",
-                                        value: "pending"
-                                    },
-                                    {
-                                        label: "Approved",
-                                        value: "approved"
-                                    },
-                                    {
-                                        label: "Rejected",
-                                        value: "rejected"
-                                    }
-                                ]
-                            }
-                        },
+                        stateField,
                         {
                             id: "userId",
                             type: "text",

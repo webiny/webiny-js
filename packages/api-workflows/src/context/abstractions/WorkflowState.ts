@@ -1,6 +1,5 @@
 import type { IWorkflow } from "./Workflow.js";
 
-
 export enum WorkflowStateRecordState {
     pending = "pending",
     inReview = "inReview",
@@ -11,25 +10,25 @@ export enum WorkflowStateRecordState {
 export interface IWorkflowStateRecordStep {
     id: string;
     state: WorkflowStateRecordState;
-    comment?: string;
-    userId: string;
+    comment: string | undefined;
+    userId: string | undefined;
 }
-
 
 export interface IWorkflowStateRecord {
     id: string;
     app: string;
     workflowId: string;
     targetId: string;
-    comment?: string;
+    comment: string | undefined;
     state: WorkflowStateRecordState;
     steps: IWorkflowStateRecordStep[];
 }
 
 export interface IWorkflowState {
-    readonly workflow: IWorkflow | undefined;
     readonly done: boolean;
+    readonly workflow: IWorkflow | undefined;
     readonly record: IWorkflowStateRecord | undefined;
+    review(): Promise<void>;
     approve(message?: string): Promise<void>;
     reject(message: string): Promise<void>;
     cancel(): Promise<void>;

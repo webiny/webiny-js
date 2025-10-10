@@ -943,7 +943,6 @@ export interface CmsModelContext {
  */
 export type CmsEntryStatus = "published" | "unpublished" | "draft";
 
-
 export interface CmsEntryListWhereRef {
     id?: string;
     id_in?: string[];
