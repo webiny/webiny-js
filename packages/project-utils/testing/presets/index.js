@@ -9,7 +9,7 @@ import { PackageJson } from "@webiny/build-tools/utils/PackageJson.js";
  * @param argv {string[]}
  * @returns {string}
  */
-const getStorage = (argv) => {
+const getStorage = argv => {
     /**
      * Storage is available in process.env?
      */
@@ -28,10 +28,13 @@ const getStorage = (argv) => {
     /**
      * Then we try to get --storage=([a-z])
      */
-    const matched  = argv.map(item => {
-        const matched = item.match(/^--storage=([^\s]+)$/);
-        return matched ? matched[1] : null;
-    }).filter(Boolean).find(() => true);
+    const matched = argv
+        .map(item => {
+            const matched = item.match(/^--storage=([^\s]+)$/);
+            return matched ? matched[1] : null;
+        })
+        .filter(Boolean)
+        .find(() => true);
     if (typeof matched === "string" && matched.length > 2) {
         return matched;
     }
