@@ -1,4 +1,4 @@
-import type { CmsModel, CmsModelCreateSettingsInput, CmsModelField } from "~/types";
+import type { CmsModel, CmsModelField } from "~/types";
 
 const DATA_FIELD = /* GraphQL*/ `
     {
@@ -56,24 +56,6 @@ const DATA_FIELD = /* GraphQL*/ `
             displayName
             type
         }
-        settings {
-            workflows {
-                id
-                name
-                steps {
-                    id
-                    title
-                    color
-                    description
-                    teams {
-                        id
-                    }
-                    notifications {
-                        id
-                    }
-                }
-            }
-        }
     }
 `;
 const ERROR_FIELD = /* GraphQL */ `
@@ -115,7 +97,6 @@ export interface CreateContentModelMutationVariables {
         titleFieldId?: string;
         defaultFields?: boolean;
         icon?: string;
-        settings?: CmsModelCreateSettingsInput;
     };
 }
 export interface CreateContentModelFromMutationVariables {

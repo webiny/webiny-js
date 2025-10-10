@@ -1,18 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import {
-    CmsGroup,
-    CmsModel,
-    type CmsModelCreateSettingsWorkflowStepInput,
-    CmsModelField,
-    CmsModelFieldInput
-} from "~/types";
+import { CmsGroup, CmsModel, CmsModelField, CmsModelFieldInput } from "~/types";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import * as helpers from "../testHelpers/helpers";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { assignModelEvents, pubSubTracker } from "./mocks/lifecycleHooks";
 import { useBugManageHandler } from "../testHelpers/useBugManageHandler";
-import type { NonEmptyArray } from "@webiny/api/types.js";
 
 const getTypeFields = (type: any) => {
     return type.fields.filter((f: any) => f.name !== "_empty").map((f: any) => f.name);
@@ -165,8 +158,7 @@ describe("content model test", () => {
                             name: contentModelGroup.name,
                             slug: contentModelGroup.slug
                         },
-                        icon: "fa/fas",
-                        settings: null
+                        icon: "fa/fas"
                     },
                     error: null
                 }
@@ -625,7 +617,6 @@ describe("content model test", () => {
                 updateContentModel: {
                     data: {
                         ...modelData,
-                        settings: null,
                         savedOn: expect.stringMatching(/^20/),
                         createdBy: helpers.identity,
                         createdOn: expect.stringMatching(/^20/),
@@ -1485,48 +1476,6 @@ describe("content model test", () => {
             }
         };
 
-        const initialSteps: NonEmptyArray<CmsModelCreateSettingsWorkflowStepInput> = [
-            {
-                id: "translation",
-                title: "Translation",
-                color: "#00FF00",
-                // @ts-expect-error TODO: @bruno mentioned this test will go away, so not fixing it now.
-                description: null,
-                teams: [
-                    {
-                        id: "team-1"
-                    }
-                ],
-                notifications: [
-                    {
-                        id: "slack"
-                    },
-                    {
-                        id: "ms-teams"
-                    }
-                ]
-            },
-            {
-                id: "seo",
-                title: "SEO",
-                color: "#0000FF",
-                description: null,
-                teams: [
-                    {
-                        id: "team-2"
-                    }
-                ],
-                notifications: [
-                    {
-                        id: "email"
-                    },
-                    {
-                        id: "slack"
-                    }
-                ]
-            }
-        ];
-
         const [createModelResponse] = await createContentModelMutation({
             data: {
                 name: "Test Content model",
@@ -1535,16 +1484,7 @@ describe("content model test", () => {
                 pluralApiName: `TestContentModels`,
                 group: contentModelGroup.id,
                 fields: [field],
-                layout: [["testId"]],
-                settings: {
-                    workflows: [
-                        {
-                            id: "allSteps",
-                            name: "All Steps",
-                            steps: initialSteps
-                        }
-                    ]
-                }
+                layout: [["testId"]]
             }
         });
 
@@ -1552,16 +1492,7 @@ describe("content model test", () => {
             data: {
                 createContentModel: {
                     data: {
-                        modelId: "testContentModel",
-                        settings: {
-                            workflows: [
-                                {
-                                    id: "allSteps",
-                                    name: "All Steps",
-                                    steps: initialSteps
-                                }
-                            ]
-                        }
+                        modelId: "testContentModel"
                     },
                     error: null
                 }
@@ -1573,68 +1504,38 @@ describe("content model test", () => {
             modelId: model.modelId,
             data: {
                 fields: model.fields,
-                layout: model.layout,
-                settings: {
-                    workflows: []
-                }
+                layout: model.layout
             }
         });
         expect(updateModelEmptyResponse).toMatchObject({
             data: {
                 updateContentModel: {
                     data: {
-                        modelId: "testContentModel",
-                        settings: {
-                            workflows: []
-                        }
+                        modelId: "testContentModel"
                     },
                     error: null
                 }
             }
         });
         expect(updateModelEmptyResponse.data.updateContentModel.error).toBeNull();
-        expect(
-            updateModelEmptyResponse.data.updateContentModel.data.settings.workflows[0]?.steps || []
-        ).toHaveLength(0);
 
         const [updateModelResponse] = await updateContentModelMutation({
             modelId: model.modelId,
             data: {
                 fields: model.fields,
-                layout: model.layout,
-                settings: {
-                    workflows: [
-                        {
-                            id: "singleStepWorkflow",
-                            name: "Single Step Workflow",
-                            steps: [initialSteps[0]]
-                        }
-                    ]
-                }
+                layout: model.layout
             }
         });
         expect(updateModelResponse).toMatchObject({
             data: {
                 updateContentModel: {
                     data: {
-                        modelId: "testContentModel",
-                        settings: {
-                            workflows: [
-                                {
-                                    id: "singleStepWorkflow",
-                                    name: "Single Step Workflow",
-                                    steps: [initialSteps[0]]
-                                }
-                            ]
-                        }
+                        modelId: "testContentModel"
                     },
                     error: null
                 }
             }
         });
         expect(updateModelResponse.data.updateContentModel.error).toBeNull();
-        expect(
-            updateModelResponse.data.updateContentModel.data.settings.workflows[0]?.steps || []
-        ).toHaveLength(1);
     });
 });
