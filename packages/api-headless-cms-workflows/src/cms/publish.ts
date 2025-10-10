@@ -1,6 +1,6 @@
 import { WebinyError } from "@webiny/error";
 import type { Context } from "~/types.js";
-import { createWorkflowAppName } from "~/utils/createWorkflowAppName.js";
+import { createWorkflowAppName } from "~/utils/appName.js";
 
 interface IParams {
     context: Pick<Context, "workflowState" | "cms">;
@@ -9,9 +9,13 @@ interface IParams {
 export const attachPublishLifecycleEvents = (params: IParams) => {
     const { context } = params;
     context.cms.onEntryBeforePublish.subscribe(async ({ model, entry }) => {
+        if (!model.isPrivate) {
+            return;
+        }
         const app = createWorkflowAppName({ model });
         const state = await context.workflowState.getState(app, entry.id);
         if (state.done) {
+            entry.state = undefined;
             return;
         }
         throw new WebinyError(

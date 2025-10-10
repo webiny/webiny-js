@@ -445,6 +445,90 @@ const expectedSystemFields: Record<string, Field> = {
         transform: expect.any(Function),
         label: "Version"
     },
+    state: {
+        createPath: expect.any(Function),
+        fieldId: "state",
+        id: "state",
+        label: "State",
+        parents: [],
+        settings: {
+            fields: [
+                {
+                    fieldId: "stepId",
+                    id: "stepId",
+                    label: "Step ID",
+                    storageId: "stepId",
+                    type: "text"
+                },
+                {
+                    fieldId: "stepName",
+                    id: "stepName",
+                    label: "Step Name",
+                    storageId: "stepName",
+                    type: "text"
+                },
+                {
+                    fieldId: "state",
+                    id: "state",
+                    label: "State",
+                    storageId: "state",
+                    type: "text"
+                }
+            ]
+        },
+        storageId: "object@state",
+        system: true,
+        transform: expect.any(Function),
+        type: "object"
+    },
+    "state.state": {
+        createPath: expect.any(Function),
+        fieldId: "state",
+        id: "state",
+        label: "State",
+        parents: [
+            {
+                fieldId: "state",
+                multipleValues: undefined
+            }
+        ],
+        storageId: "state",
+        system: true,
+        transform: expect.any(Function),
+        type: "text"
+    },
+    "state.stepId": {
+        createPath: expect.any(Function),
+        fieldId: "stepId",
+        id: "stepId",
+        label: "Step ID",
+        parents: [
+            {
+                fieldId: "state",
+                multipleValues: undefined
+            }
+        ],
+        storageId: "stepId",
+        system: true,
+        transform: expect.any(Function),
+        type: "text"
+    },
+    "state.stepName": {
+        createPath: expect.any(Function),
+        fieldId: "stepName",
+        id: "stepName",
+        label: "Step Name",
+        parents: [
+            {
+                fieldId: "state",
+                multipleValues: undefined
+            }
+        ],
+        storageId: "stepName",
+        system: true,
+        transform: expect.any(Function),
+        type: "text"
+    },
     status: {
         id: "status",
         parents: [],

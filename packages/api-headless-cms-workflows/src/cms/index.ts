@@ -7,7 +7,7 @@ interface IParams {
     context: Context;
 }
 
-export const attachLifecycleEvents = (params: IParams) => {
+export const attachCmsLifecycleEvents = (params: IParams) => {
     attachCreateLifecycleEvents(params);
     attachPublishLifecycleEvents(params);
     attachDeleteLifecycleEvents(params);

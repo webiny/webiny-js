@@ -467,8 +467,9 @@ export interface ICmsEntryLocation {
 }
 
 export interface ICmsEntryState {
-    id: string;
-    name: string;
+    state: string;
+    stepId: string;
+    stepName: string;
 }
 /**
  * A content entry definition for and from the database.
@@ -1467,7 +1468,7 @@ export type CreateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
     wbyAco_location?: {
         folderId?: string | null;
     };
-    
+
     state?: Partial<ICmsEntryState>;
 };
 
@@ -1507,9 +1508,9 @@ export interface CreateFromCmsEntryInput {
     lastPublishedOn?: Date | string;
     firstPublishedBy?: CmsIdentity;
     lastPublishedBy?: CmsIdentity;
-    
+
     state?: Partial<ICmsEntryState>;
-    
+
     [key: string]: any;
 }
 
@@ -1561,7 +1562,7 @@ export type UpdateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
     wbyAco_location?: {
         folderId?: string | null;
     };
-    
+
     state?: Partial<ICmsEntryState>;
 };
 

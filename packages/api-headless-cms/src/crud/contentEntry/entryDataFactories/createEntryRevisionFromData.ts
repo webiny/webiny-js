@@ -179,7 +179,7 @@ export const createEntryRevisionFromData = async ({
         values,
         state: getState({
             input: rawInput,
-            original: originalEntry,
+            original: originalEntry
         })
     };
 

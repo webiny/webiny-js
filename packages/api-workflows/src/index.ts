@@ -5,6 +5,17 @@ import { ContextPlugin } from "@webiny/handler";
 import type { Context } from "~/types.js";
 import { createWorkflowsSchema } from "~/graphql/workflows.js";
 
+export type {
+    IWorkflowState,
+    IWorkflowStateRecord,
+    IWorkflowStateRecordStep
+} from "./context/abstractions/WorkflowState.js";
+export type {
+    IWorkflow,
+    IWorkflowStepNotification,
+    IWorkflowStepTeam
+} from "./context/abstractions/Workflow.js";
+
 export const createWorkflows = () => {
     const plugin = new ContextPlugin<Context>(async context => {
         if (!context.wcp.canUseWorkflows()) {

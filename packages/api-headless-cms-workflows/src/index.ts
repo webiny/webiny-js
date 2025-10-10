@@ -1,6 +1,7 @@
 import { ContextPlugin } from "@webiny/handler";
 import type { Context } from "~/types.js";
-import { attachLifecycleEvents } from "~/lifecycleEvents/index.js";
+import { attachCmsLifecycleEvents } from "~/cms/index.js";
+import { attachStateLifecycleEvents } from "~/state/index.js";
 
 export const createHeadlessCmsWorkflows = () => {
     const plugin = new ContextPlugin<Context>(async context => {
@@ -8,7 +9,8 @@ export const createHeadlessCmsWorkflows = () => {
             return;
         }
 
-        attachLifecycleEvents({ context });
+        attachCmsLifecycleEvents({ context });
+        attachStateLifecycleEvents({ context });
     });
 
     plugin.name = "headless-cms-workflows.context";

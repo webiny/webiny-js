@@ -3,7 +3,8 @@ import type { IWorkflow } from "../abstractions/Workflow.js";
 import type {
     IWorkflowState,
     IWorkflowStateRecord,
-    IWorkflowStateRecordStep
+    IWorkflowStateRecordStep,
+    IWorkflowStateStep
 } from "../abstractions/WorkflowState.js";
 import { WorkflowStateRecordState } from "../abstractions/WorkflowState.js";
 import { WebinyError } from "@webiny/error";
@@ -23,6 +24,24 @@ export class WorkflowState implements IWorkflowState {
         return this.record.steps.every(step => {
             return step.state === WorkflowStateRecordState.approved;
         });
+    }
+    /**
+     * Output first possible step which is not approved.
+     */
+    public get step(): IWorkflowStateStep | undefined {
+        const step = this.record.steps.find(step => {
+            return step.state !== WorkflowStateRecordState.approved;
+        });
+        if (!step) {
+            return undefined;
+        }
+
+        const workflowStep = this.workflow?.steps.find(s => s.id === step.id);
+
+        return {
+            ...step,
+            name: workflowStep?.title || "unknown"
+        };
     }
 
     public constructor(params: IWorkflowStateParams) {

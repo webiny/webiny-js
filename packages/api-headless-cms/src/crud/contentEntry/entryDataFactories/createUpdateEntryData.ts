@@ -28,7 +28,7 @@ interface CreateEntryRevisionFromDataParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     originalEntry: CmsEntry;
-};
+}
 
 export const createUpdateEntryData = async ({
     model,

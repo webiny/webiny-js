@@ -100,6 +100,38 @@ export const createSystemFields = (): Field[] => {
             storageId: "wbyDeleted",
             fieldId: "wbyDeleted",
             label: "Deleted"
+        },
+        {
+            id: "state",
+            type: "object",
+            storageId: "object@state",
+            fieldId: "state",
+            label: "State",
+            settings: {
+                fields: [
+                    {
+                        id: "stepId",
+                        type: "text",
+                        fieldId: "stepId",
+                        label: "Step ID",
+                        storageId: "stepId"
+                    },
+                    {
+                        id: "stepName",
+                        type: "text",
+                        fieldId: "stepName",
+                        label: "Step Name",
+                        storageId: "stepName"
+                    },
+                    {
+                        id: "state",
+                        type: "text",
+                        fieldId: "state",
+                        label: "State",
+                        storageId: "state"
+                    }
+                ]
+            }
         }
     ];
 };

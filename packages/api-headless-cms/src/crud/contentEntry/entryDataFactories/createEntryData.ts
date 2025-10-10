@@ -31,7 +31,7 @@ interface CreateEntryDataParams {
     getTenant: () => Tenant;
     getLocale: () => I18NLocale;
     accessControl: AccessControl;
-};
+}
 
 export const createEntryData = async ({
     model,

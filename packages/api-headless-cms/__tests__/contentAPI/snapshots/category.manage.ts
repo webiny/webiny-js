@@ -55,6 +55,7 @@ export default /* GraphQL */ `
         locked: Boolean
 
         status: String
+        state: CmsEntryState
         """
         CAUTION: this field is resolved by making an extra query to DB.
         RECOMMENDATION: Use it only with "get" queries (avoid in "list")
@@ -118,6 +119,7 @@ export default /* GraphQL */ `
     }
 
     input CategoryApiNameWhichIsABitDifferentThanModelIdListWhereInput {
+        state: ListWhereInputCmsEntryState
         wbyAco_location: WbyAcoLocationWhereInput
         id: ID
         id_not: ID

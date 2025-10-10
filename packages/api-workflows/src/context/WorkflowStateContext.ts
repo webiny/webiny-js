@@ -10,7 +10,10 @@ import { WorkflowState } from "./workflowState/WorkflowState.js";
 import type {
     IWorkflowStateContext,
     IWorkflowStateContextListStatesParams,
-    IWorkflowStateContextListStatesResponse
+    IWorkflowStateContextListStatesResponse,
+    IWorkflowStateContextOnStateAfterCreate,
+    IWorkflowStateContextOnStateAfterDelete,
+    IWorkflowStateContextOnStateAfterUpdate
 } from "./abstractions/WorkflowStateContext.js";
 import { NullWorkflowState } from "./workflowState/NullWorkflowState.js";
 import { WebinyError } from "@webiny/error";
@@ -18,6 +21,7 @@ import { parseIdentifier } from "@webiny/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createIdentifier } from "@webiny/utils/createIdentifier.js";
 import type { IWorkflowsContextListWhere } from "~/context/abstractions/WorkflowsContext.js";
+import { createTopic } from "@webiny/pubsub";
 
 export interface IWorkflowStateContextParams {
     context: Pick<Context, "cms" | "security" | "workflows" | "workflowState">;
@@ -29,11 +33,18 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     private readonly context;
     private readonly model;
     private readonly transformer;
+    public readonly onStateAfterCreate;
+    public readonly onStateAfterUpdate;
+    public readonly onStateAfterDelete;
 
     public constructor(params: IWorkflowStateContextParams) {
         this.context = params.context;
         this.model = params.model;
         this.transformer = params.transformer;
+
+        this.onStateAfterCreate = createTopic<IWorkflowStateContextOnStateAfterCreate>();
+        this.onStateAfterUpdate = createTopic<IWorkflowStateContextOnStateAfterUpdate>();
+        this.onStateAfterDelete = createTopic<IWorkflowStateContextOnStateAfterDelete>();
     }
 
     public async getState(app: string, targetRevisionId: string): Promise<IWorkflowState> {

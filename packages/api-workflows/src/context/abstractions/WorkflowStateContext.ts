@@ -5,6 +5,7 @@ import type {
     WorkflowStateRecordState
 } from "./WorkflowState.js";
 import type { CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
+import type { Topic } from "@webiny/pubsub/types.js";
 
 export interface IWorkflowStateContextListStatesWhere {
     id?: string;
@@ -32,7 +33,23 @@ export interface IWorkflowStateContextListStatesResponse {
     meta: IMeta;
 }
 
+export interface IWorkflowStateContextOnStateAfterCreate {
+    state: IWorkflowState;
+}
+
+export interface IWorkflowStateContextOnStateAfterUpdate {
+    state: IWorkflowState;
+    original: IWorkflowState;
+}
+
+export interface IWorkflowStateContextOnStateAfterDelete {
+    state: IWorkflowState;
+}
+
 export interface IWorkflowStateContext {
+    onStateAfterCreate: Topic<IWorkflowStateContextOnStateAfterCreate>;
+    onStateAfterUpdate: Topic<IWorkflowStateContextOnStateAfterUpdate>;
+    onStateAfterDelete: Topic<IWorkflowStateContextOnStateAfterDelete>;
     getState(app: string, id: string): Promise<IWorkflowState>;
     listStates(
         params?: IWorkflowStateContextListStatesParams
