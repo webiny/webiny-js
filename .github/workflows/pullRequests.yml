@@ -375,6 +375,7 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
+      WEBINY_STORAGE: ddb
     if: needs.vitest-ddb-constants.outputs.vitest-test-commands != '[]'
     steps:
       - uses: actions/setup-node@v4
@@ -459,6 +460,7 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
+      WEBINY_STORAGE: ddb-es,ddb
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.ELASTIC_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
@@ -548,6 +550,7 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
+      WEBINY_STORAGE: ddb-os,ddb
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
