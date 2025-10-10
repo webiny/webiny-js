@@ -139,16 +139,11 @@ export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
         return null;
     }
 
-    const renderIcon = (m: MenuConfig): React.ReactNode => {
-        const parentIcon = getParentIcon(m, menuItems);
-        return React.isValidElement(parentIcon) ? React.cloneElement(parentIcon) : parentIcon;
-    };
-
     return (
         <>
             {pinnedItems.map(m => (
                 <PinnableMenuItem key={m.name} name={m.name}>
-                    {React.cloneElement(m.element!, { icon: renderIcon(m) })}
+                    {React.cloneElement(m.element!, { icon: getParentIcon(m, menuItems) })}
                 </PinnableMenuItem>
             ))}
             <Separator />
