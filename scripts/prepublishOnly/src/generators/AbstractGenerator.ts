@@ -9,7 +9,7 @@ import chalk from "chalk";
 export abstract class AbstractGenerator {
     static displayName: string = "Abstract Generator";
 
-    protected displayName = 'Abstract Generator';
+    protected displayName = "Abstract Generator";
     protected webinyPackage: WebinyPackage;
 
     constructor(webinyPackage: WebinyPackage) {
