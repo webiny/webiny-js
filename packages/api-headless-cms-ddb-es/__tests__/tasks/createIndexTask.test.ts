@@ -1,17 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { useHandler } from "~tests/context/useHandler";
-import { createMockModels } from "./mocks/models";
+import { useHandler } from "~tests/context/useHandler.js";
+import { createMockModels } from "./mocks/models.js";
 import { CreateElasticsearchIndexTaskPlugin } from "@webiny/api-elasticsearch-tasks";
-import { createIndexesTaskDefinition } from "@webiny/api-elasticsearch-tasks/tasks";
+import { createIndexesTaskDefinition } from "@webiny/api-elasticsearch-tasks/tasks/index.js";
 import { ResponseDoneResult } from "@webiny/tasks";
-import type { Context as TasksContext } from "@webiny/tasks/types";
-import type { CmsContext } from "~/types";
-import { createRunner } from "@webiny/project-utils/testing/tasks";
-import type { IElasticsearchCreateIndexesTaskInput } from "@webiny/api-elasticsearch-tasks/tasks/createIndexes/types";
-import { configurations } from "~/configurations";
-import type { CmsModel } from "@webiny/api-headless-cms/types";
-import type { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
-import type { Context as LoggerContext } from "@webiny/api-log/types";
+import type { Context as TasksContext } from "@webiny/tasks/types.js";
+import type { CmsContext } from "~/types.js";
+import { createRunner } from "@webiny/project-utils/testing/tasks/index.js";
+import type { IElasticsearchCreateIndexesTaskInput } from "@webiny/api-elasticsearch-tasks/tasks/createIndexes/types.js";
+import { configurations } from "~/configurations.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { ElasticsearchContext } from "@webiny/api-elasticsearch/types.js";
+import type { Context as LoggerContext } from "@webiny/api-log/types.js";
 
 const createIndexName = (model: Pick<CmsModel, "tenant" | "locale" | "modelId">): string => {
     const { index } = configurations.es({

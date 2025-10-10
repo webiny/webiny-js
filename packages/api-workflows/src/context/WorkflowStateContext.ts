@@ -17,6 +17,7 @@ import { WebinyError } from "@webiny/error";
 import { parseIdentifier } from "@webiny/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createIdentifier } from "@webiny/utils/createIdentifier.js";
+import type { IWorkflowsContextListWhere } from "~/context/abstractions/WorkflowsContext.js";
 
 export interface IWorkflowStateContextParams {
     context: Pick<Context, "cms" | "security" | "workflows" | "workflowState">;
@@ -79,10 +80,13 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         const { items, meta } = await this.fetchAll(params);
         const workflowIds = Array.from(new Set(items.map(item => item.workflowId)));
 
+        const where: IWorkflowsContextListWhere = {};
+        if (workflowIds.length) {
+            where.id_in = workflowIds;
+        }
+
         const { items: workflows } = await this.context.workflows.listWorkflows({
-            where: {
-                id_in: workflowIds
-            },
+            where,
             limit: 10000
         });
 

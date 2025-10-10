@@ -3,14 +3,14 @@ import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { ContextPlugin } from "@webiny/api";
 import {
-    createStorageOperations,
-    createCmsEntryElasticsearchBodyModifierPlugin
-} from "../../dist/index";
-import { configurations } from "../../dist/configurations";
-import { base as baseIndexConfigurationPlugin } from "../../dist/elasticsearch/indices/base";
-import { setStorageOps } from "@webiny/project-utils/testing/environment";
-import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
-import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";
+    createCmsEntryElasticsearchBodyModifierPlugin,
+    createStorageOperations
+} from "../../dist/index.js";
+import { configurations } from "../../dist/configurations.js";
+import { base as baseIndexConfigurationPlugin } from "../../dist/elasticsearch/indices/base.js";
+import { setStorageOps } from "@webiny/project-utils/testing/environment/index.js";
+import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch/getElasticsearchClient.js";
+import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators.js";
 
 if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);

@@ -5,9 +5,54 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { PackageJson } from "@webiny/build-tools/utils/PackageJson.js";
 
+/**
+ * @param argv {string[]}
+ * @returns {string}
+ */
+const getStorage = (argv) => {
+    /**
+     * Storage is available in process.env?
+     */
+    const envValue = process.env.WEBINY_STORAGE;
+    if (typeof envValue === "string" && envValue.length > 2) {
+        return envValue;
+    }
+    /**
+     * This is if storage is available in args.
+     */
+    const args = yargs(argv);
+    const argsValue = args.storage;
+    if (typeof argsValue === "string" && argsValue.length > 2) {
+        return argsValue;
+    }
+    /**
+     * Then we try to get --storage=([a-z])
+     */
+    const matched  = argv.map(item => {
+        const matched = item.match(/^--storage=([^\s]+)$/);
+        return matched ? matched[1] : null;
+    }).filter(Boolean).find(() => true);
+    if (typeof matched === "string" && matched.length > 2) {
+        return matched;
+    }
+    /**
+     * Last attempt is to find --storage and then take next index.
+     */
+    const index = argv.findIndex(item => {
+        return item === "--storage";
+    });
+    if (index === -1) {
+        throw Error(`Missing required --storage parameter!`);
+    }
+    const value = argv[index + 1];
+    if (typeof value !== "string") {
+        throw Error(`Missing required --storage parameter!`);
+    }
+    return value;
+};
+
 const getAllPackages = targetKeywords => {
-    const envVarStorage = process.env.WEBINY_STORAGE || "ddb";
-    const { storage = envVarStorage } = yargs(hideBin(process.argv));
+    const storage = getStorage(hideBin(process.argv));
 
     if (!storage) {
         throw Error(`Missing required --storage parameter!`);
