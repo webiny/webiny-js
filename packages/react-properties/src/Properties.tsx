@@ -240,7 +240,6 @@ interface PropertyProps {
     parent?: string;
     root?: boolean;
     children?: React.ReactNode;
-    pinnable?: boolean;
 }
 
 const PropertyContext = createContext<Property | undefined>(undefined);
@@ -290,8 +289,7 @@ export const Property = ({
     remove = false,
     array = false,
     root = false,
-    parent = undefined,
-    pinnable = false
+    parent = undefined
 }: PropertyProps) => {
     const targetName = useContext(PropertiesTargetContext);
     const uniqueId = useMemo(() => id || getUniqueId(), []);
@@ -307,7 +305,7 @@ export const Property = ({
 
     const { addProperty, removeProperty, replaceProperty } = properties;
     const parentId = parent ? parent : root ? "" : parentProperty?.id || "";
-    const property = { id: uniqueId, name, value, parent: parentId, array, pinnable };
+    const property = { id: uniqueId, name, value, parent: parentId, array };
 
     useEffect(() => {
         if (remove) {
