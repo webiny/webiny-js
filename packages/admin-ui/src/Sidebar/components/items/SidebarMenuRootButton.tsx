@@ -52,7 +52,7 @@ const SidebarMenuRootButton = ({
         <div className="wby-flex wby-absolute wby-right-sm-plus">{action}</div>
     ) : null;
 
-    const {linkComponent: LinkComponent} = useAdminUi();
+    const { linkComponent: LinkComponent } = useAdminUi();
 
     const content = to ? (
         <LinkComponent {...sharedProps} to={to} {...linkProps}>
