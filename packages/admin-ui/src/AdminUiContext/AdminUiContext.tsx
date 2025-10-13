@@ -1,17 +1,24 @@
 import React from "react";
 import { Toast } from "~/Toast/index.js";
 import { Tooltip } from "~/Tooltip/index.js";
+import { type LinkComponent, DefaultLinkComponent } from "~/index.js";
+
+export interface AdminUiProviderValue {
+    linkComponent: LinkComponent;
+}
+
+export const AdminUiContext = React.createContext<AdminUiProviderValue>({
+    linkComponent: DefaultLinkComponent
+});
 
 export interface AdminUiProviderProps {
-    linkComponent?: any;
+    linkComponent?: LinkComponent;
     children: React.ReactNode;
 }
 
-export const AdminUiContext = React.createContext<Omit<AdminUiProviderProps, "children">>({});
-
-export const AdminUiProvider = ({ children, ...adminUiProps }: AdminUiProviderProps) => {
+export const AdminUiProvider = ({ children, linkComponent }: AdminUiProviderProps) => {
     return (
-        <AdminUiContext.Provider value={adminUiProps}>
+        <AdminUiContext.Provider value={{ linkComponent: linkComponent ?? DefaultLinkComponent }}>
             <Tooltip.Provider>{children}</Tooltip.Provider>
             <Toast.Provider />
         </AdminUiContext.Provider>
@@ -20,4 +27,4 @@ export const AdminUiProvider = ({ children, ...adminUiProps }: AdminUiProviderPr
 
 export const useAdminUi = () => {
     return React.useContext(AdminUiContext);
-}
+};

@@ -6,7 +6,7 @@ import { DropdownMenuSubTrigger } from "./DropdownMenuSubTrigger.js";
 import { DropdownMenuPortal } from "./DropdownMenuPortal.js";
 import { DropdownMenuSubContent } from "./DropdownMenuSubContent.js";
 import { DropdownMenuItemIcon, type DropdownMenuItemIconProps } from "./DropdownMenuItemIcon.js";
-import { useAdminUi } from "~/index.js";
+import { LinkComponentProps, useAdminUi } from "~/index.js";
 
 interface DropdownMenuItemBaseProps {
     icon?: React.ReactNode;
@@ -18,7 +18,7 @@ interface DropdownMenuItemBaseProps {
 
 type DropdownMenuItemButtonProps = (DropdownMenuItemBaseProps &
     React.HTMLAttributes<HTMLDivElement>) & { to?: never };
-type DropdownMenuItemLinkProps = DropdownMenuItemBaseProps;
+type DropdownMenuItemLinkProps = DropdownMenuItemBaseProps & LinkComponentProps;
 
 type DropdownMenuItemProps = DropdownMenuItemButtonProps | DropdownMenuItemLinkProps;
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { createProvider } from "@webiny/app";
+import { createProvider, SimpleLink } from "@webiny/app";
 import { AdminUiProvider } from "@webiny/admin-ui";
 
 interface UiProvidersProps {
@@ -10,7 +10,7 @@ export const createUiProviders = () => {
     return createProvider(Component => {
         return function UiProviders({ children }: UiProvidersProps) {
             return (
-                <AdminUiProvider linkComponent={"a"}>
+                <AdminUiProvider linkComponent={SimpleLink}>
                     <Component>{children}</Component>
                 </AdminUiProvider>
             );
