@@ -29,8 +29,8 @@ const Welcome = () => {
     const canSeeAnyWidget = widgets.length > 0;
 
     return (
-        <div className={"wby-my-xxl"}>
-            <div className={"wby-mb-3xl"}>
+        <div className={"my-xxl"}>
+            <div className={"mb-3xl"}>
                 <Heading
                     level={3}
                 >{`Hi ${identity.displayName}, what are we doing today?`}</Heading>
@@ -38,7 +38,7 @@ const Welcome = () => {
             <Grid gap={"spacious"}>
                 <Grid.Column span={5}>
                     {!canSeeAnyWidget && <MissingPermissionsWidget />}
-                    <div className={"wby-flex wby-flex-col wby-gap-lg"}>
+                    <div className={"flex flex-col gap-lg"}>
                         {widgets.map(pl => (
                             <ApplicationWidget
                                 key={pl.name}
@@ -52,7 +52,7 @@ const Welcome = () => {
                     </div>
                 </Grid.Column>
                 <Grid.Column span={7}>
-                    <div className={"wby-flex wby-flex-col wby-gap-lg"}>
+                    <div className={"flex flex-col gap-lg"}>
                         <AssistanceWidget />
                         <CommunityWidget />
                     </div>

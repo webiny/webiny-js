@@ -3,20 +3,20 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 import { ProgressItemState } from "~/SteppedProgress/domains/index.js";
 
 const steppedProgressIndicatorVariants = cva(
-    ["wby-size-lg wby-rounded-full wby-relative wby-shrink-0 wby-basis-auto"],
+    ["size-lg rounded-full relative shrink-0 basis-auto"],
     {
         variants: {
             state: {
                 [ProgressItemState.IDLE]:
-                    "wby-bg-neutral-base wby-border-sm wby-border-solid wby-border-neutral-muted",
+                    "bg-neutral-base border-sm border-solid border-neutral-muted",
                 [ProgressItemState.IN_PROGRESS]: [
-                    "wby-bg-primary-base wby-border-sm wby-border-solid wby-border-neutral-muted"
+                    "bg-primary-base border-sm border-solid border-neutral-muted"
                 ],
-                [ProgressItemState.COMPLETED]: "wby-bg-primary-default",
-                [ProgressItemState.COMPLETED_AFFIRMATIVE]: "wby-bg-success-default"
+                [ProgressItemState.COMPLETED]: "bg-primary-default",
+                [ProgressItemState.COMPLETED_AFFIRMATIVE]: "bg-success-default"
             },
             disabled: {
-                true: "!wby-bg-neutral-dimmed !wby-border-none"
+                true: "!bg-neutral-dimmed !border-none"
             },
             errored: {
                 true: ""
@@ -26,7 +26,7 @@ const steppedProgressIndicatorVariants = cva(
             {
                 state: ProgressItemState.COMPLETED,
                 errored: true,
-                className: "wby-bg-destructive-default"
+                className: "bg-destructive-default"
             }
         ],
         defaultVariants: {

@@ -18,14 +18,14 @@ const GroupComponent = ({ item }: { item: ComponentGroupItem }) => {
     }
 
     return (
-        <div className="wby-flex wby-flex-row wby-items-center wby-p-sm wby-bg-neutral-light wby-rounded-sm wby-gap-sm wby-cursor-grab">
+        <div className="flex flex-row items-center p-sm bg-neutral-light rounded-sm gap-sm cursor-grab">
             <Icon
                 label="Icon"
-                icon={<InlineSvg src={component.image!} className={"wby-fill-neutral-strong"} />}
+                icon={<InlineSvg src={component.image!} className={"fill-neutral-strong"} />}
                 size={"md"}
-                className={"wby-fill-neutral-strong"}
+                className={"fill-neutral-strong"}
             />
-            <div className="wby-text-sm wby-font-medium wby-text-neutral-primary wby-text-center">
+            <div className="text-sm font-medium text-neutral-primary text-center">
                 {component.label ?? component.name}
             </div>
         </div>
@@ -50,7 +50,7 @@ export const InsertElements = () => {
                         borderRadius={"none"}
                         padding={"compact"}
                     >
-                        <div className="wby-flex wby-flex-col wby-gap-sm wby-p-sm wby-justify-start">
+                        <div className="flex flex-col gap-sm p-sm justify-start">
                             {group.items.map(item => {
                                 return (
                                     <Draggable

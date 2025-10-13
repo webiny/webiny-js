@@ -3,15 +3,12 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 import { Text } from "~/Text/index.js";
 
 const sliderTooltipVariants = cva(
-    [
-        "wby-px-xs-plus wby-py-xxs wby-rounded-sm wby-absolute wby-left-1/2 -wby-translate-x-1/2",
-        "wby-bg-neutral-muted"
-    ],
+    ["px-xs-plus py-xxs rounded-sm absolute left-1/2 -translate-x-1/2", "bg-neutral-muted"],
     {
         variants: {
             side: {
-                top: "wby-bottom-8",
-                bottom: "wby-top-8"
+                top: "bottom-8",
+                bottom: "top-8"
             }
         },
         defaultVariants: {

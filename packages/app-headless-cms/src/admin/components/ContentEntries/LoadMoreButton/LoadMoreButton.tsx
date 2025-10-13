@@ -24,7 +24,7 @@ export const LoadMoreButton = ({
     }
 
     return (
-        <div className={"wby-flex wby-text-center wby-mt-md"}>
+        <div className={"flex text-center mt-md"}>
             <Button onClick={onClick} disabled={disabled} text={t`Load more entries`} />
         </div>
     );

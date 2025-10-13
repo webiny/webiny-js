@@ -34,7 +34,7 @@ export const SettingsButton = () => {
     };
 
     return (
-        <div className={"wby-flex wby-gap-x-sm"}>
+        <div className={"flex gap-x-sm"}>
             <IconButton
                 variant="secondary"
                 icon={<SettingsIcon />}

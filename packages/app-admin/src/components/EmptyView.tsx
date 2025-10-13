@@ -11,24 +11,24 @@ export interface EmptyViewProps {
 
 export const EmptyView = ({ icon = <FileIcon />, title, action }: EmptyViewProps) => {
     return (
-        <div className="wby-w-full wby-h-full wby-flex wby-flex-col wby-items-center wby-justify-center wby-gap-md">
-            <div className="wby-flex wby-justify-center">
+        <div className="w-full h-full flex flex-col items-center justify-center gap-md">
+            <div className="flex justify-center">
                 <div
                     style={{ width: 128, height: 128 }}
-                    className="wby-flex wby-justify-center wby-items-center wby-bg-neutral-dimmed wby-rounded-full wby-fill-neutral-strong [&_svg]:wby-size-[48px]"
+                    className="flex justify-center items-center bg-neutral-dimmed rounded-full fill-neutral-strong [&_svg]:size-[48px]"
                 >
                     <Icon icon={icon} label={"Empty"} />
                 </div>
             </div>
             <Text
                 size={"md"}
-                className={"wby-text-center wby-text-neutral-strong"}
+                className={"text-center text-neutral-strong"}
                 as={"div"}
                 style={{ maxWidth: 276 }}
             >
                 {title}
             </Text>
-            {action && <div className={"wby-flex wby-justify-center wby-gap-sm"}>{action}</div>}
+            {action && <div className={"flex justify-center gap-sm"}>{action}</div>}
         </div>
     );
 };

@@ -1,21 +1,21 @@
 import React from "react";
 import { cn, cva, type VariantProps, makeDecoratable } from "~/utils.js";
 
-const skeletonVariants = cva("wby-animate-skeleton-pulse wby-rounded-sm", {
+const skeletonVariants = cva("animate-skeleton-pulse rounded-sm", {
     variants: {
         type: {
-            text: "wby-w-full",
-            thumbnail: "wby-aspect-square",
-            area: "wby-size-full"
+            text: "w-full",
+            thumbnail: "aspect-square",
+            area: "size-full"
         },
         size: {
-            xs: "wby-h-[8px]",
-            sm: "wby-h-[12px]",
-            md: "wby-h-[16px]",
-            lg: "wby-h-[24px]",
-            xl: "wby-h-[32px]",
-            xxl: "wby-h-[40px]",
-            "3xl": "wby-h-[48px]"
+            xs: "h-[8px]",
+            sm: "h-[12px]",
+            md: "h-[16px]",
+            lg: "h-[24px]",
+            xl: "h-[32px]",
+            xxl: "h-[40px]",
+            "3xl": "h-[48px]"
         }
     },
     compoundVariants: [
@@ -23,12 +23,12 @@ const skeletonVariants = cva("wby-animate-skeleton-pulse wby-rounded-sm", {
         {
             type: "thumbnail",
             size: "xs",
-            class: "!wby-hidden"
+            class: "!hidden"
         },
         {
             type: "text",
             size: "3xl",
-            class: "!wby-hidden"
+            class: "!hidden"
         }
     ],
     defaultVariants: {

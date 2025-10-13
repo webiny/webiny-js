@@ -28,7 +28,7 @@ export const Documentation: Story = {
         const [value, setValue] = React.useState("");
 
         return (
-            <div className="wby-mb-4 wby-space-y-2">
+            <div className="mb-4 space-y-2">
                 <Label {...args} />
                 <Input
                     id={args.htmlFor}
@@ -140,7 +140,7 @@ export const WithValue: Story = {
         value: 24
     },
     render: args => (
-        <div className="wby-w-64">
+        <div className="w-64">
             <Label {...args} />
         </div>
     )
@@ -157,7 +157,7 @@ export const Disabled: Story = {
         value: 24
     },
     render: args => (
-        <div className="wby-w-64">
+        <div className="w-64">
             <Label {...args} />
         </div>
     )

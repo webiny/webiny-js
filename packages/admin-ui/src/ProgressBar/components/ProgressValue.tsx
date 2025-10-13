@@ -7,7 +7,7 @@ interface ProgressBarProps {
 
 const ProgressValue = ({ value }: ProgressBarProps) => {
     return (
-        <Text size={"sm"} className={"wby-leading-none wby-shrink-0"}>
+        <Text size={"sm"} className={"leading-none shrink-0"}>
             {value}
         </Text>
     );

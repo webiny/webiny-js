@@ -5,7 +5,7 @@ export const TimestampFiltersContainer = styled.div`
     column-gap: 16px;
     flex-grow: 1;
 
-    .wby-relative {
+    .relative {
         height: 32px;
     }
 `;

@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as TooltipStories from './Tooltip.stories';
+import * as TooltipStories from "./Tooltip.stories";
 
 <Meta of={TooltipStories} />
 
@@ -15,39 +15,39 @@ import React from "react";
 import { Tooltip } from "@webiny/admin-ui";
 
 const TooltipExample = () => {
-    return (
-        <Tooltip.Provider>
-            <Tooltip
-                trigger={<p>Tooltip trigger</p>}
-                content={
-                    <>
-                        <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Donec
-                        viverra sit amet massa sagittis sollicitudin.
-                    </>
-                }
-                align="center"
-                side="top"
-                variant="accent"
-                showArrow={true}
-            />
-        </Tooltip.Provider>
-    );
+return (
+<Tooltip.Provider>
+<Tooltip
+trigger={<p>Tooltip trigger</p>}
+content={
+<>
+<strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Donec
+viverra sit amet massa sagittis sollicitudin.
+</>
+}
+align="center"
+side="top"
+variant="accent"
+showArrow={true}
+/>
+</Tooltip.Provider>
+);
 };
 
 export default TooltipExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Tooltip/Tooltip.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Tooltip/Tooltip.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={TooltipStories.Documentation} />
@@ -57,23 +57,23 @@ import React from "react";
 import { Tooltip } from "@webiny/admin-ui";
 
 const TooltipExample = () => {
-    return (
-        <Tooltip.Provider>
-            <Tooltip
-                trigger={<p>Tooltip trigger</p>}
-                content={
-                    <>
-                        <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Donec
-                        viverra sit amet massa sagittis sollicitudin.
-                    </>
-                }
-                align="center"
-                side="top"
-                variant="accent"
-                showArrow={true}
-            />
-        </Tooltip.Provider>
-    );
+  return (
+    <Tooltip.Provider>
+      <Tooltip
+        trigger={<p>Tooltip trigger</p>}
+        content={
+          <>
+            <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Donec viverra
+            sit amet massa sagittis sollicitudin.
+          </>
+        }
+        align="center"
+        side="top"
+        variant="accent"
+        showArrow={true}
+      />
+    </Tooltip.Provider>
+  );
 };
 
 export default TooltipExample;
@@ -90,19 +90,19 @@ import React from "react";
 import { Tooltip } from "@webiny/admin-ui";
 
 const BasicTooltipExample = () => {
-    return (
-        <Tooltip.Provider>
-            <Tooltip
-                trigger={<p>Tooltip trigger</p>}
-                content={
-                    <>
-                        <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Donec
-                        viverra sit amet massa sagittis sollicitudin.
-                    </>
-                }
-            />
-        </Tooltip.Provider>
-    );
+return (
+<Tooltip.Provider>
+<Tooltip
+trigger={<p>Tooltip trigger</p>}
+content={
+<>
+<strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Donec
+viverra sit amet massa sagittis sollicitudin.
+</>
+}
+/>
+</Tooltip.Provider>
+);
 };
 
 export default BasicTooltipExample;
@@ -117,20 +117,20 @@ import React from "react";
 import { Tooltip } from "@webiny/admin-ui";
 
 const AccentVariantExample = () => {
-    return (
-        <Tooltip.Provider>
-            <Tooltip
-                trigger={<p>Tooltip trigger</p>}
-                content={
-                    <>
-                        <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Donec
-                        viverra sit amet massa sagittis sollicitudin.
-                    </>
-                }
-                variant="accent"
-            />
-        </Tooltip.Provider>
-    );
+return (
+<Tooltip.Provider>
+<Tooltip
+trigger={<p>Tooltip trigger</p>}
+content={
+<>
+<strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Donec
+viverra sit amet massa sagittis sollicitudin.
+</>
+}
+variant="accent"
+/>
+</Tooltip.Provider>
+);
 };
 
 export default AccentVariantExample;
@@ -145,20 +145,20 @@ import React from "react";
 import { Tooltip } from "@webiny/admin-ui";
 
 const SubtleVariantExample = () => {
-    return (
-        <Tooltip.Provider>
-            <Tooltip
-                trigger={<p>Tooltip trigger</p>}
-                content={
-                    <>
-                        <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Donec
-                        viverra sit amet massa sagittis sollicitudin.
-                    </>
-                }
-                variant="subtle"
-            />
-        </Tooltip.Provider>
-    );
+return (
+<Tooltip.Provider>
+<Tooltip
+trigger={<p>Tooltip trigger</p>}
+content={
+<>
+<strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Donec
+viverra sit amet massa sagittis sollicitudin.
+</>
+}
+variant="subtle"
+/>
+</Tooltip.Provider>
+);
 };
 
 export default SubtleVariantExample;
@@ -173,20 +173,20 @@ import React from "react";
 import { Tooltip } from "@webiny/admin-ui";
 
 const WithoutArrowExample = () => {
-    return (
-        <Tooltip.Provider>
-            <Tooltip
-                trigger={<p>Tooltip trigger</p>}
-                content={
-                    <>
-                        <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Donec
-                        viverra sit amet massa sagittis sollicitudin.
-                    </>
-                }
-                showArrow={false}
-            />
-        </Tooltip.Provider>
-    );
+return (
+<Tooltip.Provider>
+<Tooltip
+trigger={<p>Tooltip trigger</p>}
+content={
+<>
+<strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Donec
+viverra sit amet massa sagittis sollicitudin.
+</>
+}
+showArrow={false}
+/>
+</Tooltip.Provider>
+);
 };
 
 export default WithoutArrowExample;
@@ -202,14 +202,14 @@ import { Tooltip, Icon } from "@webiny/admin-ui";
 import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
 
 const WithIconTriggerExample = () => {
-    return (
-        <Tooltip.Provider>
-            <Tooltip
-                trigger={<Icon icon={<InfoIcon />} label="Information" />}
-                content="This is a helpful tooltip"
-            />
-        </Tooltip.Provider>
-    );
+return (
+<Tooltip.Provider>
+<Tooltip
+trigger={<Icon icon={<InfoIcon />} label="Information" />}
+content="This is a helpful tooltip"
+/>
+</Tooltip.Provider>
+);
 };
 
 export default WithIconTriggerExample;
@@ -224,32 +224,32 @@ import React from "react";
 import { Tooltip } from "@webiny/admin-ui";
 
 const PositioningExample = () => {
-    return (
-        <Tooltip.Provider>
-            <div className="wby-flex wby-justify-center wby-items-center wby-h-48">
-                <Tooltip
-                    trigger={<p>&nbsp;&nbsp;Top&nbsp;&nbsp;</p>}
-                    content={<div>Tooltip on top</div>}
-                    side="top"
-                />
-                <Tooltip
-                    trigger={<p>&nbsp;&nbsp;Right&nbsp;&nbsp;</p>}
-                    content={<div>Tooltip on right</div>}
-                    side="right"
-                />
-                <Tooltip
-                    trigger={<p>&nbsp;&nbsp;Bottom&nbsp;&nbsp;</p>}
-                    content={<div>Tooltip on bottom</div>}
-                    side="bottom"
-                />
-                <Tooltip
-                    trigger={<p>&nbsp;&nbsp;Left&nbsp;&nbsp;</p>}
-                    content={<div>Tooltip on left</div>}
-                    side="left"
-                />
-            </div>
-        </Tooltip.Provider>
-    );
+return (
+<Tooltip.Provider>
+<div className="flex justify-center items-center h-48">
+<Tooltip
+trigger={<p>&nbsp;&nbsp;Top&nbsp;&nbsp;</p>}
+content={<div>Tooltip on top</div>}
+side="top"
+/>
+<Tooltip
+trigger={<p>&nbsp;&nbsp;Right&nbsp;&nbsp;</p>}
+content={<div>Tooltip on right</div>}
+side="right"
+/>
+<Tooltip
+trigger={<p>&nbsp;&nbsp;Bottom&nbsp;&nbsp;</p>}
+content={<div>Tooltip on bottom</div>}
+side="bottom"
+/>
+<Tooltip
+trigger={<p>&nbsp;&nbsp;Left&nbsp;&nbsp;</p>}
+content={<div>Tooltip on left</div>}
+side="left"
+/>
+</div>
+</Tooltip.Provider>
+);
 };
 
 export default PositioningExample;
@@ -264,27 +264,27 @@ import React from "react";
 import { Tooltip } from "@webiny/admin-ui";
 
 const AlignmentExample = () => {
-    return (
-        <Tooltip.Provider>
-            <div className="wby-flex wby-justify-center wby-items-center wby-h-48">
-                <Tooltip
-                    trigger={<p>&nbsp;&nbsp;Start&nbsp;&nbsp;</p>}
-                    content={<div>Aligned to start</div>}
-                    align="start"
-                />
-                <Tooltip
-                    trigger={<p>&nbsp;&nbsp;Center&nbsp;&nbsp;</p>}
-                    content={<div>Aligned to center</div>}
-                    align="center"
-                />
-                <Tooltip
-                    trigger={<p>&nbsp;&nbsp;End&nbsp;&nbsp;</p>}
-                    content={<div>Aligned to end</div>}
-                    align="end"
-                />
-            </div>
-        </Tooltip.Provider>
-    );
+return (
+<Tooltip.Provider>
+<div className="flex justify-center items-center h-48">
+<Tooltip
+trigger={<p>&nbsp;&nbsp;Start&nbsp;&nbsp;</p>}
+content={<div>Aligned to start</div>}
+align="start"
+/>
+<Tooltip
+trigger={<p>&nbsp;&nbsp;Center&nbsp;&nbsp;</p>}
+content={<div>Aligned to center</div>}
+align="center"
+/>
+<Tooltip
+trigger={<p>&nbsp;&nbsp;End&nbsp;&nbsp;</p>}
+content={<div>Aligned to end</div>}
+align="end"
+/>
+</div>
+</Tooltip.Provider>
+);
 };
 
 export default AlignmentExample;
@@ -299,14 +299,14 @@ import React from "react";
 import { Tooltip, Button } from "@webiny/admin-ui";
 
 const WithButtonTriggerExample = () => {
-    return (
-        <Tooltip.Provider>
-            <Tooltip
-                trigger={<Button text="Hover me" />}
-                content="This tooltip is triggered by a button"
-            />
-        </Tooltip.Provider>
-    );
+return (
+<Tooltip.Provider>
+<Tooltip
+trigger={<Button text="Hover me" />}
+content="This tooltip is triggered by a button"
+/>
+</Tooltip.Provider>
+);
 };
 
 export default WithButtonTriggerExample;
@@ -321,20 +321,20 @@ import React from "react";
 import { Tooltip, Text } from "@webiny/admin-ui";
 
 const WithFormattedContentExample = () => {
-    return (
-        <Tooltip.Provider>
-            <Tooltip
-                trigger={<p>Hover for more info</p>}
-                content={
-                    <div className="wby-flex wby-flex-col wby-gap-xs">
-                        <Text size="sm" className="wby-font-bold">Important Information</Text>
-                        <Text size="sm">This tooltip contains formatted content with multiple paragraphs.</Text>
-                        <Text size="sm">You can include various elements inside tooltips.</Text>
-                    </div>
-                }
-            />
-        </Tooltip.Provider>
-    );
+return (
+<Tooltip.Provider>
+<Tooltip
+trigger={<p>Hover for more info</p>}
+content={
+<div className="flex flex-col gap-xs">
+<Text size="sm" className="font-bold">Important Information</Text>
+<Text size="sm">This tooltip contains formatted content with multiple paragraphs.</Text>
+<Text size="sm">You can include various elements inside tooltips.</Text>
+</div>
+}
+/>
+</Tooltip.Provider>
+);
 };
 
 export default WithFormattedContentExample;
@@ -350,14 +350,14 @@ import { Tooltip, Icon } from "@webiny/admin-ui";
 import { ReactComponent as HelpIcon } from "@webiny/icons/help.svg";
 
 const WithHelpIconExample = () => {
-    return (
-        <Tooltip.Provider>
-            <Tooltip
-                trigger={<Icon icon={<HelpIcon />} label="Help" />}
-                content="Need help? Contact support at support@example.com"
-            />
-        </Tooltip.Provider>
-    );
+return (
+<Tooltip.Provider>
+<Tooltip
+trigger={<Icon icon={<HelpIcon />} label="Help" />}
+content="Need help? Contact support at support@example.com"
+/>
+</Tooltip.Provider>
+);
 };
 
 export default WithHelpIconExample;

@@ -9,17 +9,17 @@ export interface DetailsProps {
 
 export const Details = (props: DetailsProps) => {
     return (
-        <div className="wby-mb-lg">
+        <div className="mb-lg">
             <Grid>
                 <Grid.Column span={9}>
-                    <div className={"wby-flex wby-items-start wby-gap-md"}>
-                        <div className={"wby-text-left wby-text-neutral-primary"}>
+                    <div className={"flex items-start gap-md"}>
+                        <div className={"text-left text-neutral-primary"}>
                             <Heading level={5}>{props.name}</Heading>
                             {props.description && (
                                 <Text
                                     as={"div"}
                                     size={"sm"}
-                                    className={"wby-mt-xs wby-text-neutral-strong"}
+                                    className={"mt-xs text-neutral-strong"}
                                 >
                                     {props.description}
                                 </Text>
@@ -28,7 +28,7 @@ export const Details = (props: DetailsProps) => {
                     </div>
                 </Grid.Column>
                 <Grid.Column span={3} align={"middle"}>
-                    <div className={"wby-text-right"}>
+                    <div className={"text-right"}>
                         <OperationSelector name={"operation"} label={"Match all filter groups"} />
                     </div>
                 </Grid.Column>

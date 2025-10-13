@@ -45,7 +45,7 @@ const BaseDataListModal = (props: DataListModalProps) => {
                 content={"Sort list"}
             />
             <PopoverPrimitive.Content onOpenAutoFocus={e => e.preventDefault()} align={"end"}>
-                <div className={"wby-bg-neutral-base wby-p-md"}>{props.content}</div>
+                <div className={"bg-neutral-base p-md"}>{props.content}</div>
             </PopoverPrimitive.Content>
         </PopoverPrimitive>
     );

@@ -14,12 +14,10 @@ export const UserMenuHandle = UserMenuHandleRendererSpec.createDecorator(() => {
         }
 
         return (
-            <div className={"wby-flex wby-gap-x-sm wby-cursor-pointer"}>
+            <div className={"flex gap-x-sm cursor-pointer"}>
                 <div
                     data-testid="logged-in-user-menu-avatar"
-                    className={
-                        "wby-flex wby-items-center wby-rounded-md wby-gap-xxs wby-py-xs wby-px-xs wby-bg-neutral-light"
-                    }
+                    className={"flex items-center rounded-md gap-xxs py-xs px-xs bg-neutral-light"}
                 >
                     <UserImage />
                     <IconButton

@@ -28,7 +28,7 @@ const defaultVariants = {
 } as const;
 
 const alertVariants = cva(
-    "wby-flex wby-gap-sm-plus wby-items-start wby-w-full wby-rounded-lg wby-text-md wby-py-sm-extra wby-pl-md wby-pr-sm-plus [&_a]:wby-font-semibold [&_a]:wby-underline",
+    "flex gap-sm-plus items-start w-full rounded-lg text-md py-sm-extra pl-md pr-sm-plus [&_a]:font-semibold [&_a]:underline",
     {
         variants,
         defaultVariants,
@@ -36,67 +36,59 @@ const alertVariants = cva(
             {
                 type: "info",
                 variant: "strong",
-                className:
-                    "wby-bg-neutral-dark wby-text-neutral-light [&_a]:!wby-text-neutral-light"
+                className: "bg-neutral-dark text-neutral-light [&_a]:!text-neutral-light"
             },
             {
                 type: "info",
                 variant: "subtle",
-                className:
-                    "wby-bg-neutral-dimmed wby-text-neutral-primary [&_a]:!wby-text-neutral-primary"
+                className: "bg-neutral-dimmed text-neutral-primary [&_a]:!text-neutral-primary"
             },
             {
                 type: "success",
                 variant: "strong",
-                className:
-                    "wby-bg-secondary-default wby-text-neutral-light [&_a]:!wby-text-neutral-light"
+                className: "bg-secondary-default text-neutral-light [&_a]:!text-neutral-light"
             },
             {
                 type: "success",
                 variant: "subtle",
-                className:
-                    "wby-bg-success-subtle wby-text-neutral-primary [&_a]:!wby-text-neutral-primary"
+                className: "bg-success-subtle text-neutral-primary [&_a]:!text-neutral-primary"
             },
             {
                 type: "warning",
                 variant: "strong",
-                className:
-                    "wby-bg-warning-default wby-text-neutral-primary [&_a]:!wby-text-neutral-primary"
+                className: "bg-warning-default text-neutral-primary [&_a]:!text-neutral-primary"
             },
             {
                 type: "warning",
                 variant: "subtle",
-                className:
-                    "wby-bg-warning-subtle wby-text-neutral-primary [&_a]:!wby-text-neutral-primary"
+                className: "bg-warning-subtle text-neutral-primary [&_a]:!text-neutral-primary"
             },
             {
                 type: "danger",
                 variant: "strong",
-                className:
-                    "wby-bg-destructive-default wby-text-neutral-light [&_a]:!wby-text-neutral-light"
+                className: "bg-destructive-default text-neutral-light [&_a]:!text-neutral-light"
             },
             {
                 type: "danger",
                 variant: "subtle",
-                className:
-                    "wby-bg-destructive-subtle wby-text-neutral-primary [&_a]:!wby-text-neutral-primary"
+                className: "bg-destructive-subtle text-neutral-primary [&_a]:!text-neutral-primary"
             }
         ]
     }
 );
 
-const alertIconVariants = cva("wby-size-md", {
+const alertIconVariants = cva("size-md", {
     variants,
     defaultVariants,
     compoundVariants: [
-        { type: "info", variant: "strong", className: "wby-fill-neutral-base" },
-        { type: "info", variant: "subtle", className: "wby-fill-neutral-xstrong" },
-        { type: "success", variant: "strong", className: "wby-fill-neutral-base" },
-        { type: "success", variant: "subtle", className: "wby-fill-success" },
-        { type: "warning", variant: "strong", className: "wby-fill-neutral-xstrong" },
-        { type: "warning", variant: "subtle", className: "wby-fill-warning" },
-        { type: "danger", variant: "strong", className: "wby-fill-neutral-base" },
-        { type: "danger", variant: "subtle", className: "wby-fill-destructive" }
+        { type: "info", variant: "strong", className: "fill-neutral-base" },
+        { type: "info", variant: "subtle", className: "fill-neutral-xstrong" },
+        { type: "success", variant: "strong", className: "fill-neutral-base" },
+        { type: "success", variant: "subtle", className: "fill-success" },
+        { type: "warning", variant: "strong", className: "fill-neutral-xstrong" },
+        { type: "warning", variant: "subtle", className: "fill-warning" },
+        { type: "danger", variant: "strong", className: "fill-neutral-base" },
+        { type: "danger", variant: "subtle", className: "fill-destructive" }
     ]
 });
 
@@ -156,10 +148,10 @@ const AlertBase = ({
                 className={cn(alertVariants({ type, variant }), className)}
                 {...props}
             >
-                <div className={"wby-py-xs"}>
+                <div className={"py-xs"}>
                     <IconComponent className={alertIconVariants({ type, variant })} />
                 </div>
-                <div className={"wby-flex-grow wby-py-xxs"}>{children}</div>
+                <div className={"flex-grow py-xxs"}>{children}</div>
                 {actions && <div>{actions}</div>}
                 {showCloseButton && (
                     <IconButton

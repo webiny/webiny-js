@@ -84,7 +84,7 @@ export const EditImage = () => {
     return (
         <>
             <FileDetails.Action.Button
-                className={"wby-order-last wby-ml-auto"}
+                className={"order-last ml-auto"}
                 label={"Edit image"}
                 data-testid={"fm-edit-image-button"}
                 icon={<EditIcon />}

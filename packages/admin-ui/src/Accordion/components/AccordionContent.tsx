@@ -4,24 +4,24 @@ import { cva, type VariantProps, cn } from "~/utils.js";
 
 const accordionContentVariants = cva(
     [
-        "wby-overflow-hidden wby-text-md",
-        "wby-transition-all data-[state=closed]:wby-animate-collapsible-up data-[state=open]:wby-animate-collapsible-down"
+        "overflow-hidden text-md",
+        "transition-all data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down"
     ],
     {
         // Using pixel values here because of non-existing design tokens.
         variants: {
             withIcon: {
-                true: "wby-pl-9"
+                true: "pl-9"
             },
             withHandle: {
-                true: "wby-pl-5"
+                true: "pl-5"
             }
         },
         compoundVariants: [
             {
                 withIcon: true,
                 withHandle: true,
-                className: "wby-pl-14"
+                className: "pl-14"
             }
         ],
         defaultVariants: {
@@ -41,7 +41,7 @@ const AccordionContent = ({ children, withIcon, withHandle, ...props }: Accordio
             {...props}
             className={cn(accordionContentVariants({ withHandle, withIcon }), props.className)}
         >
-            <div className={"wby-pt-sm wby-pb-lg wby-px-md"}>{children}</div>
+            <div className={"pt-sm pb-lg px-md"}>{children}</div>
         </CollapsiblePrimitive.Content>
     );
 };

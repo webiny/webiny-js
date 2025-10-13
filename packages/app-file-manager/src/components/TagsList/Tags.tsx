@@ -32,7 +32,7 @@ export const Tags = ({ tags, activeTags, onActivatedTagsChange }: TagsProps) => 
     );
 
     return (
-        <div className={"wby-flex wby-flex-col wby-gap-sm"}>
+        <div className={"flex flex-col gap-sm"}>
             {tags.map((tagItem, index) => (
                 <div key={`tag-${index}`}>
                     <AdminTag

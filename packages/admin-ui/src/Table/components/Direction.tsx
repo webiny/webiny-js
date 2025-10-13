@@ -3,11 +3,11 @@ import { ReactComponent as ArrowDown } from "@webiny/icons/keyboard_arrow_up.svg
 import { Icon } from "~/Icon/index.js";
 import { cn, cva, type VariantProps } from "~/utils.js";
 
-const directionVariants = cva("wby-inline", {
+const directionVariants = cva("inline", {
     variants: {
         direction: {
-            asc: "wby-rotate-0",
-            desc: "wby-rotate-180"
+            asc: "rotate-0",
+            desc: "rotate-180"
         }
     }
 });

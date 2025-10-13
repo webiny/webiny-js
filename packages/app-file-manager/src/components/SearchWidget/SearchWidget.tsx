@@ -20,7 +20,7 @@ export const SearchWidget = () => {
                     startIcon={<Icon label={"Search"} icon={<SearchIcon />} />}
                     size={"md"}
                     variant={"ghost-negative"}
-                    className={"wby-max-w-full wby-w-80"}
+                    className={"max-w-full w-80"}
                 />
             )}
         </DelayedOnChange>

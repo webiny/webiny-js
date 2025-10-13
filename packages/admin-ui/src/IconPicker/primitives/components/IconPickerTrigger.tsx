@@ -5,12 +5,12 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 import { IconPickerIcon as IconPickerIconComponent } from "./IconPickerIcon.js";
 import { IconPickerIcon, IconPickerIconFormatter } from "../../domains/index.js";
 
-const iconPickerTriggerVariants = cva("wby-flex wby-items-center", {
+const iconPickerTriggerVariants = cva("flex items-center", {
     variants: {
         size: {
-            md: "wby-gap-xs",
-            lg: "wby-gap-xs",
-            xl: "wby-gap-sm"
+            md: "gap-xs",
+            lg: "gap-xs",
+            xl: "gap-sm"
         }
     },
     defaultVariants: {

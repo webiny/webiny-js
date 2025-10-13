@@ -20,7 +20,7 @@ export const Filter = ({ name, onDelete, onFieldSelectChange, fields, filter }: 
     return (
         <Grid>
             <Grid.Column span={4}>
-                <div className={"wby-text-left"}>
+                <div className={"text-left"}>
                     <Bind name={`${name}.field`}>
                         {({ value, validation }) => {
                             const options = fields.map(field => ({
@@ -51,7 +51,7 @@ export const Filter = ({ name, onDelete, onFieldSelectChange, fields, filter }: 
                 </div>
             </Grid.Column>
             <Grid.Column span={3}>
-                <div className={"wby-text-left"}>
+                <div className={"text-left"}>
                     {filter.field && (
                         <Bind name={`${name}.condition`}>
                             {({ value, onChange, validation }) => (
@@ -72,7 +72,7 @@ export const Filter = ({ name, onDelete, onFieldSelectChange, fields, filter }: 
                 </div>
             </Grid.Column>
             <Grid.Column span={4}>
-                <div className={"wby-text-left"}>
+                <div className={"text-left"}>
                     {filter.condition && (
                         <InputField
                             name={`${name}.value`}
@@ -82,7 +82,7 @@ export const Filter = ({ name, onDelete, onFieldSelectChange, fields, filter }: 
                 </div>
             </Grid.Column>
             <Grid.Column span={1}>
-                <div className={"wby-flex wby-justify-center wby-items-end wby-h-full"}>
+                <div className={"flex justify-center items-end h-full"}>
                     <RemoveFilter onClick={onDelete} disabled={!filter.canDelete} />
                 </div>
             </Grid.Column>

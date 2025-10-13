@@ -9,7 +9,7 @@ export const MouseStatus = () => {
     }, []);
 
     return (
-        <div className={"wby-absolute wby-bottom-0 wby-left-0 wby-p-md"}>
+        <div className={"absolute bottom-0 left-0 p-md"}>
             {position.x}:{position.y}
         </div>
     );

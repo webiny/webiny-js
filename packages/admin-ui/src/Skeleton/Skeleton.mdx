@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as SkeletonStories from './Skeleton.stories';
+import * as SkeletonStories from "./Skeleton.stories";
 
 <Meta of={SkeletonStories} />
 
@@ -15,23 +15,23 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 
 const SkeletonExample = () => {
-    return <Skeleton />;
+return <Skeleton />;
 };
 
 export default SkeletonExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Skeleton/Skeleton.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Skeleton/Skeleton.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={SkeletonStories.Documentation} />
@@ -41,7 +41,7 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 
 const SkeletonExample = () => {
-    return <Skeleton />;
+  return <Skeleton />;
 };
 
 export default SkeletonExample;
@@ -62,7 +62,7 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 
 const AreaSkeletonExample = () => {
-    return <Skeleton type="area" className="wby-w-1/2 wby-h-32" />;
+return <Skeleton type="area" className="w-1/2 h-32" />;
 };
 
 export default AreaSkeletonExample;
@@ -77,7 +77,7 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 
 const TextSkeletonExample = () => {
-    return <Skeleton type="text" />;
+return <Skeleton type="text" />;
 };
 
 export default TextSkeletonExample;
@@ -92,7 +92,7 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 
 const ThumbnailSkeletonExample = () => {
-    return <Skeleton type="thumbnail" />;
+return <Skeleton type="thumbnail" />;
 };
 
 export default ThumbnailSkeletonExample;
@@ -109,7 +109,7 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 
 const XsSkeletonExample = () => {
-    return <Skeleton size="xs" />;
+return <Skeleton size="xs" />;
 };
 
 export default XsSkeletonExample;
@@ -122,7 +122,7 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 
 const SmSkeletonExample = () => {
-    return <Skeleton size="sm" />;
+return <Skeleton size="sm" />;
 };
 
 export default SmSkeletonExample;
@@ -135,7 +135,7 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 
 const MdSkeletonExample = () => {
-    return <Skeleton size="md" />;
+return <Skeleton size="md" />;
 };
 
 export default MdSkeletonExample;
@@ -148,7 +148,7 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 
 const LgSkeletonExample = () => {
-    return <Skeleton size="lg" />;
+return <Skeleton size="lg" />;
 };
 
 export default LgSkeletonExample;
@@ -161,7 +161,7 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 
 const XlSkeletonExample = () => {
-    return <Skeleton size="xl" />;
+return <Skeleton size="xl" />;
 };
 
 export default XlSkeletonExample;
@@ -174,7 +174,7 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 
 const XxlSkeletonExample = () => {
-    return <Skeleton size="xxl" />;
+return <Skeleton size="xxl" />;
 };
 
 export default XxlSkeletonExample;
@@ -187,7 +187,7 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 
 const ThreeXlSkeletonExample = () => {
-    return <Skeleton size="3xl" />;
+return <Skeleton size="3xl" />;
 };
 
 export default ThreeXlSkeletonExample;
@@ -202,17 +202,17 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 
 const MultipleAreasExample = () => {
-    return (
-        <div className="wby-flex wby-gap-md">
-            <div className="wby-flex wby-flex-col wby-gap-md">
-                <Skeleton type="area" className={"wby-w-32 wby-h-32"} />
-                <Skeleton type="area" className={"wby-w-32 wby-h-32"} />
-            </div>
-            <div>
-                <Skeleton type="area" className="wby-w-32 wby-h-full" />
-            </div>
-        </div>
-    );
+return (
+<div className="flex gap-md">
+<div className="flex flex-col gap-md">
+<Skeleton type="area" className={"w-32 h-32"} />
+<Skeleton type="area" className={"w-32 h-32"} />
+</div>
+<div>
+<Skeleton type="area" className="w-32 h-full" />
+</div>
+</div>
+);
 };
 
 export default MultipleAreasExample;

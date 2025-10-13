@@ -33,7 +33,6 @@ const {
 
 /** @type {import('tailwindcss').Config} */
 export default {
-    prefix: "wby-",
     darkMode: ["class"],
     content: [
         webinyPackagesGlob,

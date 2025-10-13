@@ -72,7 +72,7 @@ export const PermissionSelector = ({
                     );
                 }
                 return (
-                    <div key={code} className={"wby-mt-md"}>
+                    <div key={code} className={"mt-md"}>
                         <Bind name={`${entity}Props.${selectorKey}.${code}`}>
                             <RenderItems label={code} items={items} disabled={disabled} />
                         </Bind>

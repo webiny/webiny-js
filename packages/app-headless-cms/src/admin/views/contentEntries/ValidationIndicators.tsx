@@ -4,7 +4,7 @@ import { makeDecoratable } from "@webiny/react-composition";
 import { Global, css } from "@emotion/react";
 
 // To customize the icon, define a CSS variable within the validation class:
-// .wby-content-entry-invalid-field {
+// .content-entry-invalid-field {
 //     --error-icon: "🤔"
 // }
 // To customize the border color, use the Admin UI Colors APIs to override the default `destructive` color palette.
@@ -27,7 +27,7 @@ const errorBorderMixin = `
 `;
 
 const defaultClass = css`
-    .wby-content-entry-invalid-field {
+    .content-entry-invalid-field {
         // Default fields
         .webiny_label-invalid {
             left: var(--spacing-sm-extra);
@@ -66,7 +66,7 @@ const defaultClass = css`
     }
 
     // reference field
-    .wby-content-entry-invalid-field[data-field-type="ref"] {
+    .content-entry-invalid-field[data-field-type="ref"] {
         .webiny_group-label-text::before {
             ${errorTitleMixin}
         }
@@ -87,7 +87,7 @@ const defaultClass = css`
     }
 
     // Object field
-    .wby-content-entry-invalid-field[data-field-type="object"] {
+    .content-entry-invalid-field[data-field-type="object"] {
         &[data-field-renderer="object"],
         &[data-field-renderer="objects"] {
             .webiny_group-label-text::before {
@@ -112,10 +112,7 @@ export interface ValidationIndicatorsProps {
 
 export const ValidationIndicators = makeDecoratable(
     "ValidationIndicators",
-    ({
-        invalidFields,
-        className = "wby-content-entry-invalid-field"
-    }: ValidationIndicatorsProps) => {
+    ({ invalidFields, className = "content-entry-invalid-field" }: ValidationIndicatorsProps) => {
         const visualizeDomByPath = (path: string) => {
             const selector = `hcms-field-validation[data-path="${path}"]`;
             const marker = Array.from(document.querySelectorAll(selector).values())[0];

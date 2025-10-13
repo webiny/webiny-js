@@ -35,7 +35,7 @@ const DecoratableMultiAutoComplete = ({
     }, []);
 
     return (
-        <div className={"wby-w-full"}>
+        <div className={"w-full"}>
             <FormComponentLabel
                 text={label}
                 required={required}

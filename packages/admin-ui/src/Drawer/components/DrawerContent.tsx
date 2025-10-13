@@ -11,26 +11,26 @@ export interface DrawerContentProps
 
 const drawerVariants = cva(
     [
-        "wby-fixed wby-gap-4 wby-bg-neutral-base wby-text-md wby-text-neutral-strong focus-visible:outline-none wby-shadow-lg",
-        "wby-transition wby-ease-in-out data-[state=open]:wby-animate-in data-[state=closed]:wby-animate-out data-[state=closed]:wby-duration-300 data-[state=open]:wby-duration-500",
-        "wby-max-w-full wby-h-full"
+        "fixed gap-4 bg-neutral-base text-md text-neutral-strong focus-visible:outline-none shadow-lg",
+        "transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+        "max-w-full h-full"
     ],
     {
         variants: {
             size: {
-                sm: "wby-w-[384px]",
-                md: "wby-w-[520px]",
-                lg: "wby-w-[640px]",
-                xl: "wby-w-[1024px]"
+                sm: "w-[384px]",
+                md: "w-[520px]",
+                lg: "w-[640px]",
+                xl: "w-[1024px]"
             },
             side: {
                 left: [
-                    "wby-inset-y-0 wby-left-0",
-                    "data-[state=closed]:wby-slide-out-to-left data-[state=open]:wby-slide-in-from-left"
+                    "inset-y-0 left-0",
+                    "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left"
                 ],
                 right: [
-                    "wby-inset-y-0 wby-right-0",
-                    "data-[state=closed]:wby-slide-out-to-right data-[state=open]:wby-slide-in-from-right"
+                    "inset-y-0 right-0",
+                    "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right"
                 ]
             }
         },
@@ -69,7 +69,7 @@ const DrawerContent = React.forwardRef<
             // TODO: An optional accessible description to be announced when the dialog is opened. At the moment we skip this.
             aria-describedby={undefined}
         >
-            <div className={"wby-flex wby-flex-col wby-justify-between wby-h-full"}>{children}</div>
+            <div className={"flex flex-col justify-between h-full"}>{children}</div>
         </DrawerPrimitive.Content>
     );
 });

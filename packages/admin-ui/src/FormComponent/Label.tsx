@@ -58,7 +58,7 @@ const DecoratableFormComponentLabel = ({
     }
 
     return (
-        <div {...props} className={cn("wby-mb-xs", className)}>
+        <div {...props} className={cn("mb-xs", className)}>
             {renderLabel}
         </div>
     );

@@ -6,21 +6,20 @@ import { ProgressItemState } from "~/SteppedProgress/domains/index.js";
 import { Icon } from "~/Icon/index.js";
 
 const steppedProgressIconVariants = cva(
-    ["wby-absolute wby-top-1/2 wby-left-1/2 -wby-translate-x-1/2 -wby-translate-y-1/2"],
+    ["absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"],
     {
         variants: {
             state: {
-                [ProgressItemState.IDLE]: "wby-hidden",
-                [ProgressItemState.IN_PROGRESS]:
-                    "wby-size-sm-extra wby-rounded-full wby-bg-primary-default",
-                [ProgressItemState.COMPLETED]: "wby-fill-neutral-base",
-                [ProgressItemState.COMPLETED_AFFIRMATIVE]: "wby-fill-neutral-base"
+                [ProgressItemState.IDLE]: "hidden",
+                [ProgressItemState.IN_PROGRESS]: "size-sm-extra rounded-full bg-primary-default",
+                [ProgressItemState.COMPLETED]: "fill-neutral-base",
+                [ProgressItemState.COMPLETED_AFFIRMATIVE]: "fill-neutral-base"
             },
             disabled: {
-                true: "!wby-fill-neutral-base"
+                true: "!fill-neutral-base"
             },
             errored: {
-                true: "wby-fill-destructive"
+                true: "fill-destructive"
             }
         },
         compoundVariants: [
@@ -28,28 +27,28 @@ const steppedProgressIconVariants = cva(
             {
                 state: ProgressItemState.IN_PROGRESS,
                 disabled: true,
-                className: "wby-bg-neutral-strong"
+                className: "bg-neutral-strong"
             },
             // errored
             {
                 state: ProgressItemState.IDLE,
                 errored: true,
-                className: "wby-block"
+                className: "block"
             },
             {
                 state: ProgressItemState.IN_PROGRESS,
                 errored: true,
-                className: "wby-size-auto wby-rounded-none wby-bg-transparent"
+                className: "size-auto rounded-none bg-transparent"
             },
             {
                 state: ProgressItemState.COMPLETED,
                 errored: true,
-                className: "wby-fill-neutral-base"
+                className: "fill-neutral-base"
             },
             {
                 state: ProgressItemState.COMPLETED_AFFIRMATIVE,
                 errored: true,
-                className: "wby-fill-neutral-base"
+                className: "fill-neutral-base"
             }
         ],
         defaultVariants: {

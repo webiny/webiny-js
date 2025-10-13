@@ -72,7 +72,7 @@ interface NoResourcesSelectedProps {
 
 const NoResourcesSelected = ({ resourceName }: NoResourcesSelectedProps) => {
     return (
-        <div className={"wby-w-full"}>
+        <div className={"w-full"}>
             <Text>There are no {pluralize(resourceName)} in this list.</Text>
         </div>
     );
@@ -116,7 +116,7 @@ export const PickResourceList = observer((props: PickResourceListProps) => {
                 <NoResourcesSelected resourceName={props.resourceName} />
             ) : null}
             {/* On click - choose product */}
-            <div className={"wby-align-center wby-my-lg"}>
+            <div className={"align-center my-lg"}>
                 <Button
                     text={`+ Select ${capitalize(pluralize(props.resourceName))}`}
                     variant="secondary"
@@ -130,7 +130,7 @@ export const PickResourceList = observer((props: PickResourceListProps) => {
                             acceptLabel: null,
                             cancelLabel: null,
                             content: (
-                                <div className={"wby-h-[500px] wby-overflow-scroll"}>
+                                <div className={"h-[500px] overflow-scroll"}>
                                     <PickerComponent
                                         {...rest}
                                         omitIds={store.value}

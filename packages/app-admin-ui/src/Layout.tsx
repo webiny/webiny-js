@@ -20,8 +20,8 @@ export const Layout = LayoutRenderer.createDecorator(() => {
         const { pinned } = useSidebar();
 
         const widthClassNames = {
-            "wby-max-w-[calc(100%-theme(spacing.sidebar-expanded))] ": pinned,
-            "wby-max-w-[calc(100%-theme(spacing.sidebar-collapsed))] ": !pinned
+            "max-w-[calc(100%-theme(spacing.sidebar-expanded))] ": pinned,
+            "max-w-[calc(100%-theme(spacing.sidebar-collapsed))] ": !pinned
         };
 
         return (
@@ -30,23 +30,21 @@ export const Layout = LayoutRenderer.createDecorator(() => {
                 {hideNavigation ? null : <Navigation />}
                 <div
                     className={cn(
-                        "wby-ml-auto wby-bg-neutral-base wby-transition-[max-width,min-width] wby-ease-linear wby-w-full",
+                        "ml-auto bg-neutral-base transition-[max-width,min-width] ease-linear w-full",
                         hideNavigation ? undefined : widthClassNames
                     )}
                 >
                     <HeaderBar
                         start={startElement}
                         end={
-                            <div className={"wby-flex"}>
+                            <div className={"flex"}>
                                 <LocaleSelector />
                                 <TenantSelector />
                                 <UserMenu />
                             </div>
                         }
                     />
-                    <main className={"wby-relative wby-overflow-y-auto wby-h-main-content"}>
-                        {children}
-                    </main>
+                    <main className={"relative overflow-y-auto h-main-content"}>{children}</main>
                 </div>
             </>
         );

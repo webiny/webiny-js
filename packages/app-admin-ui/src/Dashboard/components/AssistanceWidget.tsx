@@ -5,8 +5,8 @@ import { SimpleLink } from "@webiny/app-admin";
 
 export const AssistanceWidget = () => {
     return (
-        <div className={"wby-bg-neutral-light wby-rounded-xl wby-p-lg"}>
-            <div className={"wby-flex wby-items-center wby-gap-sm wby-mb-md"}>
+        <div className={"bg-neutral-light rounded-xl p-lg"}>
+            <div className={"flex items-center gap-sm mb-md"}>
                 <Icon
                     icon={<HelpIcon />}
                     label={"Need some assistance?"}
@@ -15,29 +15,27 @@ export const AssistanceWidget = () => {
                 />
                 <Heading level={6}>{"Need some assistance?"}</Heading>
             </div>
-            <div
-                className={"wby-bg-neutral-base wby-rounded-sm wby-px-md wby-py-sm-extra wby-mb-md"}
-            >
+            <div className={"bg-neutral-base rounded-sm px-md py-sm-extra mb-md"}>
                 <SimpleLink
                     to="https://www.webiny.com/docs"
                     target={"_blank"}
                     rel={"noopener noreferrer"}
-                    className={"!wby-no-underline"}
+                    className={"!no-underline"}
                 >
-                    <Text as={"div"} className={"wby-font-semibold !wby-text-neutral-primary"}>
+                    <Text as={"div"} className={"font-semibold !text-neutral-primary"}>
                         {"Documentation"}
                     </Text>
-                    <Text size={"sm"} className={"!wby-text-neutral-strong"}>
+                    <Text size={"sm"} className={"!text-neutral-strong"}>
                         {"Explore the Webiny documentation and check out code examples and guides."}
                     </Text>
                 </SimpleLink>
             </div>
 
-            <div className={"wby-bg-neutral-base wby-rounded-sm wby-px-md wby-py-sm-extra"}>
-                <Text as={"div"} className={"wby-font-semibold"}>
+            <div className={"bg-neutral-base rounded-sm px-md py-sm-extra"}>
+                <Text as={"div"} className={"font-semibold"}>
                     {"Contact us"}
                 </Text>
-                <Text size={"sm"} className={"wby-text-neutral-strong"}>
+                <Text size={"sm"} className={"text-neutral-strong"}>
                     <AdminLink
                         to={"https://www.webiny.com/forms/product-demo"}
                         target={"_blank"}

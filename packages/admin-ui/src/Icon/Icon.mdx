@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as IconStories from './Icon.stories';
+import * as IconStories from "./Icon.stories";
 
 <Meta of={IconStories} />
 
@@ -16,30 +16,30 @@ import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 const IconExample = () => {
-    return (
-        <Icon
-            icon={<CloseIcon />}
-            label="Close icon"
-            size="md"
-            color="accent"
-        />
-    );
+return (
+<Icon
+icon={<CloseIcon />}
+label="Close icon"
+size="md"
+color="accent"
+/>
+);
 };
 
 export default IconExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Icon/Icon.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Icon/Icon.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={IconStories.Documentation} />
@@ -50,14 +50,7 @@ import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 const IconExample = () => {
-    return (
-        <Icon
-            icon={<CloseIcon />}
-            label="Close icon"
-            size="md"
-            color="accent"
-        />
-    );
+  return <Icon icon={<CloseIcon />} label="Close icon" size="md" color="accent" />;
 };
 
 export default IconExample;
@@ -73,14 +66,14 @@ import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 const DefaultIconExample = () => {
-    return (
-        <Icon
-            icon={<CloseIcon />}
-            label="This is an icon"
-            size="md"
-            color="accent"
-        />
-    );
+return (
+<Icon
+icon={<CloseIcon />}
+label="This is an icon"
+size="md"
+color="accent"
+/>
+);
 };
 
 export default DefaultIconExample;
@@ -96,19 +89,20 @@ import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 const InheritColorIconExample = () => {
-    return (
-        <div className="wby-fill-success">
-            <Icon
-                icon={<CloseIcon />}
-                label="This is an icon"
-                size="md"
-                color="inherit"
-            />
-        </div>
-    );
+return (
+<div className="fill-success">
+<Icon
+icon={<CloseIcon />}
+label="This is an icon"
+size="md"
+color="inherit"
+/>
+</div>
+);
 };
 
     export default InheritColorIconExample;
+
 ` } } />
 
 #### Accent Color
@@ -119,14 +113,14 @@ import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 const AccentIconExample = () => {
-    return (
-        <Icon
-            icon={<CloseIcon />}
-            label="This is an icon"
-            size="md"
-            color="accent"
-        />
-    );
+return (
+<Icon
+icon={<CloseIcon />}
+label="This is an icon"
+size="md"
+color="accent"
+/>
+);
 };
 
 export default AccentIconExample;
@@ -140,17 +134,18 @@ import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 const NeutralLightIconExample = () => {
-    return (
-        <Icon
-            icon={<CloseIcon />}
-            label="This is an icon"
-            size="md"
-            color="neutral-light"
-        />
-    );
+return (
+<Icon
+icon={<CloseIcon />}
+label="This is an icon"
+size="md"
+color="neutral-light"
+/>
+);
 };
 
     export default NeutralLightIconExample;
+
 ` } } />
 
 #### Neutral Strong Color
@@ -161,17 +156,18 @@ import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 const NeutralStrongIconExample = () => {
-    return (
-        <Icon
-            icon={<CloseIcon />}
-            label="This is an icon"
-            size="md"
-            color="neutral-strong"
-        />
-    );
+return (
+<Icon
+icon={<CloseIcon />}
+label="This is an icon"
+size="md"
+color="neutral-strong"
+/>
+);
 };
 
         export default NeutralStrongIconExample;
+
 ` } } />
 
 #### Neutral Strong Transparent Color
@@ -182,16 +178,16 @@ import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 const NeutralStrongTransparentIconExample = () => {
-    return (
-        <div className="wby-bg-neutral-disabled wby-p-3xl wby-rounded-md">
-            <Icon
-                icon={<CloseIcon />}
-                label="This is an icon"
-                size="md"
-                color="neutral-strong-transparent"
-            />
-        </div>
-    );
+return (
+<div className="bg-neutral-disabled p-3xl rounded-md">
+<Icon
+icon={<CloseIcon />}
+label="This is an icon"
+size="md"
+color="neutral-strong-transparent"
+/>
+</div>
+);
 };
 
 export default NeutralStrongTransparentIconExample;
@@ -205,19 +201,20 @@ import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 const NeutralBaseIconExample = () => {
-    return (
-        <div className="wby-bg-neutral-dark wby-p-3xl wby-rounded-md">
-            <Icon
-                icon={<CloseIcon />}
-                label="This is an icon"
-                size="md"
-                color="neutral-base"
-            />
-        </div>
-    );
+return (
+<div className="bg-neutral-dark p-3xl rounded-md">
+<Icon
+icon={<CloseIcon />}
+label="This is an icon"
+size="md"
+color="neutral-base"
+/>
+</div>
+);
 };
 
     export default NeutralBaseIconExample;
+
 ` } } />
 
 #### Neutral Negative Color
@@ -228,19 +225,20 @@ import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 const NeutralNegativeIconExample = () => {
-    return (
-        <div className="wby-bg-neutral-dark wby-p-3xl wby-rounded-md">
-            <Icon
-                icon={<CloseIcon />}
-                label="This is an icon"
-                size="md"
-                color="neutral-negative"
-            />
-        </div>
-    );
+return (
+<div className="bg-neutral-dark p-3xl rounded-md">
+<Icon
+icon={<CloseIcon />}
+label="This is an icon"
+size="md"
+color="neutral-negative"
+/>
+</div>
+);
 };
 
         export default NeutralNegativeIconExample;
+
 ` } } />
 
 ### Size Variants
@@ -253,14 +251,14 @@ import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 const XsIconExample = () => {
-    return (
-        <Icon
-            icon={<CloseIcon />}
-            label="This is an icon"
-            size="xs"
-            color="accent"
-        />
-    );
+return (
+<Icon
+icon={<CloseIcon />}
+label="This is an icon"
+size="xs"
+color="accent"
+/>
+);
 };
 
 export default XsIconExample;
@@ -274,14 +272,14 @@ import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 const SmIconExample = () => {
-    return (
-        <Icon
-            icon={<CloseIcon />}
-            label="This is an icon"
-            size="sm"
-            color="accent"
-        />
-    );
+return (
+<Icon
+icon={<CloseIcon />}
+label="This is an icon"
+size="sm"
+color="accent"
+/>
+);
 };
 
 export default SmIconExample;
@@ -295,14 +293,14 @@ import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 const MdIconExample = () => {
-    return (
-        <Icon
-            icon={<CloseIcon />}
-            label="This is an icon"
-            size="md"
-            color="accent"
-        />
-    );
+return (
+<Icon
+icon={<CloseIcon />}
+label="This is an icon"
+size="md"
+color="accent"
+/>
+);
 };
 
 export default MdIconExample;
@@ -316,16 +314,15 @@ import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 
 const LgIconExample = () => {
-    return (
-        <Icon
-            icon={<CloseIcon />}
-            label="This is an icon"
-            size="lg"
-            color="accent"
-        />
-    );
+return (
+<Icon
+icon={<CloseIcon />}
+label="This is an icon"
+size="lg"
+color="accent"
+/>
+);
 };
 
 export default LgIconExample;
 ` } } />
-

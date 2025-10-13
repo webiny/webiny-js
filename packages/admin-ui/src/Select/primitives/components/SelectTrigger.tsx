@@ -6,54 +6,54 @@ import { SelectIcon } from "./SelectIcon.js";
 
 const selectTriggerVariants = cva(
     [
-        "wby-w-full wby-flex wby-items-center wby-justify-between wby-gap-sm wby-border-sm wby-text-md wby-relative",
-        "focus:wby-outline-none",
-        "disabled:wby-pointer-events-none"
+        "w-full flex items-center justify-between gap-sm border-sm text-md relative",
+        "focus:outline-none",
+        "disabled:pointer-events-none"
     ],
     {
         variants: {
             variant: {
                 primary: [
-                    "wby-bg-neutral-base wby-border-neutral-muted wby-text-neutral-strong placeholder:wby-text-neutral-dimmed wby-fill-neutral-xstrong",
-                    "hover:wby-border-neutral-strong",
-                    "focus:wby-border-neutral-black",
-                    "data-[state=open]:wby-border-neutral-black",
-                    "disabled:wby-bg-neutral-disabled disabled:wby-border-neutral-dimmed disabled:wby-text-neutral-disabled disabled:placeholder:wby-text-neutral-disabled disabled:wby-fill-neutral-disabled"
+                    "bg-neutral-base border-neutral-muted text-neutral-strong placeholder:text-neutral-dimmed fill-neutral-xstrong",
+                    "hover:border-neutral-strong",
+                    "focus:border-neutral-black",
+                    "data-[state=open]:border-neutral-black",
+                    "disabled:bg-neutral-disabled disabled:border-neutral-dimmed disabled:text-neutral-disabled disabled:placeholder:text-neutral-disabled disabled:fill-neutral-disabled"
                 ],
                 secondary: [
-                    "wby-bg-neutral-light wby-border-neutral-subtle wby-text-neutral-strong placeholder:wby-text-neutral-muted wby-fill-neutral-xstrong",
-                    "hover:wby-bg-neutral-dimmed",
-                    "focus:wby-border-neutral-black focus:wby-bg-neutral-base",
-                    "data-[state=open]:wby-border-neutral-black data-[state=open]:wby-bg-neutral-base",
-                    "disabled:wby-bg-neutral-disabled disabled:wby-border-neutral-dimmed disabled:wby-text-neutral-disabled disabled:placeholder:wby-text-neutral-disabled disabled:wby-fill-neutral-disabled"
+                    "bg-neutral-light border-neutral-subtle text-neutral-strong placeholder:text-neutral-muted fill-neutral-xstrong",
+                    "hover:bg-neutral-dimmed",
+                    "focus:border-neutral-black focus:bg-neutral-base",
+                    "data-[state=open]:border-neutral-black data-[state=open]:bg-neutral-base",
+                    "disabled:bg-neutral-disabled disabled:border-neutral-dimmed disabled:text-neutral-disabled disabled:placeholder:text-neutral-disabled disabled:fill-neutral-disabled"
                 ],
                 ghost: [
-                    "wby-bg-neutral-base wby-border-transparent wby-text-neutral-strong placeholder:wby-text-neutral-dimmed",
-                    "hover:wby-bg-neutral-dark/5",
-                    "focus:wby-bg-neutral-dark/5",
-                    "data-[state=open]:wby-bg-neutral-dark/5",
-                    "disabled:wby-bg-neutral-disabled disabled:wby-border-neutral-dimmed disabled:wby-text-neutral-disabled disabled:placeholder:wby-text-neutral-disabled disabled:wby-fill-neutral-disabled"
+                    "bg-neutral-base border-transparent text-neutral-strong placeholder:text-neutral-dimmed",
+                    "hover:bg-neutral-dark/5",
+                    "focus:bg-neutral-dark/5",
+                    "data-[state=open]:bg-neutral-dark/5",
+                    "disabled:bg-neutral-disabled disabled:border-neutral-dimmed disabled:text-neutral-disabled disabled:placeholder:text-neutral-disabled disabled:fill-neutral-disabled"
                 ],
                 "ghost-negative": [
-                    "wby-bg-transparent wby-border-transparent wby-text-neutral-light/50 placeholder:wby-text-neutral-light/50 wby-fill-neutral-base/50",
-                    "hover:wby-bg-neutral-base/20",
-                    "focus:wby-bg-neutral-base/20",
-                    "data-[state=open]:wby-bg-neutral-base data-[state=open]:wby-text-neutral-primary data[state=open]:placeholder:wby-text-neutral-dimmed data[state=open]:!wby-fill-neutral-xstrong",
-                    "disabled:wby-bg-transparent disabled:wby-text-neutral-disabled/50 disabled:placeholder:wby-text-neutral-disabled/50"
+                    "bg-transparent border-transparent text-neutral-light/50 placeholder:text-neutral-light/50 fill-neutral-base/50",
+                    "hover:bg-neutral-base/20",
+                    "focus:bg-neutral-base/20",
+                    "data-[state=open]:bg-neutral-base data-[state=open]:text-neutral-primary data[state=open]:placeholder:text-neutral-dimmed data[state=open]:!fill-neutral-xstrong",
+                    "disabled:bg-transparent disabled:text-neutral-disabled/50 disabled:placeholder:text-neutral-disabled/50"
                 ]
             },
             size: {
                 md: [
-                    "wby-rounded-md",
-                    "wby-py-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] wby-px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
+                    "rounded-md",
+                    "py-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
                 ],
                 lg: [
-                    "wby-rounded-md",
-                    "wby-py-[calc(theme(padding.sm-plus)-theme(borderWidth.sm))] wby-px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
+                    "rounded-md",
+                    "py-[calc(theme(padding.sm-plus)-theme(borderWidth.sm))] px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
                 ],
                 xl: [
-                    "wby-rounded-lg wby-leading-6",
-                    "wby-py-[calc(theme(padding.md)-theme(borderWidth.sm))] wby-px-[calc(theme(padding.md)-theme(borderWidth.sm))]"
+                    "rounded-lg leading-6",
+                    "py-[calc(theme(padding.md)-theme(borderWidth.sm))] px-[calc(theme(padding.md)-theme(borderWidth.sm))]"
                 ]
             },
             invalid: {
@@ -64,22 +64,22 @@ const selectTriggerVariants = cva(
             {
                 variant: "primary",
                 invalid: true,
-                class: "!wby-border-destructive-default"
+                class: "!border-destructive-default"
             },
             {
                 variant: "secondary",
                 invalid: true,
-                class: "!wby-border-destructive-default"
+                class: "!border-destructive-default"
             },
             {
                 variant: "ghost",
                 invalid: true,
-                class: "!wby-border-destructive-subtle !wby-bg-destructive-subtle"
+                class: "!border-destructive-subtle !bg-destructive-subtle"
             },
             {
                 variant: "ghost-negative",
                 invalid: true,
-                class: "!wby-border-destructive-default !wby-bg-destructive-subtle wby-text-neutral-primary placeholder:wby-text-neutral-dimmed !wby-fill-neutral-xstrong"
+                class: "!border-destructive-default !bg-destructive-subtle text-neutral-primary placeholder:text-neutral-dimmed !fill-neutral-xstrong"
             }
         ],
         defaultVariants: {

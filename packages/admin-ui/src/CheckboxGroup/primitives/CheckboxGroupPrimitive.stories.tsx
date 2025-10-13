@@ -12,13 +12,13 @@ const meta: Meta<typeof CheckboxGroupPrimitive> = {
     render: args => {
         const [values, setValues] = useState(args.value);
         return (
-            <div className={"wby-w-full"}>
+            <div className={"w-full"}>
                 <CheckboxGroupPrimitive
                     {...args}
                     value={values}
                     onChange={values => setValues(values)}
                 />
-                <div className={"wby-mt-4 wby-text-center"}>
+                <div className={"mt-4 text-center"}>
                     Current selected value: <pre>{values && values.join()}</pre>
                 </div>
             </div>
@@ -117,7 +117,7 @@ export const WithExternalValueControl: Story = {
     render: args => {
         const [values, setValues] = useState(args.value);
         return (
-            <div className={"wby-w-full"}>
+            <div className={"w-full"}>
                 <div>
                     <CheckboxGroupPrimitive
                         {...args}
@@ -125,10 +125,10 @@ export const WithExternalValueControl: Story = {
                         onChange={values => setValues(values)}
                     />
                 </div>
-                <div className={"wby-mt-4 wby-text-center"}>
+                <div className={"mt-4 text-center"}>
                     <Button text={"Reset"} onClick={() => setValues([])} />
                 </div>
-                <div className={"wby-mt-4 wby-text-center"}>
+                <div className={"mt-4 text-center"}>
                     Current selected value: <pre>{values && values.join()}</pre>
                 </div>
             </div>

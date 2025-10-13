@@ -15,26 +15,22 @@ interface SocialLinkProps {
 
 const SocialLink = ({ link, label, icon }: SocialLinkProps) => {
     return (
-        <div
-            className={
-                "wby-w-[64px] wby-bg-neutral-base wby-rounded-md hover:wby-opacity-80 wby-transition-opacity"
-            }
-        >
+        <div className={"w-[64px] bg-neutral-base rounded-md hover:opacity-80 transition-opacity"}>
             <SimpleLink
                 to={link}
-                className={"!wby-no-underline"}
+                className={"!no-underline"}
                 target={"_blank"}
                 rel={"noopener noreferrer"}
             >
-                <div className={"wby-px-xs wby-pt-sm-extra wby-pb-sm wby-text-center"}>
+                <div className={"px-xs pt-sm-extra pb-sm text-center"}>
                     <Icon
                         label={`${label} icon`}
                         icon={icon}
                         size={"lg"}
                         color={"inherit"}
-                        className={"wby-mx-auto wby-mb-sm"}
+                        className={"mx-auto mb-sm"}
                     />
-                    <Text size={"sm"} className={"wby-text-neutral-strong"}>
+                    <Text size={"sm"} className={"text-neutral-strong"}>
                         {label}
                     </Text>
                 </div>
@@ -45,14 +41,14 @@ const SocialLink = ({ link, label, icon }: SocialLinkProps) => {
 
 export const CommunityWidget = () => {
     return (
-        <div className={"wby-bg-neutral-light wby-rounded-xl wby-p-lg"}>
-            <div className={"wby-mb-md"}>
+        <div className={"bg-neutral-light rounded-xl p-lg"}>
+            <div className={"mb-md"}>
                 <Heading level={6}>{"Join our community:"}</Heading>
-                <Text size={"sm"} className={"wby-text-neutral-strong"}>
+                <Text size={"sm"} className={"text-neutral-strong"}>
                     {"Get to know Webiny team members, discuss new ideas and get help:"}
                 </Text>
             </div>
-            <div className={"wby-flex wby-justify-start wby-items-stretch wby-gap-md"}>
+            <div className={"flex justify-start items-stretch gap-md"}>
                 <SocialLink
                     link={"https://github.com/webiny/webiny-js"}
                     label={"GitHub"}

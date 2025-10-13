@@ -68,7 +68,7 @@ const RenderInfo = ({ field }: RenderInfoParams) => {
     }
 
     return (
-        <div className={"wby-flex wby-justify-end wby-items-center wby-gap-sm"}>
+        <div className={"flex justify-end items-center gap-sm"}>
             {items.map(model => {
                 return <Badge key={`model-${model.modelId}`} model={model} />;
             })}

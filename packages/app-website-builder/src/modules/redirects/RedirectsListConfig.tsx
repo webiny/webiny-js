@@ -68,7 +68,7 @@ export const RedirectsListConfig = () => {
                     size={56}
                     resizable={false}
                     hideable={false}
-                    className={"wby-text-right"}
+                    className={"text-right"}
                 />
             </RedirectListConfig>
         </>

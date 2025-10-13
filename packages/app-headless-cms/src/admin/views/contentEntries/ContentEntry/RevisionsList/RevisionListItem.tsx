@@ -140,9 +140,7 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                                     onClick={() => deleteRevision()}
                                     icon={<DeleteIcon />}
                                     text={t` Delete revision`}
-                                    className={
-                                        "!wby-text-destructive-primary [&_svg]:wby-fill-destructive"
-                                    }
+                                    className={"!text-destructive-primary [&_svg]:fill-destructive"}
                                 />
                             </>
                         )}

@@ -14,8 +14,8 @@ const ListStatus = ({ listing }: ListStatusProps) => {
     }
 
     return (
-        <div className="wby-flex wby-items-center wby-gap-sm">
-            <Text size={"sm"} as={"div"} className={"wby-text-neutral-strong"}>
+        <div className="flex items-center gap-sm">
+            <Text size={"sm"} as={"div"} className={"text-neutral-strong"}>
                 {t`Loading more files...`}
             </Text>
             <Loader size={"xs"} />

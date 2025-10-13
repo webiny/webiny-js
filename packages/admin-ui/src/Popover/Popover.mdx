@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as PopoverStories from './Popover.stories';
+import * as PopoverStories from "./Popover.stories";
 
 <Meta of={PopoverStories} />
 
@@ -15,41 +15,41 @@ import React from "react";
 import { Popover } from "@webiny/admin-ui";
 
 const PopoverExample = () => {
-    return (
-        <div className="wby-bg-[#f4f4f4] wby-flex wby-items-center wby-justify-center wby-w-full wby-h-[300px]">
-            <Popover
-                trigger={<p>Popover trigger</p>}
-                content={
-                    <div className={"wby-w-[260px]"}>
-                        <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
-                        lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
-                        tempus.
-                    </div>
-                }
-                align="center"
-                side="bottom"
-                variant="subtle"
-                arrow={false}
-                close={false}
-            />
-        </div>
-    );
+return (
+<div className="bg-[#f4f4f4] flex items-center justify-center w-full h-[300px]">
+<Popover
+trigger={<p>Popover trigger</p>}
+content={
+<div className={"w-[260px]"}>
+<strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
+lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
+tempus.
+</div>
+}
+align="center"
+side="bottom"
+variant="subtle"
+arrow={false}
+close={false}
+/>
+</div>
+);
 };
 
 export default PopoverExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Popover/Popover.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Popover/Popover.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={PopoverStories.Documentation} />
@@ -59,25 +59,24 @@ import React from "react";
 import { Popover } from "@webiny/admin-ui";
 
 const PopoverExample = () => {
-    return (
-        <div className="wby-bg-[#f4f4f4] wby-flex wby-items-center wby-justify-center wby-w-full wby-h-[300px]">
-            <Popover
-                trigger={<p>Popover trigger</p>}
-                content={
-                    <div className={"wby-w-[260px]"}>
-                        <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
-                        lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
-                        tempus.
-                    </div>
-                }
-                align="center"
-                side="bottom"
-                variant="subtle"
-                arrow={false}
-                close={false}
-            />
-        </div>
-    );
+  return (
+    <div className="bg-[#f4f4f4] flex items-center justify-center w-full h-[300px]">
+      <Popover
+        trigger={<p>Popover trigger</p>}
+        content={
+          <div className={"w-[260px]"}>
+            <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi lectus
+            leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor tempus.
+          </div>
+        }
+        align="center"
+        side="bottom"
+        variant="subtle"
+        arrow={false}
+        close={false}
+      />
+    </div>
+  );
 };
 
 export default PopoverExample;
@@ -94,21 +93,21 @@ import React from "react";
 import { Popover } from "@webiny/admin-ui";
 
 const AccentVariantExample = () => {
-    return (
-        <div className="wby-bg-[#f4f4f4] wby-flex wby-items-center wby-justify-center wby-w-full wby-h-[300px]">
-            <Popover
-                trigger={<p>Popover trigger</p>}
-                content={
-                    <div className={"wby-w-[260px]"}>
-                        <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
-                        lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
-                        tempus.
-                    </div>
-                }
-                variant="accent"
-            />
-        </div>
-    );
+return (
+<div className="bg-[#f4f4f4] flex items-center justify-center w-full h-[300px]">
+<Popover
+trigger={<p>Popover trigger</p>}
+content={
+<div className={"w-[260px]"}>
+<strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
+lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
+tempus.
+</div>
+}
+variant="accent"
+/>
+</div>
+);
 };
 
 export default AccentVariantExample;
@@ -123,22 +122,22 @@ import React from "react";
 import { Popover } from "@webiny/admin-ui";
 
 const WithArrowAccentExample = () => {
-    return (
-        <div className="wby-bg-[#f4f4f4] wby-flex wby-items-center wby-justify-center wby-w-full wby-h-[300px]">
-            <Popover
-                trigger={<p>Popover trigger</p>}
-                content={
-                    <div className={"wby-w-[260px]"}>
-                        <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
-                        lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
-                        tempus.
-                    </div>
-                }
-                variant="accent"
-                arrow={true}
-            />
-        </div>
-    );
+return (
+<div className="bg-[#f4f4f4] flex items-center justify-center w-full h-[300px]">
+<Popover
+trigger={<p>Popover trigger</p>}
+content={
+<div className={"w-[260px]"}>
+<strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
+lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
+tempus.
+</div>
+}
+variant="accent"
+arrow={true}
+/>
+</div>
+);
 };
 
 export default WithArrowAccentExample;
@@ -153,21 +152,21 @@ import React from "react";
 import { Popover } from "@webiny/admin-ui";
 
 const SubtleVariantExample = () => {
-    return (
-        <div className="wby-flex wby-items-center wby-justify-center wby-bg-neutral-dark wby-text-neutral-light wby-w-full wby-h-[300px]">
-            <Popover
-                trigger={<p>Popover trigger</p>}
-                content={
-                    <div className={"wby-w-[260px]"}>
-                        <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
-                        lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
-                        tempus.
-                    </div>
-                }
-                variant="subtle"
-            />
-        </div>
-    );
+return (
+<div className="flex items-center justify-center bg-neutral-dark text-neutral-light w-full h-[300px]">
+<Popover
+trigger={<p>Popover trigger</p>}
+content={
+<div className={"w-[260px]"}>
+<strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
+lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
+tempus.
+</div>
+}
+variant="subtle"
+/>
+</div>
+);
 };
 
 export default SubtleVariantExample;
@@ -182,22 +181,22 @@ import React from "react";
 import { Popover } from "@webiny/admin-ui";
 
 const WithArrowSubtleExample = () => {
-    return (
-        <div className="wby-flex wby-items-center wby-justify-center wby-bg-neutral-dark wby-text-neutral-light wby-w-full wby-h-[300px]">
-            <Popover
-                trigger={<p>Popover trigger</p>}
-                content={
-                    <div className={"wby-w-[260px]"}>
-                        <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
-                        lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
-                        tempus.
-                    </div>
-                }
-                variant="subtle"
-                arrow={true}
-            />
-        </div>
-    );
+return (
+<div className="flex items-center justify-center bg-neutral-dark text-neutral-light w-full h-[300px]">
+<Popover
+trigger={<p>Popover trigger</p>}
+content={
+<div className={"w-[260px]"}>
+<strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
+lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
+tempus.
+</div>
+}
+variant="subtle"
+arrow={true}
+/>
+</div>
+);
 };
 
 export default WithArrowSubtleExample;

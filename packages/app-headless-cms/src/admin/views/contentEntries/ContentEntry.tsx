@@ -42,7 +42,7 @@ export const ContentEntry = makeDecoratable("ContentEntry", () => {
                             disabled={loading}
                             data-testid={"cms.content-form.tabs.content"}
                             content={
-                                <div className={"wby-relative"}>
+                                <div className={"relative"}>
                                     {invalidFields ? (
                                         <ValidationIndicators invalidFields={invalidFields} />
                                     ) : null}

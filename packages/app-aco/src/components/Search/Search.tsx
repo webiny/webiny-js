@@ -17,7 +17,7 @@ export const Search = ({ value, onChange, placeholder }: SearchProps) => {
             size={"md"}
             variant={"ghost"}
             startIcon={<Icon label={"Search"} icon={<SearchIcon />} />}
-            className={"wby-w-full"}
+            className={"w-full"}
         />
     );
 };

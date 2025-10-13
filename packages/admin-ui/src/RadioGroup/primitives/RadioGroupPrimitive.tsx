@@ -11,7 +11,7 @@ import { useRadioGroup } from "./useRadioGroup.js";
 const RadioGroupRoot = ({ className, ...props }: RadioGroupPrimitives.RadioGroupProps) => {
     return (
         <RadioGroupPrimitives.Root
-            className={cn("wby-grid wby-gap-sm-extra wby-py-xs-plus", className)}
+            className={cn("grid gap-sm-extra py-xs-plus", className)}
             {...props}
         />
     );

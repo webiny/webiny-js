@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as DataTableStories from './DataTable.stories';
+import * as DataTableStories from "./DataTable.stories";
 
 <Meta of={DataTableStories} />
 
@@ -16,60 +16,60 @@ import { DataTable, DataTableColumns, DataTableSorting } from "@webiny/admin-ui"
 
 // Define the data structure
 interface Entry {
-    id: string;
-    name: string;
-    createdBy: string;
-    lastModified: string;
-    status: string;
-    $selectable?: boolean;
+id: string;
+name: string;
+createdBy: string;
+lastModified: string;
+status: string;
+$selectable?: boolean;
 }
 
 // Define the columns structure
 const columns: DataTableColumns\<Entry\> = {
-    name: {
-        header: "Title",
-        enableSorting: true
-    },
-    createdBy: {
-        header: "Author"
-    },
-    lastModified: {
-        header: "Last Modified",
-        enableSorting: true
-    },
-    status: {
-        header: "Status"
-    }
+name: {
+header: "Title",
+enableSorting: true
+},
+createdBy: {
+header: "Author"
+},
+lastModified: {
+header: "Last Modified",
+enableSorting: true
+},
+status: {
+header: "Status"
+}
 };
 
 // Sample data
 const data = [
-    {
-        id: "entry-1",
-        name: "Getting Started Guide",
-        createdBy: "John Doe",
-        lastModified: "1 hour ago",
-        status: "Published"
-    },
-    {
-        id: "entry-2",
-        name: "User Documentation",
-        createdBy: "Jane Smith",
-        lastModified: "3 days ago",
-        status: "Draft"
-    },
-    {
-        id: "entry-3",
-        name: "API Reference",
-        createdBy: "John Doe",
-        lastModified: "1 week ago",
-        status: "Published"
-    }
+{
+id: "entry-1",
+name: "Getting Started Guide",
+createdBy: "John Doe",
+lastModified: "1 hour ago",
+status: "Published"
+},
+{
+id: "entry-2",
+name: "User Documentation",
+createdBy: "Jane Smith",
+lastModified: "3 days ago",
+status: "Draft"
+},
+{
+id: "entry-3",
+name: "API Reference",
+createdBy: "John Doe",
+lastModified: "1 week ago",
+status: "Published"
+}
 ];
 
 const DataTableExample = () => {
-    const [selectedRows, setSelectedRows] = useState\<Entry[]\>([]);
-    const [sorting, setSorting] = useState\<DataTableSorting\>([]);
+const [selectedRows, setSelectedRows] = useState\<Entry[]\>([]);
+const [sorting, setSorting] = useState\<DataTableSorting\>([]);
 
     return (
         <DataTable
@@ -83,22 +83,23 @@ const DataTableExample = () => {
             onSortingChange={setSorting}
         />
     );
+
 };
 
 export default DataTableExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/DataTable/DataTable.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/DataTable/DataTable.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={DataTableStories.Documentation} />
@@ -109,73 +110,73 @@ import { DataTable, DataTableColumns, DataTableSorting } from "@webiny/admin-ui"
 
 // Define the data structure
 interface Entry {
-    id: string;
-    name: string;
-    createdBy: string;
-    lastModified: string;
-    status: string;
-    $selectable?: boolean;
+  id: string;
+  name: string;
+  createdBy: string;
+  lastModified: string;
+  status: string;
+  $selectable?: boolean;
 }
 
 // Define the columns structure
 const columns: DataTableColumns<Entry> = {
-    name: {
-        header: "Title",
-        enableSorting: true
-    },
-    createdBy: {
-        header: "Author"
-    },
-    lastModified: {
-        header: "Last Modified",
-        enableSorting: true
-    },
-    status: {
-        header: "Status"
-    }
+  name: {
+    header: "Title",
+    enableSorting: true
+  },
+  createdBy: {
+    header: "Author"
+  },
+  lastModified: {
+    header: "Last Modified",
+    enableSorting: true
+  },
+  status: {
+    header: "Status"
+  }
 };
 
 // Sample data
 const data = [
-    {
-        id: "entry-1",
-        name: "Getting Started Guide",
-        createdBy: "John Doe",
-        lastModified: "1 hour ago",
-        status: "Published"
-    },
-    {
-        id: "entry-2",
-        name: "User Documentation",
-        createdBy: "Jane Smith",
-        lastModified: "3 days ago",
-        status: "Draft"
-    },
-    {
-        id: "entry-3",
-        name: "API Reference",
-        createdBy: "John Doe",
-        lastModified: "1 week ago",
-        status: "Published"
-    }
+  {
+    id: "entry-1",
+    name: "Getting Started Guide",
+    createdBy: "John Doe",
+    lastModified: "1 hour ago",
+    status: "Published"
+  },
+  {
+    id: "entry-2",
+    name: "User Documentation",
+    createdBy: "Jane Smith",
+    lastModified: "3 days ago",
+    status: "Draft"
+  },
+  {
+    id: "entry-3",
+    name: "API Reference",
+    createdBy: "John Doe",
+    lastModified: "1 week ago",
+    status: "Published"
+  }
 ];
 
 const DataTableExample = () => {
-    const [selectedRows, setSelectedRows] = useState<Entry[]>([]);
-    const [sorting, setSorting] = useState<DataTableSorting>([]);
+  const [selectedRows, setSelectedRows] = useState<Entry[]>([]);
+  const [sorting, setSorting] = useState<DataTableSorting>([]);
 
-    return (
-        <DataTable
-            columns={columns}
-            data={data}
-            bordered={true}
-            stickyHeader={true}
-            selectedRows={selectedRows}
-            onSelectRow={rows => setSelectedRows(rows)}
-            sorting={sorting}
-            onSortingChange={setSorting}
-        />
-    );
+  return (
+    <DataTable
+      columns={columns}
+      data={data}
+      bordered={true}
+      stickyHeader={true}
+      selectedRows={selectedRows}
+      onSelectRow={rows => setSelectedRows(rows)}
+      sorting={sorting}
+      onSortingChange={setSorting}
+    />
+  );
 };
 
 export default DataTableExample;
@@ -192,54 +193,54 @@ import { DataTable, DataTableColumns } from "@webiny/admin-ui";
 
 // Define the data structure
 interface Entry {
-    id: string;
-    name: string;
-    createdBy: string;
-    lastModified: string;
-    status: string;
+id: string;
+name: string;
+createdBy: string;
+lastModified: string;
+status: string;
 }
 
 // Define the columns structure
 const columns: DataTableColumns\<Entry\> = {
-    name: {
-        header: "Title",
-        enableSorting: true
-    },
-    createdBy: {
-        header: "Author"
-    },
-    lastModified: {
-        header: "Last Modified",
-        enableSorting: true
-    },
-    status: {
-        header: "Status"
-    }
+name: {
+header: "Title",
+enableSorting: true
+},
+createdBy: {
+header: "Author"
+},
+lastModified: {
+header: "Last Modified",
+enableSorting: true
+},
+status: {
+header: "Status"
+}
 };
 
 // Sample data
 const data = [
-    {
-        id: "entry-1",
-        name: "Getting Started Guide",
-        createdBy: "John Doe",
-        lastModified: "1 hour ago",
-        status: "Published"
-    },
-    {
-        id: "entry-2",
-        name: "User Documentation",
-        createdBy: "Jane Smith",
-        lastModified: "3 days ago",
-        status: "Draft"
-    },
-    {
-        id: "entry-3",
-        name: "API Reference",
-        createdBy: "John Doe",
-        lastModified: "1 week ago",
-        status: "Published"
-    }
+{
+id: "entry-1",
+name: "Getting Started Guide",
+createdBy: "John Doe",
+lastModified: "1 hour ago",
+status: "Published"
+},
+{
+id: "entry-2",
+name: "User Documentation",
+createdBy: "Jane Smith",
+lastModified: "3 days ago",
+status: "Draft"
+},
+{
+id: "entry-3",
+name: "API Reference",
+createdBy: "John Doe",
+lastModified: "1 week ago",
+status: "Published"
+}
 ];
 
 const DataTableExample = () => {
@@ -250,6 +251,7 @@ const DataTableExample = () => {
             data={data}
         />
     );
+
 };
 
 export default DataTableExample;
@@ -264,54 +266,54 @@ import { DataTable, DataTableColumns } from "@webiny/admin-ui";
 
 // Define the data structure
 interface Entry {
-    id: string;
-    name: string;
-    createdBy: string;
-    lastModified: string;
-    status: string;
+id: string;
+name: string;
+createdBy: string;
+lastModified: string;
+status: string;
 }
 
 // Define the columns structure
 const columns: DataTableColumns\<Entry\> = {
-    name: {
-        header: "Title",
-        enableSorting: true
-    },
-    createdBy: {
-        header: "Author"
-    },
-    lastModified: {
-        header: "Last Modified",
-        enableSorting: true
-    },
-    status: {
-        header: "Status"
-    }
+name: {
+header: "Title",
+enableSorting: true
+},
+createdBy: {
+header: "Author"
+},
+lastModified: {
+header: "Last Modified",
+enableSorting: true
+},
+status: {
+header: "Status"
+}
 };
 
 // Sample data
 const data = [
-    {
-        id: "entry-1",
-        name: "Getting Started Guide",
-        createdBy: "John Doe",
-        lastModified: "1 hour ago",
-        status: "Published"
-    },
-    {
-        id: "entry-2",
-        name: "User Documentation",
-        createdBy: "Jane Smith",
-        lastModified: "3 days ago",
-        status: "Draft"
-    },
-    {
-        id: "entry-3",
-        name: "API Reference",
-        createdBy: "John Doe",
-        lastModified: "1 week ago",
-        status: "Published"
-    }
+{
+id: "entry-1",
+name: "Getting Started Guide",
+createdBy: "John Doe",
+lastModified: "1 hour ago",
+status: "Published"
+},
+{
+id: "entry-2",
+name: "User Documentation",
+createdBy: "Jane Smith",
+lastModified: "3 days ago",
+status: "Draft"
+},
+{
+id: "entry-3",
+name: "API Reference",
+createdBy: "John Doe",
+lastModified: "1 week ago",
+status: "Published"
+}
 ];
 
 const BorderedDataTableExample = () => {
@@ -323,6 +325,7 @@ const BorderedDataTableExample = () => {
             bordered={true}
         />
     );
+
 };
 
 export default BorderedDataTableExample;
@@ -337,54 +340,54 @@ import { DataTable, DataTableColumns } from "@webiny/admin-ui";
 
 // Define the data structure
 interface Entry {
-    id: string;
-    name: string;
-    createdBy: string;
-    lastModified: string;
-    status: string;
+id: string;
+name: string;
+createdBy: string;
+lastModified: string;
+status: string;
 }
 
 // Define the columns structure
 const columns: DataTableColumns\<Entry\> = {
-    name: {
-        header: "Title",
-        enableSorting: true
-    },
-    createdBy: {
-        header: "Author"
-    },
-    lastModified: {
-        header: "Last Modified",
-        enableSorting: true
-    },
-    status: {
-        header: "Status"
-    }
+name: {
+header: "Title",
+enableSorting: true
+},
+createdBy: {
+header: "Author"
+},
+lastModified: {
+header: "Last Modified",
+enableSorting: true
+},
+status: {
+header: "Status"
+}
 };
 
 // Sample data
 const data = [
-    {
-        id: "entry-1",
-        name: "Getting Started Guide",
-        createdBy: "John Doe",
-        lastModified: "1 hour ago",
-        status: "Published"
-    },
-    {
-        id: "entry-2",
-        name: "User Documentation",
-        createdBy: "Jane Smith",
-        lastModified: "3 days ago",
-        status: "Draft"
-    },
-    {
-        id: "entry-3",
-        name: "API Reference",
-        createdBy: "John Doe",
-        lastModified: "1 week ago",
-        status: "Published"
-    }
+{
+id: "entry-1",
+name: "Getting Started Guide",
+createdBy: "John Doe",
+lastModified: "1 hour ago",
+status: "Published"
+},
+{
+id: "entry-2",
+name: "User Documentation",
+createdBy: "Jane Smith",
+lastModified: "3 days ago",
+status: "Draft"
+},
+{
+id: "entry-3",
+name: "API Reference",
+createdBy: "John Doe",
+lastModified: "1 week ago",
+status: "Published"
+}
 ];
 
 const WithStickyHeaderDataTableExample = () => {
@@ -396,6 +399,7 @@ const WithStickyHeaderDataTableExample = () => {
             stickyHeader={true}
         />
     );
+
 };
 
 export default WithStickyHeaderDataTableExample;
@@ -410,60 +414,60 @@ import { DataTable, DataTableColumns, DataTableSorting } from "@webiny/admin-ui"
 
 // Define the data structure
 interface Entry {
-    id: string;
-    name: string;
-    createdBy: string;
-    lastModified: string;
-    status: string;
-    $selectable?: boolean;
+id: string;
+name: string;
+createdBy: string;
+lastModified: string;
+status: string;
+$selectable?: boolean;
 }
 
 // Define the columns structure
 const columns: DataTableColumns\<Entry\> = {
-    name: {
-        header: "Title",
-        enableSorting: true
-    },
-    createdBy: {
-        header: "Author"
-    },
-    lastModified: {
-        header: "Last Modified",
-        enableSorting: true
-    },
-    status: {
-        header: "Status"
-    }
+name: {
+header: "Title",
+enableSorting: true
+},
+createdBy: {
+header: "Author"
+},
+lastModified: {
+header: "Last Modified",
+enableSorting: true
+},
+status: {
+header: "Status"
+}
 };
 
 // Sample data
 const data = [
-    {
-        id: "entry-1",
-        name: "Getting Started Guide",
-        createdBy: "John Doe",
-        lastModified: "1 hour ago",
-        status: "Published"
-    },
-    {
-        id: "entry-2",
-        name: "User Documentation",
-        createdBy: "Jane Smith",
-        lastModified: "3 days ago",
-        status: "Draft"
-    },
-    {
-        id: "entry-3",
-        name: "API Reference",
-        createdBy: "John Doe",
-        lastModified: "1 week ago",
-        status: "Published"
-    }
+{
+id: "entry-1",
+name: "Getting Started Guide",
+createdBy: "John Doe",
+lastModified: "1 hour ago",
+status: "Published"
+},
+{
+id: "entry-2",
+name: "User Documentation",
+createdBy: "Jane Smith",
+lastModified: "3 days ago",
+status: "Draft"
+},
+{
+id: "entry-3",
+name: "API Reference",
+createdBy: "John Doe",
+lastModified: "1 week ago",
+status: "Published"
+}
 ];
 
 const WithSelectableRowsDataTableExample = () => {
-    const [selectedRows, setSelectedRows] = useState\<Entry[]\>([]);
-    const [sorting, setSorting] = useState\<DataTableSorting\>([]);
+const [selectedRows, setSelectedRows] = useState\<Entry[]\>([]);
+const [sorting, setSorting] = useState\<DataTableSorting\>([]);
 
     return (
         <DataTable
@@ -473,6 +477,7 @@ const WithSelectableRowsDataTableExample = () => {
             onSelectRow={rows => setSelectedRows(rows)}
         />
     );
+
 };
 
 export default WithSelectableRowsDataTableExample;
@@ -489,59 +494,59 @@ import { DataTable, DataTableColumns } from "@webiny/admin-ui";
 
 // Define the data structure
 interface Entry {
-    id: string;
-    name: string;
-    createdBy: string;
-    lastModified: string;
-    status: string;
+id: string;
+name: string;
+createdBy: string;
+lastModified: string;
+status: string;
 }
 
 // Define the columns structure
 const columns: DataTableColumns\<Entry\> = {
-    name: {
-        header: "Title",
-        enableSorting: true
-    },
-    createdBy: {
-        header: "Author"
-    },
-    lastModified: {
-        header: "Last Modified",
-        enableSorting: true
-    },
-    status: {
-        header: "Status"
-    }
+name: {
+header: "Title",
+enableSorting: true
+},
+createdBy: {
+header: "Author"
+},
+lastModified: {
+header: "Last Modified",
+enableSorting: true
+},
+status: {
+header: "Status"
+}
 };
 
 // Sample data
 const data: Entry[] = [
-    {
-        id: "entry-1",
-        name: "Getting Started Guide",
-        createdBy: "John Doe",
-        lastModified: "1 hour ago",
-        status: "Published"
-    },
-    {
-        id: "entry-2",
-        name: "User Documentation",
-        createdBy: "Jane Smith",
-        lastModified: "3 days ago",
-        status: "Draft"
-    },
-    {
-        id: "entry-3",
-        name: "API Reference",
-        createdBy: "John Doe",
-        lastModified: "1 week ago",
-        status: "Published"
-    }
+{
+id: "entry-1",
+name: "Getting Started Guide",
+createdBy: "John Doe",
+lastModified: "1 hour ago",
+status: "Published"
+},
+{
+id: "entry-2",
+name: "User Documentation",
+createdBy: "Jane Smith",
+lastModified: "3 days ago",
+status: "Draft"
+},
+{
+id: "entry-3",
+name: "API Reference",
+createdBy: "John Doe",
+lastModified: "1 week ago",
+status: "Published"
+}
 ];
 
 const WithLoadingDataTableExample = () => {
-    const [data, setData] = useState\<Entry[]\>([]);
-    const [loading, setLoading] = useState(true);
+const [data, setData] = useState\<Entry[]\>([]);
+const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -559,6 +564,7 @@ const WithLoadingDataTableExample = () => {
             loading={loading}
         />
     );
+
 };
 
 export default WithLoadingDataTableExample;
@@ -570,70 +576,70 @@ export default WithLoadingDataTableExample;
 <Canvas of={DataTableStories.WithCustomCellRenderer} source={ { code: `
 
 import React, { useEffect, useState } from "react";
-import { DataTable, DataTableColumns,  Avatar, Text } from "@webiny/admin-ui";
+import { DataTable, DataTableColumns, Avatar, Text } from "@webiny/admin-ui";
 
 // Define the data structure
 interface Entry {
-    id: string;
-    name: string;
-    createdBy: string;
-    lastModified: string;
-    status: string;
+id: string;
+name: string;
+createdBy: string;
+lastModified: string;
+status: string;
 }
 
 // Define the columns structure
 const columns: DataTableColumns\<Entry\> = {
-    name: {
-        header: "Title",
-        enableSorting: true
-    },
-    createdBy: {
-        header: "Author"
-    },
-    lastModified: {
-        header: "Last Modified",
-        enableSorting: true
-    },
-    status: {
-        header: "Status"
-    }
+name: {
+header: "Title",
+enableSorting: true
+},
+createdBy: {
+header: "Author"
+},
+lastModified: {
+header: "Last Modified",
+enableSorting: true
+},
+status: {
+header: "Status"
+}
 };
 
 // Sample data
 const data: Entry[] = [
-    {
-        id: "entry-1",
-        name: "Getting Started Guide",
-        createdBy: "John Doe",
-        lastModified: "1 hour ago",
-        status: "Published"
-    },
-    {
-        id: "entry-2",
-        name: "User Documentation",
-        createdBy: "Jane Smith",
-        lastModified: "3 days ago",
-        status: "Draft"
-    },
-    {
-        id: "entry-3",
-        name: "API Reference",
-        createdBy: "John Doe",
-        lastModified: "1 week ago",
-        status: "Published"
-    }
+{
+id: "entry-1",
+name: "Getting Started Guide",
+createdBy: "John Doe",
+lastModified: "1 hour ago",
+status: "Published"
+},
+{
+id: "entry-2",
+name: "User Documentation",
+createdBy: "Jane Smith",
+lastModified: "3 days ago",
+status: "Draft"
+},
+{
+id: "entry-3",
+name: "API Reference",
+createdBy: "John Doe",
+lastModified: "1 week ago",
+status: "Published"
+}
 ];
 
 const WithCustomCellRendererDataTableExample = () => {
-    return (
-        <DataTable
-            columns={{
+return (
+<DataTable
+columns={{
                 ...columns,
                 name: {
                     ...columns.name,
                     cell: (entry) => {
                         return (
-                            <div className={"wby-flex wby-items-center wby-gap-sm-extra"}>
+                            <div className={"flex items-center gap-sm-extra"}>
                                 <Avatar
                                     image={
                                         <Avatar.Image
@@ -646,14 +652,14 @@ const WithCustomCellRendererDataTableExample = () => {
                                 />
                                 <div>
                                     <Text
-                                        className={"wby-text-neutral-primary wby-font-semibold"}
+                                        className={"text-neutral-primary font-semibold"}
                                         as={"div"}
                                     >
                                         {entry.name}
                                     </Text>
                                     <Text
                                         size={"sm"}
-                                        className={"wby-text-neutral-strong"}
+                                        className={"text-neutral-strong"}
                                         as={"div"}
                                     >Last updated: {entry.lastModified}</Text>
                                 </div>
@@ -662,15 +668,12 @@ const WithCustomCellRendererDataTableExample = () => {
                     }
                 }
             }}
-            data={data}
-        />
-    );
+data={data}
+/>
+);
 };
 
-
 export default WithCustomCellRendererDataTableExample;
-
-
 
 ` } } />
 
@@ -682,69 +685,69 @@ import { DataTable, DataTableColumns } from "@webiny/admin-ui";
 
 // Define the data structure
 interface Entry {
-    id: string;
-    name: string;
-    createdBy: string;
-    lastModified: string;
-    status: string;
+id: string;
+name: string;
+createdBy: string;
+lastModified: string;
+status: string;
 }
 
 // Define the columns structure
 const columns: DataTableColumns\<Entry\> = {
-    name: {
-        header: "Title",
-        enableSorting: true
-    },
-    createdBy: {
-        header: "Author"
-    },
-    lastModified: {
-        header: "Last Modified",
-        enableSorting: true
-    },
-    status: {
-        header: "Status"
-    }
+name: {
+header: "Title",
+enableSorting: true
+},
+createdBy: {
+header: "Author"
+},
+lastModified: {
+header: "Last Modified",
+enableSorting: true
+},
+status: {
+header: "Status"
+}
 };
 
 // Sample data
 const data = [
-    {
-        id: "entry-1",
-        name: "Getting Started Guide",
-        createdBy: "John Doe",
-        lastModified: "1 hour ago",
-        status: "Published"
-    },
-    {
-        id: "entry-2",
-        name: "User Documentation",
-        createdBy: "Jane Smith",
-        lastModified: "3 days ago",
-        status: "Draft"
-    },
-    {
-        id: "entry-3",
-        name: "API Reference",
-        createdBy: "John Doe",
-        lastModified: "1 week ago",
-        status: "Published"
-    }
+{
+id: "entry-1",
+name: "Getting Started Guide",
+createdBy: "John Doe",
+lastModified: "1 hour ago",
+status: "Published"
+},
+{
+id: "entry-2",
+name: "User Documentation",
+createdBy: "Jane Smith",
+lastModified: "3 days ago",
+status: "Draft"
+},
+{
+id: "entry-3",
+name: "API Reference",
+createdBy: "John Doe",
+lastModified: "1 week ago",
+status: "Published"
+}
 ];
 
 const WithCustomColumnSizeDataTableExample = () => {
-    return (
-        <DataTable
-            columns={{
+return (
+<DataTable
+columns={{
                 ...columns,
                 name: {
                     ...columns.name,
                     size: 200
                 }
             }}
-            data={data}
-        />
-    );
+data={data}
+/>
+);
 };
 
 export default WithCustomColumnSize;
@@ -758,54 +761,54 @@ import { DataTable, DataTableColumns } from "@webiny/admin-ui";
 
 // Define the data structure
 interface Entry {
-    id: string;
-    name: string;
-    createdBy: string;
-    lastModified: string;
-    status: string;
+id: string;
+name: string;
+createdBy: string;
+lastModified: string;
+status: string;
 }
 
 // Define the columns structure
 const columns: DataTableColumns\<Entry\> = {
-    name: {
-        header: "Title",
-        enableSorting: true
-    },
-    createdBy: {
-        header: "Author"
-    },
-    lastModified: {
-        header: "Last Modified",
-        enableSorting: true
-    },
-    status: {
-        header: "Status"
-    }
+name: {
+header: "Title",
+enableSorting: true
+},
+createdBy: {
+header: "Author"
+},
+lastModified: {
+header: "Last Modified",
+enableSorting: true
+},
+status: {
+header: "Status"
+}
 };
 
 // Sample data
 const data = [
-    {
-        id: "entry-1",
-        name: "Getting Started Guide",
-        createdBy: "John Doe",
-        lastModified: "1 hour ago",
-        status: "Published"
-    },
-    {
-        id: "entry-2",
-        name: "User Documentation",
-        createdBy: "Jane Smith",
-        lastModified: "3 days ago",
-        status: "Draft"
-    },
-    {
-        id: "entry-3",
-        name: "API Reference",
-        createdBy: "John Doe",
-        lastModified: "1 week ago",
-        status: "Published"
-    }
+{
+id: "entry-1",
+name: "Getting Started Guide",
+createdBy: "John Doe",
+lastModified: "1 hour ago",
+status: "Published"
+},
+{
+id: "entry-2",
+name: "User Documentation",
+createdBy: "Jane Smith",
+lastModified: "3 days ago",
+status: "Draft"
+},
+{
+id: "entry-3",
+name: "API Reference",
+createdBy: "John Doe",
+lastModified: "1 week ago",
+status: "Published"
+}
 ];
 
 const WithCustomColumnClassNameDataTableExample = () => {
@@ -816,16 +819,17 @@ const WithCustomColumnClassNameDataTableExample = () => {
                 ...columns,
                 lastModified: {
                     ...columns.lastModified,
-                    className: "wby-bg-primary-subtle"
+                    className: "bg-primary-subtle"
                 },
                 status: {
                     ...columns.status,
-                    className: "wby-text-right"
+                    className: "text-right"
                 }
             }}
             data={data}
         />
     );
+
 };
 
 export default WithCustomColumnClassNameDataTableExample;
@@ -834,8 +838,8 @@ export default WithCustomColumnClassNameDataTableExample;
 ### With Sorting
 
 > ⚠️ Webiny’s DataTable component doesn’t perform sorting for you.
-It only provides UI state (like sort indicators, sort direction, column clicked).
-You need to sort the data manually based on the sorting state.
+> It only provides UI state (like sort indicators, sort direction, column clicked).
+> You need to sort the data manually based on the sorting state.
 
 <Canvas of={DataTableStories.WithSorting} source={ { code: `
 
@@ -844,63 +848,63 @@ import { DataTable, DataTableColumns, DataTableSorting } from "@webiny/admin-ui"
 
 // Define the data structure
 interface Entry {
-    id: string;
-    name: string;
-    createdBy: string;
-    lastModified: string;
-    status: string;
+id: string;
+name: string;
+createdBy: string;
+lastModified: string;
+status: string;
 }
 
 // Define the columns structure
 const columns: DataTableColumns<Entry> = {
-    name: {
-        header: "Title",
-        enableSorting: true
-    },
-    createdBy: {
-        header: "Author"
-    },
-    lastModified: {
-        header: "Last Modified",
-        enableSorting: true
-    },
-    status: {
-        header: "Status"
-    }
+name: {
+header: "Title",
+enableSorting: true
+},
+createdBy: {
+header: "Author"
+},
+lastModified: {
+header: "Last Modified",
+enableSorting: true
+},
+status: {
+header: "Status"
+}
 };
 
 // Sample data
 const data: Entry[] = [
-    {
-        id: "entry-1",
-        name: "Getting Started Guide",
-        createdBy: "John Doe",
-        lastModified: "1 hour ago",
-        status: "Published"
-    },
-    {
-        id: "entry-2",
-        name: "User Documentation",
-        createdBy: "Jane Smith",
-        lastModified: "3 days ago",
-        status: "Draft"
-    },
-    {
-        id: "entry-3",
-        name: "API Reference",
-        createdBy: "John Doe",
-        lastModified: "1 week ago",
-        status: "Published"
-    }
+{
+id: "entry-1",
+name: "Getting Started Guide",
+createdBy: "John Doe",
+lastModified: "1 hour ago",
+status: "Published"
+},
+{
+id: "entry-2",
+name: "User Documentation",
+createdBy: "Jane Smith",
+lastModified: "3 days ago",
+status: "Draft"
+},
+{
+id: "entry-3",
+name: "API Reference",
+createdBy: "John Doe",
+lastModified: "1 week ago",
+status: "Published"
+}
 ];
 
 const WithSortingDataTableExample = () => {
-    const [sorting, setSorting] = useState<DataTableSorting>([
-        {
-            id: "lastModified",
-            desc: true
-        }
-    ]);
+const [sorting, setSorting] = useState<DataTableSorting>([
+{
+id: "lastModified",
+desc: true
+}
+]);
 
     return (
         <DataTable
@@ -910,6 +914,7 @@ const WithSortingDataTableExample = () => {
             onSortingChange={setSorting}
         />
     );
+
 };
 
 export default WithSortingDataTableExample;

@@ -18,9 +18,9 @@ export const WithBindingToggle = ({ setBindingType, type, children }: WithBindin
     }, [type, setBindingType]);
 
     return (
-        <div className={"wby-relative"}>
+        <div className={"relative"}>
             <IconButton
-                className={"wby-absolute wby-right-0"}
+                className={"absolute right-0"}
                 variant={"ghost"}
                 size={"sm"}
                 icon={type === "static" ? addIcon : removeIcon}

@@ -116,14 +116,14 @@ const useToast = () => {
 
     const showSuccessToast = (params: ShowToastParams) => {
         return showToast({
-            icon: <Icon icon={<Check />} label={""} className={"wby-fill-success"} />,
+            icon: <Icon icon={<Check />} label={""} className={"fill-success"} />,
             ...params
         });
     };
 
     const showWarningToast = (params: ShowToastParams) => {
         return showToast({
-            icon: <Icon icon={<Warning />} label={""} className={"wby-fill-warning"} />,
+            icon: <Icon icon={<Warning />} label={""} className={"fill-warning"} />,
             ...params
         });
     };

@@ -17,7 +17,7 @@ const DisplayIcon = ({ model }: IconProps) => {
             icon={<FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />}
             label={"Model icon"}
             size={"lg"}
-            className={"wby-text-neutral-strong"}
+            className={"text-neutral-strong"}
         />
     );
 };
@@ -41,7 +41,7 @@ export const OptionsModelListItem = ({
             text={
                 <div>
                     <Text as={"div"}>{model.name}</Text>
-                    <Text as={"div"} size={"sm"} className={"wby-text-neutral-strong"}>
+                    <Text as={"div"} size={"sm"} className={"text-neutral-strong"}>
                         {model.description}
                     </Text>
                 </div>

@@ -13,15 +13,15 @@ interface IWrapperProps {
 const Wrapper = ({ children }: IWrapperProps) => {
     return (
         <>
-            <div className="wby-w-5/12 wby-absolute wby-top-1/2 wby-left-1/2 wby--translate-x-1/2 wby--translate-y-1/2 wby-z-50">
+            <div className="w-5/12 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
                 <div
                     className={
-                        "wby-flex wby-p-lg wby-border-sm wby-border-neutral-dimmed-darker wby-rounded-3xl  wby-bg-neutral-base"
+                        "flex p-lg border-sm border-neutral-dimmed-darker rounded-3xl  bg-neutral-base"
                     }
                 >
                     <Grid>
                         <Grid.Column span={3}>
-                            <div className="wby-h-full wby-flex wby-items-center wby-justify-center wby-bg-neutral-dimmed wby-rounded-md wby-p-lg">
+                            <div className="h-full flex items-center justify-center bg-neutral-dimmed rounded-md p-lg">
                                 <Icon
                                     style={{
                                         width: "64px",
@@ -35,14 +35,12 @@ const Wrapper = ({ children }: IWrapperProps) => {
                             </div>
                         </Grid.Column>
                         <Grid.Column span={9}>
-                            <div className={"wby-flex wby-flex-col wby-justify-center"}>
-                                {children}
-                            </div>
+                            <div className={"flex flex-col justify-center"}>{children}</div>
                         </Grid.Column>
                     </Grid>
                 </div>
             </div>
-            {/*<div className="wby-absolute wby-inset-0 wby-bg-neutral-dark/50 wby-z-45"></div>*/}
+            {/*<div className="absolute inset-0 bg-neutral-dark/50 z-45"></div>*/}
         </>
     );
 };
@@ -50,7 +48,7 @@ const Wrapper = ({ children }: IWrapperProps) => {
 const Title = () => {
     const { entry } = useContentEntry();
     return (
-        <Heading level={4} className={"wby-mb-sm"}>
+        <Heading level={4} className={"mb-sm"}>
             Record ({entry.meta.title}) is locked!
         </Heading>
     );

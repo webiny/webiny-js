@@ -85,12 +85,12 @@ export const Margin = observer(({ elementId, children }: MarginProps) => {
         }
     };
 
-    const rowClassname = "wby-flex wby-flex-row wby-w-full wby-justify-center wby-items-center";
+    const rowClassname = "flex flex-row w-full justify-center items-center";
 
     return (
-        <div className="wby-flex wby-flex-col wby-rounded-md wby-relative">
+        <div className="flex flex-col rounded-md relative">
             {/* Margin Label */}
-            <span className="wby-absolute wby-text-sm" style={{ top: 5, left: 7 }}>
+            <span className="absolute text-sm" style={{ top: 5, left: 7 }}>
                 Margin
             </span>
 

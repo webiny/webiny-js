@@ -82,11 +82,7 @@ const DynamicSection = ({
                     <Bind.ValidationContainer>
                         <ParentFieldProvider value={value} path={Bind.parentName}>
                             {showLabel ? (
-                                <div
-                                    className={
-                                        "wby-pb-md wby-mb-md wby-border-b-sm wby-border-neutral-dimmed"
-                                    }
-                                >
+                                <div className={"pb-md mb-md border-b-sm border-neutral-dimmed"}>
                                     <Heading level={6} className={"webiny_group-label-text"}>
                                         {`${field.label} ${
                                             bindFieldValue.length
@@ -139,7 +135,7 @@ const DynamicSection = ({
                                 <Grid.Column span={12}>
                                     <div
                                         className={cn(
-                                            bindFieldValue.length > 0 ? "wby-pt-none" : "wby-pt-sm"
+                                            bindFieldValue.length > 0 ? "pt-none" : "pt-sm"
                                         )}
                                     >
                                         <Button

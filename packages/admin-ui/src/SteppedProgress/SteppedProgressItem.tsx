@@ -20,10 +20,7 @@ const DecoratableSteppedProgressItem = ({
     return (
         <div
             {...props}
-            className={cn(
-                "wby-flex wby-justify-start wby-items-center wby-gap-sm-extra wby-py-sm",
-                className
-            )}
+            className={cn("flex justify-start items-center gap-sm-extra py-sm", className)}
         >
             <SteppedProgressIndicator state={state} errored={errored} disabled={disabled}>
                 <SteppedProgressIcon state={state} errored={errored} disabled={disabled} />

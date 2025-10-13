@@ -9,13 +9,10 @@ export const Loader = ({ count = 4 }: LoaderProps) => {
     const lines = Array.from({ length: count });
 
     return (
-        <div className={"wby-my-md wby-p-xs"}>
+        <div className={"my-md p-xs"}>
             {lines.map((_, index) => {
                 return (
-                    <div
-                        key={`folder-skeleton-${index}`}
-                        className={"wby-mb-xs wby-px-sm wby-py-xs-plus"}
-                    >
+                    <div key={`folder-skeleton-${index}`} className={"mb-xs px-sm py-xs-plus"}>
                         <Skeleton type={"text"} size={"md"} />
                     </div>
                 );

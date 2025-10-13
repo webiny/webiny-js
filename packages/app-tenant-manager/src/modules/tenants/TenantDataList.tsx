@@ -83,7 +83,7 @@ const TenantDataList = () => {
                     text={t`New`}
                     icon={<AddIcon />}
                     size={"sm"}
-                    className={"wby-ml-xs"}
+                    className={"ml-xs"}
                     ata-testid="new-record-button"
                     onClick={createTenant}
                 />

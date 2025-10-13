@@ -48,7 +48,7 @@ const BaseMultiFilePicker = ({
     );
 
     return (
-        <div className={"wby-w-full"}>
+        <div className={"w-full"}>
             {type !== "area" && (
                 <>
                     <FilePickerLabel

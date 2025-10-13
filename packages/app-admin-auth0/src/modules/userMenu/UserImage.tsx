@@ -17,7 +17,7 @@ export const UserImage = makeDecoratable("UserImage", () => {
             size={"sm"}
             variant={"strong"}
             fallback={
-                <Avatar.Fallback className={"wby-uppercase"} delayMs={0}>
+                <Avatar.Fallback className={"uppercase"} delayMs={0}>
                     {displayName[0]}
                 </Avatar.Fallback>
             }

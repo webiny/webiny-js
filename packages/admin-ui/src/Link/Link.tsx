@@ -2,36 +2,36 @@ import React from "react";
 import { cva, type VariantProps, makeDecoratable, cn } from "~/utils.js";
 import { SimpleLink, type SimpleLinkProps } from "@webiny/app";
 
-const linkVariants = cva("wby-font-sans wby-rounded-xs", {
+const linkVariants = cva("font-sans rounded-xs", {
     variants: {
         size: {
             inherit: "[font-size:inherit]",
-            sm: "wby-text-sm",
-            md: "wby-text-md",
-            lg: "wby-text-lg",
-            xl: "wby-text-xl"
+            sm: "text-sm",
+            md: "text-md",
+            lg: "text-lg",
+            xl: "text-xl"
         },
         variant: {
             primary: [
-                "wby-text-accent-primary",
-                "focus-visible:wby-outline-none focus-visible:wby-ring-[2px] focus-visible:wby-ring-primary-dimmed"
+                "text-accent-primary",
+                "focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-primary-dimmed"
             ],
             secondary: [
-                "wby-text-neutral-primary",
-                "focus-visible:wby-outline-none focus-visible:wby-ring-[2px] focus-visible:wby-ring-primary-dimmed"
+                "text-neutral-primary",
+                "focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-primary-dimmed"
             ],
             "primary-negative": [
-                "wby-text-accent-primary",
-                "focus-visible:wby-outline-none focus-visible:wby-ring-[2px] focus-visible:wby-ring-primary-strong"
+                "text-accent-primary",
+                "focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-primary-strong"
             ],
             "secondary-negative": [
-                "wby-text-neutral-light",
-                "focus-visible:wby-outline-none focus-visible:wby-ring-[2px] focus-visible:wby-ring-primary-strong"
+                "text-neutral-light",
+                "focus-visible:outline-none focus-visible:ring-[2px] focus-visible:ring-primary-strong"
             ]
         },
         underline: {
-            true: "wby-underline hover:wby-no-underline",
-            false: "hover:wby-underline"
+            true: "underline hover:no-underline",
+            false: "hover:underline"
         }
     },
     defaultVariants: {

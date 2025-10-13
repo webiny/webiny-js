@@ -17,7 +17,7 @@ export const LinkEditForm = ({ linkData, onSave, onCancel }: LinkEditFormProps) 
     return (
         <Form data={linkData} onSubmit={onSubmit}>
             {form => (
-                <div className={"wby-p-md"}>
+                <div className={"p-md"}>
                     <Grid>
                         <Grid.Column span={12}>
                             <Text size={"lg"}>Edit Link</Text>
@@ -45,7 +45,7 @@ export const LinkEditForm = ({ linkData, onSave, onCancel }: LinkEditFormProps) 
                                 )}
                             </Bind>
                         </Grid.Column>
-                        <Grid.Column span={12} className={"wby-flex wby-justify-end wby-gap-sm"}>
+                        <Grid.Column span={12} className={"flex justify-end gap-sm"}>
                             <Button variant={"secondary"} text={`Cancel`} onClick={onCancel} />
                             <Button text={`Save`} onClick={e => form.submit(e)} />
                         </Grid.Column>

@@ -54,11 +54,11 @@ const AccordionItemBase = (props: AccordionItemProps) => {
             {...itemProps}
             className={cn(
                 [
-                    "wby-group-item wby-border-b-sm wby-border-b-neutral-dimmed data-[state=open]:wby-rounded-bl-lg data-[state=open]:wby-rounded-br-lg",
-                    "group-[.wby-accordion-variant-container]:wby-rounded-lg",
-                    "group-[.wby-accordion-background-base]:wby-bg-neutral-base",
-                    "group-[.wby-accordion-background-light]:wby-bg-neutral-light",
-                    "data-[disabled]:wby-pointer-events-none data-[disabled]:wby-opacity-50"
+                    "group-item border-b-sm border-b-neutral-dimmed data-[state=open]:rounded-bl-lg data-[state=open]:rounded-br-lg",
+                    "group-[.accordion-variant-container]:rounded-lg",
+                    "group-[.accordion-background-base]:bg-neutral-base",
+                    "group-[.accordion-background-light]:bg-neutral-light",
+                    "data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                 ],
                 itemProps.className
             )}

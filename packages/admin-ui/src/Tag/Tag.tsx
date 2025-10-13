@@ -7,87 +7,87 @@ import { IconButton } from "~/Button/index.js";
 
 const tagVariants = cva(
     [
-        "wby-inline-flex wby-items-center wby-gap-xxs wby-rounded-sm wby-text-sm wby-text-regular wby-transition-colors wby-overflow-hidden",
+        "inline-flex items-center gap-xxs rounded-sm text-sm text-regular transition-colors overflow-hidden",
         "focus:outline-none"
     ],
     {
         variants: {
             isInteractive: {
-                true: "wby-cursor-pointer"
+                true: "cursor-pointer"
             },
             isDismissible: {
-                true: "wby-pl-xs-plus wby-pt-xxs wby-pb-xxs wby-pr-xs",
-                false: "wby-px-xs-plus wby-py-xxs"
+                true: "pl-xs-plus pt-xxs pb-xxs pr-xs",
+                false: "px-xs-plus py-xxs"
             },
             isDisabled: {
-                true: "wby-cursor-not-allowed wby-pointer-events-none"
+                true: "cursor-not-allowed pointer-events-none"
             },
             variant: {
                 "neutral-base": [
-                    "wby-bg-transparent wby-text-neutral-primary",
-                    "hover:wby-bg-neutral-light",
-                    "aria-disabled:wby-bg-transparent aria-disabled:wby-text-neutral-disabled"
+                    "bg-transparent text-neutral-primary",
+                    "hover:bg-neutral-light",
+                    "aria-disabled:bg-transparent aria-disabled:text-neutral-disabled"
                 ],
                 "neutral-base-outline": [
-                    "wby-border-sm wby-border-solid wby-px-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] wby-py-[calc(theme(padding.xxs)-theme(borderWidth.sm))]",
-                    "wby-bg-transparent wby-border-neutral-muted wby-text-neutral-primary",
-                    "hover:wby-bg-neutral-light",
-                    "aria-disabled:wby-bg-transparent aria-disabled:wby-border-neutral-dimmed aria-disabled:wby-text-neutral-disabled"
+                    "border-sm border-solid px-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] py-[calc(theme(padding.xxs)-theme(borderWidth.sm))]",
+                    "bg-transparent border-neutral-muted text-neutral-primary",
+                    "hover:bg-neutral-light",
+                    "aria-disabled:bg-transparent aria-disabled:border-neutral-dimmed aria-disabled:text-neutral-disabled"
                 ],
                 "neutral-light": [
-                    "wby-bg-neutral-light wby-text-neutral-primary",
-                    "hover:wby-bg-neutral-muted",
-                    "aria-disabled:wby-bg-neutral-light aria-disabled:wby-text-neutral-muted"
+                    "bg-neutral-light text-neutral-primary",
+                    "hover:bg-neutral-muted",
+                    "aria-disabled:bg-neutral-light aria-disabled:text-neutral-muted"
                 ],
                 "neutral-muted": [
-                    "wby-bg-neutral-muted wby-text-neutral-primary",
-                    "hover:wby-bg-neutral-strong",
-                    "aria-disabled:wby-bg-neutral-muted aria-disabled:wby-text-neutral-muted"
+                    "bg-neutral-muted text-neutral-primary",
+                    "hover:bg-neutral-strong",
+                    "aria-disabled:bg-neutral-muted aria-disabled:text-neutral-muted"
                 ],
                 "neutral-strong": [
-                    "wby-bg-neutral-strong wby-text-neutral-light",
-                    "hover:wby-bg-neutral-xstrong",
-                    "aria-disabled:wby-bg-neutral-muted"
+                    "bg-neutral-strong text-neutral-light",
+                    "hover:bg-neutral-xstrong",
+                    "aria-disabled:bg-neutral-muted"
                 ],
                 "neutral-xstrong": [
-                    "wby-bg-neutral-xstrong wby-text-neutral-light",
-                    "hover:wby-bg-neutral-dark",
-                    "aria-disabled:wby-bg-neutral-strong"
+                    "bg-neutral-xstrong text-neutral-light",
+                    "hover:bg-neutral-dark",
+                    "aria-disabled:bg-neutral-strong"
                 ],
                 "neutral-dark": [
-                    "wby-bg-neutral-dark wby-text-neutral-light",
-                    "hover:wby-bg-neutral-xstrong",
-                    "aria-disabled:wby-bg-neutral-strong"
+                    "bg-neutral-dark text-neutral-light",
+                    "hover:bg-neutral-xstrong",
+                    "aria-disabled:bg-neutral-strong"
                 ],
                 accent: [
-                    "wby-bg-primary-default wby-text-neutral-light",
-                    "hover:wby-bg-primary-strong",
-                    "aria-disabled:wby-bg-primary-disabled"
+                    "bg-primary-default text-neutral-light",
+                    "hover:bg-primary-strong",
+                    "aria-disabled:bg-primary-disabled"
                 ],
                 "accent-light": [
-                    "wby-bg-primary-subtle wby-text-neutral-primary",
-                    "hover:wby-bg-primary-muted",
-                    "aria-disabled:wby-bg-primary-subtle aria-disabled:wby-text-neutral-muted"
+                    "bg-primary-subtle text-neutral-primary",
+                    "hover:bg-primary-muted",
+                    "aria-disabled:bg-primary-subtle aria-disabled:text-neutral-muted"
                 ],
                 success: [
-                    "wby-bg-success-default wby-text-neutral-light",
-                    "hover:wby-bg-success-strong",
-                    "aria-disabled:wby-bg-success-disabled"
+                    "bg-success-default text-neutral-light",
+                    "hover:bg-success-strong",
+                    "aria-disabled:bg-success-disabled"
                 ],
                 "success-light": [
-                    "wby-bg-success-subtle wby-text-neutral-primary",
-                    "hover:wby-bg-success-muted",
-                    "aria-disabled:wby-bg-success-subtle aria-disabled:wby-text-neutral-muted"
+                    "bg-success-subtle text-neutral-primary",
+                    "hover:bg-success-muted",
+                    "aria-disabled:bg-success-subtle aria-disabled:text-neutral-muted"
                 ],
                 warning: [
-                    "wby-bg-warning-muted wby-text-neutral-primary",
-                    "hover:wby-bg-warning-default",
-                    "aria-disabled:wby-bg-warning-disabled aria-disabled:wby-text-neutral-disabled"
+                    "bg-warning-muted text-neutral-primary",
+                    "hover:bg-warning-default",
+                    "aria-disabled:bg-warning-disabled aria-disabled:text-neutral-disabled"
                 ],
                 destructive: [
-                    "wby-bg-destructive-default wby-text-neutral-light",
-                    "hover:wby-bg-destructive-strong",
-                    "aria-disabled:wby-bg-destructive-disabled"
+                    "bg-destructive-default text-neutral-light",
+                    "hover:bg-destructive-strong",
+                    "aria-disabled:bg-destructive-disabled"
                 ]
             }
         },
@@ -175,9 +175,7 @@ const DecoratableTag = ({
             )}
             aria-disabled={disabled}
         >
-            <span className={"wby-overflow-hidden wby-truncate wby-whitespace-nowrap"}>
-                {content}
-            </span>
+            <span className={"overflow-hidden truncate whitespace-nowrap"}>{content}</span>
             {onDismiss && (
                 <IconButton
                     icon={

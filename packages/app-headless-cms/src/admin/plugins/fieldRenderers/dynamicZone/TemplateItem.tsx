@@ -15,23 +15,23 @@ export const TemplateItem = makeDecoratable(
         return (
             <div
                 className={
-                    "wby-flex wby-flex-col wby-justify-between wby-bg-neutral-base wby-rounded-sm wby-shadow-sm wby-overflow-hidden"
+                    "flex flex-col justify-between bg-neutral-base rounded-sm shadow-sm overflow-hidden"
                 }
             >
                 <div>
-                    <div className={"wby-text-center wby-p-lg wby-bg-neutral-muted"}>
+                    <div className={"text-center p-lg bg-neutral-muted"}>
                         <TemplateIcon icon={template.icon} />
                     </div>
-                    <div className={"wby-pt-md wby-px-md wby-text-left"}>
-                        <Heading level={6} className={"wby-mb-xs"}>
+                    <div className={"pt-md px-md text-left"}>
+                        <Heading level={6} className={"mb-xs"}>
                             {template.name}
                         </Heading>
-                        <Text size={"sm"} as={"div"} className={"wby-text-neutral-strong"}>
+                        <Text size={"sm"} as={"div"} className={"text-neutral-strong"}>
                             {template.description}
                         </Text>
                     </div>
                 </div>
-                <div className={"wby-p-sm wby-text-right"}>
+                <div className={"p-sm text-right"}>
                     <Button size={"sm"} text={"Insert"} onClick={() => onTemplate(template)} />
                 </div>
             </div>

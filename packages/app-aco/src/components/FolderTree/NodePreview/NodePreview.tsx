@@ -8,10 +8,7 @@ type NodePreviewProps = {
 
 export const NodePreview = ({ text }: NodePreviewProps) => {
     return (
-        <Tree.Item
-            className={"wby-bg-neutral-dark/10 wby-absolute wby-z-[100]"}
-            style={{ maxWidth: 256 }}
-        >
+        <Tree.Item className={"bg-neutral-dark/10 absolute z-[100]"} style={{ maxWidth: 256 }}>
             <FolderNode text={text} isRoot={false} />
         </Tree.Item>
     );

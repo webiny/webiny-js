@@ -9,7 +9,7 @@ const ProgressRoot = ({ className, ...props }: ProgressRootProps) => {
         <ProgressPrimitive.Root
             data-slot="progress"
             className={cn(
-                "wby-bg-neutral-muted wby-relative wby-h-xs-plus wby-w-full wby-overflow-hidden wby-rounded-full",
+                "bg-neutral-muted relative h-xs-plus w-full overflow-hidden rounded-full",
                 className
             )}
             {...props}

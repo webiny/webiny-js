@@ -7,9 +7,9 @@ export interface RestoreItemsReportMessageProps {
 
 export const RestoreItemsReportMessage = (props: RestoreItemsReportMessageProps) => {
     return (
-        <div className={"wby-cursor-pointer"} onClick={() => props.onLocationClick()}>
+        <div className={"cursor-pointer"} onClick={() => props.onLocationClick()}>
             Item successfully restored (
-            <Text size={"sm"} className={"wby-text-accent-primary wby-underline"}>
+            <Text size={"sm"} className={"text-accent-primary underline"}>
                 {"see location"}
             </Text>
             ).

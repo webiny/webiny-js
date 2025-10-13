@@ -13,10 +13,10 @@ export const SelectedFilter = (props: SelectedFilterProps) => {
     return (
         <div
             role={"button"}
-            className={cn(buttonVariants({ variant: "tertiary" }), "wby-gap-xs wby-cursor-pointer")}
+            className={cn(buttonVariants({ variant: "tertiary" }), "gap-xs cursor-pointer")}
             onClick={props.onEdit}
         >
-            <span className={"wby-truncate wby-max-w-[256px]"}>{props.filter.name}</span>
+            <span className={"truncate max-w-[256px]"}>{props.filter.name}</span>
             <IconButton icon={<Close />} onClick={props.onDelete} size={"xs"} variant={"ghost"} />
         </div>
     );

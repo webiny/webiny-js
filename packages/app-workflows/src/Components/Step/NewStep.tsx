@@ -55,7 +55,7 @@ export const NewStep = (props: IAddNewStepProps) => {
 
     return (
         <Grid>
-            <Grid.Column span={12} className={"wby-text-center wby-p-md"}>
+            <Grid.Column span={12} className={"text-center p-md"}>
                 <Button
                     variant={"ghost"}
                     onClick={onClick}

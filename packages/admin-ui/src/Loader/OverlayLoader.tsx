@@ -9,7 +9,7 @@ const DecoratableOverlayLoader = ({ className, size = "lg", ...props }: OverlayL
     return (
         <div
             className={cn(
-                "wby-w-full wby-h-full wby-absolute wby-inset-0 wby-bg-neutral-base/80 wby-flex wby-items-center wby-justify-center wby-z-30",
+                "w-full h-full absolute inset-0 bg-neutral-base/80 flex items-center justify-center z-30",
                 className
             )}
         >

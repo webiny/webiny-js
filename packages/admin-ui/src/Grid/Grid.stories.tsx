@@ -18,7 +18,7 @@ type Story = StoryObj<typeof Grid>;
 
 export const Default: Story = {
     args: {
-        className: "wby-bg-neutral-light wby-p-md wby-w-full",
+        className: "bg-neutral-light p-md w-full",
         children: (
             <>
                 <StyledColumn index={1} />
@@ -107,39 +107,39 @@ export const Documentation: Story = {
     render: args => {
         return (
             <Grid {...args}>
-                <Grid.Column className="wby-bg-primary wby-text-neutral-light wby-p-2 wby-text-md wby-rounded-sm">
+                <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
                     Col 1
                 </Grid.Column>
                 <Grid.Column
-                    className="wby-bg-primary wby-text-neutral-light wby-p-2 wby-text-md wby-rounded-sm"
+                    className="bg-primary text-neutral-light p-2 text-md rounded-sm"
                     span={3}
                 >
                     Col 2<br />
                     Span: 3
                 </Grid.Column>
-                <Grid.Column className="wby-bg-primary wby-text-neutral-light wby-p-2 wby-text-md wby-rounded-sm">
+                <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
                     Col 3
                 </Grid.Column>
-                <Grid.Column className="wby-bg-primary wby-text-neutral-light wby-p-2 wby-text-md wby-rounded-sm">
+                <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
                     Col 4
                 </Grid.Column>
-                <Grid.Column className="wby-bg-primary wby-text-neutral-light wby-p-2 wby-text-md wby-rounded-sm">
+                <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
                     Col 5
                 </Grid.Column>
-                <Grid.Column className="wby-bg-primary wby-text-neutral-light wby-p-2 wby-text-md wby-rounded-sm">
+                <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
                     Col 6
                 </Grid.Column>
                 <Grid.Column
-                    className="wby-bg-primary wby-text-neutral-light wby-p-2 wby-text-md wby-rounded-sm"
+                    className="bg-primary text-neutral-light p-2 text-md rounded-sm"
                     span={2}
                 >
                     Col 7<br />
                     Span: 2
                 </Grid.Column>
-                <Grid.Column className="wby-bg-primary wby-text-neutral-light wby-p-2 wby-text-md wby-rounded-sm">
+                <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
                     Col 8
                 </Grid.Column>
-                <Grid.Column className="wby-bg-primary wby-text-neutral-light wby-p-2 wby-text-md wby-rounded-sm">
+                <Grid.Column className="bg-primary text-neutral-light p-2 text-md rounded-sm">
                     Col 9
                 </Grid.Column>
             </Grid>
@@ -147,7 +147,7 @@ export const Documentation: Story = {
     },
     args: {
         gap: "comfortable",
-        className: "wby-bg-neutral-light wby-p-md wby-w-full"
+        className: "bg-neutral-light p-md w-full"
     },
     argTypes: {
         gap: {

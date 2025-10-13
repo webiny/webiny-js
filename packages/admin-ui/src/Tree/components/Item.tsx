@@ -9,21 +9,21 @@ import { ItemPlaceholder } from "./ItemPlaceholder.js";
 
 const itemVariants = cva(
     [
-        "wby-group",
-        "wby-relative",
-        "wby-flex wby-items-center wby-justify-start wby-gap-xs",
-        "wby-px-sm-plus wby-py-xs-plus wby-rounded-md",
-        "wby-text-neutral-primary",
-        "wby-cursor-pointer",
-        "hover:wby-bg-neutral-dark/5"
+        "group",
+        "relative",
+        "flex items-center justify-start gap-xs",
+        "px-sm-plus py-xs-plus rounded-md",
+        "text-neutral-primary",
+        "cursor-pointer",
+        "hover:bg-neutral-dark/5"
     ],
     {
         variants: {
             active: {
-                true: "wby-bg-neutral-dark/5 wby-font-semibold"
+                true: "bg-neutral-dark/5 font-semibold"
             },
             loading: {
-                true: "!wby-text-neutral-disabled !wby-fill-neutral-disabled !wby-pointer-events-none"
+                true: "!text-neutral-disabled !fill-neutral-disabled !pointer-events-none"
             }
         }
     }
@@ -33,7 +33,7 @@ type ItemProps = React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof item
 
 const BaseItem = ({ children, className, active, loading, ...props }: ItemProps) => {
     return (
-        <div className={"wby-mb-xs wby-px-sm"}>
+        <div className={"mb-xs px-sm"}>
             <div {...props} className={cn(itemVariants({ active, loading }), className)}>
                 {children}
             </div>

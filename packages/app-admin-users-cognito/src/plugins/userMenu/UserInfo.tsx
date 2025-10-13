@@ -22,7 +22,7 @@ export const UserInfo = ({ accountRoute }: UserInfoProps) => {
 
     // Start with the assumption that the user doesn't have a profile in the system (external IDP).
     let content = (
-        <Text size={"md"} className={"wby-font-bold"}>
+        <Text size={"md"} className={"font-bold"}>
             {displayName}
         </Text>
     );
@@ -33,11 +33,11 @@ export const UserInfo = ({ accountRoute }: UserInfoProps) => {
 
         content = (
             <>
-                <Text size={"md"} className={"wby-block wby-font-semibold wby-mb-sm"}>
+                <Text size={"md"} className={"block font-semibold mb-sm"}>
                     {fullName}
                 </Text>
 
-                <Text size={"sm"} className={"wby-block !wby-text-neutral-strong"}>
+                <Text size={"sm"} className={"block !text-neutral-strong"}>
                     {email}
                 </Text>
             </>

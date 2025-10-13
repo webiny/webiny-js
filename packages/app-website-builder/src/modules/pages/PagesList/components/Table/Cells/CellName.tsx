@@ -12,20 +12,20 @@ interface PageCellRowTitleProps {
 
 const PageCellRowTitle = ({ page }: PageCellRowTitleProps) => {
     return (
-        <div className={"wby-flex wby-flex-col wby-gap-y-[3px]"}>
-            <div className={"wby-flex wby-w-full wby-items-center"}>
+        <div className={"flex flex-col gap-y-[3px]"}>
+            <div className={"flex w-full items-center"}>
                 <Icon
                     size={"sm"}
                     color={"neutral-strong"}
-                    className={"wby-mr-xs"}
+                    className={"mr-xs"}
                     icon={<File />}
                     label={`Page - ${page.properties.title}`}
                 />
-                <Text as={"div"} className={"wby-truncate wby-min-w-0 wby-flex-shrink"}>
+                <Text as={"div"} className={"truncate min-w-0 flex-shrink"}>
                     {page.properties.title}
                 </Text>
             </div>
-            <Text as={"div"} size={"sm"} className={"wby-text-neutral-dimmed"}>
+            <Text as={"div"} size={"sm"} className={"text-neutral-dimmed"}>
                 {page.properties.path}
             </Text>
         </div>
@@ -43,7 +43,7 @@ export const PageCellName = ({ page }: EntryCellNameProps) => {
         <Link
             to={getEditPageUrl(page.id)}
             variant={"secondary"}
-            className={"wby-truncate !wby-no-underline"}
+            className={"truncate !no-underline"}
         >
             <PageCellRowTitle page={page} />
         </Link>

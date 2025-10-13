@@ -33,7 +33,7 @@ export const FolderNode = ({
     return (
         <>
             <Tree.Item.Icon label={"Folder"} element={icon} />
-            <Text as={"div"} className={"wby-truncate"}>
+            <Text as={"div"} className={"truncate"}>
                 {text}
             </Text>
         </>

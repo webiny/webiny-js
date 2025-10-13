@@ -31,7 +31,7 @@ export const CellStatus = () => {
     }, [row.data.status]);
 
     return (
-        <div className={"wby-flex wby-items-center"}>
+        <div className={"flex items-center"}>
             <Tag
                 variant={variant}
                 content={`${statusLabel}${row.data.version ? ` (v${row.data.version})` : ""}`}

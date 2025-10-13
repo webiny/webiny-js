@@ -38,7 +38,7 @@ export const Search = () => {
                     startIcon={<Icon icon={<SearchIcon />} label="Search" />}
                     size={"md"}
                     variant={"ghost"}
-                    className={"wby-w-full"}
+                    className={"w-full"}
                 />
             )}
         </DelayedOnChange>

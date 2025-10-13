@@ -4,24 +4,24 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 
 const popoverContentVariants = cva(
     [
-        "wby-bg-neutral-base wby-rounded-sm wby-shadow-md wby-overflow-hidden wby-outline-none",
-        "data-[state=open]:wby-animate-in data-[state=closed]:wby-animate-out data-[state=closed]:wby-fade-out-0 data-[state=open]:wby-fade-in-0 data-[state=closed]:wby-zoom-out-95 data-[state=open]:wby-zoom-in-95 wby-origin-(--radix-popover-content-transform-origin)",
-        "data-[side=bottom]:wby-slide-in-from-top-2 data-[side=left]:wby-slide-in-from-right-2 data-[side=right]:wby-slide-in-from-left-2 data-[side=top]:wby-slide-in-from-bottom-2"
+        "bg-neutral-base rounded-sm shadow-md overflow-hidden outline-none",
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 origin-(--radix-popover-content-transform-origin)",
+        "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
     ],
     {
         variants: {
             variant: {
-                accent: "wby-bg-neutral-dark wby-text-neutral-light wby-border-neutral-black",
-                subtle: "wby-bg-neutral-base wby-text-neutral-primary wby-border-neutral-muted"
+                accent: "bg-neutral-dark text-neutral-light border-neutral-black",
+                subtle: "bg-neutral-base text-neutral-primary border-neutral-muted"
             },
             arrow: {
                 true: [
-                    "data-[side=top]:wby-pb-xs-plus",
-                    "data-[side=bottom]:wby-pt-xs-plus",
-                    "data-[side=left]:wby-pr-xs-plus",
-                    "data-[side=right]:wby-pl-xs-plus"
+                    "data-[side=top]:pb-xs-plus",
+                    "data-[side=bottom]:pt-xs-plus",
+                    "data-[side=left]:pr-xs-plus",
+                    "data-[side=right]:pl-xs-plus"
                 ],
-                false: ["wby-border-sm"]
+                false: ["border-sm"]
             }
         },
         defaultVariants: {

@@ -1,6 +1,6 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as SeparatorStories from './Separator.stories';
+import * as SeparatorStories from "./Separator.stories";
 
 <Meta of={SeparatorStories} />
 
@@ -15,41 +15,41 @@ import React from "react";
 import { Separator, Heading, Text } from "@webiny/admin-ui";
 
 const SeparatorExample = () => {
-    return (
-        <div>
-            <div className="wby-space-y-1">
-                <Heading level={6}>{"This is a heading."}</Heading>
-                <Text size="sm" className={"wby-text-neutral-strong"}>
-                    {"This is a short description here"}
-                </Text>
-            </div>
-            <Separator
+return (
+<div>
+<div className="space-y-1">
+<Heading level={6}>{"This is a heading."}</Heading>
+<Text size="sm" className={"text-neutral-strong"}>
+{"This is a short description here"}
+</Text>
+</div>
+<Separator
                 margin="lg"
                 variant="subtle"
                 orientation="horizontal"
                 decorative={true}
             />
-            <div className="wby-flex wby-items-center wby-h-6 wby-text-sm">
-                <Text>{"This is text 1."}</Text>
-            </div>
-        </div>
-    );
+<div className="flex items-center h-6 text-sm">
+<Text>{"This is text 1."}</Text>
+</div>
+</div>
+);
 };
 
 export default SeparatorExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Separator/Separator.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Separator/Separator.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
 <Controls of={SeparatorStories.Documentation} />
@@ -59,30 +59,24 @@ import React from "react";
 import { Separator, Heading, Text } from "@webiny/admin-ui";
 
 const SeparatorExample = () => {
-    return (
-        <div>
-            <div className="wby-space-y-1">
-                <Heading level={6}>{"This is a heading."}</Heading>
-                <Text size="sm" className={"wby-text-neutral-strong"}>
-                    {"This is a short description here"}
-                </Text>
-            </div>
-            <Separator
-                margin="lg"
-                variant="subtle"
-                orientation="horizontal"
-                decorative={true}
-            />
-            <div className="wby-flex wby-items-center wby-h-6 wby-text-sm">
-                <Text>{"This is text 1."}</Text>
-            </div>
-        </div>
-    );
+  return (
+    <div>
+      <div className="space-y-1">
+        <Heading level={6}>{"This is a heading."}</Heading>
+        <Text size="sm" className={"text-neutral-strong"}>
+          {"This is a short description here"}
+        </Text>
+      </div>
+      <Separator margin="lg" variant="subtle" orientation="horizontal" decorative={true} />
+      <div className="flex items-center h-6 text-sm">
+        <Text>{"This is text 1."}</Text>
+      </div>
+    </div>
+  );
 };
 
 export default SeparatorExample;
 ```
-
 
 ## Examples
 
@@ -95,20 +89,20 @@ import React from "react";
 import { Separator, Heading, Text } from "@webiny/admin-ui";
 
 const DefaultSeparatorExample = () => {
-    return (
-        <div>
-            <div className="wby-space-y-1">
-                <Heading level={6}>{"This is a heading."}</Heading>
-                <Text size="sm" className={"wby-text-neutral-strong"}>
-                    {"This is a short description here"}
-                </Text>
-            </div>
-            <Separator margin="lg" variant="subtle" />
-            <div className="wby-flex wby-items-center wby-h-6 wby-text-sm">
-                <Text>{"This is text 1."}</Text>
-            </div>
-        </div>
-    );
+return (
+<div>
+<div className="space-y-1">
+<Heading level={6}>{"This is a heading."}</Heading>
+<Text size="sm" className={"text-neutral-strong"}>
+{"This is a short description here"}
+</Text>
+</div>
+<Separator margin="lg" variant="subtle" />
+<div className="flex items-center h-6 text-sm">
+<Text>{"This is text 1."}</Text>
+</div>
+</div>
+);
 };
 
 export default DefaultSeparatorExample;
@@ -123,24 +117,24 @@ import React from "react";
 import { Separator, Heading, Text } from "@webiny/admin-ui";
 
 const VerticalAndHorizontalExample = () => {
-    return (
-        <div>
-            <div className="wby-space-y-1">
-                <Heading level={6}>{"This is a heading."}</Heading>
-                <Text size="sm" className={"wby-text-neutral-strong"}>
-                    {"This is a short description here"}
-                </Text>
-            </div>
-            <Separator margin={"lg"} />
-            <div className="wby-flex wby-items-center wby-h-6 wby-text-sm">
-                <Text>{"This is text 1."}</Text>
-                <Separator orientation="vertical" margin={"lg"} />
-                <Text>{"This is text 2."}</Text>
-                <Separator orientation="vertical" margin={"lg"} />
-                <Text>{"This is text 3."}</Text>
-            </div>
-        </div>
-    );
+return (
+<div>
+<div className="space-y-1">
+<Heading level={6}>{"This is a heading."}</Heading>
+<Text size="sm" className={"text-neutral-strong"}>
+{"This is a short description here"}
+</Text>
+</div>
+<Separator margin={"lg"} />
+<div className="flex items-center h-6 text-sm">
+<Text>{"This is text 1."}</Text>
+<Separator orientation="vertical" margin={"lg"} />
+<Text>{"This is text 2."}</Text>
+<Separator orientation="vertical" margin={"lg"} />
+<Text>{"This is text 3."}</Text>
+</div>
+</div>
+);
 };
 
 export default VerticalAndHorizontalExample;
@@ -155,20 +149,20 @@ import React from "react";
 import { Separator, Heading, Text } from "@webiny/admin-ui";
 
 const HorizontalOrientationExample = () => {
-    return (
-        <div>
-            <div className="wby-space-y-1">
-                <Heading level={6}>{"This is a heading."}</Heading>
-                <Text size="sm" className={"wby-text-neutral-strong"}>
-                    {"This is a short description here"}
-                </Text>
-            </div>
-            <Separator margin={"lg"} orientation="horizontal" />
-            <div className="wby-flex wby-items-center wby-h-6 wby-text-sm">
-                <Text>{"This is text 1."}</Text>
-            </div>
-        </div>
-    );
+return (
+<div>
+<div className="space-y-1">
+<Heading level={6}>{"This is a heading."}</Heading>
+<Text size="sm" className={"text-neutral-strong"}>
+{"This is a short description here"}
+</Text>
+</div>
+<Separator margin={"lg"} orientation="horizontal" />
+<div className="flex items-center h-6 text-sm">
+<Text>{"This is text 1."}</Text>
+</div>
+</div>
+);
 };
 
 export default HorizontalOrientationExample;
@@ -183,15 +177,15 @@ import React from "react";
 import { Separator, Text } from "@webiny/admin-ui";
 
 const VerticalOrientationExample = () => {
-    return (
-        <div className="wby-flex wby-justify-center wby-h-6 wby-text-sm">
-            <Text>{"This is text 1."}</Text>
-            <Separator orientation="vertical" margin={"lg"} />
-            <Text>{"This is text 2."}</Text>
-            <Separator orientation="vertical" margin={"lg"} />
-            <Text>{"This is text 3."}</Text>
-        </div>
-    );
+return (
+<div className="flex justify-center h-6 text-sm">
+<Text>{"This is text 1."}</Text>
+<Separator orientation="vertical" margin={"lg"} />
+<Text>{"This is text 2."}</Text>
+<Separator orientation="vertical" margin={"lg"} />
+<Text>{"This is text 3."}</Text>
+</div>
+);
 };
 
 export default VerticalOrientationExample;
@@ -206,24 +200,24 @@ import React from "react";
 import { Separator, Heading, Text } from "@webiny/admin-ui";
 
 const LessMarginExample = () => {
-    return (
-        <div>
-            <div className="wby-space-y-1">
-                <Heading level={6}>{"This is a heading."}</Heading>
-                <Text size="sm" className={"wby-text-neutral-strong"}>
-                    {"This is a short description here"}
-                </Text>
-            </div>
-            <Separator margin={"md"} />
-            <div className="wby-flex wby-items-center wby-h-6 wby-text-sm">
-                <Text>{"This is text 1."}</Text>
-                <Separator orientation="vertical" margin={"md"} />
-                <Text>{"This is text 2."}</Text>
-                <Separator orientation="vertical" margin={"md"} />
-                <Text>{"This is text 3."}</Text>
-            </div>
-        </div>
-    );
+return (
+<div>
+<div className="space-y-1">
+<Heading level={6}>{"This is a heading."}</Heading>
+<Text size="sm" className={"text-neutral-strong"}>
+{"This is a short description here"}
+</Text>
+</div>
+<Separator margin={"md"} />
+<div className="flex items-center h-6 text-sm">
+<Text>{"This is text 1."}</Text>
+<Separator orientation="vertical" margin={"md"} />
+<Text>{"This is text 2."}</Text>
+<Separator orientation="vertical" margin={"md"} />
+<Text>{"This is text 3."}</Text>
+</div>
+</div>
+);
 };
 
 export default LessMarginExample;
@@ -238,24 +232,24 @@ import React from "react";
 import { Separator, Heading, Text } from "@webiny/admin-ui";
 
 const MoreMarginExample = () => {
-    return (
-        <div>
-            <div className="wby-space-y-1">
-                <Heading level={6}>{"This is a heading."}</Heading>
-                <Text size="sm" className={"wby-text-neutral-strong"}>
-                    {"This is a short description here"}
-                </Text>
-            </div>
-            <Separator margin={"xl"} />
-            <div className="wby-flex wby-items-center wby-h-6 wby-text-sm">
-                <Text>{"This is text 1."}</Text>
-                <Separator orientation="vertical" margin={"xl"} />
-                <Text>{"This is text 2."}</Text>
-                <Separator orientation="vertical" margin={"xl"} />
-                <Text>{"This is text 3."}</Text>
-            </div>
-        </div>
-    );
+return (
+<div>
+<div className="space-y-1">
+<Heading level={6}>{"This is a heading."}</Heading>
+<Text size="sm" className={"text-neutral-strong"}>
+{"This is a short description here"}
+</Text>
+</div>
+<Separator margin={"xl"} />
+<div className="flex items-center h-6 text-sm">
+<Text>{"This is text 1."}</Text>
+<Separator orientation="vertical" margin={"xl"} />
+<Text>{"This is text 2."}</Text>
+<Separator orientation="vertical" margin={"xl"} />
+<Text>{"This is text 3."}</Text>
+</div>
+</div>
+);
 };
 
 export default MoreMarginExample;
