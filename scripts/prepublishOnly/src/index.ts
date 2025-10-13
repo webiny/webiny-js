@@ -4,12 +4,13 @@ import { WebinyPackage } from "./WebinyPackage";
 import { ReadmeGenerator } from "./generators/ReadmeGenerator";
 import { LockedDepsGenerator } from "./generators/LockedDepsGenerator";
 import chalk from "chalk";
+import { LicenseGenerator } from "./generators/LicenseGenerator";
 
 const packages = getYarnWorkspaces().map((path: string) => {
     return new WebinyPackage(path);
 });
 
-const Generators = [LockedDepsGenerator, ReadmeGenerator];
+const generatorsRegistry = [LockedDepsGenerator, ReadmeGenerator, LicenseGenerator];
 
 for (const pkg of packages) {
     if (pkg.isPrivate()) {
@@ -18,7 +19,7 @@ for (const pkg of packages) {
 
     console.log(chalk.cyan(pkg.getName()));
 
-    for (const Generator of Generators) {
+    for (const Generator of generatorsRegistry) {
         const generator = new Generator(pkg);
         await generator.generate();
     }
