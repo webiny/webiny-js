@@ -1,6 +1,6 @@
 import React from "react";
 import { cva, type VariantProps, makeDecoratable, cn } from "~/utils.js";
-import { SimpleLink, type SimpleLinkProps } from "@webiny/app";
+import { useAdminUi } from "~/index.js";
 
 const linkVariants = cva("wby-font-sans wby-rounded-xs", {
     variants: {
@@ -47,10 +47,11 @@ export type LinkProps = SimpleLinkProps &
     };
 
 function LinkBase({ size, variant, underline, className, children, ...rest }: LinkProps) {
+    const { linkComponent: LinkComponent } = useAdminUi();
     return (
-        <SimpleLink {...rest} className={cn(linkVariants({ size, variant, underline }), className)}>
+        <LinkComponent {...rest} className={cn(linkVariants({ size, variant, underline }), className)}>
             {children}
-        </SimpleLink>
+        </LinkComponent>
     );
 }
 
