@@ -50,7 +50,6 @@ schema.graphql
 lerna.json
 .stormTests
 packages/tasks/tpl/*
-packages/*/README.md
 *storybook.log
 .normalizedFigmaExport.json
 .normalizedPrimitivesFigmaExport.json
