@@ -4,6 +4,7 @@ import { createStateModel } from "~/context/models/stateModel.js";
 import { ContextPlugin } from "@webiny/handler";
 import type { Context } from "~/types.js";
 import { createWorkflowsSchema } from "~/graphql/workflows.js";
+import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 
 export type {
     IWorkflowState,
@@ -18,6 +19,9 @@ export type {
 
 export const createWorkflows = () => {
     const plugin = new ContextPlugin<Context>(async context => {
+        if (!(await isHeadlessCmsReady(context))) {
+            return;
+        }
         if (!context.wcp.canUseWorkflows()) {
             return;
         }
