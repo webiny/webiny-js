@@ -3,6 +3,38 @@ import { AdminConfig, useLocalStorageValues, useLocalStorageValue } from "@webin
 import { createPinnedKey, PINNED_ORDER_KEY, PinnableMenuItem } from "./PinnableMenuItem.js";
 import type { MenuConfig } from "@webiny/app-admin/config/AdminConfig/Menu.js";
 import { Separator } from "@webiny/admin-ui";
+import { createGenericContext } from "@webiny/app-admin";
+
+/**
+ * Context for providing a parent menu's icon in navigation components.
+ *
+ * @typeParam icon - React.ReactNode representing the icon for the parent menu.
+ */
+const MenuParentContext = createGenericContext<{ icon: React.ReactNode }>("MenuParent");
+
+/**
+ * Hook to access the parent menu icon from the MenuParentContext.
+ *
+ * @returns {React.ReactNode | undefined} The icon provided by the parent menu context, or `undefined` if the context is not available.
+ *
+ * @example
+ * // Usage inside a component wrapped by MenuParentContext.Provider
+ * const icon = useMenuParentIcon();
+ * if (icon) {
+ *   return <span>{icon}</span>;
+ * }
+ *
+ * @remarks
+ * If called outside of a MenuParentContext.Provider, this hook will return `undefined`.
+ */
+export const useMenuParentIcon = () => {
+    try {
+        const { icon } = MenuParentContext.useHook();
+        return icon;
+    } catch {
+        return undefined;
+    }
+};
 
 /**
  * Retrieves the icon from the parent menu of a given child menu.
@@ -143,7 +175,9 @@ export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
         <>
             {pinnedItems.map(m => (
                 <PinnableMenuItem key={m.name} name={m.name}>
-                    {React.cloneElement(m.element!, { icon: getParentIcon(m, menuItems) })}
+                    <MenuParentContext.Provider icon={getParentIcon(m, menuItems)}>
+                        {m.element}
+                    </MenuParentContext.Provider>
                 </PinnableMenuItem>
             ))}
             <Separator />
