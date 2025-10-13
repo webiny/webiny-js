@@ -9,7 +9,6 @@ export default {
             fs.mkdirSync(destDir, { recursive: true });
 
             copyToDist("package.json");
-            copyToDist("LICENSE");
 
             // Copy all icons from `@material-design-icons/svg/outlined` folder to `dist` folder.
             // We're doing this because simply re-exporting icons from `@material-ui/icons` package
