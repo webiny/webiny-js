@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { type FileItemDto, FilePicker } from "~/FilePicker/index.js";
-import { AdminUiProvider } from "~/AdminUiContext/index.js";
+import { AdminUiProvider } from "~/AdminUiProvider/index.js";
 
 const getRandomNumber = (min: number, max: number): number =>
     Math.floor(Math.random() * (max - min + 1)) + min;

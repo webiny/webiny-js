@@ -3,11 +3,11 @@ import { Toast } from "~/Toast/index.js";
 import { Tooltip } from "~/Tooltip/index.js";
 import { type LinkComponent, DefaultLinkComponent } from "~/index.js";
 
-export interface AdminUiProviderValue {
+export interface AdminUiContextValue {
     linkComponent: LinkComponent;
 }
 
-export const AdminUiContext = React.createContext<AdminUiProviderValue>({
+export const AdminUiContext = React.createContext<AdminUiContextValue>({
     linkComponent: DefaultLinkComponent
 });
 
