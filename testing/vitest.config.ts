@@ -99,7 +99,7 @@ export default async () => {
 
     if (!configPath && !setup) {
         throw new Error(
-            `${packageMeta.packageName} is missing a jest.config.js or a jest.setup.js file!`
+            `${packageMeta.packageName} is missing a vitest.config.ts or a vitest.setup.ts file!`
         );
     }
 
