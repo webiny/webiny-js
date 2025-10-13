@@ -5,13 +5,17 @@ interface IParams {
     context: Pick<Context, "workflowState" | "cms">;
 }
 
-export const attachDeleteLifecycleEvents = (params: IParams) => {
+export const attachDeleteEntryLifecycleEvents = (params: IParams) => {
     const { context } = params;
     context.cms.onEntryAfterDelete.subscribe(async ({ model, entry, permanent }) => {
-        if (!permanent || !model.isPrivate) {
+        if (model.isPrivate || !permanent) {
             return;
         }
         const app = createWorkflowAppName({ model });
-        await context.workflowState.deleteState(app, entry.id);
+        try {
+            await context.workflowState.deleteState(app, entry.id);
+        } catch (ex) {
+            console.error(ex);
+        }
     });
 };

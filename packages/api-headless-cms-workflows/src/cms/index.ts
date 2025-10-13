@@ -1,14 +1,16 @@
 import type { Context } from "~/types.js";
-import { attachPublishLifecycleEvents } from "./publish.js";
-import { attachCreateLifecycleEvents } from "./create.js";
-import { attachDeleteLifecycleEvents } from "./delete.js";
+import { attachPublishEntryLifecycleEvents } from "./publishEntry.js";
+import { attachCreateEntryLifecycleEvents } from "./createEntry.js";
+import { attachDeleteEntryLifecycleEvents } from "./deleteEntry.js";
+import { attachDeleteModelLifecycleEvents } from "./deleteModel.js";
 
 interface IParams {
     context: Context;
 }
 
 export const attachCmsLifecycleEvents = (params: IParams) => {
-    attachCreateLifecycleEvents(params);
-    attachPublishLifecycleEvents(params);
-    attachDeleteLifecycleEvents(params);
+    attachCreateEntryLifecycleEvents(params);
+    attachPublishEntryLifecycleEvents(params);
+    attachDeleteEntryLifecycleEvents(params);
+    attachDeleteModelLifecycleEvents(params);
 };

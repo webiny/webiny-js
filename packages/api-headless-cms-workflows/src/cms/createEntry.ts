@@ -6,20 +6,23 @@ interface IParams {
     context: Pick<Context, "workflowState" | "cms">;
 }
 
-export const attachCreateLifecycleEvents = (params: IParams) => {
+export const attachCreateEntryLifecycleEvents = (params: IParams) => {
     const { context } = params;
     context.cms.onEntryBeforeCreate.subscribe(async ({ model, entry }) => {
-        if (!model.isPrivate) {
+        if (model.isPrivate) {
             return;
         }
         const app = createWorkflowAppName({ model });
-        const state = await context.workflowState.createState(app, entry.id);
-
-        entry.state = getState(state);
+        try {
+            const state = await context.workflowState.createState(app, entry.id);
+            entry.state = getState(state);
+        } catch (ex) {
+            console.error(ex);
+        }
     });
 
     context.cms.onEntryCreateError.subscribe(async ({ model, entry }) => {
-        if (!model.isPrivate) {
+        if (model.isPrivate) {
             return;
         }
         const app = createWorkflowAppName({ model });
@@ -31,16 +34,20 @@ export const attachCreateLifecycleEvents = (params: IParams) => {
     });
 
     context.cms.onEntryRevisionBeforeCreate.subscribe(async ({ model, entry }) => {
-        if (!model.isPrivate) {
+        if (model.isPrivate) {
             return;
         }
         const app = createWorkflowAppName({ model });
-        const state = await context.workflowState.createState(app, entry.id);
-        entry.state = getState(state);
+        try {
+            const state = await context.workflowState.createState(app, entry.id);
+            entry.state = getState(state);
+        } catch (ex) {
+            console.error(ex);
+        }
     });
 
     context.cms.onEntryRevisionCreateError.subscribe(async ({ model, entry }) => {
-        if (!model.isPrivate) {
+        if (model.isPrivate) {
             return;
         }
         const app = createWorkflowAppName({ model });

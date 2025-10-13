@@ -6,10 +6,10 @@ interface IParams {
     context: Pick<Context, "workflowState" | "cms">;
 }
 
-export const attachPublishLifecycleEvents = (params: IParams) => {
+export const attachPublishEntryLifecycleEvents = (params: IParams) => {
     const { context } = params;
     context.cms.onEntryBeforePublish.subscribe(async ({ model, entry }) => {
-        if (!model.isPrivate) {
+        if (model.isPrivate) {
             return;
         }
         const app = createWorkflowAppName({ model });
