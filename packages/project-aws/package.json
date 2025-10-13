@@ -37,6 +37,7 @@
     "@webiny/api-headless-cms-scheduler": "0.0.0",
     "@webiny/api-headless-cms-tasks": "0.0.0",
     "@webiny/api-headless-cms-tasks-ddb-es": "0.0.0",
+    "@webiny/api-headless-cms-workflows": "0.0.0",
     "@webiny/api-i18n": "0.0.0",
     "@webiny/api-i18n-ddb": "0.0.0",
     "@webiny/api-log": "0.0.0",

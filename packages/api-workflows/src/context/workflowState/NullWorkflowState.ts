@@ -1,7 +1,7 @@
 import type { IWorkflowState } from "../abstractions/WorkflowState.js";
 
 export class NullWorkflowState implements IWorkflowState {
-    public readonly step = undefined;
+    public readonly activeStep = undefined;
     public readonly done = true;
     public readonly workflow = undefined;
     public readonly record = undefined;

@@ -176,11 +176,20 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 entry
             );
             const record = this.transformer.fromCmsEntry(result);
-            return new WorkflowState({
+            const state = new WorkflowState({
                 context: this.context,
                 workflow,
                 record
             });
+            try {
+                await this.onStateAfterCreate.publish({
+                    state
+                });
+            } catch (ex) {
+                console.log(ex);
+                // do nothing?
+            }
+            return state;
         });
     }
 
@@ -192,19 +201,19 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         // @ts-expect-error
         delete entry["id"];
 
-        const state = await this.fetchOne(id);
-        if (!state) {
+        const originalRecord = await this.fetchOne(id);
+        if (!originalRecord) {
             throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
                 id,
                 input
             });
         }
         // @ts-expect-error
-        delete state["id"];
+        delete originalRecord["id"];
 
         const workflow = await this.context.workflows.getWorkflow({
-            app: state.app,
-            id: state.workflowId
+            app: originalRecord.app,
+            id: originalRecord.workflowId
         });
         if (!workflow) {
             throw new WebinyError(
@@ -215,40 +224,77 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 }
             );
         }
+        const originalState = new WorkflowState({
+            context: this.context,
+            workflow,
+            record: originalRecord
+        });
 
         return await this.context.security.withoutAuthorization(async () => {
             const result = await this.context.cms.updateEntry<Omit<IWorkflowStateRecord, "id">>(
                 this.model,
                 id,
                 {
-                    ...state,
+                    ...originalRecord,
                     ...entry
                 }
             );
             const record = this.transformer.fromCmsEntry(result);
 
-            return new WorkflowState({
+            const state = new WorkflowState({
                 context: this.context,
                 workflow,
                 record
             });
+
+            try {
+                await this.onStateAfterUpdate.publish({
+                    state,
+                    original: originalState
+                });
+            } catch (ex) {
+                console.log(ex);
+                // do nothing?
+            }
+
+            return state;
         });
     }
 
     public async deleteState(app: string, targetRevisionId: string): Promise<void> {
-        const state = await this.fetchOneByTargetRevisionId(app, targetRevisionId);
-        if (!state) {
+        const record = await this.fetchOneByTargetRevisionId(app, targetRevisionId);
+        if (!record) {
             return;
         }
         try {
             await this.context.security.withoutAuthorization(async () => {
-                await this.context.cms.deleteEntry(this.model, state.id);
+                await this.context.cms.deleteEntry(this.model, record.id);
             });
         } catch (ex) {
             if (ex.code === "NOT_FOUND" || ex instanceof NotFoundError) {
                 return;
             }
             throw ex;
+        }
+
+        const workflow = await this.context.workflows.getWorkflow({
+            app: record.app,
+            id: record.workflowId
+        });
+
+        const state = new WorkflowState({
+            context: this.context,
+            workflow,
+            record
+        });
+
+        try {
+            await this.onStateAfterDelete.publish({
+                state
+            });
+        } catch (ex) {
+            console.log(ex);
+            // do nothing?
         }
     }
 

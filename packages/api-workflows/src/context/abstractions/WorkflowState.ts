@@ -31,9 +31,9 @@ export interface IWorkflowStateStep extends IWorkflowStateRecordStep {
 
 export interface IWorkflowState {
     readonly done: boolean;
-    readonly workflow: IWorkflow | undefined;
+    readonly workflow: IWorkflow | null | undefined;
     readonly record: IWorkflowStateRecord | undefined;
-    readonly step: IWorkflowStateStep | undefined;
+    readonly activeStep: IWorkflowStateStep | undefined;
     review(): Promise<void>;
     approve(message?: string): Promise<void>;
     reject(message: string): Promise<void>;

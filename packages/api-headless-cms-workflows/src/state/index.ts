@@ -57,7 +57,7 @@ export const attachStateLifecycleEvents = ({ context }: IParams) => {
                 state: undefined
             });
         } catch {
-            //
+            // no need to do anything
         }
     });
 };

@@ -10,7 +10,7 @@ import { WorkflowStateRecordState } from "../abstractions/WorkflowState.js";
 import { WebinyError } from "@webiny/error";
 
 export interface IWorkflowStateParams {
-    workflow: IWorkflow | undefined;
+    workflow: IWorkflow | undefined | null;
     record: IWorkflowStateRecord;
     context: Pick<Context, "workflowState" | "security">;
 }
@@ -25,10 +25,7 @@ export class WorkflowState implements IWorkflowState {
             return step.state === WorkflowStateRecordState.approved;
         });
     }
-    /**
-     * Output first possible step which is not approved.
-     */
-    public get step(): IWorkflowStateStep | undefined {
+    public get activeStep(): IWorkflowStateStep | undefined {
         const step = this.record.steps.find(step => {
             return step.state !== WorkflowStateRecordState.approved;
         });
