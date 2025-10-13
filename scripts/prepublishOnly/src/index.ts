@@ -3,8 +3,8 @@ import getYarnWorkspaces from "get-yarn-workspaces";
 import { WebinyPackage } from "./WebinyPackage";
 import { ReadmeGenerator } from "./generators/ReadmeGenerator";
 import { LockedDepsGenerator } from "./generators/LockedDepsGenerator";
-import chalk from "chalk";
 import { LicenseGenerator } from "./generators/LicenseGenerator";
+import chalk from "chalk";
 
 const packages = getYarnWorkspaces().map((path: string) => {
     return new WebinyPackage(path);
