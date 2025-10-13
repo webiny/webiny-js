@@ -35,6 +35,7 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
             .usage("Usage: $0 <command> [options]")
             .help(false)
             .demandCommand(1)
+            .version(await projectSdk.getProjectVersion())
             .recommendCommands()
             .scriptName("webiny")
             .epilogue(
