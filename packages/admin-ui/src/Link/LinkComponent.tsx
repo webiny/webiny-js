@@ -7,7 +7,3 @@ export type LinkComponentProps = BaseAnchorAttributes & {
 };
 
 export type LinkComponent = React.ComponentType<LinkComponentProps>;
-
-export const DefaultLinkComponent: LinkComponent = props => {
-    return <a {...props} />;
-};
