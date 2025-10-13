@@ -5,7 +5,10 @@ import { attachStateLifecycleEvents } from "~/state/index.js";
 
 export const createHeadlessCmsWorkflows = () => {
     const plugin = new ContextPlugin<Context>(async context => {
+        
         if (!context.wcp.canUseWorkflows()) {
+            return;
+        } else if (!context.workflows) {
             return;
         }
 
