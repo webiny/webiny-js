@@ -69,6 +69,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     const env: Record<string, string> = { AWS_REGION };
 
     if (storageOps) {
+        env["WEBINY_STORAGE"] = storageOps.id;
         if (storageOps.id === "ddb-es,ddb") {
             env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
             env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";

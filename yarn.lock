@@ -14065,7 +14065,6 @@ __metadata:
     fs-extra: "npm:^11.3.2"
     get-yarn-workspaces: "npm:1.0.2"
     load-json-file: "npm:^6.2.0"
-    lodash: "npm:^4.17.21"
     type-fest: "npm:^5.0.1"
     write-json-file: "npm:^4.3.0"
   bin:

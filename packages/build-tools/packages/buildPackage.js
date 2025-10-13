@@ -30,7 +30,6 @@ export default async options => {
     options.logs !== false && console.log("Copying meta files...");
     copyToDist("package.json", options);
     copyToDist("LICENSE", options);
-    copyToDist("README.md", options);
 
     const duration = (new Date() - start) / 1000;
     options.logs !== false && console.log(`Done! Build finished in ${duration + "s"}.`);

@@ -189,6 +189,8 @@ Resources:
               - es:UpdateElasticsearchDomainConfig
               - es:DescribeElasticsearchDomainConfig
               - es:UpgradeDomain
+              - es:UpdateDomainConfig
+              - es:GetUpgradeStatus
             Resource: arn:aws:es:*:*:domain/wby-*
 
           # Amazon EventBridge

@@ -1,6 +1,7 @@
 {
   "private": true,
   "name": "@webiny-scripts/prepublish-only",
+  "type": "module",
   "version": "0.0.0",
   "sideEffects": false,
   "bin": "./src/index.js",
@@ -11,7 +12,6 @@
     "fs-extra": "^11.3.2",
     "get-yarn-workspaces": "1.0.2",
     "load-json-file": "^6.2.0",
-    "lodash": "^4.17.21",
     "write-json-file": "^4.3.0"
   },
   "devDependencies": {

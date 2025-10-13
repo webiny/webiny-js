@@ -14,15 +14,15 @@ All of the above is handled by the `AccessControl` class, which provides a set o
 2. `canAccessModel` (`ensureCanAccessModel`): checks if a user has the necessary permissions to access a content model (takes into consideration the content model group permissions).
 3. `canAccessEntry` (`ensureCanAccessEntry`): checks if a user has the necessary permissions to access a content entry (takes into consideration the content model and content model group permissions).
 
-Note that all of these methods can accept an exact entity instance if needed, but it's not required. Both has its own use cases. 
+Note that all of these methods can accept an exact entity instance if needed, but it's not required. Both has its own use cases.
 
-For example, when checking if a user can access (read) a content entry, you can pass the entry instance to the `canAccessEntry` method, and it will check if the user has the necessary permissions to access that specific entry. On the other hand, if the entry instance was not passed, the method would check if the user has the necessary permissions to access (read) entries of the given content model. 
+For example, when checking if a user can access (read) a content entry, you can pass the entry instance to the `canAccessEntry` method, and it will check if the user has the necessary permissions to access that specific entry. On the other hand, if the entry instance was not passed, the method would check if the user has the necessary permissions to access (read) entries of the given content model.
 
-Note that, whenever possible, the entry should be passed to the method, as it's more secure and provides more accurate results. For example, it is possible to receive a `true` response when checking if a user can access a specific content model, but still receive `false` when the model was not passed (when checking if user can access / read models in general). 
+Note that, whenever possible, the entry should be passed to the method, as it's more secure and provides more accurate results. For example, it is possible to receive a `true` response when checking if a user can access a specific content model, but still receive `false` when the model was not passed (when checking if user can access / read models in general).
 
 ## Folder Level Permissions
 
-With Folder Level Permissions, a user can be part of a team, that may have multiple roles that provide different Headless CMS-related permissions (more information [here](https://www.webiny.com/docs/enterprise/aacl/teams#overview)). 
+With Folder Level Permissions, a user can be part of a team, that may have multiple roles that provide different Headless CMS-related permissions (more information [here](https://www.webiny.com/docs/enterprise/aacl/teams#overview)).
 
 The Access Control class is aware of this and ensures that only permissions objects from a single role are taken into consideration when checking if a user has the necessary permissions to perform a specific action. If permission objects from a single role do not provide the necessary permissions, the next role is checked, and so on.
 
