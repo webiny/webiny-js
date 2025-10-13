@@ -26,7 +26,7 @@ export default {
             });
 
             // Copy all icons from `extraIcons` folder to `dist` folder.
-            const extraIconsFolderPath = "./extraIcons";
+            const extraIconsFolderPath = "./src/extraIcons";
 
             fs.readdirSync(extraIconsFolderPath).forEach(file => {
                 const sourceFile = path.join(extraIconsFolderPath, file);
