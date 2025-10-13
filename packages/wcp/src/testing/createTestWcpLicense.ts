@@ -24,7 +24,7 @@ export const createTestWcpLicense = (): DecryptedWcpProjectLicense => {
                     }
                 },
                 [PROJECT_PACKAGE_FEATURE_NAME.APW]: {
-                    enabled: false
+                    enabled: true
                 },
                 [PROJECT_PACKAGE_FEATURE_NAME.AUDIT_LOGS]: {
                     enabled: false
@@ -43,9 +43,6 @@ export const createTestWcpLicense = (): DecryptedWcpProjectLicense => {
                     options: {
                         threatDetection: false
                     }
-                },
-                [PROJECT_PACKAGE_FEATURE_NAME.WORKFLOWS]: {
-                    enabled: true
                 }
             }
         }
