@@ -197,10 +197,6 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         id: string,
         input: Partial<Omit<IWorkflowStateRecord, "id">>
     ): Promise<IWorkflowState> {
-        const entry = structuredClone(input);
-        // @ts-expect-error
-        delete entry["id"];
-
         const originalRecord = await this.fetchOne(id);
         if (!originalRecord) {
             throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
@@ -210,6 +206,11 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         }
         // @ts-expect-error
         delete originalRecord["id"];
+
+        const entryValues = this.transformer.toCmsEntry({
+            ...originalRecord,
+            ...input
+        });
 
         const workflow = await this.context.workflows.getWorkflow({
             app: originalRecord.app,
@@ -234,10 +235,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             const result = await this.context.cms.updateEntry<Omit<IWorkflowStateRecord, "id">>(
                 this.model,
                 id,
-                {
-                    ...originalRecord,
-                    ...entry
-                }
+                entryValues
             );
             const record = this.transformer.fromCmsEntry(result);
 

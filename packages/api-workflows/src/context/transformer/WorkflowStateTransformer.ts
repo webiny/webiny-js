@@ -15,4 +15,16 @@ export class WorkflowStateTransformer implements IWorkflowStateTransformer {
             comment: input.values.comment
         };
     }
+
+    public toCmsEntry(input: IWorkflowStateRecord): Omit<IWorkflowStateRecord, "id"> {
+        return {
+            workflowId: input.workflowId,
+            targetId: input.targetId,
+            targetRevisionId: input.targetRevisionId,
+            steps: input.steps,
+            app: input.app,
+            state: input.state,
+            comment: input.comment
+        };
+    }
 }
