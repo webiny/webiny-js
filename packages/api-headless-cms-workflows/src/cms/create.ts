@@ -8,7 +8,7 @@ interface IParams {
 
 export const attachCreateLifecycleEvents = (params: IParams) => {
     const { context } = params;
-    context.cms.onEntryAfterCreate.subscribe(async ({ model, entry, storageEntry }) => {
+    context.cms.onEntryBeforeCreate.subscribe(async ({ model, entry }) => {
         if (!model.isPrivate) {
             return;
         }
@@ -16,16 +16,38 @@ export const attachCreateLifecycleEvents = (params: IParams) => {
         const state = await context.workflowState.createState(app, entry.id);
 
         entry.state = getState(state);
-        storageEntry.state = getState(state);
     });
 
-    context.cms.onEntryRevisionAfterCreate.subscribe(async ({ model, entry, storageEntry }) => {
+    context.cms.onEntryCreateError.subscribe(async ({ model, entry }) => {
+        if (!model.isPrivate) {
+            return;
+        }
+        const app = createWorkflowAppName({ model });
+        try {
+            await context.workflowState.deleteState(app, entry.id);
+        } catch (ex) {
+            console.error(ex);
+        }
+    });
+
+    context.cms.onEntryRevisionBeforeCreate.subscribe(async ({ model, entry }) => {
         if (!model.isPrivate) {
             return;
         }
         const app = createWorkflowAppName({ model });
         const state = await context.workflowState.createState(app, entry.id);
         entry.state = getState(state);
-        storageEntry.state = getState(state);
+    });
+
+    context.cms.onEntryRevisionCreateError.subscribe(async ({ model, entry }) => {
+        if (!model.isPrivate) {
+            return;
+        }
+        const app = createWorkflowAppName({ model });
+        try {
+            await context.workflowState.deleteState(app, entry.id);
+        } catch (ex) {
+            console.error(ex);
+        }
     });
 };
