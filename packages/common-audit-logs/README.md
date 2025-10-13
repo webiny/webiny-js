@@ -1,1 +1,0 @@
-# `@webiny/common-audit-logs`

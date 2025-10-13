@@ -1,1 +1,0 @@
-# @webiny/app-plugin-admin-welcome-screen

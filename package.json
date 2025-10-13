@@ -163,7 +163,7 @@
     "link-workspaces": "node ./scripts/linkWorkspaces.js",
     "lint-staged": "lint-staged",
     "postinstall": "yarn node ./scripts/linkWorkspaces.js",
-    "prepublishOnly": "tsx scripts/prepublishOnly",
+    "prepublishOnly": "tsx scripts/prepublishOnly/src/index.ts",
     "prettier": "prettier \"**/**/*.{js,jsx,ts,tsx,json,scss,yml}\" --config .prettierrc.js",
     "prettier:check": "yarn prettier --check",
     "prettier:fix": "yarn prettier --write",

@@ -9,8 +9,6 @@ export default {
             fs.mkdirSync(destDir, { recursive: true });
 
             copyToDist("package.json");
-            copyToDist("LICENSE");
-            copyToDist("README.md");
 
             // Copy all icons from `@material-design-icons/svg/outlined` folder to `dist` folder.
             // We're doing this because simply re-exporting icons from `@material-ui/icons` package
@@ -27,7 +25,7 @@ export default {
             });
 
             // Copy all icons from `extraIcons` folder to `dist` folder.
-            const extraIconsFolderPath = "./extraIcons";
+            const extraIconsFolderPath = "./src/extraIcons";
 
             fs.readdirSync(extraIconsFolderPath).forEach(file => {
                 const sourceFile = path.join(extraIconsFolderPath, file);
