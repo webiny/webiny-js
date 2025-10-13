@@ -318,25 +318,25 @@
 @layer base {
   body {
     // Styles all text that was not rendered via the Text component.
-    @apply wby-font-sans wby-antialiased wby-text-md wby-text-neutral-primary;
+    @apply font-sans antialiased text-md text-neutral-primary;
   }
 
   a {
     // Styles all links that were not rendered via the Link component.
-    @apply wby-text-accent-primary hover:wby-underline focus-visible:wby-outline-none focus-visible:wby-ring-lg focus-visible:wby-ring-primary-dimmed wby-rounded-xs;
+    @apply text-accent-primary hover:underline focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed rounded-xs;
   }
 
   #root {
-    @apply wby-isolate;
+    @apply isolate;
   }
 
   b,
   strong {
-    @apply wby-font-semibold;
+    @apply font-semibold;
   }
 
   i,
   em {
-    @apply wby-italic;
+    @apply italic;
   }
 }
