@@ -2,6 +2,7 @@ import React from "react";
 import type { CmsEditorFormSettingsPlugin, CmsModel } from "~/types.js";
 import { WorkflowPresenter } from "@webiny/app-workflows";
 import { ReactComponent as WorkflowIcon } from "@webiny/icons/account_tree.svg";
+import { Alert } from "@webiny/admin-ui";
 
 export const publishingWorkflowsEditorFormSettingsPlugin: CmsEditorFormSettingsPlugin<CmsModel> = {
     name: "cms-editor-form-settings-publishing-workflows",
@@ -15,6 +16,12 @@ export const publishingWorkflowsEditorFormSettingsPlugin: CmsEditorFormSettingsP
             return <></>;
         }
 
-        return <WorkflowPresenter app={`cms:${formData.modelId}`} />;
+        return (
+            <WorkflowPresenter app={`cms:${formData.modelId}`}>
+                <Alert type={"danger"} title={"You don't have access to Workflows."}>
+                    Access denied! TBD
+                </Alert>
+            </WorkflowPresenter>
+        );
     }
 };
