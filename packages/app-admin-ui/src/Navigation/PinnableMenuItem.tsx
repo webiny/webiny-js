@@ -1,8 +1,8 @@
 import React from "react";
 import { Icon } from "@webiny/admin-ui";
 import { ReactComponent as PinIcon } from "@webiny/icons/push_pin.svg";
+import { ReactComponent as UnPinIcon } from "@webiny/icons/push_pin_off.svg";
 import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
-import { useSidebar } from "@webiny/admin-ui";
 
 /**
  * Props for the PinnableMenuItem component.
@@ -102,19 +102,18 @@ const usePinnedMenuItem = (name: string) => {
  */
 export const PinnableMenuItem = ({ name, children }: PinnableMenuItemProps) => {
     const { isPinned, pin, unpin } = usePinnedMenuItem(name);
-    const { expanded: isSidebarExpanded } = useSidebar();
 
     return (
         <div className="wby-relative wby-group/pin">
             {children}
             <div
-                className={`group-hover/pin:wby-visible wby-absolute wby-right-sm wby-top-1/2 -wby-translate-y-1/2 wby-cursor-pointer ${isPinned && isSidebarExpanded ? "wby-visible" : "wby-invisible"}`}
+                className={`group-hover/pin:wby-visible wby-absolute wby-right-sm wby-top-1/2 -wby-translate-y-1/2 wby-cursor-pointer wby-invisible`}
             >
                 <Icon
                     size={"sm"}
                     label={isPinned ? "Unpin menu item" : "Pin menu item"}
                     onClick={isPinned ? unpin : pin}
-                    icon={<PinIcon />}
+                    icon={isPinned ? <UnPinIcon /> : <PinIcon />}
                     className="wby-fill-neutral-strong hover:wby-fill-neutral-xstrong"
                 />
             </div>
