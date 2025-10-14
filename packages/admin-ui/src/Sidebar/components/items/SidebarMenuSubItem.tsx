@@ -42,7 +42,7 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
         const chevron = (
             <Icon
                 label={"Expand / Collapse"}
-                size={"xs"}
+                size={"sm"}
                 className={
                     "wby-ml-auto wby-transition-transform wby-duration-175 group-data-[state=open]/menu-sub-item-collapsible:wby-rotate-180 group-data-[state=collapsed]:wby-hidden"
                 }
