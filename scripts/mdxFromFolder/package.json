@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "name": "@webiny-scripts/prepublish-only",
+  "version": "0.0.0",
+  "sideEffects": false,
+  "bin": "./src/index.ts",
+  "main": "./src/index.ts",
+  "dependencies": {},
+  "devDependencies": {}
+}
