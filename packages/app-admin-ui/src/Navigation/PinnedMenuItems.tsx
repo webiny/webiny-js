@@ -180,7 +180,9 @@ export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
                     </MenuParentContext.Provider>
                 </PinnableMenuItem>
             ))}
-            <Separator />
+            <div className="wby-px-sm wby-py-xs">
+                <Separator />
+            </div>
         </>
     );
 };
