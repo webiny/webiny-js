@@ -346,7 +346,6 @@ export const createCustomAppsSchemaSnapshot = () => {
           status_not: String
           status_in: [String!]
           status_not_in: [String!]
-          state: CmsEntryStateWhereInput
         
           type: String
           type_not: String

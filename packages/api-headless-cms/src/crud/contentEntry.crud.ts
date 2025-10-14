@@ -49,7 +49,9 @@ import type {
     OnEntryRevisionBeforeDeleteTopicParams,
     OnEntryRevisionDeleteErrorTopicParams,
     OnEntryUnpublishErrorTopicParams,
-    OnEntryUpdateErrorTopicParams
+    OnEntryUpdateErrorTopicParams,
+    UpdateCmsEntryInput,
+    UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation.js";
 import type { SecurityIdentity } from "@webiny/api-security/types.js";
@@ -91,6 +93,7 @@ import {
     restoreEntryFromBinUseCases
 } from "~/crud/contentEntry/useCases/index.js";
 import { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser.js";
+import type { GenericRecord } from "@webiny/api/types.js";
 
 interface CreateContentEntryCrudParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -563,13 +566,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         }
     };
-    const updateEntry: CmsEntryContext["updateEntry"] = async (
-        model,
-        id,
-        rawInput,
-        metaInput,
-        options
-    ) => {
+    const updateEntry: CmsEntryContext["updateEntry"] = async <T = CmsEntryValues>(
+        model: CmsModel,
+        id: string,
+        rawInput: UpdateCmsEntryInput,
+        metaInput?: GenericRecord,
+        options?: UpdateCmsEntryOptionsInput
+    ): Promise<CmsEntry<T>> => {
         await accessControl.ensureCanAccessEntry({ model, rwd: "w" });
 
         /**
@@ -629,7 +632,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                 original: originalEntry
             });
 
-            return entry;
+            return entry as CmsEntry<T>;
         } catch (ex) {
             await onEntryUpdateError.publish({
                 entry,

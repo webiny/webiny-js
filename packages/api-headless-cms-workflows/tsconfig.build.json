@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-headless-cms/tsconfig.build.json" },
+    { "path": "../api-workflows/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../testing/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
+    "baseUrl": "."
+  }
+}

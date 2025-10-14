@@ -174,60 +174,6 @@ const createSystemFields = (): ModelFields => {
             }),
             parents: []
         },
-        state: {
-            type: "object",
-            unmappedType: undefined,
-            keyword: false,
-            systemField: true,
-            searchable: false,
-            sortable: false,
-            field: createSystemField({
-                storageId: "state",
-                fieldId: "state",
-                type: "object"
-            }),
-            parents: []
-        },
-        ["state.name"]: {
-            type: "text",
-            unmappedType: undefined,
-            keyword: true,
-            systemField: true,
-            searchable: true,
-            sortable: false,
-            field: createSystemField({
-                storageId: "name",
-                fieldId: "name",
-                type: "text"
-            }),
-            parents: [
-                {
-                    fieldId: "state",
-                    storageId: "state",
-                    type: "object"
-                }
-            ]
-        },
-        ["state.comment"]: {
-            type: "text",
-            unmappedType: undefined,
-            keyword: true,
-            systemField: true,
-            searchable: true,
-            sortable: false,
-            field: createSystemField({
-                storageId: "comment",
-                fieldId: "comment",
-                type: "text"
-            }),
-            parents: [
-                {
-                    fieldId: "state",
-                    storageId: "state",
-                    type: "object"
-                }
-            ]
-        },
         wbyDeleted: {
             type: "boolean",
             unmappedType: undefined,
@@ -255,6 +201,103 @@ const createSystemFields = (): ModelFields => {
                 type: "text"
             }),
             parents: []
+        },
+        state: {
+            type: "object",
+            systemField: true,
+            searchable: true,
+            sortable: false,
+            field: createSystemField({
+                storageId: "object@state",
+                fieldId: "state",
+                type: "object",
+                settings: {
+                    fields: [
+                        {
+                            id: "stepId",
+                            fieldId: "stepId",
+                            storageId: "text@stepId",
+                            type: "text",
+                            label: "Step ID"
+                        },
+                        {
+                            id: "stepName",
+                            fieldId: "stepName",
+                            storageId: "text@stepName",
+                            type: "text",
+                            label: "Step Name"
+                        },
+                        {
+                            id: "state",
+                            fieldId: "state",
+                            storageId: "text@state",
+                            type: "text",
+                            label: "State"
+                        }
+                    ]
+                }
+            }),
+            parents: []
+        },
+        "state.stepId": {
+            type: "text",
+            systemField: true,
+            searchable: true,
+            sortable: false,
+            parents: [
+                {
+                    fieldId: "state",
+                    type: "object",
+                    storageId: "object@state"
+                }
+            ],
+            field: createSystemField({
+                id: "stepId",
+                fieldId: "stepId",
+                storageId: "text@stepId",
+                type: "text",
+                label: "Step ID"
+            })
+        },
+        "state.stepName": {
+            type: "text",
+            systemField: true,
+            searchable: true,
+            sortable: false,
+            parents: [
+                {
+                    fieldId: "state",
+                    type: "object",
+                    storageId: "object@state"
+                }
+            ],
+            field: createSystemField({
+                id: "stepName",
+                fieldId: "stepName",
+                storageId: "text@stepName",
+                type: "text",
+                label: "Step Name"
+            })
+        },
+        "state.state": {
+            type: "text",
+            systemField: true,
+            searchable: true,
+            sortable: false,
+            parents: [
+                {
+                    fieldId: "state",
+                    type: "object",
+                    storageId: "object@state"
+                }
+            ],
+            field: createSystemField({
+                id: "state",
+                fieldId: "state",
+                storageId: "text@state",
+                type: "text",
+                label: "State"
+            })
         }
     };
 };

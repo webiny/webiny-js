@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { WorkflowsTransformer } from "~/context/transformer/index.js";
-import type { IWorkflow } from "~/types.js";
+import { WorkflowsTransformer } from "~/context/transformer/WorkflowsTransformer.js";
+import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 
 describe("Workflows Transformer", () => {

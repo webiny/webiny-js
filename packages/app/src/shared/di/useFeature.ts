@@ -1,6 +1,6 @@
 import type { Container } from "@webiny/di-container";
-import { useContainer } from "./DiContainerProvider";
-import { FeatureDefinition } from "./createFeature";
+import { useContainer } from "./DiContainerProvider.js";
+import { FeatureDefinition } from "./createFeature.js";
 
 const featureCache = new WeakMap<Container, Map<string, unknown>>();
 

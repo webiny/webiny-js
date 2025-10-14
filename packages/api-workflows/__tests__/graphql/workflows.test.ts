@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createGraphQLHandler } from "~tests/__helpers/handler.js";
-import type { IWorkflow } from "~/types.js";
+import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 
 describe("workflow graphql", () => {
     const handler = createGraphQLHandler();
@@ -102,26 +102,40 @@ describe("workflow graphql", () => {
         });
 
         const [listResponse] = await handler.listWorkflows({
-            app: "test"
+            where: {
+                app: "test"
+            }
         });
         expect(listResponse).toEqual({
             data: {
                 workflows: {
                     listWorkflows: {
                         data: [updatedWorkflow],
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 1,
+                            cursor: null
+                        },
                         error: null
                     }
                 }
             }
         });
         const [listWrongAppResponse] = await handler.listWorkflows({
-            app: "testNonExisting"
+            where: {
+                app: "testNonExisting"
+            }
         });
         expect(listWrongAppResponse).toEqual({
             data: {
                 workflows: {
                     listWorkflows: {
                         data: [],
+                        meta: {
+                            hasMoreItems: false,
+                            totalCount: 0,
+                            cursor: null
+                        },
                         error: null
                     }
                 }

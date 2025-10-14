@@ -104,8 +104,18 @@ export const DELETE_WORKFLOW_MUTATION = gql`
     }
 `;
 
+export interface IListWorkflowVariablesWhere {
+    app?: string;
+    app_in?: string[];
+    id?: string;
+    id_in?: string[];
+}
+
 export interface IListWorkflowVariables {
-    app: string;
+    where?: IListWorkflowVariablesWhere;
+    limit?: number;
+    sort?: ["createdOn_ASC" | "createdOn_DESC"];
+    after?: string;
 }
 
 export interface IListWorkflowResponse {
@@ -118,9 +128,9 @@ export interface IListWorkflowResponse {
 }
 
 export const LIST_WORKFLOWS_QUERY = gql`
-    query ListWorkflows($app: String!) {
+    query ListWorkflows($where: ListWorkflowsWhereInput, $limit: Number, $sort: [ListWorkflowsSort!], $after: String) {
         workflows {
-            listWorkflows(app: $app) {
+            listWorkflows(where: $where, limit: $limit, sort: $sort, after: $after) {
                 data ${WORKFLOW}
                 ${ERROR_FIELD}
             }

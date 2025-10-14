@@ -337,7 +337,6 @@ export default /* GraphQL */ `
         revisionLastPublishedBy_not: ID
         revisionLastPublishedBy_in: [ID!]
         revisionLastPublishedBy_not_in: [ID!]
-        state: CmsEntryStateWhereInput
         location: FmFile_LocationWhereInput
 
         name: String

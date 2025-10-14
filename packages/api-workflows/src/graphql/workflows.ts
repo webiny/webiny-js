@@ -6,7 +6,7 @@ import { getWorkflowValidation } from "~/validation/getWorkflow.js";
 import { storeWorkflowValidation } from "~/validation/storeWorkflow.js";
 import { deleteWorkflowValidation } from "~/validation/deleteWorkflow.js";
 
-export const createSchema = () => {
+export const createWorkflowsSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
         typeDefs: /* GraphQL */ `
             type WorkflowError {
@@ -62,8 +62,15 @@ export const createSchema = () => {
                 steps: [WorkflowStep!]!
             }
 
+            type ListWorkflowsMeta {
+                cursor: String
+                hasMoreItems: Boolean!
+                totalCount: Int!
+            }
+
             type ListWorkflowsResponse {
                 data: [Workflow!]
+                meta: ListWorkflowsMeta
                 error: WorkflowError
             }
 
@@ -72,8 +79,25 @@ export const createSchema = () => {
                 error: WorkflowError
             }
 
+            input ListWorkflowsWhereInput {
+                app: String
+                app_in: [String!]
+                id: String
+                id_in: [String!]
+            }
+
+            enum ListWorkflowsSort {
+                createdOn_ASC
+                createdOn_DESC
+            }
+
             type WorkflowsQuery {
-                listWorkflows(app: String): ListWorkflowsResponse!
+                listWorkflows(
+                    where: ListWorkflowsWhereInput
+                    limit: Number
+                    sort: [ListWorkflowsSort!]
+                    after: String
+                ): ListWorkflowsResponse!
                 getWorkflow(app: String!, id: ID!): GetWorkflowResponse!
             }
 
@@ -139,16 +163,7 @@ export const createSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        const items = await context.workflows.listWorkflows(result.data);
-
-                        return {
-                            items,
-                            meta: {
-                                totalCount: items.length,
-                                hasMoreItems: false,
-                                cursor: null
-                            }
-                        };
+                        return await context.workflows.listWorkflows(result.data);
                     });
                 }
             },

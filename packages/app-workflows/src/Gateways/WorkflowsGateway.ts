@@ -93,7 +93,10 @@ export class WorkflowsGateway implements IWorkflowsGateway {
             const result = await this.client.query<IListWorkflowResponse, IListWorkflowVariables>({
                 query: LIST_WORKFLOWS_QUERY,
                 variables: {
-                    app: this.app
+                    where: {
+                        app: this.app
+                    },
+                    sort: ["createdOn_DESC"]
                 },
                 fetchPolicy: "no-cache"
             });

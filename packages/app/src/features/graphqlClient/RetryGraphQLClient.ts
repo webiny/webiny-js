@@ -1,5 +1,5 @@
 import { createDecorator } from "@webiny/di-container";
-import { GraphQLClient } from "./abstractions";
+import { GraphQLClient } from "./abstractions.js";
 import { EnvConfig } from "~/features/envConfig/index.js";
 
 class RetryGraphQLClientImpl implements GraphQLClient.Interface {
