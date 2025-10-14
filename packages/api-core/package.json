@@ -1,0 +1,32 @@
+{
+  "name": "@webiny/api-core",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "Core package for developing API-related features.",
+  "author": "Webiny Ltd.",
+  "exports": {
+    ".": "./index.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/di-container": "0.0.0",
+    "@webiny/utils": "0.0.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "rimraf": "^6.0.1",
+    "typescript": "5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  }
+}
