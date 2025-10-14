@@ -7,9 +7,6 @@ export { GetRootTenantUseCase };
 
 export const GetRootTenant = createFeature({
     name: "GetRootTenant",
-    abstractions: {
-        useCase: GetRootTenantUseCase
-    },
     register(container, context: TenancyContext) {
         container.registerFactory(GetRootTenantUseCase, () => {
             return new GetRootTenantUseCaseImpl(() => context.tenancy.getRootTenant());

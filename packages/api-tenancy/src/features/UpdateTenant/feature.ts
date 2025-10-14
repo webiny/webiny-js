@@ -8,10 +8,6 @@ export { UpdateTenantUseCase };
 
 export const UpdateTenant = createFeature({
     name: "Tenancy/UpdateTenant",
-    abstractions: {
-        useCase: UpdateTenantUseCase,
-        repository: UpdateTenantRepository
-    },
     register(container, context: TenancyContext) {
         // Use-case
         container.register(UpdateTenantUseCaseImpl);

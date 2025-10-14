@@ -7,9 +7,6 @@ export { GetTenantByIdUseCase };
 
 export const GetTenantById = createFeature({
     name: "GetTenantById",
-    abstractions: {
-        useCase: GetTenantByIdUseCase
-    },
     register(container, context: TenancyContext) {
         container.registerFactory(GetTenantByIdUseCase, () => {
             return new GetTenantByIdUseCaseImpl((id: string) => context.tenancy.getTenantById(id));

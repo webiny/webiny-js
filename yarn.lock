@@ -14364,6 +14364,7 @@ __metadata:
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di-container": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
