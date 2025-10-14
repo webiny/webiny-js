@@ -111,6 +111,7 @@ export const PinnableMenuItem = ({ name, children }: PinnableMenuItemProps) => {
                 className={`group-hover/pin:wby-visible wby-absolute wby-right-sm wby-top-1/2 -wby-translate-y-1/2 wby-cursor-pointer ${isPinned && isSidebarExpanded ? "wby-visible" : "wby-invisible"}`}
             >
                 <Icon
+                    size={"sm"}
                     label={isPinned ? "Unpin menu item" : "Pin menu item"}
                     onClick={isPinned ? unpin : pin}
                     icon={<PinIcon />}
