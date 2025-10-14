@@ -116,6 +116,26 @@ export class Container {
         return this.resolveInternal(abstraction, new Map(), {});
     }
 
+    resolveAll<T>(abstraction: Abstraction<T>): T[] {
+        const registrations = this.registrations.get(abstraction.token) || [];
+        const instanceRegs = this.instanceRegistrations.get(abstraction.token) || [];
+
+        const results: T[] = [];
+
+        // Resolve all instance registrations
+        for (const instanceReg of instanceRegs) {
+            results.push(instanceReg.instance);
+        }
+
+        // Resolve all class registrations
+        for (const registration of registrations) {
+            const instance = this.resolveRegistration(abstraction, registration, new Map());
+            results.push(instance);
+        }
+
+        return results;
+    }
+
     resolveWithDependencies<T extends Constructor>(config: {
         implementation: T;
         dependencies: Dependencies<T>;
