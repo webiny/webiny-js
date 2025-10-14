@@ -1,19 +1,16 @@
 import type { Container } from "@webiny/di-container";
 
-export interface FeatureDefinition<TAbstractions, TRegister> {
+export interface FeatureDefinition<TRegister> {
     name: string;
-    abstractions: TAbstractions;
     register(container: Container, context?: TRegister): void;
 }
 
-export function createFeature<TAbstractions, TRegister>(def: {
+export function createFeature<TRegister>(def: {
     name: string;
-    abstractions: TAbstractions;
     register(container: Container, context?: TRegister): void;
-}): FeatureDefinition<TAbstractions, TRegister> {
+}): FeatureDefinition<TRegister> {
     return {
         name: def.name,
-        abstractions: def.abstractions,
         register: def.register
     };
 }
