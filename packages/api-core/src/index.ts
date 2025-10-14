@@ -5,12 +5,7 @@ export type { IModel, IModelBuilder, IModelFactory } from "./models/abstractions
 export { createModelSchema, ModelBuilder, type ModelClass } from "./models/ModelBuilder.js";
 
 /**
- * DI Container
+ * Features
  */
-export {
-    Container,
-    Abstraction,
-    createDecorator,
-    createImplementation,
-    createComposite
-} from "@webiny/di-container";
+export { EventPublisherFeature } from "./features/eventPublisher/feature.js";
+export { EventPublisher } from "./features/eventPublisher/abstractions.js";

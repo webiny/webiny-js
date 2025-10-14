@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/di-container": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "@webiny/utils": "0.0.0",
     "zod": "^3.25.76"
   },
