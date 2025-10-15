@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Grid } from "@webiny/admin-ui";
+import { Alert, Grid } from "@webiny/admin-ui";
 import type { IWorkflowApplication } from "~/types.js";
 import { WorkflowApplications } from "./WorkflowApplications.js";
 import { WorkflowPresenter } from "./WorkflowPresenter.js";
@@ -14,11 +14,23 @@ export const Workflows = (props: IWorkflowsProps) => {
     const { apps, app: initialApp, onAppClick } = props;
 
     const app = useMemo(() => {
-        if (!initialApp || !apps.length) {
+        if (!initialApp) {
             return null;
         }
         return apps.find(a => a.id === initialApp);
     }, [initialApp, apps]);
+    
+    if (!apps.length) {
+        return (
+            <Grid>
+                <Grid.Column span={12}>
+                    <Alert type="danger" title="No applications found.">
+                        There are no applications available.
+                    </Alert>
+                </Grid.Column>
+            </Grid>
+        );
+    }
 
     return (
         <Grid>
