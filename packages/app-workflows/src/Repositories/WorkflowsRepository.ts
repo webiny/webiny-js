@@ -25,7 +25,7 @@ export class WorkflowsRepository implements IWorkflowsRepository {
     public get loading(): boolean {
         return this._loading;
     }
-    
+
     public get app(): IWorkflowApplication {
         return this.gateway.app;
     }

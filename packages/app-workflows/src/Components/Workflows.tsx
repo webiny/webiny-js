@@ -19,7 +19,7 @@ export const Workflows = (props: IWorkflowsProps) => {
         }
         return apps.find(a => a.id === initialApp);
     }, [initialApp, apps]);
-    
+
     if (!apps.length) {
         return (
             <Grid>

@@ -22,7 +22,7 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
             workflow: workflow ? workflow.toJS() : null,
             loading: this.repository.loading,
             error: toJS(this.repository.error),
-            app: this.repository.app,
+            app: this.repository.app
         };
     }
 

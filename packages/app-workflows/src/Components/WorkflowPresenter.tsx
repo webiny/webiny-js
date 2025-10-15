@@ -28,7 +28,7 @@ export const WorkflowPresenter = (props: IWorkflowPresenterProps) => {
 
     const presenter = useMemo(() => {
         const defaultWorkflow = createDefaultWorkflow({
-            app: app.id,
+            app: app.id
         });
         const gateway = new WorkflowsGateway({
             app,

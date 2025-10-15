@@ -2,7 +2,6 @@ import React from "react";
 import { List } from "@webiny/admin-ui";
 import type { IWorkflowApplication } from "~/types.js";
 
-
 export interface IWorkflowApplicationsProps {
     apps: IWorkflowApplication[];
     onClick: (id: string) => void;

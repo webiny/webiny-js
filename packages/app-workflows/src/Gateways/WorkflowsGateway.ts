@@ -95,7 +95,7 @@ export class WorkflowsGateway implements IWorkflowsGateway {
                 query: LIST_WORKFLOWS_QUERY,
                 variables: {
                     where: {
-                        app: this.app.id,
+                        app: this.app.id
                     },
                     sort: ["createdOn_DESC"]
                 },

@@ -8,7 +8,6 @@ export interface IWorkflowApplication {
     name: string;
 }
 
-
 export interface IWorkflowStepNotification {
     id: string;
 }
