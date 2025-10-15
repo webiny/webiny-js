@@ -15531,6 +15531,7 @@ __metadata:
     "@types/react-transition-group": "npm:^4.4.12"
     "@types/store": "npm:^2.0.5"
     "@types/tinycolor2": "npm:^1.4.6"
+    "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -15580,8 +15581,6 @@ __metadata:
     unicode-emoji-json: "npm:^0.8.0"
     vitest: "npm:^3.2.4"
     zod: "npm:^3.25.76"
-  peerDependencies:
-    "@webiny/admin-ui": 0.0.0
   languageName: unknown
   linkType: soft
 
