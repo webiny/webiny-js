@@ -11,7 +11,6 @@ import type {
 import { type ListFoldersParams } from "./folder.types.js";
 import {
     getCreateFolderUseCases,
-    getDeleteFolderUseCases,
     getGetAncestors,
     getGetFolderUseCase,
     getListFolderLevelPermissionsTargets,
@@ -21,6 +20,7 @@ import {
 import type { CreateAcoParams, Folder } from "~/types.js";
 import { type AcoContext } from "~/types.js";
 import { UpdateFolderUseCase } from "~/features/folders/UpdateFolder/abstractions.js";
+import { DeleteFolderUseCase } from "~/features/folders/DeleteFolder/index.js";
 
 const FIXED_FOLDER_LISTING_LIMIT = 10_000;
 
@@ -78,16 +78,6 @@ export const createFolderCrudMethods = ({
         }
     });
 
-    const { deleteFolderUseCase } = getDeleteFolderUseCases({
-        deleteOperation: storageOperations.folder.deleteFolder,
-        getOperation: storageOperations.folder.getFolder,
-        folderLevelPermissions,
-        topics: {
-            onFolderBeforeDelete,
-            onFolderAfterDelete
-        }
-    });
-
     const { getAncestorsUseCase } = getGetAncestors({
         listFoldersUseCase: listFoldersUseCase
     });
@@ -139,6 +129,7 @@ export const createFolderCrudMethods = ({
         },
 
         async delete(id) {
+            const deleteFolderUseCase = container.resolve(DeleteFolderUseCase);
             return await deleteFolderUseCase.execute({ id });
         },
 

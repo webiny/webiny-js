@@ -12,6 +12,7 @@ import { CmsEntriesCrudDecorators } from "~/utils/decorators/CmsEntriesCrudDecor
 import { createFilterCrudMethods } from "~/filter/filter.crud.js";
 import { createFlpCrudMethods, FolderLevelPermissions } from "~/flp/index.js";
 import { UpdateFolderFeature } from "~/features/folders/UpdateFolder/index.js";
+import { DeleteFolderFeature } from "~/features/folders/DeleteFolder/index.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -65,6 +66,11 @@ const setupAcoContext = async (
      * Register features into DI container
      */
     UpdateFolderFeature.register(context.container, {
+        storageOperations: storageOperations.folder,
+        folderLevelPermissions
+    });
+
+    DeleteFolderFeature.register(context.container, {
         storageOperations: storageOperations.folder,
         folderLevelPermissions
     });
