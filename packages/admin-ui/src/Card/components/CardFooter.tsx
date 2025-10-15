@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn, cva, type VariantProps } from "~/utils.js";
-import { ActionsAreaProvider } from "~/Card/components/ActionsAreaProvider.tsx";
+import { ActionsAreaProvider } from "./ActionsAreaProvider.js";
 
 const cardFooterVariants = cva("wby-flex wby-justify-between", {
     variants: {

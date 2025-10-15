@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn, cva } from "~/utils.js";
 import { type CardProps } from "../Card.js";
 import { CardTitle } from "./CardTitle.js";
-import { ActionsAreaProvider } from "~/Card/components/ActionsAreaProvider.tsx";
+import { ActionsAreaProvider } from "./ActionsAreaProvider.js";
 import { CardDescription } from "./CardDescription.js";
 
 const cardHeaderVariants = cva("wby-text-neutral-primary", {
