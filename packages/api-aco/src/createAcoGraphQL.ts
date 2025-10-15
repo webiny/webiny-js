@@ -1,7 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { filterSchema } from "~/filter/filter.gql.js";
 import { createFoldersSchema } from "~/folder/folder.gql.js";
-import { appGql } from "~/apps/app.gql.js";
 import type { AcoContext } from "~/types.js";
 import { ContextPlugin } from "@webiny/api";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
@@ -19,14 +18,6 @@ const baseSchema = new GraphQLSchemaPlugin({
         }
 
         type AcoMutation {
-            _empty: String
-        }
-
-        type SearchQuery {
-            _empty: String
-        }
-
-        type SearchMutation {
             _empty: String
         }
 
@@ -67,56 +58,20 @@ const baseSchema = new GraphQLSchemaPlugin({
             title: AcoSortDirection
         }
 
-        input AcoSearchRecordTagListWhereInput {
-            tags_in: [String!]
-            tags_startsWith: String
-            tags_not_startsWith: String
-            createdBy: ID
-            AND: [AcoSearchRecordTagListWhereInput!]
-            OR: [AcoSearchRecordTagListWhereInput!]
-        }
-
-        type AcoSearchRecordMoveResponse {
-            data: Boolean
-            error: AcoError
-        }
-
-        type TagItem {
-            tag: String!
-            count: Int!
-        }
-
-        type AcoSearchRecordTagListResponse {
-            data: [TagItem!]
-            error: AcoError
-            meta: AcoMeta
-        }
-
-        type AcoSearchLocationType {
-            folderId: ID!
-        }
-        input AcoSearchLocationInput {
-            folderId: ID!
-        }
-
         extend type Query {
             aco: AcoQuery
-            search: SearchQuery
         }
 
         extend type Mutation {
             aco: AcoMutation
-            search: SearchMutation
         }
     `,
     resolvers: {
         Query: {
-            aco: emptyResolver,
-            search: emptyResolver
+            aco: emptyResolver
         },
         Mutation: {
-            aco: emptyResolver,
-            search: emptyResolver
+            aco: emptyResolver
         }
     }
 });
@@ -155,5 +110,5 @@ export const createAcoGraphQL = () => {
         });
     });
 
-    return [baseSchema, appGql, folderSchema, filterSchema];
+    return [baseSchema, folderSchema, filterSchema];
 };

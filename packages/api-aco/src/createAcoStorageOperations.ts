@@ -4,7 +4,6 @@ import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js"
 
 import { createFilterOperations } from "~/filter/filter.so.js";
 import { createFolderOperations } from "~/folder/folder.so.js";
-import { createSearchRecordOperations } from "~/record/record.so.js";
 import { createAcoModels } from "~/createAcoModels.js";
 
 import type { AcoStorageOperations } from "~/types.js";
@@ -26,7 +25,6 @@ export const createAcoStorageOperations = async (
 
     return {
         folder: createFolderOperations(params),
-        search: createSearchRecordOperations(params),
         filter: createFilterOperations(params),
         flp: createFlpOperations(params)
     };

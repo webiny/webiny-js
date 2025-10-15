@@ -6,12 +6,8 @@ import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createAcoHooks } from "~/createAcoHooks.js";
 import { createAcoStorageOperations } from "~/createAcoStorageOperations.js";
-import type { AcoContext, CreateAcoParams, IAcoAppRegisterParams } from "~/types.js";
+import type { AcoContext, CreateAcoParams } from "~/types.js";
 import { createFolderCrudMethods } from "~/folder/folder.crud.js";
-import { createSearchRecordCrudMethods } from "~/record/record.crud.js";
-import { AcoApps } from "./apps/index.js";
-import { SEARCH_RECORD_MODEL_ID } from "~/record/record.model.js";
-import { AcoAppRegisterPlugin } from "~/plugins/index.js";
 import { CmsEntriesCrudDecorators } from "~/utils/decorators/CmsEntriesCrudDecorators.js";
 import { createFilterCrudMethods } from "~/filter/filter.crud.js";
 import { createFlpCrudMethods, FolderLevelPermissions } from "~/flp/index.js";
@@ -71,51 +67,19 @@ const setupAcoContext = async (
         folderLevelPermissions
     };
 
-    const defaultRecordModel = await context.security.withoutAuthorization(async () => {
-        return context.cms.getModel(SEARCH_RECORD_MODEL_ID);
-    });
-
-    if (!defaultRecordModel) {
-        throw new WebinyError(`There is no default record model in ${SEARCH_RECORD_MODEL_ID}`);
-    }
-
-    /**
-     * First we need to create all the apps.
-     */
-    const apps = new AcoApps(context, params);
-    const plugins = context.plugins.byType<AcoAppRegisterPlugin>(AcoAppRegisterPlugin.type);
-    for (const plugin of plugins) {
-        await apps.register({
-            model: defaultRecordModel,
-            ...plugin.app
-        });
-    }
-
     context.aco = {
         folder: createFolderCrudMethods({
             ...params,
             context
         }),
-        search: createSearchRecordCrudMethods(params),
         folderLevelPermissions,
         filter: createFilterCrudMethods(params),
-        flp: flpCrudMethods,
-        apps,
-        getApp: <C extends AcoContext = AcoContext>(name: string) => apps.get<C>(name),
-        listApps: () => apps.list(),
-        registerApp: async (params: IAcoAppRegisterParams) => {
-            return apps.register({
-                model: defaultRecordModel,
-                ...params
-            });
-        }
+        flp: flpCrudMethods
+
     };
 
     if (context.wcp.canUseFolderLevelPermissions()) {
         new CmsEntriesCrudDecorators({ context }).decorate();
-
-        // PB decorators registered here: packages/api-page-builder-aco/src/index.ts
-        // new PageBuilderCrudDecorators({ context }).decorate();
     }
 };
 
