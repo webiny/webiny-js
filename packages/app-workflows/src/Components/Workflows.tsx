@@ -30,6 +30,16 @@ export const Workflows = (props: IWorkflowsProps) => {
                 </Grid.Column>
             </Grid>
         );
+    } else if (initialApp && !app) {
+        return (
+            <Grid>
+                <Grid.Column span={12}>
+                    <Alert type="danger" title="No application found.">
+                        Application you selected does not exist: <strong>{initialApp}</strong>.
+                    </Alert>
+                </Grid.Column>
+            </Grid>
+        );
     }
 
     return (
