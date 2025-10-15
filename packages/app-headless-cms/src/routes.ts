@@ -43,6 +43,15 @@ export const Routes = {
         List: new Route({
             name: "Cms/ContentModels/List",
             path: "/cms/content-models"
+        }),
+        Workflows: new Route({
+            name: "Cms/ContentModels/Workflows",
+            path: "/cms/content-models/workflows",
+            params: zod => {
+                return {
+                    id: zod.string().optional()
+                };
+            }
         })
     }
 };
