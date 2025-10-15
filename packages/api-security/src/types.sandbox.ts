@@ -67,31 +67,31 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     /**
      * Returns the token which was used to authenticate (if authentication was successful).
      */
-    getToken(): AuthenticationToken | undefined;
+    // getToken(): AuthenticationToken | undefined;
 
     getStorageOperations(): SecurityStorageOperations;
 
-    isAuthorizationEnabled(): boolean;
+    // isAuthorizationEnabled(): boolean;
 
-    withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T>;
+    // withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T>;
 
-    withIdentity<T = any>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T>;
+    // withIdentity<T = any>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T>;
 
-    addAuthorizer(authorizer: Authorizer): void;
+    // addAuthorizer(authorizer: Authorizer): void;
 
-    getAuthorizers(): Authorizer[];
+    // getAuthorizers(): Authorizer[];
 
-    getPermission<TPermission extends SecurityPermission = SecurityPermission>(
-        permission: string
-    ): Promise<TPermission | null>;
+    // getPermission<TPermission extends SecurityPermission = SecurityPermission>(
+    //     permission: string
+    // ): Promise<TPermission | null>;
+    //
+    // getPermissions<TPermission extends SecurityPermission = SecurityPermission>(
+    //     permission: string
+    // ): Promise<TPermission[]>;
 
-    getPermissions<TPermission extends SecurityPermission = SecurityPermission>(
-        permission: string
-    ): Promise<TPermission[]>;
+    // listPermissions(): Promise<SecurityPermission[]>;
 
-    listPermissions(): Promise<SecurityPermission[]>;
-
-    hasFullAccess(): Promise<boolean>;
+    // hasFullAccess(): Promise<boolean>;
 
     // API Keys
     getApiKey(id: string): Promise<ApiKey | null>;

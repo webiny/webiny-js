@@ -1,12 +1,7 @@
 import { ContextPlugin } from "@webiny/api";
 import type { TenancyContext } from "@webiny/api-tenancy/types.js";
 import type { WcpContext } from "@webiny/api-wcp/types.js";
-import type {
-    SecurityAuthenticationPlugin,
-    SecurityAuthorizationPlugin,
-    SecurityContext,
-    SecurityStorageOperations
-} from "./types.js";
+import type { SecurityContext, SecurityStorageOperations } from "./types.js";
 import graphqlPlugins from "./graphql/index.js";
 import gqlInterfaces from "./graphql/interfaces.gql.js";
 import { createSecurity } from "~/createSecurity.js";
@@ -59,25 +54,6 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
         });
 
         attachGroupInstaller(context.security);
-
-        // Backwards Compatibility - START
-        context.plugins
-            .byType<SecurityAuthenticationPlugin>("security-authentication")
-            .forEach(pl => {
-                context.security.addAuthenticator(() => {
-                    return pl.authenticate(context);
-                });
-            });
-
-        context.plugins
-            .byType<SecurityAuthorizationPlugin>("security-authorization")
-            .forEach(pl => {
-                context.security.addAuthorizer(() => {
-                    return pl.getPermissions(context);
-                });
-            });
-
-        // Backwards Compatibility - END
     });
 };
 
@@ -93,3 +69,5 @@ export const createSecurityGraphQL = (config: MultiTenancyGraphQLConfig = {}) =>
 
 export { createSecurityRolePlugin } from "./plugins/SecurityRolePlugin.js";
 export { createSecurityTeamPlugin } from "./plugins/SecurityTeamPlugin.js";
+
+

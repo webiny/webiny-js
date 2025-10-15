@@ -5,4 +5,3 @@ export * from "./GetFolder/index.js";
 export * from "./GetFolderHierarchy/index.js";
 export * from "./ListFolderLevelPermissionsTargets/index.js";
 export * from "./ListFolders/index.js";
-export * from "./UpdateFolder/index.js";

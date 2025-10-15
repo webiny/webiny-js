@@ -60,7 +60,7 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
 
     return {
         ...authentication,
-        config,
+        // config,
         async authenticate(this: Security, token: string): Promise<void> {
             await authentication.authenticate(token);
             if (authentication.getIdentity()) {

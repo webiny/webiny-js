@@ -11,6 +11,7 @@ import { createFolderCrudMethods } from "~/folder/folder.crud.js";
 import { CmsEntriesCrudDecorators } from "~/utils/decorators/CmsEntriesCrudDecorators.js";
 import { createFilterCrudMethods } from "~/filter/filter.crud.js";
 import { createFlpCrudMethods, FolderLevelPermissions } from "~/flp/index.js";
+import { UpdateFolderFeature } from "~/features/folders/UpdateFolder/index.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -60,7 +61,20 @@ const setupAcoContext = async (
 
     const folderLevelPermissions = new FolderLevelPermissions({ context, crud: flpCrudMethods });
 
+    /**
+     * Register features into DI container
+     */
+    UpdateFolderFeature.register(context.container, {
+        storageOperations: storageOperations.folder,
+        folderLevelPermissions
+    });
+
+    /**
+     * Setup legacy context
+     */
+
     const params: CreateAcoParams = {
+        container: context.container,
         getLocale,
         getTenant,
         storageOperations,
@@ -75,7 +89,6 @@ const setupAcoContext = async (
         folderLevelPermissions,
         filter: createFilterCrudMethods(params),
         flp: flpCrudMethods
-
     };
 
     if (context.wcp.canUseFolderLevelPermissions()) {

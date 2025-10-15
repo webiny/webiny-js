@@ -13,10 +13,11 @@ export const UpdateTenant = createFeature({
         container.register(UpdateTenantUseCaseImpl);
 
         // Repository
-        container.registerFactory(UpdateTenantRepository, () => {
-            return new UpdateTenantRepositoryImpl(async (id, data) => {
+        container.registerInstance(
+            UpdateTenantRepository,
+            new UpdateTenantRepositoryImpl(async (id, data) => {
                 await context.tenancy.updateTenant(id, data);
-            });
-        });
+            })
+        );
     }
 });

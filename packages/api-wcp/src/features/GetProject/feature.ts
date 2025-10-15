@@ -7,9 +7,6 @@ export { GetProjectUseCase };
 
 export const GetProject = createFeature({
     name: "Wcp/GetProject",
-    abstractions: {
-        useCase: GetProjectUseCase
-    },
     register(container, context: WcpContext) {
         container.registerFactory(GetProjectUseCase, () => {
             return new GetProjectUseCaseImpl(() => context.wcp.getProject());

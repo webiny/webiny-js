@@ -13,6 +13,7 @@ import type {
     AcoFolderLevelPermissionsStorageOperations
 } from "~/flp/flp.types.js";
 import type { FolderLevelPermissions } from "~/flp/index.js";
+import type { Container } from "@webiny/di-container";
 
 export * from "./filter/filter.types.js";
 export type * from "./folder/folder.types.js";
@@ -60,6 +61,7 @@ export interface CreateAcoParams {
     getTenant: () => Tenant;
     storageOperations: AcoStorageOperations;
     folderLevelPermissions: FolderLevelPermissions;
+    container: Container;
 }
 
 export interface AcoStorageOperations {

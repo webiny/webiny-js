@@ -16,11 +16,11 @@ import {
     getGetFolderUseCase,
     getListFolderLevelPermissionsTargets,
     getListFoldersUseCases,
-    getUpdateFolderUseCase,
     getGetFolderHierarchyUseCases
 } from "~/folder/useCases/index.js";
 import type { CreateAcoParams, Folder } from "~/types.js";
 import { type AcoContext } from "~/types.js";
+import { UpdateFolderUseCase } from "~/features/folders/UpdateFolder/abstractions.js";
 
 const FIXED_FOLDER_LISTING_LIMIT = 10_000;
 
@@ -29,6 +29,7 @@ interface CreateFolderCrudMethodsParams extends CreateAcoParams {
 }
 
 export const createFolderCrudMethods = ({
+    container,
     storageOperations,
     folderLevelPermissions,
     context
@@ -74,16 +75,6 @@ export const createFolderCrudMethods = ({
         topics: {
             onFolderAfterCreate,
             onFolderBeforeCreate
-        }
-    });
-
-    const { updateFolderUseCase } = getUpdateFolderUseCase({
-        updateOperation: storageOperations.folder.updateFolder,
-        getOperation: storageOperations.folder.getFolder,
-        folderLevelPermissions,
-        topics: {
-            onFolderAfterUpdate,
-            onFolderBeforeUpdate
         }
     });
 
@@ -152,6 +143,7 @@ export const createFolderCrudMethods = ({
         },
 
         async update(id, data) {
+            const updateFolderUseCase = container.resolve(UpdateFolderUseCase);
             return await updateFolderUseCase.execute(id, data);
         },
 

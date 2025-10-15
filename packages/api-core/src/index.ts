@@ -9,3 +9,8 @@ export { createModelSchema, ModelBuilder, type ModelClass } from "./models/Model
  */
 export { EventPublisherFeature } from "./features/eventPublisher/feature.js";
 export { EventPublisher } from "./features/eventPublisher/abstractions.js";
+export type {
+    DomainEvent,
+    IEventHandler,
+    IEventPublisher
+} from "./features/eventPublisher/abstractions.js";
