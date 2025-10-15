@@ -80,6 +80,7 @@ export const ContentEntryForm = makeDecoratable(
                 confirmNavigationIfDirty={true}
                 persistEntry={persistEntry}
             >
+                
                 <ModelProvider model={model}>
                     {header ? header : null}
                     <div

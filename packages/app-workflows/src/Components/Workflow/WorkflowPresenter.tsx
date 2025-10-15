@@ -1,13 +1,12 @@
 import React, { useMemo } from "react";
-import type { IWorkflow, IWorkflowStep } from "~/types.js";
-import { WorkflowsRepository } from "../Repositories/index.js";
-import { WorkflowsPresenter } from "../Presenters/index.js";
-import { WorkflowsGateway } from "../Gateways/index.js";
+import type { IWorkflow, IWorkflowApplication, IWorkflowStep } from "~/types.js";
+import { WorkflowsRepository } from "~/Repositories/index.js";
+import { WorkflowsPresenter } from "~/Presenters/index.js";
+import { WorkflowsGateway } from "~/Gateways/index.js";
 import type { NonEmptyArray } from "@webiny/app/types.js";
 import { mdbid } from "@webiny/utils/mdbid.js";
 import { useApolloClient } from "@apollo/react-hooks";
-import { WorkflowView } from "~/Components/WorkflowView.js";
-import type { IWorkflowApplication } from "~/types.js";
+import { WorkflowView } from "./WorkflowView.js";
 
 export interface IWorkflowPresenterProps {
     app: IWorkflowApplication;
