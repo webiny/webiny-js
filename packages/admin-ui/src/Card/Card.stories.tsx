@@ -1,22 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
-import { ReactComponent as MoreVertical } from "@webiny/icons/more_vert.svg";
 import { Card } from "./Card.js";
-import { Button, IconButton } from "~/Button/index.js";
-import { Icon } from "~/Icon/index.js";
+import { Button } from "~/Button/index.js";
+import { DropdownMenu } from "~/DropdownMenu/index.js";
+import { ReactComponent as NotificationIcon } from "@webiny/icons/notifications_active.svg";
+import { Tabs } from "~/Tabs/index.js";
+
 
 const meta: Meta<typeof Card> = {
     title: "Components/Card",
     component: Card,
-    decorators: [
-        Story => (
-            <div className="wby-bg-[#f4f4f4] wby-h-[500px] wby-w-[700px] wby-rounded-[5px] wby-px-[50px] wby-content-center">
-                <div className={"wby-m-auto wby-w-[300px]"}>
-                    <Story />
-                </div>
-            </div>
-        )
-    ]
+    argTypes: {}
 };
 
 export default meta;
@@ -25,156 +19,198 @@ type Story = StoryObj<typeof Card>;
 
 export const Default: Story = {
     args: {
-        title: "Card title goes here",
-        description: "Card description goes here",
-        children: <>This is card content. Anything can go in here.</>,
-        actions: (
+        size: "md",
+        title: "Card Title",
+        description: "A short card description.",
+        info: (
             <>
-                <Button variant={"secondary"} text={"Cancel"} />
-                <Button variant={"primary"} text={"Confirm"} />
+                Learn more about this <a href={"#"}>here</a>.
             </>
         ),
-        padding: "standard",
-        elevation: "sm",
-        borderRadius: "md"
+        children: (
+            <>
+                The amazing, splendid, and most useful umbrella, resistant to rain and friendly to
+                winds, is something that deserves all admiration. Crafted with perfect textures, it
+                bravely withstands storms and gently shades the rays of the sun. A remarkable
+                innovation, with an ergonomically designed grip most suited to the hand, it remains
+                stable even in the fiercest weather.
+            </>
+        ),
+        actions: (
+            <>
+                <Card.CancelButton />
+                <Card.ConfirmButton />
+            </>
+        )
     },
-    argTypes: {
-        padding: {
-            control: "select",
-            options: ["none", "standard", "comfortable"]
-        },
-        elevation: {
-            control: "select",
-            options: ["none", "xs", "sm", "md", "lg", "xl"]
-        },
-        borderRadius: {
-            control: "select",
-            options: ["none", "sm", "md", "lg"]
-        }
-    }
+    argTypes: {}
 };
 
-export const NoTitleDescriptionActionsHeaderAndFooter: Story = {
-    name: "Only Body (Without Body, Title, Actions)",
-    args: {
-        children: <>This is card content. Anything can go in here.</>
-    }
-};
-
-export const WithMorePadding: Story = {
+export const SizeSmall: Story = {
     args: {
         ...Default.args,
-        actions: null,
-        padding: "comfortable"
+        size: "sm"
     }
 };
 
-export const WithMoreElevation: Story = {
+export const SizeMedium: Story = {
     args: {
         ...Default.args,
-        actions: null,
-        elevation: "md"
+        size: "md"
     }
 };
 
-export const NoElevation: Story = {
+export const SizeLarge: Story = {
     args: {
         ...Default.args,
-        actions: null,
-        elevation: "none"
+        size: "lg"
     }
 };
 
-export const NoBorderRadius: Story = {
+export const SizeExtraLarge: Story = {
     args: {
         ...Default.args,
-        actions: null,
-        borderRadius: "none"
+        size: "xl"
     }
 };
 
-export const WithOptions: Story = {
+export const SizeFullScreen: Story = {
     args: {
         ...Default.args,
-        actions: null,
-        options: (
-            <IconButton
-                variant={"ghost"}
-                icon={<Icon icon={<MoreVertical />} label={"More options"} />}
-                size={"sm"}
-                iconSize={"lg"}
-                onClick={() => alert("Custom action button clicked.")}
-            />
+        size: "full"
+    }
+};
+
+export const AlertCard: Story = {
+    args: {
+        ...Default.args,
+        info: null,
+        title: "Confirm Action",
+        description: "Are you sure you want to delete this item?",
+        children: (
+            <>
+                <p>This action cannot be undone.</p>
+                <p>Deleted items cannot be recovered.</p>
+            </>
         )
     }
 };
 
-export const WithActions: Story = {
-    args: Default.args
+export const DropdownMenuInCard: Story = {
+    args: {
+        ...Default.args,
+        children: (
+            <>
+                <DropdownMenu trigger={<Button variant="primary" text={"Open"} />}>
+                    <DropdownMenu.Item content={"Billing"} />
+                    <DropdownMenu.Item content={"Settings"} />
+                    <DropdownMenu.Item content={"Keyboard shortcuts"} />
+                </DropdownMenu>
+            </>
+        )
+    }
+};
+
+export const WithIcon: Story = {
+    args: {
+        ...Default.args,
+        icon: <Card.Icon icon={<NotificationIcon />} label={"Title icon"} />
+    }
+};
+
+export const WithTabs: Story = {
+    args: {
+        ...Default.args,
+        bodyPadding: false,
+        children: (
+            <>
+                <Tabs
+                    spacing={"lg"}
+                    tabs={[
+                        <Tabs.Tab
+                            key={"account"}
+                            value={"account"}
+                            trigger={"Account"}
+                            content={"Make changes to your account here."}
+                        />,
+                        <Tabs.Tab
+                            key={"company"}
+                            value={"company"}
+                            trigger={"Company"}
+                            content={"Make changes to your company info here."}
+                        />,
+                        <Tabs.Tab
+                            key={"security"}
+                            value={"security"}
+                            trigger={"Security"}
+                            content={"Make changes to your security settings here."}
+                        />,
+                        <Tabs.Tab
+                            key={"development"}
+                            value={"development"}
+                            trigger={"Development"}
+                            content={"Make changes to your development settings here."}
+                        />
+                    ]}
+                />
+            </>
+        )
+    }
 };
 
 export const Documentation: Story = {
-    render: args => {
-        return <Card {...args} />;
-    },
     args: {
-        title: "Card title goes here",
-        description: "Card description goes here",
-        children: <>This is card content. Anything can go in here.</>,
-        actions: (
+        title: "Card Title",
+        description: "A short card description.",
+        bodyPadding: true,
+        info: (
             <>
-                <Button variant={"secondary"} text={"Cancel"} />
-                <Button variant={"primary"} text={"Confirm"} />
+                Learn more about this <a href={"#"}>here</a>.
             </>
         ),
-        padding: "standard",
-        elevation: "sm",
-        borderRadius: "md",
-        options: (
-            <IconButton
-                variant={"ghost"}
-                icon={<Icon icon={<MoreVertical />} label={"More options"} />}
-                size={"sm"}
-                iconSize={"lg"}
-                onClick={() => alert("Custom action button clicked.")}
-            />
+        children: (
+            <>
+                This is the card content area. You can place any content here including forms,
+                text, images, or other components.
+            </>
+        ),
+        actions: (
+            <>
+                <Card.CancelButton />
+                <Card.ConfirmButton />
+            </>
         )
     },
     argTypes: {
         title: {
-            description: "The title displayed at the top of the card",
+            description: "Title displayed in the header",
             control: "text"
         },
         description: {
-            description: "A description displayed below the title",
+            description: "Description displayed below the title",
             control: "text"
+        },
+        size: {
+            description: "Controls the size of the card",
+            control: "select",
+            options: ["sm", "md", "lg", "xl", "full"]
+        },
+        bodyPadding: {
+            description: "Add padding to the Card body.",
+            control: "boolean",
+            defaultValue: true
+        },
+        info: {
+            description:
+                "Additional info displayed below the description, please refer to the example below for details."
         },
         children: {
             description:
-                "The main content of the card. Please refer to the example code for details on usage."
+                "Content of the card, please refer to the 'With Dropdown Menu' and ''With Tabs' example below for details."
         },
         actions: {
             description:
-                "Buttons or other interactive elements displayed at the bottom of the card. Please refer to the example code for details on usage."
-        },
-        options: {
-            description:
-                "Additional options or actions displayed in the top-right corner. Please refer to the example code for details on usage."
-        },
-        padding: {
-            description: "Controls the amount of padding inside the card",
-            control: "select",
-            options: ["none", "standard", "comfortable"]
-        },
-        elevation: {
-            description: "Controls the shadow depth of the card",
-            control: "select",
-            options: ["none", "xs", "sm", "md", "lg", "xl"]
-        },
-        borderRadius: {
-            description: "Controls the roundness of the card corners",
-            control: "select",
-            options: ["none", "sm", "md", "lg"]
+                "Actions displayed in the footer, please refer to the code example for details."
         }
     }
 };
