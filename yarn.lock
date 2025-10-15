@@ -16389,6 +16389,7 @@ __metadata:
     style-loader: "npm:3.3.4"
     tailwindcss: "npm:^3.4.17"
     ts-checker-rspack-plugin: "npm:^1.1.5"
+    ts-morph: "npm:^24.0.0"
     ts-patch: "npm:^3.3.0"
     tsx: "npm:^4.20.5"
     typescript: "npm:5.9.3"
