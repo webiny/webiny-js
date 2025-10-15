@@ -1,5 +1,6 @@
 import type { Context } from "~/types.js";
 import { createWorkflowAppName } from "~/utils/appName.js";
+import { isModelAllowed } from "~/utils/modelAllowed.js";
 
 interface IParams {
     context: Pick<Context, "workflowState" | "cms">;
@@ -8,7 +9,7 @@ interface IParams {
 export const attachDeleteEntryLifecycleEvents = (params: IParams) => {
     const { context } = params;
     context.cms.onEntryAfterDelete.subscribe(async ({ model, entry, permanent }) => {
-        if (model.isPrivate || !permanent) {
+        if (isModelAllowed(model) === false || !permanent) {
             return;
         }
         const app = createWorkflowAppName({ model });

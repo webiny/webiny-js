@@ -7,9 +7,10 @@ import type { NonEmptyArray } from "@webiny/app/types.js";
 import { mdbid } from "@webiny/utils/mdbid.js";
 import { useApolloClient } from "@apollo/react-hooks";
 import { WorkflowView } from "~/Components/WorkflowView.js";
+import type { IWorkflowApplication } from "~/types.js";
 
 export interface IWorkflowPresenterProps {
-    app: string;
+    app: IWorkflowApplication;
 }
 
 const createDefaultWorkflow = (options: Pick<IWorkflow, "app"> & Partial<IWorkflow>): IWorkflow => {
@@ -27,7 +28,7 @@ export const WorkflowPresenter = (props: IWorkflowPresenterProps) => {
 
     const presenter = useMemo(() => {
         const defaultWorkflow = createDefaultWorkflow({
-            app
+            app: app.id
         });
         const gateway = new WorkflowsGateway({
             app,
@@ -41,7 +42,7 @@ export const WorkflowPresenter = (props: IWorkflowPresenterProps) => {
         return new WorkflowsPresenter({
             repository
         });
-    }, []);
+    }, [app]);
 
     return <WorkflowView presenter={presenter} />;
 };
