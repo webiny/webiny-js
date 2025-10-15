@@ -3,7 +3,7 @@ import { IconButton } from "@webiny/admin-ui";
 import { useSecurity } from "@webiny/app-security";
 import { ReactComponent as KeyboardArrowRightIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 import { UserMenuHandleRenderer as UserMenuHandleRendererSpec } from "@webiny/app-admin";
-import { UserImage } from "./UserImage";
+import { UserImage } from "./UserImage.js";
 
 export const UserMenuHandle = UserMenuHandleRendererSpec.createDecorator(() => {
     return function UserMenuHandle() {

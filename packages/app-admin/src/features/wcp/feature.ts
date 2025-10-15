@@ -1,8 +1,8 @@
 import { createFeature } from "@webiny/app";
 import { Container } from "@webiny/di-container";
-import { WcpService as WcpServiceAbstraction } from "./abstractions";
-import { WcpService } from "./WcpService";
-import { WcpGateway } from "./WcpGateway";
+import { WcpService as WcpServiceAbstraction } from "./abstractions.js";
+import { WcpService } from "./WcpService.js";
+import { WcpGateway } from "./WcpGateway.js";
 
 export const WcpFeature = createFeature({
     name: "Wcp",

@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { createImplementation } from "@webiny/di-container";
-import { TenancyService as Abstraction } from "./abstractions";
+import { TenancyService as Abstraction } from "./abstractions.js";
 import { LocalStorageService } from "@webiny/app/features/localStorage";
 import { WcpService } from "~/features/wcp/abstractions.js";
 
