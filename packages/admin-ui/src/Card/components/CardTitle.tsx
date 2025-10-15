@@ -6,9 +6,7 @@ const cardTitleVariants = cva("wby-flex wby-items-center wby-gap-sm", {
         size: {
             sm: "wby-text-h5",
             md: "wby-text-h5",
-            lg: "wby-text-h4",
-            xl: "wby-text-h4",
-            full: "wby-text-h4"
+            lg: "wby-text-h4"
         }
     },
     defaultVariants: {

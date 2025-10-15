@@ -6,11 +6,17 @@ import { DropdownMenu } from "~/DropdownMenu/index.js";
 import { ReactComponent as NotificationIcon } from "@webiny/icons/notifications_active.svg";
 import { Tabs } from "~/Tabs/index.js";
 
-
 const meta: Meta<typeof Card> = {
     title: "Components/Card",
     component: Card,
-    argTypes: {}
+    argTypes: {},
+    decorators: [
+        Story => (
+            <div className="wby-bg-[#f9fafa] wby-p-[350px] wby-rounded-[5px] wby-text-neutral-dimmed">
+                <Story />
+            </div>
+        )
+    ]
 };
 
 export default meta;
@@ -41,6 +47,12 @@ export const Default: Story = {
                 <Card.CancelButton />
                 <Card.ConfirmButton />
             </>
+        ),
+        topActions: (
+            <>
+                <Card.CancelButton />
+                <Card.ConfirmButton />
+            </>
         )
     },
     argTypes: {}
@@ -67,44 +79,15 @@ export const SizeLarge: Story = {
     }
 };
 
-export const SizeExtraLarge: Story = {
-    args: {
-        ...Default.args,
-        size: "xl"
-    }
-};
-
-export const SizeFullScreen: Story = {
-    args: {
-        ...Default.args,
-        size: "full"
-    }
-};
-
-export const AlertCard: Story = {
-    args: {
-        ...Default.args,
-        info: null,
-        title: "Confirm Action",
-        description: "Are you sure you want to delete this item?",
-        children: (
-            <>
-                <p>This action cannot be undone.</p>
-                <p>Deleted items cannot be recovered.</p>
-            </>
-        )
-    }
-};
-
 export const DropdownMenuInCard: Story = {
     args: {
         ...Default.args,
         children: (
             <>
                 <DropdownMenu trigger={<Button variant="primary" text={"Open"} />}>
-                    <DropdownMenu.Item content={"Billing"} />
-                    <DropdownMenu.Item content={"Settings"} />
-                    <DropdownMenu.Item content={"Keyboard shortcuts"} />
+                    <DropdownMenu.Item text={"Billing"} />
+                    <DropdownMenu.Item text={"Settings"} />
+                    <DropdownMenu.Item text={"Keyboard shortcuts"} />
                 </DropdownMenu>
             </>
         )
@@ -155,62 +138,5 @@ export const WithTabs: Story = {
                 />
             </>
         )
-    }
-};
-
-export const Documentation: Story = {
-    args: {
-        title: "Card Title",
-        description: "A short card description.",
-        bodyPadding: true,
-        info: (
-            <>
-                Learn more about this <a href={"#"}>here</a>.
-            </>
-        ),
-        children: (
-            <>
-                This is the card content area. You can place any content here including forms,
-                text, images, or other components.
-            </>
-        ),
-        actions: (
-            <>
-                <Card.CancelButton />
-                <Card.ConfirmButton />
-            </>
-        )
-    },
-    argTypes: {
-        title: {
-            description: "Title displayed in the header",
-            control: "text"
-        },
-        description: {
-            description: "Description displayed below the title",
-            control: "text"
-        },
-        size: {
-            description: "Controls the size of the card",
-            control: "select",
-            options: ["sm", "md", "lg", "xl", "full"]
-        },
-        bodyPadding: {
-            description: "Add padding to the Card body.",
-            control: "boolean",
-            defaultValue: true
-        },
-        info: {
-            description:
-                "Additional info displayed below the description, please refer to the example below for details."
-        },
-        children: {
-            description:
-                "Content of the card, please refer to the 'With Dropdown Menu' and ''With Tabs' example below for details."
-        },
-        actions: {
-            description:
-                "Actions displayed in the footer, please refer to the code example for details."
-        }
     }
 };

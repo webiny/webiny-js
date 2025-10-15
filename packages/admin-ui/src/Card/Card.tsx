@@ -18,6 +18,7 @@ interface CardProps
     description?: React.ReactNode;
     children: React.ReactNode;
     actions?: React.ReactNode;
+    topActions?: React.ReactNode;
     info?: React.ReactNode;
 }
 
@@ -36,6 +37,7 @@ const CardBase = (props: CardProps) => {
             title,
             icon,
             description,
+            topActions,
 
             // Body props.
             children,
@@ -50,7 +52,7 @@ const CardBase = (props: CardProps) => {
         } = props;
 
         return {
-            headerProps: { title, icon, description, size },
+            headerProps: { title, icon, description, size, actions: topActions },
             bodyProps: { children, bodyPadding, size },
             footerProps: { info, actions, size },
             contentProps: { ...rest, size }

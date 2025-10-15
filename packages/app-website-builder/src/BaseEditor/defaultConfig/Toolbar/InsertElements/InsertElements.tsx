@@ -47,8 +47,8 @@ export const InsertElements = () => {
                         key={group.name}
                         title={group.label}
                         description={group.description}
-                        borderRadius={"none"}
-                        padding={"compact"}
+                        // borderRadius={"none"}
+                        // padding={"compact"}
                     >
                         <div className="wby-flex wby-flex-col wby-gap-sm wby-p-sm wby-justify-start">
                             {group.items.map(item => {

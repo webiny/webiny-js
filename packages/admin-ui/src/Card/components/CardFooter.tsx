@@ -1,14 +1,13 @@
 import * as React from "react";
 import { cn, cva, type VariantProps } from "~/utils.js";
+import { ActionsAreaProvider } from "~/Card/components/ActionsAreaProvider.tsx";
 
 const cardFooterVariants = cva("wby-flex wby-justify-between", {
     variants: {
         size: {
             sm: "wby-p-md-extra",
             md: "wby-p-md-extra",
-            lg: "wby-p-lg",
-            xl: "wby-p-lg",
-            full: "wby-p-lg"
+            lg: "wby-p-lg"
         }
     },
     defaultVariants: {
@@ -35,7 +34,11 @@ export const CardFooter = ({ actions, info, className, size, ...props }: CardFoo
                     <div>{info}</div>
                 </div>
             )}
-            {actions && <div className={"wby-flex wby-gap-x-sm wby-ml-auto"}>{actions}</div>}
+            {actions && (
+                <div className={"wby-flex wby-gap-x-sm wby-ml-auto"}>
+                    <ActionsAreaProvider areaName={"footer"}>{actions}</ActionsAreaProvider>
+                </div>
+            )}
         </div>
     );
 };
