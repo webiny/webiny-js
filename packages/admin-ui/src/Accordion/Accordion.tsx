@@ -24,6 +24,7 @@ const accordionVariants = cva("wby-group wby-w-full", {
 type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
     VariantProps<typeof accordionVariants> & {
         children: React.ReactNode;
+        colorMark?: string;
     };
 
 const AccordionBase = ({ children, variant, background, className, ...props }: AccordionProps) => {

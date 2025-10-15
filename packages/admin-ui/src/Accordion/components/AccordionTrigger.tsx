@@ -9,13 +9,21 @@ import { AccordionItemDragHandle } from "~/Accordion/components/AccordionItemDra
 
 type AccordionTriggerProps = Pick<
     AccordionItemProps,
-    "title" | "description" | "icon" | "handle" | "interactive" | "actions" | "draggable"
+    | "title"
+    | "description"
+    | "colorMark"
+    | "icon"
+    | "handle"
+    | "interactive"
+    | "actions"
+    | "draggable"
 >;
 
 const AccordionTrigger = ({
     title,
     description,
     actions,
+    colorMark,
     icon,
     interactive = true,
     draggable
@@ -53,6 +61,12 @@ const AccordionTrigger = ({
                 )}
             >
                 {draggable ? <AccordionItemDragHandle /> : null}
+                {colorMark && (
+                    <div
+                        style={{ backgroundColor: colorMark }}
+                        className={"wby-block wby-w-[4px] wby-h-[48px] wby-rounded-sm wby-ml-sm"}
+                    />
+                )}
                 <div
                     className={
                         "wby-w-full wby-flex wby-justify-between wby-items-center wby-px-md wby-py-sm-extra"

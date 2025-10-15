@@ -99,6 +99,22 @@ export const WithIcon: Story = {
     }
 };
 
+export const WithColorMark: Story = {
+    ...Default,
+    args: {
+        children: (
+            <>
+                <AccordionItem
+                    colorMark={"#ff6584"}
+                    index={1}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+            </>
+        )
+    }
+};
+
 export const WithActionsIcon: Story = {
     ...Default,
     args: {

@@ -9,6 +9,7 @@ import { AccordionRoot, type AccordionRootProps } from "~/Accordion/components/A
 interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {
     title: React.ReactNode;
     description?: React.ReactNode;
+    colorMark?: string;
     icon?: React.ReactNode;
     handle?: React.ReactNode;
     interactive?: boolean;
