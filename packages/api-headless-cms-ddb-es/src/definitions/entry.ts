@@ -104,9 +104,6 @@ export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> 
             status: {
                 type: "string"
             },
-            state: {
-                type: "map"
-            },
             location: {
                 type: "map"
             },
@@ -120,6 +117,9 @@ export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> 
                 type: "map"
             },
             meta: {
+                type: "map"
+            },
+            state: {
                 type: "map"
             },
             ...(attributes || {})

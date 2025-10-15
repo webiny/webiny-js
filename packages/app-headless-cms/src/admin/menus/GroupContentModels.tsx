@@ -35,6 +35,7 @@ export const GroupContentModels = ({ group }: { group: CmsGroup }) => {
                     <Menu
                         parent={group.id}
                         name={contentModel.modelId}
+                        pinnable={true}
                         element={
                             <Menu.Link
                                 text={contentModel.name}

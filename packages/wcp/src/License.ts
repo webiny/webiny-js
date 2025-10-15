@@ -92,6 +92,6 @@ export class License implements ILicense {
     }
 
     public canUseWorkflows(): boolean {
-        return this.canUseFeature("workflows");
+        return this.canUseFeature("advancedPublishingWorkflow");
     }
 }

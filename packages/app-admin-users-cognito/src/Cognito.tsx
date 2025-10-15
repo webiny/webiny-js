@@ -56,6 +56,7 @@ const CognitoIdP = (props: CognitoProps) => {
                     <Menu
                         name={"cognito.settings.adminUsers"}
                         parent={"settings"}
+                        pinnable={true}
                         element={<Menu.Link text={"Users"} to={getLink(Routes.Users.List)} />}
                     />
                 </HasPermission>

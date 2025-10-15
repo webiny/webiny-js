@@ -434,35 +434,6 @@ const expectedSystemFields: Record<string, Field> = {
             path: "location.folderId"
         }
     },
-    state: {
-        createPath: expect.any(Function),
-        transform: expect.any(Function),
-        fieldId: "state",
-        id: "state",
-        label: "State",
-        parents: [],
-        storageId: "object@state",
-        system: true,
-        type: "object",
-        settings: {
-            fields: [
-                {
-                    id: "name",
-                    fieldId: "name",
-                    label: "Name",
-                    storageId: "text@name",
-                    type: "text"
-                },
-                {
-                    id: "comment",
-                    fieldId: "comment",
-                    label: "Comment",
-                    storageId: "text@comment",
-                    type: "long-text"
-                }
-            ]
-        }
-    },
     version: {
         id: "version",
         parents: [],
@@ -474,34 +445,86 @@ const expectedSystemFields: Record<string, Field> = {
         transform: expect.any(Function),
         label: "Version"
     },
-    "state.comment": {
+    state: {
         createPath: expect.any(Function),
-        fieldId: "comment",
-        id: "comment",
-        label: "Comment",
-        parents: [
-            {
-                fieldId: "state",
-                multipleValues: undefined
-            }
-        ],
-        storageId: "text@comment",
+        fieldId: "state",
+        id: "state",
+        label: "State",
+        parents: [],
+        settings: {
+            fields: [
+                {
+                    fieldId: "stepId",
+                    id: "stepId",
+                    label: "Step ID",
+                    storageId: "stepId",
+                    type: "text"
+                },
+                {
+                    fieldId: "stepName",
+                    id: "stepName",
+                    label: "Step Name",
+                    storageId: "stepName",
+                    type: "text"
+                },
+                {
+                    fieldId: "state",
+                    id: "state",
+                    label: "State",
+                    storageId: "state",
+                    type: "text"
+                }
+            ]
+        },
+        storageId: "object@state",
         system: true,
         transform: expect.any(Function),
-        type: "long-text"
+        type: "object"
     },
-    "state.name": {
+    "state.state": {
         createPath: expect.any(Function),
-        fieldId: "name",
-        id: "name",
-        label: "Name",
+        fieldId: "state",
+        id: "state",
+        label: "State",
         parents: [
             {
                 fieldId: "state",
                 multipleValues: undefined
             }
         ],
-        storageId: "text@name",
+        storageId: "state",
+        system: true,
+        transform: expect.any(Function),
+        type: "text"
+    },
+    "state.stepId": {
+        createPath: expect.any(Function),
+        fieldId: "stepId",
+        id: "stepId",
+        label: "Step ID",
+        parents: [
+            {
+                fieldId: "state",
+                multipleValues: undefined
+            }
+        ],
+        storageId: "stepId",
+        system: true,
+        transform: expect.any(Function),
+        type: "text"
+    },
+    "state.stepName": {
+        createPath: expect.any(Function),
+        fieldId: "stepName",
+        id: "stepName",
+        label: "Step Name",
+        parents: [
+            {
+                fieldId: "state",
+                multipleValues: undefined
+            }
+        ],
+        storageId: "stepName",
         system: true,
         transform: expect.any(Function),
         type: "text"

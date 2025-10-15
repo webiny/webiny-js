@@ -465,6 +465,12 @@ export interface CmsEntryValues {
 export interface ICmsEntryLocation {
     folderId?: string | null;
 }
+
+export interface ICmsEntryState {
+    state: string;
+    stepId: string;
+    stepName: string;
+}
 /**
  * A content entry definition for and from the database.
  *
@@ -648,11 +654,6 @@ export interface CmsEntry<T = CmsEntryValues> {
      */
     status: CmsEntryStatus;
     /**
-     * With v6 we have added a status step. We have some default ones, but users can add their own.
-     * Note that the status step does not need to be defined.
-     */
-    state: ICmsEntryState | null;
-    /**
      * A mapped storageId -> value object.
      *
      * @see CmsModelField
@@ -682,6 +683,8 @@ export interface CmsEntry<T = CmsEntryValues> {
      * The value is utilized when restoring the entry from the trash bin.
      */
     binOriginalFolderId?: string | null;
+
+    state?: ICmsEntryState;
 }
 
 export interface CmsStorageEntry extends CmsEntry {
@@ -948,11 +951,6 @@ export interface CmsModelContext {
  */
 export type CmsEntryStatus = "published" | "unpublished" | "draft";
 
-export interface ICmsEntryState {
-    name: string | null;
-    comment: string | null;
-}
-
 export interface CmsEntryListWhereRef {
     id?: string;
     id_in?: string[];
@@ -964,14 +962,6 @@ export interface CmsEntryListWhereRef {
     entryId_not_in?: string[];
 }
 
-export interface ICmsEntryStateWhereInput {
-    name?: string;
-    name_not?: string;
-    name_in?: string[];
-    name_not_in?: string[];
-    comment_contains?: string;
-    comment_not_contains?: string;
-}
 /**
  * Entry listing where params.
  *
@@ -1000,7 +990,6 @@ export interface CmsEntryListWhere {
     status_not?: CmsEntryStatus;
     status_in?: CmsEntryStatus[];
     status_not_in?: CmsEntryStatus[];
-    state?: ICmsEntryStateWhereInput;
 
     /**
      * Revision-level meta fields. 👇
@@ -1109,8 +1098,7 @@ export interface CmsEntryListWhere {
         | null
         | CmsEntryListWhere[]
         | CmsEntryListWhere
-        | CmsEntryListWhereRef
-        | ICmsEntryStateWhereInput;
+        | CmsEntryListWhereRef;
 
     /**
      * To allow querying via nested queries, we added the AND / OR properties.
@@ -1441,7 +1429,6 @@ export interface EntryBeforeListTopicParams {
 export type CreateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
     id?: string;
     status?: CmsEntryStatus;
-    state?: ICmsEntryState;
 
     /**
      * Entry-level meta fields. 👇
@@ -1481,6 +1468,8 @@ export type CreateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
     wbyAco_location?: {
         folderId?: string | null;
     };
+
+    state?: Partial<ICmsEntryState>;
 };
 
 export interface CreateCmsEntryOptionsInput {
@@ -1519,6 +1508,8 @@ export interface CreateFromCmsEntryInput {
     lastPublishedOn?: Date | string;
     firstPublishedBy?: CmsIdentity;
     lastPublishedBy?: CmsIdentity;
+
+    state?: Partial<ICmsEntryState>;
 
     [key: string]: any;
 }
@@ -1571,6 +1562,8 @@ export type UpdateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
     wbyAco_location?: {
         folderId?: string | null;
     };
+
+    state?: Partial<ICmsEntryState>;
 };
 
 export interface UpdateCmsEntryOptionsInput {

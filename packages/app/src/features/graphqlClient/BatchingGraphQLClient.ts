@@ -1,7 +1,7 @@
 // features/graphqlClient/BatchingGraphQLClient.ts
 import { createDecorator } from "@webiny/di-container";
-import { GraphQLClient } from "./abstractions";
-import { EnvConfig } from "~/features/envConfig";
+import { GraphQLClient } from "./abstractions.js";
+import { EnvConfig } from "~/features/envConfig/index.js";
 import type { DocumentNode } from "graphql";
 
 interface BatchedRequest<TVariables = any> {

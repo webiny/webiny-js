@@ -10,7 +10,7 @@ export interface ParseIdentifierResult {
     version: number | null;
 }
 
-export const parseIdentifier = (value?: string): ParseIdentifierResult => {
+export const parseIdentifier = (value: string | undefined): ParseIdentifierResult => {
     if (!value) {
         throw new WebinyError("Missing value to be parsed for the identifier.", "MALFORMED_VALUE");
     }

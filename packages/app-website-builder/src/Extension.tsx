@@ -41,6 +41,7 @@ export const Extension = () => {
                     <Menu
                         name="wb.pagesLabel"
                         parent="Wb"
+                        pinnable={true}
                         element={<Menu.Group text={"Pages"} />}
                     />
                 </HasPermission>
@@ -51,6 +52,7 @@ export const Extension = () => {
                     <Menu
                         name="wb.pages"
                         parent={"wb"}
+                        pinnable={true}
                         element={
                             <Menu.Link text={"Pages"} to={router.getLink(Routes.Pages.List)} />
                         }
@@ -61,6 +63,7 @@ export const Extension = () => {
                     <Menu
                         name="wb.redirects"
                         parent={"wb"}
+                        pinnable={true}
                         element={
                             <Menu.Link
                                 text={"Redirects"}
@@ -70,9 +73,19 @@ export const Extension = () => {
                     />
                 </HasPermission>
                 <HasPermission name={"wb.settings"}>
-                    <Menu name="wb.settings" parent="wb" element={<SettingsMenuItem />} />
+                    <Menu
+                        name="wb.settings"
+                        parent="wb"
+                        pinnable={true}
+                        element={<SettingsMenuItem />}
+                    />
                 </HasPermission>
-                <Menu name="wb.integrations" parent="wb" element={<IntegrationsMenuItem />} />
+                <Menu
+                    name="wb.integrations"
+                    parent="wb"
+                    pinnable={true}
+                    element={<IntegrationsMenuItem />}
+                />
             </AdminConfig>
             <PagesListConfig />
             <RedirectsListConfig />

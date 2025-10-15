@@ -170,6 +170,7 @@
     "lint:fix": "yarn eslint:fix && yarn prettier:fix",
     "release": "tsx ./scripts/release/src/index.ts",
     "setup-project": "node scripts/setupProject",
+    "mdx-from-folder": "tsx scripts/mdxFromFolder",
     "setup-env-files": "node scripts/setupEnvFiles",
     "setup-cypress": "tsx scripts/setupCypress",
     "test": "vitest --config testing/vitest.config.ts --run",

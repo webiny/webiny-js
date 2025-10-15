@@ -156,21 +156,24 @@ describe("workflows graphql validation", () => {
 
     it("should fail to list workflows because of invalid graphql input", async () => {
         const [listResponse] = await handler.listWorkflows({
-            app: ""
+            where: {
+                app: ""
+            }
         });
         expect(listResponse).toEqual({
             data: {
                 workflows: {
                     listWorkflows: {
                         data: null,
+                        meta: null,
                         error: {
                             code: "VALIDATION_FAILED_INVALID_FIELDS",
                             data: {
                                 invalidFields: {
-                                    app: {
+                                    "where.app": {
                                         code: "too_small",
                                         data: {
-                                            path: ["app"]
+                                            path: ["where", "app"]
                                         },
                                         message: "App is required."
                                     }

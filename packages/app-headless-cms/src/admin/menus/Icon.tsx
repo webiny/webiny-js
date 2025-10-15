@@ -11,6 +11,7 @@ export const Icon = ({ group }: IconProps) => {
     return (
         <FontAwesomeIcon
             style={{ color: "var(--mdc-theme-text-secondary-on-background)" }}
+            className="wby-size-md wby-shrink-0"
             icon={(group.icon || "").split("/") as IconProp}
         />
     );

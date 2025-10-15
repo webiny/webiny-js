@@ -4,7 +4,7 @@ import { Collapsible } from "radix-ui";
 import { SidebarMenuSubButton } from "./SidebarMenuSubButton.js";
 import { SidebarMenuSubItemIndentation } from "./SidebarMenuSubItemIndentation.js";
 import { SidebarMenuSub } from "./SidebarMenuSub.js";
-import { IconButton } from "~/Button/index.js";
+import { Icon } from "~/Icon/index.js";
 import { ReactComponent as KeyboardArrowRightIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 import { useSidebarMenu } from "./SidebarMenuProvider.js";
 import { type SidebarMenuItemProps } from "./SidebarMenuItem.js";
@@ -40,9 +40,9 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
         }
 
         const chevron = (
-            <IconButton
-                variant={"ghost"}
-                size={"xs"}
+            <Icon
+                label={"Expand / Collapse"}
+                size={"sm"}
                 className={
                     "wby-ml-auto wby-transition-transform wby-duration-175 group-data-[state=open]/menu-sub-item-collapsible:wby-rotate-180 group-data-[state=collapsed]:wby-hidden"
                 }

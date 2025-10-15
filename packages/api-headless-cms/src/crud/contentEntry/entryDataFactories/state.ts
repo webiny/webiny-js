@@ -1,27 +1,20 @@
-import type { ICmsEntryState } from "~/types/index.js";
-import zod from "zod";
+import type { CmsEntry, ICmsEntryState } from "~/types/index.js";
 
-const schema = zod.object({
-    name: zod
-        .string()
-        .optional()
-        .nullish()
-        .transform(value => value || null),
-    comment: zod
-        .string()
-        .optional()
-        .nullish()
-        .transform(value => value || null)
-});
+interface IInputWithPossibleState {
+    state: Partial<ICmsEntryState> | null;
+}
+interface IParams {
+    input: Partial<IInputWithPossibleState>;
+    original?: CmsEntry | null;
+}
 
-export const createState = (input: unknown): ICmsEntryState | null => {
-    if (!input) {
-        return null;
+export const getState = ({ input, original }: IParams): ICmsEntryState | undefined => {
+    if (!input?.state?.stepId || !input.state.state || !input.state.stepName) {
+        return original?.state;
     }
-
-    const parsed = schema.safeParse(input);
-    if (!parsed.success) {
-        return null;
-    }
-    return parsed.data;
+    return {
+        stepId: input.state.stepId,
+        stepName: input.state.stepName,
+        state: input.state.state
+    };
 };
