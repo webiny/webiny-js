@@ -23,24 +23,13 @@ export const validateEsmImports = async ({ cwd, logs = true }) => {
         while ((match = regex.exec(content))) {
             const spec = match[1];
             if (spec.startsWith("~") || spec.startsWith("./") || spec.startsWith("../")) {
-                // Asset files (images, styles, etc.) don't need .js extension
-                const assetExtensions = [
-                    ".svg",
-                    ".png",
-                    ".jpg",
-                    ".jpeg",
-                    ".gif",
-                    ".webp",
-                    ".ico",
-                    ".css",
-                    ".scss",
-                    ".sass",
-                    ".less"
-                ];
-                const hasAssetExtension = assetExtensions.some(ext => spec.endsWith(ext));
+                // Extract the file extension from the import path
+                const lastDotIndex = spec.lastIndexOf(".");
+                const lastSlashIndex = Math.max(spec.lastIndexOf("/"), spec.lastIndexOf("\\"));
+                const hasExtension = lastDotIndex > lastSlashIndex;
 
-                // Check if the import has a .js/.json extension or is an asset file
-                if (!spec.endsWith(".js") && !spec.endsWith(".json") && !hasAssetExtension) {
+                // If there's no extension, it should have .js
+                if (!hasExtension) {
                     const errorMsg = `❌ Missing .js extension in import "${spec}" in ${file}`;
                     console.error(errorMsg);
                     errors.push({ file, spec, reason: "missing extension" });
