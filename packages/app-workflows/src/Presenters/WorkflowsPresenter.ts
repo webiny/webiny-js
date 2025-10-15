@@ -21,7 +21,8 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
             dirty: workflow ? workflow.dirty : false,
             workflow: workflow ? workflow.toJS() : null,
             loading: this.repository.loading,
-            error: toJS(this.repository.error)
+            error: toJS(this.repository.error),
+            app: this.repository.app
         };
     }
 

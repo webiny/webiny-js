@@ -1,4 +1,4 @@
-import { IWorkflow } from "~/types.js";
+import { IWorkflow, type IWorkflowApplication } from "~/types.js";
 import { IWorkflowModel } from "../../Models/index.js";
 import type { NonEmptyArray } from "@webiny/app/types.js";
 
@@ -43,6 +43,7 @@ export interface IWorkflowsGatewayStoreWorkflowResponse {
 }
 
 export interface IWorkflowsGateway {
+    app: IWorkflowApplication;
     deleteWorkflow(workflow: IWorkflowModel): Promise<IWorkflowsGatewayDeleteWorkflowResponse>;
     storeWorkflow(workflow: IWorkflowModel): Promise<IWorkflowsGatewayStoreWorkflowResponse>;
     listWorkflows(): Promise<IWorkflowsGatewayListWorkflowsResponse>;

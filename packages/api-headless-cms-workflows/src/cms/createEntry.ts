@@ -1,6 +1,7 @@
 import type { Context } from "~/types.js";
 import { createWorkflowAppName } from "~/utils/appName.js";
 import { getState } from "~/utils/state.js";
+import { isModelAllowed } from "~/utils/modelAllowed.js";
 
 interface IParams {
     context: Pick<Context, "workflowState" | "cms">;
@@ -9,7 +10,7 @@ interface IParams {
 export const attachCreateEntryLifecycleEvents = (params: IParams) => {
     const { context } = params;
     context.cms.onEntryBeforeCreate.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate) {
+        if (isModelAllowed(model) === false) {
             return;
         }
         const app = createWorkflowAppName({ model });
@@ -22,7 +23,7 @@ export const attachCreateEntryLifecycleEvents = (params: IParams) => {
     });
 
     context.cms.onEntryCreateError.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate) {
+        if (isModelAllowed(model) === false) {
             return;
         }
         const app = createWorkflowAppName({ model });
