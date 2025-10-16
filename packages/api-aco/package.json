@@ -18,6 +18,17 @@
     "access": "public",
     "directory": "dist"
   },
+  "exports": {
+    "./features/flp/FolderLevelPermissions": "./features/flp/FolderLevelPermissions/index.js",
+    "./features/folders/CreateFolder": "./features/folders/CreateFolder/index.js",
+    "./features/folders/UpdateFolder": "./features/folders/UpdateFolder/index.js",
+    "./features/folders/DeleteFolder": "./features/folders/DeleteFolder/index.js",
+    "./features/folders/GetAncestors": "./features/folders/GetAncestors/index.js",
+    "./features/folders/GetFolder": "./features/folders/GetFolder/index.js",
+    "./features/folders/GetFolderHierarchy": "./features/folders/GetFolderHierarchy/index.js",
+    "./features/folders/ListFolders": "./features/folders/ListFolders/index.js",
+    ".": "./index.js"
+  },
   "dependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-authentication": "0.0.0",

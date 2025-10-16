@@ -1,5 +1,5 @@
 import type { SecurityContext } from "@webiny/api-security/types.js";
-import type { Context as BaseContext } from "@webiny/handler/types.js";
+import type { Context as BaseContext } from "@webiny/api";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { Topic } from "@webiny/pubsub/types.js";
 import type { MailerContext } from "@webiny/api-mailer/types.js";
