@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-authentication" },
+    { "path": "../api-core" },
     { "path": "../api-headless-cms" },
     { "path": "../api-i18n" },
     { "path": "../api-security" },
@@ -40,6 +41,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-authentication/*": ["../api-authentication/src/*"],
       "@webiny/api-authentication": ["../api-authentication/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],

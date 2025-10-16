@@ -1,3 +1,4 @@
+import { createApiCore } from "@webiny/api-core";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import { createEventHandler, createHandler } from "@webiny/handler-aws/raw";
@@ -29,6 +30,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
     const handler = createHandler<any, AcoContext>({
         plugins: [
+            createApiCore(),
             ...cmsStorage.plugins,
             createGraphQLHandler(),
             ...createTenancyAndSecurity({ permissions, identity: identity || createIdentity() }),

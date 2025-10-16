@@ -30,6 +30,14 @@ export const FolderBeforeUpdateHandler = new Abstraction<
     IEventHandler<DomainEvent<FolderBeforeUpdatePayload>>
 >("FolderBeforeUpdateHandler");
 
+export namespace FolderBeforeUpdateHandler {
+    export type Interface = IEventHandler<DomainEvent<FolderBeforeUpdatePayload>>;
+}
+
 export const FolderAfterUpdateHandler = new Abstraction<
     IEventHandler<DomainEvent<FolderAfterUpdatePayload>>
 >("FolderAfterUpdateHandler");
+
+export namespace FolderAfterUpdateHandler {
+    export type Interface = IEventHandler<DomainEvent<FolderAfterUpdatePayload>>;
+}

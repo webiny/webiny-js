@@ -16,7 +16,7 @@ export class Container {
     private registrations = new Map<symbol, Registration[]>();
     private decorators = new Map<symbol, DecoratorRegistration[]>();
     private instances = new Map<string, any>();
-    private factories = new Map<symbol, () => any>();
+    private factories = new Map<symbol, (() => any)[]>();
     private instanceRegistrations = new Map<symbol, InstanceRegistration[]>();
     private composites = new Map<symbol, Registration>();
     private parent?: Container;
@@ -61,7 +61,8 @@ export class Container {
     }
 
     registerFactory<T>(abstraction: Abstraction<T>, factory: () => T): void {
-        this.factories.set(abstraction.token, factory);
+        const existing = this.factories.get(abstraction.token) || [];
+        this.factories.set(abstraction.token, [...existing, factory]);
     }
 
     registerDecorator<T>(decorator: Constructor<T>): void {
@@ -119,6 +120,7 @@ export class Container {
     resolveAll<T>(abstraction: Abstraction<T>): T[] {
         const registrations = this.registrations.get(abstraction.token) || [];
         const instanceRegs = this.instanceRegistrations.get(abstraction.token) || [];
+        const factories = this.factories.get(abstraction.token) || [];
 
         const results: T[] = [];
 
@@ -131,6 +133,13 @@ export class Container {
         for (const registration of registrations) {
             const instance = this.resolveRegistration(abstraction, registration, new Map());
             results.push(instance);
+        }
+
+        // Resolve all factories
+        for (const factory of factories) {
+            const instance = factory();
+            const decorated = this.applyDecorators(abstraction, instance, new Map());
+            results.push(decorated);
         }
 
         return results;
@@ -223,8 +232,9 @@ export class Container {
             return this.resolveRegistration(abstraction, registration, resolutionStack);
         }
 
-        const factory = this.factories.get(abstraction.token);
-        if (factory) {
+        const factories = this.factories.get(abstraction.token);
+        if (factories && factories.length > 0) {
+            const factory = factories[factories.length - 1];
             const instance = factory();
             return this.applyDecorators(abstraction, instance, resolutionStack);
         }
@@ -270,6 +280,7 @@ export class Container {
         resolutionStack: Map<symbol, boolean>
     ): T[] {
         const results: T[] = [];
+        const factories = this.factories.get(abstraction.token) || [];
 
         for (const instanceReg of instanceRegistrations) {
             const decorated = this.applyDecorators(
@@ -283,6 +294,12 @@ export class Container {
         for (const registration of registrations) {
             const instance = this.resolveRegistration(abstraction, registration, resolutionStack);
             results.push(instance);
+        }
+
+        for (const factory of factories) {
+            const instance = factory();
+            const decorated = this.applyDecorators(abstraction, instance, resolutionStack);
+            results.push(decorated);
         }
 
         return results;
