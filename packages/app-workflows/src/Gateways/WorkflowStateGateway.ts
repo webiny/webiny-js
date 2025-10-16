@@ -1,0 +1,150 @@
+import ApolloClient from "apollo-client";
+import type {
+    IWorkflowStateGateway,
+    IWorkflowStateGatewayApproveStepParams,
+    IWorkflowStateGatewayApproveStepResponse,
+    IWorkflowStateGatewayCancelStateResponse,
+    IWorkflowStateGatewayListWorkflowStatesParams,
+    IWorkflowStateGatewayListWorkflowStatesResponse,
+    IWorkflowStateGatewayRejectStepParams,
+    IWorkflowStateGatewayRejectStepResponse
+} from "./abstraction/WorkflowStateGateway.js";
+import type {
+    IApproveWorkflowStateStepResponse,
+    IApproveWorkflowStateStepVariables,
+    ICancelWorkflowStateResponse,
+    ICancelWorkflowStateVariables,
+    IListWorkflowStatesResponse,
+    IListWorkflowStatesVariables,
+    IRejectWorkflowStateStepResponse,
+    IRejectWorkflowStateStepVariables
+} from "./graphql/workflowStates.js";
+import {
+    APPROVE_WORKFLOW_STATE_STEP_MUTATION,
+    CANCEL_WORKFLOW_STATE_MUTATION,
+    LIST_WORKFLOW_STATES_QUERY,
+    REJECT_WORKFLOW_STATE_STEP_MUTATION
+} from "./graphql/workflowStates.js";
+import { WebinyError } from "@webiny/error";
+
+export interface IWorkflowStateGatewayParams {
+    client: ApolloClient<object>;
+}
+
+export class WorkflowStateGateway implements IWorkflowStateGateway {
+    private readonly client;
+
+    public constructor(params: IWorkflowStateGatewayParams) {
+        this.client = params.client;
+    }
+
+    public async approveWorkflowStateStep(
+        params: IWorkflowStateGatewayApproveStepParams
+    ): Promise<IWorkflowStateGatewayApproveStepResponse> {
+        const { id, stepId, comment } = params;
+        try {
+            const result = await this.client.mutate<
+                IApproveWorkflowStateStepResponse,
+                IApproveWorkflowStateStepVariables
+            >({
+                mutation: APPROVE_WORKFLOW_STATE_STEP_MUTATION,
+                variables: {
+                    id,
+                    stepId,
+                    comment
+                }
+            });
+            return {
+                data: result.data?.workflows.approveWorkflowStateStep.data || null,
+                error: result.data?.workflows.approveWorkflowStateStep.error || null
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: WebinyError.from(ex)
+            };
+        }
+    }
+
+    public async rejectWorkflowStateStep(
+        params: IWorkflowStateGatewayRejectStepParams
+    ): Promise<IWorkflowStateGatewayRejectStepResponse> {
+        const { id, stepId, comment } = params;
+        try {
+            const result = await this.client.mutate<
+                IRejectWorkflowStateStepResponse,
+                IRejectWorkflowStateStepVariables
+            >({
+                mutation: REJECT_WORKFLOW_STATE_STEP_MUTATION,
+                variables: {
+                    id,
+                    stepId,
+                    comment
+                }
+            });
+            return {
+                data: result.data?.workflows.rejectWorkflowStateStep.data || null,
+                error: result.data?.workflows.rejectWorkflowStateStep.error || null
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: WebinyError.from(ex)
+            };
+        }
+    }
+
+    public async cancelWorkflowState(
+        id: string
+    ): Promise<IWorkflowStateGatewayCancelStateResponse> {
+        try {
+            const result = await this.client.mutate<
+                ICancelWorkflowStateResponse,
+                ICancelWorkflowStateVariables
+            >({
+                mutation: CANCEL_WORKFLOW_STATE_MUTATION,
+                variables: {
+                    id
+                }
+            });
+            return {
+                data: result.data?.workflows.cancelWorkflowState.data || null,
+                error: result.data?.workflows.cancelWorkflowState.error || null
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: WebinyError.from(ex)
+            };
+        }
+    }
+
+    public async listWorkflowStates(
+        params?: IWorkflowStateGatewayListWorkflowStatesParams
+    ): Promise<IWorkflowStateGatewayListWorkflowStatesResponse> {
+        try {
+            const result = await this.client.query<
+                IListWorkflowStatesResponse,
+                IListWorkflowStatesVariables
+            >({
+                query: LIST_WORKFLOW_STATES_QUERY,
+                variables: {
+                    sort: ["createdOn_DESC"],
+                    ...params
+                },
+                fetchPolicy: "no-cache"
+            });
+            const error = result.data?.workflows?.listWorkflows?.error || null;
+            const data = result.data?.workflows?.listWorkflows?.data || null;
+            return {
+                data,
+                error
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: WebinyError.from(ex)
+            };
+        }
+    }
+}

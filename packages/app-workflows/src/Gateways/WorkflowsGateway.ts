@@ -11,12 +11,12 @@ import type {
     IListWorkflowVariables,
     IStoreWorkflowResponse,
     IStoreWorkflowVariables
-} from "./graphql.js";
+} from "./graphql/workflows.js";
 import {
     DELETE_WORKFLOW_MUTATION,
     LIST_WORKFLOWS_QUERY,
     STORE_WORKFLOW_MUTATION
-} from "./graphql.js";
+} from "./graphql/workflows.js";
 import { WebinyError } from "@webiny/error";
 import type { IWorkflowApplication } from "~/types.js";
 

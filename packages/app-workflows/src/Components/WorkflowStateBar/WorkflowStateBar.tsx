@@ -1,11 +1,32 @@
-import React from "react";
-import { Alert } from "@webiny/admin-ui";
+import React, { useMemo } from "react";
+import { WorkflowStatePresenter } from "~/Presenters/index.js";
+import { WorkflowStateRepository } from "~/Repositories/index.js";
+import { WorkflowStateGateway } from "~/Gateways/index.js";
+import { useApolloClient } from "@apollo/react-hooks";
+import { WorkflowStateBarPresenter } from "./WorkflowStateBarPresenter.js";
 
-export interface IWorkflowStateBareProps {
-    app: string;
+export interface IWorkflowStateBarProps {
     id: string;
+    app: string;
 }
 
-export const WorkflowStateBar = (props: IWorkflowStateBareProps) => {
-    return <Alert>The WorkflowStateBar component is not available.</Alert>;
+export const WorkflowStateBar = (props: IWorkflowStateBarProps) => {
+    const { id, app } = props;
+    const client = useApolloClient();
+
+    const presenter = useMemo(() => {
+        const gateway = new WorkflowStateGateway({
+            client
+        });
+        const repository = new WorkflowStateRepository({
+            gateway
+        });
+        return new WorkflowStatePresenter({
+            app,
+            targetRevisionId: id,
+            repository
+        });
+    }, [app, id]);
+
+    return <WorkflowStateBarPresenter presenter={presenter} />;
 };
