@@ -22,7 +22,7 @@ describe("Workflow State Context", () => {
     it("should not get a state because there is none", async () => {
         const { workflowStateContext } = await createContext();
 
-        const response = await workflowStateContext.getState("app", "non-existing-id#0001");
+        const response = await workflowStateContext.getTargetState("app", "non-existing-id#0001");
         expect(response).toBeInstanceOf(NullWorkflowState);
         expect(response.workflow).toBeUndefined();
         expect(response.record).toBeUndefined();
@@ -32,7 +32,7 @@ describe("Workflow State Context", () => {
     it("should throw an error on getState because of faulty targetId", async () => {
         const { workflowStateContext } = await createContext();
 
-        await expect(workflowStateContext.getState("app", "non-revision-id")).rejects.toThrow(
+        await expect(workflowStateContext.getTargetState("app", "non-revision-id")).rejects.toThrow(
             "Cannot get a workflow state without version of a target record."
         );
     });
@@ -88,7 +88,7 @@ describe("Workflow State Context", () => {
             })
         ]);
 
-        const getResponse = await workflowStateContext.getState(app, targetRevisionId);
+        const getResponse = await workflowStateContext.getTargetState(app, targetRevisionId);
 
         expect(getResponse.done).toBeFalse();
         expect(getResponse.workflow).toEqual({
@@ -101,11 +101,11 @@ describe("Workflow State Context", () => {
         await workflowStateContext.updateState(state.record!.id, {
             comment: "A comment!"
         });
-        const updatedState = await workflowStateContext.getState(app, targetRevisionId);
+        const updatedState = await workflowStateContext.getTargetState(app, targetRevisionId);
         expect(updatedState.record?.comment).toBe("A comment!");
 
-        await workflowStateContext.deleteState(app, targetRevisionId);
-        const afterDeleteState = await workflowStateContext.getState(app, targetRevisionId);
+        await workflowStateContext.deleteTargetState(app, targetRevisionId);
+        const afterDeleteState = await workflowStateContext.getTargetState(app, targetRevisionId);
         expect(afterDeleteState).toBeInstanceOf(NullWorkflowState);
         expect(afterDeleteState.workflow).toBeUndefined();
         expect(afterDeleteState.record).toBeUndefined();
@@ -132,7 +132,7 @@ describe("Workflow State Context", () => {
 
         await state.review();
 
-        const stateAfterReview = await workflowStateContext.getState(app, targetId);
+        const stateAfterReview = await workflowStateContext.getTargetState(app, targetId);
         expect(stateAfterReview.record?.state).toEqual(WorkflowStateRecordState.inReview);
         expect(stateAfterReview.record?.steps[0].state).toEqual(WorkflowStateRecordState.inReview);
 
@@ -145,7 +145,7 @@ describe("Workflow State Context", () => {
             userId: context.security.getIdentity().id
         });
 
-        const stateAfterFirstApprove = await workflowStateContext.getState(app, targetId);
+        const stateAfterFirstApprove = await workflowStateContext.getTargetState(app, targetId);
         expect(stateAfterFirstApprove.record?.state).toEqual(WorkflowStateRecordState.inReview);
         expect(stateAfterFirstApprove.record?.steps[0].state).toEqual(
             WorkflowStateRecordState.approved
@@ -163,7 +163,7 @@ describe("Workflow State Context", () => {
             userId: context.security.getIdentity().id
         });
 
-        const stateAfterSecondApprove = await workflowStateContext.getState(app, targetId);
+        const stateAfterSecondApprove = await workflowStateContext.getTargetState(app, targetId);
         expect(stateAfterSecondApprove.record?.state).toEqual(WorkflowStateRecordState.approved);
         expect(stateAfterSecondApprove.record?.steps[0].state).toEqual(
             WorkflowStateRecordState.approved

@@ -12,7 +12,7 @@ import { WebinyError } from "@webiny/error";
 export interface IWorkflowStateParams {
     workflow: IWorkflow | undefined | null;
     record: IWorkflowStateRecord;
-    context: Pick<Context, "workflowState" | "security">;
+    context: Pick<Context, "workflowState" | "security" | "adminUsers">;
 }
 
 export class WorkflowState implements IWorkflowState {
@@ -48,6 +48,7 @@ export class WorkflowState implements IWorkflowState {
     }
 
     public async review(): Promise<void> {
+        await this.ensureCanReview();
         const step = this.record.steps.find(step => {
             return step.state === WorkflowStateRecordState.pending;
         });
@@ -70,6 +71,8 @@ export class WorkflowState implements IWorkflowState {
     }
 
     public async approve(comment?: string): Promise<void> {
+        await this.ensureCanReview();
+
         const step = this.record.steps.find(step => {
             return step.state === WorkflowStateRecordState.inReview;
         });
@@ -108,6 +111,7 @@ export class WorkflowState implements IWorkflowState {
     }
 
     public async reject(comment: string): Promise<void> {
+        await this.ensureCanReview();
         const step = this.record.steps.find(step => {
             return step.state === WorkflowStateRecordState.inReview;
         });
@@ -119,10 +123,6 @@ export class WorkflowState implements IWorkflowState {
             state: WorkflowStateRecordState.rejected
         });
         await this.updateState(this.record);
-    }
-
-    public async cancel(): Promise<void> {
-        throw new Error("Method not implemented.");
     }
 
     private updateRecord(record: Partial<Omit<IWorkflowStateRecord, "id">>): void {
@@ -167,5 +167,68 @@ export class WorkflowState implements IWorkflowState {
         // @ts-expect-error
         delete record["id"];
         await this.context.workflowState.updateState(this.record.id, record);
+    }
+
+    private async ensureCanReview(): Promise<void> {
+        if (!this.workflow) {
+            throw new WebinyError({
+                message: `Cannot review a workflow state without a linked workflow.`,
+                code: "WORKFLOW_NOT_FOUND",
+                data: {
+                    ...this.record
+                }
+            });
+        }
+        const identity = this.context.security.getIdentity();
+        // how to find teams?
+        if (!identity?.id) {
+            throw new WebinyError({
+                message: `You must be logged in to be able to review a workflow.`,
+                code: "NOT_AUTHENTICATED"
+            });
+        }
+        const step = this.activeStep;
+        if (!step) {
+            return;
+        }
+        const teams = await this.context.adminUsers.listUserTeams(identity.id);
+        if (!teams?.length) {
+            throw new WebinyError({
+                message: `You are not assigned to any team and therefore cannot review this workflow.`,
+                code: "WORKFLOW_REVIEWER_NO_TEAMS",
+                data: {
+                    step,
+                    workflow: this.workflow,
+                    record: this.record
+                }
+            });
+        }
+        const workflowStep = this.workflow.steps.find(s => s.id === step.id);
+        if (!workflowStep) {
+            throw new WebinyError({
+                message: `Workflow step with ID "${step.id}" not found.`,
+                code: "WORKFLOW_STEP_NOT_FOUND",
+                data: {
+                    step,
+                    workflow: this.workflow,
+                    record: this.record
+                }
+            });
+        }
+        const canReview = workflowStep.teams.some(team => {
+            return teams.some(t => {
+                return team.id === t.id;
+            });
+        });
+        if (canReview) {
+            return;
+        }
+        throw new WebinyError({
+            message: `You are not assigned to a team that can review this workflow.`,
+            code: "WORKFLOW_REVIEWER_CANNOT_REVIEW",
+            data: {
+                step
+            }
+        });
     }
 }

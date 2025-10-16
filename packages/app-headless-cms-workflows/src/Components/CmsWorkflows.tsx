@@ -81,7 +81,7 @@ export const CmsWorkflowsView = () => {
         }
         return `cms:${route.params.app}`;
     }, [route]);
-    
+
     if (!canCreateContentModels) {
         return null;
     }

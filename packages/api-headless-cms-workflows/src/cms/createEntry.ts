@@ -28,7 +28,7 @@ export const attachCreateEntryLifecycleEvents = (params: IParams) => {
         }
         const app = createWorkflowAppName({ model });
         try {
-            await context.workflowState.deleteState(app, entry.id);
+            await context.workflowState.deleteTargetState(app, entry.id);
         } catch (ex) {
             console.error(ex);
         }
@@ -53,7 +53,7 @@ export const attachCreateEntryLifecycleEvents = (params: IParams) => {
         }
         const app = createWorkflowAppName({ model });
         try {
-            await context.workflowState.deleteState(app, entry.id);
+            await context.workflowState.deleteTargetState(app, entry.id);
         } catch (ex) {
             console.error(ex);
         }

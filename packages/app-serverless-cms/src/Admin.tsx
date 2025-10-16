@@ -55,7 +55,7 @@ const App = (props: AdminProps) => {
             <TrashBinConfigs />
             <AdvancedContentOrganisation />
             <WebsiteBuilder />
-            <CmsWorkflows/>
+            <CmsWorkflows />
             {props.children}
         </BaseAdmin>
     );

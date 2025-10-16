@@ -2,7 +2,6 @@ import type { IWorkflowState } from "~/types.js";
 import gql from "graphql-tag";
 import type { IWorkflowStateError } from "~/Gateways/abstraction/WorkflowStateGateway.js";
 
-
 const ERROR_FIELD = /* GraphQL */ `
     error {
         code
@@ -22,7 +21,11 @@ const WORKFLOW_STATE = /* GraphQL */ `
         steps {
             id
             comment
-            userId
+            savedBy {
+                id
+                displayName
+                type
+            }
             state
         }
     }
@@ -103,7 +106,6 @@ export const CANCEL_WORKFLOW_STATE_MUTATION = gql`
         }
     }
 `;
-
 
 export interface IListWorkflowStatesVariablesWhere {
     app?: string;

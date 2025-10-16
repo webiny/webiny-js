@@ -1,9 +1,6 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Alert } from "@webiny/admin-ui";
-import { type IWorkflowStatePresenter, WorkflowStatePresenter } from "~/Presenters/index.js";
-import { WorkflowStateRepository } from "~/Repositories/index.js";
-import { WorkflowStateGateway } from "~/Gateways/index.js";
-import { useApolloClient } from "@apollo/react-hooks";
+import { type IWorkflowStatePresenter } from "~/Presenters/index.js";
 import { observer } from "mobx-react-lite";
 
 export interface IWorkflowStateBarPresenterProps {
@@ -12,10 +9,22 @@ export interface IWorkflowStateBarPresenterProps {
 
 export const WorkflowStateBarPresenter = observer((props: IWorkflowStateBarPresenterProps) => {
     const { presenter } = props;
-    
-    return (
-        <Alert>
-            The WorkflowStateBar component is not available.: - {presenter.vm.app}, {presenter.vm.id}
-        </Alert>
-    );
+
+    if (presenter.vm.error) {
+        console.log({
+            error: presenter.vm.error,
+            app: presenter.vm.app,
+            id: presenter.vm.id
+        });
+        return (
+            <Alert type="danger">
+                {presenter.vm.error.message}
+                <br />
+                <br />
+                For more information, please check the browser console.
+            </Alert>
+        );
+    }
+
+    return <Alert>testing</Alert>;
 });

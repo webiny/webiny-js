@@ -11,7 +11,13 @@ export interface IWorkflowStateRecordStep {
     id: string;
     state: WorkflowStateRecordState;
     comment: string | undefined;
-    userId: string | undefined;
+    savedBy: IWorkflowStateIdentity | undefined;
+}
+
+export interface IWorkflowStateIdentity {
+    id: string;
+    displayName: string | null;
+    type: string | null;
 }
 
 export interface IWorkflowStateRecord {
@@ -23,6 +29,9 @@ export interface IWorkflowStateRecord {
     comment: string | undefined;
     state: WorkflowStateRecordState;
     steps: IWorkflowStateRecordStep[];
+    createdOn: Date;
+    savedOn: Date;
+    savedBy: IWorkflowStateIdentity | undefined;
 }
 
 export interface IWorkflowStateStep extends IWorkflowStateRecordStep {
@@ -35,7 +44,6 @@ export interface IWorkflowState {
     readonly record: IWorkflowStateRecord | undefined;
     readonly activeStep: IWorkflowStateStep | undefined;
     review(): Promise<void>;
-    approve(message?: string): Promise<void>;
-    reject(message: string): Promise<void>;
-    cancel(): Promise<void>;
+    approve(comment?: string): Promise<void>;
+    reject(comment: string): Promise<void>;
 }

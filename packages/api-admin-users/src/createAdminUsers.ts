@@ -1,6 +1,11 @@
 import { createTopic } from "@webiny/pubsub";
 import WebinyError from "@webiny/error";
-import type { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types.js";
+import type {
+    Security,
+    SecurityIdentity,
+    SecurityPermission,
+    Team
+} from "@webiny/api-security/types.js";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { mdbid } from "@webiny/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -16,6 +21,7 @@ import { createUserLoaders } from "./createAdminUsers/users.loaders.js";
 import { attachUserValidation } from "./createAdminUsers/users.validation.js";
 
 interface AdminUsersConfig {
+    security: Security;
     getIdentity(): SecurityIdentity;
 
     getPermission(name: string): Promise<SecurityPermission | null>;
@@ -29,6 +35,7 @@ interface AdminUsersConfig {
 
 export const createAdminUsers = ({
     storageOperations,
+    security,
     getPermission,
     getTenant,
     getIdentity,
@@ -389,6 +396,26 @@ export const createAdminUsers = ({
 
             // Store app version
             await this.setVersion(process.env.WEBINY_VERSION as string);
+        },
+        /**
+         * Added for workflows. TODO think of better location
+         */
+        async listUserTeams(this: AdminUsers, id: string): Promise<Team[]> {
+            return security.withoutAuthorization(async () => {
+                const adminUser = await this.getUser({
+                    where: {
+                        id
+                    }
+                });
+                if (!adminUser?.teams?.length) {
+                    return [];
+                }
+                return await security.listTeams({
+                    where: {
+                        id_in: adminUser.teams
+                    }
+                });
+            });
         }
     };
 };

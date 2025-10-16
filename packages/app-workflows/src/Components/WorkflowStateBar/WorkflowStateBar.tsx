@@ -21,11 +21,13 @@ export const WorkflowStateBar = (props: IWorkflowStateBarProps) => {
         const repository = new WorkflowStateRepository({
             gateway
         });
-        return new WorkflowStatePresenter({
+        const presenter = new WorkflowStatePresenter({
             app,
             targetRevisionId: id,
             repository
         });
+        presenter.init();
+        return presenter;
     }, [app, id]);
 
     return <WorkflowStateBarPresenter presenter={presenter} />;
