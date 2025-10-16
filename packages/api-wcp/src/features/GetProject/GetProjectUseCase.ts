@@ -1,4 +1,4 @@
-import { Result } from "@webiny/feature";
+import { Result } from "@webiny/feature/api";
 import type { WcpProject } from "~/types.js";
 import type { GetProjectUseCase as UseCase } from "./abstractions.js";
 

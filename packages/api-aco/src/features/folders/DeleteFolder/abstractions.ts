@@ -1,4 +1,4 @@
-import { createAbstraction } from "@webiny/feature";
+import { createAbstraction } from "@webiny/feature/api";
 import type { DomainEvent, IEventHandler } from "@webiny/api-core";
 import type { Folder, DeleteFolderParams } from "~/folder/folder.types.js";
 

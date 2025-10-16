@@ -1,10 +1,7 @@
 import type { IGetDefaultPermissions } from "./IGetDefaultPermissions.js";
-import type {
-    IGetIdentityGateway,
-    IListIdentityTeamsGateway
-} from "~/flp/FolderLevelPermissions/gateways/index.js";
 import type { FolderPermission } from "~/flp/flp.types.js";
 import type { Team } from "@webiny/api-security/types.js";
+import { type IGetIdentityGateway, IListIdentityTeamsGateway } from "../../gateways/index.js";
 
 export class GetDefaultPermissionsWithTeams implements IGetDefaultPermissions {
     private getIdentityGateway: IGetIdentityGateway;

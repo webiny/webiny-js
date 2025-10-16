@@ -9,7 +9,8 @@ import type { AcoContext } from "~/types.js";
 import { createFolderCrudMethods } from "~/folder/folder.crud.js";
 import { CmsEntriesCrudDecorators } from "~/utils/decorators/CmsEntriesCrudDecorators.js";
 import { createFilterCrudMethods } from "~/filter/filter.crud.js";
-import { createFlpCrudMethods, FolderLevelPermissions } from "~/flp/index.js";
+import { createFlpCrudMethods } from "~/flp/index.js";
+import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { UpdateFolderFeature } from "~/features/folders/UpdateFolder/index.js";
 import { DeleteFolderFeature } from "~/features/folders/DeleteFolder/index.js";
 import { CreateFolderFeature } from "~/features/folders/CreateFolder/index.js";
@@ -27,6 +28,7 @@ import { CreateFlpFeature } from "~/features/flp/CreateFlp/index.js";
 import { DeleteFlpFeature } from "~/features/flp/DeleteFlp/index.js";
 import { UpdateFlpFeature } from "~/features/flp/UpdateFlp/index.js";
 import { FolderLevelPermissionsFeature } from "~/features/flp/FolderLevelPermissions/index.js";
+import { EnsureFolderIsEmptyOnDeleteFeature } from "~/features/folders/EnsureFolderIsEmptyOnDelete/index.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -74,36 +76,29 @@ const setupAcoContext = async (
         storageOperations
     });
 
-    const folderLevelPermissions = new FolderLevelPermissions({ context, crud: flpCrudMethods });
-
     FolderLevelPermissionsFeature.register(context.container, { context, crud: flpCrudMethods });
 
     /**
      * Register folder features into DI container
      */
     CreateFolderFeature.register(context.container, {
-        storageOperations: storageOperations.folder,
-        folderLevelPermissions
+        storageOperations: storageOperations.folder
     });
 
     UpdateFolderFeature.register(context.container, {
-        storageOperations: storageOperations.folder,
-        folderLevelPermissions
+        storageOperations: storageOperations.folder
     });
 
     DeleteFolderFeature.register(context.container, {
-        storageOperations: storageOperations.folder,
-        folderLevelPermissions
+        storageOperations: storageOperations.folder
     });
 
     GetFolderFeature.register(context.container, {
-        storageOperations: storageOperations.folder,
-        folderLevelPermissions
+        storageOperations: storageOperations.folder
     });
 
     ListFoldersFeature.register(context.container, {
-        storageOperations: storageOperations.folder,
-        folderLevelPermissions
+        storageOperations: storageOperations.folder
     });
 
     ListFolderLevelPermissionsTargetsFeature.register(context.container, {
@@ -112,8 +107,7 @@ const setupAcoContext = async (
     });
 
     GetFolderHierarchyFeature.register(context.container, {
-        storageOperations: storageOperations.folder,
-        folderLevelPermissions
+        storageOperations: storageOperations.folder
     });
 
     GetAncestorsFeature.register(context.container);
@@ -138,8 +132,10 @@ const setupAcoContext = async (
     });
 
     /**
-     * Register folder event handlers into DI container
+     * Register folder event handlers
      */
+    EnsureFolderIsEmptyOnDeleteFeature.register(context.container, { context });
+
     EnsureFmFolderIsEmptyOnDeleteFeature.register(context.container, { context });
 
     EnsureHcmsFolderIsEmptyOnDeleteFeature.register(context.container, { context });
@@ -147,9 +143,10 @@ const setupAcoContext = async (
     /**
      * Setup legacy context
      */
+    const folderLevelPermissions = context.container.resolve(FolderLevelPermissions);
+
     context.aco = {
         folder: createFolderCrudMethods({ container: context.container }),
-        folderLevelPermissions,
         filter: createFilterCrudMethods({
             container: context.container,
             getLocale,

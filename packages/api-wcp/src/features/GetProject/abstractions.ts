@@ -1,4 +1,4 @@
-import { createAbstraction, type Result } from "@webiny/feature";
+import { createAbstraction, type Result } from "@webiny/feature/api";
 import type { WcpProject } from "~/types.js";
 
 export interface IGetProjectUseCase {

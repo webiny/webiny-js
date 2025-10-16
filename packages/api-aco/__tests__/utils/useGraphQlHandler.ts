@@ -1,3 +1,4 @@
+import { createApiCore } from "@webiny/api-core";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { createI18NContext } from "@webiny/api-i18n";
@@ -102,6 +103,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
     const handler = createHandler({
         plugins: [
+            createApiCore(),
             ...cmsStorage.plugins,
             createWcpContext({ testProjectLicense }),
             createGraphQLHandler(),

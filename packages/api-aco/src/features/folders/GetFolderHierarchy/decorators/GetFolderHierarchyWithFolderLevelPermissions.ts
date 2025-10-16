@@ -1,5 +1,5 @@
 import type { FolderPermission } from "~/flp/flp.types.js";
-import type { FolderLevelPermissions } from "~/flp/index.js";
+import type { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import type { GetFolderHierarchyUseCase } from "../abstractions.js";
 import type {
     Folder,
@@ -13,7 +13,7 @@ export class GetFolderHierarchyWithFolderLevelPermissions
     private flpCatalog: Map<string, FolderPermission[]> = new Map();
 
     constructor(
-        private folderLevelPermissions: FolderLevelPermissions,
+        private folderLevelPermissions: FolderLevelPermissions.Interface,
         private decoratee: GetFolderHierarchyUseCase.Interface
     ) {}
 

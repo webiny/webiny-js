@@ -1,4 +1,4 @@
-import { createFeature } from "@webiny/feature";
+import { createFeature } from "@webiny/feature/api";
 import type { Container } from "@webiny/di-container";
 import { FolderBeforeDeleteHandler } from "~/features/folders/DeleteFolder/abstractions.js";
 import { FmFolderBeforeDeleteHandler } from "./FmFolderBeforeDeleteHandler.js";

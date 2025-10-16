@@ -12,8 +12,8 @@ import type {
     AcoFolderLevelPermissionsCrud,
     AcoFolderLevelPermissionsStorageOperations
 } from "~/flp/flp.types.js";
-import type { FolderLevelPermissions } from "~/flp/index.js";
 import type { Container } from "@webiny/di-container";
+import { FolderLevelPermissions } from "./features/flp/FolderLevelPermissions/index.js";
 
 export * from "./filter/filter.types.js";
 export type * from "./folder/folder.types.js";
@@ -53,14 +53,13 @@ export interface AdvancedContentOrganisation {
     folder: AcoFolderCrud;
     filter: AcoFilterCrud;
     flp: AcoFolderLevelPermissionsCrud;
-    folderLevelPermissions: FolderLevelPermissions;
 }
 
 export interface CreateAcoParams {
     getLocale: () => I18NLocale;
     getTenant: () => Tenant;
     storageOperations: AcoStorageOperations;
-    folderLevelPermissions: FolderLevelPermissions;
+    folderLevelPermissions: FolderLevelPermissions.Interface;
     container: Container;
 }
 

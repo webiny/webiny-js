@@ -1,4 +1,4 @@
-import { createFeature } from "@webiny/feature";
+import { createFeature } from "@webiny/feature/api";
 import { IdentityContext } from "./IdentityContext";
 import * as abstractions from "./abstractions";
 import type { SecurityContext } from "~/types.js";

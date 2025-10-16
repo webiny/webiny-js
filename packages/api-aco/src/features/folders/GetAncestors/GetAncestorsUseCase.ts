@@ -1,13 +1,12 @@
 import type { GetAncestorsParams } from "./abstractions.js";
 import { GetAncestorsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { Folder } from "~/folder/folder.types.js";
-import type { IListFolders } from "~/folder/useCases/ListFolders/IListFolders.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import { createImplementation } from "@webiny/di-container";
 import { ListFoldersUseCase } from "~/features/folders/ListFolders/index.js";
 
 class GetAncestorsUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private listFoldersUseCase: IListFolders) {}
+    constructor(private listFoldersUseCase: ListFoldersUseCase.Interface) {}
 
     public async execute(params: GetAncestorsParams): Promise<Folder[]> {
         const { folder } = params;

@@ -1,5 +1,5 @@
 import type { Identity } from "@webiny/api-authentication/types";
-import { createAbstraction } from "@webiny/feature";
+import { createAbstraction } from "@webiny/feature/api";
 
 export type AuthenticationToken = string;
 

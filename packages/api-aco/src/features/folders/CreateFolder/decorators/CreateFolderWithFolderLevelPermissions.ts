@@ -1,13 +1,13 @@
-import type { FolderLevelPermissions } from "~/flp/index.js";
+import type { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import type { ICreateFolderUseCase } from "../abstractions.js";
 import type { CreateFolderParams } from "~/folder/folder.types.js";
 import { NotAuthorizedError } from "@webiny/api-security";
 
 export class CreateFolderWithFolderLevelPermissions implements ICreateFolderUseCase {
-    private folderLevelPermissions: FolderLevelPermissions;
+    private folderLevelPermissions: FolderLevelPermissions.Interface;
     private readonly decoretee: ICreateFolderUseCase;
 
-    constructor(folderLevelPermissions: FolderLevelPermissions, decoretee: ICreateFolderUseCase) {
+    constructor(folderLevelPermissions: FolderLevelPermissions.Interface, decoretee: ICreateFolderUseCase) {
         this.folderLevelPermissions = folderLevelPermissions;
         this.decoretee = decoretee;
     }

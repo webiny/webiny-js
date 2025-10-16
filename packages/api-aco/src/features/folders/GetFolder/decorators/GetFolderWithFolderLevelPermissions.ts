@@ -1,13 +1,13 @@
-import type { FolderLevelPermissions } from "~/flp/index.js";
+import type { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import type { IGetFolderUseCase } from "../abstractions.js";
 import type { GetFolderParams } from "~/folder/folder.types.js";
 import { NotAuthorizedError } from "@webiny/api-security";
 
 export class GetFolderWithFolderLevelPermissions implements IGetFolderUseCase {
-    private folderLevelPermissions: FolderLevelPermissions;
+    private folderLevelPermissions: FolderLevelPermissions.Interface;
     private readonly decoretee: IGetFolderUseCase;
 
-    constructor(folderLevelPermissions: FolderLevelPermissions, decoretee: IGetFolderUseCase) {
+    constructor(folderLevelPermissions: FolderLevelPermissions.Interface, decoretee: IGetFolderUseCase) {
         this.folderLevelPermissions = folderLevelPermissions;
         this.decoretee = decoretee;
     }

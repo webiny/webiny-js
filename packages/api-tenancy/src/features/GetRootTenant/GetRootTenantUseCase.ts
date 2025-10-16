@@ -1,4 +1,4 @@
-import { Result } from "@webiny/feature";
+import { Result } from "@webiny/feature/api";
 import type { Tenant } from "~/types.js";
 import type { GetRootTenantUseCase as UseCase } from "./abstractions.js";
 

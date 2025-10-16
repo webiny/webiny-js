@@ -10,6 +10,7 @@ import { compress } from "~/utils/compress.js";
 import type { AcoContext, Folder } from "~/types.js";
 import type { FolderLevelPermission } from "~/flp/flp.types.js";
 import { FOLDER_MODEL_ID } from "~/folder/folder.model.js";
+import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 
 export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
     const folderGraphQL = new GraphQLSchemaPlugin<AcoContext>({
@@ -17,18 +18,20 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
         resolvers: {
             Folder: {
                 hasNonInheritedPermissions: (folder: Folder, _, context) => {
-                    return context.aco.folderLevelPermissions.permissionsIncludeNonInheritedPermissions(
-                        folder.permissions
-                    );
+                    const flp = context.container.resolve(FolderLevelPermissions);
+                    return flp.permissionsIncludeNonInheritedPermissions(folder.permissions ?? []);
                 },
                 canManageStructure: (folder, _, context) => {
-                    return context.aco.folderLevelPermissions.canManageFolderStructure(folder);
+                    const flp = context.container.resolve(FolderLevelPermissions);
+                    return flp.canManageFolderStructure(folder);
                 },
                 canManagePermissions: (folder, _, context) => {
-                    return context.aco.folderLevelPermissions.canManageFolderPermissions(folder);
+                    const flp = context.container.resolve(FolderLevelPermissions);
+                    return flp.canManageFolderPermissions(folder);
                 },
                 canManageContent: (folder, _, context) => {
-                    return context.aco.folderLevelPermissions.canManageFolderContent(folder);
+                    const flp = context.container.resolve(FolderLevelPermissions);
+                    return flp.canManageFolderContent(folder);
                 }
             },
             AcoQuery: {
@@ -57,10 +60,9 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
                     return resolve(async () => {
                         ensureAuthentication(context);
 
+                        const flp = context.container.resolve(FolderLevelPermissions);
                         const [entries] = await context.aco.folder.list(args);
                         const foldersPromises = entries.map(folder => {
-                            const { folderLevelPermissions: flp } = context.aco;
-
                             const canManageStructure = flp.canManageFolderStructure(
                                 folder as unknown as FolderLevelPermission
                             );
@@ -71,7 +73,9 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
                                 folder as unknown as FolderLevelPermission
                             );
                             const hasNonInheritedPermissions =
-                                flp.permissionsIncludeNonInheritedPermissions(folder.permissions);
+                                flp.permissionsIncludeNonInheritedPermissions(
+                                    folder.permissions ?? []
+                                );
 
                             return Promise.all([
                                 canManageStructure,

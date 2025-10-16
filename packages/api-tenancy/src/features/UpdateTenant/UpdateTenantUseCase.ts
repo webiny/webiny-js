@@ -1,4 +1,4 @@
-import { createImplementation, Result } from "@webiny/feature";
+import { createImplementation, Result } from "@webiny/feature/api";
 import Error from "@webiny/error";
 import type { Tenant } from "~/types.js";
 import { UpdateTenantUseCase as UseCase, UpdateTenantRepository } from "./abstractions.js";

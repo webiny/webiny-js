@@ -1,4 +1,4 @@
-import { createFeature } from "@webiny/feature";
+import { createFeature } from "@webiny/feature/api";
 import { GetCurrentTenantUseCase } from "./abstractions.js";
 import { GetCurrentTenantUseCase as GetCurrentTenantUseCaseImpl } from "./GetCurrentTenantUseCase.js";
 import type { TenancyContext } from "~/types.js";

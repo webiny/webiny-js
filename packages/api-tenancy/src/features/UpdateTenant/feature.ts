@@ -1,4 +1,4 @@
-import { createFeature } from "@webiny/feature";
+import { createFeature } from "@webiny/feature/api";
 import { UpdateTenantRepository, UpdateTenantUseCase } from "./abstractions.js";
 import { UpdateTenantUseCase as UpdateTenantUseCaseImpl } from "./UpdateTenantUseCase.js";
 import { UpdateTenantRepository as UpdateTenantRepositoryImpl } from "./UpdateTenantRepository.js";

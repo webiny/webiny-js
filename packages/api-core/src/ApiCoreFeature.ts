@@ -1,4 +1,4 @@
-import { createFeature } from "@webiny/feature";
+import { createFeature } from "@webiny/feature/api";
 import { Container } from "@webiny/di-container";
 import { EventPublisherFeature } from "~/features/eventPublisher/feature.js";
 

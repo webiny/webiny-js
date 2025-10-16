@@ -1,4 +1,4 @@
-import { createAbstraction } from "@webiny/feature";
+import { createAbstraction } from "@webiny/feature/api";
 import type { Authenticator, Identity } from "@webiny/api-authentication/types.js";
 
 export interface IAuthenticationService {

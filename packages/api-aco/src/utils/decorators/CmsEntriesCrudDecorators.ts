@@ -3,8 +3,9 @@ import { ROOT_FOLDER } from "~/constants.js";
 import { ListEntriesFactory } from "./ListEntriesFactory.js";
 import { FilterEntriesByFolderFactory } from "./FilterEntriesByFolderFactory.js";
 import { decorateIfModelAuthorizationEnabled } from "./decorateIfModelAuthorizationEnabled.js";
+import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 
-type Context = Pick<AcoContext, "aco" | "cms">;
+type Context = Pick<AcoContext, "aco" | "cms" | "container">;
 
 interface EntryManagerCrudDecoratorsParams {
     context: Context;
@@ -19,7 +20,7 @@ export class CmsEntriesCrudDecorators {
 
     public decorate() {
         const context = this.context;
-        const folderLevelPermissions = context.aco.folderLevelPermissions;
+        const folderLevelPermissions = context.container.resolve(FolderLevelPermissions);
 
         const filterEntriesByFolder = new FilterEntriesByFolderFactory(folderLevelPermissions);
         const listEntriesHandler = new ListEntriesFactory(folderLevelPermissions);

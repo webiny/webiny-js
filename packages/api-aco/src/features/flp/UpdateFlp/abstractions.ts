@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "@webiny/feature/api";
 import type { Folder } from "~/folder/folder.types.js";
 
 export interface UpdateFlpParams {
@@ -13,7 +13,7 @@ export interface IUpdateFlpUseCase {
     execute: (params: UpdateFlpParams) => Promise<void>;
 }
 
-export const UpdateFlpUseCase = new Abstraction<IUpdateFlpUseCase>("UpdateFlpUseCase");
+export const UpdateFlpUseCase = createAbstraction<IUpdateFlpUseCase>("UpdateFlpUseCase");
 
 export namespace UpdateFlpUseCase {
     export type Interface = IUpdateFlpUseCase;

@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "@webiny/feature/api";
 import type {
     GetFolderHierarchyParams,
     GetFolderHierarchyResponse
@@ -9,7 +9,7 @@ export interface IGetFolderHierarchyUseCase {
     execute: (params: GetFolderHierarchyParams) => Promise<GetFolderHierarchyResponse>;
 }
 
-export const GetFolderHierarchyUseCase = new Abstraction<IGetFolderHierarchyUseCase>(
+export const GetFolderHierarchyUseCase = createAbstraction<IGetFolderHierarchyUseCase>(
     "GetFolderHierarchyUseCase"
 );
 

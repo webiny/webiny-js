@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "@webiny/feature/api";
 import type {
     FolderLevelPermissionsTarget,
     FolderLevelPermissionsTargetListMeta
@@ -12,7 +12,7 @@ export interface IListFolderLevelPermissionsTargetsUseCase {
 }
 
 export const ListFolderLevelPermissionsTargetsUseCase =
-    new Abstraction<IListFolderLevelPermissionsTargetsUseCase>(
+    createAbstraction<IListFolderLevelPermissionsTargetsUseCase>(
         "ListFolderLevelPermissionsTargetsUseCase"
     );
 
@@ -25,9 +25,8 @@ export interface IListAdminUsersGateway {
     execute: () => Promise<AdminUser[]>;
 }
 
-export const ListAdminUsersGateway = new Abstraction<IListAdminUsersGateway>(
-    "ListAdminUsersGateway"
-);
+export const ListAdminUsersGateway =
+    createAbstraction<IListAdminUsersGateway>("ListAdminUsersGateway");
 
 export namespace ListAdminUsersGateway {
     export type Interface = IListAdminUsersGateway;
@@ -37,7 +36,7 @@ export interface IListTeamsGateway {
     execute: () => Promise<Team[]>;
 }
 
-export const ListTeamsGateway = new Abstraction<IListTeamsGateway>("ListTeamsGateway");
+export const ListTeamsGateway = createAbstraction<IListTeamsGateway>("ListTeamsGateway");
 
 export namespace ListTeamsGateway {
     export type Interface = IListTeamsGateway;

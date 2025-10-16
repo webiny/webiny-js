@@ -13,6 +13,7 @@ import {
     GetFolderPermission,
     ListFolderPermissions
 } from "./useCases/index.js";
+import type { FolderLevelPermissions as FolderLevelPermissionsAbstraction } from "./abstractions.js";
 import type {
     AcoContext,
     AcoFolderLevelPermissionsCrud,
@@ -33,12 +34,7 @@ import {
     ListPermissionsGatewayFromContext
 } from "./gateways/index.js";
 
-interface CreateFolderLevelPermissionsParams {
-    context: AcoContext;
-    crud: AcoFolderLevelPermissionsCrud;
-}
-
-export class FolderLevelPermissions {
+export class FolderLevelPermissions implements FolderLevelPermissionsAbstraction.Interface {
     private crud: AcoFolderLevelPermissionsCrud;
 
     private readonly getWcpGateway: IGetWcpGateway;
@@ -47,18 +43,16 @@ export class FolderLevelPermissions {
     private readonly listIdentityTeamsGateway: IListIdentityTeamsGateway;
     private readonly isAuthorizationEnabledGateway: IIsAuthorizationEnabledGateway;
 
-    constructor(params: CreateFolderLevelPermissionsParams) {
-        this.crud = params.crud;
-        this.getWcpGateway = new GetWcpGatewayFromContext(params.context);
-        this.getIdentityGateway = new GetIdentityGatewayFromContext(params.context);
-        this.listPermissionsGateway = new ListPermissionsGatewayFromContext(params.context);
-        this.listIdentityTeamsGateway = new ListIdentityTeamsGatewayFromContext(params.context);
-        this.isAuthorizationEnabledGateway = new IsAuthorizationEnabledGatewayFromContext(
-            params.context
-        );
+    constructor(context: AcoContext, crud: AcoFolderLevelPermissionsCrud) {
+        this.crud = crud;
+        this.getWcpGateway = new GetWcpGatewayFromContext(context);
+        this.getIdentityGateway = new GetIdentityGatewayFromContext(context);
+        this.listPermissionsGateway = new ListPermissionsGatewayFromContext(context);
+        this.listIdentityTeamsGateway = new ListIdentityTeamsGatewayFromContext(context);
+        this.isAuthorizationEnabledGateway = new IsAuthorizationEnabledGatewayFromContext(context);
     }
 
-    public canUseFolderLevelPermissions(enabled?: boolean) {
+    public canUseFolderLevelPermissions(enabled?: boolean): boolean {
         const canUseFolderLevelPermissionsUseCase = new CanUseFolderLevelPermissions(
             this.getWcpGateway,
             this.getIdentityGateway
@@ -66,22 +60,22 @@ export class FolderLevelPermissions {
         return canUseFolderLevelPermissionsUseCase.execute(enabled);
     }
 
-    public canUseTeams() {
+    public canUseTeams(): boolean {
         const canUseTeamsUseCase = new CanUseTeams(this.getWcpGateway);
         return canUseTeamsUseCase.execute();
     }
 
-    public canCreateFolderInRoot() {
+    public canCreateFolderInRoot(): boolean {
         const canCreateFolderInRootUseCase = new CanCreateFolderInRoot();
         return canCreateFolderInRootUseCase.execute();
     }
 
-    public permissionsIncludeNonInheritedPermissions(permissions?: FolderPermission[]) {
+    public permissionsIncludeNonInheritedPermissions(permissions: FolderPermission[]): boolean {
         const checkNotInheritedPermissionsUseCase = new CheckNotInheritedPermissions();
         return checkNotInheritedPermissionsUseCase.execute(permissions);
     }
 
-    public async canAccessFolder(params: CanAccessFolderParams) {
+    public async canAccessFolder(params: CanAccessFolderParams): Promise<boolean> {
         if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabledGateway.execute()) {
             return true;
         }
@@ -90,7 +84,7 @@ export class FolderLevelPermissions {
         return await canAccessFolderUseCase.execute(params);
     }
 
-    public async canAccessFolderContent(params: CanAccessFolderContentParams) {
+    public async canAccessFolderContent(params: CanAccessFolderContentParams): Promise<boolean> {
         if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabledGateway.execute()) {
             return true;
         }
@@ -99,21 +93,21 @@ export class FolderLevelPermissions {
         return await canAccessFolderContentUseCase.execute(params);
     }
 
-    public async ensureCanAccessFolder(params: CanAccessFolderParams) {
+    public async ensureCanAccessFolder(params: CanAccessFolderParams): Promise<void> {
         const result = await this.canAccessFolder(params);
         if (!result) {
             throw new NotAuthorizedError();
         }
     }
 
-    public async ensureCanAccessFolderContent(params: CanAccessFolderContentParams) {
+    public async ensureCanAccessFolderContent(params: CanAccessFolderContentParams): Promise<void> {
         const result = await this.canAccessFolderContent(params);
         if (!result) {
             throw new NotAuthorizedError();
         }
     }
 
-    public async canManageFolderContent(flp: FolderLevelPermission) {
+    public async canManageFolderContent(flp: FolderLevelPermission): Promise<boolean> {
         if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabledGateway.execute()) {
             return true;
         }
@@ -121,7 +115,7 @@ export class FolderLevelPermissions {
         return await this.canAccessFolderContent({ permissions: flp.permissions, rwd: "w" });
     }
 
-    public async canManageFolderStructure(flp: FolderLevelPermission) {
+    public async canManageFolderStructure(flp: FolderLevelPermission): Promise<boolean> {
         if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabledGateway.execute()) {
             return true;
         }
@@ -129,7 +123,7 @@ export class FolderLevelPermissions {
         return await this.canAccessFolder({ permissions: flp.permissions, rwd: "w" });
     }
 
-    public async canManageFolderPermissions(flp: FolderLevelPermission) {
+    public async canManageFolderPermissions(flp: FolderLevelPermission): Promise<boolean> {
         if (!this.canUseFolderLevelPermissions()) {
             return false;
         }
@@ -145,7 +139,7 @@ export class FolderLevelPermissions {
         });
     }
 
-    public getDefaultPermissions(permissions: FolderPermission[]) {
+    public getDefaultPermissions(permissions: FolderPermission[]): Promise<FolderPermission[]> {
         const getDefaultPermissionsUseCase = new GetDefaultPermissions(
             this.getIdentityGateway,
             this.listPermissionsGateway
@@ -164,7 +158,12 @@ export class FolderLevelPermissions {
         return getDefaultPermissionsUseCase.execute(permissions);
     }
 
-    public async listFolderLevelPermissions(params: ListFlpsParams) {
+    public async listFolderLevelPermissions(params: ListFlpsParams): Promise<
+        Array<{
+            id: string;
+            permissions: FolderPermission[];
+        }>
+    > {
         const listFolderLevelPermissionsUseCase = new ListFolderPermissions(this.crud.list);
         const flps = await listFolderLevelPermissionsUseCase.execute(params);
 
@@ -176,7 +175,7 @@ export class FolderLevelPermissions {
         );
     }
 
-    public async getFolderLevelPermissions(id: string) {
+    public async getFolderLevelPermissions(id: string): Promise<FolderPermission[]> {
         const getFolderLevelPermissionUseCase = new GetFolderPermission(this.crud.get);
         const flp = await getFolderLevelPermissionUseCase.execute(id);
         return await this.getDefaultPermissions(flp?.permissions ?? []);

@@ -1,63 +1,65 @@
 import { ContextPlugin } from "@webiny/api";
 import type { AcoContext } from "~/types";
 import { LifecycleEventTracker } from "@webiny/project-utils/testing/helpers/lifecycleTracker";
+import type { DomainEvent } from "@webiny/api-core";
+import {
+    FolderBeforeCreateHandler,
+    FolderAfterCreateHandler,
+    type FolderBeforeCreatePayload,
+    type FolderAfterCreatePayload
+} from "~/features/folders/CreateFolder/abstractions.js";
+import {
+    FolderBeforeUpdateHandler,
+    FolderAfterUpdateHandler,
+    type FolderBeforeUpdatePayload,
+    type FolderAfterUpdatePayload
+} from "~/features/folders/UpdateFolder/abstractions.js";
+import {
+    FolderBeforeDeleteHandler,
+    FolderAfterDeleteHandler,
+    type FolderBeforeDeletePayload,
+    type FolderAfterDeletePayload
+} from "~/features/folders/DeleteFolder/abstractions.js";
 
 export const tracker = new LifecycleEventTracker();
 
 export const assignFolderLifecycleEvents = () => {
     return new ContextPlugin<AcoContext>(async context => {
-        context.aco.folder.onFolderBeforeCreate.subscribe(async params => {
-            tracker.track("folder:beforeCreate", params);
-        });
-        context.aco.folder.onFolderAfterCreate.subscribe(async params => {
-            tracker.track("folder:afterCreate", params);
-        });
+        context.container.registerFactory(FolderBeforeCreateHandler, () => ({
+            async handle(event: DomainEvent<FolderBeforeCreatePayload>) {
+                tracker.track("folder:beforeCreate", event.payload);
+            }
+        }));
 
-        context.aco.folder.onFolderBeforeUpdate.subscribe(async params => {
-            tracker.track("folder:beforeUpdate", params);
-        });
-        context.aco.folder.onFolderAfterUpdate.subscribe(async params => {
-            tracker.track("folder:afterUpdate", params);
-        });
+        context.container.registerFactory(FolderAfterCreateHandler, () => ({
+            async handle(event: DomainEvent<FolderAfterCreatePayload>) {
+                tracker.track("folder:afterCreate", event.payload);
+            }
+        }));
 
-        context.aco.folder.onFolderBeforeDelete.subscribe(async params => {
-            tracker.track("folder:beforeDelete", params);
-        });
-        context.aco.folder.onFolderAfterDelete.subscribe(async params => {
-            tracker.track("folder:afterDelete", params);
-        });
-    });
-};
+        context.container.registerFactory(FolderBeforeUpdateHandler, () => ({
+            async handle(event: DomainEvent<FolderBeforeUpdatePayload>) {
+                tracker.track("folder:beforeUpdate", event.payload);
+            }
+        }));
 
-export const assignRecordLifecycleEvents = () => {
-    return new ContextPlugin<AcoContext>(async context => {
-        context.aco.search.onSearchRecordBeforeCreate.subscribe(async params => {
-            tracker.track("searchRecord:beforeCreate", params);
-        });
-        context.aco.search.onSearchRecordAfterCreate.subscribe(async params => {
-            tracker.track("searchRecord:afterCreate", params);
-        });
+        context.container.registerFactory(FolderAfterUpdateHandler, () => ({
+            async handle(event: DomainEvent<FolderAfterUpdatePayload>) {
+                tracker.track("folder:afterUpdate", event.payload);
+            }
+        }));
 
-        context.aco.search.onSearchRecordBeforeUpdate.subscribe(async params => {
-            tracker.track("searchRecord:beforeUpdate", params);
-        });
-        context.aco.search.onSearchRecordAfterUpdate.subscribe(async params => {
-            tracker.track("searchRecord:afterUpdate", params);
-        });
+        context.container.registerFactory(FolderBeforeDeleteHandler, () => ({
+            async handle(event: DomainEvent<FolderBeforeDeletePayload>) {
+                tracker.track("folder:beforeDelete", event.payload);
+            }
+        }));
 
-        context.aco.search.onSearchRecordBeforeMove.subscribe(async params => {
-            tracker.track("searchRecord:beforeMove", params);
-        });
-        context.aco.search.onSearchRecordAfterMove.subscribe(async params => {
-            tracker.track("searchRecord:afterMove", params);
-        });
-
-        context.aco.search.onSearchRecordBeforeDelete.subscribe(async params => {
-            tracker.track("searchRecord:beforeDelete", params);
-        });
-        context.aco.search.onSearchRecordAfterDelete.subscribe(async params => {
-            tracker.track("searchRecord:afterDelete", params);
-        });
+        context.container.registerFactory(FolderAfterDeleteHandler, () => ({
+            async handle(event: DomainEvent<FolderAfterDeletePayload>) {
+                tracker.track("folder:afterDelete", event.payload);
+            }
+        }));
     });
 };
 

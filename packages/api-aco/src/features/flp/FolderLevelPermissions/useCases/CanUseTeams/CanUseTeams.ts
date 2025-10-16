@@ -1,5 +1,5 @@
+import { IGetWcpGateway } from "../../gateways/index.js";
 import type { ICanUseTeams } from "./ICanUseTeams.js";
-import type { IGetWcpGateway } from "~/flp/FolderLevelPermissions/gateways/GetWcpGateway/index.js";
 
 export class CanUseTeams implements ICanUseTeams {
     private getWcpGateway: IGetWcpGateway;

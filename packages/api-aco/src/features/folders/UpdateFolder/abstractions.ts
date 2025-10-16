@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "@webiny/feature/api";
 import type { DomainEvent, IEventHandler } from "@webiny/api-core";
 import type { Folder, UpdateFolderParams } from "~/folder/folder.types.js";
 
@@ -7,7 +7,7 @@ export interface IUpdateFolderUseCase {
     execute: (id: string, data: UpdateFolderParams) => Promise<Folder>;
 }
 
-export const UpdateFolderUseCase = new Abstraction<IUpdateFolderUseCase>("UpdateFolderUseCase");
+export const UpdateFolderUseCase = createAbstraction<IUpdateFolderUseCase>("UpdateFolderUseCase");
 
 export namespace UpdateFolderUseCase {
     export type Interface = IUpdateFolderUseCase;
@@ -26,7 +26,7 @@ export interface FolderAfterUpdatePayload {
 }
 
 // Event Handler Abstractions
-export const FolderBeforeUpdateHandler = new Abstraction<
+export const FolderBeforeUpdateHandler = createAbstraction<
     IEventHandler<DomainEvent<FolderBeforeUpdatePayload>>
 >("FolderBeforeUpdateHandler");
 
@@ -34,7 +34,7 @@ export namespace FolderBeforeUpdateHandler {
     export type Interface = IEventHandler<DomainEvent<FolderBeforeUpdatePayload>>;
 }
 
-export const FolderAfterUpdateHandler = new Abstraction<
+export const FolderAfterUpdateHandler = createAbstraction<
     IEventHandler<DomainEvent<FolderAfterUpdatePayload>>
 >("FolderAfterUpdateHandler");
 

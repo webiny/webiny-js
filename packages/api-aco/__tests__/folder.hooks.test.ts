@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 
 import { assignFolderLifecycleEvents, tracker } from "./mocks/lifecycle.mock";
-import { createMockAcoApp } from "~tests/mocks/app";
 
 const title = "Folder Lifecycle Events";
 const slug = "folder-lifecycle-events";
@@ -16,11 +15,7 @@ describe("Folder Lifecycle Events", () => {
     beforeEach(async () => {
         const handler = useGraphQlHandler({
             plugins: [
-                assignFolderLifecycleEvents(),
-                createMockAcoApp({
-                    name: "Webiny",
-                    apiName: "Webiny"
-                })
+                assignFolderLifecycleEvents()
             ]
         });
 
