@@ -1,9 +1,11 @@
-import { EventPublisher as EventPublisherAbstraction } from "@webiny/api-core";
+import { EventPublisher, EventPublisher as EventPublisherAbstraction } from "@webiny/api-core";
 import { DeleteFolderUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { FolderBeforeDeleteEvent, FolderAfterDeleteEvent } from "./events.js";
 import type { DeleteFolderParams, AcoFolderStorageOperations } from "~/folder/folder.types.js";
+import { createImplementation } from "@webiny/di-container";
+import { FolderStorageOperations } from "~/features/folders/shared/abstractions.js";
 
-export class DeleteFolderUseCase implements UseCaseAbstraction.Interface {
+class DeleteFolderUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private eventPublisher: EventPublisherAbstraction.Interface,
         private storageOperations: AcoFolderStorageOperations
@@ -33,3 +35,9 @@ export class DeleteFolderUseCase implements UseCaseAbstraction.Interface {
         return true;
     }
 }
+
+export const DeleteFolderUseCase = createImplementation({
+    abstraction: UseCaseAbstraction,
+    implementation: DeleteFolderUseCaseImpl,
+    dependencies: [EventPublisher, FolderStorageOperations]
+});

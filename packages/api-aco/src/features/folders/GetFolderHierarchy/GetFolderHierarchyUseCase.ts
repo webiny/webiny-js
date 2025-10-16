@@ -1,4 +1,4 @@
-import type { GetFolderHierarchyUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { GetFolderHierarchyUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import type {
     AcoFolderStorageOperations,
@@ -6,10 +6,12 @@ import type {
     GetFolderHierarchyParams,
     GetFolderHierarchyResponse
 } from "~/folder/folder.types.js";
+import { createImplementation } from "@webiny/di-container";
+import { FolderStorageOperations } from "~/features/folders/shared/abstractions.js";
 
 const FIXED_FOLDER_LISTING_LIMIT = 10_000;
 
-export class GetFolderHierarchyUseCase implements UseCaseAbstraction.Interface {
+class GetFolderHierarchyUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private storageOperations: AcoFolderStorageOperations) {}
 
     async execute(params: GetFolderHierarchyParams): Promise<GetFolderHierarchyResponse> {
@@ -60,3 +62,9 @@ export class GetFolderHierarchyUseCase implements UseCaseAbstraction.Interface {
         };
     }
 }
+
+export const GetFolderHierarchyUseCase = createImplementation({
+    abstraction: UseCaseAbstraction,
+    implementation: GetFolderHierarchyUseCaseImpl,
+    dependencies: [FolderStorageOperations]
+});

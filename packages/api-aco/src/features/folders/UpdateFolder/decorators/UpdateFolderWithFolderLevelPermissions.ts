@@ -1,26 +1,28 @@
+import { createDecorator } from "@webiny/feature/api";
 import { NotAuthorizedError } from "@webiny/api-security";
 import WError from "@webiny/error";
-import type { AcoFolderStorageOperations, UpdateFolderParams } from "~/folder/folder.types.js";
-import type { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
-import type { IUpdateFolderUseCase } from "../abstractions.js";
+import type { UpdateFolderParams } from "~/folder/folder.types.js";
+import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
+import { UpdateFolderUseCase } from "../abstractions.js";
+import { FolderStorageOperations } from "~/features/folders/shared/abstractions.js";
 
-export class UpdateFolderWithFolderLevelPermissions implements IUpdateFolderUseCase {
+class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.Interface {
     private folderLevelPermissions: FolderLevelPermissions.Interface;
-    private readonly getOperation: AcoFolderStorageOperations["getFolder"];
-    private readonly decoretee: IUpdateFolderUseCase;
+    private readonly storageOperations: FolderStorageOperations.Interface;
+    private readonly decoretee: UpdateFolderUseCase.Interface;
 
     constructor(
         folderLevelPermissions: FolderLevelPermissions.Interface,
-        getOperation: AcoFolderStorageOperations["getFolder"],
-        decoretee: IUpdateFolderUseCase
+        storageOperations: FolderStorageOperations.Interface,
+        decoretee: UpdateFolderUseCase.Interface
     ) {
         this.folderLevelPermissions = folderLevelPermissions;
-        this.getOperation = getOperation;
+        this.storageOperations = storageOperations;
         this.decoretee = decoretee;
     }
 
     async execute(id: string, params: UpdateFolderParams) {
-        const original = await this.getOperation({ id });
+        const original = await this.storageOperations.getFolder({ id });
         const originalPermissions = await this.folderLevelPermissions.getFolderLevelPermissions(id);
 
         // Let's ensure current identity's permission allows the update operation.
@@ -93,3 +95,9 @@ export class UpdateFolderWithFolderLevelPermissions implements IUpdateFolderUseC
         };
     }
 }
+
+export const UpdateFolderWithFolderLevelPermissions = createDecorator({
+    abstraction: UpdateFolderUseCase,
+    decorator: UpdateFolderWithFolderLevelPermissionsImpl,
+    dependencies: [FolderLevelPermissions, FolderStorageOperations]
+});

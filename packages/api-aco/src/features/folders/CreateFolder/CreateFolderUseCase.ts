@@ -1,9 +1,15 @@
-import { EventPublisher as EventPublisherAbstraction } from "@webiny/api-core";
+import { EventPublisher, EventPublisher as EventPublisherAbstraction } from "@webiny/api-core";
 import { CreateFolderUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { FolderBeforeCreateEvent, FolderAfterCreateEvent } from "./events.js";
-import type { Folder, CreateFolderParams, AcoFolderStorageOperations } from "~/folder/folder.types.js";
+import type {
+    Folder,
+    CreateFolderParams,
+    AcoFolderStorageOperations
+} from "~/folder/folder.types.js";
+import { createImplementation } from "@webiny/di-container";
+import { FolderStorageOperations } from "~/features/folders/shared/abstractions.js";
 
-export class CreateFolderUseCase implements UseCaseAbstraction.Interface {
+class CreateFolderUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private eventPublisher: EventPublisherAbstraction.Interface,
         private storageOperations: AcoFolderStorageOperations
@@ -30,3 +36,9 @@ export class CreateFolderUseCase implements UseCaseAbstraction.Interface {
         return folder;
     }
 }
+
+export const CreateFolderUseCase = createImplementation({
+    abstraction: UseCaseAbstraction,
+    implementation: CreateFolderUseCaseImpl,
+    dependencies: [EventPublisher, FolderStorageOperations]
+});

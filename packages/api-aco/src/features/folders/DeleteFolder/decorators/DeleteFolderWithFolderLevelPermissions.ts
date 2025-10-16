@@ -1,12 +1,13 @@
-import type { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
-import type { IDeleteFolderUseCase } from "../abstractions.js";
+import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
+import { DeleteFolderUseCase } from "../abstractions.js";
 import type { DeleteFolderParams } from "~/folder/folder.types.js";
+import { createDecorator } from "@webiny/feature/api";
 
-export class DeleteFolderWithFolderLevelPermissions implements IDeleteFolderUseCase {
+class DeleteFolderWithFolderLevelPermissionsImpl implements DeleteFolderUseCase.Interface {
     private folderLevelPermissions: FolderLevelPermissions.Interface;
-    private readonly decoretee: IDeleteFolderUseCase;
+    private readonly decoretee: DeleteFolderUseCase.Interface;
 
-    constructor(folderLevelPermissions: FolderLevelPermissions.Interface, decoretee: IDeleteFolderUseCase) {
+    constructor(folderLevelPermissions: FolderLevelPermissions.Interface, decoretee: DeleteFolderUseCase.Interface) {
         this.folderLevelPermissions = folderLevelPermissions;
         this.decoretee = decoretee;
     }
@@ -21,3 +22,9 @@ export class DeleteFolderWithFolderLevelPermissions implements IDeleteFolderUseC
         return true;
     }
 }
+
+export const DeleteFolderWithFolderLevelPermissions = createDecorator({
+    abstraction: DeleteFolderUseCase,
+    decorator: DeleteFolderWithFolderLevelPermissionsImpl,
+    dependencies: [FolderLevelPermissions]
+});

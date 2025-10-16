@@ -29,6 +29,10 @@ import { DeleteFlpFeature } from "~/features/flp/DeleteFlp/index.js";
 import { UpdateFlpFeature } from "~/features/flp/UpdateFlp/index.js";
 import { FolderLevelPermissionsFeature } from "~/features/flp/FolderLevelPermissions/index.js";
 import { EnsureFolderIsEmptyOnDeleteFeature } from "~/features/folders/EnsureFolderIsEmptyOnDelete/index.js";
+import {
+    FilterStorageOperations,
+    FolderStorageOperations
+} from "~/features/folders/shared/abstractions.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -79,27 +83,23 @@ const setupAcoContext = async (
     FolderLevelPermissionsFeature.register(context.container, { context, crud: flpCrudMethods });
 
     /**
+     * Register legacy dependencies via abstractions
+     */
+    context.container.registerInstance(FolderStorageOperations, storageOperations.folder);
+    context.container.registerInstance(FilterStorageOperations, storageOperations.filter);
+
+    /**
      * Register folder features into DI container
      */
-    CreateFolderFeature.register(context.container, {
-        storageOperations: storageOperations.folder
-    });
+    CreateFolderFeature.register(context.container);
 
-    UpdateFolderFeature.register(context.container, {
-        storageOperations: storageOperations.folder
-    });
+    UpdateFolderFeature.register(context.container);
 
-    DeleteFolderFeature.register(context.container, {
-        storageOperations: storageOperations.folder
-    });
+    DeleteFolderFeature.register(context.container);
 
-    GetFolderFeature.register(context.container, {
-        storageOperations: storageOperations.folder
-    });
+    GetFolderFeature.register(context.container);
 
-    ListFoldersFeature.register(context.container, {
-        storageOperations: storageOperations.folder
-    });
+    ListFoldersFeature.register(context.container);
 
     ListFolderLevelPermissionsTargetsFeature.register(context.container, {
         security: context.security,

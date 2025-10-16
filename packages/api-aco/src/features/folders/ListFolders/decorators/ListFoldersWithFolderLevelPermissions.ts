@@ -1,11 +1,12 @@
+import { createDecorator } from "@webiny/feature/api";
 import type { Folder, ListFoldersParams } from "~/folder/folder.types.js";
-import type { ListFoldersUseCase } from "../abstractions.js";
-import type { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
+import { ListFoldersUseCase } from "../abstractions.js";
+import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import type { FolderPermission } from "~/flp/flp.types.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import type { ListMeta } from "~/types.js";
 
-export class ListFoldersWithFolderLevelPermissions implements ListFoldersUseCase.Interface {
+class ListFoldersWithFolderLevelPermissionsImpl implements ListFoldersUseCase.Interface {
     private flpCatalog: Map<string, FolderPermission[]> = new Map();
 
     constructor(
@@ -75,3 +76,9 @@ export class ListFoldersWithFolderLevelPermissions implements ListFoldersUseCase
         this.flpCatalog.set(id, permissions);
     }
 }
+
+export const ListFoldersWithFolderLevelPermissions = createDecorator({
+    abstraction: ListFoldersUseCase,
+    decorator: ListFoldersWithFolderLevelPermissionsImpl,
+    dependencies: [FolderLevelPermissions]
+});

@@ -1,13 +1,14 @@
+import { createDecorator } from "@webiny/feature/api";
 import type { FolderPermission } from "~/flp/flp.types.js";
-import type { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
-import type { GetFolderHierarchyUseCase } from "../abstractions.js";
+import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
+import { GetFolderHierarchyUseCase } from "../abstractions.js";
 import type {
     Folder,
     GetFolderHierarchyParams,
     GetFolderHierarchyResponse
 } from "~/folder/folder.types.js";
 
-export class GetFolderHierarchyWithFolderLevelPermissions
+class GetFolderHierarchyWithFolderLevelPermissionsImpl
     implements GetFolderHierarchyUseCase.Interface
 {
     private flpCatalog: Map<string, FolderPermission[]> = new Map();
@@ -69,3 +70,9 @@ export class GetFolderHierarchyWithFolderLevelPermissions
         this.flpCatalog.set(id, permissions);
     }
 }
+
+export const GetFolderHierarchyWithFolderLevelPermissions = createDecorator({
+    abstraction: GetFolderHierarchyUseCase,
+    decorator: GetFolderHierarchyWithFolderLevelPermissionsImpl,
+    dependencies: [FolderLevelPermissions]
+});
