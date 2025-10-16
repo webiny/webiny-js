@@ -183,12 +183,13 @@ export class UpdateFlp {
     }
 
     private async listDirectChildren(flp: FolderLevelPermission): Promise<FolderLevelPermission[]> {
-        const [folders] = await this.context.aco.folder.listAll({
-            where: {
-                type: flp.type,
-                parentId: flp.id
-            },
-            disablePermissions: true
+        const [folders] = await this.context.security.withoutAuthorization(() => {
+            return this.context.aco.folder.listAll({
+                where: {
+                    type: flp.type,
+                    parentId: flp.id
+                }
+            });
         });
 
         return await Promise.all(folders.map(folder => this.getFlp(folder)));

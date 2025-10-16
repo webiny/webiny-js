@@ -1,115 +1,34 @@
-import { createTopic } from "@webiny/pubsub";
-import type {
-    AcoFolderCrud,
-    OnFolderAfterCreateTopicParams,
-    OnFolderAfterDeleteTopicParams,
-    OnFolderAfterUpdateTopicParams,
-    OnFolderBeforeCreateTopicParams,
-    OnFolderBeforeDeleteTopicParams,
-    OnFolderBeforeUpdateTopicParams
-} from "./folder.types.js";
+import type { AcoFolderCrud } from "./folder.types.js";
 import { type ListFoldersParams } from "./folder.types.js";
-import {
-    getCreateFolderUseCases,
-    getGetAncestors,
-    getGetFolderUseCase,
-    getListFolderLevelPermissionsTargets,
-    getListFoldersUseCases,
-    getGetFolderHierarchyUseCases
-} from "~/folder/useCases/index.js";
-import type { CreateAcoParams, Folder } from "~/types.js";
-import { type AcoContext } from "~/types.js";
+
+import type { Folder } from "~/types.js";
 import { UpdateFolderUseCase } from "~/features/folders/UpdateFolder/abstractions.js";
 import { DeleteFolderUseCase } from "~/features/folders/DeleteFolder/index.js";
+import { CreateFolderUseCase } from "~/features/folders/CreateFolder/index.js";
+import { GetFolderUseCase } from "~/features/folders/GetFolder/index.js";
+import { ListFoldersUseCase } from "~/features/folders/ListFolders/index.js";
+import { GetFolderHierarchyUseCase } from "~/features/folders/GetFolderHierarchy/index.js";
+import { GetAncestorsUseCase } from "~/features/folders/GetAncestors/index.js";
+import { ListFolderLevelPermissionsTargetsUseCase } from "~/features/folders/ListFolderLevelPermissionsTargets/index.js";
+import type { Container } from "@webiny/di-container";
 
 const FIXED_FOLDER_LISTING_LIMIT = 10_000;
 
-interface CreateFolderCrudMethodsParams extends CreateAcoParams {
-    context: AcoContext;
+interface CreateFolderCrudMethodsParams {
+    container: Container;
 }
 
 export const createFolderCrudMethods = ({
-    container,
-    storageOperations,
-    folderLevelPermissions,
-    context
+    container
 }: CreateFolderCrudMethodsParams): AcoFolderCrud => {
-    // create
-    const onFolderBeforeCreate = createTopic<OnFolderBeforeCreateTopicParams>(
-        "aco.onFolderBeforeCreate"
-    );
-    const onFolderAfterCreate =
-        createTopic<OnFolderAfterCreateTopicParams>("aco.onFolderAfterCreate");
-    // update
-    const onFolderBeforeUpdate = createTopic<OnFolderBeforeUpdateTopicParams>(
-        "aco.onFolderBeforeUpdate"
-    );
-    const onFolderAfterUpdate =
-        createTopic<OnFolderAfterUpdateTopicParams>("aco.onFolderAfterUpdate");
-    // delete
-    const onFolderBeforeDelete = createTopic<OnFolderBeforeDeleteTopicParams>(
-        "aco.onFolderBeforeDelete"
-    );
-    const onFolderAfterDelete =
-        createTopic<OnFolderAfterDeleteTopicParams>("aco.onFolderAfterDelete");
-
-    const { getFolderUseCase, getFolderUseCaseWithoutPermissions } = getGetFolderUseCase({
-        getOperation: storageOperations.folder.getFolder,
-        folderLevelPermissions
-    });
-
-    const { listFoldersUseCase, listFoldersUseCaseWithoutPermissions } = getListFoldersUseCases({
-        listOperation: storageOperations.folder.listFolders,
-        folderLevelPermissions
-    });
-
-    const { getFolderHierarchyUseCase } = getGetFolderHierarchyUseCases({
-        listOperation: storageOperations.folder.listFolders,
-        getOperation: storageOperations.folder.getFolder,
-        folderLevelPermissions
-    });
-
-    const { createFolderUseCase } = getCreateFolderUseCases({
-        createOperation: storageOperations.folder.createFolder,
-        folderLevelPermissions,
-        topics: {
-            onFolderAfterCreate,
-            onFolderBeforeCreate
-        }
-    });
-
-    const { getAncestorsUseCase } = getGetAncestors({
-        listFoldersUseCase: listFoldersUseCase
-    });
-
-    const { listFolderLevelPermissionsTargetsUseCase } = getListFolderLevelPermissionsTargets({
-        context
-    });
-
     return {
-        /**
-         * Lifecycle events
-         */
-        onFolderBeforeCreate,
-        onFolderAfterCreate,
-        onFolderBeforeUpdate,
-        onFolderAfterUpdate,
-        onFolderBeforeDelete,
-        onFolderAfterDelete,
-
-        async get(id, disablePermissions) {
-            // If permissions are disabled, execute the use case without applying folder-level permissions logic, returning the raw folder data from the database.
-            if (disablePermissions) {
-                return await getFolderUseCaseWithoutPermissions.execute({ id });
-            }
+        async get(id: string) {
+            const getFolderUseCase = container.resolve(GetFolderUseCase);
             return await getFolderUseCase.execute({ id });
         },
 
-        async list({ disablePermissions, ...params }: ListFoldersParams) {
-            // If permissions are disabled, execute the use case without applying folder-level permissions logic, returning the raw folder data from the database.
-            if (disablePermissions) {
-                return await listFoldersUseCaseWithoutPermissions.execute(params);
-            }
+        async list(params: ListFoldersParams) {
+            const listFoldersUseCase = container.resolve(ListFoldersUseCase);
             return await listFoldersUseCase.execute(params);
         },
 
@@ -121,10 +40,12 @@ export const createFolderCrudMethods = ({
         },
 
         async getFolderHierarchy(params) {
+            const getFolderHierarchyUseCase = container.resolve(GetFolderHierarchyUseCase);
             return await getFolderHierarchyUseCase.execute(params);
         },
 
         async create(data) {
+            const createFolderUseCase = container.resolve(CreateFolderUseCase);
             return await createFolderUseCase.execute(data);
         },
 
@@ -139,18 +60,14 @@ export const createFolderCrudMethods = ({
         },
 
         async getAncestors(folder: Folder) {
+            const getAncestorsUseCase = container.resolve(GetAncestorsUseCase);
             return getAncestorsUseCase.execute({ folder });
         },
 
-        /**
-         * @deprecated use `getAncestors` instead
-         */
-        async getFolderWithAncestors(id: string) {
-            const folder = await this.get(id);
-            return this.getAncestors(folder);
-        },
-
         async listFolderLevelPermissionsTargets() {
+            const listFolderLevelPermissionsTargetsUseCase = container.resolve(
+                ListFolderLevelPermissionsTargetsUseCase
+            );
             return await listFolderLevelPermissionsTargetsUseCase.execute();
         }
     };

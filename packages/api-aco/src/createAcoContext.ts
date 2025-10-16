@@ -13,6 +13,12 @@ import { createFilterCrudMethods } from "~/filter/filter.crud.js";
 import { createFlpCrudMethods, FolderLevelPermissions } from "~/flp/index.js";
 import { UpdateFolderFeature } from "~/features/folders/UpdateFolder/index.js";
 import { DeleteFolderFeature } from "~/features/folders/DeleteFolder/index.js";
+import { CreateFolderFeature } from "~/features/folders/CreateFolder/index.js";
+import { GetFolderFeature } from "~/features/folders/GetFolder/index.js";
+import { ListFoldersFeature } from "~/features/folders/ListFolders/index.js";
+import { GetFolderHierarchyFeature } from "~/features/folders/GetFolderHierarchy/index.js";
+import { GetAncestorsFeature } from "~/features/folders/GetAncestors/index.js";
+import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folders/ListFolderLevelPermissionsTargets/index.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -65,6 +71,11 @@ const setupAcoContext = async (
     /**
      * Register features into DI container
      */
+    CreateFolderFeature.register(context.container, {
+        storageOperations: storageOperations.folder,
+        folderLevelPermissions
+    });
+
     UpdateFolderFeature.register(context.container, {
         storageOperations: storageOperations.folder,
         folderLevelPermissions
@@ -75,25 +86,41 @@ const setupAcoContext = async (
         folderLevelPermissions
     });
 
+    GetFolderFeature.register(context.container, {
+        storageOperations: storageOperations.folder,
+        folderLevelPermissions
+    });
+
+    ListFoldersFeature.register(context.container, {
+        storageOperations: storageOperations.folder,
+        folderLevelPermissions
+    });
+
+    ListFolderLevelPermissionsTargetsFeature.register(context.container, {
+        security: context.security,
+        adminUsers: context.adminUsers
+    });
+
+    GetFolderHierarchyFeature.register(context.container, {
+        storageOperations: storageOperations.folder,
+        folderLevelPermissions
+    });
+
+    GetAncestorsFeature.register(context.container);
+
     /**
      * Setup legacy context
      */
-
-    const params: CreateAcoParams = {
-        container: context.container,
-        getLocale,
-        getTenant,
-        storageOperations,
-        folderLevelPermissions
-    };
-
     context.aco = {
-        folder: createFolderCrudMethods({
-            ...params,
-            context
-        }),
+        folder: createFolderCrudMethods({ container: context.container }),
         folderLevelPermissions,
-        filter: createFilterCrudMethods(params),
+        filter: createFilterCrudMethods({
+            container: context.container,
+            getLocale,
+            getTenant,
+            storageOperations,
+            folderLevelPermissions
+        }),
         flp: flpCrudMethods
     };
 
