@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import dotPropImmutable from "dot-prop-immutable";
 import pick from "lodash/pick.js";
 import { useStateIfMounted } from "@webiny/app-admin";
@@ -23,6 +23,7 @@ import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting.js";
 import { ROOT_FOLDER } from "~/constants.js";
 
 export interface AcoListContextData<T> {
+    currentFolder?: FolderItem;
     folders: FolderItem[];
     hideFilters: () => void;
     isListLoading: boolean;
@@ -389,6 +390,10 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         state.folderId
     ]);
 
+    const currentFolder = useMemo(() => {
+        return originalFolders?.find(folder => folder.id === currentFolderId);
+    }, [originalFolders, currentFolderId]);
+
     const context: AcoListContextData<GenericSearchData> = {
         ...pick(state, [
             "isSearch",
@@ -399,6 +404,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
             "isSelectedAll"
         ]),
         folders,
+        currentFolder,
         records,
         listTitle,
         isListLoading: Boolean(
