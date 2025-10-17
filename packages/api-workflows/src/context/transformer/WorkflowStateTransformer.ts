@@ -18,8 +18,9 @@ export class WorkflowStateTransformer implements IWorkflowStateTransformer {
             steps: input.values.steps,
             app: input.values.app,
             state: input.values.state,
-            savedBy: input.savedBy,
             comment: input.values.comment,
+            savedBy: input.savedBy,
+            createdBy: input.createdBy,
             savedOn: new Date(input.savedOn),
             createdOn: new Date(input.createdOn)
         };

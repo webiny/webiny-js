@@ -29,7 +29,6 @@ export const defaultIdentity: SecurityIdentity = {
 };
 
 export const createTenancyAndSecurity = ({
-    setupGraphQL,
     permissions,
     identity,
     documentClient
@@ -39,9 +38,9 @@ export const createTenancyAndSecurity = ({
 
     return [
         createTenancyContext({ storageOperations: tenancyStorage.storageOperations }),
-        setupGraphQL ? createTenancyGraphQL() : null,
+        createTenancyGraphQL(),
         createSecurityContext({ storageOperations: securityStorage.storageOperations }),
-        setupGraphQL ? createSecurityGraphQL() : null,
+        createSecurityGraphQL(),
         createAdminUsersApp({
             storageOperations: createAdminUsersStorageOperations({ documentClient })
         }),

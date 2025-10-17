@@ -8,17 +8,23 @@ import { Context } from "~/types.js";
 import { createWorkflows } from "~/index.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { STATE_MODEL_ID, WORKFLOW_MODEL_ID } from "~/constants.js";
-import type {
-    IDeleteWorkflowResponse,
-    IDeleteWorkflowVariables,
-    IGetWorkflowResponse,
-    IGetWorkflowVariables,
-    IListWorkflowResponse,
-    IListWorkflowVariables,
-    IStoreWorkflowResponse,
-    IStoreWorkflowVariables
+import {
+    type ICreateWorkflowStateResponse,
+    type ICreateWorkflowStateVariables,
+    type IDeleteWorkflowResponse,
+    type IDeleteWorkflowVariables,
+    type IGetWorkflowResponse,
+    type IGetTargetWorkflowStateVariables,
+    type IGetWorkflowVariables,
+    type IListWorkflowResponse,
+    type IListWorkflowVariables,
+    type IStoreWorkflowResponse,
+    type IStoreWorkflowVariables,
+    type IGetTargetWorkflowStateResponse,
+    GET_TARGET_WORKFLOW_STATE_QUERY
 } from "./graphql.js";
 import {
+    CREATE_WORKFLOW_STATE_MUTATION,
     DELETE_WORKFLOW_MUTATION,
     GET_WORKFLOW_QUERY,
     LIST_WORKFLOWS_QUERY,
@@ -64,6 +70,9 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     });
     return {
         handler,
+        /**
+         * Workflows
+         */
         storeWorkflow: handler.createMutation<IStoreWorkflowVariables, IStoreWorkflowResponse>(
             STORE_WORKFLOW_MUTATION
         ),
@@ -75,6 +84,17 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         ),
         listWorkflows: handler.createQuery<IListWorkflowVariables, IListWorkflowResponse>(
             LIST_WORKFLOWS_QUERY
-        )
+        ),
+        /**
+         * Workflow states
+         */
+        createWorkflowState: handler.createMutation<
+            ICreateWorkflowStateVariables,
+            ICreateWorkflowStateResponse
+        >(CREATE_WORKFLOW_STATE_MUTATION),
+        getTargetWorkflowState: handler.createMutation<
+            IGetTargetWorkflowStateVariables,
+            IGetTargetWorkflowStateResponse
+        >(GET_TARGET_WORKFLOW_STATE_QUERY)
     };
 };

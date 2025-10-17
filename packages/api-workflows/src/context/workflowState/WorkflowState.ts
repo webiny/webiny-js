@@ -180,7 +180,6 @@ export class WorkflowState implements IWorkflowState {
             });
         }
         const identity = this.context.security.getIdentity();
-        // how to find teams?
         if (!identity?.id) {
             throw new WebinyError({
                 message: `You must be logged in to be able to review a workflow.`,

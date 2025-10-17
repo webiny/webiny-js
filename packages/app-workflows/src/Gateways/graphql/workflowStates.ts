@@ -18,6 +18,18 @@ const WORKFLOW_STATE = /* GraphQL */ `
         targetRevisionId
         comment
         state
+        createdOn
+        savedOn
+        createdBy {
+            id
+            displayName
+            type
+        }
+        savedBy {
+            id
+            displayName
+            type
+        }
         steps {
             id
             comment

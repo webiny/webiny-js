@@ -31,6 +31,7 @@ export interface IWorkflowStateRecord {
     steps: IWorkflowStateRecordStep[];
     createdOn: Date;
     savedOn: Date;
+    createdBy: IWorkflowStateIdentity;
     savedBy: IWorkflowStateIdentity | undefined;
 }
 

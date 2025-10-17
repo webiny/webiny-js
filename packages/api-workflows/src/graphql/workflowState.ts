@@ -2,11 +2,12 @@ import type { Context } from "~/types.js";
 import { GraphQLSchemaPlugin, resolve, resolveList } from "@webiny/handler-graphql";
 import { createZodError } from "@webiny/utils";
 import { listWorkflowStatesValidation } from "~/validation/listWorkflowStates.js";
-import { getWorkflowTargetStateValidation } from "~/validation/getWorkflowTargetState.js";
 import { approveWorkflowStateValidation } from "~/validation/approveWorkflowState.js";
 import { rejectWorkflowStateValidation } from "~/validation/rejectWorkflowState.js";
 import { cancelWorkflowStateValidation } from "~/validation/cancelWorkflowState.js";
 import { createWorkflowStateValidation } from "~/validation/createWorkflowState.js";
+import { getTargetWorkflowStateValidation } from "~/validation/getTargetWorkflowState.js";
+import { getWorkflowStateValidation } from "~/validation/getWorkflowState.js";
 
 export const createWorkflowStateSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -33,10 +34,6 @@ export const createWorkflowStateSchema = () => {
 
             type WorkflowState {
                 id: String!
-                name: String!
-                createdOn: DateTime!
-                savedOn: DateTime!
-                savedBy: WorkflowStateIdentity!
                 app: String!
                 workflowId: String!
                 targetId: String!
@@ -44,6 +41,10 @@ export const createWorkflowStateSchema = () => {
                 comment: String
                 state: WorkflowStateStateValue!
                 steps: [WorkflowStateStep!]
+                createdOn: DateTime!
+                savedOn: DateTime!
+                createdBy: WorkflowStateIdentity!
+                savedBy: WorkflowStateIdentity!
             }
 
             type ListWorkflowStatesResponse {
@@ -81,7 +82,8 @@ export const createWorkflowStateSchema = () => {
             }
 
             extend type WorkflowsQuery {
-                getWorkflowTargetState(app: String!, id: ID!): WorkflowStateResponse!
+                getWorkflowState(id: ID!): WorkflowStateResponse!
+                getTargetWorkflowState(app: String!, targetRevisionId: ID!): WorkflowStateResponse!
                 listWorkflowStates(
                     where: ListWorkflowStatesWhereInput
                     sort: [ListWorkflowStatesSort!]
@@ -107,16 +109,29 @@ export const createWorkflowStateSchema = () => {
         `,
         resolvers: {
             WorkflowsQuery: {
-                getWorkflowTargetState: async (_, args, context) => {
+                getWorkflowState: async (_, args, context) => {
                     return resolve(async () => {
-                        const result = await getWorkflowTargetStateValidation.safeParseAsync(args);
+                        const result = await getWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return await context.workflowState.getTargetState(
+
+                        const state = await context.workflowState.getState(result.data.id);
+                        return state.record;
+                    });
+                },
+                getTargetWorkflowState: async (_, args, context) => {
+                    return resolve(async () => {
+                        const result = await getTargetWorkflowStateValidation.safeParseAsync(args);
+                        if (!result.success) {
+                            throw createZodError(result.error);
+                        }
+                        const response = await context.workflowState.getTargetState(
                             result.data.app,
-                            result.data.id
+                            result.data.targetRevisionId
                         );
+
+                        return response.record;
                     });
                 },
                 listWorkflowStates: async (_, args, context) => {
@@ -143,10 +158,12 @@ export const createWorkflowStateSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return await context.workflowState.createState(
+                        const response = await context.workflowState.createState(
                             result.data.app,
                             result.data.targetRevisionId
                         );
+
+                        return response.record;
                     });
                 },
                 approveWorkflowStateStep: (_, args, context) => {

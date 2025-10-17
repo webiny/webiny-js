@@ -31,12 +31,12 @@ export interface IWorkflowStateContextParams {
 
 type ICreateWorkflowStateEntryInput = Omit<
     IWorkflowStateRecord,
-    "id" | "savedBy" | "createdOn" | "savedOn"
+    "id" | "savedBy" | "createdOn" | "savedOn" | "createdBy"
 >;
 
 type IUpdateWorkflowStateEntryInput = Omit<
     IWorkflowStateRecord,
-    "id" | "savedBy" | "savedOn" | "createdOn"
+    "id" | "savedBy" | "savedOn" | "createdOn" | "createdBy"
 >;
 
 export class WorkflowStateContext implements IWorkflowStateContext {
