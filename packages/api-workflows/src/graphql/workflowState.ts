@@ -6,6 +6,7 @@ import { getWorkflowTargetStateValidation } from "~/validation/getWorkflowTarget
 import { approveWorkflowStateValidation } from "~/validation/approveWorkflowState.js";
 import { rejectWorkflowStateValidation } from "~/validation/rejectWorkflowState.js";
 import { cancelWorkflowStateValidation } from "~/validation/cancelWorkflowState.js";
+import { createWorkflowStateValidation } from "~/validation/createWorkflowState.js";
 
 export const createWorkflowStateSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -90,6 +91,7 @@ export const createWorkflowStateSchema = () => {
             }
 
             extend type WorkflowsMutation {
+                createWorkflowState(app: String!, targetRevisionId: ID!): WorkflowStateResponse!
                 approveWorkflowStateStep(
                     id: ID!
                     stepId: ID!
@@ -100,7 +102,7 @@ export const createWorkflowStateSchema = () => {
                     stepId: ID!
                     comment: String!
                 ): WorkflowStateResponse!
-                cancelWorkflowStateStep(id: ID!, comment: String!): CancelWorkflowStateResponse!
+                cancelWorkflowState(id: ID!, comment: String!): CancelWorkflowStateResponse!
             }
         `,
         resolvers: {
@@ -135,6 +137,18 @@ export const createWorkflowStateSchema = () => {
                 }
             },
             WorkflowsMutation: {
+                createWorkflowState: async (_, args, context) => {
+                    return resolve(async () => {
+                        const result = await createWorkflowStateValidation.safeParseAsync(args);
+                        if (!result.success) {
+                            throw createZodError(result.error);
+                        }
+                        return await context.workflowState.createState(
+                            result.data.app,
+                            result.data.targetRevisionId
+                        );
+                    });
+                },
                 approveWorkflowStateStep: (_, args, context) => {
                     return resolve(async () => {
                         const result = await approveWorkflowStateValidation.safeParseAsync(args);
@@ -161,7 +175,7 @@ export const createWorkflowStateSchema = () => {
                         );
                     });
                 },
-                cancelWorkflowStateStep: (_, args, context) => {
+                cancelWorkflowState: (_, args, context) => {
                     return resolve(async () => {
                         const result = await cancelWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {

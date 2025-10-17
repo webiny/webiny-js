@@ -2,7 +2,8 @@ import type {
     IWorkflowStateRepository,
     IWorkflowStateRepositoryApproveParams,
     IWorkflowStateRepositoryFindOneParams,
-    IWorkflowStateRepositoryRejectParams
+    IWorkflowStateRepositoryRejectParams,
+    IWorkflowStateRepositoryRequestReviewParams
 } from "./abstractions/WorkflowStateRepository.js";
 import type {
     IWorkflowStateError,
@@ -89,5 +90,24 @@ export class WorkflowStateRepository implements IWorkflowStateRepository {
             this._loading = false;
         });
         return result.data?.[0] || null;
+    }
+
+    public async requestReview(
+        params: IWorkflowStateRepositoryRequestReviewParams
+    ): Promise<IWorkflowState | null> {
+        const { app, targetRevisionId } = params;
+        runInAction(() => {
+            this._loading = true;
+            this._error = null;
+        });
+        const result = await this.gateway.createWorkflowState({
+            app,
+            targetRevisionId
+        });
+        runInAction(() => {
+            this._error = result.error;
+            this._loading = false;
+        });
+        return result.data || null;
     }
 }

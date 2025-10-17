@@ -11,4 +11,5 @@ export interface IWorkflowStatePresenterViewModel {
 
 export interface IWorkflowStatePresenter {
     vm: IWorkflowStatePresenterViewModel;
+    requestReview(): void;
 }

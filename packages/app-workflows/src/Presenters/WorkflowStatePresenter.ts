@@ -45,4 +45,11 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             this.state = item ? new WorkflowStateModel(item) : null;
         });
     }
+
+    requestReview = () => {
+        this.repository.requestReview({
+            app: this.app,
+            targetRevisionId: this.targetRevisionId
+        });
+    };
 }

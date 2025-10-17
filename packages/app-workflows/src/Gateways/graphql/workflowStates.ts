@@ -31,6 +31,31 @@ const WORKFLOW_STATE = /* GraphQL */ `
     }
 `;
 
+export interface ICreateWorkflowStateVariables {
+    app: string;
+    targetRevisionId: string;
+}
+
+export interface ICreateWorkflowStateResponse {
+    workflows: {
+        createWorkflowState: {
+            data: IWorkflowState | null;
+            error: IWorkflowStateError | null;
+        };
+    };
+}
+
+export const CREATE_WORKFLOW_STATE_MUTATION = gql`
+    mutation CreateWorkflowState($app: String!, $targetRevisionId: ID!) {
+        workflows {
+            createWorkflowState(app: $app, targetRevisionId: $targetRevisionId) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export interface IApproveWorkflowStateStepVariables {
     id: string;
     stepId: string;

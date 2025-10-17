@@ -67,7 +67,20 @@ export interface IWorkflowStateGatewayRejectStepParams {
     comment: string;
 }
 
+export interface IWorkflowStateGatewayRequestReviewStepParams {
+    app: string;
+    targetRevisionId: string;
+}
+
+export interface IWorkflowStateGatewayRequestReviewStepResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStateError | null;
+}
+
 export interface IWorkflowStateGateway {
+    createWorkflowState(
+        params: IWorkflowStateGatewayRequestReviewStepParams
+    ): Promise<IWorkflowStateGatewayRequestReviewStepResponse>;
     approveWorkflowStateStep(
         params: IWorkflowStateGatewayApproveStepParams
     ): Promise<IWorkflowStateGatewayApproveStepResponse>;

@@ -7,7 +7,9 @@ import type {
     IWorkflowStateGatewayListWorkflowStatesParams,
     IWorkflowStateGatewayListWorkflowStatesResponse,
     IWorkflowStateGatewayRejectStepParams,
-    IWorkflowStateGatewayRejectStepResponse
+    IWorkflowStateGatewayRejectStepResponse,
+    IWorkflowStateGatewayRequestReviewStepParams,
+    IWorkflowStateGatewayRequestReviewStepResponse
 } from "./abstraction/WorkflowStateGateway.js";
 import type {
     IApproveWorkflowStateStepResponse,
@@ -17,13 +19,16 @@ import type {
     IListWorkflowStatesResponse,
     IListWorkflowStatesVariables,
     IRejectWorkflowStateStepResponse,
-    IRejectWorkflowStateStepVariables
+    IRejectWorkflowStateStepVariables,
+    ICreateWorkflowStateResponse,
+    ICreateWorkflowStateVariables
 } from "./graphql/workflowStates.js";
 import {
     APPROVE_WORKFLOW_STATE_STEP_MUTATION,
     CANCEL_WORKFLOW_STATE_MUTATION,
     LIST_WORKFLOW_STATES_QUERY,
-    REJECT_WORKFLOW_STATE_STEP_MUTATION
+    REJECT_WORKFLOW_STATE_STEP_MUTATION,
+    CREATE_WORKFLOW_STATE_MUTATION
 } from "./graphql/workflowStates.js";
 import { WebinyError } from "@webiny/error";
 
@@ -139,6 +144,32 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
             return {
                 data,
                 error
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: WebinyError.from(ex)
+            };
+        }
+    }
+
+    public async createWorkflowState(
+        params: IWorkflowStateGatewayRequestReviewStepParams
+    ): Promise<IWorkflowStateGatewayRequestReviewStepResponse> {
+        try {
+            const result = await this.client.mutate<
+                ICreateWorkflowStateResponse,
+                ICreateWorkflowStateVariables
+            >({
+                mutation: CREATE_WORKFLOW_STATE_MUTATION,
+                variables: {
+                    app: params.app,
+                    targetRevisionId: params.targetRevisionId
+                }
+            });
+            return {
+                data: result.data?.workflows.createWorkflowState.data || null,
+                error: result.data?.workflows.createWorkflowState.error || null
             };
         } catch (ex) {
             return {
