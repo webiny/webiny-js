@@ -1,20 +1,26 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/index.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import type { TenancyContext } from "~/types.js";
 import types from "./types.gql.js";
+import { type AppInstallationData } from "~/features/InstallTenant/index.js";
+import { InstallSystemUseCase } from "~/features/InstallSystem/index.js";
+import { GetRootTenantUseCase } from "~/features/GetRootTenant/index.js";
 
 const emptyResolver = () => ({});
 
+interface InstallTenantArgs {
+    installationInput: AppInstallationData[];
+}
+
 export default [
     types,
-    new GraphQLSchemaPlugin<TenancyContext>({
+    new GraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type TenancyQuery {
-                version: String
+                isSystemInstalled: BooleanResponse
             }
 
             type TenancyMutation {
-                install: TenancyBooleanResponse
+                installSystem: BooleanResponse
             }
 
             type TenantResponse {
@@ -28,11 +34,6 @@ export default [
 
             extend type Mutation {
                 tenancy: TenancyMutation
-            }
-
-            type TenancyBooleanResponse {
-                data: Boolean
-                error: TenancyError
             }
 
             type TenancyError {
@@ -50,19 +51,28 @@ export default [
                 tenancy: emptyResolver
             },
             TenancyQuery: {
-                version: async (_, __, context) => {
-                    const version = await context.tenancy.getVersion();
-                    return version ? "true" : null;
+                isSystemInstalled: async (_, __, context) => {
+                    const getRootTenant = context.container.resolve(GetRootTenantUseCase);
+                    const result = await getRootTenant.execute();
+
+                    return new Response(result.isOk());
                 }
             },
             TenancyMutation: {
-                install: async (_, __, context) => {
-                    try {
-                        await context.tenancy.install();
+                installSystem: async (_, args: InstallTenantArgs, context) => {
+                    const installSystem = context.container.resolve(InstallSystemUseCase);
+
+                    const result = await installSystem.execute(args.installationInput);
+
+                    if (result.isOk()) {
                         return new Response(true);
-                    } catch (e) {
-                        return new ErrorResponse(e);
                     }
+
+                    return new ErrorResponse({
+                        code: result.error.code,
+                        message: result.error.message,
+                        data: result.error.data
+                    });
                 }
             }
         }

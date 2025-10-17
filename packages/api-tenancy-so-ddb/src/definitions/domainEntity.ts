@@ -22,14 +22,8 @@ export const createDomainEntity = ({ entityName, table }: Params): Entity<any> =
             GSI1_SK: {
                 type: "string"
             },
-            tenant: {
-                type: "string"
-            },
-            fqdn: {
-                type: "string"
-            },
-            webinyVersion: {
-                type: "string"
+            data: {
+                type: "map"
             }
         }
     });

@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-wcp" },
+    { "path": "../di-container" },
     { "path": "../error" },
     { "path": "../feature" },
     { "path": "../handler" },
@@ -23,6 +24,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],
       "@webiny/api-wcp": ["../api-wcp/src"],
+      "@webiny/di-container/*": ["../di-container/src/*"],
+      "@webiny/di-container": ["../di-container/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/feature/*": ["../feature/src/*"],

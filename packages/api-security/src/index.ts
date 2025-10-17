@@ -61,7 +61,8 @@ export const createSecurityGraphQL = (config: MultiTenancyGraphQLConfig = {}) =>
     return new ContextPlugin<Context>(context => {
         context.plugins.register(graphqlPlugins({ teams: context.wcp.canUseTeams() }));
 
-        if (context.tenancy.isMultiTenant()) {
+        const multiTenancy = context.wcp.canUseFeature("multiTenancy");
+        if (multiTenancy) {
             applyMultiTenancyGraphQLPlugins(config, context);
         }
     });

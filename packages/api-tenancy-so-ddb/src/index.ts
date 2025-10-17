@@ -1,29 +1,24 @@
-import {
-    batchReadAll,
-    createEntityWriteBatch,
-    createTableWriteBatch,
-    getClean,
-    put
-} from "@webiny/db-dynamodb";
+import { batchReadAll, createEntityWriteBatch, createTableWriteBatch } from "@webiny/db-dynamodb";
 import type { QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
 import { queryAll } from "@webiny/db-dynamodb/utils/query.js";
 import WebinyError from "@webiny/error";
 import { createTable } from "~/definitions/table.js";
 import { createTenantEntity } from "~/definitions/tenantEntity.js";
-import { createSystemEntity } from "~/definitions/systemEntity.js";
 import { createDomainEntity } from "~/definitions/domainEntity.js";
 import type { CreateTenancyStorageOperations } from "~/types.js";
 import { ENTITIES } from "~/types.js";
-import type { ListTenantsParams, System, Tenant, TenantDomain } from "@webiny/api-tenancy/types.js";
+import type { ListTenantsParams, Tenant, TenantDomain } from "@webiny/api-tenancy/types.js";
 
 interface TenantDomainRecord {
     PK: string;
     SK: string;
     GSI1_PK: string;
     GSI1_SK: string;
-    tenant: string;
-    fqdn: string;
-    webinyVersion: string;
+    data: {
+        tenant: string;
+        fqdn: string;
+        webinyVersion: string;
+    }
 }
 
 const setTenantDefaults = (item: Tenant) => {
@@ -51,16 +46,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         domains: createDomainEntity({
             entityName: ENTITIES.DOMAIN,
             table: tableInstance
-        }),
-        system: createSystemEntity({
-            entityName: ENTITIES.SYSTEM,
-            table: tableInstance
         })
-    };
-
-    const systemKeys = {
-        PK: "T#root#SYSTEM",
-        SK: "TENANCY"
     };
 
     const createNewDomainsRecords = (
@@ -80,9 +66,11 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                     SK: `A`,
                     GSI1_PK: `DOMAINS`,
                     GSI1_SK: `T#${tenant.id}#${fqdn}`,
-                    tenant: tenant.id,
-                    fqdn,
-                    webinyVersion: tenant.webinyVersion as string
+                    data: {
+                        tenant: tenant.id,
+                        fqdn,
+                        webinyVersion: tenant.webinyVersion as string
+                    }
                 };
             })
             .filter(Boolean) as TenantDomainRecord[];
@@ -95,68 +83,16 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
         getEntities() {
             return entities;
         },
-        async createSystemData(data: System) {
-            try {
-                await put({
-                    entity: entities.system,
-                    item: {
-                        ...data,
-                        ...systemKeys
-                    }
-                });
-                return data;
-            } catch (err) {
-                throw WebinyError.from(err, {
-                    message: "Could not create system record.",
-                    code: "CREATE_SYSTEM_ERROR",
-                    data: { keys: systemKeys, data }
-                });
-            }
-        },
-        async getSystemData(): Promise<System | null> {
-            try {
-                return await getClean<System>({
-                    entity: entities.system,
-                    keys: systemKeys
-                });
-            } catch (err) {
-                throw WebinyError.from(err, {
-                    message: "Could not load system record.",
-                    code: "GET_SYSTEM_ERROR",
-                    data: { keys: systemKeys }
-                });
-            }
-        },
-        async updateSystemData(data: System): Promise<System> {
-            try {
-                await put({
-                    entity: entities.system,
-                    item: {
-                        ...data,
-                        ...systemKeys
-                    }
-                });
-                return data;
-            } catch (err) {
-                throw WebinyError.from(err, {
-                    message: "Could not update system record.",
-                    code: "UPDATE_SYSTEM_ERROR",
-                    data: { keys: systemKeys, data }
-                });
-            }
-        },
 
-        async getTenantsByIds<TTenant extends Tenant = Tenant>(ids: string[]): Promise<TTenant[]> {
+        async getTenantsByIds(ids: string[]): Promise<Tenant[]> {
             const items = ids.map(id => entities.tenants.getBatch({ PK: `T#${id}`, SK: "A" }));
 
-            const tenants = await batchReadAll<{ data: TTenant }>({ table: tableInstance, items });
+            const tenants = await batchReadAll<{ data: Tenant }>({ table: tableInstance, items });
 
-            return tenants.map(item => item.data).map(item => setTenantDefaults(item) as TTenant);
+            return tenants.map(item => item.data).map(item => setTenantDefaults(item) as Tenant);
         },
 
-        async listTenants<TTenant extends Tenant = Tenant>(
-            params: ListTenantsParams = {}
-        ): Promise<TTenant[]> {
+        async listTenants(params: ListTenantsParams = {}): Promise<Tenant[]> {
             const { parent } = params;
 
             const options: QueryAllParams["options"] = {
@@ -169,16 +105,16 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
                 options.gt = " ";
             }
 
-            const tenants = await queryAll<{ data: TTenant }>({
+            const tenants = await queryAll<{ data: Tenant }>({
                 entity: entities.tenants,
                 partitionKey: `TENANTS`,
                 options
             });
 
-            return tenants.map(item => item.data).map(item => setTenantDefaults(item) as TTenant);
+            return tenants.map(item => item.data).map(item => setTenantDefaults(item) as Tenant);
         },
 
-        async createTenant<TTenant extends Tenant = Tenant>(data: TTenant): Promise<TTenant> {
+        async createTenant(data: Tenant): Promise<Tenant> {
             const keys = {
                 PK: `T#${data.id}`,
                 SK: "A",
@@ -205,7 +141,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
 
                 await tableWrite.execute();
 
-                return data as TTenant;
+                return data as Tenant;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not create tenant record.",
@@ -215,7 +151,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
             }
         },
 
-        async updateTenant<TTenant extends Tenant = Tenant>(data: TTenant): Promise<TTenant> {
+        async updateTenant(data: Tenant): Promise<Tenant> {
             const tenantPK = `T#${data.id}`;
 
             const keys = {
@@ -260,7 +196,7 @@ export const createStorageOperations: CreateTenancyStorageOperations = params =>
 
             try {
                 await tableWrite.execute();
-                return data as TTenant;
+                return data as Tenant;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not update tenant record.",

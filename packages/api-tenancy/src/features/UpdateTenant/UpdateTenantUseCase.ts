@@ -1,52 +1,46 @@
-import { createImplementation, Result } from "@webiny/feature/api";
-import Error from "@webiny/error";
+import { EventPublisher } from "@webiny/api-core";
+import { createImplementation } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
+import { UpdateTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { UpdateTenantRepository } from "./abstractions.js";
+import { TenantBeforeUpdateEvent, TenantAfterUpdateEvent } from "./events.js";
 import type { Tenant } from "~/types.js";
-import { UpdateTenantUseCase as UseCase, UpdateTenantRepository } from "./abstractions.js";
-import { GetCurrentTenantUseCase, GetTenantByIdUseCase } from "~/features/index.js";
+import { GetTenantByIdUseCase } from "~/features/GetTenantById/index.js";
 
-class DefaultUpdateTenantUseCase implements UseCase.Interface {
+class UpdateTenantUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private readonly getTenantByIdUseCase: GetTenantByIdUseCase.Interface,
-        private readonly getCurrentTenantUseCase: GetCurrentTenantUseCase.Interface,
-        private readonly updateTenantRepository: UpdateTenantRepository.Interface
+        private getTenantById: GetTenantByIdUseCase.Interface,
+        private eventPublisher: EventPublisher.Interface,
+        private repository: UpdateTenantRepository.Interface
     ) {}
 
-    async execute(id: string, data: Partial<Tenant>): UseCase.Result {
-        const tenantResult = await this.getTenantByIdUseCase.execute(id);
-        const currentTenantResult = this.getCurrentTenantUseCase.execute();
+    async execute(id: string, data: Partial<Tenant>) {
+        const result = await this.getTenantById.execute(id);
 
-        if (tenantResult.isFail()) {
-            return tenantResult;
+        if (result.isFail()) {
+            return result;
         }
+        const tenant = result.value;
 
-        const currentTenant = currentTenantResult.value;
-        const tenantToUpdate = tenantResult.value;
+        const updateData = { ...data, savedOn: new Date().toISOString() };
 
-        const canUpdate = [
-            // You can update a tenant if it's a child of the current tenant.
-            currentTenant.id === tenantToUpdate.parent,
-            // Root tenant can update itself
-            currentTenant.id === "root" && tenantToUpdate.id === "root"
-        ];
+        await this.eventPublisher.publish(
+            new TenantBeforeUpdateEvent({ tenant, inputData: data, updateData })
+        );
 
-        // If not a single `true` is present in the array...
-        if (!canUpdate.some(Boolean)) {
-            throw new Error({
-                message: `You can only update your own tenant, or a child tenant!`,
-                code: "UPDATE_NOT_ALLOWED"
-            });
-        }
+        Object.assign(tenant, updateData);
+        const updatedTenant = await this.repository.update(tenant);
 
-        const updatedTenant = { ...tenantToUpdate, ...data };
-
-        await this.updateTenantRepository.execute(updatedTenant);
+        await this.eventPublisher.publish(
+            new TenantAfterUpdateEvent({ tenant: updatedTenant, inputData: data })
+        );
 
         return Result.ok(updatedTenant);
     }
 }
 
 export const UpdateTenantUseCase = createImplementation({
-    abstraction: UseCase,
-    implementation: DefaultUpdateTenantUseCase,
-    dependencies: [GetTenantByIdUseCase, GetCurrentTenantUseCase, UpdateTenantRepository]
+    abstraction: UseCaseAbstraction,
+    implementation: UpdateTenantUseCaseImpl,
+    dependencies: [GetTenantByIdUseCase, EventPublisher, UpdateTenantRepository]
 });

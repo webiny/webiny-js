@@ -52,7 +52,8 @@ export default ({ storageOperations }: Config) => {
                 }
             });
 
-            if (context.tenancy.isMultiTenant()) {
+            const multiTenancy = context.wcp.canUseFeature("multiTenancy");
+            if (multiTenancy) {
                 applyMultiTenancyPlugins(context);
             }
 

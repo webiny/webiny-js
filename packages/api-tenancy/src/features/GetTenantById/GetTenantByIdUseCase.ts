@@ -1,17 +1,24 @@
+import { createImplementation } from "@webiny/di-container";
 import { Result } from "@webiny/feature/api";
-import type { Tenant } from "~/types.js";
-import type { GetTenantByIdUseCase as UseCase } from "./abstractions.js";
+import { GetTenantByIdUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { GetTenantByIdRepository } from "./abstractions.js";
 
-export class GetTenantByIdUseCase implements UseCase.Interface {
-    constructor(private readonly getTenantById: (id: string) => Promise<Tenant>) {}
+class GetTenantByIdUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: GetTenantByIdRepository.Interface) {}
 
-    async execute(id: string): UseCase.Result {
-        const tenant = await this.getTenantById(id);
+    async execute(id: string): UseCaseAbstraction.Result {
+        const tenant = await this.repository.getById(id);
 
         if (!tenant) {
-            return Result.fail<UseCase.Error>({ type: "NOT_FOUND" });
+            return Result.fail<UseCaseAbstraction.Error>({ type: "NOT_FOUND" });
         }
 
         return Result.ok(tenant);
     }
 }
+
+export const GetTenantByIdUseCase = createImplementation({
+    abstraction: UseCaseAbstraction,
+    implementation: GetTenantByIdUseCaseImpl,
+    dependencies: [GetTenantByIdRepository]
+});

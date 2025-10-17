@@ -1,11 +1,10 @@
-import { Result } from "@webiny/feature/api";
-import type { Tenant } from "~/types.js";
-import type { GetRootTenantUseCase as UseCase } from "./abstractions.js";
+import type { GetRootTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { GetTenantByIdUseCase } from "~/features/GetTenantById/abstractions.js";
 
-export class GetRootTenantUseCase implements UseCase.Interface {
-    constructor(private readonly getRootTenant: () => Promise<Tenant>) {}
+export class GetRootTenantUseCase implements UseCaseAbstraction.Interface {
+    constructor(private getTenantById: GetTenantByIdUseCase.Interface) {}
 
-    async execute(): UseCase.Result {
-        return Result.ok(await this.getRootTenant());
+    async execute(): GetTenantByIdUseCase.Result {
+        return this.getTenantById.execute("root");
     }
 }

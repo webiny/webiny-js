@@ -31,7 +31,8 @@ export const createIdentityType = (config: Config) => {
         }),
         // This plugin is only applied in multi-tenant environments.
         new ContextPlugin<TenancyContext>(context => {
-            if (context.tenancy.isMultiTenant()) {
+            const multiTenancy = context.wcp.canUseFeature("multiTenancy");
+            if (multiTenancy) {
                 context.plugins.register(
                     new GraphQLSchemaPlugin({
                         typeDefs: `

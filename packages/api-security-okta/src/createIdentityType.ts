@@ -28,7 +28,8 @@ export const createIdentityType = (config: Config) => {
             }
         }),
         new ContextPlugin<TenancyContext>(context => {
-            if (context.tenancy.isMultiTenant()) {
+            const multiTenancy = context.wcp.canUseFeature("multiTenancy");
+            if (multiTenancy) {
                 context.plugins.register(
                     new GraphQLSchemaPlugin({
                         typeDefs: `

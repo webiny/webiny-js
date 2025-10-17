@@ -1,7 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/index.js";
-import type { TenancyContext } from "~/types.js";
 
-export default new GraphQLSchemaPlugin<TenancyContext>({
+export default new GraphQLSchemaPlugin({
     typeDefs: /* GraphQL */ `
         type Tenant {
             id: ID!

@@ -1,0 +1,69 @@
+import { Result, createImplementation } from "@webiny/feature/api";
+import { EventPublisher } from "@webiny/api-core";
+import { InstallSystemUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { InstallTenantUseCase } from "../InstallTenant/abstractions.js";
+import { GetRootTenantUseCase } from "../GetRootTenant/abstractions.js";
+import { CreateTenantUseCase } from "../CreateTenant/abstractions.js";
+import type { InstallSystemInput } from "./abstractions.js";
+import { SystemAlreadyInstalledError } from "~/features/InstallSystem/errors.js";
+import { DeleteTenantUseCase } from "~/features/DeleteTenant/index.js";
+import { SystemInstalledEvent } from "~/features/InstallSystem/events.js";
+
+class InstallSystemUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(
+        private eventPublisher: EventPublisher.Interface,
+        private installTenantUseCase: InstallTenantUseCase.Interface,
+        private getRootTenantUseCase: GetRootTenantUseCase.Interface,
+        private createTenantUseCase: CreateTenantUseCase.Interface,
+        private deleteTenantUseCase: DeleteTenantUseCase.Interface
+    ) {}
+
+    async execute(installationInput: InstallSystemInput) {
+        const rootTenantResult = await this.getRootTenantUseCase.execute();
+
+        if (rootTenantResult.isOk()) {
+            return Result.fail(new SystemAlreadyInstalledError());
+        }
+
+        const createTenantResult = await this.createTenantUseCase.execute({
+            id: "root",
+            name: "Root",
+            tags: [],
+            description: "The top-level Webiny tenant.",
+            parent: ""
+        });
+
+        if (createTenantResult.isFail()) {
+            return Result.fail(createTenantResult.error);
+        }
+
+        const rootTenant = createTenantResult.value;
+
+        const installResult = await this.installTenantUseCase.execute({
+            tenant: rootTenant,
+            installationInput
+        });
+
+        if (installResult.isOk()) {
+            await this.eventPublisher.publish(new SystemInstalledEvent());
+            return Result.ok(undefined);
+        }
+
+        // If tenant installation failed, delete the root tenant
+        await this.deleteTenantUseCase.execute("root");
+
+        return Result.fail(installResult.error);
+    }
+}
+
+export const InstallSystemUseCase = createImplementation({
+    abstraction: UseCaseAbstraction,
+    implementation: InstallSystemUseCaseImpl,
+    dependencies: [
+        EventPublisher,
+        InstallTenantUseCase,
+        GetRootTenantUseCase,
+        CreateTenantUseCase,
+        DeleteTenantUseCase
+    ]
+});

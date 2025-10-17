@@ -1,15 +1,10 @@
 import { createFeature } from "@webiny/feature/api";
-import { GetRootTenantUseCase } from "./abstractions.js";
-import { GetRootTenantUseCase as GetRootTenantUseCaseImpl } from "./GetRootTenantUseCase.js";
-import type { TenancyContext } from "~/types.js";
+import type { Container } from "@webiny/di-container";
+import { GetRootTenantUseCase } from "./GetRootTenantUseCase.js";
 
-export { GetRootTenantUseCase };
-
-export const GetRootTenant = createFeature({
+export const GetRootTenantFeature = createFeature({
     name: "GetRootTenant",
-    register(container, context: TenancyContext) {
-        container.registerFactory(GetRootTenantUseCase, () => {
-            return new GetRootTenantUseCaseImpl(() => context.tenancy.getRootTenant());
-        });
+    register(container: Container) {
+        container.register(GetRootTenantUseCase);
     }
 });

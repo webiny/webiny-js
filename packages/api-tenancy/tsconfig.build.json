@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-wcp/tsconfig.build.json" },
+    { "path": "../di-container/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },

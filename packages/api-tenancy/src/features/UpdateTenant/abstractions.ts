@@ -1,12 +1,9 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
+import type { IEventHandler } from "@webiny/api-core";
 import type { Tenant } from "~/types.js";
+import type { TenantBeforeUpdateEvent, TenantAfterUpdateEvent } from "./events.js";
 
-// Use case
-
-export type UpdateTenantError =
-    | { type: "NOT_FOUND" }
-    | { type: "NOT_ALLOWED" }
-    | { type: "UNKNOWN"; cause: Error };
+export type UpdateTenantError = { type: "NOT_FOUND" } | { type: "UNKNOWN"; cause: Error };
 
 export interface IUpdateTenantUseCase {
     execute(id: string, data: Partial<Tenant>): Promise<Result<Tenant, UpdateTenantError>>;
@@ -16,14 +13,10 @@ export const UpdateTenantUseCase = createAbstraction<IUpdateTenantUseCase>("Upda
 
 export namespace UpdateTenantUseCase {
     export type Interface = IUpdateTenantUseCase;
-    export type Error = UpdateTenantError;
-    export type Result = ReturnType<IUpdateTenantUseCase["execute"]>;
 }
 
-// Repository
-
 export interface IUpdateTenantRepository {
-    execute(tenant: Tenant): Promise<void>;
+    update(tenant: Tenant): Promise<Tenant>;
 }
 
 export const UpdateTenantRepository =
@@ -31,5 +24,30 @@ export const UpdateTenantRepository =
 
 export namespace UpdateTenantRepository {
     export type Interface = IUpdateTenantRepository;
-    export type Result = ReturnType<IUpdateTenantRepository["execute"]>;
+}
+
+export interface IUpdateTenantGateway {
+    updateTenant(data: Tenant): Promise<Tenant>;
+}
+
+export const UpdateTenantGateway = createAbstraction<IUpdateTenantGateway>("UpdateTenantGateway");
+
+export namespace UpdateTenantGateway {
+    export type Interface = IUpdateTenantGateway;
+}
+
+export const TenantBeforeUpdateHandler = createAbstraction<IEventHandler<TenantBeforeUpdateEvent>>(
+    "TenantBeforeUpdateHandler"
+);
+
+export namespace TenantBeforeUpdateHandler {
+    export type Interface = IEventHandler<TenantBeforeUpdateEvent>;
+}
+
+export const TenantAfterUpdateHandler = createAbstraction<IEventHandler<TenantAfterUpdateEvent>>(
+    "TenantAfterUpdateHandler"
+);
+
+export namespace TenantAfterUpdateHandler {
+    export type Interface = IEventHandler<TenantAfterUpdateEvent>;
 }
