@@ -28,7 +28,7 @@ const saveFileAndFormat = async (filePath, content) => {
             "../.normalizedPrimitivesFigmaExport.json"
         ),
         createTailwindConfigTheme: path.join(__dirname, "../tailwind.config.theme.js"),
-        stylesScss: path.join(__dirname, "../src/theme.scss")
+        stylesScss: path.join(__dirname, "../src/theme.css")
     };
 
     console.log("Storing...");
@@ -42,7 +42,7 @@ const saveFileAndFormat = async (filePath, content) => {
             path.relative(paths.cwd, paths.createTailwindConfigTheme)
         )}).`
     );
-    console.log(`‣ styles.scss (${green(path.relative(paths.cwd, paths.stylesScss))}).`);
+    console.log(`‣ theme.css (${green(path.relative(paths.cwd, paths.stylesScss))}).`);
 
     await saveFileAndFormat(
         paths.normalizedFigmaExport,

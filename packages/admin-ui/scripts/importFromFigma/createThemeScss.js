@@ -7,7 +7,7 @@ const isColorWithAlpha = variantName => {
 };
 
 const createThemeScss = (normalizedFigmaExport, normalizedPrimitivesFigmaExport) => {
-    // Generate `theme.scss` file.
+    // Generate `theme.css` file.
     let stylesScss = fs.readFileSync(__dirname + "/templates/theme.scss.txt", "utf8");
 
     // 0. Colors
