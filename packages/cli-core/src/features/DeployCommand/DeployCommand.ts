@@ -10,26 +10,25 @@ import open from "open";
 // TODO: convert to a real service.
 import { PrintInfoForEnv } from "~/features/InfoCommand/PrintInfoForEnv.js";
 
-export interface IDeployNoAppParams {
+export interface IDeployCommandParams {
+    apps?: AppName[];
     variant?: string;
     region?: string;
     env: string;
     deploymentLogs?: boolean;
-}
-
-export interface IDeployWithAppParams extends IDeployNoAppParams {
-    apps: AppName[];
     build?: boolean;
     preview?: boolean;
 }
 
-export interface IDeploySingleAppParams extends IDeployNoAppParams {
+export interface IDeploySingleAppParams {
     app: AppName;
+    variant?: string;
+    region?: string;
+    env: string;
+    deploymentLogs?: boolean;
     build?: boolean;
     preview?: boolean;
 }
-
-export type IDeployCommandParams = IDeployNoAppParams | IDeployWithAppParams;
 
 const sleep = (ms: number = 1500) => setTimeout(ms);
 
@@ -70,12 +69,7 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
                     type: "string",
                     default: "dev",
                     validation: params => {
-                        if (
-                            "apps" in params &&
-                            params.apps &&
-                            params.apps.length > 0 &&
-                            !params.env
-                        ) {
+                        if (params.apps && params.apps.length > 0 && !params.env) {
                             throw new Error("Environment name is required when deploying an app.");
                         }
                         return true;
@@ -125,10 +119,13 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
                 }
             ],
             handler: async (params: IDeployCommandParams) => {
-                if ("apps" in params && params.apps && params.apps.length > 0) {
+                if (params.apps && params.apps.length > 0) {
                     // Deploy specified apps
                     for (const app of params.apps) {
-                        const appParams = { ...params, app };
+                        const appParams: IDeploySingleAppParams = {
+                            ...params,
+                            app
+                        };
                         ui.info("Deploying %s app...", app.charAt(0).toUpperCase() + app.slice(1));
                         await this.deployApp(appParams);
                         ui.newLine();
