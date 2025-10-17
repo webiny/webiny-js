@@ -18,6 +18,8 @@ import {
 import { ROOT_FOLDER } from "~/constants.js";
 import type { FolderItem } from "~/types.js";
 import { FolderProvider } from "~/contexts/folder.js";
+import { useAcoConfig } from "~/config/index.js";
+import { useConfirmMoveFolderDialog } from "~/dialogs/index.js";
 
 interface ListProps {
     folders: FolderItem[];
@@ -43,6 +45,8 @@ export const List = ({
 
     const [treeData, setTreeData] = useState<NodeDto<FolderItem>[]>([]);
     const [openFolderIds, setOpenFolderIds] = useState<string[]>([ROOT_FOLDER]);
+    const { showDialog: showConfirmMoveFolderDialog } = useConfirmMoveFolderDialog();
+    const { folder: folderConfigs } = useAcoConfig();
 
     useEffect(() => {
         setTreeData(createTreeData(folders, focusedFolderId, hiddenFolderIds));
@@ -79,6 +83,35 @@ export const List = ({
             showSnackbar(error.message);
         }
     };
+
+    const onDrop = useCallback<NonNullable<TreeProps["onDrop"]> >(
+        async (newTree, options: DropOptions) => {
+            // Function to execute the drop logic
+            const runDrop = async () => handleDrop(newTree, options);
+
+            // If drop confirmation is enabled, show dialog before proceeding
+            if (folderConfigs.dropConfirmation) {
+                const { dragSourceId, dropTargetId } = options;
+                const folder = folders.find(f => f.id === dragSourceId);
+                const targetFolder = folders.find(f => f.id === dropTargetId);
+
+                // Abort if either folder is not found
+                if (!folder || !targetFolder) {
+                    return;
+                }
+
+                showConfirmMoveFolderDialog({
+                    folder,
+                    targetFolder,
+                    onAccept: runDrop
+                });
+            } else {
+                // Otherwise, perform the drop immediately
+                await runDrop();
+            }
+        },
+        [folders, folderConfigs.dropConfirmation, showConfirmMoveFolderDialog]
+    );
 
     const sort = useMemo(
         () => (a: NodeDto<any>, b: NodeDto<any>) => {
@@ -125,7 +158,7 @@ export const List = ({
             rootId={"0"}
             defaultOpenNodeIds={openFolderIds}
             onChangeOpen={handleChangeOpen}
-            onDrop={handleDrop}
+            onDrop={onDrop}
             onNodeClick={handleNodeClick}
             sort={sort}
             canDrag={canDrag}
