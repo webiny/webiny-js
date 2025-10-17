@@ -29,7 +29,6 @@ export interface IDeploySingleAppParams extends IDeployNoAppParams {
     preview?: boolean;
 }
 
-
 export type IDeployCommandParams = IDeployNoAppParams | IDeployWithAppParams;
 
 const sleep = (ms: number = 1500) => setTimeout(ms);
@@ -58,7 +57,8 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
             params: [
                 {
                     name: "apps..",
-                    description: "Name of the app(s) to deploy (core, admin, or api). You can specify multiple apps.",
+                    description:
+                        "Name of the app(s) to deploy (core, admin, or api). You can specify multiple apps.",
                     type: "string"
                 }
             ],
@@ -69,7 +69,12 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
                     type: "string",
                     default: "dev",
                     validation: params => {
-                        if ("apps" in params && params.apps && params.apps.length > 0 && !params.env) {
+                        if (
+                            "apps" in params &&
+                            params.apps &&
+                            params.apps.length > 0 &&
+                            !params.env
+                        ) {
                             throw new Error("Environment name is required when deploying an app.");
                         }
                         return true;
