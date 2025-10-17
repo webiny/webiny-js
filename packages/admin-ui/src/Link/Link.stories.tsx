@@ -2,8 +2,8 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { BrowserRouter } from "react-router";
-import { Link } from "./Link";
-import { Text } from "~/Text";
+import { Link } from "./Link.js";
+import { Text } from "~/Text/index.js";
 
 const meta: Meta<typeof Link> = {
     title: "Components/Link",

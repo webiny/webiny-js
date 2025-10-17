@@ -1,8 +1,8 @@
 import React from "react";
 import { cn, cva } from "~/utils.js";
-import { SimpleLink } from "@webiny/app";
 import type { SidebarMenuItemProps } from "./SidebarMenuRootItem.js";
 import { DivButton } from "./DivButton.js";
+import { useAdminUi } from "~/index.js";
 
 const variants = cva(
     [
@@ -52,12 +52,14 @@ const SidebarMenuRootButton = ({
         <div className="wby-flex wby-absolute wby-right-sm-plus">{action}</div>
     ) : null;
 
+    const { linkComponent: LinkComponent } = useAdminUi();
+
     const content = to ? (
-        <SimpleLink {...sharedProps} to={to} {...linkProps}>
+        <LinkComponent {...sharedProps} to={to} {...linkProps}>
             {icon}
             {text}
             {chevron}
-        </SimpleLink>
+        </LinkComponent>
     ) : (
         <DivButton
             {...sharedProps}

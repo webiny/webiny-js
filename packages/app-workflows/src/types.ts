@@ -1,5 +1,13 @@
 import type { NonEmptyArray } from "@webiny/app/types.js";
 
+import type { ReactElement } from "react";
+
+export interface IWorkflowApplication {
+    id: string;
+    icon: ReactElement;
+    name: string;
+}
+
 export interface IWorkflowStepNotification {
     id: string;
 }

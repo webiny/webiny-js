@@ -1,5 +1,6 @@
 import type { CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types/index.js";
 import { FOLDER_MODEL_ID } from "~/folder/folder.model.js";
+import type { AcoContext } from "~/types.js";
 
 /**
  * This type matches any function that has a CmsModel as the first parameter.
@@ -44,7 +45,7 @@ export const decorateIfModelAuthorizationEnabled = <
     M extends keyof ModelMethods<HeadlessCms>,
     D extends Decorator<ModelMethods<HeadlessCms>[M]>
 >(
-    root: ModelMethods<HeadlessCms>,
+    context: AcoContext,
     method: M,
     decorator: D
 ) => {
@@ -52,9 +53,15 @@ export const decorateIfModelAuthorizationEnabled = <
      * We cast to `ModelCallable` because within the generic function, we only know that the first
      * parameter is a `CmsModel`, and we forward the rest.
      */
+    const root = context.cms;
     const decoratee = root[method].bind(root) as ModelCallable;
     root[method] = ((...params: Parameters<ModelMethods<HeadlessCms>[M]>) => {
         const [model, ...rest] = params;
+
+        if (!context.security.isAuthorizationEnabled()) {
+            return decoratee(model, ...rest);
+        }
+
         if (isFolderModel(model)) {
             return decoratee(model, ...rest);
         }

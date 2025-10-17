@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../app/tsconfig.build.json" },
     { "path": "../react-composition/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" }

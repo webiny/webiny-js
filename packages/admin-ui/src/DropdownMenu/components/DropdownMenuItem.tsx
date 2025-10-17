@@ -6,7 +6,7 @@ import { DropdownMenuSubTrigger } from "./DropdownMenuSubTrigger.js";
 import { DropdownMenuPortal } from "./DropdownMenuPortal.js";
 import { DropdownMenuSubContent } from "./DropdownMenuSubContent.js";
 import { DropdownMenuItemIcon, type DropdownMenuItemIconProps } from "./DropdownMenuItemIcon.js";
-import { SimpleLink, type SimpleLinkProps } from "@webiny/app";
+import { LinkComponentProps, useAdminUi } from "~/index.js";
 
 interface DropdownMenuItemBaseProps {
     icon?: React.ReactNode;
@@ -18,7 +18,7 @@ interface DropdownMenuItemBaseProps {
 
 type DropdownMenuItemButtonProps = (DropdownMenuItemBaseProps &
     React.HTMLAttributes<HTMLDivElement>) & { to?: never };
-type DropdownMenuItemLinkProps = DropdownMenuItemBaseProps & SimpleLinkProps;
+type DropdownMenuItemLinkProps = DropdownMenuItemBaseProps & LinkComponentProps;
 
 type DropdownMenuItemProps = DropdownMenuItemButtonProps | DropdownMenuItemLinkProps;
 
@@ -47,6 +47,8 @@ const DropdownMenuItemBase = React.forwardRef<
     React.ElementRef<typeof DropdownMenuPrimitive.Item>,
     DropdownMenuItemProps
 >(({ className, icon, text, readOnly, disabled, onClick, children, ...linkProps }, ref) => {
+    const { linkComponent: LinkComponent } = useAdminUi();
+
     if (children) {
         return (
             <DropdownMenuSubRoot>
@@ -70,10 +72,10 @@ const DropdownMenuItemBase = React.forwardRef<
     };
 
     const content = linkProps.to ? (
-        <SimpleLink {...sharedProps} {...linkProps}>
+        <LinkComponent {...sharedProps} {...linkProps}>
             {icon}
             <span>{text}</span>
-        </SimpleLink>
+        </LinkComponent>
     ) : (
         <div {...sharedProps} onClick={onClick}>
             {icon}

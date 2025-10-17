@@ -2,7 +2,7 @@ import { createImplementation } from "@webiny/di-container";
 import { CoreBeforeDeploy, UiService } from "@webiny/project/abstractions/index.js";
 import ora from "ora";
 import chalk from "chalk";
-import { IAM } from "@webiny/aws-sdk/client-iam";
+import { IAM } from "@webiny/aws-sdk/client-iam/index.js";
 
 const { green } = chalk;
 

@@ -98,6 +98,7 @@ export const Main = ({ folderId: initialFolderId }: MainProps) => {
                     onCreateEntry={createEntry}
                     onCreateFolder={onCreateFolder}
                     searchValue={list.search}
+                    searchPlaceholder={list.searchPlaceholder}
                     onSearchChange={list.setSearch}
                 />
                 <div

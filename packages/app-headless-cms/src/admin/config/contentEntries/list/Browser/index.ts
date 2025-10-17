@@ -14,6 +14,7 @@ import { FolderAction } from "./FolderAction.js";
 import type { TableConfig } from "./Table/index.js";
 import { Table } from "./Table/index.js";
 import { shouldDecorateFolderField } from "./FolderFieldDecorator.js";
+import { FolderDropConfirmation } from "./FolderDropConfirmation.js";
 
 export interface BrowserConfig {
     advancedSearch: AdvancedSearchConfig;
@@ -38,7 +39,8 @@ export const Browser = {
                 shouldDecorate: shouldDecorateFolderField
             })
         },
-        Action: FolderAction
+        Action: FolderAction,
+        DropConfirmation: FolderDropConfirmation
     },
     Table,
     /**

@@ -169,4 +169,4 @@ const Tree = withStaticProps(DecoratableTree, {
     Item
 });
 
-export { Tree };
+export { Tree, type NodeModel };

@@ -14091,7 +14091,6 @@ __metadata:
     "@types/react-color": "npm:^2.17.12"
     "@types/react-custom-scrollbars": "npm:^4.0.13"
     "@types/react-virtualized": "npm:^9.22.3"
-    "@webiny/app": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
@@ -15532,6 +15531,7 @@ __metadata:
     "@types/react-transition-group": "npm:^4.4.12"
     "@types/store": "npm:^2.0.5"
     "@types/tinycolor2": "npm:^1.4.6"
+    "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -15581,8 +15581,6 @@ __metadata:
     unicode-emoji-json: "npm:^0.8.0"
     vitest: "npm:^3.2.4"
     zod: "npm:^3.25.76"
-  peerDependencies:
-    "@webiny/admin-ui": 0.0.0
   languageName: unknown
   linkType: soft
 
@@ -16391,6 +16389,7 @@ __metadata:
     style-loader: "npm:3.3.4"
     tailwindcss: "npm:^3.4.17"
     ts-checker-rspack-plugin: "npm:^1.1.5"
+    ts-morph: "npm:^24.0.0"
     ts-patch: "npm:^3.3.0"
     tsx: "npm:^4.20.5"
     typescript: "npm:5.9.3"

@@ -4,7 +4,7 @@ import { ListEntriesFactory } from "./ListEntriesFactory.js";
 import { FilterEntriesByFolderFactory } from "./FilterEntriesByFolderFactory.js";
 import { decorateIfModelAuthorizationEnabled } from "./decorateIfModelAuthorizationEnabled.js";
 
-type Context = Pick<AcoContext, "aco" | "cms">;
+type Context = AcoContext;
 
 interface EntryManagerCrudDecoratorsParams {
     context: Context;
@@ -24,22 +24,18 @@ export class CmsEntriesCrudDecorators {
         const filterEntriesByFolder = new FilterEntriesByFolderFactory(folderLevelPermissions);
         const listEntriesHandler = new ListEntriesFactory(folderLevelPermissions);
 
-        decorateIfModelAuthorizationEnabled(context.cms, "listEntries", async (...allParams) => {
+        decorateIfModelAuthorizationEnabled(context, "listEntries", async (...allParams) => {
+            const [decoratee, model, initialParams] = allParams;
+            return await listEntriesHandler.execute({ decoratee, model, initialParams });
+        });
+
+        decorateIfModelAuthorizationEnabled(context, "listLatestEntries", async (...allParams) => {
             const [decoratee, model, initialParams] = allParams;
             return await listEntriesHandler.execute({ decoratee, model, initialParams });
         });
 
         decorateIfModelAuthorizationEnabled(
-            context.cms,
-            "listLatestEntries",
-            async (...allParams) => {
-                const [decoratee, model, initialParams] = allParams;
-                return await listEntriesHandler.execute({ decoratee, model, initialParams });
-            }
-        );
-
-        decorateIfModelAuthorizationEnabled(
-            context.cms,
+            context,
             "listPublishedEntries",
             async (...allParams) => {
                 const [decoratee, model, initialParams] = allParams;
@@ -47,16 +43,12 @@ export class CmsEntriesCrudDecorators {
             }
         );
 
-        decorateIfModelAuthorizationEnabled(
-            context.cms,
-            "listDeletedEntries",
-            async (...allParams) => {
-                const [decoratee, model, initialParams] = allParams;
-                return await listEntriesHandler.execute({ decoratee, model, initialParams });
-            }
-        );
+        decorateIfModelAuthorizationEnabled(context, "listDeletedEntries", async (...allParams) => {
+            const [decoratee, model, initialParams] = allParams;
+            return await listEntriesHandler.execute({ decoratee, model, initialParams });
+        });
 
-        decorateIfModelAuthorizationEnabled(context.cms, "getEntry", async (...allParams) => {
+        decorateIfModelAuthorizationEnabled(context, "getEntry", async (...allParams) => {
             const [decoratee, model, params] = allParams;
             const entry = await decoratee(model, params);
 
@@ -74,7 +66,7 @@ export class CmsEntriesCrudDecorators {
             return entry;
         });
 
-        decorateIfModelAuthorizationEnabled(context.cms, "getEntryById", async (...allParams) => {
+        decorateIfModelAuthorizationEnabled(context, "getEntryById", async (...allParams) => {
             const [decoratee, model, params] = allParams;
             const entry = await decoratee(model, params);
 
@@ -91,7 +83,7 @@ export class CmsEntriesCrudDecorators {
         });
 
         decorateIfModelAuthorizationEnabled(
-            context.cms,
+            context,
             "getLatestEntriesByIds",
             async (...allParams) => {
                 const [decoratee, model, ids] = allParams;
@@ -103,7 +95,7 @@ export class CmsEntriesCrudDecorators {
         );
 
         decorateIfModelAuthorizationEnabled(
-            context.cms,
+            context,
             "getPublishedEntriesByIds",
             async (...allParams) => {
                 const [decoratee, model, ids] = allParams;
@@ -113,7 +105,7 @@ export class CmsEntriesCrudDecorators {
             }
         );
 
-        decorateIfModelAuthorizationEnabled(context.cms, "createEntry", async (...allParams) => {
+        decorateIfModelAuthorizationEnabled(context, "createEntry", async (...allParams) => {
             const [decoratee, model, params, options] = allParams;
             const folderId = params.wbyAco_location?.folderId || params.location?.folderId;
 
@@ -131,7 +123,7 @@ export class CmsEntriesCrudDecorators {
         });
 
         decorateIfModelAuthorizationEnabled(
-            context.cms,
+            context,
             "createEntryRevisionFrom",
             async (...allParams) => {
                 const [decoratee, model, id, input, options] = allParams;
@@ -156,7 +148,7 @@ export class CmsEntriesCrudDecorators {
             }
         );
 
-        decorateIfModelAuthorizationEnabled(context.cms, "updateEntry", async (...allParams) => {
+        decorateIfModelAuthorizationEnabled(context, "updateEntry", async (...allParams) => {
             const [decoratee, model, id, input, meta, options] = allParams;
             const entry = await context.cms.storageOperations.entries.getRevisionById(model, {
                 id
@@ -176,7 +168,7 @@ export class CmsEntriesCrudDecorators {
             return decoratee(model, id, input, meta, options);
         });
 
-        decorateIfModelAuthorizationEnabled(context.cms, "deleteEntry", async (...allParams) => {
+        decorateIfModelAuthorizationEnabled(context, "deleteEntry", async (...allParams) => {
             const [decoratee, model, id, options] = allParams;
 
             const entry = await context.cms.storageOperations.entries.getLatestRevisionByEntryId(
@@ -201,7 +193,7 @@ export class CmsEntriesCrudDecorators {
         });
 
         decorateIfModelAuthorizationEnabled(
-            context.cms,
+            context,
             "deleteEntryRevision",
             async (...allParams) => {
                 const [decoratee, model, id] = allParams;
@@ -226,7 +218,7 @@ export class CmsEntriesCrudDecorators {
             }
         );
 
-        decorateIfModelAuthorizationEnabled(context.cms, "moveEntry", async (...allParams) => {
+        decorateIfModelAuthorizationEnabled(context, "moveEntry", async (...allParams) => {
             const [decoratee, model, id, targetFolderId] = allParams;
 
             /**
