@@ -21,14 +21,23 @@ type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
         children: React.ReactNode;
     };
 
+const DEPTH_BACKGROUNDS = {
+    odd: "wby-bg-neutral-light",
+    even: "wby-bg-neutral-base"
+} as const;
+
+const getBackgroundByDepth = (depth: number): string => {
+    return depth % 2 === 0 ? DEPTH_BACKGROUNDS.even : DEPTH_BACKGROUNDS.odd;
+};
+
 const AccordionBase = ({ children, variant, className }: AccordionProps) => {
     const parentDepth = useDepth();
-    const depth = parentDepth + 1;
-    const background = depth % 2 !== 0 ? "wby-bg-neutral-light" : "wby-bg-neutral-base";
+    const currentDepth = parentDepth + 1;
+    const background = getBackgroundByDepth(currentDepth);
 
     return (
         <div className={cn(accordionVariants({ variant }), className, background)}>
-            <DepthProvider value={depth}>{children}</DepthProvider>
+            <DepthProvider value={currentDepth}>{children}</DepthProvider>
         </div>
     );
 };
