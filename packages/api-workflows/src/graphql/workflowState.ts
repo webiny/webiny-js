@@ -8,6 +8,7 @@ import { cancelWorkflowStateValidation } from "~/validation/cancelWorkflowState.
 import { createWorkflowStateValidation } from "~/validation/createWorkflowState.js";
 import { getTargetWorkflowStateValidation } from "~/validation/getTargetWorkflowState.js";
 import { getWorkflowStateValidation } from "~/validation/getWorkflowState.js";
+import { startWorkflowStateValidation } from "~/validation/startWorkflowState.js";
 
 export const createWorkflowStateSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -56,6 +57,8 @@ export const createWorkflowStateSchema = () => {
             enum ListWorkflowStatesSort {
                 createdOn_ASC
                 createdOn_DESC
+                savedOn_ASC
+                savedOn_DESC
             }
 
             input ListWorkflowStatesWhereInput {
@@ -68,6 +71,11 @@ export const createWorkflowStateSchema = () => {
                 targetRevisionId: String
                 targetRevisionId_in: [String!]
                 state: WorkflowStateStateValue
+                createdOn_gte: DateTime
+                createdOn_lte: DateTime
+                savedOn_gte: DateTime
+                savedOn_lte: DateTime
+                createdBy: String
                 savedBy: String
             }
 
@@ -94,16 +102,9 @@ export const createWorkflowStateSchema = () => {
 
             extend type WorkflowsMutation {
                 createWorkflowState(app: String!, targetRevisionId: ID!): WorkflowStateResponse!
-                approveWorkflowStateStep(
-                    id: ID!
-                    stepId: ID!
-                    comment: String!
-                ): WorkflowStateResponse!
-                rejectWorkflowStateStep(
-                    id: ID!
-                    stepId: ID!
-                    comment: String!
-                ): WorkflowStateResponse!
+                startWorkflowStateStep(id: ID!): WorkflowStateResponse!
+                approveWorkflowStateStep(id: ID!, comment: String): WorkflowStateResponse!
+                rejectWorkflowStateStep(id: ID!, comment: String!): WorkflowStateResponse!
                 cancelWorkflowState(id: ID!, comment: String!): CancelWorkflowStateResponse!
             }
         `,
@@ -166,17 +167,28 @@ export const createWorkflowStateSchema = () => {
                         return response.record;
                     });
                 },
+                startWorkflowStateStep: async (_, args, context) => {
+                    return resolve(async () => {
+                        const result = await startWorkflowStateValidation.safeParseAsync(args);
+                        if (!result.success) {
+                            throw createZodError(result.error);
+                        }
+                        const response = await context.workflowState.startStateStep(result.data.id);
+                        
+                        return response.record;
+                    });
+                },
                 approveWorkflowStateStep: (_, args, context) => {
                     return resolve(async () => {
                         const result = await approveWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return await context.workflowState.approveStateStep(
+                        const state = await context.workflowState.approveStateStep(
                             result.data.id,
-                            result.data.stepId,
                             result.data.comment
                         );
+                        return state.record;
                     });
                 },
                 rejectWorkflowStateStep: (_, args, context) => {
@@ -185,11 +197,11 @@ export const createWorkflowStateSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return await context.workflowState.rejectStateStep(
+                        const state = await context.workflowState.rejectStateStep(
                             result.data.id,
-                            result.data.stepId,
                             result.data.comment
                         );
+                        return state.record;
                     });
                 },
                 cancelWorkflowState: (_, args, context) => {

@@ -130,7 +130,7 @@ describe("Workflow State Context", () => {
         expect(listStatesResponse.items.length).toBe(1);
         expect(listStatesResponse.items[0].record).toEqual(state.record);
 
-        await state.review();
+        await state.start();
 
         const stateAfterReview = await workflowStateContext.getTargetState(app, targetId);
         expect(stateAfterReview.record?.state).toEqual(WorkflowStateRecordState.inReview);
@@ -142,7 +142,11 @@ describe("Workflow State Context", () => {
             id: "step-1",
             state: WorkflowStateRecordState.approved,
             comment: "First step should be approved.",
-            savedBy: context.security.getIdentity().id
+            savedBy: {
+                id: context.security.getIdentity().id,
+                displayName: context.security.getIdentity().displayName,
+                type: context.security.getIdentity().type
+            }
         });
 
         const stateAfterFirstApprove = await workflowStateContext.getTargetState(app, targetId);
@@ -151,16 +155,22 @@ describe("Workflow State Context", () => {
             WorkflowStateRecordState.approved
         );
         expect(stateAfterFirstApprove.record?.steps[1].state).toEqual(
-            WorkflowStateRecordState.inReview
+            WorkflowStateRecordState.pending
         );
 
+        await stateAfterFirstApprove.start()
         await stateAfterFirstApprove.approve("Second step should be approved.");
+        
 
         expect(stateAfterFirstApprove.record?.steps[1]).toEqual({
             id: "step-2",
             state: WorkflowStateRecordState.approved,
             comment: "Second step should be approved.",
-            savedBy: context.security.getIdentity().id
+            savedBy: {
+                id: context.security.getIdentity().id,
+                displayName: context.security.getIdentity().displayName,
+                type: context.security.getIdentity().type
+            }
         });
 
         const stateAfterSecondApprove = await workflowStateContext.getTargetState(app, targetId);

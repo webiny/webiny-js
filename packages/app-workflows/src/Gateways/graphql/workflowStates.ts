@@ -144,6 +144,31 @@ export const CANCEL_WORKFLOW_STATE_MUTATION = gql`
     }
 `;
 
+export interface IGetTargetWorkflowStateVariables {
+    app: string;
+    targetRevisionId: string;
+}
+
+export interface IGetTargetWorkflowStateResponse {
+    workflows: {
+        getTargetWorkflowState: {
+            data: IWorkflowState | null;
+            error: IWorkflowStateError | null;
+        };
+    };
+}
+
+export const GET_TARGET_WORKFLOW_STATE_QUERY = gql`
+    query GetTargetWorkflowState($app: String!, $targetRevisionId: ID!) {
+        workflows {
+            getTargetWorkflowState(app: $app, targetRevisionId: $targetRevisionId) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export interface IListWorkflowStatesVariablesWhere {
     app?: string;
     app_in?: string[];

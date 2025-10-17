@@ -37,10 +37,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     }
 
     public async init(): Promise<void> {
-        const item = await this.repository.findOne({
-            app: this.app,
-            targetRevisionId: this.targetRevisionId
-        });
+        const item = await this.repository.getTargetState(this.app, this.targetRevisionId);
         runInAction(() => {
             this.state = item ? new WorkflowStateModel(item) : null;
         });

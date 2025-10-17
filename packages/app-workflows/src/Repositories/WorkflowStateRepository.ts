@@ -110,4 +110,17 @@ export class WorkflowStateRepository implements IWorkflowStateRepository {
         });
         return result.data || null;
     }
+    
+    public async getTargetState(app: string, targetRevisionId: string): Promise<IWorkflowState | null> {
+        runInAction(() => {
+            this._loading = true;
+            this._error = null;
+        });
+        const result = await this.gateway.getTargetWorkflowState(app, targetRevisionId);
+        runInAction(() => {
+            this._error = result.error;
+            this._loading = false;
+        });
+        return result.data || null;
+    }
 }

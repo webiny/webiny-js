@@ -77,6 +77,11 @@ export interface IWorkflowStateGatewayRequestReviewStepResponse {
     error: IWorkflowStateError | null;
 }
 
+export interface IWorkflowStateGatewayGetTargetWorkflowStateResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStateError | null;
+}
+
 export interface IWorkflowStateGateway {
     createWorkflowState(
         params: IWorkflowStateGatewayRequestReviewStepParams
@@ -88,6 +93,10 @@ export interface IWorkflowStateGateway {
         params: IWorkflowStateGatewayRejectStepParams
     ): Promise<IWorkflowStateGatewayRejectStepResponse>;
     cancelWorkflowState(id: string): Promise<IWorkflowStateGatewayCancelStateResponse>;
+    getTargetWorkflowState(
+        app: string,
+        targetRevisionId: string
+    ): Promise<IWorkflowStateGatewayGetTargetWorkflowStateResponse>;
     listWorkflowStates(
         params?: IWorkflowStateGatewayListWorkflowStatesParams
     ): Promise<IWorkflowStateGatewayListWorkflowStatesResponse>;

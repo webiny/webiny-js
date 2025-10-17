@@ -32,7 +32,7 @@ export interface IWorkflowStateRecord {
     createdOn: Date;
     savedOn: Date;
     createdBy: IWorkflowStateIdentity;
-    savedBy: IWorkflowStateIdentity | undefined;
+    savedBy: IWorkflowStateIdentity;
 }
 
 export interface IWorkflowStateStep extends IWorkflowStateRecordStep {
@@ -44,7 +44,7 @@ export interface IWorkflowState {
     readonly workflow: IWorkflow | null | undefined;
     readonly record: IWorkflowStateRecord | undefined;
     readonly activeStep: IWorkflowStateStep | undefined;
-    review(): Promise<void>;
+    start(): Promise<void>;
     approve(comment?: string): Promise<void>;
     reject(comment: string): Promise<void>;
 }

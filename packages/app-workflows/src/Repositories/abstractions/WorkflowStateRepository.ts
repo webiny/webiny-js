@@ -32,5 +32,6 @@ export interface IWorkflowStateRepository {
     approve(params: IWorkflowStateRepositoryApproveParams): Promise<void>;
     reject(params: IWorkflowStateRepositoryRejectParams): Promise<void>;
     cancel(id: string): Promise<void>;
+    getTargetState(app: string, targetRevisionId: string): Promise<IWorkflowState | null>;
     findOne(params: IWorkflowStateRepositoryFindOneParams): Promise<IWorkflowState | null>;
 }

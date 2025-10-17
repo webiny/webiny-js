@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-aco" },
+    { "path": "../aws-sdk" },
     { "path": "../api-admin-users" },
     { "path": "../api-admin-users-so-ddb" },
     { "path": "../api-audit-logs" },
@@ -41,6 +42,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/api-admin-users/*": ["../api-admin-users/src/*"],
       "@webiny/api-admin-users": ["../api-admin-users/src"],
       "@webiny/api-admin-users-so-ddb/*": ["../api-admin-users-so-ddb/src/*"],

@@ -2,6 +2,7 @@ import { Context } from "~/types.js";
 import type { IWorkflow } from "../abstractions/Workflow.js";
 import type {
     IWorkflowState,
+    IWorkflowStateIdentity,
     IWorkflowStateRecord,
     IWorkflowStateRecordStep,
     IWorkflowStateStep
@@ -47,12 +48,14 @@ export class WorkflowState implements IWorkflowState {
         this.record = params.record;
     }
 
-    public async review(): Promise<void> {
+    public async start(): Promise<void> {
         await this.ensureCanReview();
-        const step = this.record.steps.find(step => {
+
+        const stepIndex = this.record.steps.findIndex(step => {
             return step.state === WorkflowStateRecordState.pending;
         });
-        if (!step) {
+
+        if (stepIndex === -1) {
             throw new WebinyError({
                 message: `Cannot review a workflow that has no pending steps.`,
                 code: "WORKFLOW_NO_PENDING_STEPS",
@@ -61,6 +64,22 @@ export class WorkflowState implements IWorkflowState {
                 }
             });
         }
+        /**
+         * Note that previous step, if exists, must be approved.
+         */
+        const previousStep = this.record.steps[stepIndex - 1];
+        if (previousStep && previousStep.state !== WorkflowStateRecordState.approved) {
+            throw new WebinyError({
+                message: `Cannot start workflow step review because the previous step is not approved yet.`,
+                code: "WORKFLOW_PREVIOUS_STEP_NOT_APPROVED",
+                data: {
+                    ...this.record,
+                    previousStep
+                }
+            });
+        }
+        const step = this.record.steps[stepIndex];
+
         this.updateStep(step.id, {
             state: WorkflowStateRecordState.inReview
         });
@@ -80,28 +99,18 @@ export class WorkflowState implements IWorkflowState {
          * Step cannot be found - all steps are either approved or rejected.
          */
         if (!step) {
-            const rejected = this.record.steps.some(step => {
-                return step.state === WorkflowStateRecordState.rejected;
-            });
-            const state = rejected
-                ? WorkflowStateRecordState.rejected
-                : WorkflowStateRecordState.approved;
-            this.updateRecord({
-                state
-            });
-            await this.updateState(this.record);
-            return;
+            throw new WebinyError(
+                `Cannot approve a workflow state that is not in review.`,
+                "WORKFLOW_NOT_IN_REVIEW",
+                {
+                    ...this.record
+                }
+            );
         }
 
         this.approveStep(step.id, comment);
 
         const nextStep = this.getNextStep(step.id);
-
-        if (nextStep) {
-            this.updateStep(nextStep.id, {
-                state: WorkflowStateRecordState.inReview
-            });
-        }
 
         this.updateRecord({
             state: nextStep ? WorkflowStateRecordState.inReview : WorkflowStateRecordState.approved
@@ -116,7 +125,13 @@ export class WorkflowState implements IWorkflowState {
             return step.state === WorkflowStateRecordState.inReview;
         });
         if (!step) {
-            throw new Error(`Cannot reject a workflow that is not in review.`);
+            throw new WebinyError(
+                `Cannot reject a workflow state that is not in review.`,
+                "WORKFLOW_NOT_IN_REVIEW",
+                {
+                    ...this.record
+                }
+            );
         }
         this.rejectStep(step.id, comment);
         this.updateRecord({
@@ -135,7 +150,7 @@ export class WorkflowState implements IWorkflowState {
             throw new Error(`Step with ID "${id}" not found.`);
         }
         Object.assign(step, {
-            userId: this.context.security.getIdentity().id,
+            savedBy: this.getIdentity(),
             ...input
         });
     }
@@ -229,5 +244,14 @@ export class WorkflowState implements IWorkflowState {
                 step
             }
         });
+    }
+
+    private getIdentity(): IWorkflowStateIdentity {
+        const identity = this.context.security.getIdentity();
+        return {
+            id: identity.id,
+            displayName: identity.displayName || null,
+            type: identity.type || null
+        };
     }
 }

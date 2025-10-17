@@ -349,17 +349,23 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             // do nothing?
         }
     }
+    
+    public async startStateStep(id: string): Promise<IWorkflowState> {
+        const state = await this.getState(id);
+        if (state instanceof NullWorkflowState) {
+            throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
+                id
+            });
+        }
+        await state.start();
+        return state;
+    }
 
-    public async approveStateStep(
-        id: string,
-        stepId: string,
-        comment?: string
-    ): Promise<IWorkflowState> {
+    public async approveStateStep(id: string, comment?: string): Promise<IWorkflowState> {
         const state = await this.getState(id);
         if (state instanceof NullWorkflowState) {
             throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
                 id,
-                stepId,
                 comment
             });
         }
@@ -367,16 +373,11 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         return state;
     }
 
-    public async rejectStateStep(
-        id: string,
-        stepId: string,
-        comment: string
-    ): Promise<IWorkflowState> {
+    public async rejectStateStep(id: string, comment: string): Promise<IWorkflowState> {
         const state = await this.getState(id);
         if (state instanceof NullWorkflowState) {
             throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
                 id,
-                stepId,
                 comment
             });
         }

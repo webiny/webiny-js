@@ -4,7 +4,11 @@ import i18nContext from "@webiny/api-i18n/graphql/context.js";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createWcpContext } from "@webiny/api-wcp";
-import { createTenancyAndSecurity } from "./tenancySecurity.js";
+import {
+    createTenancyAndSecurity,
+    FULL_ACCESS_ROLE_ID,
+    FULL_ACCESS_TEAM_ID
+} from "./tenancySecurity.js";
 import type { PermissionsArg } from "./helpers.js";
 import { createDummyLocales, createPermissions } from "./helpers.js";
 import type { ApiKey, SecurityIdentity } from "@webiny/api-security/types.js";

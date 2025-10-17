@@ -5,6 +5,13 @@ import type {
 } from "@webiny/api-headless-cms/types/index.js";
 import { WorkflowStateRecordState } from "~/context/abstractions/WorkflowState.js";
 
+const datePreprocess = (input: unknown) => {
+    if (typeof input == "string" || input instanceof Date) {
+        return new Date(input);
+    }
+    return undefined;
+};
+
 export const listWorkflowStatesValidation = zod
     .object({
         where: zod
@@ -19,6 +26,11 @@ export const listWorkflowStatesValidation = zod
                 targetRevisionId_in: zod.array(zod.string()).optional(),
                 state: zod.nativeEnum(WorkflowStateRecordState).optional(),
                 state_in: zod.array(zod.nativeEnum(WorkflowStateRecordState)).optional(),
+                createdOn_gte: zod.preprocess(datePreprocess, zod.date().optional()),
+                createdOn_lte: zod.preprocess(datePreprocess, zod.date().optional()),
+                savedOn_gte: zod.preprocess(datePreprocess, zod.date().optional()),
+                savedOn_lte: zod.preprocess(datePreprocess, zod.date().optional()),
+                createdBy: zod.string().optional(),
                 savedBy: zod.string().optional()
             })
             .optional(),

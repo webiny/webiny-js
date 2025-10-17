@@ -6,6 +6,7 @@ import type {
 import type { IMeta } from "~/context/abstractions/types.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 import type { IWorkflowStateRecord } from "~/context/abstractions/WorkflowState.js";
+import type { IWorkflowStateContextListStatesParams } from "~/context/abstractions/WorkflowStateContext.js";
 
 export interface IWorkflowError {
     code: string;
@@ -231,6 +232,125 @@ export const GET_TARGET_WORKFLOW_STATE_QUERY = /* GraphQL */ `
     query GetTargetWorkflowState($app: String!, $targetRevisionId: ID!) {
         workflows {
             getTargetWorkflowState(app: $app, targetRevisionId: $targetRevisionId) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export type IListTargetWorkflowStatesVariables = IWorkflowStateContextListStatesParams;
+
+export interface IListTargetWorkflowStatesResponse {
+    data: {
+        workflows: {
+            listWorkflowStates: {
+                data: IWorkflowStateRecord[] | null;
+                meta: IMeta | null;
+                error: IWorkflowError | null;
+            };
+        };
+    };
+}
+
+export const LIST_TARGET_WORKFLOW_STATES_QUERY = /* GraphQL */ `
+    query ListWorkflowStates(
+        $where: ListWorkflowStatesWhereInput,
+        $sort: [ListWorkflowStatesSort!],
+        $limit: Number,
+        $after: String
+    ) {
+        workflows {
+            listWorkflowStates(
+                where: $where,
+                sort: $sort,
+                limit: $limit,
+                after: $after
+            ) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
+            }
+        }
+    }
+`;
+
+export interface IStartWorkflowStateStepVariables {
+    id: string;
+}
+
+export interface IStartWorkflowStateStepResponse {
+    data: {
+        workflows: {
+            startReviewWorkflowStateStep: {
+                data: IWorkflowStateRecord | null;
+                error: IWorkflowError | null;
+            };
+        };
+    };
+}
+
+export const START_WORKFLOW_STATE_STEP_MUTATION = /* GraphQL */ `
+    mutation StartWorkflowStateStep($id: ID!) {
+        workflows {
+            startWorkflowStateStep(id: $id) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }`;
+
+export interface IApproveWorkflowStateStepVariables {
+    id: string;
+    comment?: string;
+}
+
+export interface IApproveWorkflowStateStepResponse {
+    data: {
+        workflows: {
+            approveWorkflowStateStep: {
+                data: IWorkflowStateRecord | null;
+                error: IWorkflowError | null;
+            };
+        };
+    };
+}
+
+export const APPROVE_WORKFLOW_STATE_STEP_MUTATION = /* GraphQL */ `
+    mutation ApproveWorkflowStateStep($id: ID!, $comment: String) {
+        workflows {
+            approveWorkflowStateStep(id: $id, comment: $comment) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export interface IRejectWorkflowStateStepVariables {
+    id: string;
+    comment?: string;
+}
+
+export interface IRejectWorkflowStateStepResponse {
+    data: {
+        workflows: {
+            rejectWorkflowStateStep: {
+                data: IWorkflowStateRecord | null;
+                error: IWorkflowError | null;
+            };
+        };
+    };
+}
+
+export const REJECT_WORKFLOW_STATE_STEP_MUTATION = /* GraphQL */ `
+    mutation RejectWorkflowStateStep($id: ID!, $comment: String!) {
+        workflows {
+            rejectWorkflowStateStep(id: $id, comment: $comment) {
                 data ${WORKFLOW_STATE}
                 ${ERROR_FIELD}
             }

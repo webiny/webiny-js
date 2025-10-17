@@ -1,6 +1,11 @@
 import type { Plugin } from "@webiny/plugins";
 import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
-import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
+import {
+    createSecurityContext,
+    createSecurityGraphQL,
+    createSecurityRolePlugin,
+    createSecurityTeamPlugin
+} from "@webiny/api-security";
 import type {
     SecurityIdentity,
     SecurityPermission,
@@ -28,6 +33,9 @@ export const defaultIdentity: SecurityIdentity = {
     displayName: "John Doe"
 };
 
+export const FULL_ACCESS_ROLE_ID = "full-access-role";
+export const FULL_ACCESS_TEAM_ID = "full-access-team";
+
 export const createTenancyAndSecurity = ({
     permissions,
     identity,
@@ -43,6 +51,23 @@ export const createTenancyAndSecurity = ({
         createSecurityGraphQL(),
         createAdminUsersApp({
             storageOperations: createAdminUsersStorageOperations({ documentClient })
+        }),
+        createSecurityRolePlugin({
+            id: FULL_ACCESS_ROLE_ID,
+            name: "Full Access",
+            description: "Full access",
+            permissions: [{ name: "*" }]
+        }),
+        createSecurityTeamPlugin({
+            id: FULL_ACCESS_TEAM_ID,
+            name: "Full access",
+            description: "Full access",
+            roles: ["full-access"]
+        }),
+        new ContextPlugin<Context>(async context => {
+            context.adminUsers.listUserTeams = async () => {
+                return await context.security.listTeams();
+            };
         }),
         new ContextPlugin<Context>(async context => {
             await context.tenancy.createTenant({
@@ -85,7 +110,10 @@ export const createTenancyAndSecurity = ({
             } as unknown as Tenant);
 
             context.security.addAuthenticator(async () => {
-                return identity || defaultIdentity;
+                return {
+                    ...(identity || defaultIdentity),
+                    teams: ["full-access-team"]
+                };
             });
 
             context.security.addAuthorizer(async () => {

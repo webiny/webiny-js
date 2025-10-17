@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { WorkflowsTransformer } from "~/context/transformer/WorkflowsTransformer.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
+import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
 
 describe("Workflows Transformer", () => {
     const transformer = new WorkflowsTransformer();
@@ -16,7 +17,7 @@ describe("Workflows Transformer", () => {
                     id: "step-1",
                     title: "Step 1",
                     color: "blue",
-                    teams: [{ id: "team-1" }],
+                    teams: [{ id: FULL_ACCESS_TEAM_ID }],
                     notifications: [{ id: "notif-1" }]
                 }
             ]
@@ -33,7 +34,7 @@ describe("Workflows Transformer", () => {
                     id: "step-1",
                     title: "Step 1",
                     color: "blue",
-                    teams: [{ id: "team-1" }],
+                    teams: [{ id: FULL_ACCESS_TEAM_ID }],
                     notifications: [{ id: "notif-1" }]
                 }
             ]
@@ -51,7 +52,7 @@ describe("Workflows Transformer", () => {
                         id: "step-1",
                         title: "Step 1",
                         color: "blue",
-                        teams: [{ id: "team-1" }],
+                        teams: [{ id: FULL_ACCESS_TEAM_ID }],
                         notifications: [{ id: "notif-1" }]
                     }
                 ]
@@ -68,7 +69,7 @@ describe("Workflows Transformer", () => {
                     id: "step-1",
                     title: "Step 1",
                     color: "blue",
-                    teams: [{ id: "team-1" }],
+                    teams: [{ id: FULL_ACCESS_TEAM_ID }],
                     notifications: [{ id: "notif-1" }]
                 }
             ]

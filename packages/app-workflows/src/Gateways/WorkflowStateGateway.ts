@@ -4,6 +4,7 @@ import type {
     IWorkflowStateGatewayApproveStepParams,
     IWorkflowStateGatewayApproveStepResponse,
     IWorkflowStateGatewayCancelStateResponse,
+    IWorkflowStateGatewayGetTargetWorkflowStateResponse,
     IWorkflowStateGatewayListWorkflowStatesParams,
     IWorkflowStateGatewayListWorkflowStatesResponse,
     IWorkflowStateGatewayRejectStepParams,
@@ -11,22 +12,23 @@ import type {
     IWorkflowStateGatewayRequestReviewStepParams,
     IWorkflowStateGatewayRequestReviewStepResponse
 } from "./abstraction/WorkflowStateGateway.js";
-import type {
-    IApproveWorkflowStateStepResponse,
-    IApproveWorkflowStateStepVariables,
-    ICancelWorkflowStateResponse,
-    ICancelWorkflowStateVariables,
-    ICreateWorkflowStateResponse,
-    ICreateWorkflowStateVariables,
-    IListWorkflowStatesResponse,
-    IListWorkflowStatesVariables,
-    IRejectWorkflowStateStepResponse,
-    IRejectWorkflowStateStepVariables
-} from "./graphql/workflowStates.js";
 import {
     APPROVE_WORKFLOW_STATE_STEP_MUTATION,
     CANCEL_WORKFLOW_STATE_MUTATION,
     CREATE_WORKFLOW_STATE_MUTATION,
+    GET_TARGET_WORKFLOW_STATE_QUERY,
+    type IApproveWorkflowStateStepResponse,
+    type IApproveWorkflowStateStepVariables,
+    type ICancelWorkflowStateResponse,
+    type ICancelWorkflowStateVariables,
+    type ICreateWorkflowStateResponse,
+    type ICreateWorkflowStateVariables,
+    type IGetTargetWorkflowStateResponse,
+    type IGetTargetWorkflowStateVariables,
+    type IListWorkflowStatesResponse,
+    type IListWorkflowStatesVariables,
+    type IRejectWorkflowStateStepResponse,
+    type IRejectWorkflowStateStepVariables,
     LIST_WORKFLOW_STATES_QUERY,
     REJECT_WORKFLOW_STATE_STEP_MUTATION
 } from "./graphql/workflowStates.js";
@@ -170,6 +172,33 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
             return {
                 data: result.data?.workflows.createWorkflowState.data || null,
                 error: result.data?.workflows.createWorkflowState.error || null
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: WebinyError.from(ex)
+            };
+        }
+    }
+
+    public async getTargetWorkflowState(
+        app: string,
+        targetRevisionId: string
+    ): Promise<IWorkflowStateGatewayGetTargetWorkflowStateResponse> {
+        try {
+            const result = await this.client.query<
+                IGetTargetWorkflowStateResponse,
+                IGetTargetWorkflowStateVariables
+            >({
+                query: GET_TARGET_WORKFLOW_STATE_QUERY,
+                variables: {
+                    app,
+                    targetRevisionId
+                }
+            });
+            return {
+                data: result.data?.workflows.getTargetWorkflowState.data || null,
+                error: result.data?.workflows.getTargetWorkflowState.error || null
             };
         } catch (ex) {
             return {
