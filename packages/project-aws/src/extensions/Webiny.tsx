@@ -19,6 +19,7 @@ export const Webiny = () => {
             <Project />
             <BeforeBuild src={p("Webiny/BuildAppWorkspace.js")} />
             <AdminAfterDeploy src={p("Webiny/UploadAdminAppToS3.js")} />
+            <AdminAfterDeploy src={p("Webiny/PrintAdminUrl.js")} />
             <ApiAfterDeploy src={p("Webiny/ExecuteDataMigrations.js")} />
             <ExtensionDefinitions src={p("Webiny/definitions.js")} />
 
