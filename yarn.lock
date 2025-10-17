@@ -14124,8 +14124,7 @@ __metadata:
     sonner: "npm:^2.0.7"
     storybook: "npm:^9.1.8"
     tailwind-merge: "npm:^2.6.0"
-    tailwindcss: "npm:^3.4.17"
-    tailwindcss-animate: "npm:^1.0.7"
+    tailwindcss: "npm:^4.1.14"
     timeago-react: "npm:^3.0.7"
     type-fest: "npm:^5.0.1"
     typescript: "npm:5.9.3"
@@ -35199,15 +35198,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss-animate@npm:^1.0.7":
-  version: 1.0.7
-  resolution: "tailwindcss-animate@npm:1.0.7"
-  peerDependencies:
-    tailwindcss: "*"
-  checksum: 10/ef176fbb0bf9dca84178b35b6a9615cd756358ea80be9c575456d12ecd7f3c431e9e571915c7df72959dc798a730959e9a4739d59eab55d8cc6db390870ff0d2
-  languageName: node
-  linkType: hard
-
 "tailwindcss@npm:^3.4.17":
   version: 3.4.17
   resolution: "tailwindcss@npm:3.4.17"
@@ -35238,6 +35228,13 @@ __metadata:
     tailwind: lib/cli.js
     tailwindcss: lib/cli.js
   checksum: 10/b0e00533ae3800223b5b71af9cb1dd9bfea5ef5ffa01300f1ced99de9511487aa41e03106173e4168c56c8f6600ee21c98c1d75a5def23cddf9b39b4ad71210d
+  languageName: node
+  linkType: hard
+
+"tailwindcss@npm:^4.1.14":
+  version: 4.1.14
+  resolution: "tailwindcss@npm:4.1.14"
+  checksum: 10/4d5da7853d0234d9a4056e4af0f727a1dc225f937f0eff6467826365cb31890e50fc6781a666ab757b972597240e98e643b1f6387b87ddee4f3edae9c2361bc2
   languageName: node
   linkType: hard
 

@@ -1,7 +1,6 @@
 import findUp from "find-up";
 import path from "path";
 import twFontFamily from "tailwindcss/defaultTheme.js";
-import tailwindAnimate from "tailwindcss-animate";
 
 const projectConfig = findUp.sync("webiny.config.tsx");
 const projectRoot = path.dirname(projectConfig);
@@ -78,5 +77,5 @@ export default {
         }
     },
 
-    plugins: [tailwindAnimate]
+    plugins: []
 };
