@@ -84,7 +84,7 @@ export const List = ({
         }
     };
 
-    const onDrop = useCallback<NonNullable<TreeProps["onDrop"]> >(
+    const onDrop = useCallback<NonNullable<TreeProps["onDrop"]>>(
         async (newTree, options: DropOptions) => {
             // Function to execute the drop logic
             const runDrop = async () => handleDrop(newTree, options);

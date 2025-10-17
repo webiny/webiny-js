@@ -14,4 +14,3 @@ export const DropConfirmation = ({ value }: DropConfirmationProps) => {
         </Property>
     );
 };
-
