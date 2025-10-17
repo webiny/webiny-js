@@ -10,8 +10,8 @@ export enum WorkflowStateRecordState {
 export interface IWorkflowStateRecordStep {
     id: string;
     state: WorkflowStateRecordState;
-    comment: string | undefined;
-    savedBy: IWorkflowStateIdentity | undefined;
+    comment: string | null;
+    savedBy: IWorkflowStateIdentity | null;
 }
 
 export interface IWorkflowStateIdentity {

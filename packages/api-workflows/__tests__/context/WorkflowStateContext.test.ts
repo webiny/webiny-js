@@ -19,14 +19,14 @@ describe("Workflow State Context", () => {
         });
     });
 
-    it("should not get a state because there is none", async () => {
+    it("should not get a state because there is none - NullWorkflowState", async () => {
         const { workflowStateContext } = await createContext();
 
         const response = await workflowStateContext.getTargetState("app", "non-existing-id#0001");
         expect(response).toBeInstanceOf(NullWorkflowState);
         expect(response.workflow).toBeUndefined();
         expect(response.record).toBeUndefined();
-        expect(response.done).toBe(true);
+        expect(response.done).toBe(false);
     });
 
     it("should throw an error on getState because of faulty targetId", async () => {
@@ -55,7 +55,7 @@ describe("Workflow State Context", () => {
         expect(response).toBeInstanceOf(NullWorkflowState);
         expect(response.workflow).toBeUndefined();
         expect(response.record).toBeUndefined();
-        expect(response.done).toBe(true);
+        expect(response.done).toBe(false);
     });
 
     it("should create, update and delete a state", async () => {
@@ -82,8 +82,8 @@ describe("Workflow State Context", () => {
                 return {
                     id: step.id,
                     state: WorkflowStateRecordState.pending,
-                    userId: undefined,
-                    comment: undefined
+                    savedBy: null,
+                    comment: null
                 };
             })
         ]);
@@ -109,7 +109,7 @@ describe("Workflow State Context", () => {
         expect(afterDeleteState).toBeInstanceOf(NullWorkflowState);
         expect(afterDeleteState.workflow).toBeUndefined();
         expect(afterDeleteState.record).toBeUndefined();
-        expect(afterDeleteState.done).toBe(true);
+        expect(afterDeleteState.done).toBe(false);
     });
 
     it("should approve a step and move to the next one", async () => {
@@ -142,7 +142,7 @@ describe("Workflow State Context", () => {
             id: "step-1",
             state: WorkflowStateRecordState.approved,
             comment: "First step should be approved.",
-            userId: context.security.getIdentity().id
+            savedBy: context.security.getIdentity().id
         });
 
         const stateAfterFirstApprove = await workflowStateContext.getTargetState(app, targetId);
@@ -160,7 +160,7 @@ describe("Workflow State Context", () => {
             id: "step-2",
             state: WorkflowStateRecordState.approved,
             comment: "Second step should be approved.",
-            userId: context.security.getIdentity().id
+            savedBy: context.security.getIdentity().id
         });
 
         const stateAfterSecondApprove = await workflowStateContext.getTargetState(app, targetId);

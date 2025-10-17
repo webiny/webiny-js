@@ -201,8 +201,8 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 return {
                     id: step.id,
                     state: WorkflowStateRecordState.pending,
-                    savedBy: undefined,
-                    comment: undefined
+                    savedBy: null,
+                    comment: null
                 };
             })
         };

@@ -6,7 +6,7 @@ export interface IWorkflowStatePresenterViewModel {
     app: string;
     loading: boolean;
     error: IWorkflowStateError | null;
-    state: IWorkflowState | null;
+    state: IWorkflowState | null | undefined;
 }
 
 export interface IWorkflowStatePresenter {

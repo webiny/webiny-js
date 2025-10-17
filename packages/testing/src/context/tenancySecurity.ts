@@ -11,11 +11,15 @@ import { BeforeHandlerPlugin } from "@webiny/handler";
 import type { Context } from "~/types.js";
 import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
 import type { TenancyStorageOperations, Tenant } from "@webiny/api-tenancy/types.js";
+import createAdminUsersApp from "@webiny/api-admin-users";
+import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-so-ddb";
+import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
 
 interface Config {
     setupGraphQL?: boolean;
     permissions: SecurityPermission[];
     identity?: SecurityIdentity | null;
+    documentClient: DynamoDBDocument;
 }
 
 export const defaultIdentity: SecurityIdentity = {
@@ -27,7 +31,8 @@ export const defaultIdentity: SecurityIdentity = {
 export const createTenancyAndSecurity = ({
     setupGraphQL,
     permissions,
-    identity
+    identity,
+    documentClient
 }: Config): Plugin[] => {
     const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
     const securityStorage = getStorageOps<SecurityStorageOperations>("security");
@@ -37,6 +42,9 @@ export const createTenancyAndSecurity = ({
         setupGraphQL ? createTenancyGraphQL() : null,
         createSecurityContext({ storageOperations: securityStorage.storageOperations }),
         setupGraphQL ? createSecurityGraphQL() : null,
+        createAdminUsersApp({
+            storageOperations: createAdminUsersStorageOperations({ documentClient })
+        }),
         new ContextPlugin<Context>(async context => {
             await context.tenancy.createTenant({
                 id: "root",

@@ -16,19 +16,19 @@ import type {
     IApproveWorkflowStateStepVariables,
     ICancelWorkflowStateResponse,
     ICancelWorkflowStateVariables,
+    ICreateWorkflowStateResponse,
+    ICreateWorkflowStateVariables,
     IListWorkflowStatesResponse,
     IListWorkflowStatesVariables,
     IRejectWorkflowStateStepResponse,
-    IRejectWorkflowStateStepVariables,
-    ICreateWorkflowStateResponse,
-    ICreateWorkflowStateVariables
+    IRejectWorkflowStateStepVariables
 } from "./graphql/workflowStates.js";
 import {
     APPROVE_WORKFLOW_STATE_STEP_MUTATION,
     CANCEL_WORKFLOW_STATE_MUTATION,
+    CREATE_WORKFLOW_STATE_MUTATION,
     LIST_WORKFLOW_STATES_QUERY,
-    REJECT_WORKFLOW_STATE_STEP_MUTATION,
-    CREATE_WORKFLOW_STATE_MUTATION
+    REJECT_WORKFLOW_STATE_STEP_MUTATION
 } from "./graphql/workflowStates.js";
 import { WebinyError } from "@webiny/error";
 
@@ -139,8 +139,8 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
                 },
                 fetchPolicy: "no-cache"
             });
-            const error = result.data?.workflows?.listWorkflows?.error || null;
-            const data = result.data?.workflows?.listWorkflows?.data || null;
+            const error = result.data?.workflows?.listWorkflowStates?.error || null;
+            const data = result.data?.workflows?.listWorkflowStates?.data || null;
             return {
                 data,
                 error

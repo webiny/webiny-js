@@ -150,7 +150,7 @@ export interface IListWorkflowStatesVariables {
 
 export interface IListWorkflowStatesResponse {
     workflows: {
-        listWorkflows: {
+        listWorkflowStates: {
             data: IWorkflowState[] | null;
             error: IWorkflowStateError | null;
         };

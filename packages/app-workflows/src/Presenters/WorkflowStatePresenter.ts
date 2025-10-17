@@ -16,7 +16,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     private readonly repository;
     private readonly app: string;
     private readonly targetRevisionId: string;
-    private state: IWorkflowStateModel | null = null;
+    private state: IWorkflowStateModel | null | undefined = undefined;
 
     get vm(): IWorkflowStatePresenterViewModel {
         return {
@@ -46,10 +46,13 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         });
     }
 
-    requestReview = () => {
-        this.repository.requestReview({
+    requestReview = async () => {
+        const item = await this.repository.requestReview({
             app: this.app,
             targetRevisionId: this.targetRevisionId
+        });
+        runInAction(() => {
+            this.state = item ? new WorkflowStateModel(item) : null;
         });
     };
 }
