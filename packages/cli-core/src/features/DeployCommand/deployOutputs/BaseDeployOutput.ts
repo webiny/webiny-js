@@ -1,5 +1,5 @@
 import { UiService, StdioService } from "~/abstractions/index.js";
-import { IDeployWithAppParams } from "../DeployCommand.js";
+import { IDeploySingleAppParams } from "../DeployCommand.js";
 import { ExecaChildProcess } from "execa";
 
 export type IDeployProcess = ExecaChildProcess<string>;
@@ -9,7 +9,7 @@ export interface IBaseDeployOutputParams {
     stdio: StdioService.Interface;
     ui: UiService.Interface;
     showDeploymentLogs: boolean;
-    deployParams: IDeployWithAppParams;
+    deployParams: IDeploySingleAppParams;
 }
 
 export class BaseDeployOutput {
@@ -17,7 +17,7 @@ export class BaseDeployOutput {
     public readonly stdio: StdioService.Interface;
     public readonly ui: UiService.Interface;
     public readonly showDeploymentLogs: boolean;
-    public readonly deployParams: IDeployWithAppParams;
+    public readonly deployParams: IDeploySingleAppParams;
 
     public constructor({
         deployProcess,

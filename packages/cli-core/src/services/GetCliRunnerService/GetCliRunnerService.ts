@@ -137,9 +137,14 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                 yargs => {
                     params.forEach((param: Command.ParamDefinition<unknown>) => {
                         const { name, required, validation, ...rest } = param;
-
-                        const yargsParam = yargs.positional(name, {
+                        
+                        // Handle variadic parameters (those ending with ..)
+                        const isVariadic = name.endsWith("..");
+                        const positionalName = isVariadic ? name.slice(0, -2) : name;
+                        
+                        const yargsParam = yargs.positional(positionalName, {
                             ...rest,
+                            ...(isVariadic && { array: true }),
                             demandOption: required
                         });
 

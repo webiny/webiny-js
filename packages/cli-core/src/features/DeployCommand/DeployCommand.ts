@@ -18,10 +18,17 @@ export interface IDeployNoAppParams {
 }
 
 export interface IDeployWithAppParams extends IDeployNoAppParams {
+    apps: AppName[];
+    build?: boolean;
+    preview?: boolean;
+}
+
+export interface IDeploySingleAppParams extends IDeployNoAppParams {
     app: AppName;
     build?: boolean;
     preview?: boolean;
 }
+
 
 export type IDeployCommandParams = IDeployNoAppParams | IDeployWithAppParams;
 
@@ -43,14 +50,15 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
             description: "Deploys specified app or all apps in the project",
             examples: [
                 "$0 deploy api --env dev",
+                "$0 deploy core api --env dev",
                 "$0 deploy admin --env prod",
                 "$0 deploy --env prod",
                 "$0 deploy"
             ],
             params: [
                 {
-                    name: "app",
-                    description: "Name of the app (core, admin, or api)",
+                    name: "apps..",
+                    description: "Name of the app(s) to deploy (core, admin, or api). You can specify multiple apps.",
                     type: "string"
                 }
             ],
@@ -61,7 +69,7 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
                     type: "string",
                     default: "dev",
                     validation: params => {
-                        if ("app" in params && !params.env) {
+                        if ("apps" in params && params.apps && params.apps.length > 0 && !params.env) {
                             throw new Error("Environment name is required when deploying an app.");
                         }
                         return true;
@@ -111,8 +119,15 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
                 }
             ],
             handler: async (params: IDeployCommandParams) => {
-                if ("app" in params) {
-                    await this.deployApp(params);
+                if ("apps" in params && params.apps && params.apps.length > 0) {
+                    // Deploy specified apps
+                    for (const app of params.apps) {
+                        const appParams = { ...params, app };
+                        ui.info("Deploying %s app...", app.charAt(0).toUpperCase() + app.slice(1));
+                        await this.deployApp(appParams);
+                        ui.newLine();
+                    }
+                    ui.success(`Apps deployed: ${params.apps.join(", ")}`);
                 } else {
                     const isCi = projectSdk.isCi();
                     const coreStack = await projectSdk.getAppStackOutput({
@@ -195,7 +210,7 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
         };
     }
 
-    private async deployApp(params: IDeployWithAppParams) {
+    private async deployApp(params: IDeploySingleAppParams) {
         const projectSdk = await this.getProjectSdkService.execute();
 
         const ui = this.uiService;
