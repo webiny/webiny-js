@@ -1,6 +1,6 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { Accordion, AccordionItem } from "@webiny/ui/Accordion/index.js";
+import { Accordion } from "@webiny/admin-ui";
 import type { CmsModelFieldRendererPlugin } from "~/types.js";
 import { Fields } from "~/admin/components/ContentEntryForm/Fields.js";
 import { FieldSettings } from "./FieldSettings.js";
@@ -43,10 +43,10 @@ const plugin: CmsModelFieldRendererPlugin = {
                             <ParentFieldProvider value={bindProps.value} path={Bind.parentName}>
                                 <ParentValueIndexProvider index={-1}>
                                     <Accordion>
-                                        <AccordionItem
+                                        <Accordion.Item
                                             title={field.label}
                                             description={field.helpText}
-                                            open={open}
+                                            defaultOpen={open}
                                         >
                                             <Fields
                                                 Bind={Bind}
@@ -54,7 +54,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                                 fields={settings.fields || []}
                                                 layout={settings.layout || []}
                                             />
-                                        </AccordionItem>
+                                        </Accordion.Item>
                                     </Accordion>
                                 </ParentValueIndexProvider>
                             </ParentFieldProvider>

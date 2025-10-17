@@ -2,22 +2,17 @@ import React from "react";
 import { makeDecoratable, withStaticProps, cva, type VariantProps, cn } from "~/utils.js";
 import type { AccordionRoot } from "./components/AccordionRoot.js";
 import { AccordionItem, type AccordionItemProps } from "./components/AccordionItem.js";
+import { DepthProvider, useDepth } from "./DepthContext.js";
 
 const accordionVariants = cva("wby-group wby-w-full", {
     variants: {
         variant: {
             container: "wby-accordion-variant-container wby-gap-xs wby-flex wby-flex-col",
             underline: "wby-accordion-variant-underline "
-        },
-        background: {
-            base: "wby-accordion-background-base",
-            light: "wby-accordion-background-light",
-            transparent: "wby-accordion-background-transparent"
         }
     },
     defaultVariants: {
-        variant: "underline",
-        background: "base"
+        variant: "container"
     }
 });
 
@@ -26,10 +21,14 @@ type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
         children: React.ReactNode;
     };
 
-const AccordionBase = ({ children, variant, background, className, ...props }: AccordionProps) => {
+const AccordionBase = ({ children, variant, className }: AccordionProps) => {
+    const parentDepth = useDepth();
+    const depth = parentDepth + 1;
+    const background = depth % 2 !== 0 ? "wby-bg-neutral-light" : "wby-bg-neutral-base";
+
     return (
-        <div {...props} className={cn(accordionVariants({ variant, background }), className)}>
-            {children}
+        <div className={cn(accordionVariants({ variant }), className, background)}>
+            <DepthProvider value={depth}>{children}</DepthProvider>
         </div>
     );
 };

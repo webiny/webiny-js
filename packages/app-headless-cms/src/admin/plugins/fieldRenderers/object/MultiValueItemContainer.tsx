@@ -56,8 +56,12 @@ export const MultiValueItemContainer = makeDecoratable(
         );
 
         return (
-            <Accordion background="light" defaultOpen={props.isExpanded}>
-                <Accordion.Item title={props.title} actions={actions}>
+            <Accordion>
+                <Accordion.Item
+                    title={props.title}
+                    actions={actions}
+                    defaultOpen={props.isExpanded}
+                >
                     {children}
                 </Accordion.Item>
             </Accordion>
