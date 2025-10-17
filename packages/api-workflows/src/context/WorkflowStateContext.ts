@@ -349,7 +349,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             // do nothing?
         }
     }
-    
+
     public async startStateStep(id: string): Promise<IWorkflowState> {
         const state = await this.getState(id);
         if (state instanceof NullWorkflowState) {

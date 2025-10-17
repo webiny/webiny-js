@@ -138,7 +138,7 @@ describe("workflow states graphql", () => {
             }
         });
     });
-    
+
     it("should approve workflow state steps", async () => {
         const targetId = "record-1";
         const targetRevisionId = `${targetId}#0001`;

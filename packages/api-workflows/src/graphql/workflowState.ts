@@ -174,7 +174,7 @@ export const createWorkflowStateSchema = () => {
                             throw createZodError(result.error);
                         }
                         const response = await context.workflowState.startStateStep(result.data.id);
-                        
+
                         return response.record;
                     });
                 },

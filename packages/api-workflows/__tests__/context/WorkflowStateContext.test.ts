@@ -158,9 +158,8 @@ describe("Workflow State Context", () => {
             WorkflowStateRecordState.pending
         );
 
-        await stateAfterFirstApprove.start()
+        await stateAfterFirstApprove.start();
         await stateAfterFirstApprove.approve("Second step should be approved.");
-        
 
         expect(stateAfterFirstApprove.record?.steps[1]).toEqual({
             id: "step-2",
