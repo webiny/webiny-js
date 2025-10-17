@@ -56,10 +56,11 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
             ],
             params: [
                 {
-                    name: "apps..",
+                    name: "apps",
                     description:
                         "Name of the app(s) to deploy (core, admin, or api). You can specify multiple apps.",
-                    type: "string"
+                    type: "string",
+                    array: true
                 }
             ],
             options: [
