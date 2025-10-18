@@ -210,6 +210,23 @@ describe("workflow states graphql", () => {
             }
         });
 
+        // should not be possible to start a new step when one is already in review
+        const [tryToStartAgain] = await handler.startWorkflowStateStep({
+            id: workflowState!.id
+        });
+        expect(tryToStartAgain).toMatchObject({
+            data: {
+                workflows: {
+                    startWorkflowStateStep: {
+                        data: null,
+                        error: {
+                            code: "WORKFLOW_PREVIOUS_STEP_NOT_APPROVED"
+                        }
+                    }
+                }
+            }
+        });
+
         // let's move on to approving steps
         const [approveFirstStepResponse] = await handler.approveWorkflowStateStep({
             id: workflowState!.id,
@@ -354,6 +371,94 @@ describe("workflow states graphql", () => {
                         data: {
                             id: workflowState!.id,
                             state: WorkflowStateRecordState.approved
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    it("should reject workflow state step", async () => {
+        const targetId = "record-1";
+        const targetRevisionId = `${targetId}#0001`;
+        const workflow = await createWorkflow();
+
+        const [response] = await handler.createWorkflowState({
+            app: workflow.app,
+            targetRevisionId
+        });
+
+        const workflowState = response.data?.workflows?.createWorkflowState?.data;
+
+        await handler.startWorkflowStateStep({
+            id: workflowState!.id
+        });
+
+        const [rejectResponse] = await handler.rejectWorkflowStateStep({
+            id: workflowState!.id,
+            comment: "Rejecting step 1"
+        });
+
+        expect(rejectResponse).toMatchObject({
+            data: {
+                workflows: {
+                    rejectWorkflowStateStep: {
+                        data: {
+                            id: workflowState!.id,
+                            steps: [
+                                {
+                                    id: workflow.steps[0].id,
+                                    state: WorkflowStateRecordState.rejected,
+                                    comment: "Rejecting step 1",
+                                    savedBy: {
+                                        id: expect.any(String),
+                                        displayName: expect.any(String),
+                                        type: expect.any(String)
+                                    }
+                                },
+                                {
+                                    id: workflow.steps[1].id,
+                                    state: WorkflowStateRecordState.pending,
+                                    comment: null,
+                                    savedBy: null
+                                }
+                            ]
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // should not be able to start next step after rejection
+        const [startAfterRejection] = await handler.startWorkflowStateStep({
+            id: workflowState!.id
+        });
+        expect(startAfterRejection).toMatchObject({
+            data: {
+                workflows: {
+                    startWorkflowStateStep: {
+                        data: null,
+                        error: {
+                            code: "WORKFLOW_ALREADY_REJECTED"
+                        }
+                    }
+                }
+            }
+        });
+
+        const [getAfterRejectionResponse] = await handler.getTargetWorkflowState({
+            app: workflow.app,
+            targetRevisionId
+        });
+        expect(getAfterRejectionResponse).toMatchObject({
+            data: {
+                workflows: {
+                    getTargetWorkflowState: {
+                        data: {
+                            id: workflowState!.id,
+                            state: WorkflowStateRecordState.rejected
                         },
                         error: null
                     }

@@ -51,6 +51,16 @@ export class WorkflowState implements IWorkflowState {
     public async start(): Promise<void> {
         await this.ensureCanReview();
 
+        if (this.record.state === WorkflowStateRecordState.rejected) {
+            throw new WebinyError({
+                message: `Cannot start a workflow that has been rejected.`,
+                code: "WORKFLOW_ALREADY_REJECTED",
+                data: {
+                    ...this.record
+                }
+            });
+        }
+
         const stepIndex = this.record.steps.findIndex(step => {
             return step.state === WorkflowStateRecordState.pending;
         });
