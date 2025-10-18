@@ -3,7 +3,7 @@ import { TaskServicePlugin } from "@webiny/tasks/plugins/TaskServicePlugin";
 
 class MockTaskServicePlugin extends TaskServicePlugin {
     public override name = "tasks.mockTaskService";
-    
+
     public override createService(): ITaskService {
         return {
             async send() {
