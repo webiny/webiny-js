@@ -1,10 +1,10 @@
-import type { ITaskService } from "@webiny/tasks/plugins/TaskServicePlugin.js";
-import { TaskServicePlugin } from "@webiny/tasks/plugins/TaskServicePlugin.js";
+import type { ITaskService } from "@webiny/tasks/plugins/TaskServicePlugin";
+import { TaskServicePlugin } from "@webiny/tasks/plugins/TaskServicePlugin";
 
 class MockTaskServicePlugin extends TaskServicePlugin {
     public override name = "tasks.mockTaskService";
-
-    public createService(): ITaskService {
+    
+    public override createService(): ITaskService {
         return {
             async send() {
                 return {
