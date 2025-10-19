@@ -6,7 +6,6 @@ import { LoginScreenRenderer, useTenancy, useTags } from "@webiny/app-serverless
 import type { CreateAuthenticationConfig } from "./createAuthentication.js";
 import { createAuthentication } from "./createAuthentication.js";
 import { UserMenuModule } from "~/modules/userMenu/index.js";
-import { AppClientModule } from "~/modules/appClient/index.js";
 import { NotAuthorizedError } from "./components/index.js";
 
 interface AppClientIdLoaderProps extends Auth0Props {
@@ -113,7 +112,6 @@ export const Auth0 = (props: Auth0Props) => {
         <Fragment>
             <LoginScreenPlugin />
             <UserMenuModule />
-            <AppClientModule />
         </Fragment>
     );
 };

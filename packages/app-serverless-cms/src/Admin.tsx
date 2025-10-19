@@ -13,7 +13,6 @@ import { imagePlugin } from "@webiny/app/plugins/index.js";
 import fileStorageS3Plugin from "@webiny/app-file-manager-s3";
 import { createApolloClient as defaultApolloClientFactory } from "./apolloClientFactory.js";
 import apolloLinks from "./apolloLinks.js";
-import { TenantManager } from "@webiny/app-tenant-manager";
 import { AuditLogs } from "@webiny/app-audit-logs";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Module as MailerSettings } from "@webiny/app-mailer";
@@ -47,7 +46,6 @@ const App = (props: AdminProps) => {
             <RecordLocking />
             <LexicalEditorActions />
             <HeadlessCMS createApolloClient={createApolloClient} />
-            <TenantManager />
             <AuditLogs />
             <MailerSettings />
             <SchedulerConfigs />

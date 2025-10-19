@@ -1,9 +1,5 @@
 import WebinyError from "@webiny/error";
-import type { DomainEvent } from "@webiny/api-core";
-import {
-    FolderAfterCreateHandler,
-    type FolderAfterCreatePayload
-} from "@webiny/api-aco/features/folders/CreateFolder/abstractions";
+import { FolderAfterCreateHandler } from "@webiny/api-aco/features/folders/CreateFolder/abstractions";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import type { AuditLogsContext } from "~/types.js";
@@ -11,7 +7,7 @@ import type { AuditLogsContext } from "~/types.js";
 export class AuditLogFolderAfterCreateHandler implements FolderAfterCreateHandler.Interface {
     constructor(private context: AuditLogsContext) {}
 
-    async handle(event: DomainEvent<FolderAfterCreatePayload>): Promise<void> {
+    async handle(event: FolderAfterCreateHandler.Event): Promise<void> {
         try {
             const { folder } = event.payload;
             if (folder.type === "FmFile") {

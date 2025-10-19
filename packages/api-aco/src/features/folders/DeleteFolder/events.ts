@@ -1,32 +1,21 @@
-import type { Abstraction } from "@webiny/di-container";
-import type { DomainEvent, IEventHandler } from "@webiny/api-core";
+import { DomainEvent } from "@webiny/api-core";
 import { FolderBeforeDeleteHandler, FolderAfterDeleteHandler } from "./abstractions.js";
 import type { FolderBeforeDeletePayload, FolderAfterDeletePayload } from "./abstractions.js";
 
 // FolderBeforeDelete Event
-export class FolderBeforeDeleteEvent implements DomainEvent<FolderBeforeDeletePayload> {
+export class FolderBeforeDeleteEvent extends DomainEvent<FolderBeforeDeletePayload> {
     eventType = "folder.beforeDelete" as const;
-    occurredAt: Date;
 
-    constructor(public payload: FolderBeforeDeletePayload) {
-        this.occurredAt = new Date();
-    }
-
-    getHandlerAbstraction(): Abstraction<IEventHandler<any>> {
+    getHandlerAbstraction() {
         return FolderBeforeDeleteHandler;
     }
 }
 
 // FolderAfterDelete Event
-export class FolderAfterDeleteEvent implements DomainEvent<FolderAfterDeletePayload> {
+export class FolderAfterDeleteEvent extends DomainEvent<FolderAfterDeletePayload> {
     eventType = "folder.afterDelete" as const;
-    occurredAt: Date;
 
-    constructor(public payload: FolderAfterDeletePayload) {
-        this.occurredAt = new Date();
-    }
-
-    getHandlerAbstraction(): Abstraction<IEventHandler<any>> {
+    getHandlerAbstraction() {
         return FolderAfterDeleteHandler;
     }
 }

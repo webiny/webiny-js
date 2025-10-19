@@ -20,8 +20,7 @@ class CreateTenantUseCaseImpl implements UseCaseAbstraction.Interface {
             status: data.status || "active",
             isInstalled: false,
             settings: {
-                ...(data.settings || {}),
-                domains: (data.settings && data.settings.domains) || []
+                ...(data.settings || {})
             },
             savedOn: new Date().toISOString(),
             createdOn: new Date().toISOString(),

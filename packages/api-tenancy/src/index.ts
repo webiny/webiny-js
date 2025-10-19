@@ -1,12 +1,11 @@
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import { createWcpContext } from "@webiny/api-wcp";
-import { Context as BaseContext } from "@webiny/handler";
-import type { TenancyStorageOperations } from "./types.js";
+import type { TenancyContext, TenancyStorageOperations } from "./types.js";
 import graphql from "./graphql/full.gql.js";
 import baseGraphQLTypes from "./graphql/types.gql.js";
 import { setupFeatures } from "~/setupFeatures.js";
-import type { WcpContext } from "@webiny/api-wcp/types.js";
+import { LegacyContext } from "./legacy/LegacyContext.js";
 
 interface TenancyPluginsParams {
     storageOperations: TenancyStorageOperations;
@@ -20,7 +19,7 @@ async function applyBackwardsCompatibility(context: any) {
 }
 
 export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams) => {
-    return new ContextPlugin<BaseContext & WcpContext>(async context => {
+    return new ContextPlugin<TenancyContext>(async context => {
         let tenantId = "root";
 
         await applyBackwardsCompatibility(context);
@@ -58,6 +57,11 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
         // Add WCP telemetry identifier
         // This tenancy package is used by GraphQL, Headless CMS, and PB import/export functions
         context.plugins.register({ type: "wcp-telemetry-tracker" });
+
+        // TODO: Legacy!
+        // Set up legacy context. We use this API in many places across our codebase, and this will provide
+        // a working bridge until everything is migrated to use DI container.
+        context.tenancy = new LegacyContext(context.container);
     });
 };
 

@@ -8,7 +8,6 @@ import { Compose, LoginScreenRenderer, useTags, useTenancy } from "@webiny/app-s
 import type { Config } from "./createAuthentication.js";
 import { createAuthentication } from "./createAuthentication.js";
 import { UserMenuModule } from "~/modules/userMenu/index.js";
-import { AppClientModule } from "~/modules/appClient/index.js";
 import { NotAuthorizedError } from "./components/index.js";
 
 interface AppClientIdLoaderProps {
@@ -133,7 +132,6 @@ export const Okta = (props: OktaProps) => {
         <Fragment>
             <Compose component={LoginScreenRenderer} with={createLoginScreen(props)} />
             <UserMenuModule />
-            <AppClientModule />
         </Fragment>
     );
 };

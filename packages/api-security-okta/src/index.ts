@@ -9,12 +9,3 @@ export type { AuthenticatorConfig } from "./createAuthenticator.js";
 export { createOkta } from "./createOkta.js";
 
 export { createGroupsTeamsAuthorizer, type GroupsTeamsAuthorizerConfig };
-
-// Backwards compatibility.
-// @deprecated Use `createGroupsTeamsAuthorizer` instead.
-const createGroupAuthorizer = createGroupsTeamsAuthorizer;
-
-// @deprecated Use `GroupsTeamsAuthorizerConfig` instead.
-type GroupAuthorizerConfig = GroupsTeamsAuthorizerConfig;
-
-export { createGroupAuthorizer, type GroupAuthorizerConfig };

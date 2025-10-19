@@ -143,7 +143,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
                  * we need to notify the system that tenant is now ready to use, because many external plugins
                  * insert initial tenant data into various apps, copy data from other tenants, etc.
                  */
-                await context.tenancy.onTenantAfterInstall.publish({});
+                // await context.tenancy.onTenantAfterInstall.publish({});
             } catch (ex) {
                 await onSystemInstallError.publish({
                     error: ex,

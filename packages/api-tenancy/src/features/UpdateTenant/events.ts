@@ -1,4 +1,4 @@
-import type { DomainEvent } from "@webiny/api-core";
+import { DomainEvent } from "@webiny/api-core";
 import type { Tenant } from "~/types.js";
 import { TenantBeforeUpdateHandler, TenantAfterUpdateHandler } from "./abstractions.js";
 
@@ -13,26 +13,16 @@ export interface TenantAfterUpdatePayload {
     inputData: Record<string, any>;
 }
 
-export class TenantBeforeUpdateEvent implements DomainEvent<TenantBeforeUpdatePayload> {
+export class TenantBeforeUpdateEvent extends DomainEvent<TenantBeforeUpdatePayload> {
     eventType = "tenant.beforeUpdate" as const;
-    occurredAt: Date;
-
-    constructor(public payload: TenantBeforeUpdatePayload) {
-        this.occurredAt = new Date();
-    }
 
     getHandlerAbstraction() {
         return TenantBeforeUpdateHandler;
     }
 }
 
-export class TenantAfterUpdateEvent implements DomainEvent<TenantAfterUpdatePayload> {
+export class TenantAfterUpdateEvent extends DomainEvent<TenantAfterUpdatePayload> {
     eventType = "tenant.afterUpdate" as const;
-    occurredAt: Date;
-
-    constructor(public payload: TenantAfterUpdatePayload) {
-        this.occurredAt = new Date();
-    }
 
     getHandlerAbstraction() {
         return TenantAfterUpdateHandler;

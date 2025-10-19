@@ -9,15 +9,7 @@ export default new GraphQLSchemaPlugin({
             description: String!
             parent: ID
             tags: [String!]!
-            settings: TenantSettings!
-        }
-
-        type TenantDomain {
-            fqdn: String!
-        }
-
-        type TenantSettings {
-            domains: [TenantDomain!]!
+            settings: JSON
         }
     `
 });

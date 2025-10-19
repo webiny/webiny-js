@@ -1,11 +1,22 @@
 import { Abstraction } from "@webiny/di-container";
 
-export interface DomainEvent<TPayload = void> {
-    eventType: string;
-    payload?: TPayload;
-    occurredAt: Date;
-    // Key: each event knows its handler abstraction
-    getHandlerAbstraction(): Abstraction<IEventHandler<any>>;
+export abstract class DomainEvent<TPayload = void> {
+    public abstract readonly eventType: string;
+    public readonly occurredAt: Date;
+    public readonly payload: TPayload extends void ? undefined : TPayload;
+
+    constructor(payload: TPayload);
+    constructor(payload?: never) {
+        this.occurredAt = new Date();
+
+        if (payload === undefined) {
+            this.payload = undefined as any;
+        } else {
+            this.payload = payload;
+        }
+    }
+
+    abstract getHandlerAbstraction(): Abstraction<IEventHandler<any>>;
 }
 
 export interface IEventHandler<TEvent extends DomainEvent<any> = DomainEvent<any>> {
