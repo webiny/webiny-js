@@ -38,11 +38,17 @@ export enum WorkflowStateValue {
     rejected = "rejected"
 }
 
+export interface IIdentity {
+    id: string;
+    displayName?: string;
+    type?: string;
+}
+
 export interface IWorkflowStateStep {
     id: string;
     state: WorkflowStateValue;
-    comment: string | undefined;
-    userId: string | undefined;
+    comment: string | null | undefined;
+    savedBy: IIdentity | null | undefined;
 }
 
 export interface IWorkflowState {
@@ -51,7 +57,11 @@ export interface IWorkflowState {
     app: string;
     targetId: string;
     targetRevisionId: string;
-    comment: string | undefined;
+    comment: string | null | undefined;
     state: WorkflowStateValue;
     steps: IWorkflowStateStep[];
+    createdBy: IIdentity;
+    savedBy: IIdentity;
+    createdOn: Date;
+    savedOn: Date;
 }

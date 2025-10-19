@@ -9,6 +9,7 @@ import { createWorkflowStateValidation } from "~/validation/createWorkflowState.
 import { getTargetWorkflowStateValidation } from "~/validation/getTargetWorkflowState.js";
 import { getWorkflowStateValidation } from "~/validation/getWorkflowState.js";
 import { startWorkflowStateValidation } from "~/validation/startWorkflowState.js";
+import type { IWorkflowState } from "~/context/abstractions/WorkflowState.js";
 
 export const createWorkflowStateSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -46,6 +47,7 @@ export const createWorkflowStateSchema = () => {
                 savedOn: DateTime!
                 createdBy: WorkflowStateIdentity!
                 savedBy: WorkflowStateIdentity!
+                workflow: Workflow
             }
 
             type ListWorkflowStatesResponse {
@@ -109,6 +111,11 @@ export const createWorkflowStateSchema = () => {
             }
         `,
         resolvers: {
+            WorkflowState: {
+                workflow: async (parent: IWorkflowState) => {
+                    return parent.workflow || null;
+                }
+            },
             WorkflowsQuery: {
                 getWorkflowState: async (_, args, context) => {
                     return resolve(async () => {
@@ -159,6 +166,7 @@ export const createWorkflowStateSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
+
                         const response = await context.workflowState.createState(
                             result.data.app,
                             result.data.targetRevisionId

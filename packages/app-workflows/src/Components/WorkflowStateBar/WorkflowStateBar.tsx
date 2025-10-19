@@ -2,17 +2,26 @@ import React, { useMemo } from "react";
 import { WorkflowStatePresenter } from "~/Presenters/index.js";
 import { WorkflowStateRepository } from "~/Repositories/index.js";
 import { WorkflowStateGateway } from "~/Gateways/index.js";
-import { useApolloClient } from "@apollo/react-hooks";
-import { WorkflowStateBarPresenter } from "./WorkflowStateBarPresenter.js";
+
+import { WorkflowStateBarObserver } from "./WorkflowStateBarObserver.js";
+import { Plugins } from "@webiny/app";
+import { WorkflowStateBarError } from "./Bars/WorkflowStateBarError.js";
+import { WorkflowStateBarLoading } from "./Bars/WorkflowStateBarLoading.js";
+import { WorkflowStateBarRequestReview } from "./Bars/WorkflowStateBarRequestReview.js";
+import { WorkflowStateBarStartReview } from "~/Components/WorkflowStateBar/Bars/WorkflowStateBarStartReview.js";
+import type { IIdentity } from "~/types.js";
+import type ApolloClient from "apollo-client";
+import { WorkflowStateBarCancelReview } from "~/Components/WorkflowStateBar/Bars/WorkflowStateBarCancelReview.js";
 
 export interface IWorkflowStateBarProps {
     id: string;
     app: string;
+    identity: IIdentity;
+    client: ApolloClient<object>;
 }
 
 export const WorkflowStateBar = (props: IWorkflowStateBarProps) => {
-    const { id, app } = props;
-    const client = useApolloClient();
+    const { id, app, identity, client } = props;
 
     const presenter = useMemo(() => {
         const gateway = new WorkflowStateGateway({
@@ -24,11 +33,27 @@ export const WorkflowStateBar = (props: IWorkflowStateBarProps) => {
         const presenter = new WorkflowStatePresenter({
             app,
             targetRevisionId: id,
+            identity,
             repository
         });
         presenter.init();
         return presenter;
-    }, [app, id]);
-
-    return <WorkflowStateBarPresenter presenter={presenter} />;
+    }, [app, id, identity, client]);
+    console.log({
+        state: presenter.vm.state,
+        loading: presenter.vm.loading,
+        error: presenter.vm.error
+    });
+    return (
+        <>
+            <Plugins>
+                <WorkflowStateBarStartReview />
+                <WorkflowStateBarRequestReview />
+                <WorkflowStateBarCancelReview />
+                <WorkflowStateBarLoading />
+                <WorkflowStateBarError />
+            </Plugins>
+            <WorkflowStateBarObserver presenter={presenter} />
+        </>
+    );
 };

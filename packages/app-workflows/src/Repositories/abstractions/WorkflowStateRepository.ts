@@ -8,13 +8,11 @@ export interface IWorkflowStateRepositoryRequestReviewParams {
 
 export interface IWorkflowStateRepositoryApproveParams {
     id: string;
-    stepId: string;
     comment?: string;
 }
 
 export interface IWorkflowStateRepositoryRejectParams {
     id: string;
-    stepId: string;
     comment: string;
 }
 
@@ -29,8 +27,8 @@ export interface IWorkflowStateRepository {
     requestReview(
         params: IWorkflowStateRepositoryRequestReviewParams
     ): Promise<IWorkflowState | null>;
-    approve(params: IWorkflowStateRepositoryApproveParams): Promise<void>;
-    reject(params: IWorkflowStateRepositoryRejectParams): Promise<void>;
+    approve(params: IWorkflowStateRepositoryApproveParams): Promise<IWorkflowState | null>;
+    reject(params: IWorkflowStateRepositoryRejectParams): Promise<IWorkflowState | null>;
     cancel(id: string): Promise<void>;
     getTargetState(app: string, targetRevisionId: string): Promise<IWorkflowState | null>;
     findOne(params: IWorkflowStateRepositoryFindOneParams): Promise<IWorkflowState | null>;

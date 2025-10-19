@@ -35,7 +35,9 @@ export class WorkflowStateRepository implements IWorkflowStateRepository {
         makeAutoObservable(this);
     }
 
-    public async approve(params: IWorkflowStateRepositoryApproveParams): Promise<void> {
+    public async approve(
+        params: IWorkflowStateRepositoryApproveParams
+    ): Promise<IWorkflowState | null> {
         runInAction(() => {
             this._loading = true;
             this._error = null;
@@ -45,8 +47,11 @@ export class WorkflowStateRepository implements IWorkflowStateRepository {
             this._error = result.error;
             this._loading = false;
         });
+        return result.data;
     }
-    public async reject(params: IWorkflowStateRepositoryRejectParams): Promise<void> {
+    public async reject(
+        params: IWorkflowStateRepositoryRejectParams
+    ): Promise<IWorkflowState | null> {
         runInAction(() => {
             this._loading = true;
             this._error = null;
@@ -56,6 +61,7 @@ export class WorkflowStateRepository implements IWorkflowStateRepository {
             this._error = result.error;
             this._loading = false;
         });
+        return result.data;
     }
 
     public async cancel(id: string): Promise<void> {

@@ -97,6 +97,22 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 }
             );
         }
+        
+        const { items: allWorkflows } = await this.context.workflows.listWorkflows({
+            where: {
+                app
+            },
+            limit: 10000
+        });
+        if (allWorkflows.length === 0) {
+            throw new WebinyError({
+                message: `No workflow found for the given app.`,
+                code: "WORKFLOW_NOT_FOUND",
+                data: {
+                    app
+                }
+            });
+        }
 
         const state = await this.fetchOneByTargetRevisionId(app, targetRevisionId);
         if (!state) {
@@ -107,17 +123,11 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             id: state.workflowId,
             version: 1
         });
-
-        const { items: workflows } = await this.context.workflows.listWorkflows({
-            where: {
-                id: workflowId
-            },
-            limit: 1
-        });
+        const workflow = allWorkflows.find(wf => wf.id === workflowId);
 
         return new WorkflowState({
             context: this.context,
-            workflow: workflows[0],
+            workflow,
             record: state
         });
     }
@@ -176,7 +186,13 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         });
         const workflow = workflows[0];
         if (!workflow) {
-            return new NullWorkflowState();
+            throw new WebinyError({
+                message: `No workflow found for the given app.`,
+                code: "WORKFLOW_NOT_FOUND",
+                data: {
+                    app
+                }
+            });
         } else if (meta.totalCount > 1) {
             throw new WebinyError(
                 `Multiple workflows found for the given app.`,
@@ -218,12 +234,13 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 workflow,
                 record
             });
+
             try {
                 await this.onStateAfterCreate.publish({
                     state
                 });
             } catch (ex) {
-                console.log(ex);
+                console.error(ex);
                 // do nothing?
             }
             return state;
@@ -288,7 +305,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                     original: originalState
                 });
             } catch (ex) {
-                console.log(ex);
+                console.error(ex);
                 // do nothing?
             }
 
@@ -345,7 +362,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 state
             });
         } catch (ex) {
-            console.log(ex);
+            console.error(ex);
             // do nothing?
         }
     }
