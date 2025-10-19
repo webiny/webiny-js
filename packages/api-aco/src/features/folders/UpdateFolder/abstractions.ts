@@ -32,6 +32,7 @@ export const FolderBeforeUpdateHandler = createAbstraction<
 
 export namespace FolderBeforeUpdateHandler {
     export type Interface = IEventHandler<DomainEvent<FolderBeforeUpdatePayload>>;
+    export type Event = DomainEvent<FolderBeforeUpdatePayload>;
 }
 
 export const FolderAfterUpdateHandler = createAbstraction<
@@ -40,4 +41,5 @@ export const FolderAfterUpdateHandler = createAbstraction<
 
 export namespace FolderAfterUpdateHandler {
     export type Interface = IEventHandler<DomainEvent<FolderAfterUpdatePayload>>;
+    export type Event = DomainEvent<FolderAfterUpdatePayload>;
 }

@@ -1,7 +1,7 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/api-core";
+import type { IEventHandler, DomainEvent } from "@webiny/api-core";
 import type { Tenant } from "~/types.js";
-import type { TenantBeforeUpdateEvent, TenantAfterUpdateEvent } from "./events.js";
+import type { TenantBeforeUpdatePayload, TenantAfterUpdatePayload } from "./events.js";
 
 export type UpdateTenantError = { type: "NOT_FOUND" } | { type: "UNKNOWN"; cause: Error };
 
@@ -36,18 +36,20 @@ export namespace UpdateTenantGateway {
     export type Interface = IUpdateTenantGateway;
 }
 
-export const TenantBeforeUpdateHandler = createAbstraction<IEventHandler<TenantBeforeUpdateEvent>>(
+export const TenantBeforeUpdateHandler = createAbstraction<IEventHandler<DomainEvent<TenantBeforeUpdatePayload>>>(
     "TenantBeforeUpdateHandler"
 );
 
 export namespace TenantBeforeUpdateHandler {
-    export type Interface = IEventHandler<TenantBeforeUpdateEvent>;
+    export type Interface = IEventHandler<DomainEvent<TenantBeforeUpdatePayload>>;
+    export type Event = DomainEvent<TenantBeforeUpdatePayload>;
 }
 
-export const TenantAfterUpdateHandler = createAbstraction<IEventHandler<TenantAfterUpdateEvent>>(
+export const TenantAfterUpdateHandler = createAbstraction<IEventHandler<DomainEvent<TenantAfterUpdatePayload>>>(
     "TenantAfterUpdateHandler"
 );
 
 export namespace TenantAfterUpdateHandler {
-    export type Interface = IEventHandler<TenantAfterUpdateEvent>;
+    export type Interface = IEventHandler<DomainEvent<TenantAfterUpdatePayload>>;
+    export type Event = DomainEvent<TenantAfterUpdatePayload>;
 }

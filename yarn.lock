@@ -14141,6 +14141,7 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-admin-users": "npm:0.0.0"
     "@webiny/api-authentication": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-i18n": "npm:0.0.0"
@@ -14153,6 +14154,7 @@ __metadata:
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
+    "@webiny/di-container": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
@@ -14358,13 +14360,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-core@workspace:packages/api-core":
+"@webiny/api-core@npm:0.0.0, @webiny/api-core@workspace:packages/api-core":
   version: 0.0.0-use.local
   resolution: "@webiny/api-core@workspace:packages/api-core"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di-container": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
@@ -15111,6 +15114,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-db": "npm:0.0.0"
@@ -15181,6 +15185,7 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di-container": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
@@ -15190,27 +15195,6 @@ __metadata:
     "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     dataloader: "npm:^2.2.3"
-    jest-dynalite: "npm:^3.6.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-tenant-manager@npm:0.0.0, @webiny/api-tenant-manager@workspace:packages/api-tenant-manager":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-tenant-manager@workspace:packages/api-tenant-manager"
-  dependencies:
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-aws": "npm:0.0.0"
-    "@webiny/handler-graphql": "npm:0.0.0"
-    "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/utils": "npm:0.0.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
@@ -16956,7 +16940,6 @@ __metadata:
     "@webiny/api-security-so-ddb": "npm:0.0.0"
     "@webiny/api-tenancy": "npm:0.0.0"
     "@webiny/api-tenancy-so-ddb": "npm:0.0.0"
-    "@webiny/api-tenant-manager": "npm:0.0.0"
     "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"

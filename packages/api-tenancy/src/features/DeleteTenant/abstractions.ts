@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/api-core";
-import type { TenantBeforeDeleteEvent, TenantAfterDeleteEvent } from "./events.js";
+import type { IEventHandler, DomainEvent } from "@webiny/api-core";
+import type { TenantBeforeDeletePayload, TenantAfterDeletePayload } from "./events.js";
 
 export interface IDeleteTenantUseCase {
     execute(id: string): Promise<boolean>;
@@ -33,18 +33,20 @@ export namespace DeleteTenantGateway {
     export type Interface = IDeleteTenantGateway;
 }
 
-export const TenantBeforeDeleteHandler = createAbstraction<IEventHandler<TenantBeforeDeleteEvent>>(
+export const TenantBeforeDeleteHandler = createAbstraction<IEventHandler<DomainEvent<TenantBeforeDeletePayload>>>(
     "TenantBeforeDeleteHandler"
 );
 
 export namespace TenantBeforeDeleteHandler {
-    export type Interface = IEventHandler<TenantBeforeDeleteEvent>;
+    export type Interface = IEventHandler<DomainEvent<TenantBeforeDeletePayload>>;
+    export type Event = DomainEvent<TenantBeforeDeletePayload>;
 }
 
-export const TenantAfterDeleteHandler = createAbstraction<IEventHandler<TenantAfterDeleteEvent>>(
+export const TenantAfterDeleteHandler = createAbstraction<IEventHandler<DomainEvent<TenantAfterDeletePayload>>>(
     "TenantAfterDeleteHandler"
 );
 
 export namespace TenantAfterDeleteHandler {
-    export type Interface = IEventHandler<TenantAfterDeleteEvent>;
+    export type Interface = IEventHandler<DomainEvent<TenantAfterDeletePayload>>;
+    export type Event = DomainEvent<TenantAfterDeletePayload>;
 }

@@ -1,7 +1,7 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/api-core";
+import type { IEventHandler, DomainEvent } from "@webiny/api-core";
 import type { Tenant, CreateTenantInput } from "~/types.js";
-import type { TenantBeforeCreateEvent, TenantAfterCreateEvent } from "./events.js";
+import type { TenantBeforeCreatePayload, TenantAfterCreatePayload } from "./events.js";
 import { CreateTenantError } from "./errors.js";
 
 /**
@@ -57,18 +57,20 @@ export namespace CreateTenantGateway {
 /**
  * Event Handlers
  */
-export const TenantBeforeCreateHandler = createAbstraction<IEventHandler<TenantBeforeCreateEvent>>(
+export const TenantBeforeCreateHandler = createAbstraction<IEventHandler<DomainEvent<TenantBeforeCreatePayload>>>(
     "TenantBeforeCreateHandler"
 );
 
 export namespace TenantBeforeCreateHandler {
-    export type Interface = IEventHandler<TenantBeforeCreateEvent>;
+    export type Interface = IEventHandler<DomainEvent<TenantBeforeCreatePayload>>;
+    export type Event = DomainEvent<TenantBeforeCreatePayload>;
 }
 
-export const TenantAfterCreateHandler = createAbstraction<IEventHandler<TenantAfterCreateEvent>>(
+export const TenantAfterCreateHandler = createAbstraction<IEventHandler<DomainEvent<TenantAfterCreatePayload>>>(
     "TenantAfterCreateHandler"
 );
 
 export namespace TenantAfterCreateHandler {
-    export type Interface = IEventHandler<TenantAfterCreateEvent>;
+    export type Interface = IEventHandler<DomainEvent<TenantAfterCreatePayload>>;
+    export type Event = DomainEvent<TenantAfterCreatePayload>;
 }

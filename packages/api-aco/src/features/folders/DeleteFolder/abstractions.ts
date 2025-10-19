@@ -29,6 +29,7 @@ export const FolderBeforeDeleteHandler = createAbstraction<
 
 export namespace FolderBeforeDeleteHandler {
     export type Interface = IEventHandler<DomainEvent<FolderBeforeDeletePayload>>;
+    export type Event = DomainEvent<FolderBeforeDeletePayload>;
 }
 
 export const FolderAfterDeleteHandler = createAbstraction<
@@ -37,4 +38,5 @@ export const FolderAfterDeleteHandler = createAbstraction<
 
 export namespace FolderAfterDeleteHandler {
     export type Interface = IEventHandler<DomainEvent<FolderAfterDeletePayload>>;
+    export type Event = DomainEvent<FolderAfterDeletePayload>;
 }

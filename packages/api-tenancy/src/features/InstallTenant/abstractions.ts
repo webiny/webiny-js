@@ -1,7 +1,7 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/api-core";
+import type { IEventHandler, DomainEvent } from "@webiny/api-core";
 import type { Tenant } from "~/types.js";
-import type { TenantInstalledEvent } from "./events.js";
+import type { TenantInstalledPayload } from "./events.js";
 import { InstallTenantError, InstallationDependencyError } from "./errors.js";
 
 export type { Tenant };
@@ -75,8 +75,9 @@ export namespace InstallTenantUseCase {
  * Event Handler Abstraction
  */
 export const TenantInstalledHandler =
-    createAbstraction<IEventHandler<TenantInstalledEvent>>("TenantInstalledHandler");
+    createAbstraction<IEventHandler<DomainEvent<TenantInstalledPayload>>>("TenantInstalledHandler");
 
 export namespace TenantInstalledHandler {
-    export type Interface = IEventHandler<TenantInstalledEvent>;
+    export type Interface = IEventHandler<DomainEvent<TenantInstalledPayload>>;
+    export type Event = DomainEvent<TenantInstalledPayload>;
 }

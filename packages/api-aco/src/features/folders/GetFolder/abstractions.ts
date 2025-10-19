@@ -26,5 +26,15 @@ export interface FolderAfterGetPayload {
 export const FolderBeforeGetHandler =
     createAbstraction<IEventHandler<DomainEvent<FolderBeforeGetPayload>>>("FolderBeforeGetHandler");
 
+export namespace FolderBeforeGetHandler {
+    export type Interface = IEventHandler<DomainEvent<FolderBeforeGetPayload>>;
+    export type Event = DomainEvent<FolderBeforeGetPayload>;
+}
+
 export const FolderAfterGetHandler =
     createAbstraction<IEventHandler<DomainEvent<FolderAfterGetPayload>>>("FolderAfterGetHandler");
+
+export namespace FolderAfterGetHandler {
+    export type Interface = IEventHandler<DomainEvent<FolderAfterGetPayload>>;
+    export type Event = DomainEvent<FolderAfterGetPayload>;
+}

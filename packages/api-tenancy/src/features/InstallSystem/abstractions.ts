@@ -1,6 +1,5 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/api-core";
-import type { SystemInstalledEvent } from "./events.js";
+import type { IEventHandler, DomainEvent } from "@webiny/api-core";
 import { type AppInstallationData, InstallTenantUseCase } from "../InstallTenant/abstractions.js";
 import { InstallSystemError, SystemAlreadyInstalledError } from "./errors.js";
 import { CreateTenantUseCase } from "~/features/CreateTenant/abstractions.js";
@@ -42,8 +41,9 @@ export namespace InstallSystemUseCase {
  * Event Handler Abstraction
  */
 export const SystemInstalledHandler =
-    createAbstraction<IEventHandler<SystemInstalledEvent>>("SystemInstalledHandler");
+    createAbstraction<IEventHandler<DomainEvent>>("SystemInstalledHandler");
 
 export namespace SystemInstalledHandler {
-    export type Interface = IEventHandler<SystemInstalledEvent>;
+    export type Interface = IEventHandler<DomainEvent>;
+    export type Event = DomainEvent;
 }
