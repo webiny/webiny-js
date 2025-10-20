@@ -70,5 +70,3 @@ export const createSecurityGraphQL = (config: MultiTenancyGraphQLConfig = {}) =>
 
 export { createSecurityRolePlugin } from "./plugins/SecurityRolePlugin.js";
 export { createSecurityTeamPlugin } from "./plugins/SecurityTeamPlugin.js";
-
-

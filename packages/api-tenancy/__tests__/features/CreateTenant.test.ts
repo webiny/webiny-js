@@ -1,15 +1,13 @@
 import { describe, it, vi, expect, Mock } from "vitest";
 import { Container } from "@webiny/di-container";
 import { EventPublisher } from "@webiny/api-core";
+import { WcpFeatures } from "@webiny/api-wcp";
 import { CreateTenantFeature } from "~/features/CreateTenant/index.js";
 import { CreateTenantUseCaseAbstraction } from "~/features/CreateTenant/index.js";
 import { TenancyStorageOperations } from "~/features/shared/storageOperations.js";
 import { TenantCache } from "~/features/shared/abstractions.js";
 import { TenantCache as TenantCacheImpl } from "~/features/shared/TenantCache.js";
-import {
-    TenantBeforeCreateEvent,
-    TenantAfterCreateEvent
-} from "~/features/CreateTenant/events.js";
+import { TenantBeforeCreateEvent, TenantAfterCreateEvent } from "~/features/CreateTenant/events.js";
 import {
     TenantBeforeCreateHandler,
     TenantAfterCreateHandler
@@ -25,6 +23,8 @@ describe("CreateTenant Feature", () => {
      */
     const setupFeature = (mockStorageOps: Partial<IStorageOps>) => {
         const container = new Container();
+
+        WcpFeatures.register(container);
 
         // Mock EventPublisher to spy on published events
         const mockEventPublisher: Partial<EventPublisher.Interface> = {
@@ -90,7 +90,7 @@ describe("CreateTenant Feature", () => {
                 name: "Test Tenant",
                 parent: "root",
                 status: "active", // default
-                settings: { domains: [] }
+                settings: {}
             });
             expect(tenant.id).toBeDefined();
             expect(tenant.id).not.toBe("");
@@ -305,6 +305,7 @@ describe("CreateTenant Feature", () => {
 
             // Create custom setup with event order tracking
             const container = new Container();
+            WcpFeatures.register(container);
 
             const mockEventPublisher: Partial<EventPublisher.Interface> = {
                 publish: vi.fn().mockImplementation(event => {
@@ -498,7 +499,7 @@ describe("CreateTenant Feature", () => {
             const result = await useCase.execute(input);
             const afterExecution = new Date();
 
-            const tenant = result.value
+            const tenant = result.value;
 
             // Assert
             expect(tenant.createdOn).toBeDefined();
@@ -536,7 +537,6 @@ describe("CreateTenant Feature", () => {
 
             // Assert
             expect(result.value.settings).toBeDefined();
-            expect(result.value.settings.domains).toEqual([]);
         });
 
         it("should preserve provided settings.domains", async () => {

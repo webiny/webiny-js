@@ -1,19 +1,22 @@
-import type { DeleteTenantUseCase } from "../abstractions.js";
+import { WcpContext } from "@webiny/api-wcp/features/WcpContext";
+import { createDecorator } from "@webiny/feature/api";
+import { DeleteTenantUseCase } from "../abstractions.js";
 
-// TODO: This decorator will be implemented in @webiny/api-wcp package
-// It will wrap DeleteTenantUseCase and:
-// 1. Execute the deletion
-// 2. Call decrementWcpTenants() after successful deletion
-
-export class DeleteTenantWithWcpDecrement implements DeleteTenantUseCase.Interface {
+class DeleteTenantWithWcpDecrementImpl implements DeleteTenantUseCase.Interface {
     constructor(
-        private decoratee: DeleteTenantUseCase.Interface,
-        private decrementWcpTenants: () => Promise<void>
+        private wcp: WcpContext.Interface,
+        private decoratee: DeleteTenantUseCase.Interface
     ) {}
 
     async execute(id: string): Promise<boolean> {
         const result = await this.decoratee.execute(id);
-        await this.decrementWcpTenants();
+        await this.wcp.decrementTenants();
         return result;
     }
 }
+
+export const DeleteTenantWithWcpDecrement = createDecorator({
+    abstraction: DeleteTenantUseCase,
+    decorator: DeleteTenantWithWcpDecrementImpl,
+    dependencies: [WcpContext]
+});

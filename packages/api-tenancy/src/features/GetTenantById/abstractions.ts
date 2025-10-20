@@ -34,7 +34,8 @@ export interface IGetTenantByIdGateway {
     getTenantById(id: string): Promise<Tenant | null>;
 }
 
-export const GetTenantByIdGateway = createAbstraction<IGetTenantByIdGateway>("GetTenantByIdGateway");
+export const GetTenantByIdGateway =
+    createAbstraction<IGetTenantByIdGateway>("GetTenantByIdGateway");
 
 export namespace GetTenantByIdGateway {
     export type Interface = IGetTenantByIdGateway;

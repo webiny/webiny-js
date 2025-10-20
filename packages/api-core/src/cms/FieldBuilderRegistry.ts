@@ -25,4 +25,3 @@ export const FieldBuilderRegistry = createImplementation({
     implementation: FieldBuilderRegistryImpl,
     dependencies: []
 });
-

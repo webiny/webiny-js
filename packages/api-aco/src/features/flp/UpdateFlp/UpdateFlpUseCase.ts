@@ -195,7 +195,13 @@ export class UpdateFlpUseCase implements UseCaseAbstraction.Interface {
         return await Promise.all(folders.map(folder => this.getFlp(folder)));
     }
 
-    private async getFlp({ id, type, parentId, slug, permissions }: Folder): Promise<FolderLevelPermission> {
+    private async getFlp({
+        id,
+        type,
+        parentId,
+        slug,
+        permissions
+    }: Folder): Promise<FolderLevelPermission> {
         const flp = await this.context.aco.flp.get(id);
 
         if (!flp) {

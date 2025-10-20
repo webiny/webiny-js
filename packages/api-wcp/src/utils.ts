@@ -1,5 +1,3 @@
-import type { WcpFetchParams } from "~/createWcp.js";
-
 export const getWcpProjectLicenseCacheKey = () => {
     // We're dividing an hour into 5-minute blocks. In an hour, that's 12 blocks total.
     // So, while we're in the same 5-minute block, the cached license will be returned.
@@ -15,6 +13,13 @@ export const getWcpProjectLicenseCacheKey = () => {
     // - "cached-license-23-12"
     return `cached-project-license-${currentHourOfTheDay}-${Math.ceil(currentMinuteOfTheHour / 5)}`;
 };
+
+export interface WcpFetchParams {
+    url: string;
+    authorization: string;
+    body: Record<string, any>;
+    meta: Record<string, any>;
+}
 
 export const wcpFetch = async ({ url, authorization, body }: WcpFetchParams) => {
     const response = await fetch(url, {

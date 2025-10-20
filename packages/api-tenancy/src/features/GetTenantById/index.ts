@@ -1,5 +1,5 @@
 export {
     GetTenantByIdUseCase,
     GetTenantByIdRepository,
-    GetTenantByIdGateway,
+    GetTenantByIdGateway
 } from "./abstractions.js";

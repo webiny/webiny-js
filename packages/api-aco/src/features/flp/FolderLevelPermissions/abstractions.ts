@@ -1,13 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type {
-    CanAccessFolderContentParams,
-    CanAccessFolderParams
-} from "./useCases/index.js";
-import type {
-    FolderLevelPermission,
-    FolderPermission,
-    ListFlpsParams
-} from "~/types.js";
+import type { CanAccessFolderContentParams, CanAccessFolderParams } from "./useCases/index.js";
+import type { FolderLevelPermission, FolderPermission, ListFlpsParams } from "~/types.js";
 
 export interface IFolderLevelPermissions {
     canUseFolderLevelPermissions(enabled?: boolean): boolean;
@@ -22,16 +15,17 @@ export interface IFolderLevelPermissions {
     canManageFolderStructure(flp: FolderLevelPermission): Promise<boolean>;
     canManageFolderPermissions(flp: FolderLevelPermission): Promise<boolean>;
     getDefaultPermissions(permissions: FolderPermission[]): Promise<FolderPermission[]>;
-    listFolderLevelPermissions(params: ListFlpsParams): Promise<Array<{
-        id: string;
-        permissions: FolderPermission[];
-    }>>;
+    listFolderLevelPermissions(params: ListFlpsParams): Promise<
+        Array<{
+            id: string;
+            permissions: FolderPermission[];
+        }>
+    >;
     getFolderLevelPermissions(id: string): Promise<FolderPermission[]>;
 }
 
-export const FolderLevelPermissions = createAbstraction<IFolderLevelPermissions>(
-    "FolderLevelPermissions"
-);
+export const FolderLevelPermissions =
+    createAbstraction<IFolderLevelPermissions>("FolderLevelPermissions");
 
 export namespace FolderLevelPermissions {
     export type Interface = IFolderLevelPermissions;

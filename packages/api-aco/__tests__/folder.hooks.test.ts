@@ -14,9 +14,7 @@ describe("Folder Lifecycle Events", () => {
 
     beforeEach(async () => {
         const handler = useGraphQlHandler({
-            plugins: [
-                assignFolderLifecycleEvents()
-            ]
+            plugins: [assignFolderLifecycleEvents()]
         });
 
         aco = handler.aco;

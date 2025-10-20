@@ -1,11 +1,15 @@
 import { describe, it, vi, expect, Mock } from "vitest";
 import { Container } from "@webiny/di-container";
 import { EventPublisher } from "@webiny/api-core";
+import { WcpFeatures } from "@webiny/api-wcp";
 import { InstallTenantFeature } from "~/features/InstallTenant/index.js";
 import { InstallTenantUseCase } from "~/features/InstallTenant/index.js";
 import { AppInstaller } from "~/features/InstallTenant/index.js";
 import { TenantInstalledEvent } from "~/features/InstallTenant/events.js";
-import { InstallTenantError, InstallationDependencyError } from "~/features/InstallTenant/errors.js";
+import {
+    InstallTenantError,
+    InstallationDependencyError
+} from "~/features/InstallTenant/errors.js";
 import type { Tenant, TenantInstallationInput } from "~/features/InstallTenant/abstractions.js";
 import type { IAppInstaller } from "~/features/InstallTenant/abstractions.js";
 import { UpdateTenantFeature } from "~/features/UpdateTenant/index.js";
@@ -59,6 +63,7 @@ describe("InstallTenant Feature", () => {
      */
     const setupFeature = (installers: IAppInstaller[], mockStorageOps?: Partial<IStorageOps>) => {
         const container = new Container();
+        WcpFeatures.register(container);
 
         // Mock EventPublisher to spy on published events
         const mockEventPublisher: Partial<EventPublisher.Interface> = {
@@ -380,9 +385,7 @@ describe("InstallTenant Feature", () => {
             const tenant = createMockTenant();
             const input: TenantInstallationInput = {
                 tenant,
-                installationInput: [
-                    { app: "nonExistent", data: {} }
-                ]
+                installationInput: [{ app: "nonExistent", data: {} }]
             };
 
             // Act
@@ -420,7 +423,7 @@ describe("InstallTenant Feature", () => {
             const error = result.error as InstallationDependencyError;
             expect(error).toBeInstanceOf(InstallationDependencyError);
             expect(error.message).toContain('depends on "cms"');
-            expect(error.message).toContain('not included in the installation request');
+            expect(error.message).toContain("not included in the installation request");
         });
 
         it("should fail when circular dependency detected", async () => {
@@ -607,7 +610,9 @@ describe("InstallTenant Feature", () => {
 
             // Event should list all installed apps in correct order
             const event = (eventPublisher.publish as Mock).mock.calls[0][0];
-            expect(event.payload.installedApps.sort()).toEqual(["cms", "pageBuilder", "formBuilder"].sort());
+            expect(event.payload.installedApps.sort()).toEqual(
+                ["cms", "pageBuilder", "formBuilder"].sort()
+            );
         });
 
         it("should work with empty installation list", async () => {

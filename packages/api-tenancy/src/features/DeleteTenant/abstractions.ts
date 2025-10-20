@@ -33,18 +33,18 @@ export namespace DeleteTenantGateway {
     export type Interface = IDeleteTenantGateway;
 }
 
-export const TenantBeforeDeleteHandler = createAbstraction<IEventHandler<DomainEvent<TenantBeforeDeletePayload>>>(
-    "TenantBeforeDeleteHandler"
-);
+export const TenantBeforeDeleteHandler = createAbstraction<
+    IEventHandler<DomainEvent<TenantBeforeDeletePayload>>
+>("TenantBeforeDeleteHandler");
 
 export namespace TenantBeforeDeleteHandler {
     export type Interface = IEventHandler<DomainEvent<TenantBeforeDeletePayload>>;
     export type Event = DomainEvent<TenantBeforeDeletePayload>;
 }
 
-export const TenantAfterDeleteHandler = createAbstraction<IEventHandler<DomainEvent<TenantAfterDeletePayload>>>(
-    "TenantAfterDeleteHandler"
-);
+export const TenantAfterDeleteHandler = createAbstraction<
+    IEventHandler<DomainEvent<TenantAfterDeletePayload>>
+>("TenantAfterDeleteHandler");
 
 export namespace TenantAfterDeleteHandler {
     export type Interface = IEventHandler<DomainEvent<TenantAfterDeletePayload>>;

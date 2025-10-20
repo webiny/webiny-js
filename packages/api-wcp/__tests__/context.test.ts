@@ -15,7 +15,7 @@ describe("context", () => {
             await pl.apply(context);
         }
 
-        expect(context.wcp).toEqual({
+        expect(context.wcp).toMatchObject({
             getProjectLicense: expect.any(Function),
             getProject: expect.any(Function),
             getRawLicense: expect.any(Function),

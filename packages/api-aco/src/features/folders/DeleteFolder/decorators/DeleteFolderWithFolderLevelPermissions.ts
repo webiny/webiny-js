@@ -7,7 +7,10 @@ class DeleteFolderWithFolderLevelPermissionsImpl implements DeleteFolderUseCase.
     private folderLevelPermissions: FolderLevelPermissions.Interface;
     private readonly decoretee: DeleteFolderUseCase.Interface;
 
-    constructor(folderLevelPermissions: FolderLevelPermissions.Interface, decoretee: DeleteFolderUseCase.Interface) {
+    constructor(
+        folderLevelPermissions: FolderLevelPermissions.Interface,
+        decoretee: DeleteFolderUseCase.Interface
+    ) {
         this.folderLevelPermissions = folderLevelPermissions;
         this.decoretee = decoretee;
     }

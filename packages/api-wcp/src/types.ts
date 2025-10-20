@@ -1,33 +1,18 @@
 import type { Context } from "@webiny/api/types.js";
-import type { ILicense, ProjectPackageFeatures, WcpProjectEnvironment } from "@webiny/wcp/types.js";
-import type { WCP_FEATURE_LABEL } from "@webiny/wcp";
+import type { ILicense, ProjectPackageFeatures } from "@webiny/wcp/types.js";
+import type { IWcpContext } from "~/features/WcpContext/index.js";
 
 export interface WcpContext extends Context {
-    wcp: WcpContextObject;
+    wcp: IWcpContext;
 }
 
-export interface WcpContextObject extends ILicense {
-    getProject: () => WcpProject | null;
-    getProjectLicense: () => ILicense;
-    getProjectEnvironment: () => WcpProjectEnvironment | null;
-    ensureCanUseFeature: (featureId: keyof typeof WCP_FEATURE_LABEL) => void;
-    incrementSeats: () => Promise<void>;
-    decrementSeats: () => Promise<void>;
-    incrementTenants: () => Promise<void>;
-    decrementTenants: () => Promise<void>;
-}
+export type WcpContextObject = IWcpContext;
 
 export interface CachedWcpProjectLicense {
     cacheKey: string | null;
     project: WcpProject | null;
     license: ILicense;
 }
-
-export type AaclPermission = {
-    name: "aacl";
-    legacy: boolean;
-    teams: boolean;
-};
 
 export interface WcpProject {
     orgId: string;

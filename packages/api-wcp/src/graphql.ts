@@ -1,7 +1,7 @@
 import type { WcpContext } from "./types.js";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/index.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
-import { GetProjectUseCase } from "~/features/index.js";
+import { GetProjectUseCase } from "~/features/GetProject/index.js";
 
 const emptyResolver = () => ({});
 

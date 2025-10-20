@@ -57,18 +57,18 @@ export namespace CreateTenantGateway {
 /**
  * Event Handlers
  */
-export const TenantBeforeCreateHandler = createAbstraction<IEventHandler<DomainEvent<TenantBeforeCreatePayload>>>(
-    "TenantBeforeCreateHandler"
-);
+export const TenantBeforeCreateHandler = createAbstraction<
+    IEventHandler<DomainEvent<TenantBeforeCreatePayload>>
+>("TenantBeforeCreateHandler");
 
 export namespace TenantBeforeCreateHandler {
     export type Interface = IEventHandler<DomainEvent<TenantBeforeCreatePayload>>;
     export type Event = DomainEvent<TenantBeforeCreatePayload>;
 }
 
-export const TenantAfterCreateHandler = createAbstraction<IEventHandler<DomainEvent<TenantAfterCreatePayload>>>(
-    "TenantAfterCreateHandler"
-);
+export const TenantAfterCreateHandler = createAbstraction<
+    IEventHandler<DomainEvent<TenantAfterCreatePayload>>
+>("TenantAfterCreateHandler");
 
 export namespace TenantAfterCreateHandler {
     export type Interface = IEventHandler<DomainEvent<TenantAfterCreatePayload>>;

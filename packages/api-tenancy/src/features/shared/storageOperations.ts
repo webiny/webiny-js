@@ -5,8 +5,9 @@ import type { TenancyStorageOperations as ITenancyStorageOperations } from "~/ty
  * Abstraction for Tenancy Storage Operations
  * This allows the legacy storage operations to be injected through DI
  */
-export const TenancyStorageOperations =
-    createAbstraction<ITenancyStorageOperations>("TenancyStorageOperations");
+export const TenancyStorageOperations = createAbstraction<ITenancyStorageOperations>(
+    "TenancyStorageOperations"
+);
 
 export namespace TenancyStorageOperations {
     export type Interface = ITenancyStorageOperations;

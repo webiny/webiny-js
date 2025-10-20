@@ -1,28 +1,29 @@
-import type { CreateTenantUseCase } from "../abstractions.js";
-import type { Tenant, CreateTenantInput } from "~/types.js";
+import { WcpContext } from "@webiny/api-wcp/features/WcpContext";
+import { createDecorator } from "@webiny/feature/api";
+import { CreateTenantUseCase } from "../abstractions.js";
+import type { CreateTenantInput } from "~/types.js";
 
-// TODO: This decorator will be implemented in @webiny/api-wcp package
-// It will wrap CreateTenantUseCase and:
-// 1. Call incrementWcpTenants() before tenant creation
-// 2. On error, call decrementWcpTenants() to rollback
-// 3. Otherwise, return the created tenant
-
-export class CreateTenantWithWcpIncrement implements CreateTenantUseCase.Interface {
+class CreateTenantWithWcpIncrementImpl implements CreateTenantUseCase.Interface {
     constructor(
-        private decoratee: CreateTenantUseCase.Interface,
-        private incrementWcpTenants: () => Promise<void>,
-        private decrementWcpTenants: () => Promise<void>
+        private wcp: WcpContext.Interface,
+        private decoratee: CreateTenantUseCase.Interface
     ) {}
 
     async execute(data: CreateTenantInput) {
-        await this.incrementWcpTenants();
+        await this.wcp.incrementTenants();
 
         const result = await this.decoratee.execute(data);
 
         if (result.isFail()) {
-            this.decrementWcpTenants();
+            await this.wcp.decrementTenants();
         }
 
         return result;
     }
 }
+
+export const CreateTenantWithWcpIncrement = createDecorator({
+    abstraction: CreateTenantUseCase,
+    decorator: CreateTenantWithWcpIncrementImpl,
+    dependencies: [WcpContext]
+});

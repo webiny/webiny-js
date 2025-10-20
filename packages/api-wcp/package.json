@@ -11,8 +11,14 @@
   "description": "A set of backend Webiny Control Panel (WCP)-related features.",
   "author": "Webiny Ltd.",
   "license": "MIT",
+  "exports": {
+    "./features/WcpContext": "./features/WcpContext/index.js",
+    "./features/GetProject": "./features/GetProject/index.js",
+    ".": "./index.js"
+  },
   "dependencies": {
     "@webiny/api": "0.0.0",
+    "@webiny/di-container": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",

@@ -1,5 +1,5 @@
 import { createContextPlugin } from "@webiny/handler";
-import { ApiCoreFeature } from "./ApiCoreFeature.js"
+import { ApiCoreFeature } from "./ApiCoreFeature.js";
 
 export const createApiCore = () => {
     return createContextPlugin(context => {
