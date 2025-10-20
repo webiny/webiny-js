@@ -5,7 +5,8 @@ import { cva, type VariantProps, cn } from "~/utils.js";
 const accordionContentVariants = cva(
     [
         "wby-overflow-hidden wby-text-md",
-        "wby-transition-all data-[state=closed]:wby-animate-collapsible-up data-[state=open]:wby-animate-collapsible-down"
+        "wby-transition-all data-[state=closed]:wby-animate-collapsible-up data-[state=open]:wby-animate-collapsible-down",
+        "wby-pl-xxl"
     ],
     {
         // Using pixel values here because of non-existing design tokens.

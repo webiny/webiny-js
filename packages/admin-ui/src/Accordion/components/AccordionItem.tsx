@@ -45,7 +45,11 @@ const AccordionItemBase = (props: AccordionItemProps) => {
             triggerProps: {
                 ...triggerProps
             },
-            contentProps: { children, withIcon: !!props.icon, withHandle: !!props.handle }
+            contentProps: {
+                children,
+                withIcon: !!props.icon,
+                withHandle: !!props.handle
+            }
         };
     }, [props]);
 
@@ -54,7 +58,7 @@ const AccordionItemBase = (props: AccordionItemProps) => {
             {...itemProps}
             className={cn(
                 [
-                    "wby-group-item wby-border-b-sm wby-border-b-neutral-dimmed data-[state=open]:wby-rounded-bl-lg data-[state=open]:wby-rounded-br-lg",
+                    "wby-group-item data-[state=open]:wby-rounded-bl-lg data-[state=open]:wby-rounded-br-lg",
                     "group-[.wby-accordion-variant-container]/accordion:wby-rounded-lg",
                     "data-[disabled]:wby-pointer-events-none data-[disabled]:wby-opacity-50"
                 ],

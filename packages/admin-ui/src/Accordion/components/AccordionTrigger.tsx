@@ -3,7 +3,6 @@ import { ReactComponent as KeyboardArrowDownIcon } from "@webiny/icons/keyboard_
 import { Collapsible as CollapsiblePrimitive } from "radix-ui";
 import { cn } from "~/utils.js";
 import { type AccordionItemProps } from "./AccordionItem.js";
-import { AccordionItemAction } from "./AccordionItemAction.js";
 import { Icon } from "~/Icon/index.js";
 import { AccordionItemDragHandle } from "~/Accordion/components/AccordionItemDragHandle.js";
 
@@ -36,6 +35,22 @@ const AccordionTrigger = ({
         };
     }, [interactive]);
 
+    const renderIcon = (render: boolean) =>
+        render && (
+            <div className={"wby-ml-md"}>
+                <Icon
+                    size={"lg"}
+                    className={"wby-transition"}
+                    color={"neutral-strong"}
+                    data-role={"open-close-indicator"}
+                    label={"Open/close indicator"}
+                    icon={<KeyboardArrowDownIcon />}
+                />
+            </div>
+        );
+
+    const isInteractable = Boolean(actions && interactive);
+
     return (
         <CollapsiblePrimitive.Trigger
             asChild
@@ -49,10 +64,19 @@ const AccordionTrigger = ({
                     "hover:wby-bg-neutral-dimmed",
                     "group-[.wby-accordion-variant-container]:wby-rounded-lg",
                     "[&[data-state=open]_[data-role=open-close-indicator]]:wby-rotate-180",
+                    "wby-border-l-accent",
                     interactive ? "wby-cursor-pointer" : "wby-cursor-default"
                 )}
             >
+                <div
+                    className={"wby-m-xs wby-w-1 wby-self-stretch wby-rounded-xs wby-bg-primary"}
+                />
+                {!icon && !isInteractable && (
+                    <div className={"wby-ml-sm wby-w-[20px] wby-h-[1px] wby-bg-neutral-strong"} />
+                )}
                 {draggable ? <AccordionItemDragHandle /> : null}
+                {renderIcon(isInteractable)}
+
                 <div
                     className={
                         "wby-w-full wby-flex wby-justify-between wby-items-center wby-px-md wby-py-sm-extra"
@@ -71,20 +95,7 @@ const AccordionTrigger = ({
                     </div>
                     <div className={"wby-flex wby-gap-xs"}>
                         {actions}
-
-                        {/* No need to show the separator if there are no actions and the item is not interactive. */}
-                        {actions && interactive && <AccordionItemAction.Separator />}
-
-                        {interactive && (
-                            <Icon
-                                size={"lg"}
-                                className={"wby-transition"}
-                                color={"neutral-strong"}
-                                data-role={"open-close-indicator"}
-                                label={"Open/close indicator"}
-                                icon={<KeyboardArrowDownIcon />}
-                            />
-                        )}
+                        {renderIcon(!isInteractable)}
                     </div>
                 </div>
             </div>

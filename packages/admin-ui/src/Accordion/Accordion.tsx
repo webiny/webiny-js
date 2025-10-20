@@ -7,7 +7,8 @@ import { DepthProvider, useDepth } from "./DepthContext.js";
 const accordionVariants = cva("wby-group wby-w-full", {
     variants: {
         variant: {
-            container: "wby-accordion-variant-container wby-gap-xs wby-flex wby-flex-col",
+            container:
+                "wby-accordion-variant-container wby-gap-xs wby-flex wby-flex-col wby-rounded-lg",
             underline: "wby-accordion-variant-underline "
         }
     },
