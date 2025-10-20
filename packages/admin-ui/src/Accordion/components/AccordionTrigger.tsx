@@ -51,6 +51,15 @@ const AccordionTrigger = ({
 
     const isInteractable = Boolean(actions && interactive);
 
+    const baseClasses = "wby-group/trigger wby-w-full wby-flex wby-items-center wby-relative";
+    const focusClasses =
+        "focus-visible:wby-outline-none focus-visible:wby-border-none focus-visible:wby-ring-sm focus-visible:wby-ring-primary-dimmed";
+    const hoverClasses = "hover:wby-bg-neutral-dimmed";
+    const variantClasses = "group-[.wby-accordion-variant-container]:wby-rounded-lg";
+    const stateClasses = "[&[data-state=open]_[data-role=open-close-indicator]]:wby-rotate-180";
+    const borderClasses = "wby-border-l-accent";
+    const cursorClass = interactive ? "wby-cursor-pointer" : "wby-cursor-default";
+
     return (
         <CollapsiblePrimitive.Trigger
             asChild
@@ -59,13 +68,13 @@ const AccordionTrigger = ({
             <div
                 {...divAsButtonProps}
                 className={cn(
-                    "wby-group/trigger wby-w-full wby-flex wby-items-center wby-cursor-pointer wby-relative",
-                    "focus-visible:wby-outline-none focus-visible:wby-border-none focus-visible:wby-ring-sm focus-visible:wby-ring-primary-dimmed",
-                    "hover:wby-bg-neutral-dimmed",
-                    "group-[.wby-accordion-variant-container]:wby-rounded-lg",
-                    "[&[data-state=open]_[data-role=open-close-indicator]]:wby-rotate-180",
-                    "wby-border-l-accent",
-                    interactive ? "wby-cursor-pointer" : "wby-cursor-default"
+                    baseClasses,
+                    focusClasses,
+                    hoverClasses,
+                    variantClasses,
+                    stateClasses,
+                    borderClasses,
+                    cursorClass
                 )}
             >
                 <div
