@@ -1,6 +1,6 @@
 import type { StorybookConfig } from "@storybook/react-webpack5";
 import path from "path";
-import tailwindcss from "tailwindcss";
+import tailwindcss from "@tailwindcss/postcss";
 
 /**
  * This function is used to resolve the absolute path of a package.
@@ -49,15 +49,25 @@ const config: StorybookConfig = {
             ...config.resolve.extensionAlias
         };
 
+        // Remove existing CSS rules to avoid conflicts
+        config.module = config.module || {};
+        config.module.rules = config.module.rules || [];
+        config.module.rules = config.module.rules.filter(rule => {
+            const test = (rule as { test?: RegExp }).test;
+            return !(test && test.toString().includes("css"));
+        });
+
         // Add custom style handling for CSS (including Tailwind)
-        config.module?.rules?.push({
+        config.module.rules.push({
             test: /\.css$/i,
             use: [
                 "style-loader",
                 {
                     loader: "css-loader",
                     options: {
-                        importLoaders: 1
+                        importLoaders: 1,
+                        url: false,
+                        import: false
                     }
                 },
                 {
