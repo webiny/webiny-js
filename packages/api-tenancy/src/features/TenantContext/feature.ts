@@ -4,6 +4,6 @@ import { TenantContext } from "./TenantContext.js";
 export const TenantContextFeature = createFeature({
     name: "TenantContextFeature",
     register(container) {
-        container.register(TenantContext);
+        container.register(TenantContext).inSingletonScope();
     }
 });
