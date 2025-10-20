@@ -14,7 +14,7 @@ export const attachPublishEntryLifecycleEvents = (params: IParams) => {
             return;
         }
         const app = createWorkflowAppName({ model });
-        const state = await context.workflowState.getState(app, entry.id);
+        const state = await context.workflowState.getTargetState(app, entry.id);
         if (state.done) {
             entry.state = undefined;
             return;

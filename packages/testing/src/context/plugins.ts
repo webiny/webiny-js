@@ -18,6 +18,7 @@ import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/type
 import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
+import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -33,6 +34,8 @@ export interface CreateHandlerCoreParams {
 process.env.S3_BUCKET = "my-mock-s3-bucket";
 
 export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
+    const documentClient = getDocumentClient();
+
     const tenant = {
         id: "root",
         name: "Root",
@@ -52,6 +55,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
     const i18nStorage = getStorageOps<any[]>("i18n");
 
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
+
     return {
         storageOperations: cmsStorage.storageOperations,
         tenant,
@@ -65,7 +69,8 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
             ...createTenancyAndSecurity({
                 setupGraphQL: setupTenancyAndSecurityGraphQL,
                 permissions: createPermissions(permissions),
-                identity
+                identity,
+                documentClient
             }),
             {
                 type: "context",

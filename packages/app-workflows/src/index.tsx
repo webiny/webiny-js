@@ -1,14 +1,20 @@
 import React from "react";
-import type { IWorkflowsProps as BaseIWorkflowsProps } from "./Components/Workflows.js";
-import { Workflows as BaseWorkflows } from "./Components/Workflows.js";
+import type { IWorkflowsProps as BaseIWorkflowsProps } from "./Components/Workflow/index.js";
+import { Workflows as BaseWorkflows } from "./Components/Workflow/index.js";
 import { useWcp } from "@webiny/app-admin";
+
+export * from "./Components/WorkflowStateBar/index.js";
 
 export type { IWorkflowApplication } from "~/types.js";
 
 export const useCanUseWorkflows = () => {
     const wcp = useWcp();
 
-    return wcp.canUseWorkflows();
+    const canUseWorkflows = wcp.canUseWorkflows();
+
+    return {
+        canUseWorkflows
+    };
 };
 
 export interface IWorkflowProps extends BaseIWorkflowsProps {

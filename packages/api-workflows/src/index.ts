@@ -5,6 +5,7 @@ import { ContextPlugin } from "@webiny/handler";
 import type { Context } from "~/types.js";
 import { createWorkflowsSchema } from "~/graphql/workflows.js";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
+import { createWorkflowStateSchema } from "~/graphql/workflowState.js";
 
 export type {
     IWorkflowState,
@@ -28,7 +29,7 @@ export const createWorkflows = () => {
 
         context.plugins.register(createWorkflowModel(), createStateModel());
         await createContext(context);
-        context.plugins.register(createWorkflowsSchema());
+        context.plugins.register(createWorkflowsSchema(), createWorkflowStateSchema());
     });
 
     plugin.name = "workflows.context";
