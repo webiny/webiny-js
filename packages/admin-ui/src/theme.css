@@ -1,8 +1,20 @@
-@import "tailwindcss/theme" layer(theme);
-@import "tailwindcss/utilities" layer(utilities);
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+@import "tailwindcss";
 
 @theme {
-  /* Spacing - these map to gap-*, p-*, m-* utilities */
+  /* Border radius. */
+  --radius-3Xl: 36px;
+  --radius-lg: 8px;
+  --radius-md: 6px;
+  --radius-sm: 4px;
+  --radius-xl: 16px;
+  --radius-xs: 2px;
+  --radius-xxl: 24px;
+
+  /* Font. */
+  --font-sans: "Inter", sans-serif;
+
+  /* Spacing. */
   --spacing-3xl: 64px;
   --spacing-lg: 24px;
   --spacing-md: 16px;
@@ -17,7 +29,7 @@
   --spacing-xxl: 48px;
   --spacing-xxs: 2px;
 
-  /* Colors - these map to bg-*, text-*, border-*, fill-*, ring-* utilities */
+  /* Colors. */
   --color-destructive: var(--color-destructive);
   --color-destructive-disabled: var(--color-destructive-disabled);
   --color-destructive-muted: var(--color-destructive-muted);
@@ -72,6 +84,60 @@
   --text-color-success-muted: var(--text-color-success-muted);
   --text-color-success-primary: var(--text-color-success-primary);
   --text-color-success-subtle: var(--text-color-success-subtle);
+
+  /* Text sizes. */
+  --text-h1: var(--text-h1);
+  --text-h1--line-height: var(--text-h1--line-height);
+  --text-h1--letter-spacing: var(--text-h1--letter-spacing);
+  --text-h1--font-weight: var(--text-h1--font-weight);
+  --text-h2: var(--text-h2);
+  --text-h2--line-height: var(--text-h2--line-height);
+  --text-h2--letter-spacing: var(--text-h2--letter-spacing);
+  --text-h2--font-weight: var(--text-h2--font-weight);
+  --text-h3: var(--text-h3);
+  --text-h3--line-height: var(--text-h3--line-height);
+  --text-h3--letter-spacing: var(--text-h3--letter-spacing);
+  --text-h3--font-weight: var(--text-h3--font-weight);
+  --text-h4: var(--text-h4);
+  --text-h4--line-height: var(--text-h4--line-height);
+  --text-h4--letter-spacing: var(--text-h4--letter-spacing);
+  --text-h4--font-weight: var(--text-h4--font-weight);
+  --text-h5: var(--text-h5);
+  --text-h5--line-height: var(--text-h5--line-height);
+  --text-h5--letter-spacing: var(--text-h5--letter-spacing);
+  --text-h5--font-weight: var(--text-h5--font-weight);
+  --text-h6: var(--text-h6);
+  --text-h6--line-height: var(--text-h6--line-height);
+  --text-h6--letter-spacing: var(--text-h6--letter-spacing);
+  --text-h6--font-weight: var(--text-h6--font-weight);
+  --text-sm: var(--text-hsm);
+  --text-sm--line-height: var(--text-sm--line-height);
+  --text-sm--letter-spacing: var(--text-sm--letter-spacing);
+  --text-sm--font-weight: var(--text-sm--font-weight);
+  --text-md: var(--text-hmd);
+  --text-md--line-height: var(--text-md--line-height);
+  --text-md--letter-spacing: var(--text-md--letter-spacing);
+  --text-md--font-weight: var(--text-md--font-weight);
+  --text-lg: var(--text-hlg);
+  --text-lg--line-height: var(--text-lg--line-height);
+  --text-lg--letter-spacing: var(--text-lg--letter-spacing);
+  --text-lg--font-weight: var(--text-lg--font-weight);
+  --text-xl: var(--text-hxl);
+  --text-xl--line-height: var(--text-xl--line-height);
+  --text-xl--letter-spacing: var(--text-xl--letter-spacing);
+  --text-xl--font-weight: var(--text-xl--font-weight);
+  --text-xxl: var(--text-hxxl);
+  --text-xxl--line-height: var(--text-xxl--line-height);
+  --text-xxl--letter-spacing: var(--text-xxl--letter-spacing);
+  --text-xxl--font-weight: var(--text-xxl--font-weight);
+  --text-3xl: var(--text-h3xl);
+  --text-3xl--line-height: var(--text-3xl--line-height);
+  --text-3xl--letter-spacing: var(--text-3xl--letter-spacing);
+  --text-3xl--font-weight: var(--text-3xl--font-weight);
+  --text-4xl: var(--text-h4xl);
+  --text-4xl--line-height: var(--text-4xl--line-height);
+  --text-4xl--letter-spacing: var(--text-4xl--letter-spacing);
+  --text-4xl--font-weight: var(--text-4xl--font-weight);
 }
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
@@ -224,4 +290,58 @@
   --text-color-success-muted: hsl(var(--color-success-400));
   --text-color-success-primary: hsl(var(--color-success-500));
   --text-color-success-subtle: hsl(var(--color-success-200));
+
+  /* Text size. */
+  --text-h1: var(--text-4xl);
+  --text-h1--line-height: var(--text-4xl--line-height);
+  --text-h1--letter-spacing: var(--text-4xl--letter-spacing);
+  --text-h1--font-weight: var(--font-weight-semibold);
+  --text-h2: var(--text-3xl);
+  --text-h2--line-height: var(--text-3xl--line-height);
+  --text-h2--letter-spacing: var(--text-3xl--letter-spacing);
+  --text-h2--font-weight: var(--font-weight-semibold);
+  --text-h3: var(--text-xxl);
+  --text-h3--line-height: var(--text-xxl--line-height);
+  --text-h3--letter-spacing: var(--text-xxl--letter-spacing);
+  --text-h3--font-weight: var(--font-weight-semibold);
+  --text-h4: var(--text-xl);
+  --text-h4--line-height: var(--text-xl--line-height);
+  --text-h4--letter-spacing: initial;
+  --text-h4--font-weight: var(--font-weight-semibold);
+  --text-h5: var(--text-lg);
+  --text-h5--line-height: var(--text-lg--line-height);
+  --text-h5--letter-spacing: initial;
+  --text-h5--font-weight: var(--font-weight-semibold);
+  --text-h6: var(--text-md);
+  --text-h6--line-height: var(--text-md--line-height);
+  --text-h6--letter-spacing: initial;
+  --text-h6--font-weight: var(--font-weight-semibold);
+  --text-sm: 12px;
+  --text-sm--line-height: 16px;
+  --text-sm--letter-spacing: initial;
+  --text-sm--font-weight: normal;
+  --text-md: 14px;
+  --text-md--line-height: 20px;
+  --text-md--letter-spacing: initial;
+  --text-md--font-weight: normal;
+  --text-lg: 16px;
+  --text-lg--line-height: 24px;
+  --text-lg--letter-spacing: initial;
+  --text-lg--font-weight: normal;
+  --text-xl: 20px;
+  --text-xl--line-height: 32px;
+  --text-xl--letter-spacing: initial;
+  --text-xl--font-weight: normal;
+  --text-xxl: 30px;
+  --text-xxl--line-height: 38px;
+  --text-xxl--letter-spacing: initial;
+  --text-xxl--font-weight: normal;
+  --text-3xl: 36px;
+  --text-3xl--line-height: 44px;
+  --text-3xl--letter-spacing: initial;
+  --text-3xl--font-weight: normal;
+  --text-4xl: 48px;
+  --text-4xl--line-height: 60px;
+  --text-4xl--letter-spacing: initial;
+  --text-4xl--font-weight: normal;
 }

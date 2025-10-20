@@ -1,12 +1,21 @@
-@import "tailwindcss/theme" layer(theme);
-@import "tailwindcss/utilities" layer(utilities);
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+@import "tailwindcss";
 
 @theme {
-  /* Spacing - these map to gap-*, p-*, m-* utilities */
+  /* Border radius. */
+  {THEME_BORDER_RADIUS}
+
+  /* Font. */
+  {THEME_FONT}
+
+  /* Spacing. */
   {THEME_SPACING}
 
-  /* Colors - these map to bg-*, text-*, border-*, fill-*, ring-* utilities */
+  /* Colors. */
   {THEME_COLORS}
+
+  /* Text sizes. */
+  {THEME_TEXT_SIZES}
 }
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
@@ -27,5 +36,7 @@
   /* Text color. */
   {TEXT_COLOR}
 
+  /* Text size. */
+  {TEXT_SIZE}
 }
 

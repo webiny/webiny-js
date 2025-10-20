@@ -16,38 +16,17 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
 
     // ===== @theme block - Tailwind v4 utility definitions =====
 
-    // // 1. THEME: Font sizes
-    // {
-    //     const fontSizes = normalizedFigmaExport
-    //         .filter(item => item.type === "textFont" && item.variantName.startsWith("font-size-"))
-    //         .sort((a, b) => a.resolvedValue - b.resolvedValue)
-    //         .map(({ variantName, resolvedValue }) => {
-    //             const size = variantName.replace("font-size-", "");
-    //             return `--text-${size}: ${resolvedValue}px;`;
-    //         });
-    //
-    //     // Add heading sizes
-    //     const headingSizes = [1, 2, 3, 4, 5, 6].map(lvl => {
-    //         return `--text-h${lvl}: var(--text-h${lvl});`;
-    //     });
-    //
-    //     themeCss = themeCss.replace(
-    //         "{THEME_FONT_SIZES}",
-    //         [...headingSizes, ...fontSizes].join("\n  ")
-    //     );
-    // }
-    //
-    // // 2. THEME: Border radius
-    // {
-    //     const borderRadius = normalizedFigmaExport
-    //         .filter(item => item.type === "borderRadius")
-    //         .map(variable => {
-    //             return `--radius-${variable.variantName}: ${variable.resolvedValue}px;`;
-    //         });
-    //
-    //     themeCss = themeCss.replace("{THEME_BORDER_RADIUS}", borderRadius.join("\n  "));
-    // }
-    //
+    // 2. THEME: Border radius
+    {
+        const borderRadius = normalizedFigmaExport
+            .filter(item => item.type === "borderRadius")
+            .map(variable => {
+                return `--radius-${variable.variantName}: ${variable.resolvedValue}px;`;
+            });
+
+        themeCss = themeCss.replace("{THEME_BORDER_RADIUS}", borderRadius.join("\n  "));
+    }
+
     // 3. THEME: Spacing
     {
         const spacing = normalizedFigmaExport
@@ -80,13 +59,49 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
             .filter(variable => !isColorWithAlpha(variable.variantName))
             .forEach(variable => {
                 const colorKey = variable.variantName.replace("-default", "");
-                if (!colorMap.has('tc-' +colorKey)) {
-                    colorMap.set('tc-' +colorKey, `--text-color-${colorKey}: var(--text-color-${colorKey});`);
+                if (!colorMap.has("tc-" + colorKey)) {
+                    colorMap.set(
+                        "tc-" + colorKey,
+                        `--text-color-${colorKey}: var(--text-color-${colorKey});`
+                    );
                 }
             });
 
         const colors = Array.from(colorMap.values());
         themeCss = themeCss.replace("{THEME_COLORS}", colors.join("\n  "));
+    }
+
+    // Text sizes.
+    {
+        const fontSizes = normalizedFigmaExport
+            .filter(item => item.type === "textFont" && item.variantName.startsWith("font-size-"))
+            .sort((a, b) => a.resolvedValue - b.resolvedValue)
+            .map(({ variantName, resolvedValue }) => {
+                const size = variantName.replace("font-size-", "");
+                return [
+                    `--text-${size}: var(--text-h${size});`,
+                    `--text-${size}--line-height: var(--text-${size}--line-height);`,
+                    `--text-${size}--letter-spacing: var(--text-${size}--letter-spacing);`,
+                    `--text-${size}--font-weight: var(--text-${size}--font-weight);`
+                ];
+            }).flat();
+
+        // Add heading sizes
+        const headingSizes = [1, 2, 3, 4, 5, 6]
+            .map(lvl => {
+                return [
+                    `--text-h${lvl}: var(--text-h${lvl});`,
+                    `--text-h${lvl}--line-height: var(--text-h${lvl}--line-height);`,
+                    `--text-h${lvl}--letter-spacing: var(--text-h${lvl}--letter-spacing);`,
+                    `--text-h${lvl}--font-weight: var(--text-h${lvl}--font-weight);`
+                ];
+            })
+            .flat();
+
+        themeCss = themeCss.replace(
+            "{THEME_TEXT_SIZES}",
+            [...headingSizes, ...fontSizes].join("\n  ")
+        );
     }
 
     // // 5. THEME: Ring width - Map to ring-* utilities
@@ -231,15 +246,15 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
     //     themeCss = themeCss.replace("{FILL}", fillColors.join("\n    "));
     // }
     //
-    // // 6. Font
-    // {
-    //     themeCss = themeCss.replace("{FONT}", `--font-sans: 'Inter', sans-serif;`);
-    // }
+    // 6. Font
+    {
+        themeCss = themeCss.replace("{THEME_FONT}", `--font-sans: 'Inter', sans-serif;`);
+    }
     //
     // // 7. Font weight
     // {
     //     const weight = normalizedFigmaExport
-    //         .filter(item => item.type === "textFont" && item.variantName.startsWith("font-weight-"))
+    //         .filter(item => item.type === "textFont" && item.variantName.startsWith("font--font-weight-"))
     //         .map(variable => `--${variable.variantName}: ${variable.resolvedValue};`);
     //
     //     themeCss = themeCss.replace("{FONT_WEIGHT}", weight.join("\n    "));
@@ -349,72 +364,77 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
         themeCss = themeCss.replace("{TEXT_COLOR}", textColors.join("\n    "));
     }
 
-    // // 15. Text size
-    // {
-    //     const textSize = normalizedFigmaExport
-    //         .filter(item => item.type === "textFont" && item.variantName.startsWith("font-size-"))
-    //         .sort((a, b) => a.resolvedValue - b.resolvedValue)
-    //         .reduce(
-    //             (acc, { variantName, resolvedValue }) => {
-    //                 const size = variantName.replace("font-size-", "");
-    //                 const lineHeightItem = normalizedFigmaExport.find(item => {
-    //                     return item.variantName === `line-height-${size}`;
-    //                 });
-    //                 const lineHeight = lineHeightItem ? lineHeightItem.resolvedValue : resolvedValue * 1.5;
-    //
-    //                 return [
-    //                     ...acc,
-    //                     [
-    //                         `--text-${size}: ${resolvedValue}px;`,
-    //                         `--text-${size}-leading: ${lineHeight}px;`,
-    //                         `--text-${size}-tracking: initial;`,
-    //                         `--text-${size}-weight: normal;`
-    //                     ]
-    //                 ];
-    //             },
-    //             [
-    //                 [
-    //                     `--text-h1: var(--text-4xl);`,
-    //                     `--text-h1-leading: var(--text-4xl-leading);`,
-    //                     `--text-h1-tracking: var(--text-4xl-tracking);`,
-    //                     `--text-h1-weight: var(--font-weight-semibold);`
-    //                 ],
-    //                 [
-    //                     `--text-h2: var(--text-3xl);`,
-    //                     `--text-h2-leading: var(--text-3xl-leading);`,
-    //                     `--text-h2-tracking: var(--text-3xl-tracking);`,
-    //                     `--text-h2-weight: var(--font-weight-semibold);`
-    //                 ],
-    //                 [
-    //                     `--text-h3: var(--text-xxl);`,
-    //                     `--text-h3-leading: var(--text-xxl-leading);`,
-    //                     `--text-h3-tracking: var(--text-xxl-tracking);`,
-    //                     `--text-h3-weight: var(--font-weight-semibold);`
-    //                 ],
-    //                 [
-    //                     `--text-h4: var(--text-xl);`,
-    //                     `--text-h4-leading: var(--text-xl-leading);`,
-    //                     `--text-h4-tracking: initial;`,
-    //                     `--text-h4-weight: var(--font-weight-semibold);`
-    //                 ],
-    //                 [
-    //                     `--text-h5: var(--text-lg);`,
-    //                     `--text-h5-leading: var(--text-lg-leading);`,
-    //                     `--text-h5-tracking: initial;`,
-    //                     `--text-h5-weight: var(--font-weight-semibold);`
-    //                 ],
-    //                 [
-    //                     `--text-h6: var(--text-md);`,
-    //                     `--text-h6-leading: var(--text-md-leading);`,
-    //                     `--text-h6-tracking: initial;`,
-    //                     `--text-h6-weight: var(--font-weight-semibold);`
-    //                 ]
-    //             ]
-    //         )
-    //         .flat();
-    //
-    //     themeCss = themeCss.replace("{TEXT_SIZE}", textSize.join("\n    "));
-    // }
+    // 15. Text size
+    {
+
+        //  --text-tiny--line-height: 1.5rem;
+        //   --text-tiny--letter-spacing: 0.125rem;
+        //   --text-tiny--font-weight: 500;
+        
+        const textSize = normalizedFigmaExport
+            .filter(item => item.type === "textFont" && item.variantName.startsWith("font-size-"))
+            .sort((a, b) => a.resolvedValue - b.resolvedValue)
+            .reduce(
+                (acc, { variantName, resolvedValue }) => {
+                    const size = variantName.replace("font-size-", "");
+                    const lineHeightItem = normalizedFigmaExport.find(item => {
+                        return item.variantName === `line-height-${size}`;
+                    });
+                    const lineHeight = lineHeightItem ? lineHeightItem.resolvedValue : resolvedValue * 1.5;
+
+                    return [
+                        ...acc,
+                        [
+                            `--text-${size}: ${resolvedValue}px;`,
+                            `--text-${size}--line-height: ${lineHeight}px;`,
+                            `--text-${size}--letter-spacing: initial;`,
+                            `--text-${size}--font-weight: normal;`
+                        ]
+                    ];
+                },
+                [
+                    [
+                        `--text-h1: var(--text-4xl);`,
+                        `--text-h1--line-height: var(--text-4xl--line-height);`,
+                        `--text-h1--letter-spacing: var(--text-4xl--letter-spacing);`,
+                        `--text-h1--font-weight: var(--font-weight-semibold);`
+                    ],
+                    [
+                        `--text-h2: var(--text-3xl);`,
+                        `--text-h2--line-height: var(--text-3xl--line-height);`,
+                        `--text-h2--letter-spacing: var(--text-3xl--letter-spacing);`,
+                        `--text-h2--font-weight: var(--font-weight-semibold);`
+                    ],
+                    [
+                        `--text-h3: var(--text-xxl);`,
+                        `--text-h3--line-height: var(--text-xxl--line-height);`,
+                        `--text-h3--letter-spacing: var(--text-xxl--letter-spacing);`,
+                        `--text-h3--font-weight: var(--font-weight-semibold);`
+                    ],
+                    [
+                        `--text-h4: var(--text-xl);`,
+                        `--text-h4--line-height: var(--text-xl--line-height);`,
+                        `--text-h4--letter-spacing: initial;`,
+                        `--text-h4--font-weight: var(--font-weight-semibold);`
+                    ],
+                    [
+                        `--text-h5: var(--text-lg);`,
+                        `--text-h5--line-height: var(--text-lg--line-height);`,
+                        `--text-h5--letter-spacing: initial;`,
+                        `--text-h5--font-weight: var(--font-weight-semibold);`
+                    ],
+                    [
+                        `--text-h6: var(--text-md);`,
+                        `--text-h6--line-height: var(--text-md--line-height);`,
+                        `--text-h6--letter-spacing: initial;`,
+                        `--text-h6--font-weight: var(--font-weight-semibold);`
+                    ]
+                ]
+            )
+            .flat();
+
+        themeCss = themeCss.replace("{TEXT_SIZE}", textSize.join("\n    "));
+    }
 
     return themeCss;
 };
