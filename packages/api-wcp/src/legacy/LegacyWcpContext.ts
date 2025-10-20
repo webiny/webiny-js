@@ -3,9 +3,10 @@ import type { WCP_FEATURE_LABEL } from "@webiny/wcp";
 import type {
     DecryptedWcpProjectLicense,
     ILicense,
+    WcpProject,
     WcpProjectEnvironment
 } from "@webiny/wcp/types.js";
-import type { WcpContextObject, WcpProject } from "~/types.js";
+import type { WcpContextObject } from "~/types.js";
 import { WcpContext } from "~/features/WcpContext/abstractions.js";
 
 export class LegacyWcpContext implements WcpContextObject {

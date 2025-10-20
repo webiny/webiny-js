@@ -13,7 +13,6 @@
   "license": "MIT",
   "exports": {
     "./features/WcpContext": "./features/WcpContext/index.js",
-    "./features/GetProject": "./features/GetProject/index.js",
     ".": "./index.js"
   },
   "dependencies": {

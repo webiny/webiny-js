@@ -1,7 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { ILicense, WcpProjectEnvironment } from "@webiny/wcp/types.js";
+import type { ILicense, WcpProject, WcpProjectEnvironment } from "@webiny/wcp/types.js";
 import type { WCP_FEATURE_LABEL } from "@webiny/wcp";
-import type { WcpProject } from "~/types.js";
 
 /**
  * WcpContext Abstraction

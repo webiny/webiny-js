@@ -1,73 +1,23 @@
 import type { WCP_FEATURE_LABEL } from "@webiny/wcp";
-import {
-    getWcpApiUrl,
-    getWcpAppUrl,
-    getWcpProjectEnvironment,
-    getWcpProjectLicense,
-    License,
-    NullLicense
-} from "@webiny/wcp";
+import { getWcpApiUrl, getWcpAppUrl, getWcpProjectEnvironment } from "@webiny/wcp";
 import WError from "@webiny/error";
 import type {
     DecryptedWcpProjectLicense,
     ILicense,
-    WcpProjectEnvironment
+    WcpProjectEnvironment,
+    WcpProject
 } from "@webiny/wcp/types.js";
-import type { CachedWcpProjectLicense, WcpProject } from "~/types.js";
-import { getWcpProjectLicenseCacheKey, wcpFetch } from "~/utils.js";
+import { wcpFetch } from "~/utils.js";
 import { WcpContext } from "./abstractions";
 
 const wcpProjectEnvironment = getWcpProjectEnvironment();
-
-const cachedWcpProjectLicense: CachedWcpProjectLicense = {
-    cacheKey: null,
-    project: null,
-    license: new NullLicense()
-};
 
 export interface CreateWcpContextParams {
     testProjectLicense?: DecryptedWcpProjectLicense;
 }
 
 export class WcpContextImpl implements WcpContext.Interface {
-    private initialized = false;
-
-    constructor(private params: CreateWcpContextParams = {}) {}
-
-    private async ensureInitialized(): Promise<void> {
-        if (this.initialized) {
-            return;
-        }
-
-        if (this.params.testProjectLicense) {
-            cachedWcpProjectLicense.license = License.fromLicenseDto(
-                this.params.testProjectLicense
-            );
-        } else if (wcpProjectEnvironment) {
-            const currentCacheKey = getWcpProjectLicenseCacheKey();
-            if (cachedWcpProjectLicense.cacheKey !== currentCacheKey) {
-                cachedWcpProjectLicense.cacheKey = currentCacheKey;
-                // Pull the project license from the WCP API.
-                const decryptedLicenseDto = await getWcpProjectLicense({
-                    orgId: wcpProjectEnvironment.org.id,
-                    projectId: wcpProjectEnvironment.project.id,
-                    projectEnvironmentApiKey: wcpProjectEnvironment.apiKey
-                });
-
-                if (decryptedLicenseDto) {
-                    cachedWcpProjectLicense.project = {
-                        orgId: decryptedLicenseDto.orgId,
-                        projectId: decryptedLicenseDto.projectId,
-                        package: decryptedLicenseDto.package
-                    };
-                }
-
-                cachedWcpProjectLicense.license = License.fromLicenseDto(decryptedLicenseDto);
-            }
-        }
-
-        this.initialized = true;
-    }
+    constructor(private license: ILicense) {}
 
     private getWcpProjectUrl(path = ""): string | null {
         if (!wcpProjectEnvironment) {
@@ -127,11 +77,11 @@ export class WcpContextImpl implements WcpContext.Interface {
     }
 
     getRawLicense(): DecryptedWcpProjectLicense | null {
-        return cachedWcpProjectLicense.license.getRawLicense();
+        return this.license.getRawLicense();
     }
 
     getProject(): WcpProject | null {
-        return cachedWcpProjectLicense.project;
+        return this.license.getProject();
     }
 
     getProjectEnvironment(): WcpProjectEnvironment | null {
@@ -139,47 +89,47 @@ export class WcpContextImpl implements WcpContext.Interface {
     }
 
     getProjectLicense(): ILicense {
-        return cachedWcpProjectLicense.license;
+        return this.license;
     }
 
     canUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL): boolean {
-        return cachedWcpProjectLicense.license.canUseFeature(wcpFeatureId);
+        return this.license.canUseFeature(wcpFeatureId);
     }
 
     canUseAacl(): boolean {
-        return cachedWcpProjectLicense.license.canUseAacl();
+        return this.license.canUseAacl();
     }
 
     canUseTeams(): boolean {
-        return cachedWcpProjectLicense.license.canUseTeams();
+        return this.license.canUseTeams();
     }
 
     canUseFolderLevelPermissions(): boolean {
-        return cachedWcpProjectLicense.license.canUseFolderLevelPermissions();
+        return this.license.canUseFolderLevelPermissions();
     }
 
     canUsePrivateFiles(): boolean {
-        return cachedWcpProjectLicense.license.canUsePrivateFiles();
+        return this.license.canUsePrivateFiles();
     }
 
     canUseAuditLogs(): boolean {
-        return cachedWcpProjectLicense.license.canUseAuditLogs();
+        return this.license.canUseAuditLogs();
     }
 
     canUseRecordLocking(): boolean {
-        return cachedWcpProjectLicense.license.canUseRecordLocking();
+        return this.license.canUseRecordLocking();
     }
 
     canUseFileManagerThreatDetection(): boolean {
-        return cachedWcpProjectLicense.license.canUseFileManagerThreatDetection();
+        return this.license.canUseFileManagerThreatDetection();
     }
 
     canUseWorkflows(): boolean {
-        return cachedWcpProjectLicense.license.canUseWorkflows();
+        return this.license.canUseWorkflows();
     }
 
     ensureCanUseFeature(wcpFeatureId: keyof typeof WCP_FEATURE_LABEL): void {
-        if (cachedWcpProjectLicense.license.canUseFeature(wcpFeatureId)) {
+        if (this.license.canUseFeature(wcpFeatureId)) {
             return;
         }
 
@@ -194,22 +144,18 @@ export class WcpContextImpl implements WcpContext.Interface {
     }
 
     async incrementSeats(): Promise<void> {
-        await this.ensureInitialized();
         await this.updateSeats("increment");
     }
 
     async decrementSeats(): Promise<void> {
-        await this.ensureInitialized();
         await this.updateSeats("decrement");
     }
 
     async incrementTenants(): Promise<void> {
-        await this.ensureInitialized();
         await this.updateTenants("increment");
     }
 
     async decrementTenants(): Promise<void> {
-        await this.ensureInitialized();
         await this.updateTenants("decrement");
     }
 }
