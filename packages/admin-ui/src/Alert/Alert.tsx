@@ -49,7 +49,7 @@ const alertVariants = cva(
                 type: "success",
                 variant: "strong",
                 className:
-                    "bg-secondary-default text-neutral-light [&_a]:!text-neutral-light"
+                    "bg-secondary text-neutral-light [&_a]:!text-neutral-light"
             },
             {
                 type: "success",
@@ -61,7 +61,7 @@ const alertVariants = cva(
                 type: "warning",
                 variant: "strong",
                 className:
-                    "bg-warning-default text-neutral-primary [&_a]:!text-neutral-primary"
+                    "bg-warning text-neutral-primary [&_a]:!text-neutral-primary"
             },
             {
                 type: "warning",
@@ -73,7 +73,7 @@ const alertVariants = cva(
                 type: "danger",
                 variant: "strong",
                 className:
-                    "bg-destructive-default text-neutral-light [&_a]:!text-neutral-light"
+                    "bg-destructive text-neutral-light [&_a]:!text-neutral-light"
             },
             {
                 type: "danger",
