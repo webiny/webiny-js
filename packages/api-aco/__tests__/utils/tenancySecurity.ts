@@ -37,6 +37,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
                 settings: {
                     domains: []
                 },
+                isInstalled: true,
                 status: "unknown",
                 description: "",
                 parent: null,

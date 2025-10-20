@@ -72,7 +72,7 @@ class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.
 
                 await this.folderLevelPermissions.ensureCanAccessFolder({
                     permissions: parentPermissions,
-                    rwd: "r"
+                    rwd: "w"
                 });
             } catch (e) {
                 if (e instanceof NotAuthorizedError) {
