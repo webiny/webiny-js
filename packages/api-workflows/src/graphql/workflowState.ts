@@ -9,7 +9,7 @@ import { createWorkflowStateValidation } from "~/validation/createWorkflowState.
 import { getTargetWorkflowStateValidation } from "~/validation/getTargetWorkflowState.js";
 import { getWorkflowStateValidation } from "~/validation/getWorkflowState.js";
 import { startWorkflowStateValidation } from "~/validation/startWorkflowState.js";
-import type { IWorkflowState } from "~/context/abstractions/WorkflowState.js";
+import type { IWorkflowStateRecord } from "~/context/abstractions/WorkflowState.js";
 
 export const createWorkflowStateSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -112,8 +112,15 @@ export const createWorkflowStateSchema = () => {
         `,
         resolvers: {
             WorkflowState: {
-                workflow: async (parent: IWorkflowState) => {
-                    return parent.workflow || null;
+                workflow: async (parent: IWorkflowStateRecord, _, context) => {
+                    try {
+                        return await context.workflows.getWorkflow({
+                            app: parent.app,
+                            id: parent.workflowId
+                        });
+                    } catch {
+                        return null;
+                    }
                 }
             },
             WorkflowsQuery: {

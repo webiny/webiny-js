@@ -23,13 +23,14 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
 
     get vm(): IWorkflowStatePresenterViewModel {
         return {
+            isReviewable: this.state !== undefined,
+            isOwner: this.state?.createdBy?.id === this.identity.id,
             state: this.state ? this.state.toJS() : null,
             step: toJS(this.state ? this.state.currentStep : null),
             loading: this.repository.loading,
             error: toJS(this.repository.error),
             app: this.app,
             id: this.targetRevisionId,
-            isOwner: this.state?.createdBy?.id === this.identity.id
         };
     }
 

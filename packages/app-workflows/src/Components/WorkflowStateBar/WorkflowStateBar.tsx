@@ -41,11 +41,7 @@ export const WorkflowStateBar = (props: IWorkflowStateBarProps) => {
         presenter.init();
         return presenter;
     }, [app, id, identity, client]);
-    console.log({
-        state: presenter.vm.state,
-        loading: presenter.vm.loading,
-        error: presenter.vm.error
-    });
+
     return (
         <>
             <Plugins>

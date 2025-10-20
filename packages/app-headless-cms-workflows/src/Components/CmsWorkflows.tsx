@@ -59,7 +59,7 @@ export const CmsWorkflowsView = () => {
             .filter(model => canEdit(model, "cms.contentModel"))
             .map(model => {
                 return {
-                    id: `cms:${model.modelId}`,
+                    id: `cms.${model.modelId}`,
                     name: model.name,
                     icon: <ModelIcon model={model} />
                 };
@@ -69,7 +69,7 @@ export const CmsWorkflowsView = () => {
     const onAppClick = useCallback(
         (id: string) => {
             goToRoute(Routes.ContentModels.Workflows, {
-                app: id.replace("cms:", "")
+                app: id
             });
         },
         [apps]
@@ -79,7 +79,7 @@ export const CmsWorkflowsView = () => {
         if (!route.params.app) {
             return undefined;
         }
-        return `cms:${route.params.app}`;
+        return `cms.${route.params.app}`;
     }, [route]);
 
     if (!canCreateContentModels) {

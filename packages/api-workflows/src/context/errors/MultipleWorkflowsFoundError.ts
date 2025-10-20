@@ -1,4 +1,4 @@
-import { WebinyError } from "@webiny/error/index";
+import { WebinyError } from "@webiny/error";
 import type { GenericRecord } from "@webiny/api/types.js";
 
 export const MULTIPLE_WORKFLOWS_FOUND_ERROR_CODE = "APP_MULTIPLE_WORKFLOWS_FOUND";

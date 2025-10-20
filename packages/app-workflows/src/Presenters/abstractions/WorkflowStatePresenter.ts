@@ -10,6 +10,7 @@ export interface IWorkflowStatePresenterViewModel {
     state: IWorkflowState | null | undefined;
     step: IWorkflowStateStepModel | null;
     isOwner: boolean;
+    isReviewable: boolean;
 }
 
 export interface IWorkflowStatePresenter {

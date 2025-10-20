@@ -10,19 +10,25 @@ import { WorkflowStateValue } from "~/types.js";
 export const WorkflowStateBarStartReview = WorkflowStateBarComponent.createDecorator(Original => {
     return observer(function WorkflowStateBarStartReviewDecorator(props) {
         const { presenter } = props;
-        if (presenter.vm.state?.state !== WorkflowStateValue.pending || presenter.vm.isOwner) {
+        if (
+            presenter.vm.state?.state !== WorkflowStateValue.pending ||
+            !presenter.vm.step ||
+            presenter.vm.isOwner
+        ) {
             return <Original {...props} />;
         }
-
+        
+        const {color,title} = presenter.vm.step;
         return (
             <Alert
+                color={color}
                 actions={
                     <>
                         <Alert.Action text={"Start Review"} onClick={() => presenter.start()} />
                     </>
                 }
             >
-                You can start the review for this entry.
+                You can start the <strong>{title}</strong> review.
             </Alert>
         );
     });

@@ -9,7 +9,7 @@ import { observer } from "mobx-react-lite";
 export const WorkflowStateBarRequestReview = WorkflowStateBarComponent.createDecorator(Original => {
     return observer(function WorkflowStateBarRequestReviewDecorator(props) {
         const { presenter } = props;
-        if (presenter.vm.state !== null) {
+        if (!presenter.vm.isReviewable) {
             return <Original {...props} />;
         }
         return (

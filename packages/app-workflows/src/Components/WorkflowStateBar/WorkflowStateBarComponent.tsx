@@ -15,9 +15,6 @@ export const WorkflowStateBarComponent = makeDecoratable(
     "WorkflowStateBarComponent",
     observer((props: IWorkflowStateBarComponentProps) => {
         const { presenter } = props;
-        console.log({
-            state: presenter.vm.state
-        });
         return (
             <Alert>
                 <div>Debugging info:</div>

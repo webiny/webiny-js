@@ -10,9 +10,15 @@ import { WorkflowStateValue } from "~/types.js";
 export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(Original => {
     return observer(function WorkflowStateBarReviewDecorator(props) {
         const { presenter } = props;
-        if (presenter.vm.state?.state !== WorkflowStateValue.inReview || presenter.vm.isOwner) {
+        if (
+            presenter.vm.state?.state !== WorkflowStateValue.inReview ||
+            presenter.vm.isOwner ||
+            !presenter.vm.step
+        ) {
             return <Original {...props} />;
         }
+        
+        const { title } = presenter.vm.step;
 
         return (
             <Alert
@@ -27,7 +33,7 @@ export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(
                     </>
                 }
             >
-                This item is currently under review.
+                This item is currently under <strong>{title}</strong> review.
             </Alert>
         );
     });
