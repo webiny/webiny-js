@@ -70,7 +70,7 @@ export const createWcpGraphQL = () => {
                         const wcpContext = context.container.resolve(WcpContext);
                         const project = wcpContext.getProject();
 
-                        if (project) {
+                        if (!project) {
                             throw Error(`Could not get project!`);
                         }
 

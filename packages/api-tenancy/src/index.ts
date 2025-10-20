@@ -6,6 +6,8 @@ import graphql from "./graphql/full.gql.js";
 import baseGraphQLTypes from "./graphql/types.gql.js";
 import { setupFeatures } from "~/setupFeatures.js";
 import { LegacyContext } from "./legacy/LegacyContext.js";
+import { GetTenantByIdUseCase } from "~/features/GetTenantById/index.js";
+import { TenantContext } from "~/features/TenantContext/index.js";
 
 interface TenancyPluginsParams {
     storageOperations: TenancyStorageOperations;
@@ -57,6 +59,16 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
         // Add WCP telemetry identifier
         // This tenancy package is used by GraphQL, Headless CMS, and PB import/export functions
         context.plugins.register({ type: "wcp-telemetry-tracker" });
+
+        // We need to load tenant, and set the current tenant context.
+        const getTenantById = context.container.resolve(GetTenantByIdUseCase);
+        const tenantResult = await getTenantById.execute(tenantId);
+        if (tenantResult.isOk()) {
+            const tenantContext = context.container.resolve(TenantContext);
+            tenantContext.setTenant(tenantResult.value);
+        } else {
+            throw new Error("Unable to load tenant!");
+        }
 
         // TODO: Legacy!
         // Set up legacy context. We use this API in many places across our codebase, and this will provide
