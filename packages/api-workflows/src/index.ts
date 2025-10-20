@@ -7,7 +7,7 @@ import { createWorkflowsSchema } from "~/graphql/workflows.js";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { createWorkflowStateSchema } from "~/graphql/workflowState.js";
 
-export * from "./context/errors/index.js"
+export * from "./context/errors/index.js";
 
 export type {
     IWorkflowState,

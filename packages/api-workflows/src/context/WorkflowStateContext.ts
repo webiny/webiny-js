@@ -103,7 +103,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 }
             );
         }
-        
+
         const { items: allWorkflows } = await this.context.workflows.listWorkflows({
             where: {
                 app
@@ -127,7 +127,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 }
             });
         }
-        
+
         const workflow = allWorkflows.find(wf => {
             return wf.id === state.workflowId;
         });

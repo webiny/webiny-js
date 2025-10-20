@@ -12,7 +12,7 @@ interface IWorkflowStateNotFoundErrorParams {
 export class WorkflowStateNotFoundError extends WebinyError {
     public constructor(params?: IWorkflowStateNotFoundErrorParams) {
         super({
-            message: params?.message || "No workflow state for given record",
+            message: params?.message || "No workflow state for given record.",
             code: params?.code || WORKFLOW_STATE_NOT_FOUND_ERROR_CODE,
             data: params?.data
         });

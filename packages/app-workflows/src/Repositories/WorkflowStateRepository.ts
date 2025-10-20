@@ -35,7 +35,7 @@ export class WorkflowStateRepository implements IWorkflowStateRepository {
 
         makeAutoObservable(this);
     }
-    
+
     public async start(
         params: IWorkflowStateRepositoryStartParams
     ): Promise<IWorkflowState | null> {
@@ -65,7 +65,7 @@ export class WorkflowStateRepository implements IWorkflowStateRepository {
         });
         return result.data;
     }
-    
+
     public async reject(
         params: IWorkflowStateRepositoryRejectParams
     ): Promise<IWorkflowState | null> {

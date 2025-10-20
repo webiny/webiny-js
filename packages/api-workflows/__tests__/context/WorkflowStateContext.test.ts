@@ -28,7 +28,7 @@ describe("Workflow State Context", () => {
 
         await expect(() => {
             return workflowStateContext.getTargetState(app, "non-existing-id#0001");
-        }).rejects.toThrow("");
+        }).rejects.toThrow("No workflow state for given record.");
     });
 
     it("should throw an error on getState because of faulty targetId", async () => {
@@ -52,7 +52,7 @@ describe("Workflow State Context", () => {
 
         await expect(() => {
             return workflowStateContext.createState("non-existing-app", "non-existing-id#0001");
-        }).rejects.toThrow("No workflow found for the given app.");
+        }).rejects.toThrow("No workflows are defined for the given app.");
     });
 
     it("should create, update and delete a state", async () => {
@@ -102,10 +102,10 @@ describe("Workflow State Context", () => {
         expect(updatedState.record?.comment).toBe("A comment!");
 
         await workflowStateContext.deleteTargetState(app, targetRevisionId);
-        
+
         await expect(() => {
             return workflowStateContext.getTargetState(app, targetRevisionId);
-        }).rejects.toThrow("")
+        }).rejects.toThrow("No workflow state for given record.");
     });
 
     it("should approve a step and move to the next one", async () => {
