@@ -49,7 +49,7 @@ const DropdownMenuBase = React.forwardRef<
                 // Temporary fix. We need this because `ref` doesn't get passed to components
                 // that are decorated with `makeDecoratable`. This will be fixed in the future.
                 children: (
-                    <div className={"wby-inline-block wby-text-0 wby-leading-none"}>{trigger}</div>
+                    <div className={"inline-block text-0 leading-none"}>{trigger}</div>
                 )
             },
             contentProps: rest

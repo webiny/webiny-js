@@ -2,68 +2,68 @@ import React from "react";
 import { Slot } from "radix-ui";
 import { cn, cva, type VariantProps, makeDecoratable } from "~/utils.js";
 
-const iconButtonWrapperVariants = cva("wby-inline-block", {
+const iconButtonWrapperVariants = cva("inline-block", {
     variants: {
         disabled: {
-            true: "wby-cursor-not-allowed",
-            false: "wby-cursor-pointer"
+            true: "cursor-not-allowed",
+            false: "cursor-pointer"
         }
     }
 });
 
 const iconButtonVariants = cva(
     [
-        "wby-border-transparent wby-rounded wby-flex wby-flex-shrink-0 wby-items-center wby-justify-center wby-ring-offset-background wby-transition-colors",
-        "[&_svg]:wby-pointer-events-none [&_svg]:wby-shrink-0",
-        "[&_img]:wby-pointer-events-none [&_img]:wby-shrink-0",
-        "aria-disabled:wby-pointer-events-none",
-        "focus-visible:wby-outline-none focus-visible:wby-border-accent-default"
+        "border-transparent rounded flex flex-shrink-0 items-center justify-center ring-offset-background transition-colors",
+        "[&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "[&_img]:pointer-events-none [&_img]:shrink-0",
+        "aria-disabled:pointer-events-none",
+        "focus-visible:outline-none focus-visible:border-accent-default"
     ],
     {
         variants: {
             variant: {
                 primary: [
-                    "wby-bg-primary wby-fill-neutral-base",
-                    "hover:wby-bg-primary-strong",
-                    "active:wby-bg-primary-xstrong",
-                    "aria-disabled:wby-bg-primary-disabled",
-                    "focus-visible:wby-ring-lg focus-visible:wby-ring-primary-dimmed"
+                    "bg-primary fill-neutral-base",
+                    "hover:bg-primary-strong",
+                    "active:bg-primary-xstrong",
+                    "aria-disabled:bg-primary-disabled",
+                    "focus-visible:ring-lg focus-visible:ring-primary-dimmed"
                 ],
                 secondary: [
-                    "wby-bg-neutral-dimmed wby-fill-neutral-xstrong",
-                    "hover:wby-bg-neutral-muted",
-                    "active:wby-bg-neutral-strong",
-                    "aria-disabled:wby-bg-neutral-disabled aria-disabled:wby-fill-neutral-strong",
-                    "focus-visible:wby-ring-lg focus-visible:wby-ring-primary-dimmed"
+                    "bg-neutral-dimmed fill-neutral-xstrong",
+                    "hover:bg-neutral-muted",
+                    "active:bg-neutral-strong",
+                    "aria-disabled:bg-neutral-disabled aria-disabled:fill-neutral-strong",
+                    "focus-visible:ring-lg focus-visible:ring-primary-dimmed"
                 ],
                 tertiary: [
-                    "wby-bg-neutral-base wby-border-neutral-muted wby-fill-neutral-xstrong",
-                    "hover:wby-bg-neutral-light",
-                    "active:wby-bg-neutral-muted",
-                    "aria-disabled:wby-bg-neutral-disabled aria-disabled:wby-fill-neutral-strong aria-disabled:wby-border-neutral-dimmed",
-                    "focus-visible:wby-ring-lg focus-visible:wby-ring-primary-dimmed"
+                    "bg-neutral-base border-neutral-muted fill-neutral-xstrong",
+                    "hover:bg-neutral-light",
+                    "active:bg-neutral-muted",
+                    "aria-disabled:bg-neutral-disabled aria-disabled:fill-neutral-strong aria-disabled:border-neutral-dimmed",
+                    "focus-visible:ring-lg focus-visible:ring-primary-dimmed"
                 ],
                 ghost: [
-                    "wby-bg-transparent wby-fill-neutral-xstrong",
-                    "hover:wby-bg-neutral-dimmed",
-                    "active:wby-bg-neutral-muted",
-                    "aria-disabled:wby-fill-neutral-strong hover:aria-disabled:wby-bg-transparent active:aria-disabled:wby-bg-transparent"
+                    "bg-transparent fill-neutral-xstrong",
+                    "hover:bg-neutral-dimmed",
+                    "active:bg-neutral-muted",
+                    "aria-disabled:fill-neutral-strong hover:aria-disabled:bg-transparent active:aria-disabled:bg-transparent"
                 ],
                 "ghost-negative": [
-                    "wby-bg-transparent wby-fill-neutral-base",
-                    "hover:wby-bg-neutral-base/20",
-                    "active:wby-bg-neutral-base/30",
-                    "focus-visible:!wby-border-neutral-base",
-                    "aria-disabled:wby-fill-neutral-base aria-disabled:wby-opacity-50 hover:aria-disabled:wby-bg-transparent active:aria-disabled:wby-bg-transparent"
+                    "bg-transparent fill-neutral-base",
+                    "hover:bg-neutral-base/20",
+                    "active:bg-neutral-base/30",
+                    "focus-visible:!border-neutral-base",
+                    "aria-disabled:fill-neutral-base aria-disabled:opacity-50 hover:aria-disabled:bg-transparent active:aria-disabled:bg-transparent"
                 ]
             },
             size: {
-                xxs: "wby-border-sm wby-rounded-xs wby-size-sm-extra [&_svg]:wby-size-md [&_img]:wby-size-md",
-                xs: "wby-border-sm wby-rounded-xs wby-size-md [&_svg]:wby-size-md [&_img]:wby-size-md",
-                sm: "wby-border-sm wby-rounded-sm",
-                md: "wby-border-sm wby-rounded-md",
-                lg: "wby-border-sm wby-rounded-md",
-                xl: "wby-border-md wby-rounded-lg wby-p-[calc(theme(padding.md)-theme(borderWidth.md))] [&_svg]:wby-size-lg [&_img]:wby-size-lg"
+                xxs: "border-sm rounded-xs size-sm-extra [&_svg]:size-md [&_img]:size-md",
+                xs: "border-sm rounded-xs size-md [&_svg]:size-md [&_img]:size-md",
+                sm: "border-sm rounded-sm",
+                md: "border-sm rounded-md",
+                lg: "border-sm rounded-md",
+                xl: "border-md rounded-lg p-[calc(theme(padding.md)-theme(borderWidth.md))] [&_svg]:size-lg [&_img]:size-lg"
             },
             iconSize: {
                 default: "",
@@ -74,43 +74,43 @@ const iconButtonVariants = cva(
             {
                 size: "xl",
                 variant: "ghost",
-                className: "focus-visible:wby-border-md"
+                className: "focus-visible:border-md"
             },
             {
                 size: "sm",
                 iconSize: "default",
                 className:
-                    "wby-p-[calc(theme(padding.xs)-theme(borderWidth.sm))] [&_svg]:wby-size-md [&_img]:wby-size-md"
+                    "p-[calc(theme(padding.xs)-theme(borderWidth.sm))] [&_svg]:size-md [&_img]:size-md"
             },
             {
                 size: "sm",
                 iconSize: "lg",
                 className:
-                    "wby-p-[calc(theme(padding.xxs)-theme(borderWidth.sm))] [&_svg]:wby-size-md-plus [&_img]:wby-size-md-plus"
+                    "p-[calc(theme(padding.xxs)-theme(borderWidth.sm))] [&_svg]:size-md-plus [&_img]:size-md-plus"
             },
             {
                 size: "md",
                 iconSize: "default",
                 className:
-                    "wby-p-[calc(theme(padding.sm)-theme(borderWidth.sm))] [&_svg]:wby-size-md [&_img]:wby-size-md"
+                    "p-[calc(theme(padding.sm)-theme(borderWidth.sm))] [&_svg]:size-md [&_img]:size-md"
             },
             {
                 size: "md",
                 iconSize: "lg",
                 className:
-                    "wby-p-[calc(theme(padding.xs)-theme(borderWidth.sm))] [&_svg]:wby-size-lg [&_img]:wby-size-lg"
+                    "p-[calc(theme(padding.xs)-theme(borderWidth.sm))] [&_svg]:size-lg [&_img]:size-lg"
             },
             {
                 size: "lg",
                 iconSize: "default",
                 className:
-                    "wby-p-[calc(theme(padding.sm-plus)-theme(borderWidth.sm))] [&_svg]:wby-size-md-plus [&_img]:wby-size-md-plus"
+                    "p-[calc(theme(padding.sm-plus)-theme(borderWidth.sm))] [&_svg]:size-md-plus [&_img]:size-md-plus"
             },
             {
                 size: "lg",
                 iconSize: "lg",
                 className:
-                    "wby-p-[calc(theme(padding.sm)-theme(borderWidth.sm))] [&_svg]:wby-size-lg [&_img]:wby-size-lg"
+                    "p-[calc(theme(padding.sm)-theme(borderWidth.sm))] [&_svg]:size-lg [&_img]:size-lg"
             }
         ],
         defaultVariants: {

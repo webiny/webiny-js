@@ -33,7 +33,7 @@ export const MultiAutoCompleteList = ({
             }
 
             const elements = [
-                <Command.Item key={"dummy-element"} value="-" className="wby-hidden" />
+                <Command.Item key={"dummy-element"} value="-" className="hidden" />
             ];
 
             const renderedItems = items.reduce((acc, item, currentIndex) => {

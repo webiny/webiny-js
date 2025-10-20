@@ -16,7 +16,7 @@ const ItemDescription = ({ className, disabled, item, small, ...props }: ItemDes
     return (
         <div
             className={cn(
-                "wby-flex wby-flex-col wby-gap-xxs wby-overflow-hidden wby-flex-1 wby-min-w-0",
+                "flex flex-col gap-xxs overflow-hidden flex-1 min-w-0",
                 className
             )}
             {...props}
@@ -25,8 +25,8 @@ const ItemDescription = ({ className, disabled, item, small, ...props }: ItemDes
                 size="sm"
                 as="div"
                 className={cn(
-                    "wby-truncate wby-overflow-hidden wby-whitespace-nowrap wby-w-full",
-                    disabled ? "wby-text-neutral-disabled" : "wby-text-neutral-primary"
+                    "truncate overflow-hidden whitespace-nowrap w-full",
+                    disabled ? "text-neutral-disabled" : "text-neutral-primary"
                 )}
             >
                 {item.name}
@@ -35,8 +35,8 @@ const ItemDescription = ({ className, disabled, item, small, ...props }: ItemDes
                 <Text
                     size="sm"
                     className={cn(
-                        "wby-truncate wby-overflow-hidden wby-whitespace-nowrap wby-w-full",
-                        disabled ? "wby-text-neutral-disabled" : "wby-text-neutral-muted"
+                        "truncate overflow-hidden whitespace-nowrap w-full",
+                        disabled ? "text-neutral-disabled" : "text-neutral-muted"
                     )}
                 >
                     {[formattedSize, item.mimeType].filter(Boolean).join(" - ")}

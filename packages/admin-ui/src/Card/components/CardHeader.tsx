@@ -11,8 +11,8 @@ const CardHeader = ({ title, description, options }: CardHeaderProps) => {
     }
 
     return (
-        <div className={"wby-flex wby-flex-row wby-justify-between"}>
-            <div className={"wby-flex wby-flex-col wby-gap-y-xs"}>
+        <div className={"flex flex-row justify-between"}>
+            <div className={"flex flex-col gap-y-xs"}>
                 {typeof title === "string" ? (
                     <Heading level={6} as={"h1"}>
                         {title}
@@ -21,7 +21,7 @@ const CardHeader = ({ title, description, options }: CardHeaderProps) => {
                     title
                 )}
                 {typeof description === "string" ? (
-                    <Text size="sm" className={"wby-text-neutral-strong"}>
+                    <Text size="sm" className={"text-neutral-strong"}>
                         {description}
                     </Text>
                 ) : (

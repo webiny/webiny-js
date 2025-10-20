@@ -15,21 +15,21 @@ interface AvatarProps
     fallback?: React.ReactElement<AvatarFallbackProps>;
 }
 
-const avatarVariants = cva("wby-relative wby-flex wby-shrink-0 wby-overflow-hidden", {
+const avatarVariants = cva("relative flex shrink-0 overflow-hidden", {
     variants: {
         size: {
-            sm: "wby-text-h6 wby-rounded-sm wby-size-[24px] [&_svg]:wby-size-[16px]",
-            md: "wby-text-h6 wby-rounded-md wby-size-[32px] [&_svg]:wby-size-[24px]",
-            lg: "wby-text-h6 wby-rounded-md wby-size-[40px] [&_svg]:wby-size-[24px]",
-            xl: "wby-text-h4 wby-rounded-lg wby-size-[48px] [&_svg]:wby-size-[24px]"
+            sm: "text-h6 rounded-sm size-[24px] [&_svg]:size-[16px]",
+            md: "text-h6 rounded-md size-[32px] [&_svg]:size-[24px]",
+            lg: "text-h6 rounded-md size-[40px] [&_svg]:size-[24px]",
+            xl: "text-h4 rounded-lg size-[48px] [&_svg]:size-[24px]"
         },
         variant: {
-            strong: "wby-bg-primary wby-text-neutral-light [&_svg]:wby-fill-neutral-base",
-            subtle: "wby-bg-neutral-light wby-text-neutral-primary [&_svg]:wby-fill-neutral-xstrong",
-            light: "wby-bg-neutral-dimmed wby-text-neutral-primary [&_svg]:wby-fill-neutral-xstrong",
-            quiet: "wby-bg-transparent wby-text-neutral-primary [&_svg]:wby-fill-neutral-xstrong",
+            strong: "bg-primary text-neutral-light [&_svg]:fill-neutral-base",
+            subtle: "bg-neutral-light text-neutral-primary [&_svg]:fill-neutral-xstrong",
+            light: "bg-neutral-dimmed text-neutral-primary [&_svg]:fill-neutral-xstrong",
+            quiet: "bg-transparent text-neutral-primary [&_svg]:fill-neutral-xstrong",
             outlined:
-                "wby-bg-neutral-base !wby-border-neutral-muted wby-border-sm wby-text-accent-primary [&_svg]:wby-fill-neutral-xstrong"
+                "bg-neutral-base !border-neutral-muted border-sm text-accent-primary [&_svg]:fill-neutral-xstrong"
         }
     },
     defaultVariants: {

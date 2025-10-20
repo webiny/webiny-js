@@ -66,10 +66,10 @@ export const DataList = <TData,>(propsInput: DataListProps<TData>) => {
 
     return (
         <div data-testid={"ui.list.data-list"}>
-            <div className={"wby-pt-md wby-pb-sm wby-pl-lg wby-pr-md wby-border"}>
+            <div className={"pt-md pb-sm pl-lg pr-md border"}>
                 {(props.title || props.actions) && (
-                    <div className={"wby-flex wby-justify-between wby-items-center wby-mb-xl"}>
-                        <Heading className={"wby-text-neutral-primary"} level={4}>
+                    <div className={"flex justify-between items-center mb-xl"}>
+                        <Heading className={"text-neutral-primary"} level={4}>
                             {props.title}
                         </Heading>
                     </div>
@@ -77,14 +77,14 @@ export const DataList = <TData,>(propsInput: DataListProps<TData>) => {
 
                 {Object.keys(showOptions).length > 0 && (
                     <div
-                        className={"wby-flex wby-items-center wby-justify-space-between wby-gap-sm"}
+                        className={"flex items-center justify-space-between gap-sm"}
                     >
-                        <div className={"wby-flex-1"}>
+                        <div className={"flex-1"}>
                             {props.search ? React.cloneElement(props.search, props) : null}
                         </div>
                         <div
                             className={
-                                "wby-flex wby-items-center wby-justify-space-between wby-gap-xs"
+                                "flex items-center justify-space-between gap-xs"
                             }
                         >
                             <MultiSelectAll {...props} />
@@ -108,7 +108,7 @@ export const DataList = <TData,>(propsInput: DataListProps<TData>) => {
             <div
                 style={{ maxHeight: "calc(100vh - 165px)" }}
                 className={
-                    "wby-relative wby-overflow-auto wby-border-t-sm wby-border-t-neutral-dimmed webiny-data-list__content"
+                    "relative overflow-auto border-t-sm border-t-neutral-dimmed webiny-data-list__content"
                 }
             >
                 {props.subHeader}

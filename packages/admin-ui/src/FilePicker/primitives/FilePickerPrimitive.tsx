@@ -11,25 +11,25 @@ import type { FilePreviewRendererProps, TriggerRendererProps } from "./component
 
 const filePickerVariants = cva(
     [
-        "wby-w-full wby-border-sm wby-text-md wby-peer wby-rounded-md",
-        "focus-visible:wby-outline-none",
-        "data-[disabled=true]:wby-cursor-not-allowed",
-        "wby-flex wby-flex-col wby-items-start wby-gap-y-sm-extra"
+        "w-full border-sm text-md peer rounded-md",
+        "focus-visible:outline-none",
+        "data-[disabled=true]:cursor-not-allowed",
+        "flex flex-col items-start gap-y-sm-extra"
     ],
     {
         variants: {
             type: {
                 area: [
-                    "wby-px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))] wby-py-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
+                    "px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))] py-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
                 ],
                 compact: [
-                    "wby-py-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] wby-px-[calc(theme(padding.sm)-theme(borderWidth.sm))]"
+                    "py-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] px-[calc(theme(padding.sm)-theme(borderWidth.sm))]"
                 ]
             },
             variant: {
                 primary: "",
                 secondary: "",
-                ghost: ["hover:wby-bg-transparent"]
+                ghost: ["hover:bg-transparent"]
             }
         },
         defaultVariants: {
@@ -127,13 +127,13 @@ const BaseFilePickerPrimitive = ({
             style={containerStyle}
         >
             {type === "area" && (label || description) && (
-                <div className={"wby-w-full"}>
+                <div className={"w-full"}>
                     {label && (
-                        <div className={"wby-mb-xs"}>
+                        <div className={"mb-xs"}>
                             {typeof label === "string" ? (
                                 <FilePickerLabel
                                     label={label}
-                                    className={"wby-m-0"}
+                                    className={"m-0"}
                                     disabled={disabled}
                                 />
                             ) : (
@@ -145,7 +145,7 @@ const BaseFilePickerPrimitive = ({
                         <FilePickerDescription
                             description={description}
                             disabled={disabled}
-                            className={"wby-m-0"}
+                            className={"m-0"}
                         />
                     )}
                 </div>

@@ -8,7 +8,7 @@ const CardFooter = ({ actions }: CardFooterProps) => {
         return null;
     }
 
-    return <div className={"wby-flex wby-justify-end wby-gap-sm"}>{actions}</div>;
+    return <div className={"flex justify-end gap-sm"}>{actions}</div>;
 };
 
 export { CardFooter, type CardFooterProps };

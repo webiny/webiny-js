@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Text } from "~/Text/index.js";
 import { cn, cva, makeDecoratable, type VariantProps } from "~/utils.js";
 
-const loaderVariants = cva("wby-relative wby-translate", {
+const loaderVariants = cva("relative translate", {
     variants: {
         size: {
-            xs: "wby-size-[16px]",
-            sm: "wby-size-[20px]",
-            md: "wby-size-[24px]",
-            lg: "wby-size-[40px]"
+            xs: "size-[16px]",
+            sm: "size-[20px]",
+            md: "size-[24px]",
+            lg: "size-[40px]"
         }
     },
     defaultVariants: {
@@ -16,12 +16,12 @@ const loaderVariants = cva("wby-relative wby-translate", {
     }
 });
 
-const loaderBaseVariant = cva("wby-stroke ", {
+const loaderBaseVariant = cva("stroke ", {
     variants: {
         variant: {
-            accent: "wby-opacity-10 wby-text-neutral-primary",
-            subtle: "wby-opacity-10 wby-text-neutral-primary",
-            negative: "wby-opacity-20 wby-text-neutral-light"
+            accent: "opacity-10 text-neutral-primary",
+            subtle: "opacity-10 text-neutral-primary",
+            negative: "opacity-20 text-neutral-light"
         }
     },
     defaultVariants: {
@@ -29,12 +29,12 @@ const loaderBaseVariant = cva("wby-stroke ", {
     }
 });
 
-const loaderActiveVariant = cva("wby-opacity-100", {
+const loaderActiveVariant = cva("opacity-100", {
     variants: {
         variant: {
-            accent: "wby-text-accent-primary",
-            subtle: "wby-opacity-50 wby-text-neutral-primary",
-            negative: "wby-text-neutral-light"
+            accent: "text-accent-primary",
+            subtle: "opacity-50 text-neutral-primary",
+            negative: "text-neutral-light"
         }
     },
     defaultVariants: {
@@ -84,12 +84,12 @@ const DecoratableLoader = ({
     }, [indeterminate]);
 
     return (
-        <div {...props} className={"wby-text-center wby-flex wby-flex-col wby-items-center"}>
+        <div {...props} className={"text-center flex flex-col items-center"}>
             <div className={cn(loaderVariants({ size }), className)}>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
-                    className="wby-size-full wby-stroke-current"
+                    className="size-full stroke-current"
                     strokeWidth="12"
                     viewBox="0 0 100 100"
                 >
@@ -126,7 +126,7 @@ const DecoratableLoader = ({
                 </svg>
             </div>
             {text && (
-                <Text as={"div"} className={"wby-text-neutral-strong wby-w-full wby-pt-sm-plus"}>
+                <Text as={"div"} className={"text-neutral-strong w-full pt-sm-plus"}>
                     {text}
                 </Text>
             )}

@@ -68,7 +68,7 @@ export const WithTransparentBackground: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-light wby-p-md">
+            <div className="bg-neutral-light p-md">
                 <Story />
             </div>
         )
@@ -139,7 +139,7 @@ export const WithContainerVariant: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-light wby-p-md">
+            <div className="bg-neutral-light p-md">
                 <Story />
             </div>
         )

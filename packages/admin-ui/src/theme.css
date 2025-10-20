@@ -96,6 +96,11 @@
   --color-warning: hsl(var(--fill-warning));
   --color-primary-dimmed: hsl(var(--ring-primary-dimmed));
   --color-success-dimmed: hsl(var(--ring-success-dimmed));
+
+  /* Ring width - these map to ring-* utilities */
+  --ring-lg: 4px;
+  --ring-md: 2px;
+  --ring-sm: 1px;
 }
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
@@ -182,6 +187,7 @@
   --bg-neutral-subtle: var(--color-neutral-50);
   --bg-neutral-xstrong: var(--color-neutral-700);
 
+  --bg-primary: var(--color-primary-500);
   --bg-primary-default: var(--color-primary-500);
   --bg-primary-disabled: var(--color-primary-300);
   --bg-primary-muted: var(--color-primary-300);
@@ -414,10 +420,10 @@ body {
   @apply font-sans antialiased text-md text-neutral-primary;
 }
 
-a {
-  /* Styles all links that were not rendered via the Link component. */
-  @apply text-accent-primary hover:underline focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed rounded-xs;
-}
+/*a {*/
+/*  !* Styles all links that were not rendered via the Link component. *!*/
+/*  @apply text-accent-primary hover:underline focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed rounded-xs;*/
+/*}*/
 
 #root {
   @apply isolate;

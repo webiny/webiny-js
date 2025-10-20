@@ -5,15 +5,15 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 
 const commandItemVariants = cva(
     [
-        "wby-flex wby-items-center wby-justify-between wby-gap-sm-extra wby-cursor-default wby-select-none wby-rounded-sm wby-p-sm wby-mx-sm wby-text-md wby-outline-none wby-overflow-hidden",
-        "wby-bg-neutral-base wby-text-neutral-primary wby-fill-neutral-xstrong",
-        "data-[disabled=true]:wby-text-neutral-disabled data-[disabled=true]:wby-cursor-not-allowed",
-        "data-[selected=true]:wby-bg-neutral-dimmed"
+        "flex items-center justify-between gap-sm-extra cursor-default select-none rounded-sm p-sm mx-sm text-md outline-none overflow-hidden",
+        "bg-neutral-base text-neutral-primary fill-neutral-xstrong",
+        "data-[disabled=true]:text-neutral-disabled data-[disabled=true]:cursor-not-allowed",
+        "data-[selected=true]:bg-neutral-dimmed"
     ],
     {
         variants: {
             selected: {
-                true: "wby-font-semibold wby-bg-neutral-dimmed"
+                true: "font-semibold bg-neutral-dimmed"
             }
         }
     }
@@ -27,10 +27,10 @@ interface ItemProps
 
 const Item = ({ className, children, selected, ...props }: ItemProps) => (
     <CommandPrimitive.Item className={cn(commandItemVariants({ selected }), className)} {...props}>
-        <span className={"wby-w-full wby-overflow-hidden wby-truncate wby-whitespace-nowrap"}>
+        <span className={"w-full overflow-hidden truncate whitespace-nowrap"}>
             {children}
         </span>
-        {selected ? <Check className="wby-w-md wby-h-md" /> : null}
+        {selected ? <Check className="w-md h-md" /> : null}
     </CommandPrimitive.Item>
 );
 

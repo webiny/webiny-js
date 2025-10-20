@@ -3,10 +3,10 @@ import { Separator } from "~/Separator/index.js";
 
 import { cva, type VariantProps } from "~/utils.js";
 
-const separatorVariants = cva(["wby-h-xl wby-ml-px"], {
+const separatorVariants = cva(["h-xl ml-px"], {
     variants: {
         variant: {
-            "group-label": "!wby-h-[38px]"
+            "group-label": "!h-[38px]"
         }
     }
 });
@@ -19,9 +19,9 @@ export interface SidebarMenuSubItemIndentationProps
 
 const SidebarMenuSubItemIndentation = ({ lvl, variant }: SidebarMenuSubItemIndentationProps) => {
     return (
-        <div data-sidebar="indentation" className={"wby-gap-x-xs wby-flex wby-mr-sm"}>
+        <div data-sidebar="indentation" className={"gap-x-xs flex mr-sm"}>
             {Array.from({ length: lvl }, (_, index) => (
-                <div data-sidebar={"indentation-element"} className={"wby-ml-md"} key={lvl + index}>
+                <div data-sidebar={"indentation-element"} className={"ml-md"} key={lvl + index}>
                     <Separator
                         orientation={"vertical"}
                         margin={"none"}

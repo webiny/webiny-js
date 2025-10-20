@@ -6,22 +6,22 @@ import { useAdminUi } from "~/index.js";
 
 const variants = cva(
     [
-        "wby-flex wby-w-full wby-items-center wby-gap-sm wby-rounded-md",
-        "!wby-no-underline wby-text-neutral-primary wby-cursor-pointer wby-px-sm wby-py-xs-plus wby-text-left",
-        "wby-text-md wby-outline-none wby-transition-[width,height,padding]",
-        "wby-whitespace-nowrap wby-overflow-hidden",
-        "hover:wby-bg-neutral-dark/5",
-        "focus:wby-bg-neutral-dark/5 focus:wby-ring-none focus:wby-ring-transparent",
-        "data-[active=true]:wby-bg-neutral-dark/5 data-[active=true]:wby-font-semibold data-[active=true]:wby-pointer-events-none",
-        "group-data-[state=open]/menu-item-collapsible:!wby-font-semibold"
+        "flex w-full items-center gap-sm rounded-md",
+        "!no-underline text-neutral-primary cursor-pointer px-sm py-xs-plus text-left",
+        "text-md outline-none transition-[width,height,padding]",
+        "whitespace-nowrap overflow-hidden",
+        "hover:bg-neutral-dark/5",
+        "focus:bg-neutral-dark/5 focus:ring-none focus:ring-transparent",
+        "data-[active=true]:bg-neutral-dark/5 data-[active=true]:font-semibold data-[active=true]:pointer-events-none",
+        "group-data-[state=open]/menu-item-collapsible:!font-semibold"
     ],
     {
         variants: {
             variant: {
-                "group-label": "!wby-text-neutral-muted wby-uppercase"
+                "group-label": "!text-neutral-muted uppercase"
             },
             disabled: {
-                true: "wby-pointer-events-none !wby-text-neutral-disabled"
+                true: "pointer-events-none !text-neutral-disabled"
             }
         }
     }
@@ -49,7 +49,7 @@ const SidebarMenuRootButton = ({
     };
 
     const chevron = action ? (
-        <div className="wby-flex wby-absolute wby-right-sm-plus">{action}</div>
+        <div className="flex absolute right-sm-plus">{action}</div>
     ) : null;
 
     const { linkComponent: LinkComponent } = useAdminUi();
@@ -72,7 +72,7 @@ const SidebarMenuRootButton = ({
         </DivButton>
     );
 
-    return <div className={cn("wby-flex wby-items-center wby-w-full", className)}>{content}</div>;
+    return <div className={cn("flex items-center w-full", className)}>{content}</div>;
 };
 
 export { SidebarMenuRootButton };

@@ -11,7 +11,7 @@ const meta: Meta<typeof HeaderBar> = {
     component: HeaderBar,
     decorators: [
         Story => (
-            <div className="wby-bg-[#f4f4f4] wby-h-[500px] wby-w-[850px]  wby-rounded-[5px] wby-px-[50px] wby-content-center">
+            <div className="bg-[#f4f4f4] h-[500px] w-[850px]  rounded-[5px] px-[50px] content-center">
                 <Story />
             </div>
         )
@@ -23,7 +23,7 @@ export default meta;
 type Story = StoryObj<typeof HeaderBar>;
 
 const StartExample = () => (
-    <Text size={"sm"} className={"wby-text-neutral-dimmed"}>
+    <Text size={"sm"} className={"text-neutral-dimmed"}>
         {"Headless CMS / Articles / The best article ever"}
     </Text>
 );
@@ -31,11 +31,11 @@ const StartExample = () => (
 const MiddleExample = () => <>Content in the middle</>;
 
 const EndExample = () => (
-    <div className={"wby-flex wby-gap-x-sm"}>
+    <div className={"flex gap-x-sm"}>
         <Button variant={"ghost"} size={"md"} text={"Root tenant"} />
         <div
             className={
-                "wby-flex wby-items-center wby-rounded-md wby-gap-xxs wby-py-xs wby-px-xs wby-bg-neutral-light"
+                "flex items-center rounded-md gap-xxs py-xs px-xs bg-neutral-light"
             }
         >
             <Avatar

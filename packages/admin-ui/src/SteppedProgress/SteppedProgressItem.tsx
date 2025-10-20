@@ -21,7 +21,7 @@ const DecoratableSteppedProgressItem = ({
         <div
             {...props}
             className={cn(
-                "wby-flex wby-justify-start wby-items-center wby-gap-sm-extra wby-py-sm",
+                "flex justify-start items-center gap-sm-extra py-sm",
                 className
             )}
         >

@@ -29,7 +29,7 @@ export const AutoCompleteList = ({
             }
 
             const elements = [
-                <Command.Item key={"dummy-element"} value="-" className="wby-hidden" />
+                <Command.Item key={"dummy-element"} value="-" className="hidden" />
             ];
 
             return items.reduce((acc, item, currentIndex) => {

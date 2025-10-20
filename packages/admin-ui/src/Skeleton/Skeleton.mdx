@@ -62,7 +62,7 @@ import React from "react";
 import { Skeleton } from "@webiny/admin-ui";
 
 const AreaSkeletonExample = () => {
-    return <Skeleton type="area" className="wby-w-1/2 wby-h-32" />;
+    return <Skeleton type="area" className="w-1/2 h-32" />;
 };
 
 export default AreaSkeletonExample;
@@ -203,13 +203,13 @@ import { Skeleton } from "@webiny/admin-ui";
 
 const MultipleAreasExample = () => {
     return (
-        <div className="wby-flex wby-gap-md">
-            <div className="wby-flex wby-flex-col wby-gap-md">
-                <Skeleton type="area" className={"wby-w-32 wby-h-32"} />
-                <Skeleton type="area" className={"wby-w-32 wby-h-32"} />
+        <div className="flex gap-md">
+            <div className="flex flex-col gap-md">
+                <Skeleton type="area" className={"w-32 h-32"} />
+                <Skeleton type="area" className={"w-32 h-32"} />
             </div>
             <div>
-                <Skeleton type="area" className="wby-w-32 wby-h-full" />
+                <Skeleton type="area" className="w-32 h-full" />
             </div>
         </div>
     );

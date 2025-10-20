@@ -9,7 +9,7 @@ const DecoratableToastActions = ({
     <div
         {...props}
         className={cn(
-            "wby-flex wby-w-full wby-items-center wby-justify-start wby-gap-sm wby-mt-md",
+            "flex w-full items-center justify-start gap-sm mt-md",
             className
         )}
     >

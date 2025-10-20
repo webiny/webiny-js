@@ -161,7 +161,7 @@ const SidebarProvider = ({ className, children, ...props }: SidebarProviderProps
                 data-sidebar={"provider"}
                 {...props}
                 className={cn(
-                    "wby-group/sidebar-wrapper wby-flex wby-min-h-svh wby-w-full",
+                    "group/sidebar-wrapper flex min-h-svh w-full",
                     className
                 )}
             >

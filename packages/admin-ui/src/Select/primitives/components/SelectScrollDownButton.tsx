@@ -8,12 +8,12 @@ type SelectScrollDownButtonProps = SelectPrimitives.SelectScrollDownButtonProps;
 const SelectScrollDownButton = ({ className, ...props }: SelectScrollDownButtonProps) => (
     <SelectPrimitives.ScrollDownButton
         className={cn(
-            "wby-flex wby-cursor-default wby-items-center wby-justify-center wby-pt-sm wby-fill-neutral-xstrong",
+            "flex cursor-default items-center justify-center pt-sm fill-neutral-xstrong",
             className
         )}
         {...props}
     >
-        <ChevronDown className="wby-h-md wby-w-md" />
+        <ChevronDown className="h-md w-md" />
     </SelectPrimitives.ScrollDownButton>
 );
 

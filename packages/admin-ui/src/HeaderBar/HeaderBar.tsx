@@ -13,16 +13,16 @@ const HeaderBarBase = ({ start, middle, end, className, ...props }: HeaderBarPro
         <header>
             <div
                 className={cn(
-                    "wby-grid wby-grid-cols-[1fr_auto_1fr] wby-w-full wby-py-xs-plus wby-px-sm wby-bg-neutral-base",
+                    "grid grid-cols-[1fr_auto_1fr] w-full py-xs-plus px-sm bg-neutral-base",
                     className
                 )}
                 {...props}
             >
-                <div className="wby-h-full wby-flex wby-items-center wby-justify-self-start">
+                <div className="h-full flex items-center justify-self-start">
                     {start}
                 </div>
-                <div className="wby-h-full wby-flex wby-items-center">{middle}</div>
-                <div className="wby-h-full wby-flex wby-items-center wby-justify-self-end">
+                <div className="h-full flex items-center">{middle}</div>
+                <div className="h-full flex items-center justify-self-end">
                     {end}
                 </div>
             </div>

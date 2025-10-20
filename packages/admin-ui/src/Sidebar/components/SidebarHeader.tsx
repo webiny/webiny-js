@@ -16,27 +16,27 @@ const SidebarHeader = ({ title, icon }: SidebarHeaderProps) => {
 
     return (
         <>
-            <div className={"wby-px-xs-plus"}>
+            <div className={"px-xs-plus"}>
                 <div
                     data-sidebar="header"
                     className={
-                        "wby-flex wby-justify-between wby-items-center wby-gap-sm wby-py-xs-plus wby-px-xs wby-overflow-x-hidden"
+                        "flex justify-between items-center gap-sm py-xs-plus px-xs overflow-x-hidden"
                     }
                 >
                     <div
                         className={
-                            "wby-flex wby-items-center wby-gap-x-sm [&_a]:!wby-no-underline [&_a]:!wby-text-neutral-primary wby-truncate"
+                            "flex items-center gap-x-sm [&_a]:!no-underline [&_a]:!text-neutral-primary truncate"
                         }
                     >
-                        <div className={"wby-flex wby-flex-shrink-0"}>{icon}</div>
+                        <div className={"flex flex-shrink-0"}>{icon}</div>
 
-                        <span className={"wby-text-md wby-font-semibold wby-truncate"}>
+                        <span className={"text-md font-semibold truncate"}>
                             {title}
                         </span>
                     </div>
 
                     {expanded && (
-                        <div className={"wby-size-md"}>
+                        <div className={"size-md"}>
                             <Tooltip
                                 side={"right"}
                                 trigger={
@@ -54,8 +54,8 @@ const SidebarHeader = ({ title, icon }: SidebarHeaderProps) => {
                     )}
                 </div>
             </div>
-            <div className={"wby-px-sm wby-py-xs"}>
-                <Separator className={"wby-mb-px"} />
+            <div className={"px-sm py-xs"}>
+                <Separator className={"mb-px"} />
             </div>
         </>
     );

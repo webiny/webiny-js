@@ -9,11 +9,11 @@ import type { SwitchItemDto, SwitchItemFormatted } from "../domains/index.js";
  * Switch Renderer
  */
 
-const switchVariants = cva("wby-inline-flex wby-items-start wby-space-x-sm", {
+const switchVariants = cva("inline-flex items-start space-x-sm", {
     variants: {
         labelPosition: {
             start: "",
-            end: "wby-flex-row-reverse wby-space-x-sm-extra wby-space-x-reverse"
+            end: "flex-row-reverse space-x-sm-extra space-x-reverse"
         }
     },
     defaultVariants: {
@@ -60,23 +60,23 @@ const SwitchRenderer = ({
                 required={required}
                 hint={description}
                 weight={"light"}
-                className={"wby-text-md"}
+                className={"text-md"}
             />
             <SwitchPrimitives.Root
                 id={id}
                 checked={checked}
                 className={cn([
-                    "wby-peer wby-inline-flex wby-h-md wby-w-[26px] wby-mt-xxs wby-shrink-0 wby-cursor-pointer wby-items-center wby-rounded-xxl wby-border-sm wby-transition-colors",
-                    "wby-border-transparent data-[state=checked]:wby-bg-secondary-default data-[state=unchecked]:wby-bg-neutral-strong",
-                    "focus-visible:wby-outline-none focus-visible:wby-border-success-default focus-visible:wby-ring-lg focus-visible:wby-ring-primary-dimmed",
-                    "disabled:wby-cursor-not-allowed disabled:wby-bg-neutral-muted disabled:data-[state=checked]:wby-bg-neutral-muted"
+                    "peer inline-flex h-md w-[26px] mt-xxs shrink-0 cursor-pointer items-center rounded-xxl border-sm transition-colors",
+                    "border-transparent data-[state=checked]:bg-secondary-default data-[state=unchecked]:bg-neutral-strong",
+                    "focus-visible:outline-none focus-visible:border-success-default focus-visible:ring-lg focus-visible:ring-primary-dimmed",
+                    "disabled:cursor-not-allowed disabled:bg-neutral-muted disabled:data-[state=checked]:bg-neutral-muted"
                 ])}
                 disabled={disabled}
                 onCheckedChange={changeChecked}
             >
                 <SwitchPrimitives.Thumb
                     className={cn(
-                        "wby-pointer-events-none wby-block wby-h-sm-plus wby-w-sm-plus wby-rounded-xxl wby-bg-neutral-base wby-shadow-lg wby-ring-0 wby-transition-transform data-[state=checked]:wby-translate-x-sm-extra data-[state=unchecked]:wby-translate-x-xxs"
+                        "pointer-events-none block h-sm-plus w-sm-plus rounded-xxl bg-neutral-base shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-sm-extra data-[state=unchecked]:translate-x-xxs"
                     )}
                 />
             </SwitchPrimitives.Root>

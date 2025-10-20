@@ -87,6 +87,17 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
         themeCss = themeCss.replace("{THEME_COLORS}", colors.join("\n  "));
     }
 
+    // 5. THEME: Ring width - Map to ring-* utilities
+    {
+        const ringWidths = normalizedFigmaExport
+            .filter(item => item.type === "ringWidth")
+            .map(variable => {
+                return `--ring-${variable.variantName}: ${variable.resolvedValue}px;`;
+            });
+
+        themeCss = themeCss.replace("{THEME_RING_WIDTH}", ringWidths.join("\n  "));
+    }
+
     // ===== :root block - CSS custom properties (same as v3) =====
 
     // 0. Colors (primitives)

@@ -13,6 +13,9 @@
 
   /* Colors - these map to bg-*, text-*, border-*, fill-*, ring-* utilities */
   {THEME_COLORS}
+
+  /* Ring width - these map to ring-* utilities */
+  {THEME_RING_WIDTH}
 }
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
@@ -90,4 +93,3 @@ i,
 em {
   @apply italic;
 }
-

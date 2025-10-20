@@ -25,7 +25,7 @@ const DecoratableRichItemPreview = ({
         <div
             data-testid="image-preview"
             className={cn(
-                "wby-w-full wby-rounded-md",
+                "w-full rounded-md",
                 previewVariants({ variant, disabled }),
                 className
             )}
@@ -33,10 +33,10 @@ const DecoratableRichItemPreview = ({
         >
             <div
                 data-role="select-image"
-                className="wby-flex wby-items-center wby-justify-between wby-gap-sm-extra wby-min-w-0"
+                className="flex items-center justify-between gap-sm-extra min-w-0"
             >
                 <div
-                    className="wby-flex wby-items-center wby-justify-between wby-flex-1 wby-cursor-pointer wby-gap-sm-extra wby-self-stretch wby-min-w-0"
+                    className="flex items-center justify-between flex-1 cursor-pointer gap-sm-extra self-stretch min-w-0"
                     onClick={onReplaceItem}
                 >
                     <RichItemThumbnail {...value} disabled={disabled} preview={preview} />
@@ -48,7 +48,7 @@ const DecoratableRichItemPreview = ({
                     onReplaceItem={onReplaceItem}
                     onEditItem={onEditItem}
                     disabled={disabled}
-                    className={"wby-pr-sm-extra"}
+                    className={"pr-sm-extra"}
                 />
             </div>
         </div>

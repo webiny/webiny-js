@@ -2,14 +2,14 @@ import * as React from "react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { cn, cva, type VariantProps } from "~/utils.js";
 
-const dialogTitleVariants = cva("wby-flex wby-items-center wby-gap-sm", {
+const dialogTitleVariants = cva("flex items-center gap-sm", {
     variants: {
         size: {
-            sm: "wby-text-h5",
-            md: "wby-text-h5",
-            lg: "wby-text-h4",
-            xl: "wby-text-h4",
-            full: "wby-text-h4"
+            sm: "text-h5",
+            md: "text-h5",
+            lg: "text-h4",
+            xl: "text-h4",
+            full: "text-h4"
         }
     },
     defaultVariants: {

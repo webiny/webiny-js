@@ -13,7 +13,7 @@ const IconPickerIcon = ({ name, prefix, ...props }: IconPickerIconProps) => {
             <FontAwesomeIcon
                 icon={[prefix, name]}
                 size={"2x"}
-                className={"wby-block wby-size-full"}
+                className={"block size-full"}
             />
         </div>
     );

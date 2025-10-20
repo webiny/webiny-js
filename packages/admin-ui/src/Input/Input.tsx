@@ -40,7 +40,7 @@ const DecoratableInput = ({
     );
 
     return (
-        <div className={"wby-w-full"}>
+        <div className={"w-full"}>
             <FormComponentLabel
                 htmlFor={id}
                 text={label}

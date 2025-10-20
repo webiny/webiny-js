@@ -7,27 +7,27 @@ import { ListItemIcon } from "./ListItemIcon.js";
 
 const listItemVariant = cva(
     [
-        "wby-w-full wby-flex wby-items-center",
-        "group-[.wby-list-background-base]:wby-bg-neutral-base",
-        "group-[.wby-list-background-light]:wby-bg-neutral-light",
-        "group-[.wby-list-variant-container]:wby-rounded-sm",
-        "group-[.wby-list-variant-underline]:wby-border-b-sm group-[.wby-list-variant-underline]:wby-border-b-neutral-dimmed",
-        "hover:!wby-bg-neutral-dimmed",
-        "focus-visible:wby-outline-none focus-visible:wby-ring-sm focus-visible:wby-ring-inset focus-visible:wby-ring-primary-dimmed"
+        "w-full flex items-center",
+        "group-[.list-background-base]:bg-neutral-base",
+        "group-[.list-background-light]:bg-neutral-light",
+        "group-[.list-variant-container]:rounded-sm",
+        "group-[.list-variant-underline]:border-b-sm group-[.list-variant-underline]:border-b-neutral-dimmed",
+        "hover:!bg-neutral-dimmed",
+        "focus-visible:outline-none focus-visible:ring-sm focus-visible:ring-inset focus-visible:ring-primary-dimmed"
     ],
     {
         variants: {
             disabled: {
-                true: "wby-pointer-events-none wby-opacity-50"
+                true: "pointer-events-none opacity-50"
             },
             activated: {
-                true: "!wby-bg-neutral-light"
+                true: "!bg-neutral-light"
             },
             selected: {
-                true: "!wby-bg-neutral-light"
+                true: "!bg-neutral-light"
             },
             clickable: {
-                true: "wby-cursor-pointer"
+                true: "cursor-pointer"
             }
         }
     }
@@ -69,31 +69,31 @@ const DecoratableListItem = ({
             {handle}
             <div
                 className={
-                    "wby-w-full wby-flex wby-justify-between wby-items-center wby-pl-lg wby-pr-md wby-py-sm-extra"
+                    "w-full flex justify-between items-center pl-lg pr-md py-sm-extra"
                 }
             >
                 <div
-                    className={"wby-w-full wby-flex wby-items-center wby-gap-md"}
+                    className={"w-full flex items-center gap-md"}
                     onClick={onClick}
                 >
                     {icon && <div>{icon}</div>}
                     <div
-                        className={"wby-flex wby-flex-col wby-gap-xxs wby-flex-grow wby-text-left"}
+                        className={"flex flex-col gap-xxs flex-grow text-left"}
                     >
                         <Text
                             size={"md"}
                             as={"div"}
-                            className={"wby-font-semibold wby-text-neutral-primary"}
+                            className={"font-semibold text-neutral-primary"}
                         >
                             {title}
                         </Text>
-                        <Text size={"sm"} as={"div"} className={"wby-text-neutral-strong"}>
+                        <Text size={"sm"} as={"div"} className={"text-neutral-strong"}>
                             {description}
                         </Text>
                     </div>
                 </div>
                 {actions && (
-                    <div className={"wby-flex wby-items-center wby-gap-xs-plus"}>{actions}</div>
+                    <div className={"flex items-center gap-xs-plus"}>{actions}</div>
                 )}
             </div>
             {children}

@@ -29,7 +29,7 @@ const ItemActions = ({
     return (
         <div
             {...props}
-            className={cn("wby-flex wby-justify-center wby-items-center wby-gap-xs", className)}
+            className={cn("flex justify-center items-center gap-xs", className)}
         >
             {small && onReplaceItem && (
                 <IconButton

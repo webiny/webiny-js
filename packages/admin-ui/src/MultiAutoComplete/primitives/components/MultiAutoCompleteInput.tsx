@@ -6,10 +6,10 @@ import { Command } from "~/Command/index.js";
 import { Tag } from "~/Tag/index.js";
 import { cn, cva, type VariantProps } from "~/utils.js";
 
-const multiAutoCompleteInputVariants = cva("wby-relative placeholder:wby-text-neutral-dimmed", {
+const multiAutoCompleteInputVariants = cva("relative placeholder:text-neutral-dimmed", {
     variants: {
         disabled: {
-            true: "wby-cursor-not-allowed disabled:wby-text-neutral-disabled disabled:placeholder:wby-text-neutral-disabled"
+            true: "cursor-not-allowed disabled:text-neutral-disabled disabled:placeholder:text-neutral-disabled"
         }
     }
 });
@@ -101,10 +101,10 @@ const MultiAutoCompleteInput = ({
             data-focused={focused}
         >
             {startIcon && <InputIcon icon={startIcon} inputSize={size} />}
-            <div className="wby-relative wby-flex wby-flex-wrap wby-flex-1 wby-gap-xs">
+            <div className="relative flex flex-wrap flex-1 gap-xs">
                 {renderSelectedOptions(selectedOptions)}
                 <Command.Input
-                    className={"wby-bg-transparent wby-border-none wby-outline-none"}
+                    className={"bg-transparent border-none outline-none"}
                     value={value}
                     onValueChange={changeValue}
                     placeholder={placeholder}

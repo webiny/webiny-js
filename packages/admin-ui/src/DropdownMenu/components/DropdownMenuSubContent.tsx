@@ -10,7 +10,7 @@ const DropdownMenuSubContent = React.forwardRef<
         ref={ref}
         avoidCollisions={false}
         className={cn(
-            "wby-border-sm wby-border-solid wby-border-neutral-muted wby-z-[150] wby-min-w-[8rem] wby-overflow-hidden wby-rounded-md wby-border wby-bg-white wby-py-xs-plus wby-text-neutral-primary wby-shadow-lg data-[state=open]:wby-animate-in data-[state=closed]:wby-animate-out data-[state=closed]:wby-fade-out-0 data-[state=open]:wby-fade-in-0 data-[state=closed]:wby-zoom-out-95 data-[state=open]:wby-zoom-in-95 data-[side=bottom]:wby-slide-in-from-top-2 data-[side=left]:wby-slide-in-from-right-2 data-[side=right]:wby-slide-in-from-left-2 data-[side=top]:wby-slide-in-from-bottom-2",
+            "border-sm border-solid border-neutral-muted z-[150] min-w-[8rem] overflow-hidden rounded-md border bg-white py-xs-plus text-neutral-primary shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
             className
         )}
         // Added these to match alignment shown in the design.

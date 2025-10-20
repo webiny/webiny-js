@@ -7,7 +7,7 @@ type SelectLabelProps = SelectPrimitives.SelectLabelProps;
 const SelectLabel = ({ className, ...props }: SelectPrimitives.SelectLabelProps) => (
     <SelectPrimitives.Label
         className={cn(
-            "wby-py-sm wby-px-md wby-text-neutral-strong wby-text-sm wby-font-semibold wby-uppercase",
+            "py-sm px-md text-neutral-strong text-sm font-semibold uppercase",
             className
         )}
         {...props}

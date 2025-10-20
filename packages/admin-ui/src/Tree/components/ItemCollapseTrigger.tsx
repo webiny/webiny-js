@@ -27,8 +27,8 @@ const BaseItemCollapseTrigger = ({ open, loading, ...props }: ItemCollapseTrigge
                     label={"Open / Close tree item"}
                     color={"neutral-strong"}
                     className={cn(
-                        "wby-transition wby-transform wby-duration-100 wby-ease-linear",
-                        open ? "wby-rotate-90" : "wby-rotate-0"
+                        "transition transform duration-100 ease-linear",
+                        open ? "rotate-90" : "rotate-0"
                     )}
                 />
             }

@@ -3,11 +3,11 @@ import { Text, type TextProps } from "~/Text/index.js";
 import { cn, cva, makeDecoratable, type VariantProps } from "~/utils.js";
 
 const formComponentErrorMessageVariants = cva(
-    "wby-mt-xs wby-text-destructive-primary wby-font-semibold",
+    "mt-xs text-destructive-primary font-semibold",
     {
         variants: {
             disabled: {
-                true: "wby-text-destructive-muted"
+                true: "text-destructive-muted"
             }
         }
     }

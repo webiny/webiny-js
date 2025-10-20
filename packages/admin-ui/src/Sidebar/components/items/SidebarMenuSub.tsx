@@ -10,8 +10,8 @@ const SidebarMenuSub = ({ className, ...props }: React.HTMLAttributes<HTMLUListE
             <ul
                 data-sidebar="menu-sub"
                 className={cn(
-                    "wby-flex wby-min-w-0 wby-flex-col wby-gap-y-xs wby-pt-xs",
-                    "group-data-[state=collapsed]:wby-hidden",
+                    "flex min-w-0 flex-col gap-y-xs pt-xs",
+                    "group-data-[state=collapsed]:hidden",
                     className
                 )}
                 {...props}

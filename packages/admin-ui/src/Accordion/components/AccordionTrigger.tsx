@@ -44,32 +44,32 @@ const AccordionTrigger = ({
             <div
                 {...divAsButtonProps}
                 className={cn(
-                    "wby-group/trigger wby-w-full wby-flex wby-items-center wby-cursor-pointer wby-relative",
-                    "focus-visible:wby-outline-none focus-visible:wby-border-none focus-visible:wby-ring-sm focus-visible:wby-ring-primary-dimmed",
-                    "hover:wby-bg-neutral-dimmed",
-                    "group-[.wby-accordion-variant-container]:wby-rounded-lg",
-                    "[&[data-state=open]_[data-role=open-close-indicator]]:wby-rotate-180",
-                    interactive ? "wby-cursor-pointer" : "wby-cursor-default"
+                    "group/trigger w-full flex items-center cursor-pointer relative",
+                    "focus-visible:outline-none focus-visible:border-none focus-visible:ring-sm focus-visible:ring-primary-dimmed",
+                    "hover:bg-neutral-dimmed",
+                    "group-[.accordion-variant-container]:rounded-lg",
+                    "[&[data-state=open]_[data-role=open-close-indicator]]:rotate-180",
+                    interactive ? "cursor-pointer" : "cursor-default"
                 )}
             >
                 {draggable ? <AccordionItemDragHandle /> : null}
                 <div
                     className={
-                        "wby-w-full wby-flex wby-justify-between wby-items-center wby-px-md wby-py-sm-extra"
+                        "w-full flex justify-between items-center px-md py-sm-extra"
                     }
                 >
-                    {icon && <div className={"wby-mr-md"}>{icon}</div>}
+                    {icon && <div className={"mr-md"}>{icon}</div>}
                     <div
-                        className={"wby-flex wby-flex-col wby-gap-xxs wby-flex-grow wby-text-left"}
+                        className={"flex flex-col gap-xxs flex-grow text-left"}
                     >
                         <div
-                            className={"wby-text-md wby-font-semibold webiny_accordion-item-title"}
+                            className={"text-md font-semibold webiny_accordion-item-title"}
                         >
                             {title}
                         </div>
-                        <div className={"wby-text-sm wby-text-neutral-strong"}>{description}</div>
+                        <div className={"text-sm text-neutral-strong"}>{description}</div>
                     </div>
-                    <div className={"wby-flex wby-gap-xs"}>
+                    <div className={"flex gap-xs"}>
                         {actions}
 
                         {/* No need to show the separator if there are no actions and the item is not interactive. */}
@@ -78,7 +78,7 @@ const AccordionTrigger = ({
                         {interactive && (
                             <Icon
                                 size={"lg"}
-                                className={"wby-transition"}
+                                className={"transition"}
                                 color={"neutral-strong"}
                                 data-role={"open-close-indicator"}
                                 label={"Open/close indicator"}

@@ -3,26 +3,26 @@ import type { VariantProps } from "~/utils.js";
 import { cn, cva } from "~/utils.js";
 
 const cardRootVariants = cva(
-    "wby-flex wby-flex-col wby-bg-neutral-base wby-gap-y-md-plus wby-text-sm",
+    "flex flex-col bg-neutral-base gap-y-md-plus text-sm",
     {
         variants: {
             padding: {
-                standard: "wby-p-lg",
-                comfortable: "wby-p-xl",
-                compact: "wby-p-md"
+                standard: "p-lg",
+                comfortable: "p-xl",
+                compact: "p-md"
             },
             elevation: {
                 none: "",
-                xs: "wby-shadow-xs",
-                sm: "wby-shadow-sm",
-                md: "wby-shadow-md",
-                lg: "wby-shadow-lg",
-                xl: "wby-shadow-xl"
+                xs: "shadow-xs",
+                sm: "shadow-sm",
+                md: "shadow-md",
+                lg: "shadow-lg",
+                xl: "shadow-xl"
             },
             borderRadius: {
-                none: "wby-rounded-none",
-                sm: "wby-rounded-sm",
-                md: "wby-rounded-md"
+                none: "rounded-none",
+                sm: "rounded-sm",
+                md: "rounded-md"
             }
         },
         defaultVariants: {

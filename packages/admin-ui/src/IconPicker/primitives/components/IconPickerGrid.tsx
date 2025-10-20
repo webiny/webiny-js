@@ -37,11 +37,11 @@ const IconPickerGrid = (props: IconPickerGridProps) => {
                     key={key}
                     style={style}
                     className={cn([
-                        "wby-flex wby-flex-col wby-justify-center wby-items-center wby-gap-sm",
-                        "wby-text-neutral-strong",
-                        "hover:wby-bg-neutral-dimmed hover:wby-text-neutral-strong",
-                        "wby-px-xs-plus wby-box-border wby-rounded-xs wby-cursor-pointer wby-overflow-hidden",
-                        "wby-transition-colors wby-duration-400 wby-ease-out"
+                        "flex flex-col justify-center items-center gap-sm",
+                        "text-neutral-strong",
+                        "hover:bg-neutral-dimmed hover:text-neutral-strong",
+                        "px-xs-plus box-border rounded-xs cursor-pointer overflow-hidden",
+                        "transition-colors duration-400 ease-out"
                     ])}
                     onClick={() => {
                         if (props.onIconSelect) {
@@ -52,12 +52,12 @@ const IconPickerGrid = (props: IconPickerGridProps) => {
                     <IconPickerIcon
                         name={item.name}
                         prefix={item.prefix}
-                        className={"wby-size-lg"}
+                        className={"size-lg"}
                     />
                     <Text
                         as={"div"}
                         size={"sm"}
-                        className={"wby-w-full wby-truncate wby-text-center wby-text-neutral-muted"}
+                        className={"w-full truncate text-center text-neutral-muted"}
                     >
                         {item.name}
                     </Text>
@@ -69,12 +69,12 @@ const IconPickerGrid = (props: IconPickerGridProps) => {
     return (
         <div>
             {props.iconsLength === 0 ? (
-                <div className={`wby-px-sm-extra wby-py-md wby-text-neutral-strong`}>
+                <div className={`px-sm-extra py-md text-neutral-strong`}>
                     <Text>{"No results found."}</Text>
                 </div>
             ) : (
                 <Grid
-                    className={"wby-px-sm-extra wby-py-xs-plus wby-outline-none"}
+                    className={"px-sm-extra py-xs-plus outline-none"}
                     cellRenderer={renderCell()}
                     columnCount={COLUMN_COUNT}
                     columnWidth={COLUMN_WIDTH}

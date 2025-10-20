@@ -3,16 +3,16 @@ import { makeDecoratable, withStaticProps, cva, type VariantProps, cn } from "~/
 import type { AccordionRoot } from "./components/AccordionRoot.js";
 import { AccordionItem, type AccordionItemProps } from "./components/AccordionItem.js";
 
-const accordionVariants = cva("wby-group wby-w-full", {
+const accordionVariants = cva("group w-full", {
     variants: {
         variant: {
-            container: "wby-accordion-variant-container wby-gap-xs wby-flex wby-flex-col",
-            underline: "wby-accordion-variant-underline "
+            container: "accordion-variant-container gap-xs flex flex-col",
+            underline: "accordion-variant-underline "
         },
         background: {
-            base: "wby-accordion-background-base",
-            light: "wby-accordion-background-light",
-            transparent: "wby-accordion-background-transparent"
+            base: "accordion-background-base",
+            light: "accordion-background-light",
+            transparent: "accordion-background-transparent"
         }
     },
     defaultVariants: {

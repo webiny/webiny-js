@@ -7,7 +7,7 @@ const BaseItemContent = ({ children, className, ...props }: ItemContentProps) =>
     return (
         <div
             className={cn(
-                "wby-flex wby-items-center wby-w-full wby-gap-x-sm wby-truncate",
+                "flex items-center w-full gap-x-sm truncate",
                 className
             )}
             {...props}

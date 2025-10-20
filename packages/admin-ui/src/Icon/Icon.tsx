@@ -2,22 +2,22 @@ import React from "react";
 import { AccessibleIcon } from "radix-ui";
 import { cn, cva, makeDecoratable, type VariantProps } from "~/utils.js";
 
-const iconVariants = cva("wby-shrink-0", {
+const iconVariants = cva("shrink-0", {
     variants: {
         size: {
-            xs: "wby-size-sm-extra",
-            sm: "wby-size-md",
-            md: "wby-size-md-plus",
-            lg: "wby-size-lg"
+            xs: "size-sm-extra",
+            sm: "size-md",
+            md: "size-md-plus",
+            lg: "size-lg"
         },
         color: {
-            inherit: "wby-fill-inherit",
-            accent: "wby-fill-accent-default",
-            "neutral-light": "wby-fill-neutral-strong",
-            "neutral-strong": "wby-fill-neutral-xstrong",
-            "neutral-strong-transparent": "wby-fill-neutral-xstrong/30",
-            "neutral-base": "wby-fill-neutral-base",
-            "neutral-negative": "wby-fill-neutral-base/50"
+            inherit: "fill-inherit",
+            accent: "fill-accent-default",
+            "neutral-light": "fill-neutral-strong",
+            "neutral-strong": "fill-neutral-xstrong",
+            "neutral-strong-transparent": "fill-neutral-xstrong/30",
+            "neutral-base": "fill-neutral-base",
+            "neutral-negative": "fill-neutral-base/50"
         }
     },
     defaultVariants: {

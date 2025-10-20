@@ -3,7 +3,7 @@ import { cn } from "~/utils.js";
 
 const Caption = ({ className, ...props }: React.HTMLAttributes<HTMLTableCaptionElement>) => (
     <caption
-        className={cn("wby-mt-4 wby-text-sm wby-text-muted-foreground", className)}
+        className={cn("mt-4 text-sm text-muted-foreground", className)}
         {...props}
     />
 );

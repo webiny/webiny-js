@@ -2,14 +2,14 @@ import * as React from "react";
 import { cn, cva, type VariantProps } from "~/utils.js";
 import { Text } from "~/Text/index.js";
 
-const labelValueVariants = cva("wby-text-neutral-strong", {
+const labelValueVariants = cva("text-neutral-strong", {
     variants: {
         weight: {
-            strong: "wby-font-semibold",
-            light: "wby-font-regular"
+            strong: "font-semibold",
+            light: "font-regular"
         },
         disabled: {
-            true: "wby-text-neutral-disabled"
+            true: "text-neutral-disabled"
         }
     },
     defaultVariants: {

@@ -15,7 +15,7 @@ export const DialogClose = ({ size }: DialogCloseProps) => {
     }, [size]);
 
     return (
-        <div className={"wby-absolute wby-top-md wby-right-md"}>
+        <div className={"absolute top-md right-md"}>
             <DialogPrimitive.Close asChild>
                 <IconButton size={buttonSize} iconSize="lg" variant={"ghost"} icon={<XIcon />} />
             </DialogPrimitive.Close>
