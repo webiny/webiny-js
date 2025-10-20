@@ -1,5 +1,5 @@
 import { Abstraction } from "@webiny/di-container";
-import type { DecryptedWcpProjectLicense, ILicense } from "@webiny/wcp/types";
+import type { DecryptedWcpProjectLicense, ILicense } from "@webiny/wcp/types.js";
 
 export interface IWcpGateway {
     fetchProject(): Promise<DecryptedWcpProjectLicense | null>;

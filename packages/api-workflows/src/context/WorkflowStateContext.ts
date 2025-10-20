@@ -24,10 +24,20 @@ import type { IWorkflowsContextListWhere } from "~/context/abstractions/Workflow
 import { createTopic } from "@webiny/pubsub";
 
 export interface IWorkflowStateContextParams {
-    context: Pick<Context, "cms" | "security" | "workflows" | "workflowState">;
+    context: Pick<Context, "cms" | "security" | "workflows" | "workflowState" | "adminUsers">;
     model: CmsModel;
     transformer: IWorkflowStateTransformer;
 }
+
+type ICreateWorkflowStateEntryInput = Omit<
+    IWorkflowStateRecord,
+    "id" | "savedBy" | "createdOn" | "savedOn" | "createdBy"
+>;
+
+type IUpdateWorkflowStateEntryInput = Omit<
+    IWorkflowStateRecord,
+    "id" | "savedBy" | "savedOn" | "createdOn" | "createdBy"
+>;
 
 export class WorkflowStateContext implements IWorkflowStateContext {
     private readonly context;
@@ -47,7 +57,34 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         this.onStateAfterDelete = createTopic<IWorkflowStateContextOnStateAfterDelete>();
     }
 
-    public async getState(app: string, targetRevisionId: string): Promise<IWorkflowState> {
+    public async getState(id: string): Promise<IWorkflowState> {
+        const record = await this.fetchOne(id);
+        if (!record) {
+            throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
+                id
+            });
+        }
+
+        const workflowId = createIdentifier({
+            id: record.workflowId,
+            version: 1
+        });
+
+        const { items: workflows } = await this.context.workflows.listWorkflows({
+            where: {
+                id: workflowId
+            },
+            limit: 1
+        });
+
+        return new WorkflowState({
+            record,
+            workflow: workflows?.[0] || null,
+            context: this.context
+        });
+    }
+
+    public async getTargetState(app: string, targetRevisionId: string): Promise<IWorkflowState> {
         const { version } = parseIdentifier(targetRevisionId);
         if (!version) {
             throw new WebinyError(
@@ -153,7 +190,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             );
         }
 
-        const entry: Omit<IWorkflowStateRecord, "id"> = {
+        const entry: ICreateWorkflowStateEntryInput = {
             workflowId: workflow.id,
             comment: undefined,
             state: WorkflowStateRecordState.pending,
@@ -164,14 +201,14 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 return {
                     id: step.id,
                     state: WorkflowStateRecordState.pending,
-                    userId: undefined,
-                    comment: undefined
+                    savedBy: null,
+                    comment: null
                 };
             })
         };
 
         return this.context.security.withoutAuthorization(async () => {
-            const result = await this.context.cms.createEntry<Omit<IWorkflowStateRecord, "id">>(
+            const result = await this.context.cms.createEntry<ICreateWorkflowStateEntryInput>(
                 this.model,
                 entry
             );
@@ -232,7 +269,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         });
 
         return await this.context.security.withoutAuthorization(async () => {
-            const result = await this.context.cms.updateEntry<Omit<IWorkflowStateRecord, "id">>(
+            const result = await this.context.cms.updateEntry<IUpdateWorkflowStateEntryInput>(
                 this.model,
                 id,
                 entryValues
@@ -259,7 +296,24 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         });
     }
 
-    public async deleteState(app: string, targetRevisionId: string): Promise<void> {
+    public async deleteState(id: string): Promise<void> {
+        const record = await this.fetchOne(id);
+        if (!record) {
+            throw new NotFoundError();
+        }
+        try {
+            await this.context.security.withoutAuthorization(async () => {
+                await this.context.cms.deleteEntry(this.model, id);
+            });
+        } catch (ex) {
+            if (ex.code === "NOT_FOUND" || ex instanceof NotFoundError) {
+                return;
+            }
+            throw ex;
+        }
+    }
+
+    public async deleteTargetState(app: string, targetRevisionId: string): Promise<void> {
         const record = await this.fetchOneByTargetRevisionId(app, targetRevisionId);
         if (!record) {
             return;
@@ -294,6 +348,41 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             console.log(ex);
             // do nothing?
         }
+    }
+
+    public async startStateStep(id: string): Promise<IWorkflowState> {
+        const state = await this.getState(id);
+        if (state instanceof NullWorkflowState) {
+            throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
+                id
+            });
+        }
+        await state.start();
+        return state;
+    }
+
+    public async approveStateStep(id: string, comment?: string): Promise<IWorkflowState> {
+        const state = await this.getState(id);
+        if (state instanceof NullWorkflowState) {
+            throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
+                id,
+                comment
+            });
+        }
+        await state.approve(comment);
+        return state;
+    }
+
+    public async rejectStateStep(id: string, comment: string): Promise<IWorkflowState> {
+        const state = await this.getState(id);
+        if (state instanceof NullWorkflowState) {
+            throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
+                id,
+                comment
+            });
+        }
+        await state.reject(comment);
+        return state;
     }
 
     private async fetchOneByTargetRevisionId(

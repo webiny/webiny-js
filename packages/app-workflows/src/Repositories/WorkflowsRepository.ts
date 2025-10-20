@@ -1,7 +1,7 @@
 import type { IWorkflowsRepository } from "./abstractions/WorkflowsRepository.js";
 import type { IWorkflowModel } from "../Models/index.js";
 import { WorkflowModel } from "../Models/index.js";
-import type { IWorkflow } from "~/types.js";
+import type { IWorkflow, IWorkflowApplication } from "~/types.js";
 import { makeAutoObservable, observable, runInAction } from "mobx";
 import type { IWorkflowsGateway } from "../Gateways/index.js";
 import type { IWorkflowError } from "~/Gateways/abstraction/WorkflowsGateway.js";
@@ -24,6 +24,10 @@ export class WorkflowsRepository implements IWorkflowsRepository {
 
     public get loading(): boolean {
         return this._loading;
+    }
+
+    public get app(): IWorkflowApplication {
+        return this.gateway.app;
     }
 
     public constructor(params: IWorkflowsRepositoryParams) {

@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/feature/api";
-import { TenantContext as Abstraction } from "./abstractions";
+import { TenantContext as Abstraction } from "./abstractions.js";
 import type { Tenant } from "~/types.js";
 import { GetRootTenantUseCase } from "~/features/GetRootTenant/index.js";
 

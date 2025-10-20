@@ -1,6 +1,6 @@
 import { ModelBuilder as Builder } from "~/models/ModelBuilder.js";
 import { createImplementation } from "@webiny/di-container";
-import { PageSchema, PageModelBuilder as BuilderAbstraction, type IPage } from "./abstractions";
+import { PageSchema, PageModelBuilder as BuilderAbstraction, type IPage } from "./abstractions.js";
 
 class PageModelBuilderImpl implements BuilderAbstraction.Interface {
     async buildModel() {

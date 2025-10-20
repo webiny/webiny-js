@@ -19,20 +19,20 @@ describe("Workflow State Context", () => {
         });
     });
 
-    it("should not get a state because there is none", async () => {
+    it("should not get a state because there is none - NullWorkflowState", async () => {
         const { workflowStateContext } = await createContext();
 
-        const response = await workflowStateContext.getState("app", "non-existing-id#0001");
+        const response = await workflowStateContext.getTargetState("app", "non-existing-id#0001");
         expect(response).toBeInstanceOf(NullWorkflowState);
         expect(response.workflow).toBeUndefined();
         expect(response.record).toBeUndefined();
-        expect(response.done).toBe(true);
+        expect(response.done).toBe(false);
     });
 
     it("should throw an error on getState because of faulty targetId", async () => {
         const { workflowStateContext } = await createContext();
 
-        await expect(workflowStateContext.getState("app", "non-revision-id")).rejects.toThrow(
+        await expect(workflowStateContext.getTargetState("app", "non-revision-id")).rejects.toThrow(
             "Cannot get a workflow state without version of a target record."
         );
     });
@@ -55,7 +55,7 @@ describe("Workflow State Context", () => {
         expect(response).toBeInstanceOf(NullWorkflowState);
         expect(response.workflow).toBeUndefined();
         expect(response.record).toBeUndefined();
-        expect(response.done).toBe(true);
+        expect(response.done).toBe(false);
     });
 
     it("should create, update and delete a state", async () => {
@@ -82,13 +82,13 @@ describe("Workflow State Context", () => {
                 return {
                     id: step.id,
                     state: WorkflowStateRecordState.pending,
-                    userId: undefined,
-                    comment: undefined
+                    savedBy: null,
+                    comment: null
                 };
             })
         ]);
 
-        const getResponse = await workflowStateContext.getState(app, targetRevisionId);
+        const getResponse = await workflowStateContext.getTargetState(app, targetRevisionId);
 
         expect(getResponse.done).toBeFalse();
         expect(getResponse.workflow).toEqual({
@@ -101,15 +101,15 @@ describe("Workflow State Context", () => {
         await workflowStateContext.updateState(state.record!.id, {
             comment: "A comment!"
         });
-        const updatedState = await workflowStateContext.getState(app, targetRevisionId);
+        const updatedState = await workflowStateContext.getTargetState(app, targetRevisionId);
         expect(updatedState.record?.comment).toBe("A comment!");
 
-        await workflowStateContext.deleteState(app, targetRevisionId);
-        const afterDeleteState = await workflowStateContext.getState(app, targetRevisionId);
+        await workflowStateContext.deleteTargetState(app, targetRevisionId);
+        const afterDeleteState = await workflowStateContext.getTargetState(app, targetRevisionId);
         expect(afterDeleteState).toBeInstanceOf(NullWorkflowState);
         expect(afterDeleteState.workflow).toBeUndefined();
         expect(afterDeleteState.record).toBeUndefined();
-        expect(afterDeleteState.done).toBe(true);
+        expect(afterDeleteState.done).toBe(false);
     });
 
     it("should approve a step and move to the next one", async () => {
@@ -130,9 +130,9 @@ describe("Workflow State Context", () => {
         expect(listStatesResponse.items.length).toBe(1);
         expect(listStatesResponse.items[0].record).toEqual(state.record);
 
-        await state.review();
+        await state.start();
 
-        const stateAfterReview = await workflowStateContext.getState(app, targetId);
+        const stateAfterReview = await workflowStateContext.getTargetState(app, targetId);
         expect(stateAfterReview.record?.state).toEqual(WorkflowStateRecordState.inReview);
         expect(stateAfterReview.record?.steps[0].state).toEqual(WorkflowStateRecordState.inReview);
 
@@ -142,28 +142,37 @@ describe("Workflow State Context", () => {
             id: "step-1",
             state: WorkflowStateRecordState.approved,
             comment: "First step should be approved.",
-            userId: context.security.getIdentity().id
+            savedBy: {
+                id: context.security.getIdentity().id,
+                displayName: context.security.getIdentity().displayName,
+                type: context.security.getIdentity().type
+            }
         });
 
-        const stateAfterFirstApprove = await workflowStateContext.getState(app, targetId);
+        const stateAfterFirstApprove = await workflowStateContext.getTargetState(app, targetId);
         expect(stateAfterFirstApprove.record?.state).toEqual(WorkflowStateRecordState.inReview);
         expect(stateAfterFirstApprove.record?.steps[0].state).toEqual(
             WorkflowStateRecordState.approved
         );
         expect(stateAfterFirstApprove.record?.steps[1].state).toEqual(
-            WorkflowStateRecordState.inReview
+            WorkflowStateRecordState.pending
         );
 
+        await stateAfterFirstApprove.start();
         await stateAfterFirstApprove.approve("Second step should be approved.");
 
         expect(stateAfterFirstApprove.record?.steps[1]).toEqual({
             id: "step-2",
             state: WorkflowStateRecordState.approved,
             comment: "Second step should be approved.",
-            userId: context.security.getIdentity().id
+            savedBy: {
+                id: context.security.getIdentity().id,
+                displayName: context.security.getIdentity().displayName,
+                type: context.security.getIdentity().type
+            }
         });
 
-        const stateAfterSecondApprove = await workflowStateContext.getState(app, targetId);
+        const stateAfterSecondApprove = await workflowStateContext.getTargetState(app, targetId);
         expect(stateAfterSecondApprove.record?.state).toEqual(WorkflowStateRecordState.approved);
         expect(stateAfterSecondApprove.record?.steps[0].state).toEqual(
             WorkflowStateRecordState.approved

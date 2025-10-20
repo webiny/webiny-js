@@ -3,6 +3,7 @@ import { WorkflowsContext } from "~/context/WorkflowsContext.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { WorkflowsTransformer } from "~/context/transformer/WorkflowsTransformer.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
+import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
 
 describe("Workflows Context", () => {
     it("should not list any workflows because there are no any", async () => {
@@ -44,7 +45,7 @@ describe("Workflows Context", () => {
                     title: "Step 1",
                     description: "This is step 1",
                     color: "blue",
-                    teams: [{ id: "team-1" }],
+                    teams: [{ id: FULL_ACCESS_TEAM_ID }],
                     notifications: [{ id: "notif-1" }]
                 }
             ]
@@ -60,7 +61,7 @@ describe("Workflows Context", () => {
                     title: "Step 1",
                     description: "This is step 1",
                     color: "blue",
-                    teams: [{ id: "team-1" }],
+                    teams: [{ id: FULL_ACCESS_TEAM_ID }],
                     notifications: [{ id: "notif-1" }]
                 }
             ]

@@ -4,28 +4,29 @@ import type {
     IWorkflowsGatewayListWorkflowsResponse,
     IWorkflowsGatewayStoreWorkflowResponse
 } from "./abstraction/WorkflowsGateway.js";
-import { IWorkflowModel } from "~/Models/index.js";
+import type { IWorkflowModel } from "~/Models/index.js";
 import ApolloClient from "apollo-client";
 import type {
     IListWorkflowResponse,
     IListWorkflowVariables,
     IStoreWorkflowResponse,
     IStoreWorkflowVariables
-} from "./graphql.js";
+} from "./graphql/workflows.js";
 import {
     DELETE_WORKFLOW_MUTATION,
     LIST_WORKFLOWS_QUERY,
     STORE_WORKFLOW_MUTATION
-} from "./graphql.js";
+} from "./graphql/workflows.js";
 import { WebinyError } from "@webiny/error";
+import type { IWorkflowApplication } from "~/types.js";
 
 export interface IWorkflowsGatewayParams {
-    app: string;
+    app: IWorkflowApplication;
     client: ApolloClient<object>;
 }
 
 export class WorkflowsGateway implements IWorkflowsGateway {
-    private readonly app;
+    public readonly app;
     private readonly client;
 
     public constructor(params: IWorkflowsGatewayParams) {
@@ -94,7 +95,7 @@ export class WorkflowsGateway implements IWorkflowsGateway {
                 query: LIST_WORKFLOWS_QUERY,
                 variables: {
                     where: {
-                        app: this.app
+                        app: this.app.id
                     },
                     sort: ["createdOn_DESC"]
                 },

@@ -1,9 +1,9 @@
 import React from "react";
-import { SimpleLink } from "@webiny/app";
 import { cva } from "~/utils.js";
 import type { SidebarMenuItemProps } from "./SidebarMenuRootItem.js";
 import { DivButton } from "./DivButton.js";
 import { DistributedOmit } from "type-fest";
+import { useAdminUi } from "~/index.js";
 
 const variants = cva(
     [
@@ -45,6 +45,8 @@ const SidebarMenuSubButton = ({
     to,
     ...linkProps
 }: SidebarMenuSubButtonProps) => {
+    const { linkComponent: LinkComponent } = useAdminUi();
+
     const sharedProps = {
         "data-sidebar": "menu-button",
         "data-active": active,
@@ -53,10 +55,10 @@ const SidebarMenuSubButton = ({
     };
 
     const content = to ? (
-        <SimpleLink {...sharedProps} to={to} {...linkProps}>
+        <LinkComponent {...sharedProps} to={to} {...linkProps}>
             {icon}
             {text}
-        </SimpleLink>
+        </LinkComponent>
     ) : (
         <DivButton
             {...sharedProps}
@@ -73,7 +75,9 @@ const SidebarMenuSubButton = ({
     return (
         <div className={"wby-flex wby-items-center wby-w-full"}>
             {content}
-            <div className={"wby-flex wby-absolute wby-right-[10px]"}>{action}</div>
+            <div className={"wby-flex wby-absolute wby-right-[10px] wby-pointer-events-none"}>
+                {action}
+            </div>
         </div>
     );
 };

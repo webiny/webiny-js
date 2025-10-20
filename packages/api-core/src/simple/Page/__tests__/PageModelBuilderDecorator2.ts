@@ -1,5 +1,5 @@
 import { createDecorator } from "@webiny/di-container";
-import { PageModelBuilder as BuilderAbstraction } from "../abstractions";
+import { PageModelBuilder as BuilderAbstraction } from "../abstractions.js";
 
 class PageModelBuilderDecorator2Impl implements BuilderAbstraction.Interface {
     constructor(private decoratee: BuilderAbstraction.Interface) {}

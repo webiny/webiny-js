@@ -58,7 +58,8 @@ const TSCONFIG = {
             // examine dependency packages that are registered as workspaces (e.g. "@webiny/..." packages).
             const workspacePackageWbyDepsNames = Object.keys({
                 ...wpObject.packageJson.dependencies,
-                ...wpObject.packageJson.devDependencies
+                ...wpObject.packageJson.devDependencies,
+                ...wpObject.packageJson.peerDependencies
             }).filter(getPackage);
 
             for (const wpWbyDepName of workspacePackageWbyDepsNames) {

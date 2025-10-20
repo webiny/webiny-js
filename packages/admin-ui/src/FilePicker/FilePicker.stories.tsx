@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { type FileItemDto, FilePicker } from "~/FilePicker/index.js";
-import { Providers } from "~/Providers/index.js";
+import { AdminUiProvider } from "~/AdminUiProvider/index.js";
 
 const getRandomNumber = (min: number, max: number): number =>
     Math.floor(Math.random() * (max - min + 1)) + min;
@@ -37,7 +37,7 @@ const meta: Meta<typeof FilePicker> = {
     render: args => {
         const [selectedFile, setSelectedFile] = useState(args.value);
         return (
-            <Providers>
+            <AdminUiProvider>
                 <FilePicker
                     {...args}
                     value={selectedFile}
@@ -45,7 +45,7 @@ const meta: Meta<typeof FilePicker> = {
                     onRemoveItem={() => setSelectedFile(null)}
                     onEditItem={() => alert(`Editing File`)}
                 />
-            </Providers>
+            </AdminUiProvider>
         );
     }
 };
@@ -261,7 +261,7 @@ export const Documentation: Story = {
         }, [args.required, selectedFile]);
 
         return (
-            <Providers>
+            <AdminUiProvider>
                 <FilePicker
                     {...args}
                     value={selectedFile}
@@ -270,7 +270,7 @@ export const Documentation: Story = {
                     onEditItem={handleEdit}
                     validation={validation}
                 />
-            </Providers>
+            </AdminUiProvider>
         );
     },
     args: {

@@ -109,6 +109,7 @@ export const RoutesConfig = () => {
                     </SecureRoute>
                 }
             />
+
             <CmsMenuLoader />
         </AdminConfig>
     );

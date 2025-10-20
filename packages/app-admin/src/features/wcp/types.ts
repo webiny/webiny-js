@@ -1,5 +1,5 @@
 import type { WCP_FEATURE_LABEL } from "@webiny/wcp";
-import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
+import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
 
 // features/Wcp/types.ts
 export type WcpProjectData = DecryptedWcpProjectLicense;

@@ -13,6 +13,7 @@ interface HeaderProps {
     onCreateEntry: (event?: React.SyntheticEvent) => void;
     onCreateFolder: (event?: React.SyntheticEvent) => void;
     searchValue: string;
+    searchPlaceholder: string;
     onSearchChange: (value: string) => void;
 }
 
@@ -24,6 +25,7 @@ export const Header = (props: HeaderProps) => {
         onCreateFolder,
         title,
         searchValue,
+        searchPlaceholder,
         onSearchChange
     } = props;
 
@@ -37,7 +39,7 @@ export const Header = (props: HeaderProps) => {
                             <Search
                                 value={searchValue}
                                 onChange={onSearchChange}
-                                placeholder={"Search..."}
+                                placeholder={searchPlaceholder || "Search entries..."}
                             />
                         </div>
                         <div>

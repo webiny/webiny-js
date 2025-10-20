@@ -25,50 +25,48 @@ export const ContentEntry = makeDecoratable("ContentEntry", () => {
     const { persistEntry } = usePersistEntry({ addItemToListCache: true });
 
     return (
-        <div>
-            <test-id data-testid="cms-content-details">
-                <Tabs
-                    id={"cms-content-details-tabs"}
-                    size={"md"}
-                    separator={true}
-                    spacing={"lg"}
-                    value={activeTab}
-                    onValueChange={setActiveTab}
-                    tabs={[
-                        <Tabs.Tab
-                            key={"content"}
-                            value={"content"}
-                            trigger={"Content"}
-                            disabled={loading}
-                            data-testid={"cms.content-form.tabs.content"}
-                            content={
-                                <div className={"wby-relative"}>
-                                    {invalidFields ? (
-                                        <ValidationIndicators invalidFields={invalidFields} />
-                                    ) : null}
-                                    {loading && <OverlayLoader text={"Loading entry..."} />}
-                                    <ContentEntryForm
-                                        entry={entry}
-                                        persistEntry={persistEntry}
-                                        header={<Header />}
-                                        onInvalidFields={invalidFields =>
-                                            setInvalidFields(invalidFields)
-                                        }
-                                    />
-                                </div>
-                            }
-                        />,
-                        <Tabs.Tab
-                            key={"revisions"}
-                            value={"revisions"}
-                            trigger={"Revisions"}
-                            disabled={loading}
-                            data-testid={"cms.content-form.tabs.revisions"}
-                            content={<RevisionsList />}
-                        />
-                    ]}
-                ></Tabs>
-            </test-id>
+        <div data-testid="cms-content-details">
+            <Tabs
+                id={"cms-content-details-tabs"}
+                size={"md"}
+                separator={true}
+                spacing={"lg"}
+                value={activeTab}
+                onValueChange={setActiveTab}
+                tabs={[
+                    <Tabs.Tab
+                        key={"content"}
+                        value={"content"}
+                        trigger={"Content"}
+                        disabled={loading}
+                        data-testid={"cms.content-form.tabs.content"}
+                        content={
+                            <div className={"wby-relative"}>
+                                {invalidFields ? (
+                                    <ValidationIndicators invalidFields={invalidFields} />
+                                ) : null}
+                                {loading && <OverlayLoader text={"Loading entry..."} />}
+                                <ContentEntryForm
+                                    entry={entry}
+                                    persistEntry={persistEntry}
+                                    header={<Header />}
+                                    onInvalidFields={invalidFields =>
+                                        setInvalidFields(invalidFields)
+                                    }
+                                />
+                            </div>
+                        }
+                    />,
+                    <Tabs.Tab
+                        key={"revisions"}
+                        value={"revisions"}
+                        trigger={"Revisions"}
+                        disabled={loading}
+                        data-testid={"cms.content-form.tabs.revisions"}
+                        content={<RevisionsList />}
+                    />
+                ]}
+            />
         </div>
     );
 });

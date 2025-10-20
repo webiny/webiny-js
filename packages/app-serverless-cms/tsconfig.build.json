@@ -12,6 +12,7 @@
     { "path": "../app-graphql-playground/tsconfig.build.json" },
     { "path": "../app-headless-cms/tsconfig.build.json" },
     { "path": "../app-headless-cms-scheduler/tsconfig.build.json" },
+    { "path": "../app-headless-cms-workflows/tsconfig.build.json" },
     { "path": "../app-i18n/tsconfig.build.json" },
     { "path": "../app-mailer/tsconfig.build.json" },
     { "path": "../app-record-locking/tsconfig.build.json" },

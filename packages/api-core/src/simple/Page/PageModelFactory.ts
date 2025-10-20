@@ -3,7 +3,7 @@ import {
     PageModelFactory as FactoryAbstraction,
     PageModelBuilder,
     type IPage
-} from "./abstractions";
+} from "./abstractions.js";
 import type { ModelClass } from "~/models/ModelBuilder.js";
 
 class PageModelFactoryImpl implements FactoryAbstraction.Interface {

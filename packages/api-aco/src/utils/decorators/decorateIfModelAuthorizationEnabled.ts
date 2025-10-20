@@ -49,11 +49,11 @@ export const decorateIfModelAuthorizationEnabled = <
     method: M,
     decorator: D
 ) => {
-    const root = context.cms;
     /**
      * We cast to `ModelCallable` because within the generic function, we only know that the first
      * parameter is a `CmsModel`, and we forward the rest.
      */
+    const root = context.cms;
     const decoratee = root[method].bind(root) as ModelCallable;
     root[method] = ((...params: Parameters<ModelMethods<HeadlessCms>[M]>) => {
         const [model, ...rest] = params;

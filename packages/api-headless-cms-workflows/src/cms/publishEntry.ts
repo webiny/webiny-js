@@ -1,6 +1,7 @@
 import { WebinyError } from "@webiny/error";
 import type { Context } from "~/types.js";
 import { createWorkflowAppName } from "~/utils/appName.js";
+import { isModelAllowed } from "~/utils/modelAllowed.js";
 
 interface IParams {
     context: Pick<Context, "workflowState" | "cms">;
@@ -9,11 +10,11 @@ interface IParams {
 export const attachPublishEntryLifecycleEvents = (params: IParams) => {
     const { context } = params;
     context.cms.onEntryBeforePublish.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate) {
+        if (isModelAllowed(model) === false) {
             return;
         }
         const app = createWorkflowAppName({ model });
-        const state = await context.workflowState.getState(app, entry.id);
+        const state = await context.workflowState.getTargetState(app, entry.id);
         if (state.done) {
             entry.state = undefined;
             return;

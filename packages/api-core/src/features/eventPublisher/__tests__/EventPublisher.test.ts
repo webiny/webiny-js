@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Container, Abstraction, createImplementation } from "@webiny/di-container";
-import { EventPublisherFeature } from "../feature";
-import { EventPublisher as EventPublisherAbstraction } from "../abstractions";
-import type { DomainEvent, IEventHandler } from "../abstractions";
+import { EventPublisherFeature } from "../feature.js";
+import { EventPublisher as EventPublisherAbstraction } from "../abstractions.js";
+import type { DomainEvent, IEventHandler } from "../abstractions.js";
 
 // ============================================================================
 // Test Event: PagePublished

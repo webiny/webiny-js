@@ -5,7 +5,7 @@ import { loadedFolderCacheFactory } from "../cache/LoadedFoldersCacheFactory.js"
 import {
     GetFolderHierarchyGatewayResponse,
     IGetFolderHierarchyGateway
-} from "~/features/folders/getFolderHierarchy/IGetFolderHierarchyGateway";
+} from "~/features/folders/getFolderHierarchy/IGetFolderHierarchyGateway.js";
 
 describe("GetFolderHierarchy", () => {
     const type = "abc";

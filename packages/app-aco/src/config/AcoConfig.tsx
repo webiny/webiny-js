@@ -43,7 +43,8 @@ export function useAcoConfig() {
             },
             folder: {
                 ...folder,
-                actions: [...(folder.actions || [])]
+                actions: [...(folder.actions || [])],
+                dropConfirmation: folder.dropConfirmation || false
             },
             record: {
                 ...record,

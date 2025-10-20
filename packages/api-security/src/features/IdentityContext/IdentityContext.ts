@@ -1,4 +1,4 @@
-import { type AuthenticationToken, IdentityContext as ContextAbstraction } from "./abstractions";
+import { type AuthenticationToken, IdentityContext as ContextAbstraction } from "./abstractions.js";
 import type { Security } from "~/types.js";
 import type { Identity } from "@webiny/api-authentication/types";
 

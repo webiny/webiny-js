@@ -3,9 +3,9 @@ import { createImplementation } from "@webiny/di-container";
 import { LocalStorageService } from "@webiny/app/features/localStorage";
 import { EnvConfig } from "@webiny/app/features/envConfig";
 import { License, NullLicense } from "@webiny/wcp";
-import type { ILicense, DecryptedWcpProjectLicense } from "@webiny/wcp/types";
-import { WcpService as Abstraction, WcpGateway } from "./abstractions";
-import { ReactLicense } from "./ReactLicense";
+import type { ILicense, DecryptedWcpProjectLicense } from "@webiny/wcp/types.js";
+import { WcpService as Abstraction, WcpGateway } from "./abstractions.js";
+import { ReactLicense } from "./ReactLicense.js";
 import type { WcpFeatureName } from "~/features/wcp/types.js";
 
 const LOCAL_STORAGE_KEY = "wcp/project";

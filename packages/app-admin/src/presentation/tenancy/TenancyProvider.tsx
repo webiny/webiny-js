@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useRef } from "react";
 import { DiContainerProvider, useFeature, useRouter } from "@webiny/app";
 import { plugins } from "@webiny/plugins";
-import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin";
+import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
 import { Routes } from "~/routes.js";
 

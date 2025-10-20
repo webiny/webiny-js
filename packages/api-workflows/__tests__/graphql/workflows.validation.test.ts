@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createGraphQLHandler } from "~tests/__helpers/handler.js";
+import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
 
 describe("workflows graphql validation", () => {
     const handler = createGraphQLHandler();
@@ -16,7 +17,7 @@ describe("workflows graphql validation", () => {
                         title: "Step 1",
                         description: "This is step 1",
                         color: "blue",
-                        teams: [{ id: "team-1" }],
+                        teams: [{ id: FULL_ACCESS_TEAM_ID }],
                         notifications: [{ id: "" }]
                     }
                 ]

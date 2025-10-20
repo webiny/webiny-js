@@ -33,6 +33,7 @@ export default ({ storageOperations }: Config) => {
 
             context.adminUsers = createAdminUsers({
                 storageOperations,
+                security,
                 getTenant,
                 getPermission,
                 getIdentity,

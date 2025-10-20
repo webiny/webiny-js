@@ -4,7 +4,7 @@ import type { CachedWcpProjectLicense, WcpContext } from "~/types.js";
 import type { DecryptedWcpProjectLicense, ILicense } from "@webiny/wcp/types.js";
 import { LegacyWcpContext } from "~/legacy/LegacyWcpContext.js";
 import { License } from "@webiny/wcp";
-import { getWcpProjectLicenseCacheKey } from "./utils";
+import { getWcpProjectLicenseCacheKey } from "./utils.js";
 import { WcpFeatures } from "~/features/index.js";
 
 const wcpProjectEnvironment = getWcpProjectEnvironment();

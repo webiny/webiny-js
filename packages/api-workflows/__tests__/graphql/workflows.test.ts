@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createGraphQLHandler } from "~tests/__helpers/handler.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
+import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
 
 describe("workflow graphql", () => {
     const handler = createGraphQLHandler();
@@ -18,7 +19,7 @@ describe("workflow graphql", () => {
                         title: "Step 1",
                         description: "This is step 1",
                         color: "blue",
-                        teams: [{ id: "team-1" }],
+                        teams: [{ id: FULL_ACCESS_TEAM_ID }],
                         notifications: [{ id: "notif-1" }]
                     }
                 ]
@@ -32,13 +33,14 @@ describe("workflow graphql", () => {
                         data: {
                             id: "workflow-1",
                             name: "Test Workflow",
+                            app: "test",
                             steps: [
                                 {
                                     id: "step-1",
                                     title: "Step 1",
                                     description: "This is step 1",
                                     color: "blue",
-                                    teams: [{ id: "team-1" }],
+                                    teams: [{ id: FULL_ACCESS_TEAM_ID }],
                                     notifications: [{ id: "notif-1" }]
                                 }
                             ]
@@ -61,13 +63,14 @@ describe("workflow graphql", () => {
                         data: {
                             id: "workflow-1",
                             name: "Test Workflow",
+                            app: "test",
                             steps: [
                                 {
                                     id: "step-1",
                                     title: "Step 1",
                                     description: "This is step 1",
                                     color: "blue",
-                                    teams: [{ id: "team-1" }],
+                                    teams: [{ id: FULL_ACCESS_TEAM_ID }],
                                     notifications: [{ id: "notif-1" }]
                                 }
                             ]

@@ -62,6 +62,7 @@ const AccessManagementExtension = () => {
                 <Menu
                     name={"security.roles"}
                     parent={"settings"}
+                    pinnable={true}
                     element={<Menu.Link text={"Roles"} to={router.getLink(Routes.Roles.List)} />}
                 />
             </HasPermission>
@@ -70,6 +71,7 @@ const AccessManagementExtension = () => {
                     <Menu
                         name={"security.teams"}
                         parent={"settings"}
+                        pinnable={true}
                         element={
                             <Menu.Link text={"Teams"} to={router.getLink(Routes.Teams.List)} />
                         }
@@ -81,6 +83,7 @@ const AccessManagementExtension = () => {
                 <Menu
                     name={"security.apiKeys"}
                     parent={"settings"}
+                    pinnable={true}
                     element={
                         <Menu.Link text={"API Keys"} to={router.getLink(Routes.ApiKeys.List)} />
                     }

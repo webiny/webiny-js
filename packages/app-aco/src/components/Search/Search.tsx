@@ -5,7 +5,7 @@ import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 interface SearchProps {
     value: string;
     onChange: (value: string) => void;
-    placeholder?: string;
+    placeholder: string;
 }
 
 export const Search = ({ value, onChange, placeholder }: SearchProps) => {

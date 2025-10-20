@@ -34,7 +34,7 @@ export * from "./MultiFilePicker/index.js";
 export * from "./Portal/index.js";
 export * from "./Popover/index.js";
 export * from "./ProgressBar/index.js";
-export * from "./Providers/index.js";
+export * from "./AdminUiProvider/index.js";
 export * from "./RadioGroup/index.js";
 export * from "./RangeSlider/index.js";
 export * from "./Scrollbar/index.js";

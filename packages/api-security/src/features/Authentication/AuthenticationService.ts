@@ -1,5 +1,5 @@
 import type { Authenticator } from "@webiny/api-authentication/types";
-import { AuthenticationService as ServiceAbstraction } from "./abstractions";
+import { AuthenticationService as ServiceAbstraction } from "./abstractions.js";
 import type { Security } from "~/types.js";
 
 export class AuthenticationService implements ServiceAbstraction.Interface {

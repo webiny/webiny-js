@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Container } from "@webiny/di-container";
-import { GraphQLClient } from "../abstractions";
-import { FetchGraphQLClient } from "../FetchGraphQLClient";
-import { BatchingGraphQLClient } from "../BatchingGraphQLClient";
-import { RetryGraphQLClient } from "../RetryGraphQLClient";
-import { EnvConfig } from "~/features/envConfig";
+import { GraphQLClient } from "../abstractions.js";
+import { FetchGraphQLClient } from "../FetchGraphQLClient.js";
+import { BatchingGraphQLClient } from "../BatchingGraphQLClient.js";
+import { RetryGraphQLClient } from "../RetryGraphQLClient.js";
+import { EnvConfig } from "~/features/envConfig/index.js";
 
 describe("GraphQLClient Feature", () => {
     let container: Container;

@@ -1,6 +1,6 @@
 import { WebinyError } from "@webiny/error";
 import z from "zod";
-import { Result } from "./Result";
+import { Result } from "./Result.js";
 
 type DataProperties<T> = Omit<T, "__schema">;
 

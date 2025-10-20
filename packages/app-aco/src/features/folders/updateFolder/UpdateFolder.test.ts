@@ -4,8 +4,8 @@ import { folderCacheFactory } from "../cache/FoldersCacheFactory.js";
 import { Folder } from "../Folder.js";
 import { type FolderPermission } from "@webiny/shared-aco/flp/flp.types.js";
 import { ROOT_FOLDER } from "~/constants.js";
-import type { IUpdateFolderGateway } from "~/features/folders/updateFolder/IUpdateFolderGateway";
-import type { FolderGqlDto } from "~/features/folders/updateFolder/FolderGqlDto";
+import type { IUpdateFolderGateway } from "~/features/folders/updateFolder/IUpdateFolderGateway.js";
+import type { FolderGqlDto } from "~/features/folders/updateFolder/FolderGqlDto.js";
 
 class UpdateFolderMockGateway implements IUpdateFolderGateway {
     mockResponse: FolderGqlDto;

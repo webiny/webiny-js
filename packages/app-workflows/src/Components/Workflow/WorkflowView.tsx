@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
 import { Workflow } from "./Workflow.js";
-import type { IWorkflowsPresenter } from "../Presenters/index.js";
-import { Button, Grid, Loader } from "@webiny/admin-ui";
+import type { IWorkflowsPresenter } from "~/Presenters/index.js";
+import { Button, Grid, Heading, Loader } from "@webiny/admin-ui";
 import { observer } from "mobx-react-lite";
-import { WorkflowError } from "./error/WorkflowError.js";
+import { WorkflowError } from "./Error/WorkflowError.js";
 
 interface WorkflowViewProps {
     presenter: IWorkflowsPresenter;
@@ -30,6 +30,7 @@ export const WorkflowView = observer((props: WorkflowViewProps) => {
      */
     return (
         <Grid>
+            <Heading level={2}>{presenter.vm.app.name}</Heading>
             <WorkflowError error={presenter.vm.error} />
             <Grid.Column span={12}>
                 <Workflow presenter={presenter} />

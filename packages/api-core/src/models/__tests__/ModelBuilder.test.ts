@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createModelSchema, ModelBuilder } from "../ModelBuilder";
+import { createModelSchema, ModelBuilder } from "../ModelBuilder.js";
 import type { IModel } from "~/models/abstractions.js";
 
 describe("ModelBuilder", () => {

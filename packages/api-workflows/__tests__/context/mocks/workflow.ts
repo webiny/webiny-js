@@ -1,4 +1,5 @@
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
+import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
 
 export const createMockWorkflow = (input: Partial<IWorkflow> = {}): IWorkflow => {
     return {
@@ -13,7 +14,7 @@ export const createMockWorkflow = (input: Partial<IWorkflow> = {}): IWorkflow =>
                 color: "blue",
                 teams: [
                     {
-                        id: "team-1"
+                        id: FULL_ACCESS_TEAM_ID
                     }
                 ],
                 notifications: [
@@ -29,7 +30,7 @@ export const createMockWorkflow = (input: Partial<IWorkflow> = {}): IWorkflow =>
                 color: "green",
                 teams: [
                     {
-                        id: "team-2"
+                        id: FULL_ACCESS_TEAM_ID
                     }
                 ],
                 notifications: [

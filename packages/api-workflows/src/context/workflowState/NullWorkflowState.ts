@@ -2,11 +2,15 @@ import type { IWorkflowState } from "../abstractions/WorkflowState.js";
 
 export class NullWorkflowState implements IWorkflowState {
     public readonly activeStep = undefined;
-    public readonly done = true;
+    /**
+     * When we have a NullWorkflowState, it means there is no workflow assigned to the current entity.
+     * Therefore, we cannot consider it done - user MUST explicitly assign a workflow and approve it.
+     */
+    public readonly done = false;
     public readonly workflow = undefined;
     public readonly record = undefined;
 
-    public async review(): Promise<void> {
+    public async start(): Promise<void> {
         return;
     }
 

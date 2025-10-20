@@ -7,6 +7,7 @@ export const getState = (state: IWorkflowState): ICmsEntryState | undefined => {
     }
 
     return {
+        workflowId: state.workflow?.id || "unknown",
         stepId: state.activeStep.id,
         stepName: state.activeStep.name,
         state: state.activeStep.state

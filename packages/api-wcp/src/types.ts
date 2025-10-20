@@ -13,3 +13,9 @@ export interface CachedWcpProjectLicense {
     project: WcpProject | null;
     license: ILicense;
 }
+
+export type AaclPermission = {
+    name: "aacl";
+    legacy: boolean;
+    teams: boolean;
+};

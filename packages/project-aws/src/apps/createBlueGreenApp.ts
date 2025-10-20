@@ -1,4 +1,4 @@
-import { createBlueGreenPulumiApp } from "~/pulumi/apps/blueGreen/createBlueGreenPulumiApp";
+import { createBlueGreenPulumiApp } from "~/pulumi/apps/blueGreen/createBlueGreenPulumiApp.js";
 
 export function createBlueGreenApp() {
     return {
