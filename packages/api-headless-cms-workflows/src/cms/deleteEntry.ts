@@ -15,8 +15,8 @@ export const attachDeleteEntryLifecycleEvents = (params: IParams) => {
         const app = createWorkflowAppName({ model });
         try {
             await context.workflowState.deleteTargetState(app, entry.id);
-        } catch (ex) {
-            console.error(ex);
+        } catch {
+            // does not matter
         }
     });
 };

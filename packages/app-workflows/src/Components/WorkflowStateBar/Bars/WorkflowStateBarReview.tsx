@@ -1,13 +1,16 @@
+/**
+ * User can approve or reject the item in review.
+ */
 import React from "react";
 import { Alert } from "@webiny/admin-ui";
 import { WorkflowStateBarComponent } from "../WorkflowStateBarComponent.js";
 import { observer } from "mobx-react-lite";
 import { WorkflowStateValue } from "~/types.js";
 
-export const WorkflowStateBarStartReview = WorkflowStateBarComponent.createDecorator(Original => {
-    return observer(function WorkflowStateBarStartReviewDecorator(props) {
+export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(Original => {
+    return observer(function WorkflowStateBarReviewDecorator(props) {
         const { presenter } = props;
-        if (presenter.vm.state?.state !== WorkflowStateValue.inReview) {
+        if (presenter.vm.state?.state !== WorkflowStateValue.inReview || presenter.vm.isOwner) {
             return <Original {...props} />;
         }
 

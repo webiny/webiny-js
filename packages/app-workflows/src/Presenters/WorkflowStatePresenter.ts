@@ -59,9 +59,18 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         });
     };
 
+    start = async () => {
+        const item = await this.repository.start({
+            id: this.state!.id
+        });
+        runInAction(() => {
+            this.state = item ? new WorkflowStateModel(item) : null;
+        });
+    };
+
     approve = async (comment?: string) => {
         const item = await this.repository.approve({
-            id: this.targetRevisionId,
+            id: this.state!.id,
             comment
         });
         runInAction(() => {
@@ -71,7 +80,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
 
     reject = async (comment: string) => {
         const item = await this.repository.reject({
-            id: this.targetRevisionId,
+            id: this.state!.id,
             comment
         });
         runInAction(() => {
@@ -80,7 +89,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     };
 
     cancel = async () => {
-        await this.repository.cancel(this.targetRevisionId);
+        await this.repository.cancel(this.state!.id);
         runInAction(() => {
             this.state = null;
         });

@@ -1,3 +1,7 @@
+/**
+ * Any error the GraphQL API returns related to workflow states.
+ * The are some specific error codes that the UI can handle accordingly.
+ */
 import React from "react";
 import { Alert } from "@webiny/admin-ui";
 import { WorkflowStateBarComponent } from "../WorkflowStateBarComponent.js";

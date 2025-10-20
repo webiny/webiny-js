@@ -1,3 +1,6 @@
+/**
+ * Owner of the review can cancel the review request.
+ */
 import React from "react";
 import { Alert } from "@webiny/admin-ui";
 import { WorkflowStateBarComponent } from "../WorkflowStateBarComponent.js";

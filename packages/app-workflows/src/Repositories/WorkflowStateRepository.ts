@@ -3,7 +3,8 @@ import type {
     IWorkflowStateRepositoryApproveParams,
     IWorkflowStateRepositoryFindOneParams,
     IWorkflowStateRepositoryRejectParams,
-    IWorkflowStateRepositoryRequestReviewParams
+    IWorkflowStateRepositoryRequestReviewParams,
+    IWorkflowStateRepositoryStartParams
 } from "./abstractions/WorkflowStateRepository.js";
 import type {
     IWorkflowStateError,
@@ -34,6 +35,21 @@ export class WorkflowStateRepository implements IWorkflowStateRepository {
 
         makeAutoObservable(this);
     }
+    
+    public async start(
+        params: IWorkflowStateRepositoryStartParams
+    ): Promise<IWorkflowState | null> {
+        runInAction(() => {
+            this._loading = true;
+            this._error = null;
+        });
+        const result = await this.gateway.startWorkflowStateStep(params);
+        runInAction(() => {
+            this._error = result.error;
+            this._loading = false;
+        });
+        return result.data;
+    }
 
     public async approve(
         params: IWorkflowStateRepositoryApproveParams
@@ -49,6 +65,7 @@ export class WorkflowStateRepository implements IWorkflowStateRepository {
         });
         return result.data;
     }
+    
     public async reject(
         params: IWorkflowStateRepositoryRejectParams
     ): Promise<IWorkflowState | null> {

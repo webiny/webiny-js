@@ -1,4 +1,4 @@
-import type { IWorkflowState, IWorkflowStateStep, IWorkflowStep } from "~/types.js";
+import type { IWorkflowState, IWorkflowStateStep } from "~/types.js";
 import type { IWorkflowStateStepModel } from "./WorkflowStateStepModel.js";
 import type { IObservableArray } from "mobx";
 

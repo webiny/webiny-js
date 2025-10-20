@@ -1,17 +1,19 @@
 import React, { useMemo } from "react";
+import type { IIdentity } from "~/types.js";
+import type ApolloClient from "apollo-client";
 import { WorkflowStatePresenter } from "~/Presenters/index.js";
 import { WorkflowStateRepository } from "~/Repositories/index.js";
 import { WorkflowStateGateway } from "~/Gateways/index.js";
-
 import { WorkflowStateBarObserver } from "./WorkflowStateBarObserver.js";
 import { Plugins } from "@webiny/app";
 import { WorkflowStateBarError } from "./Bars/WorkflowStateBarError.js";
 import { WorkflowStateBarLoading } from "./Bars/WorkflowStateBarLoading.js";
 import { WorkflowStateBarRequestReview } from "./Bars/WorkflowStateBarRequestReview.js";
-import { WorkflowStateBarStartReview } from "~/Components/WorkflowStateBar/Bars/WorkflowStateBarStartReview.js";
-import type { IIdentity } from "~/types.js";
-import type ApolloClient from "apollo-client";
-import { WorkflowStateBarCancelReview } from "~/Components/WorkflowStateBar/Bars/WorkflowStateBarCancelReview.js";
+import { WorkflowStateBarStartReview } from "./Bars/WorkflowStateBarStartReview.js";
+import { WorkflowStateBarCancelReview } from "./Bars/WorkflowStateBarCancelReview.js";
+import { WorkflowStateBarReview } from "./Bars/WorkflowStateBarReview.js";
+import { WorkflowStateBarApproved } from "./Bars/WorkflowStateBarApproved.js";
+import { WorkflowStateBarRejected } from "./Bars/WorkflowStateBarRejected.js";
 
 export interface IWorkflowStateBarProps {
     id: string;
@@ -48,8 +50,11 @@ export const WorkflowStateBar = (props: IWorkflowStateBarProps) => {
         <>
             <Plugins>
                 <WorkflowStateBarStartReview />
+                <WorkflowStateBarReview />
                 <WorkflowStateBarRequestReview />
                 <WorkflowStateBarCancelReview />
+                <WorkflowStateBarApproved />
+                <WorkflowStateBarRejected />
                 <WorkflowStateBarLoading />
                 <WorkflowStateBarError />
             </Plugins>

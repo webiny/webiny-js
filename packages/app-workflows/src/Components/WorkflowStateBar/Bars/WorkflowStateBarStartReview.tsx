@@ -1,3 +1,6 @@
+/**
+ * Can start the review - only the owner will be locked out of starting the review.
+ */
 import React from "react";
 import { Alert } from "@webiny/admin-ui";
 import { WorkflowStateBarComponent } from "../WorkflowStateBarComponent.js";
@@ -7,7 +10,7 @@ import { WorkflowStateValue } from "~/types.js";
 export const WorkflowStateBarStartReview = WorkflowStateBarComponent.createDecorator(Original => {
     return observer(function WorkflowStateBarStartReviewDecorator(props) {
         const { presenter } = props;
-        if (presenter.vm.state?.state !== WorkflowStateValue.pending) {
+        if (presenter.vm.state?.state !== WorkflowStateValue.pending || presenter.vm.isOwner) {
             return <Original {...props} />;
         }
 
@@ -15,11 +18,11 @@ export const WorkflowStateBarStartReview = WorkflowStateBarComponent.createDecor
             <Alert
                 actions={
                     <>
-                        <Alert.Action text={"Start Review"} onClick={() => presenter.approve()} />
+                        <Alert.Action text={"Start Review"} onClick={() => presenter.start()} />
                     </>
                 }
             >
-                This item is currently under review.
+                You can start the review for this entry.
             </Alert>
         );
     });
