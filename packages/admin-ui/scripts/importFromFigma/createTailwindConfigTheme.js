@@ -1,4 +1,4 @@
-const { DEFAULTS } = require("./defaults");
+import { DEFAULTS } from "./defaults.js";
 
 // We don't need tokens that end with `-a{one or two numbers}` because they are used for
 // alpha colors. We don't need these because we can use the /alpha function in Tailwind CSS.
@@ -246,4 +246,5 @@ const createTailwindConfigTheme = normalizedFigmaExport => {
         }
     };
 };
-module.exports = { createTailwindConfigTheme };
+
+export { createTailwindConfigTheme };
