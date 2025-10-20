@@ -1,0 +1,242 @@
+# Comprehensive Developer Guide: Clean Architecture for React + MobX
+
+This guide combines the DI container patterns with Clean Architecture principles for building scalable, testable features.
+
+## Architecture Philosophy
+
+Our architecture combines:
+
+- **Clean Architecture**: Layered separation with dependency inversion
+- **Domain-Driven Design**: Rich domain models and business rules
+- **Vertical Slices**: Feature-based organization
+- **DI Container**: Type-safe dependency injection
+
+## Layered Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                  Application                        │
+│        (Use Cases, Repository Interfaces)           │
+└──────────────────┬──────────────────────────────────┘
+                   │ depends on
+┌──────────────────▼──────────────────────────────────┐
+│                    Domain                           │
+│      (Entities, Value Objects, Domain Services)     │
+└──────────────────┬──────────────────────────────────┘
+                   │ used by
+┌──────────────────▼──────────────────────────────────┐
+│               Infrastructure                        │
+│    (Gateways, Mappers, Concrete Implementations)    │
+└─────────────────────────────────────────────────────┘
+```
+
+**Key principle:** Dependencies point inward. Inner layers never depend on outer layers.
+
+## Folder Structure
+
+When developing a feature, YOU MUST follow this file organization.
+
+```text
+src/
+├── features/                        # Vertical slices (one per use case)
+│   ├── GetUser/
+│   │   ├── feature.ts              # Feature definition (DI registration)
+│   │   ├── abstractions.ts         # DI abstractions/tokens
+│   │   ├── GetUserUseCase.ts       # Application service (orchestration)
+│   │   ├── GetUserRepository.ts    # Repository implementation (OPTIONAL)
+│   │   ├── GetUserGateway.ts       # Infrastructure (API calls) (OPTIONAL)
+│   │   ├── GetUserMapper.ts        # DTO ↔ Domain mapping (OPTIONAL)
+│   │   ├── types.ts                # Input/Output DTOs (OPTIONAL)
+│   │   └── __tests__/
+│   │       └── GetUserUseCase.test.ts
+```
+
+## Creating a feature
+
+Features encapsulate complete vertical slices of functionality.
+
+**Feature Definition:**
+
+The following code snippet demonstrates what `createFeature` does internally.
+In regular code, you import it as `import { createFeature } from "@webiny/feature";`
+
+```typescript
+import type { Container } from "@webiny/di-container";
+
+export interface FeatureDefinition<TExports = any> {
+  name: string;
+  register(container: Container): void;
+}
+
+export function createFeature<TExports = any>(def: {
+  name: string;
+  register(container: Container): void;
+}): FeatureDefinition<TExports> {
+  const registeredContainers = new WeakSet<Container>();
+
+  return {
+    name: def.name,
+    register: (container: Container) => {
+      if (!registeredContainers.has(container)) {
+        def.register(container);
+        registeredContainers.add(container);
+      }
+    }
+  };
+}
+```
+
+**Abstraction Definition:**
+
+Every feature starts with an abstraction definition. There can be one or more abstractions. You need to create an abstraction for every meaningful part of the feature: use case, repository, event, etc.
+
+Here's an example definition of an abstraction for a use case.
+
+```typescript
+// abstractions.ts
+import { createAbstraction } from "@webiny/feature/api";
+
+interface IUpdateUserUseCase {
+  execute(id: string, data: Record<string, any>): Promise<void>;
+}
+
+export const UpdateUserUseCase = createAbstraction<IUpdateUserUseCase>("UpdateUserUseCase");
+
+export namespace UpdateUserUseCase {
+  export type Interface = IUpdateUserUseCase;
+}
+```
+
+You MUST ALWAYS use `createAbstraction` instead of `new Abstraction`.
+
+**Use case implementation**
+
+```typescript
+// UpdateUserUseCase.ts
+import { createImplementation } from "@webiny/feature/api";
+
+// Import abstraction you're implementing
+import { UpdateUserUseCase as UseCaseAbstraction } from "./abstractions.js";
+
+// Import abstractions you want to depend on
+import { SupportedLanguagesProvider } from "@webiny/some-package/features/SupportedLanguagesProvider";
+
+class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
+  constructor(private provider: SupportedLanguagesProvider.Interface) {}
+
+  execute(id: string, data: Record<string, any>): Promise<void> {
+    // Implementation goes here
+  }
+}
+
+export const PageTranslationPolicyImpl = createImplementation({
+  abstraction: UseCaseAbstraction,
+  implementation: UpdateUserUseCaseImpl,
+  dependencies: [SupportedLanguagesProvider]
+});
+```
+
+## Use Case Decorators
+
+Decorators add cross-cutting concerns to use cases without modifying the core logic.
+
+**Common decorator patterns:**
+
+1. **Validation** - Validate input earliest
+2. **Authorization** - Check permissions
+3. **Mutation** - Transform input (e.g., add defaults)
+4. **Metrics** - Track execution time/errors
+
+**Decorator Example:**
+
+```typescript
+// features/pages/CreatePage/decorators/ValidationDecorator.ts
+import { createDecorator } from "@webiny/feature";
+import { CreatePageUseCase } from "../abstractions";
+
+class CreatePageValidationDecoratorImpl {
+  constructor(private decoratee: CreatePageUseCase.Interface) {}
+
+  async execute(input: CreatePageInput): Promise<Page> {
+    if (!input.title || input.title.trim().length === 0) {
+      throw new Error("Title is required");
+    }
+
+    if (input.title.length > 200) {
+      throw new Error("Title must be less than 200 characters");
+    }
+
+    return this.decoratee.execute(input);
+  }
+}
+
+export const CreatePageValidationDecorator = createDecorator({
+  abstraction: CreatePageUseCase,
+  decorator: CreatePageValidationDecoratorImpl,
+  dependencies: []
+});
+```
+
+### 4. Feature Composition
+
+Build complex features from simple ones:
+
+```typescript
+// features/UserManagement/feature.ts
+export const UserManagementFeature = createFeature({
+  name: "UserManagement",
+  register(container) {
+    // Register sub-features
+    GetUserFeature.register(container);
+    UpdateUserFeature.register(container);
+    DeleteUserFeature.register(container);
+    ListUsersFeature.register(container);
+
+    // Register presenters that compose use cases
+    container.register(UserListUseCaseImpl);
+  }
+});
+```
+
+ALWAYS register use cases in transient scope (default).
+ALWAYS register repositories in singleton scope.
+
+## Public API Design
+
+Export only what external consumers need:
+
+```typescript
+// index.ts - Public API
+export { UserManagementFeature } from "./features/UserManagement";
+
+// Export abstractions for DI
+export { UserRepository, UserCache } from "./features/UserManagement/abstractions";
+
+// Export domain objects
+export { User, UserRole } from "./domain/user";
+
+// Export types
+export type { CreateUserInput, UpdateUserInput } from "./features/UserManagement/types";
+
+// DO NOT export internal implementations
+// ❌ export { UserRepositoryImpl } from "./features/UserManagement/UserRepository";
+// ❌ export { UserGateway } from "./features/UserManagement/UserGateway";
+```
+
+## Summary Checklist
+
+When building a new feature, follow this checklist:
+
+- [ ] **Define domain objects** (entities, value objects, domain services)
+- [ ] **Create use case** (application layer workflow)
+- [ ] **Define repository interface** (application layer contract)
+- [ ] **Implement gateway** (infrastructure layer I/O)
+- [ ] **Implement mapper** (DTO ↔ Domain conversion)
+- [ ] **Implement repository** (infrastructure layer, uses gateway)
+- [ ] **Create abstractions.ts** (DI tokens)
+- [ ] **Create feature.ts** (DI registration)
+- [ ] **Write tests** (unit tests for each layer)
+- [ ] **Export public API** (index.ts)
+- [ ] **Register decorators** (if needed for cross-cutting concerns)
+
+This architecture provides a scalable foundation for building complex applications while maintaining clear separation of concerns, testability, and flexibility.
