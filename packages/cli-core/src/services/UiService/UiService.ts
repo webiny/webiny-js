@@ -57,6 +57,7 @@ export class DefaultUiService implements UiService.Interface {
     }
 
     private typedColorizedText(type: keyof typeof LOG_COLORS, text: string, ...args: any[]) {
+        // const prefix = `${LOG_COLORS[type]('│')} `; // TODO: try this
         const prefix = `${LOG_COLORS[type](type)}: `;
 
         // Replace all placeholders (match with `/%[a-zA-Z]/g` regex) with colorized values.
