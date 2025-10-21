@@ -8,7 +8,6 @@ import type { CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
 import type { Topic } from "@webiny/pubsub/types.js";
 
 export interface IWorkflowStateContextListStatesWhere {
-    id?: string;
     app?: string;
     app_in?: string[];
     workflowId?: string;
@@ -19,6 +18,7 @@ export interface IWorkflowStateContextListStatesWhere {
     targetRevisionId_in?: string[];
     state?: WorkflowStateRecordState;
     state_in?: WorkflowStateRecordState[];
+    savedBy?: string;
 }
 
 export interface IWorkflowStateContextListStatesParams {
@@ -50,7 +50,9 @@ export interface IWorkflowStateContext {
     onStateAfterCreate: Topic<IWorkflowStateContextOnStateAfterCreate>;
     onStateAfterUpdate: Topic<IWorkflowStateContextOnStateAfterUpdate>;
     onStateAfterDelete: Topic<IWorkflowStateContextOnStateAfterDelete>;
-    getState(app: string, id: string): Promise<IWorkflowState>;
+    getState(id: string): Promise<IWorkflowState>;
+    getTargetState(app: string, id: string): Promise<IWorkflowState>;
+
     listStates(
         params?: IWorkflowStateContextListStatesParams
     ): Promise<IWorkflowStateContextListStatesResponse>;
@@ -59,5 +61,10 @@ export interface IWorkflowStateContext {
         id: string,
         record: Partial<Omit<IWorkflowStateRecord, "id">>
     ): Promise<IWorkflowState>;
-    deleteState(app: string, targetRevisionId: string): Promise<void>;
+    deleteTargetState(app: string, targetRevisionId: string): Promise<void>;
+    deleteState(id: string): Promise<void>;
+
+    startStateStep(id: string): Promise<IWorkflowState>;
+    approveStateStep(id: string, comment?: string): Promise<IWorkflowState>;
+    rejectStateStep(id: string, comment: string): Promise<IWorkflowState>;
 }

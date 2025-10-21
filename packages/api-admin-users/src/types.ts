@@ -1,5 +1,5 @@
 import type { Topic } from "@webiny/pubsub/types.js";
-import type { SecurityContext } from "@webiny/api-security/types.js";
+import type { SecurityContext, Team } from "@webiny/api-security/types.js";
 import type { TenancyContext } from "@webiny/api-tenancy/types.js";
 
 export interface AdminUsersContext extends SecurityContext, TenancyContext {
@@ -195,6 +195,8 @@ export interface AdminUsers {
     getUser<TUser extends AdminUser = AdminUser>(params: GetUserParams): Promise<TUser>;
 
     listUsers<TUser extends AdminUser = AdminUser>(params?: ListUsersParams): Promise<TUser[]>;
+
+    listUserTeams(id: string): Promise<Team[]>;
 
     createUser<TUser extends AdminUser = AdminUser>(data: CreateUserInput): Promise<TUser>;
 

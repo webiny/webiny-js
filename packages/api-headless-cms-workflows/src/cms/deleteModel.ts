@@ -22,8 +22,8 @@ export const attachDeleteModelLifecycleEvents = (params: IParams) => {
         for (const workflow of workflows.items) {
             try {
                 await context.workflows.deleteWorkflow(workflow.app, workflow.id);
-            } catch (ex) {
-                console.error(ex);
+            } catch {
+                // does not matter
             }
         }
     });

@@ -9,7 +9,6 @@ import { ContentEntriesContainer } from "~/admin/views/contentEntries/ContentEnt
 import { ContentEntries } from "~/admin/views/contentEntries/ContentEntries.js";
 import { Routes } from "~/routes.js";
 import { CmsMenuLoader } from "~/admin/menus/CmsMenuLoader.js";
-import { CmsWorkflowsView } from "~/admin/menus/CmsWorkflows.js";
 
 const t = i18n.ns("app-headless-cms/admin/routes");
 
@@ -110,21 +109,7 @@ export const RoutesConfig = () => {
                     </SecureRoute>
                 }
             />
-            <Route
-                route={Routes.ContentModels.Workflows}
-                element={
-                    <SecureRoute permission={"cms.contentModel"}>
-                        <AdminLayout>
-                            <Helmet>
-                                <title>{t`Workflows`}</title>
-                            </Helmet>
-                            <Loader>
-                                <CmsWorkflowsView />
-                            </Loader>
-                        </AdminLayout>
-                    </SecureRoute>
-                }
-            />
+
             <CmsMenuLoader />
         </AdminConfig>
     );

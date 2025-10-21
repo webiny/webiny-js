@@ -5,7 +5,6 @@ import { ReactComponent as HeadlessCmsContentIcon } from "@webiny/icons/wysiwyg.
 import { usePermission } from "~/admin/hooks/usePermission.js";
 import { ContentGroupsMenuItems } from "./ContentGroupsMenuItems.js";
 import { Routes } from "~/routes.js";
-import { CmsWorkflowsMenu } from "./CmsWorkflows.js";
 
 const { Menu } = AdminConfig;
 
@@ -110,7 +109,6 @@ const CmsMenuLoaderComponent = () => {
                 <>
                     <CmsContentModelsMenu canAccess={canCreateContentModels} />
                     <CmsContentGroupsMenu canAccess={canCreateContentModelGroups} />
-                    <CmsWorkflowsMenu canAccess={canCreateContentModels} />
                 </>
             )}
             <ContentGroupsMenuItems />

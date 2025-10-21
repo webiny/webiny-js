@@ -2,26 +2,23 @@ import React, { useCallback, useMemo } from "react";
 import { AdminConfig, useRoute, useRouter } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 import type { IWorkflowApplication } from "@webiny/app-workflows";
-import { useCanUseWorkflows, Workflows } from "@webiny/app-workflows";
-import { Alert, Icon } from "@webiny/admin-ui";
-import { useModels, usePermission } from "~/admin/hooks/index.js";
+import { Workflows } from "@webiny/app-workflows";
+import { Alert, Icon, Loader } from "@webiny/admin-ui";
+import { useModels, usePermission } from "@webiny/app-headless-cms/admin/hooks/index.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 const { Menu } = AdminConfig;
 
-interface ICmsWorkflowsMenuProps {
-    canAccess: boolean;
-}
-
-export const CmsWorkflowsMenu = (props: ICmsWorkflowsMenuProps) => {
-    const { canAccess } = props;
+export const CmsWorkflowsMenu = () => {
     const router = useRouter();
-    const canUseWorkflows = useCanUseWorkflows();
-    if (!canAccess || !canUseWorkflows) {
+    const { canCreateContentModels } = usePermission();
+
+    if (!canCreateContentModels) {
         return null;
     }
+
     return (
         <Menu
             name={"headlessCMS.contentModels.workflows"}
@@ -53,8 +50,8 @@ const ModelIcon = ({ model }: IModelIconProps) => {
 
 export const CmsWorkflowsView = () => {
     const { route } = useRoute(Routes.ContentModels.Workflows);
-    const { models } = useModels();
-    const { canEdit } = usePermission();
+    const { models, loading } = useModels();
+    const { canEdit, canCreateContentModels } = usePermission();
     const { goToRoute } = useRouter();
 
     const apps = useMemo<IWorkflowApplication[]>(() => {
@@ -62,7 +59,7 @@ export const CmsWorkflowsView = () => {
             .filter(model => canEdit(model, "cms.contentModel"))
             .map(model => {
                 return {
-                    id: `cms:${model.modelId}`,
+                    id: `cms.${model.modelId}`,
                     name: model.name,
                     icon: <ModelIcon model={model} />
                 };
@@ -72,23 +69,26 @@ export const CmsWorkflowsView = () => {
     const onAppClick = useCallback(
         (id: string) => {
             goToRoute(Routes.ContentModels.Workflows, {
-                id: id.replace("cms:", "")
+                app: id
             });
         },
         [apps]
     );
 
-    const app = useMemo(() => {
-        if (!route.params.id) {
-            return undefined;
-        }
-        return `cms:${route.params.id}`;
-    }, [route]);
+    if (!canCreateContentModels) {
+        return null;
+    } else if (loading) {
+        return (
+            <div className="wby-flex wby-flex-col wby-items-center wby-gap-4 wby-pt-lg">
+                <Loader size="md" variant="accent" indeterminate={true} text="Loading..." />
+            </div>
+        );
+    }
 
     return (
-        <Workflows apps={apps} onAppClick={onAppClick} app={app}>
+        <Workflows apps={apps} onAppClick={onAppClick} app={route.params.app}>
             <Alert type={"danger"} title={"You don't have access to Workflows."}>
-                Access denied! TBD
+                You do not have access to Workflows. Please contact your system administrator.
             </Alert>
         </Workflows>
     );
