@@ -77,9 +77,6 @@ const AccordionTrigger = ({
                     cursorClass
                 )}
             >
-                <div
-                    className={"wby-m-xs wby-w-1 wby-self-stretch wby-rounded-xs wby-bg-primary"}
-                />
                 {!icon && !isInteractable && (
                     <div className={"wby-ml-sm wby-w-[20px] wby-h-[1px] wby-bg-neutral-strong"} />
                 )}
