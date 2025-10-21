@@ -5,41 +5,46 @@ import { Global, css } from "@emotion/react";
 
 // To customize the border color, use the Admin UI Colors APIs to override the default `destructive` color palette.
 
-const errorColor = `hsl(var(--border-destructive-default))`;
-const errorBackground = `hsl(var(--bg-destructive-muted))`;
+const ERROR_COLOR = `hsl(var(--border-destructive-default))`;
+const ERROR_BACKGROUND = `hsl(var(--bg-destructive-muted))`;
 
-const svgString = `
-<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M8.0013 4.32663L13.0213 13H2.9813L8.0013 4.32663ZM8.0013 1.66663L0.667969 14.3333H15.3346L8.0013 1.66663ZM8.66797 11H7.33463V12.3333H8.66797V11ZM8.66797 6.99996H7.33463V9.66663H8.66797V6.99996Z" fill="white"/>
-</svg>
-`;
-const svgDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
+const createErrorIconDataUrl = () => {
+    const svgString = `
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.0013 4.32663L13.0213 13H2.9813L8.0013 4.32663ZM8.0013 1.66663L0.667969 14.3333H15.3346L8.0013 1.66663ZM8.66797 11H7.33463V12.3333H8.66797V11ZM8.66797 6.99996H7.33463V9.66663H8.66797V6.99996Z" fill="white"/>
+        </svg>
+    `;
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
+};
 
-const errorTitleMixin = `
+const SVG_DATA_URL = createErrorIconDataUrl();
+
+const createMixin = (styles: string) => styles;
+
+const errorIconMixin = createMixin(`
     position: relative;
     content: ''!important;
-    margin-right: var(--spacing-xs-plus)!important;
     display: inline-block;
     width: 20px;
     height: 20px;
-    background-color: ${errorBackground} !important;
-    background-image: url(${svgDataUrl});
+    margin-right: var(--spacing-xs-plus)!important;
+    background-color: ${ERROR_BACKGROUND}!important;
+    background-image: url(${SVG_DATA_URL});
     background-size: 80%;
     background-position: center;
     background-repeat: no-repeat;
-    margin-right: var(--spacing-xs-plus);
     top: 4px;
     border-radius: 4px;
-`;
+`);
 
-const noErrorTitleMixin = `
+const noErrorIconMixin = createMixin(`
     content: "";
     margin: 0;
-`;
+`);
 
-const errorBorderMixin = `
-    border: 1px solid ${errorColor};
-`;
+const errorBorderMixin = createMixin(`
+    border: 1px solid ${ERROR_COLOR};
+`);
 
 const defaultClass = css`
     .wby-content-entry-invalid-field {
@@ -48,42 +53,40 @@ const defaultClass = css`
             left: var(--spacing-sm-extra);
 
             .webiny_label-text::before {
-                ${errorTitleMixin}
+                ${errorIconMixin}
             }
         }
 
-        // accordion
-        .webiny_accordion-item-title::before {
-            ${errorTitleMixin}
-        }
+        // Accordion
+        .webiny_accordion-item-title::before,
         .webiny_accordion-title-text::before {
-            ${errorTitleMixin}
+            ${errorIconMixin}
         }
 
-        // multiple entries
+        // Multiple entries
         > hcms-parent-field-provider .webiny_group-label-text::before {
-            ${errorTitleMixin}
+            ${errorIconMixin}
         }
 
-        // radio buttons
+        // Radio buttons - hide error icon on individual options
         &[data-field-renderer="radio-buttons"] {
             [role="radiogroup"] .webiny_label-text::before {
-                ${noErrorTitleMixin}
+                ${noErrorIconMixin}
             }
         }
 
-        // checkboxes
+        // Checkboxes - hide error icon on individual options
         &[data-field-renderer="checkboxes"] {
             [role="checkbox"] + label .webiny_label-text::before {
-                ${noErrorTitleMixin}
+                ${noErrorIconMixin}
             }
         }
     }
 
-    // reference field
+    // Reference field
     .wby-content-entry-invalid-field[data-field-type="ref"] {
         .webiny_group-label-text::before {
-            ${errorTitleMixin}
+            ${errorIconMixin}
         }
 
         .webiny_ref-field-container {
@@ -91,12 +94,9 @@ const defaultClass = css`
         }
 
         &[data-field-renderer="ref-simple-single"] {
-            [role="radiogroup"] .webiny_label-text::before {
-                ${noErrorTitleMixin}
-            }
-
+            [role="radiogroup"] .webiny_label-text::before,
             [role="checkbox"] + label .webiny_label-text::before {
-                ${noErrorTitleMixin}
+                ${noErrorIconMixin}
             }
         }
     }
@@ -106,19 +106,53 @@ const defaultClass = css`
         &[data-field-renderer="object"],
         &[data-field-renderer="objects"] {
             .webiny_group-label-text::before {
-                ${errorTitleMixin}
+                ${errorIconMixin}
             }
 
             label {
                 left: 0;
 
                 .webiny_label-text::before {
-                    ${noErrorTitleMixin}
+                    ${noErrorIconMixin}
                 }
             }
         }
     }
 `;
+
+const markFieldAsInvalid = (path: string, className: string): void => {
+    const selector = `hcms-field-validation[data-path="${path}"]`;
+    const marker = document.querySelector(selector);
+
+    if (marker) {
+        marker.classList.add(className);
+    }
+};
+
+const markParentFieldsAsInvalid = (path: string, className: string): void => {
+    if (!path.includes(".")) {
+        return;
+    }
+
+    const pathSegments = path.split(".");
+    const parentPath = pathSegments.slice(0, -1).join(".");
+
+    markFieldAsInvalid(parentPath, className);
+    markParentFieldsAsInvalid(parentPath, className);
+};
+
+const clearValidationMarkers = (className: string): void => {
+    document.querySelectorAll(`.${className}`).forEach(element => {
+        element.classList.remove(className);
+    });
+};
+
+const applyValidationMarkers = (invalidFields: FormValidation, className: string): void => {
+    Object.keys(invalidFields).forEach(fieldPath => {
+        markFieldAsInvalid(fieldPath, className);
+        markParentFieldsAsInvalid(fieldPath, className);
+    });
+};
 
 export interface ValidationIndicatorsProps {
     invalidFields: FormValidation;
@@ -131,29 +165,10 @@ export const ValidationIndicators = makeDecoratable(
         invalidFields,
         className = "wby-content-entry-invalid-field"
     }: ValidationIndicatorsProps) => {
-        const visualizeDomByPath = (path: string) => {
-            const selector = `hcms-field-validation[data-path="${path}"]`;
-            const marker = Array.from(document.querySelectorAll(selector).values())[0];
-            if (marker) {
-                marker.classList.add(className);
-            }
-
-            if (path.includes(".")) {
-                const paths = path.split(".");
-                const parentPath = paths.slice(0, paths.length - 1);
-                visualizeDomByPath(parentPath.join("."));
-            }
-        };
-
         useEffect(() => {
-            document.querySelectorAll(`.${className}`).forEach(el => {
-                el.classList.remove(className);
-            });
-
-            for (const key of Object.keys(invalidFields)) {
-                visualizeDomByPath(key);
-            }
-        }, [invalidFields]);
+            clearValidationMarkers(className);
+            applyValidationMarkers(invalidFields, className);
+        }, [invalidFields, className]);
 
         return <Global styles={defaultClass} />;
     }
