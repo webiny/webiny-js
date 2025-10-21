@@ -5,6 +5,9 @@
   /* Border radius. */
   {THEME_BORDER_RADIUS}
 
+  /* Border width. */
+  {THEME_BORDER_WIDTH}
+
   /* Font. */
   {THEME_FONT}
 
@@ -29,6 +32,9 @@
 
   /* Border width. */
   {BORDER_WIDTH}
+
+  /* Border width. */
+  {BORDER_RADIUS}
 
   /* Padding. */
   {PADDING}

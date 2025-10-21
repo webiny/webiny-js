@@ -3,13 +3,18 @@
 
 @theme {
   /* Border radius. */
-  --radius-3Xl: 36px;
-  --radius-lg: 8px;
-  --radius-md: 6px;
-  --radius-sm: 4px;
-  --radius-xl: 16px;
-  --radius-xs: 2px;
-  --radius-xxl: 24px;
+  --radius-3Xl: var(--border-radius-3Xl);
+  --radius-lg: var(--border-radius-lg);
+  --radius-md: var(--border-radius-md);
+  --radius-sm: var(--border-radius-sm);
+  --radius-xl: var(--border-radius-xl);
+  --radius-xs: var(--border-radius-xs);
+  --radius-xxl: var(--border-radius-xxl);
+
+  /* Border width. */
+  --border-width-md: var(--border-width-md);
+  --border-width-none: var(--border-width-none);
+  --border-width-sm: var(--border-width-sm);
 
   /* Font. */
   --font-sans: "Inter", sans-serif;
@@ -256,6 +261,15 @@
   --border-width-md: 2px;
   --border-width-none: 0px;
   --border-width-sm: 1px;
+
+  /* Border width. */
+  --border-radius-3Xl: 36px;
+  --border-radius-lg: 8px;
+  --border-radius-md: 6px;
+  --border-radius-sm: 4px;
+  --border-radius-xl: 16px;
+  --border-radius-xs: 2px;
+  --border-radius-xxl: 24px;
 
   /* Padding. */
   --padding-lg: 24px;

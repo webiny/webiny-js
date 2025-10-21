@@ -14,31 +14,41 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
         "utf8"
     );
 
-    // ===== @theme block - Tailwind v4 utility definitions =====
-
-    // 2. THEME: Border radius
+    // Border radius.
     {
-        const borderRadius = normalizedFigmaExport
+        const borderRadiusTheme = normalizedFigmaExport
             .filter(item => item.type === "borderRadius")
             .map(variable => {
-                return `--radius-${variable.variantName}: ${variable.resolvedValue}px;`;
+                return `--radius-${variable.variantName}: var(--border-radius-${variable.variantName});`;
             });
 
-        themeCss = themeCss.replace("{THEME_BORDER_RADIUS}", borderRadius.join("\n  "));
+        themeCss = themeCss.replace("{THEME_BORDER_RADIUS}", borderRadiusTheme.join("\n  "));
+
+        const borderRadiusVars = normalizedFigmaExport
+            .filter(item => item.type === "borderRadius")
+            .map(
+                variable => `--border-radius-${variable.variantName}: ${variable.resolvedValue}px;`
+            );
+
+        themeCss = themeCss.replace("{BORDER_RADIUS}", borderRadiusVars.join("\n    "));
     }
 
-    // 3. THEME: Spacing
-    {
-        const spacing = normalizedFigmaExport
-            .filter(item => item.type === "spacing")
-            .map(variable => {
-                return `--spacing-${variable.variantName}: ${variable.resolvedValue}px;`;
-            });
+    // Border width.
+    const borderWidthTheme = normalizedFigmaExport
+        .filter(item => item.type === "borderWidth")
+        .map(variable => {
+            return `--border-width-${variable.variantName}: var(--border-width-${variable.variantName});`;
+        });
 
-        themeCss = themeCss.replace("{THEME_SPACING}", spacing.join("\n  "));
-    }
+    themeCss = themeCss.replace("{THEME_BORDER_WIDTH}", borderWidthTheme.join("\n  "));
 
-    // 4. THEME: Colors - Map all color types to --color-* for Tailwind utilities
+    const borderWidthVars = normalizedFigmaExport
+        .filter(item => item.type === "borderWidth")
+        .map(variable => `--border-width-${variable.variantName}: ${variable.resolvedValue}px;`);
+
+    themeCss = themeCss.replace("{BORDER_WIDTH}", borderWidthVars.join("\n    "));
+
+    // Colors.
     {
         const colorMap = new Map();
 
@@ -69,6 +79,51 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
 
         const colors = Array.from(colorMap.values());
         themeCss = themeCss.replace("{THEME_COLORS}", colors.join("\n  "));
+
+        let currentBgColorGroup = null;
+        const bgColors = normalizedPrimitivesFigmaExport
+            .filter(item => item.type === "colors")
+            .map(variable => {
+                const [colorGroup] = variable.variantName.split("-");
+                const cssVar = `--color-${variable.variantName}: ${variable.hsla.h} ${variable.hsla.s}% ${variable.hsla.l}%;`;
+
+                if (!currentBgColorGroup) {
+                    currentBgColorGroup = colorGroup;
+                    return cssVar;
+                }
+
+                if (!currentBgColorGroup || currentBgColorGroup !== colorGroup) {
+                    currentBgColorGroup = colorGroup;
+                    return ["", cssVar];
+                }
+                return cssVar;
+            })
+            .flat()
+            .reverse();
+
+        themeCss = themeCss.replace("{COLORS}", bgColors.join("\n    "));
+    }
+
+    // 3. Spacing
+    {
+        const spacingTheme = normalizedFigmaExport
+            .filter(item => item.type === "spacing")
+            .map(variable => {
+                return `--spacing-${variable.variantName}: ${variable.resolvedValue}px;`;
+            });
+
+        themeCss = themeCss.replace("{THEME_SPACING}", spacingTheme.join("\n  "));
+
+        const spacingVars = normalizedFigmaExport
+            .filter(item => item.type === "spacing")
+            .map(variable => `--spacing-${variable.variantName}: ${variable.resolvedValue}px;`)
+            .concat(
+                `--spacing-sidebar-collapsed: 44px;`,
+                `--spacing-sidebar-expanded: 256px;`,
+                `--spacing-main-content: calc(100vh - 45px);`
+            );
+
+        themeCss = themeCss.replace("{SPACING}", spacingVars.join("\n    "));
     }
 
     // Text sizes.
@@ -84,7 +139,8 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
                     `--text-${size}--letter-spacing: var(--text-${size}--letter-spacing);`,
                     `--text-${size}--font-weight: var(--text-${size}--font-weight);`
                 ];
-            }).flat();
+            })
+            .flat();
 
         // Add heading sizes
         const headingSizes = [1, 2, 3, 4, 5, 6]
@@ -116,32 +172,6 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
     // }
 
     // ===== :root block - CSS custom properties (same as v3) =====
-
-    // 0. Colors (primitives)
-    {
-        let currentBgColorGroup = null;
-        const bgColors = normalizedPrimitivesFigmaExport
-            .filter(item => item.type === "colors")
-            .map(variable => {
-                const [colorGroup] = variable.variantName.split("-");
-                const cssVar = `--color-${variable.variantName}: ${variable.hsla.h} ${variable.hsla.s}% ${variable.hsla.l}%;`;
-
-                if (!currentBgColorGroup) {
-                    currentBgColorGroup = colorGroup;
-                    return cssVar;
-                }
-
-                if (!currentBgColorGroup || currentBgColorGroup !== colorGroup) {
-                    currentBgColorGroup = colorGroup;
-                    return ["", cssVar];
-                }
-                return cssVar;
-            })
-            .flat()
-            .reverse();
-
-        themeCss = themeCss.replace("{COLORS}", bgColors.join("\n    "));
-    }
 
     // 1. Background color
     {
@@ -209,15 +239,7 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
     // }
     //
     // 4. Border width
-    {
-        const borderWidth = normalizedFigmaExport
-            .filter(item => item.type === "borderWidth")
-            .map(
-                variable => `--border-width-${variable.variantName}: ${variable.resolvedValue}px;`
-            );
 
-        themeCss = themeCss.replace("{BORDER_WIDTH}", borderWidth.join("\n    "));
-    }
     //
     // // 5. Fill
     // {
@@ -323,18 +345,7 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
     //     themeCss = themeCss.replace("{SHADOW}", shadow.join("\n    "));
     // }
     //
-    // // 13. Spacing
-    // {
-    //     const spacing = normalizedFigmaExport
-    //         .filter(item => item.type === "spacing")
-    //         .map(variable => `--spacing-${variable.variantName}: ${variable.resolvedValue}px;`)
-    //         .concat(
-    //             `--spacing-sidebar-collapsed: 44px;`,
-    //             `--spacing-sidebar-expanded: 256px;`,
-    //             `--spacing-main-content: calc(100vh - 45px);`
-    //         );
-    //
-    //     themeCss = themeCss.replace("{SPACING}", spacing.join("\n    "));
+
     // }
 
     // 14. Text color
@@ -366,11 +377,10 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
 
     // 15. Text size
     {
-
         //  --text-tiny--line-height: 1.5rem;
         //   --text-tiny--letter-spacing: 0.125rem;
         //   --text-tiny--font-weight: 500;
-        
+
         const textSize = normalizedFigmaExport
             .filter(item => item.type === "textFont" && item.variantName.startsWith("font-size-"))
             .sort((a, b) => a.resolvedValue - b.resolvedValue)
@@ -380,7 +390,9 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
                     const lineHeightItem = normalizedFigmaExport.find(item => {
                         return item.variantName === `line-height-${size}`;
                     });
-                    const lineHeight = lineHeightItem ? lineHeightItem.resolvedValue : resolvedValue * 1.5;
+                    const lineHeight = lineHeightItem
+                        ? lineHeightItem.resolvedValue
+                        : resolvedValue * 1.5;
 
                     return [
                         ...acc,
