@@ -14866,20 +14866,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-i18n-content@npm:0.0.0, @webiny/api-i18n-content@workspace:packages/api-i18n-content":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-i18n-content@workspace:packages/api-i18n-content"
-  dependencies:
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    graphql: "npm:^16.11.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-i18n-ddb@npm:0.0.0, @webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb"
@@ -17217,7 +17203,6 @@ __metadata:
     "@webiny/api-headless-cms-aco": "npm:0.0.0"
     "@webiny/api-headless-cms-tasks": "npm:0.0.0"
     "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-i18n-content": "npm:0.0.0"
     "@webiny/api-log": "npm:0.0.0"
     "@webiny/api-mailer": "npm:0.0.0"
     "@webiny/api-record-locking": "npm:0.0.0"

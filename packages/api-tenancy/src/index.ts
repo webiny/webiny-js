@@ -67,7 +67,11 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
             const tenantContext = context.container.resolve(TenantContext);
             tenantContext.setTenant(tenantResult.value);
         } else {
-            throw new Error("Unable to load tenant!");
+            // If there's no `root` tenant, it means system installation wasn't finished yet.
+            // But all other tenants should throw an error.
+            if (tenantId !== "root") {
+                throw new Error("Unable to load tenant!");
+            }
         }
 
         // TODO: Legacy!

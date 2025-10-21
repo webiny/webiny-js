@@ -12,7 +12,6 @@
     { "path": "../api-headless-cms-aco/tsconfig.build.json" },
     { "path": "../api-headless-cms-tasks/tsconfig.build.json" },
     { "path": "../api-i18n/tsconfig.build.json" },
-    { "path": "../api-i18n-content/tsconfig.build.json" },
     { "path": "../api-log/tsconfig.build.json" },
     { "path": "../api-mailer/tsconfig.build.json" },
     { "path": "../api-record-locking/tsconfig.build.json" },

@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { plugins } from "@webiny/plugins";
 import type { AdminProps as BaseAdminProps } from "@webiny/app-admin";
-import { Admin as BaseAdmin, AppInstaller } from "@webiny/app-admin";
+import { Admin as BaseAdmin, SystemInstallerProvider } from "@webiny/app-admin";
 import { Security } from "@webiny/app-security";
 import { I18N } from "@webiny/app-i18n";
 import { HeadlessCMS } from "@webiny/app-headless-cms";
@@ -39,7 +39,7 @@ const App = (props: AdminProps) => {
             <AdminUI />
             <Security />
             <AccessManagement />
-            <AppInstaller />
+            <SystemInstallerProvider />
             <FileManager />
             <GraphQLPlayground createApolloClient={createApolloClient} />
             <I18N />
