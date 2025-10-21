@@ -1,5 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
 @import "tailwindcss";
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);
 
 @theme {
   /* Color. */
@@ -286,7 +288,7 @@
 
 body {
     /* Styles all text that was not rendered via the Text component. */
-    /*@apply font-sans antialiased text-md text-neutral-primary;*/
+    @apply font-sans antialiased text-md text-neutral-primary;
 }
 
 a {

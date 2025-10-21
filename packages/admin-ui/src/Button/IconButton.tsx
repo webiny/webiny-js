@@ -80,7 +80,7 @@ const iconButtonVariants = cva(
                 size: "sm",
                 iconSize: "default",
                 className:
-                    "p-[calc(theme(padding.xs)-theme(borderWidth.sm))] [&_svg]:size-md [&_img]:size-md"
+                    "p-[calc(var(--padding-xs)-var(--border-width-sm))] [&_svg]:size-md [&_img]:size-md"
             },
             {
                 size: "sm",
