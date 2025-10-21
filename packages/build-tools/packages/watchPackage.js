@@ -4,6 +4,30 @@ import { transformFileAsync } from "@babel/core";
 import chokidar from "chokidar";
 import glob from "fast-glob";
 
+let compilationQueue = [];
+let debounceTimer = null;
+const DEBOUNCE_DELAY = 1000; // 1 second
+
+const flushCompilationQueue = () => {
+    if (compilationQueue.length > 0) {
+        if (compilationQueue.length === 1) {
+            console.log(`Successfully compiled ${compilationQueue[0]}.`);
+        } else {
+            console.log(`Successfully compiled ${compilationQueue.length} files.`);
+        }
+        compilationQueue = [];
+    }
+};
+
+const logCompilation = (inputPathRelative) => {
+    compilationQueue.push(inputPathRelative);
+
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        flushCompilationQueue();
+    }, DEBOUNCE_DELAY);
+};
+
 const compileFile = async (cwd, inputPath, outputPath) => {
     const inputPathRelative = path.relative(cwd, inputPath);
 
@@ -25,7 +49,7 @@ const compileFile = async (cwd, inputPath, outputPath) => {
         await fs.writeFile(`${outputPath}.map`, JSON.stringify(result.map));
     }
 
-    console.log(`Successfully compiled ${inputPathRelative}.`);
+    logCompilation(inputPathRelative);
 };
 
 const srcToDist = filePath =>
