@@ -19,6 +19,7 @@ export interface IWorkflowStateContextListStatesWhere {
     state?: WorkflowStateRecordState;
     state_in?: WorkflowStateRecordState[];
     savedBy?: string;
+    isActive?: boolean;
 }
 
 export interface IWorkflowStateContextListStatesParams {
@@ -62,6 +63,7 @@ export interface IWorkflowStateContext {
         record: Partial<Omit<IWorkflowStateRecord, "id">>
     ): Promise<IWorkflowState>;
     deleteTargetState(app: string, targetRevisionId: string): Promise<void>;
+    cancelState(id: string): Promise<IWorkflowState>;
     deleteState(id: string): Promise<void>;
 
     startStateStep(id: string): Promise<IWorkflowState>;

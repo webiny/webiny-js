@@ -11,7 +11,7 @@ import { WorkflowStateRecordState } from "../abstractions/WorkflowState.js";
 import { WebinyError } from "@webiny/error";
 
 export interface IWorkflowStateParams {
-    workflow: IWorkflow | undefined | null;
+    workflow: IWorkflow;
     record: IWorkflowStateRecord;
     context: Pick<Context, "workflowState" | "security" | "adminUsers">;
 }

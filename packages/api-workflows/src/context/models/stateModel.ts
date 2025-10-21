@@ -74,6 +74,13 @@ export const createStateModel = () => {
             },
             stateField,
             {
+                fieldId: "isActive",
+                type: "boolean",
+                id: "isActive",
+                storageId: "boolean@isActive",
+                label: "Is Active"
+            },
+            {
                 fieldId: "steps",
                 id: "steps",
                 storageId: "object@steps",

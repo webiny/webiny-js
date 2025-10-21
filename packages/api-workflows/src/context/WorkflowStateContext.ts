@@ -22,8 +22,10 @@ import { createIdentifier } from "@webiny/utils/createIdentifier.js";
 import type { IWorkflowsContextListWhere } from "~/context/abstractions/WorkflowsContext.js";
 import { createTopic } from "@webiny/pubsub";
 import {
-    WorkflowsNotFoundError,
+    ActiveStateExistsError,
     MultipleWorkflowsFoundError,
+    WorkflowNotFoundError,
+    WorkflowsNotFoundError,
     WorkflowStateNotFoundError
 } from "~/context/errors/index.js";
 
@@ -76,16 +78,20 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             version: 1
         });
 
-        const { items: workflows } = await this.context.workflows.listWorkflows({
+        const { items } = await this.context.workflows.listWorkflows({
             where: {
                 id: workflowId
             },
             limit: 1
         });
+        const [workflow] = items;
+        if (!workflow) {
+            throw new WorkflowNotFoundError(record.workflowId);
+        }
 
         return new WorkflowState({
             record,
-            workflow: workflows?.[0] || null,
+            workflow,
             context: this.context
         });
     }
@@ -131,6 +137,9 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         const workflow = allWorkflows.find(wf => {
             return wf.id === state.workflowId;
         });
+        if (!workflow) {
+            throw new WorkflowNotFoundError(state.workflowId);
+        }
 
         return new WorkflowState({
             context: this.context,
@@ -157,9 +166,13 @@ export class WorkflowStateContext implements IWorkflowStateContext {
 
         return {
             items: items.map(record => {
+                const workflow = workflows.find(wf => wf.id === record.workflowId);
+                if (!workflow) {
+                    throw new WorkflowNotFoundError(record.workflowId);
+                }
                 return new WorkflowState({
                     context: this.context,
-                    workflow: workflows.find(wf => wf.id === record.workflowId),
+                    workflow,
                     record
                 });
             }),
@@ -208,13 +221,30 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 }
             });
         }
+        /**
+         * We allow multiple states for the same target revision ID, but we cannot create a new one if there is an active state.
+         */
+        const existingState = await this.fetchOneByTargetRevisionId(app, targetRevisionId);
+        if (existingState) {
+            throw new ActiveStateExistsError({
+                data: {
+                    app,
+                    targetRevisionId,
+                    existingState
+                }
+            });
+        }
 
+        /**
+         * Create a new workflow state entry.
+         */
         const entry: ICreateWorkflowStateEntryInput = {
             workflowId: workflow.id,
             comment: undefined,
             state: WorkflowStateRecordState.pending,
             app,
             targetId,
+            isActive: true,
             targetRevisionId,
             steps: workflow.steps.map(step => {
                 return {
@@ -276,11 +306,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             id: originalRecord.workflowId
         });
         if (!workflow) {
-            throw new WorkflowsNotFoundError({
-                data: {
-                    workflowId: input.workflowId
-                }
-            });
+            throw new WorkflowNotFoundError(originalRecord.workflowId);
         }
         const originalState = new WorkflowState({
             context: this.context,
@@ -313,6 +339,12 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             }
 
             return state;
+        });
+    }
+
+    public async cancelState(id: string): Promise<IWorkflowState> {
+        return await this.updateState(id, {
+            isActive: false
         });
     }
 
@@ -353,6 +385,9 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             app: record.app,
             id: record.workflowId
         });
+        if (!workflow) {
+            throw new WorkflowNotFoundError(record.workflowId);
+        }
 
         const state = new WorkflowState({
             context: this.context,
@@ -395,7 +430,8 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         const { items } = await this.fetchAll({
             where: {
                 app,
-                targetRevisionId
+                targetRevisionId,
+                isActive: true
             },
             limit: 10000
         });

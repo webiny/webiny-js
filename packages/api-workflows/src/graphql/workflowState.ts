@@ -225,7 +225,7 @@ export const createWorkflowStateSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        await context.workflowState.deleteState(result.data.id);
+                        await context.workflowState.cancelState(result.data.id);
                         return true;
                     });
                 }
