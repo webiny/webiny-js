@@ -2,7 +2,6 @@ import path from "path";
 import fs from "fs/promises";
 import { transformFileAsync } from "@babel/core";
 import chokidar from "chokidar";
-import glob from "fast-glob";
 
 let compilationQueue = [];
 let debounceTimer = null;
@@ -62,11 +61,20 @@ const srcToDist = filePath =>
 export default async options => {
     const srcDir = path.join(options.cwd, "src");
 
-    const filePaths = glob.sync("**/*.{ts,tsx}", { cwd: srcDir }).map(f => path.join(srcDir, f));
+    // Watch the src directory recursively for new files
+    const watcher = chokidar.watch(srcDir, {
+        ignored: /(^|[\/\\])\../, // ignore dotfiles
+        persistent: true,
+        ignoreInitial: false
+    });
 
-    const watcher = chokidar.watch(filePaths);
+    const isTsFile = filePath => /\.(ts|tsx)$/.test(filePath);
 
     watcher.on("add", async srcPath => {
+        if (!isTsFile(srcPath)) {
+            return;
+        }
+
         const distPath = srcToDist(srcPath);
 
         try {
@@ -77,6 +85,10 @@ export default async options => {
     });
 
     watcher.on("change", async srcPath => {
+        if (!isTsFile(srcPath)) {
+            return;
+        }
+
         const distPath = srcToDist(srcPath);
 
         try {
