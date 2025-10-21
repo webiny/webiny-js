@@ -61,6 +61,10 @@ const defaultClass = css`
         .webiny_accordion-item-title::before,
         .webiny_accordion-title-text::before {
             ${errorIconMixin}
+
+            position: absolute;
+            left: -10px;
+            top: 17px;
         }
 
         // Multiple entries
@@ -106,7 +110,7 @@ const defaultClass = css`
         &[data-field-renderer="object"],
         &[data-field-renderer="objects"] {
             .webiny_group-label-text::before {
-                ${errorIconMixin}
+                display: none;
             }
 
             label {
