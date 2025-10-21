@@ -3,18 +3,33 @@ import type { FormValidation } from "@webiny/form";
 import { makeDecoratable } from "@webiny/react-composition";
 import { Global, css } from "@emotion/react";
 
-// To customize the icon, define a CSS variable within the validation class:
-// .wby-content-entry-invalid-field {
-//     --error-icon: "🤔"
-// }
 // To customize the border color, use the Admin UI Colors APIs to override the default `destructive` color palette.
 
 const errorColor = `hsl(var(--border-destructive-default))`;
-const errorIcon = `var(--error-icon, "⚠️")`;
+const errorBackground = `hsl(var(--bg-destructive-muted))`;
+
+const svgString = `
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M8.0013 4.32663L13.0213 13H2.9813L8.0013 4.32663ZM8.0013 1.66663L0.667969 14.3333H15.3346L8.0013 1.66663ZM8.66797 11H7.33463V12.3333H8.66797V11ZM8.66797 6.99996H7.33463V9.66663H8.66797V6.99996Z" fill="white"/>
+</svg>
+`;
+const svgDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgString)}`;
 
 const errorTitleMixin = `
-    content: ${errorIcon}!important;
+    position: relative;
+    content: ''!important;
     margin-right: var(--spacing-xs-plus)!important;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: ${errorBackground} !important;
+    background-image: url(${svgDataUrl});
+    background-size: 80%;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-right: var(--spacing-xs-plus);
+    top: 4px;
+    border-radius: 4px;
 `;
 
 const noErrorTitleMixin = `
