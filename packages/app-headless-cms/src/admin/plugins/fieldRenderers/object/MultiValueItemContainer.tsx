@@ -44,6 +44,7 @@ export const MultiValueItemContainer = makeDecoratable(
                     variant="ghost"
                     disabled={isFirst}
                 />
+                <Accordion.Item.Action.Separator />
                 <IconButton
                     icon={<DeleteIcon />}
                     onClick={e => {
