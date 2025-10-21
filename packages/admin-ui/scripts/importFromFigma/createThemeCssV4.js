@@ -14,78 +14,16 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
         "utf8"
     );
 
-    // Border radius.
-    {
-        const borderRadiusTheme = normalizedFigmaExport
-            .filter(item => item.type === "borderRadius")
-            .map(variable => {
-                return `--radius-${variable.variantName}: var(--border-radius-${variable.variantName});`;
-            });
-
-        themeCss = themeCss.replace("{THEME_BORDER_RADIUS}", borderRadiusTheme.join("\n  "));
-
-        const borderRadiusVars = normalizedFigmaExport
-            .filter(item => item.type === "borderRadius")
-            .map(
-                variable => `--border-radius-${variable.variantName}: ${variable.resolvedValue}px;`
-            );
-
-        themeCss = themeCss.replace("{BORDER_RADIUS}", borderRadiusVars.join("\n    "));
-    }
-
-    // Border width.
-    const borderWidthTheme = normalizedFigmaExport
-        .filter(item => item.type === "borderWidth")
-        .map(variable => {
-            return `--border-width-${variable.variantName}: var(--border-width-${variable.variantName});`;
-        });
-
-    themeCss = themeCss.replace("{THEME_BORDER_WIDTH}", borderWidthTheme.join("\n  "));
-
-    const borderWidthVars = normalizedFigmaExport
-        .filter(item => item.type === "borderWidth")
-        .map(variable => `--border-width-${variable.variantName}: ${variable.resolvedValue}px;`);
-
-    themeCss = themeCss.replace("{BORDER_WIDTH}", borderWidthVars.join("\n    "));
-
-    // Colors.
+    // Color.
     {
         const colorMap = new Map();
 
-        // Collect all color variants from different types
-        // "textColor", "borderColor", "fill", "ringColor"
-        normalizedFigmaExport
-            .filter(item => item.type === "backgroundColor")
-            .filter(variable => !isColorWithAlpha(variable.variantName))
-            .forEach(variable => {
-                const colorKey = variable.variantName.replace("-default", "");
-                if (!colorMap.has(colorKey)) {
-                    colorMap.set(colorKey, `--color-${colorKey}: var(--color-${colorKey});`);
-                }
-            });
-
-        normalizedFigmaExport
-            .filter(item => item.type === "textColor")
-            .filter(variable => !isColorWithAlpha(variable.variantName))
-            .forEach(variable => {
-                const colorKey = variable.variantName.replace("-default", "");
-                if (!colorMap.has("tc-" + colorKey)) {
-                    colorMap.set(
-                        "tc-" + colorKey,
-                        `--text-color-${colorKey}: var(--text-color-${colorKey});`
-                    );
-                }
-            });
-
-        const colors = Array.from(colorMap.values());
-        themeCss = themeCss.replace("{THEME_COLORS}", colors.join("\n  "));
-
         let currentBgColorGroup = null;
-        const bgColors = normalizedPrimitivesFigmaExport
+        normalizedPrimitivesFigmaExport
             .filter(item => item.type === "colors")
             .map(variable => {
                 const [colorGroup] = variable.variantName.split("-");
-                const cssVar = `--color-${variable.variantName}: ${variable.hsla.h} ${variable.hsla.s}% ${variable.hsla.l}%;`;
+                const cssVar = `--color-${variable.variantName}: hsl(${variable.hsla.h} ${variable.hsla.s}% ${variable.hsla.l}%);`;
 
                 if (!currentBgColorGroup) {
                     currentBgColorGroup = colorGroup;
@@ -99,81 +37,113 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
                 return cssVar;
             })
             .flat()
-            .reverse();
-
-        themeCss = themeCss.replace("{COLORS}", bgColors.join("\n    "));
-    }
-
-    // 3. Spacing
-    {
-        const spacingTheme = normalizedFigmaExport
-            .filter(item => item.type === "spacing")
-            .map(variable => {
-                return `--spacing-${variable.variantName}: ${variable.resolvedValue}px;`;
+            .reverse()
+            .forEach(colorVar => {
+                const colorKey = colorVar.replace("--color-", "").split(":")[0].trim();
+                if (!colorMap.has(colorKey)) {
+                    colorMap.set(colorKey, colorVar);
+                }
             });
 
-        themeCss = themeCss.replace("{THEME_SPACING}", spacingTheme.join("\n  "));
-
-        const spacingVars = normalizedFigmaExport
-            .filter(item => item.type === "spacing")
-            .map(variable => `--spacing-${variable.variantName}: ${variable.resolvedValue}px;`)
-            .concat(
-                `--spacing-sidebar-collapsed: 44px;`,
-                `--spacing-sidebar-expanded: 256px;`,
-                `--spacing-main-content: calc(100vh - 45px);`
-            );
-
-        themeCss = themeCss.replace("{SPACING}", spacingVars.join("\n    "));
+        const colors = Array.from(colorMap.values());
+        themeCss = themeCss.replace("{COLOR}", colors.join("\n  "));
     }
 
-    // Text sizes.
+    // Border color.
+    let currentBorderColor = null;
+    const borderColors = normalizedFigmaExport
+        .filter(item => item.type === "borderColor")
+        .filter(variable => !isColorWithAlpha(variable.variantName))
+        .map(variable => {
+            const [colorGroup] = variable.variantName.split("-");
+            const cssVarName = variable.aliasName.replace("colors/colors-", "color-");
+            const cssVar = `--border-${variable.variantName}: var(--${cssVarName});`;
+
+            if (!currentBorderColor) {
+                currentBorderColor = colorGroup;
+                return cssVar;
+            }
+
+            if (!currentBorderColor || currentBorderColor !== colorGroup) {
+                currentBorderColor = colorGroup;
+                return ["", cssVar];
+            }
+            return cssVar;
+        })
+        .flat();
+
+    themeCss = themeCss.replace("{THEME_BORDER_COLOR}", borderColors.join("\n  "));
+
+    // Border radius.
     {
-        const fontSizes = normalizedFigmaExport
-            .filter(item => item.type === "textFont" && item.variantName.startsWith("font-size-"))
-            .sort((a, b) => a.resolvedValue - b.resolvedValue)
-            .map(({ variantName, resolvedValue }) => {
-                const size = variantName.replace("font-size-", "");
-                return [
-                    `--text-${size}: var(--text-h${size});`,
-                    `--text-${size}--line-height: var(--text-${size}--line-height);`,
-                    `--text-${size}--letter-spacing: var(--text-${size}--letter-spacing);`,
-                    `--text-${size}--font-weight: var(--text-${size}--font-weight);`
-                ];
-            })
-            .flat();
+        const borderRadiusTheme = normalizedFigmaExport
+            .filter(item => item.type === "borderRadius")
+            .map(variable => {
+                return `--radius-${variable.variantName}: ${variable.resolvedValue}px;`;
+            });
 
-        // Add heading sizes
-        const headingSizes = [1, 2, 3, 4, 5, 6]
-            .map(lvl => {
-                return [
-                    `--text-h${lvl}: var(--text-h${lvl});`,
-                    `--text-h${lvl}--line-height: var(--text-h${lvl}--line-height);`,
-                    `--text-h${lvl}--letter-spacing: var(--text-h${lvl}--letter-spacing);`,
-                    `--text-h${lvl}--font-weight: var(--text-h${lvl}--font-weight);`
-                ];
-            })
-            .flat();
-
-        themeCss = themeCss.replace(
-            "{THEME_TEXT_SIZES}",
-            [...headingSizes, ...fontSizes].join("\n  ")
-        );
+        themeCss = themeCss.replace("{THEME_BORDER_RADIUS}", borderRadiusTheme.join("\n  "));
     }
 
-    // // 5. THEME: Ring width - Map to ring-* utilities
-    // {
-    //     const ringWidths = normalizedFigmaExport
-    //         .filter(item => item.type === "ringWidth")
-    //         .map(variable => {
-    //             return `--ring-${variable.variantName}: ${variable.resolvedValue}px;`;
-    //         });
-    //
-    //     themeCss = themeCss.replace("{THEME_RING_WIDTH}", ringWidths.join("\n  "));
-    // }
+    // Border width.
+    const borderWidthTheme = normalizedFigmaExport
+        .filter(item => item.type === "borderWidth")
+        .map(variable => {
+            return `--border-width-${variable.variantName}: ${variable.resolvedValue}px;`;
+        });
 
-    // ===== :root block - CSS custom properties (same as v3) =====
+    themeCss = themeCss.replace("{THEME_BORDER_WIDTH}", borderWidthTheme.join("\n  "));
 
-    // 1. Background color
+    // Fill.
+    let currentFillColorGroup = null;
+    const fillColors = normalizedFigmaExport
+        .filter(item => item.type === "fill")
+        .filter(variable => !isColorWithAlpha(variable.variantName))
+        .map(variable => {
+            const [colorGroup] = variable.variantName.split("-");
+            const cssVarName = variable.aliasName.replace("colors/colors-", "color-");
+            const cssVar = `--fill-${variable.variantName}: var(--${cssVarName});`;
+
+            if (!currentFillColorGroup) {
+                currentFillColorGroup = colorGroup;
+                return cssVar;
+            }
+
+            if (!currentFillColorGroup || currentFillColorGroup !== colorGroup) {
+                currentFillColorGroup = colorGroup;
+                return ["", cssVar];
+            }
+            return cssVar;
+        })
+        .flat();
+
+    themeCss = themeCss.replace("{FILL}", fillColors.join("\n  "));
+
+    // Font.
+    themeCss = themeCss.replace("{FONT}", `--font-sans: 'Inter', sans-serif;`);
+
+    // Font weight.
+    const weight = normalizedFigmaExport
+        .filter(item => item.type === "textFont" && item.variantName.startsWith("font-weight-"))
+        .map(variable => `--${variable.variantName}: ${variable.resolvedValue};`);
+
+    themeCss = themeCss.replace("{FONT_WEIGHT}", weight.join("\n"));
+
+    // Collect all color variants from different types
+    // "borderColor", "fill", "ringColor"
+    // normalizedFigmaExport
+    //     .filter(item => item.type === "backgroundColor")
+    //     .filter(variable => !isColorWithAlpha(variable.variantName))
+    //     .forEach(variable => {
+    //         const colorKey = variable.variantName.replace("-default", "");
+    //         if (!colorMap.has(colorKey)) {
+    //             colorMap.set(
+    //                 colorKey,
+    //                 `--color-${colorKey}: hsl(${variable.hsla.h} ${variable.hsla.s}% ${variable.hsla.l}%);`
+    //             );
+    //         }
+    //     });
+
     {
         let currentBgColorGroup = null;
         const bgColors = normalizedFigmaExport
@@ -181,8 +151,9 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
             .filter(variable => !isColorWithAlpha(variable.variantName))
             .map(variable => {
                 const [colorGroup] = variable.variantName.split("-");
+                const variantName = variable.variantName.replace("-default", "");
                 const cssVarName = variable.aliasName.replace("colors/colors-", "color-");
-                const cssVar = `--color-${variable.variantName.replace("-default", "")}: hsl(var(--${cssVarName}));`;
+                const cssVar = `--color-${variantName}: var(--${cssVarName});`;
 
                 if (!currentBgColorGroup) {
                     currentBgColorGroup = colorGroup;
@@ -197,108 +168,108 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
             })
             .flat();
 
-        themeCss = themeCss.replace("{BACKGROUND_COLOR}", bgColors.join("\n    "));
+        themeCss = themeCss.replace("{BG_COLOR}", bgColors.join("\n  "));
     }
 
-    // // 2. Border color
-    // {
-    //     let currentBorderColor = null;
-    //     const borderColors = normalizedFigmaExport
-    //         .filter(item => item.type === "borderColor")
-    //         .filter(variable => !isColorWithAlpha(variable.variantName))
-    //         .map(variable => {
-    //             const [colorGroup] = variable.variantName.split("-");
-    //             const cssVarName = variable.aliasName.replace("colors/colors-", "color-");
-    //             const cssVar = `--border-${variable.variantName}: var(--${cssVarName});`;
-    //
-    //             if (!currentBorderColor) {
-    //                 currentBorderColor = colorGroup;
-    //                 return cssVar;
-    //             }
-    //
-    //             if (!currentBorderColor || currentBorderColor !== colorGroup) {
-    //                 currentBorderColor = colorGroup;
-    //                 return ["", cssVar];
-    //             }
-    //             return cssVar;
-    //         })
-    //         .flat();
-    //
-    //     themeCss = themeCss.replace("{BORDER_COLOR}", borderColors.join("\n    "));
-    // }
-    //
-    // // 3. Border radius
-    // {
-    //     const borderRadius = normalizedFigmaExport
-    //         .filter(item => item.type === "borderRadius")
-    //         .map(variable => {
-    //             return `--radius-${variable.variantName}: ${variable.resolvedValue}px;`;
-    //         });
-    //
-    //     themeCss = themeCss.replace("{BORDER_RADIUS}", borderRadius.join("\n    "));
-    // }
-    //
-    // 4. Border width
+    // Margin.
+    const margin = normalizedFigmaExport
+        .filter(item => item.type === "margin")
+        .map(variable => `--margin-${variable.variantName}: ${variable.resolvedValue}px;`);
 
-    //
-    // // 5. Fill
-    // {
-    //     let currentFillColorGroup = null;
-    //     const fillColors = normalizedFigmaExport
-    //         .filter(item => item.type === "fill")
-    //         .filter(variable => !isColorWithAlpha(variable.variantName))
-    //         .map(variable => {
-    //             const [colorGroup] = variable.variantName.split("-");
-    //             const cssVarName = variable.aliasName.replace("colors/colors-", "color-");
-    //             const cssVar = `--fill-${variable.variantName}: var(--${cssVarName});`;
-    //
-    //             if (!currentFillColorGroup) {
-    //                 currentFillColorGroup = colorGroup;
-    //                 return cssVar;
-    //             }
-    //
-    //             if (!currentFillColorGroup || currentFillColorGroup !== colorGroup) {
-    //                 currentFillColorGroup = colorGroup;
-    //                 return ["", cssVar];
-    //             }
-    //             return cssVar;
-    //         })
-    //         .flat();
-    //
-    //     themeCss = themeCss.replace("{FILL}", fillColors.join("\n    "));
-    // }
-    //
-    // 6. Font
+    themeCss = themeCss.replace("{THEME_MARGIN}", margin.join("\n"));
+
+    // Padding.
+    const padding = normalizedFigmaExport
+        .filter(item => item.type === "padding")
+        .map(variable => `--padding-${variable.variantName}: ${variable.resolvedValue}px;`);
+
+    themeCss = themeCss.replace("{THEME_PADDING}", padding.join("\n"));
+
+    // Spacing.
+    const spacingTheme = normalizedFigmaExport
+        .filter(item => item.type === "spacing")
+        .map(variable => {
+            return `--spacing-${variable.variantName}: ${variable.resolvedValue}px;`;
+        });
+
+    themeCss = themeCss.replace("{THEME_SPACING}", spacingTheme.join("\n  "));
+
+    const spacingVars = normalizedFigmaExport
+        .filter(item => item.type === "spacing")
+        .map(variable => `--spacing-${variable.variantName}: ${variable.resolvedValue}px;`)
+        .concat(
+            `--spacing-sidebar-collapsed: 44px;`,
+            `--spacing-sidebar-expanded: 256px;`,
+            `--spacing-main-content: calc(100vh - 45px);`
+        );
+
+    themeCss = themeCss.replace("{SPACING}", spacingVars.join("\n    "));
+
+    // Text / font.
     {
-        themeCss = themeCss.replace("{THEME_FONT}", `--font-sans: 'Inter', sans-serif;`);
-    }
-    //
-    // // 7. Font weight
-    // {
-    //     const weight = normalizedFigmaExport
-    //         .filter(item => item.type === "textFont" && item.variantName.startsWith("font--font-weight-"))
-    //         .map(variable => `--${variable.variantName}: ${variable.resolvedValue};`);
-    //
-    //     themeCss = themeCss.replace("{FONT_WEIGHT}", weight.join("\n    "));
-    // }
-    //
-    // // 8. Margin
-    // {
-    //     const margin = normalizedFigmaExport
-    //         .filter(item => item.type === "margin")
-    //         .map(variable => `--margin-${variable.variantName}: ${variable.resolvedValue}px;`);
-    //
-    //     themeCss = themeCss.replace("{MARGIN}", margin.join("\n    "));
-    // }
-    //
-    // 9. Padding
-    {
-        const padding = normalizedFigmaExport
-            .filter(item => item.type === "padding")
-            .map(variable => `--padding-${variable.variantName}: ${variable.resolvedValue}px;`);
+        const fontSizes = normalizedFigmaExport
+            .filter(item => item.type === "textFont" && item.variantName.startsWith("font-size-"))
+            .sort((a, b) => a.resolvedValue - b.resolvedValue)
+            .map(({ variantName, resolvedValue }) => {
+                const size = variantName.replace("font-size-", "");
+                const lineHeightItem = normalizedFigmaExport.find(item => {
+                    return item.variantName === `line-height-${size}`;
+                });
+                const lineHeight = lineHeightItem
+                    ? lineHeightItem.resolvedValue
+                    : resolvedValue * 1.5;
 
-        themeCss = themeCss.replace("{PADDING}", padding.join("\n    "));
+                return [
+                    `--text-${size}: ${resolvedValue}px;`,
+                    `--text-${size}--line-height: ${lineHeight}px;`,
+                    `--text-${size}--letter-spacing: initial;`,
+                    `--text-${size}--font-weight: normal;`
+                ];
+            })
+            .flat()
+            .concat(
+                [
+                    `--text-h1: var(--text-4xl);`,
+                    `--text-h1--line-height: var(--text-4xl--line-height);`,
+                    `--text-h1--letter-spacing: var(--text-4xl--letter-spacing);`,
+                    `--text-h1--font-weight: var(--font-weight-semibold);`
+                ],
+                [
+                    `--text-h2: var(--text-3xl);`,
+                    `--text-h2--line-height: var(--text-3xl--line-height);`,
+                    `--text-h2--letter-spacing: var(--text-3xl--letter-spacing);`,
+                    `--text-h2--font-weight: var(--font-weight-semibold);`
+                ],
+                [
+                    `--text-h3: var(--text-xxl);`,
+                    `--text-h3--line-height: var(--text-xxl--line-height);`,
+                    `--text-h3--letter-spacing: var(--text-xxl--letter-spacing);`,
+                    `--text-h3--font-weight: var(--font-weight-semibold);`
+                ],
+                [
+                    `--text-h4: var(--text-xl);`,
+                    `--text-h4--line-height: var(--text-xl--line-height);`,
+                    `--text-h4--letter-spacing: initial;`,
+                    `--text-h4--font-weight: var(--font-weight-semibold);`
+                ],
+                [
+                    `--text-h5: var(--text-lg);`,
+                    `--text-h5--line-height: var(--text-lg--line-height);`,
+                    `--text-h5--letter-spacing: initial;`,
+                    `--text-h5--font-weight: var(--font-weight-semibold);`
+                ],
+                [
+                    `--text-h6: var(--text-md);`,
+                    `--text-h6--line-height: var(--text-md--line-height);`,
+                    `--text-h6--letter-spacing: initial;`,
+                    `--text-h6--font-weight: var(--font-weight-semibold);`
+                ]
+            );
+
+        themeCss = themeCss.replace("{TEXT_SIZE}", fontSizes.join("\n  "));
     }
+
+    //
     //
     // // 10. Ring color
     // {
@@ -357,7 +328,7 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
             .map(variable => {
                 const [colorGroup] = variable.variantName.split("-");
                 const cssVarName = variable.aliasName.replace("colors/colors-", "color-");
-                const cssVar = `--text-color-${variable.variantName}: hsl(var(--${cssVarName}));`;
+                const cssVar = `--text-color-${variable.variantName}: var(--${cssVarName});`;
 
                 if (!currentTextColor) {
                     currentTextColor = colorGroup;
@@ -373,79 +344,6 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
             .flat();
 
         themeCss = themeCss.replace("{TEXT_COLOR}", textColors.join("\n    "));
-    }
-
-    // 15. Text size
-    {
-        //  --text-tiny--line-height: 1.5rem;
-        //   --text-tiny--letter-spacing: 0.125rem;
-        //   --text-tiny--font-weight: 500;
-
-        const textSize = normalizedFigmaExport
-            .filter(item => item.type === "textFont" && item.variantName.startsWith("font-size-"))
-            .sort((a, b) => a.resolvedValue - b.resolvedValue)
-            .reduce(
-                (acc, { variantName, resolvedValue }) => {
-                    const size = variantName.replace("font-size-", "");
-                    const lineHeightItem = normalizedFigmaExport.find(item => {
-                        return item.variantName === `line-height-${size}`;
-                    });
-                    const lineHeight = lineHeightItem
-                        ? lineHeightItem.resolvedValue
-                        : resolvedValue * 1.5;
-
-                    return [
-                        ...acc,
-                        [
-                            `--text-${size}: ${resolvedValue}px;`,
-                            `--text-${size}--line-height: ${lineHeight}px;`,
-                            `--text-${size}--letter-spacing: initial;`,
-                            `--text-${size}--font-weight: normal;`
-                        ]
-                    ];
-                },
-                [
-                    [
-                        `--text-h1: var(--text-4xl);`,
-                        `--text-h1--line-height: var(--text-4xl--line-height);`,
-                        `--text-h1--letter-spacing: var(--text-4xl--letter-spacing);`,
-                        `--text-h1--font-weight: var(--font-weight-semibold);`
-                    ],
-                    [
-                        `--text-h2: var(--text-3xl);`,
-                        `--text-h2--line-height: var(--text-3xl--line-height);`,
-                        `--text-h2--letter-spacing: var(--text-3xl--letter-spacing);`,
-                        `--text-h2--font-weight: var(--font-weight-semibold);`
-                    ],
-                    [
-                        `--text-h3: var(--text-xxl);`,
-                        `--text-h3--line-height: var(--text-xxl--line-height);`,
-                        `--text-h3--letter-spacing: var(--text-xxl--letter-spacing);`,
-                        `--text-h3--font-weight: var(--font-weight-semibold);`
-                    ],
-                    [
-                        `--text-h4: var(--text-xl);`,
-                        `--text-h4--line-height: var(--text-xl--line-height);`,
-                        `--text-h4--letter-spacing: initial;`,
-                        `--text-h4--font-weight: var(--font-weight-semibold);`
-                    ],
-                    [
-                        `--text-h5: var(--text-lg);`,
-                        `--text-h5--line-height: var(--text-lg--line-height);`,
-                        `--text-h5--letter-spacing: initial;`,
-                        `--text-h5--font-weight: var(--font-weight-semibold);`
-                    ],
-                    [
-                        `--text-h6: var(--text-md);`,
-                        `--text-h6--line-height: var(--text-md--line-height);`,
-                        `--text-h6--letter-spacing: initial;`,
-                        `--text-h6--font-weight: var(--font-weight-semibold);`
-                    ]
-                ]
-            )
-            .flat();
-
-        themeCss = themeCss.replace("{TEXT_SIZE}", textSize.join("\n    "));
     }
 
     return themeCss;

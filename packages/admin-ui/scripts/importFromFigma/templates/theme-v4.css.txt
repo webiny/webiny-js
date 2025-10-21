@@ -2,47 +2,42 @@
 @import "tailwindcss";
 
 @theme {
+  /* Color. */
+  {COLOR}
+
+  /* Background color. */
+  {BG_COLOR}
+
+  /* Border color. */
+  {THEME_BORDER_COLOR}
+
   /* Border radius. */
   {THEME_BORDER_RADIUS}
 
   /* Border width. */
   {THEME_BORDER_WIDTH}
 
+  /* Fill. */
+  {FILL}
+
   /* Font. */
-  {THEME_FONT}
+  {FONT}
+
+  /* Font weight. */
+  {FONT_WEIGHT}
+
+  /* Margin. */
+  {THEME_MARGIN}
+  
+  /* Padding. */
+  {THEME_PADDING}
 
   /* Spacing. */
   {THEME_SPACING}
 
-  /* Colors. */
-  {THEME_COLORS}
-
-  /* Text sizes. */
-  {THEME_TEXT_SIZES}
-}
-
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
-
-:root {
-  /* Colors. */
-  {COLORS}
-
-  /* Background colors. */
-  {BACKGROUND_COLOR}
-
-  /* Border width. */
-  {BORDER_WIDTH}
-
-  /* Border width. */
-  {BORDER_RADIUS}
-
-  /* Padding. */
-  {PADDING}
-
   /* Text color. */
   {TEXT_COLOR}
 
-  /* Text size. */
+  /* Text sizes. */
   {TEXT_SIZE}
 }
-
