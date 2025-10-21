@@ -3,7 +3,7 @@ import { AdminConfig, useRoute, useRouter } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 import type { IWorkflowApplication } from "@webiny/app-workflows";
 import { Workflows } from "@webiny/app-workflows";
-import { Alert, Icon } from "@webiny/admin-ui";
+import { Alert, Icon, Loader } from "@webiny/admin-ui";
 import { useModels, usePermission } from "@webiny/app-headless-cms/admin/hooks/index.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -50,7 +50,7 @@ const ModelIcon = ({ model }: IModelIconProps) => {
 
 export const CmsWorkflowsView = () => {
     const { route } = useRoute(Routes.ContentModels.Workflows);
-    const { models } = useModels();
+    const { models, loading } = useModels();
     const { canEdit, canCreateContentModels } = usePermission();
     const { goToRoute } = useRouter();
 
@@ -75,19 +75,18 @@ export const CmsWorkflowsView = () => {
         [apps]
     );
 
-    const app = useMemo(() => {
-        if (!route.params.app) {
-            return undefined;
-        }
-        return `cms.${route.params.app}`;
-    }, [route]);
-
     if (!canCreateContentModels) {
         return null;
+    } else if (loading) {
+        return (
+            <div className="wby-flex wby-flex-col wby-items-center wby-gap-4 wby-pt-lg">
+                <Loader size="md" variant="accent" indeterminate={true} text="Loading..." />
+            </div>
+        );
     }
 
     return (
-        <Workflows apps={apps} onAppClick={onAppClick} app={app}>
+        <Workflows apps={apps} onAppClick={onAppClick} app={route.params.app}>
             <Alert type={"danger"} title={"You don't have access to Workflows."}>
                 You do not have access to Workflows. Please contact your system administrator.
             </Alert>

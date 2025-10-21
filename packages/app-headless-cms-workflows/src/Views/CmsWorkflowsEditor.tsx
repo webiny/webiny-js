@@ -24,7 +24,6 @@ const { Route } = AdminConfig;
 
 export const CmsWorkflowsEditor = () => {
     const { canUseWorkflows } = useCanUseWorkflows();
-
     if (!canUseWorkflows) {
         return null;
     }

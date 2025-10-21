@@ -107,7 +107,7 @@ export const createWorkflowStateSchema = () => {
                 startWorkflowStateStep(id: ID!): WorkflowStateResponse!
                 approveWorkflowStateStep(id: ID!, comment: String): WorkflowStateResponse!
                 rejectWorkflowStateStep(id: ID!, comment: String!): WorkflowStateResponse!
-                cancelWorkflowState(id: ID!, comment: String!): CancelWorkflowStateResponse!
+                cancelWorkflowState(id: ID!): CancelWorkflowStateResponse!
             }
         `,
         resolvers: {

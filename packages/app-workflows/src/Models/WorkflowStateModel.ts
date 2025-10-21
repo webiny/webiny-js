@@ -51,6 +51,14 @@ export class WorkflowStateModel implements IWorkflowStateModel {
         return pending || null;
     }
 
+    public get nextStep(): IWorkflowStateStepModel | null {
+        const index = this.steps.findIndex(step => step.state === WorkflowStateValue.inReview);
+        if (index === -1) {
+            return null;
+        }
+        return this.steps[index + 1] || null;
+    }
+
     public constructor(data: IWorkflowState) {
         this.snapshot = createSnapshot(data);
         this.id = data.id;

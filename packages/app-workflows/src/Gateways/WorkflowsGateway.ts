@@ -1,10 +1,10 @@
 import type {
     IWorkflowsGateway,
     IWorkflowsGatewayDeleteWorkflowResponse,
+    IWorkflowsGatewayListParams,
     IWorkflowsGatewayListWorkflowsResponse,
     IWorkflowsGatewayStoreWorkflowResponse
 } from "./abstraction/WorkflowsGateway.js";
-import type { IWorkflowModel } from "~/Models/index.js";
 import ApolloClient from "apollo-client";
 import type {
     IListWorkflowResponse,
@@ -18,26 +18,23 @@ import {
     STORE_WORKFLOW_MUTATION
 } from "./graphql/workflows.js";
 import { WebinyError } from "@webiny/error";
-import type { IWorkflowApplication } from "~/types.js";
+import { IWorkflow } from "~/types.js";
 
 export interface IWorkflowsGatewayParams {
-    app: IWorkflowApplication;
+    // app: IWorkflowApplication;
     client: ApolloClient<object>;
 }
 
 export class WorkflowsGateway implements IWorkflowsGateway {
-    public readonly app;
     private readonly client;
 
     public constructor(params: IWorkflowsGatewayParams) {
-        this.app = params.app;
         this.client = params.client;
     }
 
     public async storeWorkflow(
-        input: IWorkflowModel
+        workflow: IWorkflow
     ): Promise<IWorkflowsGatewayStoreWorkflowResponse> {
-        const workflow = input.toJS();
         try {
             const result = await this.client.mutate<
                 IStoreWorkflowResponse,
@@ -66,9 +63,8 @@ export class WorkflowsGateway implements IWorkflowsGateway {
     }
 
     public async deleteWorkflow(
-        input: IWorkflowModel
+        workflow: IWorkflow
     ): Promise<IWorkflowsGatewayDeleteWorkflowResponse> {
-        const workflow = input.toJS();
         try {
             const result = await this.client.mutate({
                 mutation: DELETE_WORKFLOW_MUTATION,
@@ -89,14 +85,14 @@ export class WorkflowsGateway implements IWorkflowsGateway {
         }
     }
 
-    public async listWorkflows(): Promise<IWorkflowsGatewayListWorkflowsResponse> {
+    public async listWorkflows(
+        params?: IWorkflowsGatewayListParams
+    ): Promise<IWorkflowsGatewayListWorkflowsResponse> {
         try {
             const result = await this.client.query<IListWorkflowResponse, IListWorkflowVariables>({
                 query: LIST_WORKFLOWS_QUERY,
                 variables: {
-                    where: {
-                        app: this.app.id
-                    },
+                    ...params,
                     sort: ["createdOn_DESC"]
                 },
                 fetchPolicy: "no-cache"

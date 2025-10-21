@@ -6,6 +6,7 @@ export interface IWorkflowStateModel extends Omit<IWorkflowState, "steps"> {
     readonly dirty: boolean;
     steps: IObservableArray<IWorkflowStateStepModel>;
     currentStep: IWorkflowStateStepModel | null;
+    nextStep: IWorkflowStateStepModel | null;
     setSteps(steps: IWorkflowStateStep[]): void;
     addStep(step: IWorkflowStateStep): void;
     updateStep(step: IWorkflowStateStep): void;

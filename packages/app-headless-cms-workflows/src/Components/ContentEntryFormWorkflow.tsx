@@ -19,7 +19,7 @@ export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Origina
             <Grid>
                 <Grid.Column span={12}>
                     <WorkflowStateBar
-                        app={`cms:${model.modelId}`}
+                        app={`cms.${model.modelId}`}
                         id={entry.id}
                         identity={identity}
                         client={client}
