@@ -6,6 +6,7 @@ import { Alert } from "@webiny/admin-ui";
 import { WorkflowStateBarComponent } from "../WorkflowStateBarComponent.js";
 import { observer } from "mobx-react-lite";
 import { WorkflowStateValue } from "~/types.js";
+import { ApproveSuccessDialog } from "~/Components/WorkflowStateBar/Bars/dialogs/ApproveSuccessDialog.js";
 
 export const WorkflowStateBarApproved = WorkflowStateBarComponent.createDecorator(Original => {
     return observer(function WorkflowStateBarApprovedDecorator(props) {
@@ -15,6 +16,21 @@ export const WorkflowStateBarApproved = WorkflowStateBarComponent.createDecorato
             return <Original {...props} />;
         }
 
-        return <Alert>This entry was approved.</Alert>;
+        return (
+            <>
+                <Alert
+                    actions={
+                        <>
+                            <Alert.Action
+                                text={"Cancel Review Request"}
+                                onClick={presenter.cancel}
+                            />
+                        </>
+                    }
+                >
+                    This entry was approved.
+                </Alert>
+            </>
+        );
     });
 });

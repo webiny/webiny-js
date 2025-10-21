@@ -23,7 +23,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     private readonly targetRevisionId;
     private readonly identity;
     private state: IWorkflowStateModel | null | undefined = undefined;
-    private dialog: "approve" | "reject" | null = null;
+    private dialog: "approve" | "approve:success" | "reject" | "reject:success" | null = null;
 
     private get isOwner(): boolean {
         return this.state?.createdBy?.id === this.identity.id;
@@ -74,7 +74,9 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             canCancel: this.canCancel,
             canReview: this.canReview,
             showApproveDialog: this.dialog === "approve",
-            showRejectDialog: this.dialog === "reject"
+            showApproveSuccessDialog: this.dialog === "approve:success",
+            showRejectDialog: this.dialog === "reject",
+            showRejectSuccessDialog: this.dialog === "reject:success"
         };
     }
 

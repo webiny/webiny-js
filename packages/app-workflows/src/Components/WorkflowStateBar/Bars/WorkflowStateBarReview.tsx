@@ -7,6 +7,7 @@ import { WorkflowStateBarComponent } from "../WorkflowStateBarComponent.js";
 import { observer } from "mobx-react-lite";
 import { ApproveDialog } from "./dialogs/ApproveDialog.js";
 import { RejectDialog } from "./dialogs/RejectDialog.js";
+import { ApproveSuccessDialog } from "~/Components/WorkflowStateBar/Bars/dialogs/ApproveSuccessDialog.js";
 
 export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(Original => {
     return observer(function WorkflowStateBarReviewDecorator(props) {
@@ -20,8 +21,6 @@ export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(
 
         return (
             <>
-                {presenter.vm.showApproveDialog ? <ApproveDialog presenter={presenter} /> : null}
-                {presenter.vm.showRejectDialog ? <RejectDialog presenter={presenter} /> : null}
                 <Alert
                     actions={
                         <>

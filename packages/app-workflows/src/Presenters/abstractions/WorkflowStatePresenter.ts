@@ -15,7 +15,9 @@ export interface IWorkflowStatePresenterViewModel {
     canCancel: boolean;
     canReview: boolean;
     showApproveDialog: boolean;
+    showApproveSuccessDialog: boolean;
     showRejectDialog: boolean;
+    showRejectSuccessDialog: boolean;
 }
 
 export interface IWorkflowStatePresenter {

@@ -13,12 +13,15 @@ export const ApproveDialog = (props: IApproveDialogProps) => {
     const [value, setValue] = React.useState<string>("");
 
     const onConfirm = useCallback(() => {
-        presenter.approve(value);
+        // presenter.approve(value);
     }, [presenter.approve, value]);
     return (
         <Dialog
             open={true}
-            onOpenChange={presenter.hideDialog}
+            onOpenChange={change => {
+                console.log("change", change);
+                presenter.hideDialog();
+            }}
             title={
                 <>
                     <ApproveIcon className={"wby-fill-success"} />

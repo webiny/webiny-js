@@ -11,10 +11,21 @@ export const WorkflowStateBarRejected = WorkflowStateBarComponent.createDecorato
     return observer(function WorkflowStateBarRejectedDecorator(props) {
         const { presenter } = props;
 
-        if (presenter.vm.state?.state === WorkflowStateValue.rejected) {
-            return <Alert type="warning">This entry was rejected.</Alert>;
+        if (presenter.vm.state?.state !== WorkflowStateValue.rejected) {
+            return <Original {...props} />;
         }
+        return (
+            <Alert
+                actions={
+                    <>
+                        <Alert.Action text={"Cancel Review Request"} onClick={presenter.cancel} />
+                    </>
+                }
+                type="warning"
+            >
+                This entry was rejected.
+            </Alert>
+        );
 
-        return <Original {...props} />;
     });
 });
