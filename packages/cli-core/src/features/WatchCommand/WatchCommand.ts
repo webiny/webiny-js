@@ -156,9 +156,7 @@ export class WatchCommand implements Command.Interface<IWatchCommandParams> {
                 }
 
                 if (watchProcesses.length > 1) {
-                    ui.info(
-                        `Watching ${watchProcesses.length} packages. Output will be displayed below:\n`
-                    );
+                    ui.info(`Watching %s packages...`, watchProcesses.length);
 
                     stdio.getStdout().setMaxListeners(20);
                     stdio.getStderr().setMaxListeners(20);
