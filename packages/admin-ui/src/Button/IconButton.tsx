@@ -86,31 +86,31 @@ const iconButtonVariants = cva(
                 size: "sm",
                 iconSize: "lg",
                 className:
-                    "p-[calc(theme(padding.xxs)-theme(borderWidth.sm))] [&_svg]:size-md-plus [&_img]:size-md-plus"
+                    "p-[calc(var(--padding-xxs)-var(--border-width-sm))] [&_svg]:size-md-plus [&_img]:size-md-plus"
             },
             {
                 size: "md",
                 iconSize: "default",
                 className:
-                    "p-[calc(theme(padding.sm)-theme(borderWidth.sm))] [&_svg]:size-md [&_img]:size-md"
+                    "p-[calc(var(--padding-sm)-var(--border-width-sm))] [&_svg]:size-md [&_img]:size-md"
             },
             {
                 size: "md",
                 iconSize: "lg",
                 className:
-                    "p-[calc(theme(padding.xs)-theme(borderWidth.sm))] [&_svg]:size-lg [&_img]:size-lg"
+                    "p-[calc(var(--padding-xs)-var(--border-width-sm))] [&_svg]:size-lg [&_img]:size-lg"
             },
             {
                 size: "lg",
                 iconSize: "default",
                 className:
-                    "p-[calc(theme(padding.sm-plus)-theme(borderWidth.sm))] [&_svg]:size-md-plus [&_img]:size-md-plus"
+                    "p-[calc(var(--padding-sm-plus)-var(--border-width-sm))] [&_svg]:size-md-plus [&_img]:size-md-plus"
             },
             {
                 size: "lg",
                 iconSize: "lg",
                 className:
-                    "p-[calc(theme(padding.sm)-theme(borderWidth.sm))] [&_svg]:size-lg [&_img]:size-lg"
+                    "p-[calc(var(--padding-sm)-var(--border-width-sm))] [&_svg]:size-lg [&_img]:size-lg"
             }
         ],
         defaultVariants: {
