@@ -107,6 +107,10 @@ const defaultClass = css`
 
     // Object field
     .wby-content-entry-invalid-field[data-field-type="object"] {
+        &[data-field-renderer="objects"] > div {
+            border: 1px solid ${ERROR_BACKGROUND};
+            border-radius: var(--radius-lg);
+        }
         &[data-field-renderer="object"],
         &[data-field-renderer="objects"] {
             .webiny_group-label-text::before {
