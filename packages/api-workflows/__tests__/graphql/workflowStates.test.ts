@@ -66,7 +66,11 @@ describe("workflow states graphql", () => {
                                     comment: null,
                                     savedBy: null
                                 };
-                            })
+                            }),
+                            workflow: {
+                                id: workflow.id,
+                                steps: workflow.steps
+                            }
                         },
                         error: null
                     }

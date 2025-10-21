@@ -40,6 +40,23 @@ const WORKFLOW_STATE = /* GraphQL */ `
             }
             state
         }
+        workflow {
+            id
+            app
+            name
+            steps {
+                id
+                title
+                color
+                description
+                teams {
+                    id
+                }
+                notifications {
+                    id
+                }
+            }
+        }
     }
 `;
 
@@ -68,9 +85,31 @@ export const CREATE_WORKFLOW_STATE_MUTATION = gql`
     }
 `;
 
+export interface IStartWorkflowStateStepVariables {
+    id: string;
+}
+
+export interface IStartWorkflowStateStepResponse {
+    workflows: {
+        startWorkflowStateStep: {
+            data: IWorkflowState | null;
+            error: IWorkflowStateError | null;
+        };
+    };
+}
+
+export const START_WORKFLOW_STATE_STEP_MUTATION = gql`
+    mutation StartWorkflowStateStep($id: ID!) {
+        workflows {
+            startWorkflowStateStep(id: $id) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }`;
+
 export interface IApproveWorkflowStateStepVariables {
     id: string;
-    stepId: string;
     comment?: string;
 }
 
@@ -84,9 +123,9 @@ export interface IApproveWorkflowStateStepResponse {
 }
 
 export const APPROVE_WORKFLOW_STATE_STEP_MUTATION = gql`
-    mutation ApproveWorkflowStateStep($id: ID!, $stepId: ID!, $comment: String) {
+    mutation ApproveWorkflowStateStep($id: ID!, $comment: String) {
         workflows {
-            approveWorkflowStateStep(id: $id, stepId: $stepId, comment: $comment) {
+            approveWorkflowStateStep(id: $id, comment: $comment) {
                 data ${WORKFLOW_STATE}
                 ${ERROR_FIELD}
             }
@@ -96,7 +135,6 @@ export const APPROVE_WORKFLOW_STATE_STEP_MUTATION = gql`
 
 export interface IRejectWorkflowStateStepVariables {
     id: string;
-    stepId: string;
     comment: string;
 }
 
@@ -110,9 +148,9 @@ export interface IRejectWorkflowStateStepResponse {
 }
 
 export const REJECT_WORKFLOW_STATE_STEP_MUTATION = gql`
-    mutation RejectWorkflowStateStep($id: ID!, $stepId: ID!, $comment: String!) {
+    mutation RejectWorkflowStateStep($id: ID!, $comment: String!) {
         workflows {
-            rejectWorkflowStateStep(id: $id, stepId: $stepId, comment: $comment) {
+            rejectWorkflowStateStep(id: $id, comment: $comment) {
                 data ${WORKFLOW_STATE}
                 ${ERROR_FIELD}
                 

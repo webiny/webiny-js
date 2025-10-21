@@ -10,20 +10,25 @@ import open from "open";
 // TODO: convert to a real service.
 import { PrintInfoForEnv } from "~/features/InfoCommand/PrintInfoForEnv.js";
 
-export interface IDeployNoAppParams {
+export interface IDeployCommandParams {
+    apps?: AppName[];
     variant?: string;
     region?: string;
     env: string;
     deploymentLogs?: boolean;
-}
-
-export interface IDeployWithAppParams extends IDeployNoAppParams {
-    app: AppName;
     build?: boolean;
     preview?: boolean;
 }
 
-export type IDeployCommandParams = IDeployNoAppParams | IDeployWithAppParams;
+export interface IDeploySingleAppParams {
+    app: AppName;
+    variant?: string;
+    region?: string;
+    env: string;
+    deploymentLogs?: boolean;
+    build?: boolean;
+    preview?: boolean;
+}
 
 const sleep = (ms: number = 1500) => setTimeout(ms);
 
@@ -43,15 +48,18 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
             description: "Deploys specified app or all apps in the project",
             examples: [
                 "$0 deploy api --env dev",
+                "$0 deploy core api --env dev",
                 "$0 deploy admin --env prod",
                 "$0 deploy --env prod",
                 "$0 deploy"
             ],
             params: [
                 {
-                    name: "app",
-                    description: "Name of the app (core, admin, or api)",
-                    type: "string"
+                    name: "apps",
+                    description:
+                        "Name of the app(s) to deploy (core, admin, or api). You can specify multiple apps.",
+                    type: "string",
+                    array: true
                 }
             ],
             options: [
@@ -61,7 +69,7 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
                     type: "string",
                     default: "dev",
                     validation: params => {
-                        if ("app" in params && !params.env) {
+                        if (params.apps && params.apps.length > 0 && !params.env) {
                             throw new Error("Environment name is required when deploying an app.");
                         }
                         return true;
@@ -111,8 +119,17 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
                 }
             ],
             handler: async (params: IDeployCommandParams) => {
-                if ("app" in params) {
-                    await this.deployApp(params);
+                if (params.apps && params.apps.length > 0) {
+                    // Deploy specified apps
+                    for (const app of params.apps) {
+                        const appParams: IDeploySingleAppParams = {
+                            ...params,
+                            app
+                        };
+                        ui.info("Deploying %s app...", app.charAt(0).toUpperCase() + app.slice(1));
+                        await this.deployApp(appParams);
+                        ui.newLine();
+                    }
                 } else {
                     const isCi = projectSdk.isCi();
                     const coreStack = await projectSdk.getAppStackOutput({
@@ -195,7 +212,7 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
         };
     }
 
-    private async deployApp(params: IDeployWithAppParams) {
+    private async deployApp(params: IDeploySingleAppParams) {
         const projectSdk = await this.getProjectSdkService.execute();
 
         const ui = this.uiService;
