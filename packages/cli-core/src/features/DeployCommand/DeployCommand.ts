@@ -130,7 +130,6 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
                         await this.deployApp(appParams);
                         ui.newLine();
                     }
-                    ui.success(`Apps deployed: ${params.apps.join(", ")}`);
                 } else {
                     const isCi = projectSdk.isCi();
                     const coreStack = await projectSdk.getAppStackOutput({
