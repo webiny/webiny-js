@@ -9,6 +9,7 @@ import { createWorkflowStateValidation } from "~/validation/createWorkflowState.
 import { getTargetWorkflowStateValidation } from "~/validation/getTargetWorkflowState.js";
 import { getWorkflowStateValidation } from "~/validation/getWorkflowState.js";
 import { startWorkflowStateValidation } from "~/validation/startWorkflowState.js";
+import type { IWorkflowStateRecord } from "~/context/abstractions/WorkflowState.js";
 
 export const createWorkflowStateSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -46,6 +47,7 @@ export const createWorkflowStateSchema = () => {
                 savedOn: DateTime!
                 createdBy: WorkflowStateIdentity!
                 savedBy: WorkflowStateIdentity!
+                workflow: Workflow
             }
 
             type ListWorkflowStatesResponse {
@@ -105,10 +107,22 @@ export const createWorkflowStateSchema = () => {
                 startWorkflowStateStep(id: ID!): WorkflowStateResponse!
                 approveWorkflowStateStep(id: ID!, comment: String): WorkflowStateResponse!
                 rejectWorkflowStateStep(id: ID!, comment: String!): WorkflowStateResponse!
-                cancelWorkflowState(id: ID!, comment: String!): CancelWorkflowStateResponse!
+                cancelWorkflowState(id: ID!): CancelWorkflowStateResponse!
             }
         `,
         resolvers: {
+            WorkflowState: {
+                workflow: async (parent: IWorkflowStateRecord, _, context) => {
+                    try {
+                        return await context.workflows.getWorkflow({
+                            app: parent.app,
+                            id: parent.workflowId
+                        });
+                    } catch {
+                        return null;
+                    }
+                }
+            },
             WorkflowsQuery: {
                 getWorkflowState: async (_, args, context) => {
                     return resolve(async () => {
@@ -159,6 +173,7 @@ export const createWorkflowStateSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
+
                         const response = await context.workflowState.createState(
                             result.data.app,
                             result.data.targetRevisionId

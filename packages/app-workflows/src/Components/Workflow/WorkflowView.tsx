@@ -23,7 +23,15 @@ export const WorkflowView = observer((props: WorkflowViewProps) => {
     }, [presenter.vm.workflow]);
 
     if (presenter.vm.loading) {
-        return <Loader size="md" variant="accent" indeterminate={true} text="Loading..." />;
+        return (
+            <Loader
+                className={"wby-pt-lg"}
+                size="md"
+                variant="accent"
+                indeterminate={true}
+                text="Loading..."
+            />
+        );
     }
     /**
      * Should be fairly simple to extend this to multiple workflows per model, if needed in the future.

@@ -21,7 +21,7 @@ const createDefaultWorkflow = (options: Pick<IWorkflow, "app"> & Partial<IWorkfl
     };
 };
 
-export const WorkflowPresenter = (props: IWorkflowPresenterProps) => {
+export const WorkflowEditor = (props: IWorkflowPresenterProps) => {
     const { app } = props;
     const client = useApolloClient();
 
@@ -30,17 +30,18 @@ export const WorkflowPresenter = (props: IWorkflowPresenterProps) => {
             app: app.id
         });
         const gateway = new WorkflowsGateway({
-            app,
             client
         });
         const repository = new WorkflowsRepository({
-            gateway,
+            gateway
+        });
+        const presenter = new WorkflowsPresenter({
+            app,
+            repository,
             defaultWorkflow
         });
-        repository.init();
-        return new WorkflowsPresenter({
-            repository
-        });
+        presenter.init();
+        return presenter;
     }, [app]);
 
     return <WorkflowView presenter={presenter} />;

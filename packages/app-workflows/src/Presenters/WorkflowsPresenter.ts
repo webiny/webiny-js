@@ -3,37 +3,61 @@ import type {
     IWorkflowsViewModel
 } from "./abstractions/WorkflowsPresenter.js";
 import type { IWorkflowsRepository } from "../Repositories/index.js";
-import { makeAutoObservable, runInAction, toJS } from "mobx";
-import type { IWorkflow, IWorkflowStep } from "~/types.js";
+import { makeAutoObservable, observable, runInAction, toJS } from "mobx";
+import type { IWorkflow, IWorkflowApplication, IWorkflowStep } from "~/types.js";
+import { type IWorkflowModel, WorkflowModel } from "~/Models/index.js";
 
 export interface IWorkflowsPresenterParams {
+    app: IWorkflowApplication;
     repository: IWorkflowsRepository;
+    defaultWorkflow: IWorkflow;
 }
 
 export class WorkflowsPresenter implements IWorkflowsPresenter {
+    private readonly app;
     private readonly repository;
+    private readonly workflows;
+    private readonly defaultWorkflow;
 
     get vm(): IWorkflowsViewModel {
-        const workflows = this.repository.workflows;
-        const workflow = workflows[0] || null;
+        const workflow = this.workflows[0] || null;
         return {
-            workflows: workflows.map(w => w.toJS()),
+            workflows: this.workflows.map(w => w.toJS()),
             dirty: workflow ? workflow.dirty : false,
             workflow: workflow ? workflow.toJS() : null,
             loading: this.repository.loading,
             error: toJS(this.repository.error),
-            app: this.repository.app
+            app: this.app
         };
     }
 
     public constructor(params: IWorkflowsPresenterParams) {
+        this.app = params.app;
         this.repository = params.repository;
+        this.defaultWorkflow = params.defaultWorkflow;
+
+        this.workflows = observable.array<IWorkflowModel>([]);
 
         makeAutoObservable(this);
     }
 
+    public async init(): Promise<void> {
+        const workflows = await this.repository.listWorkflows({
+            where: {
+                app: this.app.id
+            }
+        });
+        if (workflows.length === 0) {
+            workflows.push(this.defaultWorkflow);
+        }
+
+        runInAction(() => {
+            this.workflows.replace(workflows.map(w => new WorkflowModel(w)));
+        });
+    }
+
     updateWorkflow = (workflow: IWorkflow): void => {
-        this.repository.save(workflow);
+        this.repository.save(toJS(workflow));
     };
 
     deleteWorkflow(workflow: IWorkflow) {
@@ -41,7 +65,7 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
     }
 
     getWorkflow = () => {
-        return this.repository.workflows[0];
+        return this.workflows[0];
     };
 
     addStep = (step: IWorkflowStep): void => {

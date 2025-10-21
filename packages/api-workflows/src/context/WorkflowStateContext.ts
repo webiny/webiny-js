@@ -15,13 +15,17 @@ import type {
     IWorkflowStateContextOnStateAfterDelete,
     IWorkflowStateContextOnStateAfterUpdate
 } from "./abstractions/WorkflowStateContext.js";
-import { NullWorkflowState } from "./workflowState/NullWorkflowState.js";
 import { WebinyError } from "@webiny/error";
 import { parseIdentifier } from "@webiny/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createIdentifier } from "@webiny/utils/createIdentifier.js";
 import type { IWorkflowsContextListWhere } from "~/context/abstractions/WorkflowsContext.js";
 import { createTopic } from "@webiny/pubsub";
+import {
+    WorkflowsNotFoundError,
+    MultipleWorkflowsFoundError,
+    WorkflowStateNotFoundError
+} from "~/context/errors/index.js";
 
 export interface IWorkflowStateContextParams {
     context: Pick<Context, "cms" | "security" | "workflows" | "workflowState" | "adminUsers">;
@@ -60,8 +64,10 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     public async getState(id: string): Promise<IWorkflowState> {
         const record = await this.fetchOne(id);
         if (!record) {
-            throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
-                id
+            throw new WorkflowStateNotFoundError({
+                data: {
+                    id
+                }
             });
         }
 
@@ -98,26 +104,37 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             );
         }
 
-        const state = await this.fetchOneByTargetRevisionId(app, targetRevisionId);
-        if (!state) {
-            return new NullWorkflowState();
+        const { items: allWorkflows } = await this.context.workflows.listWorkflows({
+            where: {
+                app
+            },
+            limit: 10000
+        });
+        if (allWorkflows.length === 0) {
+            throw new WorkflowsNotFoundError({
+                data: {
+                    app
+                }
+            });
         }
 
-        const workflowId = createIdentifier({
-            id: state.workflowId,
-            version: 1
-        });
+        const state = await this.fetchOneByTargetRevisionId(app, targetRevisionId);
+        if (!state) {
+            throw new WorkflowStateNotFoundError({
+                data: {
+                    app,
+                    targetRevisionId
+                }
+            });
+        }
 
-        const { items: workflows } = await this.context.workflows.listWorkflows({
-            where: {
-                id: workflowId
-            },
-            limit: 1
+        const workflow = allWorkflows.find(wf => {
+            return wf.id === state.workflowId;
         });
 
         return new WorkflowState({
             context: this.context,
-            workflow: workflows[0],
+            workflow,
             record: state
         });
     }
@@ -176,18 +193,20 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         });
         const workflow = workflows[0];
         if (!workflow) {
-            return new NullWorkflowState();
+            throw new WorkflowsNotFoundError({
+                data: {
+                    app
+                }
+            });
         } else if (meta.totalCount > 1) {
-            throw new WebinyError(
-                `Multiple workflows found for the given app.`,
-                "WORKFLOW_STATE_ERROR",
-                {
+            throw new MultipleWorkflowsFoundError({
+                data: {
                     app,
                     targetRevisionId,
                     workflows,
                     meta
                 }
-            );
+            });
         }
 
         const entry: ICreateWorkflowStateEntryInput = {
@@ -218,12 +237,13 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 workflow,
                 record
             });
+
             try {
                 await this.onStateAfterCreate.publish({
                     state
                 });
             } catch (ex) {
-                console.log(ex);
+                console.error(ex);
                 // do nothing?
             }
             return state;
@@ -236,9 +256,11 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     ): Promise<IWorkflowState> {
         const originalRecord = await this.fetchOne(id);
         if (!originalRecord) {
-            throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
-                id,
-                input
+            throw new WorkflowStateNotFoundError({
+                data: {
+                    id,
+                    input
+                }
             });
         }
         // @ts-expect-error
@@ -254,13 +276,11 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             id: originalRecord.workflowId
         });
         if (!workflow) {
-            throw new WebinyError(
-                `Workflow with ID "${input.workflowId}" was not found.`,
-                "WORKFLOW_NOT_FOUND",
-                {
+            throw new WorkflowsNotFoundError({
+                data: {
                     workflowId: input.workflowId
                 }
-            );
+            });
         }
         const originalState = new WorkflowState({
             context: this.context,
@@ -288,7 +308,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                     original: originalState
                 });
             } catch (ex) {
-                console.log(ex);
+                console.error(ex);
                 // do nothing?
             }
 
@@ -345,42 +365,25 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 state
             });
         } catch (ex) {
-            console.log(ex);
+            console.error(ex);
             // do nothing?
         }
     }
 
     public async startStateStep(id: string): Promise<IWorkflowState> {
         const state = await this.getState(id);
-        if (state instanceof NullWorkflowState) {
-            throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
-                id
-            });
-        }
         await state.start();
         return state;
     }
 
     public async approveStateStep(id: string, comment?: string): Promise<IWorkflowState> {
         const state = await this.getState(id);
-        if (state instanceof NullWorkflowState) {
-            throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
-                id,
-                comment
-            });
-        }
         await state.approve(comment);
         return state;
     }
 
     public async rejectStateStep(id: string, comment: string): Promise<IWorkflowState> {
         const state = await this.getState(id);
-        if (state instanceof NullWorkflowState) {
-            throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
-                id,
-                comment
-            });
-        }
         await state.reject(comment);
         return state;
     }
@@ -402,15 +405,13 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         if (items.length === 0) {
             return null;
         } else if (items.length > 1) {
-            throw new WebinyError(
-                `Multiple workflow states found for the given app and target ID.`,
-                "WORKFLOW_STATE_ERROR",
-                {
+            throw new MultipleWorkflowsFoundError({
+                data: {
                     app,
                     targetRevisionId,
                     items
                 }
-            );
+            });
         }
         return items[0] || null;
     }

@@ -9,7 +9,6 @@ interface IParams {
 }
 
 export const attachCmsLifecycleEvents = (params: IParams) => {
-    // attachCreateEntryLifecycleEvents(params);
     attachPublishEntryLifecycleEvents(params);
     attachDeleteEntryLifecycleEvents(params);
     attachDeleteModelLifecycleEvents(params);

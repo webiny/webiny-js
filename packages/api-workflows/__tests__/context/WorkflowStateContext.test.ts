@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-import { NullWorkflowState } from "~/context/workflowState/NullWorkflowState.js";
 import { createContext } from "~tests/__helpers/context.js";
 import { createMockWorkflow } from "~tests/context/mocks/workflow.js";
 import { WorkflowStateRecordState } from "~/context/abstractions/WorkflowState.js";
@@ -19,14 +18,17 @@ describe("Workflow State Context", () => {
         });
     });
 
-    it("should not get a state because there is none - NullWorkflowState", async () => {
-        const { workflowStateContext } = await createContext();
+    it("should not get a state because there is none", async () => {
+        const { workflowStateContext, workflowsContext } = await createContext();
+        const app = "testApp";
+        const mockWorkflow = createMockWorkflow({
+            app
+        });
+        await workflowsContext.storeWorkflow(app, mockWorkflow.id, mockWorkflow);
 
-        const response = await workflowStateContext.getTargetState("app", "non-existing-id#0001");
-        expect(response).toBeInstanceOf(NullWorkflowState);
-        expect(response.workflow).toBeUndefined();
-        expect(response.record).toBeUndefined();
-        expect(response.done).toBe(false);
+        await expect(() => {
+            return workflowStateContext.getTargetState(app, "non-existing-id#0001");
+        }).rejects.toThrow("No workflow state for given record.");
     });
 
     it("should throw an error on getState because of faulty targetId", async () => {
@@ -48,14 +50,9 @@ describe("Workflow State Context", () => {
     it("should not create a state because there are no workflows", async () => {
         const { workflowStateContext } = await createContext();
 
-        const response = await workflowStateContext.createState(
-            "non-existing-app",
-            "non-existing-id#0001"
-        );
-        expect(response).toBeInstanceOf(NullWorkflowState);
-        expect(response.workflow).toBeUndefined();
-        expect(response.record).toBeUndefined();
-        expect(response.done).toBe(false);
+        await expect(() => {
+            return workflowStateContext.createState("non-existing-app", "non-existing-id#0001");
+        }).rejects.toThrow("No workflows are defined for the given app.");
     });
 
     it("should create, update and delete a state", async () => {
@@ -105,11 +102,10 @@ describe("Workflow State Context", () => {
         expect(updatedState.record?.comment).toBe("A comment!");
 
         await workflowStateContext.deleteTargetState(app, targetRevisionId);
-        const afterDeleteState = await workflowStateContext.getTargetState(app, targetRevisionId);
-        expect(afterDeleteState).toBeInstanceOf(NullWorkflowState);
-        expect(afterDeleteState.workflow).toBeUndefined();
-        expect(afterDeleteState.record).toBeUndefined();
-        expect(afterDeleteState.done).toBe(false);
+
+        await expect(() => {
+            return workflowStateContext.getTargetState(app, targetRevisionId);
+        }).rejects.toThrow("No workflow state for given record.");
     });
 
     it("should approve a step and move to the next one", async () => {

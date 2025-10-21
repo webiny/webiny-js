@@ -23,8 +23,15 @@ function CanUseFileManagerThreatDetection({ children }: ChildrenProps) {
     return wcp.canUseFileManagerThreatDetection() ? <>{children}</> : null;
 }
 
+function CanUseWorkflows({ children }: ChildrenProps) {
+    const wcp = useWcp();
+
+    return wcp.canUseWorkflows() ? <>{children}</> : null;
+}
+
 export const Wcp = {
     CanUseTeams,
     CanUsePrivateFiles,
-    CanUseFileManagerThreatDetection
+    CanUseFileManagerThreatDetection,
+    CanUseWorkflows
 };

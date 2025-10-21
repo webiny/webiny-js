@@ -123,7 +123,7 @@ export class WorkflowState implements IWorkflowState {
         const nextStep = this.getNextStep(step.id);
 
         this.updateRecord({
-            state: nextStep ? WorkflowStateRecordState.inReview : WorkflowStateRecordState.approved
+            state: nextStep ? WorkflowStateRecordState.pending : WorkflowStateRecordState.approved
         });
 
         await this.updateState(this.record);

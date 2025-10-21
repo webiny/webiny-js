@@ -68,6 +68,22 @@ const WORKFLOW_STATE = /* GraphQL */ `
                 type
             }
         }
+        workflow {
+            id
+            name
+            steps {
+                id
+                title
+                color
+                description
+                teams {
+                    id
+                }
+                notifications {
+                    id
+                }
+            }
+        }
     }
 `;
 
