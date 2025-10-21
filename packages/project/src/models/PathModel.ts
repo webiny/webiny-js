@@ -14,6 +14,13 @@ export class PathModel implements IPathModel {
         return fs.existsSync(this.value);
     }
 
+    ensure() {
+        if (!this.existsSync()) {
+            fs.mkdirSync(this.value, { recursive: true });
+        }
+        return this;
+    }
+
     toString(): string {
         return this.value;
     }

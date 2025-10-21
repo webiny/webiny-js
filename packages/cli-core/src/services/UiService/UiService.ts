@@ -59,7 +59,11 @@ export class DefaultUiService implements UiService.Interface {
     private typedColorizedText(type: keyof typeof LOG_COLORS, text: string, ...args: any[]) {
         let prefix = `${LOG_COLORS[type](type)}: `;
         if (process.env.WEBINY_CLI_SLIM_PREFIX) {
-            prefix = `${LOG_COLORS[type]("┃")} `;
+            let pipeSymbol = '│';
+            if (process.env.WEBINY_CLI_PIPE_PREFIX === '2') {
+                pipeSymbol = '┃'
+            }
+            prefix = `${LOG_COLORS[type](pipeSymbol)} `; // TODO: or maybe "┃" ?
         }
 
         // Replace all placeholders (match with `/%[a-zA-Z]/g` regex) with colorized values.

@@ -57,7 +57,14 @@ export class DefaultUiService implements UiService.Interface {
     }
 
     private typedColorizedText(type: keyof typeof LOG_COLORS, text: string, ...args: any[]) {
-        const prefix = `${LOG_COLORS[type](type)}: `;
+        let prefix = `${LOG_COLORS[type](type)}: `;
+        if (process.env.WEBINY_CLI_SLIM_PREFIX) {
+            let pipeSymbol = '│';
+            if (process.env.WEBINY_CLI_PIPE_PREFIX === '2') {
+                pipeSymbol = '┃'
+            }
+            prefix = `${LOG_COLORS[type](pipeSymbol)} `; // TODO: or maybe "┃" ?
+        }
 
         // Replace all placeholders (match with `/%[a-zA-Z]/g` regex) with colorized values.
         const textWithColorizedPlaceholders = text.replace(/%[a-zA-Z]/g, match => {

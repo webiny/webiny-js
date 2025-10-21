@@ -7,4 +7,5 @@ export interface IPathModel {
     toDto(): IPathModelDto;
     join: (...paths: string[]) => IPathModel;
     existsSync: () => boolean;
+    ensure: () => IPathModel;
 }
