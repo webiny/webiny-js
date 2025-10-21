@@ -19,7 +19,7 @@ const flushCompilationQueue = () => {
     }
 };
 
-const logCompilation = (inputPathRelative) => {
+const logCompilation = inputPathRelative => {
     compilationQueue.push(inputPathRelative);
 
     clearTimeout(debounceTimer);
