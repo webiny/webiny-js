@@ -11,6 +11,27 @@ type AccordionTriggerProps = Pick<
     "title" | "description" | "icon" | "handle" | "interactive" | "actions" | "draggable"
 >;
 
+interface OpenCloseIndicatorProps {
+    show: boolean;
+}
+
+const OpenCloseIndicator = ({ show }: OpenCloseIndicatorProps) => {
+    if (!show) {
+        return null;
+    }
+
+    return (
+        <Icon
+            size={"lg"}
+            className={"wby-transition"}
+            color={"neutral-strong"}
+            data-role={"open-close-indicator"}
+            label={"Open/close indicator"}
+            icon={<KeyboardArrowDownIcon />}
+        />
+    );
+};
+
 const AccordionTrigger = ({
     title,
     description,
@@ -34,20 +55,6 @@ const AccordionTrigger = ({
             }
         };
     }, [interactive]);
-
-    const renderIcon = (render: boolean) =>
-        render && (
-            <div className={"wby-ml-md"}>
-                <Icon
-                    size={"lg"}
-                    className={"wby-transition"}
-                    color={"neutral-strong"}
-                    data-role={"open-close-indicator"}
-                    label={"Open/close indicator"}
-                    icon={<KeyboardArrowDownIcon />}
-                />
-            </div>
-        );
 
     const isInteractable = Boolean(actions && interactive);
 
@@ -81,7 +88,7 @@ const AccordionTrigger = ({
                     <div className={"wby-ml-sm wby-w-[20px] wby-h-[1px] wby-bg-neutral-strong"} />
                 )}
                 {draggable ? <AccordionItemDragHandle /> : null}
-                {renderIcon(isInteractable)}
+                <OpenCloseIndicator show={isInteractable} />
 
                 <div
                     className={
@@ -101,7 +108,7 @@ const AccordionTrigger = ({
                     </div>
                     <div className={"wby-flex wby-gap-xs"}>
                         {actions}
-                        {renderIcon(!isInteractable)}
+                        <OpenCloseIndicator show={!isInteractable} />
                     </div>
                 </div>
             </div>
