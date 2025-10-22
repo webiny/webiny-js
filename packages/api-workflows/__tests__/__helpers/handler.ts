@@ -7,7 +7,7 @@ import {
 import { Context } from "~/types.js";
 import { createWorkflows } from "~/index.js";
 import { PluginsContainer } from "@webiny/plugins";
-import { STATE_MODEL_ID, WORKFLOW_MODEL_ID } from "~/constants.js";
+import { WORKFLOW_STATE_MODEL_ID, WORKFLOW_MODEL_ID } from "~/constants.js";
 import {
     APPROVE_WORKFLOW_STATE_STEP_MUTATION,
     CANCEL_WORKFLOW_STATE_MUTATION,
@@ -59,7 +59,7 @@ export const createContextHandler = async (params: UseContextHandlerParams = {})
     });
     const context = await handler.context();
     const workflowModel = await context.cms.getModel(WORKFLOW_MODEL_ID);
-    const stateModel = await context.cms.getModel(STATE_MODEL_ID);
+    const stateModel = await context.cms.getModel(WORKFLOW_STATE_MODEL_ID);
     return {
         handler,
         context,

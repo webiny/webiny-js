@@ -68,7 +68,7 @@ describe("Workflow State Context", () => {
 
         expect(state).toBeDefined();
         expect(state.done).toBe(false);
-        expect(state.workflow).toEqual(workflow);
+        expect(state.record.isActive).toBeTrue();
         expect(state.record).toBeDefined();
         expect(state.record!.app).toBe(app);
         expect(state.record!.workflowId).toBe(workflow.id);
@@ -78,6 +78,11 @@ describe("Workflow State Context", () => {
             ...workflow.steps.map(step => {
                 return {
                     id: step.id,
+                    title: step.title,
+                    description: step.description,
+                    color: step.color,
+                    teams: step.teams,
+                    notifications: step.notifications,
                     state: WorkflowStateRecordState.pending,
                     savedBy: null,
                     comment: null
@@ -88,8 +93,8 @@ describe("Workflow State Context", () => {
         const getResponse = await workflowStateContext.getTargetState(app, targetRevisionId);
 
         expect(getResponse.done).toBeFalse();
-        expect(getResponse.workflow).toEqual({
-            ...state.workflow
+        expect(getResponse.activeStep).toEqual({
+            ...state.record.steps[0]
         });
         expect(getResponse.record).toEqual({
             ...state.record
@@ -136,6 +141,11 @@ describe("Workflow State Context", () => {
 
         expect(stateAfterReview.record?.steps[0]).toEqual({
             id: "step-1",
+            title: state.record.steps[0].title,
+            description: state.record.steps[0].description,
+            color: state.record.steps[0].color,
+            notifications: state.record.steps[0].notifications,
+            teams: state.record.steps[0].teams,
             state: WorkflowStateRecordState.approved,
             comment: "First step should be approved.",
             savedBy: {
@@ -159,6 +169,11 @@ describe("Workflow State Context", () => {
 
         expect(stateAfterFirstApprove.record?.steps[1]).toEqual({
             id: "step-2",
+            title: state.record.steps[1].title,
+            description: state.record.steps[1].description,
+            color: state.record.steps[1].color,
+            teams: state.record.steps[1].teams,
+            notifications: state.record.steps[1].notifications,
             state: WorkflowStateRecordState.approved,
             comment: "Second step should be approved.",
             savedBy: {

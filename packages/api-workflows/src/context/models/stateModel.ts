@@ -1,40 +1,16 @@
 import { createPrivateModelPlugin } from "@webiny/api-headless-cms";
-import { STATE_MODEL_ID } from "~/constants.js";
-import type { CmsModelField } from "@webiny/api-headless-cms/types/index.js";
-import { WorkflowStateRecordState } from "~/context/abstractions/WorkflowState.js";
+import { WORKFLOW_STATE_MODEL_ID } from "~/constants.js";
+import {
+    createAppField,
+    createSavedByField,
+    createStateField,
+    createStepsField
+} from "~/context/models/fields/index.js";
+import { createCommentField } from "~/context/models/fields/comment.js";
 
-const stateField: CmsModelField = {
-    id: "state",
-    type: "text",
-    fieldId: "state",
-    storageId: "text@state",
-    label: "State",
-    predefinedValues: {
-        enabled: true,
-        values: [
-            {
-                label: "Pending",
-                value: WorkflowStateRecordState.pending
-            },
-            {
-                label: "In Review",
-                value: WorkflowStateRecordState.inReview
-            },
-            {
-                label: "Approved",
-                value: WorkflowStateRecordState.approved
-            },
-            {
-                label: "Rejected",
-                value: WorkflowStateRecordState.rejected
-            }
-        ]
-    }
-};
-
-export const createStateModel = () => {
+export const createWorkflowStateModel = () => {
     return createPrivateModelPlugin({
-        modelId: STATE_MODEL_ID,
+        modelId: WORKFLOW_STATE_MODEL_ID,
         name: "RecordWorkflow State",
         fields: [
             {
@@ -44,13 +20,7 @@ export const createStateModel = () => {
                 type: "text",
                 label: "Workflow ID"
             },
-            {
-                fieldId: "app",
-                id: "app",
-                storageId: "text@app",
-                type: "text",
-                label: "App"
-            },
+            createAppField(),
             {
                 fieldId: "targetRevisionId",
                 id: "targetRevisionId",
@@ -66,97 +36,19 @@ export const createStateModel = () => {
                 label: "Target ID"
             },
             {
-                fieldId: "comment",
-                id: "comment",
-                storageId: "text@comment",
-                type: "text",
-                label: "Comment"
-            },
-            stateField,
-            {
                 fieldId: "isActive",
                 type: "boolean",
                 id: "isActive",
                 storageId: "boolean@isActive",
                 label: "Is Active"
             },
-            {
-                fieldId: "steps",
-                id: "steps",
-                storageId: "object@steps",
-                type: "object",
-                label: "Steps",
-                multipleValues: true,
+            createCommentField(),
+            createStateField(),
+            createStepsField({
                 settings: {
-                    fields: [
-                        {
-                            id: "id",
-                            type: "text",
-                            fieldId: "id",
-                            storageId: "text@id",
-                            label: "Step ID"
-                        },
-                        stateField,
-                        {
-                            id: "savedBy",
-                            type: "object",
-                            fieldId: "savedBy",
-                            storageId: "object@savedBy",
-                            label: "User",
-                            settings: {
-                                fields: [
-                                    {
-                                        id: "id",
-                                        type: "text",
-                                        fieldId: "id",
-                                        storageId: "text@id",
-                                        label: "ID",
-                                        validation: [
-                                            {
-                                                name: "required",
-                                                message: "ID is required."
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        id: "displayName",
-                                        type: "text",
-                                        fieldId: "displayName",
-                                        storageId: "text@displayName",
-                                        label: "Display Name",
-                                        validation: [
-                                            {
-                                                name: "required",
-                                                message: "Display name is required."
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        id: "type",
-                                        type: "text",
-                                        fieldId: "type",
-                                        storageId: "text@type",
-                                        label: "Type",
-                                        validation: [
-                                            {
-                                                name: "required",
-                                                message: "Type is required."
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            fieldId: "comment",
-                            id: "comment",
-                            storageId: "text@comment",
-                            type: "text",
-                            label: "Comment"
-                        }
-                    ]
+                    fields: [createStateField(), createSavedByField(), createCommentField()]
                 }
-            }
+            })
         ]
     });
 };

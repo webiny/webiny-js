@@ -66,15 +66,16 @@ describe("workflow states graphql", () => {
                             steps: workflow.steps.map(step => {
                                 return {
                                     id: step.id,
+                                    title: step.title,
+                                    description: step.description,
+                                    color: step.color,
+                                    teams: step.teams,
+                                    notifications: step.notifications,
                                     state: WorkflowStateRecordState.pending,
                                     comment: null,
                                     savedBy: null
                                 };
-                            }),
-                            workflow: {
-                                id: workflow.id,
-                                steps: workflow.steps
-                            }
+                            })
                         },
                         error: null
                     }

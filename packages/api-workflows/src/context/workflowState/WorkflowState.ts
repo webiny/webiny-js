@@ -4,8 +4,7 @@ import type {
     IWorkflowState,
     IWorkflowStateIdentity,
     IWorkflowStateRecord,
-    IWorkflowStateRecordStep,
-    IWorkflowStateStep
+    IWorkflowStateRecordStep
 } from "../abstractions/WorkflowState.js";
 import { WorkflowStateRecordState } from "../abstractions/WorkflowState.js";
 import { WebinyError } from "@webiny/error";
@@ -18,7 +17,7 @@ export interface IWorkflowStateParams {
 
 export class WorkflowState implements IWorkflowState {
     public readonly context;
-    public readonly workflow;
+    // public readonly workflow;
     public readonly record;
 
     public get done(): boolean {
@@ -26,25 +25,27 @@ export class WorkflowState implements IWorkflowState {
             return step.state === WorkflowStateRecordState.approved;
         });
     }
-    public get activeStep(): IWorkflowStateStep | undefined {
-        const step = this.record.steps.find(step => {
-            return step.state !== WorkflowStateRecordState.approved;
+    public get activeStep(): IWorkflowStateRecordStep | undefined {
+        const hasRejected = this.record.steps.some(step => {
+            return step.state === WorkflowStateRecordState.rejected;
         });
-        if (!step) {
+        if (hasRejected) {
             return undefined;
         }
-
-        const workflowStep = this.workflow?.steps.find(s => s.id === step.id);
-
-        return {
-            ...step,
-            name: workflowStep?.title || "unknown"
-        };
+        for (const step of this.record.steps) {
+            if (
+                step.state === WorkflowStateRecordState.pending ||
+                step.state === WorkflowStateRecordState.inReview
+            ) {
+                return step;
+            }
+        }
+        return undefined;
     }
 
     public constructor(params: IWorkflowStateParams) {
         this.context = params.context;
-        this.workflow = params.workflow;
+        // this.workflow = params.workflow;
         this.record = params.record;
     }
 
@@ -195,15 +196,6 @@ export class WorkflowState implements IWorkflowState {
     }
 
     private async ensureCanReview(): Promise<void> {
-        if (!this.workflow) {
-            throw new WebinyError({
-                message: `Cannot review a workflow state without a linked workflow.`,
-                code: "WORKFLOW_NOT_FOUND",
-                data: {
-                    ...this.record
-                }
-            });
-        }
         const identity = this.context.security.getIdentity();
         if (!identity?.id) {
             throw new WebinyError({
@@ -222,24 +214,11 @@ export class WorkflowState implements IWorkflowState {
                 code: "WORKFLOW_REVIEWER_NO_TEAMS",
                 data: {
                     step,
-                    workflow: this.workflow,
                     record: this.record
                 }
             });
         }
-        const workflowStep = this.workflow.steps.find(s => s.id === step.id);
-        if (!workflowStep) {
-            throw new WebinyError({
-                message: `Workflow step with ID "${step.id}" not found.`,
-                code: "WORKFLOW_STEP_NOT_FOUND",
-                data: {
-                    step,
-                    workflow: this.workflow,
-                    record: this.record
-                }
-            });
-        }
-        const canReview = workflowStep.teams.some(team => {
+        const canReview = step.teams.some(team => {
             return teams.some(t => {
                 return team.id === t.id;
             });

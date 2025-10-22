@@ -248,7 +248,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             targetRevisionId,
             steps: workflow.steps.map(step => {
                 return {
-                    id: step.id,
+                    ...step,
                     state: WorkflowStateRecordState.pending,
                     savedBy: null,
                     comment: null

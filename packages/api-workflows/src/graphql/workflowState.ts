@@ -9,7 +9,6 @@ import { createWorkflowStateValidation } from "~/validation/createWorkflowState.
 import { getTargetWorkflowStateValidation } from "~/validation/getTargetWorkflowState.js";
 import { getWorkflowStateValidation } from "~/validation/getWorkflowState.js";
 import { startWorkflowStateValidation } from "~/validation/startWorkflowState.js";
-import type { IWorkflowStateRecord } from "~/context/abstractions/WorkflowState.js";
 
 export const createWorkflowStateSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -27,8 +26,23 @@ export const createWorkflowStateSchema = () => {
                 type: String
             }
 
-            type WorkflowStateStep {
+            type WorkflowStateStepNotification {
                 id: String!
+            }
+
+            type WorkflowStateStepTeam {
+                id: String!
+            }
+
+            type WorkflowStateStep {
+                # workflow related
+                id: String!
+                title: String!
+                color: String!
+                description: String
+                teams: [WorkflowStateStepTeam!]!
+                notifications: [WorkflowStateStepNotification!]
+                # state related
                 state: WorkflowStateStateValue!
                 comment: String
                 savedBy: WorkflowStateIdentity
@@ -48,7 +62,6 @@ export const createWorkflowStateSchema = () => {
                 savedOn: DateTime!
                 createdBy: WorkflowStateIdentity!
                 savedBy: WorkflowStateIdentity!
-                workflow: Workflow
             }
 
             type ListWorkflowStatesResponse {
@@ -112,18 +125,6 @@ export const createWorkflowStateSchema = () => {
             }
         `,
         resolvers: {
-            WorkflowState: {
-                workflow: async (parent: IWorkflowStateRecord, _, context) => {
-                    try {
-                        return await context.workflows.getWorkflow({
-                            app: parent.app,
-                            id: parent.workflowId
-                        });
-                    } catch {
-                        return null;
-                    }
-                }
-            },
             WorkflowsQuery: {
                 getWorkflowState: async (_, args, context) => {
                     return resolve(async () => {
