@@ -1,16 +1,17 @@
 import { createImplementation } from "@webiny/di-container";
+import { EnsureAppWorkspaceService, GetApp } from "~/abstractions/index.js";
+
 import path from "path";
 import fs from "fs";
 import { replaceInPath } from "replace-in-path";
-import { BeforeBuild, GetApp } from "@webiny/project/abstractions/index.js";
 import { getTemplatesFolderPath } from "~/utils/index.js";
 
 const wait = () => new Promise(resolve => setTimeout(resolve, 10));
 
-class BuildAppWorkspace implements BeforeBuild.Interface {
+export class DefaultEnsureAppWorkspaceService implements EnsureAppWorkspaceService.Interface {
     constructor(private getApp: GetApp.Interface) {}
 
-    async execute(params: BeforeBuild.Params) {
+    async execute(params: EnsureAppWorkspaceService.Params) {
         // 1. Construct required paths.
         const templatesFolderPath = getTemplatesFolderPath();
 
@@ -18,11 +19,10 @@ class BuildAppWorkspace implements BeforeBuild.Interface {
 
         const appWorkspaceFolderPath = app.paths.workspaceFolder.toString();
         const baseTemplateFolderPath = path.join(templatesFolderPath, "appTemplates", "base");
-        const appTemplateFolderPath = path.join(templatesFolderPath, "appTemplates", app.name);
 
         // 2. Do the cleanup first.
         if (fs.existsSync(appWorkspaceFolderPath)) {
-            fs.rmSync(appWorkspaceFolderPath, { recursive: true, force: true });
+            // fs.rmSync(appWorkspaceFolderPath, { recursive: true, force: true });
         }
 
         fs.mkdirSync(appWorkspaceFolderPath, { recursive: true });
@@ -47,14 +47,11 @@ class BuildAppWorkspace implements BeforeBuild.Interface {
                 replaceWith: !variant || variant === "undefined" ? "" : variant
             }
         ]);
-
-        // 4. Create app.
-        fs.cpSync(appTemplateFolderPath, appWorkspaceFolderPath, { recursive: true });
     }
 }
 
-export default createImplementation({
-    abstraction: BeforeBuild,
-    implementation: BuildAppWorkspace,
+export const ensureAppWorkspaceService = createImplementation({
+    abstraction: EnsureAppWorkspaceService,
+    implementation: DefaultEnsureAppWorkspaceService,
     dependencies: [GetApp]
 });

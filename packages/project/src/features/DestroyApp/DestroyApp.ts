@@ -1,6 +1,7 @@
 import { createImplementation } from "@webiny/di-container";
 import {
     DestroyApp,
+    EnsureAppWorkspaceService,
     GetApp,
     GetProject,
     GetPulumiService,
@@ -18,17 +19,20 @@ import {
 export class DefaultDestroyApp implements DestroyApp.Interface {
     constructor(
         private getApp: GetApp.Interface,
+        private ensureAppWorkspaceService: EnsureAppWorkspaceService.Interface,
         private getProject: GetProject.Interface,
         private pulumiSelectStackService: PulumiSelectStackService.Interface,
         private getPulumiService: GetPulumiService.Interface
     ) {}
 
     async execute(params: DestroyApp.Params) {
-        const app = this.getApp.execute(params.app);
-
         if (!params.env) {
             throw new Error(`Please specify environment, for example "dev".`);
         }
+
+        const app = this.getApp.execute(params.app);
+        await this.ensureAppWorkspaceService.execute(params);
+
 
         await this.pulumiSelectStackService.execute(app, params);
 
@@ -61,5 +65,5 @@ export class DefaultDestroyApp implements DestroyApp.Interface {
 export const destroyApp = createImplementation({
     abstraction: DestroyApp,
     implementation: DefaultDestroyApp,
-    dependencies: [GetApp, GetProject, PulumiSelectStackService, GetPulumiService]
+    dependencies: [GetApp, EnsureAppWorkspaceService, GetProject, PulumiSelectStackService, GetPulumiService]
 });

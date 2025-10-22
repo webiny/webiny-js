@@ -4,6 +4,7 @@ import util from "util";
 import { UiService, StdioService } from "~/abstractions/index.js";
 
 const NEW_LINE = "\n";
+const USE_CLI_PIPE_PREFIX = process.env.WEBINY_CLI_PIPE_PREFIX;
 
 const LOG_COLORS = {
     info: chalk.blueBright,
@@ -24,7 +25,7 @@ export class DefaultUiService implements UiService.Interface {
 
     text(text: string) {
         this.stdio.getStdout().write(text);
-        this.newLine();
+        this.stdio.getStdout().write(NEW_LINE);
     }
 
     textBold(text: string) {
@@ -32,7 +33,11 @@ export class DefaultUiService implements UiService.Interface {
     }
 
     newLine() {
-        this.stdio.getStdout().write(NEW_LINE);
+        if (USE_CLI_PIPE_PREFIX) {
+            this.stdio.getStdout().write(chalk.gray("∙") + NEW_LINE);
+        } else {
+            this.stdio.getStdout().write(NEW_LINE);
+        }
     }
 
     // The following methods are used to print texts with a specific type prefix.
@@ -58,12 +63,12 @@ export class DefaultUiService implements UiService.Interface {
 
     private typedColorizedText(type: keyof typeof LOG_COLORS, text: string, ...args: any[]) {
         let prefix = `${LOG_COLORS[type](type)}: `;
-        if (process.env.WEBINY_CLI_SLIM_PREFIX) {
-            let pipeSymbol = '│';
-            if (process.env.WEBINY_CLI_PIPE_PREFIX === '2') {
-                pipeSymbol = '┃'
+        if (USE_CLI_PIPE_PREFIX) {
+            let pipeSymbol = "│";
+            if (USE_CLI_PIPE_PREFIX === "2") {
+                pipeSymbol = "┃";
             }
-            prefix = `${LOG_COLORS[type](pipeSymbol)} `; // TODO: or maybe "┃" ?
+            prefix = `${LOG_COLORS[type](pipeSymbol)} `;
         }
 
         // Replace all placeholders (match with `/%[a-zA-Z]/g` regex) with colorized values.

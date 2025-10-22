@@ -1,5 +1,6 @@
 import { createImplementation } from "@webiny/di-container";
 import {
+    EnsureAppWorkspaceService,
     GetApp,
     GetAppOutput,
     GetPulumiService,
@@ -10,11 +11,14 @@ import { createEnvConfiguration, withPulumiConfigPassphrase } from "~/utils/env/
 export class DefaultGetAppOutput implements GetAppOutput.Interface {
     constructor(
         private getApp: GetApp.Interface,
+        private ensureAppWorkspaceService: EnsureAppWorkspaceService.Interface,
         private pulumiSelectStackService: PulumiSelectStackService.Interface,
         private getPulumiService: GetPulumiService.Interface
     ) {}
 
     async execute(params: GetAppOutput.Params) {
+        await this.ensureAppWorkspaceService.execute(params);
+
         const app = this.getApp.execute(params.app);
 
         if (!params.env) {
@@ -44,5 +48,5 @@ export class DefaultGetAppOutput implements GetAppOutput.Interface {
 export const getAppOutput = createImplementation({
     abstraction: GetAppOutput,
     implementation: DefaultGetAppOutput,
-    dependencies: [GetApp, PulumiSelectStackService, GetPulumiService]
+    dependencies: [GetApp, EnsureAppWorkspaceService, PulumiSelectStackService, GetPulumiService]
 });

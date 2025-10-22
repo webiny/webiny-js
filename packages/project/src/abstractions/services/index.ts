@@ -1,4 +1,5 @@
 export * from "./ProjectInfoService/index.js";
+export { EnsureAppWorkspaceService } from "./EnsureAppWorkspaceService.js";
 export { GetAppPackagesService } from "./GetAppPackagesService.js";
 export { GetCwdService } from "./GetCwdService.js";
 export { GetProjectConfigService } from "./GetProjectConfigService.js";

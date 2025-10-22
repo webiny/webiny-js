@@ -1,3 +1,4 @@
+export * from "./EnsureAppWorkspace/index.js";
 export * from "./GetAppPackagesService/index.js";
 export * from "./GetCwdService/index.js";
 export * from "./GetProjectConfigService/index.js";
