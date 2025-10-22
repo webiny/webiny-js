@@ -287,7 +287,6 @@ export interface CreateGroupParams {
 }
 
 export interface UpdateGroupParams {
-    original: Group;
     group: Group;
 }
 

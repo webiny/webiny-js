@@ -1,0 +1,78 @@
+import { mdbid } from "@webiny/utils";
+import { createImplementation } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
+import { TenantContext } from "@webiny/api-tenancy/features/TenantContext";
+import { EventPublisher } from "@webiny/api-core";
+import { CreateGroup } from "./abstractions.js";
+import { GroupsRepository } from "../shared/abstractions.js";
+import { IdentityContext } from "../../IdentityContext/abstractions.js";
+import { createGroupValidation } from "./schema.js";
+import { GroupBeforeCreateEvent, GroupAfterCreateEvent } from "./events.js";
+import type { Group, CreateGroupInput } from "../shared/types.js";
+import { NotAuthorizedError } from "../shared/errors.js";
+
+export class CreateGroupUseCase {
+    constructor(
+        private tenantContext: TenantContext.Interface,
+        private identityContext: IdentityContext.Interface,
+        private eventPublisher: EventPublisher.Interface,
+        private repository: GroupsRepository.Interface
+    ) {}
+
+    async execute(input: CreateGroupInput): Promise<Result<Group, Error>> {
+        const hasPermission = await this.identityContext.getPermission("security.group");
+
+        if (!hasPermission) {
+            return Result.fail(new NotAuthorizedError());
+        }
+
+        const validation = createGroupValidation.safeParse(input);
+        if (!validation.success) {
+            return Result.fail(new Error(validation.error.errors[0].message));
+        }
+
+        const tenant = this.tenantContext.getTenant();
+        const identity = this.identityContext.getIdentity();
+        const data = validation.data;
+
+        const group: Group = {
+            id: mdbid(),
+            name: data.name,
+            slug: data.slug,
+            description: data.description,
+            permissions: data.permissions,
+            system: input.system || false,
+            tenant: tenant.id,
+            createdOn: new Date().toISOString(),
+            createdBy: {
+                id: identity.id,
+                displayName: identity.displayName,
+                type: identity.type
+            },
+            webinyVersion: process.env.WEBINY_VERSION || null,
+            plugin: false
+        };
+
+        await this.eventPublisher.publish(
+            new GroupBeforeCreateEvent({ group, input: validation.data })
+        );
+
+        const result = await this.repository.create(group);
+
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        await this.eventPublisher.publish(
+            new GroupAfterCreateEvent({ group, input: validation.data })
+        );
+
+        return Result.ok(group);
+    }
+}
+
+export const CreateGroupUseCaseImpl = createImplementation({
+    abstraction: CreateGroup,
+    implementation: CreateGroupUseCase,
+    dependencies: [TenantContext, IdentityContext, EventPublisher, GroupsRepository]
+});
