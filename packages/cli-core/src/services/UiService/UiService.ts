@@ -4,7 +4,7 @@ import util from "util";
 import { UiService, StdioService } from "~/abstractions/index.js";
 
 const NEW_LINE = "\n";
-const USE_CLI_PIPE_PREFIX = process.env.WEBINY_CLI_PIPE_PREFIX;
+const useNewOutput = () => process.env.WEBINY_CLI_NEW_OUTPUT;
 
 const LOG_COLORS = {
     info: chalk.blueBright,
@@ -33,7 +33,8 @@ export class DefaultUiService implements UiService.Interface {
     }
 
     newLine() {
-        if (USE_CLI_PIPE_PREFIX) {
+        const newOutput = useNewOutput();
+        if (newOutput) {
             this.stdio.getStdout().write(chalk.gray("∙") + NEW_LINE);
         } else {
             this.stdio.getStdout().write(NEW_LINE);
@@ -63,9 +64,11 @@ export class DefaultUiService implements UiService.Interface {
 
     private typedColorizedText(type: keyof typeof LOG_COLORS, text: string, ...args: any[]) {
         let prefix = `${LOG_COLORS[type](type)}: `;
-        if (USE_CLI_PIPE_PREFIX) {
+
+        const newOutput = useNewOutput();
+        if (newOutput) {
             let pipeSymbol = "│";
-            if (USE_CLI_PIPE_PREFIX === "2") {
+            if (newOutput === "2") {
                 pipeSymbol = "┃";
             }
             prefix = `${LOG_COLORS[type](pipeSymbol)} `;
