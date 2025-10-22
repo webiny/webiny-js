@@ -31,7 +31,8 @@ export const listWorkflowStatesValidation = zod
                 savedOn_gte: zod.preprocess(datePreprocess, zod.date().optional()),
                 savedOn_lte: zod.preprocess(datePreprocess, zod.date().optional()),
                 createdBy: zod.string().optional(),
-                savedBy: zod.string().optional()
+                savedBy: zod.string().optional(),
+                isActive: zod.boolean().optional()
             })
             .optional(),
         limit: zod.number().min(1).max(10000).optional(),

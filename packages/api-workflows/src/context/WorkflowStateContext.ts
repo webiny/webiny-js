@@ -1,11 +1,8 @@
 import type { Context } from "~/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { IWorkflowStateTransformer } from "~/context/transformer/abstractions/WorkflowStateTransformer.js";
-import {
-    type IWorkflowState,
-    type IWorkflowStateRecord,
-    WorkflowStateRecordState
-} from "./abstractions/WorkflowState.js";
+import type { IWorkflowState, IWorkflowStateRecord } from "./abstractions/WorkflowState.js";
+import { WorkflowStateRecordState } from "./abstractions/WorkflowState.js";
 import { WorkflowState } from "./workflowState/WorkflowState.js";
 import type {
     IWorkflowStateContext,
@@ -18,8 +15,6 @@ import type {
 import { WebinyError } from "@webiny/error";
 import { parseIdentifier } from "@webiny/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { createIdentifier } from "@webiny/utils/createIdentifier.js";
-import type { IWorkflowsContextListWhere } from "~/context/abstractions/WorkflowsContext.js";
 import { createTopic } from "@webiny/pubsub";
 import {
     ActiveStateExistsError,
@@ -28,6 +23,7 @@ import {
     WorkflowsNotFoundError,
     WorkflowStateNotFoundError
 } from "~/context/errors/index.js";
+import type { IWorkflowStepTeam } from "~/context/abstractions/Workflow.js";
 
 export interface IWorkflowStateContextParams {
     context: Pick<Context, "cms" | "security" | "workflows" | "workflowState" | "adminUsers">;
@@ -45,6 +41,10 @@ type IUpdateWorkflowStateEntryInput = Omit<
     "id" | "savedBy" | "savedOn" | "createdOn" | "createdBy"
 >;
 
+interface ICreateWorkflowStateParams {
+    record: IWorkflowStateRecord;
+}
+
 export class WorkflowStateContext implements IWorkflowStateContext {
     private readonly context;
     private readonly model;
@@ -52,6 +52,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     public readonly onStateAfterCreate;
     public readonly onStateAfterUpdate;
     public readonly onStateAfterDelete;
+    private readonly _userTeamsCache: Record<string, IWorkflowStepTeam[]> = {};
 
     public constructor(params: IWorkflowStateContextParams) {
         this.context = params.context;
@@ -73,26 +74,8 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             });
         }
 
-        const workflowId = createIdentifier({
-            id: record.workflowId,
-            version: 1
-        });
-
-        const { items } = await this.context.workflows.listWorkflows({
-            where: {
-                id: workflowId
-            },
-            limit: 1
-        });
-        const [workflow] = items;
-        if (!workflow) {
-            throw new WorkflowNotFoundError(record.workflowId);
-        }
-
-        return new WorkflowState({
-            record,
-            workflow,
-            context: this.context
+        return this.createWorkflowState({
+            record
         });
     }
 
@@ -110,20 +93,6 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             );
         }
 
-        const { items: allWorkflows } = await this.context.workflows.listWorkflows({
-            where: {
-                app
-            },
-            limit: 10000
-        });
-        if (allWorkflows.length === 0) {
-            throw new WorkflowsNotFoundError({
-                data: {
-                    app
-                }
-            });
-        }
-
         const state = await this.fetchOneByTargetRevisionId(app, targetRevisionId);
         if (!state) {
             throw new WorkflowStateNotFoundError({
@@ -134,16 +103,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             });
         }
 
-        const workflow = allWorkflows.find(wf => {
-            return wf.id === state.workflowId;
-        });
-        if (!workflow) {
-            throw new WorkflowNotFoundError(state.workflowId);
-        }
-
-        return new WorkflowState({
-            context: this.context,
-            workflow,
+        return this.createWorkflowState({
             record: state
         });
     }
@@ -151,31 +111,21 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     public async listStates(
         params?: IWorkflowStateContextListStatesParams
     ): Promise<IWorkflowStateContextListStatesResponse> {
-        const { items, meta } = await this.fetchAll(params);
-        const workflowIds = Array.from(new Set(items.map(item => item.workflowId)));
+        const { items: states, meta } = await this.fetchAll(params);
+        /**
+         * Let's prefetch user teams for the current identity to avoid multiple calls later.
+         */
+        await this.getUserTeams();
 
-        const where: IWorkflowsContextListWhere = {};
-        if (workflowIds.length) {
-            where.id_in = workflowIds;
-        }
-
-        const { items: workflows } = await this.context.workflows.listWorkflows({
-            where,
-            limit: 10000
-        });
+        /**
+         * Convert records to workflow state instances.
+         */
+        const items = await Promise.all(
+            states.map(async record => this.createWorkflowState({ record }))
+        );
 
         return {
-            items: items.map(record => {
-                const workflow = workflows.find(wf => wf.id === record.workflowId);
-                if (!workflow) {
-                    throw new WorkflowNotFoundError(record.workflowId);
-                }
-                return new WorkflowState({
-                    context: this.context,
-                    workflow,
-                    record
-                });
-            }),
+            items,
             meta
         };
     }
@@ -262,9 +212,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 entry
             );
             const record = this.transformer.fromCmsEntry(result);
-            const state = new WorkflowState({
-                context: this.context,
-                workflow,
+            const state = await this.createWorkflowState({
                 record
             });
 
@@ -308,9 +256,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         if (!workflow) {
             throw new WorkflowNotFoundError(originalRecord.workflowId);
         }
-        const originalState = new WorkflowState({
-            context: this.context,
-            workflow,
+        const originalState = await this.createWorkflowState({
             record: originalRecord
         });
 
@@ -322,9 +268,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             );
             const record = this.transformer.fromCmsEntry(result);
 
-            const state = new WorkflowState({
-                context: this.context,
-                workflow,
+            const state = await this.createWorkflowState({
                 record
             });
 
@@ -389,9 +333,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             throw new WorkflowNotFoundError(record.workflowId);
         }
 
-        const state = new WorkflowState({
-            context: this.context,
-            workflow,
+        const state = await this.createWorkflowState({
             record
         });
 
@@ -488,5 +430,26 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             items: records,
             meta
         };
+    }
+
+    private async createWorkflowState(params: ICreateWorkflowStateParams): Promise<IWorkflowState> {
+        return new WorkflowState({
+            context: this.context,
+            record: params.record,
+            teams: await this.getUserTeams()
+        });
+    }
+
+    private async getUserTeams(): Promise<IWorkflowStepTeam[]> {
+        const id = this.context.security.getIdentity().id;
+        if (!this._userTeamsCache[id]) {
+            const teams = await this.context.adminUsers.listUserTeams(id);
+            return (this._userTeamsCache[id] = teams.map(team => {
+                return {
+                    id: team.id
+                };
+            }));
+        }
+        return this._userTeamsCache[id];
     }
 }

@@ -22,7 +22,9 @@ export interface IWorkflowStateIdentity {
     type: string | null;
 }
 
-export interface IWorkflowStateRecord {
+export interface IWorkflowStateRecord<
+    Steps extends IWorkflowStateRecordStep = IWorkflowStateRecordStep
+> {
     id: string;
     app: string;
     workflowId: string;
@@ -31,17 +33,21 @@ export interface IWorkflowStateRecord {
     isActive: boolean;
     comment: string | undefined;
     state: WorkflowStateRecordState;
-    steps: IWorkflowStateRecordStep[];
+    steps: Steps[];
     createdOn: Date;
     savedOn: Date;
     createdBy: IWorkflowStateIdentity;
     savedBy: IWorkflowStateIdentity;
 }
 
-export interface IWorkflowState {
+export interface IWorkflowStateRecordStepWithPermissions extends IWorkflowStateRecordStep {
+    isAllowedToReview: boolean;
+}
+
+export interface IWorkflowState
+    extends IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> {
     readonly done: boolean;
-    readonly record: IWorkflowStateRecord;
-    readonly activeStep: IWorkflowStateRecordStep | undefined;
+    readonly activeStep: IWorkflowStateRecordStepWithPermissions | undefined;
     start(): Promise<void>;
     approve(comment?: string): Promise<void>;
     reject(comment: string): Promise<void>;
