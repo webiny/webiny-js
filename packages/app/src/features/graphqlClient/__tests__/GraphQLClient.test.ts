@@ -65,8 +65,7 @@ describe("GraphQLClient Feature", () => {
 
             const client = container.resolve(GraphQLClient);
             const result = await client.execute({
-                mutation:
-                    "mutation CreateUser($name: String!) { createUser(name: $name) { id name } }",
+                query: "mutation CreateUser($name: String!) { createUser(name: $name) { id name } }",
                 variables: { name: "Jane" }
             });
 
@@ -207,7 +206,7 @@ describe("GraphQLClient Feature", () => {
 
             await Promise.all([
                 client.execute({ query: "query { user { id } }" }),
-                client.execute({ mutation: "mutation { createPost { id } }" })
+                client.execute({ query: "mutation { createPost { id } }" })
             ]);
 
             expect(global.fetch).toHaveBeenCalledTimes(1);

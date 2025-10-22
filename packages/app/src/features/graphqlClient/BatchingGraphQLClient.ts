@@ -11,8 +11,7 @@ interface BatchedRequest<TVariables = any> {
 }
 
 interface BatchOperation {
-    query?: DocumentNode | string;
-    mutation?: DocumentNode | string;
+    query: DocumentNode | string;
     variables?: any;
 }
 
@@ -76,17 +75,10 @@ class BatchingGraphQLClientImpl implements GraphQLClient.Interface {
 
         // Multiple requests - batch them
         const batchedOperations = batch.map(({ request }): BatchOperation => {
-            if (request.query) {
-                return {
-                    query: request.query,
-                    variables: request.variables
-                };
-            } else {
-                return {
-                    mutation: request.mutation,
-                    variables: request.variables
-                };
-            }
+            return {
+                query: request.query,
+                variables: request.variables
+            };
         });
 
         // Merge headers from the first request (assuming all have same headers)

@@ -35,7 +35,9 @@ export const FinishSetupStep = ({
                             <Grid.Column span={12}>
                                 <Alert type={"danger"}>{error.message}</Alert>
                             </Grid.Column>
-                        ) : null}
+                        ) : (
+                            <></>
+                        )}
                         {installing ? (
                             <Grid.Column span={12}>
                                 <div className="wby-flex wby-flex-col wby-items-center wby-gap-4">
@@ -47,14 +49,18 @@ export const FinishSetupStep = ({
                                     />
                                 </div>
                             </Grid.Column>
-                        ) : null}
+                        ) : (
+                            <></>
+                        )}
                         {isInstalled ? (
                             <Grid.Column span={12}>
                                 <Text size={"md"} className={"wby-text-neutral-dimmed"}>
                                     Setup complete! Everything went smooth as a breeze!
                                 </Text>
                             </Grid.Column>
-                        ) : null}
+                        ) : (
+                            <></>
+                        )}
                         {!error ? (
                             <Grid.Column span={12}>
                                 <Button
@@ -67,7 +73,9 @@ export const FinishSetupStep = ({
                                     onClick={finishInstallation}
                                 />
                             </Grid.Column>
-                        ) : null}
+                        ) : (
+                            <></>
+                        )}
                     </Grid>
                 </div>
             </Center>
