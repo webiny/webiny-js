@@ -16997,7 +16997,6 @@ __metadata:
     ora: "npm:4.1.1"
     react: "npm:18.2.0"
     regenerator-runtime: "npm:^0.14.1"
-    replace-in-path: "npm:^1.1.0"
     typescript: "npm:5.9.3"
     zod: "npm:^3.25.76"
   languageName: unknown
@@ -17068,6 +17067,7 @@ __metadata:
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     read-json-sync: "npm:2.0.1"
+    replace-in-path: "npm:^1.1.0"
     rimraf: "npm:^6.0.1"
     serialize-error: "npm:^12.0.0"
     ts-morph: "npm:^24.0.0"

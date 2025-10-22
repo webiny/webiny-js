@@ -15,10 +15,10 @@ export default () => {
             Core, API, and Admin Pulumi apps that we deploy by default. */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
             <Infra.ProductionEnvironments environments={["prod", "staging"]} />
-            <Infra.Api.BeforeDeploy src={"./extensions/myApiBeforeDeploy.ts"} />
-            <Infra.Api.BeforeBuild src={"./extensions/myApiBeforeBuild.ts"} />
-            <Infra.Api.AfterDeploy src={"./extensions/myApiAfterDeploy.ts"} />
-            <Infra.Api.AfterBuild src={"./extensions/myApiAfterBuild.ts"} />
+            {/*<Infra.Api.BeforeDeploy src={"./extensions/myApiBeforeDeploy.ts"} />*/}
+            {/*<Infra.Api.BeforeBuild src={"./extensions/myApiBeforeBuild.ts"} />*/}
+            {/*<Infra.Api.AfterDeploy src={"./extensions/myApiAfterDeploy.ts"} />*/}
+            {/*<Infra.Api.AfterBuild src={"./extensions/myApiAfterBuild.ts"} />*/}
 
             <Infra.Core.Pulumi src={"./extensions/myCorePulumiHandler2.ts"} />
 

@@ -5,6 +5,7 @@ export interface ICommandParamDefinition<TCommandParams> {
     description: string;
     type: "boolean" | "number" | "string";
     required?: boolean;
+    array?: boolean;
     default?: any;
     validation?: (value: TCommandParams) => boolean | string;
 }

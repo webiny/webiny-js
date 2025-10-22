@@ -126,7 +126,8 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                     " " +
                     params
                         .map(param => {
-                            return param.required ? `<${param.name}>` : `[${param.name}]`;
+                            const paramName = param.array ? `${param.name}..` : param.name;
+                            return param.required ? `<${paramName}>` : `[${paramName}]`;
                         })
                         .join(" ");
             }
@@ -136,10 +137,11 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                 description,
                 yargs => {
                     params.forEach((param: Command.ParamDefinition<unknown>) => {
-                        const { name, required, validation, ...rest } = param;
+                        const { name, required, validation, array, ...rest } = param;
 
                         const yargsParam = yargs.positional(name, {
                             ...rest,
+                            ...(array && { array: true }),
                             demandOption: required
                         });
 

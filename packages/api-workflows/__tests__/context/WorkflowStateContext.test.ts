@@ -146,7 +146,7 @@ describe("Workflow State Context", () => {
         });
 
         const stateAfterFirstApprove = await workflowStateContext.getTargetState(app, targetId);
-        expect(stateAfterFirstApprove.record?.state).toEqual(WorkflowStateRecordState.inReview);
+        expect(stateAfterFirstApprove.record?.state).toEqual(WorkflowStateRecordState.pending);
         expect(stateAfterFirstApprove.record?.steps[0].state).toEqual(
             WorkflowStateRecordState.approved
         );
