@@ -11,15 +11,7 @@ type AccordionTriggerProps = Pick<
     "title" | "description" | "icon" | "handle" | "interactive" | "actions" | "draggable"
 >;
 
-interface OpenCloseIndicatorProps {
-    show: boolean;
-}
-
-const OpenCloseIndicator = ({ show }: OpenCloseIndicatorProps) => {
-    if (!show) {
-        return null;
-    }
-
+const OpenCloseIndicator = () => {
     return (
         <Icon
             size={"lg"}
@@ -88,7 +80,7 @@ const AccordionTrigger = ({
                     <div className={"wby-ml-sm wby-w-[20px] wby-h-[1px] wby-bg-neutral-strong"} />
                 )}
                 {draggable ? <AccordionItemDragHandle /> : null}
-                <OpenCloseIndicator show={isInteractable} />
+                {isInteractable ? <OpenCloseIndicator /> : null}
 
                 <div
                     className={
@@ -108,7 +100,7 @@ const AccordionTrigger = ({
                     </div>
                     <div className={"wby-flex wby-gap-xs"}>
                         {actions}
-                        <OpenCloseIndicator show={!isInteractable} />
+                        {!isInteractable ? <OpenCloseIndicator /> : null}
                     </div>
                 </div>
             </div>
