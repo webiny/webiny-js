@@ -468,6 +468,7 @@ export interface ICmsEntryLocation {
 
 export interface ICmsEntryState {
     state: string;
+    workflowId: string;
     stepId: string;
     stepName: string;
 }

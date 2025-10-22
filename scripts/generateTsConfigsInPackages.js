@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { getPackages, getPackage } from "./utils/getPackages.js";
+import { getPackage, getPackages } from "./utils/getPackages.js";
 import { relative } from "path";
 import prettier from "prettier";
 import fs from "fs";
@@ -43,7 +43,8 @@ async function output(target, content) {
         // Get package dependencies that are registered as workspaces within the repo.
         const dependencies = Object.keys({
             ...wpObject.packageJson.dependencies,
-            ...wpObject.packageJson.devDependencies
+            ...wpObject.packageJson.devDependencies,
+            ...wpObject.packageJson.peerDependencies
         })
             .filter(getPackage)
             .filter(name => workspaces.find(pkg => pkg.packageJson.name === name).isTs)

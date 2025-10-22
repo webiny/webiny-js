@@ -8,7 +8,7 @@ export const createWorkflowAppName = ({ model }: IParams): string => {
 };
 
 export const getModelIdFromAppName = (app: string): string | null => {
-    const matched = app.match(/^cms:([a-zA-Z0-9_-]+)$/);
+    const matched = app.match(/^cms\.([a-zA-Z0-9_-]+)$/);
     if (!matched) {
         return null;
     }

@@ -8,20 +8,36 @@ import { Context } from "~/types.js";
 import { createWorkflows } from "~/index.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { STATE_MODEL_ID, WORKFLOW_MODEL_ID } from "~/constants.js";
-import type {
-    IDeleteWorkflowResponse,
-    IDeleteWorkflowVariables,
-    IGetWorkflowResponse,
-    IGetWorkflowVariables,
-    IListWorkflowResponse,
-    IListWorkflowVariables,
-    IStoreWorkflowResponse,
-    IStoreWorkflowVariables
-} from "./graphql.js";
 import {
+    APPROVE_WORKFLOW_STATE_STEP_MUTATION,
+    CREATE_WORKFLOW_STATE_MUTATION,
     DELETE_WORKFLOW_MUTATION,
+    GET_TARGET_WORKFLOW_STATE_QUERY,
     GET_WORKFLOW_QUERY,
+    type IApproveWorkflowStateStepResponse,
+    type IApproveWorkflowStateStepVariables,
+    type ICreateWorkflowStateResponse,
+    type ICreateWorkflowStateVariables,
+    type IDeleteWorkflowResponse,
+    type IDeleteWorkflowVariables,
+    type IGetTargetWorkflowStateResponse,
+    type IGetTargetWorkflowStateVariables,
+    type IGetWorkflowResponse,
+    type IGetWorkflowVariables,
+    type IListTargetWorkflowStatesResponse,
+    type IListTargetWorkflowStatesVariables,
+    type IListWorkflowResponse,
+    type IListWorkflowVariables,
+    type IRejectWorkflowStateStepResponse,
+    type IRejectWorkflowStateStepVariables,
+    type IStartWorkflowStateStepResponse,
+    IStartWorkflowStateStepVariables,
+    type IStoreWorkflowResponse,
+    type IStoreWorkflowVariables,
+    LIST_TARGET_WORKFLOW_STATES_QUERY,
     LIST_WORKFLOWS_QUERY,
+    REJECT_WORKFLOW_STATE_STEP_MUTATION,
+    START_WORKFLOW_STATE_STEP_MUTATION,
     STORE_WORKFLOW_MUTATION
 } from "./graphql.js";
 
@@ -64,6 +80,9 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     });
     return {
         handler,
+        /**
+         * Workflows
+         */
         storeWorkflow: handler.createMutation<IStoreWorkflowVariables, IStoreWorkflowResponse>(
             STORE_WORKFLOW_MUTATION
         ),
@@ -75,6 +94,33 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         ),
         listWorkflows: handler.createQuery<IListWorkflowVariables, IListWorkflowResponse>(
             LIST_WORKFLOWS_QUERY
-        )
+        ),
+        /**
+         * Workflow states
+         */
+        createWorkflowState: handler.createMutation<
+            ICreateWorkflowStateVariables,
+            ICreateWorkflowStateResponse
+        >(CREATE_WORKFLOW_STATE_MUTATION),
+        getTargetWorkflowState: handler.createMutation<
+            IGetTargetWorkflowStateVariables,
+            IGetTargetWorkflowStateResponse
+        >(GET_TARGET_WORKFLOW_STATE_QUERY),
+        listWorkflowStates: handler.createMutation<
+            IListTargetWorkflowStatesVariables,
+            IListTargetWorkflowStatesResponse
+        >(LIST_TARGET_WORKFLOW_STATES_QUERY),
+        startWorkflowStateStep: handler.createMutation<
+            IStartWorkflowStateStepVariables,
+            IStartWorkflowStateStepResponse
+        >(START_WORKFLOW_STATE_STEP_MUTATION),
+        approveWorkflowStateStep: handler.createMutation<
+            IApproveWorkflowStateStepVariables,
+            IApproveWorkflowStateStepResponse
+        >(APPROVE_WORKFLOW_STATE_STEP_MUTATION),
+        rejectWorkflowStateStep: handler.createMutation<
+            IRejectWorkflowStateStepVariables,
+            IRejectWorkflowStateStepResponse
+        >(REJECT_WORKFLOW_STATE_STEP_MUTATION)
     };
 };

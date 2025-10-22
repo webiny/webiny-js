@@ -46,15 +46,15 @@ import {
 } from "./features/index.js";
 
 import {
+    buildAppWorkspaceService,
     getAppPackagesService,
     getCwdService,
     getIsCiService,
     getNpmVersionService,
     getNpxVersionService,
     getProjectConfigService,
-    getProjectService,
     getProjectIdService,
-    setProjectIdService,
+    getProjectService,
     getProjectVersionService,
     getPulumiService,
     getPulumiVersionService,
@@ -73,6 +73,7 @@ import {
     pulumiGetStackOutputService,
     pulumiLoginService,
     pulumiSelectStackService,
+    setProjectIdService,
     stdioService,
     uiService,
     validateProjectConfigService,
@@ -125,33 +126,34 @@ export const createProjectSdkContainer = async (
     const container = new Container();
 
     // Services.
-    container.register(projectSdkParamsService).inSingletonScope();
+    container.register(buildAppWorkspaceService).inSingletonScope();
     container.register(getAppPackagesService).inSingletonScope();
     container.register(getCwdService).inSingletonScope();
     container.register(getIsCiService).inSingletonScope();
     container.register(getNpmVersionService).inSingletonScope();
     container.register(getNpxVersionService).inSingletonScope();
     container.register(getProjectConfigService).inSingletonScope();
-    container.register(getProjectService).inSingletonScope();
     container.register(getProjectIdService).inSingletonScope();
-    container.register(setProjectIdService).inSingletonScope();
+    container.register(getProjectService).inSingletonScope();
     container.register(getProjectVersionService).inSingletonScope();
     container.register(getPulumiService).inSingletonScope();
     container.register(getPulumiVersionService).inSingletonScope();
     container.register(getYarnVersionService).inSingletonScope();
     container.register(listAppLambdaFunctionsService).inSingletonScope();
     container.register(listDeployedEnvironmentsService).inSingletonScope();
+    container.register(listPackagesInAppWorkspaceService).inSingletonScope();
     container.register(listPackagesService).inSingletonScope();
     container.register(localStorageService).inSingletonScope();
-    container.register(listPackagesInAppWorkspaceService).inSingletonScope();
     container.register(loggerService).inSingletonScope();
     container.register(projectInfoService).inSingletonScope();
+    container.register(projectSdkParamsService).inSingletonScope();
     container.register(pulumiGetConfigPassphraseService).inSingletonScope();
     container.register(pulumiGetSecretsProviderService).inSingletonScope();
     container.register(pulumiGetStackExportService).inSingletonScope();
     container.register(pulumiGetStackOutputService).inSingletonScope();
     container.register(pulumiLoginService).inSingletonScope();
     container.register(pulumiSelectStackService).inSingletonScope();
+    container.register(setProjectIdService).inSingletonScope();
     container.register(stdioService).inSingletonScope();
     container.register(uiService).inSingletonScope();
     container.register(validateProjectConfigService).inSingletonScope();
@@ -200,7 +202,6 @@ export const createProjectSdkContainer = async (
     container.registerComposite(coreAfterBuild);
     container.registerComposite(coreAfterDeploy);
 
-    // Immediately set CLI instance params via the `CliParamsService`.
     container.resolve(ProjectSdkParamsService).set(params);
 
     // Extensions.

@@ -39,7 +39,6 @@
     "@webiny/app-plugin-admin-welcome-screen": "0.0.0",
     "@webiny/app-security": "0.0.0",
     "@webiny/app-trash-bin": "0.0.0",
-    "@webiny/app-workflows": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/feature-flags": "0.0.0",
     "@webiny/form": "0.0.0",

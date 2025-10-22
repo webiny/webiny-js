@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
 import { Workflow } from "./Workflow.js";
-import type { IWorkflowsPresenter } from "../Presenters/index.js";
+import type { IWorkflowsPresenter } from "~/Presenters/index.js";
 import { Button, Grid, Heading, Loader } from "@webiny/admin-ui";
 import { observer } from "mobx-react-lite";
-import { WorkflowError } from "./error/WorkflowError.js";
+import { WorkflowError } from "./Error/WorkflowError.js";
 
 interface WorkflowViewProps {
     presenter: IWorkflowsPresenter;
@@ -23,7 +23,15 @@ export const WorkflowView = observer((props: WorkflowViewProps) => {
     }, [presenter.vm.workflow]);
 
     if (presenter.vm.loading) {
-        return <Loader size="md" variant="accent" indeterminate={true} text="Loading..." />;
+        return (
+            <Loader
+                className={"wby-pt-lg"}
+                size="md"
+                variant="accent"
+                indeterminate={true}
+                text="Loading..."
+            />
+        );
     }
     /**
      * Should be fairly simple to extend this to multiple workflows per model, if needed in the future.

@@ -5,7 +5,7 @@ import type { IInactiveStep } from "./Step/InactiveStep.js";
 import { InactiveStep } from "./Step/InactiveStep.js";
 import { Step } from "./Step/Step.js";
 import { observer } from "mobx-react-lite";
-import type { IWorkflowsPresenter } from "../Presenters/index.js";
+import type { IWorkflowsPresenter } from "~/Presenters/index.js";
 
 export interface IWorkflowProps {
     presenter: IWorkflowsPresenter;

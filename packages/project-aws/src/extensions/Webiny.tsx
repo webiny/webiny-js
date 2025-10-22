@@ -1,12 +1,12 @@
 import React from "react";
 import {
     AdminAfterDeploy,
-    ExtensionDefinitions,
-    BeforeBuild,
-    ApiAfterDeploy,
     AfterDeploy,
+    ApiAfterDeploy,
     BeforeDeploy,
-    Project
+    ExtensionDefinitions,
+    Project,
+    ProjectDecorator
 } from "@webiny/project/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
 import { CliCommand } from "@webiny/cli-core/extensions/index.js";
@@ -17,7 +17,7 @@ export const Webiny = () => {
     return (
         <>
             <Project />
-            <BeforeBuild src={p("Webiny/BuildAppWorkspace.js")} />
+            <ProjectDecorator src={p("Webiny/BuildAppWorkspace.js")} />
             <AdminAfterDeploy src={p("Webiny/UploadAdminAppToS3.js")} />
             <ApiAfterDeploy src={p("Webiny/ExecuteDataMigrations.js")} />
             <ExtensionDefinitions src={p("Webiny/definitions.js")} />
