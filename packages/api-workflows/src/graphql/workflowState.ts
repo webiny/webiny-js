@@ -37,6 +37,7 @@ export const createWorkflowStateSchema = () => {
             type WorkflowState {
                 id: String!
                 app: String!
+                isActive: Boolean!
                 workflowId: String!
                 targetId: String!
                 targetRevisionId: String!

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { createGraphQLHandler } from "~tests/__helpers/handler.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 import { WorkflowStateRecordState } from "~/context/abstractions/WorkflowState.js";
@@ -39,11 +39,15 @@ describe("workflow states graphql", () => {
         return response.data?.workflows?.storeWorkflow?.data as IWorkflow;
     };
 
-    it("should create, get and list a new workflow state", async () => {
-        const targetId = "record-1";
-        const targetRevisionId = `${targetId}#0001`;
-        const workflow = await createWorkflow();
+    const targetId = "record-1";
+    const targetRevisionId = `${targetId}#0001`;
+    let workflow: IWorkflow;
 
+    beforeEach(async () => {
+        workflow = await createWorkflow();
+    });
+
+    it("should create, get and list a new workflow state", async () => {
         const [response] = await handler.createWorkflowState({
             app: workflow.app,
             targetRevisionId
@@ -144,10 +148,6 @@ describe("workflow states graphql", () => {
     });
 
     it("should approve workflow state steps", async () => {
-        const targetId = "record-1";
-        const targetRevisionId = `${targetId}#0001`;
-        const workflow = await createWorkflow();
-
         const [response] = await handler.createWorkflowState({
             app: workflow.app,
             targetRevisionId
@@ -384,10 +384,6 @@ describe("workflow states graphql", () => {
     });
 
     it("should reject workflow state step", async () => {
-        const targetId = "record-1";
-        const targetRevisionId = `${targetId}#0001`;
-        const workflow = await createWorkflow();
-
         const [response] = await handler.createWorkflowState({
             app: workflow.app,
             targetRevisionId
@@ -465,6 +461,104 @@ describe("workflow states graphql", () => {
                             state: WorkflowStateRecordState.rejected
                         },
                         error: null
+                    }
+                }
+            }
+        });
+    });
+
+    it("should allow creating multiple workflow states for same record - if previous state is inactive", async () => {
+        const [response] = await handler.createWorkflowState({
+            app: workflow.app,
+            targetRevisionId
+        });
+
+        const firstWorkflowState = response.data?.workflows?.createWorkflowState?.data;
+
+        expect(firstWorkflowState).toMatchObject({
+            id: expect.any(String),
+            isActive: true,
+            workflowId: workflow.id
+        });
+
+        const [canceledFirstWorkflowStateResponse] = await handler.cancelWorkflowState({
+            id: firstWorkflowState!.id
+        });
+
+        expect(canceledFirstWorkflowStateResponse).toMatchObject({
+            data: {
+                workflows: {
+                    cancelWorkflowState: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [secondWorkflowStateResponse] = await handler.createWorkflowState({
+            app: workflow.app,
+            targetRevisionId
+        });
+        const secondWorkflowState =
+            secondWorkflowStateResponse.data?.workflows?.createWorkflowState?.data;
+
+        expect(secondWorkflowStateResponse).toMatchObject({
+            data: {
+                workflows: {
+                    createWorkflowState: {
+                        data: {
+                            id: expect.any(String),
+                            isActive: true,
+                            workflowId: workflow.id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [listResponse] = await handler.listWorkflowStates({});
+        expect(listResponse).toMatchObject({
+            data: {
+                workflows: {
+                    listWorkflowStates: {
+                        data: [
+                            {
+                                id: secondWorkflowState!.id,
+                                isActive: true
+                            },
+                            {
+                                id: firstWorkflowState!.id,
+                                isActive: false
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            totalCount: 2,
+                            cursor: null,
+                            hasMoreItems: false
+                        }
+                    }
+                }
+            }
+        });
+        /**
+         * Must not be possible to create a new workflow state if the previous one is still active.
+         */
+        const [errorOnCreatingActiveWorkflowState] = await handler.createWorkflowState({
+            app: workflow.app,
+            targetRevisionId
+        });
+
+        expect(errorOnCreatingActiveWorkflowState).toMatchObject({
+            data: {
+                workflows: {
+                    createWorkflowState: {
+                        data: null,
+                        error: {
+                            code: "ACTIVE_STATE_EXISTS"
+                        }
                     }
                 }
             }

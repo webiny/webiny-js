@@ -10,12 +10,15 @@ import { PluginsContainer } from "@webiny/plugins";
 import { STATE_MODEL_ID, WORKFLOW_MODEL_ID } from "~/constants.js";
 import {
     APPROVE_WORKFLOW_STATE_STEP_MUTATION,
+    CANCEL_WORKFLOW_STATE_MUTATION,
     CREATE_WORKFLOW_STATE_MUTATION,
     DELETE_WORKFLOW_MUTATION,
     GET_TARGET_WORKFLOW_STATE_QUERY,
     GET_WORKFLOW_QUERY,
     type IApproveWorkflowStateStepResponse,
     type IApproveWorkflowStateStepVariables,
+    ICancelWorkflowStateResponse,
+    ICancelWorkflowStateVariables,
     type ICreateWorkflowStateResponse,
     type ICreateWorkflowStateVariables,
     type IDeleteWorkflowResponse,
@@ -121,6 +124,10 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         rejectWorkflowStateStep: handler.createMutation<
             IRejectWorkflowStateStepVariables,
             IRejectWorkflowStateStepResponse
-        >(REJECT_WORKFLOW_STATE_STEP_MUTATION)
+        >(REJECT_WORKFLOW_STATE_STEP_MUTATION),
+        cancelWorkflowState: handler.createMutation<
+            ICancelWorkflowStateVariables,
+            ICancelWorkflowStateResponse
+        >(CANCEL_WORKFLOW_STATE_MUTATION)
     };
 };

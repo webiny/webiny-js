@@ -53,6 +53,7 @@ const WORKFLOW_STATE = /* GraphQL */ `
             type
         }
         app
+        isActive
         workflowId
         targetId
         targetRevisionId
@@ -368,6 +369,32 @@ export const REJECT_WORKFLOW_STATE_STEP_MUTATION = /* GraphQL */ `
         workflows {
             rejectWorkflowStateStep(id: $id, comment: $comment) {
                 data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export interface ICancelWorkflowStateVariables {
+    id: string;
+}
+
+export interface ICancelWorkflowStateResponse {
+    data: {
+        workflows: {
+            cancelWorkflowState: {
+                data: boolean | null;
+                error: IWorkflowError | null;
+            };
+        };
+    };
+}
+
+export const CANCEL_WORKFLOW_STATE_MUTATION = /* GraphQL */ `
+    mutation CancelWorkflowState($id: ID!) {
+        workflows {
+            cancelWorkflowState(id: $id) {
+                data
                 ${ERROR_FIELD}
             }
         }
