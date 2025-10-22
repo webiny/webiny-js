@@ -129,21 +129,7 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
 
     themeCss = themeCss.replace("{FONT_WEIGHT}", weight.join("\n"));
 
-    // Collect all color variants from different types
-    // "borderColor", "fill", "ringColor"
-    // normalizedFigmaExport
-    //     .filter(item => item.type === "backgroundColor")
-    //     .filter(variable => !isColorWithAlpha(variable.variantName))
-    //     .forEach(variable => {
-    //         const colorKey = variable.variantName.replace("-default", "");
-    //         if (!colorMap.has(colorKey)) {
-    //             colorMap.set(
-    //                 colorKey,
-    //                 `--color-${colorKey}: hsl(${variable.hsla.h} ${variable.hsla.s}% ${variable.hsla.l}%);`
-    //             );
-    //         }
-    //     });
-
+    // Background color.
     {
         let currentBgColorGroup = null;
         const bgColors = normalizedFigmaExport
@@ -185,6 +171,51 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
 
     themeCss = themeCss.replace("{THEME_PADDING}", padding.join("\n"));
 
+    // Ring color.
+    {
+        let currentRingColorGroup = null;
+        const ringColors = normalizedFigmaExport
+            .filter(item => item.type === "ringColor")
+            .filter(variable => !isColorWithAlpha(variable.variantName))
+            .map(variable => {
+                const [colorGroup] = variable.variantName.split("-");
+                const cssVarName = variable.aliasName.replace("colors/colors-", "color-");
+                const cssVar = `--ring-${variable.variantName}: var(--${cssVarName});`;
+
+                if (!currentRingColorGroup) {
+                    currentRingColorGroup = colorGroup;
+                    return cssVar;
+                }
+
+                if (!currentRingColorGroup || currentRingColorGroup !== colorGroup) {
+                    currentRingColorGroup = colorGroup;
+                    return ["", cssVar];
+                }
+                return cssVar;
+            })
+            .flat();
+
+        themeCss = themeCss.replace("{RING_COLOR}", ringColors.join("\n"));
+    }
+
+    // Ring width.
+    {
+        const ringWidth = normalizedFigmaExport
+            .filter(item => item.type === "ringWidth")
+            .map(variable => `--ring-width-${variable.variantName}: ${variable.resolvedValue}px;`);
+
+        themeCss = themeCss.replace("{RING_WIDTH}", ringWidth.join("\n"));
+    }
+    //
+    // // 11. Shadow.
+    // {
+    //     const shadow = normalizedFigmaExport
+    //         .filter(item => item.type === "shadow")
+    //         .map(variable => `--shadow-${variable.variantName}: ${variable.resolvedValue}px;`);
+    //
+    //     stylesScss = stylesScss.replace("{SHADOW}", shadow.join("\n"));
+    // }
+    //
     // Spacing.
     const spacingTheme = normalizedFigmaExport
         .filter(item => item.type === "spacing")
