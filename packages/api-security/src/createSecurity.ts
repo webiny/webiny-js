@@ -14,7 +14,6 @@ import type {
 import { createApiKeysMethods } from "~/createSecurity/createApiKeysMethods.js";
 import { createGroupsMethods } from "~/createSecurity/createGroupsMethods.js";
 import { createTeamsMethods } from "~/createSecurity/createTeamsMethods.js";
-import { createSystemMethods } from "~/createSecurity/createSystemMethods.js";
 import { createTenantLinksMethods } from "~/createSecurity/createTenantLinksMethods.js";
 import { filterOutCustomWbyAppsPermissions } from "~/createSecurity/filterOutCustomWbyAppsPermissions.js";
 
@@ -208,7 +207,6 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
         ...createTenantLinksMethods(config),
         ...createGroupsMethods(config),
         ...createTeamsMethods(config),
-        ...createApiKeysMethods(config),
-        ...createSystemMethods(config)
+        ...createApiKeysMethods(config)
     };
 };

@@ -6,7 +6,6 @@ import type {
     ListTenantLinksByTypeParams,
     SecurityStorageOperations,
     StorageOperationsGetTenantLinkByIdentityParams,
-    System,
     Team,
     TenantLink
 } from "@webiny/api-security/types.js";
@@ -15,7 +14,6 @@ import { createTable } from "~/definitions/table.js";
 import {
     createApiKeyEntity,
     createGroupEntity,
-    createSystemEntity,
     createTeamEntity,
     createTenantLinkEntity
 } from "~/definitions/entities.js";
@@ -58,7 +56,6 @@ export const createStorageOperations = (
 
     const entities = {
         apiKeys: createApiKeyEntity(table, attributes ? attributes[ENTITIES.API_KEY] : {}),
-        system: createSystemEntity(table, attributes ? attributes[ENTITIES.SYSTEM] : {}),
         groups: createGroupEntity(table, attributes ? attributes[ENTITIES.GROUP] : {}),
         teams: createTeamEntity(table, attributes ? attributes[ENTITIES.TEAM] : {}),
         tenantLinks: createTenantLinkEntity(
@@ -90,11 +87,6 @@ export const createStorageOperations = (
     const createTeamGsiKeys = (team: Pick<Team, "tenant" | "slug">) => ({
         GSI1_PK: `T#${team.tenant}#TEAMS`,
         GSI1_SK: team.slug
-    });
-
-    const createSystemKeys = (tenant: string) => ({
-        PK: `T#${tenant}#SYSTEM`,
-        SK: "SECURITY"
     });
 
     return {
@@ -168,25 +160,6 @@ export const createStorageOperations = (
                     message: "Could not create team.",
                     code: "CREATE_TEAM_ERROR",
                     data: { keys }
-                });
-            }
-        },
-        async createSystemData({ system }): Promise<System> {
-            const keys = createSystemKeys(system.tenant);
-            try {
-                await put({
-                    entity: entities.system,
-                    item: {
-                        ...keys,
-                        ...cleanupItem(entities.system, system)
-                    }
-                });
-                return system;
-            } catch (err) {
-                throw WebinyError.from(err, {
-                    message: "Could not create system.",
-                    code: "CREATE_SYSTEM_ERROR",
-                    data: { keys, system }
                 });
             }
         },
@@ -347,21 +320,6 @@ export const createStorageOperations = (
                     message: "Could not load team.",
                     code: "GET_TEAM_ERROR",
                     data: { id, slug }
-                });
-            }
-        },
-        async getSystemData({ tenant }): Promise<System | null> {
-            const keys = createSystemKeys(tenant);
-            try {
-                return await getClean<System>({
-                    entity: entities.system,
-                    keys
-                });
-            } catch (err) {
-                throw WebinyError.from(err, {
-                    message: "Could not load system.",
-                    code: "GET_SYSTEM_ERROR",
-                    data: { keys }
                 });
             }
         },
@@ -572,25 +530,6 @@ export const createStorageOperations = (
                     message: "Could not update team.",
                     code: "UPDATE_TEAM_ERROR",
                     data: { keys, team }
-                });
-            }
-        },
-        async updateSystemData({ system, original }): Promise<System> {
-            const keys = createSystemKeys(system.tenant);
-            try {
-                await put({
-                    entity: entities.system,
-                    item: {
-                        ...keys,
-                        ...cleanupItem(entities.system, system)
-                    }
-                });
-                return system;
-            } catch (err) {
-                throw WebinyError.from(err, {
-                    message: "Could not update system.",
-                    code: "UPDATE_SYSTEM_ERROR",
-                    data: { keys, system, original }
                 });
             }
         },

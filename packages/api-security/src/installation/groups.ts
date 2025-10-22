@@ -30,6 +30,7 @@ export const attachGroupInstaller = (security: Security): void => {
         }
     };
 
+    // TODO: move group creation into the installer itself.
     security.onInstall.subscribe(() => createDefaultGroups());
 
     security.onCleanup.subscribe(async () => {

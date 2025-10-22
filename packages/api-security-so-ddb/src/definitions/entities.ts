@@ -145,27 +145,6 @@ export const createApiKeyEntity = (
     });
 };
 
-export const createSystemEntity = (
-    table: Table<string, string, string>,
-    attributes: Attributes = {}
-) => {
-    return createEntity(ENTITIES.SYSTEM, table, {
-        tenant: {
-            type: "string"
-        },
-        version: {
-            type: "string"
-        },
-        installedOn: {
-            type: "string"
-        },
-        createdOn: {
-            type: "string"
-        },
-        ...attributes
-    });
-};
-
 export const createTenantLinkEntity = (
     table: Table<string, string, string>,
     attributes: Attributes = {}

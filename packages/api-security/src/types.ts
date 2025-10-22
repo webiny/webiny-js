@@ -55,10 +55,6 @@ export interface GetTeamWhere {
 export type AuthenticationToken = string;
 
 export interface Security<TIdentity = SecurityIdentity> extends Authentication<TIdentity> {
-    onSystemBeforeInstall: Topic<InstallEvent>;
-    onInstall: Topic<InstallEvent>;
-    onSystemAfterInstall: Topic<InstallEvent>;
-    onCleanup: Topic<ErrorEvent>;
     onBeforeLogin: Topic<LoginEvent<TIdentity>>;
     onLogin: Topic<LoginEvent<TIdentity>>;
     onAfterLogin: Topic<LoginEvent<TIdentity>>;
@@ -167,13 +163,6 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(
         params: GetTenantLinkByIdentityParams
     ): Promise<TLink | null>;
-
-    // System
-    getVersion(): Promise<string | null>;
-
-    setVersion(version: string): Promise<System>;
-
-    install(this: Security): Promise<void>;
 }
 
 export interface SecurityStorageOperations {
@@ -196,12 +185,6 @@ export interface SecurityStorageOperations {
     updateTeam(params: StorageOperationsUpdateTeamParams): Promise<Team>;
 
     deleteTeam(params: StorageOperationsDeleteTeamParams): Promise<void>;
-
-    getSystemData(params: StorageOperationsGetSystemParams): Promise<System | null>;
-
-    createSystemData(params: StorageOperationsCreateSystemParams): Promise<System>;
-
-    updateSystemData(params: StorageOperationsUpdateSystemParams): Promise<System>;
 
     createTenantLinks(params: StorageOperationsCreateTenantLinkParams[]): Promise<void>;
 
@@ -367,24 +350,6 @@ export interface DeleteTeamParams {
     team: Team;
 }
 
-export interface System {
-    tenant: string;
-    version: string;
-    installedOn: string;
-}
-
-export interface GetSystemParams {
-    tenant: string;
-}
-
-export interface CreateSystemParams {
-    system: System;
-}
-
-export interface UpdateSystemParams {
-    original: System;
-    system: System;
-}
 
 export interface CreateTenantLinkParams<TData = Record<string, any>> {
     identity: string;
@@ -533,10 +498,6 @@ export interface StorageOperationsListTeamsParams extends ListTeamsParams {
 export type StorageOperationsCreateTeamParams = CreateTeamParams;
 export type StorageOperationsUpdateTeamParams = UpdateTeamParams;
 export type StorageOperationsDeleteTeamParams = DeleteTeamParams;
-
-export type StorageOperationsGetSystemParams = GetSystemParams;
-export type StorageOperationsCreateSystemParams = CreateSystemParams;
-export type StorageOperationsUpdateSystemParams = UpdateSystemParams;
 
 export interface StorageOperationsCreateTenantLinkParams extends CreateTenantLinkParams {
     createdOn: string;
