@@ -1,6 +1,6 @@
-import type { IWorkflowStateStep, IWorkflowStep } from "~/types.js";
+import type { IWorkflowStateStep } from "~/types.js";
 
-export interface IWorkflowStateStepModel extends IWorkflowStateStep, IWorkflowStep {
+export interface IWorkflowStateStepModel extends IWorkflowStateStep {
     toJS(): IWorkflowStateStep;
     updateStep(input: Partial<IWorkflowStateStep>): void;
 }

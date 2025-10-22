@@ -17,7 +17,6 @@ export interface IWorkflowStateParams {
 
 export class WorkflowState implements IWorkflowState {
     public readonly context;
-    // public readonly workflow;
     public readonly record;
 
     public get done(): boolean {
@@ -45,7 +44,6 @@ export class WorkflowState implements IWorkflowState {
 
     public constructor(params: IWorkflowStateParams) {
         this.context = params.context;
-        // this.workflow = params.workflow;
         this.record = params.record;
     }
 

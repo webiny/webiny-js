@@ -40,7 +40,6 @@ export interface IWorkflowStateRecord {
 
 export interface IWorkflowState {
     readonly done: boolean;
-    // readonly workflow: IWorkflow | null | undefined;
     readonly record: IWorkflowStateRecord;
     readonly activeStep: IWorkflowStateRecordStep | undefined;
     start(): Promise<void>;

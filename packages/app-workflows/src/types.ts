@@ -44,15 +44,16 @@ export interface IIdentity {
     type?: string;
 }
 
-export interface IWorkflowStateStep {
-    id: string;
+/**
+ * We have all info from workflow step and extend it with a state step.
+ */
+export interface IWorkflowStateStep extends IWorkflowStep {
     state: WorkflowStateValue;
     comment: string | null | undefined;
     savedBy: IIdentity | null | undefined;
 }
 
 export interface IWorkflowState {
-    readonly workflow: IWorkflow;
     id: string;
     app: string;
     targetId: string;

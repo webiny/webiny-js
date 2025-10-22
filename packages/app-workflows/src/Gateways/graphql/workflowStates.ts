@@ -32,6 +32,15 @@ const WORKFLOW_STATE = /* GraphQL */ `
         }
         steps {
             id
+            title
+            color
+            description
+            teams {
+                id
+            }
+            notifications {
+                id
+            }
             comment
             savedBy {
                 id
@@ -39,23 +48,6 @@ const WORKFLOW_STATE = /* GraphQL */ `
                 type
             }
             state
-        }
-        workflow {
-            id
-            app
-            name
-            steps {
-                id
-                title
-                color
-                description
-                teams {
-                    id
-                }
-                notifications {
-                    id
-                }
-            }
         }
     }
 `;
