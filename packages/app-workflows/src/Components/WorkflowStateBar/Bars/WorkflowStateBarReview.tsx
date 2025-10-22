@@ -5,9 +5,6 @@ import React from "react";
 import { Alert } from "@webiny/admin-ui";
 import { WorkflowStateBarComponent } from "../WorkflowStateBarComponent.js";
 import { observer } from "mobx-react-lite";
-import { ApproveDialog } from "./dialogs/ApproveDialog.js";
-import { RejectDialog } from "./dialogs/RejectDialog.js";
-import { ApproveSuccessDialog } from "~/Components/WorkflowStateBar/Bars/dialogs/ApproveSuccessDialog.js";
 
 export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(Original => {
     return observer(function WorkflowStateBarReviewDecorator(props) {

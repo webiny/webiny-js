@@ -26,6 +26,5 @@ export const WorkflowStateBarRejected = WorkflowStateBarComponent.createDecorato
                 This entry was rejected.
             </Alert>
         );
-
     });
 });
