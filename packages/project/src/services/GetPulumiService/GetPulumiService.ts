@@ -11,7 +11,7 @@ export class DefaultGetPulumiService implements GetPulumiService.Interface {
 
         let cwd;
         if (app) {
-            cwd = app.paths.workspaceFolder.ensure().toString();
+            cwd = app.paths.workspaceFolder.toString();
         }
 
         return Pulumi.create({
