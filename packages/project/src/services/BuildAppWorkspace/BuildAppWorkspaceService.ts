@@ -12,6 +12,10 @@ export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService
     constructor(private getApp: GetApp.Interface) {}
 
     async execute(params: BuildAppWorkspaceService.Params) {
+        if (!params.env) {
+            throw new Error(`Please specify environment, for example "dev".`);
+        }
+
         const templatesFolderPath = getTemplatesFolderPath();
 
         const app = this.getApp.execute(params.app);

@@ -19,10 +19,6 @@ export class DefaultBuildApp implements BuildApp.Interface {
     ) {}
 
     async execute(params: BuildApp.Params) {
-        if (!params.env) {
-            throw new Error(`Please specify environment, for example "dev".`);
-        }
-
         await this.buildAppWorkspaceService.execute(params);
 
         const projectConfig = await this.getProjectConfigService.execute({

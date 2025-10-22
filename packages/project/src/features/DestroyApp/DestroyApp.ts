@@ -26,13 +26,9 @@ export class DefaultDestroyApp implements DestroyApp.Interface {
     ) {}
 
     async execute(params: DestroyApp.Params) {
-        if (!params.env) {
-            throw new Error(`Please specify environment, for example "dev".`);
-        }
-
-        const app = this.getApp.execute(params.app);
         await this.buildAppWorkspaceService.execute(params);
 
+        const app = this.getApp.execute(params.app);
 
         await this.pulumiSelectStackService.execute(app, params);
 
@@ -65,5 +61,11 @@ export class DefaultDestroyApp implements DestroyApp.Interface {
 export const destroyApp = createImplementation({
     abstraction: DestroyApp,
     implementation: DefaultDestroyApp,
-    dependencies: [GetApp, BuildAppWorkspaceService, GetProject, PulumiSelectStackService, GetPulumiService]
+    dependencies: [
+        GetApp,
+        BuildAppWorkspaceService,
+        GetProject,
+        PulumiSelectStackService,
+        GetPulumiService
+    ]
 });

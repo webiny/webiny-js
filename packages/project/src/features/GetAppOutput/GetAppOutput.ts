@@ -21,10 +21,6 @@ export class DefaultGetAppOutput implements GetAppOutput.Interface {
 
         const app = this.getApp.execute(params.app);
 
-        if (!params.env) {
-            throw new Error(`Please specify environment, for example "dev".`);
-        }
-
         await this.pulumiSelectStackService.execute(app, params);
 
         const pulumi = await this.getPulumiService.execute({ app });

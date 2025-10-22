@@ -30,13 +30,9 @@ export class DefaultDeployApp implements DeployApp.Interface {
     ) {}
 
     async execute(params: DeployApp.Params) {
-
-        if (!params.env) {
-            throw new Error(`Please specify environment, for example "dev".`);
-        }
+        await this.buildAppWorkspaceService.execute(params);
 
         const app = this.getApp.execute(params.app);
-        await this.buildAppWorkspaceService.execute(params);
 
         await this.pulumiSelectStackService.execute(app, params);
 
