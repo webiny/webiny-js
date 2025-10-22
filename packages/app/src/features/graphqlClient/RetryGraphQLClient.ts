@@ -44,7 +44,7 @@ class RetryGraphQLClientImpl implements GraphQLClient.Interface {
     }
 
     private isGraphQLError(error: Error): boolean {
-        return error.message.includes("GraphQL errors");
+        return error.message.includes("GraphQL");
     }
 
     private calculateBackoff(attempt: number): number {

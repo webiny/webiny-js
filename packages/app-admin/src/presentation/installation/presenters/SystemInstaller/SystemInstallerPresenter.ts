@@ -2,28 +2,34 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { createImplementation } from "@webiny/di-container";
 import {
     SystemInstallerPresenter as Abstraction,
+    InstallationInput,
     SystemInstallerRepository,
     type SystemInstallerViewModel,
-    type WizardStep, type WizardStepState
+    type WizardStep,
+    type WizardStepState
 } from "./abstractions.js";
+import { TelemetryService } from "~/features/telemetry/index.js";
 
 const WIZARD_STEPS: WizardStep[] = [
-    {
-        name: "introduction",
-        label: "Introduction"
-    },
-    { name: "basic-info", label: "Basic Info" },
-    { name: "admin-account", label: "Admin Account" },
-    { name: "finish", label: "Finish" }
+    { name: "introduction", label: "Introduction" },
+    { name: "basic-info", label: "Basic info" },
+    { name: "admin-account", label: "Admin account" },
+    { name: "finish", label: "Finish setup" }
 ];
 
 class SystemInstallerPresenterImpl implements Abstraction.Interface {
     private loading = true;
     private isInstalled = false;
     private currentStep = 0;
+    private error: Error | undefined = undefined;
     private installing = false;
+    private startUsing = false;
+    private installerData: Record<string, any> = {};
 
-    constructor(private repository: SystemInstallerRepository.Interface) {
+    constructor(
+        private telemetry: TelemetryService.Interface,
+        private repository: SystemInstallerRepository.Interface
+    ) {
         makeAutoObservable(this, {}, { autoBind: true });
         this.initialize();
     }
@@ -37,10 +43,14 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
             const isInstalled = await this.repository.isSystemInstalled();
             runInAction(() => {
                 this.isInstalled = isInstalled;
+                this.startUsing = isInstalled;
                 this.loading = false;
             });
-        } catch (error) {
-            console.error("Failed to check if system is installed:", error);
+
+            if (!isInstalled) {
+                await this.telemetry.sendEvent("install-wizard-start");
+            }
+        } catch {
             runInAction(() => {
                 this.loading = false;
             });
@@ -49,9 +59,11 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
 
     get vm(): SystemInstallerViewModel {
         return {
+            error: this.error,
             loading: this.loading,
             isInstalled: this.isInstalled,
-            currentStep: this.currentStep,
+            startUsing: this.startUsing,
+            currentStep: WIZARD_STEPS[this.currentStep].name,
             steps: WIZARD_STEPS.map((step, index) => {
                 let state: WizardStepState = "idle";
                 if (index === this.currentStep) {
@@ -71,8 +83,9 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
         };
     }
 
-    nextStep = (): void => {
+    nextStep = (data: Record<string, any> = {}): void => {
         if (this.currentStep < WIZARD_STEPS.length - 1) {
+            Object.assign(this.installerData, data ?? {});
             this.currentStep++;
         }
     };
@@ -92,25 +105,44 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
     };
 
     installSystem = async (): Promise<void> => {
-        this.installing = true;
+        runInAction(() => {
+            this.installing = true;
+        });
         try {
-            await this.repository.installSystem();
+            const { basicInfo, ...installerData } = this.installerData;
+            const installationInput: InstallationInput = Object.keys(installerData).map(key => {
+                return {
+                    app: key,
+                    data: installerData[key]
+                };
+            });
+            await this.repository.installSystem(installationInput);
+
+            await this.telemetry.sendEvent("install-wizard-end", {
+                project: basicInfo.projectName,
+                organization: basicInfo.organizationName,
+                referralSource: basicInfo.referralSource
+            });
+
             runInAction(() => {
                 this.isInstalled = true;
                 this.installing = false;
             });
         } catch (error) {
-            console.error("Failed to install system:", error);
             runInAction(() => {
+                this.error = error;
                 this.installing = false;
             });
-            throw error;
         }
+    };
+
+    finishInstallation = () => {
+        this.startUsing = true;
     };
 }
 
 export const SystemInstallerPresenter = createImplementation({
     abstraction: Abstraction,
     implementation: SystemInstallerPresenterImpl,
-    dependencies: [SystemInstallerRepository]
+    dependencies: [TelemetryService, SystemInstallerRepository]
 });

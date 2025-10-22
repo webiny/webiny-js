@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/di-container";
 import { GraphQLClient } from "@webiny/app/features/graphqlClient";
-import { SystemInstallerGateway as Abstraction } from "./abstractions.js";
+import { type InstallationInput, SystemInstallerGateway as Abstraction } from "./abstractions.js";
 
 const IS_SYSTEM_INSTALLED = /* GraphQL */ `
     query IsSystemInstalled {
@@ -18,9 +18,9 @@ const IS_SYSTEM_INSTALLED = /* GraphQL */ `
 `;
 
 const INSTALL_SYSTEM = /* GraphQL */ `
-    mutation InstallSystem {
+    mutation InstallSystem($installationInput: JSON!) {
         tenancy {
-            installSystem {
+            installSystem(installationInput: $installationInput) {
                 data
                 error {
                     message
@@ -73,9 +73,12 @@ class SystemInstallerGraphQLGateway implements Abstraction.Interface {
         return response.tenancy.isSystemInstalled.data;
     }
 
-    async installSystem(): Promise<void> {
+    async installSystem(data: InstallationInput): Promise<void> {
         const response = await this.client.execute<any, InstallSystemResponse>({
-            mutation: INSTALL_SYSTEM
+            query: INSTALL_SYSTEM,
+            variables: {
+                installationInput: data
+            }
         });
 
         if (response.tenancy.installSystem.error) {

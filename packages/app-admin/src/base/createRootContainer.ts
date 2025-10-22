@@ -10,6 +10,7 @@ import { LocalStorageFeature } from "@webiny/app/features/localStorage";
 import { WcpFeature } from "~/features/wcp/feature.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
 import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/index.js";
+import { TelemetryFeature } from "~/features/telemetry/index.js";
 
 const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
 
@@ -49,6 +50,8 @@ export function createRootContainer() {
     WcpFeature.register(container);
 
     SystemInstallerFeature.register(container);
+
+    TelemetryFeature.register(container);
 
     return container;
 }

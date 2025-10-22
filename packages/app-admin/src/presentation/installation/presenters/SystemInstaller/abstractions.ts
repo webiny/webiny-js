@@ -1,8 +1,10 @@
 import { Abstraction } from "@webiny/di-container";
 
+export type InstallationInput = Array<{ app: string; data: Record<string, any> }>;
+
 export interface ISystemInstallerGateway {
     isSystemInstalled(): Promise<boolean>;
-    installSystem(): Promise<void>;
+    installSystem(data: InstallationInput): Promise<void>;
 }
 
 export const SystemInstallerGateway = new Abstraction<ISystemInstallerGateway>(
@@ -15,7 +17,7 @@ export namespace SystemInstallerGateway {
 
 export interface ISystemInstallerRepository {
     isSystemInstalled(): Promise<boolean>;
-    installSystem(): Promise<void>;
+    installSystem(data: InstallationInput): Promise<void>;
 }
 
 export const SystemInstallerRepository = new Abstraction<ISystemInstallerRepository>(
@@ -34,19 +36,22 @@ export type WizardStep = {
 export type WizardStepState = "current" | "idle" | "completed";
 
 export interface SystemInstallerViewModel {
+    error: Error | undefined;
     loading: boolean;
     isInstalled: boolean;
-    currentStep: number;
+    startUsing: boolean;
+    currentStep: WizardStep["name"];
     steps: Array<WizardStep & { state: WizardStepState }>;
     installing: boolean;
 }
 
 export interface ISystemInstallerPresenter {
     vm: SystemInstallerViewModel;
-    nextStep(): void;
+    nextStep(data?: Record<string, any>): void;
     previousStep(): void;
     goToStep(step: WizardStep["name"]): void;
     installSystem(): Promise<void>;
+    finishInstallation(): void;
 }
 
 export const SystemInstallerPresenter = new Abstraction<ISystemInstallerPresenter>(

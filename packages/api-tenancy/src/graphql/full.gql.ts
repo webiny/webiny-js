@@ -20,7 +20,7 @@ export default [
             }
 
             type TenancyMutation {
-                installSystem: BooleanResponse
+                installSystem(installationInput: JSON!): BooleanResponse
             }
 
             type TenantResponse {
@@ -62,6 +62,7 @@ export default [
                 installSystem: async (_, args: InstallTenantArgs, context) => {
                     const installSystem = context.container.resolve(InstallSystemUseCase);
 
+                    console.log("installSystem", args);
                     const result = await installSystem.execute(args.installationInput);
 
                     if (result.isOk()) {

@@ -1,6 +1,10 @@
 import { createImplementation } from "@webiny/di-container";
 import { LocalStorageService } from "@webiny/app/features/localStorage";
-import { SystemInstallerRepository as Abstraction, SystemInstallerGateway } from "./abstractions.js";
+import {
+    SystemInstallerRepository as Abstraction,
+    SystemInstallerGateway,
+    type InstallationInput
+} from "./abstractions.js";
 
 const LOCAL_STORAGE_KEY = "system/installed";
 
@@ -21,8 +25,8 @@ class SystemInstallerRepositoryImpl implements Abstraction.Interface {
         return isInstalled;
     }
 
-    async installSystem(): Promise<void> {
-        await this.gateway.installSystem();
+    async installSystem(data: InstallationInput): Promise<void> {
+        await this.gateway.installSystem(data);
         this.localStorage.set(LOCAL_STORAGE_KEY, true);
     }
 }
