@@ -22,6 +22,8 @@ import { createLexicalHTMLRenderer } from "./htmlRenderer/createLexicalHTMLRende
 import { createRevisionIdScalarPlugin } from "~/graphql/scalars/RevisionIdScalarPlugin.js";
 import type { Plugin } from "@webiny/plugins/types.js";
 
+import {compareEntryRevisions } from "./compareEntryRevisions/index.js";
+
 export * from "./utils/isHeadlessCmsReady.js";
 export * from "./utils/createModelField.js";
 export * from "./graphql/schema/resolvers/manage/normalizeGraphQlInput.js";
@@ -41,7 +43,10 @@ export const createHeadlessCmsGraphQL = (params: CreateHeadlessCmsGraphQLParams 
          */
         ...baseCreateGraphQL(params),
         createExportGraphQL(),
-        createLexicalHTMLRenderer()
+        createLexicalHTMLRenderer(),
+
+        ...compareEntryRevisions()
+
     ];
 };
 

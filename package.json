@@ -255,7 +255,8 @@
   },
   "packageManager": "yarn@4.10.2",
   "dependencies": {
-    "@types/hoist-non-react-statics": "^3.3.7"
+    "@types/hoist-non-react-statics": "^3.3.7",
+    "openai": "^6.6.0"
   },
   "engines": {
     "node": ">=22.0.0"

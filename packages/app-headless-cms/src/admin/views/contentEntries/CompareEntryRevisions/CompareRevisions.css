@@ -1,0 +1,98 @@
+/* Comparison Report Styles */
+.comparison-report {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+.comparison-report h2 {
+    color: #2563eb;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.comparison-table thead {
+    background-color: #f8fafc;
+}
+
+.comparison-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.comparison-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: top;
+}
+
+.comparison-table tr:hover {
+    background-color: #f9fafb;
+}
+
+.comparison-table tr:last-child td {
+    border-bottom: none;
+}
+
+.comparison-table strong {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+/* Highlight changes */
+.comparison-table .field-changed {
+    background-color: #fef3c7;
+}
+
+.comparison-table .field-added {
+    background-color: #d1fae5;
+}
+
+.comparison-table .field-removed {
+    background-color: #fee2e2;
+}
+
+/* Value styling */
+.comparison-table .value-old {
+    color: #dc2626;
+    text-decoration: line-through;
+}
+
+.comparison-table .value-new {
+    color: #059669;
+    font-weight: 500;
+}
+
+.comparison-table .value-unchanged {
+    color: #6b7280;
+}
+
+/* Summary styling */
+.comparison-table .change-summary {
+    font-style: italic;
+    color: #4b5563;
+}
+
+/* No differences message */
+.no-differences {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+    font-style: italic;
+    background-color: #f9fafb;
+    border-radius: 0.5rem;
+    border: 1px dashed #d1d5db;
+}

@@ -29810,6 +29810,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"openai@npm:^6.6.0":
+  version: 6.6.0
+  resolution: "openai@npm:6.6.0"
+  peerDependencies:
+    ws: ^8.18.0
+    zod: ^3.25 || ^4.0
+  peerDependenciesMeta:
+    ws:
+      optional: true
+    zod:
+      optional: true
+  bin:
+    openai: bin/cli
+  checksum: 10/475a32cf89367aa9a9c1d4a23ae361d232bcfeec1f7fc647ec8987ffe6e2701cb9f9a6544df5fef7c8d50cc84270048e765cd91f78baeffdbc63af871fffdc4d
+  languageName: node
+  linkType: hard
+
 "opencollective-postinstall@npm:^2.0.2":
   version: 2.0.3
   resolution: "opencollective-postinstall@npm:2.0.3"
@@ -33396,6 +33413,7 @@ __metadata:
     longest: "npm:^2.0.1"
     minimatch: "npm:^5.1.6"
     nanoid: "npm:^3.3.11"
+    openai: "npm:^6.6.0"
     pm2: "npm:^5.4.3"
     prettier: "npm:^3.6.2"
     react: "npm:18.2.0"

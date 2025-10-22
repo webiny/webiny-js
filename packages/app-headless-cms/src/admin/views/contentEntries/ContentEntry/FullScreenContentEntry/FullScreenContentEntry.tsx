@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { createPortal } from "react-dom";
 import { useContentEntry } from "~/admin/views/contentEntries/hooks/index.js";
 import { RevisionListDrawer } from "./RevisionListDrawer/index.js";
+import { CompareRevisionsDrawer } from "~/admin/views/contentEntries/CompareEntryRevisions/CompareRevisionsDrawer.js";
+
 import { FullScreenContentEntryHeaderLeft } from "./FullScreenContentEntryHeaderLeft.js";
 import * as FSE from "./FullScreenContentEntry.styled.js";
 import { FullScreenContentEntryProvider } from "./useFullScreenContentEntry.js";
@@ -17,11 +19,14 @@ const FullScreenContentEntryDecorator = ContentEntry.createDecorator(Original =>
         const { width } = useContentEntryEditorConfig();
         const { loading } = useContentEntry();
         const [isRevisionListOpen, openRevisionList] = useState<boolean>(false);
+        const [isCompareRevisionsOpen, openCompareRevisions] = useState<boolean>(false);
 
         return (
             <FullScreenContentEntryProvider
                 openRevisionList={openRevisionList}
                 isRevisionListOpen={isRevisionListOpen}
+                openCompareRevisions={openCompareRevisions}
+                isCompareRevisionsOpen={isCompareRevisionsOpen}
             >
                 <FSE.Container>
                     <HeaderBar
@@ -43,6 +48,7 @@ const FullScreenContentEntryDecorator = ContentEntry.createDecorator(Original =>
                         </FSE.ContentFormWrapper>
                     </FSE.Content>
                     <RevisionListDrawer />
+                    <CompareRevisionsDrawer />
                 </FSE.Container>
             </FullScreenContentEntryProvider>
         );

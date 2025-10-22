@@ -41,6 +41,8 @@ import { ShowRevisionList } from "~/admin/components/ContentEntryForm/Header/Sho
 import { cmsLegacyEntryEditor } from "~/utils/cmsLegacyEntryEditor.js";
 import { ScheduleEntryMenuItem } from "~/admin/components/ContentEntries/Scheduler/actions/ScheduleEntryAction.js";
 
+import { CompareEntryRevisionList } from "~/admin/views/contentEntries/CompareEntryRevisions/CompareEntryRevisionList.js";
+
 const { Browser } = ContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
 
@@ -128,8 +130,15 @@ export const ContentEntriesModule = () => {
                     element={<ShowRevisionList />}
                     remove={cmsLegacyEntryEditor}
                 />
+
+                <Actions.MenuItemAction
+                    name={"compareEntryRevisionList"}
+                    element={<CompareEntryRevisionList />}
+                    remove={cmsLegacyEntryEditor}
+                />
             </ContentEntryEditorConfig>
             <FullScreenContentEntry />
         </>
     );
 };
+
