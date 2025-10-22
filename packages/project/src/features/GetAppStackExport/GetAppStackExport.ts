@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/di-container";
 import {
-    EnsureAppWorkspaceService,
+    BuildAppWorkspaceService,
     GetApp,
     GetAppStackExport,
     PulumiGetStackExportService
@@ -9,14 +9,14 @@ import {
 export class DefaultGetAppStackExport implements GetAppStackExport.Interface {
     constructor(
         private getApp: GetApp.Interface,
-        private ensureAppWorkspaceService: EnsureAppWorkspaceService.Interface,
+        private buildAppWorkspaceService: BuildAppWorkspaceService.Interface,
         private pulumiGetStackExportService: PulumiGetStackExportService.Interface
     ) {}
 
     async execute<TExport extends Record<string, any> = Record<string, string>>(
         params: GetAppStackExport.Params
     ) {
-        await this.ensureAppWorkspaceService.execute(params);
+        await this.buildAppWorkspaceService.execute(params);
 
         const app = this.getApp.execute(params.app);
         return this.pulumiGetStackExportService.execute<TExport>(app, params);
@@ -26,5 +26,5 @@ export class DefaultGetAppStackExport implements GetAppStackExport.Interface {
 export const getAppStackExport = createImplementation({
     abstraction: GetAppStackExport,
     implementation: DefaultGetAppStackExport,
-    dependencies: [GetApp, EnsureAppWorkspaceService, PulumiGetStackExportService]
+    dependencies: [GetApp, BuildAppWorkspaceService, PulumiGetStackExportService]
 });

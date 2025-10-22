@@ -1,16 +1,16 @@
 import { createDecorator } from "@webiny/di-container";
 import path from "path";
 import fs from "fs";
-import { EnsureAppWorkspaceService, GetApp } from "@webiny/project/abstractions/index.js";
+import { BuildAppWorkspaceService, GetApp } from "@webiny/project/abstractions/index.js";
 import { getTemplatesFolderPath } from "~/utils/index.js";
 
-class EnsureAppWorkspace implements EnsureAppWorkspaceService.Interface {
+class BuildAppWorkspace implements BuildAppWorkspaceService.Interface {
     constructor(
         private getApp: GetApp.Interface,
-        private decoratee: EnsureAppWorkspaceService.Interface
+        private decoratee: BuildAppWorkspaceService.Interface
     ) {}
 
-    async execute(params: EnsureAppWorkspaceService.Params) {
+    async execute(params: BuildAppWorkspaceService.Params) {
         await this.decoratee.execute(params);
 
         const templatesFolderPath = getTemplatesFolderPath();
@@ -26,7 +26,7 @@ class EnsureAppWorkspace implements EnsureAppWorkspaceService.Interface {
 }
 
 export default createDecorator({
-    abstraction: EnsureAppWorkspaceService,
-    decorator: EnsureAppWorkspace,
+    abstraction: BuildAppWorkspaceService,
+    decorator: BuildAppWorkspace,
     dependencies: [GetApp]
 });

@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di-container";
-import { EnsureAppWorkspaceService, GetApp } from "~/abstractions/index.js";
+import { BuildAppWorkspaceService, GetApp } from "~/abstractions/index.js";
 
 import path from "path";
 import fs from "fs";
@@ -8,10 +8,10 @@ import { getTemplatesFolderPath } from "~/utils/index.js";
 
 const wait = () => new Promise(resolve => setTimeout(resolve, 10));
 
-export class DefaultEnsureAppWorkspaceService implements EnsureAppWorkspaceService.Interface {
+export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService.Interface {
     constructor(private getApp: GetApp.Interface) {}
 
-    async execute(params: EnsureAppWorkspaceService.Params) {
+    async execute(params: BuildAppWorkspaceService.Params) {
         const templatesFolderPath = getTemplatesFolderPath();
 
         const app = this.getApp.execute(params.app);
@@ -42,8 +42,8 @@ export class DefaultEnsureAppWorkspaceService implements EnsureAppWorkspaceServi
     }
 }
 
-export const ensureAppWorkspaceService = createImplementation({
-    abstraction: EnsureAppWorkspaceService,
-    implementation: DefaultEnsureAppWorkspaceService,
+export const buildAppWorkspaceService = createImplementation({
+    abstraction: BuildAppWorkspaceService,
+    implementation: DefaultBuildAppWorkspaceService,
     dependencies: [GetApp]
 });

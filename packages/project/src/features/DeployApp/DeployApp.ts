@@ -1,7 +1,7 @@
 import { createImplementation } from "@webiny/di-container";
 import {
     DeployApp,
-    EnsureAppWorkspaceService,
+    BuildAppWorkspaceService,
     GetApp,
     GetProject,
     GetPulumiService,
@@ -21,7 +21,7 @@ import {
 export class DefaultDeployApp implements DeployApp.Interface {
     constructor(
         private getApp: GetApp.Interface,
-        private ensureAppWorkspaceService: EnsureAppWorkspaceService.Interface,
+        private buildAppWorkspaceService: BuildAppWorkspaceService.Interface,
         private getProject: GetProject.Interface,
         private pulumiSelectStackService: PulumiSelectStackService.Interface,
         private getPulumiService: GetPulumiService.Interface,
@@ -36,7 +36,7 @@ export class DefaultDeployApp implements DeployApp.Interface {
         }
 
         const app = this.getApp.execute(params.app);
-        await this.ensureAppWorkspaceService.execute(params);
+        await this.buildAppWorkspaceService.execute(params);
 
         await this.pulumiSelectStackService.execute(app, params);
 
@@ -101,7 +101,7 @@ export const deployApp = createImplementation({
     implementation: DefaultDeployApp,
     dependencies: [
         GetApp,
-        EnsureAppWorkspaceService,
+        BuildAppWorkspaceService,
         GetProject,
         PulumiSelectStackService,
         GetPulumiService,

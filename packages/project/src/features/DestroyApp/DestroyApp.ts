@@ -1,7 +1,7 @@
 import { createImplementation } from "@webiny/di-container";
 import {
     DestroyApp,
-    EnsureAppWorkspaceService,
+    BuildAppWorkspaceService,
     GetApp,
     GetProject,
     GetPulumiService,
@@ -19,7 +19,7 @@ import {
 export class DefaultDestroyApp implements DestroyApp.Interface {
     constructor(
         private getApp: GetApp.Interface,
-        private ensureAppWorkspaceService: EnsureAppWorkspaceService.Interface,
+        private buildAppWorkspaceService: BuildAppWorkspaceService.Interface,
         private getProject: GetProject.Interface,
         private pulumiSelectStackService: PulumiSelectStackService.Interface,
         private getPulumiService: GetPulumiService.Interface
@@ -31,7 +31,7 @@ export class DefaultDestroyApp implements DestroyApp.Interface {
         }
 
         const app = this.getApp.execute(params.app);
-        await this.ensureAppWorkspaceService.execute(params);
+        await this.buildAppWorkspaceService.execute(params);
 
 
         await this.pulumiSelectStackService.execute(app, params);
@@ -65,5 +65,5 @@ export class DefaultDestroyApp implements DestroyApp.Interface {
 export const destroyApp = createImplementation({
     abstraction: DestroyApp,
     implementation: DefaultDestroyApp,
-    dependencies: [GetApp, EnsureAppWorkspaceService, GetProject, PulumiSelectStackService, GetPulumiService]
+    dependencies: [GetApp, BuildAppWorkspaceService, GetProject, PulumiSelectStackService, GetPulumiService]
 });
