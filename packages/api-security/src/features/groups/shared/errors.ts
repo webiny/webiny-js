@@ -36,3 +36,40 @@ export class NotAuthorizedError extends BaseError<NotAuthorizedErrorData> {
         });
     }
 }
+
+type GroupExistsErrorData = {
+    slug: string;
+};
+
+export class GroupExistsError extends BaseError<GroupExistsErrorData> {
+    override readonly code = "GROUP_EXISTS" as const;
+
+    constructor(slug: string) {
+        super({
+            message: `Group with slug "${slug}" already exists.`,
+            data: { slug }
+        });
+    }
+}
+
+export class CannotUpdatePluginGroupsError extends BaseError<void> {
+    override readonly code = "CANNOT_UPDATE_PLUGIN_GROUPS" as const;
+
+    constructor() {
+        super({
+            message: "Cannot update groups created via plugins.",
+            data: void 0
+        });
+    }
+}
+
+export class CannotDeletePluginGroupsError extends BaseError<void> {
+    override readonly code = "CANNOT_DELETE_PLUGIN_GROUPS" as const;
+
+    constructor() {
+        super({
+            message: "Cannot delete groups created via plugins.",
+            data: void 0
+        });
+    }
+}

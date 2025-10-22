@@ -10,6 +10,9 @@ import { IdentityContextFeature } from "./features/IdentityContext/index.js";
 // Phase 2: API Keys
 import { ApiKeysFeature } from "./features/apiKeys/index.js";
 
+// Phase 3: Groups
+import { GroupsFeature } from "./features/groups/index.js";
+
 /**
  * Setup all security features in the DI container.
  * This is the main entry point for registering all security-related features.
@@ -32,7 +35,9 @@ export const setupFeatures = (
     // Phase 2: API Keys features
     ApiKeysFeature.register(container);
 
-    // Phase 3: Groups features (to be added)
+    // Phase 3: Groups features
+    GroupsFeature.register(container);
+
     // Phase 4: Teams features (to be added)
     // Phase 5: Tenant Links features (to be added)
 };

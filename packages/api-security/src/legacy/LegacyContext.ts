@@ -13,6 +13,11 @@ import { ListApiKeys } from "~/features/apiKeys/ListApiKeys/index.js";
 import { CreateApiKey } from "~/features/apiKeys/CreateApiKey/index.js";
 import { UpdateApiKey } from "~/features/apiKeys/UpdateApiKey/index.js";
 import { DeleteApiKey } from "~/features/apiKeys/DeleteApiKey/index.js";
+import { GetGroup } from "~/features/groups/GetGroup/index.js";
+import { ListGroups } from "~/features/groups/ListGroups/index.js";
+import { CreateGroup } from "~/features/groups/CreateGroup/index.js";
+import { UpdateGroup } from "~/features/groups/UpdateGroup/index.js";
+import { DeleteGroup } from "~/features/groups/DeleteGroup/index.js";
 
 /**
  * Legacy bridge that implements the old Security interface.
@@ -243,7 +248,64 @@ export class LegacyContext implements Security {
     }
 
     // ========================================================================
-    // Phase 3+: Forward to old implementation (TO BE REPLACED)
+    // Phase 3: Groups (NEW IMPLEMENTATION)
+    // ========================================================================
+
+    async getGroup(params: any) {
+        const useCase = this.container.resolve(GetGroup);
+        const result = await useCase.execute(params.where);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return result.value;
+    }
+
+    async listGroups(params?: any) {
+        const useCase = this.container.resolve(ListGroups);
+        const result = await useCase.execute(params);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return result.value;
+    }
+
+    async createGroup(input: any) {
+        const useCase = this.container.resolve(CreateGroup);
+        const result = await useCase.execute(input);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return result.value;
+    }
+
+    async updateGroup(id: string, input: any) {
+        const useCase = this.container.resolve(UpdateGroup);
+        const result = await useCase.execute(id, input);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return result.value;
+    }
+
+    async deleteGroup(id: string) {
+        const useCase = this.container.resolve(DeleteGroup);
+        const result = await useCase.execute(id);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+    }
+
+    // ========================================================================
+    // Phase 4+: Forward to old implementation (TO BE REPLACED)
     // ========================================================================
 
     getStorageOperations() {
@@ -287,27 +349,6 @@ export class LegacyContext implements Security {
 
     get onApiKeyAfterDelete() {
         return this.oldSecurity.onApiKeyAfterDelete;
-    }
-
-    // Groups - Phase 3 (forwarding for now)
-    async getGroup(params: any) {
-        return this.oldSecurity.getGroup(params);
-    }
-
-    async listGroups(params?: any) {
-        return this.oldSecurity.listGroups.call(this, params);
-    }
-
-    async createGroup(input: any) {
-        return this.oldSecurity.createGroup(input);
-    }
-
-    async updateGroup(id: string, input: any) {
-        return this.oldSecurity.updateGroup(id, input);
-    }
-
-    async deleteGroup(id: string) {
-        return this.oldSecurity.deleteGroup(id);
     }
 
     get onGroupBeforeCreate() {

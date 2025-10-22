@@ -9,7 +9,7 @@ import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { createGroupValidation } from "./schema.js";
 import { GroupBeforeCreateEvent, GroupAfterCreateEvent } from "./events.js";
 import type { Group, CreateGroupInput } from "../shared/types.js";
-import { NotAuthorizedError } from "../shared/errors.js";
+import { NotAuthorizedError, GroupExistsError } from "../shared/errors.js";
 
 export class CreateGroupUseCase {
     constructor(
@@ -19,7 +19,7 @@ export class CreateGroupUseCase {
         private repository: GroupsRepository.Interface
     ) {}
 
-    async execute(input: CreateGroupInput): Promise<Result<Group, Error>> {
+    async execute(input: CreateGroupInput): Promise<Result<Group, CreateGroup.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.group");
 
         if (!hasPermission) {
@@ -34,6 +34,12 @@ export class CreateGroupUseCase {
         const tenant = this.tenantContext.getTenant();
         const identity = this.identityContext.getIdentity();
         const data = validation.data;
+
+        // Check if group with same slug already exists
+        const existingGroupResult = await this.repository.get({ slug: data.slug });
+        if (existingGroupResult.isOk()) {
+            return Result.fail(new GroupExistsError(data.slug));
+        }
 
         const group: Group = {
             id: mdbid(),

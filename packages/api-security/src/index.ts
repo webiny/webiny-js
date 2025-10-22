@@ -15,6 +15,7 @@ import { SecurityRolePlugin } from "~/plugins/SecurityRolePlugin.js";
 import { SecurityTeamPlugin } from "~/plugins/SecurityTeamPlugin.js";
 import { setupFeatures } from "./setupFeatures.js";
 import { LegacyContext } from "./legacy/LegacyContext.js";
+import { GroupsProvider, TeamsProvider } from "./features/shared/abstractions.js";
 
 export { default as NotAuthorizedResponse } from "./NotAuthorizedResponse.js";
 export { default as NotAuthorizedError } from "./NotAuthorizedError.js";
@@ -38,6 +39,21 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
 
         // Setup new features in DI container
         setupFeatures(context.container, storageOperations);
+
+        // Register groups and teams providers for plugin-defined groups/teams
+        context.container.registerFactory(GroupsProvider, () => {
+            return async () =>
+                context.plugins
+                    .byType<SecurityRolePlugin>(SecurityRolePlugin.type)
+                    .map(plugin => plugin.securityRole);
+        });
+
+        context.container.registerFactory(TeamsProvider, () => {
+            return async () =>
+                context.plugins
+                    .byType<SecurityTeamPlugin>(SecurityTeamPlugin.type)
+                    .map(plugin => plugin.securityTeam);
+        });
 
         const license = context.wcp.getProjectLicense().getRawLicense();
 

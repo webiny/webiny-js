@@ -189,7 +189,9 @@ describe("Security Group CRUD Test", () => {
                         error: {
                             code: "GROUP_EXISTS",
                             message: `Group with slug "${mocks.groupA.slug}" already exists.`,
-                            data: null
+                            data: {
+                                slug: "group-a"
+                            }
                         }
                     }
                 }
@@ -223,8 +225,7 @@ describe("Security Group CRUD Test", () => {
     });
 
     test("should not allow deletion of a group created via a plugin", async () => {
-        // Creating a group with same "slug" should not be allowed
-        const [response] = await securityGroup.delete({ id: "" });
+        const [response] = await securityGroup.delete({ id: "test-role-1" });
 
         expect(response).toEqual({
             data: {
