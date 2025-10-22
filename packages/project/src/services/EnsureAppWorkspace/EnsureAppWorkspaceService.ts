@@ -12,25 +12,17 @@ export class DefaultEnsureAppWorkspaceService implements EnsureAppWorkspaceServi
     constructor(private getApp: GetApp.Interface) {}
 
     async execute(params: EnsureAppWorkspaceService.Params) {
-        // 1. Construct required paths.
         const templatesFolderPath = getTemplatesFolderPath();
 
         const app = this.getApp.execute(params.app);
-
         const appWorkspaceFolderPath = app.paths.workspaceFolder.toString();
         const baseTemplateFolderPath = path.join(templatesFolderPath, "appTemplates", "base");
-
-        // 2. Do the cleanup first.
-        if (fs.existsSync(appWorkspaceFolderPath)) {
-            // fs.rmSync(appWorkspaceFolderPath, { recursive: true, force: true });
-        }
 
         fs.mkdirSync(appWorkspaceFolderPath, { recursive: true });
 
         // Wait a bit and make sure the files are ready to have their content replaced.
         await wait();
 
-        // 3. Create base.
         fs.cpSync(baseTemplateFolderPath, appWorkspaceFolderPath, { recursive: true });
 
         // Wait a bit and make sure the files are ready to have their content replaced.
