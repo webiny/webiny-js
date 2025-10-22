@@ -15,11 +15,9 @@ export default ({ identityType }: Config) => {
                 return null;
             }
 
-            const tenant = context.tenancy.getCurrentTenant();
-
-            const apiKey = await context.security
-                .getStorageOperations()
-                .getApiKeyByToken({ tenant: tenant.id, token });
+            const apiKey = await context.security.withoutAuthorization(() => {
+                return context.security.getApiKeyByToken(token);
+            });
 
             if (!apiKey) {
                 return null;

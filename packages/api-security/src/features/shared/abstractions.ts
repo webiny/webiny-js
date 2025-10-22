@@ -12,17 +12,3 @@ export const SecurityStorageOperations = createAbstraction<ISecurityStorageOpera
 export namespace SecurityStorageOperations {
     export type Interface = ISecurityStorageOperations;
 }
-
-/**
- * GetTenant abstraction
- * Function that returns the current tenant ID
- */
-export interface IGetTenant {
-    (): string | undefined;
-}
-
-export const GetTenant = createAbstraction<IGetTenant>("GetTenant");
-
-export namespace GetTenant {
-    export type Interface = IGetTenant;
-}

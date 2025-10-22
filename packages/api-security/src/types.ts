@@ -212,9 +212,9 @@ export interface SecurityStorageOperations {
 
     listApiKeys(params: StorageOperationsListApiKeysParams): Promise<ApiKey[]>;
 
-    createApiKey(params: StorageOperationsCreateApiKeyParams): Promise<ApiKey>;
+    createApiKey(params: StorageOperationsCreateApiKeyParams): Promise<void>;
 
-    updateApiKey(params: StorageOperationsUpdateApiKeyParams): Promise<ApiKey>;
+    updateApiKey(params: StorageOperationsUpdateApiKeyParams): Promise<void>;
 
     deleteApiKey(params: StorageOperationsDeleteApiKeyParams): Promise<void>;
 }
@@ -453,7 +453,6 @@ export interface CreateApiKeyParams {
 }
 
 export interface UpdateApiKeyParams {
-    original: ApiKey;
     apiKey: ApiKey;
 }
 

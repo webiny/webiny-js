@@ -7,14 +7,15 @@ import {
 import { Authorizer } from "../features/authorization/shared/abstractions.js";
 import { AuthenticatedIdentity, IdentityContext } from "~/features/IdentityContext/index.js";
 import type { Authenticator } from "@webiny/api-authentication/types.js";
+import { GetApiKey } from "~/features/apiKeys/GetApiKey/index.js";
+import { GetApiKeyByToken } from "~/features/apiKeys/GetApiKeyByToken/index.js";
+import { ListApiKeys } from "~/features/apiKeys/ListApiKeys/index.js";
+import { CreateApiKey } from "~/features/apiKeys/CreateApiKey/index.js";
+import { UpdateApiKey } from "~/features/apiKeys/UpdateApiKey/index.js";
+import { DeleteApiKey } from "~/features/apiKeys/DeleteApiKey/index.js";
 
 /**
  * Legacy bridge that implements the old Security interface.
- *
- * Strategy:
- * - Phase 1 (Identity/Auth): Delegate to new IdentityContext and AuthenticationContext
- * - Everything else: Forward to old security context object
- *
  * As we implement each phase, we'll replace forwarding with delegation.
  */
 export class LegacyContext implements Security {
@@ -31,7 +32,7 @@ export class LegacyContext implements Security {
         return this.container.resolve(AuthenticationContext);
     }
 
-    // ===== LEGACY
+    // ===== LEGACY ===== //
     addAuthenticator(authenticator: Authenticator<SecurityIdentity>): void {
         // @ts-expect-error This will go away after full refactor.
         this.container.registerFactory(AuthenticatorAbstraction, () => {
@@ -43,6 +44,7 @@ export class LegacyContext implements Security {
         });
     }
 
+    // ===== LEGACY ===== //
     getAuthenticators(): Authenticator[] {
         return this.container.resolveAll(AuthenticatorAbstraction).map(authenticator => {
             return (token: string) => authenticator.authenticate(token);
@@ -172,7 +174,76 @@ export class LegacyContext implements Security {
     }
 
     // ========================================================================
-    // Phase 2+: Forward to old implementation (TO BE REPLACED)
+    // Phase 2: API Keys (NEW IMPLEMENTATION)
+    // ========================================================================
+
+    async getApiKey(id: string) {
+        const useCase = this.container.resolve(GetApiKey);
+        const result = await useCase.execute(id);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return result.value;
+    }
+
+    async getApiKeyByToken(token: string) {
+        const useCase = this.container.resolve(GetApiKeyByToken);
+        const result = await useCase.execute(token);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return result.value;
+    }
+
+    async listApiKeys(params?: any) {
+        const useCase = this.container.resolve(ListApiKeys);
+        const result = await useCase.execute(params);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return result.value;
+    }
+
+    async createApiKey(data: any) {
+        const useCase = this.container.resolve(CreateApiKey);
+        const result = await useCase.execute(data);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return result.value;
+    }
+
+    async updateApiKey(id: string, data: any) {
+        const useCase = this.container.resolve(UpdateApiKey);
+        const result = await useCase.execute(id, data);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return result.value;
+    }
+
+    async deleteApiKey(id: string) {
+        const useCase = this.container.resolve(DeleteApiKey);
+        const result = await useCase.execute(id);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+        return true;
+    }
+
+    // ========================================================================
+    // Phase 3+: Forward to old implementation (TO BE REPLACED)
     // ========================================================================
 
     getStorageOperations() {
@@ -192,31 +263,6 @@ export class LegacyContext implements Security {
 
     getAuthorizers() {
         return this.oldSecurity.getAuthorizers();
-    }
-
-    // API Keys - Phase 2 (forwarding for now)
-    async getApiKey(id: string) {
-        return this.oldSecurity.getApiKey.call(this, id);
-    }
-
-    async getApiKeyByToken(token: string) {
-        return this.oldSecurity.getApiKeyByToken.call(this, token);
-    }
-
-    async listApiKeys() {
-        return this.oldSecurity.listApiKeys.call(this);
-    }
-
-    async createApiKey(data: any) {
-        return this.oldSecurity.createApiKey.call(this, data);
-    }
-
-    async updateApiKey(id: string, data: any) {
-        return this.oldSecurity.updateApiKey.call(this, id, data);
-    }
-
-    async deleteApiKey(id: string) {
-        return this.oldSecurity.deleteApiKey.call(this, id);
     }
 
     get onApiKeyBeforeCreate() {

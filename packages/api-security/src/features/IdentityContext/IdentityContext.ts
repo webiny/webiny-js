@@ -95,7 +95,9 @@ class IdentityContextImpl implements Abstraction.Interface {
         const permissions = await this.listPermissions();
 
         return permissions.filter(p => {
-            if (p.name === name) return true;
+            if (p.name === name) {
+                return true;
+            }
             return minimatch(name, p.name);
         }) as TPermission[];
     }

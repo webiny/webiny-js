@@ -201,6 +201,146 @@ export const UserManagementFeature = createFeature({
 ALWAYS register use cases in transient scope (default).
 ALWAYS register repositories in singleton scope.
 
+## Error Handling Pattern
+
+Every feature should define domain-specific errors that extend `BaseError` from `@webiny/feature/api`.
+
+### Error Definition Pattern
+
+Create a `shared/errors.ts` file in your feature with domain-specific errors:
+
+```typescript
+// features/apiKeys/shared/errors.ts
+import { BaseError } from "@webiny/feature/api";
+
+// Wrap storage/infrastructure errors
+export class ApiKeyStorageError extends BaseError {
+    override readonly code = "API_KEY_STORAGE_ERROR" as const;
+
+    constructor(error: Error) {
+        super({
+            message: error.message,
+            data: {}
+        });
+    }
+}
+
+// Domain-specific not found error
+export class ApiKeyNotFoundError extends BaseError {
+    override readonly code = "API_KEY_NOT_FOUND" as const;
+
+    constructor() {
+        super({
+            message: `API key was not found!`,
+            data: {}
+        });
+    }
+}
+
+// Authorization error with optional message
+type NotAuthorizedErrorData = {
+    message?: string;
+};
+
+export class NotAuthorizedError extends BaseError<NotAuthorizedErrorData> {
+    override readonly code = "NOT_AUTHORIZED" as const;
+
+    constructor(data: NotAuthorizedErrorData = {}) {
+        super({
+            message: data.message || "Not authorized to perform this action",
+            data
+        });
+    }
+}
+```
+
+### Typed Error Unions in Abstractions
+
+Define error unions in your abstraction files to provide type safety:
+
+```typescript
+// features/apiKeys/shared/abstractions.ts
+import { createAbstraction } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
+import { ApiKeyNotFoundError, ApiKeyStorageError } from "./errors.js";
+
+// Define possible errors for this repository
+export interface IApiKeysRepositoryErrors {
+    base: ApiKeyNotFoundError | ApiKeyStorageError;
+}
+
+// Create error union type
+type RepositoryError = IApiKeysRepositoryErrors[keyof IApiKeysRepositoryErrors];
+
+// Use in interface
+export interface IApiKeysRepository {
+    get(id: string): Promise<Result<ApiKey, RepositoryError>>;
+    create(data: ApiKey): Promise<Result<void, RepositoryError>>;
+}
+
+export const ApiKeysRepository = createAbstraction<IApiKeysRepository>("ApiKeysRepository");
+
+export namespace ApiKeysRepository {
+    export type Interface = IApiKeysRepository;
+    export type Error = RepositoryError; // Export for consumers
+}
+```
+
+### Using Typed Errors in Repository
+
+```typescript
+// features/apiKeys/shared/ApiKeysRepository.ts
+import { Result } from "@webiny/feature/api";
+import { ApiKeysRepository as RepositoryAbstraction } from "./abstractions.js";
+import { ApiKeyNotFoundError, ApiKeyStorageError } from "./errors.js";
+
+class ApiKeysRepositoryImpl implements RepositoryAbstraction.Interface {
+    async get(id: string): Promise<Result<ApiKey, RepositoryAbstraction.Error>> {
+        try {
+            const apiKey = await this.storageOperations.getApiKey({ id });
+            if (apiKey) {
+                return Result.ok(apiKey);
+            }
+            // Return domain-specific error
+            return Result.fail(new ApiKeyNotFoundError());
+        } catch (error) {
+            // Wrap infrastructure errors
+            return Result.fail(new ApiKeyStorageError(error as Error));
+        }
+    }
+}
+```
+
+### Error Handling Benefits
+
+This pattern provides:
+- **Type safety** - Consumers know exactly which errors can occur
+- **Domain context** - Specific error codes and messages
+- **Consistent wrapping** - Infrastructure errors wrapped in domain errors
+- **Better error handling** - Consumers can handle specific error types
+
+### Result Pattern
+
+Always use `Result<T, E>` for operations that can fail:
+
+```typescript
+// Success
+return Result.ok(value);
+
+// Failure
+return Result.fail(new DomainSpecificError());
+
+// Check result
+if (result.isFail()) {
+    return Result.fail(result.error);
+}
+
+// Access value
+const value = result.value;
+```
+
+Never use `result.isError()`, `result.getError()`, or `result.getValue()` - these are incorrect patterns.
+
 ## Public API Design
 
 Export only what external consumers need:
