@@ -12,6 +12,7 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "exports": {
+    "./utils": "./utils.js",
     "./features/WcpContext": "./features/WcpContext/index.js",
     ".": "./index.js"
   },

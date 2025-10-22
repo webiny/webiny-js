@@ -221,7 +221,7 @@ describe("Security API Key Test", () => {
             }
         });
 
-        // "listUsers" should return an array of users
+        // "listGroups" should return an array of users
         const [listResponse] = await securityGroup.list({}, { Authorization: apiKey.token });
 
         expect(listResponse.data.security.listGroups.data.length).toEqual(2);

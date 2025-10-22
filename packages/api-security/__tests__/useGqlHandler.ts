@@ -42,6 +42,8 @@ import type { SecurityStorageOperations } from "~/types";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createWcpContext } from "@webiny/api-wcp";
+import { createApiCore } from "@webiny/api-core";
+import { createRootTenantMock } from "./mocks/createRootTenantMock";
 
 type UseGqlHandlerParams = {
     plugins?: PluginCollection;
@@ -58,11 +60,13 @@ export default (opts: UseGqlHandlerParams = {}) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
         plugins: [
+            createApiCore(),
             graphqlHandlerPlugins(),
             createWcpContext({ testProjectLicense: opts.wcpLicense }),
             createTenancyContext({
                 storageOperations: tenancyStorage.storageOperations
             }),
+            createRootTenantMock(),
             createTenancyGraphQL(),
             createSecurityContext({ storageOperations: securityStorage.storageOperations }),
             createSecurityGraphQL(),

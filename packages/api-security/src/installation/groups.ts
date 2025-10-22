@@ -31,11 +31,11 @@ export const attachGroupInstaller = (security: Security): void => {
     };
 
     // TODO: move group creation into the installer itself.
-    security.onInstall.subscribe(() => createDefaultGroups());
+    // security.onInstall.subscribe(() => createDefaultGroups());
 
-    security.onCleanup.subscribe(async () => {
-        for (const group of createdGroups) {
-            await security.deleteGroup(group.id);
-        }
-    });
+    // security.onCleanup.subscribe(async () => {
+    //     for (const group of createdGroups) {
+    //         await security.deleteGroup(group.id);
+    //     }
+    // });
 };

@@ -1,7 +1,6 @@
 import { AsyncLocalStorage } from "async_hooks";
 import minimatch from "minimatch";
 import { createTopic } from "@webiny/pubsub";
-import type { AaclPermission } from "@webiny/api-wcp/types.js";
 import type { Identity } from "@webiny/api-authentication/types.js";
 import { createAuthentication } from "@webiny/api-authentication/createAuthentication.js";
 import type {
@@ -15,7 +14,6 @@ import { createApiKeysMethods } from "~/createSecurity/createApiKeysMethods.js";
 import { createGroupsMethods } from "~/createSecurity/createGroupsMethods.js";
 import { createTeamsMethods } from "~/createSecurity/createTeamsMethods.js";
 import { createTenantLinksMethods } from "~/createSecurity/createTenantLinksMethods.js";
-import { filterOutCustomWbyAppsPermissions } from "~/createSecurity/filterOutCustomWbyAppsPermissions.js";
 
 export interface GetTenant {
     (): string | undefined;
@@ -150,53 +148,9 @@ export const createSecurity = async (config: SecurityConfig): Promise<Security> 
             }) as TPermission[];
         },
 
+        // @ts-expect-error
         async listPermissions(this: Security): Promise<SecurityPermission[]> {
-            const permissions = await this.withoutAuthorization(() => loadPermissions());
-
-            // Now we start checking whether we want to return all permissions, or we
-            // need to omit the custom ones because of the one of the following reasons.
-
-            let aaclEnabled: boolean | "legacy" =
-                config.advancedAccessControlLayer?.enabled === true;
-            let teamsEnabled = false;
-            if (aaclEnabled) {
-                teamsEnabled = config.advancedAccessControlLayer?.options?.teams === true;
-            }
-
-            if (!aaclEnabled) {
-                // Are we dealing with an old Webiny project?
-                // Older versions of Webiny do not have the `installedOn` value stored. So,
-                // if missing, we don't want to make any changes to the existing behavior.
-                const securitySystemRecord = await this.getStorageOperations().getSystemData({
-                    tenant: "root"
-                });
-
-                // If `installedOn` value exists, we know we're not dealing with
-                // legacy security system. It's the new AACL one.
-                const isWcpAacl = securitySystemRecord?.installedOn;
-                const isLegacyAacl = !isWcpAacl;
-
-                if (isLegacyAacl) {
-                    aaclEnabled = "legacy";
-                }
-            }
-
-            // If Advanced Access Control Layer (AACL) can be used or if we are
-            // dealing with an old Webiny project, we don't need to do anything.
-            if (aaclEnabled === true || aaclEnabled === "legacy") {
-                // Pushing the value of `aacl` can help us in making similar checks on the frontend side.
-                permissions.push({
-                    name: "aacl",
-                    legacy: aaclEnabled === "legacy",
-                    teams: teamsEnabled
-                } as AaclPermission);
-
-                return permissions;
-            }
-
-            // If Advanced Access Control Layer (AACL) cannot be used,
-            // we omit all the Webiny apps-related custom permissions.
-            return filterOutCustomWbyAppsPermissions(permissions);
+            // No longer used
         },
 
         async hasFullAccess(this: Security): Promise<boolean> {

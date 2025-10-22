@@ -23,7 +23,7 @@ export interface Authentication<TIdentity = Identity> {
 export interface Identity {
     id: string;
     type: string;
-    displayName: string | null;
+    displayName: string;
 
     // These are used with 3rd party IdPs (Okta, Auth0), where, within the `getIdentity` callback,
     // the group and team information is retrieved from the IdP and the verified auth token. See:

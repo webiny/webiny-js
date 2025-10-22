@@ -6,6 +6,7 @@
     { "path": "../api-authentication/tsconfig.build.json" },
     { "path": "../api-tenancy/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
+    { "path": "../di-container/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },

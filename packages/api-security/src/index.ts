@@ -13,6 +13,8 @@ import type {
 import { applyMultiTenancyGraphQLPlugins } from "~/enterprise/multiTenancy/index.js";
 import { SecurityRolePlugin } from "~/plugins/SecurityRolePlugin.js";
 import { SecurityTeamPlugin } from "~/plugins/SecurityTeamPlugin.js";
+import { setupFeatures } from "./setupFeatures.js";
+import { LegacyContext } from "./legacy/LegacyContext.js";
 
 export { default as NotAuthorizedResponse } from "./NotAuthorizedResponse.js";
 export { default as NotAuthorizedError } from "./NotAuthorizedError.js";
@@ -34,9 +36,13 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
     return new ContextPlugin<Context>(async context => {
         context.plugins.register(gqlInterfaces);
 
+        // Setup new features in DI container
+        setupFeatures(context.container, storageOperations);
+
         const license = context.wcp.getProjectLicense().getRawLicense();
 
-        context.security = await createSecurity({
+        // Create old security context (for now, still needed for unimplemented features)
+        const oldSecurity = await createSecurity({
             advancedAccessControlLayer: license?.package?.features?.advancedAccessControlLayer,
             getTenant: () => {
                 const tenant = context.tenancy.getCurrentTenant();
@@ -52,6 +58,10 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
                     .byType<SecurityTeamPlugin>(SecurityTeamPlugin.type)
                     .map(plugin => plugin.securityTeam)
         });
+
+        // Create hybrid legacy context that delegates to new features where implemented
+        // and forwards to old security for unimplemented features
+        context.security = new LegacyContext(context.container, oldSecurity);
 
         attachGroupInstaller(context.security);
     });

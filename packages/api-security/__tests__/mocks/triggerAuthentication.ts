@@ -3,6 +3,8 @@ import type { SecurityContext } from "~/types";
 
 export const triggerAuthentication = () => {
     return new BeforeHandlerPlugin<SecurityContext>(context => {
-        context.security.authenticate("");
+        if (!context.request.headers.authorization) {
+            context.security.authenticate("");
+        }
     });
 };

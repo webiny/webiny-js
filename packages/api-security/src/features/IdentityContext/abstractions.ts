@@ -1,31 +1,29 @@
-import type { Identity } from "@webiny/api-authentication/types";
 import { createAbstraction } from "@webiny/feature/api";
-
-export type AuthenticationToken = string;
+import type { Identity } from "./Identity.js";
+import type { SecurityPermission } from "~/types.js";
 
 export interface IIdentityContext {
-    /**
-     * Get the current identity in the execution context.
-     * Takes into account withIdentity() scopes.
-     */
-    getIdentity<TIdentity extends Identity = Identity>(): TIdentity | undefined;
-
-    /**
-     * Set the identity for the current request/context.
-     * Called once per request after authentication.
-     */
-    setIdentity(identity: Identity): void;
-
-    /**
-     * Get the authentication token for the current request.
-     */
-    getToken(): AuthenticationToken | undefined;
-
-    /**
-     * Execute a callback with a temporary identity override.
-     * Creates a new execution scope where getIdentity() returns the override.
-     */
+    // Identity methods
+    getIdentity(): Identity;
+    setIdentity(identity: Identity | undefined): void;
     withIdentity<T>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T>;
+
+    // Permission methods
+    getPermission<TPermission extends SecurityPermission = SecurityPermission>(
+        name: string
+    ): Promise<TPermission | null>;
+
+    getPermissions<TPermission extends SecurityPermission = SecurityPermission>(
+        name: string
+    ): Promise<TPermission[]>;
+
+    listPermissions(): Promise<SecurityPermission[]>;
+
+    hasFullAccess(): Promise<boolean>;
+
+    // Authorization context methods
+    withoutAuthorization<T>(cb: () => Promise<T>): Promise<T>;
+    isAuthorizationEnabled(): boolean;
 }
 
 export const IdentityContext = createAbstraction<IIdentityContext>("IdentityContext");
