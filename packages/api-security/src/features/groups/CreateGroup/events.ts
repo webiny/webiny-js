@@ -15,6 +15,11 @@ export const GroupBeforeCreateHandler = createAbstraction<
     IEventHandler<GroupBeforeCreateEvent>
 >("GroupBeforeCreateHandler");
 
+export namespace GroupBeforeCreateHandler {
+    export type Interface = IEventHandler<GroupBeforeCreateEvent>;
+    export type Event = GroupBeforeCreateEvent;
+}
+
 export class GroupAfterCreateEvent extends DomainEvent<GroupAfterCreatePayload> {
     eventType = "group.afterCreate" as const;
 
@@ -26,3 +31,8 @@ export class GroupAfterCreateEvent extends DomainEvent<GroupAfterCreatePayload> 
 export const GroupAfterCreateHandler = createAbstraction<
     IEventHandler<GroupAfterCreateEvent>
 >("GroupAfterCreateHandler");
+
+export namespace GroupAfterCreateHandler {
+    export type Interface = IEventHandler<GroupAfterCreateEvent>;
+    export type Event = GroupAfterCreateEvent;
+}

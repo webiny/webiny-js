@@ -1,43 +1,45 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { createSecurity } from "~/createSecurity";
-import { Security, SecurityConfig, SecurityStorageOperations } from "~/types";
+import { Container } from "@webiny/di-container";
+import { IdentityContextFeature } from "~/features/IdentityContext/feature.js";
+import { AuthorizationContextFeature } from "~/features/authorization/AuthorizationContext/feature.js";
+import { IdentityContext } from "~/features/IdentityContext/index.js";
+import { WcpContextFeature } from "@webiny/api-wcp/features/WcpContext";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
+import { License } from "@webiny/wcp";
 
 const fullPermissions = {
     name: "*"
 };
 
 describe("without authorization", function () {
-    let security: Security;
-    const config: SecurityConfig = {
-        advancedAccessControlLayer: {
-            enabled: true,
-            options: {
-                teams: false,
-                folderLevelPermissions: false,
-                privateFiles: false
-            }
-        },
-        storageOperations: {} as SecurityStorageOperations,
-        getTenant: () => {
-            return "root";
-        }
-    };
+    let container: Container;
+    let identityContext: IdentityContext.Interface;
 
     beforeEach(async () => {
-        security = await createSecurity(config);
+        // Create a new container for each test
+        container = new Container();
+
+        const testLicense = License.fromLicenseDto(createTestWcpLicense());
+
+        WcpContextFeature.register(container, testLicense);
+        AuthorizationContextFeature.register(container);
+        IdentityContextFeature.register(container);
+
+        // Resolve the identity context
+        identityContext = container.resolve(IdentityContext);
     });
 
     it(`should disable authorization inside "withoutAuthorization" execution scope`, async () => {
         /**
          * Should not return permission as user does not have it (not defined in this case)
          */
-        const noPermissionCheck = await security.getPermission("some-unknown-permission");
+        const noPermissionCheck = await identityContext.getPermission("some-unknown-permission");
         expect(noPermissionCheck).toEqual(null);
         /**
          * Should return full permission as we are disabling authorization.
          */
-        const result = await security.withoutAuthorization(async () => {
-            return security.getPermission("some-unknown-permission");
+        const result = await identityContext.withoutAuthorization(async () => {
+            return identityContext.getPermission("some-unknown-permission");
         });
 
         expect(result).toEqual(fullPermissions);
@@ -45,7 +47,7 @@ describe("without authorization", function () {
          * Should not have permission again.
          */
         const noPermissionCheckAfterWithoutAuthorization =
-            await security.getPermission("some-unknown-permission");
+            await identityContext.getPermission("some-unknown-permission");
         expect(noPermissionCheckAfterWithoutAuthorization).toEqual(null);
     });
 
@@ -54,12 +56,12 @@ describe("without authorization", function () {
         let result: any = null;
         let authorizationWithinCallback = null;
 
-        const noPermissionCheck = await security.getPermission("some-unknown-permission");
+        const noPermissionCheck = await identityContext.getPermission("some-unknown-permission");
         expect(noPermissionCheck).toEqual(null);
 
         try {
-            result = await security.withoutAuthorization(async () => {
-                authorizationWithinCallback = security.isAuthorizationEnabled();
+            result = await identityContext.withoutAuthorization(async () => {
+                authorizationWithinCallback = identityContext.isAuthorizationEnabled();
                 throw new Error("Some error");
             });
         } catch (ex) {
@@ -69,9 +71,10 @@ describe("without authorization", function () {
         expect(result).toBeNull();
         expect(error?.message).toEqual("Some error");
         expect(authorizationWithinCallback).toBe(false);
-        expect(security.isAuthorizationEnabled()).toBe(true);
+        expect(identityContext.isAuthorizationEnabled()).toBe(true);
 
-        const stillNoPermissionCheck = await security.getPermission("some-unknown-permission");
+        const stillNoPermissionCheck =
+            await identityContext.getPermission("some-unknown-permission");
         expect(stillNoPermissionCheck).toEqual(null);
     });
 });

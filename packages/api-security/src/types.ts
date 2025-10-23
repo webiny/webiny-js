@@ -1,7 +1,4 @@
 import type { Authentication, Identity } from "@webiny/api-authentication/types.js";
-import type { Topic } from "@webiny/pubsub/types.js";
-import type { GetTenant } from "~/createSecurity.js";
-import type { ProjectPackageFeatures } from "@webiny/wcp/types.js";
 import type { TenancyContext } from "@webiny/api-tenancy/types.js";
 
 export type { Jwk, Jwt } from "./utils/verifyJwtUsingJwk.js";
@@ -14,30 +11,6 @@ export type GetPermissions = <T extends SecurityPermission = SecurityPermission>
 
 export interface Authorizer {
     (): Promise<SecurityPermission[] | null>;
-}
-
-export interface SecurityConfig {
-    advancedAccessControlLayer?: ProjectPackageFeatures["advancedAccessControlLayer"];
-    getTenant: GetTenant;
-    storageOperations: SecurityStorageOperations;
-    groupsProvider?: () => Promise<SecurityRole[]>;
-    teamsProvider?: () => Promise<SecurityTeam[]>;
-}
-
-export interface ErrorEvent extends InstallEvent {
-    error: Error;
-}
-
-export interface InstallEvent {
-    tenant: string;
-}
-
-export interface LoginEvent<TIdentity> {
-    identity: TIdentity;
-}
-
-export interface IdentityEvent<TIdentity> {
-    identity: TIdentity;
 }
 
 export interface GetGroupWhere {
@@ -55,17 +28,10 @@ export interface GetTeamWhere {
 export type AuthenticationToken = string;
 
 export interface Security<TIdentity = SecurityIdentity> extends Authentication<TIdentity> {
-    onBeforeLogin: Topic<LoginEvent<TIdentity>>;
-    onLogin: Topic<LoginEvent<TIdentity>>;
-    onAfterLogin: Topic<LoginEvent<TIdentity>>;
-    onIdentity: Topic<IdentityEvent<TIdentity>>;
-
     /**
      * Returns the token which was used to authenticate (if authentication was successful).
      */
     getToken(): AuthenticationToken | undefined;
-
-    getStorageOperations(): SecurityStorageOperations;
 
     isAuthorizationEnabled(): boolean;
 
@@ -102,13 +68,6 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
 
     deleteApiKey(id: string): Promise<boolean>;
 
-    onApiKeyBeforeCreate: Topic<{ apiKey: ApiKey }>;
-    onApiKeyAfterCreate: Topic<{ apiKey: ApiKey }>;
-    onApiKeyBeforeUpdate: Topic<{ original: ApiKey; apiKey: ApiKey }>;
-    onApiKeyAfterUpdate: Topic<{ original: ApiKey; apiKey: ApiKey }>;
-    onApiKeyBeforeDelete: Topic<{ apiKey: ApiKey }>;
-    onApiKeyAfterDelete: Topic<{ apiKey: ApiKey }>;
-
     // Groups
     getGroup(params: GetGroupParams): Promise<Group>;
 
@@ -120,13 +79,6 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
 
     deleteGroup(id: string): Promise<void>;
 
-    onGroupBeforeCreate: Topic<{ group: Group }>;
-    onGroupAfterCreate: Topic<{ group: Group }>;
-    onGroupBeforeUpdate: Topic<{ original: Group; group: Group }>;
-    onGroupAfterUpdate: Topic<{ original: Group; group: Group }>;
-    onGroupBeforeDelete: Topic<{ group: Group }>;
-    onGroupAfterDelete: Topic<{ group: Group }>;
-
     // Teams
     getTeam(params: GetTeamParams): Promise<Team>;
 
@@ -137,13 +89,6 @@ export interface Security<TIdentity = SecurityIdentity> extends Authentication<T
     updateTeam(id: string, input: Partial<TeamInput>): Promise<Team>;
 
     deleteTeam(id: string): Promise<void>;
-
-    onTeamBeforeCreate: Topic<{ team: Team }>;
-    onTeamAfterCreate: Topic<{ team: Team }>;
-    onTeamBeforeUpdate: Topic<{ original: Team; team: Team }>;
-    onTeamAfterUpdate: Topic<{ original: Team; team: Team }>;
-    onTeamBeforeDelete: Topic<{ team: Team }>;
-    onTeamAfterDelete: Topic<{ team: Team }>;
 
     // Links
     createTenantLinks(params: CreateTenantLinkParams[]): Promise<void>;
@@ -348,7 +293,6 @@ export interface UpdateTeamParams {
 export interface DeleteTeamParams {
     team: Team;
 }
-
 
 export interface CreateTenantLinkParams<TData = Record<string, any>> {
     identity: string;

@@ -4,7 +4,6 @@ import type { WcpContext } from "@webiny/api-wcp/types.js";
 import type { SecurityContext, SecurityStorageOperations } from "./types.js";
 import graphqlPlugins from "./graphql/index.js";
 import gqlInterfaces from "./graphql/interfaces.gql.js";
-import { createSecurity } from "~/createSecurity.js";
 import type {
     MultiTenancyAppConfig,
     MultiTenancyGraphQLConfig
@@ -12,9 +11,9 @@ import type {
 import { applyMultiTenancyGraphQLPlugins } from "~/enterprise/multiTenancy/index.js";
 import { SecurityRolePlugin } from "~/plugins/SecurityRolePlugin.js";
 import { SecurityTeamPlugin } from "~/plugins/SecurityTeamPlugin.js";
-import { setupFeatures } from "./setupFeatures.js";
 import { LegacyContext } from "./legacy/LegacyContext.js";
 import { GroupsProvider, TeamsProvider } from "./features/shared/abstractions.js";
+import { SecurityFeature } from "./features/SecurityFeature.js";
 
 export { default as NotAuthorizedResponse } from "./NotAuthorizedResponse.js";
 export { default as NotAuthorizedError } from "./NotAuthorizedError.js";
@@ -37,7 +36,7 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
         context.plugins.register(gqlInterfaces);
 
         // Setup new features in DI container
-        setupFeatures(context.container, storageOperations);
+        SecurityFeature.register(context.container, storageOperations);
 
         // Register groups and teams providers for plugin-defined groups/teams
         context.container.registerFactory(GroupsProvider, () => {
@@ -54,29 +53,8 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
                     .map(plugin => plugin.securityTeam);
         });
 
-        const license = context.wcp.getProjectLicense().getRawLicense();
-
-        // Create old security context (for now, still needed for unimplemented features)
-        const oldSecurity = await createSecurity({
-            advancedAccessControlLayer: license?.package?.features?.advancedAccessControlLayer,
-            getTenant: () => {
-                const tenant = context.tenancy.getCurrentTenant();
-                return tenant ? tenant.id : undefined;
-            },
-            storageOperations,
-            groupsProvider: async () =>
-                context.plugins
-                    .byType<SecurityRolePlugin>(SecurityRolePlugin.type)
-                    .map(plugin => plugin.securityRole),
-            teamsProvider: async () =>
-                context.plugins
-                    .byType<SecurityTeamPlugin>(SecurityTeamPlugin.type)
-                    .map(plugin => plugin.securityTeam)
-        });
-
-        // Create hybrid legacy context that delegates to new features where implemented
-        // and forwards to old security for unimplemented features
-        context.security = new LegacyContext(context.container, oldSecurity);
+        // Create legacy context that delegates to new features
+        context.security = new LegacyContext(context.container);
     });
 };
 

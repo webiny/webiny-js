@@ -21,6 +21,7 @@ export const BeforeLoginHandler = createAbstraction<IEventHandler<BeforeLoginEve
 
 export namespace BeforeLoginHandler {
     export type Interface = IEventHandler<BeforeLoginEvent>;
+    export type Event = BeforeLoginEvent;
 }
 
 export interface AfterLoginPayload {
@@ -42,4 +43,5 @@ export const AfterLoginHandler = createAbstraction<IEventHandler<AfterLoginEvent
 
 export namespace AfterLoginHandler {
     export type Interface = IEventHandler<AfterLoginEvent>;
+    export type Event = AfterLoginEvent;
 }

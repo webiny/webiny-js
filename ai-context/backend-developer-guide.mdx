@@ -503,6 +503,11 @@ export const TeamBeforeCreateHandler = createAbstraction<IEventHandler<TeamBefor
     "TeamBeforeCreateHandler"
 );
 
+export namespace TeamBeforeCreateHandler {
+    export type Interface = IEventHandler<TeamBeforeCreateEvent>;
+    export type Event = TeamBeforeCreateEvent;
+}
+
 // After event with handler abstraction
 export class TeamAfterCreateEvent extends DomainEvent<TeamAfterCreatePayload> {
     eventType = "team.afterCreate" as const;
@@ -515,6 +520,11 @@ export class TeamAfterCreateEvent extends DomainEvent<TeamAfterCreatePayload> {
 export const TeamAfterCreateHandler = createAbstraction<IEventHandler<TeamAfterCreateEvent>>(
     "TeamAfterCreateHandler"
 );
+
+export namespace TeamAfterCreateHandler {
+    export type Interface = IEventHandler<TeamAfterCreateEvent>;
+    export type Event = TeamAfterCreateEvent;
+}
 ```
 
 ### Event Payload Definition
@@ -584,6 +594,25 @@ Follow these naming conventions:
 2. **Use `eventType` property** - Not `static type`
 3. **Implement `getHandlerAbstraction()`** - This method returns the handler abstraction
 4. **Export handler abstractions** - So consumers can register event handlers in the DI container
+5. **ALWAYS export namespace with Interface and Event types** - Every handler abstraction MUST export a namespace containing both the Interface type and the Event class
+
+**Example of correct namespace export:**
+```typescript
+export const TeamBeforeCreateHandler = createAbstraction<IEventHandler<TeamBeforeCreateEvent>>(
+    "TeamBeforeCreateHandler"
+);
+
+export namespace TeamBeforeCreateHandler {
+    export type Interface = IEventHandler<TeamBeforeCreateEvent>;
+    export type Event = TeamBeforeCreateEvent;
+}
+```
+
+This namespace pattern enables:
+- Type-safe access to handler interface via `TeamBeforeCreateHandler.Interface`
+- Type-safe access to event class via `TeamBeforeCreateHandler.Event`
+- Proper event handler registration in DI container
+- Clear coupling between events and their handlers
 
 This pattern enables:
 - Type-safe event handling with DI

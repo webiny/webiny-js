@@ -8,8 +8,6 @@ import type {
     ContextRoutes,
     DefinedContextRoutes,
     HTTPMethods,
-    Reply,
-    Request,
     RouteMethodOptions
 } from "~/types.js";
 import { Context } from "~/Context.js";
@@ -38,8 +36,10 @@ import { IfOptionsRequest } from "./PreHandler/IfOptionsRequest.js";
 import { SendEarlyOptionsResponse } from "./PreHandler/SendEarlyOptionsResponse.js";
 import { OnRequestTimeoutPlugin } from "~/plugins/OnRequestTimeoutPlugin.js";
 import { OnRequestResponseSendPlugin } from "~/plugins/OnRequestResponseSendPlugin.js";
+import { Request } from "./abstractions/Request.js";
+import { Reply } from "./abstractions/Reply.js";
 
-const modifyResponseHeaders = (app: FastifyInstance, request: Request, reply: Reply) => {
+const modifyResponseHeaders = (app: FastifyInstance, request: Request.Interface, reply: Reply.Interface) => {
     const modifyHeaders = app.webiny.plugins.byType<ModifyResponseHeadersPlugin>(
         ModifyResponseHeadersPlugin.type
     );
@@ -274,6 +274,12 @@ export const createHandler = (params: CreateHandlerParams) => {
     app.addHook("preHandler", async (request, reply) => {
         app.webiny.request = request;
         app.webiny.reply = reply;
+
+        // Bind request and reply to DI container for runtime access
+        if (app.webiny.container) {
+            app.webiny.container.registerInstance(Request, request);
+            app.webiny.container.registerInstance(Reply, reply);
+        }
         /**
          * Default code to 200 - so we do not need to set it again.
          * Usually we set errors manually when we use reply.send.

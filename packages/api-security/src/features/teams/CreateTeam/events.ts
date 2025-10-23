@@ -15,6 +15,11 @@ export const TeamBeforeCreateHandler = createAbstraction<IEventHandler<TeamBefor
     "TeamBeforeCreateHandler"
 );
 
+export namespace TeamBeforeCreateHandler {
+    export type Interface = IEventHandler<TeamBeforeCreateEvent>;
+    export type Event = TeamBeforeCreateEvent;
+}
+
 export class TeamAfterCreateEvent extends DomainEvent<TeamAfterCreatePayload> {
     eventType = "team.afterCreate" as const;
 
@@ -26,3 +31,8 @@ export class TeamAfterCreateEvent extends DomainEvent<TeamAfterCreatePayload> {
 export const TeamAfterCreateHandler = createAbstraction<IEventHandler<TeamAfterCreateEvent>>(
     "TeamAfterCreateHandler"
 );
+
+export namespace TeamAfterCreateHandler {
+    export type Interface = IEventHandler<TeamAfterCreateEvent>;
+    export type Event = TeamAfterCreateEvent;
+}

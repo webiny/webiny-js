@@ -15,6 +15,11 @@ export const ApiKeyBeforeDeleteHandler = createAbstraction<
     IEventHandler<ApiKeyBeforeDeleteEvent>
 >("ApiKeyBeforeDeleteHandler");
 
+export namespace ApiKeyBeforeDeleteHandler {
+    export type Interface = IEventHandler<ApiKeyBeforeDeleteEvent>;
+    export type Event = ApiKeyBeforeDeleteEvent;
+}
+
 export class ApiKeyAfterDeleteEvent extends DomainEvent<ApiKeyAfterDeletePayload> {
     eventType = "apiKey.afterDelete" as const;
 
@@ -26,3 +31,8 @@ export class ApiKeyAfterDeleteEvent extends DomainEvent<ApiKeyAfterDeletePayload
 export const ApiKeyAfterDeleteHandler = createAbstraction<
     IEventHandler<ApiKeyAfterDeleteEvent>
 >("ApiKeyAfterDeleteHandler");
+
+export namespace ApiKeyAfterDeleteHandler {
+    export type Interface = IEventHandler<ApiKeyAfterDeleteEvent>;
+    export type Event = ApiKeyAfterDeleteEvent;
+}

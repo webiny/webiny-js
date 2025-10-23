@@ -1,4 +1,4 @@
-import type { Container } from "@webiny/di-container";
+import  { type Container } from "@webiny/di-container";
 import type { Security, SecurityIdentity, SecurityPermission, TenantLink } from "~/types.js";
 import {
     AuthenticationContext,
@@ -36,10 +36,7 @@ import { GetTenantLinkByIdentity } from "~/features/tenantLinks/GetTenantLinkByI
  * As we implement each phase, we'll replace forwarding with delegation.
  */
 export class LegacyContext implements Security {
-    constructor(
-        private container: Container,
-        private oldSecurity: Security
-    ) {}
+    constructor(private container: Container) {}
 
     private get identityContext() {
         return this.container.resolve(IdentityContext);
@@ -49,7 +46,6 @@ export class LegacyContext implements Security {
         return this.container.resolve(AuthenticationContext);
     }
 
-    // ===== LEGACY ===== //
     addAuthenticator(authenticator: Authenticator<SecurityIdentity>): void {
         // @ts-expect-error This will go away after full refactor.
         this.container.registerFactory(AuthenticatorAbstraction, () => {
@@ -61,16 +57,17 @@ export class LegacyContext implements Security {
         });
     }
 
-    // ===== LEGACY ===== //
+    getAuthorizers() {
+        return this.container.resolveAll(Authorizer).map(authorizer => {
+            return () => authorizer.authorize();
+        });
+    }
+
     getAuthenticators(): Authenticator[] {
         return this.container.resolveAll(AuthenticatorAbstraction).map(authenticator => {
             return (token: string) => authenticator.authenticate(token);
         });
     }
-
-    // ========================================================================
-    // Phase 1: Identity & Authentication (NEW IMPLEMENTATION)
-    // ========================================================================
 
     async authenticate(token: string): Promise<void> {
         // Authenticate using new context
@@ -170,30 +167,6 @@ export class LegacyContext implements Security {
         return this.identityContext.hasFullAccess();
     }
 
-    // ========================================================================
-    // Phase 1: Events (NEW IMPLEMENTATION)
-    // ========================================================================
-
-    get onBeforeLogin() {
-        return this.oldSecurity.onBeforeLogin;
-    }
-
-    get onLogin() {
-        return this.oldSecurity.onLogin;
-    }
-
-    get onAfterLogin() {
-        return this.oldSecurity.onAfterLogin;
-    }
-
-    get onIdentity() {
-        return this.oldSecurity.onIdentity;
-    }
-
-    // ========================================================================
-    // Phase 2: API Keys (NEW IMPLEMENTATION)
-    // ========================================================================
-
     async getApiKey(id: string) {
         const useCase = this.container.resolve(GetApiKey);
         const result = await useCase.execute(id);
@@ -259,10 +232,6 @@ export class LegacyContext implements Security {
         return true;
     }
 
-    // ========================================================================
-    // Phase 3: Groups (NEW IMPLEMENTATION)
-    // ========================================================================
-
     async getGroup(params: any) {
         const useCase = this.container.resolve(GetGroup);
         const result = await useCase.execute(params.where);
@@ -316,14 +285,6 @@ export class LegacyContext implements Security {
         }
     }
 
-    // ========================================================================
-    // Phase 4+: Forward to old implementation (TO BE REPLACED)
-    // ========================================================================
-
-    getStorageOperations() {
-        return this.oldSecurity.getStorageOperations();
-    }
-
     addAuthorizer(authorizer: any) {
         // @ts-expect-error This will go away after full refactor.
         this.container.registerFactory(Authorizer, () => {
@@ -334,62 +295,6 @@ export class LegacyContext implements Security {
             };
         });
     }
-
-    getAuthorizers() {
-        return this.oldSecurity.getAuthorizers();
-    }
-
-    get onApiKeyBeforeCreate() {
-        return this.oldSecurity.onApiKeyBeforeCreate;
-    }
-
-    get onApiKeyAfterCreate() {
-        return this.oldSecurity.onApiKeyAfterCreate;
-    }
-
-    get onApiKeyBeforeUpdate() {
-        return this.oldSecurity.onApiKeyBeforeUpdate;
-    }
-
-    get onApiKeyAfterUpdate() {
-        return this.oldSecurity.onApiKeyAfterUpdate;
-    }
-
-    get onApiKeyBeforeDelete() {
-        return this.oldSecurity.onApiKeyBeforeDelete;
-    }
-
-    get onApiKeyAfterDelete() {
-        return this.oldSecurity.onApiKeyAfterDelete;
-    }
-
-    get onGroupBeforeCreate() {
-        return this.oldSecurity.onGroupBeforeCreate;
-    }
-
-    get onGroupAfterCreate() {
-        return this.oldSecurity.onGroupAfterCreate;
-    }
-
-    get onGroupBeforeUpdate() {
-        return this.oldSecurity.onGroupBeforeUpdate;
-    }
-
-    get onGroupAfterUpdate() {
-        return this.oldSecurity.onGroupAfterUpdate;
-    }
-
-    get onGroupBeforeDelete() {
-        return this.oldSecurity.onGroupBeforeDelete;
-    }
-
-    get onGroupAfterDelete() {
-        return this.oldSecurity.onGroupAfterDelete;
-    }
-
-    // ========================================================================
-    // Phase 4: Teams (NEW IMPLEMENTATION)
-    // ========================================================================
 
     async getTeam(params: any) {
         const useCase = this.container.resolve(GetTeam);
@@ -443,34 +348,6 @@ export class LegacyContext implements Security {
             throw result.error;
         }
     }
-
-    get onTeamBeforeCreate() {
-        return this.oldSecurity.onTeamBeforeCreate;
-    }
-
-    get onTeamAfterCreate() {
-        return this.oldSecurity.onTeamAfterCreate;
-    }
-
-    get onTeamBeforeUpdate() {
-        return this.oldSecurity.onTeamBeforeUpdate;
-    }
-
-    get onTeamAfterUpdate() {
-        return this.oldSecurity.onTeamAfterUpdate;
-    }
-
-    get onTeamBeforeDelete() {
-        return this.oldSecurity.onTeamBeforeDelete;
-    }
-
-    get onTeamAfterDelete() {
-        return this.oldSecurity.onTeamAfterDelete;
-    }
-
-    // ========================================================================
-    // Phase 5: Tenant Links (NEW IMPLEMENTATION)
-    // ========================================================================
 
     async createTenantLinks(params: any[]) {
         const useCase = this.container.resolve(CreateTenantLinks);

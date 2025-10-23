@@ -1,19 +1,26 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { Security, SecurityStorageOperations } from "~/types";
-import { createSecurity } from "~/createSecurity";
+import { SecurityStorageOperations } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { Container } from "@webiny/di-container";
+import { setupFeatures } from "~/setupFeatures.js";
+import { CreateTenantLinks } from "~/features/tenantLinks/CreateTenantLinks/index.js";
+import { UpdateTenantLinks } from "~/features/tenantLinks/UpdateTenantLinks/index.js";
+import { DeleteTenantLinks } from "~/features/tenantLinks/DeleteTenantLinks/index.js";
+import { ListTenantLinksByType } from "~/features/tenantLinks/ListTenantLinksByType/index.js";
+import { ListTenantLinksByTenant } from "~/features/tenantLinks/ListTenantLinksByTenant/index.js";
+import { ListTenantLinksByIdentity } from "~/features/tenantLinks/ListTenantLinksByIdentity/index.js";
 
 describe("identity test", () => {
     const tenant = "root";
+    let container: Container;
 
     const { storageOperations } = getStorageOps<SecurityStorageOperations>("security");
-    let security: Security;
 
     beforeAll(async () => {
-        security = await createSecurity({
-            getTenant: () => tenant,
-            storageOperations
-        });
+        // Create a new container for each test
+        container = new Container();
+
+        setupFeatures(container, storageOperations);
     });
 
     it("should create, update, delete, and list tenant links", async () => {
@@ -26,11 +33,22 @@ describe("identity test", () => {
 
         const link2 = { tenant, identity: "2", type: "role", data: { role: "OWNER" } };
 
-        await security.createTenantLinks([link1, link2]);
+        // Create tenant links
+        const createUseCase = container.resolve(CreateTenantLinks);
+        const createResult = await createUseCase.execute([link1, link2]);
+        if (createResult.isFail()) {
+            throw createResult.error;
+        }
 
-        const linksByIdentity = await security.listTenantLinksByIdentity({
+        // List by identity
+        const listByIdentityUseCase = container.resolve(ListTenantLinksByIdentity);
+        const linksByIdentityResult = await listByIdentityUseCase.execute({
             identity: "1"
         });
+        if (linksByIdentityResult.isFail()) {
+            throw linksByIdentityResult.error;
+        }
+        const linksByIdentity = linksByIdentityResult.value;
 
         expect(linksByIdentity[0]).toEqual({
             ...link1,
@@ -38,10 +56,16 @@ describe("identity test", () => {
             webinyVersion: process.env.WEBINY_VERSION
         });
 
-        const linksByType = await security.listTenantLinksByType({
+        // List by type
+        const listByTypeUseCase = container.resolve(ListTenantLinksByType);
+        const linksByTypeResult = await listByTypeUseCase.execute({
             type: "group",
             tenant
         });
+        if (linksByTypeResult.isFail()) {
+            throw linksByTypeResult.error;
+        }
+        const linksByType = linksByTypeResult.value;
 
         expect(linksByType[0]).toEqual({
             ...link1,
@@ -49,32 +73,58 @@ describe("identity test", () => {
             webinyVersion: process.env.WEBINY_VERSION
         });
 
-        const linksByTenant = await security.listTenantLinksByTenant({
+        // List by tenant
+        const listByTenantUseCase = container.resolve(ListTenantLinksByTenant);
+        const linksByTenantResult = await listByTenantUseCase.execute({
             tenant
         });
+        if (linksByTenantResult.isFail()) {
+            throw linksByTenantResult.error;
+        }
+        const linksByTenant = linksByTenantResult.value;
 
         expect(linksByTenant).toEqual([
             { ...link1, createdOn: expect.any(String), webinyVersion: process.env.WEBINY_VERSION },
             { ...link2, createdOn: expect.any(String), webinyVersion: process.env.WEBINY_VERSION }
         ]);
 
-        await security.updateTenantLinks([{ ...link2, type: "idp" }]);
+        // Update tenant links
+        const updateUseCase = container.resolve(UpdateTenantLinks);
+        const updateResult = await updateUseCase.execute([{ ...link2, type: "idp" }]);
+        if (updateResult.isFail()) {
+            throw updateResult.error;
+        }
 
-        const idpLinks = await security.listTenantLinksByType({
+        // List by type again (idp)
+        const idpLinksResult = await listByTypeUseCase.execute({
             tenant,
             type: "idp"
         });
+        if (idpLinksResult.isFail()) {
+            throw idpLinksResult.error;
+        }
+        const idpLinks = idpLinksResult.value;
 
         expect(idpLinks.length).toBe(1);
 
-        await security.deleteTenantLinks([
+        // Delete tenant links
+        const deleteUseCase = container.resolve(DeleteTenantLinks);
+        const deleteResult = await deleteUseCase.execute([
             { identity: "1", tenant },
             { identity: "2", tenant }
         ]);
+        if (deleteResult.isFail()) {
+            throw deleteResult.error;
+        }
 
-        const remainingLinksByTenant = await security.listTenantLinksByTenant({
+        // List by tenant again (should be empty)
+        const remainingResult = await listByTenantUseCase.execute({
             tenant
         });
+        if (remainingResult.isFail()) {
+            throw remainingResult.error;
+        }
+        const remainingLinksByTenant = remainingResult.value;
 
         expect(remainingLinksByTenant.length).toBe(0);
     });

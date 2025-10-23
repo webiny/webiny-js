@@ -9,11 +9,11 @@ import type { SecurityContext, SecurityStorageOperations } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { createTenancyContext } from "@webiny/api-tenancy";
 import type { TenancyStorageOperations } from "@webiny/api-tenancy/types";
-import { createSecurityContext } from "@webiny/api-security";
+import { createSecurityContext } from "~/index.js";
 import { triggerAuthentication } from "~tests/wcp/aacl/mocks/triggerAuthentication";
 import { customAuthenticator } from "~tests/wcp/aacl/mocks/customAuthenticator";
 import { customAuthorizer } from "~tests/wcp/aacl/mocks/customAuthorizer";
-import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
+import { authenticateUsingHttpHeader } from "~/plugins/authenticateUsingHttpHeader.js";
 import type { PluginCollection } from "@webiny/plugins/types";
 import type { LambdaContext } from "@webiny/handler-aws/types";
 
@@ -50,8 +50,8 @@ export const createMockContextHandler = (opts: CreateMockContextHandlerOptions =
         plugins: [
             createWcpContext(),
             new ContextPlugin<SecurityContext>(async context => {
-                // @ts-expect-error
                 context.tenancy = {
+                    // @ts-expect-error
                     getCurrentTenant: () => {
                         return {
                             id: "root"
