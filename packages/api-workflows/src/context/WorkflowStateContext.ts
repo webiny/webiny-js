@@ -183,6 +183,16 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                     existingState
                 }
             });
+        } else if (workflow.steps.length === 0) {
+            throw new WebinyError(
+                "Cannot create a workflow state for a workflow that has no steps defined.",
+                "WORKFLOW_NO_STEPS",
+                {
+                    app,
+                    workflowId: workflow.id,
+                    targetRevisionId
+                }
+            );
         }
 
         /**
@@ -191,15 +201,21 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         const entry: ICreateWorkflowStateEntryInput = {
             workflowId: workflow.id,
             comment: undefined,
-            state: WorkflowStateRecordState.pending,
+            state: WorkflowStateRecordState.inReview,
             app,
             targetId,
             isActive: true,
             targetRevisionId,
-            steps: workflow.steps.map(step => {
+            steps: workflow.steps.map((step, index) => {
                 return {
                     ...step,
-                    state: WorkflowStateRecordState.pending,
+                    /**
+                     * First step is in review state, all others are pending.
+                     */
+                    state:
+                        index > 0
+                            ? WorkflowStateRecordState.pending
+                            : WorkflowStateRecordState.inReview,
                     savedBy: null,
                     comment: null
                 };
@@ -345,12 +361,6 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             console.error(ex);
             // do nothing?
         }
-    }
-
-    public async startStateStep(id: string): Promise<IWorkflowState> {
-        const state = await this.getState(id);
-        await state.start();
-        return state;
     }
 
     public async approveStateStep(id: string, comment?: string): Promise<IWorkflowState> {

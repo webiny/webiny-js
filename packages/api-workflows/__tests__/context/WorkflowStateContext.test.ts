@@ -75,7 +75,7 @@ describe("Workflow State Context", () => {
         expect(state.targetRevisionId).toBe("record-id#0001");
         expect(state.targetId).toBe("record-id");
         expect(state.steps).toEqual([
-            ...workflow.steps.map(step => {
+            ...workflow.steps.map((step, index) => {
                 return {
                     isAllowedToReview: true,
                     id: step.id,
@@ -84,7 +84,10 @@ describe("Workflow State Context", () => {
                     color: step.color,
                     teams: step.teams,
                     notifications: step.notifications,
-                    state: WorkflowStateRecordState.pending,
+                    state:
+                        index === 0
+                            ? WorkflowStateRecordState.inReview
+                            : WorkflowStateRecordState.pending,
                     savedBy: null,
                     comment: null
                 };
@@ -94,7 +97,7 @@ describe("Workflow State Context", () => {
         const getResponse = await workflowStateContext.getTargetState(app, targetRevisionId);
 
         expect(getResponse.done).toBeFalse();
-        expect(getResponse.activeStep).toEqual({
+        expect(getResponse.getActiveStep()).toEqual({
             ...state.steps[0]
         });
         expect(getResponse).toEqual({
@@ -126,13 +129,11 @@ describe("Workflow State Context", () => {
         const state = await workflowStateContext.createState(app, targetId);
 
         expect(state.done).toBeFalse();
-        expect(state.state).toEqual(WorkflowStateRecordState.pending);
+        expect(state.state).toEqual(WorkflowStateRecordState.inReview);
 
         const listStatesResponse = await workflowStateContext.listStates();
         expect(listStatesResponse.items.length).toBe(1);
         expect(listStatesResponse.items[0]).toEqual(state);
-
-        await state.start();
 
         const stateAfterReview = await workflowStateContext.getTargetState(app, targetId);
         expect(stateAfterReview.state).toEqual(WorkflowStateRecordState.inReview);
@@ -158,11 +159,10 @@ describe("Workflow State Context", () => {
         });
 
         const stateAfterFirstApprove = await workflowStateContext.getTargetState(app, targetId);
-        expect(stateAfterFirstApprove.state).toEqual(WorkflowStateRecordState.pending);
+        expect(stateAfterFirstApprove.state).toEqual(WorkflowStateRecordState.inReview);
         expect(stateAfterFirstApprove.steps[0].state).toEqual(WorkflowStateRecordState.approved);
-        expect(stateAfterFirstApprove.steps[1].state).toEqual(WorkflowStateRecordState.pending);
+        expect(stateAfterFirstApprove.steps[1].state).toEqual(WorkflowStateRecordState.inReview);
 
-        await stateAfterFirstApprove.start();
         await stateAfterFirstApprove.approve("Second step should be approved.");
 
         expect(stateAfterFirstApprove.steps[1]).toEqual({
@@ -187,5 +187,31 @@ describe("Workflow State Context", () => {
         expect(stateAfterSecondApprove.steps[0].state).toEqual(WorkflowStateRecordState.approved);
         expect(stateAfterSecondApprove.steps[1].state).toEqual(WorkflowStateRecordState.approved);
         expect(stateAfterSecondApprove.done).toBeTrue();
+    });
+
+    it("should throw an error when trying to approve or reject a workflow state but no step is in review", async () => {
+        const { workflowStateContext, workflowsContext } = await createContext();
+        const app = "testingApp";
+        const targetId = "record-id#0001";
+        const mockWorkflow = createMockWorkflow({
+            app
+        });
+        await workflowsContext.storeWorkflow(app, mockWorkflow.id, mockWorkflow);
+
+        const state = await workflowStateContext.createState(app, targetId);
+
+        expect(state.done).toBeFalse();
+        expect(state.state).toEqual(WorkflowStateRecordState.inReview);
+
+        await state.approve("First step should be approved.");
+        await state.approve("Second step should be approved.");
+
+        await expect(() => {
+            return state.approve("There is no step to approve.");
+        }).rejects.toThrow("Cannot approve a workflow state that is not in review.");
+
+        await expect(() => {
+            return state.reject("There is no step to reject.");
+        }).rejects.toThrow("Cannot reject a workflow state that is not in review.");
     });
 });

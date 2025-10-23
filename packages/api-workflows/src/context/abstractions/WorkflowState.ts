@@ -47,8 +47,7 @@ export interface IWorkflowStateRecordStepWithPermissions extends IWorkflowStateR
 export interface IWorkflowState
     extends IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> {
     readonly done: boolean;
-    readonly activeStep: IWorkflowStateRecordStepWithPermissions | undefined;
-    start(): Promise<void>;
+    getActiveStep(): IWorkflowStateRecordStepWithPermissions | undefined;
     approve(comment?: string): Promise<void>;
     reject(comment: string): Promise<void>;
 }

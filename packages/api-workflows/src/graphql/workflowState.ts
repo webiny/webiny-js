@@ -8,7 +8,6 @@ import { cancelWorkflowStateValidation } from "~/validation/cancelWorkflowState.
 import { createWorkflowStateValidation } from "~/validation/createWorkflowState.js";
 import { getTargetWorkflowStateValidation } from "~/validation/getTargetWorkflowState.js";
 import { getWorkflowStateValidation } from "~/validation/getWorkflowState.js";
-import { startWorkflowStateValidation } from "~/validation/startWorkflowState.js";
 import type { IWorkflowState } from "~/context/abstractions/WorkflowState.js";
 
 export const createWorkflowStateSchema = () => {
@@ -181,15 +180,6 @@ export const createWorkflowStateSchema = () => {
                             result.data.app,
                             result.data.targetRevisionId
                         );
-                    });
-                },
-                startWorkflowStateStep: async (_, args, context) => {
-                    return resolve<IWorkflowState>(async () => {
-                        const result = await startWorkflowStateValidation.safeParseAsync(args);
-                        if (!result.success) {
-                            throw createZodError(result.error);
-                        }
-                        return await context.workflowState.startStateStep(result.data.id);
                     });
                 },
                 approveWorkflowStateStep: (_, args, context) => {

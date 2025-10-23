@@ -67,7 +67,7 @@ describe("workflow states graphql", () => {
                             targetId,
                             targetRevisionId,
                             app: workflow.app,
-                            steps: workflow.steps.map(step => {
+                            steps: workflow.steps.map((step, index) => {
                                 return {
                                     id: step.id,
                                     title: step.title,
@@ -75,7 +75,10 @@ describe("workflow states graphql", () => {
                                     color: step.color,
                                     teams: step.teams,
                                     notifications: step.notifications,
-                                    state: WorkflowStateRecordState.pending,
+                                    state:
+                                        index === 0
+                                            ? WorkflowStateRecordState.inReview
+                                            : WorkflowStateRecordState.pending,
                                     comment: null,
                                     savedBy: null
                                 };
@@ -160,82 +163,6 @@ describe("workflow states graphql", () => {
 
         const workflowState = response.data?.workflows?.createWorkflowState?.data;
 
-        const [approveErrorResponse] = await handler.approveWorkflowStateStep({
-            id: workflowState!.id,
-            comment: "Approving step 1"
-        });
-        // should not be able to approve or reject a step of the workflow state that is not in review
-        expect(approveErrorResponse).toMatchObject({
-            data: {
-                workflows: {
-                    approveWorkflowStateStep: {
-                        data: null,
-                        error: {
-                            code: "WORKFLOW_NOT_IN_REVIEW"
-                        }
-                    }
-                }
-            }
-        });
-
-        const [rejectErrorResponse] = await handler.rejectWorkflowStateStep({
-            id: workflowState!.id,
-            comment: "Rejecting step 1"
-        });
-
-        expect(rejectErrorResponse).toMatchObject({
-            data: {
-                workflows: {
-                    rejectWorkflowStateStep: {
-                        data: null,
-                        error: {
-                            code: "WORKFLOW_NOT_IN_REVIEW"
-                        }
-                    }
-                }
-            }
-        });
-
-        const [startedState] = await handler.startWorkflowStateStep({
-            id: workflowState!.id
-        });
-        expect(startedState).toMatchObject({
-            data: {
-                workflows: {
-                    startWorkflowStateStep: {
-                        data: {
-                            steps: [
-                                {
-                                    state: WorkflowStateRecordState.inReview
-                                },
-                                {
-                                    state: WorkflowStateRecordState.pending
-                                }
-                            ]
-                        },
-                        error: null
-                    }
-                }
-            }
-        });
-
-        // should not be possible to start a new step when one is already in review
-        const [tryToStartAgain] = await handler.startWorkflowStateStep({
-            id: workflowState!.id
-        });
-        expect(tryToStartAgain).toMatchObject({
-            data: {
-                workflows: {
-                    startWorkflowStateStep: {
-                        data: null,
-                        error: {
-                            code: "WORKFLOW_PREVIOUS_STEP_NOT_APPROVED"
-                        }
-                    }
-                }
-            }
-        });
-
         // let's move on to approving steps
         const [approveFirstStepResponse] = await handler.approveWorkflowStateStep({
             id: workflowState!.id,
@@ -261,7 +188,7 @@ describe("workflow states graphql", () => {
                                 },
                                 {
                                     id: workflow.steps[1].id,
-                                    state: WorkflowStateRecordState.pending,
+                                    state: WorkflowStateRecordState.inReview,
                                     comment: null,
                                     savedBy: null
                                 }
@@ -274,48 +201,6 @@ describe("workflow states graphql", () => {
         });
         const afterApprovedFirstStepState =
             approveFirstStepResponse.data?.workflows?.approveWorkflowStateStep?.data;
-
-        // this one will fail as review is not started yet for the second step
-        const [tryToApproveSecondStepResponse] = await handler.approveWorkflowStateStep({
-            id: workflowState!.id,
-            comment: "Approving step 2"
-        });
-
-        expect(tryToApproveSecondStepResponse).toMatchObject({
-            data: {
-                workflows: {
-                    approveWorkflowStateStep: {
-                        data: null,
-                        error: {
-                            code: "WORKFLOW_NOT_IN_REVIEW"
-                        }
-                    }
-                }
-            }
-        });
-
-        const [startedSecondStep] = await handler.startWorkflowStateStep({
-            id: workflowState!.id
-        });
-        expect(startedSecondStep).toMatchObject({
-            data: {
-                workflows: {
-                    startWorkflowStateStep: {
-                        data: {
-                            steps: [
-                                {
-                                    state: WorkflowStateRecordState.approved
-                                },
-                                {
-                                    state: WorkflowStateRecordState.inReview
-                                }
-                            ]
-                        },
-                        error: null
-                    }
-                }
-            }
-        });
 
         const [approveSecondStepResponse] = await handler.approveWorkflowStateStep({
             id: workflowState!.id,
@@ -351,23 +236,6 @@ describe("workflow states graphql", () => {
             }
         });
 
-        // there should be no more steps to start or approve
-        const [startAfterAllApproved] = await handler.startWorkflowStateStep({
-            id: workflowState!.id
-        });
-        expect(startAfterAllApproved).toMatchObject({
-            data: {
-                workflows: {
-                    startWorkflowStateStep: {
-                        data: null,
-                        error: {
-                            code: "WORKFLOW_NO_PENDING_STEPS"
-                        }
-                    }
-                }
-            }
-        });
-
         // state should be approved as well, we can check that by getting it
         const [getFinalStateResponse] = await handler.getTargetWorkflowState({
             app: workflow.app,
@@ -395,10 +263,6 @@ describe("workflow states graphql", () => {
         });
 
         const workflowState = response.data?.workflows?.createWorkflowState?.data;
-
-        await handler.startWorkflowStateStep({
-            id: workflowState!.id
-        });
 
         const [rejectResponse] = await handler.rejectWorkflowStateStep({
             id: workflowState!.id,
@@ -436,17 +300,34 @@ describe("workflow states graphql", () => {
             }
         });
 
-        // should not be able to start next step after rejection
-        const [startAfterRejection] = await handler.startWorkflowStateStep({
+        // should not be able to do anything with steps next step after rejection
+        const [approveAfterRejection] = await handler.approveWorkflowStateStep({
             id: workflowState!.id
         });
-        expect(startAfterRejection).toMatchObject({
+        expect(approveAfterRejection).toMatchObject({
             data: {
                 workflows: {
-                    startWorkflowStateStep: {
+                    approveWorkflowStateStep: {
                         data: null,
                         error: {
-                            code: "WORKFLOW_ALREADY_REJECTED"
+                            code: "WORKFLOW_STATE_REJECTED"
+                        }
+                    }
+                }
+            }
+        });
+
+        const [rejectAfterRejection] = await handler.rejectWorkflowStateStep({
+            id: workflowState!.id,
+            comment: "testing"
+        });
+        expect(rejectAfterRejection).toMatchObject({
+            data: {
+                workflows: {
+                    rejectWorkflowStateStep: {
+                        data: null,
+                        error: {
+                            code: "WORKFLOW_STATE_REJECTED"
                         }
                     }
                 }
@@ -589,7 +470,7 @@ describe("workflow states graphql", () => {
             }
         });
     });
-    
+
     it("should not allow reviewing a step current user does not have access to - wrong team", async () => {
         const [response] = await handler.storeWorkflow({
             app: "test",
@@ -634,20 +515,20 @@ describe("workflow states graphql", () => {
             id: "step-2",
             isAllowedToReview: false
         });
-        
+
         const [getWorkflowStateResponse] = await handler.getWorkflowState({
             id: workflowState.id
         });
         const fetchedWorkflowState = getWorkflowStateResponse.data?.workflows?.getWorkflowState
             ?.data as IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions>;
-        
+
         expect(fetchedWorkflowState.steps[0]).toMatchObject({
             id: "step-1",
             isAllowedToReview: true
         });
-        
+
         expect(fetchedWorkflowState.steps[1]).toMatchObject({
-            id:  "step-2",
+            id: "step-2",
             isAllowedToReview: false
         });
     });

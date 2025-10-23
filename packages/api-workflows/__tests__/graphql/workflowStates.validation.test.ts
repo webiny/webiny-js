@@ -43,36 +43,6 @@ describe("workflow states graphql validation", () => {
         });
     });
 
-    it("should fail to validate start state step input", async () => {
-        const [response] = await handler.startWorkflowStateStep({
-            id: ""
-        });
-        expect(response).toMatchObject({
-            data: {
-                workflows: {
-                    startWorkflowStateStep: {
-                        data: null,
-                        error: {
-                            code: "VALIDATION_FAILED_INVALID_FIELDS",
-                            data: {
-                                invalidFields: {
-                                    id: {
-                                        code: "too_small",
-                                        data: {
-                                            path: ["id"]
-                                        },
-                                        message: "ID is required."
-                                    }
-                                }
-                            },
-                            message: "Validation failed."
-                        }
-                    }
-                }
-            }
-        });
-    });
-
     it("should fail to validate approve state step input", async () => {
         const [response] = await handler.approveWorkflowStateStep({
             id: ""

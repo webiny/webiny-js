@@ -67,7 +67,6 @@ export interface IWorkflowStateContext {
     cancelState(id: string): Promise<IWorkflowState>;
     deleteState(id: string): Promise<void>;
 
-    startStateStep(id: string): Promise<IWorkflowState>;
     approveStateStep(id: string, comment?: string): Promise<IWorkflowState>;
     rejectStateStep(id: string, comment: string): Promise<IWorkflowState>;
 }
