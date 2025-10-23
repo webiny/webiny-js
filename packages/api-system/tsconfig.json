@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["src", "__tests__"],
+  "references": [
+    { "path": "../api-core" },
+    { "path": "../api-security" },
+    { "path": "../api-tenancy" },
+    { "path": "../feature" }
+  ],
+  "compilerOptions": {
+    "rootDirs": ["./src", "./__tests__"],
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-security/*": ["../api-security/src/*"],
+      "@webiny/api-security": ["../api-security/src"],
+      "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
+      "@webiny/api-tenancy": ["../api-tenancy/src"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"]
+    },
+    "baseUrl": "."
+  }
+}

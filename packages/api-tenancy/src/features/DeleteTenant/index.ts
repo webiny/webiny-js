@@ -6,9 +6,4 @@ export {
     TenantBeforeDeleteHandler,
     TenantAfterDeleteHandler
 } from "./abstractions.js";
-export {
-    TenantBeforeDeleteEvent,
-    TenantAfterDeleteEvent,
-    type TenantBeforeDeletePayload,
-    type TenantAfterDeletePayload
-} from "./events.js";
+export { TenantBeforeDeleteEvent, TenantAfterDeleteEvent } from "./events.js";

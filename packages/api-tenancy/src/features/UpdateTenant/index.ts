@@ -6,9 +6,4 @@ export {
     TenantBeforeUpdateHandler,
     TenantAfterUpdateHandler
 } from "./abstractions.js";
-export {
-    TenantBeforeUpdateEvent,
-    TenantAfterUpdateEvent,
-    type TenantBeforeUpdatePayload,
-    type TenantAfterUpdatePayload
-} from "./events.js";
+export { TenantBeforeUpdateEvent, TenantAfterUpdateEvent } from "./events.js";

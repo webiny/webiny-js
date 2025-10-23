@@ -1,17 +1,19 @@
 import { Result, createImplementation } from "@webiny/feature/api";
 import { EventPublisher } from "@webiny/api-core";
 import { InstallSystemUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { InstallTenantUseCase } from "../InstallTenant/abstractions.js";
-import { GetRootTenantUseCase } from "../GetRootTenant/abstractions.js";
-import { CreateTenantUseCase } from "../CreateTenant/abstractions.js";
+import { InstallTenantUseCase } from "@webiny/api-tenancy/features/InstallTenant";
+import { GetRootTenantUseCase } from "@webiny/api-tenancy/features/GetRootTenant";
+import { CreateTenantUseCase } from "@webiny/api-tenancy/features/CreateTenant";
+import { DeleteTenantUseCase } from "@webiny/api-tenancy/features/DeleteTenant";
+import { TenantContext } from "@webiny/api-tenancy/features/TenantContext";
+import { IdentityContext } from "@webiny/api-security/features/IdentityContext";
 import type { InstallSystemInput } from "./abstractions.js";
 import { SystemAlreadyInstalledError } from "~/features/InstallSystem/errors.js";
-import { DeleteTenantUseCase } from "~/features/DeleteTenant/index.js";
 import { SystemInstalledEvent } from "~/features/InstallSystem/events.js";
-import { TenantContext } from "~/features/TenantContext/index.js";
 
 class InstallSystemUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private identityContext: IdentityContext.Interface,
         private tenantContext: TenantContext.Interface,
         private eventPublisher: EventPublisher.Interface,
         private installTenantUseCase: InstallTenantUseCase.Interface,
@@ -43,9 +45,11 @@ class InstallSystemUseCaseImpl implements UseCaseAbstraction.Interface {
 
         this.tenantContext.setTenant(rootTenant);
 
-        const installResult = await this.installTenantUseCase.execute({
-            tenant: rootTenant,
-            installationInput
+        const installResult = await this.identityContext.withoutAuthorization(() => {
+            return this.installTenantUseCase.execute({
+                tenant: rootTenant,
+                installationInput
+            });
         });
 
         if (installResult.isOk()) {
@@ -64,6 +68,7 @@ export const InstallSystemUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: InstallSystemUseCaseImpl,
     dependencies: [
+        IdentityContext,
         TenantContext,
         EventPublisher,
         InstallTenantUseCase,

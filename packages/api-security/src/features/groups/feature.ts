@@ -5,6 +5,7 @@ import { ListGroupsFeature } from "./ListGroups/feature.js";
 import { CreateGroupFeature } from "./CreateGroup/feature.js";
 import { UpdateGroupFeature } from "./UpdateGroup/feature.js";
 import { DeleteGroupFeature } from "./DeleteGroup/feature.js";
+import { GroupInstaller } from "~/features/groups/Installer/GroupsInstaller.js";
 
 export const GroupsFeature = createFeature({
     name: "Groups",
@@ -18,5 +19,7 @@ export const GroupsFeature = createFeature({
         CreateGroupFeature.register(container);
         UpdateGroupFeature.register(container);
         DeleteGroupFeature.register(container);
+
+        container.register(GroupInstaller);
     }
 });

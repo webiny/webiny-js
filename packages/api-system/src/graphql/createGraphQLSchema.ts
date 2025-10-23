@@ -1,9 +1,8 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/index.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import types from "./types.gql.js";
 import { type AppInstallationData } from "~/features/InstallTenant/index.js";
 import { InstallSystemUseCase } from "~/features/InstallSystem/index.js";
-import { GetRootTenantUseCase } from "~/features/GetRootTenant/index.js";
+import { GetRootTenantUseCase } from "@webiny/api-tenancy/features/GetRootTenant";
 
 const emptyResolver = () => ({});
 
@@ -11,46 +10,33 @@ interface InstallTenantArgs {
     installationInput: AppInstallationData[];
 }
 
-export default [
-    types,
-    new GraphQLSchemaPlugin({
+export const createGraphQLSchema = () => {
+    return new GraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
-            type TenancyQuery {
+            type SystemQuery {
                 isSystemInstalled: BooleanResponse
             }
 
-            type TenancyMutation {
+            type SystemMutation {
                 installSystem(installationInput: JSON!): BooleanResponse
             }
 
-            type TenantResponse {
-                data: Tenant
-                error: TenancyError
-            }
-
             extend type Query {
-                tenancy: TenancyQuery
+                system: SystemQuery
             }
 
             extend type Mutation {
-                tenancy: TenancyMutation
-            }
-
-            type TenancyError {
-                code: String
-                message: String
-                data: JSON
-                stack: String
+                system: SystemMutation
             }
         `,
         resolvers: {
             Query: {
-                tenancy: emptyResolver
+                system: emptyResolver
             },
             Mutation: {
-                tenancy: emptyResolver
+                system: emptyResolver
             },
-            TenancyQuery: {
+            SystemQuery: {
                 isSystemInstalled: async (_, __, context) => {
                     const getRootTenant = context.container.resolve(GetRootTenantUseCase);
                     const result = await getRootTenant.execute();
@@ -58,7 +44,7 @@ export default [
                     return new Response(result.isOk());
                 }
             },
-            TenancyMutation: {
+            SystemMutation: {
                 installSystem: async (_, args: InstallTenantArgs, context) => {
                     const installSystem = context.container.resolve(InstallSystemUseCase);
 
@@ -77,5 +63,5 @@ export default [
                 }
             }
         }
-    })
-];
+    });
+};

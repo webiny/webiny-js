@@ -23,7 +23,7 @@ describe("Security Parallel Queries", () => {
                 listApiKeys: {
                     data: null,
                     error: {
-                        code: "SECURITY_NOT_AUTHORIZED"
+                        code: "NOT_AUTHORIZED"
                     }
                 }
             }

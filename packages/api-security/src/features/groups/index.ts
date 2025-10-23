@@ -5,4 +5,5 @@ export * from "./ListGroups/index.js";
 export * from "./CreateGroup/index.js";
 export * from "./UpdateGroup/index.js";
 export * from "./DeleteGroup/index.js";
+export * from "./DeleteGroup/index.js";
 export * from "./feature.js";

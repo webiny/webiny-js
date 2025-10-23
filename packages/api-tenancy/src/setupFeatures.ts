@@ -10,7 +10,6 @@ import { UpdateTenantFeature } from "./features/UpdateTenant/feature.js";
 import { DeleteTenantFeature } from "./features/DeleteTenant/feature.js";
 import { GetTenantByIdFeature } from "~/features/GetTenantById/feature.js";
 import { TenantContextFeature } from "~/features/TenantContext/feature.js";
-import { InstallSystemFeature } from "~/features/InstallSystem/feature.js";
 import { InstallTenantFeature } from "~/features/InstallTenant/index.js";
 
 export const setupFeatures = (
@@ -40,6 +39,5 @@ export const setupFeatures = (
     ListTenantsFeature.register(container);
     UpdateTenantFeature.register(container);
     TenantContextFeature.register(container);
-    InstallSystemFeature.register(container);
     InstallTenantFeature.register(container);
 };

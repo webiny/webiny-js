@@ -15148,6 +15148,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-system@workspace:packages/api-system":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-system@workspace:packages/api-system"
+  dependencies:
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-tenancy": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    jest-dynalite: "npm:^3.6.1"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.9.3"
+    vitest: "npm:^3.2.4"
+  peerDependencies:
+    "@webiny/api-security": 0.0.0
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-tenancy-so-ddb@npm:0.0.0, @webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb"
