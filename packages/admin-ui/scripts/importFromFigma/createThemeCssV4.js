@@ -57,7 +57,7 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
         .map(variable => {
             const [colorGroup] = variable.variantName.split("-");
             const cssVarName = variable.aliasName.replace("colors/colors-", "color-");
-            const cssVar = `--border-${variable.variantName}: var(--${cssVarName});`;
+            const cssVar = `--border-color-${variable.variantName}: var(--${cssVarName});`;
 
             if (!currentBorderColor) {
                 currentBorderColor = colorGroup;
@@ -180,7 +180,7 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
             .map(variable => {
                 const [colorGroup] = variable.variantName.split("-");
                 const cssVarName = variable.aliasName.replace("colors/colors-", "color-");
-                const cssVar = `--ring-${variable.variantName}: var(--${cssVarName});`;
+                const cssVar = `--ring-color-${variable.variantName}: var(--${cssVarName});`;
 
                 if (!currentRingColorGroup) {
                     currentRingColorGroup = colorGroup;
