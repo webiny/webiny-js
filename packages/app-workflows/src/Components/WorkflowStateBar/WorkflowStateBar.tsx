@@ -20,6 +20,7 @@ import { ApproveDialog } from "./Bars/dialogs/ApproveDialog.js";
 import { ApproveSuccessDialog } from "./Bars/dialogs/ApproveSuccessDialog.js";
 import { RejectDialog } from "./Bars/dialogs/RejectDialog.js";
 import { RejectSuccessDialog } from "./Bars/dialogs/RejectSuccessDialog.js";
+import { CommentDialog } from "~/Components/WorkflowStateBar/Bars/dialogs/CommentDialog.js";
 
 export interface IWorkflowStateBarProps {
     id: string;
@@ -46,6 +47,9 @@ const WorkflowStateBarWithPresenter = observer((props: IWorkflowStateBarWithPres
             {presenter.vm.showRejectDialog ? <RejectDialog presenter={presenter} /> : null}
             {presenter.vm.showRejectSuccessDialog ? (
                 <RejectSuccessDialog presenter={presenter} />
+            ) : null}
+            {presenter.vm.showStepCommentDialog ? (
+                <CommentDialog presenter={presenter} step={presenter.vm.showStepCommentDialog} />
             ) : null}
             <Plugins>
                 <WorkflowStateBarApproved />

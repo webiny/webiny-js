@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
 import { Dialog, Grid, Loader, Textarea } from "@webiny/admin-ui";
 import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
@@ -7,28 +7,49 @@ interface IRejectDialogProps {
     presenter: IWorkflowStatePresenter;
 }
 
-interface ITextareaNoteProps {
-    value: string;
-}
-
-const TextareaNote = ({ value }: ITextareaNoteProps) => {
-    if (value.trim().length > 0) {
-        return null;
-    }
-
-    return (
-        <span className={"wby-text-destructive-primary"}>
-            You must write a reason when rejecting content.
-        </span>
-    );
-};
+const defaultMessage = "Please write a reason for rejecting the content.";
 
 export const RejectDialog = (props: IRejectDialogProps) => {
     const { presenter } = props;
+    
+    const [value, setValue] = useState<string>("");
+    const [validation, setValidation] = useState({
+        isValid: false,
+        message: defaultMessage
+    });
 
-    const [value, setValue] = React.useState<string>("");
+    const validate = useCallback(
+        async (input?: string) => {
+            const toValidate = input || value;
+            if (!toValidate.trim()) {
+                setValidation({
+                    isValid: false,
+                    message: defaultMessage
+                });
+            } else if (toValidate.length < 10) {
+                setValidation({
+                    isValid: false,
+                    message: "Comment must be at least 10 characters long."
+                });
+            } else {
+                setValidation({ isValid: true, message: "" });
+            }
+        },
+        [validation, value]
+    );
+
+    const onChange = useCallback(
+        (input: string) => {
+            setValue(input);
+            validate(input);
+        },
+        [value]
+    );
 
     const onConfirm = useCallback(() => {
+        if (!validation.isValid) {
+            return;
+        }
         presenter.reject(value);
     }, [presenter.reject, value]);
     return (
@@ -44,7 +65,11 @@ export const RejectDialog = (props: IRejectDialogProps) => {
             actions={
                 <>
                     <Dialog.CancelButton onClick={presenter.hideDialog} />
-                    <Dialog.ConfirmButton text={"Reject content"} onClick={onConfirm} />
+                    <Dialog.ConfirmButton
+                        disabled={!validation.isValid}
+                        text={"Reject content"}
+                        onClick={onConfirm}
+                    />
                 </>
             }
             showCloseButton={true}
@@ -67,8 +92,9 @@ export const RejectDialog = (props: IRejectDialogProps) => {
                         }
                         required={true}
                         value={value}
-                        onChange={setValue}
-                        note={<TextareaNote value={value} />}
+                        onChange={onChange}
+                        validate={validate}
+                        validation={validation}
                     />
                 </Grid.Column>
             </Grid>

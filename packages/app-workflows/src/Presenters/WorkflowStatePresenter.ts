@@ -4,7 +4,11 @@ import type {
 } from "./abstractions/WorkflowStatePresenter.js";
 import type { IWorkflowsRepository, IWorkflowStateRepository } from "../Repositories/index.js";
 import { makeAutoObservable, runInAction, toJS } from "mobx";
-import { type IWorkflowStateModel, WorkflowStateModel } from "~/Models/index.js";
+import {
+    type IWorkflowStateModel,
+    type IWorkflowStateStepModel,
+    WorkflowStateModel
+} from "~/Models/index.js";
 import { type IIdentity, type IWorkflow } from "~/types.js";
 
 export interface IWorkflowStatePresenterParams {
@@ -23,7 +27,9 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     private readonly targetRevisionId;
     private readonly identity;
     private state: IWorkflowStateModel | null | undefined = undefined;
-    private dialog: "approve" | "approve:success" | "reject" | "reject:success" | null = null;
+    private dialog: "approve" | "approve:success" | "reject" | "reject:success" | "comment" | null =
+        null;
+    private comment: IWorkflowStateStepModel | undefined = undefined;
 
     private get isOwner(): boolean {
         return this.state?.createdBy?.id === this.identity.id;
@@ -52,7 +58,8 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             showApproveDialog: this.dialog === "approve",
             showApproveSuccessDialog: this.dialog === "approve:success",
             showRejectDialog: this.dialog === "reject",
-            showRejectSuccessDialog: this.dialog === "reject:success"
+            showRejectSuccessDialog: this.dialog === "reject:success",
+            showStepCommentDialog: this.comment
         };
     }
 
@@ -144,12 +151,23 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     hideDialog = () => {
         runInAction(() => {
             this.dialog = null;
+            this.comment = undefined;
         });
     };
 
     showRejectDialog = () => {
         runInAction(() => {
             this.dialog = "reject";
+        });
+    };
+
+    showCommentDialog = (id: string) => {
+        const step = this.state?.steps.find(step => step.id === id);
+        if (!step) {
+            return;
+        }
+        runInAction(() => {
+            this.comment = step;
         });
     };
 }
