@@ -16587,7 +16587,7 @@ __metadata:
     sass-loader: "npm:^16.0.5"
     scheduler: "npm:0.26.0"
     style-loader: "npm:3.3.4"
-    tailwindcss: "npm:^4.1.14"
+    tailwindcss: "npm:^4.1.16"
     ts-checker-rspack-plugin: "npm:^1.1.5"
     ts-morph: "npm:^24.0.0"
     ts-patch: "npm:^3.3.0"
@@ -35408,13 +35408,6 @@ __metadata:
   version: 4.1.16
   resolution: "tailwindcss@npm:4.1.16"
   checksum: 10/1a17c0f652268440a29997828d7d002c1ae334841ca56767e61e228eb0aaadbbc48e694619bedbb37c3e9a7c89182168e9035bd62bbf48dc617c97ef36b78a36
-  languageName: node
-  linkType: hard
-
-"tailwindcss@npm:^4.1.14":
-  version: 4.1.14
-  resolution: "tailwindcss@npm:4.1.14"
-  checksum: 10/4d5da7853d0234d9a4056e4af0f727a1dc225f937f0eff6467826365cb31890e50fc6781a666ab757b972597240e98e643b1f6387b87ddee4f3edae9c2361bc2
   languageName: node
   linkType: hard
 
