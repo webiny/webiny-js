@@ -11,16 +11,18 @@ type AccordionTriggerProps = Pick<
     "title" | "description" | "icon" | "handle" | "interactive" | "actions" | "draggable"
 >;
 
-const OpenCloseIndicator = () => {
+const OpenCloseIndicator = ({ className }: { className?: string }) => {
     return (
-        <Icon
-            size={"lg"}
-            className={"wby-transition"}
-            color={"neutral-strong"}
-            data-role={"open-close-indicator"}
-            label={"Open/close indicator"}
-            icon={<KeyboardArrowDownIcon />}
-        />
+        <div className={className}>
+            <Icon
+                size={"lg"}
+                className={"wby-transition"}
+                color={"neutral-strong"}
+                data-role={"open-close-indicator"}
+                label={"Open/close indicator"}
+                icon={<KeyboardArrowDownIcon />}
+            />
+        </div>
     );
 };
 
@@ -77,7 +79,7 @@ const AccordionTrigger = ({
                 )}
             >
                 {draggable ? <AccordionItemDragHandle /> : null}
-                {isInteractable ? <OpenCloseIndicator /> : null}
+                {isInteractable ? <OpenCloseIndicator className="wby-pl-md" /> : null}
 
                 <div
                     className={
