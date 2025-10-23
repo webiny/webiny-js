@@ -1,16 +1,16 @@
 import React from "react";
 import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
 import { Dialog, Grid } from "@webiny/admin-ui";
-import { ReactComponent as ApproveIcon } from "@webiny/icons/check.svg";
+import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
 
-interface IApproveSuccessDialogProps {
+interface IRejectSuccessDialogProps {
     presenter: IWorkflowStatePresenter;
 }
 
-export const ApproveSuccessDialog = (props: IApproveSuccessDialogProps) => {
+export const RejectSuccessDialog = (props: IRejectSuccessDialogProps) => {
     const { presenter } = props;
 
-    const step = presenter.vm.lastApprovedStep;
+    const step = presenter.vm.lastRejectedStep;
     if (!step) {
         return null;
     }
@@ -21,8 +21,8 @@ export const ApproveSuccessDialog = (props: IApproveSuccessDialogProps) => {
             onOpenChange={presenter.hideDialog}
             title={
                 <>
-                    <ApproveIcon className={"wby-fill-success"} />
-                    {step.title} Approved
+                    <RejectIcon className={"wby-fill-destructive"} />
+                    {step.title} Rejected
                 </>
             }
             actions={

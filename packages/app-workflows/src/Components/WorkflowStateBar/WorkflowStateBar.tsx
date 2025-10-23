@@ -10,16 +10,16 @@ import { Plugins } from "@webiny/app";
 import { WorkflowStateBarError } from "./Bars/WorkflowStateBarError.js";
 import { WorkflowStateBarLoading } from "./Bars/WorkflowStateBarLoading.js";
 import { WorkflowStateBarRequestReview } from "./Bars/WorkflowStateBarRequestReview.js";
-import { WorkflowStateBarStartReview } from "./Bars/WorkflowStateBarStartReview.js";
 import { WorkflowStateBarCancelReview } from "./Bars/WorkflowStateBarCancelReview.js";
 import { WorkflowStateBarReview } from "./Bars/WorkflowStateBarReview.js";
 import { WorkflowStateBarApproved } from "./Bars/WorkflowStateBarApproved.js";
 import { WorkflowStateBarRejected } from "./Bars/WorkflowStateBarRejected.js";
 import { WorkflowStateBarWorkflow } from "./Bars/WorkflowStateBarWorkflow.js";
 import { WorkflowStateBarComponent } from "./WorkflowStateBarComponent.js";
-import { ApproveDialog } from "~/Components/WorkflowStateBar/Bars/dialogs/ApproveDialog.js";
-import { ApproveSuccessDialog } from "~/Components/WorkflowStateBar/Bars/dialogs/ApproveSuccessDialog.js";
-import { RejectDialog } from "~/Components/WorkflowStateBar/Bars/dialogs/RejectDialog.js";
+import { ApproveDialog } from "./Bars/dialogs/ApproveDialog.js";
+import { ApproveSuccessDialog } from "./Bars/dialogs/ApproveSuccessDialog.js";
+import { RejectDialog } from "./Bars/dialogs/RejectDialog.js";
+import { RejectSuccessDialog } from "./Bars/dialogs/RejectSuccessDialog.js";
 
 export interface IWorkflowStateBarProps {
     id: string;
@@ -44,11 +44,13 @@ const WorkflowStateBarWithPresenter = observer((props: IWorkflowStateBarWithPres
                 <ApproveSuccessDialog presenter={presenter} />
             ) : null}
             {presenter.vm.showRejectDialog ? <RejectDialog presenter={presenter} /> : null}
+            {presenter.vm.showRejectSuccessDialog ? (
+                <RejectSuccessDialog presenter={presenter} />
+            ) : null}
             <Plugins>
                 <WorkflowStateBarApproved />
                 <WorkflowStateBarRejected />
                 <WorkflowStateBarReview />
-                <WorkflowStateBarStartReview />
                 <WorkflowStateBarCancelReview />
                 <WorkflowStateBarRequestReview />
                 <WorkflowStateBarLoading />

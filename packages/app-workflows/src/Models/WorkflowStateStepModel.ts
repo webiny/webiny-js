@@ -12,6 +12,7 @@ export class WorkflowStateStepModel implements IWorkflowStateStepModel {
     public notifications;
     public color;
     public description;
+    public isAllowedToReview;
 
     public constructor(params: IWorkflowStateStep) {
         this.id = params.id;
@@ -23,6 +24,7 @@ export class WorkflowStateStepModel implements IWorkflowStateStepModel {
         this.comment = params.comment;
         this.savedBy = params.savedBy;
         this.state = params.state;
+        this.isAllowedToReview = params.isAllowedToReview;
 
         makeAutoObservable(this);
     }
@@ -37,7 +39,8 @@ export class WorkflowStateStepModel implements IWorkflowStateStepModel {
             notifications: this.notifications,
             teams: this.teams,
             color: this.color,
-            description: this.description
+            description: this.description,
+            isAllowedToReview: this.isAllowedToReview
         });
     }
 

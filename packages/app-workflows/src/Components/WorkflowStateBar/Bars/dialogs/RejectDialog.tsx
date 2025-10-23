@@ -1,11 +1,27 @@
 import React, { useCallback } from "react";
 import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
-import { Dialog, Grid, Textarea } from "@webiny/admin-ui";
+import { Dialog, Grid, Loader, Textarea } from "@webiny/admin-ui";
 import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
 
 interface IRejectDialogProps {
     presenter: IWorkflowStatePresenter;
 }
+
+interface ITextareaNoteProps {
+    value: string;
+}
+
+const TextareaNote = ({ value }: ITextareaNoteProps) => {
+    if (value.trim().length > 0) {
+        return null;
+    }
+
+    return (
+        <span className={"wby-text-destructive-primary"}>
+            You must write a reason when rejecting content.
+        </span>
+    );
+};
 
 export const RejectDialog = (props: IRejectDialogProps) => {
     const { presenter } = props;
@@ -34,6 +50,9 @@ export const RejectDialog = (props: IRejectDialogProps) => {
             showCloseButton={true}
             dismissible={true}
         >
+            {presenter.vm.loading ? (
+                <Loader size="sm" variant="accent" indeterminate={true} />
+            ) : null}
             <Grid>
                 <Grid.Column span={12}>
                     You are about to reject the <strong>{presenter.vm.step?.title}</strong>, are you
@@ -49,6 +68,7 @@ export const RejectDialog = (props: IRejectDialogProps) => {
                         required={true}
                         value={value}
                         onChange={setValue}
+                        note={<TextareaNote value={value} />}
                     />
                 </Grid.Column>
             </Grid>

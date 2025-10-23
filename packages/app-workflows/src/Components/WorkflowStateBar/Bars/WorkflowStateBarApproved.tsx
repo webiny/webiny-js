@@ -21,7 +21,7 @@ export const WorkflowStateBarApproved = WorkflowStateBarComponent.createDecorato
                     actions={
                         <>
                             <Alert.Action
-                                text={"Cancel Review Request"}
+                                text={"Remove Review Request"}
                                 onClick={presenter.cancel}
                             />
                         </>

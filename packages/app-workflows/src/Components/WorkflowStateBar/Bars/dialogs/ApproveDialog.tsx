@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
-import { Dialog, Grid, Textarea } from "@webiny/admin-ui";
+import { Dialog, Grid, Loader, Textarea } from "@webiny/admin-ui";
 import { ReactComponent as ApproveIcon } from "@webiny/icons/check.svg";
 
 interface IApproveDialogProps {
@@ -13,7 +13,8 @@ export const ApproveDialog = (props: IApproveDialogProps) => {
     const [value, setValue] = React.useState<string>("");
 
     const onConfirm = useCallback(() => {
-        // presenter.approve(value);
+        presenter.approve(value);
+        return false;
     }, [presenter.approve, value]);
     return (
         <Dialog
@@ -37,6 +38,9 @@ export const ApproveDialog = (props: IApproveDialogProps) => {
             showCloseButton={true}
             dismissible={true}
         >
+            {presenter.vm.loading ? (
+                <Loader size="sm" variant="accent" indeterminate={true} />
+            ) : null}
             <Grid>
                 <Grid.Column span={12}>
                     You are about to approve the <strong>{presenter.vm.step?.title}</strong>.

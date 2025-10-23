@@ -10,11 +10,19 @@ export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(
     return observer(function WorkflowStateBarReviewDecorator(props) {
         const { presenter } = props;
 
-        if (!presenter.vm.canReview) {
+        const { step } = presenter.vm;
+        if (!step) {
             return <Original {...props} />;
+        } else if (!step.isAllowedToReview) {
+            return (
+                <>
+                    <Alert>
+                        This item is currently under <strong>{step.title}</strong> review, but you
+                        are not in the team assigned to review it.
+                    </Alert>
+                </>
+            );
         }
-
-        const { title } = presenter.vm.step || {};
 
         return (
             <>
@@ -30,7 +38,7 @@ export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(
                         </>
                     }
                 >
-                    This item is currently under <strong>{title}</strong> review.
+                    This item is currently under <strong>{step.title}</strong> review.
                 </Alert>
             </>
         );

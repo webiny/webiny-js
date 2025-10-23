@@ -51,10 +51,12 @@ export interface IWorkflowStateStep extends IWorkflowStep {
     state: WorkflowStateValue;
     comment: string | null | undefined;
     savedBy: IIdentity | null | undefined;
+    isAllowedToReview: boolean;
 }
 
 export interface IWorkflowState {
     id: string;
+    isActive: boolean;
     app: string;
     targetId: string;
     targetRevisionId: string;
