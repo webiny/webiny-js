@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { useFeature } from "@webiny/app";
-import { Alert, OverlayLoader, ProgressItemState, SteppedProgress, Text } from "@webiny/admin-ui";
+import { OverlayLoader, ProgressItemState, SteppedProgress, Text } from "@webiny/admin-ui";
 import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/feature.js";
 import { LoginScreen } from "~/base/ui/LoginScreen.js";
 import { Tags } from "~/base/ui/Tags.js";
