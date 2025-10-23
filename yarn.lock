@@ -16557,6 +16557,7 @@ __metadata:
     "@rspack/plugin-react-refresh": "npm:^1.5.1"
     "@svgr/webpack": "npm:^6.5.1"
     "@swc/plugin-emotion": "npm:^11.1.0"
+    "@tailwindcss/postcss": "npm:^4.1.16"
     "@types/webpack-env": "npm:^1.18.8"
     camelcase: "npm:^6.3.0"
     case-sensitive-paths-webpack-plugin: "npm:2.4.0"
