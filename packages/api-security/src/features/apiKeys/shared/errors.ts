@@ -36,3 +36,18 @@ export class NotAuthorizedError extends BaseError<NotAuthorizedErrorData> {
         });
     }
 }
+
+type ApiKeyValidationErrorData = {
+    message: string;
+};
+
+export class ApiKeyValidationError extends BaseError<ApiKeyValidationErrorData> {
+    override readonly code = "API_KEY_VALIDATION_ERROR" as const;
+
+    constructor(message: string) {
+        super({
+            message,
+            data: { message }
+        });
+    }
+}

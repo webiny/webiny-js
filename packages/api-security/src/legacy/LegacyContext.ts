@@ -18,6 +18,11 @@ import { ListGroups } from "~/features/groups/ListGroups/index.js";
 import { CreateGroup } from "~/features/groups/CreateGroup/index.js";
 import { UpdateGroup } from "~/features/groups/UpdateGroup/index.js";
 import { DeleteGroup } from "~/features/groups/DeleteGroup/index.js";
+import { GetTeam } from "~/features/teams/GetTeam/index.js";
+import { ListTeams } from "~/features/teams/ListTeams/index.js";
+import { CreateTeam } from "~/features/teams/CreateTeam/index.js";
+import { UpdateTeam } from "~/features/teams/UpdateTeam/index.js";
+import { DeleteTeam } from "~/features/teams/DeleteTeam/index.js";
 
 /**
  * Legacy bridge that implements the old Security interface.
@@ -375,25 +380,61 @@ export class LegacyContext implements Security {
         return this.oldSecurity.onGroupAfterDelete;
     }
 
-    // Teams - Phase 4 (forwarding for now)
+    // ========================================================================
+    // Phase 4: Teams (NEW IMPLEMENTATION)
+    // ========================================================================
+
     async getTeam(params: any) {
-        return this.oldSecurity.getTeam(params);
+        const useCase = this.container.resolve(GetTeam);
+        const result = await useCase.execute(params.where);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return result.value;
     }
 
     async listTeams(params?: any) {
-        return this.oldSecurity.listTeams(params);
+        const useCase = this.container.resolve(ListTeams);
+        const result = await useCase.execute(params);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return result.value;
     }
 
     async createTeam(input: any) {
-        return this.oldSecurity.createTeam(input);
+        const useCase = this.container.resolve(CreateTeam);
+        const result = await useCase.execute(input);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return result.value;
     }
 
     async updateTeam(id: string, input: any) {
-        return this.oldSecurity.updateTeam(id, input);
+        const useCase = this.container.resolve(UpdateTeam);
+        const result = await useCase.execute(id, input);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return result.value;
     }
 
     async deleteTeam(id: string) {
-        return this.oldSecurity.deleteTeam(id);
+        const useCase = this.container.resolve(DeleteTeam);
+        const result = await useCase.execute(id);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
     }
 
     get onTeamBeforeCreate() {

@@ -9,7 +9,7 @@ import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { createGroupValidation } from "./schema.js";
 import { GroupBeforeCreateEvent, GroupAfterCreateEvent } from "./events.js";
 import type { Group, CreateGroupInput } from "../shared/types.js";
-import { NotAuthorizedError, GroupExistsError } from "../shared/errors.js";
+import { NotAuthorizedError, GroupExistsError, GroupValidationError } from "../shared/errors.js";
 
 export class CreateGroupUseCase {
     constructor(
@@ -28,7 +28,7 @@ export class CreateGroupUseCase {
 
         const validation = createGroupValidation.safeParse(input);
         if (!validation.success) {
-            return Result.fail(new Error(validation.error.errors[0].message));
+            return Result.fail(new GroupValidationError(validation.error.errors[0].message));
         }
 
         const tenant = this.tenantContext.getTenant();

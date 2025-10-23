@@ -143,7 +143,7 @@ describe("Security Team CRUD Test", () => {
                     getTeam: {
                         data: null,
                         error: {
-                            code: "NOT_FOUND",
+                            code: "TEAM_NOT_FOUND",
                             data: null
                         }
                     }
@@ -181,7 +181,9 @@ describe("Security Team CRUD Test", () => {
                         error: {
                             code: "TEAM_EXISTS",
                             message: `Team with slug "${mocks.teamA.slug}" already exists.`,
-                            data: null
+                            data: {
+                                slug: "team-a"
+                            }
                         }
                     }
                 }
@@ -216,7 +218,7 @@ describe("Security Team CRUD Test", () => {
 
     test("should not allow deletion of a team created via a plugin", async () => {
         // Creating a team with same "slug" should not be allowed
-        const [response] = await securityTeam.delete({ id: "" });
+        const [response] = await securityTeam.delete({ id: "test-team-2" });
 
         expect(response).toEqual({
             data: {

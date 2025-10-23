@@ -319,6 +319,87 @@ This pattern provides:
 - **Consistent wrapping** - Infrastructure errors wrapped in domain errors
 - **Better error handling** - Consumers can handle specific error types
 
+### Use Case Error Handling Pattern
+
+**CRITICAL:** Use cases MUST extend repository errors with their own use-case-specific errors.
+
+Every use case abstraction must define:
+1. An extendable error interface for use-case-specific errors
+2. A union type combining use-case errors with repository errors
+3. An exported error type in the namespace
+
+```typescript
+// features/apiKeys/CreateApiKey/abstractions.ts
+import { createAbstraction } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
+import { ApiKeysRepository } from "../shared/abstractions.js";
+import { NotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
+
+// 1. Define extendable interface for use-case-specific errors
+export interface ICreateApiKeyErrors {
+    notAuthorized: NotAuthorizedError;
+    validation: ApiKeyValidationError;
+}
+
+// 2. Create union of use-case errors + repository errors
+type CreateApiKeyError = ICreateApiKeyErrors[keyof ICreateApiKeyErrors] | ApiKeysRepository.Error;
+
+// 3. Use in interface
+export interface ICreateApiKey {
+    execute(input: CreateApiKeyInput): Promise<Result<ApiKey, CreateApiKeyError>>;
+}
+
+export const CreateApiKey = createAbstraction<ICreateApiKey>("CreateApiKey");
+
+// 4. Export error type in namespace
+export namespace CreateApiKey {
+    export type Interface = ICreateApiKey;
+    export type Error = CreateApiKeyError; // Consumers can use CreateApiKey.Error
+}
+```
+
+This pattern ensures:
+- All repository errors (storage, not found, etc.) are automatically included
+- Use case can add its own specific errors (validation, authorization, business rules)
+- Type safety throughout the error handling chain
+- Clear documentation of all possible errors
+
+**Use Case Implementation:**
+
+```typescript
+// features/apiKeys/CreateApiKey/CreateApiKeyUseCase.ts
+import { CreateApiKey } from "./abstractions.js";
+import { ApiKeysRepository } from "../shared/abstractions.js";
+import { NotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
+
+class CreateApiKeyUseCaseImpl implements CreateApiKey.Interface {
+    constructor(
+        private identityContext: IdentityContext.Interface,
+        private repository: ApiKeysRepository.Interface
+    ) {}
+
+    async execute(input: CreateApiKeyInput): Promise<Result<ApiKey, CreateApiKey.Error>> {
+        // Use-case specific error
+        if (!hasPermission) {
+            return Result.fail(new NotAuthorizedError());
+        }
+
+        // Validation error
+        if (!validation.success) {
+            return Result.fail(new ApiKeyValidationError(validation.error.message));
+        }
+
+        // Repository errors are automatically included in CreateApiKey.Error
+        const result = await this.repository.create(apiKey);
+        if (result.isFail()) {
+            return Result.fail(result.error); // Could be ApiKeyStorageError
+        }
+
+        return Result.ok(result.value);
+    }
+}
+```
+
 ### Result Pattern
 
 Always use `Result<T, E>` for operations that can fail:
@@ -340,6 +421,148 @@ const value = result.value;
 ```
 
 Never use `result.isError()`, `result.getError()`, or `result.getValue()` - these are incorrect patterns.
+
+### Validation Errors
+
+**NEVER use generic `Error` for validation failures.** Always create domain-specific validation errors:
+
+```typescript
+// shared/errors.ts
+export class ApiKeyValidationError extends BaseError<{ message: string }> {
+    override readonly code = "API_KEY_VALIDATION_ERROR" as const;
+
+    constructor(message: string) {
+        super({
+            message,
+            data: { message }
+        });
+    }
+}
+
+// In use case
+const validation = schema.safeParse(input);
+if (!validation.success) {
+    return Result.fail(new ApiKeyValidationError(validation.error.errors[0].message));
+}
+```
+
+This ensures error codes are identifiable in API responses and logs.
+
+## Domain Events Pattern
+
+Domain events notify the system when important domain actions occur. Every event MUST have a corresponding handler abstraction.
+
+### Event Definition Pattern
+
+Events must follow this structure with handler abstractions:
+
+```typescript
+// features/teams/CreateTeam/events.ts
+import { createAbstraction } from "@webiny/feature/api";
+import { DomainEvent } from "@webiny/api-core";
+import type { IEventHandler } from "@webiny/api-core";
+import type { TeamBeforeCreatePayload, TeamAfterCreatePayload } from "./abstractions.js";
+
+// Before event with handler abstraction
+export class TeamBeforeCreateEvent extends DomainEvent<TeamBeforeCreatePayload> {
+    eventType = "team.beforeCreate" as const;
+
+    getHandlerAbstraction() {
+        return TeamBeforeCreateHandler;
+    }
+}
+
+export const TeamBeforeCreateHandler = createAbstraction<IEventHandler<TeamBeforeCreateEvent>>(
+    "TeamBeforeCreateHandler"
+);
+
+// After event with handler abstraction
+export class TeamAfterCreateEvent extends DomainEvent<TeamAfterCreatePayload> {
+    eventType = "team.afterCreate" as const;
+
+    getHandlerAbstraction() {
+        return TeamAfterCreateHandler;
+    }
+}
+
+export const TeamAfterCreateHandler = createAbstraction<IEventHandler<TeamAfterCreateEvent>>(
+    "TeamAfterCreateHandler"
+);
+```
+
+### Event Payload Definition
+
+Define event payloads in the abstraction file:
+
+```typescript
+// features/teams/CreateTeam/abstractions.ts
+export interface TeamBeforeCreatePayload {
+    team: Team;
+    input: CreateTeamInput;
+}
+
+export interface TeamAfterCreatePayload {
+    team: Team;
+    input: CreateTeamInput;
+}
+```
+
+### Publishing Events
+
+Publish events from use cases using EventPublisher:
+
+```typescript
+// features/teams/CreateTeam/CreateTeamUseCase.ts
+import { EventPublisher } from "@webiny/api-core";
+import { TeamBeforeCreateEvent, TeamAfterCreateEvent } from "./events.js";
+
+class CreateTeamUseCaseImpl implements CreateTeam.Interface {
+    constructor(
+        private eventPublisher: EventPublisher.Interface,
+        private repository: TeamsRepository.Interface
+    ) {}
+
+    async execute(input: CreateTeamInput): Promise<Result<Team, CreateTeam.Error>> {
+        const team = createTeamFromInput(input);
+
+        // Publish before event
+        await this.eventPublisher.publish(
+            new TeamBeforeCreateEvent({ team, input })
+        );
+
+        const result = await this.repository.create(team);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        // Publish after event
+        await this.eventPublisher.publish(
+            new TeamAfterCreateEvent({ team, input })
+        );
+
+        return Result.ok(team);
+    }
+}
+```
+
+### Event Naming Convention
+
+Follow these naming conventions:
+- Event types use `entityName.action` format (e.g., `"team.beforeCreate"`, `"team.afterUpdate"`)
+- Handler abstractions use `EntityActionHandler` format (e.g., `TeamBeforeCreateHandler`)
+- Event classes use `EntityActionEvent` format (e.g., `TeamBeforeCreateEvent`)
+
+**Critical Rules:**
+1. **ALWAYS create handler abstractions** - Every event must have a `createAbstraction` for its handler
+2. **Use `eventType` property** - Not `static type`
+3. **Implement `getHandlerAbstraction()`** - This method returns the handler abstraction
+4. **Export handler abstractions** - So consumers can register event handlers in the DI container
+
+This pattern enables:
+- Type-safe event handling with DI
+- Decoupled event producers and consumers
+- Testable event handlers
+- Clear event contracts
 
 ## Public API Design
 

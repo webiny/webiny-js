@@ -1,19 +1,18 @@
-export interface ErrorData<TData = any> {
-    message: string;
-    data: TData;
-}
-
 export interface ErrorOptions {
     stack?: string;
 }
 
-export abstract class BaseError<TData = Record<string, any>> extends Error {
-    public abstract readonly code: string;
-    public readonly data: TData;
+type ErrorDataWithOptionalData<TData> = TData extends void
+    ? { message: string; data?: never }
+    : { message: string; data: TData };
 
-    protected constructor(data: ErrorData<TData>, options?: ErrorOptions) {
-        super(data.message);
+export abstract class BaseError<TData = void> extends Error {
+    public abstract readonly code: string;
+    public readonly data: TData extends void ? undefined : TData;
+
+    protected constructor(input: ErrorDataWithOptionalData<TData>, options?: ErrorOptions) {
+        super(input.message);
         this.stack = options?.stack;
-        this.data = data.data;
+        this.data = input.data as any;
     }
 }

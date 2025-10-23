@@ -73,3 +73,18 @@ export class CannotDeletePluginGroupsError extends BaseError<void> {
         });
     }
 }
+
+type GroupValidationErrorData = {
+    message: string;
+};
+
+export class GroupValidationError extends BaseError<GroupValidationErrorData> {
+    override readonly code = "GROUP_VALIDATION_ERROR" as const;
+
+    constructor(message: string) {
+        super({
+            message,
+            data: { message }
+        });
+    }
+}

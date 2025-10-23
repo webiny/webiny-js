@@ -1,19 +1,20 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { Group, UpdateGroupInput } from "../shared/types.js";
+import { GroupsRepository } from "../shared/abstractions.js";
 import {
     NotAuthorizedError,
-    GroupNotFoundError,
-    GroupStorageError,
-    CannotUpdatePluginGroupsError
+    CannotUpdatePluginGroupsError,
+    GroupValidationError
 } from "../shared/errors.js";
 
-type UpdateGroupError =
-    | NotAuthorizedError
-    | GroupNotFoundError
-    | GroupStorageError
-    | CannotUpdatePluginGroupsError
-    | Error;
+export interface IUpdateGroupErrors {
+    notAuthorized: NotAuthorizedError;
+    cannotUpdatePlugin: CannotUpdatePluginGroupsError;
+    validation: GroupValidationError;
+}
+
+type UpdateGroupError = IUpdateGroupErrors[keyof IUpdateGroupErrors] | GroupsRepository.Error;
 
 export interface IUpdateGroup {
     execute(id: string, input: UpdateGroupInput): Promise<Result<Group, UpdateGroupError>>;

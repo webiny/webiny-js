@@ -1,9 +1,16 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { Group, CreateGroupInput } from "../shared/types.js";
-import { NotAuthorizedError, GroupExistsError, GroupStorageError } from "../shared/errors.js";
+import { GroupsRepository } from "../shared/abstractions.js";
+import { NotAuthorizedError, GroupExistsError, GroupValidationError } from "../shared/errors.js";
 
-type CreateGroupError = NotAuthorizedError | GroupExistsError | GroupStorageError | Error;
+export interface ICreateGroupErrors {
+    notAuthorized: NotAuthorizedError;
+    groupExists: GroupExistsError;
+    validation: GroupValidationError;
+}
+
+type CreateGroupError = ICreateGroupErrors[keyof ICreateGroupErrors] | GroupsRepository.Error;
 
 export interface ICreateGroup {
     execute(input: CreateGroupInput): Promise<Result<Group, CreateGroupError>>;

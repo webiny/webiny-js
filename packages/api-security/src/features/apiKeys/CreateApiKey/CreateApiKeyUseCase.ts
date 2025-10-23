@@ -12,6 +12,7 @@ import type { ApiKey, CreateApiKeyInput } from "../shared/types.js";
 import type { ApiKeyPermission } from "~/types.js";
 import { NotAuthorizedError } from "~/index.js";
 import { generateToken } from "~/features/apiKeys/shared/generateToken.js";
+import { ApiKeyValidationError } from "../shared/errors.js";
 
 export class CreateApiKeyUseCase {
     constructor(
@@ -21,7 +22,7 @@ export class CreateApiKeyUseCase {
         private repository: ApiKeysRepository.Interface
     ) {}
 
-    async execute(input: CreateApiKeyInput): Promise<Result<ApiKey, Error>> {
+    async execute(input: CreateApiKeyInput): Promise<Result<ApiKey, CreateApiKey.Error>> {
         const hasPermission =
             await this.identityContext.getPermission<ApiKeyPermission>("security.apiKey");
 
@@ -31,7 +32,7 @@ export class CreateApiKeyUseCase {
 
         const validation = createApiKeyInputSchema.safeParse(input);
         if (!validation.success) {
-            return Result.fail(new Error(validation.error.errors[0].message));
+            return Result.fail(new ApiKeyValidationError(validation.error.errors[0].message));
         }
 
         const tenant = this.tenantContext.getTenant();

@@ -5,8 +5,7 @@ export class TeamStorageError extends BaseError {
 
     constructor(error: Error) {
         super({
-            message: error.message,
-            data: {}
+            message: error.message
         });
     }
 }
@@ -16,8 +15,7 @@ export class TeamNotFoundError extends BaseError {
 
     constructor() {
         super({
-            message: `Team was not found!`,
-            data: {}
+            message: `Team was not found!`
         });
     }
 }
@@ -92,6 +90,21 @@ export class CannotDeleteSystemTeamsError extends BaseError<void> {
         super({
             message: "Cannot delete system teams.",
             data: void 0
+        });
+    }
+}
+
+type TeamValidationErrorData = {
+    message: string;
+};
+
+export class TeamValidationError extends BaseError<TeamValidationErrorData> {
+    override readonly code = "TEAM_VALIDATION_ERROR" as const;
+
+    constructor(message: string) {
+        super({
+            message,
+            data: { message }
         });
     }
 }

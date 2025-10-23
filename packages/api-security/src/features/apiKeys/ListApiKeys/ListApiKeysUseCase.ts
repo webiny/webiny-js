@@ -6,6 +6,7 @@ import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { listApiKeysInputSchema } from "../shared/schemas.js";
 import type { ApiKey, ListApiKeysInput } from "../shared/types.js";
 import { NotAuthorizedError } from "~/index.js";
+import { ApiKeyValidationError } from "../shared/errors.js";
 
 export class ListApiKeysUseCase {
     private repository: ApiKeysRepository.Interface;
@@ -19,7 +20,7 @@ export class ListApiKeysUseCase {
         this.identityContext = identityContext;
     }
 
-    async execute(params: ListApiKeysInput = {}): Promise<Result<ApiKey[], Error>> {
+    async execute(params: ListApiKeysInput = {}): Promise<Result<ApiKey[], ListApiKeys.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.apiKey");
         if (!hasPermission) {
             return Result.fail(new NotAuthorizedError());
@@ -27,7 +28,7 @@ export class ListApiKeysUseCase {
 
         const validation = listApiKeysInputSchema.safeParse(params);
         if (!validation.success) {
-            return Result.fail(new Error(validation.error.errors[0].message));
+            return Result.fail(new ApiKeyValidationError(validation.error.errors[0].message));
         }
 
         return this.repository.list(validation.data);

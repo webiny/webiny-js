@@ -7,7 +7,11 @@ import { EventPublisher } from "@webiny/api-core";
 import { updateGroupValidation } from "./schema.js";
 import { GroupBeforeUpdateEvent, GroupAfterUpdateEvent } from "./events.js";
 import type { Group, UpdateGroupInput } from "../shared/types.js";
-import { NotAuthorizedError, CannotUpdatePluginGroupsError } from "../shared/errors.js";
+import {
+    NotAuthorizedError,
+    CannotUpdatePluginGroupsError,
+    GroupValidationError
+} from "../shared/errors.js";
 
 export class UpdateGroupUseCase {
     private repository: GroupsRepository.Interface;
@@ -32,7 +36,7 @@ export class UpdateGroupUseCase {
 
         const validation = updateGroupValidation.safeParse(input);
         if (!validation.success) {
-            return Result.fail(new Error(validation.error.errors[0].message));
+            return Result.fail(new GroupValidationError(validation.error.errors[0].message));
         }
 
         const existingResult = await this.repository.get({ id });

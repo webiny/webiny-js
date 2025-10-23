@@ -8,6 +8,7 @@ import { apiKeyInputSchema } from "../shared/schemas.js";
 import { ApiKeyBeforeUpdateEvent, ApiKeyAfterUpdateEvent } from "./events.js";
 import type { ApiKey, UpdateApiKeyInput } from "../shared/types.js";
 import { NotAuthorizedError } from "~/index.js";
+import { ApiKeyValidationError } from "../shared/errors.js";
 
 export class UpdateApiKeyUseCase {
     private repository: ApiKeysRepository.Interface;
@@ -24,7 +25,7 @@ export class UpdateApiKeyUseCase {
         this.eventPublisher = eventPublisher;
     }
 
-    async execute(id: string, input: UpdateApiKeyInput): Promise<Result<ApiKey, Error>> {
+    async execute(id: string, input: UpdateApiKeyInput): Promise<Result<ApiKey, UpdateApiKey.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.apiKey");
         if (!hasPermission) {
             return Result.fail(new NotAuthorizedError());
@@ -32,7 +33,7 @@ export class UpdateApiKeyUseCase {
 
         const validation = apiKeyInputSchema.safeParse(input);
         if (!validation.success) {
-            return Result.fail(new Error(validation.error.errors[0].message));
+            return Result.fail(new ApiKeyValidationError(validation.error.errors[0].message));
         }
 
         const existingResult = await this.repository.get(id);

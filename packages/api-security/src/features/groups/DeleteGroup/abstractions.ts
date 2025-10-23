@@ -1,19 +1,15 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { Group } from "../shared/types.js";
-import {
-    NotAuthorizedError,
-    GroupNotFoundError,
-    GroupStorageError,
-    CannotDeletePluginGroupsError
-} from "../shared/errors.js";
+import { GroupsRepository } from "../shared/abstractions.js";
+import { NotAuthorizedError, CannotDeletePluginGroupsError } from "../shared/errors.js";
 
-type DeleteGroupError =
-    | NotAuthorizedError
-    | GroupNotFoundError
-    | GroupStorageError
-    | CannotDeletePluginGroupsError
-    | Error;
+export interface IDeleteGroupErrors {
+    notAuthorized: NotAuthorizedError;
+    cannotDeletePlugin: CannotDeletePluginGroupsError;
+}
+
+type DeleteGroupError = IDeleteGroupErrors[keyof IDeleteGroupErrors] | GroupsRepository.Error;
 
 export interface IDeleteGroup {
     execute(id: string): Promise<Result<void, DeleteGroupError>>;
