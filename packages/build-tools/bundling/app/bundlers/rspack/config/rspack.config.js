@@ -5,10 +5,8 @@ import {
     DefinePlugin,
     HotModuleReplacementPlugin,
     HtmlRspackPlugin,
-    ProgressPlugin
 } from "@rspack/core";
 import ReactRefreshPlugin from "@rspack/plugin-react-refresh";
-import tailwindcss from "tailwindcss";
 import CaseSensitivePathsPlugin from "case-sensitive-paths-webpack-plugin";
 import getCSSModuleLocalIdent from "react-dev-utils/getCSSModuleLocalIdent.js";
 import ESLintPlugin from "eslint-webpack-plugin";
@@ -17,7 +15,7 @@ import getClientEnvironment from "./env.js";
 import { createSwcConfig } from "../createSwcConfig.js";
 import modulesFactory from "./modules.js";
 import { createRequire } from "module";
-import { getAppName } from "./getAppName.js";
+import tailwindcss from "@tailwindcss/postcss";
 
 const require = createRequire(import.meta.url);
 
@@ -34,10 +32,10 @@ export async function createRspackConfig(webpackEnv, { paths, options }) {
     const isEnvProduction = webpackEnv === "production";
     const isEnvProductionProfile = isEnvProduction && process.argv.includes("--profile");
 
-    const { default: tailwindConfig } = await import(
-        /* webpackChunkName: "rspack.config.tailwind" */
-        "@webiny/admin-ui/tailwind.config.js"
-    );
+    // const { default: tailwindConfig } = await import(
+    //     /* webpackChunkName: "rspack.config.tailwind" */
+    //     "@webiny/admin-ui/tailwind.config.js"
+    // );
 
     const modules = modulesFactory({ paths });
     const swcConfig = createSwcConfig(options.cwd);
@@ -162,7 +160,9 @@ export async function createRspackConfig(webpackEnv, { paths, options }) {
                                             features: { "custom-properties": false }
                                         }),
                                         require("postcss-normalize")(),
-                                        tailwindcss(tailwindConfig)
+                                        tailwindcss({
+
+                                        })
                                     ]
                                 },
                                 sourceMap: shouldUseSourceMap
@@ -214,7 +214,6 @@ export async function createRspackConfig(webpackEnv, { paths, options }) {
                 formatter: "react-dev-utils/eslintFormatter"
             }),
             new CaseSensitivePathsPlugin(),
-            new ProgressPlugin({ prefix: getAppName(paths.appPath) }),
             isEnvDevelopment && new ReactRefreshPlugin(),
             isEnvDevelopment && new HotModuleReplacementPlugin()
         ].filter(Boolean),
