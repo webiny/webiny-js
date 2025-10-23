@@ -131,6 +131,11 @@ export const createWorkflowStateSchema = () => {
             }
         `,
         resolvers: {
+            WorkflowState: {
+                isActive: (parent: Partial<IWorkflowState>) => {
+                    return parent.isActive || false;
+                }
+            },
             WorkflowsQuery: {
                 getWorkflowState: async (_, args, context) => {
                     return resolve<IWorkflowState>(async () => {

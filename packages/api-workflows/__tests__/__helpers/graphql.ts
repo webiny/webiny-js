@@ -5,7 +5,10 @@ import type {
 } from "~/context/abstractions/WorkflowsContext.js";
 import type { IMeta } from "~/context/abstractions/types.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
-import type { IWorkflowStateRecord } from "~/context/abstractions/WorkflowState.js";
+import type {
+    IWorkflowStateRecord,
+    IWorkflowStateRecordStepWithPermissions
+} from "~/context/abstractions/WorkflowState.js";
 import type { IWorkflowStateContextListStatesParams } from "~/context/abstractions/WorkflowStateContext.js";
 
 export interface IWorkflowError {
@@ -82,6 +85,7 @@ const WORKFLOW_STATE = /* GraphQL */ `
                 displayName
                 type
             }
+            isAllowedToReview
         }
     }
 `;
@@ -209,7 +213,7 @@ export interface ICreateWorkflowStateResponse {
     data: {
         workflows: {
             createWorkflowState: {
-                data: IWorkflowStateRecord | null;
+                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
                 error: IWorkflowError | null;
             };
         };
@@ -236,7 +240,7 @@ export interface IGetTargetWorkflowStateResponse {
     data: {
         workflows: {
             getTargetWorkflowState: {
-                data: IWorkflowStateRecord | null;
+                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
                 error: IWorkflowError | null;
             };
         };
@@ -260,7 +264,7 @@ export interface IListTargetWorkflowStatesResponse {
     data: {
         workflows: {
             listWorkflowStates: {
-                data: IWorkflowStateRecord[] | null;
+                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions>[] | null;
                 meta: IMeta | null;
                 error: IWorkflowError | null;
             };
@@ -302,7 +306,7 @@ export interface IStartWorkflowStateStepResponse {
     data: {
         workflows: {
             startReviewWorkflowStateStep: {
-                data: IWorkflowStateRecord | null;
+                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
                 error: IWorkflowError | null;
             };
         };
@@ -328,7 +332,7 @@ export interface IApproveWorkflowStateStepResponse {
     data: {
         workflows: {
             approveWorkflowStateStep: {
-                data: IWorkflowStateRecord | null;
+                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
                 error: IWorkflowError | null;
             };
         };
@@ -355,7 +359,7 @@ export interface IRejectWorkflowStateStepResponse {
     data: {
         workflows: {
             rejectWorkflowStateStep: {
-                data: IWorkflowStateRecord | null;
+                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
                 error: IWorkflowError | null;
             };
         };
@@ -407,7 +411,7 @@ export interface IGetWorkflowStateResponse {
     data: {
         workflows: {
             getWorkflowState: {
-                data: IWorkflowStateRecord | null;
+                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
                 error: IWorkflowError | null;
             };
         };

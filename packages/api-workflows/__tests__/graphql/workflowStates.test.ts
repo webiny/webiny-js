@@ -1,8 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createGraphQLHandler } from "~tests/__helpers/handler.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
-import { WorkflowStateRecordState } from "~/context/abstractions/WorkflowState.js";
-import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
+import {
+    type IWorkflowStateRecord,
+    type IWorkflowStateRecordStepWithPermissions,
+    WorkflowStateRecordState
+} from "~/context/abstractions/WorkflowState.js";
+import { FULL_ACCESS_TEAM_ID, UNKNOWN_TEAM_ID } from "@webiny/testing";
 
 describe("workflow states graphql", () => {
     const handler = createGraphQLHandler();
@@ -583,6 +587,68 @@ describe("workflow states graphql", () => {
                     }
                 }
             }
+        });
+    });
+    
+    it("should not allow reviewing a step current user does not have access to - wrong team", async () => {
+        const [response] = await handler.storeWorkflow({
+            app: "test",
+            id: `workflow-1`,
+            data: {
+                name: "Test Workflow",
+                steps: [
+                    {
+                        id: "step-1",
+                        title: "Step 1",
+                        description: "This is step 1",
+                        color: "blue",
+                        teams: [{ id: FULL_ACCESS_TEAM_ID }],
+                        notifications: [{ id: "notif-1" }]
+                    },
+                    {
+                        id: "step-2",
+                        title: "Step 2",
+                        description: "This is step 2",
+                        color: "blue",
+                        teams: [{ id: UNKNOWN_TEAM_ID }],
+                        notifications: [{ id: "notif-1" }]
+                    }
+                ]
+            }
+        });
+        const workflow = response.data?.workflows?.storeWorkflow?.data as IWorkflow;
+
+        const [createWorkflowStateResponse] = await handler.createWorkflowState({
+            app: workflow.app,
+            targetRevisionId
+        });
+        const workflowState = createWorkflowStateResponse.data?.workflows?.createWorkflowState
+            ?.data as IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions>;
+
+        expect(workflowState.steps[0]).toMatchObject({
+            id: "step-1",
+            isAllowedToReview: true
+        });
+
+        expect(workflowState.steps[1]).toMatchObject({
+            id: "step-2",
+            isAllowedToReview: false
+        });
+        
+        const [getWorkflowStateResponse] = await handler.getWorkflowState({
+            id: workflowState.id
+        });
+        const fetchedWorkflowState = getWorkflowStateResponse.data?.workflows?.getWorkflowState
+            ?.data as IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions>;
+        
+        expect(fetchedWorkflowState.steps[0]).toMatchObject({
+            id: "step-1",
+            isAllowedToReview: true
+        });
+        
+        expect(fetchedWorkflowState.steps[1]).toMatchObject({
+            id:  "step-2",
+            isAllowedToReview: false
         });
     });
 });
