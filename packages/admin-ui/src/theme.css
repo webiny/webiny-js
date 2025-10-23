@@ -110,24 +110,24 @@
   --color-warning-xstrong: var(--color-warning-800);
 
   /* Border color. */
-  --border-accent-default: var(--color-primary-500);
-  --border-accent-dimmed: var(--color-primary-200);
-  --border-accent-subtle: var(--color-primary-100);
+  --border-color-accent-default: var(--color-primary-500);
+  --border-color-accent-dimmed: var(--color-primary-200);
+  --border-color-accent-subtle: var(--color-primary-100);
 
-  --border-destructive-default: var(--color-destructive-500);
-  --border-destructive-subtle: var(--color-destructive-100);
+  --border-color-destructive-default: var(--color-destructive-500);
+  --border-color-destructive-subtle: var(--color-destructive-100);
 
-  --border-neutral-base: var(--color-neutral-0);
-  --border-neutral-black: var(--color-neutral-900);
-  --border-neutral-dark: var(--color-neutral-600);
-  --border-neutral-dimmed: var(--color-neutral-200);
-  --border-neutral-dimmed-darker: var(--color-neutral-300);
-  --border-neutral-muted: var(--color-neutral-400);
-  --border-neutral-strong: var(--color-neutral-500);
-  --border-neutral-subtle: var(--color-neutral-100);
+  --border-color-neutral-base: var(--color-neutral-0);
+  --border-color-neutral-black: var(--color-neutral-900);
+  --border-color-neutral-dark: var(--color-neutral-600);
+  --border-color-neutral-dimmed: var(--color-neutral-200);
+  --border-color-neutral-dimmed-darker: var(--color-neutral-300);
+  --border-color-neutral-muted: var(--color-neutral-400);
+  --border-color-neutral-strong: var(--color-neutral-500);
+  --border-color-neutral-subtle: var(--color-neutral-100);
 
-  --border-success-default: var(--color-success-500);
-  --border-success-subtle: var(--color-success-200);
+  --border-color-success-default: var(--color-success-500);
+  --border-color-success-subtle: var(--color-success-200);
 
   /* Border radius. */
   --radius-3Xl: 36px;
@@ -180,13 +180,13 @@
   --margin-xxs: 2px;
 
   /* Ring color */
-  --color-ring-primary-dimmed: var(--color-primary-200);
-  --color-ring-primary-strong: var(--color-primary-500);
-  --color-ring-primary-subtle: var(--color-primary-100);
+  --ring-color-primary-dimmed: var(--color-primary-200);
+  --ring-color-primary-strong: var(--color-primary-500);
+  --ring-color-primary-subtle: var(--color-primary-100);
 
-  --color-ring-success-dimmed: var(--color-success-200);
-  --color-ring-success-strong: var(--color-success-500);
-  --color-ring-success-subtle: var(--color-success-100);
+  --ring-color-success-dimmed: var(--color-success-200);
+  --ring-color-success-strong: var(--color-success-500);
+  --ring-color-success-subtle: var(--color-success-100);
 
   /* Ring width */
   --ring-width-lg: 4px;
@@ -304,7 +304,7 @@ body {
 
 a {
   /* Styles all links that were not rendered via the Link component. */
-  @apply text-accent-primary hover:underline focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-ring-primary-dimmed rounded-xs;
+  @apply text-accent-primary hover:underline focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed rounded-xs;
 }
 
 #root {
