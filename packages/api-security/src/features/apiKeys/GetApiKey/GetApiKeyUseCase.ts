@@ -4,9 +4,9 @@ import { GetApiKey } from "./abstractions.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import type { ApiKey } from "../shared/types.js";
-import { NotAuthorizedError } from "~/index.js";
+import { NotAuthorizedError } from "~/features/tenantLinks/shared/errors.js";
 
-export class GetApiKeyUseCase {
+export class GetApiKeyUseCase implements GetApiKey.Interface {
     private repository: ApiKeysRepository.Interface;
     private identityContext: IdentityContext.Interface;
 
@@ -18,7 +18,7 @@ export class GetApiKeyUseCase {
         this.identityContext = identityContext;
     }
 
-    async execute(id: string): Promise<Result<ApiKey | null, Error>> {
+    async execute(id: string): Promise<Result<ApiKey | null, GetApiKey.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.apiKey");
         if (!hasPermission) {
             return Result.fail(new NotAuthorizedError());

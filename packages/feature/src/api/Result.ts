@@ -18,12 +18,15 @@ export class Result<TValue, TError = never> {
 
     /**
      * Creates a successful `Result` containing the provided value.
+     * If no value is provided, returns Result<void, never>.
      *
-     * @param value - The value to wrap in a successful result.
+     * @param value - The value to wrap in a successful result (optional).
      * @returns A `Result` instance with the value.
      */
-    public static ok<T>(value: T): Result<T, never> {
-        return new Result<T, never>(true, value);
+    public static ok<T>(value: T): Result<T, never>;
+    public static ok(): Result<void, never>;
+    public static ok<T>(value?: T): Result<T | void, never> {
+        return new Result<T | void, never>(true, value);
     }
 
     /**

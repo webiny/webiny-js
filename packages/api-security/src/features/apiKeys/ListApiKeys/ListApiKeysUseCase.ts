@@ -5,10 +5,9 @@ import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { listApiKeysInputSchema } from "../shared/schemas.js";
 import type { ApiKey, ListApiKeysInput } from "../shared/types.js";
-import { NotAuthorizedError } from "~/index.js";
-import { ApiKeyValidationError } from "../shared/errors.js";
+import { NotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
 
-export class ListApiKeysUseCase {
+export class ListApiKeysUseCase implements ListApiKeys.Interface {
     private repository: ApiKeysRepository.Interface;
     private identityContext: IdentityContext.Interface;
 

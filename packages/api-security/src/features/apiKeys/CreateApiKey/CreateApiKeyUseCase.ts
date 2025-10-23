@@ -10,9 +10,8 @@ import { createApiKeyInputSchema } from "../shared/schemas.js";
 import { ApiKeyBeforeCreateEvent, ApiKeyAfterCreateEvent } from "./events.js";
 import type { ApiKey, CreateApiKeyInput } from "../shared/types.js";
 import type { ApiKeyPermission } from "~/types.js";
-import { NotAuthorizedError } from "~/index.js";
-import { generateToken } from "~/features/apiKeys/shared/generateToken.js";
-import { ApiKeyValidationError } from "../shared/errors.js";
+import { generateToken } from "../shared/generateToken.js";
+import { ApiKeyValidationError, NotAuthorizedError } from "../shared/errors.js";
 
 export class CreateApiKeyUseCase {
     constructor(

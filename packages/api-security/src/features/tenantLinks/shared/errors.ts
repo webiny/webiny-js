@@ -1,7 +1,7 @@
 import { BaseError } from "@webiny/feature/api";
 
-export class ApiKeyStorageError extends BaseError {
-    override readonly code = "API_KEY_STORAGE_ERROR" as const;
+export class TenantLinkStorageError extends BaseError {
+    override readonly code = "TENANT_LINK_STORAGE_ERROR" as const;
 
     constructor(error: Error) {
         super({
@@ -10,12 +10,12 @@ export class ApiKeyStorageError extends BaseError {
     }
 }
 
-export class ApiKeyNotFoundError extends BaseError {
-    override readonly code = "API_KEY_NOT_FOUND" as const;
+export class TenantLinkNotFoundError extends BaseError {
+    override readonly code = "TENANT_LINK_NOT_FOUND" as const;
 
     constructor() {
         super({
-            message: `API key was not found!`
+            message: `Tenant link was not found!`
         });
     }
 }
@@ -35,12 +35,12 @@ export class NotAuthorizedError extends BaseError<NotAuthorizedErrorData> {
     }
 }
 
-type ApiKeyValidationErrorData = {
+type TenantLinkValidationErrorData = {
     message: string;
 };
 
-export class ApiKeyValidationError extends BaseError<ApiKeyValidationErrorData> {
-    override readonly code = "API_KEY_VALIDATION_ERROR" as const;
+export class TenantLinkValidationError extends BaseError<TenantLinkValidationErrorData> {
+    override readonly code = "TENANT_LINK_VALIDATION_ERROR" as const;
 
     constructor(message: string) {
         super({

@@ -7,10 +7,9 @@ import { EventPublisher } from "@webiny/api-core";
 import { apiKeyInputSchema } from "../shared/schemas.js";
 import { ApiKeyBeforeUpdateEvent, ApiKeyAfterUpdateEvent } from "./events.js";
 import type { ApiKey, UpdateApiKeyInput } from "../shared/types.js";
-import { NotAuthorizedError } from "~/index.js";
-import { ApiKeyValidationError } from "../shared/errors.js";
+import { NotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
 
-export class UpdateApiKeyUseCase {
+export class UpdateApiKeyUseCase implements UpdateApiKey.Interface {
     private repository: ApiKeysRepository.Interface;
     private identityContext: IdentityContext.Interface;
     private eventPublisher: EventPublisher.Interface;

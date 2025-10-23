@@ -100,7 +100,7 @@ class GroupsRepositoryImpl implements RepositoryAbstraction.Interface {
     async create(group: Group): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
             await this.storageOperations.createGroup({ group });
-            return Result.ok(void 0);
+            return Result.ok();
         } catch (error) {
             return Result.fail(new GroupStorageError(error));
         }
@@ -110,7 +110,7 @@ class GroupsRepositoryImpl implements RepositoryAbstraction.Interface {
         try {
             await this.storageOperations.updateGroup({ group });
 
-            return Result.ok(void 0);
+            return Result.ok();
         } catch (error) {
             return Result.fail(new GroupStorageError(error));
         }
@@ -119,7 +119,7 @@ class GroupsRepositoryImpl implements RepositoryAbstraction.Interface {
     async delete(group: Group): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
             await this.storageOperations.deleteGroup({ group });
-            return Result.ok(void 0);
+            return Result.ok();
         } catch (error) {
             return Result.fail(new GroupStorageError(error));
         }

@@ -1,13 +1,13 @@
+import { EventPublisher } from "@webiny/api-core";
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { DeleteApiKey } from "./abstractions.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
-import { EventPublisher } from "@webiny/api-core";
 import { ApiKeyBeforeDeleteEvent, ApiKeyAfterDeleteEvent } from "./events.js";
-import { NotAuthorizedError } from "~/index.js";
+import { NotAuthorizedError } from "~/features/apiKeys/shared/errors.js";
 
-export class DeleteApiKeyUseCase {
+export class DeleteApiKeyUseCase implements DeleteApiKey.Interface {
     private repository: ApiKeysRepository.Interface;
     private identityContext: IdentityContext.Interface;
     private eventPublisher: EventPublisher.Interface;
@@ -22,7 +22,7 @@ export class DeleteApiKeyUseCase {
         this.eventPublisher = eventPublisher;
     }
 
-    async execute(id: string): Promise<Result<void, Error>> {
+    async execute(id: string): Promise<Result<void, DeleteApiKey.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.apiKey");
         if (!hasPermission) {
             return Result.fail(new NotAuthorizedError());
@@ -45,7 +45,7 @@ export class DeleteApiKeyUseCase {
 
         await this.eventPublisher.publish(new ApiKeyAfterDeleteEvent({ apiKey: existingApiKey }));
 
-        return Result.ok(void 0);
+        return Result.ok();
     }
 }
 

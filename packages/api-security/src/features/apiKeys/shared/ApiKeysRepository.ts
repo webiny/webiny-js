@@ -60,7 +60,7 @@ class ApiKeysRepositoryImpl implements RepositoryAbstraction.Interface {
     async create(apiKey: ApiKey): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
             await this.storageOperations.createApiKey({ apiKey });
-            return Result.ok(void 0);
+            return Result.ok();
         } catch (error) {
             return Result.fail(new ApiKeyStorageError(error));
         }
@@ -70,7 +70,7 @@ class ApiKeysRepositoryImpl implements RepositoryAbstraction.Interface {
         try {
             await this.storageOperations.updateApiKey({ apiKey });
 
-            return Result.ok(void 0);
+            return Result.ok();
         } catch (error) {
             return Result.fail(new ApiKeyStorageError(error));
         }
@@ -80,7 +80,7 @@ class ApiKeysRepositoryImpl implements RepositoryAbstraction.Interface {
         try {
             await this.storageOperations.deleteApiKey({ apiKey });
 
-            return Result.ok(void 0);
+            return Result.ok();
         } catch (error) {
             return Result.fail(new ApiKeyStorageError(error));
         }

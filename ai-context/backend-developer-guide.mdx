@@ -111,28 +111,55 @@ You MUST ALWAYS use `createAbstraction` instead of `new Abstraction`.
 
 **Use case implementation**
 
+**CRITICAL RULES:**
+1. Use case class MUST implement the abstraction's `.Interface` type
+2. Use case method return types MUST use the abstraction's `.Error` namespace type
+3. Constructor parameters MUST use `.Interface` types from their abstractions
+4. Always use `createImplementation` to wire up the use case
+
 ```typescript
 // UpdateUserUseCase.ts
 import { createImplementation } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 
 // Import abstraction you're implementing
 import { UpdateUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 
 // Import abstractions you want to depend on
 import { SupportedLanguagesProvider } from "@webiny/some-package/features/SupportedLanguagesProvider";
+import { UserRepository } from "../shared/abstractions.js";
 
-class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
-  constructor(private provider: SupportedLanguagesProvider.Interface) {}
+// Implementation class MUST implement the abstraction's Interface
+export class UpdateUserUseCase implements UseCaseAbstraction.Interface {
+  private provider: SupportedLanguagesProvider.Interface;
+  private repository: UserRepository.Interface;
 
-  execute(id: string, data: Record<string, any>): Promise<void> {
+  // Constructor parameters MUST use .Interface types
+  constructor(
+    provider: SupportedLanguagesProvider.Interface,
+    repository: UserRepository.Interface
+  ) {
+    this.provider = provider;
+    this.repository = repository;
+  }
+
+  // Return type MUST use the abstraction's .Error namespace type
+  async execute(id: string, data: Record<string, any>): Promise<Result<void, UseCaseAbstraction.Error>> {
     // Implementation goes here
+    const result = await this.repository.update(id, data);
+    if (result.isFail()) {
+      return Result.fail(result.error);
+    }
+
+    return Result.ok();
   }
 }
 
-export const PageTranslationPolicyImpl = createImplementation({
+// Wire up with createImplementation
+export const UpdateUserUseCaseImpl = createImplementation({
   abstraction: UseCaseAbstraction,
-  implementation: UpdateUserUseCaseImpl,
-  dependencies: [SupportedLanguagesProvider]
+  implementation: UpdateUserUseCase,
+  dependencies: [SupportedLanguagesProvider, UserRepository]
 });
 ```
 

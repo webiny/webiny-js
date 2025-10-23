@@ -50,7 +50,7 @@ export class DeleteGroupUseCase {
 
         await this.eventPublisher.publish(new GroupAfterDeleteEvent({ group: existingGroup }));
 
-        return Result.ok(void 0);
+        return Result.ok();
     }
 }
 

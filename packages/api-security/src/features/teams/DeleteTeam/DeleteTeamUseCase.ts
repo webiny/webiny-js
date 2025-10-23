@@ -59,7 +59,7 @@ export class DeleteTeamUseCase {
 
         await this.eventPublisher.publish(new TeamAfterDeleteEvent({ team: existingTeam }));
 
-        return Result.ok(void 0);
+        return Result.ok();
     }
 }
 

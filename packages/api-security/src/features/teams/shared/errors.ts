@@ -50,46 +50,42 @@ export class TeamExistsError extends BaseError<TeamExistsErrorData> {
     }
 }
 
-export class CannotUpdatePluginTeamsError extends BaseError<void> {
+export class CannotUpdatePluginTeamsError extends BaseError {
     override readonly code = "CANNOT_UPDATE_PLUGIN_TEAMS" as const;
 
     constructor() {
         super({
-            message: "Cannot update teams created via plugins.",
-            data: void 0
+            message: "Cannot update teams created via plugins."
         });
     }
 }
 
-export class CannotDeletePluginTeamsError extends BaseError<void> {
+export class CannotDeletePluginTeamsError extends BaseError {
     override readonly code = "CANNOT_DELETE_PLUGIN_TEAMS" as const;
 
     constructor() {
         super({
-            message: "Cannot delete teams created via plugins.",
-            data: void 0
+            message: "Cannot delete teams created via plugins."
         });
     }
 }
 
-export class CannotUpdateSystemTeamsError extends BaseError<void> {
+export class CannotUpdateSystemTeamsError extends BaseError {
     override readonly code = "CANNOT_UPDATE_SYSTEM_TEAMS" as const;
 
     constructor() {
         super({
-            message: "Cannot update system teams.",
-            data: void 0
+            message: "Cannot update system teams."
         });
     }
 }
 
-export class CannotDeleteSystemTeamsError extends BaseError<void> {
+export class CannotDeleteSystemTeamsError extends BaseError {
     override readonly code = "CANNOT_DELETE_SYSTEM_TEAMS" as const;
 
     constructor() {
         super({
-            message: "Cannot delete system teams.",
-            data: void 0
+            message: "Cannot delete system teams."
         });
     }
 }

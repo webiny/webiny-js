@@ -6,7 +6,7 @@ import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import type { Group, GetGroupInput } from "../shared/types.js";
 import { NotAuthorizedError } from "../shared/errors.js";
 
-export class GetGroupUseCase {
+export class GetGroupUseCase implements GetGroup.Interface {
     private repository: GroupsRepository.Interface;
     private identityContext: IdentityContext.Interface;
 
@@ -18,7 +18,7 @@ export class GetGroupUseCase {
         this.identityContext = identityContext;
     }
 
-    async execute(params: GetGroupInput): Promise<Result<Group, Error>> {
+    async execute(params: GetGroupInput): Promise<Result<Group, GetGroup.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.group");
         if (!hasPermission) {
             return Result.fail(new NotAuthorizedError());

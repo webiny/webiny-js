@@ -5,8 +5,7 @@ export class GroupStorageError extends BaseError {
 
     constructor(error: Error) {
         super({
-            message: error.message,
-            data: {}
+            message: error.message
         });
     }
 }
@@ -16,8 +15,7 @@ export class GroupNotFoundError extends BaseError {
 
     constructor() {
         super({
-            message: `Group was not found!`,
-            data: {}
+            message: `Group was not found!`
         });
     }
 }
@@ -52,24 +50,22 @@ export class GroupExistsError extends BaseError<GroupExistsErrorData> {
     }
 }
 
-export class CannotUpdatePluginGroupsError extends BaseError<void> {
+export class CannotUpdatePluginGroupsError extends BaseError {
     override readonly code = "CANNOT_UPDATE_PLUGIN_GROUPS" as const;
 
     constructor() {
         super({
-            message: "Cannot update groups created via plugins.",
-            data: void 0
+            message: "Cannot update groups created via plugins."
         });
     }
 }
 
-export class CannotDeletePluginGroupsError extends BaseError<void> {
+export class CannotDeletePluginGroupsError extends BaseError {
     override readonly code = "CANNOT_DELETE_PLUGIN_GROUPS" as const;
 
     constructor() {
         super({
-            message: "Cannot delete groups created via plugins.",
-            data: void 0
+            message: "Cannot delete groups created via plugins."
         });
     }
 }

@@ -353,7 +353,7 @@ export const createGroupsMethods = ({
 
             try {
                 await this.onGroupBeforeUpdate.publish({ original, group });
-                const result = await storageOperations.updateGroup({ original, group });
+                const result = await storageOperations.updateGroup({ group });
                 if (permissionsChanged) {
                     await updateTenantLinks(this, getTenant(), result);
                 }

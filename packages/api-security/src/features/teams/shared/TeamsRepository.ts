@@ -100,7 +100,7 @@ class TeamsRepositoryImpl implements RepositoryAbstraction.Interface {
     async create(team: Team): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
             await this.storageOperations.createTeam({ team });
-            return Result.ok(void 0);
+            return Result.ok();
         } catch (error) {
             return Result.fail(new TeamStorageError(error));
         }
@@ -112,7 +112,7 @@ class TeamsRepositoryImpl implements RepositoryAbstraction.Interface {
             // We'll need to handle this in the use case layer.
             await this.storageOperations.updateTeam({ team, original: team });
 
-            return Result.ok(void 0);
+            return Result.ok();
         } catch (error) {
             return Result.fail(new TeamStorageError(error));
         }
@@ -121,7 +121,7 @@ class TeamsRepositoryImpl implements RepositoryAbstraction.Interface {
     async delete(team: Team): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
             await this.storageOperations.deleteTeam({ team });
-            return Result.ok(void 0);
+            return Result.ok();
         } catch (error) {
             return Result.fail(new TeamStorageError(error));
         }
