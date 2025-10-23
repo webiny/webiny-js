@@ -3,7 +3,7 @@ import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { TenantContext } from "@webiny/api-tenancy/features/TenantContext";
 import { EventPublisher } from "@webiny/api-core";
-import { CreateGroup } from "./abstractions.js";
+import { CreateGroupUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GroupsRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { createGroupValidation } from "./schema.js";
@@ -11,7 +11,7 @@ import { GroupBeforeCreateEvent, GroupAfterCreateEvent } from "./events.js";
 import type { Group, CreateGroupInput } from "../shared/types.js";
 import { NotAuthorizedError, GroupExistsError, GroupValidationError } from "../shared/errors.js";
 
-export class CreateGroupUseCase {
+class CreateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private tenantContext: TenantContext.Interface,
         private identityContext: IdentityContext.Interface,
@@ -19,7 +19,7 @@ export class CreateGroupUseCase {
         private repository: GroupsRepository.Interface
     ) {}
 
-    async execute(input: CreateGroupInput): Promise<Result<Group, CreateGroup.Error>> {
+    async execute(input: CreateGroupInput): Promise<Result<Group, UseCaseAbstraction.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.group");
 
         if (!hasPermission) {
@@ -77,8 +77,8 @@ export class CreateGroupUseCase {
     }
 }
 
-export const CreateGroupUseCaseImpl = createImplementation({
-    abstraction: CreateGroup,
-    implementation: CreateGroupUseCase,
+export const CreateGroupUseCase = createImplementation({
+    abstraction: UseCaseAbstraction,
+    implementation: CreateGroupUseCaseImpl,
     dependencies: [TenantContext, IdentityContext, EventPublisher, GroupsRepository]
 });

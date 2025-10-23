@@ -76,6 +76,10 @@ export default defineConfig([
       "@typescript-eslint/no-var-requires": 0,
       "@typescript-eslint/no-explicit-any": 0,
       "@typescript-eslint/no-non-null-assertion": 0,
+      "@typescript-eslint/no-empty-object-type": {
+        allowInterfaces: "always",
+        allowObjectTypes: "never"
+      },
       curly: ["error"],
       "@vitest/expect-expect": 0,
       "@vitest/no-conditional-expect": 0,

@@ -1,12 +1,12 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { ListGroups } from "./abstractions.js";
+import { ListGroupsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GroupsRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import type { Group, ListGroupsInput } from "../shared/types.js";
 import { NotAuthorizedError } from "../shared/errors.js";
 
-export class ListGroupsUseCase implements ListGroups.Interface {
+class ListGroupsUseCaseImpl implements UseCaseAbstraction.Interface {
     private repository: GroupsRepository.Interface;
     private identityContext: IdentityContext.Interface;
 
@@ -18,7 +18,9 @@ export class ListGroupsUseCase implements ListGroups.Interface {
         this.identityContext = identityContext;
     }
 
-    async execute(params: ListGroupsInput = {}): Promise<Result<Group[], ListGroups.Error>> {
+    async execute(
+        params: ListGroupsInput = {}
+    ): Promise<Result<Group[], UseCaseAbstraction.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.group");
         if (!hasPermission) {
             return Result.fail(new NotAuthorizedError());
@@ -28,8 +30,8 @@ export class ListGroupsUseCase implements ListGroups.Interface {
     }
 }
 
-export const ListGroupsUseCaseImpl = createImplementation({
-    abstraction: ListGroups,
-    implementation: ListGroupsUseCase,
+export const ListGroupsUseCase = createImplementation({
+    abstraction: UseCaseAbstraction,
+    implementation: ListGroupsUseCaseImpl,
     dependencies: [GroupsRepository, IdentityContext]
 });

@@ -15,9 +15,9 @@ export interface IDeleteGroup {
     execute(id: string): Promise<Result<void, DeleteGroupError>>;
 }
 
-export const DeleteGroup = createAbstraction<IDeleteGroup>("DeleteGroup");
+export const DeleteGroupUseCase = createAbstraction<IDeleteGroup>("DeleteGroupUseCase");
 
-export namespace DeleteGroup {
+export namespace DeleteGroupUseCase {
     export type Interface = IDeleteGroup;
     export type Error = DeleteGroupError;
 }

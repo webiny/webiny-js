@@ -8,9 +8,11 @@ import type { InstallSystemInput } from "./abstractions.js";
 import { SystemAlreadyInstalledError } from "~/features/InstallSystem/errors.js";
 import { DeleteTenantUseCase } from "~/features/DeleteTenant/index.js";
 import { SystemInstalledEvent } from "~/features/InstallSystem/events.js";
+import { TenantContext } from "~/features/TenantContext/index.js";
 
 class InstallSystemUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private tenantContext: TenantContext.Interface,
         private eventPublisher: EventPublisher.Interface,
         private installTenantUseCase: InstallTenantUseCase.Interface,
         private getRootTenantUseCase: GetRootTenantUseCase.Interface,
@@ -39,6 +41,8 @@ class InstallSystemUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const rootTenant = createTenantResult.value;
 
+        this.tenantContext.setTenant(rootTenant);
+
         const installResult = await this.installTenantUseCase.execute({
             tenant: rootTenant,
             installationInput
@@ -46,7 +50,7 @@ class InstallSystemUseCaseImpl implements UseCaseAbstraction.Interface {
 
         if (installResult.isOk()) {
             await this.eventPublisher.publish(new SystemInstalledEvent());
-            return Result.ok(undefined);
+            return Result.ok();
         }
 
         // If tenant installation failed, delete the root tenant
@@ -60,6 +64,7 @@ export const InstallSystemUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: InstallSystemUseCaseImpl,
     dependencies: [
+        TenantContext,
         EventPublisher,
         InstallTenantUseCase,
         GetRootTenantUseCase,

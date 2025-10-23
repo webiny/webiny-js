@@ -16,9 +16,9 @@ export interface ICreateGroup {
     execute(input: CreateGroupInput): Promise<Result<Group, CreateGroupError>>;
 }
 
-export const CreateGroup = createAbstraction<ICreateGroup>("CreateGroup");
+export const CreateGroupUseCase = createAbstraction<ICreateGroup>("CreateGroupUseCase");
 
-export namespace CreateGroup {
+export namespace CreateGroupUseCase {
     export type Interface = ICreateGroup;
     export type Error = CreateGroupError;
 }

@@ -11,12 +11,12 @@ export interface IListGroupsErrors {
 type ListGroupsError = IListGroupsErrors[keyof IListGroupsErrors] | GroupsRepository.Error;
 
 export interface IListGroups {
-    execute(params: ListGroupsInput): Promise<Result<Group[], ListGroupsError>>;
+    execute(params?: ListGroupsInput): Promise<Result<Group[], ListGroupsError>>;
 }
 
-export const ListGroups = createAbstraction<IListGroups>("ListGroups");
+export const ListGroupsUseCase = createAbstraction<IListGroups>("ListGroupsUseCase");
 
-export namespace ListGroups {
+export namespace ListGroupsUseCase {
     export type Interface = IListGroups;
     export type Error = ListGroupsError;
 }

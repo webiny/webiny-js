@@ -16,6 +16,9 @@ import { GroupsFeature } from "./features/groups/index.js";
 // Phase 4: Teams
 import { TeamsFeature } from "./features/teams/index.js";
 
+// Phase 5: Tenant Links
+import { TenantLinksFeature } from "./features/tenantLinks/index.js";
+
 /**
  * Setup all security features in the DI container.
  * This is the main entry point for registering all security-related features.
@@ -44,5 +47,6 @@ export const setupFeatures = (
     // Phase 4: Teams features
     TeamsFeature.register(container);
 
-    // Phase 5: Tenant Links features (to be added)
+    // Phase 5: Tenant Links features
+    TenantLinksFeature.register(container);
 };

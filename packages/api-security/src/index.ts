@@ -5,7 +5,6 @@ import type { SecurityContext, SecurityStorageOperations } from "./types.js";
 import graphqlPlugins from "./graphql/index.js";
 import gqlInterfaces from "./graphql/interfaces.gql.js";
 import { createSecurity } from "~/createSecurity.js";
-import { attachGroupInstaller } from "~/installation/groups.js";
 import type {
     MultiTenancyAppConfig,
     MultiTenancyGraphQLConfig
@@ -78,8 +77,6 @@ export const createSecurityContext = ({ storageOperations }: SecurityConfig) => 
         // Create hybrid legacy context that delegates to new features where implemented
         // and forwards to old security for unimplemented features
         context.security = new LegacyContext(context.container, oldSecurity);
-
-        attachGroupInstaller(context.security);
     });
 };
 

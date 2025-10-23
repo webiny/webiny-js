@@ -1,13 +1,13 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { DeleteGroup } from "./abstractions.js";
+import { DeleteGroupUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GroupsRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { EventPublisher } from "@webiny/api-core";
 import { GroupBeforeDeleteEvent, GroupAfterDeleteEvent } from "./events.js";
 import { NotAuthorizedError, CannotDeletePluginGroupsError } from "../shared/errors.js";
 
-export class DeleteGroupUseCase {
+class DeleteGroupUseCaseImpl implements UseCaseAbstraction.Interface {
     private repository: GroupsRepository.Interface;
     private identityContext: IdentityContext.Interface;
     private eventPublisher: EventPublisher.Interface;
@@ -22,7 +22,7 @@ export class DeleteGroupUseCase {
         this.eventPublisher = eventPublisher;
     }
 
-    async execute(id: string): Promise<Result<void, DeleteGroup.Error>> {
+    async execute(id: string): Promise<Result<void, UseCaseAbstraction.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.group");
         if (!hasPermission) {
             return Result.fail(new NotAuthorizedError());
@@ -54,8 +54,8 @@ export class DeleteGroupUseCase {
     }
 }
 
-export const DeleteGroupUseCaseImpl = createImplementation({
-    abstraction: DeleteGroup,
-    implementation: DeleteGroupUseCase,
+export const DeleteGroupUseCase = createImplementation({
+    abstraction: UseCaseAbstraction,
+    implementation: DeleteGroupUseCaseImpl,
     dependencies: [GroupsRepository, IdentityContext, EventPublisher]
 });

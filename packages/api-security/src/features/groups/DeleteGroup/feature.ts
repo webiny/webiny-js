@@ -1,9 +1,9 @@
 import { createFeature } from "@webiny/feature/api";
-import { DeleteGroupUseCaseImpl } from "./DeleteGroupUseCase.js";
+import { DeleteGroupUseCase } from "./DeleteGroupUseCase.js";
 
 export const DeleteGroupFeature = createFeature({
     name: "DeleteGroup",
     register(container) {
-        container.register(DeleteGroupUseCaseImpl);
+        container.register(DeleteGroupUseCase);
     }
 });
