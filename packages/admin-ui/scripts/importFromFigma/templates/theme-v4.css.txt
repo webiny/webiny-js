@@ -48,8 +48,6 @@
   {TEXT_SIZE}
 }
 
-/*focus-visible:ring-lg focus-visible:ring-primary-dimmed*/
-
 body {
     /* Styles all text that was not rendered via the Text component. */
     @apply font-sans antialiased text-md text-neutral-primary;
@@ -57,7 +55,7 @@ body {
 
 a {
   /* Styles all links that were not rendered via the Link component. */
-  @apply text-accent-primary hover:underline focus-visible:outline-none rounded-xs;
+  @apply text-accent-primary hover:underline focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed rounded-xs;
 }
 
 #root {
