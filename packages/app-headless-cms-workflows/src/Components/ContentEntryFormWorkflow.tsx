@@ -16,19 +16,21 @@ export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Origina
         }
 
         return (
-            <Grid>
-                <Grid.Column span={12}>
-                    <WorkflowStateBar
-                        app={`cms.${model.modelId}`}
-                        id={entry.id}
-                        identity={identity}
-                        client={client}
-                    />
-                </Grid.Column>
-                <Grid.Column span={12}>
-                    <Original {...props} />
-                </Grid.Column>
-            </Grid>
+            <>
+                <Grid>
+                    <Grid.Column span={12}>
+                        <WorkflowStateBar
+                            app={`cms.${model.modelId}`}
+                            id={entry.id}
+                            identity={identity}
+                            client={client}
+                        />
+                    </Grid.Column>
+                    <Grid.Column span={12}>
+                        <Original {...props} />
+                    </Grid.Column>
+                </Grid>
+            </>
         );
     };
 });

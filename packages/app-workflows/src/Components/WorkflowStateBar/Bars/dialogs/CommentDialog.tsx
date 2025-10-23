@@ -3,6 +3,8 @@ import type { IWorkflowStateStepModel } from "~/Models/index.js";
 import { Dialog, Grid } from "@webiny/admin-ui";
 import React from "react";
 import { WorkflowStateValue } from "~/types.js";
+import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
+import { ReactComponent as ApproveIcon } from "@webiny/icons/check.svg";
 
 interface ICommentDialogProps {
     presenter: IWorkflowStatePresenter;
@@ -16,9 +18,19 @@ interface ITitleProps {
 const Title = (props: ITitleProps) => {
     const { step } = props;
     if (step.state === WorkflowStateValue.rejected) {
-        return <>{step.title} Rejected</>;
+        return (
+            <>
+                <RejectIcon className={"wby-fill-destructive"} />
+                {step.title} Rejected!
+            </>
+        );
     }
-    return <>{step.title} Approved</>;
+    return (
+        <>
+            <ApproveIcon className={"wby-fill-success"} />
+            {step.title} Approved!
+        </>
+    );
 };
 
 export const CommentDialog = (props: ICommentDialogProps) => {

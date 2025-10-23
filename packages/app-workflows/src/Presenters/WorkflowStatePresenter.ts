@@ -71,9 +71,11 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         this.identity = params.identity;
 
         makeAutoObservable(this);
+        
+        this.init();
     }
 
-    public async init(): Promise<void> {
+    private async init(): Promise<void> {
         const workflows = await this.workflowsRepository.listWorkflows({
             where: {
                 app: this.app

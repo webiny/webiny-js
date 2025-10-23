@@ -20,7 +20,7 @@ import { ApproveDialog } from "./Bars/dialogs/ApproveDialog.js";
 import { ApproveSuccessDialog } from "./Bars/dialogs/ApproveSuccessDialog.js";
 import { RejectDialog } from "./Bars/dialogs/RejectDialog.js";
 import { RejectSuccessDialog } from "./Bars/dialogs/RejectSuccessDialog.js";
-import { CommentDialog } from "~/Components/WorkflowStateBar/Bars/dialogs/CommentDialog.js";
+import { CommentDialog } from "./Bars/dialogs/CommentDialog.js";
 
 export interface IWorkflowStateBarProps {
     id: string;
@@ -33,8 +33,12 @@ interface IWorkflowStateBarWithPresenterProps {
     presenter: IWorkflowStatePresenter;
 }
 
-const WorkflowStateBarWithPresenter = observer((props: IWorkflowStateBarWithPresenterProps) => {
+const WorkflowStateBarObserver = observer((props: IWorkflowStateBarWithPresenterProps) => {
     const { presenter } = props;
+    /**
+     * If no workflow, do not show anything - there might not be a workflow assigned.
+     * We do not want to show loading or error states in this case.
+     */
     if (!presenter.vm.workflow) {
         return null;
     }
@@ -82,16 +86,14 @@ export const WorkflowStateBar = (props: IWorkflowStateBarProps) => {
         const workflowsRepository = new WorkflowsRepository({
             gateway: workflowsGateway
         });
-        const presenter = new WorkflowStatePresenter({
+        return new WorkflowStatePresenter({
             app,
             targetRevisionId: id,
             identity,
             repository,
             workflowsRepository
         });
-        presenter.init();
-        return presenter;
     }, [app, id, identity, client]);
 
-    return <WorkflowStateBarWithPresenter presenter={presenter} />;
+    return <WorkflowStateBarObserver presenter={presenter} />;
 };
