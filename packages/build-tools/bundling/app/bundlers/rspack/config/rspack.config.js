@@ -4,7 +4,7 @@ import {
     CssExtractRspackPlugin,
     DefinePlugin,
     HotModuleReplacementPlugin,
-    HtmlRspackPlugin,
+    HtmlRspackPlugin
 } from "@rspack/core";
 import ReactRefreshPlugin from "@rspack/plugin-react-refresh";
 import CaseSensitivePathsPlugin from "case-sensitive-paths-webpack-plugin";
@@ -31,11 +31,6 @@ export async function createRspackConfig(webpackEnv, { paths, options }) {
     const isEnvDevelopment = webpackEnv === "development";
     const isEnvProduction = webpackEnv === "production";
     const isEnvProductionProfile = isEnvProduction && process.argv.includes("--profile");
-
-    // const { default: tailwindConfig } = await import(
-    //     /* webpackChunkName: "rspack.config.tailwind" */
-    //     "@webiny/admin-ui/tailwind.config.js"
-    // );
 
     const modules = modulesFactory({ paths });
     const swcConfig = createSwcConfig(options.cwd);
@@ -161,7 +156,7 @@ export async function createRspackConfig(webpackEnv, { paths, options }) {
                                         }),
                                         require("postcss-normalize")(),
                                         tailwindcss({
-
+                                            base: path.join(process.cwd(), "packages")
                                         })
                                     ]
                                 },
