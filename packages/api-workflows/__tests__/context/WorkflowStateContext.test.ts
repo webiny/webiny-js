@@ -159,12 +159,8 @@ describe("Workflow State Context", () => {
 
         const stateAfterFirstApprove = await workflowStateContext.getTargetState(app, targetId);
         expect(stateAfterFirstApprove.state).toEqual(WorkflowStateRecordState.pending);
-        expect(stateAfterFirstApprove.steps[0].state).toEqual(
-            WorkflowStateRecordState.approved
-        );
-        expect(stateAfterFirstApprove.steps[1].state).toEqual(
-            WorkflowStateRecordState.pending
-        );
+        expect(stateAfterFirstApprove.steps[0].state).toEqual(WorkflowStateRecordState.approved);
+        expect(stateAfterFirstApprove.steps[1].state).toEqual(WorkflowStateRecordState.pending);
 
         await stateAfterFirstApprove.start();
         await stateAfterFirstApprove.approve("Second step should be approved.");
@@ -188,12 +184,8 @@ describe("Workflow State Context", () => {
 
         const stateAfterSecondApprove = await workflowStateContext.getTargetState(app, targetId);
         expect(stateAfterSecondApprove.state).toEqual(WorkflowStateRecordState.approved);
-        expect(stateAfterSecondApprove.steps[0].state).toEqual(
-            WorkflowStateRecordState.approved
-        );
-        expect(stateAfterSecondApprove.steps[1].state).toEqual(
-            WorkflowStateRecordState.approved
-        );
+        expect(stateAfterSecondApprove.steps[0].state).toEqual(WorkflowStateRecordState.approved);
+        expect(stateAfterSecondApprove.steps[1].state).toEqual(WorkflowStateRecordState.approved);
         expect(stateAfterSecondApprove.done).toBeTrue();
     });
 });

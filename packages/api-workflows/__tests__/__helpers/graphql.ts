@@ -52,6 +52,11 @@ const WORKFLOW_STATE = /* GraphQL */ `
             displayName
             type
         }
+        createdBy {
+            id
+            displayName
+            type
+        }
         app
         isActive
         workflowId
@@ -343,7 +348,7 @@ export const APPROVE_WORKFLOW_STATE_STEP_MUTATION = /* GraphQL */ `
 
 export interface IRejectWorkflowStateStepVariables {
     id: string;
-    comment?: string;
+    comment: string;
 }
 
 export interface IRejectWorkflowStateStepResponse {
@@ -388,6 +393,32 @@ export const CANCEL_WORKFLOW_STATE_MUTATION = /* GraphQL */ `
         workflows {
             cancelWorkflowState(id: $id) {
                 data
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export interface IGetWorkflowStateVariables {
+    id: string;
+}
+
+export interface IGetWorkflowStateResponse {
+    data: {
+        workflows: {
+            getWorkflowState: {
+                data: IWorkflowStateRecord | null;
+                error: IWorkflowError | null;
+            };
+        };
+    };
+}
+
+export const GET_WORKFLOW_STATE_MUTATION = /* GraphQL */ `
+    query GetWorkflowState($id: ID!) {
+        workflows {
+            getWorkflowState(id: $id) {
+                data ${WORKFLOW_STATE}
                 ${ERROR_FIELD}
             }
         }

@@ -84,12 +84,13 @@ export const createWorkflowStateSchema = () => {
                 app: String
                 app_in: [String!]
                 workflowId: String
-                workflowId_id: [String!]
+                workflowId_in: [String!]
                 targetId: String
                 targetId_in: [String!]
                 targetRevisionId: String
                 targetRevisionId_in: [String!]
                 state: WorkflowStateStateValue
+                state_in: [WorkflowStateStateValue!]
                 createdOn_gte: DateTime
                 createdOn_lte: DateTime
                 savedOn_gte: DateTime

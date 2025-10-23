@@ -15,6 +15,7 @@ import {
     DELETE_WORKFLOW_MUTATION,
     GET_TARGET_WORKFLOW_STATE_QUERY,
     GET_WORKFLOW_QUERY,
+    GET_WORKFLOW_STATE_MUTATION,
     type IApproveWorkflowStateStepResponse,
     type IApproveWorkflowStateStepVariables,
     ICancelWorkflowStateResponse,
@@ -26,6 +27,8 @@ import {
     type IGetTargetWorkflowStateResponse,
     type IGetTargetWorkflowStateVariables,
     type IGetWorkflowResponse,
+    IGetWorkflowStateResponse,
+    IGetWorkflowStateVariables,
     type IGetWorkflowVariables,
     type IListTargetWorkflowStatesResponse,
     type IListTargetWorkflowStatesVariables,
@@ -128,6 +131,10 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         cancelWorkflowState: handler.createMutation<
             ICancelWorkflowStateVariables,
             ICancelWorkflowStateResponse
-        >(CANCEL_WORKFLOW_STATE_MUTATION)
+        >(CANCEL_WORKFLOW_STATE_MUTATION),
+        getWorkflowState: handler.createMutation<
+            IGetWorkflowStateVariables,
+            IGetWorkflowStateResponse
+        >(GET_WORKFLOW_STATE_MUTATION)
     };
 };

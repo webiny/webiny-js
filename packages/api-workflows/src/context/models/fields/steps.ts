@@ -37,7 +37,7 @@ export const createStepsField = (params?: Partial<CmsModelObjectField>): CmsMode
                 createDescriptionField(),
                 createTeamsField(),
                 createNotificationsField(),
-                ...params?.settings?.fields || []
+                ...(params?.settings?.fields || [])
             ]
         }
     };

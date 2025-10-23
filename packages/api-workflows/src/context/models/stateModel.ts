@@ -44,6 +44,9 @@ export const createWorkflowStateModel = () => {
             },
             createCommentField(),
             createStateField(),
+            /**
+             * We need to extend the base steps field with additional fields required for workflow state.
+             */
             createStepsField({
                 settings: {
                     fields: [createStateField(), createSavedByField(), createCommentField()]

@@ -564,5 +564,25 @@ describe("workflow states graphql", () => {
                 }
             }
         });
+        /**
+         * Should be possible to get the inactive workflow state by its ID.
+         */
+        const [inactiveFirstStateResponse] = await handler.getWorkflowState({
+            id: firstWorkflowState!.id
+        });
+        expect(inactiveFirstStateResponse).toMatchObject({
+            data: {
+                workflows: {
+                    getWorkflowState: {
+                        data: {
+                            id: firstWorkflowState!.id,
+                            isActive: false,
+                            workflowId: workflow.id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
     });
 });

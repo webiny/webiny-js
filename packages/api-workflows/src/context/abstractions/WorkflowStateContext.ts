@@ -19,6 +19,7 @@ export interface IWorkflowStateContextListStatesWhere {
     state?: WorkflowStateRecordState;
     state_in?: WorkflowStateRecordState[];
     savedBy?: string;
+    createdBy?: string;
     isActive?: boolean;
 }
 

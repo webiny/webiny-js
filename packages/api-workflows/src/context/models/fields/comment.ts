@@ -8,4 +8,4 @@ export const createCommentField = (): CmsModelField => {
         type: "text",
         label: "Comment"
     };
-}
+};

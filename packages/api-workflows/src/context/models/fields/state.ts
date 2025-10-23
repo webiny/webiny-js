@@ -30,4 +30,4 @@ export const createStateField = (): CmsModelField => {
             ]
         }
     };
-}
+};

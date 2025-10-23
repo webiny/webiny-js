@@ -8,4 +8,4 @@ export const createDescriptionField = (): CmsModelField => {
         storageId: "text@description",
         label: "Description"
     };
-}
+};

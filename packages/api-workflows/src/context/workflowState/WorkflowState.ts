@@ -263,8 +263,7 @@ export class WorkflowState implements IWorkflowState {
         if (!step) {
             return;
         }
-        const teams = await this.context.adminUsers.listUserTeams(identity.id);
-        if (!teams?.length) {
+        if (this.teams.length === 0) {
             throw new WebinyError({
                 message: `You are not assigned to any team and therefore cannot review this workflow.`,
                 code: "WORKFLOW_REVIEWER_NO_TEAMS",
@@ -275,7 +274,7 @@ export class WorkflowState implements IWorkflowState {
             });
         }
         const canReview = step.teams.some(team => {
-            return teams.some(t => {
+            return this.teams.some(t => {
                 return team.id === t.id;
             });
         });
