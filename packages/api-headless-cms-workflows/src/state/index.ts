@@ -13,19 +13,13 @@ export const attachStateLifecycleEvents = ({ context }: IParams) => {
         state: IWorkflowState,
         values: ICmsEntryState | undefined
     ): Promise<void> => {
-        /**
-         * Should not happen but let's be safe.
-         */
-        if (!state.record) {
-            return;
-        }
-        const modelId = getModelIdFromAppName(state.record.app);
+        const modelId = getModelIdFromAppName(state.app);
         if (!modelId) {
             return;
         }
         try {
             const model = await context.cms.getModel(modelId);
-            await context.cms.updateEntry(model, state.record.targetRevisionId, {
+            await context.cms.updateEntry(model, state.targetRevisionId, {
                 state: values
             });
         } catch (ex) {

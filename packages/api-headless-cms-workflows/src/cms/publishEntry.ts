@@ -33,7 +33,9 @@ export const attachPublishEntryLifecycleEvents = (params: IParams) => {
             {
                 app,
                 entryId: entry.id,
-                state
+                state: {
+                    ...state
+                }
             }
         );
     });

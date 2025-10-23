@@ -7,7 +7,7 @@ export const getStateValues = (state: IWorkflowState): ICmsEntryState | undefine
     }
 
     return {
-        workflowId: state.record.workflowId,
+        workflowId: state.workflowId,
         stepId: state.activeStep.id,
         stepName: state.activeStep.title,
         state: state.activeStep.state

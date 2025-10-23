@@ -26,7 +26,9 @@ export const attachUpdateEntryLifecycleEvents = (params: IParams) => {
             message: "Cannot update entry because it is currently in a workflow.",
             code: "ENTRY_IN_WORKFLOW",
             data: {
-                state: state.record
+                state: {
+                    ...state
+                }
             }
         });
     });
