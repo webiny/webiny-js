@@ -8,9 +8,9 @@ import { cn, cva, makeDecoratable } from "~/utils.js";
 const colorPickerVariants = cva("cursor-pointer", {
     variants: {
         size: {
-            md: ["size-8", "p-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] "],
-            lg: ["size-10", "p-[calc(theme(padding.sm-plus)-theme(borderWidth.sm))]"],
-            xl: ["size-14", "p-[calc(theme(padding.md)-theme(borderWidth.sm))]"]
+            md: ["size-8", "p-[calc(var(--padding-xs-plus)-(var(--border-width-sm)))] "],
+            lg: ["size-10", "p-[calc(var(--padding-sm-plus)-(var(--border-width-sm)))]"],
+            xl: ["size-14", "p-[calc(var(--padding-md)-(var(--border-width-sm)))]"]
         },
         disabled: {
             true: "pointer-events-none"

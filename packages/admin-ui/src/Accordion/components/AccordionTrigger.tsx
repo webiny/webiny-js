@@ -60,7 +60,7 @@ const AccordionTrigger = ({
                 >
                     {icon && <div className={"mr-md"}>{icon}</div>}
                     <div
-                        className={"flex flex-col gap-xxs flex-grow text-left"}
+                        className={"flex flex-col gap-xxs grow text-left"}
                     >
                         <div
                             className={"text-md font-semibold webiny_accordion-item-title"}

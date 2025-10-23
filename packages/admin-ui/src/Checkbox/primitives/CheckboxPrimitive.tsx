@@ -25,7 +25,7 @@ const IndeterminateIcon = () => {
 const checkboxVariants = cva(
     [
         "group peer h-md w-md shrink-0 rounded-sm border-sm ",
-        "border-neutral-muted bg-neutral-base [&_svg]:!fill-neutral-base ring-offset-background",
+        "border-neutral-muted bg-neutral-base [&_svg]:fill-neutral-base! ring-offset-background",
         "hover:border-neutral-dark",
         "focus:outline-none focus-visible:border-accent-default focus-visible:ring-lg focus-visible:ring-primary-dimmed focus-visible:ring-offset-0",
         "disabled:cursor-not-allowed disabled:border-transparent disabled:bg-neutral-disabled",
@@ -93,7 +93,7 @@ const DecoratableCheckboxPrimitiveRenderer = ({
                         <IndeterminateIcon />
                     ) : (
                         <CheckboxPrimitives.Indicator>
-                            <CheckIcon className={"!size-sm-extra"} />
+                            <CheckIcon className={"size-sm-extra!"} />
                         </CheckboxPrimitives.Indicator>
                     )}
                 </span>

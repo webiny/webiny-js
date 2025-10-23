@@ -9,13 +9,13 @@ const skeletonVariants = cva("animate-skeleton-pulse rounded-sm", {
             area: "size-full"
         },
         size: {
-            xs: "h-[8px]",
-            sm: "h-[12px]",
-            md: "h-[16px]",
-            lg: "h-[24px]",
-            xl: "h-[32px]",
+            xs: "h-sm",
+            sm: "h-sm-extra",
+            md: "h-md",
+            lg: "h-lg",
+            xl: "h-xl",
             xxl: "h-[40px]",
-            "3xl": "h-[48px]"
+            "3xl": "h-xxl"
         }
     },
     compoundVariants: [
@@ -23,12 +23,12 @@ const skeletonVariants = cva("animate-skeleton-pulse rounded-sm", {
         {
             type: "thumbnail",
             size: "xs",
-            class: "!hidden"
+            class: "hidden!"
         },
         {
             type: "text",
             size: "3xl",
-            class: "!hidden"
+            class: "hidden!"
         }
     ],
     defaultVariants: {

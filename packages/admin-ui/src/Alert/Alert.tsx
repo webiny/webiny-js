@@ -37,49 +37,49 @@ const alertVariants = cva(
                 type: "info",
                 variant: "strong",
                 className:
-                    "bg-neutral-dark text-neutral-light [&_a]:!text-neutral-light"
+                    "bg-neutral-dark text-neutral-light [&_a]:text-neutral-light!"
             },
             {
                 type: "info",
                 variant: "subtle",
                 className:
-                    "bg-neutral-dimmed text-neutral-primary [&_a]:!text-neutral-primary"
+                    "bg-neutral-dimmed text-neutral-primary [&_a]:text-neutral-primary!"
             },
             {
                 type: "success",
                 variant: "strong",
                 className:
-                    "bg-secondary text-neutral-light [&_a]:!text-neutral-light"
+                    "bg-secondary text-neutral-light [&_a]:text-neutral-light!"
             },
             {
                 type: "success",
                 variant: "subtle",
                 className:
-                    "bg-success-subtle text-neutral-primary [&_a]:!text-neutral-primary"
+                    "bg-success-subtle text-neutral-primary [&_a]:text-neutral-primary!"
             },
             {
                 type: "warning",
                 variant: "strong",
                 className:
-                    "bg-warning text-neutral-primary [&_a]:!text-neutral-primary"
+                    "bg-warning text-neutral-primary [&_a]:text-neutral-primary!"
             },
             {
                 type: "warning",
                 variant: "subtle",
                 className:
-                    "bg-warning-subtle text-neutral-primary [&_a]:!text-neutral-primary"
+                    "bg-warning-subtle text-neutral-primary [&_a]:text-neutral-primary!"
             },
             {
                 type: "danger",
                 variant: "strong",
                 className:
-                    "bg-destructive text-neutral-light [&_a]:!text-neutral-light"
+                    "bg-destructive text-neutral-light [&_a]:text-neutral-light!"
             },
             {
                 type: "danger",
                 variant: "subtle",
                 className:
-                    "bg-destructive-subtle text-neutral-primary [&_a]:!text-neutral-primary"
+                    "bg-destructive-subtle text-neutral-primary [&_a]:text-neutral-primary!"
             }
         ]
     }
@@ -159,7 +159,7 @@ const AlertBase = ({
                 <div className={"py-xs"}>
                     <IconComponent className={alertIconVariants({ type, variant })} />
                 </div>
-                <div className={"flex-grow py-xxs"}>{children}</div>
+                <div className={"grow py-xxs"}>{children}</div>
                 {actions && <div>{actions}</div>}
                 {showCloseButton && (
                     <IconButton

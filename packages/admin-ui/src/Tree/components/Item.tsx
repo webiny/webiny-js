@@ -23,7 +23,7 @@ const itemVariants = cva(
                 true: "bg-neutral-dark/5 font-semibold"
             },
             loading: {
-                true: "!text-neutral-disabled !fill-neutral-disabled !pointer-events-none"
+                true: "text-neutral-disabled! fill-neutral-disabled! pointer-events-none!"
             }
         }
     }

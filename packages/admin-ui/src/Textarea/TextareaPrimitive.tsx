@@ -58,12 +58,12 @@ const textareaVariants = cva(
             {
                 variant: "ghost",
                 invalid: true,
-                class: "!border-destructive-subtle !bg-destructive-subtle"
+                class: "border-destructive-subtle! bg-destructive-subtle!"
             },
             {
                 variant: "ghost-negative",
                 invalid: true,
-                class: "!border-destructive-default !bg-destructive-subtle text-neutral-primary placeholder:text-neutral-dimmed"
+                class: "!border-destructive-default bg-destructive-subtle! text-neutral-primary placeholder:text-neutral-dimmed"
             }
         ],
         defaultVariants: {

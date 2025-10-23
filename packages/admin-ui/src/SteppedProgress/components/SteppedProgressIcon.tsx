@@ -17,7 +17,7 @@ const steppedProgressIconVariants = cva(
                 [ProgressItemState.COMPLETED_AFFIRMATIVE]: "fill-neutral-base"
             },
             disabled: {
-                true: "!fill-neutral-base"
+                true: "fill-neutral-base!"
             },
             errored: {
                 true: "fill-destructive"

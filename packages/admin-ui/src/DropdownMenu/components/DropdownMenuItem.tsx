@@ -25,11 +25,11 @@ type DropdownMenuItemProps = DropdownMenuItemButtonProps | DropdownMenuItemLinkP
 const variants = cva(
     [
         "group relative cursor-default select-none items-center rounded-sm",
-        "text-md text-neutral-primary !no-underline",
+        "text-md text-neutral-primary no-underline!",
         "px-xs-plus outline-none transition-colors",
         "[&_svg]:fill-neutral-xstrong [&_svg]:pointer-events-none [&_svg]:size-md [&_svg]:shrink-0",
-        "data-[disabled]:pointer-events-none data-[disabled]:text-neutral-disabled",
-        "[&_a]:!no-underline [&_a]:!text-neutral-primary"
+        "data-disabled:pointer-events-none data-disabled:text-neutral-disabled",
+        "[&_a]:no-underline! [&_a]:text-neutral-primary!"
     ],
     {
         variants: {
@@ -66,7 +66,7 @@ const DropdownMenuItemBase = React.forwardRef<
         className: cn(
             "flex px-sm py-xs-plus gap-sm-extra items-center text-md rounded-sm transition-colors group-focus:bg-neutral-dimmed",
             {
-                "[&_svg]:!fill-neutral-disabled": disabled
+                "[&_svg]:fill-neutral-disabled!": disabled
             }
         )
     };

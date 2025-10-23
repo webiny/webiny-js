@@ -12,7 +12,7 @@ const SelectItem = ({ className, children, ...props }: SelectPrimitives.SelectIt
                 "flex items-center justify-between gap-sm-extra cursor-default select-none rounded-sm p-sm mx-sm text-md outline-none",
                 "bg-neutral-base text-neutral-primary fill-neutral-xstrong",
                 "focus:bg-neutral-dimmed",
-                "data-[disabled]:text-neutral-disabled data-[disabled]:cursor-not-allowed",
+                "data-disabled:text-neutral-disabled data-disabled:cursor-not-allowed",
                 "data-[state=checked]:font-semibold"
             ],
             className

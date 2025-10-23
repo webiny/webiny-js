@@ -5,9 +5,9 @@ import { cn, cva, makeDecoratable, type VariantProps } from "~/utils.js";
 const loaderVariants = cva("relative translate", {
     variants: {
         size: {
-            xs: "size-[16px]",
-            sm: "size-[20px]",
-            md: "size-[24px]",
+            xs: "size-md",
+            sm: "size-md-plus",
+            md: "size-lg",
             lg: "size-[40px]"
         }
     },

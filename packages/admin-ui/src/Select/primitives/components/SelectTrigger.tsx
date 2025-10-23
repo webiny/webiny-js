@@ -45,15 +45,15 @@ const selectTriggerVariants = cva(
             size: {
                 md: [
                     "rounded-md",
-                    "py-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
+                    "py-[calc(var(--padding-xs-plus)-(var(--border-width-sm)))] px-[calc(var(--padding-sm-extra)-(var(--border-width-sm)))]"
                 ],
                 lg: [
                     "rounded-md",
-                    "py-[calc(theme(padding.sm-plus)-theme(borderWidth.sm))] px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
+                    "py-[calc(var(--padding-sm-plus)-(var(--border-width-sm)))] px-[calc(var(--padding-sm-extra)-(var(--border-width-sm)))]"
                 ],
                 xl: [
                     "rounded-lg leading-6",
-                    "py-[calc(theme(padding.md)-theme(borderWidth.sm))] px-[calc(theme(padding.md)-theme(borderWidth.sm))]"
+                    "py-[calc(var(--padding-md)-(var(--border-width-sm)))] px-[calc(var(--padding-md)-(var(--border-width-sm)))]"
                 ]
             },
             invalid: {
@@ -74,12 +74,12 @@ const selectTriggerVariants = cva(
             {
                 variant: "ghost",
                 invalid: true,
-                class: "!border-destructive-subtle !bg-destructive-subtle"
+                class: "border-destructive-subtle! bg-destructive-subtle!"
             },
             {
                 variant: "ghost-negative",
                 invalid: true,
-                class: "!border-destructive-default !bg-destructive-subtle text-neutral-primary placeholder:text-neutral-dimmed !fill-neutral-xstrong"
+                class: "!border-destructive-default bg-destructive-subtle! text-neutral-primary placeholder:text-neutral-dimmed fill-neutral-xstrong!"
             }
         ],
         defaultVariants: {

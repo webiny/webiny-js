@@ -16,7 +16,7 @@ const dialogContentVariants = cva(
                 md: "w-[520px]",
                 lg: "w-[640px]",
                 xl: "w-[800px]",
-                full: "w-[100vw] h-[100vh]"
+                full: "w-screen h-screen"
             }
         },
         defaultVariants: {

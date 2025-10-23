@@ -20,10 +20,10 @@ const filePickerVariants = cva(
         variants: {
             type: {
                 area: [
-                    "px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))] py-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
+                    "px-[calc(var(--padding-sm-extra)-(var(--border-width-sm)))] py-[calc(var(--padding-sm-extra)-(var(--border-width-sm)))]"
                 ],
                 compact: [
-                    "py-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] px-[calc(theme(padding.sm)-theme(borderWidth.sm))]"
+                    "py-[calc(var(--padding-xs-plus)-(var(--border-width-sm)))] px-[calc(var(--padding-sm)-(var(--border-width-sm)))]"
                 ]
             },
             variant: {

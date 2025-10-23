@@ -18,10 +18,10 @@ interface AvatarProps
 const avatarVariants = cva("relative flex shrink-0 overflow-hidden", {
     variants: {
         size: {
-            sm: "text-h6 rounded-sm size-[24px] [&_svg]:size-[16px]",
-            md: "text-h6 rounded-md size-[32px] [&_svg]:size-[24px]",
-            lg: "text-h6 rounded-md size-[40px] [&_svg]:size-[24px]",
-            xl: "text-h4 rounded-lg size-[48px] [&_svg]:size-[24px]"
+            sm: "text-h6 rounded-sm size-lg [&_svg]:size-md",
+            md: "text-h6 rounded-md size-xl [&_svg]:size-lg",
+            lg: "text-h6 rounded-md size-[40px] [&_svg]:size-lg",
+            xl: "text-h4 rounded-lg size-xxl [&_svg]:size-lg"
         },
         variant: {
             strong: "bg-primary text-neutral-light [&_svg]:fill-neutral-base",
@@ -29,7 +29,7 @@ const avatarVariants = cva("relative flex shrink-0 overflow-hidden", {
             light: "bg-neutral-dimmed text-neutral-primary [&_svg]:fill-neutral-xstrong",
             quiet: "bg-transparent text-neutral-primary [&_svg]:fill-neutral-xstrong",
             outlined:
-                "bg-neutral-base !border-neutral-muted border-sm text-accent-primary [&_svg]:fill-neutral-xstrong"
+                "bg-neutral-base border-neutral-muted! border-sm text-accent-primary [&_svg]:fill-neutral-xstrong"
         }
     },
     defaultVariants: {

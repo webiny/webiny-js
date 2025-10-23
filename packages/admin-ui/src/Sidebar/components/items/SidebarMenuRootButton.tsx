@@ -7,21 +7,21 @@ import { useAdminUi } from "~/index.js";
 const variants = cva(
     [
         "flex w-full items-center gap-sm rounded-md",
-        "!no-underline text-neutral-primary cursor-pointer px-sm py-xs-plus text-left",
+        "no-underline! text-neutral-primary cursor-pointer px-sm py-xs-plus text-left",
         "text-md outline-none transition-[width,height,padding]",
         "whitespace-nowrap overflow-hidden",
         "hover:bg-neutral-dark/5",
         "focus:bg-neutral-dark/5 focus:ring-none focus:ring-transparent",
         "data-[active=true]:bg-neutral-dark/5 data-[active=true]:font-semibold data-[active=true]:pointer-events-none",
-        "group-data-[state=open]/menu-item-collapsible:!font-semibold"
+        "group-data-[state=open]/menu-item-collapsible:font-semibold!"
     ],
     {
         variants: {
             variant: {
-                "group-label": "!text-neutral-muted uppercase"
+                "group-label": "text-neutral-muted! uppercase"
             },
             disabled: {
-                true: "pointer-events-none !text-neutral-disabled"
+                true: "pointer-events-none text-neutral-disabled!"
             }
         }
     }

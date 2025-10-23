@@ -13,7 +13,7 @@ const SliderThumb = ({ textValue, showTooltip, tooltipSide }: SliderThumbProps) 
             "bg-primary-default border-white",
             "hover:bg-primary-strong",
             "active:bg-primary-default",
-            "data-[disabled]:pointer-events-none data-[disabled]:bg-primary-disabled"
+            "data-disabled:pointer-events-none data-disabled:bg-primary-disabled"
         )}
     >
         <SliderTooltip showTooltip={showTooltip} textValue={textValue} tooltipSide={tooltipSide} />

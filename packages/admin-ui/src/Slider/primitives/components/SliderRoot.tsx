@@ -7,7 +7,7 @@ const SliderRoot = ({ className, ...props }: SliderPrimitives.SliderProps) => (
         className={cn(
             [
                 "relative flex w-full touch-none select-none items-center cursor-pointer",
-                "data-[disabled]:cursor-not-allowed"
+                "data-disabled:cursor-not-allowed"
             ],
             className
         )}

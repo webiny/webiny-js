@@ -58,7 +58,7 @@ const AccordionItemBase = (props: AccordionItemProps) => {
                     "group-[.accordion-variant-container]:rounded-lg",
                     "group-[.accordion-background-base]:bg-neutral-base",
                     "group-[.accordion-background-light]:bg-neutral-light",
-                    "data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    "data-disabled:pointer-events-none data-disabled:opacity-50"
                 ],
                 itemProps.className
             )}

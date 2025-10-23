@@ -17,7 +17,7 @@ const DropdownMenuCheckboxItemBase = React.forwardRef<
         className={cn(
             "group relative cursor-default select-none items-center rounded-sm px-xs-plus outline-none transition-colors",
             "[&_svg]:fill-neutral-xstrong [&_svg]:pointer-events-none [&_svg]:size-md [&_svg]:shrink-0",
-            "data-[disabled]:pointer-events-none data-[disabled]:text-neutral-disabled",
+            "data-disabled:pointer-events-none data-disabled:text-neutral-disabled",
             className
         )}
         checked={checked}

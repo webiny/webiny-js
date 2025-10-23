@@ -13,7 +13,7 @@ const buttonWrapperVariants = cva("inline-block", {
 
 const buttonVariants = cva(
     [
-        "border-transparent rounded font-sans inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors !no-underline",
+        "border-transparent rounded font-sans inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors no-underline!",
         "aria-disabled:pointer-events-none",
         "focus-visible:outline-none focus-visible:border-accent-default"
     ],
@@ -52,25 +52,25 @@ const buttonVariants = cva(
                     "hover:bg-neutral-base/20",
                     "active:bg-neutral-base/30",
                     "aria-disabled:text-neutral-disabled aria-disabled:fill-neutral-base/50",
-                    "focus-visible:!border-neutral-base"
+                    "focus-visible:border-neutral-base!"
                 ]
             },
             size: {
                 sm: [
                     "text-sm border-sm rounded-sm [&>svg]:size-md",
-                    "py-[calc(theme(padding.xs)-theme(borderWidth.sm))] px-[calc(theme(padding.sm)-theme(borderWidth.sm))]"
+                    "py-[calc(var(--padding-xs)-(var(--border-width-sm)))] px-[calc(var(--padding-sm)-(var(--border-width-sm)))]"
                 ],
                 md: [
                     "text-md border-sm rounded-md [&>svg]:size-md",
-                    "py-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
+                    "py-[calc(var(--padding-xs-plus)-(var(--border-width-sm)))] px-[calc(var(--padding-sm-extra)-(var(--border-width-sm)))]"
                 ],
                 lg: [
                     "text-md border-sm rounded-md [&>svg]:size-md-plus",
-                    "py-[calc(theme(padding.sm-plus)-theme(borderWidth.sm))] px-[calc(theme(padding.md)-theme(borderWidth.sm))]"
+                    "py-[calc(var(--padding-sm-plus)-(var(--border-width-sm)))] px-[calc(var(--padding-md)-(var(--border-width-sm)))]"
                 ],
                 xl: [
                     "text-lg font-semibold border-lg rounded-md [&>svg]:size-lg",
-                    "py-[calc(theme(padding.md-plus)-theme(borderWidth.md))] px-[calc(theme(padding.md)-theme(borderWidth.md))]"
+                    "py-[calc(theme(padding.md-plus)-(var(--border-width-md)))] px-[calc(var(--padding-md)-(var(--border-width-md)))]"
                 ]
             },
             contentLayout: {
@@ -89,70 +89,70 @@ const buttonVariants = cva(
             {
                 size: "sm",
                 contentLayout: "icon",
-                className: "p-[calc(theme(padding.xs)-theme(borderWidth.sm))]"
+                className: "p-[calc(var(--padding-xs)-(var(--border-width-sm)))]"
             },
             {
                 size: "sm",
                 contentLayout: "text-icon-start",
                 className:
-                    "pl-[calc(theme(padding.xs)-theme(borderWidth.sm))] [&>svg]:mr-xs"
+                    "pl-[calc(var(--padding-xs)-(var(--border-width-sm)))] [&>svg]:mr-xs"
             },
             {
                 size: "sm",
                 contentLayout: "text-icon-end",
                 className:
-                    "pr-[calc(theme(padding.xs)-theme(borderWidth.sm))] [&>svg]:ml-xs"
+                    "pr-[calc(var(--padding-xs)-(var(--border-width-sm)))] [&>svg]:ml-xs"
             },
             {
                 size: "md",
                 contentLayout: "icon",
-                className: "p-[calc(theme(padding.sm)-theme(borderWidth.sm))]"
+                className: "p-[calc(var(--padding-sm)-(var(--border-width-sm)))]"
             },
             {
                 size: "md",
                 contentLayout: "text-icon-start",
                 className:
-                    "pl-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] [&>svg]:mr-xs"
+                    "pl-[calc(var(--padding-xs-plus)-(var(--border-width-sm)))] [&>svg]:mr-xs"
             },
             {
                 size: "md",
                 contentLayout: "text-icon-end",
                 className:
-                    "pr-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] [&>svg]:ml-xs"
+                    "pr-[calc(var(--padding-xs-plus)-(var(--border-width-sm)))] [&>svg]:ml-xs"
             },
             {
                 size: "lg",
                 contentLayout: "icon",
-                className: "p-[calc(theme(padding.sm-plus)-theme(borderWidth.sm))]"
+                className: "p-[calc(var(--padding-sm-plus)-(var(--border-width-sm)))]"
             },
             {
                 size: "lg",
                 contentLayout: "text-icon-start",
                 className:
-                    "pl-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))] [&>svg]:mr-xs-plus"
+                    "pl-[calc(var(--padding-sm-extra)-(var(--border-width-sm)))] [&>svg]:mr-xs-plus"
             },
             {
                 size: "lg",
                 contentLayout: "text-icon-end",
                 className:
-                    "pr-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))] [&>svg]:ml-xs-plus"
+                    "pr-[calc(var(--padding-sm-extra)-(var(--border-width-sm)))] [&>svg]:ml-xs-plus"
             },
             {
                 size: "xl",
                 contentLayout: "icon",
-                className: "p-[calc(theme(padding.md)-theme(borderWidth.md))]"
+                className: "p-[calc(var(--padding-md)-(var(--border-width-md)))]"
             },
             {
                 size: "xl",
                 contentLayout: "text-icon-start",
                 className:
-                    "pl-[calc(theme(padding.sm-extra)-theme(borderWidth.md))] [&>svg]:mr-sm"
+                    "pl-[calc(var(--padding-sm-extra)-(var(--border-width-md)))] [&>svg]:mr-sm"
             },
             {
                 size: "xl",
                 contentLayout: "text-icon-end",
                 className:
-                    "pr-[calc(theme(padding.sm-extra)-theme(borderWidth.md))] [&>svg]:ml-sm"
+                    "pr-[calc(var(--padding-sm-extra)-(var(--border-width-md)))] [&>svg]:ml-sm"
             }
         ],
         defaultVariants: {

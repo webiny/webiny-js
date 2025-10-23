@@ -12,7 +12,7 @@ const listItemVariant = cva(
         "group-[.list-background-light]:bg-neutral-light",
         "group-[.list-variant-container]:rounded-sm",
         "group-[.list-variant-underline]:border-b-sm group-[.list-variant-underline]:border-b-neutral-dimmed",
-        "hover:!bg-neutral-dimmed",
+        "hover:bg-neutral-dimmed!",
         "focus-visible:outline-none focus-visible:ring-sm focus-visible:ring-inset focus-visible:ring-primary-dimmed"
     ],
     {
@@ -21,10 +21,10 @@ const listItemVariant = cva(
                 true: "pointer-events-none opacity-50"
             },
             activated: {
-                true: "!bg-neutral-light"
+                true: "bg-neutral-light!"
             },
             selected: {
-                true: "!bg-neutral-light"
+                true: "bg-neutral-light!"
             },
             clickable: {
                 true: "cursor-pointer"
@@ -78,7 +78,7 @@ const DecoratableListItem = ({
                 >
                     {icon && <div>{icon}</div>}
                     <div
-                        className={"flex flex-col gap-xxs flex-grow text-left"}
+                        className={"flex flex-col gap-xxs grow text-left"}
                     >
                         <Text
                             size={"md"}

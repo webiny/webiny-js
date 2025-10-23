@@ -16,7 +16,7 @@ const steppedProgressIndicatorVariants = cva(
                 [ProgressItemState.COMPLETED_AFFIRMATIVE]: "bg-success-default"
             },
             disabled: {
-                true: "!bg-neutral-dimmed !border-none"
+                true: "bg-neutral-dimmed! border-none!"
             },
             errored: {
                 true: ""

@@ -13,7 +13,7 @@ const iconButtonWrapperVariants = cva("inline-block", {
 
 const iconButtonVariants = cva(
     [
-        "border-transparent rounded flex flex-shrink-0 items-center justify-center ring-offset-background transition-colors",
+        "border-transparent rounded flex shrink-0 items-center justify-center ring-offset-background transition-colors",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0",
         "[&_img]:pointer-events-none [&_img]:shrink-0",
         "aria-disabled:pointer-events-none",
@@ -53,7 +53,7 @@ const iconButtonVariants = cva(
                     "bg-transparent fill-neutral-base",
                     "hover:bg-neutral-base/20",
                     "active:bg-neutral-base/30",
-                    "focus-visible:!border-neutral-base",
+                    "focus-visible:border-neutral-base!",
                     "aria-disabled:fill-neutral-base aria-disabled:opacity-50 hover:aria-disabled:bg-transparent active:aria-disabled:bg-transparent"
                 ]
             },
@@ -63,7 +63,7 @@ const iconButtonVariants = cva(
                 sm: "border-sm rounded-sm",
                 md: "border-sm rounded-md",
                 lg: "border-sm rounded-md",
-                xl: "border-md rounded-lg p-[calc(theme(padding.md)-theme(borderWidth.md))] [&_svg]:size-lg [&_img]:size-lg"
+                xl: "border-md rounded-lg p-[calc(var(--padding-md)-(var(--border-width-md)))] [&_svg]:size-lg [&_img]:size-lg"
             },
             iconSize: {
                 default: "",

@@ -56,7 +56,7 @@ const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMen
                 </Collapsible.Trigger>
                 <Collapsible.Content
                     forceMount
-                    className={"hidden data-[state=open]:!block"}
+                    className={"hidden data-[state=open]:block!"}
                 >
                     <SidebarMenuSub>{children}</SidebarMenuSub>
                 </Collapsible.Content>
@@ -72,8 +72,8 @@ const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMen
 
                 // When the sidebar is collapsed, this ensures that the sidebar menu item is highlighted
                 // if it contains an active child (no matter how deep in the hierarchy).
-                "group-data-[state=collapsed]:[&:has([data-active=true])_[data-sidebar=menu-button]_svg]:!fill-neutral-xstrong",
-                "group-data-[state=collapsed]:[&:has([data-active=true])_[data-sidebar=menu-button]]:!bg-neutral-dark/5",
+                "group-data-[state=collapsed]:[&:has([data-active=true])_[data-sidebar=menu-button]_svg]:fill-neutral-xstrong!",
+                "group-data-[state=collapsed]:[&:has([data-active=true])_[data-sidebar=menu-button]]:bg-neutral-dark/5!",
                 className
             )}
         >

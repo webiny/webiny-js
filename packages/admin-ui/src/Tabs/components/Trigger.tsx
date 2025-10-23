@@ -9,15 +9,15 @@ const tabTriggerVariants = cva(
         "text-neutral-strong hover:text-neutral-primary",
         "border-b-md border-transparent border-solid",
         "data-[state=active]:border-accent-default data-[state=active]:text-neutral-primary",
-        "disabled:pointer-events-none disabled:!text-neutral-disabled disabled:!fill-neutral-disabled disabled:!border-transparent"
+        "disabled:pointer-events-none disabled:text-neutral-disabled! disabled:fill-neutral-disabled! disabled:border-transparent!"
     ],
     {
         variants: {
             size: {
                 sm: "text-sm h-[40px]",
-                md: "text-md h-[48px]",
+                md: "text-md h-xxl",
                 lg: "text-lg h-[56px]",
-                xl: "text-xl h-[64px]"
+                xl: "text-xl h-3xl"
             },
             visible: {
                 false: "hidden"

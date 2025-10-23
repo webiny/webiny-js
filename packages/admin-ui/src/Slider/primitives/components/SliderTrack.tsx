@@ -7,14 +7,14 @@ const SliderTrack = () => (
         className={cn(
             "relative h-xxs w-full grow overflow-hidden rounded-full",
             "bg-neutral-strong",
-            "data-[disabled]:bg-neutral-muted"
+            "data-disabled:bg-neutral-muted"
         )}
     >
         <SliderPrimitives.Range
             className={cn([
                 "absolute h-full",
                 "bg-primary-default",
-                "data-[disabled]:bg-primary-disabled"
+                "data-disabled:bg-primary-disabled"
             ])}
         />
     </SliderPrimitives.Track>

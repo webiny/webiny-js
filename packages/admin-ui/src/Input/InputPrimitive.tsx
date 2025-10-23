@@ -29,22 +29,22 @@ const inputVariants = cva(
     [
         "relative flex items-center gap-sm w-full",
         "border-sm text-md",
-        "has-[:disabled]:cursor-not-allowed data-[disabled=true]:cursor-not-allowed"
+        "has-disabled:cursor-not-allowed data-[disabled=true]:cursor-not-allowed"
     ],
     {
         variants: {
             size: {
                 md: [
                     "rounded-md",
-                    "py-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
+                    "py-[calc(var(--padding-xs-plus)-(var(--border-width-sm)))] px-[calc(var(--padding-sm-extra)-(var(--border-width-sm)))]"
                 ],
                 lg: [
                     "rounded-md",
-                    "py-[calc(theme(padding.sm-plus)-theme(borderWidth.sm))] px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
+                    "py-[calc(var(--padding-sm-plus)-(var(--border-width-sm)))] px-[calc(var(--padding-sm-extra)-(var(--border-width-sm)))]"
                 ],
                 xl: [
                     "rounded-lg leading-6",
-                    "py-[calc(theme(padding.md)-theme(borderWidth.sm))] px-[calc(theme(padding.md)-theme(borderWidth.sm))]"
+                    "py-[calc(var(--padding-md)-(var(--border-width-sm)))] px-[calc(var(--padding-md)-(var(--border-width-sm)))]"
                 ]
             },
             variant: {
@@ -53,31 +53,31 @@ const inputVariants = cva(
                     "hover:border-neutral-strong",
                     "focus-within:!border-neutral-black",
                     "data-[focused=true]:!border-neutral-black",
-                    "has-[:disabled]:bg-neutral-disabled has-[:disabled]:border-neutral-muted has-[:disabled]:hover:border-neutral-muted has-[:disabled]:text-neutral-disabled has-[:disabled]:placeholder:text-neutral-disabled has-[:disabled]:fill-neutral-disabled",
+                    "has-disabled:bg-neutral-disabled has-disabled:border-neutral-muted has-disabled:hover:border-neutral-muted has-disabled:text-neutral-disabled has-disabled:placeholder:text-neutral-disabled has-disabled:fill-neutral-disabled",
                     "data-[disabled=true]:bg-neutral-disabled data-[disabled=true]:border-neutral-muted data-[disabled=true]:text-neutral-disabled data-[disabled=true]:placeholder:text-neutral-disabled data-[disabled=true]:fill-neutral-disabled"
                 ],
                 secondary: [
                     "bg-neutral-light border-neutral-subtle text-neutral-strong placeholder:text-neutral-dimmed fill-neutral-xstrong",
                     "hover:bg-neutral-dimmed",
-                    "focus-within:!bg-neutral-base focus-within:!border-neutral-black",
-                    "data-[focused=true]:!bg-neutral-base data-[focused=true]:!border-neutral-black",
-                    "has-[:disabled]:bg-neutral-disabled has-[:disabled]:text-neutral-disabled has-[:disabled]:placeholder:text-neutral-disabled has-[:disabled]:fill-neutral-disabled",
+                    "focus-within:bg-neutral-base! focus-within:!border-neutral-black",
+                    "data-[focused=true]:bg-neutral-base! data-[focused=true]:!border-neutral-black",
+                    "has-disabled:bg-neutral-disabled has-disabled:text-neutral-disabled has-disabled:placeholder:text-neutral-disabled has-disabled:fill-neutral-disabled",
                     "data-[disabled=true]:bg-neutral-disabled data-[disabled=true]:text-neutral-disabled data-[disabled=true]:placeholder:text-neutral-disabled data-[disabled=true]:fill-neutral-disabled"
                 ],
                 ghost: [
                     "bg-transparent border-transparent text-neutral-strong placeholder:text-neutral-dimmed",
                     "hover:bg-neutral-dark/5",
-                    "focus-within:!bg-neutral-dark/5",
-                    "data-[focused=true]:!bg-neutral-dark/5",
-                    "has-[:disabled]:bg-transparent has-[:disabled]:text-neutral-disabled has-[:disabled]:placeholder:text-neutral-disabled has-[:disabled]:fill-neutral-disabled",
+                    "focus-within:bg-neutral-dark/5!",
+                    "data-[focused=true]:bg-neutral-dark/5!",
+                    "has-disabled:bg-transparent has-disabled:text-neutral-disabled has-disabled:placeholder:text-neutral-disabled has-disabled:fill-neutral-disabled",
                     "data-[disabled=true]:bg-transparent data-[disabled=true]:text-neutral-disabled data-[disabled=true]:placeholder:text-neutral-disabled data-[disabled=true]:fill-neutral-disabled"
                 ],
                 "ghost-negative": [
                     "bg-transparent border-transparent text-neutral-light/50 placeholder:text-neutral-light/50 fill-neutral-base/50",
                     "hover:bg-neutral-base/20",
-                    "focus-within:!bg-neutral-base focus-within:!text-neutral-primary focus-within:!placeholder:text-neutral-dimmed focus-within:!fill-neutral-xstrong",
-                    "data-[focused=true]:!bg-neutral-base data-[focused=true]:!text-neutral-primary data-[focused=true]:!placeholder:text-neutral-dimmed data-[focused=true]:!fill-neutral-xstrong",
-                    "has-[:disabled]:bg-transparent has-[:disabled]:text-neutral-disabled/50 has-[:disabled]:placeholder:text-neutral-disabled/50",
+                    "focus-within:bg-neutral-base! focus-within:text-neutral-primary! focus-within:!placeholder:text-neutral-dimmed focus-within:fill-neutral-xstrong!",
+                    "data-[focused=true]:bg-neutral-base! data-[focused=true]:text-neutral-primary! data-[focused=true]:!placeholder:text-neutral-dimmed data-[focused=true]:fill-neutral-xstrong!",
+                    "has-disabled:bg-transparent has-disabled:text-neutral-disabled/50 has-disabled:placeholder:text-neutral-disabled/50",
                     "data-[disabled=true]:bg-transparent data-[disabled=true]:text-neutral-disabled/50 data-[disabled=true]:placeholder:text-neutral-disabled/50"
                 ]
             },
@@ -100,12 +100,12 @@ const inputVariants = cva(
             {
                 variant: "ghost",
                 invalid: true,
-                class: "!border-destructive-subtle !bg-destructive-subtle"
+                class: "border-destructive-subtle! bg-destructive-subtle!"
             },
             {
                 variant: "ghost-negative",
                 invalid: true,
-                class: "!border-destructive-default !bg-destructive-subtle text-neutral-primary placeholder:text-neutral-dimmed !fill-neutral-xstrong"
+                class: "!border-destructive-default bg-destructive-subtle! text-neutral-primary placeholder:text-neutral-dimmed fill-neutral-xstrong!"
             }
         ],
         defaultVariants: {

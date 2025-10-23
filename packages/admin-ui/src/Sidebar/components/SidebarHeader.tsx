@@ -25,10 +25,10 @@ const SidebarHeader = ({ title, icon }: SidebarHeaderProps) => {
                 >
                     <div
                         className={
-                            "flex items-center gap-x-sm [&_a]:!no-underline [&_a]:!text-neutral-primary truncate"
+                            "flex items-center gap-x-sm [&_a]:no-underline! [&_a]:text-neutral-primary! truncate"
                         }
                     >
-                        <div className={"flex flex-shrink-0"}>{icon}</div>
+                        <div className={"flex shrink-0"}>{icon}</div>
 
                         <span className={"text-md font-semibold truncate"}>
                             {title}
