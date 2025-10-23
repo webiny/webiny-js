@@ -23,7 +23,7 @@ const Title = () => {
     return (
         <Heading
             level={5}
-            className={"wby-text-neutral-strong"}
+            className={"text-neutral-strong"}
         >{t`Content model settings`}</Heading>
     );
 };
@@ -69,7 +69,7 @@ const FormSettings = ({ onExited }: FormSettingsProps) => {
                         {({ Bind, submit, form, data: formData }) => (
                             <SimpleForm size={"lg"}>
                                 <SimpleFormHeader title={activePlugin.title}>
-                                    <div className={"wby-flex wby-justify-end wby-items-center"}>
+                                    <div className={"flex justify-end items-center"}>
                                         {typeof activePlugin.renderHeaderActions === "function" &&
                                             activePlugin.renderHeaderActions({
                                                 Bind,

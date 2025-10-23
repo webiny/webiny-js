@@ -31,12 +31,12 @@ export const Entries = (props: EntriesProps) => {
     return (
         <div
             style={{ height: "260px" }}
-            className={"wby-w-full wby-overflow-x-hidden wby-overflow-y-hidden"}
+            className={"w-full overflow-x-hidden overflow-y-hidden"}
         >
             <Scrollbar data-testid="advanced-ref-field-entries" onScrollFrame={loadMoreOnScroll}>
                 {entries.map((entry, index) => {
                     return (
-                        <div className={"wby-mb-sm wby-w-full"} key={`entry-${entry.id}`}>
+                        <div className={"mb-sm w-full"} key={`entry-${entry.id}`}>
                             {children(entry, index)}
                         </div>
                     );

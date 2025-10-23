@@ -68,7 +68,7 @@ export const AdvancedSearch = observer(
             <>
                 <div
                     className={
-                        "wby-flex wby-flex-row-reverse wby-justify-between wby-items-center wby-gap-sm"
+                        "flex flex-row-reverse justify-between items-center gap-sm"
                     }
                 >
                     <Button onClick={() => presenter.openManager()} />

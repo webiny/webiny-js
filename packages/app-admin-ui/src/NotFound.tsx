@@ -8,7 +8,7 @@ export const NotFound = NotFoundBase.createDecorator(() => {
         return (
             <div
                 className={
-                    "wby-h-full wby-flex wby-flex-col wby-items-center wby-justify-center wby-text-center wby-gap-xs"
+                    "h-full flex flex-col items-center justify-center text-center gap-xs"
                 }
             >
                 <img
@@ -16,7 +16,7 @@ export const NotFound = NotFoundBase.createDecorator(() => {
                     height={200}
                     src={notFoundImage}
                     alt="Not Accessible"
-                    className={"wby-mb-xl"}
+                    className={"mb-xl"}
                 />
                 <Text>The route is either missing, or you&apos;re not authorized to view it.</Text>
                 <Text>Please contact your administrator to report the issue.</Text>

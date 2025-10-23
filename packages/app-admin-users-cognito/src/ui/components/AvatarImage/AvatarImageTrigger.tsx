@@ -12,9 +12,9 @@ const AvatarImageTrigger = ({ onSelectItem, disabled }: AvatarImageTriggerProps)
         <div
             data-role={"select-image"}
             className={cn([
-                "wby-size-[128px]",
-                "wby-flex wby-justify-center wby-items-center wby-gap-xs",
-                "wby-bg-neutral-strong"
+                "size-[128px]",
+                "flex justify-center items-center gap-xs",
+                "bg-neutral-strong"
             ])}
         >
             <Tooltip

@@ -88,12 +88,12 @@ export const ValueSelector = (props: ValueSelectorProps) => {
     };
 
     const classNames = cn([
-        "wby-cursor-pointer wby-bg-neutral-base",
-        "wby-border-sm wby-border-solid wby-border-neutral-muted",
-        props.overridden && props.inheritedFrom && "wby-bg-success-default wby-text-neutral-light",
+        "cursor-pointer bg-neutral-base",
+        "border-sm border-solid border-neutral-muted",
+        props.overridden && props.inheritedFrom && "bg-success-default text-neutral-light",
         props.disabled &&
-            "wby-bg-neutral-disabled wby-text-neutral-disabled wby-pointer-events-none",
-        "wby-flex wby-flex-row wby-text-sm wby-mx-auto wby-justify-center wby-rounded-sm wby-py-[1px] wby-px-[2px]"
+            "bg-neutral-disabled text-neutral-disabled pointer-events-none",
+        "flex flex-row text-sm mx-auto justify-center rounded-sm py-[1px] px-[2px]"
     ]);
 
     const label = (
@@ -105,8 +105,8 @@ export const ValueSelector = (props: ValueSelectorProps) => {
     const controls = (
         <>
             <FormComponentLabel text={props.label} />
-            <div className={"wby-flex wby-flex-row wby-space-x-sm"}>
-                <div className={"wby-flex-col"}>
+            <div className={"flex flex-row space-x-sm"}>
+                <div className={"flex-col"}>
                     <Input
                         onKeyDown={trackTyping}
                         inputRef={inputRef}
@@ -120,7 +120,7 @@ export const ValueSelector = (props: ValueSelectorProps) => {
                         autoFocus={true}
                     />
                 </div>
-                <div className={"wby-flex-col"}>
+                <div className={"flex-col"}>
                     <Select
                         size="md"
                         value={props.unit}
@@ -140,16 +140,16 @@ export const ValueSelector = (props: ValueSelectorProps) => {
     );
 
     return (
-        <div className={"wby-flex wby-flex-col wby-w-full"}>
+        <div className={"flex flex-col w-full"}>
             <DropdownMenu
                 open={isOpen}
                 onOpenChange={() => setIsOpen(false)}
                 trigger={label}
                 align="center"
                 side="bottom"
-                className={"wby-shadow-lg"}
+                className={"shadow-lg"}
             >
-                <div className={"wby-p-sm wby-text-sm"} style={{ width: 200 }}>
+                <div className={"p-sm text-sm"} style={{ width: 200 }}>
                     {controls}
                     {BASE_BREAKPOINT === breakpoint.name ? null : (
                         <>

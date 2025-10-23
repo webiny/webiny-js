@@ -10,7 +10,7 @@ export const Title = ({ title }: TitleProps) => {
         <Text
             size={"sm"}
             as={"div"}
-            className={cn("wby-truncate wby-w-full wby-text-neutral-primary")}
+            className={cn("truncate w-full text-neutral-primary")}
         >
             {title}
         </Text>

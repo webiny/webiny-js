@@ -16,19 +16,19 @@ const DocumentCellRowTitle = ({ document }: DocumentCellRowTitleProps) => {
     const { showEditRedirectDialog } = useEditRedirectDialog();
 
     return (
-        <div className={"wby-flex wby-flex-col wby-gap-y-[3px]"}>
+        <div className={"flex flex-col gap-y-[3px]"}>
             <div
-                className={"wby-flex wby-w-full wby-items-center wby-cursor-pointer"}
+                className={"flex w-full items-center cursor-pointer"}
                 onClick={() => showEditRedirectDialog(document.id)}
             >
                 <Icon
                     size={"sm"}
                     color={"neutral-strong"}
-                    className={"wby-mr-xs"}
+                    className={"mr-xs"}
                     icon={<File />}
                     label={`Redirect - ${document.title}`}
                 />
-                <Text as={"div"} className={"wby-truncate wby-min-w-0 wby-flex-shrink"}>
+                <Text as={"div"} className={"truncate min-w-0 flex-shrink"}>
                     {document.title}
                 </Text>
             </div>

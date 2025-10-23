@@ -8,7 +8,7 @@ export const CreatedOn = () => {
     const { file } = useFile();
 
     return (
-        <div className={"wby-flex wby-items-center wby-gap-xs"}>
+        <div className={"flex items-center gap-xs"}>
             <div>
                 <Icon icon={<CalendarIcon />} label={"Calendar icon"} color={"neutral-light"} />
             </div>

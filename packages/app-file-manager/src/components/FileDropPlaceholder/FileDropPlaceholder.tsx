@@ -5,7 +5,7 @@ export const FileDropPlaceholder = () => {
     return (
         <div
             className={
-                "wby-absolute wby-top-0 wby-left-0 wby-bottom-0 wby-right-0 wby-animate-in wby-fade-in wby-duration-300"
+                "absolute top-0 left-0 bottom-0 right-0 animate-in fade-in duration-300"
             }
         >
             <FileDropArea

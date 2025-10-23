@@ -11,7 +11,7 @@ export const TableItemImageRenderer = () => {
             src={file.src}
             alt={file.name}
             transform={width100}
-            className={"wby-object-cover wby-w-full wby-h-full"}
+            className={"object-cover w-full h-full"}
         />
     );
 };

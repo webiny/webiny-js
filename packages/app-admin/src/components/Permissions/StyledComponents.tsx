@@ -10,7 +10,7 @@ interface PermissionInfoProps {
     title: string;
 }
 export const PermissionInfo = ({ title }: PermissionInfoProps) => (
-    <div className={"wby-flex wby-items-center wby-h-full"}>
+    <div className={"flex items-center h-full"}>
         <Label text={title} />
     </div>
 );

@@ -44,10 +44,10 @@ export const AddTemplateButton = (props: AddTemplateProps) => {
     return (
         <div
             className={
-                "wby-flex wby-flex-col wby-px-xl wby-pt-xl wby-pb-lg wby-gap-sm wby-border-sm wby-border-neutral-muted wby-rounded"
+                "flex flex-col px-xl pt-xl pb-lg gap-sm border-sm border-neutral-muted rounded"
             }
         >
-            <div className={"wby-w-full wby-text-center"}>
+            <div className={"w-full text-center"}>
                 {showTemplateDialog ? (
                     <TemplateDialog onTemplate={onTemplate} onClose={onDialogClose} />
                 ) : null}
@@ -61,10 +61,10 @@ export const AddTemplateButton = (props: AddTemplateProps) => {
             </div>
             <div
                 className={
-                    "wby-flex wby-items-center wby-justify-center wby-gap-xs wby-w-full wby-mx-auto wby-text-center"
+                    "flex items-center justify-center gap-xs w-full mx-auto text-center"
                 }
             >
-                <Text size={"sm"} className={"wby-text-neutral-strong"}>
+                <Text size={"sm"} className={"text-neutral-strong"}>
                     <Link
                         to={"http://webiny.link/admin/how-to-use/dynamic-zones"}
                         target={"_blank"}
@@ -84,7 +84,7 @@ export const AddTemplateIcon = (props: AddTemplateProps) => {
     });
 
     return (
-        <div className={"wby-w-full wby-text-center wby-mt-md"}>
+        <div className={"w-full text-center mt-md"}>
             {showTemplateDialog ? (
                 <TemplateDialog onTemplate={onTemplate} onClose={onDialogClose} />
             ) : null}

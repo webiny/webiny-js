@@ -14,7 +14,7 @@ export const CellEnabled = () => {
     const { isEnabled } = row.data;
 
     return (
-        <div className={"wby-flex wby-items-center"}>
+        <div className={"flex items-center"}>
             <Tag
                 variant={isEnabled ? "success" : "neutral-light"}
                 content={isEnabled ? "Enabled" : "Disabled"}

@@ -36,6 +36,6 @@ export const AutoSaveIndicator = () => {
     const isSaving = useSelectFromEditor(state => state.autoSaving ?? false);
 
     return isSaving ? (
-        <div className="wby-text-neutral-muted wby-animate-pulse">Autosaving...</div>
+        <div className="text-neutral-muted animate-pulse">Autosaving...</div>
     ) : null;
 };

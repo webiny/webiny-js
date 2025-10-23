@@ -45,12 +45,12 @@ export const Elements = ({ group, scope, transform = defaultTransform }: Element
     }, [elements, group, scope]);
 
     return (
-        <wb-editor-ui-elements data-scope={scope} data-group={group} class={"wby-contents"}>
+        <wb-editor-ui-elements data-scope={scope} data-group={group} class={"contents"}>
             {transform(groupElements).map(element => (
                 <wb-editor-ui-element
                     key={element.name}
                     data-name={element.name}
-                    class={"wby-contents"}
+                    class={"contents"}
                 >
                     {element.element}
                 </wb-editor-ui-element>

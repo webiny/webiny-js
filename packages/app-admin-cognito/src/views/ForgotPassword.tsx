@@ -34,7 +34,7 @@ export const ForgotPassword = () => {
                             description={"Request a password reset code."}
                         />
                         {error && (
-                            <div className={"wby-mb-lg"}>
+                            <div className={"mb-lg"}>
                                 <Alert title={"Something went wrong"} type={"danger"}>
                                     {error}
                                 </Alert>
@@ -69,7 +69,7 @@ export const ForgotPassword = () => {
                                     <Grid.Column span={12}>
                                         <div
                                             className={
-                                                "wby-flex wby-flex-row-reverse wby-items-center wby-justify-between"
+                                                "flex flex-row-reverse items-center justify-between"
                                             }
                                         >
                                             <Button
@@ -110,7 +110,7 @@ export const ForgotPassword = () => {
                                     <Grid.Column span={12}>
                                         <div
                                             className={
-                                                "wby-flex wby-flex-row-reverse wby-justify-start wby-gap-md"
+                                                "flex flex-row-reverse justify-start gap-md"
                                             }
                                         >
                                             <Button

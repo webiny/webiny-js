@@ -182,7 +182,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                         text={t`New`}
                         icon={<AddIcon />}
                         size={"sm"}
-                        className={"wby-ml-xs"}
+                        className={"ml-xs"}
                     />
                 ) : null
             }

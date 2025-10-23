@@ -45,7 +45,7 @@ const EntryForm = ({ onCreate, setSaveEntry }: EntryFormProps) => {
         <ModelProvider model={contentModel}>
             <SplitView>
                 <LeftPanel span={3}>
-                    <div className={"wby-px-sm-extra wby-py-sm"}>
+                    <div className={"px-sm-extra py-sm"}>
                         <FolderTree
                             focusedFolderId={currentFolderId}
                             onFolderClick={data => navigateToFolder(data.id)}
@@ -55,7 +55,7 @@ const EntryForm = ({ onCreate, setSaveEntry }: EntryFormProps) => {
                     </div>
                 </LeftPanel>
                 <RightPanel span={9}>
-                    <div className={"wby-p-md wby-relative"}>
+                    <div className={"p-md relative"}>
                         {loading ? <OverlayLoader text={"Creating entry..."} /> : null}
                         <ContentEntryForm
                             header={false}

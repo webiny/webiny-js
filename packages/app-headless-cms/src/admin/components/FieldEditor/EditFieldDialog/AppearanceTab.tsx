@@ -75,7 +75,7 @@ const AppearanceTab = () => {
                         <Text size={"sm"}>Choose a component that will render the field.</Text>
                     </Grid.Column>
                     <Grid.Column span={12}>
-                        <div className={"wby-mb-xl"}>
+                        <div className={"mb-xl"}>
                             <RadioGroup
                                 {...rendererName}
                                 items={renderers.map(item => ({
@@ -89,7 +89,7 @@ const AppearanceTab = () => {
                                             <Text
                                                 as={"div"}
                                                 size={"sm"}
-                                                className={"wby-text-sm wby-text-neutral-strong"}
+                                                className={"text-sm text-neutral-strong"}
                                             >
                                                 {item.renderer.description}
                                             </Text>

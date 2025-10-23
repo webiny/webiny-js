@@ -58,7 +58,7 @@ function flattenElements(elements: Record<string, ElementNodeData>, activeElemen
             data: {
                 parent: node.parent,
                 icon: node.image ? (
-                    <InlineSvg src={node.image} className={"wby-fill-neutral-strong"} />
+                    <InlineSvg src={node.image} className={"fill-neutral-strong"} />
                 ) : (
                     <></>
                 ),
@@ -199,7 +199,7 @@ export const Navigator = observer(() => {
             >
                 <Tree.Item.Icon label={node.label} element={node.icon} size={"sm"} />
                 {node.label}
-                <div className={"wby-flex wby-w-full wby-justify-end"}>
+                <div className={"flex w-full justify-end"}>
                     <ElementActions elementId={node.id} />
                 </div>
             </Tree.Item.Content>
@@ -259,7 +259,7 @@ type PlaceholderProps = {
 
 const Placeholder = (props: PlaceholderProps) => (
     <div
-        className={"wby-bg-primary-default"}
+        className={"bg-primary-default"}
         style={{
             height: 2,
             zIndex: 999,
@@ -288,12 +288,12 @@ const ElementActions = ({ elementId }: { elementId: string }) => {
     }
 
     return (
-        <div className={"wby-flex"}>
+        <div className={"flex"}>
             <Tooltip
                 trigger={
                     <Tree.Item.Icon
                         size={"sm"}
-                        className={"wby-cursor-pointer"}
+                        className={"cursor-pointer"}
                         element={<VisibilityNone />}
                         label={"This element is hidden."}
                         onClick={unhideElement}

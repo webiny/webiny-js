@@ -27,7 +27,7 @@ export const ContentEntryFormPreview = makeDecoratable(
             >
                 <ModelProvider model={contentModel}>
                     <div
-                        className={"wby-h-calc(100vh-260px) wby-overflow-auto"}
+                        className={"h-calc(100vh-260px) overflow-auto"}
                         data-testid={"cms-content-form"}
                     >
                         {formRenderer ? (

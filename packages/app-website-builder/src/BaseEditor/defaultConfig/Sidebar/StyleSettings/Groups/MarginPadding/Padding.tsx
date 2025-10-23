@@ -75,11 +75,11 @@ export const Padding = observer(({ elementId }: PaddingProps) => {
     };
 
     const rowClassname =
-        "wby-flex wby-flex-row wby-w-full wby-justify-center wby-items-center wby-py-[4px]";
+        "flex flex-row w-full justify-center items-center py-[4px]";
 
     return (
-        <div className="wby-flex wby-flex-col wby-items-center wby-bg-neutral-muted wby-border-sm wby-border-neutral-muted wby-relative wby-rounded-md">
-            <span className="wby-absolute wby-text-sm" style={{ top: 3, left: 5 }}>
+        <div className="flex flex-col items-center bg-neutral-muted border-sm border-neutral-muted relative rounded-md">
+            <span className="absolute text-sm" style={{ top: 3, left: 5 }}>
                 Padding
             </span>
 
@@ -106,7 +106,7 @@ export const Padding = observer(({ elementId }: PaddingProps) => {
                     disabled={linked}
                 />
                 <div
-                    className="wby-flex wby-border-sm wby-border-neutral-muted wby-bg-neutral-light wby-rounded-md wby-items-center wby-justify-center"
+                    className="flex border-sm border-neutral-muted bg-neutral-light rounded-md items-center justify-center"
                     style={{ width: 170, height: 30 }}
                 >
                     -

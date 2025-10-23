@@ -36,12 +36,12 @@ export const DropBox = React.memo(
         }));
 
         const canAccept = isDragging;
-        const disabled = "wby-border-neutral-muted wby-fill-neutral-disabled";
-        const enabled = "wby-border-success-default wby-fill-success";
-        const mouseOver = "wby-border-accent-default wby-fill-accent-default";
+        const disabled = "border-neutral-muted fill-neutral-disabled";
+        const enabled = "border-success-default fill-success";
+        const mouseOver = "border-accent-default fill-accent-default";
 
         const classes = cn(
-            "wby-flex wby-absolute wby-items-center wby-justify-center wby-border-sm wby-border-dashed",
+            "flex absolute items-center justify-center border-sm border-dashed",
             canAccept && isOver && mouseOver,
             canAccept && !isOver && enabled,
             !canAccept && disabled

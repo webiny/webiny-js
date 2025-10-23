@@ -7,7 +7,7 @@ export const TableItemDefaultRenderer = () => {
     const { file } = useFile();
 
     return (
-        <div className={"wby-w-full wby-h-full wby-flex wby-items-center wby-justify-center"}>
+        <div className={"w-full h-full flex items-center justify-center"}>
             <Icon color={"neutral-light"} size={"md"} icon={<HideImageIcon />} label={file.name} />
         </div>
     );

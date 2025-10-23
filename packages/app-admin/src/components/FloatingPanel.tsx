@@ -74,7 +74,7 @@ export const FloatingPanel = ({ dragHandle, shortcut, children }: FloatingPanelP
                     >
                         <div
                             className={
-                                "wby-bg-neutral-base wby-relative wby-border-sm wby-border-accent-default"
+                                "bg-neutral-base relative border-sm border-accent-default"
                             }
                             style={{
                                 display: isVisible ? "block" : "none",

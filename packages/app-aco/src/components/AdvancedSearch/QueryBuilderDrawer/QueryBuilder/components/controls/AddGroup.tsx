@@ -8,7 +8,7 @@ interface AddGroupProps {
 
 export const AddGroup = ({ onClick }: AddGroupProps) => {
     return (
-        <div className={"wby-mt-lg wby-text-center"}>
+        <div className={"mt-lg text-center"}>
             <Button
                 onClick={onClick}
                 text={"Add new filter group"}

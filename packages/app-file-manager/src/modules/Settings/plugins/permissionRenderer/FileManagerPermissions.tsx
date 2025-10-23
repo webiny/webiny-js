@@ -176,7 +176,7 @@ export const FileManagerPermissions = ({ value, onChange }: FileManagerPermissio
                         </Grid.Column>
                     </Grid>
                     {data.accessLevel === "custom" && (
-                        <div className={"wby-mt-lg"}>
+                        <div className={"mt-lg"}>
                             <PermissionsGroup title={t`Files`}>
                                 <Grid>
                                     <Grid.Column span={12}>

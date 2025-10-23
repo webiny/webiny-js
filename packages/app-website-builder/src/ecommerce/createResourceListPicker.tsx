@@ -17,7 +17,7 @@ export const createResourceListPicker = (
         };
 
         return (
-            <div className={"wby-w-full"}>
+            <div className={"w-full"}>
                 <FormComponentLabel text={props.label} />
                 <PickResourcesListButton
                     api={api}

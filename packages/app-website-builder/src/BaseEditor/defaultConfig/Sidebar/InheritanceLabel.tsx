@@ -24,7 +24,7 @@ const getBreakpointIcon = (breakpoints: Breakpoint[], name: string) => {
     return bp ? <InlineSvg src={bp.icon} /> : null;
 };
 
-const iconClassName = "wby-cursor-pointer wby-mr-xs wby-mb-[2px]";
+const iconClassName = "cursor-pointer mr-xs mb-[2px]";
 
 export const InheritanceLabel = ({
     inheritedFrom,
@@ -45,7 +45,7 @@ export const InheritanceLabel = ({
     }
 
     return (
-        <div className={"wby-flex wby-items-center"}>
+        <div className={"flex items-center"}>
             <DropdownMenu
                 trigger={
                     <Icon
@@ -58,9 +58,9 @@ export const InheritanceLabel = ({
                 }
                 align="center"
                 side="bottom"
-                className={"wy-p-sm wby-shadow-lg"}
+                className={"wy-p-sm shadow-lg"}
             >
-                <div className={"wby-p-sm wby-text-sm"} style={{ width: 200 }}>
+                <div className={"p-sm text-sm"} style={{ width: 200 }}>
                     <InheritedFrom
                         inheritedFrom={inheritedFrom ?? baseBreakpoint.name}
                         overriddenAt={isOverridden ? breakpoint.name : null}

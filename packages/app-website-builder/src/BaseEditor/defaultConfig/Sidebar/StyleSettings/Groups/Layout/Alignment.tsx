@@ -113,7 +113,7 @@ export const Alignment = observer(({ elementId }: { elementId: string }) => {
     return (
         <div>
             <InheritanceLabel text={"Align"} onReset={onReset} isOverridden={isOverridden} />
-            <div className={"wby-flex wby-flex-row wby-w-full wby-justify-between"}>
+            <div className={"flex flex-row w-full justify-between"}>
                 {/* Horizontal Alignment */}
                 <IconButton
                     icon={<AlignLeft />}

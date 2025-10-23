@@ -3,7 +3,7 @@ import { OverlayLoader } from "@webiny/admin-ui";
 
 export const Loader = () => {
     return (
-        <div style={{ height: "180px" }} className={"wby-relative"}>
+        <div style={{ height: "180px" }} className={"relative"}>
             <OverlayLoader size={"md"} text={"Loading entries..."} />
         </div>
     );

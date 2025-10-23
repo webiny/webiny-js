@@ -3,7 +3,7 @@ import { OverlayLoader } from "@webiny/admin-ui";
 
 export const LoadingContentModel = () => {
     return (
-        <div className={"wby-w-screen wby-h-screen wby-fixed wby-top-0 wby-left-0 wby-z-50"}>
+        <div className={"w-screen h-screen fixed top-0 left-0 z-50"}>
             <OverlayLoader text={"Loading content model..."} />
         </div>
     );

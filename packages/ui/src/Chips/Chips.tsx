@@ -34,7 +34,7 @@ export const Chips = (props: ChipsProps) => {
     return (
         <div
             {...rest}
-            className={cn("mdc-evolution-chip-set wby-flex wby-gap-sm wby-py-sm", className)}
+            className={cn("mdc-evolution-chip-set flex gap-sm py-sm", className)}
         >
             {children}
         </div>

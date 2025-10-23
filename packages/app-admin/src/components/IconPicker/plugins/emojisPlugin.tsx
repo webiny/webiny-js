@@ -14,7 +14,7 @@ const SkinToneSelectWrapper = (props: React.HTMLAttributes<HTMLDivElement>) => {
     return (
         <div
             className={cn(
-                "wby-size-xl wby-rounded-sm wby-pointer wby-border-solid wby-border-sm wby-border-neutral-muted wby-flex wby-justify-center wby-items-center wby-text-center"
+                "size-xl rounded-sm pointer border-solid border-sm border-neutral-muted flex justify-center items-center text-center"
             )}
         >
             {props.children}
@@ -78,7 +78,7 @@ const SkinToneSelect = ({ icon, hasSkinToneSupport, onChange }: SkinToneSelectPr
 
     return (
         <PopoverPrimitive open={open} onOpenChange={open => setOpen(open)}>
-            <PopoverPrimitive.Trigger className={"wby-outline-none"}>
+            <PopoverPrimitive.Trigger className={"outline-none"}>
                 <SkinToneSelectWrapper>
                     <IconProvider icon={icon} size={24}>
                         <Emoji />
@@ -86,14 +86,14 @@ const SkinToneSelect = ({ icon, hasSkinToneSupport, onChange }: SkinToneSelectPr
                 </SkinToneSelectWrapper>
             </PopoverPrimitive.Trigger>
             <PopoverPrimitive.Content>
-                <div className={"wby-bg-neutral-base wby-grid wby-gap-xs wby-p-xs wby-text-center"}>
+                <div className={"bg-neutral-base grid gap-xs p-xs text-center"}>
                     {SKIN_TONES.map((skinTone, index) => (
                         <div
                             key={index}
                             onClick={() => {
                                 onChange(skinTone);
                             }}
-                            className={"wby-cursor-pointer"}
+                            className={"cursor-pointer"}
                         >
                             <IconProvider icon={{ ...icon, skinTone }} size={24}>
                                 <Emoji />

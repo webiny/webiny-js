@@ -17,8 +17,8 @@ export const FilterSelect = () => {
     const fmView = useFileManagerView();
 
     return (
-        <div className={"wby-flex wby-flex-col wby-gap-sm wby-mb-md"}>
-            <Text className={"wby-font-semibold"}>Filter by tag</Text>
+        <div className={"flex flex-col gap-sm mb-md"}>
+            <Text className={"font-semibold"}>Filter by tag</Text>
             <Select
                 disabled={fmView.tags.activeTags.length < 2}
                 size={"md"}

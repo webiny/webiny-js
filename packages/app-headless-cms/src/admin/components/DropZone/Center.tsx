@@ -5,15 +5,15 @@ import { Droppable } from "./../Droppable.js";
 import { cn, cva } from "@webiny/admin-ui";
 
 const droppableContainerVariants = cva(
-    "wby-bg-transparent wby-box-border wby-h-full wby-min-h-[120px] wby-relative wby-user-select-none wby-w-full wby-border-md wby-border-dashed",
+    "bg-transparent box-border h-full min-h-[120px] relative user-select-none w-full border-md border-dashed",
     {
         variants: {
             isOver: {
-                true: "wby-border-accent-default wby-text-accent-primary",
-                false: "wby-border-success-default wby-text-success-primary"
+                true: "border-accent-default text-accent-primary",
+                false: "border-success-default text-success-primary"
             },
             isDroppable: {
-                false: "wby-border-success-default wby-text-accent-primary"
+                false: "border-success-default text-accent-primary"
             }
         },
         defaultVariants: {
@@ -48,7 +48,7 @@ const Center = ({ onDrop, children, style, isDroppable }: CenterProps) => {
                     {...getInert(isDroppable)}
                 >
                     <div className={cn(droppableContainerVariants({ isOver, isDroppable }))}>
-                        <div className="wby-absolute wby-top-1/2 wby-left-1/2 wby-transform wby--translate-x-1/2 wby--translate-y-1/2 wby-m-0">
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 m-0">
                             {children}
                         </div>
                     </div>

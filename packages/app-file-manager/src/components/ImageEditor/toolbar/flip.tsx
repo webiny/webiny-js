@@ -11,7 +11,7 @@ const flipped = { x: 1, y: 1 };
 
 const renderForm = () => {
     return (
-        <div className={"wby-flex wby-justify-center wby-gap-sm"}>
+        <div className={"flex justify-center gap-sm"}>
             <Button
                 text={"FlipX"}
                 variant={"secondary"}

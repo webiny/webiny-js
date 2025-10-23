@@ -24,7 +24,7 @@ export const LengthWithUnitInput = observer(
                     isOverridden={style.overridden}
                     inheritedFrom={style.inheritedFrom}
                 />
-                <div className={"wby-flex wby-flex-row wby-w-full"}>
+                <div className={"flex flex-row w-full"}>
                     <UnitValuePicker
                         value={style.value}
                         unit={style.unit}

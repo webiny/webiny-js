@@ -23,7 +23,7 @@ export const DeleteEntry = () => {
             label={"Trash"}
             onAction={deleteEntry}
             data-testid={"aco.actions.entry.delete"}
-            className={"!wby-text-destructive-primary [&_svg]:wby-fill-destructive"}
+            className={"!text-destructive-primary [&_svg]:fill-destructive"}
         />
     );
 };

@@ -124,7 +124,7 @@ export const AdminUsersPermissions = ({ value, onChange }: AdminUsersPermissions
                             </Cell>
                         </Grid>
                         {data.accessLevel === CUSTOM_ACCESS && (
-                            <div className={"wby-mt-lg"}>
+                            <div className={"mt-lg"}>
                                 <PermissionsGroup title={t`Users`}>
                                     <Grid>
                                         <Cell span={12}>

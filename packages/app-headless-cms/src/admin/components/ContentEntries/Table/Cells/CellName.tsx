@@ -28,7 +28,7 @@ export const FolderCellName = ({ folder }: FolderCellNameProps) => {
     return (
         <div
             className={
-                "wby-flex wby-items-center wby-gap-sm wby-truncate wby-cursor-pointer wby-font-semibold hover:wby-underline"
+                "flex items-center gap-sm truncate cursor-pointer font-semibold hover:underline"
             }
             onClick={() => navigateToFolder(folder.id)}
         >
@@ -38,7 +38,7 @@ export const FolderCellName = ({ folder }: FolderCellNameProps) => {
                 icon={icon}
                 label={`Folder - ${folder.title}`}
             />
-            <Text className={"wby-truncate wby-min-w-0 wby-flex-shrink"}>{folder.title}</Text>
+            <Text className={"truncate min-w-0 flex-shrink"}>{folder.title}</Text>
         </div>
     );
 };
@@ -49,14 +49,14 @@ interface EntryCellRowTitleProps {
 
 const EntryCellRowTitle = ({ entry }: EntryCellRowTitleProps) => {
     return (
-        <div className={"wby-flex wby-items-center wby-gap-sm wby-truncate"}>
+        <div className={"flex items-center gap-sm truncate"}>
             <Icon
                 size={"sm"}
                 color={"neutral-strong"}
                 icon={<File />}
                 label={`Entry - ${entry.meta.title}`}
             />
-            <Text className={"wby-truncate wby-min-w-0 wby-flex-shrink"}>{entry.meta.title}</Text>
+            <Text className={"truncate min-w-0 flex-shrink"}>{entry.meta.title}</Text>
         </div>
     );
 };
@@ -76,7 +76,7 @@ export const EntryCellName = ({ entry }: EntryCellNameProps) => {
     }
 
     return (
-        <Link to={entryEditUrl} variant={"secondary"} className={"wby-truncate"}>
+        <Link to={entryEditUrl} variant={"secondary"} className={"truncate"}>
             <EntryCellRowTitle entry={entry} />
         </Link>
     );

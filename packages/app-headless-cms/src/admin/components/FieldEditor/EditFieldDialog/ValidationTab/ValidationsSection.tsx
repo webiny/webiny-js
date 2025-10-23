@@ -23,7 +23,7 @@ export const ValidationsSection = ({
     validators
 }: ValidatorsSectionProps) => {
     return (
-        <div className="wby-mb-xl">
+        <div className="mb-xl">
             <Grid>
                 <Grid.Column span={12}>
                     <Heading level={5}>{title}</Heading>

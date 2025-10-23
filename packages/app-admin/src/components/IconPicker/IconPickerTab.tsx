@@ -87,7 +87,7 @@ const RowRenderer = ({ row, style, cellDecorator, onIconClick }: RenderRowProps)
             <IconPickerRow style={style}>
                 <Text
                     size={"sm"}
-                    className={"wby-uppercase wby-self-end wby-text-neutral-muted wby-mb-sm"}
+                    className={"uppercase self-end text-neutral-muted mb-sm"}
                 >
                     {row.name}
                 </Text>
@@ -145,7 +145,7 @@ export const IconPickerTab = ({
             trigger={label}
             content={
                 <div>
-                    <div className={"wby-flex wby-items-center wby-justify-center wby-gap-sm"}>
+                    <div className={"flex items-center justify-center gap-sm"}>
                         <DelayedOnChange
                             value={presenter.vm.filter}
                             onChange={value => presenter.setFilter(value)}
@@ -168,14 +168,14 @@ export const IconPickerTab = ({
                         </DelayedOnChange>
                         {actions ? <div>{actions}</div> : null}
                     </div>
-                    <div className={"wby-relative"}>
+                    <div className={"relative"}>
                         {isEmpty ? (
-                            <div className={"wby-pt-md wby-text-neutral-strong"}>
+                            <div className={"pt-md text-neutral-strong"}>
                                 <Text>{"No results found."}</Text>
                             </div>
                         ) : (
                             <List
-                                className={"wby-outline-none"}
+                                className={"outline-none"}
                                 rowRenderer={({ key, ...props }) => (
                                     <RowRenderer
                                         key={key}

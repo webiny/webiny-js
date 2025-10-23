@@ -49,9 +49,9 @@ export const ElementOverlay = React.memo(
                         <div>
                             <div
                                 className={cn(
-                                    "wby-absolute wby-box-border wby-text-right",
-                                    "data-[state=hover]:wby-border-md data-[state=hover]:wby-border-success-default",
-                                    "data-[state=active]:wby-border-md data-[state=active]:wby-border-accent-default"
+                                    "absolute box-border text-right",
+                                    "data-[state=hover]:border-md data-[state=hover]:border-success-default",
+                                    "data-[state=active]:border-md data-[state=active]:border-accent-default"
                                 )}
                                 onClick={onClick}
                                 data-state={boxState}
@@ -93,9 +93,9 @@ export const ElementOverlay = React.memo(
                                 data-label-for={previewBox.id}
                                 data-state={boxState}
                                 className={cn(
-                                    "wby-absolute wby-text-sm wby-text-neutral-light wby-p-xs",
-                                    "data-[state=hover]:wby-bg-success-default",
-                                    "data-[state=active]:wby-bg-primary-default"
+                                    "absolute text-sm text-neutral-light p-xs",
+                                    "data-[state=hover]:bg-success-default",
+                                    "data-[state=active]:bg-primary-default"
                                 )}
                                 style={{
                                     pointerEvents: "auto",

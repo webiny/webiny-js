@@ -204,15 +204,15 @@ const Field = (props: FieldProps) => {
 
     return (
         <Fragment>
-            <div className={"wby-flex wby-justify-between wby-align-center"}>
+            <div className={"flex justify-between align-center"}>
                 <div>
                     <Heading level={6}>{field.label}</Heading>
-                    <Text size={"sm"} className={"wby-text-neutral-strong"}>
+                    <Text size={"sm"} className={"text-neutral-strong"}>
                         {fieldPlugin.field.label}
-                        {info && <span className={"wby-lowercase"}> ({info})</span>}
+                        {info && <span className={"lowercase"}> ({info})</span>}
                     </Text>
                 </div>
-                <div className={"wby-flex wby-items-center wby-justify-end wby-gap-sm"}>
+                <div className={"flex items-center justify-end gap-sm"}>
                     {fieldInformationRenderer
                         ? fieldInformationRenderer({ model, field })
                         : defaultInformationRenderer()}
@@ -276,13 +276,13 @@ const Field = (props: FieldProps) => {
                                     label={t`Delete`}
                                 />
                             }
-                            className={"!wby-text-destructive-primary [&_svg]:wby-fill-destructive"}
+                            className={"!text-destructive-primary [&_svg]:fill-destructive"}
                         />
                     </DropdownMenu>
                 </div>
             </div>
             {fieldPlugin.field.render && (
-                <div className={"wby-pt-md"}>
+                <div className={"pt-md"}>
                     {fieldPlugin.field.render({ field, data: model, setData: setModel })}
                 </div>
             )}

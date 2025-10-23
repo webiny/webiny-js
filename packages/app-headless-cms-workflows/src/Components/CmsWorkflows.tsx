@@ -43,7 +43,7 @@ const ModelIcon = ({ model }: IModelIconProps) => {
             icon={<FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />}
             label={model.name}
             size={"sm"}
-            className={"wby-text-neutral-strong"}
+            className={"text-neutral-strong"}
         />
     );
 };
@@ -79,7 +79,7 @@ export const CmsWorkflowsView = () => {
         return null;
     } else if (loading) {
         return (
-            <div className="wby-flex wby-flex-col wby-items-center wby-gap-4 wby-pt-lg">
+            <div className="flex flex-col items-center gap-4 pt-lg">
                 <Loader size="md" variant="accent" indeterminate={true} text="Loading..." />
             </div>
         );

@@ -18,21 +18,21 @@ const AvatarImagePreview = ({
     disabled
 }: AvatarImagePreviewProps) => {
     return (
-        <div className={"wby-w-full wby-flex-1"}>
-            <div className={cn("wby-size-[128px] wby-mx-auto wby-relative wby-overflow-hidden")}>
-                <div className={"wby-size-full"}>
+        <div className={"w-full flex-1"}>
+            <div className={cn("size-[128px] mx-auto relative overflow-hidden")}>
+                <div className={"size-full"}>
                     <img
                         src={value.url}
                         alt={value.name}
-                        className={"wby-object-cover wby-size-full"}
+                        className={"object-cover size-full"}
                     />
                 </div>
                 <div
                     className={cn([
-                        "wby-flex wby-justify-center wby-items-center wby-gap-xs wby-size-full",
-                        "wby-absolute wby-top-0 wby-left-0",
-                        "wby-bg-neutral-xstrong/90",
-                        "wby-opacity-0 hover:wby-opacity-100 wby-transition-opacity"
+                        "flex justify-center items-center gap-xs size-full",
+                        "absolute top-0 left-0",
+                        "bg-neutral-xstrong/90",
+                        "opacity-0 hover:opacity-100 transition-opacity"
                     ])}
                 >
                     {onReplaceItem && (

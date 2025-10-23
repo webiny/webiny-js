@@ -29,7 +29,7 @@ export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(
                             <Alert.Action
                                 text={"Reject"}
                                 onClick={presenter.showRejectDialog}
-                                className={"wby-ml-sm"}
+                                className={"ml-sm"}
                             />
                         </>
                     }

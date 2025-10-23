@@ -10,7 +10,7 @@ const Grow = ({ flex, children, className }: React.PropsWithChildren<GrowProps>)
     return (
         <div
             className={cn(
-                "wby-overflow-y-scroll last-of-type:wby-border-l-sm wby-border-neutral-dimmed",
+                "overflow-y-scroll last-of-type:border-l-sm border-neutral-dimmed",
                 className
             )}
             style={{ flex }}
@@ -25,7 +25,7 @@ interface ContentProps {
 }
 
 export const Content = ({ children }: ContentProps) => {
-    return <div className={"wby-flex wby-h-full"}>{children}</div>;
+    return <div className={"flex h-full"}>{children}</div>;
 };
 
 interface PanelProps {

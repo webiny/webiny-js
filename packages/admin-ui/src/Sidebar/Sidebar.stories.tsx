@@ -65,7 +65,7 @@ const SidebarComponent = () => {
                 title={"Webiny"}
                 icon={
                     <Sidebar.Icon
-                        element={<img src="/images/logo.png" alt="Webiny" />}
+                        element={<img src="/images/wby-logo.png" alt="Webiny" />}
                         label={"Webiny"}
                     />
                 }

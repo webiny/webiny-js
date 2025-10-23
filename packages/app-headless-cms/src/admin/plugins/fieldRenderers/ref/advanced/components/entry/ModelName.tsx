@@ -7,7 +7,7 @@ interface ModelNameProps {
 
 export const ModelName = ({ name }: ModelNameProps) => {
     return (
-        <Text size="sm" as="div" className={cn("wby-truncate wby-w-full wby-text-neutral-muted")}>
+        <Text size="sm" as="div" className={cn("truncate w-full text-neutral-muted")}>
             {name}
         </Text>
     );

@@ -19,13 +19,13 @@ export const ApplicationWidget = ({
 }: ApplicationWidgetProps) => {
     return (
         <Grid.Column span={4} key={name}>
-            <div className={"wby-p-lg wby-bg-primary-subtle wby-rounded-xl"} data-testid={name}>
-                <div className={"wby-flex wby-items-center wby-gap-sm wby-mb-sm"}>
+            <div className={"p-lg bg-primary-subtle rounded-xl"} data-testid={name}>
+                <div className={"flex items-center gap-sm mb-sm"}>
                     <Icon icon={icon} label={title} size={"lg"} color={"accent"} />
                     <Heading level={4}>{title}</Heading>
                 </div>
                 <Text>{description}</Text>
-                <div className={"wby-mt-lg"}>{cta}</div>
+                <div className={"mt-lg"}>{cta}</div>
             </div>
         </Grid.Column>
     );

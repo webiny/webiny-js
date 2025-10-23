@@ -78,7 +78,7 @@ export const PagesListConfig = () => {
                     size={56}
                     resizable={false}
                     hideable={false}
-                    className={"wby-text-right"}
+                    className={"text-right"}
                 />
             </PageListConfig>
         </>

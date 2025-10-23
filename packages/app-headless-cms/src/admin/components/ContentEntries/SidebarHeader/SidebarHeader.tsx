@@ -7,9 +7,9 @@ export const SidebarHeader = () => {
 
     return (
         <div>
-            <div className={"wby-p-md wby-pl-lg"}>
+            <div className={"p-md pl-lg"}>
                 <Heading level={5}>{model.name}</Heading>
-                <Text size={"sm"} className={"wby-text-neutral-muted"}>
+                <Text size={"sm"} className={"text-neutral-muted"}>
                     Model ID:{" "}
                     {model.plugin ? (
                         <Tooltip
@@ -26,7 +26,7 @@ export const SidebarHeader = () => {
                                     to={`/cms/content-models/${model.modelId}`}
                                     variant={"secondary"}
                                     className={
-                                        "wby-text-neutral-muted hover:wby-text-neutral-strong"
+                                        "text-neutral-muted hover:text-neutral-strong"
                                     }
                                 >
                                     {model.modelId}
