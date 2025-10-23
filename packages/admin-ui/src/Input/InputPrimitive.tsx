@@ -51,16 +51,16 @@ const inputVariants = cva(
                 primary: [
                     "bg-neutral-base border-neutral-muted text-neutral-strong placeholder:text-neutral-dimmed fill-neutral-xstrong",
                     "hover:border-neutral-strong",
-                    "focus-within:!border-neutral-black",
-                    "data-[focused=true]:!border-neutral-black",
+                    "focus-within:border-neutral-black!",
+                    "data-[focused=true]:border-neutral-black!",
                     "has-disabled:bg-neutral-disabled has-disabled:border-neutral-muted has-disabled:hover:border-neutral-muted has-disabled:text-neutral-disabled has-disabled:placeholder:text-neutral-disabled has-disabled:fill-neutral-disabled",
                     "data-[disabled=true]:bg-neutral-disabled data-[disabled=true]:border-neutral-muted data-[disabled=true]:text-neutral-disabled data-[disabled=true]:placeholder:text-neutral-disabled data-[disabled=true]:fill-neutral-disabled"
                 ],
                 secondary: [
                     "bg-neutral-light border-neutral-subtle text-neutral-strong placeholder:text-neutral-dimmed fill-neutral-xstrong",
                     "hover:bg-neutral-dimmed",
-                    "focus-within:bg-neutral-base! focus-within:!border-neutral-black",
-                    "data-[focused=true]:bg-neutral-base! data-[focused=true]:!border-neutral-black",
+                    "focus-within:bg-neutral-base! focus-within:border-neutral-black!",
+                    "data-[focused=true]:bg-neutral-base! data-[focused=true]:border-neutral-black!",
                     "has-disabled:bg-neutral-disabled has-disabled:text-neutral-disabled has-disabled:placeholder:text-neutral-disabled has-disabled:fill-neutral-disabled",
                     "data-[disabled=true]:bg-neutral-disabled data-[disabled=true]:text-neutral-disabled data-[disabled=true]:placeholder:text-neutral-disabled data-[disabled=true]:fill-neutral-disabled"
                 ],
@@ -90,12 +90,12 @@ const inputVariants = cva(
             {
                 variant: "primary",
                 invalid: true,
-                class: "!border-destructive-default"
+                class: "border-destructive-default!"
             },
             {
                 variant: "secondary",
                 invalid: true,
-                class: "!border-destructive-default"
+                class: "border-destructive-default!"
             },
             {
                 variant: "ghost",
@@ -105,7 +105,7 @@ const inputVariants = cva(
             {
                 variant: "ghost-negative",
                 invalid: true,
-                class: "!border-destructive-default bg-destructive-subtle! text-neutral-primary placeholder:text-neutral-dimmed fill-neutral-xstrong!"
+                class: "border-destructive-default! bg-destructive-subtle! text-neutral-primary placeholder:text-neutral-dimmed fill-neutral-xstrong!"
             }
         ],
         defaultVariants: {

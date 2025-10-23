@@ -7,7 +7,7 @@ export const Empty = () => {
         <div className="py-xl">
             <div className="w-full flex flex-col items-center justify-center gap-md">
                 <div className="flex justify-center">
-                    <div className="flex justify-center items-center size-[72px] bg-neutral-dimmed rounded-full fill-neutral-strong [&_svg]:size-[32px]">
+                    <div className="flex justify-center items-center size-[72px] bg-neutral-dimmed rounded-full fill-neutral-strong [&_svg]:size-xl">
                         <SettingsIcon />
                     </div>
                 </div>

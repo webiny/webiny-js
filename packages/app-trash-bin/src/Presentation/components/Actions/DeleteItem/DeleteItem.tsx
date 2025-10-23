@@ -13,7 +13,7 @@ export const DeleteItemAction = () => {
             icon={<Delete />}
             label={"Delete"}
             onAction={openDialogDeleteItem}
-            className={"!text-destructive-primary [&_svg]:fill-destructive"}
+            className={"text-destructive-primary! [&_svg]:fill-destructive"}
         />
     );
 };

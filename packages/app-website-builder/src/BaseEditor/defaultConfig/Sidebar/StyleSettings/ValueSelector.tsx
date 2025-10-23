@@ -93,7 +93,7 @@ export const ValueSelector = (props: ValueSelectorProps) => {
         props.overridden && props.inheritedFrom && "bg-success-default text-neutral-light",
         props.disabled &&
             "bg-neutral-disabled text-neutral-disabled pointer-events-none",
-        "flex flex-row text-sm mx-auto justify-center rounded-sm py-[1px] px-[2px]"
+        "flex flex-row text-sm mx-auto justify-center rounded-sm py-px px-xxs"
     ]);
 
     const label = (

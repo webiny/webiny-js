@@ -38,7 +38,7 @@ export const FolderCellName = ({ folder }: FolderCellNameProps) => {
                 icon={icon}
                 label={`Folder - ${folder.title}`}
             />
-            <Text className={"truncate min-w-0 flex-shrink"}>{folder.title}</Text>
+            <Text className={"truncate min-w-0 shrink"}>{folder.title}</Text>
         </div>
     );
 };
@@ -56,7 +56,7 @@ const EntryCellRowTitle = ({ entry }: EntryCellRowTitleProps) => {
                 icon={<File />}
                 label={`Entry - ${entry.meta.title}`}
             />
-            <Text className={"truncate min-w-0 flex-shrink"}>{entry.meta.title}</Text>
+            <Text className={"truncate min-w-0 shrink"}>{entry.meta.title}</Text>
         </div>
     );
 };

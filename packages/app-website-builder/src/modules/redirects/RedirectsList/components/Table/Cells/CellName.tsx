@@ -28,7 +28,7 @@ const DocumentCellRowTitle = ({ document }: DocumentCellRowTitleProps) => {
                     icon={<File />}
                     label={`Redirect - ${document.title}`}
                 />
-                <Text as={"div"} className={"truncate min-w-0 flex-shrink"}>
+                <Text as={"div"} className={"truncate min-w-0 shrink"}>
                     {document.title}
                 </Text>
             </div>

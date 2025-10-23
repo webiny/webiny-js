@@ -17,12 +17,12 @@ const SocialLink = ({ link, label, icon }: SocialLinkProps) => {
     return (
         <div
             className={
-                "w-[64px] bg-neutral-base rounded-md hover:opacity-80 transition-opacity"
+                "w-3xl bg-neutral-base rounded-md hover:opacity-80 transition-opacity"
             }
         >
             <SimpleLink
                 to={link}
-                className={"!no-underline"}
+                className={"no-underline!"}
                 target={"_blank"}
                 rel={"noopener noreferrer"}
             >

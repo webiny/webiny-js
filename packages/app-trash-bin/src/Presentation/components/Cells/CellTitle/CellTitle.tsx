@@ -10,7 +10,7 @@ export const CellTitle = () => {
     return (
         <div className={"flex items-center gap-sm truncate"}>
             <Icon size={"sm"} color={"neutral-strong"} icon={<File />} label={"Item"} />
-            <Text className={"truncate min-w-0 flex-shrink"}>{row.data.title}</Text>
+            <Text className={"truncate min-w-0 shrink"}>{row.data.title}</Text>
         </div>
     );
 };

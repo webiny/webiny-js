@@ -8,8 +8,8 @@ import type { Icon } from "~/components/IconPicker/types.js";
 const iconPickerTriggerVariants = cva("cursor-pointer fill-neutral-xstrong", {
     variants: {
         size: {
-            md: "w-[64px]",
-            lg: "w-[64px]",
+            md: "w-3xl",
+            lg: "w-3xl",
             xl: "w-[76px]"
         },
         disabled: {

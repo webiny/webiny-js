@@ -24,7 +24,7 @@ const getBreakpointIcon = (breakpoints: Breakpoint[], name: string) => {
     return bp ? <InlineSvg src={bp.icon} /> : null;
 };
 
-const iconClassName = "cursor-pointer mr-xs mb-[2px]";
+const iconClassName = "cursor-pointer mr-xs mb-xxs";
 
 export const InheritanceLabel = ({
     inheritedFrom,

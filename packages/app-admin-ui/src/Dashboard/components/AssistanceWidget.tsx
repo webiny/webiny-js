@@ -22,12 +22,12 @@ export const AssistanceWidget = () => {
                     to="https://www.webiny.com/docs"
                     target={"_blank"}
                     rel={"noopener noreferrer"}
-                    className={"!no-underline"}
+                    className={"no-underline!"}
                 >
-                    <Text as={"div"} className={"font-semibold !text-neutral-primary"}>
+                    <Text as={"div"} className={"font-semibold text-neutral-primary!"}>
                         {"Documentation"}
                     </Text>
-                    <Text size={"sm"} className={"!text-neutral-strong"}>
+                    <Text size={"sm"} className={"text-neutral-strong!"}>
                         {"Explore the Webiny documentation and check out code examples and guides."}
                     </Text>
                 </SimpleLink>

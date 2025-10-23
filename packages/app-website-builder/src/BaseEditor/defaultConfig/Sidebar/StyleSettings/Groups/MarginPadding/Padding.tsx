@@ -75,7 +75,7 @@ export const Padding = observer(({ elementId }: PaddingProps) => {
     };
 
     const rowClassname =
-        "flex flex-row w-full justify-center items-center py-[4px]";
+        "flex flex-row w-full justify-center items-center py-xs";
 
     return (
         <div className="flex flex-col items-center bg-neutral-muted border-sm border-neutral-muted relative rounded-md">

@@ -362,7 +362,7 @@ const ContentModelsDataList = ({
                                                                 "cms-delete-content-model-button"
                                                             }
                                                             className={
-                                                                "!text-destructive-primary [&_svg]:fill-destructive"
+                                                                "text-destructive-primary! [&_svg]:fill-destructive"
                                                             }
                                                         />
                                                     )}

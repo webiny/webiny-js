@@ -141,7 +141,7 @@ const RevisionListItem = ({ revision }: RevisionListItemProps) => {
                                     icon={<DeleteIcon />}
                                     text={t` Delete revision`}
                                     className={
-                                        "!text-destructive-primary [&_svg]:fill-destructive"
+                                        "text-destructive-primary! [&_svg]:fill-destructive"
                                     }
                                 />
                             </>

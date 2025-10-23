@@ -20,8 +20,8 @@ export const Layout = LayoutRenderer.createDecorator(() => {
         const { pinned } = useSidebar();
 
         const widthClassNames = {
-            "max-w-[calc(100%-theme(spacing.sidebar-expanded))] ": pinned,
-            "max-w-[calc(100%-theme(spacing.sidebar-collapsed))] ": !pinned
+            "max-w-[calc(100%-(var(--spacing-sidebar-expanded)))] ": pinned,
+            "max-w-[calc(100%-(var(--spacing-sidebar-collapsed)))] ": !pinned
         };
 
         return (

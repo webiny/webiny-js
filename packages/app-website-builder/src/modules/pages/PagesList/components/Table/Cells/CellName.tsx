@@ -21,7 +21,7 @@ const PageCellRowTitle = ({ page }: PageCellRowTitleProps) => {
                     icon={<File />}
                     label={`Page - ${page.properties.title}`}
                 />
-                <Text as={"div"} className={"truncate min-w-0 flex-shrink"}>
+                <Text as={"div"} className={"truncate min-w-0 shrink"}>
                     {page.properties.title}
                 </Text>
             </div>
@@ -43,7 +43,7 @@ export const PageCellName = ({ page }: EntryCellNameProps) => {
         <Link
             to={getEditPageUrl(page.id)}
             variant={"secondary"}
-            className={"truncate !no-underline"}
+            className={"truncate no-underline!"}
         >
             <PageCellRowTitle page={page} />
         </Link>

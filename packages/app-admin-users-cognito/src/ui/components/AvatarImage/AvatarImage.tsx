@@ -16,7 +16,7 @@ export const AvatarImage = ({ round, ...props }: SingleImageUploadProps) => {
             >
                 <SingleImageUpload
                     {...props}
-                    className={"p-0 !border-none"}
+                    className={"p-0 border-none!"}
                     variant={"ghost"}
                     type={"area"}
                     renderFilePreview={({ onReplaceItem, onRemoveItem, value, disabled }) => {

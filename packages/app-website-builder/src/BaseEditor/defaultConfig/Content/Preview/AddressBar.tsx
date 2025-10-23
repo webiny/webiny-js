@@ -26,7 +26,7 @@ export const AddressBar = () => {
             <div className={"relative flex-auto mr-sm"}>
                 <div
                     className={
-                        "w-full absolute top-[-1px] py-[6px] pl-xl border-sm text-md peer cursor-not-allowed rounded-md border-neutral-subtle text-neutral-muted bg-neutral-disabled text-neutral-disabled"
+                        "w-full absolute -top-px py-xs-plus pl-xl border-sm text-md peer cursor-not-allowed rounded-md border-neutral-subtle text-neutral-muted bg-neutral-disabled text-neutral-disabled"
                     }
                 >
                     <PreviewDomain />

@@ -32,10 +32,10 @@ export const FolderCellName = ({ folder, onClick }: FolderCellNameProps) => {
             ])}
             onClick={() => onClick(folder.id)}
         >
-            <div className={"size-xl rounded-md overflow-hidden flex-shrink-0"}>
+            <div className={"size-xl rounded-md overflow-hidden shrink-0"}>
                 {icon}
             </div>
-            <Text className={"truncate min-w-0 flex-shrink"}>{folder.title}</Text>
+            <Text className={"truncate min-w-0 shrink"}>{folder.title}</Text>
         </div>
     );
 };
@@ -57,13 +57,13 @@ export const FileCellName = ({ file, onClick }: FileCellNameProps) => {
             <FileProvider file={file}>
                 <div
                     className={
-                        "size-xl aspect-square rounded-md bg-neutral-muted overflow-hidden flex-shrink-0"
+                        "size-xl aspect-square rounded-md bg-neutral-muted overflow-hidden shrink-0"
                     }
                 >
                     <CellThumbnail />
                 </div>
             </FileProvider>
-            <Text className={"truncate min-w-0 flex-shrink"}>{file.name}</Text>
+            <Text className={"truncate min-w-0 shrink"}>{file.name}</Text>
         </div>
     );
 };

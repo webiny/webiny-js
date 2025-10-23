@@ -64,12 +64,12 @@ const selectTriggerVariants = cva(
             {
                 variant: "primary",
                 invalid: true,
-                class: "!border-destructive-default"
+                class: "border-destructive-default!"
             },
             {
                 variant: "secondary",
                 invalid: true,
-                class: "!border-destructive-default"
+                class: "border-destructive-default!"
             },
             {
                 variant: "ghost",
@@ -79,7 +79,7 @@ const selectTriggerVariants = cva(
             {
                 variant: "ghost-negative",
                 invalid: true,
-                class: "!border-destructive-default bg-destructive-subtle! text-neutral-primary placeholder:text-neutral-dimmed fill-neutral-xstrong!"
+                class: "border-destructive-default! bg-destructive-subtle! text-neutral-primary placeholder:text-neutral-dimmed fill-neutral-xstrong!"
             }
         ],
         defaultVariants: {

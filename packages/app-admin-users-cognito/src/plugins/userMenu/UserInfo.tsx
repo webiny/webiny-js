@@ -37,7 +37,7 @@ export const UserInfo = ({ accountRoute }: UserInfoProps) => {
                     {fullName}
                 </Text>
 
-                <Text size={"sm"} className={"block !text-neutral-strong"}>
+                <Text size={"sm"} className={"block text-neutral-strong!"}>
                     {email}
                 </Text>
             </>

@@ -15,7 +15,7 @@ export const EmptyView = ({ icon = <FileIcon />, title, action }: EmptyViewProps
             <div className="flex justify-center">
                 <div
                     style={{ width: 128, height: 128 }}
-                    className="flex justify-center items-center bg-neutral-dimmed rounded-full fill-neutral-strong [&_svg]:size-[48px]"
+                    className="flex justify-center items-center bg-neutral-dimmed rounded-full fill-neutral-strong [&_svg]:size-xxl"
                 >
                     <Icon icon={icon} label={"Empty"} />
                 </div>

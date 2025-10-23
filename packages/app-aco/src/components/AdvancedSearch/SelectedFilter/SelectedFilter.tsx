@@ -16,7 +16,7 @@ export const SelectedFilter = (props: SelectedFilterProps) => {
             className={cn(buttonVariants({ variant: "tertiary" }), "gap-xs cursor-pointer")}
             onClick={props.onEdit}
         >
-            <span className={"truncate max-w-[256px]"}>{props.filter.name}</span>
+            <span className={"truncate max-w-sidebar-expanded"}>{props.filter.name}</span>
             <IconButton icon={<Close />} onClick={props.onDelete} size={"xs"} variant={"ghost"} />
         </div>
     );

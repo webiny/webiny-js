@@ -29,7 +29,7 @@ export const FolderCellName = ({ folder }: FolderCellNameProps) => {
                 icon={icon}
                 label={`Folder - ${folder.title}`}
             />
-            <Text className={"truncate min-w-0 flex-shrink"}>{folder.title}</Text>
+            <Text className={"truncate min-w-0 shrink"}>{folder.title}</Text>
         </div>
     );
 };
