@@ -50,7 +50,7 @@ const validationStyles = css`
             left: var(--spacing-sm-extra);
 
             .webiny_label-text::before {
-                ${errorIconStyles}
+                display: none;
             }
         }
 
