@@ -10,10 +10,16 @@ const accordionVariants = cva("wby-group wby-w-full", {
             container:
                 "wby-accordion-variant-container wby-gap-xs wby-flex wby-flex-col wby-rounded-lg",
             underline: "wby-accordion-variant-underline"
+        },
+        background: {
+            base: "wby-bg-neutral-base",
+            light: "wby-bg-neutral-light",
+            transparent: "wby-bg-transparent"
         }
     },
     defaultVariants: {
-        variant: "container"
+        variant: "container",
+        background: "light"
     }
 });
 
@@ -22,16 +28,30 @@ type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
         children: React.ReactNode;
     };
 
-const getBackgroundByDepth = (depth: number): string => {
-    return depth % 2 === 0 ? "wby-bg-neutral-base" : "wby-bg-neutral-light";
+const getBackgroundByDepth = (
+    depth: number,
+    background?: string | null
+): "base" | "light" | "transparent" | undefined => {
+    // If background is explicitly provided, use it at any depth
+    if (background !== undefined && background !== null) {
+        return background as "base" | "light" | "transparent";
+    }
+
+    // For depth 0, return undefined to let defaultVariants apply
+    if (depth === 0) {
+        return undefined;
+    }
+
+    // For nested levels, alternate between light and base
+    return depth % 2 === 0 ? "light" : "base";
 };
 
-const AccordionBase = ({ children, variant, className }: AccordionProps) => {
+const AccordionBase = ({ children, variant, background, className }: AccordionProps) => {
     const currentDepth = useDepth() + 1;
-    const background = getBackgroundByDepth(currentDepth);
+    const bg = getBackgroundByDepth(currentDepth, background);
 
     return (
-        <div className={cn(accordionVariants({ variant }), className, background)}>
+        <div className={cn(accordionVariants({ variant, background: bg }), className)}>
             <DepthProvider value={currentDepth}>{children}</DepthProvider>
         </div>
     );

@@ -76,9 +76,6 @@ const AccordionTrigger = ({
                     cursorClass
                 )}
             >
-                {!icon && !isInteractable && (
-                    <div className={"wby-ml-sm wby-w-[20px] wby-h-[1px] wby-bg-neutral-strong"} />
-                )}
                 {draggable ? <AccordionItemDragHandle /> : null}
                 {isInteractable ? <OpenCloseIndicator /> : null}
 

@@ -298,6 +298,7 @@ export const LightBackground: Story = {
         )
     ],
     args: {
+        background: "light",
         children: (
             <>
                 <AccordionItem
@@ -326,6 +327,7 @@ export const ContainerVariantWithLightBackground: Story = {
     ],
     args: {
         variant: "container",
+        background: "light",
         children: (
             <>
                 <AccordionItem
@@ -350,6 +352,7 @@ export const Documentation: Story = {
     },
     args: {
         variant: "underline",
+        background: "base",
         children: (
             <>
                 <Accordion.Item
@@ -390,6 +393,11 @@ export const Documentation: Story = {
             control: "select",
             options: ["underline", "container"],
             description: "The visual style of the accordion"
+        },
+        background: {
+            control: "select",
+            options: ["base", "light", "transparent"],
+            description: "The background color of the accordion"
         },
         children: {
             description:
