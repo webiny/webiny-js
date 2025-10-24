@@ -219,9 +219,9 @@
   --spacing-xs-plus: 6px;
   --spacing-xxl: 48px;
   --spacing-xxs: 2px;
-    --spacing-sidebar-collapsed: 44px;
-    --spacing-sidebar-expanded: 256px;
-    --spacing-main-content: calc(100vh - 45px);
+  --spacing-sidebar-collapsed: 44px;
+  --spacing-sidebar-expanded: 256px;
+  --spacing-main-content: calc(100vh - 45px);
 
   /* Text color. */
   --text-color-accent-muted: var(--color-primary-300);
