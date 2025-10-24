@@ -66,7 +66,7 @@ export const DataList = <TData,>(propsInput: DataListProps<TData>) => {
 
     return (
         <div data-testid={"ui.list.data-list"}>
-            <div className={"pt-md pb-sm pl-lg pr-md border"}>
+            <div className={"pt-md pb-sm pl-lg pr-md"}>
                 {(props.title || props.actions) && (
                     <div className={"flex justify-between items-center mb-xl"}>
                         <Heading className={"text-neutral-primary"} level={4}>
