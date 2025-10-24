@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import { createImplementation } from "@webiny/feature/api";
 import { Reply } from "@webiny/handler";
-import { AfterLoginHandler } from "~/features/authentication/index.js";
-import { AuthenticationContext } from "~/features/authentication/index.js";
+import { AfterAuthenticationHandler } from "~/features/authentication/AuthenticationContext/index.js";
+import { AuthenticationContext } from "~/features/authentication/AuthenticationContext/index.js";
 
 const get24HoursFromNow = () => {
     const oneHour = 1000 * 60 * 60;
@@ -13,7 +13,7 @@ const toDate = (timestamp: number | undefined) => {
     return timestamp ? new Date(timestamp * 1000) : get24HoursFromNow();
 };
 
-class SetIdTokenCookieImpl implements AfterLoginHandler.Interface {
+class SetIdTokenCookieImpl implements AfterAuthenticationHandler.Interface {
     constructor(
         private authenticationContext: AuthenticationContext.Interface,
         private reply: Reply.Interface
@@ -49,7 +49,7 @@ class SetIdTokenCookieImpl implements AfterLoginHandler.Interface {
 }
 
 export const SetIdTokenCookie = createImplementation({
-    abstraction: AfterLoginHandler,
+    abstraction: AfterAuthenticationHandler,
     implementation: SetIdTokenCookieImpl,
     dependencies: [AuthenticationContext, Reply]
 });

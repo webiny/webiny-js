@@ -4,7 +4,7 @@ import type { SecurityStorageOperations as ISecurityStorageOperations } from "~/
 import { SecurityStorageOperations } from "./shared/abstractions.js";
 
 import { AuthorizationContextFeature } from "./authorization/AuthorizationContext/index.js";
-import { AuthenticationFeature } from "./authentication/index.js";
+import { AuthenticationContextFeature } from "./authentication/AuthenticationContext/index.js";
 import { IdentityContextFeature } from "./IdentityContext/index.js";
 import { ApiKeysFeature } from "./apiKeys/index.js";
 import { GroupsFeature } from "./groups/index.js";
@@ -25,7 +25,7 @@ export const SecurityFeature = createFeature({
         container.registerInstance(SecurityStorageOperations, storageOperations);
 
         AuthorizationContextFeature.register(container);
-        AuthenticationFeature.register(container);
+        AuthenticationContextFeature.register(container);
         IdentityContextFeature.register(container);
         ApiKeysFeature.register(container);
         GroupsFeature.register(container);

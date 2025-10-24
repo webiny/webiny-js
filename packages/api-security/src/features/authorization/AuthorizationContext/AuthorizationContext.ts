@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "async_hooks";
 import { createImplementation } from "@webiny/di-container";
 import { AuthorizationContext as Abstraction } from "./abstractions.js";
-import { Authorizer } from "~/features/authorization/shared/abstractions.js";
+import { Authorizer } from "../Authorizer/index.js";
 import type { SecurityPermission } from "~/types.js";
 
 const authorizationEnabledStorage = new AsyncLocalStorage<boolean>();

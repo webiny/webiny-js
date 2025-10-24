@@ -1,3 +1,5 @@
+import type { SecurityPermission } from "~/types.js";
+
 /**
  * Abstract base class for all identity types.
  * Provides common interface for identity checks across the codebase.
@@ -12,3 +14,13 @@ export abstract class Identity {
      */
     abstract isAnonymous(): boolean;
 }
+
+export type IdentityData = {
+    id: string;
+    displayName: string;
+    type: string;
+    groups?: string[];
+    teams?: string[];
+    permissions?: SecurityPermission[];
+    [key: string]: any;
+};

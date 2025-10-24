@@ -1,7 +1,7 @@
 import { createContextPlugin } from "@webiny/api";
 import { createBeforeHandlerPlugin } from "@webiny/handler";
 import type { SecurityContext } from "~/types.js";
-import { SetIdTokenCookie } from "~/features/authentication/SetIdTokenCookie.js";
+import { SetIdTokenCookie } from "~/features/authentication/AuthenticationContext/SetIdTokenCookie.js";
 
 
 /**

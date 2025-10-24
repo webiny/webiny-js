@@ -1,8 +1,8 @@
 import { createImplementation } from "@webiny/di-container";
-import { AuthenticationContext as Abstraction } from "./abstractions.js";
-import { Authenticator } from "./shared/abstractions.js";
 import { EventPublisher } from "@webiny/api-core";
-import { BeforeLoginEvent, AfterLoginEvent } from "./events.js";
+import { AuthenticationContext as Abstraction } from "./abstractions.js";
+import { Authenticator } from "../Authenticator/index.js";
+import { BeforeAuthenticationEvent, AfterAuthenticationEvent } from "./events.js";
 import type { Identity } from "~/features/IdentityContext/Identity.js";
 import { AnonymousIdentity, AuthenticatedIdentity } from "~/features/IdentityContext/index.js";
 
@@ -17,17 +17,21 @@ class AuthenticationContextImpl implements Abstraction.Interface {
     }
 
     async authenticate(token: string): Promise<Identity> {
-        await this.eventPublisher.publish(new BeforeLoginEvent({ token }));
+        await this.eventPublisher.publish(new BeforeAuthenticationEvent({ token }));
 
         // Try each authenticator until one succeeds
         for (const authenticator of this.authenticators) {
-            const identity = await authenticator.authenticate(token);
-            if (identity) {
+            const identityData = await authenticator.authenticate(token);
+            if (identityData) {
                 this.authToken = token;
 
-                await this.eventPublisher.publish(new AfterLoginEvent({ identity, token }));
+                const identity = new AuthenticatedIdentity(identityData);
 
-                return new AuthenticatedIdentity(identity);
+                await this.eventPublisher.publish(
+                    new AfterAuthenticationEvent({ identity, token })
+                );
+
+                return identity;
             }
         }
 

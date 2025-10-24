@@ -2,21 +2,12 @@ import type { Container } from "@webiny/di-container";
 import type { SecurityStorageOperations as ISecurityStorageOperations } from "./types.js";
 import { SecurityStorageOperations } from "./features/shared/abstractions.js";
 
-// Phase 1: Core contexts
 import { AuthorizationContextFeature } from "./features/authorization/AuthorizationContext/index.js";
-import { AuthenticationFeature } from "./features/authentication/index.js";
+import { AuthenticationContextFeature } from "~/features/authentication/AuthenticationContext/index.js";
 import { IdentityContextFeature } from "./features/IdentityContext/index.js";
-
-// Phase 2: API Keys
 import { ApiKeysFeature } from "./features/apiKeys/index.js";
-
-// Phase 3: Groups
 import { GroupsFeature } from "./features/groups/index.js";
-
-// Phase 4: Teams
 import { TeamsFeature } from "./features/teams/index.js";
-
-// Phase 5: Tenant Links
 import { TenantLinksFeature } from "./features/tenantLinks/index.js";
 
 /**
@@ -35,7 +26,7 @@ export const setupFeatures = (
 
     // Phase 1: Register core contexts (order matters for dependencies)
     AuthorizationContextFeature.register(container);
-    AuthenticationFeature.register(container);
+    AuthenticationContextFeature.register(container);
     IdentityContextFeature.register(container);
 
     // Phase 2: API Keys features

@@ -1,11 +1,4 @@
-import { Identity } from "./Identity.js";
-
-export interface AuthenticatedIdentityData {
-    id: string;
-    displayName: string;
-    type: string;
-    [key: string]: any;
-}
+import { Identity, type IdentityData } from "./Identity.js";
 
 /**
  * Represents an authenticated user identity.
@@ -14,9 +7,9 @@ export class AuthenticatedIdentity extends Identity {
     readonly id: string;
     readonly displayName: string;
     readonly type: string;
-    private data: AuthenticatedIdentityData;
+    private data: IdentityData;
 
-    constructor(data: AuthenticatedIdentityData) {
+    constructor(data: IdentityData) {
         super();
         this.id = data.id;
         this.displayName = data.displayName;
@@ -31,7 +24,7 @@ export class AuthenticatedIdentity extends Identity {
     /**
      * Get additional identity data.
      */
-    getData(): AuthenticatedIdentityData {
+    getData(): IdentityData {
         return this.data;
     }
 

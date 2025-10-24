@@ -1,8 +1,11 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
 import type { IEventHandler, DomainEvent } from "@webiny/api-core";
-import { type AppInstallationData, InstallTenantUseCase } from "../InstallTenant/abstractions.js";
 import { InstallSystemError, SystemAlreadyInstalledError } from "./errors.js";
-import { CreateTenantUseCase } from "~/features/CreateTenant/abstractions.js";
+import {
+    type AppInstallationData,
+    InstallTenantUseCase
+} from "@webiny/api-tenancy/features/InstallTenant/index.js";
+import { CreateTenantUseCase } from "@webiny/api-tenancy/features/CreateTenant/index.js";
 
 /**
  * Errors

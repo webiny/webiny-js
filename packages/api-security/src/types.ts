@@ -1,5 +1,6 @@
-import type { Authentication, Identity } from "@webiny/api-authentication/types.js";
 import type { TenancyContext } from "@webiny/api-tenancy/types.js";
+import type { Identity } from "./features/IdentityContext/index.js";
+import type { LegacyContext } from "~/legacy/LegacyContext.js";
 
 export type { Jwk, Jwt } from "./utils/verifyJwtUsingJwk.js";
 
@@ -9,9 +10,6 @@ export type GetPermissions = <T extends SecurityPermission = SecurityPermission>
     name: string
 ) => Promise<T[]>;
 
-export interface Authorizer {
-    (): Promise<SecurityPermission[] | null>;
-}
 
 export interface GetGroupWhere {
     id?: string;
@@ -25,90 +23,7 @@ export interface GetTeamWhere {
     tenant?: string;
 }
 
-export type AuthenticationToken = string;
-
-export interface Security<TIdentity = SecurityIdentity> extends Authentication<TIdentity> {
-    /**
-     * Returns the token which was used to authenticate (if authentication was successful).
-     */
-    getToken(): AuthenticationToken | undefined;
-
-    isAuthorizationEnabled(): boolean;
-
-    withoutAuthorization<T = any>(cb: () => Promise<T>): Promise<T>;
-
-    withIdentity<T = any>(identity: Identity | undefined, cb: () => Promise<T>): Promise<T>;
-
-    addAuthorizer(authorizer: Authorizer): void;
-
-    getAuthorizers(): Authorizer[];
-
-    getPermission<TPermission extends SecurityPermission = SecurityPermission>(
-        permission: string
-    ): Promise<TPermission | null>;
-
-    getPermissions<TPermission extends SecurityPermission = SecurityPermission>(
-        permission: string
-    ): Promise<TPermission[]>;
-
-    listPermissions(): Promise<SecurityPermission[]>;
-
-    hasFullAccess(): Promise<boolean>;
-
-    // API Keys
-    getApiKey(id: string): Promise<ApiKey | null>;
-
-    getApiKeyByToken(token: string): Promise<ApiKey | null>;
-
-    listApiKeys(): Promise<ApiKey[]>;
-
-    createApiKey(data: ApiKeyInput): Promise<ApiKey>;
-
-    updateApiKey(id: string, data: ApiKeyInput): Promise<ApiKey>;
-
-    deleteApiKey(id: string): Promise<boolean>;
-
-    // Groups
-    getGroup(params: GetGroupParams): Promise<Group>;
-
-    listGroups(params?: ListGroupsParams): Promise<Group[]>;
-
-    createGroup(input: GroupInput): Promise<Group>;
-
-    updateGroup(id: string, input: Partial<GroupInput>): Promise<Group>;
-
-    deleteGroup(id: string): Promise<void>;
-
-    // Teams
-    getTeam(params: GetTeamParams): Promise<Team>;
-
-    listTeams(params?: ListTeamsParams): Promise<Team[]>;
-
-    createTeam(input: TeamInput): Promise<Team>;
-
-    updateTeam(id: string, input: Partial<TeamInput>): Promise<Team>;
-
-    deleteTeam(id: string): Promise<void>;
-
-    // Links
-    createTenantLinks(params: CreateTenantLinkParams[]): Promise<void>;
-
-    updateTenantLinks(params: UpdateTenantLinkParams[]): Promise<void>;
-
-    deleteTenantLinks(params: DeleteTenantLinkParams[]): Promise<void>;
-
-    listTenantLinksByType<TLink extends TenantLink = TenantLink>(
-        params: ListTenantLinksByTypeParams
-    ): Promise<TLink[]>;
-
-    listTenantLinksByTenant(params: ListTenantLinksParams): Promise<TenantLink[]>;
-
-    listTenantLinksByIdentity(params: ListTenantLinksByIdentityParams): Promise<TenantLink[]>;
-
-    getTenantLinkByIdentity<TLink extends TenantLink = TenantLink>(
-        params: GetTenantLinkByIdentityParams
-    ): Promise<TLink | null>;
-}
+export type Security = LegacyContext;
 
 export interface SecurityStorageOperations {
     getGroup(params: StorageOperationsGetGroupParams): Promise<Group | null>;
@@ -168,8 +83,8 @@ export type SecurityPermission<T = Record<string, any>> = T & {
     name: string;
 };
 
-export interface SecurityContext<TIdentity = SecurityIdentity> extends TenancyContext {
-    security: Security<TIdentity>;
+export interface SecurityContext extends TenancyContext {
+    security: Security;
 }
 
 export interface FullAccessPermission {
@@ -207,10 +122,6 @@ export interface Group {
 export type SecurityRole = Group;
 export type SecurityTeam = Team;
 
-export type GroupInput = Pick<Group, "name" | "slug" | "description" | "permissions"> & {
-    system?: boolean;
-};
-
 export interface GetGroupParams {
     where: GetGroupWhere;
 }
@@ -221,10 +132,6 @@ export interface ListGroupsParams {
         slug_in?: string[];
     };
     sort?: string[];
-}
-
-export interface GroupsCreateParams {
-    group: Group;
 }
 
 export interface CreateGroupParams {
@@ -275,10 +182,6 @@ export interface ListTeamsParams {
         slug_in?: string[];
     };
     sort?: string[];
-}
-
-export interface TeamsCreateParams {
-    team: Team;
 }
 
 export interface CreateTeamParams {
@@ -365,12 +268,6 @@ export interface ApiKey {
     createdBy: CreatedBy;
     createdOn: string;
     webinyVersion?: string;
-}
-
-export interface ApiKeyInput {
-    name: string;
-    description: string;
-    permissions: SecurityPermission[];
 }
 
 export interface ApiKeyPermission extends SecurityPermission {

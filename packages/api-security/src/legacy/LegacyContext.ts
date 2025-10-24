@@ -1,12 +1,13 @@
-import  { type Container } from "@webiny/di-container";
-import type { Security, SecurityIdentity, SecurityPermission, TenantLink } from "~/types.js";
+import { type Container } from "@webiny/di-container";
+import type { SecurityIdentity, SecurityPermission, TenantLink } from "~/types.js";
+import { AuthenticationContext } from "~/features/authentication/AuthenticationContext/index.js";
+import { Authenticator } from "~/features/authentication/Authenticator/index.js";
+import { Authorizer } from "~/features/authorization/Authorizer/abstractions.js";
 import {
-    AuthenticationContext,
-    Authenticator as AuthenticatorAbstraction
-} from "~/features/authentication/index.js";
-import { Authorizer } from "../features/authorization/shared/abstractions.js";
-import { AuthenticatedIdentity, IdentityContext } from "~/features/IdentityContext/index.js";
-import type { Authenticator } from "@webiny/api-authentication/types.js";
+    AuthenticatedIdentity,
+    IdentityContext,
+    IdentityData
+} from "~/features/IdentityContext/index.js";
 import { GetApiKey } from "~/features/apiKeys/GetApiKey/index.js";
 import { GetApiKeyByToken } from "~/features/apiKeys/GetApiKeyByToken/index.js";
 import { ListApiKeys } from "~/features/apiKeys/ListApiKeys/index.js";
@@ -35,7 +36,7 @@ import { GetTenantLinkByIdentity } from "~/features/tenantLinks/GetTenantLinkByI
  * Legacy bridge that implements the old Security interface.
  * As we implement each phase, we'll replace forwarding with delegation.
  */
-export class LegacyContext implements Security {
+export class LegacyContext {
     constructor(private container: Container) {}
 
     private get identityContext() {
@@ -46,11 +47,11 @@ export class LegacyContext implements Security {
         return this.container.resolve(AuthenticationContext);
     }
 
-    addAuthenticator(authenticator: Authenticator<SecurityIdentity>): void {
+    addAuthenticator(authenticator: Authenticator.Interface["authenticate"]): void {
         // @ts-expect-error This will go away after full refactor.
         this.container.registerFactory(AuthenticatorAbstraction, () => {
             return {
-                authenticate(token: string): Promise<SecurityIdentity | null> {
+                authenticate(token: string): Promise<IdentityData | null> {
                     return authenticator(token);
                 }
             };
@@ -63,8 +64,8 @@ export class LegacyContext implements Security {
         });
     }
 
-    getAuthenticators(): Authenticator[] {
-        return this.container.resolveAll(AuthenticatorAbstraction).map(authenticator => {
+    getAuthenticators(): Authenticator.Interface["authenticate"][] {
+        return this.container.resolveAll(Authenticator).map(authenticator => {
             return (token: string) => authenticator.authenticate(token);
         });
     }

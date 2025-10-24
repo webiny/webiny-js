@@ -1,8 +1,8 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { Identity } from "~/features/IdentityContext/Identity.js";
+import type { IdentityData } from "~/features/IdentityContext/Identity.js";
 
 export interface IAuthenticator {
-    authenticate(token: string): Promise<Identity | null>;
+    authenticate(token: string): Promise<IdentityData | null>;
 }
 
 export const Authenticator = createAbstraction<IAuthenticator>("Authenticator");

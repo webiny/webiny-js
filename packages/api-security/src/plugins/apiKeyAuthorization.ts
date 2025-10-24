@@ -10,7 +10,7 @@ interface APIKeyIdentity extends SecurityIdentity {
 }
 
 export default (config: Config) => {
-    return new ContextPlugin<SecurityContext<APIKeyIdentity>>(({ security }) => {
+    return new ContextPlugin<SecurityContext>(({ security }) => {
         security.addAuthorizer(async () => {
             const identityType = config.identityType || "api-key";
 

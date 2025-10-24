@@ -2,6 +2,8 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSche
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import type { SecurityContext } from "~/types.js";
 import type { TenancyContext } from "@webiny/api-tenancy/types.js";
+import { EventPublisher } from "@webiny/api-core";
+import { AfterLoginEvent } from "~/features/login/index.js";
 
 type Context = SecurityContext & TenancyContext;
 
@@ -28,9 +30,8 @@ export default new GraphQLSchemaPlugin<Context>({
                 const identity = context.security.getIdentity();
                 if (identity) {
                     try {
-                        await context.security.onBeforeLogin.publish({ identity });
-                        await context.security.onLogin.publish({ identity });
-                        await context.security.onAfterLogin.publish({ identity });
+                        const eventPublisher = context.container.resolve(EventPublisher);
+                        await eventPublisher.publish(new AfterLoginEvent({ identity }));
                     } catch (err) {
                         return new ErrorResponse(err);
                     }
