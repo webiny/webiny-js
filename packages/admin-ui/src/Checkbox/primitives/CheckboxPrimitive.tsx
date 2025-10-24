@@ -13,7 +13,7 @@ const IndeterminateIcon = () => {
     return (
         <span
             className={
-                "block w-sm h-xxs rounded-sm bg-primary-default group-disabled:bg-primary-disabled"
+                "block w-sm h-xxs rounded-sm bg-primary group-disabled:bg-primary-disabled"
             }
         />
     );
@@ -29,7 +29,7 @@ const checkboxVariants = cva(
         "hover:border-neutral-dark",
         "focus:outline-none focus-visible:border-accent-default focus-visible:ring-lg focus-visible:ring-primary-dimmed focus-visible:ring-offset-0",
         "disabled:cursor-not-allowed disabled:border-transparent disabled:bg-neutral-disabled",
-        "data-[state=checked]:bg-primary-default data-[state=checked]:border-transparent",
+        "data-[state=checked]:bg-primary data-[state=checked]:border-transparent",
         "data-[state=checked]:hover:bg-primary-strong",
         "data-[state=checked]:disabled:bg-neutral-disabled data-[state=checked]:disabled:fill-neutral-strong"
     ],

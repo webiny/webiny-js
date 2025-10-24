@@ -60,7 +60,7 @@ const tagVariants = cva(
                     "aria-disabled:bg-neutral-strong"
                 ],
                 accent: [
-                    "bg-primary-default text-neutral-light",
+                    "bg-primary text-neutral-light",
                     "hover:bg-primary-strong",
                     "aria-disabled:bg-primary-disabled"
                 ],

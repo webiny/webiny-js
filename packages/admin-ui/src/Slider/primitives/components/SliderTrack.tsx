@@ -13,7 +13,7 @@ const SliderTrack = () => (
         <SliderPrimitives.Range
             className={cn([
                 "absolute h-full",
-                "bg-primary-default",
+                "bg-primary",
                 "data-disabled:bg-primary-disabled"
             ])}
         />

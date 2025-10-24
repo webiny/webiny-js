@@ -31,7 +31,7 @@ const DecoratableRadio = ({ className, label, id, ...props }: RadioProps) => {
                     <span
                         className={cn([
                             "h-sm w-sm rounded-xl",
-                            "bg-primary-default",
+                            "bg-primary",
                             "group-disabled:bg-neutral-strong"
                         ])}
                     />

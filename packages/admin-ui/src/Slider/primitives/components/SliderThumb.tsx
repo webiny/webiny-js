@@ -10,9 +10,9 @@ const SliderThumb = ({ textValue, showTooltip, tooltipSide }: SliderThumbProps) 
     <SliderPrimitives.Thumb
         className={cn(
             "inline-block w-md h-md mt-xs-plus rounded-xxl border-md transition-colors outline-none",
-            "bg-primary-default border-white",
+            "bg-primary border-white",
             "hover:bg-primary-strong",
-            "active:bg-primary-default",
+            "active:bg-primary",
             "data-disabled:pointer-events-none data-disabled:bg-primary-disabled"
         )}
     >

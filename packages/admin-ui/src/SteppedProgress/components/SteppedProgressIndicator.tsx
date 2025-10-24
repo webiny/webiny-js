@@ -12,7 +12,7 @@ const steppedProgressIndicatorVariants = cva(
                 [ProgressItemState.IN_PROGRESS]: [
                     "bg-primary-base border-sm border-solid border-neutral-muted"
                 ],
-                [ProgressItemState.COMPLETED]: "bg-primary-default",
+                [ProgressItemState.COMPLETED]: "bg-primary",
                 [ProgressItemState.COMPLETED_AFFIRMATIVE]: "bg-success-default"
             },
             disabled: {
