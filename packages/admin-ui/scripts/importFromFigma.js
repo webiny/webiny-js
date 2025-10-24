@@ -3,7 +3,6 @@ import chalk from "chalk";
 import path from "path";
 import { normalizeFigmaExport } from "./importFromFigma/normalizeFigmaExport.js";
 import { normalizePrimitivesFigmaExport } from "./importFromFigma/normalizePrimitivesFigmaExport.js";
-import { createTailwindConfigTheme } from "./importFromFigma/createTailwindConfigTheme.js";
 import { createThemeCssV4 } from "./importFromFigma/createThemeCssV4.js";
 import { formatCode } from "./importFromFigma/formatCode.js";
 import { fileURLToPath } from "url";
@@ -20,7 +19,6 @@ const saveFileAndFormat = async (filePath, content) => {
 (async () => {
     const normalizedFigmaExport = normalizeFigmaExport();
     const normalizedPrimitivesFigmaExport = normalizePrimitivesFigmaExport();
-    const tailwindConfigTheme = createTailwindConfigTheme(normalizedFigmaExport);
     const themeCss = createThemeCssV4(normalizedFigmaExport, normalizedPrimitivesFigmaExport);
 
     const paths = {
@@ -40,11 +38,6 @@ const saveFileAndFormat = async (filePath, content) => {
             path.relative(paths.cwd, paths.normalizedFigmaExport)
         )}).`
     );
-    console.log(
-        `‣ Tailwind config theme (${chalk.green(
-            path.relative(paths.cwd, paths.createTailwindConfigTheme)
-        )}).`
-    );
     console.log(`‣ theme.css (${chalk.green(path.relative(paths.cwd, paths.themeCss))}).`);
 
     await saveFileAndFormat(
@@ -57,10 +50,6 @@ const saveFileAndFormat = async (filePath, content) => {
         JSON.stringify(normalizedPrimitivesFigmaExport, null, 2)
     );
 
-    await saveFileAndFormat(
-        paths.createTailwindConfigTheme,
-        `export default ${JSON.stringify(tailwindConfigTheme, null, 2)};`
-    );
 
     await saveFileAndFormat(paths.themeCss, themeCss);
 
