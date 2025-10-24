@@ -68,11 +68,7 @@
 }
 
 @utility container {
-    width: 100%;
-    padding-right: var(--padding-xxl);
-    padding-left: var(--padding-xxl);
-    margin-left: auto;
-    margin-right: auto;
+    @apply pr-xxl pl-xxl mx-auto w-full;
 }
 
 @layer base {
