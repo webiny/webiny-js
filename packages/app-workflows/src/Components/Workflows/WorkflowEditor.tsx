@@ -6,7 +6,7 @@ import { WorkflowsGateway } from "~/Gateways/index.js";
 import type { NonEmptyArray } from "@webiny/app/types.js";
 import { mdbid } from "@webiny/utils/mdbid.js";
 import { useApolloClient } from "@apollo/react-hooks";
-import { WorkflowView } from "./WorkflowView.js";
+import { WorkflowEditorView } from "./WorkflowEditorView.js";
 
 export interface IWorkflowPresenterProps {
     app: IWorkflowApplication;
@@ -44,5 +44,5 @@ export const WorkflowEditor = (props: IWorkflowPresenterProps) => {
         return presenter;
     }, [app]);
 
-    return <WorkflowView presenter={presenter} />;
+    return <WorkflowEditorView presenter={presenter} />;
 };

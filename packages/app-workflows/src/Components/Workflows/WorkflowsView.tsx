@@ -1,16 +1,16 @@
 import React, { useMemo } from "react";
 import { Alert, Grid } from "@webiny/admin-ui";
 import type { IWorkflowApplication } from "~/types.js";
-import { WorkflowApplications } from "./WorkflowApplications.js";
+import { WorkflowsApplications } from "./WorkflowsApplications.js";
 import { WorkflowEditor } from "./WorkflowEditor.js";
 
-export interface IWorkflowsProps {
+export interface IWorkflowsViewProps {
     apps: IWorkflowApplication[];
     app: string | null | undefined;
     onAppClick: (id: string) => void;
 }
 
-export const Workflows = (props: IWorkflowsProps) => {
+export const WorkflowsView = (props: IWorkflowsViewProps) => {
     const { apps, app: initialApp, onAppClick } = props;
 
     const app = useMemo(() => {
@@ -45,7 +45,7 @@ export const Workflows = (props: IWorkflowsProps) => {
     return (
         <Grid>
             <Grid.Column span={2}>
-                <WorkflowApplications apps={apps} onClick={onAppClick} />
+                <WorkflowsApplications apps={apps} onClick={onAppClick} />
             </Grid.Column>
             <Grid.Column span={10}>{app ? <WorkflowEditor app={app} /> : null}</Grid.Column>
         </Grid>

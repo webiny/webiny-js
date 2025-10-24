@@ -2,11 +2,11 @@ import React from "react";
 import { List } from "@webiny/admin-ui";
 import type { IWorkflowApplication } from "~/types.js";
 
-export interface IWorkflowApplicationsProps {
+export interface IWorkflowsApplicationsProps {
     apps: IWorkflowApplication[];
     onClick: (id: string) => void;
 }
-export const WorkflowApplications = (props: IWorkflowApplicationsProps) => {
+export const WorkflowsApplications = (props: IWorkflowsApplicationsProps) => {
     const { apps, onClick } = props;
     return (
         <List>
