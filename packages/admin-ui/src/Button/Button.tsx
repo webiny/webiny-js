@@ -5,8 +5,7 @@ import { cn, cva, type VariantProps, makeDecoratable } from "~/utils.js";
 const buttonWrapperVariants = cva("inline-block", {
     variants: {
         disabled: {
-            true: "cursor-not-allowed",
-            false: "cursor-pointer"
+            true: "cursor-not-allowed"
         }
     }
 });
@@ -14,7 +13,7 @@ const buttonWrapperVariants = cva("inline-block", {
 const buttonVariants = cva(
     [
         "border-transparent rounded font-sans inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors no-underline!",
-        "aria-disabled:pointer-events-none",
+        "cursor-pointer aria-disabled:pointer-events-none",
         "focus-visible:outline-none focus-visible:border-accent-default"
     ],
     {
@@ -94,14 +93,12 @@ const buttonVariants = cva(
             {
                 size: "sm",
                 contentLayout: "text-icon-start",
-                className:
-                    "pl-[calc(var(--padding-xs)-(var(--border-width-sm)))] [&>svg]:mr-xs"
+                className: "pl-[calc(var(--padding-xs)-(var(--border-width-sm)))] [&>svg]:mr-xs"
             },
             {
                 size: "sm",
                 contentLayout: "text-icon-end",
-                className:
-                    "pr-[calc(var(--padding-xs)-(var(--border-width-sm)))] [&>svg]:ml-xs"
+                className: "pr-[calc(var(--padding-xs)-(var(--border-width-sm)))] [&>svg]:ml-xs"
             },
             {
                 size: "md",
