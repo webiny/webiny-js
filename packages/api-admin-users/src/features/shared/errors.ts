@@ -53,14 +53,3 @@ export class NotAuthorizedError extends BaseError {
         });
     }
 }
-
-// Business rule errors
-export class CannotDeleteOwnAccountError extends BaseError {
-    override readonly code = "CANNOT_DELETE_OWN_ACCOUNT" as const;
-
-    constructor() {
-        super({
-            message: "You can't delete your own user account."
-        });
-    }
-}

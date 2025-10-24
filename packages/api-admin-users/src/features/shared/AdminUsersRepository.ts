@@ -1,8 +1,8 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { TenantContext } from "@webiny/api-tenancy";
+import { TenantContext } from "@webiny/api-tenancy/features/TenantContext";
 import { AdminUsersRepository as RepositoryAbstraction } from "./abstractions.js";
-import { AdminUsersStorageOperationsAbstraction } from "./storageAbstractions.js";
+import { AdminUsersStorageOperations } from "./storageAbstractions.js";
 import { createUserLoaders } from "./loaders.js";
 import {
     UserNotFoundError,
@@ -19,18 +19,18 @@ class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
 
     constructor(
         private tenantContext: TenantContext.Interface,
-        private storageOperations: AdminUsersStorageOperationsAbstraction.Interface
+        private storageOperations: AdminUsersStorageOperations.Interface
     ) {
         // Initialize DataLoaders using existing implementation
         this.loaders = createUserLoaders({
-            getTenant: () => this.tenantContext.getCurrentTenant().id,
+            getTenant: () => this.tenantContext.getTenant().id,
             storageOperations: this.storageOperations
         });
     }
 
     async get(params: GetUserInput): Promise<Result<AdminUser, RepositoryAbstraction.Error>> {
         try {
-            const tenant = this.tenantContext.getCurrentTenant().id;
+            const tenant = this.tenantContext.getTenant().id;
 
             // Use DataLoader for ID-based queries (majority of queries)
             if (params.id) {
@@ -67,7 +67,7 @@ class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async list(params: ListUsersInput): Promise<Result<AdminUser[], RepositoryAbstraction.Error>> {
         try {
-            const tenant = this.tenantContext.getCurrentTenant().id;
+            const tenant = this.tenantContext.getTenant().id;
             const users = await this.storageOperations.listUsers({
                 where: { tenant, ...params.where },
                 sort: params.sort || ["createdOn_ASC"]
@@ -81,6 +81,10 @@ class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
 
     async create(user: AdminUser): Promise<Result<AdminUser, RepositoryAbstraction.Error>> {
         try {
+            // Delete password field before storing!
+            // @ts-expect-error - password is optional and has to be removed
+            delete user["password"];
+
             const result = await this.storageOperations.createUser({ user });
 
             // Prime the cache with the new user
@@ -97,7 +101,7 @@ class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
             await this.storageOperations.updateUser({ user });
 
             // Update the cache
-            const tenant = this.tenantContext.getCurrentTenant().id;
+            const tenant = this.tenantContext.getTenant().id;
             await this.loaders.updateDataLoaderUserCache({ tenant, id: user.id }, user);
 
             return Result.ok(user);
@@ -111,7 +115,7 @@ class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
             await this.storageOperations.deleteUser({ user });
 
             // Clear from cache
-            const tenant = this.tenantContext.getCurrentTenant().id;
+            const tenant = this.tenantContext.getTenant().id;
             this.clearCache([{ tenant, id: user.id }]);
 
             return Result.ok();
@@ -128,5 +132,5 @@ class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
 export const AdminUsersRepository = createImplementation({
     abstraction: RepositoryAbstraction,
     implementation: AdminUsersRepositoryImpl,
-    dependencies: [TenantContext, AdminUsersStorageOperationsAbstraction]
+    dependencies: [TenantContext, AdminUsersStorageOperations]
 });

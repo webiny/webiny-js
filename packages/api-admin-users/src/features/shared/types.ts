@@ -10,7 +10,7 @@ export interface CreateUserInput {
     email: string;
     firstName?: string;
     lastName?: string;
-    avatar?: Record<string, any>;
+    avatar?: Record<string, any> | null;
     groups?: string[];
     teams?: string[];
     password?: string; // Only for Cognito
@@ -21,7 +21,7 @@ export interface UpdateUserInput {
     displayName?: string;
     firstName?: string;
     lastName?: string;
-    avatar?: Record<string, any>;
+    avatar?: Record<string, any> | null;
     groups?: string[];
     teams?: string[];
 }
