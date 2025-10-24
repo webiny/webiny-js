@@ -47,6 +47,9 @@
 
     // Spacing.
     {SPACING}
+    --spacing-sidebar-collapsed: 44px;
+    --spacing-sidebar-expanded: 256px;
+    --spacing-main-content: calc(100vh - 45px);
 
     // Text color.
     {TEXT_COLOR}
