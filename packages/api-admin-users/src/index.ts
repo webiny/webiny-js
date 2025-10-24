@@ -3,8 +3,6 @@ import { createAdminUsers } from "./createAdminUsers.js";
 import type { AdminUsersContext, AdminUsersStorageOperations } from "./types.js";
 import baseGqlPlugins from "./graphql/base.gql.js";
 import adminUsersGqlPlugins from "./graphql/user.gql.js";
-import installGqlPlugins from "./graphql/install.gql.js";
-import { applyMultiTenancyPlugins } from "~/multiTenancy/index.js";
 import type { SecurityPermission } from "@webiny/api-security/types.js";
 
 export interface Config {
@@ -53,15 +51,9 @@ export default ({ storageOperations }: Config) => {
                 }
             });
 
-            const multiTenancy = context.wcp.canUseFeature("multiTenancy");
-            if (multiTenancy) {
-                applyMultiTenancyPlugins(context);
-            }
-
             const teams = context.wcp.canUseTeams();
             context.plugins.register(adminUsersGqlPlugins({ teams }));
         }),
-        installGqlPlugins,
         baseGqlPlugins
     ];
 };

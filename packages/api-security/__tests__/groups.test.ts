@@ -151,7 +151,7 @@ describe("Security Group CRUD Test", () => {
                     getGroup: {
                         data: null,
                         error: {
-                            code: "NOT_FOUND",
+                            code: "GROUP_NOT_FOUND",
                             data: null
                         }
                     }

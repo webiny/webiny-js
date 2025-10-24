@@ -14,9 +14,9 @@ export const IS_INSTALLED = /* GraphQL */ `
 `;
 
 export const INSTALL = /* GraphQL */ `
-    mutation Install {
-        security {
-            install {
+    mutation Install ($installationInput: JSON!){
+        system {
+            installSystem(installationInput: $installationInput ) {
                 data
                 error ${ERROR_FIELD}
             }

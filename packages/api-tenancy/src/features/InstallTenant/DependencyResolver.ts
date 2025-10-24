@@ -1,19 +1,15 @@
 import { InstallationDependencyError } from "./errors.js";
-import type { AppInstallationData } from "./abstractions.js";
-
-interface InstallationNode {
-    appName: string;
-    dependsOn: string[];
-}
+import { type AppInstallationData, AppInstaller } from "./abstractions.js";
 
 export class DependencyResolver {
     resolve(
-        installers: Array<{ appName: string; dependsOn: string[] }>,
+        installers: AppInstaller.Interface[],
         requestedInstalls: AppInstallationData[]
     ): string[] {
-        const nodes = new Map<string, InstallationNode>();
+        const nodes = new Map<string, AppInstaller.Interface>();
         const installerMap = new Map(installers.map(i => [i.appName, i]));
 
+        // First, add all requested installers
         for (const install of requestedInstalls) {
             const installer = installerMap.get(install.app);
             if (!installer) {
@@ -22,10 +18,14 @@ export class DependencyResolver {
                 });
             }
 
-            nodes.set(install.app, {
-                appName: install.app,
-                dependsOn: installer.dependsOn
-            });
+            nodes.set(install.app, installer);
+        }
+
+        // Then, add all installers with alwaysRun === true that aren't already included
+        for (const installer of installers) {
+            if (installer.alwaysRun && !nodes.has(installer.appName)) {
+                nodes.set(installer.appName, installer);
+            }
         }
 
         this.validateDependencies(nodes, installerMap);
@@ -33,8 +33,8 @@ export class DependencyResolver {
     }
 
     private validateDependencies(
-        nodes: Map<string, InstallationNode>,
-        installerMap: Map<string, { appName: string; dependsOn: string[] }>
+        nodes: Map<string, AppInstaller.Interface>,
+        installerMap: Map<string, AppInstaller.Interface>
     ): void {
         for (const [appName, node] of nodes) {
             for (const dep of node.dependsOn) {
@@ -55,7 +55,7 @@ export class DependencyResolver {
         }
     }
 
-    private topologicalSort(nodes: Map<string, InstallationNode>): string[] {
+    private topologicalSort(nodes: Map<string, AppInstaller.Interface>): string[] {
         const sorted: string[] = [];
         const visited = new Set<string>();
         const visiting = new Set<string>();

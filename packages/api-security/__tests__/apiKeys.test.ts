@@ -212,9 +212,9 @@ describe("Security API Key Test", () => {
                     listGroups: {
                         data: null,
                         error: {
-                            message: "Not authorized!",
-                            code: "SECURITY_NOT_AUTHORIZED",
-                            data: null
+                            message: "Not authorized to perform this action",
+                            code: "NOT_AUTHORIZED",
+                            data: {}
                         }
                     }
                 }

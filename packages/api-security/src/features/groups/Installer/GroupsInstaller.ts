@@ -8,6 +8,7 @@ import {
 } from "~/features/groups/index.js";
 
 class GroupsInstallerImpl implements AppInstaller.Interface {
+    readonly alwaysRun = true;
     readonly appName = "Security/GroupsInstaller";
     readonly dependsOn = [];
     private createdGroups: Group[] = [];

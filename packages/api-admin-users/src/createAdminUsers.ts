@@ -79,12 +79,6 @@ export const createAdminUsers = ({
     const onUserCreateError = createTopic("adminUsers.onCreateError");
     const onUserUpdateError = createTopic("adminUsers.onUpdateError");
     const onUserDeleteError = createTopic("adminUsers.onDeleteError");
-    const onBeforeInstall = createTopic("adminUsers.onSystemBeforeInstall");
-    const onSystemBeforeInstall = createTopic("adminUsers.onSystemBeforeInstall");
-    const onInstall = createTopic("adminUsers.onSystemInstall");
-    const onAfterInstall = createTopic("adminUsers.onSystemAfterInstall");
-    const onSystemAfterInstall = createTopic("adminUsers.onSystemAfterInstall");
-    const onCleanup = createTopic("adminUsers.onCleanup");
 
     attachUserValidation({
         onUserBeforeCreate,
@@ -101,12 +95,6 @@ export const createAdminUsers = ({
         onUserCreateError,
         onUserUpdateError,
         onUserDeleteError,
-        onBeforeInstall,
-        onSystemBeforeInstall,
-        onInstall,
-        onAfterInstall,
-        onSystemAfterInstall,
-        onCleanup,
         getStorageOperations() {
             return storageOperations;
         },
@@ -287,10 +275,7 @@ export const createAdminUsers = ({
                 });
             }
         },
-        /**
-         * TODO @ts-refactor figure out better way to type this
-         */
-        // @ts-expect-error
+        // @ts-expect-error figure out better way to type this
         async updateUser(this: AdminUsers, id, data) {
             await checkPermission();
 
@@ -332,70 +317,6 @@ export const createAdminUsers = ({
                     code: "UPDATE_USER_ERROR"
                 });
             }
-        },
-        async getVersion() {
-            const tenantId = getTenant();
-            if (!tenantId) {
-                return null;
-            }
-
-            const system = await storageOperations.getSystemData({ tenant: tenantId });
-
-            return system ? system.version || null : null;
-        },
-
-        async setVersion(version) {
-            const original = await storageOperations.getSystemData({ tenant: getTenant() });
-
-            const system: System = { tenant: getTenant(), version };
-
-            if (original) {
-                try {
-                    return await storageOperations.updateSystemData({
-                        system: { ...original, version }
-                    });
-                } catch (err) {
-                    throw WebinyError.from(err, {
-                        message: "Could not update existing system data.",
-                        code: "UPDATE_SYSTEM_ERROR",
-                        data: { original, system }
-                    });
-                }
-            }
-            try {
-                return await storageOperations.createSystemData({ system });
-            } catch (err) {
-                throw WebinyError.from(err, {
-                    message: "Could not create the system data.",
-                    code: "CREATE_SYSTEM_ERROR",
-                    data: { system }
-                });
-            }
-        },
-
-        async install(this: AdminUsers, data) {
-            if (await this.getVersion()) {
-                throw new WebinyError(
-                    "Admin Users is already installed.",
-                    "ADMIN_USERS_INSTALL_ABORTED"
-                );
-            }
-
-            const user = { ...data, id: mdbid() };
-            const installEvent = { tenant: getTenant(), user };
-
-            try {
-                await onSystemBeforeInstall.publish(installEvent);
-                await onInstall.publish(installEvent);
-                await onSystemAfterInstall.publish(installEvent);
-            } catch (err) {
-                await onCleanup.publish({ error: err, tenant: getTenant(), user });
-
-                throw WebinyError.from(err, { message: "ADMIN_USERS_INSTALL_ABORTED" });
-            }
-
-            // Store app version
-            await this.setVersion(process.env.WEBINY_VERSION as string);
         },
         /**
          * Added for workflows. TODO think of better location

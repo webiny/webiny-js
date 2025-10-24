@@ -16,6 +16,7 @@ import { customAuthorizer } from "~tests/wcp/aacl/mocks/customAuthorizer";
 import { authenticateUsingHttpHeader } from "~/plugins/authenticateUsingHttpHeader.js";
 import type { PluginCollection } from "@webiny/plugins/types";
 import type { LambdaContext } from "@webiny/handler-aws/types";
+import { createApiCore } from "@webiny/api-core";
 
 type CreateMockContextHandlerOptions = {
     plugins?: PluginCollection;
@@ -48,6 +49,7 @@ export const createMockContextHandler = (opts: CreateMockContextHandlerOptions =
 
     const handler = createRawHandler<any, SecurityContext>({
         plugins: [
+            createApiCore(),
             createWcpContext(),
             new ContextPlugin<SecurityContext>(async context => {
                 context.tenancy = {

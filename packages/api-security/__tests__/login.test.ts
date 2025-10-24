@@ -10,8 +10,8 @@ describe(`"Login" test`, () => {
             "x-tenant": "root"
         });
 
-        if (response.data.security.install.error) {
-            throw new Error(response.data.security.install.error.message);
+        if (response.data.system.installSystem.error) {
+            throw new Error(response.data.system.installSystem.error.message);
             // @ts-expect-error
             process.exit(0);
         }

@@ -172,21 +172,12 @@ export interface AdminUsers {
     onUserAfterUpdate: Topic<AfterUpdateEvent>;
     onUserBeforeDelete: Topic<BeforeDeleteEvent>;
     onUserAfterDelete: Topic<AfterDeleteEvent>;
-    onSystemBeforeInstall: Topic<InstallEvent>;
-
     /**
      * Errors
      */
     onUserCreateError: Topic<CreateErrorEvent>;
     onUserUpdateError: Topic<UpdateErrorEvent>;
     onUserDeleteError: Topic<DeleteErrorEvent>;
-
-    /**
-     * This will be executed during Webiny installation.
-     */
-    onInstall: Topic<InstallEvent>;
-    onSystemAfterInstall: Topic<InstallEvent>;
-    onCleanup: Topic<ErrorEvent>;
 
     getStorageOperations(): AdminUsersStorageOperations;
 
@@ -206,12 +197,6 @@ export interface AdminUsers {
     ): Promise<TUser>;
 
     deleteUser(id: string): Promise<void>;
-
-    getVersion(): Promise<string | null>;
-
-    setVersion(version: string): Promise<System>;
-
-    install(params: InstallParams): Promise<void>;
 }
 
 /* Storage Operations */

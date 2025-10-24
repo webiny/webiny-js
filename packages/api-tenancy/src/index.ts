@@ -6,6 +6,7 @@ import { setupFeatures } from "./setupFeatures.js";
 import { LegacyContext } from "./legacy/LegacyContext.js";
 import { GetTenantByIdUseCase } from "~/features/GetTenantById/index.js";
 import { TenantContext } from "~/features/TenantContext/index.js";
+import { createTenantSchema } from "~/graphql/tenant.gql.js";
 
 interface TenancyPluginsParams {
     storageOperations: TenancyStorageOperations;
@@ -74,6 +75,6 @@ export const createTenancyContext = ({ storageOperations }: TenancyPluginsParams
     });
 };
 
-export const createTenancyGraphQL = () => [
-    // TODO: remove this from the project template!
-];
+export const createTenancyGraphQL = () => {
+    return createTenantSchema();
+};

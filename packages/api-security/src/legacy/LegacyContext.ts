@@ -48,8 +48,7 @@ export class LegacyContext {
     }
 
     addAuthenticator(authenticator: Authenticator.Interface["authenticate"]): void {
-        // @ts-expect-error This will go away after full refactor.
-        this.container.registerFactory(AuthenticatorAbstraction, () => {
+        this.container.registerFactory(Authenticator, () => {
             return {
                 authenticate(token: string): Promise<IdentityData | null> {
                     return authenticator(token);

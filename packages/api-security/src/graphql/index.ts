@@ -1,4 +1,3 @@
-import interfaces from "./interfaces.gql.js";
 import base from "./base.gql.js";
 import apiKey from "./apiKey.gql.js";
 import group from "./group.gql.js";
@@ -10,7 +9,7 @@ export interface CreateGraphQlPluginsParams {
 }
 
 export default ({ teams }: CreateGraphQlPluginsParams) => {
-    const plugins = [interfaces, base, apiKey, group, identity];
+    const plugins = [base, apiKey, group, identity];
     if (teams) {
         plugins.push(team);
     }

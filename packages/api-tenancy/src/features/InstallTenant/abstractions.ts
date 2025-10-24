@@ -31,6 +31,7 @@ export interface TenantInstallationInput {
  * App Installer Abstraction
  */
 export interface IAppInstaller<TData = Record<string, any>> {
+    readonly alwaysRun?: boolean;
     readonly appName: string;
     readonly dependsOn: string[];
 

@@ -25,6 +25,8 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                     displayName: String!
                     permissions: [JSON!]!
                     profile: AdminUser
+                    currentTenant: Tenant
+                    defaultTenant: Tenant
                 }
 
                 type AdminUser {

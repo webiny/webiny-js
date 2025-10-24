@@ -33,18 +33,18 @@ const AdminUserInputs = () => {
     return (
         <Grid>
             <Grid.Column span={6}>
-                <Bind name={"adminUser.firstName"} validators={validation.create("required")}>
+                <Bind name={"cognitoUser.firstName"} validators={validation.create("required")}>
                     <Input label={"First name"} />
                 </Bind>
             </Grid.Column>
             <Grid.Column span={6}>
-                <Bind name={"adminUser.lastName"} validators={validation.create("required")}>
+                <Bind name={"cognitoUser.lastName"} validators={validation.create("required")}>
                     <Input label={"Last name"} />
                 </Bind>
             </Grid.Column>
             <Grid.Column span={12}>
                 <Bind
-                    name={"adminUser.email"}
+                    name={"cognitoUser.email"}
                     beforeChange={(value: string, cb) => cb(value.toLowerCase())}
                     validators={validation.create("required,email")}
                 >
@@ -53,7 +53,7 @@ const AdminUserInputs = () => {
             </Grid.Column>
             <Grid.Column span={12}>
                 <Bind
-                    name={"adminUser.password"}
+                    name={"cognitoUser.password"}
                     validators={[passwordValidator, validation.create("required")]}
                 >
                     <Input label={"Choose Password"} type={"password"} autoComplete={"off"} />

@@ -19,6 +19,8 @@ export const createIdentityType = (config: Config) => {
                 type: String!
                 displayName: String!
                 permissions: [JSON!]!
+                currentTenant: Tenant
+                defaultTenant: Tenant
             }
         `,
             resolvers: {

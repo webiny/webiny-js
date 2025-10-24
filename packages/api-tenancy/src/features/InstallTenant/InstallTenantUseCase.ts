@@ -29,13 +29,7 @@ class InstallTenantUseCaseImpl implements UseCaseAbstraction.Interface {
         // Resolve installation order
         let installationOrder: string[];
         try {
-            installationOrder = this.resolver.resolve(
-                this.appInstallers.map(i => ({
-                    appName: i.appName,
-                    dependsOn: i.dependsOn
-                })),
-                installationInput
-            );
+            installationOrder = this.resolver.resolve(this.appInstallers, installationInput);
         } catch (error) {
             if (error instanceof InstallationDependencyError) {
                 return Result.fail(error);
@@ -47,8 +41,6 @@ class InstallTenantUseCaseImpl implements UseCaseAbstraction.Interface {
             );
         }
 
-        console.log(`Installation order: ${installationOrder.join(" → ")}`);
-
         const installedApps: Array<{ appName: string; installer: AppInstaller.Interface }> = [];
 
         try {
@@ -57,12 +49,9 @@ class InstallTenantUseCaseImpl implements UseCaseAbstraction.Interface {
                 const installer = installerMap.get(appName)!;
                 const data = dataMap.get(appName)!;
 
-                console.log(`Installing ${appName}...`);
-
                 try {
                     await installer.install(tenant, data);
                     installedApps.push({ appName, installer });
-                    console.log(`✓ ${appName} installed successfully`);
                 } catch (error) {
                     // Installation failed - rollback everything
                     console.error(`✗ ${appName} installation failed:`, error);
@@ -78,8 +67,6 @@ class InstallTenantUseCaseImpl implements UseCaseAbstraction.Interface {
                     );
                 }
             }
-
-            console.log("✓ All installations completed successfully");
 
             await this.updateTenantUseCase.execute(tenant.id, {
                 isInstalled: true
@@ -117,8 +104,6 @@ class InstallTenantUseCaseImpl implements UseCaseAbstraction.Interface {
             return;
         }
 
-        console.log(`Rolling back ${installedApps.length} installations...`);
-
         // Rollback in REVERSE order (last installed first)
         const errors: Array<{ appName: string; error: Error }> = [];
 
@@ -126,9 +111,7 @@ class InstallTenantUseCaseImpl implements UseCaseAbstraction.Interface {
             const { appName, installer } = installedApps[i];
 
             try {
-                console.log(`Rolling back ${appName}...`);
                 await installer.uninstall(tenant);
-                console.log(`✓ ${appName} rolled back successfully`);
             } catch (error) {
                 console.error(`✗ Failed to rollback ${appName}:`, error);
                 errors.push({

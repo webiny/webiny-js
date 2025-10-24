@@ -43,6 +43,7 @@ import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createWcpContext } from "@webiny/api-wcp";
 import { createApiCore } from "@webiny/api-core";
+import { createSystemContext, createSystemGraphQL } from "@webiny/api-system";
 import { createRootTenantMock } from "./mocks/createRootTenantMock";
 
 type UseGqlHandlerParams = {
@@ -61,6 +62,8 @@ export default (opts: UseGqlHandlerParams = {}) => {
     const handler = createHandler({
         plugins: [
             createApiCore(),
+            createSystemContext(),
+            createSystemGraphQL(),
             graphqlHandlerPlugins(),
             createWcpContext({ testProjectLicense: opts.wcpLicense }),
             createTenancyContext({
@@ -158,11 +161,10 @@ export default (opts: UseGqlHandlerParams = {}) => {
             return invoke({ body: { query: IS_INSTALLED } });
         },
         async install(headers = {}) {
-            await this.installTenancy();
-            return invoke({ body: { query: INSTALL }, headers });
-        },
-        async installTenancy() {
-            return await invoke({ body: { query: INSTALL_TENANCY } });
+            return invoke({
+                body: { query: INSTALL, variables: { installationInput: [] } },
+                headers
+            });
         }
     };
 

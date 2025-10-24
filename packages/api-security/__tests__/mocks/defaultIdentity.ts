@@ -11,6 +11,8 @@ export const defaultIdentity = () => {
                 displayName: String!
                 permissions: [JSON!]!
                 tenant: Tenant
+                defaultTenant: Tenant
+                currentTenant: Tenant
             }
         `,
         resolvers: {
