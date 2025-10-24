@@ -10,8 +10,8 @@ export const breadcrumbs = css({
     bottom: 0,
     width: "calc(100% - 600px)",
     height: "31px",
-    backgroundColor: "var(--mdc-theme-surface)",
-    borderTop: "1px solid var(--mdc-theme-background)",
+    backgroundColor: "var(--color-neutral-base)",
+    borderTop: "1px solid var( --color-neutral-dimmed)",
     fontSize: "12px",
     overflow: "hidden",
     "> li": {
