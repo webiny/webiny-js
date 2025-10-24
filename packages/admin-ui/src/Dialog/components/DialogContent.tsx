@@ -7,7 +7,7 @@ const dialogContentVariants = cva(
         "fixed left-[50%] top-[50%] border-none bg-neutral-base shadow-lg focus-visible:outline-none rounded-xl text-md text-neutral-strong max-h-screen",
         "translate-x-[-50%] translate-y-[-50%] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
         "focus:outline-none focus-visible:outline-none",
-        "max-w-[calc(100vw-var(--spacing-lg))] max-h-[calc(100vh-var(--spacing-lg))] z-50"
+        "max-w-[calc(100vw-var(--spacing-lg))] max-h-[calc(100vh-var(--spacing-lg))] z-dialog"
     ],
     {
         variants: {

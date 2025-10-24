@@ -297,6 +297,21 @@
   --text-h6--line-height: var(--text-md--line-height);
   --text-h6--letter-spacing: initial;
   --text-h6--font-weight: var(--font-weight-semibold);
+
+  /* Z-Index */
+  --z-index-negative: -1;
+  --z-index-base: 1;
+  --z-index-base-overwrite: 10;
+  --z-index-header: 50;
+  --z-index-backdrop: 100;
+  --z-index-drawer: 150;
+  --z-index-overlay: 150;
+  --z-index-dialog: 175;
+  --z-index-popover: 200;
+  --z-index-dropdown: 250;
+  --z-index-tooltip: 300;
+  --z-index-toast: 350;
+  --z-index-progress-bar: 400;
 }
 
 @utility container {

@@ -11,7 +11,7 @@ const OverlayContent = ({ visible, className, style, children, ...props }: Overl
             data-state={visible ? "open" : "closed"}
             className={cn(
                 [
-                    "fixed inset-x-0 top-lg",
+                    "fixed inset-x-0 top-lg z-overlay",
                     "w-screen",
                     "rounded-t-lg overflow-hidden",
                     "bg-neutral-base",

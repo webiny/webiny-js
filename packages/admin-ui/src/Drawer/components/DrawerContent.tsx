@@ -13,7 +13,7 @@ const drawerVariants = cva(
     [
         "fixed gap-4 bg-neutral-base text-md text-neutral-strong focus-visible:outline-none shadow-lg",
         "transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
-        "max-w-full h-full"
+        "max-w-full h-full z-drawer"
     ],
     {
         variants: {
