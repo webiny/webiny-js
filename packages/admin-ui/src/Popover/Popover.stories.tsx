@@ -78,7 +78,7 @@ export const WithArrowSubtleVariant: Story = {
         trigger: <p>Popover trigger</p>,
         arrow: true,
         content: (
-            <div className={"wby-w-[260px]"}>
+            <div className={"wby-w-[320px]"}>
                 <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
                 lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
                 tempus.

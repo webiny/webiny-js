@@ -58,11 +58,11 @@ export const CoreVpc = createAppModule({
             }
         });
 
-        // Create NAT gateway.
+        // Create NAT gateway.z
         const elasticIpAllocation = app.addResource(aws.ec2.Eip, {
             name: "nat-gateway-elastic-ip",
             config: {
-                vpc: true
+                domain: "vpc"
             }
         });
 
