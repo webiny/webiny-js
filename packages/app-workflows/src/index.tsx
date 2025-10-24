@@ -2,9 +2,9 @@ import React from "react";
 import type { IWorkflowsProps as BaseIWorkflowsProps } from "./Components/Workflow/index.js";
 import { Workflows as BaseWorkflows } from "./Components/Workflow/index.js";
 import { useWcp } from "@webiny/app-admin";
+import { Alert } from "@webiny/admin-ui";
 
 export * from "./Components/WorkflowState/index.js";
-
 export type { IWorkflowApplication } from "~/types.js";
 
 export const useCanUseWorkflows = () => {
@@ -18,20 +18,20 @@ export const useCanUseWorkflows = () => {
 };
 
 export interface IWorkflowProps extends BaseIWorkflowsProps {
-    /**
-     * Children will be rendered if the user doesn't have access to Workflows.
-     */
     app: string | null | undefined;
-    children?: React.ReactNode;
     onAppClick: (id: string) => void;
 }
 
 export const Workflows = (props: IWorkflowProps) => {
-    const { apps, children, onAppClick, app } = props;
+    const { apps, onAppClick, app } = props;
 
     const canUseWorkflows = useCanUseWorkflows();
     if (!canUseWorkflows) {
-        return <>{children}</>;
+        return (
+            <Alert type={"danger"} title={"You don't have access to Workflows."}>
+                You do not have access to Workflows. Please contact your system administrator.
+            </Alert>
+        );
     }
     return <BaseWorkflows apps={apps} onAppClick={onAppClick} app={app} />;
 };

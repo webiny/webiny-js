@@ -3,7 +3,7 @@ import { AdminConfig, useRoute, useRouter } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 import type { IWorkflowApplication } from "@webiny/app-workflows";
 import { Workflows } from "@webiny/app-workflows";
-import { Alert, Icon, Loader } from "@webiny/admin-ui";
+import { Icon, Loader } from "@webiny/admin-ui";
 import { useModels, usePermission } from "@webiny/app-headless-cms/admin/hooks/index.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -85,11 +85,5 @@ export const CmsWorkflowsEditorView = () => {
         );
     }
 
-    return (
-        <Workflows apps={apps} onAppClick={onAppClick} app={route.params.app}>
-            <Alert type={"danger"} title={"You don't have access to Workflows."}>
-                You do not have access to Workflows. Please contact your system administrator.
-            </Alert>
-        </Workflows>
-    );
+    return <Workflows apps={apps} onAppClick={onAppClick} app={route.params.app} />;
 };
