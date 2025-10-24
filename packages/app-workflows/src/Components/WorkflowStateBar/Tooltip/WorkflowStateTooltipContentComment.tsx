@@ -1,8 +1,11 @@
 import React from "react";
-import type { IWorkflowStateStep } from "~/types.js";
 import { ReactComponent as CommentIcon } from "@webiny/icons/comment.svg";
+import { Tag } from "@webiny/admin-ui";
+import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
+import type { IWorkflowStateStep } from "~/types.js";
 
 interface IWorkflowStateTooltipContentCommentProps {
+    presenter: IWorkflowStatePresenter;
     step: IWorkflowStateStep;
 }
 
@@ -13,8 +16,14 @@ export const WorkflowStateTooltipContentComment = ({
         return null;
     }
     return (
-        <>
-            <CommentIcon /> Comment
-        </>
+        <Tag
+            content={
+                <>
+                    <CommentIcon /> Comment
+                </>
+            }
+            variant={"neutral-light"}
+            isDismissible={false}
+        />
     );
 };

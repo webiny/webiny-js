@@ -1,9 +1,10 @@
 import React from "react";
 import { ContentEntryForm, useContentEntry } from "@webiny/app-headless-cms";
-import { WorkflowStateBar } from "@webiny/app-workflows";
+import { WorkflowStateBar, WorkflowStateSetup } from "@webiny/app-workflows";
 import { Grid } from "@webiny/admin-ui";
 import { useSecurity } from "@webiny/app-security";
 import { useApolloClient } from "@apollo/react-hooks";
+import { CmsEntryFormTooltipButton } from "~/Components/CmsEntryFormTooltipButton.js";
 
 export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Original => {
     return function ContentEntryFormWorkflow(props) {
@@ -16,21 +17,22 @@ export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Origina
         }
 
         return (
-            <>
-                <Grid>
-                    <Grid.Column span={12}>
-                        <WorkflowStateBar
-                            app={`cms.${model.modelId}`}
-                            id={entry.id}
-                            identity={identity}
-                            client={client}
-                        />
-                    </Grid.Column>
-                    <Grid.Column span={12}>
-                        <Original {...props} />
-                    </Grid.Column>
-                </Grid>
-            </>
+            <Grid>
+                <Grid.Column span={12}>
+                    <WorkflowStateSetup
+                        app={`cms.${model.modelId}`}
+                        id={entry.id}
+                        identity={identity}
+                        client={client}
+                    >
+                        <WorkflowStateBar />
+                        <CmsEntryFormTooltipButton />
+                    </WorkflowStateSetup>
+                </Grid.Column>
+                <Grid.Column span={12}>
+                    <Original {...props} />
+                </Grid.Column>
+            </Grid>
         );
     };
 });

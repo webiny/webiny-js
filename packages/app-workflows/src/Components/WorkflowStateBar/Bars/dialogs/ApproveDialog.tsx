@@ -19,10 +19,7 @@ export const ApproveDialog = (props: IApproveDialogProps) => {
     return (
         <Dialog
             open={true}
-            onOpenChange={change => {
-                console.log("change", change);
-                presenter.hideDialog();
-            }}
+            onOpenChange={presenter.hideDialog}
             title={
                 <>
                     <ApproveIcon className={"wby-fill-success"} />
