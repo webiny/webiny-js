@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
-import { Dialog, Grid, Loader, Textarea } from "@webiny/admin-ui";
+import { Dialog, Grid, OverlayLoader, Textarea } from "@webiny/admin-ui";
 import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
 
 interface IRejectDialogProps {
@@ -11,7 +11,7 @@ const defaultMessage = "Please write a reason for rejecting the content.";
 
 export const RejectDialog = (props: IRejectDialogProps) => {
     const { presenter } = props;
-    
+
     const [value, setValue] = useState<string>("");
     const [validation, setValidation] = useState({
         isValid: false,
@@ -76,7 +76,7 @@ export const RejectDialog = (props: IRejectDialogProps) => {
             dismissible={true}
         >
             {presenter.vm.loading ? (
-                <Loader size="sm" variant="accent" indeterminate={true} />
+                <OverlayLoader size="sm" variant="accent" indeterminate={true} />
             ) : null}
             <Grid>
                 <Grid.Column span={12}>

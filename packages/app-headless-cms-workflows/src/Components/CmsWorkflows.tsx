@@ -48,7 +48,7 @@ const ModelIcon = ({ model }: IModelIconProps) => {
     );
 };
 
-export const CmsWorkflowsView = () => {
+export const CmsWorkflowsEditorView = () => {
     const { route } = useRoute(Routes.ContentModels.Workflows);
     const { models, loading } = useModels();
     const { canEdit, canCreateContentModels } = usePermission();

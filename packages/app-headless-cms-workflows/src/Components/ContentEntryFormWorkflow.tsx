@@ -1,6 +1,6 @@
 import React from "react";
 import { ContentEntryForm, useContentEntry } from "@webiny/app-headless-cms";
-import { WorkflowStateBar } from "@webiny/app-workflows";
+import { WorkflowStateBar, WorkflowStateOverlay } from "@webiny/app-workflows";
 import { Grid } from "@webiny/admin-ui";
 import { useSecurity } from "@webiny/app-security";
 
@@ -19,7 +19,9 @@ export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Origina
                     <WorkflowStateBar />
                 </Grid.Column>
                 <Grid.Column span={12}>
-                    <Original {...props} />
+                    <WorkflowStateOverlay>
+                        <Original {...props} />
+                    </WorkflowStateOverlay>
                 </Grid.Column>
             </Grid>
         );

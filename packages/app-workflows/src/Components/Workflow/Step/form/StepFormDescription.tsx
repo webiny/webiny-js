@@ -5,7 +5,7 @@ import { Input } from "@webiny/admin-ui";
 export const StepFormDescription = () => {
     return (
         <Bind name={"description"}>
-            <Input label={"Description"} size={"lg"} />
+            <Input label={"Give your workflow a description (Optional)"} size={"lg"} />
         </Bind>
     );
 };

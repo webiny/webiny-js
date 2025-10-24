@@ -15,8 +15,7 @@ import { ApproveSuccessDialog } from "./Bars/dialogs/ApproveSuccessDialog.js";
 import { RejectDialog } from "./Bars/dialogs/RejectDialog.js";
 import { RejectSuccessDialog } from "./Bars/dialogs/RejectSuccessDialog.js";
 import { CommentDialog } from "./Bars/dialogs/CommentDialog.js";
-import { useWorkflowState } from "~/Components/WorkflowStateSetup/useWorkflowState.js";
-
+import { useWorkflowState } from "../useWorkflowState.js";
 
 export const WorkflowStateBar = observer(() => {
     const { presenter } = useWorkflowState();

@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { Grid, Heading, Tag } from "@webiny/admin-ui";
+import { Grid, Tag } from "@webiny/admin-ui";
 import { WorkflowStateTooltipContentComment } from "./WorkflowStateTooltipContentComment.js";
 import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
 import { IWorkflowState } from "~/types.js";
@@ -12,21 +12,21 @@ interface IWorkflowStateTooltipButtonProps {
 export const WorkflowStateTooltipContent = (props: IWorkflowStateTooltipButtonProps) => {
     const { state, presenter } = props;
     return (
-        <Grid className={"wby-w-[260px]"}>
+        <Grid className={"wby-w-[350px] wby-text-sm"} gap={"small"}>
             <>
                 <Grid.Column span={12}>
-                    <Heading level={6}>Workflow progress</Heading>
+                    <strong>Workflow progress</strong>
                 </Grid.Column>
                 {state.steps.map(step => {
                     return (
                         <Fragment key={`step-${step.id}`}>
-                            <Grid.Column span={5}>
+                            <Grid.Column span={4}>
                                 <Tag content={step.title} variant={"neutral-light"} />
                             </Grid.Column>
                             <Grid.Column span={4}>
                                 <Tag content={step.state} color={step.color} />
                             </Grid.Column>
-                            <Grid.Column span={3}>
+                            <Grid.Column span={4}>
                                 <WorkflowStateTooltipContentComment
                                     presenter={presenter}
                                     step={step}

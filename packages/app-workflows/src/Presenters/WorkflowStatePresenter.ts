@@ -71,7 +71,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         this.identity = params.identity;
 
         makeAutoObservable(this);
-        
+
         this.init();
     }
 

@@ -34,7 +34,13 @@ const Autocomplete = ({ bind }: IAutocompleteProps) => {
         [bind.onChange]
     );
 
-    return <TeamsMultiAutocomplete {...bind} onChange={onChange} />;
+    return (
+        <TeamsMultiAutocomplete
+            {...bind}
+            label={"Select which teams need to review and approve this workflow"}
+            onChange={onChange}
+        />
+    );
 };
 
 export const StepFormTeams = () => {

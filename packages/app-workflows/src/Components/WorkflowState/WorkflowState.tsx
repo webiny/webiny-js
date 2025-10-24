@@ -1,11 +1,11 @@
-import type { IIdentity } from "~/types.js";
-import type ApolloClient from "apollo-client";
 import React, { useMemo } from "react";
 import { WorkflowsGateway, WorkflowStateGateway } from "~/Gateways/index.js";
 import { WorkflowsRepository, WorkflowStateRepository } from "~/Repositories/index.js";
 import { type IWorkflowStatePresenter, WorkflowStatePresenter } from "~/Presenters/index.js";
+import type { IIdentity } from "~/types.js";
+import type ApolloClient from "apollo-client";
 
-export interface IWorkflowStateSetupProps {
+export interface IWorkflowStateProps {
     id: string;
     app: string;
     identity: IIdentity;
@@ -13,15 +13,13 @@ export interface IWorkflowStateSetupProps {
     children: React.ReactElement | React.ReactElement[];
 }
 
-export interface WorkflowStateSetupContext {
+export interface IWorkflowStateContext {
     presenter: IWorkflowStatePresenter;
 }
 
-export const WorkflowStateSetupContext = React.createContext<WorkflowStateSetupContext | null>(
-    null
-);
+export const WorkflowStateContext = React.createContext<IWorkflowStateContext | null>(null);
 
-export const WorkflowStateSetup = (props: IWorkflowStateSetupProps) => {
+export const WorkflowState = (props: IWorkflowStateProps) => {
     const { id, app, identity, client, children } = props;
     const presenter = useMemo(() => {
         const gateway = new WorkflowStateGateway({
@@ -46,8 +44,8 @@ export const WorkflowStateSetup = (props: IWorkflowStateSetupProps) => {
     }, [app, id, identity, client]);
 
     return (
-        <WorkflowStateSetupContext.Provider value={{ presenter }}>
+        <WorkflowStateContext.Provider value={{ presenter }}>
             {children}
-        </WorkflowStateSetupContext.Provider>
+        </WorkflowStateContext.Provider>
     );
 };

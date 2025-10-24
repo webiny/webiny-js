@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import { Routes } from "~/routes.js";
 import Helmet from "react-helmet";
-import { CmsWorkflowsMenu, CmsWorkflowsView } from "~/Components/CmsWorkflows.js";
+import { CmsWorkflowsMenu, CmsWorkflowsEditorView } from "~/Components/CmsWorkflows.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { SecureRoute } from "@webiny/app-security/components/index.js";
 import { OverlayLoader } from "@webiny/admin-ui";
@@ -38,7 +38,7 @@ export const CmsWorkflowsEditor = () => {
                                 <title>{t`Workflows`}</title>
                             </Helmet>
                             <Loader>
-                                <CmsWorkflowsView />
+                                <CmsWorkflowsEditorView />
                             </Loader>
                         </AdminLayout>
                     </SecureRoute>

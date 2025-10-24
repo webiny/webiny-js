@@ -9,7 +9,7 @@ import { observer } from "mobx-react-lite";
 export const WorkflowStateBarRejected = WorkflowStateBarComponent.createDecorator(Original => {
     return observer(function WorkflowStateBarRejectedDecorator(props) {
         const { presenter } = props;
-        
+
         const step = presenter.vm.lastRejectedStep;
 
         if (!step) {

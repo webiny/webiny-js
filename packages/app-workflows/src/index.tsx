@@ -3,8 +3,7 @@ import type { IWorkflowsProps as BaseIWorkflowsProps } from "./Components/Workfl
 import { Workflows as BaseWorkflows } from "./Components/Workflow/index.js";
 import { useWcp } from "@webiny/app-admin";
 
-export * from "./Components/WorkflowStateBar/index.js";
-export * from "./Components/WorkflowStateSetup/index.js";
+export * from "./Components/WorkflowState/index.js";
 
 export type { IWorkflowApplication } from "~/types.js";
 

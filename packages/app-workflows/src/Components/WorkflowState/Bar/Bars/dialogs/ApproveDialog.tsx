@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
-import { Dialog, Grid, Loader, Textarea } from "@webiny/admin-ui";
+import { Dialog, Grid, OverlayLoader, Textarea } from "@webiny/admin-ui";
 import { ReactComponent as ApproveIcon } from "@webiny/icons/check.svg";
 
 interface IApproveDialogProps {
@@ -36,7 +36,7 @@ export const ApproveDialog = (props: IApproveDialogProps) => {
             dismissible={true}
         >
             {presenter.vm.loading ? (
-                <Loader size="sm" variant="accent" indeterminate={true} />
+                <OverlayLoader size="sm" variant="accent" indeterminate={true} />
             ) : null}
             <Grid>
                 <Grid.Column span={12}>

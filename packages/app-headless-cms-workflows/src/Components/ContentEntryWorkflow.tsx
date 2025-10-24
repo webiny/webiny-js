@@ -1,6 +1,6 @@
 import React from "react";
 import { ContentEntryEditorConfig, useContentEntry } from "@webiny/app-headless-cms";
-import { WorkflowStateSetup } from "@webiny/app-workflows";
+import { WorkflowState } from "@webiny/app-workflows";
 import { useSecurity } from "@webiny/app-security";
 import { useApolloClient } from "@apollo/react-hooks";
 
@@ -17,14 +17,14 @@ export const ContentEntryWorkflow = ContentEntry.createDecorator(Original => {
         }
 
         return (
-            <WorkflowStateSetup
+            <WorkflowState
                 app={`cms.${model.modelId}`}
                 id={entry.id}
                 identity={identity}
                 client={client}
             >
                 <Original />
-            </WorkflowStateSetup>
+            </WorkflowState>
         );
     };
 });
