@@ -3,7 +3,6 @@ import { ReactComponent as KeyboardArrowDownIcon } from "@webiny/icons/keyboard_
 import { Collapsible as CollapsiblePrimitive } from "radix-ui";
 import { cn } from "~/utils.js";
 import { type AccordionItemProps } from "./AccordionItem.js";
-import { AccordionItemAction } from "./AccordionItemAction.js";
 import { Icon } from "~/Icon/index.js";
 import { AccordionItemDragHandle } from "~/Accordion/components/AccordionItemDragHandle.js";
 
@@ -11,6 +10,19 @@ type AccordionTriggerProps = Pick<
     AccordionItemProps,
     "title" | "description" | "icon" | "handle" | "interactive" | "actions" | "draggable"
 >;
+
+const OpenCloseIndicator = () => {
+    return (
+        <Icon
+            size={"lg"}
+            className={"wby-transition"}
+            color={"neutral-strong"}
+            data-role={"open-close-indicator"}
+            label={"Open/close indicator"}
+            icon={<KeyboardArrowDownIcon />}
+        />
+    );
+};
 
 const AccordionTrigger = ({
     title,
@@ -36,6 +48,17 @@ const AccordionTrigger = ({
         };
     }, [interactive]);
 
+    const isInteractable = Boolean(actions && interactive);
+
+    const baseClasses = "wby-group/trigger wby-w-full wby-flex wby-items-center wby-relative";
+    const focusClasses =
+        "focus-visible:wby-outline-none focus-visible:wby-border-none focus-visible:wby-ring-sm focus-visible:wby-ring-primary-dimmed";
+    const hoverClasses = "hover:wby-bg-neutral-dimmed";
+    const variantClasses = "group-[.wby-accordion-variant-container]:wby-rounded-lg";
+    const stateClasses = "[&[data-state=open]_[data-role=open-close-indicator]]:wby-rotate-180";
+    const borderClasses = "wby-border-l-accent";
+    const cursorClass = interactive ? "wby-cursor-pointer" : "wby-cursor-default";
+
     return (
         <CollapsiblePrimitive.Trigger
             asChild
@@ -44,15 +67,21 @@ const AccordionTrigger = ({
             <div
                 {...divAsButtonProps}
                 className={cn(
-                    "wby-group/trigger wby-w-full wby-flex wby-items-center wby-cursor-pointer wby-relative",
-                    "focus-visible:wby-outline-none focus-visible:wby-border-none focus-visible:wby-ring-sm focus-visible:wby-ring-primary-dimmed",
-                    "hover:wby-bg-neutral-dimmed",
-                    "group-[.wby-accordion-variant-container]:wby-rounded-lg",
-                    "[&[data-state=open]_[data-role=open-close-indicator]]:wby-rotate-180",
-                    interactive ? "wby-cursor-pointer" : "wby-cursor-default"
+                    baseClasses,
+                    focusClasses,
+                    hoverClasses,
+                    variantClasses,
+                    stateClasses,
+                    borderClasses,
+                    cursorClass
                 )}
             >
+                {!icon && !isInteractable && (
+                    <div className={"wby-ml-sm wby-w-[20px] wby-h-[1px] wby-bg-neutral-strong"} />
+                )}
                 {draggable ? <AccordionItemDragHandle /> : null}
+                {isInteractable ? <OpenCloseIndicator /> : null}
+
                 <div
                     className={
                         "wby-w-full wby-flex wby-justify-between wby-items-center wby-px-md wby-py-sm-extra"
@@ -71,20 +100,7 @@ const AccordionTrigger = ({
                     </div>
                     <div className={"wby-flex wby-gap-xs"}>
                         {actions}
-
-                        {/* No need to show the separator if there are no actions and the item is not interactive. */}
-                        {actions && interactive && <AccordionItemAction.Separator />}
-
-                        {interactive && (
-                            <Icon
-                                size={"lg"}
-                                className={"wby-transition"}
-                                color={"neutral-strong"}
-                                data-role={"open-close-indicator"}
-                                label={"Open/close indicator"}
-                                icon={<KeyboardArrowDownIcon />}
-                            />
-                        )}
+                        {!isInteractable ? <OpenCloseIndicator /> : null}
                     </div>
                 </div>
             </div>

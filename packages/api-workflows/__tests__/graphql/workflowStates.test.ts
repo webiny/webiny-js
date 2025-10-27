@@ -1,8 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { createGraphQLHandler } from "~tests/__helpers/handler.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
-import { WorkflowStateRecordState } from "~/context/abstractions/WorkflowState.js";
-import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
+import {
+    type IWorkflowStateRecord,
+    type IWorkflowStateRecordStepWithPermissions,
+    WorkflowStateRecordState
+} from "~/context/abstractions/WorkflowState.js";
+import { FULL_ACCESS_TEAM_ID, UNKNOWN_TEAM_ID } from "@webiny/testing";
 
 describe("workflow states graphql", () => {
     const handler = createGraphQLHandler();
@@ -39,11 +43,15 @@ describe("workflow states graphql", () => {
         return response.data?.workflows?.storeWorkflow?.data as IWorkflow;
     };
 
-    it("should create, get and list a new workflow state", async () => {
-        const targetId = "record-1";
-        const targetRevisionId = `${targetId}#0001`;
-        const workflow = await createWorkflow();
+    const targetId = "record-1";
+    const targetRevisionId = `${targetId}#0001`;
+    let workflow: IWorkflow;
 
+    beforeEach(async () => {
+        workflow = await createWorkflow();
+    });
+
+    it("should create, get and list a new workflow state", async () => {
         const [response] = await handler.createWorkflowState({
             app: workflow.app,
             targetRevisionId
@@ -59,18 +67,22 @@ describe("workflow states graphql", () => {
                             targetId,
                             targetRevisionId,
                             app: workflow.app,
-                            steps: workflow.steps.map(step => {
+                            steps: workflow.steps.map((step, index) => {
                                 return {
                                     id: step.id,
-                                    state: WorkflowStateRecordState.pending,
+                                    title: step.title,
+                                    description: step.description,
+                                    color: step.color,
+                                    teams: step.teams,
+                                    notifications: step.notifications,
+                                    state:
+                                        index === 0
+                                            ? WorkflowStateRecordState.inReview
+                                            : WorkflowStateRecordState.pending,
                                     comment: null,
                                     savedBy: null
                                 };
-                            }),
-                            workflow: {
-                                id: workflow.id,
-                                steps: workflow.steps
-                            }
+                            })
                         },
                         error: null
                     }
@@ -144,92 +156,12 @@ describe("workflow states graphql", () => {
     });
 
     it("should approve workflow state steps", async () => {
-        const targetId = "record-1";
-        const targetRevisionId = `${targetId}#0001`;
-        const workflow = await createWorkflow();
-
         const [response] = await handler.createWorkflowState({
             app: workflow.app,
             targetRevisionId
         });
 
         const workflowState = response.data?.workflows?.createWorkflowState?.data;
-
-        const [approveErrorResponse] = await handler.approveWorkflowStateStep({
-            id: workflowState!.id,
-            comment: "Approving step 1"
-        });
-        // should not be able to approve or reject a step of the workflow state that is not in review
-        expect(approveErrorResponse).toMatchObject({
-            data: {
-                workflows: {
-                    approveWorkflowStateStep: {
-                        data: null,
-                        error: {
-                            code: "WORKFLOW_NOT_IN_REVIEW"
-                        }
-                    }
-                }
-            }
-        });
-
-        const [rejectErrorResponse] = await handler.rejectWorkflowStateStep({
-            id: workflowState!.id,
-            comment: "Rejecting step 1"
-        });
-
-        expect(rejectErrorResponse).toMatchObject({
-            data: {
-                workflows: {
-                    rejectWorkflowStateStep: {
-                        data: null,
-                        error: {
-                            code: "WORKFLOW_NOT_IN_REVIEW"
-                        }
-                    }
-                }
-            }
-        });
-
-        const [startedState] = await handler.startWorkflowStateStep({
-            id: workflowState!.id
-        });
-        expect(startedState).toMatchObject({
-            data: {
-                workflows: {
-                    startWorkflowStateStep: {
-                        data: {
-                            steps: [
-                                {
-                                    state: WorkflowStateRecordState.inReview
-                                },
-                                {
-                                    state: WorkflowStateRecordState.pending
-                                }
-                            ]
-                        },
-                        error: null
-                    }
-                }
-            }
-        });
-
-        // should not be possible to start a new step when one is already in review
-        const [tryToStartAgain] = await handler.startWorkflowStateStep({
-            id: workflowState!.id
-        });
-        expect(tryToStartAgain).toMatchObject({
-            data: {
-                workflows: {
-                    startWorkflowStateStep: {
-                        data: null,
-                        error: {
-                            code: "WORKFLOW_PREVIOUS_STEP_NOT_APPROVED"
-                        }
-                    }
-                }
-            }
-        });
 
         // let's move on to approving steps
         const [approveFirstStepResponse] = await handler.approveWorkflowStateStep({
@@ -256,7 +188,7 @@ describe("workflow states graphql", () => {
                                 },
                                 {
                                     id: workflow.steps[1].id,
-                                    state: WorkflowStateRecordState.pending,
+                                    state: WorkflowStateRecordState.inReview,
                                     comment: null,
                                     savedBy: null
                                 }
@@ -269,48 +201,6 @@ describe("workflow states graphql", () => {
         });
         const afterApprovedFirstStepState =
             approveFirstStepResponse.data?.workflows?.approveWorkflowStateStep?.data;
-
-        // this one will fail as review is not started yet for the second step
-        const [tryToApproveSecondStepResponse] = await handler.approveWorkflowStateStep({
-            id: workflowState!.id,
-            comment: "Approving step 2"
-        });
-
-        expect(tryToApproveSecondStepResponse).toMatchObject({
-            data: {
-                workflows: {
-                    approveWorkflowStateStep: {
-                        data: null,
-                        error: {
-                            code: "WORKFLOW_NOT_IN_REVIEW"
-                        }
-                    }
-                }
-            }
-        });
-
-        const [startedSecondStep] = await handler.startWorkflowStateStep({
-            id: workflowState!.id
-        });
-        expect(startedSecondStep).toMatchObject({
-            data: {
-                workflows: {
-                    startWorkflowStateStep: {
-                        data: {
-                            steps: [
-                                {
-                                    state: WorkflowStateRecordState.approved
-                                },
-                                {
-                                    state: WorkflowStateRecordState.inReview
-                                }
-                            ]
-                        },
-                        error: null
-                    }
-                }
-            }
-        });
 
         const [approveSecondStepResponse] = await handler.approveWorkflowStateStep({
             id: workflowState!.id,
@@ -346,23 +236,6 @@ describe("workflow states graphql", () => {
             }
         });
 
-        // there should be no more steps to start or approve
-        const [startAfterAllApproved] = await handler.startWorkflowStateStep({
-            id: workflowState!.id
-        });
-        expect(startAfterAllApproved).toMatchObject({
-            data: {
-                workflows: {
-                    startWorkflowStateStep: {
-                        data: null,
-                        error: {
-                            code: "WORKFLOW_NO_PENDING_STEPS"
-                        }
-                    }
-                }
-            }
-        });
-
         // state should be approved as well, we can check that by getting it
         const [getFinalStateResponse] = await handler.getTargetWorkflowState({
             app: workflow.app,
@@ -384,20 +257,12 @@ describe("workflow states graphql", () => {
     });
 
     it("should reject workflow state step", async () => {
-        const targetId = "record-1";
-        const targetRevisionId = `${targetId}#0001`;
-        const workflow = await createWorkflow();
-
         const [response] = await handler.createWorkflowState({
             app: workflow.app,
             targetRevisionId
         });
 
         const workflowState = response.data?.workflows?.createWorkflowState?.data;
-
-        await handler.startWorkflowStateStep({
-            id: workflowState!.id
-        });
 
         const [rejectResponse] = await handler.rejectWorkflowStateStep({
             id: workflowState!.id,
@@ -435,17 +300,34 @@ describe("workflow states graphql", () => {
             }
         });
 
-        // should not be able to start next step after rejection
-        const [startAfterRejection] = await handler.startWorkflowStateStep({
+        // should not be able to do anything with steps next step after rejection
+        const [approveAfterRejection] = await handler.approveWorkflowStateStep({
             id: workflowState!.id
         });
-        expect(startAfterRejection).toMatchObject({
+        expect(approveAfterRejection).toMatchObject({
             data: {
                 workflows: {
-                    startWorkflowStateStep: {
+                    approveWorkflowStateStep: {
                         data: null,
                         error: {
-                            code: "WORKFLOW_ALREADY_REJECTED"
+                            code: "WORKFLOW_STATE_REJECTED"
+                        }
+                    }
+                }
+            }
+        });
+
+        const [rejectAfterRejection] = await handler.rejectWorkflowStateStep({
+            id: workflowState!.id,
+            comment: "testing"
+        });
+        expect(rejectAfterRejection).toMatchObject({
+            data: {
+                workflows: {
+                    rejectWorkflowStateStep: {
+                        data: null,
+                        error: {
+                            code: "WORKFLOW_STATE_REJECTED"
                         }
                     }
                 }
@@ -468,6 +350,186 @@ describe("workflow states graphql", () => {
                     }
                 }
             }
+        });
+    });
+
+    it("should allow creating multiple workflow states for same record - if previous state is inactive", async () => {
+        const [response] = await handler.createWorkflowState({
+            app: workflow.app,
+            targetRevisionId
+        });
+
+        const firstWorkflowState = response.data?.workflows?.createWorkflowState?.data;
+
+        expect(firstWorkflowState).toMatchObject({
+            id: expect.any(String),
+            isActive: true,
+            workflowId: workflow.id
+        });
+
+        const [canceledFirstWorkflowStateResponse] = await handler.cancelWorkflowState({
+            id: firstWorkflowState!.id
+        });
+
+        expect(canceledFirstWorkflowStateResponse).toMatchObject({
+            data: {
+                workflows: {
+                    cancelWorkflowState: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [secondWorkflowStateResponse] = await handler.createWorkflowState({
+            app: workflow.app,
+            targetRevisionId
+        });
+        const secondWorkflowState =
+            secondWorkflowStateResponse.data?.workflows?.createWorkflowState?.data;
+
+        expect(secondWorkflowStateResponse).toMatchObject({
+            data: {
+                workflows: {
+                    createWorkflowState: {
+                        data: {
+                            id: expect.any(String),
+                            isActive: true,
+                            workflowId: workflow.id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [listResponse] = await handler.listWorkflowStates({});
+        expect(listResponse).toMatchObject({
+            data: {
+                workflows: {
+                    listWorkflowStates: {
+                        data: [
+                            {
+                                id: secondWorkflowState!.id,
+                                isActive: true
+                            },
+                            {
+                                id: firstWorkflowState!.id,
+                                isActive: false
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            totalCount: 2,
+                            cursor: null,
+                            hasMoreItems: false
+                        }
+                    }
+                }
+            }
+        });
+        /**
+         * Must not be possible to create a new workflow state if the previous one is still active.
+         */
+        const [errorOnCreatingActiveWorkflowState] = await handler.createWorkflowState({
+            app: workflow.app,
+            targetRevisionId
+        });
+
+        expect(errorOnCreatingActiveWorkflowState).toMatchObject({
+            data: {
+                workflows: {
+                    createWorkflowState: {
+                        data: null,
+                        error: {
+                            code: "ACTIVE_STATE_EXISTS"
+                        }
+                    }
+                }
+            }
+        });
+        /**
+         * Should be possible to get the inactive workflow state by its ID.
+         */
+        const [inactiveFirstStateResponse] = await handler.getWorkflowState({
+            id: firstWorkflowState!.id
+        });
+        expect(inactiveFirstStateResponse).toMatchObject({
+            data: {
+                workflows: {
+                    getWorkflowState: {
+                        data: {
+                            id: firstWorkflowState!.id,
+                            isActive: false,
+                            workflowId: workflow.id
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    it("should not allow reviewing a step current user does not have access to - wrong team", async () => {
+        const [response] = await handler.storeWorkflow({
+            app: "test",
+            id: `workflow-1`,
+            data: {
+                name: "Test Workflow",
+                steps: [
+                    {
+                        id: "step-1",
+                        title: "Step 1",
+                        description: "This is step 1",
+                        color: "blue",
+                        teams: [{ id: FULL_ACCESS_TEAM_ID }],
+                        notifications: [{ id: "notif-1" }]
+                    },
+                    {
+                        id: "step-2",
+                        title: "Step 2",
+                        description: "This is step 2",
+                        color: "blue",
+                        teams: [{ id: UNKNOWN_TEAM_ID }],
+                        notifications: [{ id: "notif-1" }]
+                    }
+                ]
+            }
+        });
+        const workflow = response.data?.workflows?.storeWorkflow?.data as IWorkflow;
+
+        const [createWorkflowStateResponse] = await handler.createWorkflowState({
+            app: workflow.app,
+            targetRevisionId
+        });
+        const workflowState = createWorkflowStateResponse.data?.workflows?.createWorkflowState
+            ?.data as IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions>;
+
+        expect(workflowState.steps[0]).toMatchObject({
+            id: "step-1",
+            isAllowedToReview: true
+        });
+
+        expect(workflowState.steps[1]).toMatchObject({
+            id: "step-2",
+            isAllowedToReview: false
+        });
+
+        const [getWorkflowStateResponse] = await handler.getWorkflowState({
+            id: workflowState.id
+        });
+        const fetchedWorkflowState = getWorkflowStateResponse.data?.workflows?.getWorkflowState
+            ?.data as IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions>;
+
+        expect(fetchedWorkflowState.steps[0]).toMatchObject({
+            id: "step-1",
+            isAllowedToReview: true
+        });
+
+        expect(fetchedWorkflowState.steps[1]).toMatchObject({
+            id: "step-2",
+            isAllowedToReview: false
         });
     });
 });

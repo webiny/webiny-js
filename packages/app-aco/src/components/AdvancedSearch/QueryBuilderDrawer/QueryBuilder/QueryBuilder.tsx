@@ -56,7 +56,7 @@ export const QueryBuilder = (props: QueryBuilderProps) => {
                 {() => (
                     <>
                         <Details name={props.vm.name} description={props.vm.description} />
-                        <Accordion background={"light"} variant={"container"}>
+                        <Accordion variant={"container"}>
                             {props.vm.data.groups.map((group, groupIndex, groups) => (
                                 <Accordion.Item
                                     className={"wby-relative"}

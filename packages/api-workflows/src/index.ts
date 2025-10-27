@@ -1,6 +1,6 @@
 import { createContext } from "~/context/index.js";
 import { createWorkflowModel } from "~/context/models/workflowModel.js";
-import { createStateModel } from "~/context/models/stateModel.js";
+import { createWorkflowStateModel } from "~/context/models/stateModel.js";
 import { ContextPlugin } from "@webiny/handler";
 import type { Context } from "~/types.js";
 import { createWorkflowsSchema } from "~/graphql/workflows.js";
@@ -29,7 +29,7 @@ export const createWorkflows = () => {
             return;
         }
 
-        context.plugins.register(createWorkflowModel(), createStateModel());
+        context.plugins.register(createWorkflowModel(), createWorkflowStateModel());
         await createContext(context);
         context.plugins.register(createWorkflowsSchema(), createWorkflowStateSchema());
     });

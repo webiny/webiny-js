@@ -8,7 +8,8 @@ import type {
     IWorkflowsContext,
     IWorkflowsContextGetParams,
     IWorkflowsContextListParams,
-    IWorkflowsContextListResponse
+    IWorkflowsContextListResponse,
+    IWorkflowsContextListWhere
 } from "./abstractions/WorkflowsContext.js";
 import type { IWorkflowsTransformer } from "./transformer/abstractions/WorkflowsTransformer.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
@@ -113,15 +114,17 @@ export class WorkflowsContext implements IWorkflowsContext {
         params: IWorkflowsContextListParams
     ): Promise<IWorkflowsContextListResponse> {
         return this.context.security.withoutAuthorization(async () => {
+            const where = {
+                ...this.convertListWhere(params.where)
+            };
+
             const [items, meta] = await this.context.cms.listLatestEntries<Omit<IWorkflow, "id">>(
                 this.model,
                 {
                     sort: ["createdOn_ASC"],
                     limit: 100,
                     ...params,
-                    where: {
-                        ...params.where
-                    }
+                    where
                 }
             );
             return {
@@ -181,5 +184,29 @@ export class WorkflowsContext implements IWorkflowsContext {
             ...values,
             id
         };
+    }
+
+    private convertListWhere(
+        input?: IWorkflowsContextListWhere
+    ): IWorkflowsContextListWhere | undefined {
+        if (!input || Object.keys(input).length === 0) {
+            return undefined;
+        }
+        const where = structuredClone(input);
+        if (where.id) {
+            where.id = this.convertWorkflowId(where.id);
+        }
+        if (where.id_in) {
+            where.id_in = where.id_in.map(id => this.convertWorkflowId(id));
+        }
+        return where;
+    }
+
+    private convertWorkflowId(input: string): string {
+        const { id } = parseIdentifier(input);
+        return createIdentifier({
+            id,
+            version: 1
+        });
     }
 }

@@ -2,22 +2,18 @@ import React from "react";
 import { makeDecoratable, withStaticProps, cva, type VariantProps, cn } from "~/utils.js";
 import type { AccordionRoot } from "./components/AccordionRoot.js";
 import { AccordionItem, type AccordionItemProps } from "./components/AccordionItem.js";
+import { DepthProvider, useDepth } from "./DepthContext.js";
 
 const accordionVariants = cva("wby-group wby-w-full", {
     variants: {
         variant: {
-            container: "wby-accordion-variant-container wby-gap-xs wby-flex wby-flex-col",
-            underline: "wby-accordion-variant-underline "
-        },
-        background: {
-            base: "wby-accordion-background-base",
-            light: "wby-accordion-background-light",
-            transparent: "wby-accordion-background-transparent"
+            container:
+                "wby-accordion-variant-container wby-gap-xs wby-flex wby-flex-col wby-rounded-lg",
+            underline: "wby-accordion-variant-underline"
         }
     },
     defaultVariants: {
-        variant: "underline",
-        background: "base"
+        variant: "container"
     }
 });
 
@@ -26,18 +22,25 @@ type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
         children: React.ReactNode;
     };
 
-const AccordionBase = ({ children, variant, background, className, ...props }: AccordionProps) => {
+const getBackgroundByDepth = (depth: number): string => {
+    return depth % 2 === 0 ? "wby-bg-neutral-base" : "wby-bg-neutral-light";
+};
+
+const AccordionBase = ({ children, variant, className }: AccordionProps) => {
+    const currentDepth = useDepth() + 1;
+    const background = getBackgroundByDepth(currentDepth);
+
     return (
-        <div {...props} className={cn(accordionVariants({ variant, background }), className)}>
-            {children}
+        <div className={cn(accordionVariants({ variant }), className, background)}>
+            <DepthProvider value={currentDepth}>{children}</DepthProvider>
         </div>
     );
 };
 
 const DecoratableAccordion = makeDecoratable("Accordion", AccordionBase);
 
-const Accordion = withStaticProps(DecoratableAccordion, {
+export const Accordion = withStaticProps(DecoratableAccordion, {
     Item: AccordionItem
 });
 
-export { Accordion, type AccordionProps, type AccordionItemProps };
+export type { AccordionProps, AccordionItemProps };

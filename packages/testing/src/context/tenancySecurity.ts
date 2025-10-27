@@ -35,6 +35,7 @@ export const defaultIdentity: SecurityIdentity = {
 
 export const FULL_ACCESS_ROLE_ID = "full-access-role";
 export const FULL_ACCESS_TEAM_ID = "full-access-team";
+export const UNKNOWN_TEAM_ID = "unknown-team";
 
 export const createTenancyAndSecurity = ({
     permissions,

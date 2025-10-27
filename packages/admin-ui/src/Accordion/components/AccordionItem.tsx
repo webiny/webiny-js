@@ -17,52 +17,43 @@ interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {
     children: React.ReactNode;
 }
 
+const ACCORDION_ITEM_CLASSES = [
+    "wby-group-item data-[state=open]:wby-rounded-bl-lg data-[state=open]:wby-rounded-br-lg",
+    "group-[.wby-accordion-variant-container]/accordion:wby-rounded-lg",
+    "data-[disabled]:wby-pointer-events-none data-[disabled]:wby-opacity-50"
+] as const;
+
+const splitAccordionProps = (props: AccordionItemProps) => {
+    const {
+        // AccordionRoot props
+        className,
+        defaultOpen,
+        disabled,
+        onOpenChange,
+        open,
+        // AccordionContent props
+        children,
+        icon,
+        handle,
+        // AccordionTrigger props
+        ...triggerProps
+    } = props;
+
+    return {
+        itemProps: { className, defaultOpen, disabled, onOpenChange, open },
+        contentProps: { children, withIcon: !!icon, withHandle: !!handle },
+        triggerProps
+    };
+};
+
 const AccordionItemBase = (props: AccordionItemProps) => {
-    const { itemProps, triggerProps, contentProps } = React.useMemo(() => {
-        const {
-            // Item props.
-            className,
-            defaultOpen,
-            disabled,
-            onOpenChange,
-            open,
-
-            // Content props.
-            children,
-
-            // Trigger props.
-            ...triggerProps
-        } = props;
-
-        return {
-            itemProps: {
-                className,
-                defaultOpen,
-                disabled,
-                onOpenChange,
-                open
-            },
-            triggerProps: {
-                ...triggerProps
-            },
-            contentProps: { children, withIcon: !!props.icon, withHandle: !!props.handle }
-        };
-    }, [props]);
+    const { itemProps, triggerProps, contentProps } = React.useMemo(
+        () => splitAccordionProps(props),
+        [props]
+    );
 
     return (
-        <AccordionRoot
-            {...itemProps}
-            className={cn(
-                [
-                    "wby-group-item wby-border-b-sm wby-border-b-neutral-dimmed data-[state=open]:wby-rounded-bl-lg data-[state=open]:wby-rounded-br-lg",
-                    "group-[.wby-accordion-variant-container]:wby-rounded-lg",
-                    "group-[.wby-accordion-background-base]:wby-bg-neutral-base",
-                    "group-[.wby-accordion-background-light]:wby-bg-neutral-light",
-                    "data-[disabled]:wby-pointer-events-none data-[disabled]:wby-opacity-50"
-                ],
-                itemProps.className
-            )}
-        >
+        <AccordionRoot {...itemProps} className={cn(ACCORDION_ITEM_CLASSES, itemProps.className)}>
             <AccordionTrigger {...triggerProps} />
             <AccordionContent {...contentProps} />
         </AccordionRoot>

@@ -4,8 +4,12 @@ import type {
 } from "./abstractions/WorkflowStatePresenter.js";
 import type { IWorkflowsRepository, IWorkflowStateRepository } from "../Repositories/index.js";
 import { makeAutoObservable, runInAction, toJS } from "mobx";
-import { type IWorkflowStateModel, WorkflowStateModel } from "~/Models/index.js";
-import { type IIdentity, type IWorkflow, WorkflowStateValue } from "~/types.js";
+import {
+    type IWorkflowStateModel,
+    type IWorkflowStateStepModel,
+    WorkflowStateModel
+} from "~/Models/index.js";
+import { type IIdentity, type IWorkflow } from "~/types.js";
 
 export interface IWorkflowStatePresenterParams {
     repository: IWorkflowStateRepository;
@@ -23,25 +27,12 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     private readonly targetRevisionId;
     private readonly identity;
     private state: IWorkflowStateModel | null | undefined = undefined;
-    private dialog: "approve" | "reject" | null = null;
+    private dialog: "approve" | "approve:success" | "reject" | "reject:success" | "comment" | null =
+        null;
+    private comment: IWorkflowStateStepModel | undefined = undefined;
 
     private get isOwner(): boolean {
         return this.state?.createdBy?.id === this.identity.id;
-    }
-    /**
-     * Determines whether the current user can start the step review.
-     * User must not be the owner of the requested review, there must be a current step,
-     * and the workflow state must be pending.
-     */
-    private get canStartStepReview(): boolean {
-        if (this.isOwner) {
-            return false;
-        } else if (!this.state?.currentStep) {
-            return false;
-        } else if (this.state.state !== WorkflowStateValue.pending) {
-            return false;
-        }
-        return true;
     }
     /**
      * Determines whether the current user can cancel the review request.
@@ -51,30 +42,24 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         return this.isOwner && !!this.state?.currentStep;
     }
 
-    private get canReview(): boolean {
-        if (this.state?.state !== WorkflowStateValue.inReview) {
-            return false;
-        } else if (this.isOwner) {
-            return false;
-        }
-        return !!this.state.currentStep;
-    }
-
     get vm(): IWorkflowStatePresenterViewModel {
         return {
             workflow: this.workflow,
             state: this.state ? this.state.toJS() : null,
             step: toJS(this.state ? this.state.currentStep : null),
+            lastApprovedStep: toJS(this.state?.lastApproved || null),
+            lastRejectedStep: toJS(this.state?.lastRejected || null),
             nextStep: toJS(this.state ? this.state.nextStep : null),
             loading: this.repository.loading || this.workflowsRepository.loading,
             error: toJS(this.repository.error || this.workflowsRepository.error),
             app: this.app,
             id: this.targetRevisionId,
-            canStartStepReview: this.canStartStepReview,
             canCancel: this.canCancel,
-            canReview: this.canReview,
             showApproveDialog: this.dialog === "approve",
-            showRejectDialog: this.dialog === "reject"
+            showApproveSuccessDialog: this.dialog === "approve:success",
+            showRejectDialog: this.dialog === "reject",
+            showRejectSuccessDialog: this.dialog === "reject:success",
+            showStepCommentDialog: this.comment
         };
     }
 
@@ -86,9 +71,11 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         this.identity = params.identity;
 
         makeAutoObservable(this);
+
+        this.init();
     }
 
-    public async init(): Promise<void> {
+    private async init(): Promise<void> {
         const workflows = await this.workflowsRepository.listWorkflows({
             where: {
                 app: this.app
@@ -122,15 +109,6 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         });
     };
 
-    start = async () => {
-        const item = await this.repository.start({
-            id: this.state!.id
-        });
-        runInAction(() => {
-            this.state = item ? new WorkflowStateModel(item) : null;
-        });
-    };
-
     approve = async (comment?: string) => {
         const item = await this.repository.approve({
             id: this.state!.id,
@@ -138,6 +116,10 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         });
         runInAction(() => {
             this.state = item ? new WorkflowStateModel(item) : null;
+            if (!item) {
+                return;
+            }
+            this.dialog = "approve:success";
         });
     };
 
@@ -148,6 +130,10 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         });
         runInAction(() => {
             this.state = item ? new WorkflowStateModel(item) : null;
+            if (!item) {
+                return;
+            }
+            this.dialog = "reject:success";
         });
     };
 
@@ -167,12 +153,23 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     hideDialog = () => {
         runInAction(() => {
             this.dialog = null;
+            this.comment = undefined;
         });
     };
 
     showRejectDialog = () => {
         runInAction(() => {
             this.dialog = "reject";
+        });
+    };
+
+    showCommentDialog = (id: string) => {
+        const step = this.state?.steps.find(step => step.id === id);
+        if (!step) {
+            return;
+        }
+        runInAction(() => {
+            this.comment = step;
         });
     };
 }

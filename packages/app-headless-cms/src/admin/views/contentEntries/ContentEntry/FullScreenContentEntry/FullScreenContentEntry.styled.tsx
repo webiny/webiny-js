@@ -24,7 +24,7 @@ export const Container = ({
             <div
                 className={cn(
                     [
-                        "wby-bg-neutral-base",
+                        "wby-bg-neutral-light",
                         "wby-fixed wby-z-15 wby-top-0 wby-left-0",
                         "wby-w-full wby-h-screen"
                     ],

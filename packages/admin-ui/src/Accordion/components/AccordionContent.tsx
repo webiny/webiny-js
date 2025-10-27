@@ -4,11 +4,12 @@ import { cva, type VariantProps, cn } from "~/utils.js";
 
 const accordionContentVariants = cva(
     [
-        "wby-overflow-hidden wby-text-md",
-        "wby-transition-all data-[state=closed]:wby-animate-collapsible-up data-[state=open]:wby-animate-collapsible-down"
+        "wby-overflow-hidden wby-text-md wby-pl-xxl wby-pr-xxl",
+        "wby-transition-all",
+        "data-[state=closed]:wby-animate-collapsible-up",
+        "data-[state=open]:wby-animate-collapsible-down"
     ],
     {
-        // Using pixel values here because of non-existing design tokens.
         variants: {
             withIcon: {
                 true: "wby-pl-9"
@@ -35,15 +36,17 @@ export interface AccordionContentProps
     extends React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Content>,
         VariantProps<typeof accordionContentVariants> {}
 
-const AccordionContent = ({ children, withIcon, withHandle, ...props }: AccordionContentProps) => {
-    return (
-        <CollapsiblePrimitive.Content
-            {...props}
-            className={cn(accordionContentVariants({ withHandle, withIcon }), props.className)}
-        >
-            <div className={"wby-pt-sm wby-pb-lg wby-px-md"}>{children}</div>
-        </CollapsiblePrimitive.Content>
-    );
-};
-
-export { AccordionContent };
+export const AccordionContent = ({
+    children,
+    withIcon,
+    withHandle,
+    className,
+    ...props
+}: AccordionContentProps) => (
+    <CollapsiblePrimitive.Content
+        {...props}
+        className={cn(accordionContentVariants({ withHandle, withIcon }), className)}
+    >
+        <div className="wby-pt-sm wby-pb-lg wby-px-md">{children}</div>
+    </CollapsiblePrimitive.Content>
+);

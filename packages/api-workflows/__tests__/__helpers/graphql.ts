@@ -5,7 +5,10 @@ import type {
 } from "~/context/abstractions/WorkflowsContext.js";
 import type { IMeta } from "~/context/abstractions/types.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
-import type { IWorkflowStateRecord } from "~/context/abstractions/WorkflowState.js";
+import type {
+    IWorkflowStateRecord,
+    IWorkflowStateRecordStepWithPermissions
+} from "~/context/abstractions/WorkflowState.js";
 import type { IWorkflowStateContextListStatesParams } from "~/context/abstractions/WorkflowStateContext.js";
 
 export interface IWorkflowError {
@@ -52,7 +55,13 @@ const WORKFLOW_STATE = /* GraphQL */ `
             displayName
             type
         }
+        createdBy {
+            id
+            displayName
+            type
+        }
         app
+        isActive
         workflowId
         targetId
         targetRevisionId
@@ -60,6 +69,15 @@ const WORKFLOW_STATE = /* GraphQL */ `
         state
         steps {
             id
+            title
+            color
+            description
+            teams {
+                id
+            }
+            notifications {
+                id
+            }
             state
             comment
             savedBy {
@@ -67,22 +85,7 @@ const WORKFLOW_STATE = /* GraphQL */ `
                 displayName
                 type
             }
-        }
-        workflow {
-            id
-            name
-            steps {
-                id
-                title
-                color
-                description
-                teams {
-                    id
-                }
-                notifications {
-                    id
-                }
-            }
+            isAllowedToReview
         }
     }
 `;
@@ -210,7 +213,7 @@ export interface ICreateWorkflowStateResponse {
     data: {
         workflows: {
             createWorkflowState: {
-                data: IWorkflowStateRecord | null;
+                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
                 error: IWorkflowError | null;
             };
         };
@@ -237,7 +240,7 @@ export interface IGetTargetWorkflowStateResponse {
     data: {
         workflows: {
             getTargetWorkflowState: {
-                data: IWorkflowStateRecord | null;
+                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
                 error: IWorkflowError | null;
             };
         };
@@ -261,7 +264,7 @@ export interface IListTargetWorkflowStatesResponse {
     data: {
         workflows: {
             listWorkflowStates: {
-                data: IWorkflowStateRecord[] | null;
+                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions>[] | null;
                 meta: IMeta | null;
                 error: IWorkflowError | null;
             };
@@ -295,31 +298,6 @@ export const LIST_TARGET_WORKFLOW_STATES_QUERY = /* GraphQL */ `
     }
 `;
 
-export interface IStartWorkflowStateStepVariables {
-    id: string;
-}
-
-export interface IStartWorkflowStateStepResponse {
-    data: {
-        workflows: {
-            startReviewWorkflowStateStep: {
-                data: IWorkflowStateRecord | null;
-                error: IWorkflowError | null;
-            };
-        };
-    };
-}
-
-export const START_WORKFLOW_STATE_STEP_MUTATION = /* GraphQL */ `
-    mutation StartWorkflowStateStep($id: ID!) {
-        workflows {
-            startWorkflowStateStep(id: $id) {
-                data ${WORKFLOW_STATE}
-                ${ERROR_FIELD}
-            }
-        }
-    }`;
-
 export interface IApproveWorkflowStateStepVariables {
     id: string;
     comment?: string;
@@ -329,7 +307,7 @@ export interface IApproveWorkflowStateStepResponse {
     data: {
         workflows: {
             approveWorkflowStateStep: {
-                data: IWorkflowStateRecord | null;
+                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
                 error: IWorkflowError | null;
             };
         };
@@ -349,14 +327,14 @@ export const APPROVE_WORKFLOW_STATE_STEP_MUTATION = /* GraphQL */ `
 
 export interface IRejectWorkflowStateStepVariables {
     id: string;
-    comment?: string;
+    comment: string;
 }
 
 export interface IRejectWorkflowStateStepResponse {
     data: {
         workflows: {
             rejectWorkflowStateStep: {
-                data: IWorkflowStateRecord | null;
+                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
                 error: IWorkflowError | null;
             };
         };
@@ -367,6 +345,58 @@ export const REJECT_WORKFLOW_STATE_STEP_MUTATION = /* GraphQL */ `
     mutation RejectWorkflowStateStep($id: ID!, $comment: String!) {
         workflows {
             rejectWorkflowStateStep(id: $id, comment: $comment) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export interface ICancelWorkflowStateVariables {
+    id: string;
+}
+
+export interface ICancelWorkflowStateResponse {
+    data: {
+        workflows: {
+            cancelWorkflowState: {
+                data: boolean | null;
+                error: IWorkflowError | null;
+            };
+        };
+    };
+}
+
+export const CANCEL_WORKFLOW_STATE_MUTATION = /* GraphQL */ `
+    mutation CancelWorkflowState($id: ID!) {
+        workflows {
+            cancelWorkflowState(id: $id) {
+                data
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export interface IGetWorkflowStateVariables {
+    id: string;
+}
+
+export interface IGetWorkflowStateResponse {
+    data: {
+        workflows: {
+            getWorkflowState: {
+                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
+                error: IWorkflowError | null;
+            };
+        };
+    };
+}
+
+export const GET_WORKFLOW_STATE_MUTATION = /* GraphQL */ `
+    query GetWorkflowState($id: ID!) {
+        workflows {
+            getWorkflowState(id: $id) {
                 data ${WORKFLOW_STATE}
                 ${ERROR_FIELD}
             }

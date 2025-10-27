@@ -1,11 +1,10 @@
 import React from "react";
 import { makeDecoratable } from "@webiny/react-composition";
-import Accordion from "~/admin/plugins/fieldRenderers/Accordion.js";
+import { Accordion, IconButton } from "@webiny/admin-ui";
 import type { GenericRecord } from "@webiny/app/types.js";
 import { ReactComponent as DeleteIcon } from "@webiny/icons/delete_outline.svg";
-import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_drop_up.svg";
-import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_drop_down.svg";
-import { IconButton } from "@webiny/ui/Button/index.js";
+import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
+import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
 
 export interface MultiValueItemContainerProps {
     value: GenericRecord<string>;
@@ -33,6 +32,7 @@ export const MultiValueItemContainer = makeDecoratable(
                         e.stopPropagation();
                         onMoveDown();
                     }}
+                    variant="ghost"
                     disabled={isLast}
                 />
                 <IconButton
@@ -41,26 +41,30 @@ export const MultiValueItemContainer = makeDecoratable(
                         e.stopPropagation();
                         onMoveUp();
                     }}
+                    variant="ghost"
                     disabled={isFirst}
                 />
+                <Accordion.Item.Action.Separator />
                 <IconButton
                     icon={<DeleteIcon />}
                     onClick={e => {
                         e.stopPropagation();
                         onDelete();
                     }}
+                    variant="ghost"
                 />
             </>
         );
 
         return (
-            <Accordion
-                title={props.title}
-                action={actions}
-                isExpanded={props.isExpanded}
-                toggleExpanded={props.toggleExpanded}
-            >
-                {children}
+            <Accordion>
+                <Accordion.Item
+                    title={props.title}
+                    actions={actions}
+                    defaultOpen={props.isExpanded}
+                >
+                    {children}
+                </Accordion.Item>
             </Accordion>
         );
     }

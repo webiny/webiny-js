@@ -1,4 +1,4 @@
-import type { IWorkflowStateStep, IWorkflowStep } from "~/types.js";
+import type { IWorkflowStateStep } from "~/types.js";
 import { makeAutoObservable, runInAction, toJS } from "mobx";
 import type { IWorkflowStateStepModel } from "./abstractions/WorkflowStateStepModel.js";
 
@@ -12,17 +12,19 @@ export class WorkflowStateStepModel implements IWorkflowStateStepModel {
     public notifications;
     public color;
     public description;
+    public isAllowedToReview;
 
-    public constructor(data: IWorkflowStateStep, workflowStep: IWorkflowStep) {
-        this.id = data.id;
-        this.comment = data.comment;
-        this.savedBy = data.savedBy;
-        this.state = data.state;
-        this.title = workflowStep.title;
-        this.teams = workflowStep.teams;
-        this.notifications = workflowStep.notifications;
-        this.color = workflowStep.color;
-        this.description = workflowStep.description;
+    public constructor(params: IWorkflowStateStep) {
+        this.id = params.id;
+        this.title = params.title;
+        this.color = params.color;
+        this.description = params.description;
+        this.notifications = params.notifications;
+        this.teams = params.teams;
+        this.comment = params.comment;
+        this.savedBy = params.savedBy;
+        this.state = params.state;
+        this.isAllowedToReview = params.isAllowedToReview;
 
         makeAutoObservable(this);
     }
@@ -32,7 +34,13 @@ export class WorkflowStateStepModel implements IWorkflowStateStepModel {
             id: this.id,
             comment: this.comment,
             savedBy: this.savedBy,
-            state: this.state
+            state: this.state,
+            title: this.title,
+            notifications: this.notifications,
+            teams: this.teams,
+            color: this.color,
+            description: this.description,
+            isAllowedToReview: this.isAllowedToReview
         });
     }
 
