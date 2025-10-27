@@ -10,7 +10,7 @@ interface DropLineProps {
 export function DropLine({ label, top, visible, dimmed }: DropLineProps) {
     return (
         <div
-            className={"absolute bg-primary-default left-0 right-0 w-full"}
+            className={"absolute bg-primary left-0 right-0 w-full"}
             style={{
                 display: "flex",
                 justifyContent: "center",
@@ -22,7 +22,7 @@ export function DropLine({ label, top, visible, dimmed }: DropLineProps) {
             }}
         >
             <span
-                className={"absolute bg-primary-default text-neutral-light"}
+                className={"absolute bg-primary text-neutral-light"}
                 style={{ top: -10, padding: "2px 8px" }}
             >
                 {label}

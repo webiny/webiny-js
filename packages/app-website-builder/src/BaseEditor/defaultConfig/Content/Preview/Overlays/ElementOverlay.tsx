@@ -95,7 +95,7 @@ export const ElementOverlay = React.memo(
                                 className={cn(
                                     "absolute text-sm text-neutral-light p-xs",
                                     "data-[state=hover]:bg-success-default",
-                                    "data-[state=active]:bg-primary-default"
+                                    "data-[state=active]:bg-primary"
                                 )}
                                 style={{
                                     pointerEvents: "auto",

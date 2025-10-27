@@ -259,7 +259,7 @@ type PlaceholderProps = {
 
 const Placeholder = (props: PlaceholderProps) => (
     <div
-        className={"bg-primary-default"}
+        className={"bg-primary"}
         style={{
             height: 2,
             zIndex: 999,
