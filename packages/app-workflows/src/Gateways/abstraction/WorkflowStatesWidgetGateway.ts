@@ -12,12 +12,14 @@ export interface IWorkflowStatesWidgetGatewayListOwnStatesParams {
     where: {
         state: WorkflowStateValue;
     };
+    limit: number;
 }
 
 export interface IWorkflowStatesWidgetGatewayListRequestedStatesParams {
     where: {
         state: WorkflowStateValue;
     };
+    limit: number;
 }
 
 export interface IWorkflowStatesWidgetMeta {

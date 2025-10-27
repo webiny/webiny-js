@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import type { IIdentity } from "~/types.js";
 import type ApolloClient from "apollo-client";
 import type { IWorkflowStatesWidgetPresenter } from "~/Presenters/index.js";
 import { WorkflowStatesOwnWidgetPresenter } from "~/Presenters/index.js";
@@ -22,6 +21,7 @@ interface WorkflowStatesWidgetViewObserverProps {
 const WorkflowStatesWidgetViewObserver = observer(
     (props: WorkflowStatesWidgetViewObserverProps) => {
         const { presenter } = props;
+
         return (
             <Card
                 title={
@@ -31,7 +31,7 @@ const WorkflowStatesWidgetViewObserver = observer(
                             color={"accent"}
                             label={"Review Requests"}
                         />
-                        Review Requests
+                        Own Review Requests
                     </>
                 }
                 options={
@@ -52,19 +52,31 @@ const WorkflowStatesWidgetViewObserver = observer(
                             key="inReview"
                             value="inReview"
                             trigger="In Review"
-                            content={<WorkflowStateList states={presenter.vm.inReview} />}
+                            content={
+                                <>
+                                    <WorkflowStateList states={presenter.vm.inReview} />
+                                </>
+                            }
                         />,
                         <Tabs.Tab
                             key="approved"
                             value="approved"
                             trigger="Approved"
-                            content={<WorkflowStateList states={presenter.vm.approved} />}
+                            content={
+                                <>
+                                    <WorkflowStateList states={presenter.vm.approved} />
+                                </>
+                            }
                         />,
                         <Tabs.Tab
                             key="declined"
                             value="declined"
                             trigger="Declined"
-                            content={<WorkflowStateList states={presenter.vm.rejected} />}
+                            content={
+                                <>
+                                    <WorkflowStateList states={presenter.vm.rejected} />
+                                </>
+                            }
                         />
                     ]}
                 />
@@ -83,9 +95,11 @@ export const WorkflowStatesOwnWidgetView = (props: IWorkflowStatesWidgetViewProp
         const repository = new WorkflowStatesWidgetRepository({
             gateway
         });
-        return new WorkflowStatesOwnWidgetPresenter({
-            repository,
+        const presenter = new WorkflowStatesOwnWidgetPresenter({
+            repository
         });
+        presenter.init();
+        return presenter;
     }, []);
 
     return <WorkflowStatesWidgetViewObserver presenter={presenter} />;
