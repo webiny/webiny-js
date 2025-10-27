@@ -13,6 +13,7 @@ export class WorkflowStateTransformer implements IWorkflowStateTransformer {
         return {
             id: input.id,
             workflowId: input.values.workflowId,
+            title: input.values.title,
             targetId: input.values.targetId,
             targetRevisionId: input.values.targetRevisionId,
             steps: input.values.steps,
@@ -32,6 +33,7 @@ export class WorkflowStateTransformer implements IWorkflowStateTransformer {
     ): IWorkflowStateTransformerToCmsEntryOutput {
         return {
             isActive: input.isActive,
+            title: input.title,
             workflowId: input.workflowId,
             targetId: input.targetId,
             targetRevisionId: input.targetRevisionId,

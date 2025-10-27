@@ -16,6 +16,7 @@ export interface IWorkflowStatePresenterParams {
     workflowsRepository: IWorkflowsRepository;
     app: string;
     targetRevisionId: string;
+    title: string;
     identity: IIdentity;
 }
 
@@ -25,6 +26,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     private workflow: IWorkflow | null = null;
     private readonly app;
     private readonly targetRevisionId;
+    private readonly title;
     private readonly identity;
     private state: IWorkflowStateModel | null | undefined = undefined;
     private dialog: "approve" | "approve:success" | "reject" | "reject:success" | "comment" | null =
@@ -68,6 +70,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         this.workflowsRepository = params.workflowsRepository;
         this.app = params.app;
         this.targetRevisionId = params.targetRevisionId;
+        this.title = params.title;
         this.identity = params.identity;
 
         makeAutoObservable(this);
@@ -102,7 +105,8 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     requestReview = async () => {
         const item = await this.repository.requestReview({
             app: this.app,
-            targetRevisionId: this.targetRevisionId
+            targetRevisionId: this.targetRevisionId,
+            title: this.title,
         });
         runInAction(() => {
             this.state = item ? new WorkflowStateModel(item) : null;

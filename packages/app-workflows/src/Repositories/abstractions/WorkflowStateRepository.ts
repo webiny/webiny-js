@@ -4,6 +4,7 @@ import type { IWorkflowState } from "~/types.js";
 export interface IWorkflowStateRepositoryRequestReviewParams {
     app: string;
     targetRevisionId: string;
+    title: string;
 }
 
 export interface IWorkflowStateRepositoryApproveParams {
