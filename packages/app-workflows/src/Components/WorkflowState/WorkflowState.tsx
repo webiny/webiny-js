@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
 import { WorkflowsGateway, WorkflowStateGateway } from "~/Gateways/index.js";
 import { WorkflowsRepository, WorkflowStateRepository } from "~/Repositories/index.js";
-import { type IWorkflowStatePresenter, WorkflowStatePresenter } from "~/Presenters/index.js";
+import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
+import { WorkflowStatePresenter } from "~/Presenters/index.js";
 import type { IIdentity } from "~/types.js";
 import type ApolloClient from "apollo-client";
 

@@ -1,6 +1,6 @@
 import React from "react";
-import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
 import { WorkflowStateTooltip } from "@webiny/app-workflows";
+import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
 
 const { Actions } = ContentEntryEditorConfig;
 

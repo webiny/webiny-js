@@ -3,13 +3,24 @@ import { ContentEntryForm, useContentEntry } from "@webiny/app-headless-cms";
 import { WorkflowStateBar, WorkflowStateOverlay } from "@webiny/app-workflows";
 import { Grid } from "@webiny/admin-ui";
 import { useSecurity } from "@webiny/app-security";
+import type { PersistEntry } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/ContentEntryFormProvider.js";
+
+/**
+ * To override storing of the entry when in workflow state.
+ */
+// @ts-expect-error
+const emptyFunction: PersistEntry = async () => {
+    return void 0;
+};
 
 export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Original => {
     return function ContentEntryFormWorkflow(props) {
         const { entry, contentModel: model } = useContentEntry();
-
         const { identity } = useSecurity();
-        if (!entry?.id || !model?.modelId || !identity?.id) {
+
+        const showOriginal = !entry?.id || !model?.modelId || !identity?.id;
+
+        if (showOriginal) {
             return <Original {...props} />;
         }
 
@@ -20,7 +31,14 @@ export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Origina
                 </Grid.Column>
                 <Grid.Column span={12}>
                     <WorkflowStateOverlay>
-                        <Original {...props} />
+                        {({ state }) => {
+                            return (
+                                <Original
+                                    {...props}
+                                    persistEntry={state ? emptyFunction : props.persistEntry}
+                                />
+                            );
+                        }}
                     </WorkflowStateOverlay>
                 </Grid.Column>
             </Grid>

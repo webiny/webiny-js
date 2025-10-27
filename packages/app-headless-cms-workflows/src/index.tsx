@@ -4,6 +4,8 @@ import { ContentEntryFormWorkflow } from "~/Components/ContentEntryFormWorkflow.
 import { CmsWorkflowsEditor } from "~/Routes/CmsWorkflowsEditor.js";
 import { CmsEntryFormTooltipButton } from "~/Components/CmsEntryFormTooltipButton.js";
 import { ContentEntryWorkflow } from "~/Components/ContentEntryWorkflow.js";
+import { CmsEntryFormSaveAndPublishButton } from "~/Components/CmsEntryFormSaveAndPublishButton.js";
+import { CmsEntryFormScheduleMenuItemAction } from "~/Components/CmsEntryFormScheduleMenuItemAction.js";
 
 export const CmsWorkflows = () => {
     return (
@@ -12,6 +14,8 @@ export const CmsWorkflows = () => {
             <ContentEntryFormWorkflow />
             <ContentEntryWorkflow />
             <CmsEntryFormTooltipButton />
+            <CmsEntryFormScheduleMenuItemAction />
+            <CmsEntryFormSaveAndPublishButton />
         </Wcp.CanUseWorkflows>
     );
 };

@@ -78,11 +78,7 @@ export const CmsWorkflowsEditorView = () => {
     if (!canCreateContentModels) {
         return null;
     } else if (loading) {
-        return (
-            <div className="wby-flex wby-flex-col wby-items-center wby-gap-4 wby-pt-lg">
-                <Loader size="md" variant="accent" indeterminate={true} text="Loading..." />
-            </div>
-        );
+        return <Loader size="lg" variant="accent" indeterminate={true} text="Loading..." />;
     }
 
     return <Workflows apps={apps} onAppClick={onAppClick} app={route.params.app} />;
