@@ -3,8 +3,8 @@ import type {
     IWorkflowStatesWidgetPresenter,
     IWorkflowStatesWidgetPresenterViewModel
 } from "./abstractions/WorkflowStatesWidgetPresenter.js";
-import { type IIdentity, type IWorkflowStatesWidgetItem, WorkflowStateValue } from "~/types.js";
-import { makeAutoObservable } from "mobx";
+import { type IWorkflowStatesWidgetItem, WorkflowStateValue } from "~/types.js";
+import { type IObservableArray, makeAutoObservable, observable, runInAction, toJS } from "mobx";
 
 export interface IWorkflowStatesOwnWidgetPresenterParams {
     repository: IWorkflowStatesWidgetRepository;
@@ -19,30 +19,30 @@ interface IWorkflowStatesOwnWidgetPresenterItems {
 export class WorkflowStatesOwnWidgetPresenter implements IWorkflowStatesWidgetPresenter {
     readonly #repository;
 
-    #items: IWorkflowStatesOwnWidgetPresenterItems = {
-        inReview: [],
-        approved: [],
-        rejected: []
-    };
+    #inReview: IObservableArray<IWorkflowStatesWidgetItem>;
+    #approved: IObservableArray<IWorkflowStatesWidgetItem>;
+    #rejected: IObservableArray<IWorkflowStatesWidgetItem>;
 
     public get vm(): IWorkflowStatesWidgetPresenterViewModel {
         return {
-            inReview: this.#items.inReview,
-            approved: this.#items.approved,
-            rejected: this.#items.rejected
+            inReview: toJS(this.#inReview),
+            approved: toJS(this.#approved),
+            rejected: toJS(this.#rejected)
         };
     }
 
     public constructor(params: IWorkflowStatesOwnWidgetPresenterParams) {
         this.#repository = params.repository;
 
-        makeAutoObservable(this);
+        this.#inReview = observable.array<IWorkflowStatesWidgetItem>([]);
+        this.#approved = observable.array<IWorkflowStatesWidgetItem>([]);
+        this.#rejected = observable.array<IWorkflowStatesWidgetItem>([]);
 
-        this.init();
+        makeAutoObservable(this);
     }
 
-    private async init(): Promise<void> {
-        this.#items = await Promise.all([
+    public async init(): Promise<void> {
+        const result = await Promise.all([
             this.#repository.listOwnStates(WorkflowStateValue.inReview).then(data => {
                 return {
                     inReview: data
@@ -72,6 +72,12 @@ export class WorkflowStatesOwnWidgetPresenter implements IWorkflowStatesWidgetPr
                     rejected: []
                 }
             );
+        });
+
+        runInAction(() => {
+            this.#inReview.replace(result.inReview);
+            this.#approved.replace(result.approved);
+            this.#rejected.replace(result.rejected);
         });
     }
 }

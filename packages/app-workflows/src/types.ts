@@ -64,7 +64,6 @@ export interface IWorkflowStateStep extends IWorkflowStep {
 
 export interface IWorkflowState {
     id: string;
-    // TODO add into the API model
     title: string;
     isActive: boolean;
     app: string;
@@ -79,6 +78,14 @@ export interface IWorkflowState {
     savedOn: Date;
 }
 
+export interface IWorkflowStatesWidgetItemStep {
+    id: string;
+    title: string;
+    color: string
+    description: string | undefined | null;
+    savedBy: IIdentity | null;
+}
+
 
 export interface IWorkflowStatesWidgetItem {
     id: string;
@@ -88,5 +95,5 @@ export interface IWorkflowStatesWidgetItem {
     state: WorkflowStateValue;
     savedBy: IIdentity;
     savedOn: Date;
-    step: IWorkflowStateStep;
+    step: IWorkflowStatesWidgetItemStep;
 }

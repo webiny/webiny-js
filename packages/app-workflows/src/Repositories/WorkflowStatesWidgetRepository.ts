@@ -54,7 +54,8 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
         const result = await this.#gateway.listOwnStates({
             where: {
                 state
-            }
+            },
+            limit: 5
         });
         runInAction(() => {
             this.#loading[key] = false;
@@ -74,7 +75,8 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
         const result = await this.#gateway.listRequestedStates({
             where: {
                 state
-            }
+            },
+            limit: 5
         });
         runInAction(() => {
             this.#loading[key] = false;
