@@ -3,6 +3,7 @@ import { ReactComponent as KeyboardArrowDownIcon } from "@webiny/icons/keyboard_
 import { Collapsible as CollapsiblePrimitive } from "radix-ui";
 import { cn } from "~/utils.js";
 import { type AccordionItemProps } from "./AccordionItem.js";
+import { AccordionItemAction } from "./AccordionItemAction.js";
 import { Icon } from "~/Icon/index.js";
 import { AccordionItemDragHandle } from "~/Accordion/components/AccordionItemDragHandle.js";
 
@@ -50,8 +51,6 @@ const AccordionTrigger = ({
         };
     }, [interactive]);
 
-    const isInteractable = Boolean(actions && interactive);
-
     const baseClasses = "wby-group/trigger wby-w-full wby-flex wby-items-center wby-relative";
     const focusClasses =
         "focus-visible:wby-outline-none focus-visible:wby-border-none focus-visible:wby-ring-sm focus-visible:wby-ring-primary-dimmed";
@@ -79,14 +78,12 @@ const AccordionTrigger = ({
                 )}
             >
                 {draggable ? <AccordionItemDragHandle /> : null}
-                {isInteractable ? <OpenCloseIndicator className="wby-pl-md" /> : null}
-
                 <div
                     className={
                         "wby-w-full wby-flex wby-justify-between wby-items-center wby-px-md wby-py-sm-extra"
                     }
                 >
-                    {icon && <div className={"wby-mr-md"}>{icon}</div>}
+                    {icon ? <div className={"wby-mr-md"}>{icon}</div> : null}
                     <div
                         className={"wby-flex wby-flex-col wby-gap-xxs wby-flex-grow wby-text-left"}
                     >
@@ -99,7 +96,9 @@ const AccordionTrigger = ({
                     </div>
                     <div className={"wby-flex wby-gap-xs"}>
                         {actions}
-                        {!isInteractable ? <OpenCloseIndicator /> : null}
+                        {/* No need to show the separator if there are no actions and the item is not interactive. */}
+                        {actions && interactive ? <AccordionItemAction.Separator /> : null}
+                        {interactive ? <OpenCloseIndicator /> : null}
                     </div>
                 </div>
             </div>
