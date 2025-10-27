@@ -1,20 +1,21 @@
 import type { IGetDefaultPermissions } from "./IGetDefaultPermissions.js";
 import type { FolderPermission } from "~/flp/flp.types.js";
 import type { Team } from "@webiny/api-security/types.js";
-import { type IGetIdentityGateway, IListIdentityTeamsGateway } from "../../gateways/index.js";
+import type { IdentityContext } from "@webiny/api-security/features/IdentityContext";
+import type { ListUserTeamsUseCase } from "@webiny/api-admin-users/features/ListUserTeams";
 
 export class GetDefaultPermissionsWithTeams implements IGetDefaultPermissions {
-    private getIdentityGateway: IGetIdentityGateway;
-    private listIdentityTeamsGateway: IListIdentityTeamsGateway;
+    private identityContext: IdentityContext.Interface;
+    private listUserTeamsUseCase: ListUserTeamsUseCase.Interface;
     private decoretee: IGetDefaultPermissions;
 
     constructor(
-        getIdentityGateway: IGetIdentityGateway,
-        listIdentityTeamsGateway: IListIdentityTeamsGateway,
+        identityContext: IdentityContext.Interface,
+        listUserTeamsUseCase: ListUserTeamsUseCase.Interface,
         decoretee: IGetDefaultPermissions
     ) {
-        this.getIdentityGateway = getIdentityGateway;
-        this.listIdentityTeamsGateway = listIdentityTeamsGateway;
+        this.identityContext = identityContext;
+        this.listUserTeamsUseCase = listUserTeamsUseCase;
         this.decoretee = decoretee;
     }
 
@@ -24,8 +25,11 @@ export class GetDefaultPermissionsWithTeams implements IGetDefaultPermissions {
          * have permissions for the folder. If a team has permissions, the current identity is granted
          * the same permissions, inheriting them from the team.
          */
-        const identity = this.getIdentityGateway.execute();
-        const identityTeams: Team[] = (await this.listIdentityTeamsGateway.execute()) ?? [];
+        const identity = this.identityContext.getIdentity();
+
+        // Get teams for current identity
+        const listTeamsResult = await this.listUserTeamsUseCase.execute(identity.id);
+        const identityTeams: Team[] = listTeamsResult.isOk() ? listTeamsResult.value : [];
 
         const permissions = [...originalPermissions]; // Clone the original permissions to avoid mutation.
 

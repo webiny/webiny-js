@@ -12,6 +12,16 @@
     "Pavel Denisjuk <pavel@webiny.com>"
   ],
   "license": "MIT",
+  "exports": {
+    "./features/CreateUser": "./features/CreateUser/index.js",
+    "./features/DeleteUser": "./features/DeleteUser/index.js",
+    "./features/UpdateUser": "./features/UpdateUser/index.js",
+    "./features/GetUser": "./features/GetUser/index.js",
+    "./features/ListUsers": "./features/ListUsers/index.js",
+    "./features/ListUserTeams": "./features/ListUserTeams/index.js",
+    "./*": "./*",
+    ".": "./index.js"
+  },
   "dependencies": {
     "@webiny/api": "0.0.0",
     "@webiny/api-security": "0.0.0",

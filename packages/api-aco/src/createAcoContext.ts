@@ -33,6 +33,8 @@ import {
     FilterStorageOperations,
     FolderStorageOperations
 } from "~/features/folders/shared/abstractions.js";
+import { ListFlpsFeature } from "~/features/flp/ListFlps/feature.js";
+import { GetFlpFeature } from "~/features/flp/GetFlp/feature.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -80,7 +82,7 @@ const setupAcoContext = async (
         storageOperations
     });
 
-    FolderLevelPermissionsFeature.register(context.container, { context, crud: flpCrudMethods });
+    FolderLevelPermissionsFeature.register(context.container);
 
     /**
      * Register legacy dependencies via abstractions
@@ -101,10 +103,7 @@ const setupAcoContext = async (
 
     ListFoldersFeature.register(context.container);
 
-    ListFolderLevelPermissionsTargetsFeature.register(context.container, {
-        security: context.security,
-        adminUsers: context.adminUsers
-    });
+    ListFolderLevelPermissionsTargetsFeature.register(context.container);
 
     GetFolderHierarchyFeature.register(context.container, {
         storageOperations: storageOperations.folder
@@ -118,6 +117,8 @@ const setupAcoContext = async (
     CreateFlpFeature.register(context.container, { context });
     UpdateFlpFeature.register(context.container, { context });
     DeleteFlpFeature.register(context.container, { context });
+    ListFlpsFeature.register(context.container, flpCrudMethods);
+    GetFlpFeature.register(context.container, flpCrudMethods);
 
     CreateFlpOnFolderCreatedFeature.register(context.container, {
         tasks: context.tasks

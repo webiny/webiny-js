@@ -1,25 +1,31 @@
-import type {
-    ListFolderLevelPermissionsTargetsUseCase as UseCaseAbstraction,
-    ListAdminUsersGateway,
-    ListTeamsGateway
-} from "./abstractions.js";
+import { ListFolderLevelPermissionsTargetsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { validation } from "@webiny/validation";
 import type {
     FolderLevelPermissionsTarget,
     FolderLevelPermissionsTargetListMeta
 } from "~/folder/folder.types.js";
+import { ListUsersUseCase } from "@webiny/api-admin-users/features/ListUsers";
+import { ListTeamsUseCase } from "@webiny/api-security/features/teams/ListTeams";
+import { createImplementation } from "@webiny/di-container";
 
-export class ListFolderLevelPermissionsTargetsUseCase implements UseCaseAbstraction.Interface {
+class ListFolderLevelPermissionsTargetsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private listAdminUsersGateway: ListAdminUsersGateway.Interface,
-        private listTeamsGateway: ListTeamsGateway.Interface
+        private listAdminUsers: ListUsersUseCase.Interface,
+        private listTeams: ListTeamsUseCase.Interface
     ) {}
 
     public async execute(): Promise<
         [FolderLevelPermissionsTarget[], FolderLevelPermissionsTargetListMeta]
     > {
-        const adminUsers = await this.listAdminUsersGateway.execute();
-        const teams = await this.listTeamsGateway.execute();
+        const adminUsersResult = await this.listAdminUsers.execute();
+        const teamsResult = await this.listTeams.execute();
+
+        if (adminUsersResult.isFail() || teamsResult.isFail()) {
+            return [[], { totalCount: 0 }];
+        }
+
+        const adminUsers = adminUsersResult.value;
+        const teams = teamsResult.value;
 
         const teamTargets = teams.map(team => ({
             id: team.id,
@@ -66,3 +72,9 @@ export class ListFolderLevelPermissionsTargetsUseCase implements UseCaseAbstract
         return [results, meta];
     }
 }
+
+export const ListFolderLevelPermissionsTargetsUseCase = createImplementation({
+    abstraction: UseCaseAbstraction,
+    implementation: ListFolderLevelPermissionsTargetsUseCaseImpl,
+    dependencies: [ListUsersUseCase, ListTeamsUseCase]
+});

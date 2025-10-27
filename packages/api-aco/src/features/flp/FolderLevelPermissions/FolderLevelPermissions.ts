@@ -1,68 +1,56 @@
 import { NotAuthorizedError } from "@webiny/api-security";
+import { IdentityContext } from "@webiny/api-security/features/IdentityContext";
+import { WcpContext } from "@webiny/api-wcp/features/WcpContext";
+import { ListUserTeamsUseCase } from "@webiny/api-admin-users/features/ListUserTeams";
 import {
     CanAccessFolder,
     CanAccessFolderContent,
     type CanAccessFolderContentParams,
     type CanAccessFolderParams,
     CanCreateFolderInRoot,
-    CanUseFolderLevelPermissions,
-    CanUseTeams,
     CheckNotInheritedPermissions,
     GetDefaultPermissions,
-    GetDefaultPermissionsWithTeams,
-    GetFolderPermission,
-    ListFolderPermissions
+    GetDefaultPermissionsWithTeams
 } from "./useCases/index.js";
-import type { FolderLevelPermissions as FolderLevelPermissionsAbstraction } from "./abstractions.js";
-import type {
-    AcoContext,
-    AcoFolderLevelPermissionsCrud,
-    FolderLevelPermission,
-    FolderPermission,
-    ListFlpsParams
-} from "~/types.js";
-import {
-    GetIdentityGatewayFromContext,
-    GetWcpGatewayFromContext,
-    type IGetIdentityGateway,
-    type IGetWcpGateway,
-    type IIsAuthorizationEnabledGateway,
-    type IListIdentityTeamsGateway,
-    type IListPermissionsGateway,
-    IsAuthorizationEnabledGatewayFromContext,
-    ListIdentityTeamsGatewayFromContext,
-    ListPermissionsGatewayFromContext
-} from "./gateways/index.js";
+import { FolderLevelPermissions as FolderLevelPermissionsAbstraction } from "./abstractions.js";
+import type { FolderLevelPermission, FolderPermission, ListFlpsParams } from "~/types.js";
+import { createImplementation } from "@webiny/di-container";
+import { ListFlpsUseCase } from "~/features/flp/ListFlps/index.js";
+import { GetFlpUseCase } from "~/features/flp/GetFlp/index.js";
 
-export class FolderLevelPermissions implements FolderLevelPermissionsAbstraction.Interface {
-    private crud: AcoFolderLevelPermissionsCrud;
-
-    private readonly getWcpGateway: IGetWcpGateway;
-    private readonly getIdentityGateway: IGetIdentityGateway;
-    private readonly listPermissionsGateway: IListPermissionsGateway;
-    private readonly listIdentityTeamsGateway: IListIdentityTeamsGateway;
-    private readonly isAuthorizationEnabledGateway: IIsAuthorizationEnabledGateway;
-
-    constructor(context: AcoContext, crud: AcoFolderLevelPermissionsCrud) {
-        this.crud = crud;
-        this.getWcpGateway = new GetWcpGatewayFromContext(context);
-        this.getIdentityGateway = new GetIdentityGatewayFromContext(context);
-        this.listPermissionsGateway = new ListPermissionsGatewayFromContext(context);
-        this.listIdentityTeamsGateway = new ListIdentityTeamsGatewayFromContext(context);
-        this.isAuthorizationEnabledGateway = new IsAuthorizationEnabledGatewayFromContext(context);
-    }
+class FolderLevelPermissionsImpl implements FolderLevelPermissionsAbstraction.Interface {
+    constructor(
+        private identityContext: IdentityContext.Interface,
+        private wcpContext: WcpContext.Interface,
+        private listUserTeamsUseCase: ListUserTeamsUseCase.Interface,
+        private getFlpUseCase: GetFlpUseCase.Interface,
+        private listFlpsUseCase: ListFlpsUseCase.Interface
+    ) {}
 
     public canUseFolderLevelPermissions(enabled?: boolean): boolean {
-        const canUseFolderLevelPermissionsUseCase = new CanUseFolderLevelPermissions(
-            this.getWcpGateway,
-            this.getIdentityGateway
-        );
-        return canUseFolderLevelPermissionsUseCase.execute(enabled);
+        if (enabled === false) {
+            return false;
+        }
+
+        const identity = this.identityContext.getIdentity();
+
+        // FLPs only work with authenticated identities (logged-in users).
+        if (!identity) {
+            return false;
+        }
+
+        // At the moment, we only want FLP to be used with identities of type "admin".
+        // This temporarily addresses the issue of API keys not being able to access content, because
+        // FLPs doesn't work with them. Once we start adding FLPs to API keys, we can remove this check.
+        if (identity.type !== "admin") {
+            return false;
+        }
+
+        return this.wcpContext.canUseFolderLevelPermissions();
     }
 
     public canUseTeams(): boolean {
-        const canUseTeamsUseCase = new CanUseTeams(this.getWcpGateway);
-        return canUseTeamsUseCase.execute();
+        return this.wcpContext.canUseTeams();
     }
 
     public canCreateFolderInRoot(): boolean {
@@ -76,20 +64,26 @@ export class FolderLevelPermissions implements FolderLevelPermissionsAbstraction
     }
 
     public async canAccessFolder(params: CanAccessFolderParams): Promise<boolean> {
-        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabledGateway.execute()) {
+        if (
+            !this.canUseFolderLevelPermissions() ||
+            !this.identityContext.isAuthorizationEnabled()
+        ) {
             return true;
         }
 
-        const canAccessFolderUseCase = new CanAccessFolder(this.getIdentityGateway);
+        const canAccessFolderUseCase = new CanAccessFolder(this.identityContext);
         return await canAccessFolderUseCase.execute(params);
     }
 
     public async canAccessFolderContent(params: CanAccessFolderContentParams): Promise<boolean> {
-        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabledGateway.execute()) {
+        if (
+            !this.canUseFolderLevelPermissions() ||
+            !this.identityContext.isAuthorizationEnabled()
+        ) {
             return true;
         }
 
-        const canAccessFolderContentUseCase = new CanAccessFolderContent(this.getIdentityGateway);
+        const canAccessFolderContentUseCase = new CanAccessFolderContent(this.identityContext);
         return await canAccessFolderContentUseCase.execute(params);
     }
 
@@ -108,7 +102,10 @@ export class FolderLevelPermissions implements FolderLevelPermissionsAbstraction
     }
 
     public async canManageFolderContent(flp: FolderLevelPermission): Promise<boolean> {
-        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabledGateway.execute()) {
+        if (
+            !this.canUseFolderLevelPermissions() ||
+            !this.identityContext.isAuthorizationEnabled()
+        ) {
             return true;
         }
 
@@ -116,7 +113,10 @@ export class FolderLevelPermissions implements FolderLevelPermissionsAbstraction
     }
 
     public async canManageFolderStructure(flp: FolderLevelPermission): Promise<boolean> {
-        if (!this.canUseFolderLevelPermissions() || !this.isAuthorizationEnabledGateway.execute()) {
+        if (
+            !this.canUseFolderLevelPermissions() ||
+            !this.identityContext.isAuthorizationEnabled()
+        ) {
             return true;
         }
 
@@ -128,7 +128,7 @@ export class FolderLevelPermissions implements FolderLevelPermissionsAbstraction
             return false;
         }
 
-        if (!this.isAuthorizationEnabledGateway.execute()) {
+        if (!this.identityContext.isAuthorizationEnabled()) {
             return true;
         }
 
@@ -140,15 +140,12 @@ export class FolderLevelPermissions implements FolderLevelPermissionsAbstraction
     }
 
     public getDefaultPermissions(permissions: FolderPermission[]): Promise<FolderPermission[]> {
-        const getDefaultPermissionsUseCase = new GetDefaultPermissions(
-            this.getIdentityGateway,
-            this.listPermissionsGateway
-        );
+        const getDefaultPermissionsUseCase = new GetDefaultPermissions(this.identityContext);
 
         if (this.canUseTeams()) {
             const getDefaultPermissionsWithTeams = new GetDefaultPermissionsWithTeams(
-                this.getIdentityGateway,
-                this.listIdentityTeamsGateway,
+                this.identityContext,
+                this.listUserTeamsUseCase,
                 getDefaultPermissionsUseCase
             );
 
@@ -164,8 +161,7 @@ export class FolderLevelPermissions implements FolderLevelPermissionsAbstraction
             permissions: FolderPermission[];
         }>
     > {
-        const listFolderLevelPermissionsUseCase = new ListFolderPermissions(this.crud.list);
-        const flps = await listFolderLevelPermissionsUseCase.execute(params);
+        const flps = await this.listFlpsUseCase.execute(params);
 
         return Promise.all(
             flps.map(async flp => ({
@@ -176,8 +172,19 @@ export class FolderLevelPermissions implements FolderLevelPermissionsAbstraction
     }
 
     public async getFolderLevelPermissions(id: string): Promise<FolderPermission[]> {
-        const getFolderLevelPermissionUseCase = new GetFolderPermission(this.crud.get);
-        const flp = await getFolderLevelPermissionUseCase.execute(id);
+        const flp = await this.getFlpUseCase.execute(id);
         return await this.getDefaultPermissions(flp?.permissions ?? []);
     }
 }
+
+export const FolderLevelPermissions = createImplementation({
+    abstraction: FolderLevelPermissionsAbstraction,
+    implementation: FolderLevelPermissionsImpl,
+    dependencies: [
+        IdentityContext,
+        WcpContext,
+        ListUserTeamsUseCase,
+        GetFlpUseCase,
+        ListFlpsUseCase
+    ]
+});

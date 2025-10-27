@@ -1,55 +1,24 @@
-import WebinyError from "@webiny/error";
-
-import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
+import { UserAfterCreateHandler } from "@webiny/api-admin-users/features/CreateUser";
+import { UserAfterUpdateHandler } from "@webiny/api-admin-users/features/UpdateUser";
+import { UserAfterDeleteHandler } from "@webiny/api-admin-users/features/DeleteUser";
+import { AuditLogUserAfterCreateHandler } from "./handlers/AuditLogUserAfterCreateHandler.js";
+import { AuditLogUserAfterUpdateHandler } from "./handlers/AuditLogUserAfterUpdateHandler.js";
+import { AuditLogUserAfterDeleteHandler } from "./handlers/AuditLogUserAfterDeleteHandler.js";
 import type { AuditLogsContext } from "~/types.js";
 
-export const onUserAfterCreateHook = (context: AuditLogsContext) => {
-    context.adminUsers.onUserAfterCreate.subscribe(async ({ user }) => {
-        try {
-            const createAuditLog = getAuditConfig(AUDIT.SECURITY.USER.CREATE);
+export const createUserHooks = (context: AuditLogsContext) => {
+    context.container.registerFactory(
+        UserAfterCreateHandler,
+        () => new AuditLogUserAfterCreateHandler(context)
+    );
 
-            await createAuditLog("User created", user, user.id, context);
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onUserAfterCreateHook hook",
-                code: "AUDIT_LOGS_AFTER_USER_CREATE_HOOK"
-            });
-        }
-    });
-};
+    context.container.registerFactory(
+        UserAfterUpdateHandler,
+        () => new AuditLogUserAfterUpdateHandler(context)
+    );
 
-export const onUserAfterUpdateHook = (context: AuditLogsContext) => {
-    context.adminUsers.onUserAfterUpdate.subscribe(async ({ updatedUser, originalUser }) => {
-        try {
-            const createAuditLog = getAuditConfig(AUDIT.SECURITY.USER.UPDATE);
-
-            await createAuditLog(
-                "User updated",
-                { before: originalUser, after: updatedUser },
-                updatedUser.id,
-                context
-            );
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onUserAfterUpdateHook hook",
-                code: "AUDIT_LOGS_AFTER_USER_UPDATE_HOOK"
-            });
-        }
-    });
-};
-
-export const onUserAfterDeleteHook = (context: AuditLogsContext) => {
-    context.adminUsers.onUserAfterDelete.subscribe(async ({ user }) => {
-        try {
-            const createAuditLog = getAuditConfig(AUDIT.SECURITY.USER.DELETE);
-
-            await createAuditLog("User deleted", user, user.id, context);
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onUserAfterDeleteHook hook",
-                code: "AUDIT_LOGS_AFTER_USER_DELETE_HOOK"
-            });
-        }
-    });
+    context.container.registerFactory(
+        UserAfterDeleteHandler,
+        () => new AuditLogUserAfterDeleteHandler(context)
+    );
 };

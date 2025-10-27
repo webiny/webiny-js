@@ -8,12 +8,14 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createAco } from "~/index";
 import type { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import createAdminUsers from "@webiny/api-admin-users";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createIdentity } from "./identity";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import type { AdminUsersStorageOperations } from "@webiny/api-admin-users/types.js";
 
 export interface UseHandlerParams {
     permissions?: SecurityPermission[];
@@ -27,6 +29,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
     const i18nStorage = getStorageOps<any[]>("i18n");
+    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
 
     const handler = createHandler<any, AcoContext>({
         plugins: [
@@ -34,6 +37,7 @@ export const useHandler = (params: UseHandlerParams = {}) => {
             ...cmsStorage.plugins,
             createGraphQLHandler(),
             ...createTenancyAndSecurity({ permissions, identity: identity || createIdentity() }),
+            createAdminUsers({ storageOperations: adminUsersStorage.storageOperations }),
             i18nContext(),
             ...i18nStorage.storageOperations,
             mockLocalesPlugins(),

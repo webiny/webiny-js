@@ -1,19 +1,15 @@
+import { IdentityContext } from "@webiny/api-security/features/IdentityContext";
 import type { CanAccessFolderParams, ICanAccessFolder } from "./ICanAccessFolder.js";
-import type { IGetIdentityGateway } from "../../gateways/index.js";
 
 export class CanAccessFolder implements ICanAccessFolder {
-    private getIdentityGateway: IGetIdentityGateway;
-
-    constructor(getIdentityGateway: IGetIdentityGateway) {
-        this.getIdentityGateway = getIdentityGateway;
-    }
+    constructor(private identityContext: IdentityContext.Interface) {}
 
     async execute({ permissions = [], rwd, managePermissions }: CanAccessFolderParams) {
         if (!permissions.length) {
             return true;
         }
 
-        const identity = this.getIdentityGateway.execute();
+        const identity = this.identityContext.getIdentity();
         const currentIdentityPermission = permissions.find(p => {
             return p.target === `admin:${identity.id}`;
         });
