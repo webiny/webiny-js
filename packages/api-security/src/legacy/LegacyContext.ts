@@ -14,7 +14,7 @@ import { ListApiKeys } from "~/features/apiKeys/ListApiKeys/index.js";
 import { CreateApiKey } from "~/features/apiKeys/CreateApiKey/index.js";
 import { UpdateApiKey } from "~/features/apiKeys/UpdateApiKey/index.js";
 import { DeleteApiKey } from "~/features/apiKeys/DeleteApiKey/index.js";
-import { GetGroup } from "~/features/groups/GetGroup/index.js";
+import { GetGroupUseCase } from "~/features/groups/GetGroup/index.js";
 import { ListGroupsUseCase } from "~/features/groups/ListGroups/index.js";
 import { CreateGroupUseCase } from "~/features/groups/CreateGroup/index.js";
 import { UpdateGroup } from "~/features/groups/UpdateGroup/index.js";
@@ -223,7 +223,7 @@ export class LegacyContext {
     }
 
     async getGroup(params: any) {
-        const useCase = this.container.resolve(GetGroup);
+        const useCase = this.container.resolve(GetGroupUseCase);
         const result = await useCase.execute(params.where);
 
         if (result.isFail()) {

@@ -14,9 +14,9 @@ export interface IGetGroup {
     execute(params: GetGroupInput): Promise<Result<Group, GetGroupError>>;
 }
 
-export const GetGroup = createAbstraction<IGetGroup>("GetGroup");
+export const GetGroupUseCase = createAbstraction<IGetGroup>("GetGroupUseCase");
 
-export namespace GetGroup {
+export namespace GetGroupUseCase {
     export type Interface = IGetGroup;
     export type Error = GetGroupError;
 }

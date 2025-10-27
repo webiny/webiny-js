@@ -5,6 +5,8 @@ import { createAuthenticator } from "~/createAuthenticator.js";
 import { createIdentityType } from "~/createIdentityType.js";
 import { extendTenancy } from "./extendTenancy.js";
 import type { Context } from "~/types.js";
+import { createContextPlugin } from "@webiny/handler/Context.js";
+import { ExternalIdpUserSyncFeature } from "@webiny/api-admin-users/features/ExternalIdpUserSync";
 
 export interface CreateAuth0Config<TContext extends Context = Context>
     extends AuthenticatorConfig,
@@ -32,6 +34,9 @@ export const createAuth0 = <TContext extends Context = Context>(
             identityType,
             name: graphQLIdentityType
         }),
-        extendTenancy()
+        extendTenancy(),
+        createContextPlugin(context => {
+            ExternalIdpUserSyncFeature.register(context.container);
+        })
     ];
 };

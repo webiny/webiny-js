@@ -1,6 +1,12 @@
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses.js";
 import type { AdminUsersContext } from "@webiny/api-admin-users/types.js";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
+import { IdentityContext } from "@webiny/api-security/features/IdentityContext";
+import { GetUserUseCase } from "@webiny/api-admin-users/features/GetUser";
+import { CreateUserUseCase } from "@webiny/api-admin-users/features/CreateUser";
+import { UpdateUserUseCase } from "@webiny/api-admin-users/features/UpdateUser";
+import { DeleteUserUseCase } from "@webiny/api-admin-users/features/DeleteUser";
+import { NotAuthorizedResponse } from "@webiny/api-security";
 
 export interface CreateUserGraphQlPluginsParams {
     teams?: boolean;
@@ -58,59 +64,75 @@ export default (params: CreateUserGraphQlPluginsParams) => {
             resolvers: {
                 AdminUsersMutation: {
                     updateCurrentUser: async (_, args: any, context) => {
-                        const { security, adminUsers } = context;
-                        const identity = security.getIdentity();
-                        if (!identity) {
-                            throw new Error("Not authorized!");
+                        const identityContext = context.container.resolve(IdentityContext);
+                        const getUserUseCase = context.container.resolve(GetUserUseCase);
+                        const updateUserUseCase = context.container.resolve(UpdateUserUseCase);
+
+                        const identity = identityContext.getIdentity();
+                        if (identity.isAnonymous()) {
+                            return new NotAuthorizedResponse();
                         }
 
                         // Current user might not have permissions for `adminUsers`.
-
-                        return await context.security.withoutAuthorization(async () => {
-                            let user = await adminUsers.getUser({ where: { id: identity.id } });
-                            if (!user) {
+                        return await identityContext.withoutAuthorization(async () => {
+                            const getUserResult = await getUserUseCase.execute({ id: identity.id });
+                            if (getUserResult.isFail()) {
                                 // TODO: check if current identity belongs to a different tenant.
                                 // TODO: If so, switch to that other tenant, and update his profile there.
                                 return new NotFoundResponse("User not found!");
                             }
 
-                            try {
-                                user = await adminUsers.updateUser(user.id, args.data);
+                            const user = getUserResult.value;
 
-                                // Now we can re-enable authorization.
-
-                                return new Response(user);
-                            } catch (ex) {
-                                return new ErrorResponse(ex);
+                            const updateResult = await updateUserUseCase.execute(user.id, args.data);
+                            if (updateResult.isFail()) {
+                                return new ErrorResponse({
+                                    message: updateResult.error.message,
+                                    code: updateResult.error.code
+                                });
                             }
+
+                            return new Response(updateResult.value);
                         });
                     },
                     createUser: async (_, { data }: any, context) => {
-                        try {
-                            const user = await context.adminUsers.createUser(data);
+                        const createUserUseCase = context.container.resolve(CreateUserUseCase);
 
-                            return new Response(user);
-                        } catch (e) {
-                            return new ErrorResponse(e);
+                        const result = await createUserUseCase.execute(data);
+                        if (result.isFail()) {
+                            return new ErrorResponse({
+                                message: result.error.message,
+                                code: result.error.code
+                            });
                         }
+
+                        return new Response(result.value);
                     },
-                    updateUser: async (_, { data, id }: any, { adminUsers }) => {
-                        try {
-                            const user = await adminUsers.updateUser(id, data);
+                    updateUser: async (_, { data, id }: any, context) => {
+                        const updateUserUseCase = context.container.resolve(UpdateUserUseCase);
 
-                            return new Response(user);
-                        } catch (e) {
-                            return new ErrorResponse(e);
+                        const result = await updateUserUseCase.execute(id, data);
+                        if (result.isFail()) {
+                            return new ErrorResponse({
+                                message: result.error.message,
+                                code: result.error.code
+                            });
                         }
+
+                        return new Response(result.value);
                     },
                     deleteUser: async (_, { id }: any, context) => {
-                        try {
-                            await context.adminUsers.deleteUser(id);
+                        const deleteUserUseCase = context.container.resolve(DeleteUserUseCase);
 
-                            return new Response(true);
-                        } catch (e) {
-                            return new ErrorResponse(e);
+                        const result = await deleteUserUseCase.execute(id);
+                        if (result.isFail()) {
+                            return new ErrorResponse({
+                                message: result.error.message,
+                                code: result.error.code
+                            });
                         }
+
+                        return new Response(true);
                     }
                 }
             }

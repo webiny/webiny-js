@@ -1,5 +1,7 @@
+import { createContextPlugin } from "@webiny/api";
 import type { GroupsTeamsAuthorizerConfig } from "@webiny/api-security";
 import { createGroupsTeamsAuthorizer } from "@webiny/api-security";
+import { ExternalIdpUserSyncFeature } from "@webiny/api-admin-users/features/ExternalIdpUserSync";
 import type { AuthenticatorConfig } from "~/createAuthenticator.js";
 import { createAuthenticator } from "~/createAuthenticator.js";
 import { createIdentityType } from "~/createIdentityType.js";
@@ -31,6 +33,9 @@ export const createOkta = <TContext extends Context = Context>(
             identityType,
             name: graphQLIdentityType
         }),
-        extendTenancy()
+        extendTenancy(),
+        createContextPlugin(context => {
+            ExternalIdpUserSyncFeature.register(context.container);
+        })
     ];
 };

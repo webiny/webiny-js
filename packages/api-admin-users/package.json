@@ -19,6 +19,7 @@
     "./features/GetUser": "./features/GetUser/index.js",
     "./features/ListUsers": "./features/ListUsers/index.js",
     "./features/ListUserTeams": "./features/ListUserTeams/index.js",
+    "./features/ExternalIdpUserSync": "./features/ExternalIdpUserSync/index.js",
     "./*": "./*",
     ".": "./index.js"
   },

@@ -51,7 +51,7 @@ export interface IAppInstaller<TData = Record<string, any>> {
 export const AppInstaller = createAbstraction<IAppInstaller>("AppInstaller");
 
 export namespace AppInstaller {
-    export type Interface = IAppInstaller;
+    export type Interface<T = any> = IAppInstaller<T>;
 }
 
 /**
