@@ -118,7 +118,6 @@ Your task:
 Example output format:
 
 <div class="comparison-report">
-    <h2>Comparison between Version A and Version B</h2>
     <table class="comparison-table">
         <thead>
             <tr>

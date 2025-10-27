@@ -21,7 +21,7 @@ export const CompareRevisionsDialog = () => {
             open={isComparisonDialogOpen}
             onOpenChange={openComparisonDialog}
             title={`Compare Revisions: #${revision1.meta.version} vs #${revision2.meta.version}`}
-            size={"xl"}
+            size={"full"}
             data-testid={"cms.compare-revisions.dialog"}
             actions={
                 <Button
