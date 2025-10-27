@@ -6,6 +6,30 @@ import type {
 } from "./WorkflowState.js";
 import type { CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
 import type { Topic } from "@webiny/pubsub/types.js";
+import type { IWidgetWorkflowState } from "~/context/abstractions/WidgetWorkflowState.js";
+import type {
+    IWorkflowStepNotification,
+    IWorkflowStepTeam
+} from "~/context/abstractions/Workflow.js";
+
+export interface IWorkflowStateContextListStatesWhereSteps {
+    id?: string;
+    id_in?: string[];
+    title?: string;
+    title_contains?: string;
+    color?: string;
+    description?: string;
+    teams?: IWorkflowStepTeam;
+    teams_in?: IWorkflowStepTeam[];
+    notifications?: IWorkflowStepNotification;
+    notifications_in?: IWorkflowStepNotification[];
+    state?: WorkflowStateRecordState;
+    state_in?: WorkflowStateRecordState[];
+    comment?: string;
+    comment_contains?: string;
+    savedBy?: string;
+    savedBy_in?: string[];
+}
 
 export interface IWorkflowStateContextListStatesWhere {
     app?: string;
@@ -21,6 +45,7 @@ export interface IWorkflowStateContextListStatesWhere {
     savedBy?: string;
     createdBy?: string;
     isActive?: boolean;
+    steps?: IWorkflowStateContextListStatesWhereSteps;
 }
 
 export interface IWorkflowStateContextListStatesParams {
@@ -32,6 +57,30 @@ export interface IWorkflowStateContextListStatesParams {
 
 export interface IWorkflowStateContextListStatesResponse {
     items: IWorkflowState[];
+    meta: IMeta;
+}
+
+export interface IWorkflowStateContextListOwnWorkflowStatesParams {
+    where: {
+        state: WorkflowStateRecordState;
+    };
+    limit: number;
+}
+
+export interface IWorkflowStateContextListOwnWorkflowStatesResponse {
+    items: IWidgetWorkflowState[];
+    meta: IMeta;
+}
+
+export interface IWorkflowStateContextListRequestedWorkflowStatesParams {
+    where: {
+        state: WorkflowStateRecordState;
+    };
+    limit: number;
+}
+
+export interface IWorkflowStateContextListRequestedWorkflowStatesResponse {
+    items: IWidgetWorkflowState[];
     meta: IMeta;
 }
 
@@ -54,10 +103,23 @@ export interface IWorkflowStateContext {
     onStateAfterDelete: Topic<IWorkflowStateContextOnStateAfterDelete>;
     getState(id: string): Promise<IWorkflowState>;
     getTargetState(app: string, id: string): Promise<IWorkflowState>;
-
     listStates(
         params?: IWorkflowStateContextListStatesParams
     ): Promise<IWorkflowStateContextListStatesResponse>;
+    /**
+     * List Workflow States where the current user is an owner of the request.
+     */
+    listOwnWorkflowStates(
+        params: IWorkflowStateContextListOwnWorkflowStatesParams
+    ): Promise<IWorkflowStateContextListOwnWorkflowStatesResponse>;
+    /**
+     * List Workflow States where the current user is one of the reviewers.
+     * @param params
+     */
+    listRequestedWorkflowStates(
+        params: IWorkflowStateContextListRequestedWorkflowStatesParams
+    ): Promise<IWorkflowStateContextListRequestedWorkflowStatesResponse>;
+
     createState(app: string, targetRevisionId: string, title: string): Promise<IWorkflowState>;
     updateState(
         id: string,
@@ -66,7 +128,6 @@ export interface IWorkflowStateContext {
     deleteTargetState(app: string, targetRevisionId: string): Promise<void>;
     cancelState(id: string): Promise<IWorkflowState>;
     deleteState(id: string): Promise<void>;
-
     approveStateStep(id: string, comment?: string): Promise<IWorkflowState>;
     rejectStateStep(id: string, comment: string): Promise<IWorkflowState>;
 }
