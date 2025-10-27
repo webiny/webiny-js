@@ -5,7 +5,7 @@ import type {
     IWorkflowStatesWidgetMeta
 } from "~/Gateways/abstraction/WorkflowStatesWidgetGateway.js";
 
-const WORKFLOW_STATE_FIELDS = /* GraphQL */ `
+const WORKFLOW_STATE_FIELDS = /* GraphQL */ `{
     id
     app
     title
@@ -21,7 +21,16 @@ const WORKFLOW_STATE_FIELDS = /* GraphQL */ `
         title
         color
         description
+        state
+        savedBy {
+            id
+            displayName
+            type
+        }
     }
+    
+}
+
 `;
 
 export interface IListWidgetWorkflowStatesParamsWhere {
@@ -30,10 +39,11 @@ export interface IListWidgetWorkflowStatesParamsWhere {
 
 export interface IListOwnWorkflowStatesVariables {
     where: IListWidgetWorkflowStatesParamsWhere;
+    limit: number;
 }
 
 export interface IListOwnWorkflowStatesResponse {
-    data: {
+    workflows: {
         listOwnWorkflowStates: {
             data: IWorkflowStatesWidgetItem[] | null;
             meta: IWorkflowStatesWidgetMeta | null;
@@ -44,13 +54,15 @@ export interface IListOwnWorkflowStatesResponse {
 
 
 export const LIST_OWN_WORKFLOW_STATES = gql`
-    query ListOwnWorkflowStates($where: ListWidgetWorkflowStatesWhereInput!, $limit: Int) {
-        listOwnWorkflowStates(where: $where, limit: $limit) {
-            data ${WORKFLOW_STATE_FIELDS}
-            error {
-                message
-                code
-                data
+    query ListOwnWorkflowStates($where: ListWidgetWorkflowStatesWhereInput!, $limit: Int!) {
+        workflows {
+            listOwnWorkflowStates(where: $where, limit: $limit) {
+                data ${WORKFLOW_STATE_FIELDS}
+                error {
+                    message
+                    code
+                    data
+                }
             }
         }
     }
@@ -58,10 +70,11 @@ export const LIST_OWN_WORKFLOW_STATES = gql`
 
 export interface IListRequestedWorkflowStatesVariables {
     where: IListWidgetWorkflowStatesParamsWhere;
+    limit: number;
 }
 
 export interface IListRequestedWorkflowStatesResponse {
-    data: {
+    workflows: {
         listRequestedWorkflowStates: {
             data: IWorkflowStatesWidgetItem[] | null;
             meta: IWorkflowStatesWidgetMeta | null;
@@ -72,13 +85,15 @@ export interface IListRequestedWorkflowStatesResponse {
 
 
 export const LIST_REQUESTED_WORKFLOW_STATES = gql`
-    query ListRequestedWorkflowStates($where: ListWidgetWorkflowStatesWhereInput!, $limit: Int) {
-        listRequestedWorkflowStates(where: $where, limit: $limit) {
-            data ${WORKFLOW_STATE_FIELDS}
-            error {
-                message
-                code
-                data
+    query ListRequestedWorkflowStates($where: ListWidgetWorkflowStatesWhereInput!, $limit: Int!) {
+        workflows {
+            listRequestedWorkflowStates(where: $where, limit: $limit) {
+                data ${WORKFLOW_STATE_FIELDS}
+                error {
+                    message
+                    code
+                    data
+                }
             }
         }
     }

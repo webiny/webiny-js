@@ -43,9 +43,9 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
                 fetchPolicy: "no-cache"
             });
             return {
-                data: result.data.data.listOwnWorkflowStates.data,
-                meta: result.data.data.listOwnWorkflowStates.meta,
-                error: result.data.data.listOwnWorkflowStates.error
+                data: result.data.workflows.listOwnWorkflowStates.data,
+                meta: result.data.workflows.listOwnWorkflowStates.meta,
+                error: result.data.workflows.listOwnWorkflowStates.error
             };
         } catch (ex) {
             return {
@@ -71,9 +71,9 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
                 fetchPolicy: "no-cache"
             });
             return {
-                data: result.data.data.listRequestedWorkflowStates.data,
-                meta: result.data.data.listRequestedWorkflowStates.meta,
-                error: result.data.data.listRequestedWorkflowStates.error
+                data: result.data.workflows.listRequestedWorkflowStates.data,
+                meta: result.data.workflows.listRequestedWorkflowStates.meta,
+                error: result.data.workflows.listRequestedWorkflowStates.error
             };
         } catch (ex) {
             return {
