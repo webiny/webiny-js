@@ -1,1 +1,1 @@
-export { WorkflowStatesWidget } from "./WorkflowStatesWidget.js";
+export { WorkflowStatesOwnWidget } from "./WorkflowStatesOwnWidget.js";

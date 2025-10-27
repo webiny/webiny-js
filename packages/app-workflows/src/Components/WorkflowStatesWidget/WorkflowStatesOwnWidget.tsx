@@ -1,17 +1,15 @@
 import React from "react";
-import type { IIdentity } from "~/types.js";
 import type ApolloClient from "apollo-client";
 import { useCanUseWorkflows } from "~/hooks/canUseWorkflows.js";
 import { Alert } from "@webiny/admin-ui";
-import { WorkflowStatesWidgetView } from "./WorkflowStatesWidgetView.js";
+import { WorkflowStatesOwnWidgetView } from "./WorkflowStatesOwnWidgetView.js";
 
-interface IWorkflowStatesWidgetProps {
-    identity: IIdentity;
+interface IWorkflowStatesOwnWidgetProps {
     client: ApolloClient<object>;
 }
 
-export const WorkflowStatesWidget = (props: IWorkflowStatesWidgetProps) => {
-    const { identity, client } = props;
+export const WorkflowStatesOwnWidget = (props: IWorkflowStatesOwnWidgetProps) => {
+    const { client } = props;
 
     const canUseWorkflows = useCanUseWorkflows();
     if (!canUseWorkflows) {
@@ -22,5 +20,5 @@ export const WorkflowStatesWidget = (props: IWorkflowStatesWidgetProps) => {
         );
     }
 
-    return <WorkflowStatesWidgetView identity={identity} client={client} />;
+    return <WorkflowStatesOwnWidgetView client={client} />;
 };
