@@ -23,34 +23,37 @@ const ACCORDION_ITEM_CLASSES = [
     "data-[disabled]:wby-pointer-events-none data-[disabled]:wby-opacity-50"
 ] as const;
 
-const splitAccordionProps = (props: AccordionItemProps) => {
-    const {
-        // AccordionRoot props
-        className,
-        defaultOpen,
-        disabled,
-        onOpenChange,
-        open,
-        // AccordionContent props
-        children,
-        icon,
-        handle,
-        // AccordionTrigger props
-        ...triggerProps
-    } = props;
-
-    return {
-        itemProps: { className, defaultOpen, disabled, onOpenChange, open },
-        contentProps: { children, withIcon: !!icon, withHandle: !!handle },
-        triggerProps
-    };
-};
-
 const AccordionItemBase = (props: AccordionItemProps) => {
-    const { itemProps, triggerProps, contentProps } = React.useMemo(
-        () => splitAccordionProps(props),
-        [props]
-    );
+    const { itemProps, triggerProps, contentProps } = React.useMemo(() => {
+        const {
+            // Item props.
+            className,
+            defaultOpen,
+            disabled,
+            onOpenChange,
+            open,
+
+            // Content props.
+            children,
+
+            // Trigger props.
+            ...triggerProps
+        } = props;
+
+        return {
+            itemProps: {
+                className,
+                defaultOpen,
+                disabled,
+                onOpenChange,
+                open
+            },
+            triggerProps: {
+                ...triggerProps
+            },
+            contentProps: { children, withIcon: !!props.icon, withHandle: !!props.handle }
+        };
+    }, [props]);
 
     return (
         <AccordionRoot {...itemProps} className={cn(ACCORDION_ITEM_CLASSES, itemProps.className)}>

@@ -19,7 +19,7 @@ const accordionVariants = cva("wby-group wby-w-full", {
     },
     defaultVariants: {
         variant: "container",
-        background: "light"
+        background: "base"
     }
 });
 
