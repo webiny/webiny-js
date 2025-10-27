@@ -4,8 +4,9 @@ import { LocalesStorageOperationsProviderPlugin } from "~/plugins/LocalesStorage
 import { SystemStorageOperationsProviderPlugin } from "~/plugins/SystemStorageOperationsProviderPlugin.js";
 import WebinyError from "@webiny/error";
 import { createLocalesCrud } from "~/graphql/crud/locales.crud.js";
-import { createSystemCrud } from "~/graphql/crud/system.crud.js";
 import { LocalesPermissions } from "~/graphql/crud/permissions/LocalesPermissions.js";
+import { AppInstaller } from "@webiny/api-tenancy/features/InstallTenant/index.js";
+import { I18nInstaller } from "~/features/Installer.js";
 
 const getStorageOperations = async <T = any>(context: I18NContext, type: string): Promise<T> => {
     const providerPlugin = context.plugins.byType<any>(type).find(() => true);
@@ -53,12 +54,12 @@ export const createCrudContext = () => {
                 storageOperations: localeStorageOperations,
                 localesPermissions,
                 getTenant
-            }),
-            system: createSystemCrud({
-                context,
-                storageOperations: systemStorageOperations,
-                getTenant
             })
         };
+
+        // Temporary installer to have a default locale in the system!
+        context.container.registerFactory(AppInstaller, () => {
+            return new I18nInstaller(context.i18n);
+        });
     });
 };

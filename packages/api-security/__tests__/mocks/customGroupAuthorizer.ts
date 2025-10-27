@@ -5,7 +5,7 @@ export const customGroupAuthorizer = () => {
     return new ContextPlugin<SecurityContext>(({ security }) => {
         security.addAuthorizer(async () => {
             const identity = security.getIdentity();
-            if (identity && identity["group"] === "full-access") {
+            if (identity && identity.groups.includes("full-access")) {
                 return [
                     {
                         name: "*"

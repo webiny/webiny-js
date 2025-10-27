@@ -5,16 +5,12 @@ export interface Config {
     identityType?: string;
 }
 
-interface APIKeyIdentity extends SecurityIdentity {
-    permissions: SecurityPermission[];
-}
-
 export default (config: Config) => {
     return new ContextPlugin<SecurityContext>(({ security }) => {
         security.addAuthorizer(async () => {
             const identityType = config.identityType || "api-key";
 
-            const identity = security.getIdentity<APIKeyIdentity>();
+            const identity = security.getIdentity();
 
             if (!identity || identity.type !== identityType) {
                 return null;

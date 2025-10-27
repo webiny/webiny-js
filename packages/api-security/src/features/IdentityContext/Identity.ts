@@ -2,17 +2,50 @@ import type { SecurityPermission } from "~/types.js";
 
 /**
  * Abstract base class for all identity types.
- * Provides common interface for identity checks across the codebase.
+ * Provides a common interface for identity checks across the codebase.
  */
 export abstract class Identity {
-    abstract readonly id: string;
-    abstract readonly displayName: string;
-    abstract readonly type: string;
+    readonly id: string;
+    readonly displayName: string;
+    readonly type: string;
+    readonly groups: string[];
+    readonly teams: string[];
+    readonly permissions: SecurityPermission[];
+    readonly data: Record<string, any> = {};
+
+    constructor(identityData: IdentityData) {
+        this.id = identityData.id;
+        this.displayName = identityData.displayName;
+        this.type = identityData.type;
+        this.groups = identityData.groups ?? [];
+        this.teams = identityData.teams ?? [];
+        this.permissions = identityData.permissions ?? [];
+        this.data = identityData.data ?? {};
+    }
 
     /**
      * Check if this identity represents an anonymous (unauthenticated) user.
      */
     abstract isAnonymous(): boolean;
+
+    /**
+     * Get a specific property from custom data.
+     */
+    get<T = any>(key: string): T | undefined {
+        return this.data[key];
+    }
+
+    toJson(): Required<IdentityData> {
+        return {
+            id: this.id,
+            displayName: this.displayName,
+            type: this.type,
+            teams: this.teams,
+            groups: this.groups,
+            permissions: this.permissions,
+            data: this.data
+        };
+    }
 }
 
 export type IdentityData = {
@@ -22,5 +55,5 @@ export type IdentityData = {
     groups?: string[];
     teams?: string[];
     permissions?: SecurityPermission[];
-    [key: string]: any;
+    data?: Record<string, any>;
 };

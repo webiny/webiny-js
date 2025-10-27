@@ -28,7 +28,7 @@ describe("identity test", () => {
             tenant,
             identity: "1",
             type: "group",
-            data: { group: "full-access" }
+            data: { groups: ["full-access"] }
         };
 
         const link2 = { tenant, identity: "2", type: "role", data: { role: "OWNER" } };

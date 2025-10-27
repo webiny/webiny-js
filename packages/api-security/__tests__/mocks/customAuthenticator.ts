@@ -15,7 +15,7 @@ export const customAuthenticator = () => {
                 id: "123456789",
                 displayName: "John Doe",
                 type: "admin",
-                group: "full-access"
+                groups: ["full-access"]
             };
         });
     });

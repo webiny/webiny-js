@@ -18,7 +18,6 @@ import { GetFolderFeature } from "~/features/folders/GetFolder/index.js";
 import { ListFoldersFeature } from "~/features/folders/ListFolders/index.js";
 import { GetFolderHierarchyFeature } from "~/features/folders/GetFolderHierarchy/index.js";
 import { GetAncestorsFeature } from "~/features/folders/GetAncestors/index.js";
-import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folders/ListFolderLevelPermissionsTargets/index.js";
 import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
 import { UpdateFlpOnFolderUpdatedFeature } from "~/features/flp/UpdateFlpOnFolderUpdated/index.js";
 import { DeleteFlpOnFolderDeletedFeature } from "~/features/flp/DeleteFlpOnFolderDeleted/index.js";
@@ -35,6 +34,9 @@ import {
 } from "~/features/folders/shared/abstractions.js";
 import { ListFlpsFeature } from "~/features/flp/ListFlps/feature.js";
 import { GetFlpFeature } from "~/features/flp/GetFlp/feature.js";
+import {
+    ListFolderLevelPermissionsTargetsFeature
+} from "~/features/folders/ListFolderLevelPermissionsTargets/feature.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;

@@ -1,6 +1,5 @@
 import type { GroupsTeamsAuthorizerConfig } from "@webiny/api-security";
 import { createGroupsTeamsAuthorizer } from "@webiny/api-security";
-import { createExternalIdpAdminUserHooksPlugin } from "@webiny/api-admin-users/createExternalIdpAdminUserHooks.js";
 import type { AuthenticatorConfig } from "~/createAuthenticator.js";
 import { createAuthenticator } from "~/createAuthenticator.js";
 import { createIdentityType } from "~/createIdentityType.js";
@@ -26,14 +25,12 @@ export const createOkta = <TContext extends Context = Context>(
             getIdentity: config.getIdentity
         }),
         createGroupsTeamsAuthorizer<TContext>({
-            identityType,
-            getGroupSlug: config.getGroupSlug
+            identityType
         }),
         createIdentityType({
             identityType,
             name: graphQLIdentityType
         }),
-        extendTenancy(),
-        createExternalIdpAdminUserHooksPlugin()
+        extendTenancy()
     ];
 };

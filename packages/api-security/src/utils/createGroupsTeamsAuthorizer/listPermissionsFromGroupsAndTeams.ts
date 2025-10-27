@@ -1,6 +1,5 @@
 import { getPermissionsFromSecurityGroupsForLocale } from "../getPermissionsFromSecurityGroupsForLocale.js";
-import type { SecurityContext, SecurityRole } from "~/types.js";
-import type { Identity } from "@webiny/api-authentication/types.js";
+import type { SecurityContext, SecurityIdentity, SecurityRole } from "~/types.js";
 
 export type GroupSlug = string | undefined;
 export type TeamSlug = string | undefined;
@@ -10,12 +9,6 @@ export interface GroupsTeamsAuthorizerConfig<TContext extends SecurityContext = 
      * Specify an `identityType` if you want to only run this authorizer for specific identities.
      */
     identityType?: string;
-
-    /**
-     * @deprecated Return group slugs from the `getIdentity` function instead.
-     * Get a group slug to load permissions from.
-     */
-    getGroupSlug?: (context: TContext) => Promise<GroupSlug> | GroupSlug;
 
     /**
      * If a security group is not found, try loading it from a parent tenant (default: true).
@@ -32,7 +25,7 @@ export interface ListPermissionsFromGroupsAndTeamsParams<
     TContext extends SecurityContext = SecurityContext
 > {
     config: GroupsTeamsAuthorizerConfig<TContext>;
-    identity: Identity;
+    identity: SecurityIdentity;
     localeCode: string;
     context: TContext;
 }
@@ -42,22 +35,13 @@ export const listPermissionsFromGroupsAndTeams = async <
 >(
     params: ListPermissionsFromGroupsAndTeamsParams<TContext>
 ) => {
-    const { config, context, identity, localeCode } = params;
+    const { context, identity, localeCode } = params;
     const { security, wcp } = context;
 
     // Load groups that are associated with the current identity. Also load groups
     // that are assigned via one or more teams (if the Teams feature is enabled).
     const groupSlugs: GroupSlug[] = [];
     const teamSlugs: TeamSlug[] = [];
-
-    if (config.getGroupSlug) {
-        const loadedGroupSlug = await config.getGroupSlug(context);
-        groupSlugs.push(loadedGroupSlug);
-    }
-
-    if (identity.group) {
-        groupSlugs.push(identity.group);
-    }
 
     if (identity.groups) {
         groupSlugs.push(...identity.groups);
@@ -82,11 +66,6 @@ export const listPermissionsFromGroupsAndTeams = async <
     }
 
     if (wcp.canUseTeams()) {
-        // Load groups coming from teams.
-        if (identity.team) {
-            teamSlugs.push(identity.team);
-        }
-
         if (identity.teams) {
             teamSlugs.push(...identity.teams);
         }

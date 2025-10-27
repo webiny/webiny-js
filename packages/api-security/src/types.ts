@@ -30,9 +30,9 @@ export interface SecurityStorageOperations {
 
     listGroups(params: StorageOperationsListGroupsParams): Promise<Group[]>;
 
-    createGroup(params: StorageOperationsCreateGroupParams): Promise<Group>;
+    createGroup(params: StorageOperationsCreateGroupParams): Promise<void>;
 
-    updateGroup(params: StorageOperationsUpdateGroupParams): Promise<Group>;
+    updateGroup(params: StorageOperationsUpdateGroupParams): Promise<void>;
 
     deleteGroup(params: StorageOperationsDeleteGroupParams): Promise<void>;
 
@@ -40,9 +40,9 @@ export interface SecurityStorageOperations {
 
     listTeams(params: StorageOperationsListTeamsParams): Promise<Team[]>;
 
-    createTeam(params: StorageOperationsCreateTeamParams): Promise<Team>;
+    createTeam(params: StorageOperationsCreateTeamParams): Promise<void>;
 
-    updateTeam(params: StorageOperationsUpdateTeamParams): Promise<Team>;
+    updateTeam(params: StorageOperationsUpdateTeamParams): Promise<void>;
 
     deleteTeam(params: StorageOperationsDeleteTeamParams): Promise<void>;
 

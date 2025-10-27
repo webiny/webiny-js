@@ -9,7 +9,7 @@ import {
 
 class GroupsInstallerImpl implements AppInstaller.Interface {
     readonly alwaysRun = true;
-    readonly appName = "Security/GroupsInstaller";
+    readonly appName = "Security";
     readonly dependsOn = [];
     private createdGroups: Group[] = [];
 

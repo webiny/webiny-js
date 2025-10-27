@@ -5,9 +5,13 @@ import { Identity } from "./Identity.js";
  * This identity has no permissions by default.
  */
 export class AnonymousIdentity extends Identity {
-    readonly id = "anonymous";
-    readonly displayName = "Anonymous";
-    readonly type = "anonymous";
+    constructor() {
+        super({
+            id: "anonymous",
+            displayName: "Anonymous",
+            type: "anonymous"
+        });
+    }
 
     isAnonymous(): boolean {
         return true;

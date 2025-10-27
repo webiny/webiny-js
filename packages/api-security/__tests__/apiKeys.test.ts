@@ -32,7 +32,8 @@ describe("Security API Key Test", () => {
     const { install, securityApiKeys } = useGqlHandler();
 
     beforeEach(async () => {
-        await install.install();
+        const res = await install.install();
+        const a = res;
     });
 
     test("should create, list, update and delete an API key", async () => {

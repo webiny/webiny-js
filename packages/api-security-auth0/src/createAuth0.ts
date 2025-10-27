@@ -1,6 +1,5 @@
 import type { GroupsTeamsAuthorizerConfig } from "@webiny/api-security";
 import { createGroupsTeamsAuthorizer } from "@webiny/api-security";
-import { createExternalIdpAdminUserHooksPlugin } from "@webiny/api-admin-users/createExternalIdpAdminUserHooks.js";
 import type { AuthenticatorConfig } from "~/createAuthenticator.js";
 import { createAuthenticator } from "~/createAuthenticator.js";
 import { createIdentityType } from "~/createIdentityType.js";
@@ -26,7 +25,6 @@ export const createAuth0 = <TContext extends Context = Context>(
         }),
         createGroupsTeamsAuthorizer<TContext>({
             identityType,
-            getGroupSlug: config.getGroupSlug,
             inheritGroupsFromParentTenant: config.inheritGroupsFromParentTenant,
             canAccessTenant: config.canAccessTenant
         }),
@@ -34,7 +32,6 @@ export const createAuth0 = <TContext extends Context = Context>(
             identityType,
             name: graphQLIdentityType
         }),
-        extendTenancy(),
-        createExternalIdpAdminUserHooksPlugin()
+        extendTenancy()
     ];
 };

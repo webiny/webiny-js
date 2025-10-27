@@ -14139,7 +14139,6 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-admin-users": "npm:0.0.0"
-    "@webiny/api-authentication": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
@@ -14277,33 +14276,6 @@ __metadata:
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
     zod: "npm:^3.25.76"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-authentication-cognito@workspace:packages/api-authentication-cognito":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-authentication-cognito@workspace:packages/api-authentication-cognito"
-  dependencies:
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/api-authentication": "npm:0.0.0"
-    "@webiny/api-cognito-authenticator": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-authentication@npm:0.0.0, @webiny/api-authentication@workspace:packages/api-authentication":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-authentication@workspace:packages/api-authentication"
-  dependencies:
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    jest-dynalite: "npm:^3.6.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
 
@@ -15094,7 +15066,6 @@ __metadata:
   dependencies:
     "@types/jsonwebtoken": "npm:^9.0.10"
     "@webiny/api": "npm:0.0.0"
-    "@webiny/api-authentication": "npm:0.0.0"
     "@webiny/api-tenancy": "npm:0.0.0"
     "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"

@@ -37,7 +37,6 @@ export interface I18NContextObject {
     getLocale: (code: string) => I18NLocale | undefined;
     reloadLocales: () => Promise<void>;
     locales: LocalesCRUD;
-    system: SystemCRUD;
     hasI18NContentPermission: () => Promise<boolean>;
     checkI18NContentPermission: () => Promise<void>;
     withEachLocale: <TReturn>(
@@ -50,30 +49,6 @@ export interface I18NContextObject {
     ) => Promise<TReturn | undefined>;
 }
 
-export interface SystemInstallParams {
-    code: string;
-}
-
-/**
- * Definition for the system part crud of the i18n.
- */
-export interface SystemCRUD {
-    storageOperations: I18NSystemStorageOperations;
-    /**
-     * Get the current version of the i18n.
-     */
-    getSystemVersion(): Promise<string | null>;
-    /**
-     * Set the current version of the i18n.
-     */
-    setSystemVersion(version: string): Promise<void>;
-    /**
-     * Run the install process for the i18n.
-     */
-    installSystem(params: SystemInstallParams): Promise<void>;
-    onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
-    onSystemAfterInstall: Topic<OnSystemAfterInstallTopicParams>;
-}
 
 export interface I18NContext extends Context, ClientContext, TenancyContext, SecurityContext {
     i18n: I18NContextObject;
@@ -114,13 +89,6 @@ export interface LocalesCRUDListParams {
     sort?: string[];
     limit?: number;
     after?: string;
-}
-
-export interface OnSystemBeforeInstallTopicParams {
-    code: string;
-}
-export interface OnSystemAfterInstallTopicParams {
-    code: string;
 }
 
 export interface OnLocaleBeforeCreateTopicParams {

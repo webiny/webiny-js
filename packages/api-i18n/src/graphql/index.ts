@@ -1,6 +1,5 @@
 import { createBaseGraphQL } from "./graphql/base.js";
 import { createLocalesGraphQL } from "./graphql/locales.js";
-import { createInstallationGraphQL } from "./graphql/installation.js";
 import { createI18NBaseContext } from "./context.js";
 import localeContexts from "./localeContexts.js";
 import type { ContextI18NGetLocales } from "~/types.js";
@@ -27,7 +26,7 @@ export const createI18NContext = () => {
  * Create all the required GraphQL plugins for I18N to work.
  */
 export const createI18NGraphQL = () => {
-    return [createBaseGraphQL(), createInstallationGraphQL(), createLocalesGraphQL()];
+    return [createBaseGraphQL(), createLocalesGraphQL()];
 };
 /**
  * @deprecated for usage in old projects only

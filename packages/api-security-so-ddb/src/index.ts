@@ -90,7 +90,7 @@ export const createStorageOperations = (
     });
 
     return {
-        async createApiKey({ apiKey }): Promise<ApiKey> {
+        async createApiKey({ apiKey }): Promise<void> {
             const keys = {
                 ...createApiKeyKeys(apiKey),
                 GSI1_PK: `T#${apiKey.tenant}#API_KEYS`,
@@ -106,7 +106,6 @@ export const createStorageOperations = (
                         ...keys
                     }
                 });
-                return apiKey;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not create api key.",
@@ -115,7 +114,7 @@ export const createStorageOperations = (
                 });
             }
         },
-        async createGroup({ group }): Promise<Group> {
+        async createGroup({ group }): Promise<void> {
             const keys = {
                 ...createGroupKeys(group),
                 ...createGroupGsiKeys(group)
@@ -130,7 +129,6 @@ export const createStorageOperations = (
                         ...keys
                     }
                 });
-                return group;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not create group.",
@@ -139,7 +137,7 @@ export const createStorageOperations = (
                 });
             }
         },
-        async createTeam({ team }): Promise<Team> {
+        async createTeam({ team }): Promise<void> {
             const keys = {
                 ...createTeamKeys(team),
                 ...createTeamGsiKeys(team)
@@ -154,7 +152,6 @@ export const createStorageOperations = (
                         ...keys
                     }
                 });
-                return team;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not create team.",
@@ -466,7 +463,7 @@ export const createStorageOperations = (
                 options: { index: "GSI1", beginsWith: `TYPE#${type}#` }
             });
         },
-        async updateApiKey({ apiKey }): Promise<ApiKey> {
+        async updateApiKey({ apiKey }): Promise<void> {
             const keys = {
                 ...createApiKeyKeys(apiKey),
                 GSI1_PK: `T#${apiKey.tenant}#API_KEYS`,
@@ -482,7 +479,6 @@ export const createStorageOperations = (
                         ...keys
                     }
                 });
-                return apiKey;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not update api key.",
@@ -491,7 +487,7 @@ export const createStorageOperations = (
                 });
             }
         },
-        async updateGroup({ group }): Promise<Group> {
+        async updateGroup({ group }): Promise<void> {
             const keys = createGroupKeys(group);
 
             try {
@@ -503,7 +499,6 @@ export const createStorageOperations = (
                         ...createGroupGsiKeys(group)
                     }
                 });
-                return group;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not update group.",
@@ -512,7 +507,7 @@ export const createStorageOperations = (
                 });
             }
         },
-        async updateTeam({ team }): Promise<Team> {
+        async updateTeam({ team }): Promise<void> {
             const keys = createTeamKeys(team);
 
             try {
@@ -524,7 +519,6 @@ export const createStorageOperations = (
                         ...createTeamGsiKeys(team)
                     }
                 });
-                return team;
             } catch (err) {
                 throw WebinyError.from(err, {
                     message: "Could not update team.",

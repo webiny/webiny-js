@@ -77,7 +77,7 @@ export class LegacyContext {
         this.identityContext.setIdentity(identity);
     }
 
-    getIdentity<TIdentity extends SecurityIdentity = SecurityIdentity>(): TIdentity {
+    getIdentity(): SecurityIdentity {
         const identity = this.identityContext.getIdentity();
 
         // Convert our Identity class to old SecurityIdentity format
@@ -85,17 +85,7 @@ export class LegacyContext {
             return undefined as any;
         }
 
-        // Return the underlying data from AuthenticatedIdentity
-        if (identity instanceof AuthenticatedIdentity) {
-            return identity.getData() as TIdentity;
-        }
-
-        // Fallback
-        return {
-            id: identity.id,
-            displayName: identity.displayName,
-            type: identity.type
-        } as TIdentity;
+        return identity;
     }
 
     setIdentity(identity: SecurityIdentity): void {
