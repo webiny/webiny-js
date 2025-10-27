@@ -18,11 +18,11 @@ export const WorkflowStateRow = (props: IWorkflowStateRowProps) => {
             title={state.title}
             description={
                 <>
-                    {state.currentStep.title} - {state.currentStep.savedBy?.displayName}
+                    {state.step.title} - {state.step.savedBy?.displayName}
                     , <TimeAgo datetime={state.savedOn} />
                 </>
             }
-            icon={<Color color={state.currentStep.color} />}
+            icon={<Color color={state.step.color} />}
             interactive={false}
             actions={<WorkflowStateRowOptions state={state} />}
         >
