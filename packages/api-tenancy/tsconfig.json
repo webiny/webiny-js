@@ -3,6 +3,7 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api" },
+    { "path": "../api-core" },
     { "path": "../api-wcp" },
     { "path": "../di-container" },
     { "path": "../error" },
@@ -10,7 +11,6 @@
     { "path": "../handler" },
     { "path": "../handler-db" },
     { "path": "../handler-graphql" },
-    { "path": "../pubsub" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -22,6 +22,8 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-wcp/*": ["../api-wcp/src/*"],
       "@webiny/api-wcp": ["../api-wcp/src"],
       "@webiny/di-container/*": ["../di-container/src/*"],
@@ -36,8 +38,6 @@
       "@webiny/handler-db": ["../handler-db/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/pubsub/*": ["../pubsub/src/*"],
-      "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     },

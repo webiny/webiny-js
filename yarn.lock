@@ -14154,6 +14154,7 @@ __metadata:
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di-container": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
@@ -14223,6 +14224,7 @@ __metadata:
   dependencies:
     "@types/md5": "npm:^2.3.5"
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-i18n": "npm:0.0.0"
     "@webiny/api-security": "npm:0.0.0"
     "@webiny/api-tenancy": "npm:0.0.0"
@@ -14250,6 +14252,7 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
     "@webiny/api-admin-users": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-i18n": "npm:0.0.0"
@@ -14339,10 +14342,10 @@ __metadata:
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di-container": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.2"
     vitest: "npm:^3.2.4"
@@ -15006,8 +15009,10 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-admin-users": "npm:0.0.0"
     "@webiny/api-cognito-authenticator": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-i18n": "npm:0.0.0"
     "@webiny/api-security": "npm:0.0.0"
+    "@webiny/api-system": "npm:0.0.0"
     "@webiny/api-tenancy": "npm:0.0.0"
     "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
@@ -15067,9 +15072,10 @@ __metadata:
   dependencies:
     "@types/jsonwebtoken": "npm:^9.0.10"
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-system": "npm:0.0.0"
     "@webiny/api-tenancy": "npm:0.0.0"
     "@webiny/api-wcp": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/di-container": "npm:0.0.0"
@@ -15081,7 +15087,6 @@ __metadata:
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     deep-equal: "npm:^2.2.3"
@@ -15122,14 +15127,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-system@workspace:packages/api-system":
+"@webiny/api-system@npm:0.0.0, @webiny/api-system@workspace:packages/api-system":
   version: 0.0.0-use.local
   resolution: "@webiny/api-system@workspace:packages/api-system"
   dependencies:
+    "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-tenancy": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di-container": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
@@ -15161,6 +15169,7 @@ __metadata:
   resolution: "@webiny/api-tenancy@workspace:packages/api-tenancy"
   dependencies:
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/di-container": "npm:0.0.0"
@@ -15170,7 +15179,6 @@ __metadata:
     "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     dataloader: "npm:^2.2.3"
     jest-dynalite: "npm:^3.6.1"

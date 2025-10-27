@@ -1,8 +1,8 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { ApiKey } from "~/features/apiKeys/index.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { NotAuthorizedError } from "../shared/errors.js";
+import type { ApiKey } from "../shared/types.js";
 
 export interface IDeleteApiKeyErrors {
     notAuthorized: NotAuthorizedError;

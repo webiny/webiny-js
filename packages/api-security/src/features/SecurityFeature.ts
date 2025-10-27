@@ -6,10 +6,10 @@ import { SecurityStorageOperations } from "./shared/abstractions.js";
 import { AuthorizationContextFeature } from "./authorization/AuthorizationContext/index.js";
 import { AuthenticationContextFeature } from "./authentication/AuthenticationContext/index.js";
 import { IdentityContextFeature } from "./IdentityContext/index.js";
-import { ApiKeysFeature } from "./apiKeys/index.js";
-import { GroupsFeature } from "./groups/index.js";
-import { TeamsFeature } from "./teams/index.js";
-import { TenantLinksFeature } from "./tenantLinks/index.js";
+import { ApiKeysFeature } from "./apiKeys/feature.js";
+import { GroupsFeature } from "./groups/feature.js";
+import { TeamsFeature } from "./teams/feature.js";
+import { TenantLinksFeature } from "./tenantLinks/feature.js";
 
 /**
  * Setup all security features in the DI container.

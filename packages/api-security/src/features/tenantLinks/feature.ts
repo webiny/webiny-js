@@ -7,6 +7,8 @@ import { ListTenantLinksByTypeFeature } from "./ListTenantLinksByType/feature.js
 import { ListTenantLinksByTenantFeature } from "./ListTenantLinksByTenant/feature.js";
 import { ListTenantLinksByIdentityFeature } from "./ListTenantLinksByIdentity/feature.js";
 import { GetTenantLinkByIdentityFeature } from "./GetTenantLinkByIdentity/feature.js";
+import { UpdateTenantLinksAfterTeamUpdate } from "./eventHandlers/UpdateTenantLinksAfterTeamUpdate.js";
+import { UpdateTenantLinksAfterGroupUpdate } from "./eventHandlers/UpdateTenantLinksAfterGroupUpdate.js";
 
 export const TenantLinksFeature = createFeature({
     name: "TenantLinks",
@@ -22,5 +24,9 @@ export const TenantLinksFeature = createFeature({
         ListTenantLinksByTenantFeature.register(container);
         ListTenantLinksByIdentityFeature.register(container);
         GetTenantLinkByIdentityFeature.register(container);
+
+        // Register event handlers
+        container.register(UpdateTenantLinksAfterGroupUpdate);
+        container.register(UpdateTenantLinksAfterTeamUpdate);
     }
 });

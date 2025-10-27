@@ -2,13 +2,13 @@ import type { Container } from "@webiny/di-container";
 import type { SecurityStorageOperations as ISecurityStorageOperations } from "./types.js";
 import { SecurityStorageOperations } from "./features/shared/abstractions.js";
 
-import { AuthorizationContextFeature } from "./features/authorization/AuthorizationContext/index.js";
-import { AuthenticationContextFeature } from "~/features/authentication/AuthenticationContext/index.js";
-import { IdentityContextFeature } from "./features/IdentityContext/index.js";
-import { ApiKeysFeature } from "./features/apiKeys/index.js";
-import { GroupsFeature } from "./features/groups/index.js";
-import { TeamsFeature } from "./features/teams/index.js";
-import { TenantLinksFeature } from "./features/tenantLinks/index.js";
+import { AuthorizationContextFeature } from "./features/authorization/AuthorizationContext/feature.js";
+import { AuthenticationContextFeature } from "~/features/authentication/AuthenticationContext/feature.js";
+import { IdentityContextFeature } from "./features/IdentityContext/feature.js";
+import { ApiKeysFeature } from "./features/apiKeys/feature.js";
+import { GroupsFeature } from "./features/groups/feature.js";
+import { TeamsFeature } from "./features/teams/feature.js";
+import { TenantLinksFeature } from "./features/tenantLinks/feature.js";
 
 /**
  * Setup all security features in the DI container.

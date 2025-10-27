@@ -1,11 +1,9 @@
 import { AppInstaller } from "@webiny/api-tenancy/features/InstallTenant";
 import { createImplementation } from "@webiny/feature/api";
-import {
-    CreateGroupUseCase,
-    DeleteGroupUseCase,
-    Group,
-    ListGroupsUseCase
-} from "~/features/groups/index.js";
+import { Group } from "../shared/types.js";
+import { ListGroupsUseCase } from "~/features/groups/ListGroups/index.js";
+import { CreateGroupUseCase } from "~/features/groups/CreateGroup/index.js";
+import { DeleteGroupUseCase } from "~/features/groups/DeleteGroup/index.js";
 
 class GroupsInstallerImpl implements AppInstaller.Interface {
     readonly alwaysRun = true;

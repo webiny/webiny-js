@@ -1,4 +1,4 @@
-import type { Group, SecurityPermission, CreatedBy } from "~/types.js";
+import type { Group, SecurityPermission } from "~/types.js";
 
 export type { Group };
 
