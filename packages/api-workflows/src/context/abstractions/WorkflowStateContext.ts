@@ -58,7 +58,7 @@ export interface IWorkflowStateContext {
     listStates(
         params?: IWorkflowStateContextListStatesParams
     ): Promise<IWorkflowStateContextListStatesResponse>;
-    createState(app: string, targetRevisionId: string): Promise<IWorkflowState>;
+    createState(app: string, targetRevisionId: string, title: string): Promise<IWorkflowState>;
     updateState(
         id: string,
         record: Partial<Omit<IWorkflowStateRecord, "id">>

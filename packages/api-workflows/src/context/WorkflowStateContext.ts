@@ -130,7 +130,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         };
     }
 
-    public async createState(app: string, targetRevisionId: string): Promise<IWorkflowState> {
+    public async createState(app: string, targetRevisionId: string, title: string): Promise<IWorkflowState> {
         const { id: targetId, version } = parseIdentifier(targetRevisionId);
         if (!version) {
             throw new WebinyError(
@@ -203,6 +203,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             comment: undefined,
             state: WorkflowStateRecordState.inReview,
             app,
+            title,
             targetId,
             isActive: true,
             targetRevisionId,

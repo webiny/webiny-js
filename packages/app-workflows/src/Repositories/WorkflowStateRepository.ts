@@ -102,14 +102,15 @@ export class WorkflowStateRepository implements IWorkflowStateRepository {
     public async requestReview(
         params: IWorkflowStateRepositoryRequestReviewParams
     ): Promise<IWorkflowState | null> {
-        const { app, targetRevisionId } = params;
+        const { app, targetRevisionId, title } = params;
         runInAction(() => {
             this._loading = true;
             this._error = null;
         });
         const result = await this.gateway.createWorkflowState({
             app,
-            targetRevisionId
+            targetRevisionId,
+            title,
         });
         runInAction(() => {
             this._error = result.error;

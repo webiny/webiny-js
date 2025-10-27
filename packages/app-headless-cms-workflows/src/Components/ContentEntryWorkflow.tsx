@@ -22,6 +22,7 @@ export const ContentEntryWorkflow = ContentEntry.createDecorator(Original => {
                 id={entry.id}
                 identity={identity}
                 client={client}
+                title={`${model.name}: ${entry.meta.title}`}
             >
                 <Original />
             </WorkflowState>

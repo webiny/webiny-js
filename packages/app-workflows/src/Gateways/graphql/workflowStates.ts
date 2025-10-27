@@ -15,6 +15,7 @@ const WORKFLOW_STATE = /* GraphQL */ `
         id
         isActive
         app
+        title
         targetId
         targetRevisionId
         comment
@@ -57,6 +58,7 @@ const WORKFLOW_STATE = /* GraphQL */ `
 export interface ICreateWorkflowStateVariables {
     app: string;
     targetRevisionId: string;
+    title: string;
 }
 
 export interface ICreateWorkflowStateResponse {
@@ -69,9 +71,9 @@ export interface ICreateWorkflowStateResponse {
 }
 
 export const CREATE_WORKFLOW_STATE_MUTATION = gql`
-    mutation CreateWorkflowState($app: String!, $targetRevisionId: ID!) {
+    mutation CreateWorkflowState($app: String!, $targetRevisionId: ID!, $title: String!) {
         workflows {
-            createWorkflowState(app: $app, targetRevisionId: $targetRevisionId) {
+            createWorkflowState(app: $app, targetRevisionId: $targetRevisionId, title: $title) {
                 data ${WORKFLOW_STATE}
                 ${ERROR_FIELD}
             }

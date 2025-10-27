@@ -8,3 +8,5 @@ export {
     WorkflowStateBar
 } from "./Components/WorkflowState/index.js";
 export type { IWorkflowApplication } from "~/types.js";
+
+export * from "./Components/WorkflowStatesWidget/index.js";

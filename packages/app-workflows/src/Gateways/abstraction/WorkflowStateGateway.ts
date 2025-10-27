@@ -68,6 +68,7 @@ export interface IWorkflowStateGatewayRejectStepParams {
 export interface IWorkflowStateGatewayRequestReviewStepParams {
     app: string;
     targetRevisionId: string;
+    title: string;
 }
 
 export interface IWorkflowStateGatewayRequestReviewStepResponse {
