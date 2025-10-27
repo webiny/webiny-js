@@ -26,46 +26,51 @@ interface CardProps extends Omit<React.ComponentPropsWithoutRef<typeof CardConte
 }
 
 const CardBase = (props: CardProps) => {
-    const { cardProviderProps, contentProps, headerProps, bodyProps, footerProps } =
-        React.useMemo(() => {
-            const {
-                // Shared props.
-                padding,
-                actions,
-                size,
-                cornerSize,
-                variant,
+    const { headerProps, bodyProps, footerProps } = React.useMemo(() => {
+        const {
+            // Shared props.
+            padding,
+            actions,
+            actionsSize,
+            actionsPosition,
+            size,
+            cornerSize,
+            variant,
 
-                // Card provider props.
-                actionsPosition,
+            // Header props.
+            title,
+            icon,
+            description,
 
-                // Header props.
+            // Body props.
+            children,
+
+            // Footer props.
+            info,
+
+            // Content props.
+            ...rest
+        } = props;
+
+        return {
+            headerProps: {
                 title,
                 icon,
                 description,
-
-                // Body props.
-                children,
-
-                // Footer props.
-                info,
-
-                // Content props.
-                ...rest
-            } = props;
-
-            return {
-                headerProps: { title, icon, description, padding, actions, actionsPosition, size, variant },
-                bodyProps: { children, padding },
-                footerProps: { info, padding, actions, actionsPosition },
-                contentProps: { ...rest, padding, variant },
-                cardProviderProps: { padding, size, cornerSize, actionsPosition }
-            };
-        }, [props]);
+                padding,
+                actions,
+                actionsPosition,
+                size,
+                variant
+            },
+            bodyProps: { children, padding },
+            footerProps: { info, padding, actions, actionsPosition },
+        };
+    }, [props]);
 
     return (
-        <CardProvider {...cardProviderProps}>
-            <CardContent {...contentProps}>
+        <CardProvider {...props}>
+            <CardContent>
                 <CardHeader {...headerProps} />
                 <CardBody {...bodyProps} />
                 <CardFooter {...footerProps} />

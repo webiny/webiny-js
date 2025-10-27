@@ -79,6 +79,11 @@ export const PaddingLarge: Story = {
     }
 };
 
+export const WithActions: Story = {
+    args: {
+        ...Default.args,
+    }
+};
 export const WithHeaderActions: Story = {
     args: {
         ...Default.args,

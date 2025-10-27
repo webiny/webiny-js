@@ -33,7 +33,7 @@ export const CardFooter = ({ actions, info, className, padding, ...props }: Card
                     <div>{info}</div>
                 </div>
             )}
-            {actions && actionsPosition === "footer" && (
+            {actions && actionsPosition !== "header" && (
                 <div className={"flex gap-x-sm ml-auto"}>{actions}</div>
             )}
         </div>

@@ -1,8 +1,9 @@
 import * as React from "react";
 import { cn, cva, type VariantProps } from "~/utils.js";
+import { useCardProps } from "~/Card/components/CardProvider.tsx";
 
 const cardContentVariants = cva(
-    ["border bg-neutral-base rounded-xl text-md text-neutral-strong"],
+    ["border-md border-solid bg-neutral-base text-md text-neutral-strong overflow-hidden"],
     {
         variants: {
             cornerSize: {
@@ -10,13 +11,13 @@ const cardContentVariants = cva(
                 lg: "rounded-xl"
             },
             variant: {
-                default: '',
-                accent: "border-md border-accent-dimmed"
+                default: "border-transparent",
+                accent: "border-accent-dimmed"
             }
         },
         defaultVariants: {
             cornerSize: "lg",
-            variant: 'default'
+            variant: "default"
         }
     }
 );
@@ -26,19 +27,12 @@ export interface CardContentProps extends VariantProps<typeof cardContentVariant
     children: React.ReactNode;
 }
 
-const CardContent = ({ className, children, ...props }: CardContentProps) => {
+const CardContent = ({ children }: CardContentProps) => {
+    const { cornerSize, variant } = useCardProps();
+
     return (
-        <div {...props} className={cn(cardContentVariants(props), className)}>
-            <div
-                className={cn([
-                    [
-                        "flex flex-col justify-between",
-                        "w-full max-w-full",
-                        "h-full",
-                        "relative"
-                    ]
-                ])}
-            >
+        <div data-card="content" className={cardContentVariants({ cornerSize, variant })}>
+            <div className={"flex flex-col justify-between w-full max-w-full h-full relative"}>
                 {children}
             </div>
         </div>
