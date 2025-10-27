@@ -15,14 +15,14 @@ interface AdminUserInstallationData {
 
 class AdminUsersInstallerImpl implements AppInstaller.Interface<AdminUserInstallationData> {
     readonly alwaysRun = false;
-    readonly appName = "AdminUsers";
+    readonly appName = "AdminUser";
     readonly dependsOn = ["Security"];
     private createdUser: AdminUser | undefined;
 
     constructor(
         private getGroup: GetGroupUseCase.Interface,
         private createUserUseCase: CreateUserUseCase.Interface,
-        private deleteUserUseCase: CreateUserUseCase.Interface
+        private deleteUserUseCase: DeleteUserUseCase.Interface
     ) {}
 
     async install(_: Tenant, data: AdminUserInstallationData): Promise<void> {
@@ -51,7 +51,7 @@ class AdminUsersInstallerImpl implements AppInstaller.Interface<AdminUserInstall
 
     async uninstall(): Promise<void> {
         if (this.createdUser) {
-            await this.deleteUserUseCase.execute(this.createdUser);
+            await this.deleteUserUseCase.execute(this.createdUser.id);
         }
     }
 }

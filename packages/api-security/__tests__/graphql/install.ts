@@ -7,8 +7,11 @@ const ERROR_FIELD = /* GraphQL */ `
 `;
 export const IS_INSTALLED = /* GraphQL */ `
     query IsInstalled {
-        security {
-            version
+        system {
+            isSystemInstalled {
+                data
+                error ${ERROR_FIELD}
+            }
         }
     }
 `;
@@ -17,17 +20,6 @@ export const INSTALL = /* GraphQL */ `
     mutation Install ($installationInput: JSON!){
         system {
             installSystem(installationInput: $installationInput ) {
-                data
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export const INSTALL_TENANCY = /* GraphQL */ `
-    mutation InstallTenancy {
-        tenancy {
-            install {
                 data
                 error ${ERROR_FIELD}
             }

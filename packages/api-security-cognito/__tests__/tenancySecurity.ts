@@ -11,6 +11,7 @@ import type { TenancyContext, TenancyStorageOperations } from "@webiny/api-tenan
 import type { AdminUsersContext } from "@webiny/api-admin-users/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { createTenantLinkAuthorizer } from "@webiny/api-security/plugins/tenantLinkAuthorization";
+import { UserBeforeCreateHandler } from "@webiny/api-admin-users/features/CreateUser/index.js";
 
 interface Config {
     fullAccess?: boolean;
@@ -31,6 +32,7 @@ export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) 
                 id: "root",
                 name: "Root",
                 status: "unknown",
+                isInstalled: true,
                 parent: null,
                 tags: [],
                 settings: {
@@ -65,11 +67,16 @@ export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) 
             });
         }),
         new BeforeHandlerPlugin<SecurityContext & AdminUsersContext>(context => {
-            // We need to set an exact user ID to match the Identity ID
-            context.adminUsers.onUserBeforeCreate.subscribe(({ user }) => {
-                if (user.email === "admin@webiny.com") {
-                    user.id = "12345678";
-                }
+            context.container.registerFactory(UserBeforeCreateHandler, () => {
+                return {
+                    handle(event) {
+                        const { user } = event.payload;
+
+                        if (user.email === "admin@webiny.com") {
+                            user.id = "12345678";
+                        }
+                    }
+                };
             });
 
             return context.security.authenticate("");

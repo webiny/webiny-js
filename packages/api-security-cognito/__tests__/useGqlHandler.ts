@@ -7,6 +7,7 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import adminUsersPlugins from "@webiny/api-admin-users";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
+import { createSystemContext, createSystemGraphQL } from "@webiny/api-system";
 
 // Graphql
 import {
@@ -21,11 +22,12 @@ import {
     GET_SECURITY_GROUP
 } from "./graphql/users";
 
-import { INSTALL, IS_INSTALLED, INSTALL_SECURITY, INSTALL_TENANCY } from "./graphql/install";
+import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import type { AdminUsersStorageOperations } from "./types";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import cognitoAuthentication from "~/index";
+import { createApiCore } from "@webiny/api-core";
+import type { AdminUsersStorageOperations } from "@webiny/api-admin-users/types.js";
 
 interface UseGqlHandlerParams {
     fullAccess?: boolean;
@@ -51,6 +53,9 @@ export default (opts: UseGqlHandlerParams = {}) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
         plugins: [
+            createApiCore(),
+            createSystemContext(),
+            createSystemGraphQL(),
             createWcpContext(),
             createWcpGraphQL(),
             ...createTenancyAndSecurity({ fullAccess: opts.fullAccess }),
@@ -129,15 +134,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
             return invoke({ body: { query: IS_INSTALLED } });
         },
         async install(variables: Record<string, any> = {}) {
-            await this.installTenancy();
-            await this.installSecurity();
             return invoke({ body: { query: INSTALL, variables } });
-        },
-        async installTenancy() {
-            return await invoke({ body: { query: INSTALL_TENANCY } });
-        },
-        async installSecurity() {
-            return await invoke({ body: { query: INSTALL_SECURITY } });
         }
     };
 

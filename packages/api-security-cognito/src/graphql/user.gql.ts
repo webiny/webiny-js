@@ -84,11 +84,15 @@ export default (params: CreateUserGraphQlPluginsParams) => {
 
                             const user = getUserResult.value;
 
-                            const updateResult = await updateUserUseCase.execute(user.id, args.data);
+                            const updateResult = await updateUserUseCase.execute(
+                                user.id,
+                                args.data
+                            );
                             if (updateResult.isFail()) {
                                 return new ErrorResponse({
                                     message: updateResult.error.message,
-                                    code: updateResult.error.code
+                                    code: updateResult.error.code,
+                                    data: updateResult.error.data
                                 });
                             }
 
@@ -102,7 +106,8 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                         if (result.isFail()) {
                             return new ErrorResponse({
                                 message: result.error.message,
-                                code: result.error.code
+                                code: result.error.code,
+                                data: result.error.data
                             });
                         }
 
@@ -128,7 +133,8 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                         if (result.isFail()) {
                             return new ErrorResponse({
                                 message: result.error.message,
-                                code: result.error.code
+                                code: result.error.code,
+                                data: result.error.data
                             });
                         }
 

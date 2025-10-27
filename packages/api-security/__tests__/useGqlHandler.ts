@@ -30,7 +30,7 @@ import {
     UPDATE_API_KEY
 } from "./graphql/apiKeys";
 
-import { INSTALL, INSTALL_TENANCY, IS_INSTALLED } from "./graphql/install";
+import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import { LOGIN } from "./graphql/login";
 import { customGroupAuthorizer } from "./mocks/customGroupAuthorizer";
 import { customAuthenticator } from "./mocks/customAuthenticator";

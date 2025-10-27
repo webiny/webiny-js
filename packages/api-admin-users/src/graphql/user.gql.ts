@@ -82,8 +82,8 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                             return getUserUseCase.execute({ id: identity.id });
                         });
 
-                        if (adminUser) {
-                            return adminUser;
+                        if (adminUser.isOk()) {
+                            return adminUser.value;
                         }
 
                         // TODO: `parent` tenant resolution should be a decorator of the base resolver.
@@ -91,19 +91,27 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                         // a "parent" tenant user, so naturally, his user profile lives in his original tenant.
                         const tenant = context.tenancy.getCurrentTenant();
 
-                        return context.security.withoutAuthorization(async () => {
-                            if (!tenant.parent) {
-                                return null;
+                        const parentTenantUser = await context.security.withoutAuthorization(
+                            async () => {
+                                if (!tenant.parent) {
+                                    return null;
+                                }
+
+                                const parentTenantResult = await getTenantUseCase.execute(
+                                    tenant.parent
+                                );
+
+                                return tenantContext.withTenant(parentTenantResult.value, () => {
+                                    return getUserUseCase.execute({ id: identity.id });
+                                });
                             }
+                        );
 
-                            const parentTenantResult = await getTenantUseCase.execute(
-                                tenant.parent
-                            );
+                        if (parentTenantUser) {
+                            return parentTenantUser.value;
+                        }
 
-                            return tenantContext.withTenant(parentTenantResult.value, () => {
-                                return getUserUseCase.execute({ id: identity.id });
-                            });
-                        });
+                        return {};
                     },
                     __isTypeOf(obj: SecurityIdentity) {
                         return obj.type === "admin";
@@ -130,7 +138,7 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                             email: where.email
                         });
 
-                        if (userResult.error) {
+                        if (userResult.isFail()) {
                             const error = userResult.error;
                             if (error.code === "USER_NOT_FOUND") {
                                 return new NotFoundResponse(

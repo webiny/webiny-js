@@ -7,38 +7,19 @@ const ERROR_FIELD = /* GraphQL */ `
 `;
 export const IS_INSTALLED = /* GraphQL */ `
     query IsInstalled {
-        adminUsers {
-            version
+        system {
+            isSystemInstalled {
+                data
+                error ${ERROR_FIELD}
+            }
         }
     }
 `;
 
 export const INSTALL = /* GraphQL */ `
-    mutation Install($data: AdminUsersInstallInput!) {
-        adminUsers {
-            install(data: $data) {
-                data
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export const INSTALL_TENANCY = /* GraphQL */ `
-    mutation InstallTenancy {
-        tenancy {
-            install {
-                data
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
-export const INSTALL_SECURITY = /* GraphQL */ `
-    mutation Install {
-        security {
-            install {
+    mutation Install ($installationInput: JSON!){
+        system {
+            installSystem(installationInput: $installationInput ) {
                 data
                 error ${ERROR_FIELD}
             }

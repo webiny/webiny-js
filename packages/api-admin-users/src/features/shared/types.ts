@@ -24,6 +24,7 @@ export interface UpdateUserInput {
     avatar?: Record<string, any> | null;
     groups?: string[];
     teams?: string[];
+    password?: string; // Only for Cognito
 }
 
 export interface GetUserInput {
