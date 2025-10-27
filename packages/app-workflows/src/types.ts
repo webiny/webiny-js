@@ -1,5 +1,13 @@
 import type { NonEmptyArray } from "@webiny/app/types.js";
 import type { ReactElement } from "react";
+import type { GenericRecord } from "@webiny/app/types.js";
+
+export interface IGenericError {
+    message: string;
+    code: string | null;
+    data?: GenericRecord;
+    stack?: string;
+}
 
 export interface IWorkflowApplication {
     id: string;
@@ -71,6 +79,14 @@ export interface IWorkflowState {
     savedOn: Date;
 }
 
-export interface IWorkflowStatesWidgetItem extends IWorkflowState {
-    currentStep: IWorkflowStateStep;
+
+export interface IWorkflowStatesWidgetItem {
+    id: string;
+    app: string;
+    targetRevisionId: string;
+    title: string;
+    state: WorkflowStateValue;
+    savedBy: IIdentity;
+    savedOn: Date;
+    step: IWorkflowStateStep;
 }

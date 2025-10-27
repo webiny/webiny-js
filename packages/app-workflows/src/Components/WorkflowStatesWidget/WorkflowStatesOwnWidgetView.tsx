@@ -1,26 +1,26 @@
 import React, { useMemo } from "react";
 import type { IIdentity } from "~/types.js";
 import type ApolloClient from "apollo-client";
+import type { IWorkflowStatesWidgetPresenter } from "~/Presenters/index.js";
+import { WorkflowStatesOwnWidgetPresenter } from "~/Presenters/index.js";
 import { WorkflowStatesWidgetRepository } from "~/Repositories/index.js";
-import { WorkflowStatesWidgetPresenter } from "~/Presenters/index.js";
 import { Card, Icon, Tabs } from "@webiny/admin-ui";
 import { ReactComponent as ReviewRequestsIcon } from "@webiny/icons/reviews.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { WorkflowStateList } from "~/Components/WorkflowStatesWidget/State/WorkflowStateList.js";
-import type { IWorkflowStatesWidgetPresenter } from "~/Presenters/abstractions/WorkflowStatesWidgetPresenter.js";
 import { observer } from "mobx-react-lite";
+import { WorkflowStatesWidgetGateway } from "~/Gateways/index.js";
 
 interface IWorkflowStatesWidgetViewProps {
-    identity: IIdentity;
     client: ApolloClient<object>;
 }
 
-interface WorkflowStatesWidgetViewObservableProps {
+interface WorkflowStatesWidgetViewObserverProps {
     presenter: IWorkflowStatesWidgetPresenter;
 }
 
-const WorkflowStatesWidgetViewObservable = observer(
-    (props: WorkflowStatesWidgetViewObservableProps) => {
+const WorkflowStatesWidgetViewObserver = observer(
+    (props: WorkflowStatesWidgetViewObserverProps) => {
         const { presenter } = props;
         return (
             <Card
@@ -64,7 +64,7 @@ const WorkflowStatesWidgetViewObservable = observer(
                             key="declined"
                             value="declined"
                             trigger="Declined"
-                            content={<WorkflowStateList states={presenter.vm.declined} />}
+                            content={<WorkflowStateList states={presenter.vm.rejected} />}
                         />
                     ]}
                 />
@@ -73,17 +73,20 @@ const WorkflowStatesWidgetViewObservable = observer(
     }
 );
 
-export const WorkflowStatesWidgetView = (props: IWorkflowStatesWidgetViewProps) => {
-    const { identity, client } = props;
+export const WorkflowStatesOwnWidgetView = (props: IWorkflowStatesWidgetViewProps) => {
+    const { client } = props;
 
     const presenter = useMemo(() => {
-        const repository = new WorkflowStatesWidgetRepository({});
-
-        return new WorkflowStatesWidgetPresenter({
-            repository,
-            identity
+        const gateway = new WorkflowStatesWidgetGateway({
+            client
         });
-    }, [identity.id, client]);
+        const repository = new WorkflowStatesWidgetRepository({
+            gateway
+        });
+        return new WorkflowStatesOwnWidgetPresenter({
+            repository,
+        });
+    }, []);
 
-    return <WorkflowStatesWidgetViewObservable presenter={presenter} />;
+    return <WorkflowStatesWidgetViewObserver presenter={presenter} />;
 };

@@ -3,7 +3,7 @@ import type { IWorkflowStatesWidgetItem } from "~/types.js";
 export interface IWorkflowStatesWidgetPresenterViewModel {
     inReview: IWorkflowStatesWidgetItem[];
     approved: IWorkflowStatesWidgetItem[];
-    declined: IWorkflowStatesWidgetItem[];
+    rejected: IWorkflowStatesWidgetItem[];
 }
 
 export interface IWorkflowStatesWidgetPresenter {
