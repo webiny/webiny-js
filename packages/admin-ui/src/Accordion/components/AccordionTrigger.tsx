@@ -12,18 +12,16 @@ type AccordionTriggerProps = Pick<
     "title" | "description" | "icon" | "handle" | "interactive" | "actions" | "draggable"
 >;
 
-const OpenCloseIndicator = ({ className }: { className?: string }) => {
+const OpenCloseIndicator = () => {
     return (
-        <div className={className}>
-            <Icon
-                size={"lg"}
-                className={"wby-transition"}
-                color={"neutral-strong"}
-                data-role={"open-close-indicator"}
-                label={"Open/close indicator"}
-                icon={<KeyboardArrowDownIcon />}
-            />
-        </div>
+        <Icon
+            size={"lg"}
+            className={"wby-transition"}
+            color={"neutral-strong"}
+            data-role={"open-close-indicator"}
+            label={"Open/close indicator"}
+            icon={<KeyboardArrowDownIcon />}
+        />
     );
 };
 
