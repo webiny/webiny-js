@@ -30,16 +30,11 @@ type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
 
 const getBackgroundByDepth = (
     depth: number,
-    background?: string | null
-): "base" | "light" | "transparent" | undefined => {
+    background: AccordionProps["background"]
+): AccordionProps["background"] => {
     // If background is explicitly provided, use it at any depth
-    if (background !== undefined && background !== null) {
-        return background as "base" | "light" | "transparent";
-    }
-
-    // For depth 0, return undefined to let defaultVariants apply
-    if (depth === 0) {
-        return undefined;
+    if (background) {
+        return background;
     }
 
     // For nested levels, alternate between light and base
