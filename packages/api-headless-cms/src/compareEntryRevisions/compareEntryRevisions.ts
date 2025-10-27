@@ -1,6 +1,6 @@
-import { CmsGraphQLSchemaPlugin } from "@webiny/api-headless-cms";
+import { createCmsGraphQLSchemaPlugin } from "@webiny/api-headless-cms";
 import OpenAI from "openai";
-import type { CmsContext as Context } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsContext } from "~/types/types.js";
 
 /*
  * This file adds a GraphQL schema for comparing content entry revisions.
@@ -14,8 +14,8 @@ const OPENAI_API_KEY = process.env["WEBINY_API_OPEN_AI_API_KEY"];
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
-export const compareEntryRevisions = () => [
-    new CmsGraphQLSchemaPlugin<Context>({
+export const compareEntryRevisions = () => {
+    const plugin = createCmsGraphQLSchemaPlugin({
         typeDefs: `
             type ComparisonData {
                 html: String
@@ -34,7 +34,11 @@ export const compareEntryRevisions = () => [
         `,
         resolvers: {
             Query: {
-                compareEntryRevisions: async (_, { input }, context: Context) => {
+                compareEntryRevisions: async (
+                    _: any,
+                    { input }: { input: any },
+                    context: CmsContext
+                ) => {
                     try {
                         const { revisionId1, revisionId2, modelId } = input;
 
@@ -49,29 +53,18 @@ export const compareEntryRevisions = () => [
                         let model, entryRevision1Values, entryRevision2Values;
 
                         try {
-                            console.log("Model ID:", modelId);
-
                             // First, get the model to ensure it exists and is properly formatted
                             model = await cms.getModel(modelId);
                             if (!model) {
                                 throw new Error(`Model '${modelId}' not found`);
                             }
 
-                            console.log("Model found:", model.modelId);
+                            entryRevision1 = await cms.getEntryById(model, revisionId1);
 
-
-                            entryRevision1 = await cms.getEntryById(model, revisionId1)
-                            console.log("=== revision1 getEntryById", entryRevision1);
-
-                            entryRevision2 = await cms.getEntryById(model, revisionId2)
-                            console.log("=== revision2 getEntryById", entryRevision2);
+                            entryRevision2 = await cms.getEntryById(model, revisionId2);
 
                             entryRevision1Values = entryRevision1.values;
                             entryRevision2Values = entryRevision2.values;
-
-                            console.log("=== entryRevision1Values", entryRevision1Values);
-                            console.log("=== entryRevision2Values", entryRevision2Values);
-
                         } catch (fetchError) {
                             console.error("Error fetching revisions:", fetchError);
                             throw new Error("Failed to fetch content entry revisions");
@@ -173,8 +166,6 @@ Use semantic HTML and include appropriate classes for styling. Do not include <s
 
                         // Extract summary from the HTML content (look for h2 or h3 text, or first paragraph)
                         const htmlContent = messageContent;
-
-                        console.log("=== 178 htmlContent", htmlContent);
                         // Try to extract summary from HTML - look for heading text or first meaningful content
                         const headingMatch = htmlContent.match(/<h[2-3][^>]*>([^<]+)<\/h[2-3]>/);
                         const paragraphMatch = htmlContent.match(/<p[^>]*>([^<]+)<\/p>/);
@@ -200,7 +191,9 @@ Use semantic HTML and include appropriate classes for styling. Do not include <s
                 }
             }
         }
-    })
-];
+    });
 
+    plugin.name = "headless-cms.graphql.schema.compareEntryRevisions";
 
+    return [plugin];
+};
