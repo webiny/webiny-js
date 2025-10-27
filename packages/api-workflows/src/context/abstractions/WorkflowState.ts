@@ -27,6 +27,7 @@ export interface IWorkflowStateRecord<
 > {
     id: string;
     app: string;
+    title: string;
     workflowId: string;
     targetId: string;
     targetRevisionId: string;

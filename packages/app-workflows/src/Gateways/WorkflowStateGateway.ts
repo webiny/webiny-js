@@ -164,7 +164,8 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
                 mutation: CREATE_WORKFLOW_STATE_MUTATION,
                 variables: {
                     app: params.app,
-                    targetRevisionId: params.targetRevisionId
+                    targetRevisionId: params.targetRevisionId,
+                    title: params.title,
                 }
             });
             return {

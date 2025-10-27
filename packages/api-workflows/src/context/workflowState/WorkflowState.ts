@@ -29,6 +29,10 @@ export class WorkflowState implements IWorkflowState {
         return this.#record.app;
     }
 
+    public get title() {
+        return this.#record.title;
+    }
+
     public get workflowId() {
         return this.#record.workflowId;
     }

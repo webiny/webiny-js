@@ -53,6 +53,7 @@ export const createWorkflowStateSchema = () => {
             type WorkflowState {
                 id: String!
                 app: String!
+                title: String!
                 isActive: Boolean!
                 workflowId: String!
                 targetId: String!
@@ -122,7 +123,7 @@ export const createWorkflowStateSchema = () => {
             }
 
             extend type WorkflowsMutation {
-                createWorkflowState(app: String!, targetRevisionId: ID!): WorkflowStateResponse!
+                createWorkflowState(app: String!, targetRevisionId: ID!, title: String!): WorkflowStateResponse!
                 startWorkflowStateStep(id: ID!): WorkflowStateResponse!
                 approveWorkflowStateStep(id: ID!, comment: String): WorkflowStateResponse!
                 rejectWorkflowStateStep(id: ID!, comment: String!): WorkflowStateResponse!
@@ -178,7 +179,8 @@ export const createWorkflowStateSchema = () => {
 
                         return await context.workflowState.createState(
                             result.data.app,
-                            result.data.targetRevisionId
+                            result.data.targetRevisionId,
+                            result.data.title,
                         );
                     });
                 },
