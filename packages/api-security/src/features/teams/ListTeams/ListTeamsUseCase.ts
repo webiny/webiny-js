@@ -1,18 +1,18 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { ListTeams } from "./abstractions.js";
+import { ListTeamsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { TeamsRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import type { Team, ListTeamsInput } from "../shared/types.js";
 import { NotAuthorizedError } from "../shared/errors.js";
 
-export class ListTeamsUseCase {
+export class ListTeamsUseCase implements UseCaseAbstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
         private repository: TeamsRepository.Interface
     ) {}
 
-    async execute(params: ListTeamsInput = {}): Promise<Result<Team[], ListTeams.Error>> {
+    async execute(params: ListTeamsInput = {}): Promise<Result<Team[], UseCaseAbstraction.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.team");
 
         if (!hasPermission) {
@@ -30,7 +30,7 @@ export class ListTeamsUseCase {
 }
 
 export const ListTeamsUseCaseImpl = createImplementation({
-    abstraction: ListTeams,
+    abstraction: UseCaseAbstraction,
     implementation: ListTeamsUseCase,
     dependencies: [IdentityContext, TeamsRepository]
 });

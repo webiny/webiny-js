@@ -20,7 +20,7 @@ import { CreateGroupUseCase } from "~/features/groups/CreateGroup/index.js";
 import { UpdateGroup } from "~/features/groups/UpdateGroup/index.js";
 import { DeleteGroupUseCase } from "~/features/groups/DeleteGroup/index.js";
 import { GetTeam } from "~/features/teams/GetTeam/index.js";
-import { ListTeams } from "~/features/teams/ListTeams/index.js";
+import { ListTeamsUseCase } from "~/features/teams/ListTeams/index.js";
 import { CreateTeam } from "~/features/teams/CreateTeam/index.js";
 import { UpdateTeam } from "~/features/teams/UpdateTeam/index.js";
 import { DeleteTeam } from "~/features/teams/DeleteTeam/index.js";
@@ -308,7 +308,7 @@ export class LegacyContext {
     }
 
     async listTeams(params?: any) {
-        const useCase = this.container.resolve(ListTeams);
+        const useCase = this.container.resolve(ListTeamsUseCase);
         const result = await useCase.execute(params);
 
         if (result.isFail()) {

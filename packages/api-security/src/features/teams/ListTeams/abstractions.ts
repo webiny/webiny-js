@@ -14,9 +14,9 @@ export interface IListTeams {
     execute(params?: ListTeamsInput): Promise<Result<Team[], ListTeamsError>>;
 }
 
-export const ListTeams = createAbstraction<IListTeams>("ListTeams");
+export const ListTeamsUseCase = createAbstraction<IListTeams>("ListTeamsUseCase");
 
-export namespace ListTeams {
+export namespace ListTeamsUseCase {
     export type Interface = IListTeams;
     export type Error = ListTeamsError;
 }
