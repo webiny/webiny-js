@@ -3,9 +3,9 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api-core" },
-    { "path": "../api-security" },
     { "path": "../api-tenancy" },
-    { "path": "../feature" }
+    { "path": "../feature" },
+    { "path": "../api-security" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -16,12 +16,12 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
-      "@webiny/api-security/*": ["../api-security/src/*"],
-      "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/feature/*": ["../feature/src/*"],
-      "@webiny/feature": ["../feature/src"]
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/api-security/*": ["../api-security/src/*"],
+      "@webiny/api-security": ["../api-security/src"]
     },
     "baseUrl": "."
   }

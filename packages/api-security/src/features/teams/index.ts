@@ -1,21 +1,22 @@
-import type { Container } from "@webiny/di-container";
+import { createFeature } from "@webiny/feature/api";
 import { TeamsRepository } from "./shared/TeamsRepository.js";
-import { CreateTeamUseCaseImpl } from "./CreateTeam/index.js";
-import { GetTeamUseCaseImpl } from "./GetTeam/index.js";
-import { ListTeamsUseCaseImpl } from "./ListTeams/index.js";
-import { UpdateTeamUseCaseImpl } from "./UpdateTeam/index.js";
-import { DeleteTeamUseCaseImpl } from "./DeleteTeam/index.js";
+import { GetTeamFeature } from "./GetTeam/feature.js";
+import { ListTeamsFeature } from "./ListTeams/feature.js";
+import { CreateTeamFeature } from "./CreateTeam/feature.js";
+import { UpdateTeamFeature } from "./UpdateTeam/feature.js";
+import { DeleteTeamFeature } from "./DeleteTeam/feature.js";
 
-export const TeamsFeature = {
-    register(container: Container) {
-        // Register repository (singleton)
+export const TeamsFeature = createFeature({
+    name: "Teams",
+    register(container) {
+        // Register repository in singleton scope
         container.register(TeamsRepository).inSingletonScope();
 
-        // Register use cases (transient)
-        container.register(CreateTeamUseCaseImpl);
-        container.register(GetTeamUseCaseImpl);
-        container.register(ListTeamsUseCaseImpl);
-        container.register(UpdateTeamUseCaseImpl);
-        container.register(DeleteTeamUseCaseImpl);
+        // Register all use cases
+        GetTeamFeature.register(container);
+        ListTeamsFeature.register(container);
+        CreateTeamFeature.register(container);
+        UpdateTeamFeature.register(container);
+        DeleteTeamFeature.register(container);
     }
-};
+});

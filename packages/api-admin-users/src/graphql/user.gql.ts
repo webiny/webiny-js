@@ -10,6 +10,10 @@ import type { AdminUser, AdminUsersContext } from "~/types.js";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
 import { NotAuthorizedError } from "@webiny/api-security";
 import type { SecurityIdentity } from "@webiny/api-security/types.js";
+import { GetUserUseCase } from "~/features/GetUser/index.js";
+import { TenantContext } from "@webiny/api-tenancy/features/TenantContext";
+import { GetTenantByIdUseCase } from "@webiny/api-tenancy/features/GetTenantById/index.js";
+import { ListUsersUseCase } from "~/features/ListUsers/index.js";
 
 export interface CreateUserGraphQlPluginsParams {
     teams?: boolean;
@@ -69,32 +73,35 @@ export default (params: CreateUserGraphQlPluginsParams) => {
             resolvers: {
                 AdminUserIdentity: {
                     async profile(identity, _, context) {
+                        // TODO: refactor this resolver into a proper class with dependencies.
+                        const tenantContext = context.container.resolve(TenantContext);
+                        const getTenantUseCase = context.container.resolve(GetTenantByIdUseCase);
+                        const getUserUseCase = context.container.resolve(GetUserUseCase);
+
                         const adminUser = await context.security.withoutAuthorization(async () => {
-                            return context.adminUsers.getUser({
-                                where: { id: identity.id }
-                            });
+                            return getUserUseCase.execute({ id: identity.id });
                         });
 
                         if (adminUser) {
                             return adminUser;
                         }
 
+                        // TODO: `parent` tenant resolution should be a decorator of the base resolver.
                         // We must also consider an option where we have multi-tenancy, and current identity is
                         // a "parent" tenant user, so naturally, his user profile lives in his original tenant.
                         const tenant = context.tenancy.getCurrentTenant();
 
                         return context.security.withoutAuthorization(async () => {
-                            return context.adminUsers.getUser({
-                                where: {
-                                    id: identity.id,
-                                    /**
-                                     * TODO @ts-refactor @pavel
-                                     * What happens if tenant has no parent?
-                                     * Or is the getUser.where.tenant optional parameter? In that case, remove comments and make tenant param optional
-                                     */
-                                    // @ts-expect-error
-                                    tenant: tenant.parent
-                                }
+                            if (!tenant.parent) {
+                                return null;
+                            }
+
+                            const parentTenantResult = await getTenantUseCase.execute(
+                                tenant.parent
+                            );
+
+                            return tenantContext.withTenant(parentTenantResult.value, () => {
+                                return getUserUseCase.execute({ id: identity.id });
                             });
                         });
                     },
@@ -116,49 +123,75 @@ export default (params: CreateUserGraphQlPluginsParams) => {
                 },
                 AdminUsersQuery: {
                     getUser: async (_, { where }: any, context) => {
-                        try {
-                            const user = await context.adminUsers.getUser({ where });
-                            if (!user) {
+                        const getUser = context.container.resolve(GetUserUseCase);
+
+                        const userResult = await getUser.execute({
+                            id: where.id,
+                            email: where.email
+                        });
+
+                        if (userResult.error) {
+                            const error = userResult.error;
+                            if (error.code === "USER_NOT_FOUND") {
                                 return new NotFoundResponse(
                                     `User "${JSON.stringify(where)}" was not found!`
                                 );
                             }
-                            return new Response(user);
-                        } catch (e) {
-                            return new ErrorResponse(e);
+
+                            return new ErrorResponse({
+                                message: error.message,
+                                code: error.code,
+                                data: error.data
+                            });
                         }
+
+                        return new Response(userResult.value);
                     },
                     getCurrentUser: async (_, __, context) => {
                         const identity = context.security.getIdentity();
 
-                        if (!identity) {
+                        if (identity.isAnonymous()) {
                             throw new NotAuthorizedError();
                         }
 
                         // Current user might not have permissions to execute `getUser` (this method can load any user in the system),
                         // but loading your own user record should be allowed. For that reason, let's temporarily disable authorization.
 
-                        const user = await context.security.withoutAuthorization(async () => {
-                            // Get user record using the identity ID.
-                            return await context.adminUsers.getUser({ where: { id: identity.id } });
-                        });
+                        const getUser = context.container.resolve(GetUserUseCase);
 
-                        if (!user) {
-                            return new NotFoundResponse(
-                                `User with ID ${identity.id} was not found!`
-                            );
+                        const userResponse = await context.security.withoutAuthorization(
+                            async () => {
+                                // Get user record using the identity ID.
+                                return await getUser.execute({ id: identity.id });
+                            }
+                        );
+
+                        if (userResponse.isFail()) {
+                            const error = userResponse.error;
+                            if (error.code === "USER_NOT_FOUND") {
+                                return new NotFoundResponse(
+                                    `User with ID ${identity.id} was not found!`
+                                );
+                            }
+
+                            return new ErrorResponse({
+                                message: error.message,
+                                code: error.code,
+                                data: error.data
+                            });
                         }
 
-                        return new Response(user);
+                        return new Response(userResponse.value);
                     },
                     listUsers: async (_, __, context) => {
-                        try {
-                            const userList = await context.adminUsers.listUsers();
+                        const listUsers = context.container.resolve(ListUsersUseCase);
+                        const users = await listUsers.execute();
 
-                            return new ListResponse(userList);
-                        } catch (e) {
-                            return new ListErrorResponse(e);
+                        if (users.isFail()) {
+                            return new ListErrorResponse(users.error);
                         }
+
+                        return new ListResponse(users.value);
                     }
                 }
             }
