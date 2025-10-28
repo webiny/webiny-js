@@ -14,11 +14,11 @@ export const WorkflowStateRowOptions = ({ state }: IWorkflowStateRowOptionsProps
     return (
         <Popover
             trigger={
-                <span>
+                <div>
                     <Accordion.Item.Action
                         icon={<Icon icon={<MoreVerticalIcon />} label={"Options"} />}
                     />
-                </span>
+                </div>
             }
             content={
                 <List>

@@ -2,8 +2,8 @@ import React from "react";
 import type { IIdentity, IWorkflowStatesWidgetItem } from "~/types.js";
 import { Accordion, TimeAgo } from "@webiny/admin-ui";
 import { Color } from "~/Components/Workflows/Step/Color.js";
-import { WorkflowStateRowOptions } from "~/Components/WorkflowStatesWidget/State/WorkflowStateRowOptions.js";
 import { observer } from "mobx-react-lite";
+import { WorkflowStateRowOptions } from "./WorkflowStateRowOptions.js";
 
 interface IWorkflowStateRowProps {
     state: IWorkflowStatesWidgetItem;
@@ -22,15 +22,12 @@ const Identity = ({ identity }: IIdentityProps) => {
 
 export const WorkflowStateRow = observer((props: IWorkflowStateRowProps) => {
     const { state } = props;
-    console.log({
-        WorkflowStateRow: true,
-        state
-    });
 
     return (
         <Accordion.Item
-            key={`state-${state.id}`}
             title={state.title}
+            open={false}
+            interactive={false}
             description={
                 <>
                     {state.step.title}
@@ -38,7 +35,6 @@ export const WorkflowStateRow = observer((props: IWorkflowStateRowProps) => {
                     , <TimeAgo datetime={state.savedOn} />
                 </>
             }
-            interactive={false}
             icon={<Color color={state.step.color} />}
             actions={<WorkflowStateRowOptions state={state} />}
         >
