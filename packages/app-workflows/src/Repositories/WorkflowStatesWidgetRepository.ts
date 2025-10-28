@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, observable, runInAction } from "mobx";
 import type { IWorkflowStatesWidgetRepository } from "./abstractions/WorkflowStatesWidgetRepository.js";
 import type { IWorkflowStatesWidgetGateway } from "~/Gateways/index.js";
 import { type IGenericError, type IWorkflowStatesWidgetItem, WorkflowStateValue } from "~/types.js";
@@ -16,19 +16,21 @@ interface IError {
 }
 
 export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepository {
-    /**
-     * We need to track which state is loading and for which type of request (own/requested)
-     */
-    #loading: ILoading = {};
-    #error: IError = {};
-    readonly #gateway: IWorkflowStatesWidgetGateway;
+    #loading;
+    #error;
+    readonly #gateway;
 
     public get loading(): boolean {
-        const keys = Object.keys(this.#loading);
-        return keys.some(key => this.#loading[key]);
+        for (const key in this.#loading) {
+            if (this.#loading[key]) {
+                return true;
+            }
+        }
+        return false;
     }
+
     public get error(): IGenericError | null {
-        const errors = Object.keys(this.#error).filter(key => this.#error[key] !== null);
+        const errors = Object.keys(this.#error).filter(key => !!this.#error[key]);
         if (errors.length === 0) {
             return null;
         }
@@ -41,6 +43,8 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
 
     public constructor(params: IWorkflowStatesWidgetRepositoryParams) {
         this.#gateway = params.gateway;
+        this.#error = observable.object<IError>({});
+        this.#loading = observable.object<ILoading>({});
 
         makeAutoObservable(this);
     }
