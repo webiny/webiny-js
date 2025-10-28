@@ -69,13 +69,13 @@
   /* Animation. */
   --animate-skeleton-pulse: skeleton-pulse 1400ms ease-in-out infinite;
   @keyframes skeleton-pulse {
-      0%,
-      100% {
-          background-color: var(--color-neutral-dimmed)
-      }
-      50% {
-          background-color: var(--color-neutral-muted)
-      }
+    0%,
+    100% {
+      background-color: var(--color-neutral-dimmed);
+    }
+    50% {
+      background-color: var(--color-neutral-muted);
+    }
   }
 }
 
