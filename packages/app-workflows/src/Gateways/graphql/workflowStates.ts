@@ -13,6 +13,7 @@ const ERROR_FIELD = /* GraphQL */ `
 const WORKFLOW_STATE = /* GraphQL */ `
     {
         id
+        isActive
         app
         targetId
         targetRevisionId
@@ -32,6 +33,15 @@ const WORKFLOW_STATE = /* GraphQL */ `
         }
         steps {
             id
+            title
+            color
+            description
+            teams {
+                id
+            }
+            notifications {
+                id
+            }
             comment
             savedBy {
                 id
@@ -39,23 +49,7 @@ const WORKFLOW_STATE = /* GraphQL */ `
                 type
             }
             state
-        }
-        workflow {
-            id
-            app
-            name
-            steps {
-                id
-                title
-                color
-                description
-                teams {
-                    id
-                }
-                notifications {
-                    id
-                }
-            }
+            isAllowedToReview
         }
     }
 `;
@@ -84,29 +78,6 @@ export const CREATE_WORKFLOW_STATE_MUTATION = gql`
         }
     }
 `;
-
-export interface IStartWorkflowStateStepVariables {
-    id: string;
-}
-
-export interface IStartWorkflowStateStepResponse {
-    workflows: {
-        startWorkflowStateStep: {
-            data: IWorkflowState | null;
-            error: IWorkflowStateError | null;
-        };
-    };
-}
-
-export const START_WORKFLOW_STATE_STEP_MUTATION = gql`
-    mutation StartWorkflowStateStep($id: ID!) {
-        workflows {
-            startWorkflowStateStep(id: $id) {
-                data ${WORKFLOW_STATE}
-                ${ERROR_FIELD}
-            }
-        }
-    }`;
 
 export interface IApproveWorkflowStateStepVariables {
     id: string;

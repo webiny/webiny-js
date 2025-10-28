@@ -10,9 +10,7 @@ import type {
     IWorkflowStateGatewayRejectStepParams,
     IWorkflowStateGatewayRejectStepResponse,
     IWorkflowStateGatewayRequestReviewStepParams,
-    IWorkflowStateGatewayRequestReviewStepResponse,
-    IWorkflowStateGatewayStartStepParams,
-    IWorkflowStateGatewayStartStepResponse
+    IWorkflowStateGatewayRequestReviewStepResponse
 } from "./abstraction/WorkflowStateGateway.js";
 import {
     APPROVE_WORKFLOW_STATE_STEP_MUTATION,
@@ -31,11 +29,8 @@ import {
     type IListWorkflowStatesVariables,
     type IRejectWorkflowStateStepResponse,
     type IRejectWorkflowStateStepVariables,
-    IStartWorkflowStateStepResponse,
-    type IStartWorkflowStateStepVariables,
     LIST_WORKFLOW_STATES_QUERY,
-    REJECT_WORKFLOW_STATE_STEP_MUTATION,
-    START_WORKFLOW_STATE_STEP_MUTATION
+    REJECT_WORKFLOW_STATE_STEP_MUTATION
 } from "./graphql/workflowStates.js";
 import { WebinyError } from "@webiny/error";
 
@@ -48,32 +43,6 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
 
     public constructor(params: IWorkflowStateGatewayParams) {
         this.client = params.client;
-    }
-
-    public async startWorkflowStateStep(
-        params: IWorkflowStateGatewayStartStepParams
-    ): Promise<IWorkflowStateGatewayStartStepResponse> {
-        const { id } = params;
-        try {
-            const result = await this.client.mutate<
-                IStartWorkflowStateStepResponse,
-                IStartWorkflowStateStepVariables
-            >({
-                mutation: START_WORKFLOW_STATE_STEP_MUTATION,
-                variables: {
-                    id
-                }
-            });
-            return {
-                data: result.data?.workflows.startWorkflowStateStep.data || null,
-                error: result.data?.workflows.startWorkflowStateStep.error || null
-            };
-        } catch (ex) {
-            return {
-                data: null,
-                error: WebinyError.from(ex)
-            };
-        }
     }
 
     public async approveWorkflowStateStep(

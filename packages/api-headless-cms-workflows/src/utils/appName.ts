@@ -4,7 +4,7 @@ interface IParams {
     model: Pick<CmsModel, "modelId">;
 }
 export const createWorkflowAppName = ({ model }: IParams): string => {
-    return `cms:${model.modelId}`;
+    return `cms.${model.modelId}`;
 };
 
 export const getModelIdFromAppName = (app: string): string | null => {

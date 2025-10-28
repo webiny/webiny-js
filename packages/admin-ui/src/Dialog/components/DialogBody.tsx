@@ -14,7 +14,7 @@ const dialogBodyVariants = cva("flex-1", {
         },
         bodyPadding: {
             true: "",
-            false: "px-none!"
+            false: "!px-none !py-none"
         }
     },
     defaultVariants: {

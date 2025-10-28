@@ -1,4 +1,4 @@
-import type { IWorkflow } from "./Workflow.js";
+import type { IWorkflowStep } from "./Workflow.js";
 
 export enum WorkflowStateRecordState {
     pending = "pending",
@@ -7,8 +7,10 @@ export enum WorkflowStateRecordState {
     rejected = "rejected"
 }
 
-export interface IWorkflowStateRecordStep {
-    id: string;
+/**
+ * We require all data from the workflow step to be stored in the state step.
+ */
+export interface IWorkflowStateRecordStep extends IWorkflowStep {
     state: WorkflowStateRecordState;
     comment: string | null;
     savedBy: IWorkflowStateIdentity | null;
@@ -20,31 +22,32 @@ export interface IWorkflowStateIdentity {
     type: string | null;
 }
 
-export interface IWorkflowStateRecord {
+export interface IWorkflowStateRecord<
+    Steps extends IWorkflowStateRecordStep = IWorkflowStateRecordStep
+> {
     id: string;
     app: string;
     workflowId: string;
     targetId: string;
     targetRevisionId: string;
+    isActive: boolean;
     comment: string | undefined;
     state: WorkflowStateRecordState;
-    steps: IWorkflowStateRecordStep[];
+    steps: Steps[];
     createdOn: Date;
     savedOn: Date;
     createdBy: IWorkflowStateIdentity;
     savedBy: IWorkflowStateIdentity;
 }
 
-export interface IWorkflowStateStep extends IWorkflowStateRecordStep {
-    name: string;
+export interface IWorkflowStateRecordStepWithPermissions extends IWorkflowStateRecordStep {
+    isAllowedToReview: boolean;
 }
 
-export interface IWorkflowState {
+export interface IWorkflowState
+    extends IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> {
     readonly done: boolean;
-    readonly workflow: IWorkflow | null | undefined;
-    readonly record: IWorkflowStateRecord | undefined;
-    readonly activeStep: IWorkflowStateStep | undefined;
-    start(): Promise<void>;
+    getActiveStep(): IWorkflowStateRecordStepWithPermissions | undefined;
     approve(comment?: string): Promise<void>;
     reject(comment: string): Promise<void>;
 }

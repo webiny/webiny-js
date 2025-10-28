@@ -7,15 +7,19 @@ import {
 import { Context } from "~/types.js";
 import { createWorkflows } from "~/index.js";
 import { PluginsContainer } from "@webiny/plugins";
-import { STATE_MODEL_ID, WORKFLOW_MODEL_ID } from "~/constants.js";
+import { WORKFLOW_MODEL_ID, WORKFLOW_STATE_MODEL_ID } from "~/constants.js";
 import {
     APPROVE_WORKFLOW_STATE_STEP_MUTATION,
+    CANCEL_WORKFLOW_STATE_MUTATION,
     CREATE_WORKFLOW_STATE_MUTATION,
     DELETE_WORKFLOW_MUTATION,
     GET_TARGET_WORKFLOW_STATE_QUERY,
     GET_WORKFLOW_QUERY,
+    GET_WORKFLOW_STATE_MUTATION,
     type IApproveWorkflowStateStepResponse,
     type IApproveWorkflowStateStepVariables,
+    ICancelWorkflowStateResponse,
+    ICancelWorkflowStateVariables,
     type ICreateWorkflowStateResponse,
     type ICreateWorkflowStateVariables,
     type IDeleteWorkflowResponse,
@@ -23,6 +27,8 @@ import {
     type IGetTargetWorkflowStateResponse,
     type IGetTargetWorkflowStateVariables,
     type IGetWorkflowResponse,
+    IGetWorkflowStateResponse,
+    IGetWorkflowStateVariables,
     type IGetWorkflowVariables,
     type IListTargetWorkflowStatesResponse,
     type IListTargetWorkflowStatesVariables,
@@ -30,14 +36,11 @@ import {
     type IListWorkflowVariables,
     type IRejectWorkflowStateStepResponse,
     type IRejectWorkflowStateStepVariables,
-    type IStartWorkflowStateStepResponse,
-    IStartWorkflowStateStepVariables,
     type IStoreWorkflowResponse,
     type IStoreWorkflowVariables,
     LIST_TARGET_WORKFLOW_STATES_QUERY,
     LIST_WORKFLOWS_QUERY,
     REJECT_WORKFLOW_STATE_STEP_MUTATION,
-    START_WORKFLOW_STATE_STEP_MUTATION,
     STORE_WORKFLOW_MUTATION
 } from "./graphql.js";
 
@@ -56,7 +59,7 @@ export const createContextHandler = async (params: UseContextHandlerParams = {})
     });
     const context = await handler.context();
     const workflowModel = await context.cms.getModel(WORKFLOW_MODEL_ID);
-    const stateModel = await context.cms.getModel(STATE_MODEL_ID);
+    const stateModel = await context.cms.getModel(WORKFLOW_STATE_MODEL_ID);
     return {
         handler,
         context,
@@ -110,10 +113,7 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
             IListTargetWorkflowStatesVariables,
             IListTargetWorkflowStatesResponse
         >(LIST_TARGET_WORKFLOW_STATES_QUERY),
-        startWorkflowStateStep: handler.createMutation<
-            IStartWorkflowStateStepVariables,
-            IStartWorkflowStateStepResponse
-        >(START_WORKFLOW_STATE_STEP_MUTATION),
+
         approveWorkflowStateStep: handler.createMutation<
             IApproveWorkflowStateStepVariables,
             IApproveWorkflowStateStepResponse
@@ -121,6 +121,14 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         rejectWorkflowStateStep: handler.createMutation<
             IRejectWorkflowStateStepVariables,
             IRejectWorkflowStateStepResponse
-        >(REJECT_WORKFLOW_STATE_STEP_MUTATION)
+        >(REJECT_WORKFLOW_STATE_STEP_MUTATION),
+        cancelWorkflowState: handler.createMutation<
+            ICancelWorkflowStateVariables,
+            ICancelWorkflowStateResponse
+        >(CANCEL_WORKFLOW_STATE_MUTATION),
+        getWorkflowState: handler.createMutation<
+            IGetWorkflowStateVariables,
+            IGetWorkflowStateResponse
+        >(GET_WORKFLOW_STATE_MUTATION)
     };
 };

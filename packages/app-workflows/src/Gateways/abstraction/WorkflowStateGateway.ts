@@ -55,15 +55,6 @@ export interface IWorkflowStateGatewayCancelStateResponse {
     error: IWorkflowStateError | null;
 }
 
-export interface IWorkflowStateGatewayStartStepParams {
-    id: string;
-}
-
-export interface IWorkflowStateGatewayStartStepResponse {
-    data: IWorkflowState | null;
-    error: IWorkflowStateError | null;
-}
-
 export interface IWorkflowStateGatewayApproveStepParams {
     id: string;
     comment?: string;
@@ -93,9 +84,6 @@ export interface IWorkflowStateGateway {
     createWorkflowState(
         params: IWorkflowStateGatewayRequestReviewStepParams
     ): Promise<IWorkflowStateGatewayRequestReviewStepResponse>;
-    startWorkflowStateStep(
-        params: IWorkflowStateGatewayStartStepParams
-    ): Promise<IWorkflowStateGatewayStartStepResponse>;
     approveWorkflowStateStep(
         params: IWorkflowStateGatewayApproveStepParams
     ): Promise<IWorkflowStateGatewayApproveStepResponse>;

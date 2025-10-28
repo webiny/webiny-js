@@ -24,9 +24,9 @@ export const Container = ({
             <div
                 className={cn(
                     [
-                        "bg-neutral-base",
-                        "fixed z-15 top-0 left-0",
-                        "w-full h-screen"
+                        "wby-bg-neutral-light",
+                        "wby-fixed wby-z-15 wby-top-0 wby-left-0",
+                        "wby-w-full wby-h-screen"
                     ],
                     className
                 )}
@@ -47,7 +47,7 @@ export const Content = ({
     ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
     return (
-        <div className={cn("overflow-y-auto h-main-content", className)} {...props}>
+        <div className={cn("wby-overflow-y-auto wby-h-main-content", className)} {...props}>
             {children}
         </div>
     );
@@ -59,7 +59,7 @@ export const ContentFormWrapper = ({
     ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
     return (
-        <div className={cn("flex justify-center", className)} {...props}>
+        <div className={cn("wby-flex wby-justify-center", className)} {...props}>
             {children}
         </div>
     );

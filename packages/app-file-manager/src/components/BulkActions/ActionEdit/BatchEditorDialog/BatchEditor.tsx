@@ -42,7 +42,7 @@ export const BatchEditor = observer((props: BatchEditorProps) => {
             >
                 {() => (
                     <>
-                        <Accordion variant={"container"} background={"light"}>
+                        <Accordion variant={"container"}>
                             {props.vm.data.operations.map((operation, operationIndex) => (
                                 <Accordion.Item
                                     key={`operation-${operationIndex}`}
