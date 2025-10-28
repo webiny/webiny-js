@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn, cva, type VariantProps } from "~/utils.js";
+import { cva, type VariantProps } from "~/utils.js";
 import { useCardProps } from "~/Card/components/CardProvider.js";
 
 const cardContentVariants = cva(
