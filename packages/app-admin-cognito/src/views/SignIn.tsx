@@ -76,11 +76,7 @@ const DefaultContent = (props: SignInDefaultContentProps) => {
                         </Bind>
                     </Grid.Column>
                     <Grid.Column span={12}>
-                        <div
-                            className={
-                                "flex flex-row-reverse items-center justify-between"
-                            }
-                        >
+                        <div className={"flex flex-row-reverse items-center justify-between"}>
                             <Button
                                 text={"Submit"}
                                 data-testid="submit-sign-in-form-button"

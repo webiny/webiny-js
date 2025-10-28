@@ -65,19 +65,13 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                         <div className={"px-lg py-md"}>
                             <Text
                                 as={"div"}
-                                className={
-                                    "uppercase font-semibold text-neutral-xstrong"
-                                }
+                                className={"uppercase font-semibold text-neutral-xstrong"}
                             >
                                 {"Fields"}
                             </Text>
                         </div>
                         <Separator />
-                        <div
-                            className={
-                                "px-lg py-md h-[calc(100vh-98px)] overflow-y-scroll"
-                            }
-                        >
+                        <div className={"px-lg py-md h-[calc(100vh-98px)] overflow-y-scroll"}>
                             <FieldsSidebar
                                 onFieldDragStart={() => {
                                     setActiveTab("edit");

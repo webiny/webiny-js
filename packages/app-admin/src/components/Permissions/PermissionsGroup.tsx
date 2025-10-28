@@ -9,10 +9,7 @@ const PermissionsGroup = ({ className, children, title, ...props }: PermissionsG
     return (
         <div
             {...props}
-            className={cn(
-                "mb-lg p-md-extra border-sm border-neutral-dimmed rounded-lg",
-                className
-            )}
+            className={cn("mb-lg p-md-extra border-sm border-neutral-dimmed rounded-lg", className)}
         >
             <Heading level={6} className={"mb-sm"}>
                 {title}

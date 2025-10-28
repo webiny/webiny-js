@@ -15,10 +15,7 @@ const ItemDescription = ({ className, disabled, item, small, ...props }: ItemDes
 
     return (
         <div
-            className={cn(
-                "flex flex-col gap-xxs overflow-hidden flex-1 min-w-0",
-                className
-            )}
+            className={cn("flex flex-col gap-xxs overflow-hidden flex-1 min-w-0", className)}
             {...props}
         >
             <Text

@@ -75,9 +75,7 @@ const SidebarMenuSubButton = ({
     return (
         <div className={"flex items-center w-full"}>
             {content}
-            <div className={"flex absolute right-sm-plus pointer-events-none"}>
-                {action}
-            </div>
+            <div className={"flex absolute right-sm-plus pointer-events-none"}>{action}</div>
         </div>
     );
 };

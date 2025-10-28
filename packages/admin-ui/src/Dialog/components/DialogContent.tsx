@@ -59,12 +59,7 @@ const DialogContent = React.forwardRef<
         >
             <div
                 className={cn([
-                    [
-                        "flex flex-col justify-between",
-                        "w-full max-w-full",
-                        "h-full",
-                        "relative"
-                    ]
+                    ["flex flex-col justify-between", "w-full max-w-full", "h-full", "relative"]
                 ])}
             >
                 {children}

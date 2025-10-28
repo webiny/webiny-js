@@ -50,7 +50,6 @@ const saveFileAndFormat = async (filePath, content) => {
         JSON.stringify(normalizedPrimitivesFigmaExport, null, 2)
     );
 
-
     await saveFileAndFormat(paths.themeCss, themeCss);
 
     console.log("Done.");

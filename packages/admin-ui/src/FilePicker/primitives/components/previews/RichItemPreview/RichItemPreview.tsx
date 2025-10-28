@@ -24,11 +24,7 @@ const DecoratableRichItemPreview = ({
     return (
         <div
             data-testid="image-preview"
-            className={cn(
-                "w-full rounded-md",
-                previewVariants({ variant, disabled }),
-                className
-            )}
+            className={cn("w-full rounded-md", previewVariants({ variant, disabled }), className)}
             {...props}
         >
             <div

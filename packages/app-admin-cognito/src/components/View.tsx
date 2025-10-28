@@ -9,15 +9,11 @@ export interface ContainerProps {
 const Container = makeDecoratable("ViewContainer", ({ children }: ContainerProps) => {
     return (
         <div className={"w-full h-screen bg-neutral-light flex-1"}>
-            <section
-                className={"m-auto flex flex-col justify-center min-h-screen"}
-            >
+            <section className={"m-auto flex flex-col justify-center min-h-screen"}>
                 <div className={"mx-auto"}>
                     <Logo />
                 </div>
-                <div className={"w-full max-w-[480px] mx-auto my-lg"}>
-                    {children}
-                </div>
+                <div className={"w-full max-w-[480px] mx-auto my-lg"}>{children}</div>
             </section>
         </div>
     );
@@ -28,9 +24,7 @@ export interface ContentProps {
 }
 
 const Content = makeDecoratable("ViewContent", ({ children }: ContentProps) => (
-    <div className={"relative p-lg pt-md bg-neutral-base rounded-xl"}>
-        {children}
-    </div>
+    <div className={"relative p-lg pt-md bg-neutral-base rounded-xl"}>{children}</div>
 ));
 
 export interface FooterProps {

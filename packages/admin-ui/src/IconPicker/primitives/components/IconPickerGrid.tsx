@@ -49,11 +49,7 @@ const IconPickerGrid = (props: IconPickerGridProps) => {
                         }
                     }}
                 >
-                    <IconPickerIcon
-                        name={item.name}
-                        prefix={item.prefix}
-                        className={"size-lg"}
-                    />
+                    <IconPickerIcon name={item.name} prefix={item.prefix} className={"size-lg"} />
                     <Text
                         as={"div"}
                         size={"sm"}

@@ -79,7 +79,7 @@ const DragPreview = () => {
                 className="transition-opacity duration-250 ease-in-out block"
                 style={{ opacity: dragHelperOpacity }}
             >
-                <div className="size-lg rounded-full bg-primary"/>
+                <div className="size-lg rounded-full bg-primary" />
             </div>
         </div>
     );

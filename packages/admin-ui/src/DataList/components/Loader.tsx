@@ -15,11 +15,7 @@ const Loader = (): ReactElement => {
                 >
                     <div className="flex w-full items-center justify-start gap-lg mb-md group-[.last-item]:mb-none">
                         <Skeleton type={"thumbnail"} size={"xxl"} />
-                        <div
-                            className={
-                                "flex-1 h-10 flex flex-col justify-between"
-                            }
-                        >
+                        <div className={"flex-1 h-10 flex flex-col justify-between"}>
                             <Skeleton type={"text"} size={"md"} />
                             <Skeleton type={"text"} size={"md"} />
                         </div>

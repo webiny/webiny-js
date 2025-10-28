@@ -76,17 +76,11 @@ export const DataList = <TData,>(propsInput: DataListProps<TData>) => {
                 )}
 
                 {Object.keys(showOptions).length > 0 && (
-                    <div
-                        className={"flex items-center justify-space-between gap-sm"}
-                    >
+                    <div className={"flex items-center justify-space-between gap-sm"}>
                         <div className={"flex-1"}>
                             {props.search ? React.cloneElement(props.search, props) : null}
                         </div>
-                        <div
-                            className={
-                                "flex items-center justify-space-between gap-xs"
-                            }
-                        >
+                        <div className={"flex items-center justify-space-between gap-xs"}>
                             <MultiSelectAll {...props} />
                             <MultiSelectActions {...props} />
                             {showOptions.refresh && <RefreshButton {...props} />}

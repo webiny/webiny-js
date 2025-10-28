@@ -6,11 +6,7 @@ import { Link, Text } from "@webiny/admin-ui";
 export const NotFound = NotFoundBase.createDecorator(() => {
     return function NotFound() {
         return (
-            <div
-                className={
-                    "h-full flex flex-col items-center justify-center text-center gap-xs"
-                }
-            >
+            <div className={"h-full flex flex-col items-center justify-center text-center gap-xs"}>
                 <img
                     width={200}
                     height={200}

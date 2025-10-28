@@ -224,10 +224,7 @@ const ContentModelsDataList = ({
                             };
 
                             return (
-                                <UIL.ListItem
-                                    key={contentModel.modelId}
-                                    className={"group/item"}
-                                >
+                                <UIL.ListItem key={contentModel.modelId} className={"group/item"}>
                                     <UIL.ListItemText>
                                         <DisplayIcon model={contentModel} />
                                         <UIL.ListItemTextPrimary>
@@ -247,9 +244,7 @@ const ContentModelsDataList = ({
                                         <UIL.ListActions>
                                             <ModelIsBeingDeleted model={contentModel}>
                                                 <span
-                                                    className={
-                                                        "invisible group-hover/item:visible"
-                                                    }
+                                                    className={"invisible group-hover/item:visible"}
                                                 >
                                                     <Tooltip
                                                         side={"top"}

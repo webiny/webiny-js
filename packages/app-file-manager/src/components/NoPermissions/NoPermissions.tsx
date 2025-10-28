@@ -4,11 +4,7 @@ import { ReactComponent as VisibilityOffIcon } from "@webiny/icons/visibility_of
 
 export const NoPermissions = () => {
     return (
-        <div
-            className={
-                "w-full h-full p-lg flex items-center justify-center bg-neutral-base"
-            }
-        >
+        <div className={"w-full h-full p-lg flex items-center justify-center bg-neutral-base"}>
             <div className={"flex flex-col items-center justify-center gap-sm"}>
                 <div className={"fill-neutral-strong"}>
                     <VisibilityOffIcon width={75} height={75} />

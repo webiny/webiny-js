@@ -85,10 +85,7 @@ const RowRenderer = ({ row, style, cellDecorator, onIconClick }: RenderRowProps)
     if (row.type === "category-name") {
         return (
             <IconPickerRow style={style}>
-                <Text
-                    size={"sm"}
-                    className={"uppercase self-end text-neutral-muted mb-sm"}
-                >
+                <Text size={"sm"} className={"uppercase self-end text-neutral-muted mb-sm"}>
                     {row.name}
                 </Text>
             </IconPickerRow>

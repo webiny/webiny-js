@@ -8,10 +8,7 @@ const DecoratableToastActions = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
     <div
         {...props}
-        className={cn(
-            "flex w-full items-center justify-start gap-sm mt-md",
-            className
-        )}
+        className={cn("flex w-full items-center justify-start gap-sm mt-md", className)}
     >
         {children}
     </div>

@@ -28,8 +28,8 @@ const tabContentVariants = cva(
 
 type ContentProps = Omit<TabsPrimitive.TabsContentProps, "children" | "content"> &
     VariantProps<typeof tabContentVariants> & {
-    content: React.ReactNode;
-};
+        content: React.ReactNode;
+    };
 
 const Content = ({ className, content, spacing, ...props }: ContentProps) => (
     <TabsPrimitive.Content

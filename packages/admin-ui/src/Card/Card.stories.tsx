@@ -81,7 +81,7 @@ export const PaddingLarge: Story = {
 
 export const WithActions: Story = {
     args: {
-        ...Default.args,
+        ...Default.args
     }
 };
 export const WithHeaderActions: Story = {
@@ -98,7 +98,6 @@ export const WithSmallHeaderActions: Story = {
         actionsSize: "sm"
     }
 };
-
 
 export const WithLargeCorners: Story = {
     args: {

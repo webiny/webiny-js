@@ -74,9 +74,7 @@ export const FolderTree = ({
                     enableActions={enableActions}
                 />
                 {enableCreate && (
-                    <div className={"m-xs-plus mt-sm-plus mb-lg pl-sm-extra"}>
-                        {createButton}
-                    </div>
+                    <div className={"m-xs-plus mt-sm-plus mb-lg pl-sm-extra"}>{createButton}</div>
                 )}
             </AcoWithConfig>
         </div>

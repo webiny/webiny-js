@@ -48,9 +48,7 @@ const SidebarMenuRootButton = ({
         onClick
     };
 
-    const chevron = action ? (
-        <div className="flex absolute right-sm-plus">{action}</div>
-    ) : null;
+    const chevron = action ? <div className="flex absolute right-sm-plus">{action}</div> : null;
 
     const { linkComponent: LinkComponent } = useAdminUi();
 

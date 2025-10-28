@@ -160,10 +160,7 @@ const SidebarProvider = ({ className, children, ...props }: SidebarProviderProps
             <div
                 data-sidebar={"provider"}
                 {...props}
-                className={cn(
-                    "group/sidebar-wrapper flex min-h-svh w-full",
-                    className
-                )}
+                className={cn("group/sidebar-wrapper flex min-h-svh w-full", className)}
             >
                 {children}
             </div>

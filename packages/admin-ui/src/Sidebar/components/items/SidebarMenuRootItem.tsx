@@ -54,10 +54,7 @@ const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMen
                 <Collapsible.Trigger asChild>
                     <SidebarMenuRootButton {...buttonProps} action={chevron} />
                 </Collapsible.Trigger>
-                <Collapsible.Content
-                    forceMount
-                    className={"hidden data-[state=open]:block!"}
-                >
+                <Collapsible.Content forceMount className={"hidden data-[state=open]:block!"}>
                     <SidebarMenuSub>{children}</SidebarMenuSub>
                 </Collapsible.Content>
             </Collapsible.Root>

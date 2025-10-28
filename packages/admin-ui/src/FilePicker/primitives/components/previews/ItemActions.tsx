@@ -27,10 +27,7 @@ const ItemActions = ({
     const buttonSize = small ? "xs" : "sm";
 
     return (
-        <div
-            {...props}
-            className={cn("flex justify-center items-center gap-xs", className)}
-        >
+        <div {...props} className={cn("flex justify-center items-center gap-xs", className)}>
             {small && onReplaceItem && (
                 <IconButton
                     icon={

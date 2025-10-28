@@ -30,9 +30,7 @@ const SidebarHeader = ({ title, icon }: SidebarHeaderProps) => {
                     >
                         <div className={"flex shrink-0"}>{icon}</div>
 
-                        <span className={"text-md font-semibold truncate"}>
-                            {title}
-                        </span>
+                        <span className={"text-md font-semibold truncate"}>{title}</span>
                     </div>
 
                     {expanded && (

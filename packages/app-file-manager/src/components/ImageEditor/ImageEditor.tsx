@@ -185,11 +185,7 @@ class ImageEditor extends React.Component<ImageEditorProps, ImageEditorState> {
         const { src, tools, children } = this.props;
         const { tool } = this.state;
         const editor = (
-            <div
-                className={
-                    "w-full h-full flex flex-col gap-md overflow-hidden"
-                }
-            >
+            <div className={"w-full h-full flex flex-col gap-md overflow-hidden"}>
                 <div className={"flex justify-center items-center w-full"}>
                     {tools.map(key => {
                         const tool: ImageEditorTool = toolbar[key];
@@ -201,9 +197,7 @@ class ImageEditor extends React.Component<ImageEditorProps, ImageEditorState> {
                             <div
                                 key={key}
                                 className={
-                                    this.state.tool
-                                        ? "opacity-50 cursor pointer-events-none"
-                                        : ""
+                                    this.state.tool ? "opacity-50 cursor pointer-events-none" : ""
                                 }
                             >
                                 {tool.icon({

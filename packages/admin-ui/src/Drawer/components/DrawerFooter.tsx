@@ -23,10 +23,7 @@ export const DrawerFooter = ({
     return (
         <>
             {separator && <Separator />}
-            <div
-                {...props}
-                className={cn("flex justify-between p-lg pt-md-extra", className)}
-            >
+            <div {...props} className={cn("flex justify-between p-lg pt-md-extra", className)}>
                 {info && (
                     <div className={"text-sm flex items-center"}>
                         <div>{info}</div>

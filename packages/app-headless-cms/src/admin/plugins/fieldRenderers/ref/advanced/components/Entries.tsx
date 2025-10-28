@@ -29,10 +29,7 @@ export const Entries = (props: EntriesProps) => {
     }
 
     return (
-        <div
-            style={{ height: "260px" }}
-            className={"w-full overflow-x-hidden overflow-y-hidden"}
-        >
+        <div style={{ height: "260px" }} className={"w-full overflow-x-hidden overflow-y-hidden"}>
             <Scrollbar data-testid="advanced-ref-field-entries" onScrollFrame={loadMoreOnScroll}>
                 {entries.map((entry, index) => {
                     return (

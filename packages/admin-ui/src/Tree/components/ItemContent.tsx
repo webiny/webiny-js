@@ -5,13 +5,7 @@ export type ItemContentProps = React.HTMLAttributes<HTMLDivElement>;
 
 const BaseItemContent = ({ children, className, ...props }: ItemContentProps) => {
     return (
-        <div
-            className={cn(
-                "flex items-center w-full gap-x-sm truncate",
-                className
-            )}
-            {...props}
-        >
+        <div className={cn("flex items-center w-full gap-x-sm truncate", className)} {...props}>
             {children}
         </div>
     );

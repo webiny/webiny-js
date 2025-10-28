@@ -66,11 +66,7 @@ export const AdvancedSearch = observer(
 
         return (
             <>
-                <div
-                    className={
-                        "flex flex-row-reverse justify-between items-center gap-sm"
-                    }
-                >
+                <div className={"flex flex-row-reverse justify-between items-center gap-sm"}>
                     <Button onClick={() => presenter.openManager()} />
                     {presenter.vm.appliedFilter ? (
                         <SelectedFilter

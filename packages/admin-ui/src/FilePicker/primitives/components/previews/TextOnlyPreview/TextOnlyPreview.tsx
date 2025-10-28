@@ -5,20 +5,17 @@ import { ItemActions } from "~/FilePicker/primitives/components/previews/ItemAct
 import type { FilePreviewDefaultProps } from "../../types.js";
 import { previewVariants } from "../variants.js";
 
-const textOnlyPreviewVariants = cva(
-    "w-full flex items-center justify-between gap-sm min-w-0",
-    {
-        variants: {
-            small: {
-                true: "px-sm py-xs rounded-xs",
-                false: "px-sm py-xs-plus rounded-md"
-            }
-        },
-        defaultVariants: {
-            small: false
+const textOnlyPreviewVariants = cva("w-full flex items-center justify-between gap-sm min-w-0", {
+    variants: {
+        small: {
+            true: "px-sm py-xs rounded-xs",
+            false: "px-sm py-xs-plus rounded-md"
         }
+    },
+    defaultVariants: {
+        small: false
     }
-);
+});
 
 type TextOnlyPreviewProps = FilePreviewDefaultProps &
     React.HTMLAttributes<HTMLDivElement> &

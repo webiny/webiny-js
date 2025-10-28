@@ -6,11 +6,7 @@ import { Link, Text } from "@webiny/admin-ui";
 export const NotAuthorizedError = () => {
     return (
         <div className={"flex-1"}>
-            <div
-                className={
-                    "h-full flex flex-col items-center justify-center text-center gap-xs"
-                }
-            >
+            <div className={"h-full flex flex-col items-center justify-center text-center gap-xs"}>
                 <Helmet title={"Not authorized"} />
 
                 <img

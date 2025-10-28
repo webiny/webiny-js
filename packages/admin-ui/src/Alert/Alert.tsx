@@ -36,50 +36,42 @@ const alertVariants = cva(
             {
                 type: "info",
                 variant: "strong",
-                className:
-                    "bg-neutral-dark text-neutral-light [&_a]:text-neutral-light!"
+                className: "bg-neutral-dark text-neutral-light [&_a]:text-neutral-light!"
             },
             {
                 type: "info",
                 variant: "subtle",
-                className:
-                    "bg-neutral-dimmed text-neutral-primary [&_a]:text-neutral-primary!"
+                className: "bg-neutral-dimmed text-neutral-primary [&_a]:text-neutral-primary!"
             },
             {
                 type: "success",
                 variant: "strong",
-                className:
-                    "bg-secondary text-neutral-light [&_a]:text-neutral-light!"
+                className: "bg-secondary text-neutral-light [&_a]:text-neutral-light!"
             },
             {
                 type: "success",
                 variant: "subtle",
-                className:
-                    "bg-success-subtle text-neutral-primary [&_a]:text-neutral-primary!"
+                className: "bg-success-subtle text-neutral-primary [&_a]:text-neutral-primary!"
             },
             {
                 type: "warning",
                 variant: "strong",
-                className:
-                    "bg-warning text-neutral-primary [&_a]:text-neutral-primary!"
+                className: "bg-warning text-neutral-primary [&_a]:text-neutral-primary!"
             },
             {
                 type: "warning",
                 variant: "subtle",
-                className:
-                    "bg-warning-subtle text-neutral-primary [&_a]:text-neutral-primary!"
+                className: "bg-warning-subtle text-neutral-primary [&_a]:text-neutral-primary!"
             },
             {
                 type: "danger",
                 variant: "strong",
-                className:
-                    "bg-destructive text-neutral-light [&_a]:text-neutral-light!"
+                className: "bg-destructive text-neutral-light [&_a]:text-neutral-light!"
             },
             {
                 type: "danger",
                 variant: "subtle",
-                className:
-                    "bg-destructive-subtle text-neutral-primary [&_a]:text-neutral-primary!"
+                className: "bg-destructive-subtle text-neutral-primary [&_a]:text-neutral-primary!"
             }
         ]
     }

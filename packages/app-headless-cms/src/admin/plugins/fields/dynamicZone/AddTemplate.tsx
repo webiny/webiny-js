@@ -59,11 +59,7 @@ export const AddTemplateButton = (props: AddTemplateProps) => {
                     icon={<AddIcon />}
                 />
             </div>
-            <div
-                className={
-                    "flex items-center justify-center gap-xs w-full mx-auto text-center"
-                }
-            >
+            <div className={"flex items-center justify-center gap-xs w-full mx-auto text-center"}>
                 <Text size={"sm"} className={"text-neutral-strong"}>
                     <Link
                         to={"http://webiny.link/admin/how-to-use/dynamic-zones"}

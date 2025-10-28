@@ -146,10 +146,7 @@ const Editor = () => {
                             />
                             {/* Row start - includes field drop zones and fields */}
                             <div
-                                className={cn([
-                                    "w-full flex justify-between",
-                                    "pl-xl pr-sm py-sm"
-                                ])}
+                                className={cn(["w-full flex justify-between", "pl-xl pr-sm py-sm"])}
                                 data-testid={"cms.editor.field-row"}
                             >
                                 {row.map((field, fieldIndex) => (

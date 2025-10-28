@@ -25,17 +25,11 @@ const DecoratableImagePreview = ({
             data-testid={"image-preview"}
         >
             <div
-                className={
-                    "cursor-pointer size-[128px] flex justify-center items-center"
-                }
+                className={"cursor-pointer size-[128px] flex justify-center items-center"}
                 data-role={"select-image"}
                 onClick={onReplaceItem}
             >
-                <img
-                    src={value.url}
-                    alt={value.name}
-                    className={"object-contain size-full"}
-                />
+                <img src={value.url} alt={value.name} className={"object-contain size-full"} />
             </div>
             <div className={"absolute top-1 right-1.5"}>
                 <ItemActions

@@ -64,7 +64,7 @@ const CardBase = (props: CardProps) => {
                 variant
             },
             bodyProps: { children, padding },
-            footerProps: { info, padding, actions, actionsPosition },
+            footerProps: { info, padding, actions, actionsPosition }
         };
     }, [props]);
 

@@ -6,10 +6,7 @@ type AvatarFallbackProps = AvatarPrimitive.AvatarFallbackProps;
 
 const AvatarFallbackBase = ({ className, ...props }: AvatarFallbackProps) => (
     <AvatarPrimitive.Fallback
-        className={cn(
-            "flex h-full w-full items-center justify-center rounded-sm",
-            className
-        )}
+        className={cn("flex h-full w-full items-center justify-center rounded-sm", className)}
         {...props}
     />
 );

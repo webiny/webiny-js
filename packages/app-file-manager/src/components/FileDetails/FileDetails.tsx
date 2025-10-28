@@ -70,11 +70,7 @@ const FileDetailsInner = ({ file, onForm, ...props }: FileDetailsInnerProps) => 
             {() => (
                 <Content>
                     <Content.Panel flex={parseFloat(leftPanel)}>
-                        <div
-                            className={
-                                "flex flex-col justify-between gap-md h-full px-lg py-md"
-                            }
-                        >
+                        <div className={"flex flex-col justify-between gap-md h-full px-lg py-md"}>
                             <Actions />
                             <Preview />
                         </div>

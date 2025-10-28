@@ -24,11 +24,7 @@ export interface TemplateGalleryListProps {
 
 const GalleryList = makeDecoratable("TemplateGalleryList", (props: TemplateGalleryListProps) => {
     return (
-        <div
-            className={
-                "p-md rounded-sm bg-neutral-dimmed grid grid-cols-4 gap-md"
-            }
-        >
+        <div className={"p-md rounded-sm bg-neutral-dimmed grid grid-cols-4 gap-md"}>
             {props.children}
         </div>
     );

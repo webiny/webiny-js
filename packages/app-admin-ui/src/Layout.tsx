@@ -44,9 +44,7 @@ export const Layout = LayoutRenderer.createDecorator(() => {
                             </div>
                         }
                     />
-                    <main className={"relative overflow-y-auto h-main-content"}>
-                        {children}
-                    </main>
+                    <main className={"relative overflow-y-auto h-main-content"}>{children}</main>
                 </div>
             </>
         );

@@ -33,11 +33,7 @@ const MiddleExample = () => <>Content in the middle</>;
 const EndExample = () => (
     <div className={"flex gap-x-sm"}>
         <Button variant={"ghost"} size={"md"} text={"Root tenant"} />
-        <div
-            className={
-                "flex items-center rounded-md gap-xxs py-xs px-xs bg-neutral-light"
-            }
-        >
+        <div className={"flex items-center rounded-md gap-xxs py-xs px-xs bg-neutral-light"}>
             <Avatar
                 size={"sm"}
                 variant={"strong"}

@@ -10,11 +10,7 @@ export const BottomInfoBar = () => {
     return (
         <div className="sticky bottom-0 z-5 bg-neutral-base w-full transform translate-z-0 overflow-hidden">
             <Separator />
-            <div
-                className={
-                    "h-xl px-md py-sm flex items-center justify-between"
-                }
-            >
+            <div className={"h-xl px-md py-sm flex items-center justify-between"}>
                 <ListMeta
                     loading={vm.isLoading}
                     totalCount={vm.meta.totalCount}

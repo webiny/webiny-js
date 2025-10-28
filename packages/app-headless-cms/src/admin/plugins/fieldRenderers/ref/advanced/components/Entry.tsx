@@ -73,11 +73,7 @@ export const Entry = ({
         <div className={"w-full rounded-md bg-neutral-dimmed"}>
             <div className="flex items-center justify-between gap-sm-extra min-w-0">
                 <Image title={entry.title} src={entry.image} icon={icon} />
-                <div
-                    className={
-                        "flex flex-col gap-xxs overflow-hidden flex-1 min-w-0"
-                    }
-                >
+                <div className={"flex flex-col gap-xxs overflow-hidden flex-1 min-w-0"}>
                     <Title title={entry.title} />
                     <Excerpt
                         modelName={entry.model.name}

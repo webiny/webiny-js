@@ -32,9 +32,7 @@ export const FolderCellName = ({ folder, onClick }: FolderCellNameProps) => {
             ])}
             onClick={() => onClick(folder.id)}
         >
-            <div className={"size-xl rounded-md overflow-hidden shrink-0"}>
-                {icon}
-            </div>
+            <div className={"size-xl rounded-md overflow-hidden shrink-0"}>{icon}</div>
             <Text className={"truncate min-w-0 shrink"}>{folder.title}</Text>
         </div>
     );

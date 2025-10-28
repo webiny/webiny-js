@@ -102,9 +102,7 @@ export const Main = ({ folderId: initialFolderId }: MainProps) => {
                     onSearchChange={list.setSearch}
                 />
                 <div
-                    className={
-                        "w-full overflow-hidden absolute top-0 bottom-0 left-0"
-                    }
+                    className={"w-full overflow-hidden absolute top-0 bottom-0 left-0"}
                     style={{ top: "105px" }}
                 >
                     <BulkActions />

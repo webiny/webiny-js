@@ -24,9 +24,7 @@ export const Information = (props: IInformationProps) => {
             <li>References to this model in other parts of the system will be emptied.</li>
             <li>All relevant lifecycle events will be triggered.</li>
             <li>
-                <Text className={`text-destructive-primary`}>
-                    This action cannot be undone!
-                </Text>
+                <Text className={`text-destructive-primary`}>This action cannot be undone!</Text>
             </li>
         </ul>
     );

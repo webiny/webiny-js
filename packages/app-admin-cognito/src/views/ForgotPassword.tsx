@@ -109,9 +109,7 @@ export const ForgotPassword = () => {
                                     </Grid.Column>
                                     <Grid.Column span={12}>
                                         <div
-                                            className={
-                                                "flex flex-row-reverse justify-start gap-md"
-                                            }
+                                            className={"flex flex-row-reverse justify-start gap-md"}
                                         >
                                             <Button
                                                 text={"I got the code!"}

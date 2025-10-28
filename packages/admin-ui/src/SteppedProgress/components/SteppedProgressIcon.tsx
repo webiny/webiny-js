@@ -11,8 +11,7 @@ const steppedProgressIconVariants = cva(
         variants: {
             state: {
                 [ProgressItemState.IDLE]: "hidden",
-                [ProgressItemState.IN_PROGRESS]:
-                    "size-sm-extra rounded-full bg-primary",
+                [ProgressItemState.IN_PROGRESS]: "size-sm-extra rounded-full bg-primary",
                 [ProgressItemState.COMPLETED]: "fill-neutral-base",
                 [ProgressItemState.COMPLETED_AFFIRMATIVE]: "fill-neutral-base"
             },

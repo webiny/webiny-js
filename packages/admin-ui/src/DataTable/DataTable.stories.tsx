@@ -161,10 +161,7 @@ export const WithCustomCellRenderer: Story<Entry> = {
                                 size={"xl"}
                             />
                             <div>
-                                <Text
-                                    className={"text-neutral-primary font-semibold"}
-                                    as={"div"}
-                                >
+                                <Text className={"text-neutral-primary font-semibold"} as={"div"}>
                                     {entry.name}
                                 </Text>
                                 <Text

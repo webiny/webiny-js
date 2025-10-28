@@ -4,11 +4,7 @@ import { ReactComponent as SearchOffIcon } from "@webiny/icons/search_off.svg";
 
 export const NoResults = () => {
     return (
-        <div
-            className={
-                "w-full h-full p-lg flex items-center justify-center bg-neutral-base"
-            }
-        >
+        <div className={"w-full h-full p-lg flex items-center justify-center bg-neutral-base"}>
             <div className={"flex flex-col items-center justify-center gap-sm"}>
                 <div className={"fill-neutral-strong"}>
                     <SearchOffIcon width={75} height={75} />

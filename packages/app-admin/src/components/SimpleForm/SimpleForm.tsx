@@ -24,28 +24,22 @@ interface SimpleFormProps
 
 export const SimpleForm = ({ children, className, size, ...props }: SimpleFormProps) => {
     return (
-        <div
-            {...props}
-            className={cn(["webiny-data-list", "mx-auto p-lg", "relative"], className)}
-        >
+        <div {...props} className={cn(["webiny-data-list", "mx-auto p-lg", "relative"], className)}>
             <div className={cn(simpleFormInnerVariants({ size }))}>{children}</div>
         </div>
     );
 };
 
-const simpleFormHeaderVariants = cva(
-    "p-md pl-lg border-sm border-neutral-dimmed-darker",
-    {
-        variants: {
-            rounded: {
-                true: "rounded-t-3xl"
-            }
-        },
-        defaultVariants: {
-            rounded: true
+const simpleFormHeaderVariants = cva("p-md pl-lg border-sm border-neutral-dimmed-darker", {
+    variants: {
+        rounded: {
+            true: "rounded-t-3xl"
         }
+    },
+    defaultVariants: {
+        rounded: true
     }
-);
+});
 
 interface SimpleFormHeaderProps
     extends Omit<React.HTMLAttributes<HTMLDivElement>, "title">,
@@ -110,12 +104,7 @@ interface SimpleFormContentProps {
 
 export const SimpleFormContent = ({ children, className }: SimpleFormContentProps) => {
     return (
-        <div
-            className={cn(
-                "p-lg border-sm border-y-none border-neutral-dimmed-darker",
-                className
-            )}
-        >
+        <div className={cn("p-lg border-sm border-y-none border-neutral-dimmed-darker", className)}>
             {children}
         </div>
     );

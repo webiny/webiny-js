@@ -12,9 +12,7 @@ import type { CheckboxItemDto, CheckboxItemFormatted } from "~/Checkbox/index.js
 const IndeterminateIcon = () => {
     return (
         <span
-            className={
-                "block w-sm h-xxs rounded-sm bg-primary group-disabled:bg-primary-disabled"
-            }
+            className={"block w-sm h-xxs rounded-sm bg-primary group-disabled:bg-primary-disabled"}
         />
     );
 };
@@ -98,9 +96,7 @@ const DecoratableCheckboxPrimitiveRenderer = ({
                     )}
                 </span>
             </CheckboxPrimitives.Root>
-            {hasLabel && (
-                <Label htmlFor={id} text={label} weight={"light"} className={"text-md"} />
-            )}
+            {hasLabel && <Label htmlFor={id} text={label} weight={"light"} className={"text-md"} />}
         </div>
     );
 };

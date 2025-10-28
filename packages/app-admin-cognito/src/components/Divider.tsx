@@ -8,12 +8,7 @@ export const Divider = () => {
                 <Separator />
             </div>
             <div className={"relative flex justify-center"}>
-                <Text
-                    size={"sm"}
-                    className={
-                        "text-neutral-strong px-sm bg-neutral-base uppercase"
-                    }
-                >
+                <Text size={"sm"} className={"text-neutral-strong px-sm bg-neutral-base uppercase"}>
                     {"Or continue with"}
                 </Text>
             </div>

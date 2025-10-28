@@ -35,9 +35,7 @@ const Wrapper = ({ children }: IWrapperProps) => {
                             </div>
                         </Grid.Column>
                         <Grid.Column span={9}>
-                            <div className={"flex flex-col justify-center"}>
-                                {children}
-                            </div>
+                            <div className={"flex flex-col justify-center"}>{children}</div>
                         </Grid.Column>
                     </Grid>
                 </div>

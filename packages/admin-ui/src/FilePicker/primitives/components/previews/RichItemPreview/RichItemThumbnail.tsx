@@ -60,20 +60,14 @@ const FileType = ({ mimeType = "", name }: FileTypeProps) => {
         }
     };
 
-    return (
-        <img src={getMimeTypeSrc(mimeType)} alt={name} className="size-full p-sm-extra" />
-    );
+    return <img src={getMimeTypeSrc(mimeType)} alt={name} className="size-full p-sm-extra" />;
 };
 
 type PlaceholderProps = Pick<FileItemFormatted, "name">;
 
 const Placeholder = ({ name }: PlaceholderProps) => {
     return (
-        <div
-            className={
-                "size-full flex justify-center items-center bg-transparent"
-            }
-        >
+        <div className={"size-full flex justify-center items-center bg-transparent"}>
             <Icon icon={<PlaceholderIcon />} label={name} size={"lg"} color={"neutral-light"} />
         </div>
     );

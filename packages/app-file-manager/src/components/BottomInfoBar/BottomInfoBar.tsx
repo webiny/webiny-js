@@ -17,11 +17,7 @@ export const BottomInfoBar = (props: BottomInfoBarProps) => {
     return (
         <div className="bg-neutral-base w-full overflow-hidden z-5">
             <Separator />
-            <div
-                className={
-                    "h-xl px-md py-sm flex items-center justify-between"
-                }
-            >
+            <div className={"h-xl px-md py-sm flex items-center justify-between"}>
                 <SupportedFileTypes {...props} />
                 <ListStatus {...props} />
             </div>

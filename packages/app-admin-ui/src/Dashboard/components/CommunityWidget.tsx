@@ -15,11 +15,7 @@ interface SocialLinkProps {
 
 const SocialLink = ({ link, label, icon }: SocialLinkProps) => {
     return (
-        <div
-            className={
-                "w-3xl bg-neutral-base rounded-md hover:opacity-80 transition-opacity"
-            }
-        >
+        <div className={"w-3xl bg-neutral-base rounded-md hover:opacity-80 transition-opacity"}>
             <SimpleLink
                 to={link}
                 className={"no-underline!"}

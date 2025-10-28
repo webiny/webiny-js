@@ -21,10 +21,7 @@ const t = i18n.namespace("FormsApp.Editor.FormSettings");
 
 const Title = () => {
     return (
-        <Heading
-            level={5}
-            className={"text-neutral-strong"}
-        >{t`Content model settings`}</Heading>
+        <Heading level={5} className={"text-neutral-strong"}>{t`Content model settings`}</Heading>
     );
 };
 

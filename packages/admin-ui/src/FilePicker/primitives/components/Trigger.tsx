@@ -83,11 +83,7 @@ const Trigger = ({
             className={cn(triggerVariants({ type, variant }), className)}
             {...props}
         >
-            <span
-                className={
-                    "inline-flex items-center justify-center whitespace-nowrap gap-xs"
-                }
-            >
+            <span className={"inline-flex items-center justify-center whitespace-nowrap gap-xs"}>
                 <Icon icon={<ImageIcon />} label={label} color={"inherit"} />
                 <Text size={"sm"} className={"leading-none"}>
                     {label}

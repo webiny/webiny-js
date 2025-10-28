@@ -27,9 +27,7 @@ interface ItemProps
 
 const Item = ({ className, children, selected, ...props }: ItemProps) => (
     <CommandPrimitive.Item className={cn(commandItemVariants({ selected }), className)} {...props}>
-        <span className={"w-full overflow-hidden truncate whitespace-nowrap"}>
-            {children}
-        </span>
+        <span className={"w-full overflow-hidden truncate whitespace-nowrap"}>{children}</span>
         {selected ? <Check className="w-md h-md" /> : null}
     </CommandPrimitive.Item>
 );

@@ -25,9 +25,7 @@ export const SidebarHeader = () => {
                                 <Link
                                     to={`/cms/content-models/${model.modelId}`}
                                     variant={"secondary"}
-                                    className={
-                                        "text-neutral-muted hover:text-neutral-strong"
-                                    }
+                                    className={"text-neutral-muted hover:text-neutral-strong"}
                                 >
                                     {model.modelId}
                                 </Link>

@@ -15,9 +15,7 @@ export const AssistanceWidget = () => {
                 />
                 <Heading level={6}>{"Need some assistance?"}</Heading>
             </div>
-            <div
-                className={"bg-neutral-base rounded-sm px-md py-sm-extra mb-md"}
-            >
+            <div className={"bg-neutral-base rounded-sm px-md py-sm-extra mb-md"}>
                 <SimpleLink
                     to="https://www.webiny.com/docs"
                     target={"_blank"}

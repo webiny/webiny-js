@@ -21,11 +21,7 @@ const AvatarImagePreview = ({
         <div className={"w-full flex-1"}>
             <div className={cn("size-[128px] mx-auto relative overflow-hidden")}>
                 <div className={"size-full"}>
-                    <img
-                        src={value.url}
-                        alt={value.name}
-                        className={"object-cover size-full"}
-                    />
+                    <img src={value.url} alt={value.name} className={"object-cover size-full"} />
                 </div>
                 <div
                     className={cn([

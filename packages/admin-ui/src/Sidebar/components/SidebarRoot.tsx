@@ -6,16 +6,13 @@ interface SidebarRootProps extends React.ComponentProps<"div"> {
     side?: "left" | "right";
 }
 
-const variants = cva(
-    "group peer block border-r-sm border-neutral-dimmed bg-neutral-light",
-    {
-        variants: {
-            pinned: {
-                false: "fixed top-0 z-10 "
-            }
+const variants = cva("group peer block border-r-sm border-neutral-dimmed bg-neutral-light", {
+    variants: {
+        pinned: {
+            false: "fixed top-0 z-10 "
         }
     }
-);
+});
 
 const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRootProps) => {
     const { state, setExpanded, pinned } = useSidebar();
@@ -77,10 +74,7 @@ const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRo
                 )}
                 {...props}
             >
-                <div
-                    data-sidebar="sidebar"
-                    className="flex h-full w-full py-xs flex-col"
-                >
+                <div data-sidebar="sidebar" className="flex h-full w-full py-xs flex-col">
                     {children}
                 </div>
             </div>

@@ -67,19 +67,10 @@ const DecoratableListItem = ({
             )}
         >
             {handle}
-            <div
-                className={
-                    "w-full flex justify-between items-center pl-lg pr-md py-sm-extra"
-                }
-            >
-                <div
-                    className={"w-full flex items-center gap-md"}
-                    onClick={onClick}
-                >
+            <div className={"w-full flex justify-between items-center pl-lg pr-md py-sm-extra"}>
+                <div className={"w-full flex items-center gap-md"} onClick={onClick}>
                     {icon && <div>{icon}</div>}
-                    <div
-                        className={"flex flex-col gap-xxs grow text-left"}
-                    >
+                    <div className={"flex flex-col gap-xxs grow text-left"}>
                         <Text
                             size={"md"}
                             as={"div"}
@@ -92,9 +83,7 @@ const DecoratableListItem = ({
                         </Text>
                     </div>
                 </div>
-                {actions && (
-                    <div className={"flex items-center gap-xs-plus"}>{actions}</div>
-                )}
+                {actions && <div className={"flex items-center gap-xs-plus"}>{actions}</div>}
             </div>
             {children}
         </div>

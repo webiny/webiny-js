@@ -21,9 +21,7 @@ export const UserMenuHandle = UserMenuHandleRendererSpec.createDecorator(() => {
             <div className={"flex gap-x-sm cursor-pointer"}>
                 <div
                     data-testid="logged-in-user-menu-avatar"
-                    className={
-                        "flex items-center rounded-md gap-xxs py-xs px-xs bg-neutral-light"
-                    }
+                    className={"flex items-center rounded-md gap-xxs py-xs px-xs bg-neutral-light"}
                 >
                     <Avatar
                         size={"sm"}
