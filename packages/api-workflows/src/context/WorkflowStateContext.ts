@@ -114,11 +114,12 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         params?: IWorkflowStateContextListStatesParams
     ): Promise<IWorkflowStateContextListStatesResponse> {
         const id = this.context.security.getIdentity().id;
-        const { items: states, meta } = await this.fetchAll(params);
         /**
          * Let's prefetch user teams for the current identity to avoid multiple calls later.
          */
         await this.getUserTeams(id);
+
+        const { items: states, meta } = await this.fetchAll(params);
 
         /**
          * Convert records to workflow state instances.
@@ -134,7 +135,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     }
 
     public async listOwnWorkflowStates(
-        params: IWorkflowStateContextListOwnWorkflowStatesParams
+        params?: IWorkflowStateContextListOwnWorkflowStatesParams
     ): Promise<IWorkflowStateContextListOwnWorkflowStatesResponse> {
         const identity = this.context.security.getIdentity();
         if (!identity?.id) {
@@ -151,7 +152,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         const result = await this.listStates({
             ...params,
             where: {
-                ...params.where,
+                ...params?.where,
                 createdBy: identity.id
             }
         });
@@ -162,7 +163,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     }
 
     public async listRequestedWorkflowStates(
-        params: IWorkflowStateContextListOwnWorkflowStatesParams
+        params?: IWorkflowStateContextListOwnWorkflowStatesParams
     ): Promise<IWorkflowStateContextListOwnWorkflowStatesResponse> {
         const identity = this.context.security.getIdentity();
         const teams = await this.getUserTeams(identity.id);
@@ -180,9 +181,12 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         const result = await this.listStates({
             ...params,
             where: {
-                ...params.where,
+                ...params?.where,
+                createdBy_not: identity.id,
                 steps: {
-                    teams_in: teams
+                    teams: {
+                        id_in: teams.map(team => team.id)
+                    }
                 }
             }
         });
