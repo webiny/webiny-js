@@ -3,7 +3,7 @@ import { Result } from "@webiny/feature/api";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { GroupsRepository as RepositoryAbstraction } from "./abstractions.js";
 import type { Group, GetGroupInput, ListGroupsInput } from "./types.js";
-import { SecurityStorageOperations, GroupsProvider } from "~/features/shared/abstractions.js";
+import { SecurityStorageOperations, GroupsProvider } from "~/features/security/shared/abstractions.js";
 import { GroupNotFoundError, GroupStorageError } from "./errors.js";
 
 class GroupsRepositoryImpl implements RepositoryAbstraction.Interface {

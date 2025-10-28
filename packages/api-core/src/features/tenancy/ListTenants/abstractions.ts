@@ -1,5 +1,5 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
-import type { Tenant, ListTenantsParams } from "~/types.js";
+import type { Tenant, ListTenantsParams } from "~/types/tenancy.js";
 
 // Use Case Abstraction
 export interface IListTenantsUseCase {

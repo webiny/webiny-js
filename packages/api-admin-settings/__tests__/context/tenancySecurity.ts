@@ -1,15 +1,15 @@
-import { createTenancyContext } from "@webiny/api-tenancy";
-import { createSecurityContext } from "@webiny/api-security";
-import type {
-    SecurityContext,
-    SecurityIdentity,
-    SecurityPermission,
-    SecurityStorageOperations
-} from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import type { TenancyContext, TenancyStorageOperations } from "@webiny/api-tenancy/types";
+import type {
+    SecurityIdentity,
+    SecurityPermission,
+    SecurityStorageOperations
+} from "@webiny/api-core/types/security.js";
+import { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
+import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import { createApiCore } from "@webiny/api-core";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 interface Config {
     permissions: SecurityPermission[];
@@ -19,16 +19,21 @@ interface Config {
 export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
     const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
     const securityStorage = getStorageOps<SecurityStorageOperations>("security");
+    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
 
     return [
-        createTenancyContext({ storageOperations: tenancyStorage.storageOperations }),
-        createSecurityContext({ storageOperations: securityStorage.storageOperations }),
-        new ContextPlugin<SecurityContext & TenancyContext>(context => {
+        createApiCore({
+            tenancyStorageOperations: tenancyStorage.storageOperations,
+            securityStorageOperations: securityStorage.storageOperations,
+            usersStorageOperations: adminUsersStorage.storageOperations
+        }),
+        new ContextPlugin<ApiCoreContext>(context => {
             context.tenancy.setCurrentTenant({
                 id: "root",
                 name: "Root",
                 parent: null,
                 description: "",
+                isInstalled: true,
                 status: "unknown",
                 settings: {
                     domains: []
@@ -53,7 +58,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
                 return permissions || [{ name: "*" }];
             });
         }),
-        new BeforeHandlerPlugin<SecurityContext>(context => {
+        new BeforeHandlerPlugin<ApiCoreContext>(context => {
             return context.security.authenticate("");
         })
     ].filter(Boolean);

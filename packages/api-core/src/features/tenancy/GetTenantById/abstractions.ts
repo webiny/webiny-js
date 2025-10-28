@@ -1,5 +1,5 @@
 import { type Result, createAbstraction } from "@webiny/feature/api";
-import type { Tenant } from "~/types.js";
+import type { Tenant } from "~/types/tenancy.js";
 
 export type GetTenantByIdError = { type: "NOT_FOUND" } | { type: "UNKNOWN"; cause: Error };
 

@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { IEventHandler, DomainEvent } from "@webiny/api-core";
+import type { IEventHandler, DomainEvent } from "~/features/eventPublisher/index.js";
 import type { TenantBeforeDeletePayload, TenantAfterDeletePayload } from "./events.js";
 
 export interface IDeleteTenantUseCase {

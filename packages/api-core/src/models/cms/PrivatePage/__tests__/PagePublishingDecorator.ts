@@ -1,5 +1,5 @@
 import { createDecorator } from "@webiny/di-container";
-import { PageCmsModelBuilder } from "~/cms/PrivatePage/abstractions.js";
+import { PageCmsModelBuilder } from "~/models/cms/PrivatePage/abstractions.js";
 
 class PagePublishingDecoratorImpl implements PageCmsModelBuilder.Interface {
     constructor(private decoratee: PageCmsModelBuilder.Interface) {}
@@ -44,7 +44,7 @@ export const PagePublishingDecorator = createDecorator({
     dependencies: []
 });
 
-declare module "~/cms/PrivatePage/abstractions.js" {
+declare module "~/models/cms/PrivatePage/abstractions.js" {
     interface IPage {
         publish(userId: string): void;
         unpublish(): void;

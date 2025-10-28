@@ -1,6 +1,6 @@
 import { DbContext } from "@webiny/handler-db/types";
-import { WcpContext } from "@webiny/api-wcp/types";
 import { Context as BaseContext } from "@webiny/handler/types";
+import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 
 export type TenantSettings = Record<string, any>;
 
@@ -43,7 +43,7 @@ export interface TenancyStorageOperations {
 }
 
 // LEGACY CONTEXT
-export interface TenancyContext extends BaseContext, DbContext, WcpContext {
+export interface TenancyContext extends BaseContext, DbContext, WcpContext.Interface {
     tenancy: Tenancy;
 }
 

@@ -12,7 +12,7 @@
     { "path": "../plugins" },
     { "path": "../pubsub" },
     { "path": "../utils" },
-    { "path": "../api-i18n" }
+    { "path": "../api-core" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -41,8 +41,8 @@
       "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
-      "@webiny/api-i18n/*": ["../api-i18n/src/*"],
-      "@webiny/api-i18n": ["../api-i18n/src"]
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"]
     },
     "baseUrl": "."
   }

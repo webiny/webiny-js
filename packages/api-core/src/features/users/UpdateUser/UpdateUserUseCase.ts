@@ -1,20 +1,20 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { UpdateUserUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { AdminUsersRepository } from "~/features/shared/abstractions.js";
+import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 import { updateUserValidation } from "./schema.js";
 import {
     NotAuthorizedError,
     UserValidationError
-} from "~/features/shared/errors.js";
+} from "~/features/users/shared/errors.js";
 import {
     UserBeforeUpdateEvent,
     UserAfterUpdateEvent
 } from "./events.js";
-import type { AdminUser } from "~/features/shared/types.js";
-import type { UpdateUserInput } from "~/features/shared/types.js";
+import type { AdminUser } from "~/features/users/shared/types.js";
+import type { UpdateUserInput } from "~/features/users/shared/types.js";
 
 class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

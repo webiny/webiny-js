@@ -4,7 +4,7 @@ import { ListGroupsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GroupsRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import type { Group, ListGroupsInput } from "../shared/types.js";
-import { NotAuthorizedError } from "~/features/groups/shared/errors.js";
+import { NotAuthorizedError } from "~/features/security/groups/shared/errors.js";
 
 class ListGroupsUseCaseImpl implements UseCaseAbstraction.Interface {
     private repository: GroupsRepository.Interface;

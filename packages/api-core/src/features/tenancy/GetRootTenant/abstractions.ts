@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { GetTenantByIdUseCase } from "~/features/GetTenantById/index.js";
+import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
 
 // Use Case Abstraction
 export interface IGetRootTenantUseCase {

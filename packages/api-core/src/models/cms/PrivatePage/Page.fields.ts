@@ -1,4 +1,4 @@
-import { createFieldDefinitions, type InferFieldSchema } from "~/cms/FieldDefinitionsBuilder.js";
+import { createFieldDefinitions, type InferFieldSchema } from "~/models/cms/FieldDefinitionsBuilder.js";
 
 export const PageFieldDefinitions = createFieldDefinitions(fields => ({
     id: fields.text().required(),

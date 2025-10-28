@@ -1,4 +1,4 @@
-import type { SecurityContext } from "~/types.js";
+import type { SecurityContext } from "~/types/security.js";
 import type { TenancyContext } from "~/types/tenancy.js";
 
 export type Context = SecurityContext & TenancyContext;

@@ -1,6 +1,6 @@
 import { Abstraction } from "@webiny/di-container";
-import type { IModel, IModelData } from "~/models/abstractions.js";
-import type { ICmsModelBuilder, ICmsModelFactory } from "~/cms/abstractions.js";
+import type { IModel, IModelData } from "~/models/base/abstractions.js";
+import type { ICmsModelBuilder, ICmsModelFactory } from "~/models/cms/abstractions.js";
 import type { PageFieldsSchema } from "./Page.fields.js";
 
 // Extension interface for plugins to augment

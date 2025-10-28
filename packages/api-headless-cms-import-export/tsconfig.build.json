@@ -11,7 +11,7 @@
     { "path": "../tasks/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
-    { "path": "../api-i18n/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }

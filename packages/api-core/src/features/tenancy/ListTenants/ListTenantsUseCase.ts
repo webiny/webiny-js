@@ -1,7 +1,7 @@
 import { createImplementation, Result } from "@webiny/feature/api";
 import { ListTenantsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { ListTenantsRepository } from "./abstractions.js";
-import type { ListTenantsParams } from "~/types.js";
+import type { ListTenantsParams } from "~/types/tenancy.js";
 
 class ListTenantsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private repository: ListTenantsRepository.Interface) {}

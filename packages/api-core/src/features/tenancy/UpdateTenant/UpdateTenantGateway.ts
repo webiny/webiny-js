@@ -1,7 +1,7 @@
 import { createImplementation } from "@webiny/feature/api";
 import { UpdateTenantGateway as GatewayAbstraction } from "./abstractions.js";
-import { type Tenant } from "~/types.js";
-import { TenancyStorageOperations } from "~/features/shared/storageOperations.js";
+import { type Tenant } from "~/types/tenancy.js";
+import { TenancyStorageOperations } from "~/features/tenancy/shared/storageOperations.js";
 
 class UpdateTenantGatewayImpl implements GatewayAbstraction.Interface {
     constructor(private storageOperations: TenancyStorageOperations.Interface) {}

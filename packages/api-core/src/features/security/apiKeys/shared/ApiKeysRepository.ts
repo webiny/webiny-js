@@ -2,7 +2,7 @@ import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { ApiKeysRepository as RepositoryAbstraction } from "./abstractions.js";
 import type { ApiKey, ListApiKeysInput } from "./types.js";
-import { SecurityStorageOperations } from "~/features/shared/abstractions.js";
+import { SecurityStorageOperations } from "~/features/security/shared/abstractions.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { ApiKeyNotFoundError, ApiKeyStorageError } from "./errors.js";
 

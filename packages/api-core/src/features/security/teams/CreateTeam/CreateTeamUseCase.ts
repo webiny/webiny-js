@@ -2,7 +2,7 @@ import { mdbid } from "@webiny/utils";
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { CreateTeam } from "./abstractions.js";
 import { TeamsRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";

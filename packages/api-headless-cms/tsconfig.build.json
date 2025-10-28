@@ -3,7 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../api/tsconfig.build.json" },
-    { "path": "../api-i18n/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" },
     { "path": "../di-container/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },

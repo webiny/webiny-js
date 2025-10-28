@@ -1,7 +1,4 @@
-import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
-import type { I18NLocale } from "@webiny/api-i18n/types.js";
-import type { Tenant } from "@webiny/api-tenancy/types.js";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createAcoStorageOperations } from "~/createAcoStorageOperations.js";
@@ -37,6 +34,8 @@ import { GetFlpFeature } from "~/features/flp/GetFlp/feature.js";
 import {
     ListFolderLevelPermissionsTargetsFeature
 } from "~/features/folders/ListFolderLevelPermissionsTargets/feature.js";
+import { Tenant } from "@webiny/api-core/types/tenancy";
+import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -47,19 +46,7 @@ const setupAcoContext = async (
     context: AcoContext,
     setupAcoContextParams: CreateAcoContextParams
 ): Promise<void> => {
-    const { tenancy, security, i18n } = context;
-
-    const getLocale = (): I18NLocale => {
-        const locale = i18n.getContentLocale();
-        if (!locale) {
-            throw new WebinyError(
-                "Missing content locale in api-aco/plugins/context.ts",
-                "LOCALE_ERROR"
-            );
-        }
-
-        return locale;
-    };
+    const { tenancy, security} = context;
 
     const getTenant = (): Tenant => {
         return tenancy.getCurrentTenant();

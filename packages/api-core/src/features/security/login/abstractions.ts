@@ -1,7 +1,7 @@
-import { DomainEvent } from "@webiny/api-core";
-import type { IEventHandler } from "@webiny/api-core";
+import { DomainEvent } from "~/features/eventPublisher/index.js";
+import type { IEventHandler } from "~/features/eventPublisher/index.js";
 import { createAbstraction } from "@webiny/feature/api";
-import { Identity } from "~/features/IdentityContext/index.js";
+import { Identity } from "~/features/security/IdentityContext/index.js";
 
 export interface AfterLoginPayload {
     identity: Identity;

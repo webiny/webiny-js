@@ -1,13 +1,15 @@
 import { ContextPlugin } from "@webiny/api";
-import { createGroupsTeamsAuthorizerHandler } from "@webiny/api-security";
-import type { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types.js";
 import type { Config as CognitoConfig, TokenData } from "@webiny/api-cognito-authenticator";
 import { createAuthenticator } from "@webiny/api-cognito-authenticator";
-import { ExternalIdpUserSyncFeature } from "@webiny/api-admin-users/features/ExternalIdpUserSync/index.js";
-import type { CoreContext } from "~/types.js";
 import adminUsersGqlPlugins from "./graphql/user.gql.js";
 import { AdminUserInstallerFeature } from "~/features/AdminUserInstaller/feature.js";
 import { UpdateUserPermissions } from "~/features/UpdateUserPermissions/feature.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import type { SecurityIdentity, SecurityPermission } from "@webiny/api-core/types/security.js";
+import {
+    createGroupsTeamsAuthorizerHandler
+} from "@webiny/api-core/features/security/utils/createGroupsTeamsAuthorizer.js";
+import { ExternalIdpUserSyncFeature } from "@webiny/api-core/features/ExternalIdpUserSync";
 
 interface GetIdentityParams<TContext, TToken, TIdentity> {
     identity: TIdentity;
@@ -38,7 +40,7 @@ export interface CognitoTokenData extends TokenData {
 }
 
 export const createCognito = <
-    TContext extends CoreContext = CoreContext,
+    TContext extends ApiCoreContext = ApiCoreContext,
     TToken extends CognitoTokenData = CognitoTokenData,
     TIdentity extends SecurityIdentity = SecurityIdentity
 >(

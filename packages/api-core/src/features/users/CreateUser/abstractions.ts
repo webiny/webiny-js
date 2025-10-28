@@ -1,13 +1,13 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { AdminUser } from "~/features/shared/types.js";
-import type { CreateUserInput } from "~/features/shared/types.js";
-import { AdminUsersRepository } from "~/features/shared/abstractions.js";
+import type { AdminUser } from "~/features/users/shared/types.js";
+import type { CreateUserInput } from "~/features/users/shared/types.js";
+import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 import {
     NotAuthorizedError,
     UserExistsError,
     UserValidationError
-} from "~/features/shared/errors.js";
+} from "~/features/users/shared/errors.js";
 
 // Use case specific errors
 export interface ICreateUserErrors {

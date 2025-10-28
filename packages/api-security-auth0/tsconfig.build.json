@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../api-i18n/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" }

@@ -3,7 +3,7 @@ import { Result } from "@webiny/feature/api";
 import { UpdateApiKey } from "./abstractions.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { apiKeyInputSchema } from "../shared/schemas.js";
 import { ApiKeyBeforeUpdateEvent, ApiKeyAfterUpdateEvent } from "./events.js";
 import type { ApiKey, UpdateApiKeyInput } from "../shared/types.js";

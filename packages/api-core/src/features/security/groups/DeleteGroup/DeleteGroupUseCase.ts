@@ -3,7 +3,7 @@ import { Result } from "@webiny/feature/api";
 import { DeleteGroupUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GroupsRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { GroupBeforeDeleteEvent, GroupAfterDeleteEvent } from "./events.js";
 import { NotAuthorizedError, CannotDeletePluginGroupsError } from "../shared/errors.js";
 

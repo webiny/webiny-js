@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { Container } from "@webiny/di-container";
-import { FieldBuilderRegistry } from "~/cms/FieldBuilderRegistry.js";
-import { PrivateCmsModelBuilder } from "~/cms/PrivateCmsModelBuilder.js";
+import { FieldBuilderRegistry } from "~/models/cms/FieldBuilderRegistry.js";
+import { PrivateCmsModelBuilder } from "~/models/cms/PrivateCmsModelBuilder.js";
 import { PageCmsModelBuilder } from "../PageModelBuilder.js";
 import { PageModelFactory } from "../PageModelFactory.js";
 import { PageModelFactory as FactoryAbstraction } from "../abstractions.js";

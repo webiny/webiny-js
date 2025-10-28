@@ -1,5 +1,5 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
-import type { IEventHandler, DomainEvent } from "@webiny/api-core";
+import type { IEventHandler, DomainEvent } from "~/features/eventPublisher/index.js";
 import { InstallSystemError, SystemAlreadyInstalledError } from "./errors.js";
 import {
     type AppInstallationData,

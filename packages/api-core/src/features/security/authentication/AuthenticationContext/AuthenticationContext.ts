@@ -1,10 +1,10 @@
 import { createImplementation } from "@webiny/di-container";
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { AuthenticationContext as Abstraction } from "./abstractions.js";
 import { Authenticator } from "../Authenticator/index.js";
 import { BeforeAuthenticationEvent, AfterAuthenticationEvent } from "./events.js";
-import type { Identity } from "~/features/IdentityContext/Identity.js";
-import { AnonymousIdentity, AuthenticatedIdentity } from "~/features/IdentityContext/index.js";
+import type { Identity } from "~/features/security/IdentityContext/Identity.js";
+import { AnonymousIdentity, AuthenticatedIdentity } from "~/features/security/IdentityContext/index.js";
 
 class AuthenticationContextImpl implements Abstraction.Interface {
     private authToken?: string;

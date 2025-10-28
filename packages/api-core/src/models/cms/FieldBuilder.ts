@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { FieldConfig } from "./types.js";
-import type { IFieldBuilderRegistry } from "~/cms/abstractions.js";
+import type { IFieldBuilderRegistry } from "./abstractions.js";
 
 // Make FieldBuilder return the Zod type it produces
 export abstract class FieldBuilder<TZod extends z.ZodTypeAny> {

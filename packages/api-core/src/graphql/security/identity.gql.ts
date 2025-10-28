@@ -1,6 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import type { ApiCoreContext } from "~/types/core.js";
 import { AfterLoginEvent } from "~/features/security/login/index.js";
 

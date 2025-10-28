@@ -11,7 +11,7 @@ import type {
     GetTenantLinkByIdentityInput,
     TenantLink
 } from "./types.js";
-import { SecurityStorageOperations } from "~/features/shared/abstractions.js";
+import { SecurityStorageOperations } from "~/features/security/shared/abstractions.js";
 import { TenantLinkStorageError } from "./errors.js";
 
 class TenantLinksRepositoryImpl implements RepositoryAbstraction.Interface {

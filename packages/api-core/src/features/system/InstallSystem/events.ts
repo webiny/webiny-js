@@ -1,4 +1,4 @@
-import { DomainEvent } from "@webiny/api-core";
+import { DomainEvent } from "~/features/eventPublisher/index.js";
 import { SystemInstalledHandler } from "./abstractions.js";
 
 export class SystemInstalledEvent extends DomainEvent {

@@ -3,7 +3,7 @@ import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
 import { ListUserTeamsUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { AdminUsersRepository } from "~/features/shared/abstractions.js";
+import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 import type { Team } from "~/types/security.js";
 
 class ListUserTeamsUseCaseImpl implements UseCaseAbstraction.Interface {

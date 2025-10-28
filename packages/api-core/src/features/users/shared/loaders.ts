@@ -1,7 +1,7 @@
 import DataLoader from "dataloader";
 import WebinyError from "@webiny/error";
 import flatten from "lodash/flatten.js";
-import type { AdminUsersStorageOperations } from "~/types.js";
+import type { AdminUsersStorageOperations } from "~/types/users.js";
 import type { AdminUser } from "./types.js";
 
 interface Config {

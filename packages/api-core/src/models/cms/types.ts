@@ -1,7 +1,7 @@
 import { z } from "zod";
-import type { ModelClass } from "~/models/ModelBuilder.js";
-import type { BaseModel } from "~/models/BaseModel.js";
-import type { IModelData } from "~/models/abstractions.js";
+import type { ModelClass } from "~/models/base/ModelBuilder.js";
+import type { BaseModel } from "~/models/base/BaseModel.js";
+import type { IModelData } from "~/models/base/abstractions.js";
 
 export interface FieldConfig {
     fieldId: string;

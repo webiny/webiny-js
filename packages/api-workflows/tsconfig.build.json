@@ -3,6 +3,7 @@
   "include": ["src"],
   "references": [
     { "path": "../api/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },

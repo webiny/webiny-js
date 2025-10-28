@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
+    { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-elasticsearch/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../api-headless-cms-ddb-es/tsconfig.build.json" },
@@ -10,7 +11,6 @@
     { "path": "../tasks/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
-    { "path": "../api-i18n/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" }
   ],

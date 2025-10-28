@@ -12,7 +12,7 @@
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../pubsub/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
-    { "path": "../api-i18n/tsconfig.build.json" }
+    { "path": "../api-core/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",

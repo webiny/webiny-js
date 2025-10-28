@@ -1,4 +1,4 @@
-import type { SecurityPermission } from "~/types.js";
+import type { SecurityPermission } from "~/types/security.js";
 
 /**
  * Abstract base class for all identity types.

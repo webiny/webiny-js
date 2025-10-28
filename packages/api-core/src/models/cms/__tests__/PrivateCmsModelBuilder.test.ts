@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 import { PrivateCmsModelBuilder } from "../PrivateCmsModelBuilder.js";
 import { FieldBuilderRegistry } from "../FieldBuilderRegistry.js";
 import { createFieldDefinitions, type InferFieldSchema } from "../FieldDefinitionsBuilder.js";
-import type { IModel } from "~/models/abstractions.js";
+import type { IModel } from "~/models/base/abstractions.js";
 
 describe("PrivateCmsModelBuilder", () => {
     const registry = new FieldBuilderRegistry();

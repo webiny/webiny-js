@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { ListApiKeysInput } from "../shared/types.js";
-import type { ApiKey } from "~/types.js";
+import type { ApiKey } from "~/types/security.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { NotAuthorizedError, ApiKeyValidationError } from "../shared/errors.js";
 

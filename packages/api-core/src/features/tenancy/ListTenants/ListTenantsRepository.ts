@@ -1,7 +1,7 @@
 import { createImplementation } from "@webiny/feature/api";
 import { ListTenantsRepository as RepositoryAbstraction } from "./abstractions.js";
 import { ListTenantsGateway } from "./abstractions.js";
-import type { ListTenantsParams } from "~/types.js";
+import type { ListTenantsParams } from "~/types/tenancy.js";
 
 class ListTenantsRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(private gateway: ListTenantsGateway.Interface) {}

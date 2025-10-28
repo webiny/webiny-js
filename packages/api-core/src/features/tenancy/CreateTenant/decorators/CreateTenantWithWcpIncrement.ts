@@ -1,7 +1,7 @@
-import { WcpContext } from "@webiny/api-wcp/features/WcpContext";
 import { createDecorator } from "@webiny/feature/api";
 import { CreateTenantUseCase } from "../abstractions.js";
-import type { CreateTenantInput } from "~/types.js";
+import type { CreateTenantInput } from "~/types/tenancy.js";
+import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 
 class CreateTenantWithWcpIncrementImpl implements CreateTenantUseCase.Interface {
     constructor(

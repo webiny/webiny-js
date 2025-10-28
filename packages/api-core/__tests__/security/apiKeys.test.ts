@@ -1,13 +1,13 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
-import { mockCreateGetWcpProjectEnvironment } from "./wcp/aacl/mocks/mockCreateGetWcpProjectEnvironment";
-import { mockCreateGetWcpProjectLicense } from "./wcp/aacl/mocks/mockCreateGetWcpProjectLicense";
-import useGqlHandler from "./useGqlHandler";
-import apiKeyAuthentication from "~/plugins/apiKeyAuthentication";
-import apiKeyAuthorization from "~/plugins/apiKeyAuthorization";
+import { mockCreateGetWcpProjectEnvironment } from "./aacl/mocks/mockCreateGetWcpProjectEnvironment.js";
+import { mockCreateGetWcpProjectLicense } from "./aacl/mocks/mockCreateGetWcpProjectLicense.js";
+import useGqlHandler from "../useGqlHandler.js";
+import apiKeyAuthentication from "~/legacy/security/plugins/apiKeyAuthentication.js";
+import apiKeyAuthorization from "~/legacy/security/plugins/apiKeyAuthorization.js";
 
-vi.mock("@webiny/api-wcp/utils", async () => {
+vi.mock("~/features/wcp/WcpContext/utils.js", async () => {
     // The mock returned only mocks the generateServerSeed method.
-    const actual = await vi.importActual("@webiny/api-wcp/utils");
+    const actual = await vi.importActual("~/features/wcp/WcpContext/utils.js");
 
     return {
         ...actual,

@@ -7,8 +7,8 @@ import type {
     WcpProjectEnvironment,
     WcpProject
 } from "@webiny/wcp/types.js";
-import { wcpFetch } from "~/utils.js";
 import { WcpContext } from "./abstractions.js";
+import { wcpFetch } from "~/features/wcp/WcpContext/utils.js";
 
 const wcpProjectEnvironment = getWcpProjectEnvironment();
 

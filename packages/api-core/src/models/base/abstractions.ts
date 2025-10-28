@@ -1,8 +1,8 @@
 import { z } from "zod";
-import type { ModelBuilder } from "~/models/ModelBuilder.js";
-import { BaseModel, type IModelData } from "~/models/BaseModel.js";
+import type { ModelBuilder } from "./ModelBuilder.js";
+import { BaseModel, type IModelData } from "./BaseModel.js";
 
-export type { IModelInput, IModelData } from "~/models/BaseModel.js";
+export type { IModelInput, IModelData } from "./BaseModel.js";
 
 export type IModel<TSchema extends z.ZodObject<any>> = BaseModel<TSchema> & z.infer<TSchema>;
 

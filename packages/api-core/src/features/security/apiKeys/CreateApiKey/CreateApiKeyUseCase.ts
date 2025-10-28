@@ -2,14 +2,14 @@ import { mdbid } from "@webiny/utils";
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { CreateApiKey } from "./abstractions.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { createApiKeyInputSchema } from "../shared/schemas.js";
 import { ApiKeyBeforeCreateEvent, ApiKeyAfterCreateEvent } from "./events.js";
 import type { ApiKey, CreateApiKeyInput } from "../shared/types.js";
-import type { ApiKeyPermission } from "~/types.js";
+import type { ApiKeyPermission } from "~/types/security.js";
 import { generateToken } from "../shared/generateToken.js";
 import { ApiKeyValidationError, NotAuthorizedError } from "../shared/errors.js";
 

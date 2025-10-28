@@ -2,7 +2,7 @@ import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/index.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { type AppInstallationData } from "~/features/tenancy/InstallTenant/index.js";
 import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/index.js";
-import { InstallSystemUseCase } from "~/features/InstallSystem/index.js";
+import { InstallSystemUseCase } from "~/features/system/InstallSystem/index.js";
 
 const emptyResolver = () => ({});
 

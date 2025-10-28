@@ -4,8 +4,8 @@ import {
     PageCmsModelBuilder,
     type IPage
 } from "./abstractions.js";
-import type { ModelClass } from "~/models/ModelBuilder.js";
-import type { PrivateCmsModel } from "~/cms/types.js";
+import type { ModelClass } from "~/models/base/ModelBuilder.js";
+import type { PrivateCmsModel } from "~/models/cms/types.js";
 
 class PageModelFactoryImpl implements FactoryAbstraction.Interface {
     private modelClass: ModelClass<IPage> | undefined;

@@ -1,12 +1,12 @@
 import { WebinyError } from "@webiny/error";
-import type { I18NLocale } from "@webiny/api-i18n/types.js";
-import type { Tenant } from "@webiny/api-tenancy/types.js";
 import {
     type AcoFolderLevelPermissionsCrud,
     type AcoStorageOperations,
     type CreateFlpParams,
     type UpdateFlpParams
 } from "~/types.js";
+import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
 export interface CreateFlpCrudMethodsParams {
     getLocale: () => I18NLocale;

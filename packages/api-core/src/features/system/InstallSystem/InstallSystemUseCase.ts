@@ -1,5 +1,5 @@
 import { Result, createImplementation } from "@webiny/feature/api";
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { InstallSystemUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { InstallTenantUseCase } from "~/features/tenancy/InstallTenant/index.js";
 import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/index.js";

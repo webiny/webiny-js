@@ -1,12 +1,12 @@
 import { Result, createImplementation } from "@webiny/feature/api";
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { InstallTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { AppInstaller } from "./abstractions.js";
 import { InstallTenantError, InstallationDependencyError } from "./errors.js";
 import { TenantInstalledEvent } from "./events.js";
 import { DependencyResolver } from "./DependencyResolver.js";
 import type { TenantInstallationInput } from "./abstractions.js";
-import { UpdateTenantUseCase } from "~/features/UpdateTenant/index.js";
+import { UpdateTenantUseCase } from "~/features/tenancy/UpdateTenant/index.js";
 
 class InstallTenantUseCaseImpl implements UseCaseAbstraction.Interface {
     private resolver: DependencyResolver;

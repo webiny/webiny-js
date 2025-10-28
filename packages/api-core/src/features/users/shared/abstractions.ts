@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { AdminUser } from "~/types.js";
+import type { AdminUser } from "~/types/users.js";
 import type {
     GetUserInput,
     ListUsersInput

@@ -3,22 +3,22 @@ import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { CreateUserUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { AdminUsersRepository } from "~/features/shared/abstractions.js";
+import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 import { createUserValidation } from "./schema.js";
 import {
     NotAuthorizedError,
     UserExistsError,
     UserValidationError
-} from "~/features/shared/errors.js";
+} from "~/features/users/shared/errors.js";
 import {
     UserBeforeCreateEvent,
     UserAfterCreateEvent
 } from "./events.js";
-import type { AdminUser } from "~/features/shared/types.js";
-import type { CreateUserInput } from "~/features/shared/types.js";
-import type { CreatedBy } from "~/types.js";
+import type { AdminUser } from "~/features/users/shared/types.js";
+import type { CreateUserInput } from "~/features/users/shared/types.js";
+import type { CreatedBy } from "~/types/users.js";
 
 class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

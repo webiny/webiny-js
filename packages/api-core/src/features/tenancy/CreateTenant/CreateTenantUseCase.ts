@@ -1,11 +1,11 @@
 import { Result, createImplementation } from "@webiny/feature/api";
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { mdbid } from "@webiny/utils";
 import { CreateTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { CreateTenantRepository } from "./abstractions.js";
 import { TenantBeforeCreateEvent, TenantAfterCreateEvent } from "./events.js";
-import type { Tenant, CreateTenantInput } from "~/types.js";
-import { CreateTenantError } from "~/features/CreateTenant/errors.js";
+import type { Tenant, CreateTenantInput } from "~/types/tenancy.js";
+import { CreateTenantError } from "~/features/tenancy/CreateTenant/errors.js";
 
 class CreateTenantUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

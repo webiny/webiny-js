@@ -20,9 +20,8 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
+    "@webiny/api-core": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
-    "@webiny/api-security": "0.0.0",
-    "@webiny/api-tenancy": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/error": "0.0.0",
@@ -39,7 +38,6 @@
   },
   "devDependencies": {
     "@types/object-hash": "^3.0.6",
-    "@webiny/api-i18n": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/utils": "0.0.0",
     "rimraf": "^6.0.1",

@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { Identity } from "~/features/IdentityContext/Identity.js";
+import type { Identity } from "~/features/security/IdentityContext/Identity.js";
 
 export interface IAuthenticationContext {
     authenticate(token: string): Promise<Identity>;

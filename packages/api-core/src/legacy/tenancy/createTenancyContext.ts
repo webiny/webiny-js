@@ -1,24 +1,14 @@
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
-import { createWcpContext } from "@webiny/api-wcp";
 import type { ApiCoreContext } from "~/types/core.js";
 import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { LegacyContext } from "~/legacy/tenancy/LegacyContext.js";
 import { createTenantSchema } from "~/graphql/tenancy/tenant.gql.js";
 
-async function applyBackwardsCompatibility(context: any) {
-    if (!context.wcp) {
-        // This can happen in projects created prior to 5.29.0 release.
-        await createWcpContext().apply(context);
-    }
-}
-
 export const createTenancyContext = () => {
     return new ContextPlugin<ApiCoreContext>(async context => {
         let tenantId = "root";
-
-        await applyBackwardsCompatibility(context);
 
         const multiTenancy = context.wcp.canUseFeature("multiTenancy");
         if (!context.request) {

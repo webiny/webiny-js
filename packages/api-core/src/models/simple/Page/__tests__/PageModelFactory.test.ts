@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { Container } from "@webiny/di-container";
-import { PageModelBuilder } from "~/simple/Page/PageModelBuilder.js";
-import { PageModelFactory } from "~/simple/Page/PageModelFactory.js";
-import { PageModelFactory as FactoryAbstraction } from "~/simple/Page/abstractions.js";
+import { PageModelBuilder } from "~/models/simple/Page/PageModelBuilder.js";
+import { PageModelFactory } from "~/models/simple/Page/PageModelFactory.js";
+import { PageModelFactory as FactoryAbstraction } from "~/models/simple/Page/abstractions.js";
 import { PageModelBuilderDecorator } from "./PageModelBuilderDecorator.js";
 import { PageModelBuilderDecorator2 } from "./PageModelBuilderDecorator2.js";
 

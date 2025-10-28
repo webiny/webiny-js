@@ -1,10 +1,10 @@
 import { Container } from "@webiny/di-container";
-import type { CreateTenantInput, ListTenantsParams, Tenancy, Tenant } from "~/types.js";
-import { CreateTenantUseCase } from "~/features/CreateTenant/abstractions.js";
-import { GetRootTenantUseCase } from "~/features/GetRootTenant/abstractions.js";
-import { GetTenantByIdUseCase } from "~/features/GetTenantById/abstractions.js";
-import { ListTenantsUseCase } from "~/features/ListTenants/abstractions.js";
-import { TenantContext } from "~/features/TenantContext/abstractions.js";
+import type { CreateTenantInput, ListTenantsParams, Tenancy, Tenant } from "~/types/tenancy.js";
+import { CreateTenantUseCase } from "~/features/tenancy/CreateTenant/abstractions.js";
+import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/abstractions.js";
+import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/abstractions.js";
+import { ListTenantsUseCase } from "~/features/tenancy/ListTenants/abstractions.js";
+import { TenantContext } from "~/features/tenancy/TenantContext/abstractions.js";
 
 export class LegacyContext implements Tenancy {
     constructor(private container: Container) {}

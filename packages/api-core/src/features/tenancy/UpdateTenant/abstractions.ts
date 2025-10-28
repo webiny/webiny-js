@@ -1,6 +1,6 @@
 import { createAbstraction, type Result } from "@webiny/feature/api";
-import type { IEventHandler, DomainEvent } from "@webiny/api-core";
-import type { Tenant } from "~/types.js";
+import type { IEventHandler, DomainEvent } from "~/features/eventPublisher/index.js";
+import type { Tenant } from "~/types/tenancy.js";
 import type { TenantBeforeUpdatePayload, TenantAfterUpdatePayload } from "./events.js";
 
 export type UpdateTenantError = { type: "NOT_FOUND" } | { type: "UNKNOWN"; cause: Error };

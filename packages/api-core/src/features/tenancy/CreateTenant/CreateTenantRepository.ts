@@ -2,7 +2,7 @@ import { createImplementation } from "@webiny/di-container";
 import { CreateTenantRepository as RepositoryAbstraction } from "./abstractions.js";
 import { CreateTenantGateway } from "./abstractions.js";
 import { TenantCache } from "../shared/abstractions.js";
-import type { Tenant } from "~/types.js";
+import type { Tenant } from "~/types/tenancy.js";
 
 class CreateTenantRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(

@@ -2,10 +2,10 @@ import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { GetUserUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { AdminUsersRepository } from "~/features/shared/abstractions.js";
-import { NotAuthorizedError } from "~/features/shared/errors.js";
-import type { AdminUser } from "~/features/shared/types.js";
-import type { GetUserInput } from "~/features/shared/types.js";
+import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
+import { NotAuthorizedError } from "~/features/users/shared/errors.js";
+import type { AdminUser } from "~/features/users/shared/types.js";
+import type { GetUserInput } from "~/features/users/shared/types.js";
 
 class GetUserUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

@@ -1,7 +1,7 @@
-import { WcpContext } from "@webiny/api-wcp/features/WcpContext";
 import { createDecorator } from "@webiny/feature/api";
 import { CreateUserUseCase } from "../abstractions.js";
 import type { CreateUserInput } from "~/features/users/shared/types.js";
+import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 
 class CreateUserWithWcpIncrementImpl implements CreateUserUseCase.Interface {
     constructor(

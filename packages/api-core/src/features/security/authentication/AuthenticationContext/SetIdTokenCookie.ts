@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import { createImplementation } from "@webiny/feature/api";
 import { Reply } from "@webiny/handler";
-import { AfterAuthenticationHandler } from "~/features/authentication/AuthenticationContext/index.js";
-import { AuthenticationContext } from "~/features/authentication/AuthenticationContext/index.js";
+import { AfterAuthenticationHandler } from "~/features/security/authentication/AuthenticationContext/index.js";
+import { AuthenticationContext } from "~/features/security/authentication/AuthenticationContext/index.js";
 
 const get24HoursFromNow = () => {
     const oneHour = 1000 * 60 * 60;

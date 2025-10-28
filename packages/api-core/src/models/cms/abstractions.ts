@@ -1,10 +1,9 @@
 import { z } from "zod";
 import { Abstraction } from "@webiny/di-container";
-import type { BaseModel } from "~/models/BaseModel.js";
-import type { IModelData } from "~/models/abstractions.js";
 import type { IPrivateCmsModelConfiguration } from "./PrivateCmsModelBuilder.js";
 import type { FieldDefinitionsFactory } from "./FieldDefinitionsBuilder.js";
 import { type TextFieldBuilder, type ObjectFieldBuilder, FieldBuilder } from "./FieldBuilder.js";
+import type { BaseModel, IModelData } from "~/models/base/BaseModel.js";
 
 /**
  * Field Builder Registry - provides field builders

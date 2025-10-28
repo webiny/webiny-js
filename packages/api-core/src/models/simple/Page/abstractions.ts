@@ -1,6 +1,6 @@
 import { Abstraction } from "@webiny/di-container";
-import { createModelSchema } from "~/models/ModelBuilder.js";
-import type { IModel, IModelBuilder, IModelFactory, IModelInput } from "~/models/abstractions.js";
+import { createModelSchema } from "~/models/base/ModelBuilder.js";
+import type { IModel, IModelBuilder, IModelFactory, IModelInput } from "~/models/base/abstractions.js";
 
 export const PageSchema = createModelSchema(z => ({
     id: z.string(),

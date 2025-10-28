@@ -1,10 +1,10 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { DeleteUserUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { AdminUsersRepository } from "~/features/shared/abstractions.js";
-import { NotAuthorizedError } from "~/features/shared/errors.js";
+import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
+import { NotAuthorizedError } from "~/features/users/shared/errors.js";
 import { UserBeforeDeleteEvent, UserAfterDeleteEvent } from "./events.js";
 import { CannotDeleteOwnAccountError } from "./errors.js";
 

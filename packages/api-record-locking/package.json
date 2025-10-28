@@ -25,10 +25,7 @@
     "@webiny/utils": "0.0.0"
   },
   "devDependencies": {
-    "@webiny/api-i18n": "0.0.0",
-    "@webiny/api-security": "0.0.0",
-    "@webiny/api-tenancy": "0.0.0",
-    "@webiny/api-wcp": "0.0.0",
+    "@webiny/api-core": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "graphql": "^16.11.0",

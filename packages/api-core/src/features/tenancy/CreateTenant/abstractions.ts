@@ -1,6 +1,6 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
-import type { IEventHandler, DomainEvent } from "@webiny/api-core";
-import type { Tenant, CreateTenantInput } from "~/types.js";
+import type { IEventHandler, DomainEvent } from "~/features/eventPublisher/index.js";
+import type { Tenant, CreateTenantInput } from "~/types/tenancy.js";
 import type { TenantBeforeCreatePayload, TenantAfterCreatePayload } from "./events.js";
 import { CreateTenantError } from "./errors.js";
 

@@ -1,5 +1,5 @@
 import { getPermissionsFromSecurityGroupsForLocale } from "../getPermissionsFromSecurityGroupsForLocale.js";
-import type { SecurityContext, SecurityIdentity, SecurityRole } from "~/types.js";
+import type { SecurityContext, SecurityIdentity, SecurityRole } from "~/types/security.js";
 
 export type GroupSlug = string | undefined;
 export type TeamSlug = string | undefined;

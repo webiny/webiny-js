@@ -1,5 +1,5 @@
 import { createDecorator } from "@webiny/di-container";
-import { PageCmsModelBuilder } from "~/cms/PrivatePage/abstractions.js";
+import { PageCmsModelBuilder } from "~/models/cms/PrivatePage/abstractions.js";
 
 class PageSeoDecoratorImpl implements PageCmsModelBuilder.Interface {
     constructor(private decoratee: PageCmsModelBuilder.Interface) {}
@@ -35,7 +35,7 @@ export const PageSeoDecorator = createDecorator({
 });
 
 // Module augmentation
-declare module "~/cms/PrivatePage/abstractions.js" {
+declare module "~/models/cms/PrivatePage/abstractions.js" {
     interface IPage {
         getSeoTitle(): string;
         hasSeo(): boolean;

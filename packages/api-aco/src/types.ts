@@ -1,8 +1,4 @@
-import type { TenancyContext, Tenant } from "@webiny/api-tenancy/types.js";
 import type { Context as BaseContext } from "@webiny/handler/types.js";
-import type { I18NContext, I18NLocale } from "@webiny/api-i18n/types.js";
-import type { SecurityContext } from "@webiny/api-security/types.js";
-import type { AdminUsersContext } from "@webiny/api-admin-users/types.js";
 import type { FileManagerContext } from "@webiny/api-file-manager/types.js";
 import type { Context as TasksContext } from "@webiny/tasks/types.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
@@ -14,6 +10,9 @@ import type {
 } from "~/flp/flp.types.js";
 import type { Container } from "@webiny/di-container";
 import { FolderLevelPermissions } from "./features/flp/FolderLevelPermissions/index.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 
 export * from "./filter/filter.types.js";
 export type * from "./folder/folder.types.js";
@@ -71,10 +70,7 @@ export interface AcoStorageOperations {
 
 export interface AcoContext
     extends BaseContext,
-        I18NContext,
-        TenancyContext,
-        SecurityContext,
-        AdminUsersContext,
+        ApiCoreContext,
         CmsContext,
         FileManagerContext,
         TasksContext {

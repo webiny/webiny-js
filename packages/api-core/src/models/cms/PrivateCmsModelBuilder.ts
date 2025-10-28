@@ -3,18 +3,18 @@ import {
     FieldDefinitionsBuilder,
     type FieldDefinitionsFactory
 } from "./FieldDefinitionsBuilder.js";
-import type { BaseModel } from "~/models/BaseModel.js";
-import type { IModelData } from "~/models/abstractions.js";
+import type { BaseModel } from "../base/BaseModel.js";
+import type { IModelData } from "../base/abstractions.js";
 import type { PrivateCmsModel, CmsModelMetadata, FieldBuilderConfig } from "./types.js";
 // Import your existing ModelBuilder
-import { ModelBuilder } from "~/models/ModelBuilder.js";
 import { FieldBuilder } from "./FieldBuilder.js";
 import { createImplementation } from "@webiny/di-container";
 import {
     FieldBuilderRegistry,
     type IFieldBuilderRegistry,
     PrivateCmsModelBuilder as BuilderAbstraction
-} from "~/cms/abstractions.js";
+} from "~/models/cms/abstractions.js";
+import { ModelBuilder } from "~/models/base/ModelBuilder.js";
 
 export interface IPrivateCmsModelBuilder {
     create<TModel extends BaseModel<any>, TFields extends z.ZodRawShape = any>(

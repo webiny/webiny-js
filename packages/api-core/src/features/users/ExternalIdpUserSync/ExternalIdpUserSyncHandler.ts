@@ -3,9 +3,9 @@ import { AfterLoginHandler } from "~/features/security/login/index.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { ListGroupsUseCase } from "~/features/security/groups/ListGroups/index.js";
 import { ListTeamsUseCase } from "~/features/security/teams/ListTeams/index.js";
-import { GetUserUseCase } from "~/features/GetUser/index.js";
-import { CreateUserUseCase } from "~/features/CreateUser/index.js";
-import { UpdateUserUseCase } from "~/features/UpdateUser/index.js";
+import { GetUserUseCase } from "~/features/users/GetUser/index.js";
+import { CreateUserUseCase } from "~/features/users/CreateUser/index.js";
+import { UpdateUserUseCase } from "~/features/users/UpdateUser/index.js";
 
 class ExternalIdpUserSyncHandlerImpl implements AfterLoginHandler.Interface {
     constructor(

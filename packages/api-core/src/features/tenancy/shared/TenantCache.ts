@@ -1,6 +1,6 @@
 import DataLoader from "dataloader";
 import type { TenantCache as CacheAbstraction } from "./abstractions.js";
-import type { Tenant } from "~/types.js";
+import type { Tenant } from "~/types/tenancy.js";
 
 export interface TenantCacheBatchLoader {
     (ids: readonly string[]): Promise<Tenant[]>;

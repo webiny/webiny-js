@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
+    { "path": "../api-core" },
     { "path": "../api-elasticsearch" },
     { "path": "../api-headless-cms" },
     { "path": "../api-headless-cms-ddb-es" },
@@ -10,7 +11,6 @@
     { "path": "../tasks" },
     { "path": "../utils" },
     { "path": "../api" },
-    { "path": "../api-i18n" },
     { "path": "../handler-graphql" },
     { "path": "../plugins" }
   ],
@@ -21,6 +21,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
@@ -37,8 +39,6 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
-      "@webiny/api-i18n/*": ["../api-i18n/src/*"],
-      "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

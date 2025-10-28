@@ -21,7 +21,7 @@ export const PageModelBuilderDecorator2 = createDecorator({
     dependencies: []
 });
 
-declare module "~/simple/Page/abstractions.js" {
+declare module "~/models/simple/Page/abstractions.js" {
     interface IPageExtensions {
         social?: { description: string };
     }

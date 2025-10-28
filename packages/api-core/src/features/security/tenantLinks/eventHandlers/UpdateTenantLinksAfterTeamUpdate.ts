@@ -2,10 +2,10 @@ import deepEqual from "deep-equal";
 import { createImplementation } from "@webiny/feature/api";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { UpdateTenantLinks } from "../UpdateTenantLinks/abstractions.js";
-import { TeamAfterUpdateHandler } from "~/features/teams/UpdateTeam/index.js";
-import { ListTenantLinksByType } from "~/features/tenantLinks/ListTenantLinksByType/index.js";
-import { ListGroupsUseCase } from "~/features/groups/ListGroups/index.js";
-import type { PermissionsTenantLink } from "~/types.js";
+import { TeamAfterUpdateHandler } from "~/features/security/teams/UpdateTeam/index.js";
+import { ListTenantLinksByType } from "~/features/security/tenantLinks/ListTenantLinksByType/index.js";
+import { ListGroupsUseCase } from "~/features/security/groups/ListGroups/index.js";
+import type { PermissionsTenantLink } from "~/types/security.js";
 
 class TeamAfterUpdateHandlerImpl implements TeamAfterUpdateHandler.Interface {
     constructor(

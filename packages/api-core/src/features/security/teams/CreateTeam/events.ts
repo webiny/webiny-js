@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core";
-import type { IEventHandler } from "@webiny/api-core";
+import { DomainEvent } from "~/features/eventPublisher/index.js";
+import type { IEventHandler } from "~/features/eventPublisher/index.js";
 import type { TeamBeforeCreatePayload, TeamAfterCreatePayload } from "./abstractions.js";
 
 export class TeamBeforeCreateEvent extends DomainEvent<TeamBeforeCreatePayload> {

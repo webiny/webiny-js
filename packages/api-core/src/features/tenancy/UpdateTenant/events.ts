@@ -1,5 +1,5 @@
-import { DomainEvent } from "@webiny/api-core";
-import type { Tenant } from "~/types.js";
+import { DomainEvent } from "~/features/eventPublisher/index.js";
+import type { Tenant } from "~/types/tenancy.js";
 import { TenantBeforeUpdateHandler, TenantAfterUpdateHandler } from "./abstractions.js";
 
 export interface TenantBeforeUpdatePayload {

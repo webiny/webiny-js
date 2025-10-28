@@ -3,7 +3,7 @@ import { Result } from "@webiny/feature/api";
 import { UpdateGroup } from "./abstractions.js";
 import { GroupsRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { updateGroupValidation } from "./schema.js";
 import { GroupBeforeUpdateEvent, GroupAfterUpdateEvent } from "./events.js";
 import type { Group, UpdateGroupInput } from "../shared/types.js";

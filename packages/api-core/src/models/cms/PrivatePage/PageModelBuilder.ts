@@ -1,10 +1,10 @@
 import { createImplementation } from "@webiny/di-container";
 import { PageFieldDefinitions } from "./Page.fields.js";
-import { PrivateCmsModelBuilder } from "~/cms/abstractions.js";
+import { PrivateCmsModelBuilder } from "~/models/cms/abstractions.js";
 import {
     IPage,
     PageCmsModelBuilder as BuilderAbstraction
-} from "~/cms/PrivatePage/abstractions.js";
+} from "~/models/cms/PrivatePage/abstractions.js";
 
 class PageCmsModelBuilderImpl implements BuilderAbstraction.Interface {
     constructor(private privateCmsModelBuilder: PrivateCmsModelBuilder.Interface) {}

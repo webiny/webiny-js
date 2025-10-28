@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { SecurityPermission } from "~/types.js";
+import type { SecurityPermission } from "~/types/security.js";
 
 export interface IAuthorizationContext {
     loadPermissions(): Promise<SecurityPermission[]>;

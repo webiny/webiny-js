@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Identity } from "./Identity.js";
-import type { SecurityPermission } from "~/types.js";
+import type { SecurityPermission } from "~/types/security.js";
 
 export interface IIdentityContext {
     // Identity methods

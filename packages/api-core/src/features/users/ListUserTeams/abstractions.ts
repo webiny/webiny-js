@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { Team } from "~/types/security.js";
-import { AdminUsersRepository } from "~/features/shared/abstractions.js";
+import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 
 // Use case specific errors - none for this use case
 export interface IListUserTeamsErrors {

@@ -1,8 +1,8 @@
 import { describe, test, expect } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { expectNotAuthorized } from "./utils/expectNotAuthorized";
-import { SecurityIdentity } from "@webiny/api-security/types";
 import { mdbid } from "@webiny/utils";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 const FOLDER_TYPE = "FmFile";
 

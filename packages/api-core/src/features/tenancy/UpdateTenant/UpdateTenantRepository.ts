@@ -2,7 +2,7 @@ import { createImplementation } from "@webiny/feature/api";
 import { UpdateTenantRepository as RepositoryAbstraction } from "./abstractions.js";
 import { UpdateTenantGateway } from "./abstractions.js";
 import { TenantCache } from "../shared/abstractions.js";
-import type { Tenant } from "~/types.js";
+import type { Tenant } from "~/types/tenancy.js";
 
 class UpdateTenantRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(

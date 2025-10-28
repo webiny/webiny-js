@@ -4,7 +4,7 @@ import {
     PageModelBuilder,
     type IPage
 } from "./abstractions.js";
-import type { ModelClass } from "~/models/ModelBuilder.js";
+import type { ModelClass } from "~/models/base/ModelBuilder.js";
 
 class PageModelFactoryImpl implements FactoryAbstraction.Interface {
     private modelClass: ModelClass<IPage> | undefined;

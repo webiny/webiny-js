@@ -8,7 +8,7 @@
     { "path": "../tasks/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
-    { "path": "../api-i18n/tsconfig.build.json" },
+    { "path": "../api-core/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }

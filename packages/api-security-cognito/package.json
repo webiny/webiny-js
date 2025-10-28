@@ -14,13 +14,8 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
-    "@webiny/api-admin-users": "0.0.0",
     "@webiny/api-cognito-authenticator": "0.0.0",
     "@webiny/api-core": "0.0.0",
-    "@webiny/api-i18n": "0.0.0",
-    "@webiny/api-security": "0.0.0",
-    "@webiny/api-system": "0.0.0",
-    "@webiny/api-tenancy": "0.0.0",
     "@webiny/aws-sdk": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
@@ -29,7 +24,6 @@
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",
-    "@webiny/api-wcp": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",

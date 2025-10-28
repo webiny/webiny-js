@@ -2,9 +2,9 @@ import deepEqual from "deep-equal";
 import { createImplementation } from "@webiny/feature/api";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { UpdateTenantLinks } from "../UpdateTenantLinks/abstractions.js";
-import { GroupAfterUpdateHandler } from "~/features/groups/UpdateGroup/index.js";
-import type { PermissionsTenantLink } from "~/types.js";
-import { ListTenantLinksByType } from "~/features/tenantLinks/ListTenantLinksByType/index.js";
+import { GroupAfterUpdateHandler } from "~/features/security/groups/UpdateGroup/index.js";
+import type { PermissionsTenantLink } from "~/types/security.js";
+import { ListTenantLinksByType } from "~/features/security/tenantLinks/ListTenantLinksByType/index.js";
 
 class GroupAfterUpdateHandlerImpl implements GroupAfterUpdateHandler.Interface {
     constructor(

@@ -1,6 +1,6 @@
-import { WcpContext } from "@webiny/api-wcp/features/WcpContext";
 import { createDecorator } from "@webiny/feature/api";
 import { DeleteUserUseCase } from "../abstractions.js";
+import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 
 class DeleteUserWithWcpDecrementImpl implements DeleteUserUseCase.Interface {
     constructor(

@@ -1,4 +1,4 @@
-import type { AdminUser } from "~/types.js";
+import type { AdminUser } from "~/types/users.js";
 
 // Re-export domain entity
 export type { AdminUser };

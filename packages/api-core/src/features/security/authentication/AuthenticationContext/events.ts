@@ -1,7 +1,7 @@
-import { DomainEvent } from "@webiny/api-core";
+import { DomainEvent } from "~/features/eventPublisher/index.js";
 import { createAbstraction } from "@webiny/feature/api";
-import type { IEventHandler } from "@webiny/api-core";
-import type { Identity } from "~/features/IdentityContext/Identity.js";
+import type { IEventHandler } from "~/features/eventPublisher/index.js";
+import type { Identity } from "~/features/security/IdentityContext/Identity.js";
 
 export interface BeforeAuthenticationPayload {
     token: string;

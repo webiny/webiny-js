@@ -27,7 +27,7 @@ export const PageModelBuilderDecorator = createDecorator({
     dependencies: []
 });
 
-declare module "~/simple/Page/abstractions.js" {
+declare module "~/models/simple/Page/abstractions.js" {
     interface IPage {
         hasSeoTitle(): boolean;
     }

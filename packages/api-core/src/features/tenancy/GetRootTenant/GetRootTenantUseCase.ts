@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/feature/api";
 import { GetRootTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { GetTenantByIdUseCase } from "~/features/GetTenantById/abstractions.js";
+import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/abstractions.js";
 
 export class GetRootTenantUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private getTenantById: GetTenantByIdUseCase.Interface) {}

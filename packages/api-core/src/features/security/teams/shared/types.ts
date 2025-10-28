@@ -1,4 +1,4 @@
-import type { Team } from "~/types.js";
+import type { Team } from "~/types/security.js";
 
 export type { Team };
 

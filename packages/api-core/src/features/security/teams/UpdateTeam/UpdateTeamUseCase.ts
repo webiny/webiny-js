@@ -3,7 +3,7 @@ import { Result } from "@webiny/feature/api";
 import { UpdateTeam } from "./abstractions.js";
 import { TeamsRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { updateTeamValidation } from "./schema.js";
 import { TeamBeforeUpdateEvent, TeamAfterUpdateEvent } from "./events.js";
 import type { Team, UpdateTeamInput } from "../shared/types.js";

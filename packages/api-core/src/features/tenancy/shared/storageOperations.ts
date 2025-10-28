@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { TenancyStorageOperations as ITenancyStorageOperations } from "~/types.js";
+import type { TenancyStorageOperations as ITenancyStorageOperations } from "~/types/tenancy.js";
 
 /**
  * Abstraction for Tenancy Storage Operations

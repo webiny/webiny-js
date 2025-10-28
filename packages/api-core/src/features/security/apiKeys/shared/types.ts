@@ -1,4 +1,4 @@
-import type { CreatedBy, SecurityPermission } from "~/types.js";
+import type { CreatedBy, SecurityPermission } from "~/types/security.js";
 
 export interface ApiKey {
     id: string;

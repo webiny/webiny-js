@@ -5,8 +5,6 @@ import type { PluginCollection } from "@webiny/plugins/types";
 import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import adminUsersPlugins from "@webiny/api-admin-users";
-import i18nContext from "@webiny/api-i18n/graphql/context";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { createSystemContext, createSystemGraphQL } from "@webiny/api-system";
 
 // Graphql
@@ -27,7 +25,6 @@ import { createTenancyAndSecurity } from "./tenancySecurity";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import cognitoAuthentication from "~/index";
 import { createApiCore } from "@webiny/api-core";
-import type { AdminUsersStorageOperations } from "@webiny/api-admin-users/types.js";
 
 interface UseGqlHandlerParams {
     fullAccess?: boolean;
@@ -48,7 +45,6 @@ export default (opts: UseGqlHandlerParams = {}) => {
     opts = Object.assign({}, defaults, opts);
 
     const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
-    const i18nStorage = getStorageOps<any>("i18n");
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
@@ -59,9 +55,6 @@ export default (opts: UseGqlHandlerParams = {}) => {
             createWcpContext(),
             createWcpGraphQL(),
             ...createTenancyAndSecurity({ fullAccess: opts.fullAccess }),
-            ...i18nStorage.storageOperations,
-            i18nContext(),
-            mockLocalesPlugins(),
             adminUsersPlugins({
                 storageOperations: adminUsersStorage.storageOperations
             }),

@@ -1,11 +1,11 @@
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { DeleteApiKey } from "./abstractions.js";
 import { ApiKeysRepository } from "../shared/abstractions.js";
 import { IdentityContext } from "../../IdentityContext/abstractions.js";
 import { ApiKeyBeforeDeleteEvent, ApiKeyAfterDeleteEvent } from "./events.js";
-import { NotAuthorizedError } from "~/features/apiKeys/shared/errors.js";
+import { NotAuthorizedError } from "~/features/security/apiKeys/shared/errors.js";
 
 export class DeleteApiKeyUseCase implements DeleteApiKey.Interface {
     private repository: ApiKeysRepository.Interface;
