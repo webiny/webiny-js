@@ -30,20 +30,34 @@ type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
 
 const getBackgroundByDepth = (
     depth: number,
-    background: AccordionProps["background"]
+    background: AccordionProps["background"],
+    shouldAlternate: boolean
 ): AccordionProps["background"] => {
-    // If background is explicitly provided, use it at any depth
-    if (background) {
+    if (!shouldAlternate) {
         return background;
     }
 
-    // For nested levels, alternate between light and base
-    return depth % 2 === 0 ? "light" : "base";
+    // Determine starting background: light stays light, everything else starts as base
+    const startingBackground =
+        background === "base" || background === "transparent" ? "light" : "base";
+
+    return depth % 2 === 0 ? startingBackground : startingBackground === "base" ? "light" : "base";
+};
+
+const hasNestedAccordion = (children: React.ReactNode): boolean => {
+    const nested =
+        React.isValidElement(children) &&
+        children.type &&
+        typeof children.type === "function" &&
+        "originalName" in children.type &&
+        children.type.originalName === "AccordionItem";
+    return Boolean(nested);
 };
 
 const AccordionBase = ({ children, variant, background, className }: AccordionProps) => {
     const currentDepth = useDepth() + 1;
-    const bg = getBackgroundByDepth(currentDepth, background);
+    const shouldAlternate = hasNestedAccordion(children);
+    const bg = getBackgroundByDepth(currentDepth, background, shouldAlternate);
 
     return (
         <div className={cn(accordionVariants({ variant, background: bg }), className)}>
