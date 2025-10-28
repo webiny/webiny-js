@@ -1,13 +1,12 @@
-import type { I18NContext } from "@webiny/api-i18n/types.js";
 import type { FileStorage } from "./storage/FileStorage.js";
-import type { TenancyContext } from "@webiny/api-tenancy/types.js";
-import type { SecurityContext, SecurityPermission } from "@webiny/api-security/types.js";
 import type { Context } from "@webiny/api/types.js";
 import type { FileLifecycleEvents } from "./types/file.lifecycle.js";
 import type { CreatedBy, File } from "./types/file.js";
 import type { Topic } from "@webiny/pubsub/types.js";
 import type { CmsContext, CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
 import type { Context as TasksContext } from "@webiny/tasks/types.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 export type * from "./types/file.lifecycle.js";
 export type * from "./types/file.js";
@@ -17,13 +16,7 @@ export interface FileManagerContextObject extends FilesCRUD, SettingsCRUD, Syste
     storage: FileStorage;
 }
 
-export interface FileManagerContext
-    extends Context,
-        SecurityContext,
-        TenancyContext,
-        I18NContext,
-        CmsContext,
-        TasksContext {
+export interface FileManagerContext extends Context, ApiCoreContext, CmsContext, TasksContext {
     fileManager: FileManagerContextObject;
 }
 

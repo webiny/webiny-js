@@ -1,8 +1,7 @@
-import type { TenancyContext } from "@webiny/api-tenancy/types.js";
-import type { I18NContext } from "@webiny/api-i18n/types.js";
 import type { Context as HandlerContext } from "@webiny/handler/types.js";
 import type { Context as TasksContext, ITask } from "@webiny/tasks/types.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 export interface ILoggerLogCallableOptions {
     tenant?: string;
@@ -144,11 +143,7 @@ export interface ILogger {
     flush(): Promise<ILoggerLog[]>;
 }
 
-export interface Context
-    extends Pick<TenancyContext, "tenancy" | "db">,
-        Pick<I18NContext, "i18n" | "security">,
-        Pick<TasksContext, "tasks">,
-        HandlerContext {
+export interface Context extends ApiCoreContext, Pick<TasksContext, "tasks">, HandlerContext {
     logger: ILoggerCrud & {
         log: ILogger;
     };

@@ -25,7 +25,7 @@ import type { IUnlockEntryUseCase } from "~/abstractions/IUnlockEntryUseCase.js"
 import type { IUnlockEntryRequestUseCase } from "~/abstractions/IUnlockEntryRequestUseCase.js";
 import { convertEntryToLockRecord as baseConvertEntryToLockRecord } from "~/utils/convertEntryToLockRecord.js";
 import type { ConvertEntryToLockRecordCb } from "~/useCases/types.js";
-import type { Security } from "@webiny/api-security/types.js";
+import type { Security } from "@webiny/api-core/types/security.js";
 
 export interface ICreateUseCasesParams {
     getTimeout: () => number;

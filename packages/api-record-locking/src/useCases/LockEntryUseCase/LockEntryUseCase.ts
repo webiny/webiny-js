@@ -4,6 +4,7 @@ import type {
     ILockEntryUseCaseExecuteParams
 } from "~/abstractions/ILockEntryUseCase.js";
 import type {
+    IRecordLockingIdentity,
     IRecordLockingLockRecord,
     IRecordLockingLockRecordValues,
     IRecordLockingModelManager
@@ -12,13 +13,14 @@ import type { IIsEntryLockedUseCase } from "~/abstractions/IIsEntryLocked.js";
 import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import type { ConvertEntryToLockRecordCb } from "~/useCases/types.js";
-import type { Security, SecurityIdentity } from "@webiny/api-security/types.js";
+import { Security} from "@webiny/api-core/types/security.js";
+import type { CmsIdentity } from "@webiny/api-headless-cms/types/index.js";
 
 export interface ILockEntryUseCaseParams {
     isEntryLockedUseCase: IIsEntryLockedUseCase;
     getManager(): Promise<IRecordLockingModelManager>;
     getSecurity(): Pick<Security, "withoutAuthorization">;
-    getIdentity(): SecurityIdentity;
+    getIdentity(): IRecordLockingIdentity;
     convert: ConvertEntryToLockRecordCb;
 }
 
@@ -57,7 +59,7 @@ export class LockEntryUseCase implements ILockEntryUseCase {
         const security = this.getSecurity();
         const identity = this.getIdentity();
         try {
-            const user: SecurityIdentity = {
+            const user: CmsIdentity = {
                 id: identity.id,
                 displayName: identity.displayName,
                 type: identity.type

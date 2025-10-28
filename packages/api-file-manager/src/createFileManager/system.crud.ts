@@ -1,5 +1,4 @@
 import { createTopic } from "@webiny/pubsub";
-import { NotAuthorizedError } from "@webiny/api-security";
 import type {
     FileManagerContextObject,
     FileManagerSettings,
@@ -8,6 +7,7 @@ import type {
 } from "~/types.js";
 import WebinyError from "@webiny/error";
 import type { FileManagerConfig } from "~/createFileManager/types.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 
 export const createSystemCrud = ({
     storageOperations,

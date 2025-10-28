@@ -12,10 +12,10 @@ import type {
 import { createLockRecordDatabaseId } from "~/utils/lockRecordDatabaseId.js";
 import type { IGetLockRecordUseCase } from "~/abstractions/IGetLockRecordUseCase.js";
 import { validateSameIdentity } from "~/utils/validateSameIdentity.js";
-import { NotAuthorizedError } from "@webiny/api-security";
 import type { IKickOutCurrentUserUseCase } from "~/abstractions/IKickOutCurrentUserUseCase.js";
 import { NotFoundError } from "@webiny/handler-graphql";
-import type { Security } from "@webiny/api-security/types.js";
+import type { Security } from "@webiny/api-core/types/security.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 
 export interface IUnlockEntryUseCaseParams {
     readonly getLockRecordUseCase: IGetLockRecordUseCase;

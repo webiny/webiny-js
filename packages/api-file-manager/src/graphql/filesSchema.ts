@@ -8,7 +8,7 @@ import type { FileManagerContext, FilesListOpts } from "~/types.js";
 import { emptyResolver, resolve } from "./utils.js";
 import type { CreateFilesTypeDefsParams } from "~/graphql/createFilesTypeDefs.js";
 import { createFilesTypeDefs } from "~/graphql/createFilesTypeDefs.js";
-import { NotAuthorizedResponse } from "@webiny/api-security";
+import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 
 export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
     const fileManagerGraphQL = new GraphQLSchemaPlugin<FileManagerContext>({

@@ -82,8 +82,8 @@ export const createBaseSchema = () => {
             },
             FmQuery: {
                 async version(_, __, context) {
-                    const { i18n, tenancy, fileManager } = context;
-                    if (!tenancy.getCurrentTenant() || !i18n.getContentLocale()) {
+                    const { tenancy, fileManager } = context;
+                    if (!tenancy.getCurrentTenant()) {
                         return null;
                     }
 

@@ -7,7 +7,7 @@ export const getIdentity = <T extends SecurityIdentity | CmsIdentity | null>(
 ): CmsIdentity | null => {
     const identity = input?.id && input?.displayName && input?.type ? input : defaultValue;
     if (!identity) {
-        return null as T;
+        return null;
     }
     return {
         id: identity.id,
