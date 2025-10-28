@@ -298,7 +298,7 @@
   --text-h6--letter-spacing: initial;
   --text-h6--font-weight: var(--font-weight-semibold);
 
-  /* Z-Index */
+  /* Z-Index. */
   --z-index-negative: -1;
   --z-index-base: 1;
   --z-index-base-overwrite: 10;
