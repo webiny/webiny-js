@@ -7,10 +7,16 @@ import type {
 import type { CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
 import type { Topic } from "@webiny/pubsub/types.js";
 import type { IWidgetWorkflowState } from "~/context/abstractions/WidgetWorkflowState.js";
-import type {
-    IWorkflowStepNotification,
-    IWorkflowStepTeam
-} from "~/context/abstractions/Workflow.js";
+
+export interface IWorkflowStateContextListStatesWhereStepsTeams {
+    id?: string;
+    id_in?: string[];
+}
+
+export interface IWorkflowStateContextListStatesWhereStepsNotifications {
+    id?: string;
+    id_in?: string[];
+}
 
 export interface IWorkflowStateContextListStatesWhereSteps {
     id?: string;
@@ -19,10 +25,8 @@ export interface IWorkflowStateContextListStatesWhereSteps {
     title_contains?: string;
     color?: string;
     description?: string;
-    teams?: IWorkflowStepTeam;
-    teams_in?: IWorkflowStepTeam[];
-    notifications?: IWorkflowStepNotification;
-    notifications_in?: IWorkflowStepNotification[];
+    teams?: IWorkflowStateContextListStatesWhereStepsTeams;
+    notifications?: IWorkflowStateContextListStatesWhereStepsNotifications;
     state?: WorkflowStateRecordState;
     state_in?: WorkflowStateRecordState[];
     comment?: string;
@@ -44,6 +48,9 @@ export interface IWorkflowStateContextListStatesWhere {
     state_in?: WorkflowStateRecordState[];
     savedBy?: string;
     createdBy?: string;
+    createdBy_not?: string;
+    createdBy_in?: string[];
+    createdBy_not_in?: string[];
     isActive?: boolean;
     steps?: IWorkflowStateContextListStatesWhereSteps;
 }
@@ -61,10 +68,10 @@ export interface IWorkflowStateContextListStatesResponse {
 }
 
 export interface IWorkflowStateContextListOwnWorkflowStatesParams {
-    where: {
-        state: WorkflowStateRecordState;
+    where?: {
+        state?: WorkflowStateRecordState;
     };
-    limit: number;
+    limit?: number;
 }
 
 export interface IWorkflowStateContextListOwnWorkflowStatesResponse {
