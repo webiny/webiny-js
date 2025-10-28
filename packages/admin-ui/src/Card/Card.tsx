@@ -31,10 +31,8 @@ const CardBase = (props: CardProps) => {
             // Shared props.
             padding,
             actions,
-            actionsSize,
             actionsPosition,
             size,
-            cornerSize,
             variant,
 
             // Header props.
@@ -46,10 +44,7 @@ const CardBase = (props: CardProps) => {
             children,
 
             // Footer props.
-            info,
-
-            // Content props.
-            ...rest
+            info
         } = props;
 
         return {
