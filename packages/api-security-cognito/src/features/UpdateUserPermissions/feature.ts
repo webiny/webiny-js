@@ -4,7 +4,7 @@ import { CognitoUserAfterUpdateHandler } from "./handlers/UserAfterUpdateHandler
 import { CognitoUserAfterDeleteHandler } from "./handlers/UserAfterDeleteHandler.js";
 
 export const UpdateUserPermissions = createFeature({
-    name: "ApiSecurityCognito",
+    name: "UpdateUserPermissions",
     register(container) {
         // Register event handlers
         container.register(CognitoUserAfterCreateHandler);

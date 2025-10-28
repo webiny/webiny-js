@@ -4,7 +4,6 @@
   "references": [
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-aco/tsconfig.build.json" },
-    { "path": "../api-admin-users/tsconfig.build.json" },
     { "path": "../api-admin-users-so-ddb/tsconfig.build.json" },
     { "path": "../api-audit-logs/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
@@ -15,9 +14,6 @@
     { "path": "../api-log/tsconfig.build.json" },
     { "path": "../api-mailer/tsconfig.build.json" },
     { "path": "../api-record-locking/tsconfig.build.json" },
-    { "path": "../api-security/tsconfig.build.json" },
-    { "path": "../api-tenancy/tsconfig.build.json" },
-    { "path": "../api-wcp/tsconfig.build.json" },
     { "path": "../api-website-builder/tsconfig.build.json" },
     { "path": "../api-websockets/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },

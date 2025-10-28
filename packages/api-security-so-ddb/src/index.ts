@@ -8,7 +8,7 @@ import type {
     StorageOperationsGetTenantLinkByIdentityParams,
     Team,
     TenantLink
-} from "@webiny/api-security/types.js";
+} from "@webiny/api-core/types/security.js";
 import WebinyError from "@webiny/error";
 import { createTable } from "~/definitions/table.js";
 import {

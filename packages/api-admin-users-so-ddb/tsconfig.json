@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    { "path": "../api-admin-users" },
+    { "path": "../api-core" },
     { "path": "../aws-sdk" },
     { "path": "../db-dynamodb" },
     { "path": "../error" }
@@ -14,8 +14,8 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api-admin-users/*": ["../api-admin-users/src/*"],
-      "@webiny/api-admin-users": ["../api-admin-users/src"],
+      "@webiny/api-core/*": ["../api-core/src/*"],
+      "@webiny/api-core": ["../api-core/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],

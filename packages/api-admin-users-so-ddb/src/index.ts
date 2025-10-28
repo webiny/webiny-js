@@ -8,7 +8,7 @@ import type {
     StorageOperationsGetUserParams,
     StorageOperationsListUsersParams,
     System
-} from "@webiny/api-admin-users/types.js";
+} from "@webiny/api-core/types/users.js";
 import {
     cleanupItem,
     deleteItem,

@@ -4,11 +4,9 @@
   "references": [
     { "path": "../api" },
     { "path": "../api-core" },
-    { "path": "../api-tenancy" },
     { "path": "../di-container" },
     { "path": "../feature" },
-    { "path": "../handler-graphql" },
-    { "path": "../api-security" }
+    { "path": "../handler-graphql" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -21,16 +19,12 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
       "@webiny/api-core": ["../api-core/src"],
-      "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
-      "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/di-container/*": ["../di-container/src/*"],
       "@webiny/di-container": ["../di-container/src"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
-      "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/api-security/*": ["../api-security/src/*"],
-      "@webiny/api-security": ["../api-security/src"]
+      "@webiny/handler-graphql": ["../handler-graphql/src"]
     },
     "baseUrl": "."
   }

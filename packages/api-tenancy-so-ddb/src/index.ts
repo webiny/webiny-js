@@ -7,7 +7,7 @@ import { createTenantEntity } from "~/definitions/tenantEntity.js";
 import { createDomainEntity } from "~/definitions/domainEntity.js";
 import type { CreateTenancyStorageOperations } from "~/types.js";
 import { ENTITIES } from "~/types.js";
-import type { ListTenantsParams, Tenant } from "@webiny/api-tenancy/types.js";
+import type { ListTenantsParams, Tenant } from "@webiny/api-core/types/tenancy.js";
 
 const setTenantDefaults = (item: Tenant) => {
     if (!item.tags) {

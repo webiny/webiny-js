@@ -12,10 +12,7 @@
     { "path": "../plugins" },
     { "path": "../pubsub" },
     { "path": "../utils" },
-    { "path": "../api-i18n" },
-    { "path": "../api-security" },
-    { "path": "../api-tenancy" },
-    { "path": "../api-wcp" }
+    { "path": "../api-i18n" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -45,13 +42,7 @@
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
-      "@webiny/api-i18n": ["../api-i18n/src"],
-      "@webiny/api-security/*": ["../api-security/src/*"],
-      "@webiny/api-security": ["../api-security/src"],
-      "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
-      "@webiny/api-tenancy": ["../api-tenancy/src"],
-      "@webiny/api-wcp/*": ["../api-wcp/src/*"],
-      "@webiny/api-wcp": ["../api-wcp/src"]
+      "@webiny/api-i18n": ["../api-i18n/src"]
     },
     "baseUrl": "."
   }
