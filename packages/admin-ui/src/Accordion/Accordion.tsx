@@ -37,7 +37,6 @@ const getBackgroundByDepth = (
         return background;
     }
 
-    // Determine starting background: light stays light, everything else starts as base
     const startingBackground =
         background === "base" || background === "transparent" ? "light" : "base";
 
