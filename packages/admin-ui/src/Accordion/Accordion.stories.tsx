@@ -345,6 +345,31 @@ export const ContainerVariantWithLightBackground: Story = {
     }
 };
 
+export const NestedAccordions: Story = {
+    args: {
+        children: (
+            <>
+                <Accordion>
+                    <Accordion>
+                        <AccordionItem index={2} />
+                    </Accordion>
+                    <Accordion>
+                        <AccordionItem index={2} />
+                    </Accordion>
+                </Accordion>
+                <Accordion>
+                    <Accordion>
+                        <AccordionItem index={2} />
+                    </Accordion>
+                    <Accordion>
+                        <AccordionItem index={2} />
+                    </Accordion>
+                </Accordion>
+            </>
+        )
+    }
+};
+
 // Add a Documentation story
 export const Documentation: Story = {
     render: args => {
