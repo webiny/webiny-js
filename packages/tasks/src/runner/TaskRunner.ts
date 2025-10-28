@@ -94,13 +94,6 @@ export class TaskRunner<C extends Context = Context> implements ITaskRunner<C> {
     }
 
     private setLocale(event: ITaskEvent) {
-        const { locale: localeCode } = event;
-        const locale = this.context.i18n.getLocale(localeCode);
-
-        if (!locale) {
-            return;
-        }
-
-        this.context.i18n.setContentLocale(locale);
+        // TODO: remove all locale related logic
     }
 }

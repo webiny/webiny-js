@@ -1,16 +1,16 @@
 import jwt from "jsonwebtoken";
 import { ContextPlugin } from "@webiny/api";
-import { isJwt, verifyJwtUsingJwk } from "@webiny/api-security";
-import type { SecurityContext, SecurityIdentity, Jwk } from "@webiny/api-security/types.js";
 import WebinyError from "@webiny/error";
-
-type Context = SecurityContext;
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { type Jwk, verifyJwtUsingJwk } from "@webiny/api-core/features/security/utils/verifyJwtUsingJwk.js";
+import { isJwt } from "@webiny/api-core/features/security/utils/isJwt.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 export interface AuthenticatorConfig {
     // Okta issuer endpoint
     issuer: string;
     // Create an identity object using the verified idToken
-    getIdentity(params: { token: { [key: string]: any } }): SecurityIdentity;
+    getIdentity(params: { token: { [key: string]: any } }): IdentityData;
 }
 
 const jwksCache = new Map<string, Jwk[]>();
@@ -56,7 +56,7 @@ export const createAuthenticator = (config: AuthenticatorConfig) => {
         return null;
     };
 
-    return new ContextPlugin<Context>(({ security }) => {
+    return new ContextPlugin<ApiCoreContext>(({ security }) => {
         security.addAuthenticator(async (idToken?: string) => {
             const token = await oktaAuthenticator(idToken);
 

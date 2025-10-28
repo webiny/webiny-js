@@ -1,4 +1,4 @@
-import { UserBeforeUpdateHandler } from "@webiny/api-admin-users/features/UpdateUser";
+import { UserBeforeUpdateHandler } from "@webiny/api-core/features/UpdateUser";
 import { createImplementation } from "@webiny/feature/api";
 
 class UserBeforeUpdateHandlerImpl implements UserBeforeUpdateHandler.Interface {

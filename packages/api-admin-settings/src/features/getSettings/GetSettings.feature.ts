@@ -4,6 +4,7 @@ import type { Settings } from "~/domain/Settings.js";
 import { GetSettingsRepository } from "./GetSettings.repository.js";
 import { GetSettingsGateway } from "~/infrastructure/GetSettings.gateway.js";
 import type { Context } from "~/types.js";
+import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
 export class GetSettings implements IGetSettingsFeature {
     private repository: IGetSettingsRepository;
@@ -22,8 +23,9 @@ export class GetSettings implements IGetSettingsFeature {
             return context.tenancy.getCurrentTenant().id;
         };
 
-        // @ts-expect-error `context.db` is a hidden "feature".
-        const gateway = new GetSettingsGateway(context.db.driver.documentClient);
+        // @ts-expect-error
+        const documentClient = context.db.driver.documentClient;
+        const gateway = new GetSettingsGateway(documentClient as DynamoDBDocument);
         const repository = new GetSettingsRepository(getTenant, gateway);
         const getSettings = new GetSettings(repository);
 

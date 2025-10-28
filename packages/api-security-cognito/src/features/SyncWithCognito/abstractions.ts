@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { BaseUserAttributes } from "@webiny/api-admin-users/types.js";
+import type { BaseUserAttributes } from "@webiny/api-core/types/users.js";
 
 export interface AttributeGetter {
     (user: BaseUserAttributes): string;

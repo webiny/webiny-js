@@ -11,7 +11,18 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/di-container/*": ["../di-container/src/*"],
+      "@webiny/di-container": ["../di-container/src"],
+      "@webiny/logger/*": ["../logger/src/*"],
+      "@webiny/logger": ["../logger/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"],
+      "@webiny/pulumi-sdk/*": ["../pulumi-sdk/src/*"],
+      "@webiny/pulumi-sdk": ["../pulumi-sdk/src"]
+    },
     "baseUrl": "."
   }
 }

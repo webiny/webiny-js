@@ -8,15 +8,15 @@ import type {
 } from "~/types/index.js";
 import { getDate } from "~/utils/date.js";
 import { getIdentity } from "~/utils/identity.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
-import type { Tenant } from "@webiny/api-tenancy/types.js";
-import type { I18NLocale } from "@webiny/api-i18n/types.js";
 import { validateModelEntryDataOrThrow } from "../entryDataValidation.js";
 import { referenceFieldsMapping } from "../referenceFieldsMapping.js";
 import { mapAndCleanUpdatedInputData } from "./mapAndCleanUpdatedInputData.js";
 import lodashMerge from "lodash/merge.js";
 import { removeNullValues, removeUndefinedValues } from "@webiny/utils";
 import { getState } from "./state.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 
 interface CreateEntryRevisionFromDataParams {
     metaInput?: Record<string, any>;
@@ -103,9 +103,9 @@ export const createUpdateEntryData = async ({
             rawInput.revisionLastPublishedOn,
             originalEntry.revisionLastPublishedOn
         ),
-        revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, originalEntry.revisionCreatedBy),
+        revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, originalEntry.revisionCreatedBy)!,
         revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, currentIdentity),
-        revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
+        revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity)!,
         revisionDeletedBy: getIdentity(rawInput.revisionSavedBy, null),
         revisionRestoredBy: getIdentity(rawInput.revisionRestoredBy, null),
         revisionFirstPublishedBy: getIdentity(
@@ -129,8 +129,8 @@ export const createUpdateEntryData = async ({
         restoredOn: getDate(rawInput.restoredOn, null),
         firstPublishedOn: getDate(rawInput.firstPublishedOn, originalEntry.firstPublishedOn),
         lastPublishedOn: getDate(rawInput.lastPublishedOn, originalEntry.lastPublishedOn),
-        createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy),
-        savedBy: getIdentity(rawInput.savedBy, currentIdentity),
+        createdBy: getIdentity(rawInput.createdBy, originalEntry.createdBy)!,
+        savedBy: getIdentity(rawInput.savedBy, currentIdentity)!,
         modifiedBy: getIdentity(rawInput.modifiedBy, currentIdentity),
         deletedBy: getIdentity(rawInput.deletedBy, null),
         restoredBy: getIdentity(rawInput.restoredBy, null),

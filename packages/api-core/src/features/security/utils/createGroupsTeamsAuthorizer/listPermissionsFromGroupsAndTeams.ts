@@ -1,10 +1,12 @@
 import { getPermissionsFromSecurityGroupsForLocale } from "../getPermissionsFromSecurityGroupsForLocale.js";
-import type { SecurityContext, SecurityIdentity, SecurityRole } from "~/types/security.js";
+import { WcpContext } from "~/features/wcp/WcpContext/index.js";
+import type { ApiCoreContext } from "~/types/core.js";
+import type { SecurityIdentity, SecurityRole } from "~/types/security.js";
 
 export type GroupSlug = string | undefined;
 export type TeamSlug = string | undefined;
 
-export interface GroupsTeamsAuthorizerConfig<TContext extends SecurityContext = SecurityContext> {
+export interface GroupsTeamsAuthorizerConfig<TContext extends ApiCoreContext = ApiCoreContext> {
     /**
      * Specify an `identityType` if you want to only run this authorizer for specific identities.
      */
@@ -22,7 +24,7 @@ export interface GroupsTeamsAuthorizerConfig<TContext extends SecurityContext = 
 }
 
 export interface ListPermissionsFromGroupsAndTeamsParams<
-    TContext extends SecurityContext = SecurityContext
+    TContext extends ApiCoreContext = ApiCoreContext
 > {
     config: GroupsTeamsAuthorizerConfig<TContext>;
     identity: SecurityIdentity;
@@ -31,12 +33,14 @@ export interface ListPermissionsFromGroupsAndTeamsParams<
 }
 
 export const listPermissionsFromGroupsAndTeams = async <
-    TContext extends SecurityContext = SecurityContext
+    TContext extends ApiCoreContext = ApiCoreContext
 >(
     params: ListPermissionsFromGroupsAndTeamsParams<TContext>
 ) => {
     const { context, identity, localeCode } = params;
-    const { security, wcp } = context;
+    const { security } = context;
+
+    const wcp = context.container.resolve(WcpContext);
 
     // Load groups that are associated with the current identity. Also load groups
     // that are assigned via one or more teams (if the Teams feature is enabled).

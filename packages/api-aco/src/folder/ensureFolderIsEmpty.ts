@@ -1,5 +1,4 @@
 import WebinyError from "@webiny/error";
-import { NotAuthorizedError } from "@webiny/api-security";
 import type { AcoContext, Folder } from "~/types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 

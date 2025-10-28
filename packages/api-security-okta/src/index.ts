@@ -1,7 +1,7 @@
 import {
     createGroupsTeamsAuthorizer,
-    type GroupsTeamsAuthorizerConfig
-} from "@webiny/api-security";
+    GroupsTeamsAuthorizerConfig
+} from "@webiny/api-core/features/security/utils/createGroupsTeamsAuthorizer.js";
 
 export { createIdentityType } from "./createIdentityType.js";
 export { createAuthenticator } from "./createAuthenticator.js";

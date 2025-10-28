@@ -1,7 +1,7 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/index.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import { ContextPlugin } from "@webiny/api";
-import type { TenancyContext } from "@webiny/api-tenancy/types.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 interface Config {
     name: string;
@@ -29,7 +29,7 @@ export const createIdentityType = (config: Config) => {
                 }
             }
         }),
-        new ContextPlugin<TenancyContext>(context => {
+        new ContextPlugin<ApiCoreContext>(context => {
             const multiTenancy = context.wcp.canUseFeature("multiTenancy");
             if (multiTenancy) {
                 context.plugins.register(

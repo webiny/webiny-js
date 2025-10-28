@@ -4,7 +4,6 @@ import type {
     EntryBeforeListTopicParams
 } from "~/types/index.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
-
 import type { Topic } from "@webiny/pubsub/types.js";
 import { ListEntriesOperationWithSearchableFields } from "./ListEntriesOperationWithSearchableFields.js";
 import { ListEntriesOperation } from "./ListEntriesOperation.js";
@@ -19,8 +18,8 @@ import { ListEntriesOperationPublished } from "./ListEntriesOperationPublished.j
 import { ListEntries } from "./ListEntries.js";
 import { GetEntry } from "./GetEntry.js";
 import { GetEntrySecure } from "./GetEntrySecure.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import type { ITransformEntryCallable } from "~/utils/entryStorage.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 export interface ListEntriesUseCasesTopics {
     onEntryBeforeList: Topic<EntryBeforeListTopicParams>;

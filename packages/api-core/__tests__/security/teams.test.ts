@@ -1,9 +1,9 @@
 import { describe, test, expect, beforeEach } from "vitest";
-import useGqlHandler from "./useGqlHandler";
-import mocks from "./mocks/securityTeam";
-import { createSecurityRolePlugin } from "~/plugins/SecurityRolePlugin";
-import { createSecurityTeamPlugin } from "~/plugins/SecurityTeamPlugin";
+import { useGqlHandler } from "../useGqlHandler";
+import mocks from "../mocks/securityTeam";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
+import { createSecurityTeamPlugin } from "~/legacy/security/plugins/SecurityTeamPlugin";
+import { createSecurityRolePlugin } from "~/legacy/security/plugins/SecurityRolePlugin.js";
 
 describe("Security Team CRUD Test", () => {
     const { install, securityTeam } = useGqlHandler({

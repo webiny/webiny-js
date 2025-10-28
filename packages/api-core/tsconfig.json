@@ -12,8 +12,6 @@
     { "path": "../plugins" },
     { "path": "../utils" },
     { "path": "../wcp" },
-    { "path": "../api-security-so-ddb" },
-    { "path": "../api-tenancy-so-ddb" },
     { "path": "../handler-aws" }
   ],
   "compilerOptions": {
@@ -29,6 +27,8 @@
       "@webiny/di-container": ["../di-container/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
       "@webiny/feature/*": ["../feature/src/*"],
       "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
@@ -43,10 +43,6 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"],
-      "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
-      "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
-      "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
-      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"]
     },

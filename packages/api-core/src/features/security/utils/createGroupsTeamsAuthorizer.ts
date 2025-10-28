@@ -1,12 +1,12 @@
-import { ContextPlugin } from "@webiny/handler";
-import type { SecurityContext } from "~/types/security.js";
+import { ContextPlugin } from "@webiny/api";
 import type { GroupsTeamsAuthorizerConfig } from "./createGroupsTeamsAuthorizer/listPermissionsFromGroupsAndTeams.js";
 import { listPermissionsFromGroupsAndTeams } from "./createGroupsTeamsAuthorizer/listPermissionsFromGroupsAndTeams.js";
+import type { ApiCoreContext } from "~/types/core.js";
 
 export type { GroupsTeamsAuthorizerConfig };
 
 export const createGroupsTeamsAuthorizerHandler = <
-    TContext extends SecurityContext = SecurityContext
+    TContext extends ApiCoreContext = ApiCoreContext
 >(
     config: GroupsTeamsAuthorizerConfig<TContext>,
     context: TContext
@@ -82,7 +82,7 @@ export const createGroupsTeamsAuthorizerHandler = <
     };
 };
 
-export const createGroupsTeamsAuthorizer = <TContext extends SecurityContext = SecurityContext>(
+export const createGroupsTeamsAuthorizer = <TContext extends ApiCoreContext = ApiCoreContext>(
     config: GroupsTeamsAuthorizerConfig<TContext>
 ) => {
     return new ContextPlugin<TContext>(context => {

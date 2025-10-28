@@ -1,4 +1,4 @@
-import type { TenancyContext } from "@webiny/api-tenancy/types.js";
 import type { DbContext } from "@webiny/handler-db/types.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
-export type Context = TenancyContext & DbContext;
+export type Context = ApiCoreContext & DbContext;

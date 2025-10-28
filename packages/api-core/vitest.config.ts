@@ -5,6 +5,7 @@ export default async () => {
     const presets = await getPresets(
         ["@webiny/api-tenancy", "storage-operations"],
         ["@webiny/api-security", "storage-operations"],
+        ["@webiny/api-admin-users", "storage-operations"],
         ["@webiny/api-aco", "storage-operations"]
     );
 

@@ -1,9 +1,8 @@
 import { ContextPlugin } from "@webiny/api";
-import type { TenancyContext } from "~/types/tenancy.js";
-import type { SecurityContext } from "~/types/security.js";
+import type { ApiCoreContext } from "~/types/core.js";
 
 export default () => {
-    return new ContextPlugin<SecurityContext & TenancyContext>(({ security, tenancy }) => {
+    return new ContextPlugin<ApiCoreContext>(({ security, tenancy }) => {
         security.addAuthorizer(async () => {
             const tenant = tenancy.getCurrentTenant();
 

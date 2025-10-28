@@ -13,12 +13,12 @@ import { validateModelEntryDataOrThrow } from "~/crud/contentEntry/entryDataVali
 import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMapping.js";
 import { createIdentifier, mdbid } from "@webiny/utils";
 import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "./statuses.js";
-import type { I18NLocale } from "@webiny/api-i18n/types.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
-import type { Tenant } from "@webiny/api-tenancy/types.js";
 import { getIdentity } from "~/utils/identity.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
 import { getState } from "./state.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 
 type DefaultValue = boolean | number | string | null;
 
@@ -148,9 +148,9 @@ export const createEntryData = async ({
         savedOn: getDate(rawInput.savedOn, currentDateTime),
         deletedOn: getDate(rawInput.deletedOn, null),
         restoredOn: getDate(rawInput.restoredOn, null),
-        createdBy: getIdentity(rawInput.createdBy, currentIdentity),
+        createdBy: getIdentity(rawInput.createdBy, currentIdentity)!,
         modifiedBy: getIdentity(rawInput.modifiedBy, null),
-        savedBy: getIdentity(rawInput.savedBy, currentIdentity),
+        savedBy: getIdentity(rawInput.savedBy, currentIdentity)!,
         deletedBy: getIdentity(rawInput.deletedBy, null),
         restoredBy: getIdentity(rawInput.restoredBy, null),
         ...entryLevelPublishingMetaFields,
@@ -163,9 +163,9 @@ export const createEntryData = async ({
         revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
         revisionDeletedOn: getDate(rawInput.revisionDeletedOn, null),
         revisionRestoredOn: getDate(rawInput.revisionRestoredOn, null),
-        revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
+        revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity)!,
         revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, null),
-        revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
+        revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity)!,
         revisionDeletedBy: getIdentity(rawInput.revisionDeletedBy, null),
         revisionRestoredBy: getIdentity(rawInput.revisionRestoredBy, null),
         ...revisionLevelPublishingMetaFields,

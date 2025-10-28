@@ -15,6 +15,7 @@ import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/v
 import { createExportCrud } from "~/export/index.js";
 import { createImportCrud } from "~/export/crud/importing.js";
 import { getSchema } from "~/graphql/getSchema.js";
+import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -38,21 +39,6 @@ export interface CrudParams {
 export const createContextPlugin = ({ storageOperations }: CrudParams) => {
     const plugin = new ContextPlugin<CmsContext>(async context => {
         const { type, locale: localeCode } = await getParameters(context);
-
-        if (localeCode) {
-            const locale = context.i18n.getLocale(localeCode);
-            if (locale) {
-                context.i18n.setContentLocale(locale);
-            }
-        }
-
-        const getLocale = () => {
-            const locale = context.i18n.getContentLocale();
-            if (!locale) {
-                throw new WebinyError("Missing content locale in cms context.ts.", "LOCALE_ERROR");
-            }
-            return locale;
-        };
 
         const getIdentity = () => {
             return context.security.getIdentity();

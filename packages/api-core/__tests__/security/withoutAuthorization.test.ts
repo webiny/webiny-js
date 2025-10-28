@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { Container } from "@webiny/di-container";
-import { IdentityContextFeature } from "~/features/IdentityContext/feature.js";
-import { AuthorizationContextFeature } from "~/features/authorization/AuthorizationContext/feature.js";
-import { IdentityContext } from "~/features/IdentityContext/index.js";
-import { WcpContextFeature } from "@webiny/api-wcp/features/WcpContext";
+import { IdentityContextFeature } from "~/features/security/IdentityContext/feature.js";
+import { AuthorizationContextFeature } from "~/features/security/authorization/AuthorizationContext/feature.js";
+import { IdentityContext } from "~/features/security/IdentityContext/index.js";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import { License } from "@webiny/wcp";
+import { WcpContextFeature } from "~/features/wcp/WcpContext/index.js";
 
 const fullPermissions = {
     name: "*"

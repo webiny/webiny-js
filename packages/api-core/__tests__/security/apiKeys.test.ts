@@ -1,7 +1,7 @@
 import { describe, test, expect, vi, beforeEach } from "vitest";
 import { mockCreateGetWcpProjectEnvironment } from "./aacl/mocks/mockCreateGetWcpProjectEnvironment.js";
 import { mockCreateGetWcpProjectLicense } from "./aacl/mocks/mockCreateGetWcpProjectLicense.js";
-import useGqlHandler from "../useGqlHandler.js";
+import { useGqlHandler } from "../useGqlHandler.js";
 import apiKeyAuthentication from "~/legacy/security/plugins/apiKeyAuthentication.js";
 import apiKeyAuthorization from "~/legacy/security/plugins/apiKeyAuthorization.js";
 
@@ -32,8 +32,7 @@ describe("Security API Key Test", () => {
     const { install, securityApiKeys } = useGqlHandler();
 
     beforeEach(async () => {
-        const res = await install.install();
-        const a = res;
+        await install.install();
     });
 
     test("should create, list, update and delete an API key", async () => {

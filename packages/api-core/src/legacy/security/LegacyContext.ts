@@ -276,6 +276,7 @@ export class LegacyContext {
     }
 
     addAuthorizer(authorizer: any) {
+        // @ts-expect-error
         this.container.registerFactory(Authorizer, () => {
             return {
                 authorize(): Promise<Permissions[]> {

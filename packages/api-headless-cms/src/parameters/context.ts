@@ -1,12 +1,11 @@
+import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 import { CmsParametersPlugin } from "~/plugins/CmsParametersPlugin.js";
 
-const DEFAULT_LOCALE_CODE = "en-US";
-
 export const createContextParameterPlugin = () => {
-    return new CmsParametersPlugin(async context => {
-        const locale = context.i18n.getContentLocale();
+    return new CmsParametersPlugin(async () => {
+        const locale = getLocale();
         return {
-            locale: locale?.code || DEFAULT_LOCALE_CODE,
+            locale: locale?.code,
             type: null
         };
     });

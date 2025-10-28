@@ -1,26 +1,34 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { SecurityStorageOperations } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { Container } from "@webiny/di-container";
-import { setupFeatures } from "~/setupFeatures.js";
-import { CreateTenantLinks } from "~/features/tenantLinks/CreateTenantLinks/index.js";
-import { UpdateTenantLinks } from "~/features/tenantLinks/UpdateTenantLinks/index.js";
-import { DeleteTenantLinks } from "~/features/tenantLinks/DeleteTenantLinks/index.js";
-import { ListTenantLinksByType } from "~/features/tenantLinks/ListTenantLinksByType/index.js";
-import { ListTenantLinksByTenant } from "~/features/tenantLinks/ListTenantLinksByTenant/index.js";
-import { ListTenantLinksByIdentity } from "~/features/tenantLinks/ListTenantLinksByIdentity/index.js";
+import { CreateTenantLinks } from "~/features/security/tenantLinks/CreateTenantLinks/index.js";
+import { UpdateTenantLinks } from "~/features/security/tenantLinks/UpdateTenantLinks/index.js";
+import { DeleteTenantLinks } from "~/features/security/tenantLinks/DeleteTenantLinks/index.js";
+import { ListTenantLinksByType } from "~/features/security/tenantLinks/ListTenantLinksByType/index.js";
+import { ListTenantLinksByTenant } from "~/features/security/tenantLinks/ListTenantLinksByTenant/index.js";
+import { ListTenantLinksByIdentity } from "~/features/security/tenantLinks/ListTenantLinksByIdentity/index.js";
+import type { TenancyStorageOperations } from "~/types/tenancy.js";
+import type { SecurityStorageOperations } from "~/types/security.js";
+import type { AdminUsersStorageOperations } from "~/types/users.js";
+import { ApiCoreFeature } from "~/ApiCoreFeature.js";
 
 describe("identity test", () => {
     const tenant = "root";
     let container: Container;
 
-    const { storageOperations } = getStorageOps<SecurityStorageOperations>("security");
-
     beforeAll(async () => {
         // Create a new container for each test
         container = new Container();
 
-        setupFeatures(container, storageOperations);
+        const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
+        const securityStorage = getStorageOps<SecurityStorageOperations>("security");
+        const usersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+
+        ApiCoreFeature.register(container, {
+            tenancyStorageOperations: tenancyStorage.storageOperations,
+            securityStorageOperations: securityStorage.storageOperations,
+            usersStorageOperations: usersStorage.storageOperations
+        });
     });
 
     it("should create, update, delete, and list tenant links", async () => {

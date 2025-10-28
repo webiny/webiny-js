@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import useGqlHandler from "./useGqlHandler";
-import mocks from "./mocks/securityGroup";
+import { useGqlHandler } from "../useGqlHandler";
 
-import { assignGroupLifecycleEvents, tracker } from "./mocks/lifecycleEvents";
+import { assignGroupLifecycleEvents, tracker } from "../mocks/lifecycleEvents";
+import mocks from "~tests/mocks/securityGroup.js";
 
 describe("Group Lifecycle Events", () => {
     const { install, securityGroup } = useGqlHandler({

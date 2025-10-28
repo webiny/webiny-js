@@ -1,10 +1,10 @@
-import { UserAfterCreateHandler } from "@webiny/api-admin-users/features/CreateUser";
 import { createImplementation } from "@webiny/feature/api";
-import { TenantContext } from "@webiny/api-tenancy/features/TenantContext";
-import { ListTeamsUseCase } from "@webiny/api-security/features/teams/ListTeams";
-import { ListGroupsUseCase } from "@webiny/api-security/features/groups/ListGroups";
-import { CreateTenantLinks } from "@webiny/api-security/features/tenantLinks/CreateTenantLinks";
-import type { PermissionsTenantLink } from "@webiny/api-security/types.js";
+import { UserAfterCreateHandler } from "@webiny/api-core/features/CreateUser";
+import { TenantContext } from "@webiny/api-core/features/TenantContext";
+import { ListTeamsUseCase } from "@webiny/api-core/features/ListTeams";
+import { ListGroupsUseCase } from "@webiny/api-core/features/ListGroups";
+import { CreateTenantLinks } from "@webiny/api-core/features/CreateTenantLinks";
+import type { PermissionsTenantLink } from "@webiny/api-core/types/security.js";
 
 class UserAfterCreateHandlerImpl implements UserAfterCreateHandler.Interface {
     constructor(

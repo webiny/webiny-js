@@ -12,15 +12,40 @@
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" },
-    { "path": "../api-security-so-ddb/tsconfig.build.json" },
-    { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api/*": ["../api/src/*"],
+      "@webiny/api": ["../api/src"],
+      "@webiny/di-container/*": ["../di-container/src/*"],
+      "@webiny/di-container": ["../di-container/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-db/*": ["../handler-db/src/*"],
+      "@webiny/handler-db": ["../handler-db/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"]
+    },
     "baseUrl": "."
   }
 }

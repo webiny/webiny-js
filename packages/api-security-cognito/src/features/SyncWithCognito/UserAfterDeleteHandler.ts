@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/feature/api";
 import { CognitoIdentityProvider } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
-import { UserAfterDeleteHandler } from "@webiny/api-admin-users/features/DeleteUser";
+import { UserAfterDeleteHandler } from "@webiny/api-core/features/DeleteUser";
 import { CognitoConfig, type ICognitoConfig } from "./abstractions.js";
 
 type GetUsername = NonNullable<ICognitoConfig["getUsername"]>;

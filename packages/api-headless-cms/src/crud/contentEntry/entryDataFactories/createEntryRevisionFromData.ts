@@ -7,17 +7,17 @@ import type {
 } from "~/types/index.js";
 import { getDate } from "~/utils/date.js";
 import { getIdentity } from "~/utils/identity.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
-import type { Tenant } from "@webiny/api-tenancy/types.js";
-import type { I18NLocale } from "@webiny/api-i18n/types.js";
 import { mapAndCleanUpdatedInputData } from ".//mapAndCleanUpdatedInputData.js";
 import { validateModelEntryDataOrThrow } from "../entryDataValidation.js";
 import { referenceFieldsMapping } from "../referenceFieldsMapping.js";
 import { createIdentifier, parseIdentifier } from "@webiny/utils";
 import WebinyError from "@webiny/error";
+import type { GenericRecord } from "@webiny/api/types.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 import { STATUS_DRAFT, STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "./statuses.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
-import type { GenericRecord } from "@webiny/api/types.js";
 import { getState } from "./state.js";
 
 interface CreateEntryRevisionFromDataParams {
@@ -158,8 +158,8 @@ export const createEntryRevisionFromData = async ({
         createdOn: getDate(rawInput.createdOn, latestStorageEntry.createdOn),
         savedOn: getDate(rawInput.savedOn, currentDateTime),
         modifiedOn: getDate(rawInput.modifiedOn, currentDateTime),
-        createdBy: getIdentity(rawInput.createdBy, latestStorageEntry.createdBy),
-        savedBy: getIdentity(rawInput.savedBy, currentIdentity),
+        createdBy: getIdentity(rawInput.createdBy, latestStorageEntry.createdBy)!,
+        savedBy: getIdentity(rawInput.savedBy, currentIdentity)!,
         modifiedBy: getIdentity(rawInput.modifiedBy, currentIdentity),
         ...entryLevelPublishingMetaFields,
 
@@ -169,8 +169,8 @@ export const createEntryRevisionFromData = async ({
         revisionCreatedOn: getDate(rawInput.revisionCreatedOn, currentDateTime),
         revisionSavedOn: getDate(rawInput.revisionSavedOn, currentDateTime),
         revisionModifiedOn: getDate(rawInput.revisionModifiedOn, null),
-        revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity),
-        revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity),
+        revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, currentIdentity)!,
+        revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity)!,
         revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, null),
         ...revisionLevelPublishingMetaFields,
 

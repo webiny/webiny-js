@@ -11,7 +11,18 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-elasticsearch-tasks/*": ["../api-elasticsearch-tasks/src/*"],
+      "@webiny/api-elasticsearch-tasks": ["../api-elasticsearch-tasks/src"],
+      "@webiny/api-headless-cms-es-tasks/*": ["../api-headless-cms-es-tasks/src/*"],
+      "@webiny/api-headless-cms-es-tasks": ["../api-headless-cms-es-tasks/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/tasks/*": ["../tasks/src/*"],
+      "@webiny/tasks": ["../tasks/src"]
+    },
     "baseUrl": "."
   }
 }

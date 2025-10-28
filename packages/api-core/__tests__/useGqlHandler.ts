@@ -48,7 +48,7 @@ type UseGqlHandlerParams = {
     wcpLicense?: DecryptedWcpProjectLicense;
 };
 
-export default (opts: UseGqlHandlerParams = {}) => {
+export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
     const defaults = { plugins: [] };
     opts = Object.assign({}, defaults, opts);
 

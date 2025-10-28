@@ -13,6 +13,7 @@
     ".": "./index.js",
     "./features/EventPublisher": "./features/eventPublisher/index.js",
     "./features/IdentityContext": "./features/security/IdentityContext/index.js",
+    "./features/WcpContext": "./features/wcp/WcpContext/index.js",
     "./features/CreateApiKey": "./features/security/apiKeys/CreateApiKey/index.js",
     "./features/DeleteApiKey": "./features/security/apiKeys/DeleteApiKey/index.js",
     "./features/GetApiKey": "./features/security/apiKeys/GetApiKey/index.js",
@@ -76,8 +77,6 @@
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",
     "@types/md5": "^2.3.5",
-    "@webiny/api-security-so-ddb": "0.0.0",
-    "@webiny/api-tenancy-so-ddb": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/project-utils": "0.0.0",

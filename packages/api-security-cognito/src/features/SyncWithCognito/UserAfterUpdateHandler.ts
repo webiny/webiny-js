@@ -1,7 +1,7 @@
 import { CognitoIdentityProvider } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
-import { UserAfterUpdateHandler } from "@webiny/api-admin-users/features/UpdateUser";
+import { UserAfterUpdateHandler } from "@webiny/api-core/features/UpdateUser";
 import { createImplementation } from "@webiny/feature/api";
-import type { AdminUser } from "@webiny/api-admin-users/types.js";
+import type { AdminUser } from "@webiny/api-core/types/users.js";
 import { CognitoConfig, type ICognitoConfig, type AttributeGetter } from "./abstractions.js";
 
 type GetUsername = NonNullable<ICognitoConfig["getUsername"]>;

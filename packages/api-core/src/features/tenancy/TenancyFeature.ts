@@ -1,4 +1,4 @@
-import { createFeature } from "@webiny/feature/api/index.js";
+import { createFeature } from "@webiny/feature/api";
 import type { TenancyStorageOperations as ITenancyStorageOperations } from "~/types/tenancy.js";
 import { TenantCache } from "./shared/abstractions.js";
 import { TenantCache as TenantCacheImpl } from "./shared/TenantCache.js";

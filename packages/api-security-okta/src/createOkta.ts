@@ -1,7 +1,7 @@
 import { createContextPlugin } from "@webiny/api";
-import type { GroupsTeamsAuthorizerConfig } from "@webiny/api-security";
-import { createGroupsTeamsAuthorizer } from "@webiny/api-security";
-import { ExternalIdpUserSyncFeature } from "@webiny/api-admin-users/features/ExternalIdpUserSync";
+import type { GroupsTeamsAuthorizerConfig } from "@webiny/api-core/features/security/utils/createGroupsTeamsAuthorizer/listPermissionsFromGroupsAndTeams.js";
+import { createGroupsTeamsAuthorizer } from "@webiny/api-core/features/security/utils/createGroupsTeamsAuthorizer.js";
+import { ExternalIdpUserSyncFeature } from "@webiny/api-core/features/ExternalIdpUserSync";
 import type { AuthenticatorConfig } from "~/createAuthenticator.js";
 import { createAuthenticator } from "~/createAuthenticator.js";
 import { createIdentityType } from "~/createIdentityType.js";

@@ -10,7 +10,7 @@ interface InstallTenantArgs {
     installationInput: AppInstallationData[];
 }
 
-export const createGraphQLSchema = () => {
+export const createSystemGraphQL = () => {
     return new GraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type SystemQuery {

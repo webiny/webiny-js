@@ -1,35 +1,35 @@
 import { ContextPlugin } from "@webiny/api";
-import type { SecurityContext } from "~/types";
 import { LifecycleEventTracker } from "@webiny/project-utils/testing/helpers/lifecycleTracker";
 import {
     ApiKeyBeforeCreateHandler,
     ApiKeyAfterCreateHandler
-} from "~/features/apiKeys/CreateApiKey/events.js";
+} from "~/features/security/apiKeys/CreateApiKey/events.js";
 import {
     ApiKeyBeforeUpdateHandler,
     ApiKeyAfterUpdateHandler
-} from "~/features/apiKeys/UpdateApiKey/events.js";
+} from "~/features/security/apiKeys/UpdateApiKey/events.js";
 import {
     ApiKeyBeforeDeleteHandler,
     ApiKeyAfterDeleteHandler
-} from "~/features/apiKeys/DeleteApiKey/events.js";
+} from "~/features/security/apiKeys/DeleteApiKey/events.js";
 import {
     GroupBeforeCreateHandler,
     GroupAfterCreateHandler
-} from "~/features/groups/CreateGroup/events.js";
+} from "~/features/security/groups/CreateGroup/events.js";
 import {
     GroupBeforeUpdateHandler,
     GroupAfterUpdateHandler
-} from "~/features/groups/UpdateGroup/events.js";
+} from "~/features/security/groups/UpdateGroup/events.js";
 import {
     GroupBeforeDeleteHandler,
     GroupAfterDeleteHandler
-} from "~/features/groups/DeleteGroup/events.js";
+} from "~/features/security/groups/DeleteGroup/events.js";
+import type { ApiCoreContext } from "~/types/core.js";
 
 export const tracker = new LifecycleEventTracker();
 
 export const assignApiKeyLifecycleEvents = () => {
-    return new ContextPlugin<SecurityContext>(async context => {
+    return new ContextPlugin<ApiCoreContext>(async context => {
         if (!context.container) {
             return;
         }
@@ -79,7 +79,7 @@ export const assignApiKeyLifecycleEvents = () => {
 };
 
 export const assignGroupLifecycleEvents = () => {
-    return new ContextPlugin<SecurityContext>(async context => {
+    return new ContextPlugin<ApiCoreContext>(async context => {
         if (!context.container) {
             return;
         }

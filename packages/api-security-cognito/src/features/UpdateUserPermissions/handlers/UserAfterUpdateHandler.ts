@@ -1,14 +1,14 @@
-import { UserAfterUpdateHandler } from "@webiny/api-admin-users/features/UpdateUser";
+import deepEqual from "deep-equal";
+import { UserAfterUpdateHandler } from "@webiny/api-core/features/UpdateUser";
 import { createImplementation } from "@webiny/feature/api";
-import { TenantContext } from "@webiny/api-tenancy/features/TenantContext";
-import { ListTeamsUseCase } from "@webiny/api-security/features/teams/ListTeams";
-import { ListGroupsUseCase } from "@webiny/api-security/features/groups/ListGroups";
-import { UpdateTenantLinks } from "@webiny/api-security/features/tenantLinks/UpdateTenantLinks";
+import { TenantContext } from "@webiny/api-core/features/TenantContext";
+import { ListTeamsUseCase } from "@webiny/api-core/features/ListTeams";
+import { ListGroupsUseCase } from "@webiny/api-core/features/ListGroups";
+import { UpdateTenantLinks } from "@webiny/api-core/features/UpdateTenantLinks";
 import type {
     PermissionsTenantLink,
     PermissionsTenantLinkTeam
-} from "@webiny/api-security/types.js";
-import deepEqual from "deep-equal";
+} from "@webiny/api-core/types/security.js";
 
 class UserAfterUpdateHandlerImpl implements UserAfterUpdateHandler.Interface {
     constructor(

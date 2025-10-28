@@ -1,5 +1,6 @@
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
+import { Request } from "@webiny/handler";
 import type { ApiCoreContext } from "~/types/core.js";
 import { GetTenantByIdUseCase } from "~/features/tenancy/GetTenantById/index.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
@@ -10,13 +11,15 @@ export const createTenancyContext = () => {
     return new ContextPlugin<ApiCoreContext>(async context => {
         let tenantId = "root";
 
+        const request = context.container.resolve(Request);
+
         const multiTenancy = context.wcp.canUseFeature("multiTenancy");
-        if (!context.request) {
+        if (!request) {
             throw new Error("MISSING CONTEXT REQUEST");
         }
 
         if (multiTenancy) {
-            const { headers = {}, method, params, query } = context.request;
+            const { headers = {}, method, params, query } = request;
 
             tenantId = headers["x-tenant"] as string;
 

@@ -1,8 +1,8 @@
 import type { AdminCreateUserRequest } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
 import { CognitoIdentityProvider } from "@webiny/aws-sdk/client-cognito-identity-provider/index.js";
 import WebinyError from "@webiny/error";
-import { UserBeforeCreateHandler } from "@webiny/api-admin-users/features/CreateUser";
-import { ListUsersUseCase } from "@webiny/api-admin-users/features/ListUsers";
+import { UserBeforeCreateHandler } from "@webiny/api-core/features/CreateUser";
+import { ListUsersUseCase } from "@webiny/api-core/features/ListUsers";
 import { createImplementation } from "@webiny/feature/api";
 import { CognitoConfig, type ICognitoConfig } from "./abstractions.js";
 

@@ -1,12 +1,12 @@
 import { ErrorResponse, NotFoundResponse, Response } from "@webiny/handler-graphql/responses.js";
-import type { AdminUsersContext } from "@webiny/api-admin-users/types.js";
+import type { AdminUsersContext } from "@webiny/api-core/types/users.js";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin.js";
-import { IdentityContext } from "@webiny/api-security/features/IdentityContext";
-import { GetUserUseCase } from "@webiny/api-admin-users/features/GetUser";
-import { CreateUserUseCase } from "@webiny/api-admin-users/features/CreateUser";
-import { UpdateUserUseCase } from "@webiny/api-admin-users/features/UpdateUser";
-import { DeleteUserUseCase } from "@webiny/api-admin-users/features/DeleteUser";
-import { NotAuthorizedResponse } from "@webiny/api-security";
+import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { GetUserUseCase } from "@webiny/api-core/features/GetUser";
+import { CreateUserUseCase } from "@webiny/api-core/features/CreateUser";
+import { UpdateUserUseCase } from "@webiny/api-core/features/UpdateUser";
+import { DeleteUserUseCase } from "@webiny/api-core/features/DeleteUser";
+import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 
 export interface CreateUserGraphQlPluginsParams {
     teams?: boolean;

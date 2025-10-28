@@ -1,4 +1,4 @@
-import { createBeforeHandlerPlugin } from "@webiny/handler";
+import { createBeforeHandlerPlugin, Request } from "@webiny/handler";
 import { authenticateUsingCookie } from "./authenticateUsingCookie.js";
 import type { ApiCoreContext } from "~/types/core.js";
 import { setupSecureHeaders } from "./secureHeaders.js";
@@ -8,7 +8,8 @@ export interface GetHeader {
 }
 
 const defaultGetHeader: GetHeader = context => {
-    const header = context.request.headers["authorization"];
+    const request = context.container.resolve(Request);
+    const header = request.headers["authorization"];
 
     return header ? header.split(" ").pop() : null;
 };

@@ -1,8 +1,8 @@
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import type { SecurityContext } from "~/types";
+import type { ApiCoreContext } from "~/types/core.js";
 
 export const triggerAuthentication = () => {
-    return new BeforeHandlerPlugin<SecurityContext>(context => {
+    return new BeforeHandlerPlugin<ApiCoreContext>(context => {
         if (!context.request.headers.authorization) {
             context.security.authenticate("");
         }

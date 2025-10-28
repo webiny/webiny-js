@@ -1,7 +1,7 @@
-import { UserAfterDeleteHandler } from "@webiny/api-admin-users/features/DeleteUser";
+import { UserAfterDeleteHandler } from "@webiny/api-core/features/DeleteUser";
 import { createImplementation } from "@webiny/feature/api";
-import { TenantContext } from "@webiny/api-tenancy/features/TenantContext";
-import { DeleteTenantLinks } from "@webiny/api-security/features/tenantLinks/DeleteTenantLinks";
+import { TenantContext } from "@webiny/api-core/features/TenantContext";
+import { DeleteTenantLinks } from "@webiny/api-core/features/DeleteTenantLinks";
 
 class UserAfterDeleteHandlerImpl implements UserAfterDeleteHandler.Interface {
     constructor(

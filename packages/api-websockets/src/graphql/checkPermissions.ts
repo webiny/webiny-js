@@ -1,4 +1,5 @@
-import { NotAuthorizedError } from "@webiny/api-security";
+import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 import type { Context, WebsocketsPermission } from "~/types.js";
 
 /**
@@ -7,7 +8,8 @@ import type { Context, WebsocketsPermission } from "~/types.js";
  * @throws
  */
 export const checkPermissions = async (context: Context): Promise<void> => {
-    const permissions = await context.security.getPermissions<WebsocketsPermission>("websockets");
+    const identityContext = context.container.resolve(IdentityContext);
+    const permissions = await identityContext.getPermissions<WebsocketsPermission>("websockets");
 
     if (permissions.length === 0) {
         throw new NotAuthorizedError();

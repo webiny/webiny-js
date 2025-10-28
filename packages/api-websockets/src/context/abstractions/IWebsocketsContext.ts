@@ -6,8 +6,8 @@ import type {
     IWebsocketsTransportSendConnection,
     IWebsocketsTransportSendData
 } from "~/transport/index.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 export type IWebsocketsIdentity = Pick<SecurityIdentity, "id" | "displayName" | "type">;
 

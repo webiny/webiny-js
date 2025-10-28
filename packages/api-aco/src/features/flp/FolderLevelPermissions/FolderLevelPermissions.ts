@@ -1,7 +1,8 @@
-import { NotAuthorizedError } from "@webiny/api-security";
-import { IdentityContext } from "@webiny/api-security/features/IdentityContext";
-import { WcpContext } from "@webiny/api-wcp/features/WcpContext";
-import { ListUserTeamsUseCase } from "@webiny/api-admin-users/features/ListUserTeams";
+import { createImplementation } from "@webiny/di-container";
+import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { WcpContext } from "@webiny/api-core/features/WcpContext";
+import { ListUserTeamsUseCase } from "@webiny/api-core/features/ListUserTeams";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 import {
     CanAccessFolder,
     CanAccessFolderContent,
@@ -14,7 +15,6 @@ import {
 } from "./useCases/index.js";
 import { FolderLevelPermissions as FolderLevelPermissionsAbstraction } from "./abstractions.js";
 import type { FolderLevelPermission, FolderPermission, ListFlpsParams } from "~/types.js";
-import { createImplementation } from "@webiny/di-container";
 import { ListFlpsUseCase } from "~/features/flp/ListFlps/index.js";
 import { GetFlpUseCase } from "~/features/flp/GetFlp/index.js";
 

@@ -1,7 +1,7 @@
-import { NotAuthorizedError } from "@webiny/api-security";
-import type { AcoContext } from "~/types.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/errors.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
-export const ensureAuthentication = (context: AcoContext) => {
+export const ensureAuthentication = (context: ApiCoreContext) => {
     const identity = context.security.getIdentity();
     if (!identity) {
         throw new NotAuthorizedError();

@@ -1,5 +1,5 @@
 import { createContextPlugin } from "@webiny/api";
-import { createBeforeHandlerPlugin } from "@webiny/handler";
+import { createBeforeHandlerPlugin, Request } from "@webiny/handler";
 import type { ApiCoreContext } from "~/types/core.js";
 import { SetIdTokenCookie } from "~/features/security/authentication/AuthenticationContext/SetIdTokenCookie.js";
 
@@ -9,7 +9,8 @@ import { SetIdTokenCookie } from "~/features/security/authentication/Authenticat
 export function authenticateUsingCookie() {
     return [
         createBeforeHandlerPlugin<ApiCoreContext>(async context => {
-            const { cookies } = context.request;
+            const request = context.container.resolve(Request);
+            const { cookies } = request;
             const token = cookies["wby-id-token"];
 
             if (!context.security.getIdentity() && token) {

@@ -4,6 +4,7 @@ import type { ISaveSettingsRepository } from "./abstractions/ISaveSettings.repos
 import { SaveSettingsGateway } from "~/infrastructure/SaveSettings.gateway.js";
 import { SaveSettingsRepository } from "~/features/saveSettings/SaveSettings.repository.js";
 import type { Context } from "~/types.js";
+import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
 export class SaveSettings implements ISaveSettingsFeature {
     private repository: ISaveSettingsRepository;
@@ -25,8 +26,9 @@ export class SaveSettings implements ISaveSettingsFeature {
             return context.tenancy.getCurrentTenant().id;
         };
 
-        // @ts-expect-error `context.db` is a hidden "feature".
-        const gateway = new SaveSettingsGateway(context.db.driver.documentClient);
+        // @ts-expect-error
+        const documentClient = context.db.driver.documentClient;
+        const gateway = new SaveSettingsGateway(documentClient as DynamoDBDocument);
         const repository = new SaveSettingsRepository(getTenant, gateway);
         const saveSettings = new SaveSettings(repository);
 

@@ -1,10 +1,10 @@
 import { createImplementation } from "@webiny/feature/api";
-import { AppInstaller } from "@webiny/api-tenancy/features/InstallTenant";
-import type { Tenant } from "@webiny/api-tenancy/types.js";
-import type { AdminUser } from "@webiny/api-admin-users/types";
-import { CreateUserUseCase } from "@webiny/api-admin-users/features/CreateUser";
-import { DeleteUserUseCase } from "@webiny/api-admin-users/features/DeleteUser";
-import { GetGroupUseCase } from "@webiny/api-security/features/groups/GetGroup";
+import { AppInstaller } from "@webiny/api-core/features/InstallTenant";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { AdminUser } from "@webiny/api-core/types/users.js";
+import { CreateUserUseCase } from "@webiny/api-core/features/CreateUser";
+import { DeleteUserUseCase } from "@webiny/api-core/features/DeleteUser";
+import { GetGroupUseCase } from "@webiny/api-core/features/GetGroup";
 
 interface AdminUserInstallationData {
     firstName: string;

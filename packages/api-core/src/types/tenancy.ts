@@ -1,5 +1,5 @@
-import { DbContext } from "@webiny/handler-db/types";
-import { Context as BaseContext } from "@webiny/handler/types";
+import { DbContext } from "@webiny/handler-db/types.js";
+import { Context as BaseContext } from "@webiny/handler/types.js";
 import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 
 export type TenantSettings = Record<string, any>;

@@ -5,7 +5,7 @@ import { createWcpContext } from "~/legacy/wcp/context.js";
 import { createSecurityContext } from "~/legacy/security/createSecurityContext.js";
 import { createAdminUsersContext } from "~/legacy/users/createAdminUsersContext.js";
 import { createTenancyContext } from "~/legacy/tenancy/createTenancyContext.js";
-import { WcpContext } from "~/features/wcp/WcpContext/index.js";
+import { createSystemGraphQL } from "~/graphql/system/createSystemGraphQL.js";
 
 export interface ApiCoreConfig extends ApiCoreFeatureConfig {
     testProjectLicense?: DecryptedWcpProjectLicense;
@@ -16,15 +16,11 @@ export const createApiCore = (config: ApiCoreConfig) => {
         createContextPlugin(context => {
             // Register ALL core features
             ApiCoreFeature.register(context.container, config);
-
-            // Setup graphql and legacy contexts
-            const wcp = context.container.resolve(WcpContext);
-            const teams = wcp.canUseTeams();
-
-            createWcpContext({ testProjectLicense: config.testProjectLicense });
-            createTenancyContext(),
-            createSecurityContext({ teams });
-            createAdminUsersContext({ teams });
-        })
+        }),
+        createWcpContext({ testProjectLicense: config.testProjectLicense }),
+        createTenancyContext(),
+        createSecurityContext(),
+        createAdminUsersContext(),
+        createSystemGraphQL()
     ];
 };
