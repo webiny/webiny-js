@@ -55,7 +55,6 @@
     "sass-loader": "^16.0.5",
     "scheduler": "0.26.0",
     "style-loader": "3.3.4",
-    "tailwindcss": "^4.1.16",
     "ts-checker-rspack-plugin": "^1.1.5",
     "ts-morph": "^24.0.0",
     "ts-patch": "^3.3.0",
