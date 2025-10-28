@@ -92,7 +92,7 @@ const AccordionTrigger = ({
                         </div>
                         <div className={"wby-text-sm wby-text-neutral-strong"}>{description}</div>
                     </div>
-                    <div className={"wby-flex wby-gap-xs"}>
+                    <div className={"wby-flex wby-gap-xs wby-items-center"}>
                         {actions}
                         {/* No need to show the separator if there are no actions and the item is not interactive. */}
                         {actions && interactive ? <AccordionItemAction.Separator /> : null}
