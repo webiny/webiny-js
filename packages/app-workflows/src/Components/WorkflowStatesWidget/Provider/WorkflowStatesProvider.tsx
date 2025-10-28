@@ -1,6 +1,6 @@
 import {
     type IWorkflowStatesWidgetPresenter,
-    WorkflowStatesOwnWidgetPresenter
+    WorkflowStatesWidgetPresenter
 } from "~/Presenters/index.js";
 import React, { useMemo } from "react";
 import { WorkflowStatesWidgetGateway } from "~/Gateways/index.js";
@@ -31,7 +31,7 @@ export const WorkflowStatesProvider = (props: IWorkflowStatesProviderProps) => {
         const repository = new WorkflowStatesWidgetRepository({
             gateway
         });
-        return new WorkflowStatesOwnWidgetPresenter({
+        return new WorkflowStatesWidgetPresenter({
             repository,
             type,
         });

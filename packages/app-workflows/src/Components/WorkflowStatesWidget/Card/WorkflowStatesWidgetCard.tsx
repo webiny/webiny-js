@@ -3,10 +3,14 @@ import { Card, Icon } from "@webiny/admin-ui";
 import { ReactComponent as ReviewRequestsIcon } from "@webiny/icons/reviews.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { observer } from "mobx-react-lite";
-import { useWorkflowStatesWidget } from "../useWorkflowStatesWidget.js";
+import { useWorkflowStatesWidget } from "../Provider/useWorkflowStatesWidget.js";
 import { WorkflowStatesWidgetCardTabs } from "./WorkflowStatesWidgetCardTabs.js";
 
-export const WorkflowStateWidgetCard = observer(() => {
+interface IWorkflowStateWidgetCardProps {
+    title: React.ReactNode;
+}
+
+export const WorkflowStateWidgetCard = observer(({ title }: IWorkflowStateWidgetCardProps) => {
     const { presenter } = useWorkflowStatesWidget();
     return (
         <Card
@@ -17,7 +21,7 @@ export const WorkflowStateWidgetCard = observer(() => {
                         color={"accent"}
                         label={"Review Requests"}
                     />
-                    Own Review Requests
+                    {title}
                 </>
             }
             options={

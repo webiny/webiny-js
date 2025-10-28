@@ -1,7 +1,10 @@
 import { makeAutoObservable, observable, runInAction } from "mobx";
-import type { IWorkflowStatesWidgetRepository } from "./abstractions/WorkflowStatesWidgetRepository.js";
+import type {
+    IWorkflowStatesWidgetRepository,
+    IWorkflowStatesWidgetRepositoryListResult
+} from "./abstractions/WorkflowStatesWidgetRepository.js";
 import type { IWorkflowStatesWidgetGateway } from "~/Gateways/index.js";
-import { type IGenericError, type IWorkflowStatesWidgetItem, WorkflowStateValue } from "~/types.js";
+import { type IGenericError, WorkflowStateValue } from "~/types.js";
 
 export interface IWorkflowStatesWidgetRepositoryParams {
     gateway: IWorkflowStatesWidgetGateway;
@@ -49,7 +52,9 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
         makeAutoObservable(this);
     }
 
-    public async listOwnStates(state: WorkflowStateValue): Promise<IWorkflowStatesWidgetItem[]> {
+    public async listOwnStates(
+        state: WorkflowStateValue
+    ): Promise<IWorkflowStatesWidgetRepositoryListResult> {
         const key = `own.${state}`;
         runInAction(() => {
             this.#loading[key] = true;
@@ -65,12 +70,15 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
             this.#loading[key] = false;
             this.#error[key] = result.error;
         });
-        return result.data || [];
+        return {
+            items: result.data || [],
+            totalCount: result.meta?.totalCount || 0
+        };
     }
 
     public async listRequestedStates(
         state: WorkflowStateValue
-    ): Promise<IWorkflowStatesWidgetItem[]> {
+    ): Promise<IWorkflowStatesWidgetRepositoryListResult> {
         const key = `requested.${state}`;
         runInAction(() => {
             this.#loading[key] = true;
@@ -86,6 +94,9 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
             this.#loading[key] = false;
             this.#error[key] = result.error;
         });
-        return result.data || [];
+        return {
+            items: result.data || [],
+            totalCount: result.meta?.totalCount || 0
+        };
     }
 }
