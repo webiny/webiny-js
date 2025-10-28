@@ -3,9 +3,10 @@ import { WorkflowStateTransformer } from "~/context/transformer/WorkflowStateTra
 import { createContextHandler } from "~tests/__helpers/handler.js";
 import { WorkflowsContext } from "~/context/WorkflowsContext.js";
 import { WorkflowsTransformer } from "~/context/transformer/WorkflowsTransformer";
+import type { UseContextHandlerParams } from "@webiny/testing";
 
-export const createContext = async () => {
-    const { context, stateModel, workflowModel } = await createContextHandler();
+export const createContext = async (params?: UseContextHandlerParams) => {
+    const { context, stateModel, workflowModel } = await createContextHandler(params);
     const workflowStateContext = new WorkflowStateContext({
         context,
         model: stateModel,

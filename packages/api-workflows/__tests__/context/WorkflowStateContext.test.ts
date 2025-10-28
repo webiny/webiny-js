@@ -4,6 +4,8 @@ import { createMockWorkflow } from "~tests/context/mocks/workflow.js";
 import { WorkflowStateRecordState } from "~/context/abstractions/WorkflowState.js";
 
 describe("Workflow State Context", () => {
+    const targetTitle = "App: Some Record Title";
+    
     it("should not list any states", async () => {
         const { workflowStateContext } = await createContext();
 
@@ -42,16 +44,20 @@ describe("Workflow State Context", () => {
     it("should fail to create a workflow state because of faulty targetId", async () => {
         const { workflowStateContext } = await createContext();
 
-        await expect(workflowStateContext.createState("app", "non-revision-id")).rejects.toThrow(
-            "Cannot create a workflow state without version of a target record."
-        );
+        await expect(
+            workflowStateContext.createState("app", "non-revision-id", targetTitle)
+        ).rejects.toThrow("Cannot create a workflow state without version of a target record.");
     });
 
     it("should not create a state because there are no workflows", async () => {
         const { workflowStateContext } = await createContext();
 
         await expect(() => {
-            return workflowStateContext.createState("non-existing-app", "non-existing-id#0001");
+            return workflowStateContext.createState(
+                "non-existing-app",
+                "non-existing-id#0001",
+                targetTitle
+            );
         }).rejects.toThrow("No workflows are defined for the given app.");
     });
 
@@ -59,12 +65,13 @@ describe("Workflow State Context", () => {
         const { workflowStateContext, workflowsContext } = await createContext();
         const app = "testingApp";
         const targetRevisionId = "record-id#0001";
+
         const mockWorkflow = createMockWorkflow({
             app
         });
         const workflow = await workflowsContext.storeWorkflow(app, mockWorkflow.id, mockWorkflow);
 
-        const state = await workflowStateContext.createState(app, targetRevisionId);
+        const state = await workflowStateContext.createState(app, targetRevisionId, targetTitle);
 
         expect(state).toBeDefined();
         expect(state.done).toBe(false);
@@ -126,7 +133,7 @@ describe("Workflow State Context", () => {
         });
         await workflowsContext.storeWorkflow(app, mockWorkflow.id, mockWorkflow);
 
-        const state = await workflowStateContext.createState(app, targetId);
+        const state = await workflowStateContext.createState(app, targetId, targetTitle);
 
         expect(state.done).toBeFalse();
         expect(state.state).toEqual(WorkflowStateRecordState.inReview);
@@ -198,7 +205,7 @@ describe("Workflow State Context", () => {
         });
         await workflowsContext.storeWorkflow(app, mockWorkflow.id, mockWorkflow);
 
-        const state = await workflowStateContext.createState(app, targetId);
+        const state = await workflowStateContext.createState(app, targetId, targetTitle);
 
         expect(state.done).toBeFalse();
         expect(state.state).toEqual(WorkflowStateRecordState.inReview);
@@ -213,5 +220,46 @@ describe("Workflow State Context", () => {
         await expect(() => {
             return state.reject("There is no step to reject.");
         }).rejects.toThrow("Cannot reject a workflow state that is not in review.");
+    });
+    
+    
+    it("should list own workflow states only", async () => {
+        const { workflowStateContext, workflowsContext } = await createContext();
+        const app = "testingApp";
+        const targetId1 = "record-1-id#0001";
+        const targetTitle1 = "App: Record 1 Title";
+        const targetId2 = "record-2-id#0001";
+        const targetTitle2 = "App: Record 2 Title";
+        const mockWorkflow = createMockWorkflow({
+            app
+        });
+        await workflowsContext.storeWorkflow(app, mockWorkflow.id, mockWorkflow);
+
+        await workflowStateContext.createState(app, targetId1, targetTitle1);
+        await workflowStateContext.createState(app, targetId2, targetTitle2);
+
+        const { items: ownItems } = await workflowStateContext.listOwnWorkflowStates();
+
+        expect(ownItems.length).toBe(2);
+        expect(ownItems[0].targetRevisionId).toBe(targetId2);
+        expect(ownItems[1].targetRevisionId).toBe(targetId1);
+        
+        const { items: requestedItems } = await workflowStateContext.listRequestedWorkflowStates();
+        
+        expect(requestedItems.length).toBe(0);
+        
+
+        const { workflowStateContext: anotherIdentityWorkflowStateContext } = await createContext({
+            identity: {
+                id: "another-identity-id",
+                displayName: "Another Identity",
+                type: "user"
+            }
+        });
+
+        const { items: noOwnItems } =
+            await anotherIdentityWorkflowStateContext.listOwnWorkflowStates();
+
+        expect(noOwnItems).toHaveLength(0);
     });
 });
