@@ -17,5 +17,5 @@ export type {
     IWorkflowStatesWidgetPresenterViewModel,
     IWorkflowStatesWidgetPresenter
 } from "./abstractions/WorkflowStatesWidgetPresenter.js";
-export { WorkflowStatesOwnWidgetPresenter } from "./WorkflowStatesOwnWidgetPresenter.js";
-export type { IWorkflowStatesOwnWidgetPresenterParams } from "./WorkflowStatesOwnWidgetPresenter.js";
+export { WorkflowStatesWidgetPresenter } from "./WorkflowStatesWidgetPresenter.js";
+export type { IWorkflowStatesWidgetPresenterParams } from "./WorkflowStatesWidgetPresenter.js";

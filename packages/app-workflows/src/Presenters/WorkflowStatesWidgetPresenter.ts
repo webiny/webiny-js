@@ -6,35 +6,45 @@ import type {
 import { type IWorkflowStatesWidgetItem, WorkflowStateValue } from "~/types.js";
 import { type IObservableArray, makeAutoObservable, observable, runInAction, toJS } from "mobx";
 
-export interface IWorkflowStatesOwnWidgetPresenterParams {
+export interface IWorkflowStatesWidgetPresenterParams {
     repository: IWorkflowStatesWidgetRepository;
     type: "own" | "requested";
 }
 
-interface IWorkflowStatesOwnWidgetPresenterItems {
+interface IWorkflowStatesWidgetPresenterItems {
     inReview: IWorkflowStatesWidgetItem[];
+    inReviewTotalCount: number;
     approved: IWorkflowStatesWidgetItem[];
+    approvedTotalCount: number;
     rejected: IWorkflowStatesWidgetItem[];
+    rejectedTotalCount: number;
 }
 
-export class WorkflowStatesOwnWidgetPresenter implements IWorkflowStatesWidgetPresenter {
+export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPresenter {
     readonly #repository;
     readonly #type: "own" | "requested";
 
     #inReview: IObservableArray<IWorkflowStatesWidgetItem>;
+    #inReviewTotalCount: number = 0;
     #approved: IObservableArray<IWorkflowStatesWidgetItem>;
+    #approvedTotalCount: number = 0;
     #rejected: IObservableArray<IWorkflowStatesWidgetItem>;
+    #rejectedTotalCount: number = 0;
 
     public get vm(): IWorkflowStatesWidgetPresenterViewModel {
         return {
             loading: this.#repository.loading,
+            error: this.#repository.error,
             inReview: toJS(this.#inReview),
+            inReviewTotalCount: this.#inReviewTotalCount,
             approved: toJS(this.#approved),
-            rejected: toJS(this.#rejected)
+            approvedTotalCount: this.#approvedTotalCount,
+            rejected: toJS(this.#rejected),
+            rejectedTotalCount: this.#rejectedTotalCount
         };
     }
 
-    public constructor(params: IWorkflowStatesOwnWidgetPresenterParams) {
+    public constructor(params: IWorkflowStatesWidgetPresenterParams) {
         this.#repository = params.repository;
         this.#type = params.type;
 
@@ -48,16 +58,15 @@ export class WorkflowStatesOwnWidgetPresenter implements IWorkflowStatesWidgetPr
     }
 
     private async init(): Promise<void> {
-        const result = await (this.#type === "requested" ? this.initOwn() : this.initRequested());
+        const result = await (this.#type === "requested" ? this.initRequested() : this.initOwn());
 
-        console.log({
-            type: this.#type,
-            result
-        });
         runInAction(() => {
             this.#inReview.replace(result.inReview);
+            this.#inReviewTotalCount = result.inReviewTotalCount;
             this.#approved.replace(result.approved);
+            this.#approvedTotalCount = result.approvedTotalCount;
             this.#rejected.replace(result.rejected);
+            this.#rejectedTotalCount = result.rejectedTotalCount;
         });
     }
 
@@ -65,21 +74,24 @@ export class WorkflowStatesOwnWidgetPresenter implements IWorkflowStatesWidgetPr
         return await Promise.all([
             this.#repository.listOwnStates(WorkflowStateValue.inReview).then(data => {
                 return {
-                    inReview: data
+                    inReview: data.items,
+                    inReviewTotalCount: data.totalCount
                 };
             }),
             this.#repository.listOwnStates(WorkflowStateValue.approved).then(data => {
                 return {
-                    approved: data
+                    approved: data.items,
+                    approvedTotalCount: data.totalCount
                 };
             }),
             this.#repository.listOwnStates(WorkflowStateValue.rejected).then(data => {
                 return {
-                    rejected: data
+                    rejected: data.items,
+                    rejectedTotalCount: data.totalCount
                 };
             })
         ]).then(results => {
-            return results.reduce<IWorkflowStatesOwnWidgetPresenterItems>(
+            return results.reduce<IWorkflowStatesWidgetPresenterItems>(
                 (output, result) => {
                     return {
                         ...output,
@@ -88,32 +100,38 @@ export class WorkflowStatesOwnWidgetPresenter implements IWorkflowStatesWidgetPr
                 },
                 {
                     inReview: [],
+                    inReviewTotalCount: 0,
                     approved: [],
-                    rejected: []
+                    approvedTotalCount: 0,
+                    rejected: [],
+                    rejectedTotalCount: 0
                 }
             );
         });
     }
-    
+
     private async initRequested() {
         return await Promise.all([
             this.#repository.listRequestedStates(WorkflowStateValue.inReview).then(data => {
                 return {
-                    inReview: data
+                    inReview: data.items,
+                    inReviewTotalCount: data.totalCount
                 };
             }),
             this.#repository.listRequestedStates(WorkflowStateValue.approved).then(data => {
                 return {
-                    approved: data
+                    approved: data.items,
+                    approvedTotalCount: data.totalCount
                 };
             }),
             this.#repository.listRequestedStates(WorkflowStateValue.rejected).then(data => {
                 return {
-                    rejected: data
+                    rejected: data.items,
+                    rejectedTotalCount: data.totalCount
                 };
             })
         ]).then(results => {
-            return results.reduce<IWorkflowStatesOwnWidgetPresenterItems>(
+            return results.reduce<IWorkflowStatesWidgetPresenterItems>(
                 (output, result) => {
                     return {
                         ...output,
@@ -122,8 +140,11 @@ export class WorkflowStatesOwnWidgetPresenter implements IWorkflowStatesWidgetPr
                 },
                 {
                     inReview: [],
+                    inReviewTotalCount: 0,
                     approved: [],
-                    rejected: []
+                    approvedTotalCount: 0,
+                    rejected: [],
+                    rejectedTotalCount: 0
                 }
             );
         });

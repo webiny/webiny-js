@@ -1,7 +1,7 @@
 import React from "react";
 import type { IWorkflowStatesWidgetPresenter } from "~/Presenters/index.js";
 import { Loader, Tabs } from "@webiny/admin-ui";
-import { WorkflowStateList } from "~/Components/WorkflowStatesWidget/State/WorkflowStateList.js";
+import { WorkflowStateList } from "../State/WorkflowStateList.js";
 import { observer } from "mobx-react-lite";
 
 interface IWorkflowStatesWidgetCardTabsProps {
@@ -23,7 +23,7 @@ export const WorkflowStatesWidgetCardTabs = observer(
                     <Tabs.Tab
                         key="inReview"
                         value="inReview"
-                        trigger="In Review"
+                        trigger={`In Review (${presenter.vm.inReviewTotalCount})`}
                         content={
                             <>
                                 <WorkflowStateList states={presenter.vm.inReview} />
@@ -33,7 +33,7 @@ export const WorkflowStatesWidgetCardTabs = observer(
                     <Tabs.Tab
                         key="approved"
                         value="approved"
-                        trigger="Approved"
+                        trigger={`Approved (${presenter.vm.approvedTotalCount})`}
                         content={
                             <>
                                 <WorkflowStateList states={presenter.vm.approved} />
@@ -43,7 +43,7 @@ export const WorkflowStatesWidgetCardTabs = observer(
                     <Tabs.Tab
                         key="declined"
                         value="declined"
-                        trigger="Declined"
+                        trigger={`Declined (${presenter.vm.rejectedTotalCount})`}
                         content={
                             <>
                                 <WorkflowStateList states={presenter.vm.rejected} />
