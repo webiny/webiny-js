@@ -9,7 +9,7 @@ type NodePreviewProps = {
 export const NodePreview = ({ text }: NodePreviewProps) => {
     return (
         <Tree.Item
-            className={"bg-neutral-dark/10 absolute z-100"}
+            className={"bg-neutral-dark/10 absolute z-backdrop"}
             style={{ maxWidth: 256 }}
         >
             <FolderNode text={text} isRoot={false} />
