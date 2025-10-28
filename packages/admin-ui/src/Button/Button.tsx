@@ -12,8 +12,8 @@ const buttonWrapperVariants = cva("inline-block", {
 
 const buttonVariants = cva(
     [
-        "border-transparent rounded font-sans inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors no-underline!",
-        "cursor-pointer aria-disabled:pointer-events-none",
+        "border-transparent rounded font-sans inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors no-underline! cursor-pointer",
+        "aria-disabled:pointer-events-none",
         "focus-visible:outline-none focus-visible:border-accent-default"
     ],
     {

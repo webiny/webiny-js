@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn, cva, type VariantProps } from "~/utils.js";
-import { useCardProps } from "~/Card/components/CardProvider.tsx";
+import { useCardProps } from "~/Card/components/CardProvider.js";
 
 const cardContentVariants = cva(
     ["border-md border-solid bg-neutral-base text-md text-neutral-strong overflow-hidden"],

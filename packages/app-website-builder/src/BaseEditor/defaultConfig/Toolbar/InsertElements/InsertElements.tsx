@@ -47,8 +47,8 @@ export const InsertElements = () => {
                         key={group.name}
                         title={group.label}
                         description={group.description}
-                        borderRadius={"none"}
-                        padding={"compact"}
+                        // borderRadius={"none"}
+                        // padding={""}
                     >
                         <div className="flex flex-col gap-sm p-sm justify-start">
                             {group.items.map(item => {

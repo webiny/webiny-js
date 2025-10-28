@@ -5,15 +5,14 @@ import { cn, cva, type VariantProps, makeDecoratable } from "~/utils.js";
 const iconButtonWrapperVariants = cva("inline-block", {
     variants: {
         disabled: {
-            true: "cursor-not-allowed",
-            false: "cursor-pointer"
+            true: "cursor-not-allowed"
         }
     }
 });
 
 const iconButtonVariants = cva(
     [
-        "border-transparent rounded flex shrink-0 items-center justify-center ring-offset-background transition-colors",
+        "border-transparent rounded flex shrink-0 items-center justify-center ring-offset-background transition-colors cursor-pointer",
         "[&_svg]:pointer-events-none [&_svg]:shrink-0",
         "[&_img]:pointer-events-none [&_img]:shrink-0",
         "aria-disabled:pointer-events-none",
