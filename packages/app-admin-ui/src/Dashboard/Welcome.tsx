@@ -9,7 +9,7 @@ import {
     CommunityWidget,
     MissingPermissionsWidget
 } from "./components/index.js";
-import { WorkflowStatesOwnWidget } from "@webiny/app-workflows";
+import { WorkflowStatesOwnWidget, WorkflowStatesRequestedWidget } from "@webiny/app-workflows";
 import { useApolloClient } from "@apollo/react-hooks";
 
 const Welcome = () => {
@@ -54,6 +54,7 @@ const Welcome = () => {
                             />
                         ))}
                     </div>
+                    <WorkflowStatesRequestedWidget client={client} />
                 </Grid.Column>
                 <Grid.Column span={7}>
                     <div className={"flex flex-col gap-lg"}>

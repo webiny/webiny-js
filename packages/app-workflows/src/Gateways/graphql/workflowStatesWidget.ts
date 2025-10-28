@@ -5,6 +5,23 @@ import type {
     IWorkflowStatesWidgetMeta
 } from "~/Gateways/abstraction/WorkflowStatesWidgetGateway.js";
 
+const META_FIELDS = /* GraphQL */ `
+    meta {
+        totalCount
+        hasMoreItems
+        cursor
+    }
+`;
+
+const ERROR_FIELDS = /* GraphQL */ `
+    error {
+        code
+        message
+        data
+        stack
+    }
+`;
+
 const WORKFLOW_STATE_FIELDS = /* GraphQL */ `{
     id
     app
@@ -58,11 +75,8 @@ export const LIST_OWN_WORKFLOW_STATES = gql`
         workflows {
             listOwnWorkflowStates(where: $where, limit: $limit) {
                 data ${WORKFLOW_STATE_FIELDS}
-                error {
-                    message
-                    code
-                    data
-                }
+                ${META_FIELDS}
+                ${ERROR_FIELDS}
             }
         }
     }
@@ -89,11 +103,8 @@ export const LIST_REQUESTED_WORKFLOW_STATES = gql`
         workflows {
             listRequestedWorkflowStates(where: $where, limit: $limit) {
                 data ${WORKFLOW_STATE_FIELDS}
-                error {
-                    message
-                    code
-                    data
-                }
+                ${META_FIELDS}
+                ${ERROR_FIELDS}
             }
         }
     }

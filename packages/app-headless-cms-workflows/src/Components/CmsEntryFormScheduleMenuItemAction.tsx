@@ -17,7 +17,7 @@ const OverrideScheduleMenuItemAction = (props: IOverrideScheduleMenuItemActionPr
      * If there is no workflow state or state is approved, we simply render the original element.
      * This is to ensure that no button will be shown if workflow state is active.
      */
-    if (!presenter.vm.state || presenter.vm.state.state === WorkflowStateValue.approved) {
+    if (!presenter.vm.workflow || presenter.vm.state?.state === WorkflowStateValue.approved) {
         return props.children;
     } else if (props.name === "schedule") {
         return null;

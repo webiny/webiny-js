@@ -84,6 +84,7 @@ export interface IWorkflowStatesWidgetItemStep {
     color: string
     description: string | undefined | null;
     savedBy: IIdentity | null;
+    isAllowedToReview: boolean;
 }
 
 
