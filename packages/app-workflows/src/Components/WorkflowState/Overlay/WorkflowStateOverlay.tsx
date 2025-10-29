@@ -21,10 +21,10 @@ interface IOverlayProps {
 // TODO create overlay as a component in the Admin UI.
 const Overlay = ({ children }: IOverlayProps) => {
     return (
-        <div className={"wby-w-full wby-h-full wby-relative"}>
+        <div className={"w-full h-full relative"}>
             <div
                 className={
-                    "wby-w-full wby-h-full wby-absolute wby-inset-0 wby-bg-neutral-base/80 wby-flex wby-items-center wby-justify-center wby-z-30"
+                    "w-full h-full absolute inset-0 bg-neutral-base/80 flex items-center justify-center z-30"
                 }
             />
             {children}

@@ -24,15 +24,14 @@ export const WorkflowStateWidgetCard = observer(({ title }: IWorkflowStateWidget
                     {title}
                 </>
             }
-            options={
+            actions={
                 <>
                     <Icon icon={<AddIcon />} label={"View All"} color={"neutral-strong"} />
                     View All
                 </>
             }
-            padding="standard"
-            elevation="md"
-            borderRadius="md"
+            padding="sm"
+            elevation="small"
         >
             <WorkflowStatesWidgetCardTabs presenter={presenter} />
         </Card>

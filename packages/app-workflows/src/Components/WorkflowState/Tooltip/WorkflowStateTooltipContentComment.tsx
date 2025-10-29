@@ -25,7 +25,7 @@ export const WorkflowStateTooltipContentComment = (
         <Tag
             onClick={showComment}
             content={
-                <Grid gap={"none"} className={"wby-text-center"}>
+                <Grid gap={"none"} className={"text-center"}>
                     <Grid.Column span={2}>
                         <Icon
                             size={"xs"}
@@ -34,7 +34,7 @@ export const WorkflowStateTooltipContentComment = (
                             color={"neutral-strong"}
                         />
                     </Grid.Column>
-                    <Grid.Column span={10} className={"wby-pl-xs"}>
+                    <Grid.Column span={10} className={"pl-xs"}>
                         Comments
                     </Grid.Column>
                 </Grid>
