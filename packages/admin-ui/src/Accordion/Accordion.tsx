@@ -2,17 +2,26 @@ import React from "react";
 import { makeDecoratable, withStaticProps, cva, type VariantProps, cn } from "~/utils.js";
 import type { AccordionRoot } from "./components/AccordionRoot.js";
 import { AccordionItem, type AccordionItemProps } from "./components/AccordionItem.js";
-import { DepthProvider, useDepth } from "./DepthContext.js";
+import {
+    AccordionBackgroundProvider,
+    useAccordionBackground
+} from "./components/AccordionBackgroundProvider.js";
 
 const accordionVariants = cva("group w-full", {
     variants: {
         variant: {
             container: "accordion-variant-container gap-xs flex flex-col rounded-lg",
             underline: "accordion-variant-underline"
+        },
+        background: {
+            base: "bg-neutral-base",
+            light: "bg-neutral-light",
+            transparent: "bg-transparent"
         }
     },
     defaultVariants: {
-        variant: "container"
+        variant: "container",
+        background: "base"
     }
 });
 
@@ -21,18 +30,20 @@ type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
         children: React.ReactNode;
     };
 
-const getBackgroundByDepth = (depth: number): string => {
-    return depth % 2 === 0 ? "bg-neutral-base" : "bg-neutral-light";
-};
-
-const AccordionBase = ({ children, variant, className }: AccordionProps) => {
-    const currentDepth = useDepth() + 1;
-    const background = getBackgroundByDepth(currentDepth);
+const AccordionBase = ({
+    children,
+    variant,
+    background: backgroundProp = "base",
+    className
+}: AccordionProps) => {
+    const background = useAccordionBackground(backgroundProp);
 
     return (
-        <div className={cn(accordionVariants({ variant }), className, background)}>
-            <DepthProvider value={currentDepth}>{children}</DepthProvider>
-        </div>
+        <AccordionBackgroundProvider currentBackground={background}>
+            <div className={cn(accordionVariants({ variant, background }), className)}>
+                {children}
+            </div>
+        </AccordionBackgroundProvider>
     );
 };
 

@@ -3,6 +3,7 @@ import { ReactComponent as KeyboardArrowDownIcon } from "@webiny/icons/keyboard_
 import { Collapsible as CollapsiblePrimitive } from "radix-ui";
 import { cn } from "~/utils.js";
 import { type AccordionItemProps } from "./AccordionItem.js";
+import { AccordionItemAction } from "./AccordionItemAction.js";
 import { Icon } from "~/Icon/index.js";
 import { AccordionItemDragHandle } from "~/Accordion/components/AccordionItemDragHandle.js";
 
@@ -48,8 +49,6 @@ const AccordionTrigger = ({
         };
     }, [interactive]);
 
-    const isInteractable = Boolean(actions && interactive);
-
     const baseClasses = "group/trigger w-full flex items-center relative";
     const focusClasses =
         "focus-visible:outline-none focus-visible:border-none focus-visible:ring-sm focus-visible:ring-primary-dimmed";
@@ -76,23 +75,20 @@ const AccordionTrigger = ({
                     cursorClass
                 )}
             >
-                {!icon && !isInteractable && (
-                    <div className={"ml-sm w-[20px] h-[1px] bg-neutral-strong"} />
-                )}
                 {draggable ? <AccordionItemDragHandle /> : null}
-                {isInteractable ? <OpenCloseIndicator /> : null}
-
                 <div className={"w-full flex justify-between items-center px-md py-sm-extra"}>
-                    {icon && <div className={"mr-md"}>{icon}</div>}
+                    {icon ? <div className={"mr-md"}>{icon}</div> : null}
                     <div className={"flex flex-col gap-xxs flex-grow text-left"}>
                         <div className={"text-md font-semibold webiny_accordion-item-title"}>
                             {title}
                         </div>
                         <div className={"text-sm text-neutral-strong"}>{description}</div>
                     </div>
-                    <div className={"flex gap-xs"}>
+                    <div className={"flex gap-xs items-center"}>
                         {actions}
-                        {!isInteractable ? <OpenCloseIndicator /> : null}
+                        {/* No need to show the separator if there are no actions and the item is not interactive. */}
+                        {actions && interactive ? <AccordionItemAction.Separator /> : null}
+                        {interactive ? <OpenCloseIndicator /> : null}
                     </div>
                 </div>
             </div>
