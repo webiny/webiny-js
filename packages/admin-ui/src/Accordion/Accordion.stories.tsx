@@ -13,13 +13,6 @@ const meta: Meta<typeof Accordion> = {
     title: "Components/Accordion",
     component: Accordion,
     argTypes: {},
-    decorators: [
-        Story => (
-            <div className="wby-w-[750px] wby-p-[50px] wby-min-h-[500px] wby-bg-[#f6f7f8]">
-                <Story />
-            </div>
-        )
-    ],
     render: args => {
         return <Accordion {...args} />;
     }
@@ -45,6 +38,13 @@ const AccordionItem = (props: AccordionItemProps) => {
 };
 
 export const Default: Story = {
+    decorators: [
+        Story => (
+            <div className="wby-w-[750px] wby-p-[50px] wby-min-h-[500px] wby-bg-[#f6f7f8]">
+                <Story />
+            </div>
+        )
+    ],
     args: {
         children: (
             <>
@@ -346,10 +346,168 @@ export const ContainerVariantWithLightBackground: Story = {
 };
 
 export const NestedAccordions: Story = {
+    ...Default,
+    name: "Nested Accordions (Base Background)",
     args: {
         children: (
             <>
                 <Accordion>
+                    <Accordion.Item
+                        title="Level 1"
+                        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                        icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                        actions={
+                            <>
+                                <Accordion.Item.Action icon={<ArrowUp />} />
+                                <Accordion.Item.Action icon={<ArrowDown />} />
+                                <Accordion.Item.Action.Separator />
+                                <Accordion.Item.Action icon={<EditIcon />} />
+                                <Accordion.Item.Action icon={<TrashIcon />} />
+                            </>
+                        }
+                    >
+                        <Accordion>
+                            <Accordion.Item
+                                title="Level 2"
+                                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                                icon={
+                                    <Accordion.Item.Icon
+                                        icon={<WarningIcon />}
+                                        label={"Warning icon"}
+                                    />
+                                }
+                                actions={
+                                    <>
+                                        <Accordion.Item.Action icon={<ArrowUp />} />
+                                        <Accordion.Item.Action icon={<ArrowDown />} />
+                                        <Accordion.Item.Action.Separator />
+                                        <Accordion.Item.Action icon={<EditIcon />} />
+                                        <Accordion.Item.Action icon={<TrashIcon />} />
+                                    </>
+                                }
+                            >
+                                <Accordion>
+                                    <Accordion.Item
+                                        title="Level 3"
+                                        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                                        icon={
+                                            <Accordion.Item.Icon
+                                                icon={<WarningIcon />}
+                                                label={"Warning icon"}
+                                            />
+                                        }
+                                        actions={
+                                            <>
+                                                <Accordion.Item.Action icon={<ArrowUp />} />
+                                                <Accordion.Item.Action icon={<ArrowDown />} />
+                                                <Accordion.Item.Action.Separator />
+                                                <Accordion.Item.Action icon={<EditIcon />} />
+                                                <Accordion.Item.Action icon={<TrashIcon />} />
+                                            </>
+                                        }
+                                    >
+                                        <Accordion>
+                                            <Accordion.Item title="Level 4">
+                                                <Accordion>
+                                                    <Accordion.Item title="Level 5">
+                                                        Content
+                                                    </Accordion.Item>
+                                                </Accordion>
+                                                <Accordion>
+                                                    <Accordion.Item title="Level 5">
+                                                        Content
+                                                    </Accordion.Item>
+                                                </Accordion>
+                                                <Accordion>
+                                                    <Accordion.Item title="Level 5">
+                                                        Content
+                                                    </Accordion.Item>
+                                                </Accordion>
+                                            </Accordion.Item>
+                                        </Accordion>
+                                    </Accordion.Item>
+                                </Accordion>
+                                <Accordion>
+                                    <Accordion.Item title="Level 3">Content</Accordion.Item>
+                                </Accordion>
+                                <Accordion>
+                                    <Accordion.Item title="Level 3">Content</Accordion.Item>
+                                </Accordion>
+                            </Accordion.Item>
+                        </Accordion>
+                    </Accordion.Item>
+                    <Accordion.Item title="Level 1">
+                        <Accordion>
+                            <Accordion.Item
+                                title="Level 2"
+                                description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                                icon={
+                                    <Accordion.Item.Icon
+                                        icon={<WarningIcon />}
+                                        label={"Warning icon"}
+                                    />
+                                }
+                                actions={
+                                    <>
+                                        <Accordion.Item.Action icon={<ArrowUp />} />
+                                        <Accordion.Item.Action icon={<ArrowDown />} />
+                                        <Accordion.Item.Action.Separator />
+                                        <Accordion.Item.Action icon={<EditIcon />} />
+                                        <Accordion.Item.Action icon={<TrashIcon />} />
+                                    </>
+                                }
+                            >
+                                <Accordion>
+                                    <Accordion.Item title="Level 3">
+                                        <Accordion>
+                                            <Accordion.Item title="Level 4">
+                                                <Accordion>
+                                                    <Accordion.Item title="Level 5">
+                                                        Test
+                                                    </Accordion.Item>
+                                                </Accordion>
+                                                <Accordion>
+                                                    <Accordion.Item title="Level 5">
+                                                        Test
+                                                    </Accordion.Item>
+                                                </Accordion>
+                                                <Accordion>
+                                                    <Accordion.Item title="Level 5">
+                                                        Test
+                                                    </Accordion.Item>
+                                                </Accordion>
+                                            </Accordion.Item>
+                                        </Accordion>
+                                    </Accordion.Item>
+                                </Accordion>
+                                <Accordion>
+                                    <Accordion.Item title="Level 3">Content</Accordion.Item>
+                                </Accordion>
+                                <Accordion>
+                                    <Accordion.Item title="Level 3">Content</Accordion.Item>
+                                </Accordion>
+                            </Accordion.Item>
+                        </Accordion>
+                    </Accordion.Item>
+                </Accordion>
+            </>
+        )
+    }
+};
+
+export const NestedAccordionsLight: Story = {
+    decorators: [
+        Story => (
+            <div className="wby-w-[750px] wby-p-[50px] wby-min-h-[500px] wby-bg-white">
+                <Story />
+            </div>
+        )
+    ],
+    name: "Nested Accordions (Light Background)",
+    args: {
+        children: (
+            <>
+                <Accordion background={"light"}>
                     <Accordion.Item
                         title="Level 1"
                         description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
