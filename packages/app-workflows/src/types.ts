@@ -1,6 +1,5 @@
-import type { NonEmptyArray } from "@webiny/app/types.js";
+import type { GenericRecord, NonEmptyArray } from "@webiny/app/types.js";
 import type { ReactElement } from "react";
-import type { GenericRecord } from "@webiny/app/types.js";
 
 export interface IGenericError {
     message: string;
@@ -76,24 +75,7 @@ export interface IWorkflowState {
     savedBy: IIdentity;
     createdOn: Date;
     savedOn: Date;
-}
-
-export interface IWorkflowStatesWidgetItemStep {
-    id: string;
-    title: string;
-    color: string;
-    description: string | undefined | null;
-    savedBy: IIdentity | null;
-    isAllowedToReview: boolean;
-}
-
-export interface IWorkflowStatesWidgetItem {
-    id: string;
-    app: string;
-    targetRevisionId: string;
-    title: string;
-    state: WorkflowStateValue;
-    savedBy: IIdentity;
-    savedOn: Date;
-    step: IWorkflowStatesWidgetItemStep;
+    currentStep: IWorkflowStateStep;
+    nextStep: IWorkflowStateStep | null;
+    previousStep: IWorkflowStateStep | null;
 }

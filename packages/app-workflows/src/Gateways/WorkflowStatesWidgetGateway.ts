@@ -11,11 +11,11 @@ import type {
     IListOwnWorkflowStatesVariables,
     IListRequestedWorkflowStatesResponse,
     IListRequestedWorkflowStatesVariables
-} from "~/Gateways/graphql/workflowStatesWidget.js";
+} from "~/Gateways/graphql/workflowStates.js";
 import {
     LIST_OWN_WORKFLOW_STATES,
     LIST_REQUESTED_WORKFLOW_STATES
-} from "~/Gateways/graphql/workflowStatesWidget.js";
+} from "~/Gateways/graphql/workflowStates.js";
 
 interface IWorkflowStatesWidgetGatewayParams {
     client: ApolloClient<object>;

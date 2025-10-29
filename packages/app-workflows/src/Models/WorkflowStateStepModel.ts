@@ -49,4 +49,8 @@ export class WorkflowStateStepModel implements IWorkflowStateStepModel {
             Object.assign(this, input);
         });
     }
+
+    public static create(input: IWorkflowStateStep): IWorkflowStateStepModel {
+        return new WorkflowStateStepModel(input);
+    }
 }

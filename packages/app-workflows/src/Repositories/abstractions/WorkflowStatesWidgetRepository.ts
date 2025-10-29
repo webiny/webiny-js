@@ -1,8 +1,8 @@
-import type { IGenericError, IWorkflowStatesWidgetItem } from "~/types.js";
+import type { IGenericError, IWorkflowState } from "~/types.js";
 import { WorkflowStateValue } from "~/types.js";
 
 export interface IWorkflowStatesWidgetRepositoryListResult {
-    items: IWorkflowStatesWidgetItem[];
+    items: IWorkflowState[];
     totalCount: number;
 }
 

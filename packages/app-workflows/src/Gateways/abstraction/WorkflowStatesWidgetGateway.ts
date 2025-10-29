@@ -1,4 +1,4 @@
-import { type IWorkflowStatesWidgetItem, WorkflowStateValue } from "~/types.js";
+import { type IWorkflowState, WorkflowStateValue } from "~/types.js";
 import type { IWorkflowStateErrorData } from "~/Gateways/index.js";
 
 export interface IWorkflowStatesWidgetError {
@@ -29,13 +29,13 @@ export interface IWorkflowStatesWidgetMeta {
 }
 
 export interface IWorkflowStatesWidgetGatewayListOwnStatesResponse {
-    data: IWorkflowStatesWidgetItem[] | null;
+    data: IWorkflowState[] | null;
     meta: IWorkflowStatesWidgetMeta | null;
     error: IWorkflowStatesWidgetError | null;
 }
 
 export interface IWorkflowStatesWidgetGatewayListRequestedStatesResponse {
-    data: IWorkflowStatesWidgetItem[] | null;
+    data: IWorkflowState[] | null;
     meta: IWorkflowStatesWidgetMeta | null;
     error: IWorkflowStatesWidgetError | null;
 }

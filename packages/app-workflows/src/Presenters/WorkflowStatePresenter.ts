@@ -108,7 +108,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
 
         const state = await this.repository.getTargetState(this.app, this.targetRevisionId);
         runInAction(() => {
-            this.state = state ? new WorkflowStateModel(state) : null;
+            this.state = state ? WorkflowStateModel.create(state) : null;
         });
     }
 
@@ -119,7 +119,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             title: this.title
         });
         runInAction(() => {
-            this.state = item ? new WorkflowStateModel(item) : null;
+            this.state = item ? WorkflowStateModel.create(item) : null;
         });
     };
 
@@ -129,7 +129,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             comment
         });
         runInAction(() => {
-            this.state = item ? new WorkflowStateModel(item) : null;
+            this.state = item ? WorkflowStateModel.create(item) : null;
             if (!item) {
                 return;
             }
@@ -143,7 +143,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             comment
         });
         runInAction(() => {
-            this.state = item ? new WorkflowStateModel(item) : null;
+            this.state = item ? WorkflowStateModel.create(item) : null;
             if (!item) {
                 return;
             }
