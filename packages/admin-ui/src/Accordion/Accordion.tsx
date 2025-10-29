@@ -5,7 +5,7 @@ import { AccordionItem, type AccordionItemProps } from "./components/AccordionIt
 import {
     AccordionBackgroundProvider,
     useAccordionBackground
-} from "./components/AccordionBackgroundProvider.tsx";
+} from "./components/AccordionBackgroundProvider.js";
 
 const accordionVariants = cva("group w-full", {
     variants: {
