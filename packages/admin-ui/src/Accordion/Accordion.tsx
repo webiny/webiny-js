@@ -2,7 +2,10 @@ import React from "react";
 import { makeDecoratable, withStaticProps, cva, type VariantProps, cn } from "~/utils.js";
 import type { AccordionRoot } from "./components/AccordionRoot.js";
 import { AccordionItem, type AccordionItemProps } from "./components/AccordionItem.js";
-import { DepthProvider, useDepth } from "./DepthContext.js";
+import {
+    AccordionBackgroundProvider,
+    useAccordionBackground
+} from "./components/AccordionBackgroundProvider.tsx";
 
 const accordionVariants = cva("wby-group wby-w-full", {
     variants: {
@@ -28,40 +31,21 @@ type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
         children: React.ReactNode;
     };
 
-const getBackgroundByDepth = (
-    depth: number,
-    background: AccordionProps["background"],
-    shouldAlternate: boolean
-): AccordionProps["background"] => {
-    if (!shouldAlternate) {
-        return background;
-    }
-
-    const startingBackground =
-        background === "base" || background === "transparent" ? "light" : "base";
-
-    return depth % 2 === 0 ? startingBackground : startingBackground === "base" ? "light" : "base";
-};
-
-const hasNestedAccordion = (children: React.ReactNode): boolean => {
-    const nested =
-        React.isValidElement(children) &&
-        children.type &&
-        typeof children.type === "function" &&
-        "originalName" in children.type &&
-        children.type.originalName === "AccordionItem";
-    return Boolean(nested);
-};
-
-const AccordionBase = ({ children, variant, background, className }: AccordionProps) => {
-    const currentDepth = useDepth() + 1;
-    const shouldAlternate = hasNestedAccordion(children);
-    const bg = getBackgroundByDepth(currentDepth, background, shouldAlternate);
+const AccordionBase = ({
+    children,
+    variant,
+    background: backgroundProp = "base",
+    className
+}: AccordionProps) => {
+    const background = useAccordionBackground(backgroundProp);
+    console.log("backgroundProp", backgroundProp, background);
 
     return (
-        <div className={cn(accordionVariants({ variant, background: bg }), className)}>
-            <DepthProvider value={currentDepth}>{children}</DepthProvider>
-        </div>
+        <AccordionBackgroundProvider currentBackground={background}>
+            <div className={cn(accordionVariants({ variant, background }), className)}>
+                {children}
+            </div>
+        </AccordionBackgroundProvider>
     );
 };
 
