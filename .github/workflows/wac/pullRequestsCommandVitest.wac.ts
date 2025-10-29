@@ -14,15 +14,9 @@ import {
     runNodeScript
 } from "./utils/index.js";
 import { createJob } from "./jobs/index.js";
-import {
-    DdbStorageOps,
-    DdbEsStorageOps,
-    DdbOsStorageOps,
-    type AbstractStorageOps
-} from "./storageOps/index.js";
+import { DdbStorageOps, DdbOsStorageOps, type AbstractStorageOps } from "./storageOps/index.js";
 
 const ddbStorageOps = new DdbStorageOps();
-const ddbEsStorageOps = new DdbEsStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
@@ -205,7 +199,6 @@ export const pullRequestsCommandVitest = createWorkflow({
         }),
         ...createVitestTestsJobs(),
         ...createVitestTestsJobs(ddbStorageOps),
-        ...createVitestTestsJobs(ddbEsStorageOps),
         ...createVitestTestsJobs(ddbOsStorageOps)
     }
 });
