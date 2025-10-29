@@ -21,7 +21,7 @@ const IconPickerContent = ({
     removable
 }: IconPickerContentProps) => {
     return (
-        <div className={"wby-relative"}>
+        <div className={"relative"}>
             {loading && <OverlayLoader size={"sm"} />}
             <Tabs
                 size={"sm"}
@@ -37,7 +37,7 @@ const IconPickerContent = ({
             {removable && (
                 <div
                     className={
-                        "wby-flex wby-flex-col wby-px-sm wby-py-sm wby-border-solid wby-border-t-sm wby-border-neutral-muted"
+                        "flex flex-col px-sm py-sm border-solid border-t-sm border-neutral-muted"
                     }
                 >
                     <Button

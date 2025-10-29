@@ -19,7 +19,7 @@ export const Editor = () => {
 
     return (
         <ThemeProvider theme={theme}>
-            <div className={classSet("wby-w-full")}>
+            <div className={classSet("w-full")}>
                 <EditorWithConfig>
                     <EditorConfig.Ui.Layout />
                 </EditorWithConfig>

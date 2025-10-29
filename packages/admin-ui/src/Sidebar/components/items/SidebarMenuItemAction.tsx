@@ -11,7 +11,7 @@ const SidebarMenuItemAction = ({ element, ...props }: SidebarMenuItemActionProps
             icon={element}
             size={"xs"}
             variant={"ghost"}
-            className={"wby-ml-auto group-data-[state=collapsed]:wby-hidden"}
+            className={"ml-auto group-data-[state=collapsed]:hidden"}
             {...props}
         />
     );

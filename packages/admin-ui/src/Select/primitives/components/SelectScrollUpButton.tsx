@@ -8,12 +8,12 @@ type SelectScrollUpButtonProps = SelectPrimitives.SelectScrollUpButtonProps;
 const SelectScrollUpButton = ({ className, ...props }: SelectScrollUpButtonProps) => (
     <SelectPrimitives.ScrollUpButton
         className={cn(
-            "wby-flex wby-cursor-default wby-items-center wby-justify-center wby-pb-sm wby-fill-neutral-xstrong",
+            "flex cursor-default items-center justify-center pb-sm fill-neutral-xstrong",
             className
         )}
         {...props}
     >
-        <ChevronUp className="wby-h-md wby-w-md" />
+        <ChevronUp className="h-md w-md" />
     </SelectPrimitives.ScrollUpButton>
 );
 

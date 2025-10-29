@@ -9,11 +9,11 @@ type SliderThumbProps = SliderTooltipProps;
 const SliderThumb = ({ textValue, showTooltip, tooltipSide }: SliderThumbProps) => (
     <SliderPrimitives.Thumb
         className={cn(
-            "wby-inline-block wby-w-md wby-h-md wby-mt-xs-plus wby-rounded-xxl wby-border-md wby-transition-colors wby-outline-none",
-            "wby-bg-primary-default wby-border-white",
-            "hover:wby-bg-primary-strong",
-            "active:wby-bg-primary-default",
-            "data-[disabled]:wby-pointer-events-none data-[disabled]:wby-bg-primary-disabled"
+            "inline-block w-md h-md mt-xs-plus rounded-xxl border-md transition-colors outline-none",
+            "bg-primary border-white",
+            "hover:bg-primary-strong",
+            "active:bg-primary",
+            "data-disabled:pointer-events-none data-disabled:bg-primary-disabled"
         )}
     >
         <SliderTooltip showTooltip={showTooltip} textValue={textValue} tooltipSide={tooltipSide} />

@@ -10,7 +10,7 @@ export const CenteredView = makeDecoratable(
     "CenteredView",
     ({ maxWidth, children }: CenteredViewProps) => {
         return (
-            <div className={"wby-container"} style={{ maxWidth }}>
+            <div className={"container"} style={{ maxWidth }}>
                 {children}
             </div>
         );

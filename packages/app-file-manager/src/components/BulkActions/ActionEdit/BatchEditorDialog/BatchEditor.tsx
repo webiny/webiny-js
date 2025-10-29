@@ -33,7 +33,7 @@ export const BatchEditor = observer((props: BatchEditorProps) => {
     }, []);
 
     return (
-        <div className={"wby-py-lg"}>
+        <div className={"py-lg"}>
             <Form
                 ref={formRef}
                 data={props.vm.data}

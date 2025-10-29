@@ -10,10 +10,10 @@ const PATHNAME_REGEX = /^\/[/.a-zA-Z0-9-_]+$/;
 const Header = () => {
     return (
         <>
-            <Heading level={6} className={"wby-text-neutral-primary"}>
+            <Heading level={6} className={"text-neutral-primary"}>
                 {"File Aliases"}
             </Heading>
-            <Text size={"sm"} as={"div"} className={"wby-mt-xs"}>
+            <Text size={"sm"} as={"div"} className={"mt-xs"}>
                 To make your file accessible via custom paths, add one or more aliases.
             </Text>
         </>
@@ -26,7 +26,7 @@ interface FooterProps {
 
 const Footer = ({ addAlias }: FooterProps) => {
     return (
-        <div className={"wby-mt-md"}>
+        <div className={"mt-md"}>
             <Button
                 onClick={addAlias}
                 text="Add Alias"
@@ -53,16 +53,16 @@ export const Aliases = () => {
     }, []);
 
     return (
-        <div className={"wby-my-lg"}>
+        <div className={"my-lg"}>
             <DynamicFieldset value={value || [""]} onChange={onChange} onAdd={() => ""}>
                 {({ actions, header, footer, row, empty }) => (
                     <>
                         {row(({ index }) => (
-                            <div className={"wby-mt-md"}>
-                                <Text size={"sm"} as={"div"} className={"wby-mb-sm"}>
+                            <div className={"mt-md"}>
+                                <Text size={"sm"} as={"div"} className={"mb-sm"}>
                                     {"Enter a file path, e.g., /my/custom/file/path.png"}
                                 </Text>
-                                <div className={"wby-flex wby-items-start wby-gap-sm"}>
+                                <div className={"flex items-start gap-sm"}>
                                     <Bind validators={aliasValidator} name={`aliases.${index}`}>
                                         <Input placeholder={"Alias"} size={"lg"} />
                                     </Bind>

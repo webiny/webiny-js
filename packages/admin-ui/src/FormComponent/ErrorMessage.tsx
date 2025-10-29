@@ -2,16 +2,13 @@ import React from "react";
 import { Text, type TextProps } from "~/Text/index.js";
 import { cn, cva, makeDecoratable, type VariantProps } from "~/utils.js";
 
-const formComponentErrorMessageVariants = cva(
-    "wby-mt-xs wby-text-destructive-primary wby-font-semibold",
-    {
-        variants: {
-            disabled: {
-                true: "wby-text-destructive-muted"
-            }
+const formComponentErrorMessageVariants = cva("mt-xs text-destructive-primary font-semibold", {
+    variants: {
+        disabled: {
+            true: "text-destructive-muted"
         }
     }
-);
+});
 
 type FormComponentErrorMessageProps = TextProps &
     VariantProps<typeof formComponentErrorMessageVariants> & {

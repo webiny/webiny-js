@@ -25,7 +25,7 @@ export const WorkflowEditorView = observer((props: WorkflowEditorViewProps) => {
     if (presenter.vm.loading) {
         return (
             <Loader
-                className={"wby-pt-lg"}
+                className={"pt-lg"}
                 size="md"
                 variant="accent"
                 indeterminate={true}
@@ -43,7 +43,7 @@ export const WorkflowEditorView = observer((props: WorkflowEditorViewProps) => {
             <Grid.Column span={12}>
                 <WorkflowEditorSteps presenter={presenter} />
             </Grid.Column>
-            <Grid.Column span={12} className={"wby-text-right"}>
+            <Grid.Column span={12} className={"text-right"}>
                 <Button
                     disabled={!presenter.vm.dirty}
                     text={"Save"}

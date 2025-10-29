@@ -107,7 +107,7 @@ export const Step = observer(
                 {({ submit: onFormSubmit }) => {
                     return (
                         <Accordion.Item
-                            className={"wby-mt-sm wby-border-sm"}
+                            className={"mt-sm border-sm"}
                             key={`step-${step.id}`}
                             title={step.title || title}
                             description={step.description}

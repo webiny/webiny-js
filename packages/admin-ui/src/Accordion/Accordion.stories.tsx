@@ -15,7 +15,7 @@ const meta: Meta<typeof Accordion> = {
     argTypes: {},
     decorators: [
         Story => (
-            <div className="wby-w-[750px] wby-p-[50px] wby-min-h-[500px] wby-bg-[#f6f7f8]">
+            <div className="w-[750px] p-[50px] min-h-[500px] bg-[#f6f7f8]">
                 <Story />
             </div>
         )
@@ -248,7 +248,7 @@ export const WithControlledOpenedItem: Story = {
                         onOpenChange={open => setOpenThirdItem(open)}
                     />
                 </Accordion>
-                <div className={"wby-flex wby-justify-center wby-mt-lg wby-gap-md"}>
+                <div className={"flex justify-center mt-lg gap-md"}>
                     <Button
                         onClick={() => setOpenFirstItem(!openFirstItem)}
                         text={"Toggle First Item"}
@@ -292,7 +292,7 @@ export const LightBackground: Story = {
     ...Default,
     decorators: [
         Story => (
-            <div className="wby-w-[750px] wby-p-[50px] wby-min-h-[500px]">
+            <div className="w-[750px] p-[50px] min-h-[500px]">
                 <Story />
             </div>
         )
@@ -319,7 +319,7 @@ export const ContainerVariantWithLightBackground: Story = {
     ...Default,
     decorators: [
         Story => (
-            <div className="wby-w-[750px] wby-p-[50px] wby-min-h-[500px]">
+            <div className="w-[750px] p-[50px] min-h-[500px]">
                 <Story />
             </div>
         )

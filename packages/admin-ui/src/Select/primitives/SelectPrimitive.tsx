@@ -90,7 +90,7 @@ const Trigger = ({
             endIcon={endIcon}
             resetButton={resetButton}
         >
-            <div className={"wby-flex-1 wby-text-left wby-truncate"}>
+            <div className={"flex-1 text-left truncate"}>
                 <SelectValue {...props} />
             </div>
         </SelectTrigger>

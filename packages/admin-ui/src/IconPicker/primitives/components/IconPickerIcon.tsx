@@ -10,11 +10,7 @@ interface IconPickerIconProps extends React.HTMLAttributes<HTMLDivElement> {
 const IconPickerIcon = ({ name, prefix, ...props }: IconPickerIconProps) => {
     return (
         <div {...props}>
-            <FontAwesomeIcon
-                icon={[prefix, name]}
-                size={"2x"}
-                className={"wby-block wby-size-full"}
-            />
+            <FontAwesomeIcon icon={[prefix, name]} size={"2x"} className={"block size-full!"} />
         </div>
     );
 };

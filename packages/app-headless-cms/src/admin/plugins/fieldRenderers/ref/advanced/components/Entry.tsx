@@ -70,14 +70,10 @@ export const Entry = ({
     const icon = model.icon;
 
     return (
-        <div className={"wby-w-full wby-rounded-md wby-bg-neutral-dimmed"}>
-            <div className="wby-flex wby-items-center wby-justify-between wby-gap-sm-extra wby-min-w-0">
+        <div className={"w-full rounded-md bg-neutral-dimmed"}>
+            <div className="flex items-center justify-between gap-sm-extra min-w-0">
                 <Image title={entry.title} src={entry.image} icon={icon} />
-                <div
-                    className={
-                        "wby-flex wby-flex-col wby-gap-xxs wby-overflow-hidden wby-flex-1 wby-min-w-0"
-                    }
-                >
+                <div className={"flex flex-col gap-xxs overflow-hidden flex-1 min-w-0"}>
                     <Title title={entry.title} />
                     <Excerpt
                         modelName={entry.model.name}
@@ -86,7 +82,7 @@ export const Entry = ({
                         status={entry.status}
                     />
                 </div>
-                <div className={"wby-flex wby-items-center wby-gap-sm wby-pr-sm-extra wby-h-lg"}>
+                <div className={"flex items-center gap-sm pr-sm-extra h-lg"}>
                     {placement == "multiRef" && (
                         <>
                             <MoveUp

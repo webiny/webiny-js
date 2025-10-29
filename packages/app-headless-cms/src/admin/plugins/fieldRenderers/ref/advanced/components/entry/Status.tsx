@@ -14,7 +14,7 @@ const getIcon = (status: CmsContentEntryStatusType) => {
                     icon={<PublishedIcon />}
                     label="Published"
                     size={"lg"}
-                    className={"wby-fill-success-default"}
+                    className={"fill-success-default"}
                 />
             );
         case "unpublished":
@@ -23,7 +23,7 @@ const getIcon = (status: CmsContentEntryStatusType) => {
                     icon={<UnpublishedIcon />}
                     label="Unpublished"
                     size={"lg"}
-                    className={"wby-fill-danger-default"}
+                    className={"fill-danger-default"}
                 />
             );
         case "draft":
@@ -32,7 +32,7 @@ const getIcon = (status: CmsContentEntryStatusType) => {
                     icon={<DraftIcon />}
                     label="Draft"
                     size={"lg"}
-                    className={"wby-fill-warning-default"}
+                    className={"fill-warning-default"}
                 />
             );
         default:

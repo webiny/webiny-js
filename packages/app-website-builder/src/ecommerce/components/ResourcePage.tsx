@@ -71,7 +71,7 @@ export const ResourcePage = (props: ResourcePageProps) => {
                 <Input {...resourceTypeBind} type={"hidden"} />
             </UnsetOnUnmount>
             <Grid.Column span={12}>
-                <div className={"wby-border-sm wby-rounded-md wby-border-neutral-muted wby-p-sm"}>
+                <div className={"border-sm rounded-md border-neutral-muted p-sm"}>
                     {api ? (
                         <UnsetOnUnmount name={"metadata.resourceId"}>
                             <ResourcePicker

@@ -89,7 +89,7 @@ export const WithExternalValueControl: Story = {
         const defaultValues = args.values ?? [25, 75];
         const [values, setValues] = useState(defaultValues);
         return (
-            <div className={"wby-w-full"}>
+            <div className={"w-full"}>
                 <div>
                     <RangeSliderPrimitive
                         {...args}
@@ -97,10 +97,10 @@ export const WithExternalValueControl: Story = {
                         onValuesChange={values => setValues(values)}
                     />
                 </div>
-                <div className={"wby-mt-4 wby-text-center"}>
+                <div className={"mt-4 text-center"}>
                     <Button text={"Reset"} onClick={() => setValues(defaultValues)} />
                 </div>
-                <div className={"wby-mt-4 wby-text-center"}>
+                <div className={"mt-4 text-center"}>
                     Current value: <code>{values.toString()}</code>
                 </div>
             </div>

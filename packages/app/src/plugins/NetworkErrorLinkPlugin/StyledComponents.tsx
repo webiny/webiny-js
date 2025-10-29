@@ -30,7 +30,7 @@ export const OverlayWrapper = styled("div")(`
     }
     
     .body {
-        flex-grow: 1;
+        grow: 1;
         .body__summary {
             margin-bottom: 1rem;
         }

@@ -102,7 +102,7 @@ export const ContentEntriesModule = () => {
                     size={56}
                     resizable={false}
                     hideable={false}
-                    className={"cms-aco-list-actions wby-text-right"}
+                    className={"cms-aco-list-actions text-right"}
                 />
                 <Browser.AdvancedSearch.FieldRenderer
                     name={"ref"}

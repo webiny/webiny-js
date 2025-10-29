@@ -108,7 +108,7 @@ const DecoratableTagsPrimitive = (props: TagsPrimitiveProps) => {
             />
 
             {vm.valuesVm.values.length > 0 && (
-                <div className={"wby-mt-sm wby-flex wby-flex-wrap wby-gap-xs"}>
+                <div className={"mt-sm flex flex-wrap gap-xs"}>
                     {vm.valuesVm.values.map(tag => (
                         <Tag
                             key={tag.id}

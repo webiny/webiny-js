@@ -69,7 +69,7 @@ export const UserForm = ({ teams }: UserFormProps) => {
             {({ data, form, Bind }) => (
                 <SimpleForm size={"lg"}>
                     {userForm.loading && <OverlayLoader />}
-                    <div className={"wby-mb-xl"}>
+                    <div className={"mb-xl"}>
                         <Bind name="avatar">
                             <AvatarImage round disabled={isExternal} />
                         </Bind>

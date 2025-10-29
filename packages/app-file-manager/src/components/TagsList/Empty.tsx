@@ -6,5 +6,5 @@ type EmptyProps = {
 };
 
 export const Empty = ({ disclaimer = `No tags found...` }: EmptyProps) => {
-    return <Text className={"wby-text-neutral-muted"}>{disclaimer}</Text>;
+    return <Text className={"text-neutral-muted"}>{disclaimer}</Text>;
 };

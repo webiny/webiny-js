@@ -16,8 +16,8 @@ export const FilterStatus = ({ activeTags, onActivatedTagsChange }: FilterStatus
     }, []);
 
     return (
-        <div className={"wby-mb-md wby-flex wby-items-center wby-justify-between wby-gap-sm"}>
-            <Text size={"sm"} className={"wby-text-neutral-muted"}>
+        <div className={"mb-md flex items-center justify-between gap-sm"}>
+            <Text size={"sm"} className={"text-neutral-muted"}>
                 {activeTags.length} selected
             </Text>
             <Button

@@ -11,7 +11,7 @@ const IconBase = ({ className, ...props }: IconProps) => {
             size={"lg"}
             color={"neutral-strong"}
             {...props}
-            className={cn("wby-pt-xs", className)}
+            className={cn("pt-xs", className)}
         />
     );
 };

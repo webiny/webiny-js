@@ -9,7 +9,7 @@ type ResultDialogMessageProps = Pick<ShowResultsDialogParams, "results" | "messa
 export const ResultDialogMessage = ({ results, message }: ResultDialogMessageProps) => {
     return (
         <>
-            {message && <div className={"wby-mb-md"}>{message}</div>}
+            {message && <div className={"mb-md"}>{message}</div>}
             <List>
                 {results.map((result, index) => (
                     <List.Item
@@ -22,8 +22,8 @@ export const ResultDialogMessage = ({ results, message }: ResultDialogMessagePro
                                 label={result.status}
                                 className={cn(
                                     result.status === "success"
-                                        ? "wby-fill-success"
-                                        : "wby-fill-destructive"
+                                        ? "fill-success"
+                                        : "fill-destructive"
                                 )}
                             />
                         }

@@ -67,16 +67,16 @@ export const BulkActions = () => {
     }
 
     return (
-        <div className={"wby-w-full wby-bg-neutral-disabled wby-px-md wby-py-sm"}>
-            <div className={"wby-flex wby-items-center wby-justify-between wby-gap-sm"}>
-                <div className={"wby-flex wby-items-center wby-gap-sm"}>
-                    <Text size={"sm"} className={"wby-text-neutral-strong"}>
+        <div className={"w-full bg-neutral-disabled px-md py-sm"}>
+            <div className={"flex items-center justify-between gap-sm"}>
+                <div className={"flex items-center gap-sm"}>
+                    <Text size={"sm"} className={"text-neutral-strong"}>
                         {headline}
                     </Text>
                     <SelectAll />
                 </div>
 
-                <div className={"wby-flex wby-items-center wby-gap-sm"}>
+                <div className={"flex items-center gap-sm"}>
                     <Buttons actions={browser.bulkActions} />
                     <IconButton
                         variant={"ghost"}

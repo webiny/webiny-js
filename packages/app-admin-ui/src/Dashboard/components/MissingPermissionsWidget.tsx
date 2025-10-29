@@ -4,7 +4,7 @@ import { Heading, Icon, Text } from "@webiny/admin-ui";
 
 export const MissingPermissionsWidget = () => {
     return (
-        <div className="wby-w-full wby-h-full wby-flex wby-flex-col wby-items-center wby-justify-center wby-text-center wby-bg-neutral-light wby-rounded-xl wby-px-xxl wby-py-lg wby-gap-sm">
+        <div className="w-full h-full flex flex-col items-center justify-center text-center bg-neutral-light rounded-xl px-xxl py-lg gap-sm">
             <div>
                 <Icon
                     icon={<VisibilityOff />}

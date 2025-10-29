@@ -17,7 +17,7 @@ const BaseTable: ForwardRefRenderFunction<HTMLDivElement> = (_, ref) => {
     }, [list.selected]);
 
     return (
-        <div className={"wby-mb-xl"} ref={ref}>
+        <div className={"mb-xl"} ref={ref}>
             <AcoTable<TableItem>
                 data={data}
                 nameColumnId={model.titleFieldId || "id"}

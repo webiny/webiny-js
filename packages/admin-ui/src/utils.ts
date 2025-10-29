@@ -6,7 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 export { makeDecoratable } from "@webiny/react-composition";
 
 const twMerge = extendTailwindMerge({
-    prefix: "wby-",
+    prefix: "",
     override: {
         theme: {
             borderWidth: ["sm", "md", "none"]
@@ -122,7 +122,7 @@ export const generateId = (initialId?: string) => {
     if (initialId) {
         return initialId;
     }
-    return "wby-" + baseGenerateId(4);
+    return "" + baseGenerateId(4);
 };
 
 export const withStaticProps = <TComponent extends React.ComponentType<any>, TProps>(

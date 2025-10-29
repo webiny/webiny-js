@@ -7,15 +7,15 @@ import { IconPickerGrid, IconPickerInput, IconPickerTrigger } from "./components
 import type { IconPickerIconDto } from "../domains/index.js";
 import { useIconPicker } from "./useIconPicker.js";
 
-const iconPickerVariants = cva("wby-cursor-pointer wby-text-neutral-strong", {
+const iconPickerVariants = cva("cursor-pointer text-neutral-strong", {
     variants: {
         size: {
-            md: "wby-w-16",
-            lg: "wby-w-16",
-            xl: "wby-w-20"
+            md: "w-16",
+            lg: "w-16",
+            xl: "w-20"
         },
         disabled: {
-            true: "wby-pointer-events-none"
+            true: "pointer-events-none"
         }
     },
     defaultVariants: {
@@ -83,7 +83,7 @@ const IconPickerPrimitive = (props: IconPickerPrimitiveProps) => {
             </PopoverPrimitive.Trigger>
             <PopoverPrimitive.Content
                 align={"start"}
-                className={"wby-min-w-96"}
+                className={"min-w-96"}
                 onWheel={e => e.stopPropagation()} // Wheel event should not propagate to the parent: this fixes scrolling issues when the IconPicker is placed inside a Dialog.
             >
                 <IconPickerInput value={vm.searchQuery} onChange={searchIcon} inputRef={inputRef} />

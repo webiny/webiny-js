@@ -14,11 +14,11 @@ export const Title = ({ title, isRoot }: TitleProps) => {
     }, [isRoot]);
 
     return (
-        <div className={"wby-w-5/12 wby-pt-md wby-px-lg"}>
+        <div className={"w-5/12 pt-md px-lg"}>
             {(title && (
-                <div className={"wby-flex wby-gap-sm wby-items-center"}>
+                <div className={"flex gap-sm items-center"}>
                     <Icon icon={icon} label={title} size={"md"} color={"neutral-strong"} />
-                    <Heading level={4} as={"h1"} className={"wby-truncate"}>
+                    <Heading level={4} as={"h1"} className={"truncate"}>
                         {title}
                     </Heading>
                 </div>

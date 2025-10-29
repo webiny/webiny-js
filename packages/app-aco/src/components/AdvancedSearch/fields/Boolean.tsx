@@ -10,7 +10,7 @@ export const Boolean = () => {
     return (
         <Bind name={name}>
             {({ value, onChange, validation }) => (
-                <div className="wby-w-full wby-mt-lg">
+                <div className="w-full mt-lg">
                     <RadioGroup
                         validation={validation}
                         onChange={onChange}

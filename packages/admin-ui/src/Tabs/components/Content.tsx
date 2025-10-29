@@ -4,23 +4,23 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 
 const tabContentVariants = cva(
     [
-        "wby-bg-neutral-base",
-        "wby-my-lg wby-rounded-lg",
-        "focus-visible:wby-outline-none focus-visible:wby-ring-lg focus-visible:wby-ring-primary-dimmed",
+        "bg-neutral-base",
+        "my-lg rounded-lg",
+        "focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed",
         // By default, the inner content is removed by the DOM when the tab becomes inactive.
         // This is a problem when we need to keep track of the state inside a tab content, such as forms.
         //  We are force-mounting the tab content and this class ensures the content is hidden, but not removed from the DOM.
-        "data-[state=inactive]:wby-hidden"
+        "data-[state=inactive]:hidden"
     ],
     {
         variants: {
             spacing: {
-                xs: "wby-p-xs",
-                sm: "wby-p-sm",
-                md: "wby-p-md",
-                lg: "wby-p-lg",
-                xl: "wby-p-xl",
-                xxl: "wby-p-xxl"
+                xs: "p-xs",
+                sm: "p-sm",
+                md: "p-md",
+                lg: "p-lg",
+                xl: "p-xl",
+                xxl: "p-xxl"
             }
         }
     }

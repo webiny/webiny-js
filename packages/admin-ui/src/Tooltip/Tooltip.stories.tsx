@@ -35,7 +35,7 @@ const meta: Meta<typeof Tooltip> = {
     decorators: [
         Story => (
             <Tooltip.Provider>
-                <div className="wby-flex wby-justify-center wby-items-center wby-h-48">
+                <div className="flex justify-center items-center h-48">
                     <Story />
                 </div>
             </Tooltip.Provider>
@@ -74,7 +74,7 @@ export const SubtleVariant: Story = {
     decorators: [
         Story => (
             <Tooltip.Provider>
-                <div className="wby-flex wby-justify-center wby-items-center wby-bg-neutral-dark wby-text-neutral-light wby-w-full wby-h-48">
+                <div className="flex justify-center items-center bg-neutral-dark text-neutral-light w-full h-48">
                     <Story />
                 </div>
             </Tooltip.Provider>
@@ -143,7 +143,7 @@ export const Documentation: Story = {
 
 export const Positioning: Story = {
     render: () => (
-        <div className="wby-flex wby-gap-md">
+        <div className="flex gap-md">
             <Tooltip trigger={<p>Top</p>} content={<div>Tooltip on top</div>} side="top" />
             <Tooltip trigger={<p>Right</p>} content={<div>Tooltip on right</div>} side="right" />
             <Tooltip trigger={<p>Bottom</p>} content={<div>Tooltip on bottom</div>} side="bottom" />
@@ -154,7 +154,7 @@ export const Positioning: Story = {
 
 export const Alignment: Story = {
     render: () => (
-        <div className="wby-flex wby-gap-md">
+        <div className="flex gap-md">
             <Tooltip trigger={<p>Start</p>} content={<div>Aligned to start</div>} align="start" />
             <Tooltip
                 trigger={<p>Center</p>}
@@ -177,8 +177,8 @@ export const WithFormattedContent: Story = {
     args: {
         trigger: <p>Hover for more info</p>,
         content: (
-            <div className="wby-flex wby-flex-col wby-gap-xs">
-                <Text size="sm" className="wby-font-bold">
+            <div className="flex flex-col gap-xs">
+                <Text size="sm" className="font-bold">
                     Important Information
                 </Text>
                 <Text size="sm">

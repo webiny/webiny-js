@@ -5,8 +5,8 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 const tooltipArrowVariants = cva("", {
     variants: {
         variant: {
-            accent: "wby-fill-bg-neutral-dark",
-            subtle: "wby-fill-neutral-base"
+            accent: "fill-bg-neutral-dark",
+            subtle: "fill-neutral-base"
         }
     },
     defaultVariants: {

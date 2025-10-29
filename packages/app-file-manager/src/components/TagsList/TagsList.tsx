@@ -27,7 +27,7 @@ export const TagsList = ({
     }
 
     return (
-        <div className={"wby-my-lg wby-px-md"}>
+        <div className={"my-lg px-md"}>
             {tags.length === 0 ? (
                 <Empty disclaimer={emptyDisclaimer} />
             ) : (

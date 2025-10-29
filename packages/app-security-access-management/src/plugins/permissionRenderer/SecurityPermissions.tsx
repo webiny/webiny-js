@@ -144,7 +144,7 @@ export const SecurityPermissions = ({ value, onChange }: SecurityPermissionsProp
                             </Cell>
                         </Grid>
                         {data.accessLevel === CUSTOM_ACCESS && (
-                            <div className={"wby-mt-lg"}>
+                            <div className={"mt-lg"}>
                                 <PermissionsGroup title={t`API Keys`}>
                                     <Grid>
                                         <Cell span={12}>

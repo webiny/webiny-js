@@ -37,7 +37,7 @@ const plugin: CmsModelFieldRendererPlugin = {
             return (
                 <DynamicSection {...props}>
                     {({ bind, index }) => (
-                        <div className={"wby-relative"}>
+                        <div className={"relative"}>
                             <DelayedOnChange {...bind.index}>
                                 {({ value, onChange }) => (
                                     <LexicalCmsEditor
@@ -51,7 +51,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                             {field.multipleValues ? null : (
                                 <FormComponentNote text={field.helpText} />
                             )}
-                            <div className={"wby-absolute wby-top-sm wby-right-sm wby-z-10"}>
+                            <div className={"absolute top-sm right-sm z-10"}>
                                 <IconButton
                                     variant={"ghost"}
                                     size={"md"}

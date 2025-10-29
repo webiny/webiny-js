@@ -45,7 +45,7 @@ export const QueryBuilder = (props: QueryBuilderProps) => {
     }, []);
 
     return (
-        <div className={"wby-py-lg"}>
+        <div className={"py-lg"}>
             <Form
                 ref={formRef}
                 data={props.vm.data}
@@ -59,13 +59,13 @@ export const QueryBuilder = (props: QueryBuilderProps) => {
                         <Accordion variant={"container"}>
                             {props.vm.data.groups.map((group, groupIndex, groups) => (
                                 <Accordion.Item
-                                    className={"wby-relative"}
+                                    className={"relative"}
                                     title={group.title}
                                     defaultOpen={group.open}
                                     key={`group-${groupIndex}`}
                                     actions={
                                         <>
-                                            <div className={"wby-mt-xxs wby-mr-xs-plus"}>
+                                            <div className={"mt-xxs mr-xs-plus"}>
                                                 <OperationSelector
                                                     label={"Match all conditions"}
                                                     name={`groups.${groupIndex}.operation`}

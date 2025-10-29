@@ -48,9 +48,9 @@ const meta: Meta<typeof InputPrimitive> = {
     render: args => {
         const [value, setValue] = useState(args.value);
         return (
-            <div className={"wby-w-full"}>
+            <div className={"w-full"}>
                 <InputPrimitive {...args} value={value} onChange={setValue} />
-                <div className={"wby-mt-4 wby-text-center"}>
+                <div className={"mt-4 text-center"}>
                     Current selected value: <pre>{value}</pre>
                 </div>
             </div>
@@ -180,7 +180,7 @@ export const GhostNegativeVariant: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-dark wby-text-neutral-light wby-p-xl">
+            <div className="bg-neutral-dark text-neutral-light p-xl">
                 <Story />
             </div>
         )
@@ -194,7 +194,7 @@ export const GhostNegativeVariantDisabled: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-dark wby-text-neutral-light wby-p-xl">
+            <div className="bg-neutral-dark text-neutral-light p-xl">
                 <Story />
             </div>
         )
@@ -208,7 +208,7 @@ export const GhostNegativeVariantInvalid: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-dark wby-text-neutral-light wby-p-xl">
+            <div className="bg-neutral-dark text-neutral-light p-xl">
                 <Story />
             </div>
         )

@@ -44,7 +44,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                         icon={<DeleteIcon />}
                                         label={"Delete"}
                                         onClick={() => bind.field.removeValue(index)}
-                                        className={"wby-cursor-pointer"}
+                                        className={"cursor-pointer"}
                                     />
                                 }
                             />

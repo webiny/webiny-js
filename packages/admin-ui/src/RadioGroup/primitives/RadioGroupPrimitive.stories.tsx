@@ -13,9 +13,9 @@ const meta: Meta<typeof RadioGroupPrimitive> = {
     render: args => {
         const [value, setValue] = useState(args.value);
         return (
-            <div className={"wby-w-full"}>
+            <div className={"w-full"}>
                 <RadioGroupPrimitive {...args} value={value} onChange={value => setValue(value)} />
-                <div className={"wby-mt-4 wby-text-center"}>
+                <div className={"mt-4 text-center"}>
                     Current selected value: <pre>{value}</pre>
                 </div>
             </div>
@@ -198,7 +198,7 @@ export const WithExternalValueControl: Story = {
     render: args => {
         const [value, setValue] = useState(args.value);
         return (
-            <div className={"wby-w-full"}>
+            <div className={"w-full"}>
                 <div>
                     <RadioGroupPrimitive
                         {...args}
@@ -206,10 +206,10 @@ export const WithExternalValueControl: Story = {
                         onChange={value => setValue(value)}
                     />
                 </div>
-                <div className={"wby-mt-4 wby-text-center"}>
+                <div className={"mt-4 text-center"}>
                     <Button onClick={() => setValue(args.value)} text={"Reset"} />
                 </div>
-                <div className={"wby-mt-4 wby-text-center"}>
+                <div className={"mt-4 text-center"}>
                     Current selected value: <pre>{value}</pre>
                 </div>
             </div>

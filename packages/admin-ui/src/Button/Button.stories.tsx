@@ -80,7 +80,7 @@ export const Ghost: Story = {
 export const GhostNegative: Story = {
     decorators: [
         (Story: any) => (
-            <div className="wby-bg-[#25292e] wby-p-[50px] wby-rounded-[5px]">
+            <div className="bg-[#25292e] p-[50px] rounded-[5px]">
                 <Story />
             </div>
         )

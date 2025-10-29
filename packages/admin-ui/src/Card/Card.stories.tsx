@@ -1,19 +1,18 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
-import { ReactComponent as MoreVertical } from "@webiny/icons/more_vert.svg";
 import { Card } from "./Card.js";
-import { Button, IconButton } from "~/Button/index.js";
-import { Icon } from "~/Icon/index.js";
+import { Button } from "~/Button/index.js";
+import { DropdownMenu } from "~/DropdownMenu/index.js";
+import { ReactComponent as NotificationIcon } from "@webiny/icons/notifications_active.svg";
 
 const meta: Meta<typeof Card> = {
     title: "Components/Card",
     component: Card,
+    argTypes: {},
     decorators: [
         Story => (
-            <div className="wby-bg-[#f4f4f4] wby-h-[500px] wby-w-[700px] wby-rounded-[5px] wby-px-[50px] wby-content-center">
-                <div className={"wby-m-auto wby-w-[300px]"}>
-                    <Story />
-                </div>
+            <div className="bg-[#f9fafa] p-[50px] rounded-[5px] max-w-[800px] text-neutral-dimmed">
+                <Story />
             </div>
         )
     ]
@@ -25,156 +24,113 @@ type Story = StoryObj<typeof Card>;
 
 export const Default: Story = {
     args: {
-        title: "Card title goes here",
-        description: "Card description goes here",
-        children: <>This is card content. Anything can go in here.</>,
-        actions: (
+        padding: "md",
+        title: "Card Title",
+        description: "A short card description.",
+        info: (
             <>
-                <Button variant={"secondary"} text={"Cancel"} />
-                <Button variant={"primary"} text={"Confirm"} />
+                Learn more about this <a href={"#"}>here</a>.
             </>
         ),
-        padding: "standard",
-        elevation: "sm",
-        borderRadius: "md"
-    },
-    argTypes: {
-        padding: {
-            control: "select",
-            options: ["none", "standard", "comfortable"]
-        },
-        elevation: {
-            control: "select",
-            options: ["none", "xs", "sm", "md", "lg", "xl"]
-        },
-        borderRadius: {
-            control: "select",
-            options: ["none", "sm", "md", "lg"]
-        }
-    }
-};
-
-export const NoTitleDescriptionActionsHeaderAndFooter: Story = {
-    name: "Only Body (Without Body, Title, Actions)",
-    args: {
-        children: <>This is card content. Anything can go in here.</>
-    }
-};
-
-export const WithMorePadding: Story = {
-    args: {
-        ...Default.args,
-        actions: null,
-        padding: "comfortable"
-    }
-};
-
-export const WithMoreElevation: Story = {
-    args: {
-        ...Default.args,
-        actions: null,
-        elevation: "md"
-    }
-};
-
-export const NoElevation: Story = {
-    args: {
-        ...Default.args,
-        actions: null,
-        elevation: "none"
-    }
-};
-
-export const NoBorderRadius: Story = {
-    args: {
-        ...Default.args,
-        actions: null,
-        borderRadius: "none"
-    }
-};
-
-export const WithOptions: Story = {
-    args: {
-        ...Default.args,
-        actions: null,
-        options: (
-            <IconButton
-                variant={"ghost"}
-                icon={<Icon icon={<MoreVertical />} label={"More options"} />}
-                size={"sm"}
-                iconSize={"lg"}
-                onClick={() => alert("Custom action button clicked.")}
-            />
+        children: (
+            <>
+                The amazing, splendid, and most useful umbrella, resistant to rain and friendly to
+                winds, is something that deserves all admiration. Crafted with perfect textures, it
+                bravely withstands storms and gently shades the rays of the sun. A remarkable
+                innovation, with an ergonomically designed grip most suited to the hand, it remains
+                stable even in the fiercest weather.
+            </>
+        ),
+        actions: (
+            <>
+                <Card.CancelButton />
+                <Card.ConfirmButton />
+            </>
         )
+    },
+    argTypes: {}
+};
+
+export const SmallSize: Story = {
+    args: {
+        ...Default.args,
+        size: "sm"
+    }
+};
+
+export const PaddingSmall: Story = {
+    args: {
+        ...Default.args,
+        padding: "sm"
+    }
+};
+
+export const PaddingMedium: Story = {
+    args: {
+        ...Default.args,
+        padding: "md"
+    }
+};
+
+export const PaddingLarge: Story = {
+    args: {
+        ...Default.args,
+        padding: "lg"
     }
 };
 
 export const WithActions: Story = {
-    args: Default.args
+    args: {
+        ...Default.args
+    }
+};
+export const WithHeaderActions: Story = {
+    args: {
+        ...Default.args,
+        actionsPosition: "header"
+    }
 };
 
-export const Documentation: Story = {
-    render: args => {
-        return <Card {...args} />;
-    },
+export const WithSmallHeaderActions: Story = {
     args: {
-        title: "Card title goes here",
-        description: "Card description goes here",
-        children: <>This is card content. Anything can go in here.</>,
-        actions: (
+        ...Default.args,
+        actionsPosition: "header",
+        actionsSize: "sm"
+    }
+};
+
+export const WithLargeCorners: Story = {
+    args: {
+        ...Default.args,
+        cornerSize: "lg"
+    }
+};
+
+export const AccentVariant: Story = {
+    args: {
+        ...Default.args,
+        variant: "accent"
+    }
+};
+
+export const DropdownMenuInCard: Story = {
+    args: {
+        ...Default.args,
+        children: (
             <>
-                <Button variant={"secondary"} text={"Cancel"} />
-                <Button variant={"primary"} text={"Confirm"} />
+                <DropdownMenu trigger={<Button variant="primary" text={"Open"} />}>
+                    <DropdownMenu.Item text={"Billing"} />
+                    <DropdownMenu.Item text={"Settings"} />
+                    <DropdownMenu.Item text={"Keyboard shortcuts"} />
+                </DropdownMenu>
             </>
-        ),
-        padding: "standard",
-        elevation: "sm",
-        borderRadius: "md",
-        options: (
-            <IconButton
-                variant={"ghost"}
-                icon={<Icon icon={<MoreVertical />} label={"More options"} />}
-                size={"sm"}
-                iconSize={"lg"}
-                onClick={() => alert("Custom action button clicked.")}
-            />
         )
-    },
-    argTypes: {
-        title: {
-            description: "The title displayed at the top of the card",
-            control: "text"
-        },
-        description: {
-            description: "A description displayed below the title",
-            control: "text"
-        },
-        children: {
-            description:
-                "The main content of the card. Please refer to the example code for details on usage."
-        },
-        actions: {
-            description:
-                "Buttons or other interactive elements displayed at the bottom of the card. Please refer to the example code for details on usage."
-        },
-        options: {
-            description:
-                "Additional options or actions displayed in the top-right corner. Please refer to the example code for details on usage."
-        },
-        padding: {
-            description: "Controls the amount of padding inside the card",
-            control: "select",
-            options: ["none", "standard", "comfortable"]
-        },
-        elevation: {
-            description: "Controls the shadow depth of the card",
-            control: "select",
-            options: ["none", "xs", "sm", "md", "lg", "xl"]
-        },
-        borderRadius: {
-            description: "Controls the roundness of the card corners",
-            control: "select",
-            options: ["none", "sm", "md", "lg"]
-        }
+    }
+};
+
+export const WithIcon: Story = {
+    args: {
+        ...Default.args,
+        icon: <Card.Icon icon={<NotificationIcon />} label={"Title icon"} />
     }
 };

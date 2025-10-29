@@ -42,7 +42,7 @@ export const Default: Story = {
 export const ColorInherit: Story = {
     decorators: [
         Story => (
-            <div className="wby-fill-success">
+            <div className="fill-success">
                 <Story />
             </div>
         )
@@ -77,7 +77,7 @@ export const ColorNeutralStrong: Story = {
 export const ColorNeutralStrongTransparent: Story = {
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-disabled wby-p-3xl wby-rounded-md">
+            <div className="bg-neutral-disabled p-3xl rounded-md">
                 <Story />
             </div>
         )
@@ -91,7 +91,7 @@ export const ColorNeutralStrongTransparent: Story = {
 export const ColorNeutralBase: Story = {
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-dark wby-p-3xl wby-rounded-md">
+            <div className="bg-neutral-dark p-3xl rounded-md">
                 <Story />
             </div>
         )
@@ -105,7 +105,7 @@ export const ColorNeutralBase: Story = {
 export const ColorNeutralNegative: Story = {
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-dark wby-p-3xl wby-rounded-md">
+            <div className="bg-neutral-dark p-3xl rounded-md">
                 <Story />
             </div>
         )

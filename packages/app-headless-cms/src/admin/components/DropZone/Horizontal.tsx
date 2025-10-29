@@ -13,21 +13,21 @@ interface OuterDivProps {
 const OuterDiv = ({ isOver, isDragging, last }: OuterDivProps) => (
     <div
         className={cn(
-            "wby-absolute wby-w-full wby-z-10 wby-bg-transparent wby-flex wby-justify-center",
-            last ? "-wby-bottom-md" : "-wby-top-md"
+            "absolute w-full z-10 bg-transparent flex justify-center",
+            last ? "-bottom-md" : "-top-md"
         )}
     >
         <div
             className={cn(
-                "wby-h-md wby-w-full wby-z-3 wby-border-dashed wby-border-sm wby-hidden",
-                isOver ? "wby-border-accent-default" : "wby-border-success-default",
-                isDragging && "wby-block"
+                "h-md w-full z-3 border-dashed border-sm hidden",
+                isOver ? "border-accent-default" : "border-success-default",
+                isDragging && "block"
             )}
         >
             <div
                 className={cn(
-                    "wby-w-full wby-h-full wby-opacity-50",
-                    isOver ? "wby-bg-primary-muted" : "wby-bg-success-muted"
+                    "w-full h-full opacity-50",
+                    isOver ? "bg-primary-muted" : "bg-success-muted"
                 )}
             />
         </div>

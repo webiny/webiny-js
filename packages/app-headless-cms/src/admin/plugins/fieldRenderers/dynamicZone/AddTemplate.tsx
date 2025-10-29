@@ -48,7 +48,7 @@ export const AddTemplateButton = (props: AddTemplateProps) => {
     return (
         <div
             className={
-                "wby-w-full wby-rounded-md wby-border-sm wby-border-neutral-muted wby-p-sm-extra wby-mt-xs wby-mb-md wby-relative"
+                "w-full rounded-md border-sm border-neutral-muted p-sm-extra mt-xs mb-md relative"
             }
         >
             {showGallery ? (
@@ -56,8 +56,8 @@ export const AddTemplateButton = (props: AddTemplateProps) => {
             ) : (
                 <div
                     className={cn([
-                        "wby-w-full wby-flex wby-flex-col wby-gap-sm-extra wby-px-xl wby-pt-xl wby-pb-lg wby-bg-neutral-subtle wby-rounded wby-text-center",
-                        "hover:wby-bg-neutral-light"
+                        "w-full flex flex-col gap-sm-extra px-xl pt-xl pb-lg bg-neutral-subtle rounded text-center",
+                        "hover:bg-neutral-light"
                     ])}
                 >
                     <Button
@@ -69,10 +69,10 @@ export const AddTemplateButton = (props: AddTemplateProps) => {
                     />
                     <div
                         className={
-                            "wby-flex wby-items-center wby-justify-center wby-gap-xs wby-w-full wby-mx-auto wby-text-center"
+                            "flex items-center justify-center gap-xs w-full mx-auto text-center"
                         }
                     >
-                        <Text size={"sm"} className={"wby-text-neutral-strong"}>
+                        <Text size={"sm"} className={"text-neutral-strong"}>
                             <Link
                                 to={"http://webiny.link/admin/how-to-use/dynamic-zones"}
                                 target={"_blank"}
@@ -94,7 +94,7 @@ export const AddTemplateIcon = (props: AddTemplateProps) => {
     });
 
     return (
-        <div className={"wby-w-full wby-text-center wby-mt-md"}>
+        <div className={"w-full text-center mt-md"}>
             {showGallery ? (
                 <TemplateGallery onTemplate={onTemplate} onClose={onGalleryClose} />
             ) : (

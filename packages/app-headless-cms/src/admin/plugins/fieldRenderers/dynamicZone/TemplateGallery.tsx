@@ -24,11 +24,7 @@ export interface TemplateGalleryListProps {
 
 const GalleryList = makeDecoratable("TemplateGalleryList", (props: TemplateGalleryListProps) => {
     return (
-        <div
-            className={
-                "wby-p-md wby-rounded-sm wby-bg-neutral-dimmed wby-grid wby-grid-cols-4 wby-gap-md"
-            }
-        >
+        <div className={"p-md rounded-sm bg-neutral-dimmed grid grid-cols-4 gap-md"}>
             {props.children}
         </div>
     );
@@ -40,7 +36,7 @@ export interface CloseGalleryProps {
 
 const CloseGallery = makeDecoratable("TemplateGalleryClose", (props: CloseGalleryProps) => {
     return (
-        <div className={"wby-w-full wby-text-center wby-mt-md"}>
+        <div className={"w-full text-center mt-md"}>
             <Tooltip
                 content={"Close"}
                 trigger={
