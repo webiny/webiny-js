@@ -110,7 +110,7 @@ export class WorkflowStateRepository implements IWorkflowStateRepository {
         const result = await this.gateway.createWorkflowState({
             app,
             targetRevisionId,
-            title,
+            title
         });
         runInAction(() => {
             this._error = result.error;

@@ -81,12 +81,11 @@ export interface IWorkflowState {
 export interface IWorkflowStatesWidgetItemStep {
     id: string;
     title: string;
-    color: string
+    color: string;
     description: string | undefined | null;
     savedBy: IIdentity | null;
     isAllowedToReview: boolean;
 }
-
 
 export interface IWorkflowStatesWidgetItem {
     id: string;

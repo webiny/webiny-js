@@ -116,7 +116,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         const item = await this.repository.requestReview({
             app: this.app,
             targetRevisionId: this.targetRevisionId,
-            title: this.title,
+            title: this.title
         });
         runInAction(() => {
             this.state = item ? new WorkflowStateModel(item) : null;

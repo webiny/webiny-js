@@ -7,8 +7,9 @@ interface IWorkflowStateRowOptionsOpenInNewWindowProps {
     state: IWorkflowStatesWidgetItem;
 }
 
-
-export const WorkflowStateRowOptionsOpenInNewWindow = ({state}: IWorkflowStateRowOptionsOpenInNewWindowProps) => {
+export const WorkflowStateRowOptionsOpenInNewWindow = ({
+    state
+}: IWorkflowStateRowOptionsOpenInNewWindowProps) => {
     return (
         <DropdownMenu.Item
             icon={<Icon icon={<OpenInNewIcon />} label={"Open In New Window"} />}

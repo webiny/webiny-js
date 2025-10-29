@@ -10,7 +10,6 @@ interface IWorkflowStateRowProps {
     state: IWorkflowStatesWidgetItem;
 }
 
-
 export const WorkflowStateRow = observer((props: IWorkflowStateRowProps) => {
     const { state } = props;
 

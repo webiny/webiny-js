@@ -10,7 +10,7 @@ import { FULL_ACCESS_TEAM_ID, UNKNOWN_TEAM_ID } from "@webiny/testing";
 
 describe("workflow states graphql", () => {
     const handler = createGraphQLHandler();
-    
+
     const targetTitle = "App: Test Record Title";
 
     const createWorkflow = async () => {

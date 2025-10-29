@@ -5,7 +5,7 @@ import { WorkflowStateRecordState } from "~/context/abstractions/WorkflowState.j
 
 describe("Workflow State Context", () => {
     const targetTitle = "App: Some Record Title";
-    
+
     it("should not list any states", async () => {
         const { workflowStateContext } = await createContext();
 
@@ -221,8 +221,7 @@ describe("Workflow State Context", () => {
             return state.reject("There is no step to reject.");
         }).rejects.toThrow("Cannot reject a workflow state that is not in review.");
     });
-    
-    
+
     it("should list own workflow states only", async () => {
         const { workflowStateContext, workflowsContext } = await createContext();
         const app = "testingApp";
@@ -243,11 +242,10 @@ describe("Workflow State Context", () => {
         expect(ownItems.length).toBe(2);
         expect(ownItems[0].targetRevisionId).toBe(targetId2);
         expect(ownItems[1].targetRevisionId).toBe(targetId1);
-        
+
         const { items: requestedItems } = await workflowStateContext.listRequestedWorkflowStates();
-        
+
         expect(requestedItems.length).toBe(0);
-        
 
         const { workflowStateContext: anotherIdentityWorkflowStateContext } = await createContext({
             identity: {
