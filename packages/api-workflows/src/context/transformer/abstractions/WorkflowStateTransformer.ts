@@ -1,6 +1,5 @@
 import { type IWorkflowStateRecord } from "~/context/abstractions/WorkflowState.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
-import type { IWidgetWorkflowState } from "~/context/abstractions/WidgetWorkflowState.js";
 
 export type IWorkflowStateTransformerFromCmsEntryInput = CmsEntry<
     Omit<IWorkflowStateRecord, "id" | "savedOn" | "createdOn" | "savedBy" | "createdBy">
@@ -25,6 +24,4 @@ export interface IWorkflowStateTransformer {
     toCmsEntry(
         input: IWorkflowStateTransformerToCmsEntryInput
     ): IWorkflowStateTransformerToCmsEntryOutput;
-
-    toWidgetWorkflowState(input: IWorkflowStateTransformerFromCmsEntryOutput): IWidgetWorkflowState;
 }
