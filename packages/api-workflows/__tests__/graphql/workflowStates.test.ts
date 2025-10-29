@@ -53,7 +53,7 @@ describe("workflow states graphql", () => {
         workflow = await createWorkflow();
     });
 
-    it.skip("should create, get and list a new workflow state", async () => {
+    it("should create, get and list a new workflow state", async () => {
         const [response] = await handler.createWorkflowState({
             app: workflow.app,
             targetRevisionId,
@@ -320,7 +320,7 @@ describe("workflow states graphql", () => {
         });
     });
 
-    it.skip("should reject workflow state step", async () => {
+    it("should reject workflow state step", async () => {
         const [response] = await handler.createWorkflowState({
             app: workflow.app,
             targetRevisionId,
@@ -418,7 +418,7 @@ describe("workflow states graphql", () => {
         });
     });
 
-    it.skip("should allow creating multiple workflow states for same record - if previous state is inactive", async () => {
+    it("should allow creating multiple workflow states for same record - if previous state is inactive", async () => {
         const [response] = await handler.createWorkflowState({
             app: workflow.app,
             targetRevisionId,
@@ -539,7 +539,7 @@ describe("workflow states graphql", () => {
         });
     });
 
-    it.skip("should not allow reviewing a step current user does not have access to - wrong team", async () => {
+    it("should not allow reviewing a step current user does not have access to - wrong team", async () => {
         const [response] = await handler.storeWorkflow({
             app: "test",
             id: `workflow-1`,
