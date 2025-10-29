@@ -4,12 +4,11 @@ import type { AccordionRoot } from "./components/AccordionRoot.js";
 import { AccordionItem, type AccordionItemProps } from "./components/AccordionItem.js";
 import { DepthProvider, useDepth } from "./DepthContext.js";
 
-const accordionVariants = cva("wby-group wby-w-full", {
+const accordionVariants = cva("group w-full", {
     variants: {
         variant: {
-            container:
-                "wby-accordion-variant-container wby-gap-xs wby-flex wby-flex-col wby-rounded-lg",
-            underline: "wby-accordion-variant-underline"
+            container: "accordion-variant-container gap-xs flex flex-col rounded-lg",
+            underline: "accordion-variant-underline"
         }
     },
     defaultVariants: {
@@ -23,7 +22,7 @@ type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
     };
 
 const getBackgroundByDepth = (depth: number): string => {
-    return depth % 2 === 0 ? "wby-bg-neutral-base" : "wby-bg-neutral-light";
+    return depth % 2 === 0 ? "bg-neutral-base" : "bg-neutral-light";
 };
 
 const AccordionBase = ({ children, variant, className }: AccordionProps) => {
