@@ -1,5 +1,5 @@
 import React, { createContext, useContext, ReactNode } from "react";
-import { AccordionProps } from "~/Accordion";
+import { AccordionProps } from "~/Accordion/index.js";
 
 type BackgroundValue = AccordionProps["background"];
 
