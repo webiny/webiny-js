@@ -44,6 +44,7 @@ const WORKFLOW_STATE_FIELDS = /* GraphQL */ `{
             displayName
             type
         }
+        isAllowedToReview
     }
     
 }

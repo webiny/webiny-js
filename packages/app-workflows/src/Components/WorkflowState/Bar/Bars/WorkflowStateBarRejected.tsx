@@ -20,7 +20,7 @@ export const WorkflowStateBarRejected = WorkflowStateBarComponent.createDecorato
                 actions={
                     <>
                         <Alert.Action
-                            className={"wby-mr-sm"}
+                            className={"mr-sm"}
                             text={"View Comment"}
                             onClick={() => {
                                 presenter.showCommentDialog(step.id);
