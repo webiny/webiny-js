@@ -38,7 +38,6 @@ const AccordionBase = ({
     className
 }: AccordionProps) => {
     const background = useAccordionBackground(backgroundProp);
-    console.log("backgroundProp", backgroundProp, background);
 
     return (
         <AccordionBackgroundProvider currentBackground={background}>
