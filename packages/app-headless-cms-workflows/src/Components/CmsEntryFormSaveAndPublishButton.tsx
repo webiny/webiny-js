@@ -28,7 +28,14 @@ const OverrideSaveAndPublishButton = (props: IOverrideSaveAndPublishButtonProps)
 export const CmsEntryFormSaveAndPublishButton = ButtonAction.createDecorator(Original => {
     return function WorkflowCmsEntryFormSaveAndPublishButton(props) {
         return (
-            <Original {...props} element={<OverrideSaveAndPublishButton name={props.name}>{props.element}</OverrideSaveAndPublishButton>} />
+            <Original
+                {...props}
+                element={
+                    <OverrideSaveAndPublishButton name={props.name}>
+                        {props.element}
+                    </OverrideSaveAndPublishButton>
+                }
+            />
         );
     };
 });

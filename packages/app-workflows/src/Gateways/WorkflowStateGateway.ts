@@ -165,7 +165,7 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
                 variables: {
                     app: params.app,
                     targetRevisionId: params.targetRevisionId,
-                    title: params.title,
+                    title: params.title
                 }
             });
             return {

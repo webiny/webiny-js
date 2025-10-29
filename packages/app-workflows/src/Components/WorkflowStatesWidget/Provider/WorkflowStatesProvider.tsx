@@ -33,7 +33,7 @@ export const WorkflowStatesProvider = (props: IWorkflowStatesProviderProps) => {
         });
         return new WorkflowStatesWidgetPresenter({
             repository,
-            type,
+            type
         });
     }, []);
 
