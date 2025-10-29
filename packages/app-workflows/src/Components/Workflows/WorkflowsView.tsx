@@ -3,6 +3,7 @@ import { Alert, Grid } from "@webiny/admin-ui";
 import type { IWorkflowApplication } from "~/types.js";
 import { WorkflowsApplications } from "./WorkflowsApplications.js";
 import { WorkflowEditor } from "./WorkflowEditor.js";
+import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin";
 
 export interface IWorkflowsViewProps {
     apps: IWorkflowApplication[];
@@ -20,34 +21,60 @@ export const WorkflowsView = (props: IWorkflowsViewProps) => {
         return apps.find(a => a.id === initialApp);
     }, [initialApp, apps]);
 
-    if (!apps.length) {
-        return (
-            <Grid>
-                <Grid.Column span={12}>
-                    <Alert type="danger" title="No applications found.">
-                        There are no applications available.
-                    </Alert>
-                </Grid.Column>
-            </Grid>
-        );
-    } else if (initialApp && !app) {
-        return (
-            <Grid>
-                <Grid.Column span={12}>
-                    <Alert type="danger" title="No application found.">
-                        Application you selected does not exist: <strong>{initialApp}</strong>.
-                    </Alert>
-                </Grid.Column>
-            </Grid>
-        );
-    }
-
     return (
-        <Grid>
-            <Grid.Column span={2}>
+        <SplitView>
+            <LeftPanel>
                 <WorkflowsApplications apps={apps} onClick={onAppClick} />
-            </Grid.Column>
-            <Grid.Column span={10}>{app ? <WorkflowEditor app={app} /> : null}</Grid.Column>
-        </Grid>
+
+                {/*<ApiKeysDataList activeId={route.params.id} />*/}
+            </LeftPanel>
+            <RightPanel>
+                <Grid.Column span={10}>{app ? <WorkflowEditor app={app} /> : null}</Grid.Column>
+
+                {/*<ApiKeyForm newEntry={route.params.new === true} id={route.params.id} />*/}
+            </RightPanel>
+        </SplitView>
     );
+
+    // const { apps, app: initialApp, onAppClick } = props;
+    //
+    // const app = useMemo(() => {
+    //     if (!initialApp) {
+    //         return null;
+    //     }
+    //     return apps.find(a => a.id === initialApp);
+    // }, [initialApp, apps]);
+    //
+    // if (!apps.length) {
+    //     return (
+    //         <Grid>
+    //             <Grid.Column span={12}>
+    //                 <Alert type="danger" title="No applications found.">
+    //                     There are no applications available.
+    //                 </Alert>
+    //             </Grid.Column>
+    //         </Grid>
+    //     );
+    // } else if (initialApp && !app) {
+    //     return (
+    //         <Grid>
+    //             <Grid.Column span={12}>
+    //                 <Alert type="danger" title="No application found.">
+    //                     Application you selected does not exist: <strong>{initialApp}</strong>.
+    //                 </Alert>
+    //             </Grid.Column>
+    //         </Grid>
+    //     );
+    // }
+    //
+    // console.log("apps", apps);
+    //
+    // return (
+    //     <Grid>
+    //         <Grid.Column span={2}>
+    //             <WorkflowsApplications apps={apps} onClick={onAppClick} />
+    //         </Grid.Column>
+    //         <Grid.Column span={10}>{app ? <WorkflowEditor app={app} /> : null}</Grid.Column>
+    //     </Grid>
+    // );
 };

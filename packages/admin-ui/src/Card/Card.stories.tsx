@@ -127,6 +127,29 @@ export const DropdownMenuInCard: Story = {
         )
     }
 };
+export const WithSmallElevation: Story = {
+    args: {
+        ...Default.args,
+        elevation: "small"
+    }
+};
+
+export const WithMediumElevation: Story = {
+    args: {
+        ...Default.args,
+        elevation: "medium"
+    }
+};
+
+
+export const WithLargeElevation: Story = {
+    args: {
+        ...Default.args,
+        elevation: "large"
+    }
+};
+
+
 
 export const WithIcon: Story = {
     args: {

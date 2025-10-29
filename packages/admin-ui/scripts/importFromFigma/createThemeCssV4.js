@@ -1,5 +1,4 @@
 import fs from "fs";
-import { DEFAULTS } from "./defaults.js";
 
 // We don't need tokens that end with `-a{one or two numbers}` because they are used for
 // alpha colors. We don't need these because we can use the /alpha function in Tailwind CSS.
@@ -206,16 +205,16 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
 
         themeCss = themeCss.replace("{RING_WIDTH}", ringWidth.join("\n"));
     }
-    //
-    // // 11. Shadow.
-    // {
-    //     const shadow = normalizedFigmaExport
-    //         .filter(item => item.type === "shadow")
-    //         .map(variable => `--shadow-${variable.variantName}: ${variable.resolvedValue}px;`);
-    //
-    //     stylesScss = stylesScss.replace("{SHADOW}", shadow.join("\n"));
-    // }
-    //
+
+    // 11. Shadow.
+    {
+        const shadow = normalizedFigmaExport
+            .filter(item => item.type === "shadow")
+            .map(variable => `--shadow-${variable.variantName}: 0 ${variable.resolvedValue}px ${variable.resolvedValue}px rgba(0, 0, 0, 0.06); `);
+
+        themeCss = themeCss.replace("{SHADOW}", shadow.join("\n"));
+    }
+
     // Spacing.
     const spacingTheme = normalizedFigmaExport
         .filter(item => item.type === "spacing")
