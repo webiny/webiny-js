@@ -22,6 +22,7 @@ export const CmsWorkflowsMenu = () => {
     return (
         <Menu
             name={"headlessCMS.contentModels.workflows"}
+            pinnable={true}
             parent={"headlessCMS"}
             element={
                 <Menu.Link text={"Workflows"} to={router.getLink(Routes.ContentModels.Workflows)} />

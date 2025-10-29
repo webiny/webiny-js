@@ -13,7 +13,13 @@ const cardContentVariants = cva(
             variant: {
                 default: "border-transparent",
                 accent: "border-accent-dimmed"
-            }
+            },
+            elevation: {
+                "none": "",
+                "small": "shadow-sm",
+                "medium": "shadow-md",
+                "large": "shadow-lg"
+            },
         },
         defaultVariants: {
             cornerSize: "lg",
@@ -28,10 +34,10 @@ export interface CardContentProps extends VariantProps<typeof cardContentVariant
 }
 
 const CardContent = ({ children }: CardContentProps) => {
-    const { cornerSize, variant } = useCardProps();
+    const { cornerSize, variant, elevation } = useCardProps();
 
     return (
-        <div data-card="content" className={cardContentVariants({ cornerSize, variant })}>
+        <div data-card="content" className={cardContentVariants({ cornerSize, variant,elevation })}>
             <div className={"flex flex-col justify-between w-full max-w-full h-full relative"}>
                 {children}
             </div>
