@@ -1,7 +1,11 @@
 import type { Context } from "~/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { IWorkflowStateTransformer } from "~/context/transformer/abstractions/WorkflowStateTransformer.js";
-import type { IWorkflowState, IWorkflowStateRecord } from "./abstractions/WorkflowState.js";
+import type {
+    IWorkflowState,
+    IWorkflowStateModel,
+    IWorkflowStateRecord
+} from "./abstractions/WorkflowState.js";
 import { WorkflowStateRecordState } from "./abstractions/WorkflowState.js";
 import { WorkflowState } from "./workflowState/WorkflowState.js";
 import type {
@@ -66,7 +70,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         this.onStateAfterDelete = createTopic<IWorkflowStateContextOnStateAfterDelete>();
     }
 
-    public async getState(id: string): Promise<IWorkflowState> {
+    public async getState(id: string): Promise<IWorkflowStateModel> {
         const record = await this.fetchOne(id);
         if (!record) {
             throw new WorkflowStateNotFoundError({
@@ -81,7 +85,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         });
     }
 
-    public async getTargetState(app: string, targetRevisionId: string): Promise<IWorkflowState> {
+    public async getTargetState(app: string, targetRevisionId: string): Promise<IWorkflowStateModel> {
         const { version } = parseIdentifier(targetRevisionId);
         if (!version) {
             throw new WebinyError(
@@ -149,17 +153,13 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             };
         }
 
-        const result = await this.listStates({
+        return await this.listStates({
             ...params,
             where: {
                 ...params?.where,
                 createdBy: identity.id
             }
         });
-        return {
-            items: result.items.map(state => this.transformer.toWidgetWorkflowState(state)),
-            meta: result.meta
-        };
     }
 
     public async listRequestedWorkflowStates(
@@ -178,7 +178,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             };
         }
 
-        const result = await this.listStates({
+        return await this.listStates({
             ...params,
             where: {
                 ...params?.where,
@@ -190,17 +190,13 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 }
             }
         });
-        return {
-            items: result.items.map(state => this.transformer.toWidgetWorkflowState(state)),
-            meta: result.meta
-        };
     }
 
     public async createState(
         app: string,
         targetRevisionId: string,
         title: string
-    ): Promise<IWorkflowState> {
+    ): Promise<IWorkflowStateModel> {
         const { id: targetId, version } = parseIdentifier(targetRevisionId);
         if (!version) {
             throw new WebinyError(
@@ -318,7 +314,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     public async updateState(
         id: string,
         input: Partial<Omit<IWorkflowStateRecord, "id">>
-    ): Promise<IWorkflowState> {
+    ): Promise<IWorkflowStateModel> {
         const originalRecord = await this.fetchOne(id);
         if (!originalRecord) {
             throw new WorkflowStateNotFoundError({
@@ -373,7 +369,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         });
     }
 
-    public async cancelState(id: string): Promise<IWorkflowState> {
+    public async cancelState(id: string): Promise<IWorkflowStateModel> {
         return await this.updateState(id, {
             isActive: false
         });
@@ -434,13 +430,13 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         }
     }
 
-    public async approveStateStep(id: string, comment?: string): Promise<IWorkflowState> {
+    public async approveStateStep(id: string, comment?: string): Promise<IWorkflowStateModel> {
         const state = await this.getState(id);
         await state.approve(comment);
         return state;
     }
 
-    public async rejectStateStep(id: string, comment: string): Promise<IWorkflowState> {
+    public async rejectStateStep(id: string, comment: string): Promise<IWorkflowStateModel> {
         const state = await this.getState(id);
         await state.reject(comment);
         return state;
@@ -513,7 +509,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         };
     }
 
-    private async createWorkflowState(params: ICreateWorkflowStateParams): Promise<IWorkflowState> {
+    private async createWorkflowState(params: ICreateWorkflowStateParams): Promise<IWorkflowStateModel> {
         const id = this.context.security.getIdentity().id;
         return new WorkflowState({
             context: this.context,

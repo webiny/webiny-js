@@ -1,12 +1,12 @@
 import type { IMeta } from "./types.js";
 import type {
     IWorkflowState,
+    IWorkflowStateModel,
     IWorkflowStateRecord,
     WorkflowStateRecordState
 } from "./WorkflowState.js";
 import type { CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
 import type { Topic } from "@webiny/pubsub/types.js";
-import type { IWidgetWorkflowState } from "~/context/abstractions/WidgetWorkflowState.js";
 
 export interface IWorkflowStateContextListStatesWhereStepsTeams {
     id?: string;
@@ -63,7 +63,7 @@ export interface IWorkflowStateContextListStatesParams {
 }
 
 export interface IWorkflowStateContextListStatesResponse {
-    items: IWorkflowState[];
+    items: IWorkflowStateModel[];
     meta: IMeta;
 }
 
@@ -75,7 +75,7 @@ export interface IWorkflowStateContextListOwnWorkflowStatesParams {
 }
 
 export interface IWorkflowStateContextListOwnWorkflowStatesResponse {
-    items: IWidgetWorkflowState[];
+    items: IWorkflowStateModel[];
     meta: IMeta;
 }
 
@@ -87,7 +87,7 @@ export interface IWorkflowStateContextListRequestedWorkflowStatesParams {
 }
 
 export interface IWorkflowStateContextListRequestedWorkflowStatesResponse {
-    items: IWidgetWorkflowState[];
+    items: IWorkflowStateModel[];
     meta: IMeta;
 }
 
@@ -108,8 +108,8 @@ export interface IWorkflowStateContext {
     onStateAfterCreate: Topic<IWorkflowStateContextOnStateAfterCreate>;
     onStateAfterUpdate: Topic<IWorkflowStateContextOnStateAfterUpdate>;
     onStateAfterDelete: Topic<IWorkflowStateContextOnStateAfterDelete>;
-    getState(id: string): Promise<IWorkflowState>;
-    getTargetState(app: string, id: string): Promise<IWorkflowState>;
+    getState(id: string): Promise<IWorkflowStateModel>;
+    getTargetState(app: string, id: string): Promise<IWorkflowStateModel>;
     listStates(
         params?: IWorkflowStateContextListStatesParams
     ): Promise<IWorkflowStateContextListStatesResponse>;
@@ -127,14 +127,14 @@ export interface IWorkflowStateContext {
         params: IWorkflowStateContextListRequestedWorkflowStatesParams
     ): Promise<IWorkflowStateContextListRequestedWorkflowStatesResponse>;
 
-    createState(app: string, targetRevisionId: string, title: string): Promise<IWorkflowState>;
+    createState(app: string, targetRevisionId: string, title: string): Promise<IWorkflowStateModel>;
     updateState(
         id: string,
         record: Partial<Omit<IWorkflowStateRecord, "id">>
-    ): Promise<IWorkflowState>;
+    ): Promise<IWorkflowStateModel>;
     deleteTargetState(app: string, targetRevisionId: string): Promise<void>;
-    cancelState(id: string): Promise<IWorkflowState>;
+    cancelState(id: string): Promise<IWorkflowStateModel>;
     deleteState(id: string): Promise<void>;
-    approveStateStep(id: string, comment?: string): Promise<IWorkflowState>;
-    rejectStateStep(id: string, comment: string): Promise<IWorkflowState>;
+    approveStateStep(id: string, comment?: string): Promise<IWorkflowStateModel>;
+    rejectStateStep(id: string, comment: string): Promise<IWorkflowStateModel>;
 }

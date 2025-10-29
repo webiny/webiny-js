@@ -1,12 +1,12 @@
 import { Context } from "~/types.js";
-import {
-    type IWorkflowState,
-    type IWorkflowStateIdentity,
-    type IWorkflowStateRecord,
-    type IWorkflowStateRecordStep,
-    type IWorkflowStateRecordStepWithPermissions,
-    WorkflowStateRecordState
+import type {
+    IWorkflowStateIdentity,
+    IWorkflowStateModel,
+    IWorkflowStateRecord,
+    IWorkflowStateRecordStep,
+    IWorkflowStateRecordStepWithPermissions
 } from "../abstractions/WorkflowState.js";
+import { WorkflowStateRecordState } from "../abstractions/WorkflowState.js";
 import { WebinyError } from "@webiny/error";
 import type { IWorkflowStepTeam } from "~/context/abstractions/Workflow.js";
 
@@ -16,7 +16,7 @@ export interface IWorkflowStateParams {
     context: Pick<Context, "workflowState" | "security" | "adminUsers">;
 }
 
-export class WorkflowState implements IWorkflowState {
+export class WorkflowState implements IWorkflowStateModel {
     public readonly context;
     readonly #record;
     private readonly teams;
@@ -85,6 +85,51 @@ export class WorkflowState implements IWorkflowState {
         });
     }
 
+    public get currentStep(): IWorkflowStateRecordStepWithPermissions {
+        const step = this.getActiveStep();
+        if (step) {
+            return step;
+        }
+        const steps = this.steps.toReversed();
+        const rejected = steps.find(step => step.state === WorkflowStateRecordState.rejected);
+        if (rejected) {
+            return rejected;
+        }
+        const approved = steps.find(step => step.state === WorkflowStateRecordState.approved);
+        if (approved) {
+            return approved;
+        }
+        const inReview = steps.find(step => step.state === WorkflowStateRecordState.inReview);
+        if (inReview) {
+            return inReview;
+        }
+        const pending = steps.find(step => step.state === WorkflowStateRecordState.pending);
+        if (pending) {
+            return pending;
+        }
+        return steps[0];
+    }
+
+    public get nextStep(): IWorkflowStateRecordStepWithPermissions | null {
+        const steps = this.steps;
+        const currentStep = this.currentStep;
+        const currentIndex = steps.findIndex(step => step.id === currentStep.id);
+        if (currentIndex === -1) {
+            return null;
+        }
+        return steps[currentIndex + 1] || null;
+    }
+
+    public get previousStep(): IWorkflowStateRecordStepWithPermissions | null {
+        const steps = this.steps;
+        const currentStep = this.currentStep;
+        const currentIndex = steps.findIndex(step => step.id === currentStep.id);
+        if (currentIndex <= 0) {
+            return null;
+        }
+        return steps[currentIndex - 1] || null;
+    }
+
     public constructor(params: IWorkflowStateParams) {
         this.context = params.context;
         this.#record = params.record;
@@ -92,15 +137,16 @@ export class WorkflowState implements IWorkflowState {
     }
 
     public getActiveStep(): IWorkflowStateRecordStepWithPermissions | undefined {
-        const hasRejected = this.#record.steps.some(step => {
+        const steps = this.steps;
+        const hasRejected = steps.some(step => {
             return step.state === WorkflowStateRecordState.rejected;
         });
         if (hasRejected) {
             return undefined;
         }
-        for (const step of this.#record.steps) {
+        for (const step of steps) {
             if (step.state === WorkflowStateRecordState.inReview) {
-                return this.enrichStepWithPermissions(step);
+                return step;
             }
         }
         return undefined;
