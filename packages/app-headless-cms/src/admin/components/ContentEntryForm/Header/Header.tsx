@@ -15,13 +15,13 @@ export const Header = makeDecoratable("ContentEntryFormHeader", () => {
     return (
         <div
             className={
-                "wby-flex wby-items-center wby-justify-between wby-gap-sm wby-border-b-sm wby-border-neutral-dimmed wby-pb-md wby-mb-md"
+                "flex items-center justify-between gap-sm border-b-sm border-neutral-dimmed pb-md mb-md"
             }
             id="headerToolbarGrid"
         >
             {entry.meta?.title ? <Helmet title={entry.meta.title} /> : null}
             <RevisionSelector />
-            <div className={"wby-flex wby-items-center wby-gap-sm"}>
+            <div className={"flex items-center gap-sm"}>
                 <Buttons actions={buttonActions} />
                 <ContentFormOptionsMenu />
             </div>

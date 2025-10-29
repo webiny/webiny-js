@@ -7,7 +7,7 @@ export interface TitleProps {
 
 export const Title = ({ title }: TitleProps) => {
     return title ? (
-        <Heading level={5} className={"wby-text-neutral-primary"}>
+        <Heading level={5} className={"text-neutral-primary"}>
             {title}
         </Heading>
     ) : (

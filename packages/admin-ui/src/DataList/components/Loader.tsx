@@ -7,24 +7,20 @@ const Loader = (): ReactElement => {
     const lines = Array.from(Array(5).keys());
 
     return (
-        <ul className={"wby-list-none wby-p-lg"} data-testid={"default-data-list.loading"}>
+        <ul className={"list-none p-lg"} data-testid={"default-data-list.loading"}>
             {lines.map(line => (
                 <li
                     key={"list-" + line}
-                    className={cn(["wby-group", line === lines.length - 1 ? "wby-last-item" : ""])}
+                    className={cn(["group", line === lines.length - 1 ? "last-item" : ""])}
                 >
-                    <div className="wby-flex wby-w-full wby-items-center wby-justify-start wby-gap-lg wby-mb-md group-[.wby-last-item]:wby-mb-none">
+                    <div className="flex w-full items-center justify-start gap-lg mb-md group-[.last-item]:mb-none">
                         <Skeleton type={"thumbnail"} size={"xxl"} />
-                        <div
-                            className={
-                                "wby-flex-1 wby-h-10 wby-flex wby-flex-col wby-justify-between"
-                            }
-                        >
+                        <div className={"flex-1 h-10 flex flex-col justify-between"}>
                             <Skeleton type={"text"} size={"md"} />
                             <Skeleton type={"text"} size={"md"} />
                         </div>
-                        <div className={"wby-justify-self-end"}>
-                            <div className={"wby-text-right wby-flex wby-justify-end wby-gap-sm"}>
+                        <div className={"justify-self-end"}>
+                            <div className={"text-right flex justify-end gap-sm"}>
                                 <Skeleton type={"thumbnail"} size={"lg"} />
                                 <Skeleton type={"thumbnail"} size={"lg"} />
                             </div>

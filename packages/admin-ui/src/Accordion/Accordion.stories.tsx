@@ -13,6 +13,13 @@ const meta: Meta<typeof Accordion> = {
     title: "Components/Accordion",
     component: Accordion,
     argTypes: {},
+    decorators: [
+        Story => (
+            <div className="w-[750px] p-[50px] min-h-[500px] bg-[#f6f7f8]">
+                <Story />
+            </div>
+        )
+    ],
     render: args => {
         return <Accordion {...args} />;
     }
@@ -38,13 +45,6 @@ const AccordionItem = (props: AccordionItemProps) => {
 };
 
 export const Default: Story = {
-    decorators: [
-        Story => (
-            <div className="wby-w-[750px] wby-p-[50px] wby-min-h-[500px] wby-bg-[#f6f7f8]">
-                <Story />
-            </div>
-        )
-    ],
     args: {
         children: (
             <>
@@ -53,7 +53,14 @@ export const Default: Story = {
                 <AccordionItem index={3} />
             </>
         )
-    }
+    },
+    decorators: [
+        Story => (
+            <div className="w-[750px] p-[50px] min-h-[500px] bg-[#f6f7f8]">
+                <Story />
+            </div>
+        )
+    ]
 };
 
 export const WithDescriptions: Story = {
@@ -248,7 +255,7 @@ export const WithControlledOpenedItem: Story = {
                         onOpenChange={open => setOpenThirdItem(open)}
                     />
                 </Accordion>
-                <div className={"wby-flex wby-justify-center wby-mt-lg wby-gap-md"}>
+                <div className={"flex justify-center mt-lg gap-md"}>
                     <Button
                         onClick={() => setOpenFirstItem(!openFirstItem)}
                         text={"Toggle First Item"}
@@ -292,7 +299,7 @@ export const LightBackground: Story = {
     ...Default,
     decorators: [
         Story => (
-            <div className="wby-w-[750px] wby-p-[50px] wby-min-h-[500px]">
+            <div className="w-[750px] p-[50px] min-h-[500px]">
                 <Story />
             </div>
         )
@@ -320,7 +327,7 @@ export const ContainerVariantWithLightBackground: Story = {
     ...Default,
     decorators: [
         Story => (
-            <div className="wby-w-[750px] wby-p-[50px] wby-min-h-[500px]">
+            <div className="w-[750px] p-[50px] min-h-[500px]">
                 <Story />
             </div>
         )
@@ -496,7 +503,7 @@ export const NestedAccordions: Story = {
 export const NestedAccordionsLight: Story = {
     decorators: [
         Story => (
-            <div className="wby-w-[750px] wby-p-[50px] wby-min-h-[500px] wby-bg-white">
+            <div className="w-[750px] p-[50px] min-h-[500px] bg-white">
                 <Story />
             </div>
         )
@@ -655,7 +662,6 @@ export const Documentation: Story = {
     },
     args: {
         variant: "underline",
-        background: "base",
         children: (
             <>
                 <Accordion.Item

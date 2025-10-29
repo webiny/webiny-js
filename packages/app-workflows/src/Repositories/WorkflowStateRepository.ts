@@ -3,15 +3,14 @@ import type {
     IWorkflowStateRepositoryApproveParams,
     IWorkflowStateRepositoryFindOneParams,
     IWorkflowStateRepositoryRejectParams,
-    IWorkflowStateRepositoryRequestReviewParams,
-    IWorkflowStateRepositoryStartParams
+    IWorkflowStateRepositoryRequestReviewParams
 } from "./abstractions/WorkflowStateRepository.js";
 import type {
     IWorkflowStateError,
     IWorkflowStateGateway
 } from "~/Gateways/abstraction/WorkflowStateGateway.js";
 import { makeAutoObservable, runInAction } from "mobx";
-import { IWorkflowState } from "~/types.js";
+import type { IWorkflowState } from "~/types.js";
 
 export interface IWorkflowStateRepositoryParams {
     gateway: IWorkflowStateGateway;
@@ -34,21 +33,6 @@ export class WorkflowStateRepository implements IWorkflowStateRepository {
         this.gateway = params.gateway;
 
         makeAutoObservable(this);
-    }
-
-    public async start(
-        params: IWorkflowStateRepositoryStartParams
-    ): Promise<IWorkflowState | null> {
-        runInAction(() => {
-            this._loading = true;
-            this._error = null;
-        });
-        const result = await this.gateway.startWorkflowStateStep(params);
-        runInAction(() => {
-            this._error = result.error;
-            this._loading = false;
-        });
-        return result.data;
     }
 
     public async approve(

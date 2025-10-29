@@ -7,12 +7,12 @@ const EditorBar = () => {
         <HeaderBar
             data-testid={"cms-editor-top-bar"}
             start={
-                <div className={"wby-flex wby-items-center wby-justify-start wby-gap-sm"}>
+                <div className={"flex items-center justify-start gap-sm"}>
                     {renderPlugins("content-model-editor-default-bar-left")}
                 </div>
             }
             end={
-                <div className={"wby-flex wby-items-center wby-justify-end wby-gap-xs"}>
+                <div className={"flex items-center justify-end gap-xs"}>
                     {renderPlugins("content-model-editor-default-bar-right")}
                 </div>
             }

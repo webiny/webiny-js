@@ -314,12 +314,12 @@ const FileManagerView = () => {
                                 </LeftPanel>
                                 <RightPanel span={10}>
                                     <div
-                                        className={"wby-flex wby-flex-col wby-relative"}
+                                        className={"flex flex-col relative"}
                                         style={{ height: "calc(100vh - 69px" }}
                                     >
                                         <Header browseFiles={browseFiles} />
                                         <div
-                                            className={"wby-flex-1"}
+                                            className={"flex-1"}
                                             {...getDropZoneProps({
                                                 onDragOver: () => view.setDragging(true),
                                                 onDragLeave: () => view.setDragging(false),

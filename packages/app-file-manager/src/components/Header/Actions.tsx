@@ -109,12 +109,12 @@ const ToggleFiltersAction = () => {
 
 export const Actions = (props: ActionsProps) => {
     return (
-        <div className={"wby-h-full wby-flex wby-gap-sm wby-items-center wby-justify-end"}>
-            <div className={"wby-flex wby-gap-xs"}>
+        <div className={"h-full flex gap-sm items-center justify-end"}>
+            <div className={"flex gap-xs"}>
                 <ToggleFiltersAction />
                 <LayoutSwitchAction />
             </div>
-            <div className={"wby-flex wby-gap-xs"}>
+            <div className={"flex gap-xs"}>
                 <FileAction browseFiles={props.browseFiles} />
                 <FolderAction />
             </div>

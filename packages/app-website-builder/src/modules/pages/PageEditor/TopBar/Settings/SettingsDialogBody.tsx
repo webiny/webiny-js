@@ -41,7 +41,7 @@ export const SettingsDialogBody = () => {
 
 const GeneralSettingsForm = () => {
     return (
-        <Grid className={"wby-mt-md"}>
+        <Grid className={"mt-md"}>
             <Grid.Column span={12}>
                 <Bind name={"properties.title"}>
                     <Input label={"Page title"} />
@@ -95,7 +95,7 @@ const GeneralSettingsForm = () => {
 
 const SeoSettingsForm = () => {
     return (
-        <Grid className={"wby-mt-md"}>
+        <Grid className={"mt-md"}>
             <Grid.Column span={12}>
                 <Bind name={"properties.seo.title"}>
                     <Input label={"Title"} description={"SEO title"} />
@@ -123,7 +123,7 @@ const SeoSettingsForm = () => {
 
 const SocialSettingsForm = () => {
     return (
-        <Grid className={"wby-mt-md"}>
+        <Grid className={"mt-md"}>
             <Grid.Column span={12}>
                 <Bind name={"properties.social.title"}>
                     <Input label={"Title"} description={"Title for social platforms (og:title)"} />

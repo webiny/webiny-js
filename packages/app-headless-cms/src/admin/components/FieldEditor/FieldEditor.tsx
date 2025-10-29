@@ -118,17 +118,17 @@ const Editor = () => {
                     ) => (
                         <div
                             className={cn([
-                                "wby-flex wby-flex-column",
-                                "wby-relative",
-                                "wby-mb-md last-of-type:wby-mb-none",
-                                "wby-bg-neutral-dimmed",
-                                isDragging ? "wby-opacity-30" : "wby-opacity-100"
+                                "flex flex-column",
+                                "relative",
+                                "mb-md last-of-type:mb-none",
+                                "bg-neutral-dimmed",
+                                isDragging ? "opacity-30" : "opacity-100"
                             ])}
                         >
                             <div
                                 className={cn([
-                                    "wby-cursor-grab",
-                                    "wby-absolute wby-left-sm-plus wby-top-sm-plus wby-z-10"
+                                    "cursor-grab",
+                                    "absolute left-sm-plus top-sm-plus z-10"
                                 ])}
                                 ref={drag}
                             >
@@ -146,10 +146,7 @@ const Editor = () => {
                             />
                             {/* Row start - includes field drop zones and fields */}
                             <div
-                                className={cn([
-                                    "wby-w-full wby-flex wby-justify-between",
-                                    "wby-pl-xl wby-pr-sm wby-py-sm"
-                                ])}
+                                className={cn(["w-full flex justify-between", "pl-xl pr-sm py-sm"])}
                                 data-testid={"cms.editor.field-row"}
                             >
                                 {row.map((field, fieldIndex) => (
@@ -169,9 +166,9 @@ const Editor = () => {
                                             {({ drag }) => (
                                                 <div
                                                     className={cn([
-                                                        "wby-relative",
-                                                        "wby-flex-1 wby-basis-full",
-                                                        "wby-mx-sm"
+                                                        "relative",
+                                                        "flex-1 basis-full",
+                                                        "mx-sm"
                                                     ])}
                                                     ref={drag}
                                                 >
@@ -198,7 +195,7 @@ const Editor = () => {
 
                                                     <div
                                                         className={
-                                                            "wby-cursor-grab wby-bg-neutral-base wby-p-md wby-shadow-sm wby-rounded-xs"
+                                                            "cursor-grab bg-neutral-base p-md shadow-sm rounded-xs"
                                                         }
                                                     >
                                                         <Field

@@ -33,7 +33,7 @@ export interface TabProps {
 export const Tab = ({ name, label, disabled, element, visible, noPadding }: TabProps) => {
     return (
         <Tabs.Tab
-            className={noPadding ? "wby-p-0" : undefined}
+            className={noPadding ? "p-0" : undefined}
             value={name}
             trigger={label}
             disabled={disabled}

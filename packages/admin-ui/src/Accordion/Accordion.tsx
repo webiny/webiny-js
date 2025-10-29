@@ -7,17 +7,16 @@ import {
     useAccordionBackground
 } from "./components/AccordionBackgroundProvider.tsx";
 
-const accordionVariants = cva("wby-group wby-w-full", {
+const accordionVariants = cva("group w-full", {
     variants: {
         variant: {
-            container:
-                "wby-accordion-variant-container wby-gap-xs wby-flex wby-flex-col wby-rounded-lg",
-            underline: "wby-accordion-variant-underline"
+            container: "accordion-variant-container gap-xs flex flex-col rounded-lg",
+            underline: "accordion-variant-underline"
         },
         background: {
-            base: "wby-bg-neutral-base",
-            light: "wby-bg-neutral-light",
-            transparent: "wby-bg-transparent"
+            base: "bg-neutral-base",
+            light: "bg-neutral-light",
+            transparent: "bg-transparent"
         }
     },
     defaultVariants: {

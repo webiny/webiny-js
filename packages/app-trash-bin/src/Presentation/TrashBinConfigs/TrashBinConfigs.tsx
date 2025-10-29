@@ -49,7 +49,7 @@ export const TrashBinConfigs = () => {
                     header={""}
                     cell={<CellActions />}
                     size={56}
-                    className={"wby-text-right"}
+                    className={"text-right"}
                     hideable={false}
                     resizable={false}
                 />

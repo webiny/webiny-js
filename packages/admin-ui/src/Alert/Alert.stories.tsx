@@ -8,7 +8,7 @@ const meta: Meta<typeof Alert> = {
     argTypes: {},
     decorators: [
         Story => (
-            <div className="wby-w-[700px]">
+            <div className="w-[700px]">
                 <Story />
             </div>
         )

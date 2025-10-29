@@ -24,17 +24,17 @@ type DropdownMenuItemProps = DropdownMenuItemButtonProps | DropdownMenuItemLinkP
 
 const variants = cva(
     [
-        "wby-group wby-relative wby-cursor-default wby-select-none wby-items-center wby-rounded-sm",
-        "wby-text-md wby-text-neutral-primary !wby-no-underline",
-        "wby-px-xs-plus wby-outline-none wby-transition-colors",
-        "[&_svg]:wby-fill-neutral-xstrong [&_svg]:wby-pointer-events-none [&_svg]:wby-size-md [&_svg]:wby-shrink-0",
-        "data-[disabled]:wby-pointer-events-none data-[disabled]:wby-text-neutral-disabled",
-        "[&_a]:!wby-no-underline [&_a]:!wby-text-neutral-primary"
+        "group relative cursor-default select-none items-center rounded-sm",
+        "text-md text-neutral-primary no-underline!",
+        "px-xs-plus outline-none transition-colors",
+        "[&_svg]:fill-neutral-xstrong [&_svg]:pointer-events-none [&_svg]:size-md [&_svg]:shrink-0",
+        "data-disabled:pointer-events-none data-disabled:text-neutral-disabled",
+        "[&_a]:no-underline! [&_a]:text-neutral-primary!"
     ],
     {
         variants: {
             readOnly: {
-                true: "wby-pointer-events-none"
+                true: "pointer-events-none"
             }
         },
         defaultVariants: {
@@ -64,9 +64,9 @@ const DropdownMenuItemBase = React.forwardRef<
     }
     const sharedProps = {
         className: cn(
-            "wby-flex wby-px-sm wby-py-xs-plus wby-gap-sm-extra wby-items-center wby-text-md wby-rounded-sm wby-transition-colors group-focus:wby-bg-neutral-dimmed",
+            "flex px-sm py-xs-plus gap-sm-extra items-center text-md rounded-sm transition-colors group-focus:bg-neutral-dimmed",
             {
-                "[&_svg]:!wby-fill-neutral-disabled": disabled
+                "[&_svg]:fill-neutral-disabled!": disabled
             }
         )
     };

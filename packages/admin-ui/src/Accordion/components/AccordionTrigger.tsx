@@ -16,7 +16,7 @@ const OpenCloseIndicator = () => {
     return (
         <Icon
             size={"lg"}
-            className={"wby-transition"}
+            className={"transition"}
             color={"neutral-strong"}
             data-role={"open-close-indicator"}
             label={"Open/close indicator"}
@@ -49,14 +49,14 @@ const AccordionTrigger = ({
         };
     }, [interactive]);
 
-    const baseClasses = "wby-group/trigger wby-w-full wby-flex wby-items-center wby-relative";
+    const baseClasses = "group/trigger w-full flex items-center relative";
     const focusClasses =
-        "focus-visible:wby-outline-none focus-visible:wby-border-none focus-visible:wby-ring-sm focus-visible:wby-ring-primary-dimmed";
-    const hoverClasses = "hover:wby-bg-neutral-dimmed";
-    const variantClasses = "group-[.wby-accordion-variant-container]:wby-rounded-lg";
-    const stateClasses = "[&[data-state=open]_[data-role=open-close-indicator]]:wby-rotate-180";
-    const borderClasses = "wby-border-l-accent";
-    const cursorClass = interactive ? "wby-cursor-pointer" : "wby-cursor-default";
+        "focus-visible:outline-none focus-visible:border-none focus-visible:ring-sm focus-visible:ring-primary-dimmed";
+    const hoverClasses = "hover:bg-neutral-dimmed";
+    const variantClasses = "group-[.accordion-variant-container]:rounded-lg";
+    const stateClasses = "[&[data-state=open]_[data-role=open-close-indicator]]:rotate-180";
+    const borderClasses = "border-l-accent";
+    const cursorClass = interactive ? "cursor-pointer" : "cursor-default";
 
     return (
         <CollapsiblePrimitive.Trigger
@@ -76,23 +76,15 @@ const AccordionTrigger = ({
                 )}
             >
                 {draggable ? <AccordionItemDragHandle /> : null}
-                <div
-                    className={
-                        "wby-w-full wby-flex wby-justify-between wby-items-center wby-px-md wby-py-sm-extra"
-                    }
-                >
-                    {icon ? <div className={"wby-mr-md"}>{icon}</div> : null}
-                    <div
-                        className={"wby-flex wby-flex-col wby-gap-xxs wby-flex-grow wby-text-left"}
-                    >
-                        <div
-                            className={"wby-text-md wby-font-semibold webiny_accordion-item-title"}
-                        >
+                <div className={"w-full flex justify-between items-center px-md py-sm-extra"}>
+                    {icon ? <div className={"mr-md"}>{icon}</div> : null}
+                    <div className={"flex flex-col gap-xxs flex-grow text-left"}>
+                        <div className={"text-md font-semibold webiny_accordion-item-title"}>
                             {title}
                         </div>
-                        <div className={"wby-text-sm wby-text-neutral-strong"}>{description}</div>
+                        <div className={"text-sm text-neutral-strong"}>{description}</div>
                     </div>
-                    <div className={"wby-flex wby-gap-xs wby-items-center"}>
+                    <div className={"flex gap-xs items-center"}>
                         {actions}
                         {/* No need to show the separator if there are no actions and the item is not interactive. */}
                         {actions && interactive ? <AccordionItemAction.Separator /> : null}

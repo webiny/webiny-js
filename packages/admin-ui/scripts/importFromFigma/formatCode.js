@@ -1,5 +1,5 @@
-const fs = require("fs");
-const prettier = require("prettier");
+import fs from "fs";
+import prettier from "prettier";
 
 const formatCode = async filePath => {
     const options = await prettier.resolveConfig(filePath);
@@ -11,4 +11,4 @@ const formatCode = async filePath => {
     fs.writeFileSync(filePath, fileContentFormatted);
 };
 
-module.exports = { formatCode };
+export { formatCode };

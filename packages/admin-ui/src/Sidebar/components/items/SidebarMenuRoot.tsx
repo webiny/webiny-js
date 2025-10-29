@@ -7,11 +7,7 @@ interface SidebarMenuProps {
 
 const SidebarMenuRoot = (props: SidebarMenuProps) => (
     <SidebarMenuProvider>
-        <ul
-            data-sidebar="menu"
-            className={"wby-flex wby-w-full wby-min-w-0 wby-flex-col wby-gap-y-xs"}
-            {...props}
-        />
+        <ul data-sidebar="menu" className={"flex w-full min-w-0 flex-col gap-y-xs"} {...props} />
     </SidebarMenuProvider>
 );
 

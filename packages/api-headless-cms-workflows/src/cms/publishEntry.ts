@@ -28,12 +28,14 @@ export const attachPublishEntryLifecycleEvents = (params: IParams) => {
             return;
         }
         throw new WebinyError(
-            "Cannot publish entry because its workflow is not completed.",
-            "WORKFLOW_NOT_COMPLETED",
+            "Cannot publish entry because its workflow state is not completed.",
+            "WORKFLOW_STATE_NOT_COMPLETED",
             {
                 app,
                 entryId: entry.id,
-                workflowId: state.workflow?.id
+                state: {
+                    ...state
+                }
             }
         );
     });

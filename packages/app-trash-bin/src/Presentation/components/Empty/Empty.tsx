@@ -8,8 +8,8 @@ export const Empty = () => {
     const { vm } = useTrashBin();
 
     return (
-        <div className={"wby-flex wby-items-center wby-justify-center wby-w-full wby-h-full"}>
-            <div className={"wby-flex wby-items-center wby-flex-cols"}>
+        <div className={"flex items-center justify-center w-full h-full"}>
+            <div className={"flex items-center flex-cols"}>
                 {vm.isSearchView ? (
                     <EmptyView icon={<SearchIcon />} title={"No items found."} action={null} />
                 ) : (

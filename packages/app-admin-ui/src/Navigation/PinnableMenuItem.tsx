@@ -104,17 +104,17 @@ export const PinnableMenuItem = ({ name, children }: PinnableMenuItemProps) => {
     const { isPinned, pin, unpin } = usePinnedMenuItem(name);
 
     return (
-        <div className="wby-relative wby-group/pin">
+        <div className="relative group/pin">
             {children}
             <div
-                className={`group-hover/pin:wby-visible wby-absolute wby-right-sm wby-top-1/2 -wby-translate-y-1/2 wby-cursor-pointer wby-invisible`}
+                className={`group-hover/pin:visible absolute right-sm top-1/2 -translate-y-1/2 cursor-pointer invisible`}
             >
                 <Icon
                     size={"sm"}
                     label={isPinned ? "Unpin menu item" : "Pin menu item"}
                     onClick={isPinned ? unpin : pin}
                     icon={isPinned ? <UnPinIcon /> : <PinIcon />}
-                    className="wby-fill-neutral-strong hover:wby-fill-neutral-xstrong"
+                    className="fill-neutral-strong hover:fill-neutral-xstrong"
                 />
             </div>
         </div>

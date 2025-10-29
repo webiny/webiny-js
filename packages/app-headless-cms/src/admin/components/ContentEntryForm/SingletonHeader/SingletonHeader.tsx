@@ -9,15 +9,15 @@ export interface SingletonHeaderProps {
 
 export const SingletonHeader = ({ title }: SingletonHeaderProps) => {
     return (
-        <div className={"wby-p-md wby-pl-lg wby-border-b-sm wby-border-neutral-dimmed-darker"}>
+        <div className={"p-md pl-lg border-b-sm border-neutral-dimmed-darker"}>
             <Grid>
                 <Grid.Column span={9}>
-                    <Heading level={4} className={"wby-truncate"}>
+                    <Heading level={4} className={"truncate"}>
                         {title}
                     </Heading>
                 </Grid.Column>
                 <Grid.Column span={3}>
-                    <div className="wby-flex wby-items-center wby-justify-end">
+                    <div className="flex items-center justify-end">
                         <Buttons actions={[{ name: "save", element: <SaveAction /> }]} />
                     </div>
                 </Grid.Column>

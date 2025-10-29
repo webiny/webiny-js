@@ -117,7 +117,7 @@ export const Menus = React.memo(() => {
                 name={"support"}
                 element={
                     <DropdownMenu
-                        className={"wby-w-[225px]"}
+                        className={"w-[225px]"}
                         trigger={
                             <Menu.Item
                                 text={"Support"}

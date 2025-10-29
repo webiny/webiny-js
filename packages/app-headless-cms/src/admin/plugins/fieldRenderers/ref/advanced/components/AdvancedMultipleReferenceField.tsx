@@ -221,7 +221,7 @@ export const AdvancedMultipleReferenceField = (props: AdvancedMultipleReferenceF
 
     return (
         <>
-            <div className={"wby-flex wby-items-center wby-justify-between"}>
+            <div className={"flex items-center justify-between"}>
                 <FormComponentLabel text={field.label} invalid={invalid} />
                 <Text size={"sm"}>({message})</Text>
             </div>

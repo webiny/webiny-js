@@ -20,15 +20,15 @@ export const Header = (props: HeaderProps) => {
 
     return (
         <>
-            <div className={"wby-flex wby-flex-col wby-gap-md"}>
+            <div className={"flex flex-col gap-md"}>
                 <Title title={title} isRoot={isRoot} />
-                <div className={"wby-px-md wby-pb-sm"}>
-                    <div className={"wby-flex wby-items-center wby-gap-sm wby-w-full"}>
-                        <div className={"wby-flex-1"}>
+                <div className={"px-md pb-sm"}>
+                    <div className={"flex items-center gap-sm w-full"}>
+                        <div className={"flex-1"}>
                             <Search />
                         </div>
                         <div>
-                            <div className={"wby-flex wby-gap-sm"}>
+                            <div className={"flex gap-sm"}>
                                 <ButtonFilters />
                                 <ButtonsCreate
                                     canCreateFolder={canCreateFolder}

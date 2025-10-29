@@ -81,12 +81,12 @@ export const RemoveFieldButton = ({ trailingIcon }: RemoveFieldButtonProps) => {
     }
     return (
         <Grid.Column span={1}>
-            <div className={"wby-flex wby-items-end wby-justify-center wby-h-full"}>
+            <div className={"flex items-end justify-center h-full"}>
                 <IconButton
                     variant={"ghost"}
                     onClick={trailingIcon.onClick}
                     icon={trailingIcon.icon}
-                    className={"wby-mb-xs-plus"}
+                    className={"mb-xs-plus"}
                 />
             </div>
         </Grid.Column>

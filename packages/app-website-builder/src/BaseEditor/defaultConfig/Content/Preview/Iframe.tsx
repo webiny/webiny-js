@@ -28,7 +28,7 @@ export const Iframe = observer(({ url, timestamp, ...props }: IframeProps) => {
     return (
         <div
             key={iframeUrl}
-            className={"wby-relative wby-flex wby-flex-col wby-items-center"}
+            className={"relative flex flex-col items-center"}
             data-role={"responsive-container"}
         >
             <ConnectEditorToPreview iframeRef={iframeRef} onConnected={props.onConnected} />
@@ -37,19 +37,19 @@ export const Iframe = observer(({ url, timestamp, ...props }: IframeProps) => {
                     size="lg"
                     variant="accent"
                     text="Loading preview..."
-                    className={"wby-bg-neutral-base"}
+                    className={"bg-neutral-base"}
                 />
             ) : null}
             {/* Height = viewport height - top bar - address bar - breadcrumbs. */}
             <div
-                className="wby-min-h-[calc(100vh-43px-50px-31px)] wby-max-h-[calc(100vh-43px-50px)] wby-box-border  wby-overflow-hidden"
+                className="min-h-[calc(100vh-43px-50px-31px)] max-h-[calc(100vh-43px-50px)] box-border  overflow-hidden"
                 style={{ width: previewWidth }}
             >
                 <ElementOverlays />
                 <iframe
                     id={"preview-iframe"}
                     className={
-                        "wby-w-full wby-bg-white wby-border-none wby-overflow-scroll wby-min-h-[inherit] wby-pointer-events-none"
+                        "w-full bg-white border-none overflow-scroll min-h-[inherit] pointer-events-none"
                     }
                     src={iframeUrl}
                     ref={iframeRef}

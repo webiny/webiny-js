@@ -30,10 +30,10 @@ const ContentModelList = ({ items, label, disabled, value, onChange }: ContentMo
 
     return (
         <>
-            <Text className={"wby-font-semibold"}>{label}</Text>
+            <Text className={"font-semibold"}>{label}</Text>
             {list.map(([key, items]) => {
                 return (
-                    <div key={key} className={"wby-ml-md wby-mt-sm"}>
+                    <div key={key} className={"ml-md mt-sm"}>
                         <CheckboxGroup
                             label={key}
                             value={value}

@@ -61,7 +61,7 @@ export const RevisionsMenu = () => {
             {revisions.map(revision => (
                 <Item
                     key={revision.id}
-                    className={"wby-cursor-pointer"}
+                    className={"cursor-pointer"}
                     onClick={() => goToRevision(revision.id)}
                     disabled={revision.locked}
                     icon={

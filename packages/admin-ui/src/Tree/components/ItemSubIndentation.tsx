@@ -8,14 +8,14 @@ interface ItemSubIndentationProps extends Omit<React.HTMLAttributes<HTMLDivEleme
 
 const BaseItemSubIndentation = ({ level }: ItemSubIndentationProps) => {
     return (
-        <div className={"wby-gap-x-xs wby-flex wby-mr-sm"}>
+        <div className={"gap-x-xs flex mr-sm"}>
             {Array.from({ length: level }, (_, index) => (
-                <div className={"wby-ml-md"} key={`sub-indentation-${level + index}`}>
+                <div className={"ml-md"} key={`sub-indentation-${level + index}`}>
                     <Separator
                         orientation={"vertical"}
                         margin={"none"}
                         variant={"strong"}
-                        className={"wby-h-xl wby-ml-px"}
+                        className={"h-xl ml-px"}
                     />
                 </div>
             ))}

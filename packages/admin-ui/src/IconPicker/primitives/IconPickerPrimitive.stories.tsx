@@ -13,9 +13,9 @@ const meta: Meta<typeof IconPickerPrimitive> = {
     render: args => {
         const [value, setValue] = useState(args.value);
         return (
-            <div className={"wby-w-full"}>
+            <div className={"w-full"}>
                 <IconPickerPrimitive {...args} value={value} onChange={setValue} />
-                <div className={"wby-mt-4 wby-text-center"}>
+                <div className={"mt-4 text-center"}>
                     Current selected value: <pre>{value}</pre>
                 </div>
             </div>

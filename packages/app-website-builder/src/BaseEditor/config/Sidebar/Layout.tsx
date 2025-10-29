@@ -1,17 +1,11 @@
 import React from "react";
-import styled from "@emotion/styled";
 import { makeDecoratable } from "@webiny/app-admin";
 import { Tabs } from "@webiny/admin-ui";
 import { Sidebar } from "./Sidebar.js";
 
-const SidebarContainer = styled.div`
-    background-color: #ffffff;
-    border-left: 1px solid var(--mdc-theme-on-background);
-`;
-
 export const Layout = makeDecoratable("SidebarLayout", () => {
     return (
-        <SidebarContainer>
+        <div className={"bg-neutral-base border-l-sm border-l-neutral-dimmed"}>
             <Tabs
                 size="md"
                 spacing={"md"}
@@ -19,6 +13,6 @@ export const Layout = makeDecoratable("SidebarLayout", () => {
                 defaultValue={"element"}
                 tabs={[<Sidebar.Elements group="groups" key={"groups"} />]}
             />
-        </SidebarContainer>
+        </div>
     );
 });

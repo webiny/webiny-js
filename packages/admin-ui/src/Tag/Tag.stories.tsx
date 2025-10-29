@@ -232,7 +232,7 @@ export const FullExample: Story = {
     args: WithOnDismissCallback.args,
     render: args => {
         return (
-            <div className={"wby-flex wby-gap-sm"}>
+            <div className={"flex gap-sm"}>
                 <Tag {...args} content={"Neutral base"} variant={"neutral-base"} />
                 <Tag {...args} content={"Neutral base outline"} variant={"neutral-base-outline"} />
                 <Tag {...args} content={"Neutral light"} variant={"neutral-light"} />

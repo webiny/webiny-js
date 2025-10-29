@@ -51,12 +51,12 @@ export const ModelIsBeingDeleted = ({
     return (
         <div
             style={{ width: "150px" }}
-            className={"wby-text-right"}
+            className={"text-right"}
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
         >
             {!over && (
-                <Text size={"sm"} as={"div"} className={"wby-text-destructive-primary"}>
+                <Text size={"sm"} as={"div"} className={"text-destructive-primary"}>
                     {message}
                 </Text>
             )}

@@ -10,7 +10,7 @@ const CommandBase = ({
     ...props
 }: React.ComponentPropsWithoutRef<typeof CommandPrimitive>) => (
     <CommandPrimitive
-        className={cn("wby-flex wby-h-full wby-w-full wby-flex-col wby-outline-none", className)}
+        className={cn("flex h-full w-full flex-col outline-none", className)}
         {...props}
     />
 );

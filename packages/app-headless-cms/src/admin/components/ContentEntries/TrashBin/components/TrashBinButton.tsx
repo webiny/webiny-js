@@ -8,7 +8,7 @@ export interface TrashBinButtonProps {
 
 export const TrashBinButton = (props: TrashBinButtonProps) => {
     return (
-        <div className={"wby-list-none"}>
+        <div className={"list-none"}>
             <Sidebar.Item
                 onClick={props.onClick}
                 text={"Trash"}

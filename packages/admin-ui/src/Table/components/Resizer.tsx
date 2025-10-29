@@ -3,14 +3,14 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 
 const resizerVariants = cva(
     [
-        "wby-absolute wby-right-0 wby-top-0 wby-w-md wby-h-full wby-border-r-md wby-border-r-accent-default wby-cursor-col-resize wby-select-none wby-touch-none",
-        "wby-opacity-0 wby-bg-transparent",
-        "hover:wby-opacity-100"
+        "absolute right-0 top-0 w-md h-full border-r-md border-r-accent-default cursor-col-resize select-none touch-none",
+        "opacity-0 bg-transparent",
+        "hover:opacity-100"
     ],
     {
         variants: {
             isResizing: {
-                true: "wby-opacity-100"
+                true: "opacity-100"
             }
         }
     }

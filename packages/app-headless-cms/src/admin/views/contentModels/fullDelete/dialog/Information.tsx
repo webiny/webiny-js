@@ -9,7 +9,7 @@ export interface IInformationProps {
 export const Information = (props: IInformationProps) => {
     const { model } = props;
     return (
-        <ul className={"wby-list-disc wby-ml-md"}>
+        <ul className={"list-disc ml-md"}>
             {model.plugin ? (
                 <>
                     <li>
@@ -24,9 +24,7 @@ export const Information = (props: IInformationProps) => {
             <li>References to this model in other parts of the system will be emptied.</li>
             <li>All relevant lifecycle events will be triggered.</li>
             <li>
-                <Text className={`wby-text-destructive-primary`}>
-                    This action cannot be undone!
-                </Text>
+                <Text className={`text-destructive-primary`}>This action cannot be undone!</Text>
             </li>
         </ul>
     );

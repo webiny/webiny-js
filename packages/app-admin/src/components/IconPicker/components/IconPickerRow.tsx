@@ -5,7 +5,7 @@ type IconPickerRowProps = React.ButtonHTMLAttributes<HTMLDivElement>;
 
 const IconPickerRow = ({ children, className, ...props }: IconPickerRowProps) => {
     return (
-        <div {...props} className={cn("wby-flex wby-items-center wby-gap-sm", className)}>
+        <div {...props} className={cn("flex items-center gap-sm", className)}>
             {children}
         </div>
     );

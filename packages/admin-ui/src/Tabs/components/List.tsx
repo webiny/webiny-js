@@ -2,24 +2,24 @@ import * as React from "react";
 import { Tabs as TabsPrimitive } from "radix-ui";
 import { cn, cva, type VariantProps } from "~/utils.js";
 
-const tabListVariants = cva("wby-w-full wby-inline-flex wby-items-center wby-justify-start", {
+const tabListVariants = cva("w-full inline-flex items-center justify-start", {
     variants: {
         size: {
-            sm: "wby-gap-sm",
-            md: "wby-gap-sm",
-            lg: "wby-gap-sm-extra",
-            xl: "wby-gap-md"
+            sm: "gap-sm",
+            md: "gap-sm",
+            lg: "gap-sm-extra",
+            xl: "gap-md"
         },
         spacing: {
-            xs: "wby-px-xs",
-            sm: "wby-px-sm",
-            md: "wby-px-md",
-            lg: "wby-px-lg",
-            xl: "wby-px-xl",
-            xxl: "wby-px-xxl"
+            xs: "px-xs",
+            sm: "px-sm",
+            md: "px-md",
+            lg: "px-lg",
+            xl: "px-xl",
+            xxl: "px-xxl"
         },
         separator: {
-            true: "wby-border-solid wby-border-b-sm wby-border-neutral-dimmed"
+            true: "border-solid border-b-sm border-neutral-dimmed"
         }
     },
     defaultVariants: {

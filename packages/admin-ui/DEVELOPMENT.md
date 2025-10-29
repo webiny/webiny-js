@@ -2,7 +2,14 @@
 This document covers different aspects of the development process for the `@webiny/admin-ui` package.
 
 ## Tailwind CSS
-Webiny's Admin app uses Tailwind CSS for styling.
+Webiny's Admin app uses Tailwind CSS v4 for styling.
+
+### Tailwind v4 Migration
+As of this version, the admin-ui package has been upgraded to Tailwind CSS v4. Key changes include:
+- The `@tailwind` directives have been replaced with `@import "tailwindcss/theme" layer(theme)` and `@import "tailwindcss/utilities" layer(utilities)`
+- The `tailwindcss-animate` plugin has been removed as animations are now built into Tailwind v4
+- SCSS syntax has been converted to pure CSS (theme.scss → theme.css)
+- PostCSS configuration no longer requires passing the config object to the plugin
 
 ### Tailwind Configuration
 Tailwind CSS is configured as usual, via the [`tailwind.config.js`](./tailwind.config.js) file. Among other things, this file defines the default Webiny theme, which is based on Webiny's design system. More on this in the next section.
@@ -28,4 +35,4 @@ Finally, from project root, we run the following script:
 yarn webiny-admin-import-from-figma
 ```
 
-First, the script will regenerate the `tailwind.config.theme.js` file, which will contain all the necessary Tailwind CSS configuration. Second, it will also regenerate the `src/styles.scss` file, which contains actual values for CSS variables that are referenced in the `tailwind.config.theme.js` file.
+First, the script will regenerate the `tailwind.config.theme.js` file, which will contain all the necessary Tailwind CSS configuration. Second, it will also regenerate the `src/theme.css` file, which contains actual values for CSS variables that are referenced in the `tailwind.config.theme.js` file.

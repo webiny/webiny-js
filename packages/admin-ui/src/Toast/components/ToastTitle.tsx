@@ -10,7 +10,7 @@ const DecoratableToastTitle = ({ text, className, ...props }: ToastTitleProps) =
     <div
         {...props}
         className={cn(
-            "group-[.wby-default-variant]:wby-text-neutral-light group-[.wby-subtle-variant]:wby-text-neutral-primary wby-font-normal group-[.wby-has-description]:wby-font-semibold",
+            "group-[.default-variant]:text-neutral-light group-[.subtle-variant]:text-neutral-primary font-normal group-[.has-description]:font-semibold",
             className
         )}
     >

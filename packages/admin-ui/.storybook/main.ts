@@ -1,7 +1,6 @@
 import type { StorybookConfig } from "@storybook/react-webpack5";
 import path from "path";
-import tailwindcss from "tailwindcss";
-import tailwindConfig from "../tailwind.config.js";
+import tailwindcss from "@tailwindcss/postcss";
 
 /**
  * This function is used to resolve the absolute path of a package.
@@ -50,7 +49,39 @@ const config: StorybookConfig = {
             ...config.resolve.extensionAlias
         };
 
-        // Add custom style handling
+        // Remove existing CSS rules to avoid conflicts
+        config.module = config.module || {};
+        config.module.rules = config.module.rules || [];
+        config.module.rules = config.module.rules.filter(rule => {
+            const test = (rule as { test?: RegExp }).test;
+            return !(test && test.toString().includes("css"));
+        });
+
+        // Add custom style handling for CSS (including Tailwind)
+        config.module.rules.push({
+            test: /\.css$/i,
+            use: [
+                "style-loader",
+                {
+                    loader: "css-loader",
+                    options: {
+                        importLoaders: 1,
+                        url: false,
+                        import: false
+                    }
+                },
+                {
+                    loader: "postcss-loader",
+                    options: {
+                        postcssOptions: {
+                            plugins: [tailwindcss]
+                        }
+                    }
+                }
+            ]
+        });
+
+        // Keep SCSS support for other files
         config.module?.rules?.push({
             test: /\.s[ac]ss$/i,
             use: [
@@ -65,7 +96,7 @@ const config: StorybookConfig = {
                     loader: "postcss-loader",
                     options: {
                         postcssOptions: {
-                            plugins: [tailwindcss(tailwindConfig)]
+                            plugins: [tailwindcss]
                         }
                     }
                 },

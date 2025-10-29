@@ -5,22 +5,22 @@ import { Icon } from "~/Icon/index.js";
 
 const tabTriggerVariants = cva(
     [
-        "wby-group wby-inline-flex wby-items-center wby-justify-center wby-whitespace-nowrap wby-outline-none wby-transition-all",
-        "wby-text-neutral-strong hover:text-neutral-primary",
-        "wby-border-b-md wby-border-transparent wby-border-solid",
-        "data-[state=active]:wby-border-accent-default data-[state=active]:wby-text-neutral-primary",
-        "disabled:wby-pointer-events-none disabled:!wby-text-neutral-disabled disabled:!wby-fill-neutral-disabled disabled:!wby-border-transparent"
+        "group inline-flex items-center justify-center whitespace-nowrap outline-none transition-all",
+        "text-neutral-strong hover:text-neutral-primary",
+        "border-b-md border-transparent border-solid",
+        "data-[state=active]:border-accent-default data-[state=active]:text-neutral-primary",
+        "disabled:pointer-events-none disabled:text-neutral-disabled! disabled:fill-neutral-disabled! disabled:border-transparent!"
     ],
     {
         variants: {
             size: {
-                sm: "wby-text-sm wby-h-[40px]",
-                md: "wby-text-md wby-h-[48px]",
-                lg: "wby-text-lg wby-h-[56px]",
-                xl: "wby-text-xl wby-h-[64px]"
+                sm: "text-sm h-[40px]",
+                md: "text-md h-xxl",
+                lg: "text-lg h-[56px]",
+                xl: "text-xl h-3xl"
             },
             visible: {
-                false: "wby-hidden"
+                false: "hidden"
             }
         },
         defaultVariants: {
@@ -31,17 +31,17 @@ const tabTriggerVariants = cva(
 
 const innerTabTriggerVariants = cva(
     [
-        "wby-inline-flex wby-items-center wby-justify-start wby-gap-xs",
-        "group-hover:wby-bg-neutral-dimmed",
-        "group-focus-visible:wby-ring-lg group-focus-visible:wby-ring-primary-dimmed"
+        "inline-flex items-center justify-start gap-xs",
+        "group-hover:bg-neutral-dimmed",
+        "group-focus-visible:ring-lg group-focus-visible:ring-primary-dimmed"
     ],
     {
         variants: {
             size: {
-                sm: "wby-rounded-sm wby-p-xs",
-                md: "wby-rounded-sm wby-px-xs wby-py-xs-plus",
-                lg: "wby-rounded-sm wby-px-xs-plus wby-py-sm-plus",
-                xl: "wby-rounded-lg wby-px-sm wby-py-sm-plus"
+                sm: "rounded-sm p-xs",
+                md: "rounded-sm px-xs py-xs-plus",
+                lg: "rounded-sm px-xs-plus py-sm-plus",
+                xl: "rounded-lg px-sm py-sm-plus"
             }
         },
         defaultVariants: {

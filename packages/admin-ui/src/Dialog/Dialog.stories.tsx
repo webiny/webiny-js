@@ -171,9 +171,9 @@ export const DropdownMenuInDialog: Story = {
         children: (
             <>
                 <DropdownMenu trigger={<Button variant="primary" text={"Open"} />}>
-                    <DropdownMenu.Item content={"Billing"} />
-                    <DropdownMenu.Item content={"Settings"} />
-                    <DropdownMenu.Item content={"Keyboard shortcuts"} />
+                    <DropdownMenu.Item text={"Billing"} />
+                    <DropdownMenu.Item text={"Settings"} />
+                    <DropdownMenu.Item text={"Keyboard shortcuts"} />
                 </DropdownMenu>
             </>
         )
@@ -253,6 +253,7 @@ export const WithTabs: Story = {
         children: (
             <>
                 <Tabs
+                    separator={true}
                     spacing={"lg"}
                     tabs={[
                         <Tabs.Tab

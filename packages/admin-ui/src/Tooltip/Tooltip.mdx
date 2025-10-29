@@ -226,7 +226,7 @@ import { Tooltip } from "@webiny/admin-ui";
 const PositioningExample = () => {
     return (
         <Tooltip.Provider>
-            <div className="wby-flex wby-justify-center wby-items-center wby-h-48">
+            <div className="flex justify-center items-center h-48">
                 <Tooltip
                     trigger={<p>&nbsp;&nbsp;Top&nbsp;&nbsp;</p>}
                     content={<div>Tooltip on top</div>}
@@ -266,7 +266,7 @@ import { Tooltip } from "@webiny/admin-ui";
 const AlignmentExample = () => {
     return (
         <Tooltip.Provider>
-            <div className="wby-flex wby-justify-center wby-items-center wby-h-48">
+            <div className="flex justify-center items-center h-48">
                 <Tooltip
                     trigger={<p>&nbsp;&nbsp;Start&nbsp;&nbsp;</p>}
                     content={<div>Aligned to start</div>}
@@ -326,8 +326,8 @@ const WithFormattedContentExample = () => {
             <Tooltip
                 trigger={<p>Hover for more info</p>}
                 content={
-                    <div className="wby-flex wby-flex-col wby-gap-xs">
-                        <Text size="sm" className="wby-font-bold">Important Information</Text>
+                    <div className="flex flex-col gap-xs">
+                        <Text size="sm" className="font-bold">Important Information</Text>
                         <Text size="sm">This tooltip contains formatted content with multiple paragraphs.</Text>
                         <Text size="sm">You can include various elements inside tooltips.</Text>
                     </div>

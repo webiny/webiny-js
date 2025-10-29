@@ -7,7 +7,7 @@ export const ExpandEditorAction = () => {
     return (
         <button
             onClick={() => setExpanded(expanded => !expanded)}
-            className={"popup-item wby-absolute wby-right-0 wby-z-1"}
+            className={"popup-item absolute right-0 z-1"}
             aria-label="Expand editor"
         >
             <i className="format expand" />

@@ -1,5 +1,5 @@
-const primitiveTokensExport = require("./exports/Primitives.json");
-const { figmaRgbaToHsla } = require("./figmaRgbaToHsla");
+import primitiveTokensExport from "./exports/Primitives.json" with { type: "json" };
+import { figmaRgbaToHsla } from "./figmaRgbaToHsla.js";
 
 const INCLUDED_VARIABLE_TYPES = ["colors"];
 
@@ -61,4 +61,4 @@ const normalizePrimitivesFigmaExport = () => {
         });
 };
 
-module.exports = { normalizePrimitivesFigmaExport };
+export { normalizePrimitivesFigmaExport };

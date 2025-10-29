@@ -215,7 +215,7 @@ export const GroupsForm = ({ id, newEntry }: GroupsFormProps) => {
                             </Grid>
                         </SimpleFormContent>
                         <SimpleFormHeader title={"Permissions"} rounded={false}>
-                            <div className={"wby-flex wby-justify-end"}>
+                            <div className={"flex justify-end"}>
                                 <Tooltip
                                     content="Copy permissions as JSON"
                                     trigger={

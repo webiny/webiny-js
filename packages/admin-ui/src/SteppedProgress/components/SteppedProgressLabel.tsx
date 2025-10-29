@@ -20,8 +20,8 @@ const SteppedProgressLabel = ({
         <Text
             {...props}
             className={cn(
-                state === ProgressItemState.IN_PROGRESS ? "wby-font-semibold" : "wby-font-regular",
-                disabled ? "wby-text-neutral-disabled" : "wby-text-neutral-primary",
+                state === ProgressItemState.IN_PROGRESS ? "font-semibold" : "font-regular",
+                disabled ? "text-neutral-disabled" : "text-neutral-primary",
                 className
             )}
         >

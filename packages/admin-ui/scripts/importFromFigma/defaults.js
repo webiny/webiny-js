@@ -5,4 +5,4 @@ const DEFAULTS = {
     }
 };
 
-module.exports = { DEFAULTS };
+export { DEFAULTS };
