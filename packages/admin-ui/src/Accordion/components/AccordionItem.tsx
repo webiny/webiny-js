@@ -18,9 +18,9 @@ interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {
 }
 
 const ACCORDION_ITEM_CLASSES = [
-    "wby-group-item data-[state=open]:wby-rounded-bl-lg data-[state=open]:wby-rounded-br-lg",
-    "group-[.wby-accordion-variant-container]/accordion:wby-rounded-lg",
-    "data-[disabled]:wby-pointer-events-none data-[disabled]:wby-opacity-50"
+    "group-item data-[state=open]:rounded-bl-lg data-[state=open]:rounded-br-lg",
+    "group-[.accordion-variant-container]/accordion:rounded-lg",
+    "data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
 ] as const;
 
 const splitAccordionProps = (props: AccordionItemProps) => {
