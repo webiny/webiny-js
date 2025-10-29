@@ -1,11 +1,11 @@
 import React from "react";
 import { Accordion } from "@webiny/admin-ui";
 import { WorkflowStateRow } from "./WorkflowStateRow.js";
-import type { IWorkflowStatesWidgetItem } from "~/types.js";
+import type { IWorkflowState } from "~/types.js";
 import { observer } from "mobx-react-lite";
 
 interface IWorkflowStateListProps {
-    states: IWorkflowStatesWidgetItem[];
+    states: IWorkflowState[];
 }
 
 export const WorkflowStateList = observer((props: IWorkflowStateListProps) => {

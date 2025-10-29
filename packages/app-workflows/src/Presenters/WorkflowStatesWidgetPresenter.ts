@@ -3,7 +3,7 @@ import type {
     IWorkflowStatesWidgetPresenter,
     IWorkflowStatesWidgetPresenterViewModel
 } from "./abstractions/WorkflowStatesWidgetPresenter.js";
-import { type IWorkflowStatesWidgetItem, WorkflowStateValue } from "~/types.js";
+import { type IWorkflowState, WorkflowStateValue } from "~/types.js";
 import { type IObservableArray, makeAutoObservable, observable, runInAction, toJS } from "mobx";
 
 export interface IWorkflowStatesWidgetPresenterParams {
@@ -12,11 +12,11 @@ export interface IWorkflowStatesWidgetPresenterParams {
 }
 
 interface IWorkflowStatesWidgetPresenterItems {
-    inReview: IWorkflowStatesWidgetItem[];
+    inReview: IWorkflowState[];
     inReviewTotalCount: number;
-    approved: IWorkflowStatesWidgetItem[];
+    approved: IWorkflowState[];
     approvedTotalCount: number;
-    rejected: IWorkflowStatesWidgetItem[];
+    rejected: IWorkflowState[];
     rejectedTotalCount: number;
 }
 
@@ -24,11 +24,11 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
     readonly #repository;
     readonly #type: "own" | "requested";
 
-    #inReview: IObservableArray<IWorkflowStatesWidgetItem>;
+    #inReview: IObservableArray<IWorkflowState>;
     #inReviewTotalCount: number = 0;
-    #approved: IObservableArray<IWorkflowStatesWidgetItem>;
+    #approved: IObservableArray<IWorkflowState>;
     #approvedTotalCount: number = 0;
-    #rejected: IObservableArray<IWorkflowStatesWidgetItem>;
+    #rejected: IObservableArray<IWorkflowState>;
     #rejectedTotalCount: number = 0;
 
     public get vm(): IWorkflowStatesWidgetPresenterViewModel {
@@ -48,9 +48,9 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         this.#repository = params.repository;
         this.#type = params.type;
 
-        this.#inReview = observable.array<IWorkflowStatesWidgetItem>([]);
-        this.#approved = observable.array<IWorkflowStatesWidgetItem>([]);
-        this.#rejected = observable.array<IWorkflowStatesWidgetItem>([]);
+        this.#inReview = observable.array<IWorkflowState>([]);
+        this.#approved = observable.array<IWorkflowState>([]);
+        this.#rejected = observable.array<IWorkflowState>([]);
 
         makeAutoObservable(this);
 

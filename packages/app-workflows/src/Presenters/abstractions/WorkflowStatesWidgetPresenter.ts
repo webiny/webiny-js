@@ -1,13 +1,13 @@
-import type { IGenericError, IWorkflowStatesWidgetItem } from "~/types.js";
+import type { IGenericError, IWorkflowState } from "~/types.js";
 
 export interface IWorkflowStatesWidgetPresenterViewModel {
     loading: boolean;
     error: IGenericError | null;
-    inReview: IWorkflowStatesWidgetItem[];
+    inReview: IWorkflowState[];
     inReviewTotalCount: number;
-    approved: IWorkflowStatesWidgetItem[];
+    approved: IWorkflowState[];
     approvedTotalCount: number;
-    rejected: IWorkflowStatesWidgetItem[];
+    rejected: IWorkflowState[];
     rejectedTotalCount: number;
 }
 

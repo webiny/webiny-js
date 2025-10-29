@@ -1,14 +1,14 @@
 import React from "react";
-import type { IWorkflowStatesWidgetItem } from "~/types.js";
+import { type IWorkflowState, WorkflowStateValue } from "~/types.js";
 import { DropdownMenu, Icon } from "@webiny/admin-ui";
 import { ReactComponent as ApproveIcon } from "@webiny/icons/check.svg";
 
 interface IWorkflowStateRowOptionsApproveProps {
-    state: IWorkflowStatesWidgetItem;
+    state: IWorkflowState;
 }
 
 export const WorkflowStateRowOptionsApprove = ({ state }: IWorkflowStateRowOptionsApproveProps) => {
-    if (state.state !== "inReview" || !state.step.isAllowedToReview) {
+    if (state.state !== WorkflowStateValue.inReview || !state.currentStep.isAllowedToReview) {
         return null;
     }
     return (

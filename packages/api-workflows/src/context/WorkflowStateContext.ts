@@ -1,11 +1,7 @@
 import type { Context } from "~/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { IWorkflowStateTransformer } from "~/context/transformer/abstractions/WorkflowStateTransformer.js";
-import type {
-    IWorkflowState,
-    IWorkflowStateModel,
-    IWorkflowStateRecord
-} from "./abstractions/WorkflowState.js";
+import type { IWorkflowStateModel, IWorkflowStateRecord } from "./abstractions/WorkflowState.js";
 import { WorkflowStateRecordState } from "./abstractions/WorkflowState.js";
 import { WorkflowState } from "./workflowState/WorkflowState.js";
 import type {
@@ -85,7 +81,10 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         });
     }
 
-    public async getTargetState(app: string, targetRevisionId: string): Promise<IWorkflowStateModel> {
+    public async getTargetState(
+        app: string,
+        targetRevisionId: string
+    ): Promise<IWorkflowStateModel> {
         const { version } = parseIdentifier(targetRevisionId);
         if (!version) {
             throw new WebinyError(
@@ -509,7 +508,9 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         };
     }
 
-    private async createWorkflowState(params: ICreateWorkflowStateParams): Promise<IWorkflowStateModel> {
+    private async createWorkflowState(
+        params: ICreateWorkflowStateParams
+    ): Promise<IWorkflowStateModel> {
         const id = this.context.security.getIdentity().id;
         return new WorkflowState({
             context: this.context,
