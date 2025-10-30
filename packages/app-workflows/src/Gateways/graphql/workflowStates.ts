@@ -97,6 +97,30 @@ export const CREATE_WORKFLOW_STATE_MUTATION = gql`
     }
 `;
 
+export interface IStartWorkflowStateStepVariables {
+    id: string;
+}
+
+export interface IStartWorkflowStateStepResponse {
+    workflows: {
+        startWorkflowStateStep: {
+            data: IWorkflowState | null;
+            error: IWorkflowStateError | null;
+        };
+    };
+}
+
+export const START_WORKFLOW_STATE_STEP_MUTATION = gql`
+    mutation StartWorkflowStateStep($id: ID!) {
+        workflows {
+            startWorkflowStateStep(id: $id) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export interface IApproveWorkflowStateStepVariables {
     id: string;
     comment?: string;

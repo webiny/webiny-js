@@ -119,7 +119,9 @@ export class WorkflowState implements IWorkflowStateModel {
         if (pending) {
             return pending;
         }
-        const approved = steps.toReversed().find(step => step.state === WorkflowStateRecordState.approved);
+        const approved = steps
+            .toReversed()
+            .find(step => step.state === WorkflowStateRecordState.approved);
         if (approved) {
             return approved;
         }
@@ -127,9 +129,9 @@ export class WorkflowState implements IWorkflowStateModel {
             message: `Cannot determine the current step of the workflow state.`,
             code: "WORKFLOW_STATE_NO_CURRENT_STEP",
             data: {
-                steps,
+                steps
             }
-        })
+        });
     }
 
     public get nextStep(): IWorkflowStateRecordStepWithPermissions | null {

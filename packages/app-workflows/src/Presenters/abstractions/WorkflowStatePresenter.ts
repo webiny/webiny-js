@@ -24,6 +24,7 @@ export interface IWorkflowStatePresenterViewModel {
 export interface IWorkflowStatePresenter {
     vm: IWorkflowStatePresenterViewModel;
     requestReview(): void;
+    start(): void;
     approve(comment?: string): void;
     reject(comment: string): void;
     cancel(): void;
