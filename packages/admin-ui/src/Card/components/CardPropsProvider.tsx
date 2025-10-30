@@ -1,15 +1,16 @@
-import React, { createContext, useContext, ReactNode } from "react";
+import React, { createContext, useContext } from "react";
 import { type CardProps } from "../Card.js";
 
-type CardContextValue = Omit<CardProps, "children">;
+type CardContextValue = CardProps;
 
 const CardContext = createContext<CardContextValue | undefined>(undefined);
 
 interface CardProviderProps extends CardContextValue {
-    children: ReactNode;
+    props: CardProps;
+    children: React.ReactNode;
 }
 
-export const CardProvider = ({ children, ...props }: CardProviderProps) => {
+export const CardPropsProvider = ({ props, children }: CardProviderProps) => {
     return <CardContext.Provider value={props}>{children}</CardContext.Provider>;
 };
 

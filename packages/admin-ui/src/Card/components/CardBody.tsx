@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "~/utils.js";
 import { cva } from "~/utils.js";
-import type { CardProps } from "~/Card/index.js";
+import { useCardProps } from "./CardPropsProvider.js";
 
 const cardBodyVariants = cva("flex-1", {
     variants: {
@@ -16,9 +16,8 @@ const cardBodyVariants = cva("flex-1", {
     }
 });
 
-export type CardBodyProps = Pick<CardProps, "children" | "padding">;
-
-export const CardBody = ({ padding, children }: CardBodyProps) => {
+export const CardBody = () => {
+    const { padding, children } = useCardProps();
     return (
         <div data-card="body" className={cn(cardBodyVariants({ padding }))}>
             {children}

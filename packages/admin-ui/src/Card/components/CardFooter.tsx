@@ -1,7 +1,6 @@
 import * as React from "react";
 import { cn, cva } from "~/utils.js";
-import { useCardProps } from "./CardProvider.js";
-import type { CardProps } from "~/Card/index.js";
+import { useCardProps } from "./CardPropsProvider.js";
 
 const cardFooterVariants = cva("flex justify-between", {
     variants: {
@@ -16,18 +15,15 @@ const cardFooterVariants = cva("flex justify-between", {
     }
 });
 
-export type CardFooterProps = React.HTMLAttributes<HTMLDivElement> &
-    Pick<CardProps, "padding" | "info" | "actions" | "actionsPosition">;
-
-export const CardFooter = ({ actions, info, className, padding, ...props }: CardFooterProps) => {
-    const { actionsPosition } = useCardProps();
+export const CardFooter = () => {
+    const { actionsPosition, actions, info, className, padding } = useCardProps();
 
     if (!actions && !info) {
         return null;
     }
 
     return (
-        <div {...props} className={cn(cardFooterVariants({ padding }), className)}>
+        <div className={cn(cardFooterVariants({ padding }), className)}>
             {info && (
                 <div className={"text-sm flex items-center"}>
                     <div>{info}</div>
