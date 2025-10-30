@@ -123,6 +123,15 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         });
     };
 
+    start = async () => {
+        const item = await this.repository.start({
+            id: this.state!.id
+        });
+        runInAction(() => {
+            this.state = item ? WorkflowStateModel.create(item) : null;
+        });
+    };
+
     approve = async (comment?: string) => {
         const item = await this.repository.approve({
             id: this.state!.id,

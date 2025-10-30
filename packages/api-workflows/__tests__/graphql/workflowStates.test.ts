@@ -413,8 +413,7 @@ describe("workflow states graphql", () => {
         });
 
         const workflowState = response.data?.workflows?.createWorkflowState?.data;
-        
-        
+
         const reviewerHandler = createGraphQLHandler({
             identity: reviewerIdentity
         });

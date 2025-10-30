@@ -127,11 +127,8 @@ describe("Workflow State Context", () => {
     });
 
     it("should approve a step and move to the next one", async () => {
-        const {
-            workflowStateContext: creatorWorkflowStateContext,
-            workflowsContext,
-            context
-        } = await createContext();
+        const { workflowStateContext: creatorWorkflowStateContext, workflowsContext } =
+            await createContext();
         const app = "testingApp";
         const targetId = "record-id#0001";
         const mockWorkflow = createMockWorkflow({

@@ -10,6 +10,7 @@ import { WorkflowStateBarApproved } from "./Bars/WorkflowStateBarApproved.js";
 import { WorkflowStateBarRejected } from "./Bars/WorkflowStateBarRejected.js";
 import { WorkflowStateBarWorkflow } from "./Bars/WorkflowStateBarWorkflow.js";
 import { WorkflowStateBarComponent } from "./WorkflowStateBarComponent.js";
+import { WorkflowStateBarStartReview } from "./Bars/WorkflowStateBarStartReview.js";
 import { useWorkflowState } from "../useWorkflowState.js";
 import {
     ApproveDialog,
@@ -43,6 +44,7 @@ export const WorkflowStateBar = observer(() => {
                 <WorkflowStateBarApproved />
                 <WorkflowStateBarRejected />
                 <WorkflowStateBarReview />
+                <WorkflowStateBarStartReview />
                 <WorkflowStateBarCancelReview />
                 <WorkflowStateBarRequestReview />
                 <WorkflowStateBarLoading />

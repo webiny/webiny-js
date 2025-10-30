@@ -5,23 +5,15 @@ import React from "react";
 import { Alert } from "@webiny/admin-ui";
 import { WorkflowStateBarComponent } from "../WorkflowStateBarComponent.js";
 import { observer } from "mobx-react-lite";
+import { WorkflowStateValue } from "~/types.js";
 
 export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(Original => {
     return observer(function WorkflowStateBarReviewDecorator(props) {
         const { presenter } = props;
 
         const { step } = presenter.vm;
-        if (!step) {
+        if (!step?.isAllowedToReview || step.state !== WorkflowStateValue.inReview) {
             return <Original {...props} />;
-        } else if (!step.isAllowedToReview) {
-            return (
-                <>
-                    <Alert>
-                        This item is currently under <strong>{step.title}</strong> review, but you
-                        are not in the team assigned to review it.
-                    </Alert>
-                </>
-            );
         }
 
         return (
