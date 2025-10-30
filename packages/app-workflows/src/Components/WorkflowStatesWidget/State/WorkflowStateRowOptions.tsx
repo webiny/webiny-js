@@ -1,0 +1,29 @@
+import React from "react";
+import type { IWorkflowStatesWidgetItem } from "~/types.js";
+import { Accordion, DropdownMenu, Icon } from "@webiny/admin-ui";
+import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
+import { WorkflowStateRowOptionsOpenInNewWindow } from "./Options/OpenInNewWindow.js";
+import { WorkflowStateRowOptionsApprove } from "./Options/Approve.js";
+import { WorkflowStateRowOptionsDecline } from "./Options/Decline.js";
+
+interface IWorkflowStateRowOptionsProps {
+    state: IWorkflowStatesWidgetItem;
+}
+
+export const WorkflowStateRowOptions = ({ state }: IWorkflowStateRowOptionsProps) => {
+    return (
+        <DropdownMenu
+            trigger={
+                <Accordion.Item.Action
+                    icon={<Icon icon={<MoreVerticalIcon />} label={"Options"} />}
+                />
+            }
+            align="start"
+            side="bottom"
+        >
+            <WorkflowStateRowOptionsOpenInNewWindow state={state} />
+            <WorkflowStateRowOptionsApprove state={state} />
+            <WorkflowStateRowOptionsDecline state={state} />
+        </DropdownMenu>
+    );
+};

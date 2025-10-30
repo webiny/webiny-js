@@ -9,9 +9,13 @@ import {
     CommunityWidget,
     MissingPermissionsWidget
 } from "./components/index.js";
+import { WorkflowStatesOwnWidget, WorkflowStatesRequestedWidget } from "@webiny/app-workflows";
+import { useApolloClient } from "@apollo/react-hooks";
 
 const Welcome = () => {
     const { identity, getPermission } = useSecurity();
+    
+    const client = useApolloClient();
 
     if (!identity) {
         return null;
@@ -50,9 +54,11 @@ const Welcome = () => {
                             />
                         ))}
                     </div>
+                    <WorkflowStatesRequestedWidget client={client} />
                 </Grid.Column>
                 <Grid.Column span={7}>
                     <div className={"flex flex-col gap-lg"}>
+                        <WorkflowStatesOwnWidget client={client} />
                         <AssistanceWidget />
                         <CommunityWidget />
                     </div>

@@ -6,6 +6,8 @@ import { WorkflowStateRecordState } from "./abstractions/WorkflowState.js";
 import { WorkflowState } from "./workflowState/WorkflowState.js";
 import type {
     IWorkflowStateContext,
+    IWorkflowStateContextListOwnWorkflowStatesParams,
+    IWorkflowStateContextListOwnWorkflowStatesResponse,
     IWorkflowStateContextListStatesParams,
     IWorkflowStateContextListStatesResponse,
     IWorkflowStateContextOnStateAfterCreate,
@@ -111,11 +113,13 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     public async listStates(
         params?: IWorkflowStateContextListStatesParams
     ): Promise<IWorkflowStateContextListStatesResponse> {
-        const { items: states, meta } = await this.fetchAll(params);
+        const id = this.context.security.getIdentity().id;
         /**
          * Let's prefetch user teams for the current identity to avoid multiple calls later.
          */
-        await this.getUserTeams();
+        await this.getUserTeams(id);
+
+        const { items: states, meta } = await this.fetchAll(params);
 
         /**
          * Convert records to workflow state instances.
@@ -130,7 +134,73 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         };
     }
 
-    public async createState(app: string, targetRevisionId: string): Promise<IWorkflowState> {
+    public async listOwnWorkflowStates(
+        params?: IWorkflowStateContextListOwnWorkflowStatesParams
+    ): Promise<IWorkflowStateContextListOwnWorkflowStatesResponse> {
+        const identity = this.context.security.getIdentity();
+        if (!identity?.id) {
+            return {
+                items: [],
+                meta: {
+                    cursor: null,
+                    hasMoreItems: false,
+                    totalCount: 0
+                }
+            };
+        }
+
+        const result = await this.listStates({
+            ...params,
+            where: {
+                ...params?.where,
+                createdBy: identity.id
+            }
+        });
+        return {
+            items: result.items.map(state => this.transformer.toWidgetWorkflowState(state)),
+            meta: result.meta
+        };
+    }
+
+    public async listRequestedWorkflowStates(
+        params?: IWorkflowStateContextListOwnWorkflowStatesParams
+    ): Promise<IWorkflowStateContextListOwnWorkflowStatesResponse> {
+        const identity = this.context.security.getIdentity();
+        const teams = await this.getUserTeams(identity.id);
+        if (!identity?.id || teams.length === 0) {
+            return {
+                items: [],
+                meta: {
+                    cursor: null,
+                    hasMoreItems: false,
+                    totalCount: 0
+                }
+            };
+        }
+
+        const result = await this.listStates({
+            ...params,
+            where: {
+                ...params?.where,
+                createdBy_not: identity.id,
+                steps: {
+                    teams: {
+                        id_in: teams.map(team => team.id)
+                    }
+                }
+            }
+        });
+        return {
+            items: result.items.map(state => this.transformer.toWidgetWorkflowState(state)),
+            meta: result.meta
+        };
+    }
+
+    public async createState(
+        app: string,
+        targetRevisionId: string,
+        title: string
+    ): Promise<IWorkflowState> {
         const { id: targetId, version } = parseIdentifier(targetRevisionId);
         if (!version) {
             throw new WebinyError(
@@ -203,6 +273,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             comment: undefined,
             state: WorkflowStateRecordState.inReview,
             app,
+            title,
             targetId,
             isActive: true,
             targetRevisionId,
@@ -443,15 +514,15 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     }
 
     private async createWorkflowState(params: ICreateWorkflowStateParams): Promise<IWorkflowState> {
+        const id = this.context.security.getIdentity().id;
         return new WorkflowState({
             context: this.context,
             record: params.record,
-            teams: await this.getUserTeams()
+            teams: await this.getUserTeams(id)
         });
     }
 
-    private async getUserTeams(): Promise<IWorkflowStepTeam[]> {
-        const id = this.context.security.getIdentity().id;
+    private async getUserTeams(id: string): Promise<IWorkflowStepTeam[]> {
         if (!this._userTeamsCache[id]) {
             const teams = await this.context.adminUsers.listUserTeams(id);
             return (this._userTeamsCache[id] = teams.map(team => {

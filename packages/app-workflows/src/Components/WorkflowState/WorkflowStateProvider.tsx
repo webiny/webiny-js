@@ -9,9 +9,10 @@ import type ApolloClient from "apollo-client";
 export interface IWorkflowStateProps {
     id: string;
     app: string;
-    identity: IIdentity;
+    identity: IIdentity | null;
     client: ApolloClient<object>;
     children: React.ReactElement | React.ReactElement[];
+    title: string;
 }
 
 export interface IWorkflowStateContext {
@@ -20,8 +21,8 @@ export interface IWorkflowStateContext {
 
 export const WorkflowStateContext = React.createContext<IWorkflowStateContext | null>(null);
 
-export const WorkflowState = (props: IWorkflowStateProps) => {
-    const { id, app, identity, client, children } = props;
+export const WorkflowStateProvider = (props: IWorkflowStateProps) => {
+    const { id, app, identity, client, children, title } = props;
     const presenter = useMemo(() => {
         const gateway = new WorkflowStateGateway({
             client
@@ -40,9 +41,10 @@ export const WorkflowState = (props: IWorkflowStateProps) => {
             targetRevisionId: id,
             identity,
             repository,
-            workflowsRepository
+            workflowsRepository,
+            title
         });
-    }, [app, id, identity, client]);
+    }, [app, id, identity, client, title]);
 
     return (
         <WorkflowStateContext.Provider value={{ presenter }}>

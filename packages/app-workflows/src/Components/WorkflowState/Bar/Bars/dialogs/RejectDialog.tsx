@@ -58,7 +58,7 @@ export const RejectDialog = (props: IRejectDialogProps) => {
             onOpenChange={presenter.hideDialog}
             title={
                 <>
-                    <RejectIcon className={"wby-fill-destructive"} />
+                    <RejectIcon className={"fill-destructive"} />
                     Reject Content?
                 </>
             }

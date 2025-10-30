@@ -44,7 +44,7 @@ const ModelIcon = ({ model }: IModelIconProps) => {
             icon={<FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />}
             label={model.name}
             size={"sm"}
-            className={"wby-text-neutral-strong"}
+            className={"text-neutral-strong"}
         />
     );
 };

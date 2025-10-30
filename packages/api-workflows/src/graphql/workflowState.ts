@@ -9,6 +9,8 @@ import { createWorkflowStateValidation } from "~/validation/createWorkflowState.
 import { getTargetWorkflowStateValidation } from "~/validation/getTargetWorkflowState.js";
 import { getWorkflowStateValidation } from "~/validation/getWorkflowState.js";
 import type { IWorkflowState } from "~/context/abstractions/WorkflowState.js";
+import { listWidgetWorkflowStatesValidation } from "~/validation/listWidgetWorkflowStates.js";
+import type { IWidgetWorkflowState } from "~/context/abstractions/WidgetWorkflowState.js";
 
 export const createWorkflowStateSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -53,6 +55,7 @@ export const createWorkflowStateSchema = () => {
             type WorkflowState {
                 id: String!
                 app: String!
+                title: String!
                 isActive: Boolean!
                 workflowId: String!
                 targetId: String!
@@ -109,6 +112,33 @@ export const createWorkflowStateSchema = () => {
                 error: WorkflowError
             }
 
+            type WidgetWorkflowStateTarget {
+                id: String!
+                title: String!
+                url: String!
+            }
+
+            type WidgetWorkflowState {
+                id: String!
+                app: String!
+                title: String!
+                targetRevisionId: String!
+                state: WorkflowStateStateValue!
+                savedBy: WorkflowStateIdentity!
+                savedOn: DateTime!
+                step: WorkflowStateStep!
+            }
+
+            type ListWidgetWorkflowStatesResponse {
+                data: [WidgetWorkflowState!]
+                meta: ListWorkflowsMeta
+                error: WorkflowError
+            }
+
+            input ListWidgetWorkflowStatesWhereInput {
+                state: WorkflowStateStateValue!
+            }
+
             extend type WorkflowsQuery {
                 getWorkflowState(id: ID!): WorkflowStateResponse!
                 # always returns active workflow state for the given targetRevisionId - or null
@@ -119,10 +149,22 @@ export const createWorkflowStateSchema = () => {
                     limit: Number
                     after: String
                 ): ListWorkflowStatesResponse!
+                listOwnWorkflowStates(
+                    where: ListWidgetWorkflowStatesWhereInput!
+                    limit: Int!
+                ): ListWidgetWorkflowStatesResponse!
+                listRequestedWorkflowStates(
+                    where: ListWidgetWorkflowStatesWhereInput!
+                    limit: Int!
+                ): ListWidgetWorkflowStatesResponse!
             }
 
             extend type WorkflowsMutation {
-                createWorkflowState(app: String!, targetRevisionId: ID!): WorkflowStateResponse!
+                createWorkflowState(
+                    app: String!
+                    targetRevisionId: ID!
+                    title: String!
+                ): WorkflowStateResponse!
                 startWorkflowStateStep(id: ID!): WorkflowStateResponse!
                 approveWorkflowStateStep(id: ID!, comment: String): WorkflowStateResponse!
                 rejectWorkflowStateStep(id: ID!, comment: String!): WorkflowStateResponse!
@@ -166,6 +208,26 @@ export const createWorkflowStateSchema = () => {
                         }
                         return await context.workflowState.listStates(result.data);
                     });
+                },
+                listOwnWorkflowStates: async (_, args, context) => {
+                    return resolveList<IWidgetWorkflowState>(async () => {
+                        const result =
+                            await listWidgetWorkflowStatesValidation.safeParseAsync(args);
+                        if (!result.success) {
+                            throw createZodError(result.error);
+                        }
+                        return await context.workflowState.listOwnWorkflowStates(result.data);
+                    });
+                },
+                listRequestedWorkflowStates: async (_, args, context) => {
+                    return resolveList<IWidgetWorkflowState>(async () => {
+                        const result =
+                            await listWidgetWorkflowStatesValidation.safeParseAsync(args);
+                        if (!result.success) {
+                            throw createZodError(result.error);
+                        }
+                        return await context.workflowState.listRequestedWorkflowStates(result.data);
+                    });
                 }
             },
             WorkflowsMutation: {
@@ -178,7 +240,8 @@ export const createWorkflowStateSchema = () => {
 
                         return await context.workflowState.createState(
                             result.data.app,
-                            result.data.targetRevisionId
+                            result.data.targetRevisionId,
+                            result.data.title
                         );
                     });
                 },

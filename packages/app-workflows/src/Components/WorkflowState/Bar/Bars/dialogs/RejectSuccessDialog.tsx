@@ -21,7 +21,7 @@ export const RejectSuccessDialog = (props: IRejectSuccessDialogProps) => {
             onOpenChange={presenter.hideDialog}
             title={
                 <>
-                    <RejectIcon className={"wby-fill-destructive"} />
+                    <RejectIcon className={"fill-destructive"} />
                     {step.title} Rejected
                 </>
             }

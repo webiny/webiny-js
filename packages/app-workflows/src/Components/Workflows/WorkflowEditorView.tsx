@@ -5,11 +5,11 @@ import { Button, Grid, Heading, Loader } from "@webiny/admin-ui";
 import { observer } from "mobx-react-lite";
 import { WorkflowError } from "./Error/WorkflowError.js";
 
-interface WorkflowEditorViewProps {
+interface WorkflowViewProps {
     presenter: IWorkflowsPresenter;
 }
 
-export const WorkflowEditorView = observer((props: WorkflowEditorViewProps) => {
+export const WorkflowEditorView = observer((props: WorkflowViewProps) => {
     const { presenter } = props;
 
     const saveWorkflow = useCallback(() => {
@@ -40,6 +40,9 @@ export const WorkflowEditorView = observer((props: WorkflowEditorViewProps) => {
         <Grid>
             <WorkflowError error={presenter.vm.error} />
             <Heading level={6}>Steps</Heading>
+            <Grid.Column span={12}>
+                <Heading level={2}>{presenter.vm.app.name}</Heading>
+            </Grid.Column>
             <Grid.Column span={12}>
                 <WorkflowEditorSteps presenter={presenter} />
             </Grid.Column>

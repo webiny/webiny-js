@@ -7,7 +7,8 @@ describe("workflow states graphql validation", () => {
     it("should fail to validate create input", async () => {
         const [response] = await handler.createWorkflowState({
             app: "",
-            targetRevisionId: ""
+            targetRevisionId: "",
+            title: "App: Record Title"
         });
 
         expect(response).toMatchObject({

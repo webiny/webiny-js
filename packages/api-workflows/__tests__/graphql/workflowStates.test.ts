@@ -10,6 +10,8 @@ import { FULL_ACCESS_TEAM_ID, UNKNOWN_TEAM_ID } from "@webiny/testing";
 
 describe("workflow states graphql", () => {
     const handler = createGraphQLHandler();
+    
+    const targetTitle = "App: Test Record Title";
 
     const createWorkflow = async () => {
         const [response] = await handler.storeWorkflow({
@@ -54,7 +56,8 @@ describe("workflow states graphql", () => {
     it("should create, get and list a new workflow state", async () => {
         const [response] = await handler.createWorkflowState({
             app: workflow.app,
-            targetRevisionId
+            targetRevisionId,
+            title: targetTitle
         });
 
         expect(response).toMatchObject({
@@ -158,7 +161,8 @@ describe("workflow states graphql", () => {
     it("should approve workflow state steps", async () => {
         const [response] = await handler.createWorkflowState({
             app: workflow.app,
-            targetRevisionId
+            targetRevisionId,
+            title: targetTitle
         });
 
         const workflowState = response.data?.workflows?.createWorkflowState?.data;
@@ -259,7 +263,8 @@ describe("workflow states graphql", () => {
     it("should reject workflow state step", async () => {
         const [response] = await handler.createWorkflowState({
             app: workflow.app,
-            targetRevisionId
+            targetRevisionId,
+            title: targetTitle
         });
 
         const workflowState = response.data?.workflows?.createWorkflowState?.data;
@@ -356,7 +361,8 @@ describe("workflow states graphql", () => {
     it("should allow creating multiple workflow states for same record - if previous state is inactive", async () => {
         const [response] = await handler.createWorkflowState({
             app: workflow.app,
-            targetRevisionId
+            targetRevisionId,
+            title: targetTitle
         });
 
         const firstWorkflowState = response.data?.workflows?.createWorkflowState?.data;
@@ -384,7 +390,8 @@ describe("workflow states graphql", () => {
 
         const [secondWorkflowStateResponse] = await handler.createWorkflowState({
             app: workflow.app,
-            targetRevisionId
+            targetRevisionId,
+            title: targetTitle
         });
         const secondWorkflowState =
             secondWorkflowStateResponse.data?.workflows?.createWorkflowState?.data;
@@ -434,7 +441,8 @@ describe("workflow states graphql", () => {
          */
         const [errorOnCreatingActiveWorkflowState] = await handler.createWorkflowState({
             app: workflow.app,
-            targetRevisionId
+            targetRevisionId,
+            title: targetTitle
         });
 
         expect(errorOnCreatingActiveWorkflowState).toMatchObject({
@@ -501,7 +509,8 @@ describe("workflow states graphql", () => {
 
         const [createWorkflowStateResponse] = await handler.createWorkflowState({
             app: workflow.app,
-            targetRevisionId
+            targetRevisionId,
+            title: targetTitle
         });
         const workflowState = createWorkflowStateResponse.data?.workflows?.createWorkflowState
             ?.data as IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions>;

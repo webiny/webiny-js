@@ -6,20 +6,6 @@ import { type IWorkflowState, type IWorkflowStateStep, WorkflowStateValue } from
 
 const createSnapshot = (input: IWorkflowState) => {
     return JSON.stringify(toJS(input));
-    // return JSON.stringify({
-    //     id: input.id,
-    //     app: input.app,
-    //     targetId: input.targetId,
-    //     targetRevisionId: input.targetRevisionId,
-    //     comment: input.comment,
-    //     state: input.state,
-    //     steps: input.steps.map(step => ({
-    //         id: step.id,
-    //         comment: step.comment,
-    //         savedBy: step.savedBy,
-    //         state: step.state
-    //     }))
-    // });
 };
 
 export class WorkflowStateModel implements IWorkflowStateModel {
@@ -27,6 +13,7 @@ export class WorkflowStateModel implements IWorkflowStateModel {
     public id;
     public isActive;
     public app;
+    public title;
     public targetId;
     public targetRevisionId;
     public comment;
@@ -81,6 +68,7 @@ export class WorkflowStateModel implements IWorkflowStateModel {
         this.#snapshot = createSnapshot(params);
         this.id = params.id;
         this.app = params.app;
+        this.title = params.title;
         this.targetId = params.targetId;
         this.targetRevisionId = params.targetRevisionId;
         this.comment = params.comment;
@@ -106,6 +94,7 @@ export class WorkflowStateModel implements IWorkflowStateModel {
             id: this.id,
             isActive: this.isActive,
             app: this.app,
+            title: this.title,
             targetId: this.targetId,
             targetRevisionId: this.targetRevisionId,
             comment: this.comment,

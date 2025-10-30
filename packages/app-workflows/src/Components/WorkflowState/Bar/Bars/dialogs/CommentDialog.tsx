@@ -20,14 +20,14 @@ const Title = (props: ITitleProps) => {
     if (step.state === WorkflowStateValue.rejected) {
         return (
             <>
-                <RejectIcon className={"wby-fill-destructive"} />
+                <RejectIcon className={"fill-destructive"} />
                 {step.title} Rejected!
             </>
         );
     }
     return (
         <>
-            <ApproveIcon className={"wby-fill-success"} />
+            <ApproveIcon className={"fill-success"} />
             {step.title} Approved!
         </>
     );
