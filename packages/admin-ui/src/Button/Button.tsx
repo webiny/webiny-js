@@ -163,6 +163,7 @@ interface ButtonProps
     extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "children">,
         VariantProps<typeof buttonVariants> {
     text?: React.ReactNode;
+    children?: React.ReactNode;
 
     icon?: React.ReactNode;
 
@@ -181,6 +182,7 @@ const ButtonBase = ({
     size,
     asChild = false,
     text,
+    children,
     icon,
     iconPosition = "start",
     disabled,
@@ -190,7 +192,7 @@ const ButtonBase = ({
     const Comp = asChild ? Slot.Root : "button";
 
     const contentLayout = useMemo<ContentLayout>(() => {
-        if (!text) {
+        if (!text && !children) {
             return "icon";
         }
 
@@ -199,7 +201,7 @@ const ButtonBase = ({
         }
 
         return `text-icon-${iconPosition}` as ContentLayout;
-    }, [text, icon, iconPosition]);
+    }, [text, children, icon, iconPosition]);
 
     const cssClasses = cn(
         buttonVariants({
@@ -214,7 +216,7 @@ const ButtonBase = ({
         <span className={cn(buttonWrapperVariants({ disabled }), containerClassName)}>
             <Comp className={cssClasses} disabled={disabled} aria-disabled={disabled} {...rest}>
                 {iconPosition !== "end" && icon}
-                <Slot.Slottable>{text}</Slot.Slottable>
+                <Slot.Slottable>{text || children || null}</Slot.Slottable>
                 {iconPosition === "end" && icon}
             </Comp>
         </span>
