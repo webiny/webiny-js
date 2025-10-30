@@ -67,20 +67,17 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
     private state: IWorkflowState | null;
 
     public get vm(): IWorkflowStatesWidgetPresenterViewModel {
-        const approved = this.totals.find(t => t.key === WorkflowStateValue.approved);
+        const pending = this.totals.find(t => t.key === WorkflowStateValue.pending);
         const inReview = this.totals.find(t => t.key === WorkflowStateValue.inReview);
-        const rejected = this.totals.find(t => t.key === WorkflowStateValue.rejected);
         const items = toJS(this.items);
 
         return {
             loading: this.repository.loading,
             error: this.repository.error,
-            approved: items.filter(item => item.state === WorkflowStateValue.approved),
-            rejected: items.filter(item => item.state === WorkflowStateValue.rejected),
+            pending: items.filter(item => item.state === WorkflowStateValue.pending),
             inReview: items.filter(item => item.state === WorkflowStateValue.inReview),
-            approvedCount: approved?.value || 0,
+            pendingCount: pending?.value || 0,
             inReviewCount: inReview?.value || 0,
-            rejectedCount: rejected?.value || 0,
             dialogLoading: this.repository.actionLoading,
             dialogError: this.repository.actionError,
             showApproveDialog: this.dialog === "approve" && this.state ? this.state : null,
@@ -120,11 +117,8 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
                 .listOwnStates(WorkflowStateValue.inReview)
                 .then(mapListStatesResponse(WorkflowStateValue.inReview)),
             this.repository
-                .listOwnStates(WorkflowStateValue.approved)
-                .then(mapListStatesResponse(WorkflowStateValue.approved)),
-            this.repository
-                .listOwnStates(WorkflowStateValue.rejected)
-                .then(mapListStatesResponse(WorkflowStateValue.rejected))
+                .listOwnStates(WorkflowStateValue.pending)
+                .then(mapListStatesResponse(WorkflowStateValue.pending))
         ]).then(mapPromiseAllResponse);
     }
 
@@ -134,11 +128,8 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
                 .listRequestedStates(WorkflowStateValue.inReview)
                 .then(mapListStatesResponse(WorkflowStateValue.inReview)),
             this.repository
-                .listRequestedStates(WorkflowStateValue.approved)
-                .then(mapListStatesResponse(WorkflowStateValue.approved)),
-            this.repository
-                .listRequestedStates(WorkflowStateValue.rejected)
-                .then(mapListStatesResponse(WorkflowStateValue.rejected))
+                .listRequestedStates(WorkflowStateValue.pending)
+                .then(mapListStatesResponse(WorkflowStateValue.pending)),
         ]).then(mapPromiseAllResponse);
     }
 
