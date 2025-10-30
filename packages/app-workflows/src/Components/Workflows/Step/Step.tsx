@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Accordion, Button, Card, Grid, IconButton } from "@webiny/admin-ui";
-import { Color } from "./Color.js";
+import { Accordion, Card, Grid, IconButton } from "@webiny/admin-ui";
 import type { IWorkflowStep } from "~/types.js";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
@@ -109,97 +108,79 @@ export const Step = observer(
                     return (
                         <div className={"flex items-center justify-space-between gap-sm-plus"}>
                             {editing ? (
-                                <Card
-                                    padding="md"
-                                    title={step.title || title}
-                                    actionsPosition={"header"}
-                                    variant="accent"
-                                    actions={
-                                        <>
-                                            <Card.CancelButton onClick={onCancel}>
-                                                Cancel
-                                            </Card.CancelButton>
-                                            <Card.ConfirmButton onClick={onFormSubmit}>
-                                                Save
-                                            </Card.ConfirmButton>
-                                        </>
-                                    }
-                                >
-                                    The amazing, splendid, and most useful umbrella, resistant to
-                                    rain and friendly to winds, is something that deserves all
-                                    admiration. Crafted with perfect textures, it bravely withstands
-                                    storms and gently shades the rays of the sun. A remarkable
-                                    innovation, with an ergonomically designed grip most suited to
-                                    the hand, it remains stable even in the fiercest weather.
-                                </Card>
+                                <>
+                                    <Card
+                                        className={"w-full"}
+                                        padding="md"
+                                        title={step.title || title}
+                                        actionsPosition={"header"}
+                                        variant="accent"
+                                        actions={
+                                            <>
+                                                <Card.CancelButton onClick={onCancel}>
+                                                    Cancel
+                                                </Card.CancelButton>
+                                                <Card.ConfirmButton onClick={onFormSubmit}>
+                                                    Save
+                                                </Card.ConfirmButton>
+                                            </>
+                                        }
+                                    >
+                                        <Grid gap={"comfortable"}>
+                                            <Grid.Column span={10}>
+                                                <StepFormTitle />
+                                            </Grid.Column>
+                                            <Grid.Column span={2}>
+                                                <StepFormColor />
+                                            </Grid.Column>
+                                            <Grid.Column span={12}>
+                                                <StepFormDescription />
+                                            </Grid.Column>
+                                            <Grid.Column span={12}>
+                                                <StepFormTeams />
+                                            </Grid.Column>
+                                            <Grid.Column span={12}>
+                                                <StepFormNotifications />
+                                            </Grid.Column>
+                                        </Grid>
+                                    </Card>
+                                    <div className={"size-lg"} />
+                                </>
                             ) : (
                                 <>
-                                    <Accordion variant={"container"} background={"light"}>
+                                    <Accordion
+                                        variant={"container"}
+                                        background={"base"}
+                                        border={"accent"}
+                                    >
                                         <Accordion.Item
                                             key={`step-${step.id}`}
                                             title={step.title || title}
                                             description={step.description}
                                             colorMark={step.color}
-                                            open={editing}
                                             onOpenChange={onOpenChange}
-                                            interactive={!editing}
                                             actions={
-                                                !editing ? (
-                                                    <>
-                                                        {canMoveUp && (
-                                                            <Accordion.Item.Action
-                                                                onClick={moveUp}
-                                                                disabled={!canMoveUp(step)}
-                                                                icon={<ArrowUp />}
-                                                            />
-                                                        )}
-                                                        {canMoveDown && (
-                                                            <Accordion.Item.Action
-                                                                onClick={moveDown}
-                                                                disabled={!canMoveDown(step)}
-                                                                icon={<ArrowDown />}
-                                                            />
-                                                        )}
-                                                        <Accordion.Item.Action.Separator />
-                                                        <RemoveStep
-                                                            step={step}
-                                                            onRemove={onRemove}
+                                                <>
+                                                    {canMoveUp && (
+                                                        <Accordion.Item.Action
+                                                            onClick={moveUp}
+                                                            disabled={!canMoveUp(step)}
+                                                            icon={<ArrowUp />}
                                                         />
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Button
-                                                            text={"Cancel"}
-                                                            variant={"ghost"}
-                                                            size={"md"}
-                                                            onClick={onCancel}
+                                                    )}
+                                                    {canMoveDown && (
+                                                        <Accordion.Item.Action
+                                                            onClick={moveDown}
+                                                            disabled={!canMoveDown(step)}
+                                                            icon={<ArrowDown />}
                                                         />
-                                                        <Button
-                                                            text={"Save"}
-                                                            variant={"primary"}
-                                                            onClick={onFormSubmit}
-                                                        />
-                                                    </>
-                                                )
+                                                    )}
+                                                    <Accordion.Item.Action.Separator />
+                                                    <RemoveStep step={step} onRemove={onRemove} />
+                                                </>
                                             }
                                         >
-                                            <Grid gap={"comfortable"}>
-                                                <Grid.Column span={10}>
-                                                    <StepFormTitle />
-                                                </Grid.Column>
-                                                <Grid.Column span={2}>
-                                                    <StepFormColor />
-                                                </Grid.Column>
-                                                <Grid.Column span={12}>
-                                                    <StepFormDescription />
-                                                </Grid.Column>
-                                                <Grid.Column span={12}>
-                                                    <StepFormTeams />
-                                                </Grid.Column>
-                                                <Grid.Column span={12}>
-                                                    <StepFormNotifications />
-                                                </Grid.Column>
-                                            </Grid>
+                                            {null}
                                         </Accordion.Item>
                                     </Accordion>
                                     <IconButton

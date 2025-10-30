@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cva, type VariantProps } from "~/utils.js";
+import { cn, cva, type VariantProps } from "~/utils.js";
 import { useCardProps } from "~/Card/components/CardPropsProvider.js";
 
 const cardContentVariants = cva(
@@ -15,11 +15,11 @@ const cardContentVariants = cva(
                 accent: "border-accent-dimmed"
             },
             elevation: {
-                "none": "",
-                "small": "shadow-sm",
-                "medium": "shadow-md",
-                "large": "shadow-lg"
-            },
+                none: "",
+                small: "shadow-sm",
+                medium: "shadow-md",
+                large: "shadow-lg"
+            }
         },
         defaultVariants: {
             cornerSize: "lg",
@@ -34,10 +34,13 @@ export interface CardContentProps extends VariantProps<typeof cardContentVariant
 }
 
 const CardContent = ({ children }: CardContentProps) => {
-    const { cornerSize, variant, elevation } = useCardProps();
+    const { cornerSize, variant, elevation, className } = useCardProps();
 
     return (
-        <div data-card="content" className={cardContentVariants({ cornerSize, variant,elevation })}>
+        <div
+            data-card="content"
+            className={cn(cardContentVariants({ cornerSize, variant, elevation }), className)}
+        >
             <div className={"flex flex-col justify-between w-full max-w-full h-full relative"}>
                 {children}
             </div>

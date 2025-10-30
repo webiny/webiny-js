@@ -11,6 +11,7 @@ import {
     SplitView
 } from "@webiny/app-admin";
 import { WorkflowsDataList } from "./WorkflowsDataList.js";
+import { SimpleFormFooter } from "@webiny/app-admin/components/SimpleForm";
 
 export interface IWorkflowsViewProps {
     apps: IWorkflowApplication[];
@@ -28,27 +29,7 @@ export const WorkflowsView = (props: IWorkflowsViewProps) => {
         return apps.find(a => a.id === initialApp);
     }, [initialApp, apps]);
 
-    return (
-        <SplitView>
-            <LeftPanel>
-                <WorkflowsDataList apps={apps} activeId={"sd"} onSelectApp={onAppClick} />
-            </LeftPanel>
-            <RightPanel>
-                {app && (
-                    <SimpleForm size={"lg"}>
-                        {/*{loading && <OverlayLoader />}*/}
-                        <SimpleFormHeader title={app.name} />
-                        <SimpleFormContent>
-                            <WorkflowEditor app={app} />
-                        </SimpleFormContent>
-                    </SimpleForm>
-                )}
-
-                {/*<WorkflowForm newEntry={route.params.new === true} id={route.params.id} />*/}
-            </RightPanel>
-        </SplitView>
-    );
-
+    // TODO: finish this up
     // const { apps, app: initialApp, onAppClick } = props;
     //
     // const app = useMemo(() => {
@@ -80,14 +61,24 @@ export const WorkflowsView = (props: IWorkflowsViewProps) => {
     //     );
     // }
     //
-    // console.log("apps", apps);
-    //
-    // return (
-    //     <Grid>
-    //         <Grid.Column span={2}>
-    //             <WorkflowsApplications apps={apps} onClick={onAppClick} />
-    //         </Grid.Column>
-    //         <Grid.Column span={10}>{app ? <WorkflowEditor app={app} /> : null}</Grid.Column>
-    //     </Grid>
-    // );
+
+    return (
+        <SplitView>
+            <LeftPanel>
+                <WorkflowsDataList apps={apps} activeId={app?.id} onSelectApp={onAppClick} />
+            </LeftPanel>
+            <RightPanel>
+                {app && (
+                    <SimpleForm size={"lg"}>
+                        {/*{loading && <OverlayLoader />}*/}
+                        <SimpleFormHeader title={app.name} />
+                        <SimpleFormContent>
+                            <WorkflowEditor app={app} />
+                        </SimpleFormContent>
+                        <SimpleFormFooter>TODO: Submit btn form here</SimpleFormFooter>
+                    </SimpleForm>
+                )}
+            </RightPanel>
+        </SplitView>
+    );
 };

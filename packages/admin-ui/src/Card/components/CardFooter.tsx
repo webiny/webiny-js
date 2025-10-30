@@ -6,7 +6,7 @@ const cardFooterVariants = cva("flex justify-between", {
     variants: {
         padding: {
             sm: "p-md-extra",
-            md: "p-md-extra",
+            md: "p-md-extra pt-md h-lg",
             lg: "p-lg"
         }
     },
