@@ -1,9 +1,10 @@
 import React, { useCallback, useState } from "react";
-import { Accordion, Button, Grid } from "@webiny/admin-ui";
+import { Accordion, Button, Grid, IconButton } from "@webiny/admin-ui";
 import { Color } from "./Color.js";
 import type { IWorkflowStep } from "~/types.js";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { observer } from "mobx-react-lite";
 import { Form } from "@webiny/form";
 import { StepFormTitle } from "./form/StepFormTitle.js";
@@ -106,70 +107,74 @@ export const Step = observer(
             <Form<IWorkflowStep> data={step} onSubmit={onSubmit}>
                 {({ submit: onFormSubmit }) => {
                     return (
-                        <Accordion.Item
-                            className={"mt-sm border-sm"}
-                            key={`step-${step.id}`}
-                            title={step.title || title}
-                            description={step.description}
-                            icon={<Color color={step.color} />}
-                            open={editing}
-                            onOpenChange={onOpenChange}
-                            interactive={!editing}
-                            actions={
-                                !editing ? (
-                                    <>
-                                        {canMoveUp && (
-                                            <Accordion.Item.Action
-                                                onClick={moveUp}
-                                                disabled={!canMoveUp(step)}
-                                                icon={<ArrowUp />}
-                                            />
-                                        )}
-                                        {canMoveDown && (
-                                            <Accordion.Item.Action
-                                                onClick={moveDown}
-                                                disabled={!canMoveDown(step)}
-                                                icon={<ArrowDown />}
-                                            />
-                                        )}
-                                        <Accordion.Item.Action.Separator />
-                                        <RemoveStep step={step} onRemove={onRemove} />
-                                    </>
-                                ) : (
-                                    <>
-                                        <Button
-                                            text={"Cancel"}
-                                            variant={"ghost"}
-                                            size={"md"}
-                                            onClick={onCancel}
-                                        />
-                                        <Button
-                                            text={"Save"}
-                                            variant={"primary"}
-                                            onClick={onFormSubmit}
-                                        />
-                                    </>
-                                )
-                            }
-                        >
-                            <Grid gap={"comfortable"}>
-                                <Grid.Column span={10}>
-                                    <StepFormTitle />
-                                </Grid.Column>
-                                <Grid.Column span={2}>
-                                    <StepFormColor />
-                                </Grid.Column>
-                                <Grid.Column span={12}>
-                                    <StepFormDescription />
-                                </Grid.Column>
-                                <Grid.Column span={12}>
-                                    <StepFormTeams />
-                                </Grid.Column>
-                                <Grid.Column span={12}>
-                                    <StepFormNotifications />
-                                </Grid.Column>
-                            </Grid>
-                        </Accordion.Item>
+                        <div className={"flex items-center justify-space-between gap-sm-plus"}>
+                            <Accordion variant={"container"}>
+                                <Accordion.Item
+                                    key={`step-${step.id}`}
+                                    title={step.title || title}
+                                    description={step.description}
+                                    icon={<Color color={step.color} />}
+                                    open={editing}
+                                    onOpenChange={onOpenChange}
+                                    interactive={!editing}
+                                    actions={
+                                        !editing ? (
+                                            <>
+                                                {canMoveUp && (
+                                                    <Accordion.Item.Action
+                                                        onClick={moveUp}
+                                                        disabled={!canMoveUp(step)}
+                                                        icon={<ArrowUp />}
+                                                    />
+                                                )}
+                                                {canMoveDown && (
+                                                    <Accordion.Item.Action
+                                                        onClick={moveDown}
+                                                        disabled={!canMoveDown(step)}
+                                                        icon={<ArrowDown />}
+                                                    />
+                                                )}
+                                                <Accordion.Item.Action.Separator />
+                                                <RemoveStep step={step} onRemove={onRemove} />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Button
+                                                    text={"Cancel"}
+                                                    variant={"ghost"}
+                                                    size={"md"}
+                                                    onClick={onCancel}
+                                                />
+                                                <Button
+                                                    text={"Save"}
+                                                    variant={"primary"}
+                                                    onClick={onFormSubmit}
+                                                />
+                                            </>
+                                        )
+                                    }
+                                >
+                                    <Grid gap={"comfortable"}>
+                                        <Grid.Column span={10}>
+                                            <StepFormTitle />
+                                        </Grid.Column>
+                                        <Grid.Column span={2}>
+                                            <StepFormColor />
+                                        </Grid.Column>
+                                        <Grid.Column span={12}>
+                                            <StepFormDescription />
+                                        </Grid.Column>
+                                        <Grid.Column span={12}>
+                                            <StepFormTeams />
+                                        </Grid.Column>
+                                        <Grid.Column span={12}>
+                                            <StepFormNotifications />
+                                        </Grid.Column>
+                                    </Grid>
+                                </Accordion.Item>
+                            </Accordion>
+                            <IconButton icon={<AddIcon />} variant={"ghost"} size={"sm"} />
+                        </div>
                     );
                 }}
             </Form>

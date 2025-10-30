@@ -295,6 +295,23 @@ export const ContainerVariant: Story = {
     }
 };
 
+export const WithAccentBorder: Story = {
+    ...Default,
+    args: {
+        variant: "container",
+        border: "accent",
+        children: (
+            <>
+                <AccordionItem
+                    index={1}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+            </>
+        )
+    }
+};
+
 export const LightBackground: Story = {
     ...Default,
     decorators: [

@@ -38,8 +38,8 @@ export const WorkflowEditorView = observer((props: WorkflowEditorViewProps) => {
      */
     return (
         <Grid>
-            <Heading level={2}>{presenter.vm.app.name}</Heading>
             <WorkflowError error={presenter.vm.error} />
+            <Heading level={6}>Steps</Heading>
             <Grid.Column span={12}>
                 <WorkflowEditorSteps presenter={presenter} />
             </Grid.Column>

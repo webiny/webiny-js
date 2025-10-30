@@ -35,22 +35,21 @@ export const WorkflowEditorSteps = observer((props: IWorkflowEditorStepsProps) =
     return (
         <>
             <InactiveStep step={draftStep} />
-            <Accordion variant={"container"}>
-                {workflow.steps.map(step => {
-                    return (
-                        <Step
-                            key={`step-${step.id}`}
-                            step={step}
-                            onSave={presenter.updateStep}
-                            onRemove={presenter.removeStep}
-                            onMoveUp={presenter.moveStepUp}
-                            canMoveDown={presenter.canMoveStepDown}
-                            onMoveDown={presenter.moveStepDown}
-                            canMoveUp={presenter.canMoveStepUp}
-                        />
-                    );
-                })}
-            </Accordion>
+
+            {workflow.steps.map(step => {
+                return (
+                    <Step
+                        key={`step-${step.id}`}
+                        step={step}
+                        onSave={presenter.updateStep}
+                        onRemove={presenter.removeStep}
+                        onMoveUp={presenter.moveStepUp}
+                        canMoveDown={presenter.canMoveStepDown}
+                        onMoveDown={presenter.moveStepDown}
+                        canMoveUp={presenter.canMoveStepUp}
+                    />
+                );
+            })}
             <NewStep onAdd={presenter.addStep} />
             <InactiveStep step={publishedStep} />
         </>
