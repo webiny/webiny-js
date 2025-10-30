@@ -25,7 +25,7 @@ export const WorkflowsDataList = ({ apps, activeId, onSelectApp }: WorkflowsData
     const [filter, setFilter] = useState("");
 
     const filterWorkflow = useCallback(
-        ({ name }: IWorkflow) => {
+        ({ name }: IWorkflowApplication) => {
             return name.toLowerCase().includes(filter);
         },
         [filter]
