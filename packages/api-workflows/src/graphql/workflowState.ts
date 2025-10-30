@@ -2,6 +2,7 @@ import type { Context } from "~/types.js";
 import { GraphQLSchemaPlugin, resolve, resolveList } from "@webiny/handler-graphql";
 import { createZodError } from "@webiny/utils";
 import { listWorkflowStatesValidation } from "~/validation/listWorkflowStates.js";
+import { startWorkflowStateValidation } from "~/validation/startWorkflowState.js";
 import { approveWorkflowStateValidation } from "~/validation/approveWorkflowState.js";
 import { rejectWorkflowStateValidation } from "~/validation/rejectWorkflowState.js";
 import { cancelWorkflowStateValidation } from "~/validation/cancelWorkflowState.js";
@@ -229,6 +230,15 @@ export const createWorkflowStateSchema = () => {
                             result.data.targetRevisionId,
                             result.data.title
                         );
+                    });
+                },
+                startWorkflowStateStep(_, args, context) {
+                    return resolve<IWorkflowStateModel>(async () => {
+                        const result = await startWorkflowStateValidation.safeParseAsync(args);
+                        if (!result.success) {
+                            throw createZodError(result.error);
+                        }
+                        return await context.workflowState.startStateStep(result.data.id);
                     });
                 },
                 approveWorkflowStateStep: (_, args, context) => {

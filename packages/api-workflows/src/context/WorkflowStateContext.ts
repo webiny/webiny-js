@@ -423,6 +423,12 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         }
     }
 
+    public async startStateStep(id: string): Promise<IWorkflowStateModel> {
+        const state = await this.getState(id);
+        await state.start();
+        return state;
+    }
+
     public async approveStateStep(id: string, comment?: string): Promise<IWorkflowStateModel> {
         const state = await this.getState(id);
         await state.approve(comment);
