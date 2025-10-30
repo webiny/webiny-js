@@ -1,9 +1,16 @@
 import React, { useMemo } from "react";
-import { Alert, Grid } from "@webiny/admin-ui";
 import type { IWorkflowApplication } from "~/types.js";
-import { WorkflowsApplications } from "./WorkflowsApplications.js";
+// import { WorkflowsApplications } from "./WorkflowsApplications.js";
 import { WorkflowEditor } from "./WorkflowEditor.js";
-import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin";
+import {
+    LeftPanel,
+    RightPanel,
+    SimpleForm,
+    SimpleFormContent,
+    SimpleFormHeader,
+    SplitView
+} from "@webiny/app-admin";
+import { WorkflowsDataList } from "./WorkflowsDataList.js";
 
 export interface IWorkflowsViewProps {
     apps: IWorkflowApplication[];
@@ -24,14 +31,20 @@ export const WorkflowsView = (props: IWorkflowsViewProps) => {
     return (
         <SplitView>
             <LeftPanel>
-                <WorkflowsApplications apps={apps} onClick={onAppClick} />
-
-                {/*<ApiKeysDataList activeId={route.params.id} />*/}
+                <WorkflowsDataList apps={apps} activeId={"sd"} onSelectApp={onAppClick} />
             </LeftPanel>
             <RightPanel>
-                <Grid.Column span={10}>{app ? <WorkflowEditor app={app} /> : null}</Grid.Column>
+                {app && (
+                    <SimpleForm size={"lg"}>
+                        {/*{loading && <OverlayLoader />}*/}
+                        <SimpleFormHeader title={app.name} />
+                        <SimpleFormContent>
+                            <WorkflowEditor app={app} />
+                        </SimpleFormContent>
+                    </SimpleForm>
+                )}
 
-                {/*<ApiKeyForm newEntry={route.params.new === true} id={route.params.id} />*/}
+                {/*<WorkflowForm newEntry={route.params.new === true} id={route.params.id} />*/}
             </RightPanel>
         </SplitView>
     );
