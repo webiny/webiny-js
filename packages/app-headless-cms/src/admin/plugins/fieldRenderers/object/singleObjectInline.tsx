@@ -53,11 +53,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                             {field.helpText}
                                         </FormComponentDescription>
                                     )}
-                                    <div
-                                        className={
-                                            "p-md border-sm border-neutral-dimmed-darker rounded-md"
-                                        }
-                                    >
+                                    <div className={"py-md-extra"}>
                                         <Fields
                                             gridClassName={fieldsGridStyle}
                                             Bind={Bind}
