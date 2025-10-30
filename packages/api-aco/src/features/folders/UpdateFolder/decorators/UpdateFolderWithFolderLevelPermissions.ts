@@ -1,10 +1,10 @@
 import { createDecorator } from "@webiny/feature/api";
-import { NotAuthorizedError } from "@webiny/api-security";
 import WError from "@webiny/error";
 import type { UpdateFolderParams } from "~/folder/folder.types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { UpdateFolderUseCase } from "../abstractions.js";
 import { FolderStorageOperations } from "~/features/folders/shared/abstractions.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 
 class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.Interface {
     private folderLevelPermissions: FolderLevelPermissions.Interface;

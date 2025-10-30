@@ -1,21 +1,19 @@
 import { getIntrospectionQuery } from "graphql";
 import { createHandler } from "@webiny/handler-aws";
-import type { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
 import { sleep, until } from "./context/helpers";
-/**
- * Unfortunately at we need to import the api-i18n-ddb package manually
- */
 import { ContextPlugin } from "@webiny/api";
 import type { MailerContext } from "~/types";
-import type { Tenant } from "@webiny/api-tenancy/types";
 import { GET_SETTINGS_QUERY, SAVE_SETTINGS_MUTATION } from "./graphql/settings";
 import type { CreateHandlerParams } from "./handlerPlugins";
 import { createHandlerPlugins } from "./handlerPlugins";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { ApiKey } from "@webiny/api-core/types/security.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
 interface ContextTenantParams {
     tenant: Pick<Tenant, "id" | "name" | "parent">;
-    identity?: SecurityIdentity;
+    identity?: IdentityData;
 }
 export const contextSecurity = ({
     tenant,

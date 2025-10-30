@@ -2,24 +2,24 @@ import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { createWcpContext } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { createDummyLocales, createIdentity, createPermissions } from "./helpers";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import i18nContext from "@webiny/api-i18n/graphql/context";
+import { createIdentity, createPermissions } from "./helpers";
 import { createApiGatewayHandler } from "@webiny/handler-aws";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { PluginCollection } from "@webiny/plugins/types";
 import { createBackgroundTaskContext, createBackgroundTaskGraphQL } from "~/index";
 import { createListDefinitionsQuery } from "./graphql/definitions";
-import type { ApiKey } from "@webiny/api-security/types";
 import type { ContextPlugin } from "@webiny/api";
-import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
-import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import type { Context } from "~tests/types";
 import { createListTasksQuery } from "~tests/helpers/graphql/tasks";
 import { createListTaskLogsQuery } from "~tests/helpers/graphql/logs";
 import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
+import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
+import type { ApiKey, SecurityStorageOperations } from "@webiny/api-core/types/security.js";
+import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import { createApiCore } from "@webiny/api-core";
+import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
+import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";
@@ -42,12 +42,19 @@ const tenant = {
 
 export const useGraphQLHandler = (params?: UseHandlerParams) => {
     const { plugins = [] } = params || {};
+
+    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
+    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
+    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const i18nStorage = getStorageOps<any[]>("i18n");
 
     const handler = createApiGatewayHandler({
         plugins: [
-            createWcpContext(),
+            createApiCore({
+                tenancyStorageOperations: tenancyStorage.storageOperations,
+                securityStorageOperations: securityStorage.storageOperations,
+                usersStorageOperations: adminUsersStorage.storageOperations
+            }),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: false,
@@ -85,10 +92,6 @@ export const useGraphQLHandler = (params?: UseHandlerParams) => {
             } as ContextPlugin<Context>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
-            i18nContext(),
-            i18nStorage.storageOperations,
-            createDummyLocales(),
-            mockLocalesPlugins(),
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations
             }),

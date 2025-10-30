@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { GroupAfterDeleteHandler } from "@webiny/api-security/features/groups/DeleteGroup";
+import { GroupAfterDeleteHandler } from "@webiny/api-core/features/DeleteGroup";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import type { AuditLogsContext } from "~/types.js";

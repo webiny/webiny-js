@@ -1,7 +1,6 @@
 import type { Context } from "~/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { NotAuthorizedError } from "@webiny/api-security";
 import { createIdentifier } from "@webiny/utils";
 import type {
     IStoreWorkflowInput,
@@ -14,6 +13,7 @@ import type {
 import type { IWorkflowsTransformer } from "./transformer/abstractions/WorkflowsTransformer.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
+import { NotAuthorizedError } from "./errors.js";
 
 export interface IWorkflowsContextParams {
     context: Pick<Context, "cms" | "security">;
@@ -141,10 +141,7 @@ export class WorkflowsContext implements IWorkflowsContext {
         if (permissions?.length) {
             return;
         }
-        throw new NotAuthorizedError({
-            message: "You have no access to workflows.",
-            code: "WORKFLOWS_ACCESS_DENIED"
-        });
+        throw new NotAuthorizedError("You have no access to workflows.");
     }
 
     private async createWorkflow(params: ICreateWorkflowParams): Promise<IWorkflow> {

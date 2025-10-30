@@ -1,6 +1,6 @@
-import { TeamAfterCreateHandler } from "@webiny/api-security/features/teams/CreateTeam";
-import { TeamAfterUpdateHandler } from "@webiny/api-security/features/teams/UpdateTeam";
-import { TeamAfterDeleteHandler } from "@webiny/api-security/features/teams/DeleteTeam";
+import { TeamAfterCreateHandler } from "@webiny/api-core/features/CreateTeam";
+import { TeamAfterUpdateHandler } from "@webiny/api-core/features/UpdateTeam";
+import { TeamAfterDeleteHandler } from "@webiny/api-core/features/DeleteTeam";
 import { AuditLogTeamAfterCreateHandler } from "./handlers/AuditLogTeamAfterCreateHandler.js";
 import { AuditLogTeamAfterUpdateHandler } from "./handlers/AuditLogTeamAfterUpdateHandler.js";
 import { AuditLogTeamAfterDeleteHandler } from "./handlers/AuditLogTeamAfterDeleteHandler.js";

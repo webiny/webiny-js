@@ -1,5 +1,7 @@
 import "tsx";
 import { defineConfig } from "vitest/config";
+import tsconfigPaths from "vite-tsconfig-paths";
+
 import fg from "fast-glob";
 import path from "path";
 import chalk from "chalk";
@@ -107,7 +109,14 @@ export default async () => {
 
     project.rootDir = process.cwd();
 
-    return defineConfig({
+    const vitestConfig = defineConfig({
+        plugins: [
+            tsconfigPaths({
+                // This flag ensures tsconfig templates don't throw errors (e.g. project-aws/_templates).
+                // Ideally, we would want to list all valid packages ONLY, and disable tsconfig auto-discovery.
+                ignoreConfigErrors: true
+            })
+        ],
         resolve: {
             alias: {
                 "graphql/language/index.js": "graphql/language/index.js",
@@ -120,7 +129,13 @@ export default async () => {
             hookTimeout: 30000,
             testTimeout: 30000, // 30 seconds
             ...project,
-            setupFiles: [path.resolve(import.meta.dirname, "./setupFile.js"), ...project.setupFiles]
+            setupFiles: [
+                path.resolve(import.meta.dirname, "./setupFile.js"),
+                ...project.setupFiles
+            ],
+            tsconfig: `${project.dir}/tsconfig.json`
         }
     });
+
+    return vitestConfig;
 };

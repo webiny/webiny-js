@@ -1,6 +1,6 @@
-import { ApiKeyAfterCreateHandler } from "@webiny/api-security/features/apiKeys/CreateApiKey";
-import { ApiKeyAfterUpdateHandler } from "@webiny/api-security/features/apiKeys/UpdateApiKey";
-import { ApiKeyAfterDeleteHandler } from "@webiny/api-security/features/apiKeys/DeleteApiKey";
+import { ApiKeyAfterCreateHandler } from "@webiny/api-core/features/CreateApiKey";
+import { ApiKeyAfterUpdateHandler } from "@webiny/api-core/features/UpdateApiKey";
+import { ApiKeyAfterDeleteHandler } from "@webiny/api-core/features/DeleteApiKey";
 import { AuditLogApiKeyAfterCreateHandler } from "./handlers/AuditLogApiKeyAfterCreateHandler.js";
 import { AuditLogApiKeyAfterUpdateHandler } from "./handlers/AuditLogApiKeyAfterUpdateHandler.js";
 import { AuditLogApiKeyAfterDeleteHandler } from "./handlers/AuditLogApiKeyAfterDeleteHandler.js";

@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-import { SecurityIdentity } from "@webiny/api-security/types";
 
-const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
-const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
-const identityApiToken: SecurityIdentity = { id: "3", type: "api-token", displayName: "API Token" };
+const identityA: IdentityData = { id: "1", type: "admin", displayName: "A" };
+const identityB: IdentityData = { id: "2", type: "admin", displayName: "B" };
+const identityApiToken: IdentityData = { id: "3", type: "api-token", displayName: "API Token" };
 
 describe("Folder Level Permissions - API Tokens", () => {
     it("FLPs should not interfere with API tokens", async () => {

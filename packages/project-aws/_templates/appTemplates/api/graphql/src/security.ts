@@ -1,49 +1,11 @@
-import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
-import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
-import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
-import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
-import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
-import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
-import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
-import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import tenantLinkAuthorization from "@webiny/api-security/plugins/tenantLinkAuthorization";
 import cognitoAuthentication, { syncWithCognito } from "@webiny/api-security-cognito";
-import anonymousAuthorization from "@webiny/api-security/plugins/anonymousAuthorization";
-import createAdminUsersApp from "@webiny/api-admin-users";
-import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-so-ddb";
+import {authenticateUsingHttpHeader} from "@webiny/api-core/legacy/security/plugins/authenticateUsingHttpHeader.js";
+import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
+import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
+import tenantLinkAuthorization from "@webiny/api-core/legacy/security/plugins/tenantLinkAuthorization.js";
+import anonymousAuthorization from "@webiny/api-core/legacy/security/plugins/anonymousAuthorization.js";
 
-export default ({ documentClient }: { documentClient: DynamoDBDocument }) => [
-    /**
-     * Create Tenancy app in the `context`.
-     */
-    createTenancyContext({
-        storageOperations: tenancyStorageOperations({ documentClient })
-    }),
-
-    /**
-     * Expose tenancy GraphQL schema.
-     */
-    createTenancyGraphQL(),
-
-    /**
-     * Create Security app in the `context`.
-     */
-    createSecurityContext({
-        storageOperations: securityStorageOperations({ documentClient })
-    }),
-
-    /**
-     * Expose security GraphQL schema.
-     */
-    createSecurityGraphQL(),
-
-    /**
-     * Create Admin Users app.
-     */
-    createAdminUsersApp({
-        storageOperations: createAdminUsersStorageOperations({ documentClient })
-    }),
-
+export default () => [
     /**
      * Sync Admin Users with Cognito User Pool.
      */

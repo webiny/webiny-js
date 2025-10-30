@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { DomainEvent, IEventHandler } from "@webiny/api-core";
+import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { Folder, DeleteFolderParams } from "~/folder/folder.types.js";
 
 // Use Case Abstraction

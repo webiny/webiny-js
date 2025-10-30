@@ -1,11 +1,17 @@
 import { BaseError } from "@webiny/feature/api";
 
-export class NotAuthorizedError extends BaseError {
+type ErrorInput = {
+    message?: string;
+    data?: Record<string, any>;
+};
+
+export class NotAuthorizedError extends BaseError<Record<string, any> | undefined> {
     override readonly code = "NOT_AUTHORIZED" as const;
 
-    constructor(message?: string) {
+    constructor(input?: ErrorInput) {
         super({
-            message: message || "Not authorized to perform this action"
+            message: input?.message || "Not authorized!",
+            data: input?.data
         });
     }
 }

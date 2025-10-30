@@ -119,6 +119,7 @@
     "typescript": "5.9.3",
     "typescript-transform-paths": "^3.5.5",
     "verdaccio": "^6.2.0",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4",
     "write-json-file": "^4.3.0",
     "yargs": "^17.7.2"

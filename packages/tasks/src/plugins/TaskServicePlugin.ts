@@ -3,7 +3,6 @@ import type { ITask } from "~/types.js";
 
 export interface ITaskServiceCreatePluginParams {
     getTenant(): string;
-    getLocale(): string;
 }
 
 export type ITaskServiceTask = Pick<ITask, "id" | "definitionId">;

@@ -1,12 +1,12 @@
 import { describe, it, test, expect } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-import type { SecurityIdentity } from "@webiny/api-security/types";
 import { expectNotAuthorized } from "~tests/utils/expectNotAuthorized";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 const FOLDER_TYPE = "test-folders";
 
-const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
-const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
+const identityA: IdentityData = { id: "1", type: "admin", displayName: "A" };
+const identityB: IdentityData = { id: "2", type: "admin", displayName: "B" };
 
 describe("Folder Level Permissions - Security Checks", () => {
     const { aco: acoIdentityA } = useGraphQlHandler({ identity: identityA });

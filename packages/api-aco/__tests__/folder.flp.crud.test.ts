@@ -1,7 +1,7 @@
 import { describe, it, test, expect } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-import { SecurityIdentity } from "@webiny/api-security/types";
 import { expectNotAuthorized } from "./utils/expectNotAuthorized";
+import { AuthenticatedIdentity } from "@webiny/api-core/features/IdentityContext";
 
 const FOLDER_TYPE = "test-folders";
 
@@ -443,8 +443,8 @@ describe("Folder Level Permissions", () => {
     });
 
     test("hasNonInheritedPermissions and canManagePermissions GraphQL field must show correct values", async () => {
-        const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
-        const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
+        const identityA = new AuthenticatedIdentity({ id: "1", type: "admin", displayName: "A" });
+        const identityB = new AuthenticatedIdentity({ id: "2", type: "admin", displayName: "B" });
 
         const { aco: acoIdentityA } = useGraphQlHandler({ identity: identityA });
         const { aco: acoIdentityB } = useGraphQlHandler({ identity: identityB, permissions: [] });
@@ -629,9 +629,9 @@ describe("Folder Level Permissions", () => {
     });
 
     test("as a user, I should not be able to delete folders that have content they cannot see", async () => {
-        const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
-        const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
-        const identityC: SecurityIdentity = { id: "3", type: "admin", displayName: "C" };
+        const identityA = new AuthenticatedIdentity({ id: "1", type: "admin", displayName: "A" });
+        const identityB = new AuthenticatedIdentity({ id: "2", type: "admin", displayName: "B" });
+        const identityC = new AuthenticatedIdentity({ id: "3", type: "admin", displayName: "C" });
 
         const gqlIdentityA = useGraphQlHandler({ identity: identityA });
         const gqlIdentityC = useGraphQlHandler({ identity: identityC, permissions: [] });

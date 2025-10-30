@@ -1,9 +1,10 @@
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
-import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
-import i18nPlugins from "@webiny/api-i18n/graphql";
-import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
+import { createApiCore } from "@webiny/api-core";
+import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
+import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
+import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-so-ddb";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
@@ -39,8 +40,11 @@ const elasticsearchClient = createElasticsearchClient({
 
 export const handler = createHandler({
     plugins: [
-        createWcpContext(),
-        createWcpGraphQL(),
+        createApiCore({
+            tenancyStorageOperations: tenancyStorageOperations({ documentClient }),
+            securityStorageOperations: securityStorageOperations({ documentClient }),
+            usersStorageOperations: createAdminUsersStorageOperations({ documentClient })
+        }),
         dynamoDbPlugins(),
         graphqlPlugins({ debug }),
         elasticsearchClientContext(elasticsearchClient),
@@ -48,12 +52,10 @@ export const handler = createHandler({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({ documentClient })
         }),
-        securityPlugins({ documentClient }),
+        securityPlugins(),
         createLogger({
             documentClient
         }),
-        i18nPlugins(),
-        i18nDynamoDbStorageOperations(),
         createWebsockets(),
         createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({

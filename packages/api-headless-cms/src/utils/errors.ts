@@ -5,7 +5,7 @@ export class NotAuthorizedError extends BaseError {
 
     constructor(message?: string) {
         super({
-            message: message || "Not authorized to perform this action"
+            message: message || "Not authorized!"
         });
     }
 }

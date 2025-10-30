@@ -1,4 +1,4 @@
-import { IdentityContext } from "@webiny/api-security/features/IdentityContext";
+import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import type { CanAccessFolderParams, ICanAccessFolder } from "./ICanAccessFolder.js";
 
 export class CanAccessFolder implements ICanAccessFolder {

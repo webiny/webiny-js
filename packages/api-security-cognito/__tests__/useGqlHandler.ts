@@ -1,11 +1,7 @@
-import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
 import type { PluginCollection } from "@webiny/plugins/types";
-import { authenticateUsingHttpHeader } from "@webiny/api-security/plugins/authenticateUsingHttpHeader";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import adminUsersPlugins from "@webiny/api-admin-users";
-import { createSystemContext, createSystemGraphQL } from "@webiny/api-system";
 
 // Graphql
 import {
@@ -25,6 +21,10 @@ import { createTenancyAndSecurity } from "./tenancySecurity";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import cognitoAuthentication from "~/index";
 import { createApiCore } from "@webiny/api-core";
+import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
+import type { SecurityStorageOperations } from "@webiny/api-core/types/security.js";
+import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import { authenticateUsingHttpHeader } from "@webiny/api-core/legacy/security/plugins/authenticateUsingHttpHeader.js";
 
 interface UseGqlHandlerParams {
     fullAccess?: boolean;
@@ -44,21 +44,19 @@ export default (opts: UseGqlHandlerParams = {}) => {
     const defaults = { fullAccess: false, plugins: [] };
     opts = Object.assign({}, defaults, opts);
 
+    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
+    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
     const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
         plugins: [
-            createApiCore(),
-            createSystemContext(),
-            createSystemGraphQL(),
-            createWcpContext(),
-            createWcpGraphQL(),
-            ...createTenancyAndSecurity({ fullAccess: opts.fullAccess }),
-            adminUsersPlugins({
-                storageOperations: adminUsersStorage.storageOperations
+            createApiCore({
+                tenancyStorageOperations: tenancyStorage.storageOperations,
+                securityStorageOperations: securityStorage.storageOperations,
+                usersStorageOperations: adminUsersStorage.storageOperations
             }),
-
+            ...createTenancyAndSecurity({ fullAccess: opts.fullAccess }),
             // No interaction with actual Cognito is performed in tests. Passing "test" values is enough.
             cognitoAuthentication({
                 region: "test",

@@ -1,4 +1,4 @@
-import { EventPublisher, EventPublisher as EventPublisherAbstraction } from "@webiny/api-core";
+import { EventPublisher, EventPublisher as EventPublisherAbstraction } from "@webiny/api-core/features/EventPublisher";
 import { createImplementation } from "@webiny/di-container";
 import { CreateFolderUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { FolderBeforeCreateEvent, FolderAfterCreateEvent } from "./events.js";

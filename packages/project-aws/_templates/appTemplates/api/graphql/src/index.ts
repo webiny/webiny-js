@@ -1,11 +1,10 @@
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
-import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
 import { createApiCore } from "@webiny/api-core";
-import { createSystemContext, createSystemGraphQL } from "@webiny/api-system";
-import i18nPlugins from "@webiny/api-i18n/graphql";
-import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
+import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
+import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
+import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-so-ddb";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
@@ -38,28 +37,22 @@ const documentClient = getDocumentClient();
 
 export const handler = createHandler({
     plugins: [
-        createApiCore(),
-        createSystemContext(),
-        createSystemGraphQL(),
-        createWcpContext(),
-        createWcpGraphQL(),
+        createApiCore({
+            tenancyStorageOperations: tenancyStorageOperations({ documentClient }),
+            securityStorageOperations: securityStorageOperations({ documentClient }),
+            usersStorageOperations: createAdminUsersStorageOperations({ documentClient })
+        }),
         dynamoDbPlugins(),
         graphqlPlugins({ debug }),
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({ documentClient })
         }),
-        securityPlugins({ documentClient }),
-        createLogger({
-            documentClient
-        }),
-        i18nPlugins(),
-        i18nDynamoDbStorageOperations(),
+        securityPlugins(),
+        createLogger({ documentClient }),
         createWebsockets(),
         createHeadlessCmsContext({
-            storageOperations: createHeadlessCmsStorageOperations({
-                documentClient
-            })
+            storageOperations: createHeadlessCmsStorageOperations({ documentClient })
         }),
         createHeadlessCmsGraphQL(),
         createMailerContext(),
@@ -68,16 +61,12 @@ export const handler = createHandler({
         createRecordLocking(),
         createBackgroundTasks(),
         createFileManagerContext({
-            storageOperations: createFileManagerStorageOperations({
-                documentClient
-            })
+            storageOperations: createFileManagerStorageOperations({ documentClient })
         }),
         createFileManagerGraphQL(),
         createAssetDelivery({ documentClient }),
         fileManagerS3(),
-        createAco({
-            documentClient
-        }),
+        createAco({ documentClient }),
         createWorkflows(),
         createHeadlessCmsWorkflows(),
         createAuditLogs(),

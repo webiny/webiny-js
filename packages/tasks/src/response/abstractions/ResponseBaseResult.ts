@@ -5,5 +5,4 @@ export interface IResponseBaseResult {
     webinyTaskId: string;
     webinyTaskDefinitionId: string;
     tenant: string;
-    locale: string;
 }

@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import type { DomainEvent } from "@webiny/api-core";
+import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import {
     FolderAfterUpdateHandler,
     type FolderAfterUpdatePayload

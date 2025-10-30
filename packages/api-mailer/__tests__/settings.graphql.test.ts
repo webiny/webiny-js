@@ -203,11 +203,9 @@ describe("Mailer Settings GraphQL", () => {
                     saveSettings: {
                         data: null,
                         error: {
-                            code: "SECURITY_NOT_AUTHORIZED",
-                            data: {
-                                reason: "Not allowed to update the mailer settings."
-                            },
-                            message: "Not authorized!"
+                            data: null,
+                            code: "NOT_AUTHORIZED",
+                            message: "Not allowed to update the mailer settings."
                         }
                     }
                 }

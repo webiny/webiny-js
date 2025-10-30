@@ -29,7 +29,7 @@ export class NotAuthorizedError extends BaseError<NotAuthorizedErrorData> {
 
     constructor(data: NotAuthorizedErrorData = {}) {
         super({
-            message: data.message || "Not authorized to perform this action",
+            message: data.message || "Not authorized!",
             data
         });
     }

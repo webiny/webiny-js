@@ -1,6 +1,6 @@
-import { GroupAfterCreateHandler } from "@webiny/api-security/features/groups/CreateGroup";
-import { GroupAfterUpdateHandler } from "@webiny/api-security/features/groups/UpdateGroup";
-import { GroupAfterDeleteHandler } from "@webiny/api-security/features/groups/DeleteGroup";
+import { GroupAfterCreateHandler } from "@webiny/api-core/features/CreateGroup";
+import { GroupAfterUpdateHandler } from "@webiny/api-core/features/UpdateGroup";
+import { GroupAfterDeleteHandler } from "@webiny/api-core/features/DeleteGroup";
 import { AuditLogGroupAfterCreateHandler } from "./handlers/AuditLogGroupAfterCreateHandler.js";
 import { AuditLogGroupAfterUpdateHandler } from "./handlers/AuditLogGroupAfterUpdateHandler.js";
 import { AuditLogGroupAfterDeleteHandler } from "./handlers/AuditLogGroupAfterDeleteHandler.js";

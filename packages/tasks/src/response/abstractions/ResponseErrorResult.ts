@@ -12,7 +12,6 @@ export interface IResponseError {
 export interface IResponseErrorParams {
     error: IResponseError | Error;
     tenant?: string;
-    locale?: string;
     webinyTaskId?: string;
 }
 

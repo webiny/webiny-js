@@ -1,35 +1,30 @@
-import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
-import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
-import type {
-    SecurityIdentity,
-    SecurityPermission,
-    SecurityStorageOperations
-} from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import { createPermissions } from "./helpers";
 import type { MailerContext } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import type { TenancyStorageOperations } from "@webiny/api-tenancy/types";
+import { SecurityPermission, SecurityStorageOperations } from "@webiny/api-core/types/security";
+import { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import { TenancyStorageOperations } from "@webiny/api-core/types/tenancy";
+import { createApiCore } from "@webiny/api-core";
+import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
 
 interface Config {
     permissions: SecurityPermission[];
-    identity?: SecurityIdentity | null;
+    identity?: IdentityData | null;
 }
 
 export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
     const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
     const securityStorage = getStorageOps<SecurityStorageOperations>("security");
+    const usersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
 
     return [
-        createTenancyContext({
-            storageOperations: tenancyStorage.storageOperations
+        createApiCore({
+            tenancyStorageOperations: tenancyStorage.storageOperations,
+            securityStorageOperations: securityStorage.storageOperations,
+            usersStorageOperations: usersStorage.storageOperations
         }),
-        createTenancyGraphQL(),
-        createSecurityContext({
-            storageOperations: securityStorage.storageOperations
-        }),
-        createSecurityGraphQL(),
         new ContextPlugin<MailerContext>(context => {
             context.tenancy.setCurrentTenant({
                 id: "root",
@@ -40,6 +35,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
                 settings: {
                     domains: []
                 },
+                isInstalled: true,
                 tags: [],
                 webinyVersion: context.WEBINY_VERSION,
                 createdOn: new Date().toISOString(),

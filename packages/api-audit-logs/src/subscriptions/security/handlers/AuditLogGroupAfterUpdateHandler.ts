@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { GroupAfterUpdateHandler } from "@webiny/api-security/features/groups/UpdateGroup";
+import { GroupAfterUpdateHandler } from "@webiny/api-core/features/UpdateGroup";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import type { AuditLogsContext } from "~/types.js";

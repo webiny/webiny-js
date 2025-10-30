@@ -1,6 +1,6 @@
-import { UserAfterCreateHandler } from "@webiny/api-admin-users/features/CreateUser";
-import { UserAfterUpdateHandler } from "@webiny/api-admin-users/features/UpdateUser";
-import { UserAfterDeleteHandler } from "@webiny/api-admin-users/features/DeleteUser";
+import { UserAfterCreateHandler } from "@webiny/api-core/features/CreateUser";
+import { UserAfterUpdateHandler } from "@webiny/api-core/features/UpdateUser";
+import { UserAfterDeleteHandler } from "@webiny/api-core/features/DeleteUser";
 import { AuditLogUserAfterCreateHandler } from "./handlers/AuditLogUserAfterCreateHandler.js";
 import { AuditLogUserAfterUpdateHandler } from "./handlers/AuditLogUserAfterUpdateHandler.js";
 import { AuditLogUserAfterDeleteHandler } from "./handlers/AuditLogUserAfterDeleteHandler.js";

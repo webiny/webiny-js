@@ -65,16 +65,16 @@ import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import type {
-    SecurityIdentity,
     SecurityPermission,
     SecurityStorageOperations
 } from "@webiny/api-core/types/security.js";
 import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
 import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity | null;
+    identity?: IdentityData | null;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: any[];
     testProjectLicense?: DecryptedWcpProjectLicense;
@@ -95,12 +95,12 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const documentClient = getDocumentClient();
     const { permissions, identity, plugins = [] } = params;
 
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
     const securityStorage = getStorageOps<SecurityStorageOperations>("security");
     const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
 

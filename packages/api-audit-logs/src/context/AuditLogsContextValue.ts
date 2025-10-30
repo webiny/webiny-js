@@ -14,7 +14,7 @@ import { convertExpiresAtDaysToDate } from "~/utils/expiresAt.js";
 import type { IAuditLog, IAuditLogCreatedBy } from "~/storage/types.js";
 import { mdbid } from "@webiny/utils/mdbid.js";
 import type { IStorage, IStorageListParams } from "~/storage/abstractions/Storage.js";
-import { NotAuthorizedError } from "@webiny/api-security";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 
 export interface IAuditLogsContextValueParams {
     getContext: () => AuditLogsContext;

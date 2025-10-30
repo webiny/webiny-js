@@ -1,46 +1,51 @@
 import { createApiCore } from "@webiny/api-core";
 import createGraphQLHandler from "@webiny/handler-graphql";
-import i18nContext from "@webiny/api-i18n/graphql/context";
 import { createEventHandler, createHandler } from "@webiny/handler-aws/raw";
 import type { AcoContext } from "~/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createAco } from "~/index";
-import type { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
-import createAdminUsers from "@webiny/api-admin-users";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createIdentity } from "./identity";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
-import type { AdminUsersStorageOperations } from "@webiny/api-admin-users/types.js";
+import {
+    SecurityPermission,
+    type SecurityStorageOperations
+} from "@webiny/api-core/types/security.js";
+import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
+import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 
 export interface UseHandlerParams {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
 }
 
 export const useHandler = (params: UseHandlerParams = {}) => {
     const documentClient = getDocumentClient();
-    const { permissions, identity, plugins = [] } = params;
+    const { permissions, plugins = [] } = params;
 
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const i18nStorage = getStorageOps<any[]>("i18n");
+    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
+    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
     const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+
+    const testProjectLicense = createTestWcpLicense();
 
     const handler = createHandler<any, AcoContext>({
         plugins: [
-            createApiCore(),
+            createApiCore({
+                tenancyStorageOperations: tenancyStorage.storageOperations,
+                securityStorageOperations: securityStorage.storageOperations,
+                usersStorageOperations: adminUsersStorage.storageOperations,
+                testProjectLicense
+            }),
             ...cmsStorage.plugins,
             createGraphQLHandler(),
-            ...createTenancyAndSecurity({ permissions, identity: identity || createIdentity() }),
-            createAdminUsers({ storageOperations: adminUsersStorage.storageOperations }),
-            i18nContext(),
-            ...i18nStorage.storageOperations,
-            mockLocalesPlugins(),
+            ...createTenancyAndSecurity({ permissions, identity: createIdentity() }),
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations
             }),

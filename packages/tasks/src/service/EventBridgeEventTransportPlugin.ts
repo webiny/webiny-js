@@ -12,7 +12,6 @@ import type { GenericRecord } from "@webiny/api/types.js";
 
 class EventBridgeService implements ITaskService {
     protected readonly getTenant: () => string;
-    protected readonly getLocale: () => string;
     private readonly client: EventBridgeClient;
 
     public constructor(params: ITaskServiceCreatePluginParams) {
@@ -20,7 +19,6 @@ class EventBridgeService implements ITaskService {
             region: process.env.AWS_REGION
         });
         this.getTenant = params.getTenant;
-        this.getLocale = params.getLocale;
     }
 
     public async send(task: ITaskServiceTask, delay: number): Promise<PutEventsCommandOutput> {
@@ -32,7 +30,6 @@ class EventBridgeService implements ITaskService {
             webinyTaskId: task.id,
             webinyTaskDefinitionId: task.definitionId,
             tenant: this.getTenant(),
-            locale: this.getLocale(),
             delay
         };
 

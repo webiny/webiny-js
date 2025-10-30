@@ -1,4 +1,4 @@
-import type { IdentityContext } from "@webiny/api-security/features/IdentityContext";
+import type { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import type {
     CanAccessFolderContentParams,
     ICanAccessFolderContent

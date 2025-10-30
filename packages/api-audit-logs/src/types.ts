@@ -1,20 +1,15 @@
-import type { SecurityContext } from "@webiny/api-security/types.js";
-import type { Context as BaseContext } from "@webiny/api";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { Topic } from "@webiny/pubsub/types.js";
 import type { MailerContext } from "@webiny/api-mailer/types.js";
-import type { TenancyContext } from "@webiny/api-tenancy/types.js";
 import type { IAuditLog } from "~/storage/types.js";
 import type { FileManagerContext } from "@webiny/api-file-manager/types.js";
 import type { AcoContext } from "@webiny/api-aco/types.js";
 import type { IStorageListParams } from "~/storage/abstractions/Storage.js";
 import type { Action, App, Entity } from "@webiny/common-audit-logs/types.js";
 import type { DbContext } from "@webiny/handler-db/types.js";
-import type { AdminUsersContext } from "@webiny/api-admin-users/types.js";
-import type { I18NContext } from "@webiny/api-i18n/types.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
-import type { WcpContext } from "@webiny/api-wcp/types.js";
 import type { WebsiteBuilderContext } from "@webiny/api-website-builder";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 export interface AuditLogPayload
     extends Omit<IAuditLog, "id" | "tenant" | "createdOn" | "createdBy" | "expiresAt" | "content"> {
@@ -80,17 +75,12 @@ export interface AuditLogsContextValue {
 }
 
 export interface AuditLogsContext
-    extends BaseContext,
+    extends ApiCoreContext,
         Pick<CmsContext, "cms">,
-        Pick<WcpContext, "wcp">,
-        Pick<AdminUsersContext, "adminUsers">,
-        Pick<I18NContext, "i18n">,
         Pick<DbContext, "db">,
         Pick<AcoContext, "aco">,
         Pick<MailerContext, "mailer">,
         Pick<FileManagerContext, "fileManager">,
-        Pick<SecurityContext, "security">,
-        Pick<TenancyContext, "tenancy">,
         Pick<WebsiteBuilderContext, "websiteBuilder"> {
     auditLogs: AuditLogsContextValue;
 }

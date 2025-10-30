@@ -1,5 +1,5 @@
 import WebinyError from "@webiny/error";
-import { TeamAfterCreateHandler } from "@webiny/api-security/features/teams/CreateTeam";
+import { TeamAfterCreateHandler } from "@webiny/api-core/features/CreateTeam";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import type { AuditLogsContext } from "~/types.js";

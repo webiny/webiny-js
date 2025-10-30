@@ -1,6 +1,7 @@
 import WebinyError from "@webiny/error";
 import type { AcoContext, Folder } from "~/types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 
 interface EnsureFolderIsEmptyParams {
     context: AcoContext;

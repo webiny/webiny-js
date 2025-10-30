@@ -1,4 +1,4 @@
-import { EventPublisher, EventPublisher as EventPublisherAbstraction } from "@webiny/api-core";
+import { EventPublisher, EventPublisher as EventPublisherAbstraction } from "@webiny/api-core/features/EventPublisher";
 import { DeleteFolderUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { FolderBeforeDeleteEvent, FolderAfterDeleteEvent } from "./events.js";
 import type { DeleteFolderParams, AcoFolderStorageOperations } from "~/folder/folder.types.js";

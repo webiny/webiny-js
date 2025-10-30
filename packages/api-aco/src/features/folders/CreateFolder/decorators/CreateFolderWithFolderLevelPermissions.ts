@@ -1,8 +1,8 @@
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { CreateFolderUseCase } from "../abstractions.js";
 import type { CreateFolderParams } from "~/folder/folder.types.js";
-import { NotAuthorizedError } from "@webiny/api-security";
 import { createDecorator } from "@webiny/feature/api";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 
 class CreateFolderWithFolderLevelPermissionsImpl implements CreateFolderUseCase.Interface {
     private folderLevelPermissions: FolderLevelPermissions.Interface;

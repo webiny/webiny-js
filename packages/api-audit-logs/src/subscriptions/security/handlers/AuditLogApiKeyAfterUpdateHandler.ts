@@ -1,9 +1,9 @@
 import WebinyError from "@webiny/error";
-import { ApiKeyAfterUpdateHandler } from "@webiny/api-security/features/apiKeys/UpdateApiKey";
+import { ApiKeyAfterUpdateHandler } from "@webiny/api-core/features/UpdateApiKey";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import type { AuditLogsContext } from "~/types.js";
-import type { ApiKey } from "@webiny/api-security/types.js";
+import type { ApiKey } from "@webiny/api-core/types/security.js";
 
 /**
  * We need to remove the token from the API Key object, as it is a security risk.

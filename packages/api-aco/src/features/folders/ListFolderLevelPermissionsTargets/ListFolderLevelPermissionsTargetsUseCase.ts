@@ -4,9 +4,9 @@ import type {
     FolderLevelPermissionsTarget,
     FolderLevelPermissionsTargetListMeta
 } from "~/folder/folder.types.js";
-import { ListUsersUseCase } from "@webiny/api-admin-users/features/ListUsers";
-import { ListTeamsUseCase } from "@webiny/api-security/features/teams/ListTeams";
 import { createImplementation } from "@webiny/di-container";
+import { ListUsersUseCase } from "@webiny/api-core/features/ListUsers";
+import { ListTeamsUseCase } from "@webiny/api-core/features/ListTeams";
 
 class ListFolderLevelPermissionsTargetsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

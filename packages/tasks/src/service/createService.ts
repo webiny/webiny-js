@@ -1,3 +1,4 @@
+import { getLocale as getBaseLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 import type { Context } from "~/types.js";
 import type { ITaskService } from "~/plugins/index.js";
 import { TaskServicePlugin } from "~/plugins/index.js";
@@ -22,12 +23,8 @@ export const createService = (params: ICreateTransport): ITaskService => {
     const getTenant = (): string => {
         return params.context.tenancy.getCurrentTenant().id;
     };
-    const getLocale = (): string => {
-        return params.context.cms.getLocale().code;
-    };
 
     return plugin.createService({
-        getTenant,
-        getLocale
+        getTenant
     });
 };

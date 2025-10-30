@@ -1058,7 +1058,7 @@ describe("`folder` CRUD", () => {
         const notAuthorizedResponse = {
             data: null,
             error: {
-                code: "SECURITY_NOT_AUTHORIZED",
+                code: "NOT_AUTHORIZED",
                 message: "Not authorized!",
                 data: null
             }

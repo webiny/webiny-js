@@ -75,7 +75,7 @@ class SecureGetFileByUrl implements IGetFileByUrl {
 
     execute(url: string): Promise<File | undefined> {
         if (!this.security.getIdentity()) {
-            throw new NotAuthorizedError("You're not authorized to edit this file!");
+            throw new NotAuthorizedError({ message: "You're not authorized to edit this file!" });
         }
 
         return this.useCase.execute(url);

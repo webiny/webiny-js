@@ -1,7 +1,7 @@
-import type { Security } from "@webiny/api-security/types";
+import type { IIdentityContext } from "@webiny/api-core/features/IdentityContext";
 
 export const createGetSecurity = () => {
-    return (): Pick<Security, "withoutAuthorization"> => {
+    return (): { withoutAuthorization: IIdentityContext["withoutAuthorization"]} => {
         return {
             withoutAuthorization: async cb => {
                 return await cb();

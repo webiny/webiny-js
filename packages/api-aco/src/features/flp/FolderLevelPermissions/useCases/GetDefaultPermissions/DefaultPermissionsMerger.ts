@@ -1,6 +1,5 @@
+import { SecurityIdentity, SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { FolderAccessLevel, FolderPermission } from "~/flp/flp.types.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
-import type { SecurityPermission } from "@webiny/api-security/types.js";
 
 export class DefaultPermissionsMerger {
     static merge(
