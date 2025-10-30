@@ -21,13 +21,23 @@ interface IError {
 }
 
 export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepository {
-    #loading;
-    #error;
-    readonly #gateway;
+    private readonly _loading;
+    private readonly _error;
+    private _actionLoading: boolean = false;
+    private _actionError: IGenericError | null = null;
+    private readonly gateway;
+
+    public get actionLoading(): boolean {
+        return this._actionLoading;
+    }
+
+    public get actionError(): IGenericError | null {
+        return this._actionError;
+    }
 
     public get loading(): boolean {
-        for (const key in this.#loading) {
-            if (this.#loading[key]) {
+        for (const key in this._loading) {
+            if (this._loading[key]) {
                 return true;
             }
         }
@@ -35,21 +45,21 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
     }
 
     public get error(): IGenericError | null {
-        const errors = Object.keys(this.#error).filter(key => !!this.#error[key]);
+        const errors = Object.keys(this._error).filter(key => !!this._error[key]);
         if (errors.length === 0) {
             return null;
         }
         return {
             message: "One or more errors occurred.",
             code: "MULTIPLE_ERRORS",
-            data: this.#error
+            data: this._error
         };
     }
 
     public constructor(params: IWorkflowStatesWidgetRepositoryParams) {
-        this.#gateway = params.gateway;
-        this.#error = observable.object<IError>({});
-        this.#loading = observable.object<ILoading>({});
+        this.gateway = params.gateway;
+        this._error = observable.object<IError>({});
+        this._loading = observable.object<ILoading>({});
 
         makeAutoObservable(this);
     }
@@ -59,18 +69,18 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
     ): Promise<IWorkflowStatesWidgetRepositoryListResult> {
         const key = `own.${state}`;
         runInAction(() => {
-            this.#loading[key] = true;
-            this.#error[key] = null;
+            this._loading[key] = true;
+            this._error[key] = null;
         });
-        const result = await this.#gateway.listOwnStates({
+        const result = await this.gateway.listOwnStates({
             where: {
                 state
             },
             limit: 5
         });
         runInAction(() => {
-            this.#loading[key] = false;
-            this.#error[key] = result.error;
+            this._loading[key] = false;
+            this._error[key] = result.error;
         });
         return {
             items: result.data || [],
@@ -83,18 +93,18 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
     ): Promise<IWorkflowStatesWidgetRepositoryListResult> {
         const key = `requested.${state}`;
         runInAction(() => {
-            this.#loading[key] = true;
-            this.#error[key] = null;
+            this._loading[key] = true;
+            this._error[key] = null;
         });
-        const result = await this.#gateway.listRequestedStates({
+        const result = await this.gateway.listRequestedStates({
             where: {
                 state
             },
             limit: 5
         });
         runInAction(() => {
-            this.#loading[key] = false;
-            this.#error[key] = result.error;
+            this._loading[key] = false;
+            this._error[key] = result.error;
         });
         return {
             items: result.data || [],
@@ -105,15 +115,14 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
     public async approveState(
         params: IWorkflowStatesWidgetRepositoryApproveStateParams
     ): Promise<IWorkflowState | null> {
-        const key = `approve.${params.id}`;
         runInAction(() => {
-            this.#loading[key] = true;
-            this.#error[key] = null;
+            this._actionLoading = true;
+            this._actionError = null;
         });
-        const result = await this.#gateway.approveState(params);
+        const result = await this.gateway.approveState(params);
         runInAction(() => {
-            this.#loading[key] = false;
-            this.#error[key] = result.error;
+            this._actionLoading = false;
+            this._actionError = result.error;
         });
         return result.data || null;
     }
@@ -121,15 +130,14 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
     public async declineState(
         params: IWorkflowStatesWidgetRepositoryDeclineStateParams
     ): Promise<IWorkflowState | null> {
-        const key = `decline.${params.id}`;
         runInAction(() => {
-            this.#loading[key] = true;
-            this.#error[key] = null;
+            this._actionLoading = true;
+            this._actionError = null;
         });
-        const result = await this.#gateway.declineState(params);
+        const result = await this.gateway.declineState(params);
         runInAction(() => {
-            this.#loading[key] = false;
-            this.#error[key] = result.error;
+            this._actionLoading = false;
+            this._actionError = result.error;
         });
         return result.data || null;
     }
