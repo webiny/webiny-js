@@ -9,7 +9,14 @@ import { AccordionItemDragHandle } from "~/Accordion/components/AccordionItemDra
 
 type AccordionTriggerProps = Pick<
     AccordionItemProps,
-    "title" | "description" | "icon" | "handle" | "interactive" | "actions" | "draggable"
+    | "title"
+    | "description"
+    | "colorMark"
+    | "icon"
+    | "handle"
+    | "interactive"
+    | "actions"
+    | "draggable"
 >;
 
 const OpenCloseIndicator = () => {
@@ -28,6 +35,7 @@ const OpenCloseIndicator = () => {
 const AccordionTrigger = ({
     title,
     description,
+    colorMark,
     actions,
     icon,
     interactive = true,
@@ -76,6 +84,12 @@ const AccordionTrigger = ({
                 )}
             >
                 {draggable ? <AccordionItemDragHandle /> : null}
+                {colorMark && (
+                    <div
+                        style={{ backgroundColor: colorMark }}
+                        className={"block w-[4px] h-[48px] rounded-sm ml-sm"}
+                    />
+                )}
                 <div className={"w-full flex justify-between items-center px-md py-sm-extra"}>
                     {icon ? <div className={"mr-md"}>{icon}</div> : null}
                     <div className={"flex flex-col gap-xxs flex-grow text-left"}>
