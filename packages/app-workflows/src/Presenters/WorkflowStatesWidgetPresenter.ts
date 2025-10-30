@@ -30,70 +30,75 @@ interface IWorkflowStatesData {
     totals: ITotals[];
 }
 
-const toResultData = (key: WorkflowStateValue) => {
-    
-    return (input: IWorkflowStatesWidgetRepositoryListResult): IResultData =>  {
+const mapListStatesResponse = (key: WorkflowStateValue) => {
+    return (input: IWorkflowStatesWidgetRepositoryListResult): IResultData => {
         return {
             key,
             items: input.items,
             totalCount: input.totalCount
         };
-        
-    }
-}
+    };
+};
 
-const toResponseData = (results: IResultData[]): IWorkflowStatesData => {
-        return results.reduce<IWorkflowStatesData>(
-            (output, result) => {
-                return {
-                    items: output.items.concat(result.items),
-                    totals: output.totals.concat({
-                        key: result.key,
-                        value: result.totalCount
-                    })
-                };
-            },
-            {
-                items: [],
-                totals: []
-            }
-        );
-}
+const mapPromiseAllResponse = (results: IResultData[]): IWorkflowStatesData => {
+    return results.reduce<IWorkflowStatesData>(
+        (output, result) => {
+            return {
+                items: output.items.concat(result.items),
+                totals: output.totals.concat({
+                    key: result.key,
+                    value: result.totalCount
+                })
+            };
+        },
+        {
+            items: [],
+            totals: []
+        }
+    );
+};
 
 export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPresenter {
-    readonly #repository;
-    readonly #type: "own" | "requested";
-    readonly #items;
-    readonly #totals;
-    #dialog: "approve" | "decline" | "approve:success" | "decline:success" | null = null;
-    #state: IWorkflowState | null = null;
+    readonly type: "own" | "requested";
+    private readonly repository;
+    private readonly items;
+    private readonly totals;
+    private dialog: "approve" | "decline" | "approve:success" | "decline:success" | null;
+    private state: IWorkflowState | null;
 
     public get vm(): IWorkflowStatesWidgetPresenterViewModel {
-        const approved = this.#totals.find(t => t.key === WorkflowStateValue.approved);
-        const inReview = this.#totals.find(t => t.key === WorkflowStateValue.inReview);
-        const rejected = this.#totals.find(t => t.key === WorkflowStateValue.rejected);
-        const items = toJS(this.#items);
+        const approved = this.totals.find(t => t.key === WorkflowStateValue.approved);
+        const inReview = this.totals.find(t => t.key === WorkflowStateValue.inReview);
+        const rejected = this.totals.find(t => t.key === WorkflowStateValue.rejected);
+        const items = toJS(this.items);
+
         return {
-            loading: this.#repository.loading,
-            error: this.#repository.error,
+            loading: this.repository.loading,
+            error: this.repository.error,
             approved: items.filter(item => item.state === WorkflowStateValue.approved),
             rejected: items.filter(item => item.state === WorkflowStateValue.rejected),
             inReview: items.filter(item => item.state === WorkflowStateValue.inReview),
             approvedCount: approved?.value || 0,
             inReviewCount: inReview?.value || 0,
             rejectedCount: rejected?.value || 0,
-            showApproveDialog: this.#dialog === "approve",
-            showApproveSuccessDialog: this.#dialog === "approve:success",
-            showDeclineDialog: this.#dialog === "decline",
-            showDeclineSuccessDialog: this.#dialog === "decline:success"
+            dialogLoading: this.repository.actionLoading,
+            dialogError: this.repository.actionError,
+            showApproveDialog: this.dialog === "approve" && this.state ? this.state : null,
+            showApproveSuccessDialog:
+                this.dialog === "approve:success" && this.state ? this.state : null,
+            showDeclineDialog: this.dialog === "decline" && this.state ? this.state : null,
+            showDeclineSuccessDialog:
+                this.dialog === "decline:success" && this.state ? this.state : null
         };
     }
 
     public constructor(params: IWorkflowStatesWidgetPresenterParams) {
-        this.#repository = params.repository;
-        this.#type = params.type;
-        this.#items = observable.array<IWorkflowState>([]);
-        this.#totals = observable.array<ITotals>([]);
+        this.repository = params.repository;
+        this.type = params.type;
+        this.items = observable.array<IWorkflowState>([]);
+        this.totals = observable.array<ITotals>([]);
+        this.dialog = null;
+        this.state = null;
 
         makeAutoObservable(this);
 
@@ -101,50 +106,72 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
     }
 
     private async init(): Promise<void> {
-        const result = await (this.#type === "requested" ? this.initRequested() : this.initOwn());
+        const result = await (this.type === "requested" ? this.initRequested() : this.initOwn());
 
         runInAction(() => {
-            this.#items.replace(result.items);
-            this.#totals.replace(result.totals);
+            this.items.replace(result.items);
+            this.totals.replace(result.totals);
         });
     }
 
     private async initOwn() {
         return await Promise.all([
-            this.#repository
+            this.repository
                 .listOwnStates(WorkflowStateValue.inReview)
-                .then(toResultData(WorkflowStateValue.inReview)),
-            this.#repository
+                .then(mapListStatesResponse(WorkflowStateValue.inReview)),
+            this.repository
                 .listOwnStates(WorkflowStateValue.approved)
-                .then(toResultData(WorkflowStateValue.approved)),
-            this.#repository
+                .then(mapListStatesResponse(WorkflowStateValue.approved)),
+            this.repository
                 .listOwnStates(WorkflowStateValue.rejected)
-                .then(toResultData(WorkflowStateValue.rejected))
-        ]).then(toResponseData);
+                .then(mapListStatesResponse(WorkflowStateValue.rejected))
+        ]).then(mapPromiseAllResponse);
     }
 
     private async initRequested() {
         return await Promise.all([
-            this.#repository
+            this.repository
                 .listRequestedStates(WorkflowStateValue.inReview)
-                .then(toResultData(WorkflowStateValue.inReview)),
-            this.#repository
+                .then(mapListStatesResponse(WorkflowStateValue.inReview)),
+            this.repository
                 .listRequestedStates(WorkflowStateValue.approved)
-                .then(toResultData(WorkflowStateValue.approved)),
-            this.#repository
+                .then(mapListStatesResponse(WorkflowStateValue.approved)),
+            this.repository
                 .listRequestedStates(WorkflowStateValue.rejected)
-                .then(toResultData(WorkflowStateValue.rejected))
-        ]).then(toResponseData);
+                .then(mapListStatesResponse(WorkflowStateValue.rejected))
+        ]).then(mapPromiseAllResponse);
+    }
+
+    private increaseTotals(key: WorkflowStateValue): void {
+        const total = this.totals.find(t => t.key === key);
+        if (total) {
+            total.value = total.value + 1;
+            return;
+        }
+        this.totals.push({
+            key,
+            value: 1
+        });
+    }
+
+    private decreaseTotals(key: WorkflowStateValue): void {
+        const total = this.totals.find(t => t.key === key);
+        if (!total?.value) {
+            return;
+        }
+
+        total.value = total.value - 1;
+        return;
     }
 
     approveState = async (state: IWorkflowState, comment?: string): Promise<void> => {
-        const index = this.#items.findIndex(
+        const index = this.items.findIndex(
             item => item.id === state.id && item.state === WorkflowStateValue.inReview
         );
         if (index === -1) {
             return;
         }
-        const result = await this.#repository.approveState({
+        const result = await this.repository.approveState({
             id: state.id,
             comment
         });
@@ -152,18 +179,24 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
             return;
         }
         runInAction(() => {
-            this.#items[index] = result;
+            this.items[index] = result;
+            if (result.state === WorkflowStateValue.approved) {
+                this.increaseTotals(WorkflowStateValue.approved);
+                this.decreaseTotals(WorkflowStateValue.inReview);
+            }
+            this.state = result;
+            this.dialog = "approve:success";
         });
     };
 
     declineState = async (state: IWorkflowState, comment: string): Promise<void> => {
-        const index = this.#items.findIndex(
+        const index = this.items.findIndex(
             item => item.id === state.id && item.state === WorkflowStateValue.inReview
         );
         if (index === -1) {
             return;
         }
-        const result = await this.#repository.declineState({
+        const result = await this.repository.declineState({
             id: state.id,
             comment
         });
@@ -172,26 +205,32 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         }
 
         runInAction(() => {
-            this.#items[index] = result;
+            this.items[index] = result;
+            if (result.state === WorkflowStateValue.approved) {
+                this.increaseTotals(WorkflowStateValue.rejected);
+                this.decreaseTotals(WorkflowStateValue.inReview);
+            }
+            this.state = result;
+            this.dialog = "decline:success";
         });
     };
 
     showApproveStateDialog = (state: IWorkflowState): void => {
         runInAction(() => {
-            this.#state = state;
-            this.#dialog = "approve";
+            this.state = state;
+            this.dialog = "approve";
         });
     };
     showDeclineStateDialog = (state: IWorkflowState): void => {
         runInAction(() => {
-            this.#state = state;
-            this.#dialog = "decline";
+            this.state = state;
+            this.dialog = "decline";
         });
     };
     hideDialog = (): void => {
         runInAction(() => {
-            this.#state = null;
-            this.#dialog = null;
+            this.state = null;
+            this.dialog = null;
         });
     };
 }

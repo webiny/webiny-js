@@ -3,16 +3,18 @@ import type { IGenericError, IWorkflowState } from "~/types.js";
 export interface IWorkflowStatesWidgetPresenterViewModel {
     loading: boolean;
     error: IGenericError | null;
+    dialogLoading: boolean;
+    dialogError: IGenericError | null;
     inReview: IWorkflowState[];
     inReviewCount: number;
     approved: IWorkflowState[];
     approvedCount: number;
     rejected: IWorkflowState[];
     rejectedCount: number;
-    showApproveDialog: boolean;
-    showApproveSuccessDialog: boolean;
-    showDeclineDialog: boolean;
-    showDeclineSuccessDialog: boolean;
+    showApproveDialog: IWorkflowState | null;
+    showApproveSuccessDialog: IWorkflowState | null;
+    showDeclineDialog: IWorkflowState | null;
+    showDeclineSuccessDialog: IWorkflowState | null;
 }
 
 export interface IWorkflowStatesWidgetPresenter {

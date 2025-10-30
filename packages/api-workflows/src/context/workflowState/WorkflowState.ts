@@ -16,6 +16,11 @@ export interface IWorkflowStateParams {
     context: Pick<Context, "workflowState" | "security" | "adminUsers">;
 }
 
+interface IEnrichStepWithPermissionParams {
+    createdBy: Pick<IWorkflowStateIdentity, "id">;
+    step: IWorkflowStateRecordStep;
+}
+
 export class WorkflowState implements IWorkflowStateModel {
     public readonly context;
     readonly #record;
@@ -59,7 +64,10 @@ export class WorkflowState implements IWorkflowStateModel {
 
     public get steps() {
         return this.#record.steps.map(step => {
-            return this.enrichStepWithPermissions(step);
+            return this.enrichStepWithPermissions({
+                createdBy: this.#record.createdBy,
+                step
+            });
         });
     }
 
@@ -298,8 +306,16 @@ export class WorkflowState implements IWorkflowStateModel {
     }
 
     private enrichStepWithPermissions(
-        step: IWorkflowStateRecordStep
+        params: IEnrichStepWithPermissionParams
     ): IWorkflowStateRecordStepWithPermissions {
+        const { step, createdBy } = params;
+        const identity = this.context.security.getIdentity();
+        if (!identity?.id || createdBy.id === identity.id) {
+            return {
+                ...step,
+                isAllowedToReview: false
+            };
+        }
         const isAllowedToReview = step.teams.some(team => {
             return this.teams.some(t => {
                 return t.id === team.id;

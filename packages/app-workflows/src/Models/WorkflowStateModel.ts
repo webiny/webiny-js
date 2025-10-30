@@ -9,7 +9,7 @@ const createSnapshot = (input: IWorkflowState) => {
 };
 
 export class WorkflowStateModel implements IWorkflowStateModel {
-    #snapshot: string;
+    snapshot: string;
     public id;
     public isActive;
     public app;
@@ -28,7 +28,7 @@ export class WorkflowStateModel implements IWorkflowStateModel {
     public previousStep;
 
     public get dirty(): boolean {
-        return this.#snapshot !== createSnapshot(this.toJS());
+        return this.snapshot !== createSnapshot(this.toJS());
     }
 
     public get lastApproved(): IWorkflowStateStepModel | null {
@@ -52,7 +52,7 @@ export class WorkflowStateModel implements IWorkflowStateModel {
     }
 
     public constructor(params: IWorkflowState) {
-        this.#snapshot = createSnapshot(params);
+        this.snapshot = createSnapshot(params);
         this.id = params.id;
         this.app = params.app;
         this.title = params.title;
@@ -146,7 +146,7 @@ export class WorkflowStateModel implements IWorkflowStateModel {
     }
 
     private updateSnapshot() {
-        this.#snapshot = createSnapshot(this.toJS());
+        this.snapshot = createSnapshot(this.toJS());
     }
 
     public static create(input: IWorkflowState): IWorkflowStateModel {

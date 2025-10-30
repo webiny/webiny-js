@@ -30,17 +30,17 @@ interface IWorkflowStatesWidgetGatewayParams {
 }
 
 export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway {
-    readonly #client;
+    private readonly client;
 
     public constructor(params: IWorkflowStatesWidgetGatewayParams) {
-        this.#client = params.client;
+        this.client = params.client;
     }
 
     public async listOwnStates(
         params: IWorkflowStatesWidgetGatewayListOwnStatesParams
     ): Promise<IWorkflowStatesWidgetGatewayListOwnStatesResponse> {
         try {
-            const result = await this.#client.query<
+            const result = await this.client.query<
                 IListOwnWorkflowStatesResponse,
                 IListOwnWorkflowStatesVariables
             >({
@@ -68,7 +68,7 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
         params: IWorkflowStatesWidgetGatewayListRequestedStatesParams
     ): Promise<IWorkflowStatesWidgetGatewayListRequestedStatesResponse> {
         try {
-            const result = await this.#client.query<
+            const result = await this.client.query<
                 IListRequestedWorkflowStatesResponse,
                 IListRequestedWorkflowStatesVariables
             >({
@@ -96,7 +96,7 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
         params: IWorkflowStatesWidgetGatewayApproveStateParams
     ): Promise<IWorkflowStatesWidgetGatewayApproveStateResponse> {
         try {
-            const result = await this.#client.mutate<
+            const result = await this.client.mutate<
                 IApproveWorkflowStateStepResponse,
                 IApproveWorkflowStateStepVariables
             >({
@@ -122,7 +122,7 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
         params: IWorkflowStatesWidgetGatewayDeclineStateParams
     ): Promise<IWorkflowStatesWidgetGatewayDeclineStateResponse> {
         try {
-            const result = await this.#client.mutate<
+            const result = await this.client.mutate<
                 IRejectWorkflowStateStepResponse,
                 IRejectWorkflowStateStepVariables
             >({
