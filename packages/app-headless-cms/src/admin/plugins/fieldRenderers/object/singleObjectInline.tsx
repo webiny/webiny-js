@@ -38,25 +38,21 @@ const plugin: CmsModelFieldRendererPlugin = {
                         <Bind.ValidationContainer>
                             <ParentFieldProvider value={bindProps.value} path={Bind.parentName}>
                                 <ParentValueIndexProvider index={-1}>
-                                    <div
+                                    <Heading
+                                        level={5}
                                         className={
-                                            "relative mb-xl mt-md border-b-sm border-accent-default"
+                                            "webiny_group-label-text mt-xl mb-sm relative text-accent-primary after:absolute after:z-0 after:inset-x-0 after:top-1/2 after:-translate-y-1/2 after:block after:content-[''] after:h-px after:border-primary-300 after:border-b-1 after:flex-1 after:min-w-0"
                                         }
                                     >
-                                        <Heading
-                                            level={6}
-                                            className={
-                                                "webiny_group-label-text absolute bottom-[-10px] pr-sm text-accent-primary bg-white"
-                                            }
-                                        >
+                                        <span className="relative z-1 pr-md bg-white">
                                             {field.label}
-                                        </Heading>
-                                        {field.helpText && (
-                                            <FormComponentDescription>
-                                                {field.helpText}
-                                            </FormComponentDescription>
-                                        )}
-                                    </div>
+                                        </span>
+                                    </Heading>
+                                    {field.helpText && (
+                                        <FormComponentDescription>
+                                            {field.helpText}
+                                        </FormComponentDescription>
+                                    )}
                                     <div
                                         className={
                                             "p-md border-sm border-neutral-dimmed-darker rounded-md"

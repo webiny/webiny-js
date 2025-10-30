@@ -82,27 +82,25 @@ const DynamicSection = ({
                     <Bind.ValidationContainer>
                         <ParentFieldProvider value={value} path={Bind.parentName}>
                             {showLabel ? (
-                                <div
-                                    className={
-                                        "relative mb-xl mt-md border-b-sm border-accent-dimmed"
-                                    }
-                                >
+                                <>
                                     <Heading
-                                        level={6}
+                                        level={5}
                                         className={
-                                            "webiny_group-label-text absolute bottom-[-10px] pr-sm text-accent-primary bg-white"
+                                            "webiny_group-label-text mt-xl mb-sm relative text-accent-primary after:absolute after:z-0 after:inset-x-0 after:top-1/2 after:-translate-y-1/2 after:block after:content-[''] after:h-px after:border-primary-300 after:border-b-1 after:flex-1 after:min-w-0"
                                         }
                                     >
-                                        {`${field.label} ${
-                                            bindFieldValue.length
-                                                ? `(${bindFieldValue.length})`
-                                                : ""
-                                        }`}
+                                        <span className="relative z-1 pr-md bg-white">
+                                            {`${field.label} ${
+                                                bindFieldValue.length
+                                                    ? `(${bindFieldValue.length})`
+                                                    : ""
+                                            }`}
+                                        </span>
                                     </Heading>
                                     {field.helpText && (
                                         <FormComponentDescription text={field.helpText} />
                                     )}
-                                </div>
+                                </>
                             ) : null}
                             <Grid className={classSet(gridClassName, style.gridContainer)}>
                                 <>
