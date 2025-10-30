@@ -1,6 +1,5 @@
 import React from "react";
 import { NewStep } from "./Step/NewStep.js";
-import { Accordion } from "@webiny/admin-ui";
 import type { IInactiveStep } from "./Step/InactiveStep.js";
 import { InactiveStep } from "./Step/InactiveStep.js";
 import { Step } from "./Step/Step.js";
@@ -13,13 +12,13 @@ export interface IWorkflowEditorStepsProps {
 
 const draftStep: IInactiveStep = {
     id: "draft",
-    color: "grey",
+    color: "#BEC3CC",
     title: "Draft",
     description: "This is the initial state of your content."
 };
 const publishedStep: IInactiveStep = {
     id: "published",
-    color: "green",
+    color: "#5AC74C",
     title: "Published",
     description: "The final state for any publish content."
 };
@@ -33,7 +32,7 @@ export const WorkflowEditorSteps = observer((props: IWorkflowEditorStepsProps) =
     }
 
     return (
-        <>
+        <div className={"flex gap-y-md flex-col"}>
             <InactiveStep step={draftStep} />
 
             {workflow.steps.map(step => {
@@ -52,6 +51,6 @@ export const WorkflowEditorSteps = observer((props: IWorkflowEditorStepsProps) =
             })}
             <NewStep onAdd={presenter.addStep} />
             <InactiveStep step={publishedStep} />
-        </>
+        </div>
     );
 });

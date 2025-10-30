@@ -19,8 +19,8 @@ const accordionVariants = cva("group w-full", {
             transparent: "bg-transparent"
         },
         border: {
-            "none": "",
-            "accent": "border-md border-neutral-dimmed-darker",
+            none: "",
+            accent: "border-md border-neutral-dimmed-darker"
         }
     },
     defaultVariants: {

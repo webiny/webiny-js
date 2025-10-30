@@ -672,6 +672,22 @@ export const NestedAccordionsLight: Story = {
     }
 };
 
+export const WithColorMark: Story = {
+    ...Default,
+    args: {
+        children: (
+            <>
+                <AccordionItem
+                    colorMark={"#ff6584"}
+                    index={1}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+            </>
+        )
+    }
+};
+
 // Add a Documentation story
 export const Documentation: Story = {
     render: args => {
