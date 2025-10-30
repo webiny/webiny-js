@@ -9,6 +9,10 @@ const cardBodyVariants = cva("flex-1", {
             sm: "px-md",
             md: "px-lg",
             lg: "px-xl"
+        },
+        variant: {
+            default: "",
+            accent: "pt-lg pb-sm"
         }
     },
     defaultVariants: {
@@ -17,9 +21,9 @@ const cardBodyVariants = cva("flex-1", {
 });
 
 export const CardBody = () => {
-    const { padding, children } = useCardProps();
+    const { padding, variant, children } = useCardProps();
     return (
-        <div data-card="body" className={cn(cardBodyVariants({ padding }))}>
+        <div data-card="body" className={cn(cardBodyVariants({ padding, variant }))}>
             {children}
         </div>
     );
