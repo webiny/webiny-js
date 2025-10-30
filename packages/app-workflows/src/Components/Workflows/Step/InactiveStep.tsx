@@ -14,20 +14,24 @@ export const InactiveStep = (props: IInactiveStepProps) => {
     const { step } = props;
 
     return (
-        <Accordion.Item
-            disabled={true}
-            key={`step-${step.id}`}
-            title={step.title}
-            description={step.description}
-            icon={<Color color={step.color} />}
-            interactive={false}
-            actions={
-                <>
-                    <Accordion.Item.Action icon={<LockedIndicator content={step.description} />} />
-                </>
-            }
-        >
-            <></>
-        </Accordion.Item>
+        <Accordion variant={"container"} background={'light'}>
+            <Accordion.Item
+                disabled={true}
+                key={`step-${step.id}`}
+                title={step.title}
+                description={step.description}
+                icon={<Color color={step.color} />}
+                interactive={false}
+                actions={
+                    <>
+                        <Accordion.Item.Action
+                            icon={<LockedIndicator content={step.description} />}
+                        />
+                    </>
+                }
+            >
+                <></>
+            </Accordion.Item>
+        </Accordion>
     );
 };
