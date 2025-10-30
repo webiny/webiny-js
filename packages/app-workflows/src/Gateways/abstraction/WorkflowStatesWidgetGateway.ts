@@ -50,12 +50,12 @@ export interface IWorkflowStatesWidgetGatewayApproveStateResponse {
     error: IWorkflowStatesWidgetError | null;
 }
 
-export interface IWorkflowStatesWidgetGatewayDeclineStateParams {
+export interface IWorkflowStatesWidgetGatewayRejectStateParams {
     id: string;
     comment: string;
 }
 
-export interface IWorkflowStatesWidgetGatewayDeclineStateResponse {
+export interface IWorkflowStatesWidgetGatewayRejectStateResponse {
     data: IWorkflowState | null;
     error: IWorkflowStatesWidgetError | null;
 }
@@ -70,7 +70,7 @@ export interface IWorkflowStatesWidgetGateway {
     approveState(
         params: IWorkflowStatesWidgetGatewayApproveStateParams
     ): Promise<IWorkflowStatesWidgetGatewayApproveStateResponse>;
-    declineState(
-        params: IWorkflowStatesWidgetGatewayDeclineStateParams
-    ): Promise<IWorkflowStatesWidgetGatewayDeclineStateResponse>;
+    rejectState(
+        params: IWorkflowStatesWidgetGatewayRejectStateParams
+    ): Promise<IWorkflowStatesWidgetGatewayRejectStateResponse>;
 }

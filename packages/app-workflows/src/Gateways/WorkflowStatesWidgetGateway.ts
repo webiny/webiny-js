@@ -3,8 +3,8 @@ import type {
     IWorkflowStatesWidgetGateway,
     IWorkflowStatesWidgetGatewayApproveStateParams,
     IWorkflowStatesWidgetGatewayApproveStateResponse,
-    IWorkflowStatesWidgetGatewayDeclineStateParams,
-    IWorkflowStatesWidgetGatewayDeclineStateResponse,
+    IWorkflowStatesWidgetGatewayRejectStateParams,
+    IWorkflowStatesWidgetGatewayRejectStateResponse,
     IWorkflowStatesWidgetGatewayListOwnStatesParams,
     IWorkflowStatesWidgetGatewayListOwnStatesResponse,
     IWorkflowStatesWidgetGatewayListRequestedStatesParams,
@@ -118,9 +118,9 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
         }
     }
 
-    public async declineState(
-        params: IWorkflowStatesWidgetGatewayDeclineStateParams
-    ): Promise<IWorkflowStatesWidgetGatewayDeclineStateResponse> {
+    public async rejectState(
+        params: IWorkflowStatesWidgetGatewayRejectStateParams
+    ): Promise<IWorkflowStatesWidgetGatewayRejectStateResponse> {
         try {
             const result = await this.client.mutate<
                 IRejectWorkflowStateStepResponse,

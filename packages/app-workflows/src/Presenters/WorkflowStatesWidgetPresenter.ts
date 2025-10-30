@@ -63,7 +63,7 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
     private readonly repository;
     private readonly items;
     private readonly totals;
-    private dialog: "approve" | "decline" | "approve:success" | "decline:success" | null;
+    private dialog: "approve" | "reject" | "approve:success" | "reject:success" | null;
     private state: IWorkflowState | null;
 
     public get vm(): IWorkflowStatesWidgetPresenterViewModel {
@@ -86,9 +86,9 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
             showApproveDialog: this.dialog === "approve" && this.state ? this.state : null,
             showApproveSuccessDialog:
                 this.dialog === "approve:success" && this.state ? this.state : null,
-            showDeclineDialog: this.dialog === "decline" && this.state ? this.state : null,
-            showDeclineSuccessDialog:
-                this.dialog === "decline:success" && this.state ? this.state : null
+            showRejectDialog: this.dialog === "reject" && this.state ? this.state : null,
+            showRejectSuccessDialog:
+                this.dialog === "reject:success" && this.state ? this.state : null
         };
     }
 
@@ -189,14 +189,14 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         });
     };
 
-    declineState = async (state: IWorkflowState, comment: string): Promise<void> => {
+    rejectState = async (state: IWorkflowState, comment: string): Promise<void> => {
         const index = this.items.findIndex(
             item => item.id === state.id && item.state === WorkflowStateValue.inReview
         );
         if (index === -1) {
             return;
         }
-        const result = await this.repository.declineState({
+        const result = await this.repository.rejectState({
             id: state.id,
             comment
         });
@@ -211,7 +211,7 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
                 this.decreaseTotals(WorkflowStateValue.inReview);
             }
             this.state = result;
-            this.dialog = "decline:success";
+            this.dialog = "reject:success";
         });
     };
 
@@ -221,10 +221,10 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
             this.dialog = "approve";
         });
     };
-    showDeclineStateDialog = (state: IWorkflowState): void => {
+    showRejectStateDialog = (state: IWorkflowState): void => {
         runInAction(() => {
             this.state = state;
-            this.dialog = "decline";
+            this.dialog = "reject";
         });
     };
     hideDialog = (): void => {

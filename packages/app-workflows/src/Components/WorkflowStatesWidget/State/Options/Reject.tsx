@@ -1,19 +1,19 @@
 import React, { useCallback } from "react";
 import { type IWorkflowState, WorkflowStateValue } from "~/types.js";
 import { DropdownMenu, Icon } from "@webiny/admin-ui";
-import { ReactComponent as DeclineIcon } from "@webiny/icons/do_not_disturb.svg";
+import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
 import { useWorkflowStatesWidget } from "~/Components/WorkflowStatesWidget/Provider/useWorkflowStatesWidget.js";
 import { observer } from "mobx-react-lite";
 
-interface IWorkflowStateRowOptionsDeclineProps {
+interface IWorkflowStateRowOptionsRejectProps {
     state: IWorkflowState;
 }
 
-export const WorkflowStateRowOptionsDecline = observer(
-    ({ state }: IWorkflowStateRowOptionsDeclineProps) => {
+export const WorkflowStateRowOptionsReject = observer(
+    ({ state }: IWorkflowStateRowOptionsRejectProps) => {
         const { presenter } = useWorkflowStatesWidget();
         const onClick = useCallback(() => {
-            presenter.showDeclineStateDialog(state);
+            presenter.showRejectStateDialog(state);
         }, [state.id]);
 
         if (state.state !== WorkflowStateValue.inReview || !state.currentStep.isAllowedToReview) {
@@ -21,8 +21,8 @@ export const WorkflowStateRowOptionsDecline = observer(
         }
         return (
             <DropdownMenu.Item
-                icon={<Icon icon={<DeclineIcon />} label={"Decline"} />}
-                text={"Decline"}
+                icon={<Icon icon={<RejectIcon />} label={"Reject"} />}
+                text={"Reject"}
                 onClick={onClick}
             />
         );

@@ -266,22 +266,16 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         const entry: ICreateWorkflowStateEntryInput = {
             workflowId: workflow.id,
             comment: undefined,
-            state: WorkflowStateRecordState.inReview,
+            state: WorkflowStateRecordState.pending,
             app,
             title,
             targetId,
             isActive: true,
             targetRevisionId,
-            steps: workflow.steps.map((step, index) => {
+            steps: workflow.steps.map(step => {
                 return {
                     ...step,
-                    /**
-                     * First step is in review state, all others are pending.
-                     */
-                    state:
-                        index > 0
-                            ? WorkflowStateRecordState.pending
-                            : WorkflowStateRecordState.inReview,
+                    state: WorkflowStateRecordState.pending,
                     savedBy: null,
                     comment: null
                 };
