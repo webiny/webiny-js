@@ -13,7 +13,7 @@ export const RejectDialog = (props: IRejectDialogProps) => {
 
     const onReject = useCallback(
         (comment: string) => {
-            presenter.approveState(state, comment);
+            presenter.approveStateStep(state, comment);
         },
         [state.id]
     );

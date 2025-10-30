@@ -1,9 +1,10 @@
 import { makeAutoObservable, observable, runInAction } from "mobx";
 import type {
     IWorkflowStatesWidgetRepository,
-    IWorkflowStatesWidgetRepositoryApproveStateParams,
-    IWorkflowStatesWidgetRepositoryRejectStateParams,
-    IWorkflowStatesWidgetRepositoryListResult
+    IWorkflowStatesWidgetRepositoryApproveStateStepParams,
+    IWorkflowStatesWidgetRepositoryListResult,
+    IWorkflowStatesWidgetRepositoryRejectStateStepParams,
+    IWorkflowStatesWidgetRepositoryStartStateStepParams
 } from "./abstractions/WorkflowStatesWidgetRepository.js";
 import type { IWorkflowStatesWidgetGateway } from "~/Gateways/index.js";
 import { type IGenericError, type IWorkflowState, WorkflowStateValue } from "~/types.js";
@@ -112,14 +113,30 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
         };
     }
 
-    public async approveState(
-        params: IWorkflowStatesWidgetRepositoryApproveStateParams
+    public async startStateStep(
+        params: IWorkflowStatesWidgetRepositoryStartStateStepParams
+    ): Promise<IWorkflowState | null> {
+        const key = `start.${params.id}`;
+        runInAction(() => {
+            this._loading[key] = true;
+            this._error[key] = null;
+        });
+        const result = await this.gateway.startStateStep(params);
+        runInAction(() => {
+            this._loading[key] = false;
+            this._error[key] = result.error;
+        });
+        return result.data || null;
+    }
+
+    public async approveStateStep(
+        params: IWorkflowStatesWidgetRepositoryApproveStateStepParams
     ): Promise<IWorkflowState | null> {
         runInAction(() => {
             this._actionLoading = true;
             this._actionError = null;
         });
-        const result = await this.gateway.approveState(params);
+        const result = await this.gateway.approveStateStep(params);
         runInAction(() => {
             this._actionLoading = false;
             this._actionError = result.error;
@@ -127,14 +144,14 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
         return result.data || null;
     }
 
-    public async rejectState(
-        params: IWorkflowStatesWidgetRepositoryRejectStateParams
+    public async rejectStateStep(
+        params: IWorkflowStatesWidgetRepositoryRejectStateStepParams
     ): Promise<IWorkflowState | null> {
         runInAction(() => {
             this._actionLoading = true;
             this._actionError = null;
         });
-        const result = await this.gateway.rejectState(params);
+        const result = await this.gateway.rejectStateStep(params);
         runInAction(() => {
             this._actionLoading = false;
             this._actionError = result.error;

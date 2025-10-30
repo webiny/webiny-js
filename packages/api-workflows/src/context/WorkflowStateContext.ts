@@ -156,6 +156,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             ...params,
             where: {
                 ...params?.where,
+                isActive: true,
                 createdBy: identity.id
             }
         });
@@ -181,6 +182,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             ...params,
             where: {
                 ...params?.where,
+                isActive: true,
                 createdBy_not: identity.id,
                 steps: {
                     teams: {

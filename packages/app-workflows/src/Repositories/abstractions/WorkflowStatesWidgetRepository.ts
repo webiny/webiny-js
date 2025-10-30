@@ -6,12 +6,16 @@ export interface IWorkflowStatesWidgetRepositoryListResult {
     totalCount: number;
 }
 
-export interface IWorkflowStatesWidgetRepositoryApproveStateParams {
+export interface IWorkflowStatesWidgetRepositoryStartStateStepParams {
+    id: string;
+}
+
+export interface IWorkflowStatesWidgetRepositoryApproveStateStepParams {
     id: string;
     comment?: string;
 }
 
-export interface IWorkflowStatesWidgetRepositoryRejectStateParams {
+export interface IWorkflowStatesWidgetRepositoryRejectStateStepParams {
     id: string;
     comment: string;
 }
@@ -25,11 +29,13 @@ export interface IWorkflowStatesWidgetRepository {
     listRequestedStates(
         state: WorkflowStateValue
     ): Promise<IWorkflowStatesWidgetRepositoryListResult>;
-
-    approveState(
-        params: IWorkflowStatesWidgetRepositoryApproveStateParams
+    startStateStep(
+        params: IWorkflowStatesWidgetRepositoryStartStateStepParams
     ): Promise<IWorkflowState | null>;
-    rejectState(
-        params: IWorkflowStatesWidgetRepositoryRejectStateParams
+    approveStateStep(
+        params: IWorkflowStatesWidgetRepositoryApproveStateStepParams
+    ): Promise<IWorkflowState | null>;
+    rejectStateStep(
+        params: IWorkflowStatesWidgetRepositoryRejectStateStepParams
     ): Promise<IWorkflowState | null>;
 }

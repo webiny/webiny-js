@@ -1,29 +1,29 @@
 import React, { useCallback } from "react";
 import { type IWorkflowState, WorkflowStateValue } from "~/types.js";
 import { DropdownMenu, Icon } from "@webiny/admin-ui";
-import { ReactComponent as ApproveIcon } from "@webiny/icons/check.svg";
+import { ReactComponent as StartIcon } from "@webiny/icons/start.svg";
 import { useWorkflowStatesWidget } from "~/Components/WorkflowStatesWidget/Provider/useWorkflowStatesWidget.js";
 import { observer } from "mobx-react-lite";
 
-interface IWorkflowStateRowOptionsApproveProps {
+interface IWorkflowStateRowOptionsStartProps {
     state: IWorkflowState;
 }
 
-export const WorkflowStateRowOptionsApprove = observer(
-    ({ state }: IWorkflowStateRowOptionsApproveProps) => {
+export const WorkflowStateRowOptionsStart = observer(
+    ({ state }: IWorkflowStateRowOptionsStartProps) => {
         const { presenter } = useWorkflowStatesWidget();
 
         const onClick = useCallback(() => {
-            presenter.showApproveStateStepDialog(state);
+            presenter.startStateStep(state);
         }, [state.id]);
 
-        if (state.state !== WorkflowStateValue.inReview || !state.currentStep.isAllowedToReview) {
+        if (state.state !== WorkflowStateValue.pending || !state.currentStep.isAllowedToReview) {
             return null;
         }
         return (
             <DropdownMenu.Item
-                icon={<Icon icon={<ApproveIcon />} label={"Approve"} />}
-                text={"Approve"}
+                icon={<Icon icon={<StartIcon />} label={"Start"} />}
+                text={"Start Step Rreview"}
                 onClick={onClick}
             />
         );

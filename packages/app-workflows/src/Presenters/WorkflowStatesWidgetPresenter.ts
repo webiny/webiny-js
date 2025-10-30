@@ -129,12 +129,13 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
                 .then(mapListStatesResponse(WorkflowStateValue.inReview)),
             this.repository
                 .listRequestedStates(WorkflowStateValue.pending)
-                .then(mapListStatesResponse(WorkflowStateValue.pending)),
+                .then(mapListStatesResponse(WorkflowStateValue.pending))
         ]).then(mapPromiseAllResponse);
     }
 
     private increaseTotals(key: WorkflowStateValue): void {
         const total = this.totals.find(t => t.key === key);
+        console.log(`increasing ${key}, ${total?.value}`);
         if (total) {
             total.value = total.value + 1;
             return;
@@ -147,6 +148,7 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
 
     private decreaseTotals(key: WorkflowStateValue): void {
         const total = this.totals.find(t => t.key === key);
+        console.log(`decreasing ${key}, ${total?.value}`);
         if (!total?.value) {
             return;
         }
@@ -155,14 +157,38 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         return;
     }
 
-    approveState = async (state: IWorkflowState, comment?: string): Promise<void> => {
+    startStateStep = async (state: IWorkflowState): Promise<void> => {
+        const index = this.items.findIndex(
+            item => item.id === state.id && item.state === WorkflowStateValue.pending
+        );
+        if (index === -1) {
+            return;
+        }
+        const result = await this.repository.startStateStep({
+            id: state.id
+        });
+        if (!result) {
+            return;
+        }
+        runInAction(() => {
+            this.items[index] = result;
+            if (result.state === WorkflowStateValue.inReview) {
+                this.decreaseTotals(WorkflowStateValue.pending);
+                this.increaseTotals(WorkflowStateValue.inReview);
+            }
+            this.state = null;
+            this.dialog = null;
+        });
+    };
+
+    approveStateStep = async (state: IWorkflowState, comment?: string): Promise<void> => {
         const index = this.items.findIndex(
             item => item.id === state.id && item.state === WorkflowStateValue.inReview
         );
         if (index === -1) {
             return;
         }
-        const result = await this.repository.approveState({
+        const result = await this.repository.approveStateStep({
             id: state.id,
             comment
         });
@@ -171,8 +197,10 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         }
         runInAction(() => {
             this.items[index] = result;
-            if (result.state === WorkflowStateValue.approved) {
-                this.increaseTotals(WorkflowStateValue.approved);
+            if (result.state === WorkflowStateValue.pending) {
+                this.increaseTotals(WorkflowStateValue.pending);
+                this.decreaseTotals(WorkflowStateValue.inReview);
+            } else if (result.state === WorkflowStateValue.approved) {
                 this.decreaseTotals(WorkflowStateValue.inReview);
             }
             this.state = result;
@@ -180,14 +208,14 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         });
     };
 
-    rejectState = async (state: IWorkflowState, comment: string): Promise<void> => {
+    rejectStateStep = async (state: IWorkflowState, comment: string): Promise<void> => {
         const index = this.items.findIndex(
             item => item.id === state.id && item.state === WorkflowStateValue.inReview
         );
         if (index === -1) {
             return;
         }
-        const result = await this.repository.rejectState({
+        const result = await this.repository.rejectStateStep({
             id: state.id,
             comment
         });
@@ -197,8 +225,7 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
 
         runInAction(() => {
             this.items[index] = result;
-            if (result.state === WorkflowStateValue.approved) {
-                this.increaseTotals(WorkflowStateValue.rejected);
+            if (result.state === WorkflowStateValue.rejected) {
                 this.decreaseTotals(WorkflowStateValue.inReview);
             }
             this.state = result;
@@ -206,13 +233,13 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         });
     };
 
-    showApproveStateDialog = (state: IWorkflowState): void => {
+    showApproveStateStepDialog = (state: IWorkflowState): void => {
         runInAction(() => {
             this.state = state;
             this.dialog = "approve";
         });
     };
-    showRejectStateDialog = (state: IWorkflowState): void => {
+    showRejectStateStepDialog = (state: IWorkflowState): void => {
         runInAction(() => {
             this.state = state;
             this.dialog = "reject";
