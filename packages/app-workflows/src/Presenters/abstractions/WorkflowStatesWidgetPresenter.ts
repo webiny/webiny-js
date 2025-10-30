@@ -7,10 +7,8 @@ export interface IWorkflowStatesWidgetPresenterViewModel {
     dialogError: IGenericError | null;
     inReview: IWorkflowState[];
     inReviewCount: number;
-    approved: IWorkflowState[];
-    approvedCount: number;
-    rejected: IWorkflowState[];
-    rejectedCount: number;
+    pending: IWorkflowState[];
+    pendingCount: number;
     showApproveDialog: IWorkflowState | null;
     showApproveSuccessDialog: IWorkflowState | null;
     showRejectDialog: IWorkflowState | null;
