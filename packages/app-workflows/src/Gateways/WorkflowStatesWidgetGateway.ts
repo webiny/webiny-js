@@ -1,28 +1,35 @@
 import type ApolloClient from "apollo-client";
 import type {
     IWorkflowStatesWidgetGateway,
-    IWorkflowStatesWidgetGatewayApproveStateParams,
-    IWorkflowStatesWidgetGatewayApproveStateResponse,
-    IWorkflowStatesWidgetGatewayRejectStateParams,
-    IWorkflowStatesWidgetGatewayRejectStateResponse,
+    IWorkflowStatesWidgetGatewayApproveStateStepParams,
+    IWorkflowStatesWidgetGatewayApproveStateStepResponse,
     IWorkflowStatesWidgetGatewayListOwnStatesParams,
     IWorkflowStatesWidgetGatewayListOwnStatesResponse,
     IWorkflowStatesWidgetGatewayListRequestedStatesParams,
-    IWorkflowStatesWidgetGatewayListRequestedStatesResponse
+    IWorkflowStatesWidgetGatewayListRequestedStatesResponse,
+    IWorkflowStatesWidgetGatewayRejectStateStepParams,
+    IWorkflowStatesWidgetGatewayRejectStateStepResponse,
+    IWorkflowStatesWidgetGatewayStartStateStepParams,
+    IWorkflowStatesWidgetGatewayStartStateStepResponse
 } from "./abstraction/WorkflowStatesWidgetGateway.js";
+import type {
+    IApproveWorkflowStateStepResponse,
+    IApproveWorkflowStateStepVariables,
+    IListOwnWorkflowStatesResponse,
+    IListOwnWorkflowStatesVariables,
+    IListRequestedWorkflowStatesResponse,
+    IListRequestedWorkflowStatesVariables,
+    IRejectWorkflowStateStepResponse,
+    IRejectWorkflowStateStepVariables,
+    IStartWorkflowStateStepResponse,
+    IStartWorkflowStateStepVariables
+} from "~/Gateways/graphql/workflowStates.js";
 import {
     APPROVE_WORKFLOW_STATE_STEP_MUTATION,
-    type IApproveWorkflowStateStepResponse,
-    type IApproveWorkflowStateStepVariables,
-    type IListOwnWorkflowStatesResponse,
-    type IListOwnWorkflowStatesVariables,
-    type IListRequestedWorkflowStatesResponse,
-    type IListRequestedWorkflowStatesVariables,
-    type IRejectWorkflowStateStepResponse,
-    type IRejectWorkflowStateStepVariables,
     LIST_OWN_WORKFLOW_STATES,
     LIST_REQUESTED_WORKFLOW_STATES,
-    REJECT_WORKFLOW_STATE_STEP_MUTATION
+    REJECT_WORKFLOW_STATE_STEP_MUTATION,
+    START_WORKFLOW_STATE_STEP_MUTATION
 } from "~/Gateways/graphql/workflowStates.js";
 
 interface IWorkflowStatesWidgetGatewayParams {
@@ -91,10 +98,35 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
             };
         }
     }
+    public async startStateStep(
+        params: IWorkflowStatesWidgetGatewayStartStateStepParams
+    ): Promise<IWorkflowStatesWidgetGatewayStartStateStepResponse> {
+        try {
+            const result = await this.client.mutate<
+                IStartWorkflowStateStepResponse,
+                IStartWorkflowStateStepVariables
+            >({
+                mutation: START_WORKFLOW_STATE_STEP_MUTATION,
+                variables: {
+                    ...params
+                },
+                fetchPolicy: "no-cache"
+            });
+            return {
+                data: result.data!.workflows.startWorkflowStateStep.data,
+                error: result.data!.workflows.startWorkflowStateStep.error
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: ex
+            };
+        }
+    }
 
-    public async approveState(
-        params: IWorkflowStatesWidgetGatewayApproveStateParams
-    ): Promise<IWorkflowStatesWidgetGatewayApproveStateResponse> {
+    public async approveStateStep(
+        params: IWorkflowStatesWidgetGatewayApproveStateStepParams
+    ): Promise<IWorkflowStatesWidgetGatewayApproveStateStepResponse> {
         try {
             const result = await this.client.mutate<
                 IApproveWorkflowStateStepResponse,
@@ -118,9 +150,9 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
         }
     }
 
-    public async rejectState(
-        params: IWorkflowStatesWidgetGatewayRejectStateParams
-    ): Promise<IWorkflowStatesWidgetGatewayRejectStateResponse> {
+    public async rejectStateStep(
+        params: IWorkflowStatesWidgetGatewayRejectStateStepParams
+    ): Promise<IWorkflowStatesWidgetGatewayRejectStateStepResponse> {
         try {
             const result = await this.client.mutate<
                 IRejectWorkflowStateStepResponse,

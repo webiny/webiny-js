@@ -39,7 +39,7 @@ export const WorkflowStatesWidgetCardTabs = observer(
                                 <WorkflowStateList states={presenter.vm.inReview} />
                             </>
                         }
-                    />,
+                    />
                 ]}
             />
         );

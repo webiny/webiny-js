@@ -17,9 +17,10 @@ export interface IWorkflowStatesWidgetPresenterViewModel {
 
 export interface IWorkflowStatesWidgetPresenter {
     vm: IWorkflowStatesWidgetPresenterViewModel;
-    approveState(state: IWorkflowState, comment?: string): Promise<void>;
-    rejectState(state: IWorkflowState, comment: string): Promise<void>;
-    showApproveStateDialog(state: IWorkflowState): void;
-    showRejectStateDialog(state: IWorkflowState): void;
+    startStateStep(state: IWorkflowState): Promise<void>;
+    approveStateStep(state: IWorkflowState, comment?: string): Promise<void>;
+    rejectStateStep(state: IWorkflowState, comment: string): Promise<void>;
+    showApproveStateStepDialog(state: IWorkflowState): void;
+    showRejectStateStepDialog(state: IWorkflowState): void;
     hideDialog(): void;
 }

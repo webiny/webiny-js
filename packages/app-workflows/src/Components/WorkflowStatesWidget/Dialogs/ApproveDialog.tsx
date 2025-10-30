@@ -13,7 +13,7 @@ export const ApproveDialog = (props: IApproveDialogProps) => {
 
     const onApprove = useCallback(
         (comment?: string) => {
-            presenter.approveState(state, comment);
+            presenter.approveStateStep(state, comment);
         },
         [state.id]
     );

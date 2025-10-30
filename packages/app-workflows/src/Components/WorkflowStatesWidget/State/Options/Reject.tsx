@@ -13,7 +13,7 @@ export const WorkflowStateRowOptionsReject = observer(
     ({ state }: IWorkflowStateRowOptionsRejectProps) => {
         const { presenter } = useWorkflowStatesWidget();
         const onClick = useCallback(() => {
-            presenter.showRejectStateDialog(state);
+            presenter.showRejectStateStepDialog(state);
         }, [state.id]);
 
         if (state.state !== WorkflowStateValue.inReview || !state.currentStep.isAllowedToReview) {

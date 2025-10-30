@@ -40,22 +40,31 @@ export interface IWorkflowStatesWidgetGatewayListRequestedStatesResponse {
     error: IWorkflowStatesWidgetError | null;
 }
 
-export interface IWorkflowStatesWidgetGatewayApproveStateParams {
+export interface IWorkflowStatesWidgetGatewayStartStateStepParams {
     id: string;
-    comment?: string;
 }
 
-export interface IWorkflowStatesWidgetGatewayApproveStateResponse {
+export interface IWorkflowStatesWidgetGatewayStartStateStepResponse {
     data: IWorkflowState | null;
     error: IWorkflowStatesWidgetError | null;
 }
 
-export interface IWorkflowStatesWidgetGatewayRejectStateParams {
+export interface IWorkflowStatesWidgetGatewayApproveStateStepParams {
+    id: string;
+    comment?: string;
+}
+
+export interface IWorkflowStatesWidgetGatewayApproveStateStepResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStatesWidgetError | null;
+}
+
+export interface IWorkflowStatesWidgetGatewayRejectStateStepParams {
     id: string;
     comment: string;
 }
 
-export interface IWorkflowStatesWidgetGatewayRejectStateResponse {
+export interface IWorkflowStatesWidgetGatewayRejectStateStepResponse {
     data: IWorkflowState | null;
     error: IWorkflowStatesWidgetError | null;
 }
@@ -67,10 +76,13 @@ export interface IWorkflowStatesWidgetGateway {
     listRequestedStates(
         params: IWorkflowStatesWidgetGatewayListRequestedStatesParams
     ): Promise<IWorkflowStatesWidgetGatewayListRequestedStatesResponse>;
-    approveState(
-        params: IWorkflowStatesWidgetGatewayApproveStateParams
-    ): Promise<IWorkflowStatesWidgetGatewayApproveStateResponse>;
-    rejectState(
-        params: IWorkflowStatesWidgetGatewayRejectStateParams
-    ): Promise<IWorkflowStatesWidgetGatewayRejectStateResponse>;
+    startStateStep(
+        params: IWorkflowStatesWidgetGatewayStartStateStepParams
+    ): Promise<IWorkflowStatesWidgetGatewayStartStateStepResponse>;
+    approveStateStep(
+        params: IWorkflowStatesWidgetGatewayApproveStateStepParams
+    ): Promise<IWorkflowStatesWidgetGatewayApproveStateStepResponse>;
+    rejectStateStep(
+        params: IWorkflowStatesWidgetGatewayRejectStateStepParams
+    ): Promise<IWorkflowStatesWidgetGatewayRejectStateStepResponse>;
 }
