@@ -4,13 +4,22 @@ export interface IWorkflowStatesWidgetPresenterViewModel {
     loading: boolean;
     error: IGenericError | null;
     inReview: IWorkflowState[];
-    inReviewTotalCount: number;
+    inReviewCount: number;
     approved: IWorkflowState[];
-    approvedTotalCount: number;
+    approvedCount: number;
     rejected: IWorkflowState[];
-    rejectedTotalCount: number;
+    rejectedCount: number;
+    showApproveDialog: boolean;
+    showApproveSuccessDialog: boolean;
+    showDeclineDialog: boolean;
+    showDeclineSuccessDialog: boolean;
 }
 
 export interface IWorkflowStatesWidgetPresenter {
     vm: IWorkflowStatesWidgetPresenterViewModel;
+    approveState(state: IWorkflowState, comment?: string): Promise<void>;
+    declineState(state: IWorkflowState, comment: string): Promise<void>;
+    showApproveStateDialog(state: IWorkflowState): void;
+    showDeclineStateDialog(state: IWorkflowState): void;
+    hideDialog(): void;
 }

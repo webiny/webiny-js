@@ -240,14 +240,20 @@ describe("workflow states graphql", () => {
             id: workflowState!.id,
             comment: "Approving step 2"
         });
-        
-        expect(approveSecondStepResponse.data.workflows.approveWorkflowStateStep.data!.previousStep).toMatchObject({
-            id: workflow.steps[0].id,
+
+        expect(
+            approveSecondStepResponse.data.workflows.approveWorkflowStateStep.data!.previousStep
+        ).toMatchObject({
+            id: workflow.steps[0].id
         });
-        expect(approveSecondStepResponse.data.workflows.approveWorkflowStateStep.data!.currentStep).toMatchObject({
-            id: workflow.steps[1].id,
+        expect(
+            approveSecondStepResponse.data.workflows.approveWorkflowStateStep.data!.currentStep
+        ).toMatchObject({
+            id: workflow.steps[1].id
         });
-        expect(approveSecondStepResponse.data.workflows.approveWorkflowStateStep.data!.nextStep).toBeNull();
+        expect(
+            approveSecondStepResponse.data.workflows.approveWorkflowStateStep.data!.nextStep
+        ).toBeNull();
 
         expect(approveSecondStepResponse).toMatchObject({
             data: {

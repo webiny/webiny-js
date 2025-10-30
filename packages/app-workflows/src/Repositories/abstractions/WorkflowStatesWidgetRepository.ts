@@ -6,6 +6,17 @@ export interface IWorkflowStatesWidgetRepositoryListResult {
     totalCount: number;
 }
 
+export interface IWorkflowStatesWidgetRepositoryApproveStateParams {
+    id: string;
+    comment?: string;
+}
+
+export interface IWorkflowStatesWidgetRepositoryDeclineStateParams {
+    id: string;
+    comment: string;
+}
+
+
 export interface IWorkflowStatesWidgetRepository {
     readonly loading: boolean;
     readonly error: IGenericError | null;
@@ -13,4 +24,11 @@ export interface IWorkflowStatesWidgetRepository {
     listRequestedStates(
         state: WorkflowStateValue
     ): Promise<IWorkflowStatesWidgetRepositoryListResult>;
+
+    approveState(
+        params: IWorkflowStatesWidgetRepositoryApproveStateParams
+    ): Promise<IWorkflowState | null>;
+    declineState(
+        params: IWorkflowStatesWidgetRepositoryDeclineStateParams
+    ): Promise<IWorkflowState | null>;
 }

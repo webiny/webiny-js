@@ -40,6 +40,26 @@ export interface IWorkflowStatesWidgetGatewayListRequestedStatesResponse {
     error: IWorkflowStatesWidgetError | null;
 }
 
+export interface IWorkflowStatesWidgetGatewayApproveStateParams {
+    id: string;
+    comment?: string;
+}
+
+export interface IWorkflowStatesWidgetGatewayApproveStateResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStatesWidgetError | null;
+}
+
+export interface IWorkflowStatesWidgetGatewayDeclineStateParams {
+    id: string;
+    comment: string;
+}
+
+export interface IWorkflowStatesWidgetGatewayDeclineStateResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStatesWidgetError | null;
+}
+
 export interface IWorkflowStatesWidgetGateway {
     listOwnStates(
         params: IWorkflowStatesWidgetGatewayListOwnStatesParams
@@ -47,4 +67,10 @@ export interface IWorkflowStatesWidgetGateway {
     listRequestedStates(
         params: IWorkflowStatesWidgetGatewayListRequestedStatesParams
     ): Promise<IWorkflowStatesWidgetGatewayListRequestedStatesResponse>;
+    approveState(
+        params: IWorkflowStatesWidgetGatewayApproveStateParams
+    ): Promise<IWorkflowStatesWidgetGatewayApproveStateResponse>;
+    declineState(
+        params: IWorkflowStatesWidgetGatewayDeclineStateParams
+    ): Promise<IWorkflowStatesWidgetGatewayDeclineStateResponse>;
 }

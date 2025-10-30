@@ -23,7 +23,7 @@ export const WorkflowStatesWidgetCardTabs = observer(
                     <Tabs.Tab
                         key="inReview"
                         value="inReview"
-                        trigger={`In Review (${presenter.vm.inReviewTotalCount})`}
+                        trigger={`In Review (${presenter.vm.inReviewCount})`}
                         content={
                             <>
                                 <WorkflowStateList states={presenter.vm.inReview} />
@@ -33,7 +33,7 @@ export const WorkflowStatesWidgetCardTabs = observer(
                     <Tabs.Tab
                         key="approved"
                         value="approved"
-                        trigger={`Approved (${presenter.vm.approvedTotalCount})`}
+                        trigger={`Approved (${presenter.vm.approvedCount})`}
                         content={
                             <>
                                 <WorkflowStateList states={presenter.vm.approved} />
@@ -43,7 +43,7 @@ export const WorkflowStatesWidgetCardTabs = observer(
                     <Tabs.Tab
                         key="declined"
                         value="declined"
-                        trigger={`Declined (${presenter.vm.rejectedTotalCount})`}
+                        trigger={`Declined (${presenter.vm.rejectedCount})`}
                         content={
                             <>
                                 <WorkflowStateList states={presenter.vm.rejected} />

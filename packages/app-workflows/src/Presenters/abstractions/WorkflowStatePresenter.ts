@@ -18,7 +18,7 @@ export interface IWorkflowStatePresenterViewModel {
     showApproveSuccessDialog: boolean;
     showRejectDialog: boolean;
     showRejectSuccessDialog: boolean;
-    showStepCommentDialog: IWorkflowStateStepModel | undefined;
+    showStepCommentDialog: boolean;
 }
 
 export interface IWorkflowStatePresenter {
