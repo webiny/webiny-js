@@ -55,7 +55,8 @@ export interface IWorkflowState<
 }
 
 export interface IWorkflowStateModel extends IWorkflowState {
-    getActiveStep(): IWorkflowStateRecordStepWithPermissions | undefined;
+    getActiveStep(): IWorkflowStateRecordStepWithPermissions | null;
+    start(): Promise<void>;
     approve(comment?: string): Promise<void>;
     reject(comment: string): Promise<void>;
 }

@@ -135,6 +135,7 @@ export interface IWorkflowStateContext {
     deleteTargetState(app: string, targetRevisionId: string): Promise<void>;
     cancelState(id: string): Promise<IWorkflowStateModel>;
     deleteState(id: string): Promise<void>;
+    startStateStep(id: string): Promise<IWorkflowStateModel>;
     approveStateStep(id: string, comment?: string): Promise<IWorkflowStateModel>;
     rejectStateStep(id: string, comment: string): Promise<IWorkflowStateModel>;
 }

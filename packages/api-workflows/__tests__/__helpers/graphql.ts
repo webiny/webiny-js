@@ -308,6 +308,32 @@ export const LIST_TARGET_WORKFLOW_STATES_QUERY = /* GraphQL */ `
     }
 `;
 
+export interface IStartWorkflowStateStepVariables {
+    id: string;
+}
+
+export interface IStartWorkflowStateStepResponse {
+    data: {
+        workflows: {
+            startWorkflowStateStep: {
+                data: IWorkflowState | null;
+                error: IWorkflowError | null;
+            };
+        };
+    };
+}
+
+export const START_WORKFLOW_STATE_STEP_MUTATION = /* GraphQL */ `
+    mutation StartWorkflowStateStep($id: ID!) {
+        workflows {
+            startWorkflowStateStep(id: $id) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export interface IApproveWorkflowStateStepVariables {
     id: string;
     comment?: string;
