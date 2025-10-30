@@ -199,10 +199,8 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
             this.items[index] = result;
             if (result.state === WorkflowStateValue.pending) {
                 this.increaseTotals(WorkflowStateValue.pending);
-                this.decreaseTotals(WorkflowStateValue.inReview);
-            } else if (result.state === WorkflowStateValue.approved) {
-                this.decreaseTotals(WorkflowStateValue.inReview);
             }
+            this.decreaseTotals(WorkflowStateValue.inReview);
             this.state = result;
             this.dialog = "approve:success";
         });
