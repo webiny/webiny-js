@@ -1,33 +1,28 @@
 import React from "react";
-import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
 import { Dialog, Grid } from "@webiny/admin-ui";
 import { ReactComponent as ApproveIcon } from "@webiny/icons/check.svg";
 
 interface IApproveSuccessDialogProps {
-    presenter: IWorkflowStatePresenter;
+    hide(): void;
+    title: string;
 }
 
 export const ApproveSuccessDialog = (props: IApproveSuccessDialogProps) => {
-    const { presenter } = props;
-
-    const step = presenter.vm.lastApprovedStep;
-    if (!step) {
-        return null;
-    }
+    const { hide, title } = props;
 
     return (
         <Dialog
             open={true}
-            onOpenChange={presenter.hideDialog}
+            onOpenChange={hide}
             title={
                 <>
                     <ApproveIcon className={"fill-success"} />
-                    {step.title} Approved
+                    {title} Approved
                 </>
             }
             actions={
                 <>
-                    <Dialog.ConfirmButton text={"Close"} onClick={presenter.hideDialog} />
+                    <Dialog.ConfirmButton text={"Close"} onClick={hide} />
                 </>
             }
             showCloseButton={true}
@@ -35,8 +30,8 @@ export const ApproveSuccessDialog = (props: IApproveSuccessDialogProps) => {
         >
             <Grid>
                 <Grid.Column span={12}>
-                    <strong>{step.title}</strong> is successfully approved. All relevant parties
-                    have been notified.
+                    <strong>{title}</strong> is successfully approved. All relevant parties have
+                    been notified.
                 </Grid.Column>
                 <Grid.Column span={12}>
                     You can track all Content Reviews <u>here</u>.

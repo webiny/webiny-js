@@ -1,10 +1,12 @@
 import { makeAutoObservable, observable, runInAction } from "mobx";
 import type {
     IWorkflowStatesWidgetRepository,
+    IWorkflowStatesWidgetRepositoryApproveStateParams,
+    IWorkflowStatesWidgetRepositoryDeclineStateParams,
     IWorkflowStatesWidgetRepositoryListResult
 } from "./abstractions/WorkflowStatesWidgetRepository.js";
 import type { IWorkflowStatesWidgetGateway } from "~/Gateways/index.js";
-import { type IGenericError, WorkflowStateValue } from "~/types.js";
+import { type IGenericError, type IWorkflowState, WorkflowStateValue } from "~/types.js";
 
 export interface IWorkflowStatesWidgetRepositoryParams {
     gateway: IWorkflowStatesWidgetGateway;
@@ -98,5 +100,37 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
             items: result.data || [],
             totalCount: result.meta?.totalCount || 0
         };
+    }
+
+    public async approveState(
+        params: IWorkflowStatesWidgetRepositoryApproveStateParams
+    ): Promise<IWorkflowState | null> {
+        const key = `approve.${params.id}`;
+        runInAction(() => {
+            this.#loading[key] = true;
+            this.#error[key] = null;
+        });
+        const result = await this.#gateway.approveState(params);
+        runInAction(() => {
+            this.#loading[key] = false;
+            this.#error[key] = result.error;
+        });
+        return result.data || null;
+    }
+
+    public async declineState(
+        params: IWorkflowStatesWidgetRepositoryDeclineStateParams
+    ): Promise<IWorkflowState | null> {
+        const key = `decline.${params.id}`;
+        runInAction(() => {
+            this.#loading[key] = true;
+            this.#error[key] = null;
+        });
+        const result = await this.#gateway.declineState(params);
+        runInAction(() => {
+            this.#loading[key] = false;
+            this.#error[key] = result.error;
+        });
+        return result.data || null;
     }
 }

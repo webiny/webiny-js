@@ -31,7 +31,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     private state: IWorkflowStateModel | null | undefined = undefined;
     private dialog: "approve" | "approve:success" | "reject" | "reject:success" | "comment" | null =
         null;
-    private comment: IWorkflowStateStepModel | undefined = undefined;
+    #step: IWorkflowStateStepModel | null = null;
 
     private get isOwner(): boolean {
         if (!this.identity) {
@@ -51,7 +51,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         return {
             workflow: this.workflow,
             state: this.state ? this.state.toJS() : null,
-            step: toJS(this.state ? this.state.currentStep : null),
+            step: toJS(this.#step || this.state?.currentStep || null),
             lastApprovedStep: toJS(this.state?.lastApproved || null),
             lastRejectedStep: toJS(this.state?.lastRejected || null),
             nextStep: toJS(this.state ? this.state.nextStep : null),
@@ -64,7 +64,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             showApproveSuccessDialog: this.dialog === "approve:success",
             showRejectDialog: this.dialog === "reject",
             showRejectSuccessDialog: this.dialog === "reject:success",
-            showStepCommentDialog: this.comment
+            showStepCommentDialog: this.dialog === "comment"
         };
     }
 
@@ -167,7 +167,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     hideDialog = () => {
         runInAction(() => {
             this.dialog = null;
-            this.comment = undefined;
+            this.#step = null;
         });
     };
 
@@ -183,7 +183,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             return;
         }
         runInAction(() => {
-            this.comment = step;
+            this.#step = step;
         });
     };
 }

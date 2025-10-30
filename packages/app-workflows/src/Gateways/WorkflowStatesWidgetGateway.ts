@@ -1,20 +1,28 @@
 import type ApolloClient from "apollo-client";
 import type {
     IWorkflowStatesWidgetGateway,
+    IWorkflowStatesWidgetGatewayApproveStateParams,
+    IWorkflowStatesWidgetGatewayApproveStateResponse,
+    IWorkflowStatesWidgetGatewayDeclineStateParams,
+    IWorkflowStatesWidgetGatewayDeclineStateResponse,
     IWorkflowStatesWidgetGatewayListOwnStatesParams,
     IWorkflowStatesWidgetGatewayListOwnStatesResponse,
     IWorkflowStatesWidgetGatewayListRequestedStatesParams,
     IWorkflowStatesWidgetGatewayListRequestedStatesResponse
 } from "./abstraction/WorkflowStatesWidgetGateway.js";
-import type {
-    IListOwnWorkflowStatesResponse,
-    IListOwnWorkflowStatesVariables,
-    IListRequestedWorkflowStatesResponse,
-    IListRequestedWorkflowStatesVariables
-} from "~/Gateways/graphql/workflowStates.js";
 import {
+    APPROVE_WORKFLOW_STATE_STEP_MUTATION,
+    type IApproveWorkflowStateStepResponse,
+    type IApproveWorkflowStateStepVariables,
+    type IListOwnWorkflowStatesResponse,
+    type IListOwnWorkflowStatesVariables,
+    type IListRequestedWorkflowStatesResponse,
+    type IListRequestedWorkflowStatesVariables,
+    type IRejectWorkflowStateStepResponse,
+    type IRejectWorkflowStateStepVariables,
     LIST_OWN_WORKFLOW_STATES,
-    LIST_REQUESTED_WORKFLOW_STATES
+    LIST_REQUESTED_WORKFLOW_STATES,
+    REJECT_WORKFLOW_STATE_STEP_MUTATION
 } from "~/Gateways/graphql/workflowStates.js";
 
 interface IWorkflowStatesWidgetGatewayParams {
@@ -79,6 +87,58 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
             return {
                 data: null,
                 meta: null,
+                error: ex
+            };
+        }
+    }
+
+    public async approveState(
+        params: IWorkflowStatesWidgetGatewayApproveStateParams
+    ): Promise<IWorkflowStatesWidgetGatewayApproveStateResponse> {
+        try {
+            const result = await this.#client.mutate<
+                IApproveWorkflowStateStepResponse,
+                IApproveWorkflowStateStepVariables
+            >({
+                mutation: APPROVE_WORKFLOW_STATE_STEP_MUTATION,
+                variables: {
+                    ...params
+                },
+                fetchPolicy: "no-cache"
+            });
+            return {
+                data: result.data!.workflows.approveWorkflowStateStep.data,
+                error: result.data!.workflows.approveWorkflowStateStep.error
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: ex
+            };
+        }
+    }
+
+    public async declineState(
+        params: IWorkflowStatesWidgetGatewayDeclineStateParams
+    ): Promise<IWorkflowStatesWidgetGatewayDeclineStateResponse> {
+        try {
+            const result = await this.#client.mutate<
+                IRejectWorkflowStateStepResponse,
+                IRejectWorkflowStateStepVariables
+            >({
+                mutation: REJECT_WORKFLOW_STATE_STEP_MUTATION,
+                variables: {
+                    ...params
+                },
+                fetchPolicy: "no-cache"
+            });
+            return {
+                data: result.data!.workflows.rejectWorkflowStateStep.data,
+                error: result.data!.workflows.rejectWorkflowStateStep.error
+            };
+        } catch (ex) {
+            return {
+                data: null,
                 error: ex
             };
         }

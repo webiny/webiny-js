@@ -233,7 +233,6 @@ export const LIST_WORKFLOW_STATES_QUERY = gql`
     }
 `;
 
-
 export interface IListWidgetWorkflowStatesParamsWhere {
     state: string;
 }

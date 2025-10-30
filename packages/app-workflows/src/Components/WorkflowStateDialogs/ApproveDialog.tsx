@@ -1,25 +1,26 @@
 import React, { useCallback } from "react";
-import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
 import { Dialog, Grid, OverlayLoader, Textarea } from "@webiny/admin-ui";
 import { ReactComponent as ApproveIcon } from "@webiny/icons/check.svg";
 
 interface IApproveDialogProps {
-    presenter: IWorkflowStatePresenter;
+    onApprove(comment?: string): void;
+    hide(): void;
+    loading: boolean;
+    title: string;
 }
 
 export const ApproveDialog = (props: IApproveDialogProps) => {
-    const { presenter } = props;
+    const { onApprove, hide, loading, title } = props;
 
-    const [value, setValue] = React.useState<string>("");
+    const [comment, setComment] = React.useState<string>("");
 
     const onConfirm = useCallback(() => {
-        presenter.approve(value);
-        return false;
-    }, [presenter.approve, value]);
+        onApprove(comment);
+    }, [onApprove, comment]);
     return (
         <Dialog
             open={true}
-            onOpenChange={presenter.hideDialog}
+            onOpenChange={hide}
             title={
                 <>
                     <ApproveIcon className={"fill-success"} />
@@ -28,20 +29,18 @@ export const ApproveDialog = (props: IApproveDialogProps) => {
             }
             actions={
                 <>
-                    <Dialog.CancelButton onClick={presenter.hideDialog} />
+                    <Dialog.CancelButton onClick={hide} />
                     <Dialog.ConfirmButton text={"Approve content"} onClick={onConfirm} />
                 </>
             }
             showCloseButton={true}
             dismissible={true}
         >
-            {presenter.vm.loading ? (
-                <OverlayLoader size="sm" variant="accent" indeterminate={true} />
-            ) : null}
+            {loading ? <OverlayLoader size="sm" variant="accent" indeterminate={true} /> : null}
             <Grid>
                 <Grid.Column span={12}>
-                    You are about to approve the <strong>{presenter.vm.step?.title}</strong>.
-                    Authors and responsible reviewers will be notified.
+                    You are about to approve the <strong>{title}</strong>. Authors and responsible
+                    reviewers will be notified.
                 </Grid.Column>
                 <Grid.Column span={12}>
                     <Textarea
@@ -51,8 +50,8 @@ export const ApproveDialog = (props: IApproveDialogProps) => {
                             </>
                         }
                         required={true}
-                        value={value}
-                        onChange={setValue}
+                        value={comment}
+                        onChange={setComment}
                     />
                 </Grid.Column>
             </Grid>

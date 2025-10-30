@@ -1,18 +1,20 @@
 import React, { useCallback, useState } from "react";
-import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
 import { Dialog, Grid, OverlayLoader, Textarea } from "@webiny/admin-ui";
 import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
 
 interface IRejectDialogProps {
-    presenter: IWorkflowStatePresenter;
+    onReject(comment: string): void;
+    hide(): void;
+    title: string;
+    loading: boolean;
 }
 
 const defaultMessage = "Please write a reason for rejecting the content.";
 
 export const RejectDialog = (props: IRejectDialogProps) => {
-    const { presenter } = props;
+    const { hide, title, onReject, loading } = props;
 
-    const [value, setValue] = useState<string>("");
+    const [comment, setComment] = useState<string>("");
     const [validation, setValidation] = useState({
         isValid: false,
         message: defaultMessage
@@ -20,7 +22,7 @@ export const RejectDialog = (props: IRejectDialogProps) => {
 
     const validate = useCallback(
         async (input?: string) => {
-            const toValidate = input || value;
+            const toValidate = input || comment;
             if (!toValidate.trim()) {
                 setValidation({
                     isValid: false,
@@ -35,27 +37,27 @@ export const RejectDialog = (props: IRejectDialogProps) => {
                 setValidation({ isValid: true, message: "" });
             }
         },
-        [validation, value]
+        [validation, comment]
     );
 
     const onChange = useCallback(
         (input: string) => {
-            setValue(input);
+            setComment(input);
             validate(input);
         },
-        [value]
+        [comment]
     );
 
     const onConfirm = useCallback(() => {
         if (!validation.isValid) {
             return;
         }
-        presenter.reject(value);
-    }, [presenter.reject, value]);
+        onReject(comment);
+    }, [onReject, comment]);
     return (
         <Dialog
             open={true}
-            onOpenChange={presenter.hideDialog}
+            onOpenChange={hide}
             title={
                 <>
                     <RejectIcon className={"fill-destructive"} />
@@ -64,7 +66,7 @@ export const RejectDialog = (props: IRejectDialogProps) => {
             }
             actions={
                 <>
-                    <Dialog.CancelButton onClick={presenter.hideDialog} />
+                    <Dialog.CancelButton onClick={hide} />
                     <Dialog.ConfirmButton
                         disabled={!validation.isValid}
                         text={"Reject content"}
@@ -75,13 +77,11 @@ export const RejectDialog = (props: IRejectDialogProps) => {
             showCloseButton={true}
             dismissible={true}
         >
-            {presenter.vm.loading ? (
-                <OverlayLoader size="sm" variant="accent" indeterminate={true} />
-            ) : null}
+            {loading ? <OverlayLoader size="sm" variant="accent" indeterminate={true} /> : null}
             <Grid>
                 <Grid.Column span={12}>
-                    You are about to reject the <strong>{presenter.vm.step?.title}</strong>, are you
-                    sure you want to do this? Author will be notified about the rejection.
+                    You are about to reject the <strong>{title}</strong>, are you sure you want to
+                    do this? Author will be notified about the rejection.
                 </Grid.Column>
                 <Grid.Column span={12}>
                     <Textarea
@@ -91,7 +91,7 @@ export const RejectDialog = (props: IRejectDialogProps) => {
                             </>
                         }
                         required={true}
-                        value={value}
+                        value={comment}
                         onChange={onChange}
                         validate={validate}
                         validation={validation}

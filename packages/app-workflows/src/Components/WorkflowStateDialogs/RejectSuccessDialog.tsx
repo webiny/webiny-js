@@ -1,33 +1,28 @@
 import React from "react";
-import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
 import { Dialog, Grid } from "@webiny/admin-ui";
 import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
 
 interface IRejectSuccessDialogProps {
-    presenter: IWorkflowStatePresenter;
+    hide: () => void;
+    title: string;
 }
 
 export const RejectSuccessDialog = (props: IRejectSuccessDialogProps) => {
-    const { presenter } = props;
-
-    const step = presenter.vm.lastRejectedStep;
-    if (!step) {
-        return null;
-    }
+    const { hide, title } = props;
 
     return (
         <Dialog
             open={true}
-            onOpenChange={presenter.hideDialog}
+            onOpenChange={hide}
             title={
                 <>
                     <RejectIcon className={"fill-destructive"} />
-                    {step.title} Rejected
+                    {title} Rejected
                 </>
             }
             actions={
                 <>
-                    <Dialog.ConfirmButton text={"Close"} onClick={presenter.hideDialog} />
+                    <Dialog.ConfirmButton text={"Close"} onClick={hide} />
                 </>
             }
             showCloseButton={true}
@@ -35,8 +30,8 @@ export const RejectSuccessDialog = (props: IRejectSuccessDialogProps) => {
         >
             <Grid>
                 <Grid.Column span={12}>
-                    <strong>{step.title}</strong> is successfully approved. All relevant parties
-                    have been notified.
+                    <strong>{title}</strong> is successfully approved. All relevant parties have
+                    been notified.
                 </Grid.Column>
                 <Grid.Column span={12}>
                     You can track all Content Reviews <u>here</u>.
