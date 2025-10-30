@@ -41,9 +41,9 @@ export const WorkflowStatesWidgetCardTabs = observer(
                         }
                     />,
                     <Tabs.Tab
-                        key="declined"
-                        value="declined"
-                        trigger={`Declined (${presenter.vm.rejectedCount})`}
+                        key="rejected"
+                        value="rejected"
+                        trigger={`Rejected (${presenter.vm.rejectedCount})`}
                         content={
                             <>
                                 <WorkflowStateList states={presenter.vm.rejected} />

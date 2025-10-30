@@ -11,7 +11,7 @@ export interface IWorkflowStatesWidgetRepositoryApproveStateParams {
     comment?: string;
 }
 
-export interface IWorkflowStatesWidgetRepositoryDeclineStateParams {
+export interface IWorkflowStatesWidgetRepositoryRejectStateParams {
     id: string;
     comment: string;
 }
@@ -29,7 +29,7 @@ export interface IWorkflowStatesWidgetRepository {
     approveState(
         params: IWorkflowStatesWidgetRepositoryApproveStateParams
     ): Promise<IWorkflowState | null>;
-    declineState(
-        params: IWorkflowStatesWidgetRepositoryDeclineStateParams
+    rejectState(
+        params: IWorkflowStatesWidgetRepositoryRejectStateParams
     ): Promise<IWorkflowState | null>;
 }

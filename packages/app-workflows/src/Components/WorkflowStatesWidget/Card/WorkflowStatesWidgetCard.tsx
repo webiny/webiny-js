@@ -27,11 +27,11 @@ export const WorkflowStateWidgetCard = observer(({ title }: IWorkflowStateWidget
             {presenter.vm.showApproveSuccessDialog ? (
                 <ApproveSuccessDialog state={presenter.vm.showApproveSuccessDialog} />
             ) : null}
-            {presenter.vm.showDeclineDialog ? (
-                <RejectDialog state={presenter.vm.showDeclineDialog} />
+            {presenter.vm.showRejectDialog ? (
+                <RejectDialog state={presenter.vm.showRejectDialog} />
             ) : null}
-            {presenter.vm.showDeclineSuccessDialog ? (
-                <RejectSuccessDialog state={presenter.vm.showDeclineSuccessDialog} />
+            {presenter.vm.showRejectSuccessDialog ? (
+                <RejectSuccessDialog state={presenter.vm.showRejectSuccessDialog} />
             ) : null}
             <Card
                 title={

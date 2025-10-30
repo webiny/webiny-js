@@ -13,15 +13,15 @@ export interface IWorkflowStatesWidgetPresenterViewModel {
     rejectedCount: number;
     showApproveDialog: IWorkflowState | null;
     showApproveSuccessDialog: IWorkflowState | null;
-    showDeclineDialog: IWorkflowState | null;
-    showDeclineSuccessDialog: IWorkflowState | null;
+    showRejectDialog: IWorkflowState | null;
+    showRejectSuccessDialog: IWorkflowState | null;
 }
 
 export interface IWorkflowStatesWidgetPresenter {
     vm: IWorkflowStatesWidgetPresenterViewModel;
     approveState(state: IWorkflowState, comment?: string): Promise<void>;
-    declineState(state: IWorkflowState, comment: string): Promise<void>;
+    rejectState(state: IWorkflowState, comment: string): Promise<void>;
     showApproveStateDialog(state: IWorkflowState): void;
-    showDeclineStateDialog(state: IWorkflowState): void;
+    showRejectStateDialog(state: IWorkflowState): void;
     hideDialog(): void;
 }

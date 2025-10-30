@@ -2,7 +2,6 @@ import React from "react";
 import type { IWorkflowState } from "~/types.js";
 import { Accordion } from "@webiny/admin-ui";
 import { Color } from "~/Components/Workflows/Step/Color.js";
-import { observer } from "mobx-react-lite";
 import { WorkflowStateRowOptions } from "./WorkflowStateRowOptions.js";
 import { WorkflowStateRowDescription } from "../Row/WorkflowStateRowDescription.js";
 
@@ -10,7 +9,7 @@ interface IWorkflowStateRowProps {
     state: IWorkflowState;
 }
 
-export const WorkflowStateRow = observer((props: IWorkflowStateRowProps) => {
+export const WorkflowStateRow = (props: IWorkflowStateRowProps) => {
     const { state } = props;
 
     return (
@@ -25,4 +24,4 @@ export const WorkflowStateRow = observer((props: IWorkflowStateRowProps) => {
             <></>
         </Accordion.Item>
     );
-});
+};

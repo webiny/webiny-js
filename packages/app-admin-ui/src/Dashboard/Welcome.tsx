@@ -42,6 +42,7 @@ const Welcome = () => {
             <Grid gap={"spacious"}>
                 <Grid.Column span={5}>
                     {!canSeeAnyWidget && <MissingPermissionsWidget />}
+                    <WorkflowStatesRequestedWidget client={client} />
                     <div className={"flex flex-col gap-lg"}>
                         {widgets.map(pl => (
                             <ApplicationWidget
@@ -54,7 +55,6 @@ const Welcome = () => {
                             />
                         ))}
                     </div>
-                    <WorkflowStatesRequestedWidget client={client} />
                 </Grid.Column>
                 <Grid.Column span={7}>
                     <div className={"flex flex-col gap-lg"}>

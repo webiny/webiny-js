@@ -2,7 +2,7 @@ import { makeAutoObservable, observable, runInAction } from "mobx";
 import type {
     IWorkflowStatesWidgetRepository,
     IWorkflowStatesWidgetRepositoryApproveStateParams,
-    IWorkflowStatesWidgetRepositoryDeclineStateParams,
+    IWorkflowStatesWidgetRepositoryRejectStateParams,
     IWorkflowStatesWidgetRepositoryListResult
 } from "./abstractions/WorkflowStatesWidgetRepository.js";
 import type { IWorkflowStatesWidgetGateway } from "~/Gateways/index.js";
@@ -127,14 +127,14 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
         return result.data || null;
     }
 
-    public async declineState(
-        params: IWorkflowStatesWidgetRepositoryDeclineStateParams
+    public async rejectState(
+        params: IWorkflowStatesWidgetRepositoryRejectStateParams
     ): Promise<IWorkflowState | null> {
         runInAction(() => {
             this._actionLoading = true;
             this._actionError = null;
         });
-        const result = await this.gateway.declineState(params);
+        const result = await this.gateway.rejectState(params);
         runInAction(() => {
             this._actionLoading = false;
             this._actionError = result.error;
