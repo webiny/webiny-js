@@ -1,30 +1,27 @@
 import React, { useCallback } from "react";
-import { RejectDialog as BaseRejectDialog } from "~/Components/WorkflowStateDialogs/index.js";
-import type { IWorkflowState } from "~/types.js";
+import { StartDialog as BaseStartDialog } from "~/Components/WorkflowStateDialogs/index.js";
 import { useWorkflowStatesWidget } from "~/Components/WorkflowStatesWidget/Provider/useWorkflowStatesWidget.js";
+import type { IWorkflowState } from "~/types.js";
 
-interface IRejectDialogProps {
+interface IStartDialogProps {
     state: IWorkflowState;
 }
 
-export const RejectDialog = (props: IRejectDialogProps) => {
+export const StartDialog = (props: IStartDialogProps) => {
     const { state } = props;
     const { presenter } = useWorkflowStatesWidget();
 
-    const onReject = useCallback(
-        (comment: string) => {
-            presenter.rejectStateStep(state, comment);
-        },
-        [state.id]
-    );
+    const onStart = useCallback(() => {
+        presenter.startStateStep(state);
+    }, [state.id]);
 
     if (!state.currentStep.isAllowedToReview) {
         return null;
     }
 
     return (
-        <BaseRejectDialog
-            onReject={onReject}
+        <BaseStartDialog
+            onStart={onStart}
             hide={presenter.hideDialog}
             loading={presenter.vm.dialogLoading}
             title={state.currentStep.title}

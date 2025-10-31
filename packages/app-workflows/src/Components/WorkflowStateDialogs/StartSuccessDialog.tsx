@@ -1,13 +1,13 @@
 import React from "react";
 import { Dialog, Grid } from "@webiny/admin-ui";
-import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
+import { ReactComponent as StartIcon } from "@webiny/icons/check.svg";
 
-interface IRejectSuccessDialogProps {
-    hide: () => void;
+interface IStartSuccessDialogProps {
+    hide(): void;
     title: string;
 }
 
-export const RejectSuccessDialog = (props: IRejectSuccessDialogProps) => {
+export const StartSuccessDialog = (props: IStartSuccessDialogProps) => {
     const { hide, title } = props;
 
     return (
@@ -16,8 +16,8 @@ export const RejectSuccessDialog = (props: IRejectSuccessDialogProps) => {
             onOpenChange={hide}
             title={
                 <>
-                    <RejectIcon className={"fill-destructive"} />
-                    {title} Rejected
+                    <StartIcon className={"fill-success"} />
+                    <strong>{title}</strong> Content Review Started
                 </>
             }
             actions={
@@ -30,8 +30,7 @@ export const RejectSuccessDialog = (props: IRejectSuccessDialogProps) => {
         >
             <Grid>
                 <Grid.Column span={12}>
-                    <strong>{title}</strong> is successfully rejected. All relevant parties have
-                    been notified.
+                    <strong>{title}</strong> content review successfully started.
                 </Grid.Column>
                 <Grid.Column span={12}>
                     You can track all Content Reviews <u>here</u>.

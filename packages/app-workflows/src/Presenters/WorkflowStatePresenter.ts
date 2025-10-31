@@ -9,7 +9,7 @@ import {
     type IWorkflowStateStepModel,
     WorkflowStateModel
 } from "~/Models/index.js";
-import { type IIdentity, type IWorkflow } from "~/types.js";
+import { type IIdentity, type IWorkflow, WorkflowStateValue } from "~/types.js";
 
 export interface IWorkflowStatePresenterParams {
     repository: IWorkflowStateRepository;
@@ -29,8 +29,16 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     private readonly title;
     private readonly identity;
     private state: IWorkflowStateModel | null | undefined = undefined;
-    private dialog: "approve" | "approve:success" | "reject" | "reject:success" | "comment" | null =
-        null;
+    private dialog:
+        | "start"
+        | "start:success"
+        | "requestReview"
+        | "approve"
+        | "approve:success"
+        | "reject"
+        | "reject:success"
+        | "comment"
+        | null = null;
     step: IWorkflowStateStepModel | null = null;
 
     private get isOwner(): boolean {
@@ -41,10 +49,17 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     }
     /**
      * Determines whether the current user can cancel the review request.
-     * User must be the owner of the requested review and current step must exist.
+     * User must be the owner of the requested review.
+     * Previous step must not exist (only the initial request can be cancelled).
+     * Current step must be in pending state.
      */
     private get canCancel(): boolean {
-        return this.isOwner && !!this.state?.currentStep;
+        if (!this.isOwner) {
+            return false;
+        } else if (this.state?.previousStep) {
+            return false;
+        }
+        return this.state?.currentStep.state === WorkflowStateValue.pending;
     }
 
     get vm(): IWorkflowStatePresenterViewModel {
@@ -60,6 +75,9 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             app: this.app,
             id: this.targetRevisionId,
             canCancel: this.canCancel,
+            showRequestReviewDialog: this.dialog === "requestReview",
+            showStartDialog: this.dialog === "approve",
+            showStartSuccessDialog: this.dialog === "approve:success",
             showApproveDialog: this.dialog === "approve",
             showApproveSuccessDialog: this.dialog === "approve:success",
             showRejectDialog: this.dialog === "reject",
@@ -120,6 +138,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         });
         runInAction(() => {
             this.state = item ? WorkflowStateModel.create(item) : null;
+            this.dialog = null;
         });
     };
 
@@ -129,6 +148,10 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         });
         runInAction(() => {
             this.state = item ? WorkflowStateModel.create(item) : null;
+            if (!item) {
+                return;
+            }
+            this.dialog = "start:success";
         });
     };
 
@@ -167,6 +190,18 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         });
     };
 
+    showRequestReviewDialog = () => {
+        runInAction(() => {
+            this.dialog = "requestReview";
+        });
+    };
+
+    showStartDialog = () => {
+        runInAction(() => {
+            this.dialog = "start";
+        });
+    };
+
     showApproveDialog = () => {
         runInAction(() => {
             this.dialog = "approve";
@@ -193,6 +228,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         }
         runInAction(() => {
             this.step = step;
+            this.dialog = "comment";
         });
     };
 }

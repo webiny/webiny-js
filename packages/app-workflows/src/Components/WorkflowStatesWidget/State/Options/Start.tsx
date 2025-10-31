@@ -14,7 +14,7 @@ export const WorkflowStateRowOptionsStart = observer(
         const { presenter } = useWorkflowStatesWidget();
 
         const onClick = useCallback(() => {
-            presenter.startStateStep(state);
+            presenter.showStartStateStepDialog(state);
         }, [state.id]);
 
         if (state.state !== WorkflowStateValue.pending || !state.currentStep.isAllowedToReview) {
@@ -23,7 +23,7 @@ export const WorkflowStateRowOptionsStart = observer(
         return (
             <DropdownMenu.Item
                 icon={<Icon icon={<StartIcon />} label={"Start"} />}
-                text={"Start Step Rreview"}
+                text={"Start Step Review"}
                 onClick={onClick}
             />
         );
