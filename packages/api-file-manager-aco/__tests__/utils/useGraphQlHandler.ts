@@ -1,12 +1,9 @@
 import createGraphQLHandler from "@webiny/handler-graphql";
-import { createI18NContext } from "@webiny/api-i18n";
 import {
     CmsParametersPlugin,
     createHeadlessCmsContext,
     createHeadlessCmsGraphQL
 } from "@webiny/api-headless-cms";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import type { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { createHandler } from "@webiny/handler-aws";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { createTenancyAndSecurity } from "./tenancySecurity";
@@ -19,15 +16,20 @@ import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/type
 import { getIntrospectionQuery } from "graphql";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
-import createAdminUsersApp from "@webiny/api-admin-users";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
-import { createWcpContext } from "@webiny/api-wcp";
-import type { AdminUsersStorageOperations } from "@webiny/api-admin-users/types";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type {
+    SecurityPermission,
+    SecurityStorageOperations
+} from "@webiny/api-core/types/security.js";
+import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
+import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import { createApiCore } from "@webiny/api-core";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity;
+    identity?: IdentityData;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: any[];
     testProjectLicense?: DecryptedWcpProjectLicense;
@@ -42,7 +44,7 @@ interface InvokeParams {
     headers?: Record<string, string>;
 }
 
-const defaultIdentity: SecurityIdentity = {
+const defaultIdentity: IdentityData = {
     id: "12345678",
     type: "admin",
     displayName: "John Doe"
@@ -52,24 +54,25 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
 
     const documentClient = getDocumentClient();
-    const i18nStorage = getStorageOps<any[]>("i18n");
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+
+    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
+    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
     const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
 
     const handler = createHandler({
         plugins: [
+            createApiCore({
+                tenancyStorageOperations: tenancyStorage.storageOperations,
+                securityStorageOperations: securityStorage.storageOperations,
+                usersStorageOperations: adminUsersStorage.storageOperations,
+                testProjectLicense
+            }),
             ...cmsStorage.plugins,
-            createWcpContext({ testProjectLicense }),
             createGraphQLHandler(),
             ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
-            createI18NContext(),
-            ...i18nStorage.storageOperations,
-            mockLocalesPlugins(),
-            createAdminUsersApp({
-                storageOperations: adminUsersStorage.storageOperations
-            }),
             new CmsParametersPlugin(async () => {
                 return {
                     locale: "en-US",
