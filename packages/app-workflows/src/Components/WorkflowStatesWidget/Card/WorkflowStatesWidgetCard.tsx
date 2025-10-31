@@ -61,6 +61,7 @@ export const WorkflowStateWidgetCard = observer(
                             View All
                         </>
                     }
+                    actionsPosition={"header"}
                     padding="sm"
                     elevation="small"
                 >

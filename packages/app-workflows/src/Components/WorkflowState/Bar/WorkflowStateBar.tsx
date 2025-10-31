@@ -19,6 +19,7 @@ import {
     RejectDialog,
     RejectSuccessDialog,
     RequestReviewDialog,
+    CancelReviewDialog,
     StartDialog,
     StartSuccessDialog
 } from "./Dialogs/index.js";
@@ -35,6 +36,9 @@ export const WorkflowStateBar = observer(() => {
 
     return (
         <>
+            {presenter.vm.showCancelReviewDialog ? (
+                <CancelReviewDialog presenter={presenter} />
+            ) : null}
             {presenter.vm.showRequestReviewDialog ? (
                 <RequestReviewDialog presenter={presenter} />
             ) : null}

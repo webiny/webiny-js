@@ -1,6 +1,5 @@
 import type { IMeta } from "./types.js";
 import type {
-    IWorkflowState,
     IWorkflowStateModel,
     IWorkflowStateRecord,
     WorkflowStateRecordState
@@ -92,16 +91,16 @@ export interface IWorkflowStateContextListRequestedWorkflowStatesResponse {
 }
 
 export interface IWorkflowStateContextOnStateAfterCreate {
-    state: IWorkflowState;
+    state: IWorkflowStateModel;
 }
 
 export interface IWorkflowStateContextOnStateAfterUpdate {
-    state: IWorkflowState;
-    original: IWorkflowState;
+    state: IWorkflowStateModel;
+    original: IWorkflowStateModel;
 }
 
 export interface IWorkflowStateContextOnStateAfterDelete {
-    state: IWorkflowState;
+    state: IWorkflowStateModel;
 }
 
 export interface IWorkflowStateContext {

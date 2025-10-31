@@ -30,9 +30,10 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     private readonly identity;
     private state: IWorkflowStateModel | null | undefined = undefined;
     private dialog:
+        | "cancelReview"
+        | "requestReview"
         | "start"
         | "start:success"
-        | "requestReview"
         | "approve"
         | "approve:success"
         | "reject"
@@ -75,6 +76,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             app: this.app,
             id: this.targetRevisionId,
             canCancel: this.canCancel,
+            showCancelReviewDialog: this.dialog === "cancelReview",
             showRequestReviewDialog: this.dialog === "requestReview",
             showStartDialog: this.dialog === "approve",
             showStartSuccessDialog: this.dialog === "approve:success",
@@ -187,6 +189,13 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         await this.repository.cancel(this.state!.id);
         runInAction(() => {
             this.state = null;
+            this.dialog = null;
+        });
+    };
+
+    showCancelReviewDialog = () => {
+        runInAction(() => {
+            this.dialog = "cancelReview";
         });
     };
 
