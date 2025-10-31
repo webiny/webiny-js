@@ -4,6 +4,7 @@ import { useCanUseWorkflows } from "~/hooks/canUseWorkflows.js";
 import { Alert } from "@webiny/admin-ui";
 import { WorkflowStatesProvider } from "./Provider/WorkflowStatesProvider.js";
 import { WorkflowStateWidgetCard } from "./Card/WorkflowStatesWidgetCard.js";
+import { WorkflowStateValue } from "~/types.js";
 
 interface IWorkflowStatesOwnWidgetProps {
     client: ApolloClient<object>;
@@ -23,7 +24,15 @@ export const WorkflowStatesOwnWidget = (props: IWorkflowStatesOwnWidgetProps) =>
 
     return (
         <WorkflowStatesProvider type={"own"} client={client}>
-            <WorkflowStateWidgetCard title={<>Workflow States requested by current user</>} />
+            <WorkflowStateWidgetCard
+                title={<>Workflow States requested by current user</>}
+                tabs={[
+                    WorkflowStateValue.pending,
+                    WorkflowStateValue.inReview,
+                    WorkflowStateValue.approved,
+                    WorkflowStateValue.rejected
+                ]}
+            />
         </WorkflowStatesProvider>
     );
 };

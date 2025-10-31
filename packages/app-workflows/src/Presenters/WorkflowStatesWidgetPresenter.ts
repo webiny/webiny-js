@@ -59,27 +59,44 @@ const mapPromiseAllResponse = (results: IResultData[]): IWorkflowStatesData => {
 };
 
 export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPresenter {
-    readonly type: "own" | "requested";
+    readonly #type: "own" | "requested";
     private readonly repository;
     private readonly items;
     private readonly totals;
-    private dialog: "approve" | "reject" | "approve:success" | "reject:success" | null;
+    private dialog:
+        | "approve"
+        | "reject"
+        | "approve:success"
+        | "reject:success"
+        | "start"
+        | "start:success"
+        | null;
     private state: IWorkflowState | null;
 
     public get vm(): IWorkflowStatesWidgetPresenterViewModel {
         const pending = this.totals.find(t => t.key === WorkflowStateValue.pending);
         const inReview = this.totals.find(t => t.key === WorkflowStateValue.inReview);
+        const approved = this.totals.find(t => t.key === WorkflowStateValue.approved);
+        const rejected = this.totals.find(t => t.key === WorkflowStateValue.rejected);
         const items = toJS(this.items);
 
         return {
+            type: this.#type,
             loading: this.repository.loading,
             error: this.repository.error,
             pending: items.filter(item => item.state === WorkflowStateValue.pending),
             inReview: items.filter(item => item.state === WorkflowStateValue.inReview),
+            approved: items.filter(item => item.state === WorkflowStateValue.approved),
+            rejected: items.filter(item => item.state === WorkflowStateValue.rejected),
             pendingCount: pending?.value || 0,
             inReviewCount: inReview?.value || 0,
+            approvedCount: approved?.value || 0,
+            rejectedCount: rejected?.value || 0,
             dialogLoading: this.repository.actionLoading,
             dialogError: this.repository.actionError,
+            showStartDialog: this.dialog === "start" && this.state ? this.state : null,
+            showStartSuccessDialog:
+                this.dialog === "start:success" && this.state ? this.state : null,
             showApproveDialog: this.dialog === "approve" && this.state ? this.state : null,
             showApproveSuccessDialog:
                 this.dialog === "approve:success" && this.state ? this.state : null,
@@ -91,7 +108,7 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
 
     public constructor(params: IWorkflowStatesWidgetPresenterParams) {
         this.repository = params.repository;
-        this.type = params.type;
+        this.#type = params.type;
         this.items = observable.array<IWorkflowState>([]);
         this.totals = observable.array<ITotals>([]);
         this.dialog = null;
@@ -103,7 +120,7 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
     }
 
     private async init(): Promise<void> {
-        const result = await (this.type === "requested" ? this.initRequested() : this.initOwn());
+        const result = await (this.#type === "requested" ? this.initRequested() : this.initOwn());
 
         runInAction(() => {
             this.items.replace(result.items);
@@ -114,11 +131,17 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
     private async initOwn() {
         return await Promise.all([
             this.repository
+                .listOwnStates(WorkflowStateValue.pending)
+                .then(mapListStatesResponse(WorkflowStateValue.pending)),
+            this.repository
                 .listOwnStates(WorkflowStateValue.inReview)
                 .then(mapListStatesResponse(WorkflowStateValue.inReview)),
             this.repository
-                .listOwnStates(WorkflowStateValue.pending)
-                .then(mapListStatesResponse(WorkflowStateValue.pending))
+                .listOwnStates(WorkflowStateValue.approved)
+                .then(mapListStatesResponse(WorkflowStateValue.approved)),
+            this.repository
+                .listOwnStates(WorkflowStateValue.rejected)
+                .then(mapListStatesResponse(WorkflowStateValue.rejected))
         ]).then(mapPromiseAllResponse);
     }
 
@@ -135,7 +158,6 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
 
     private increaseTotals(key: WorkflowStateValue): void {
         const total = this.totals.find(t => t.key === key);
-        console.log(`increasing ${key}, ${total?.value}`);
         if (total) {
             total.value = total.value + 1;
             return;
@@ -148,7 +170,6 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
 
     private decreaseTotals(key: WorkflowStateValue): void {
         const total = this.totals.find(t => t.key === key);
-        console.log(`decreasing ${key}, ${total?.value}`);
         if (!total?.value) {
             return;
         }
@@ -176,8 +197,8 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
                 this.decreaseTotals(WorkflowStateValue.pending);
                 this.increaseTotals(WorkflowStateValue.inReview);
             }
-            this.state = null;
-            this.dialog = null;
+            this.state = result;
+            this.dialog = "start:success";
         });
     };
 
@@ -231,18 +252,27 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         });
     };
 
+    showStartStateStepDialog = (state: IWorkflowState): void => {
+        runInAction(() => {
+            this.state = state;
+            this.dialog = "start";
+        });
+    };
+
     showApproveStateStepDialog = (state: IWorkflowState): void => {
         runInAction(() => {
             this.state = state;
             this.dialog = "approve";
         });
     };
+
     showRejectStateStepDialog = (state: IWorkflowState): void => {
         runInAction(() => {
             this.state = state;
             this.dialog = "reject";
         });
     };
+
     hideDialog = (): void => {
         runInAction(() => {
             this.state = null;
