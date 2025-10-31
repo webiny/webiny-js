@@ -8,10 +8,9 @@ import type {
     IUpdateTaskResponse
 } from "@webiny/tasks/types";
 import type { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
-// @ts-expect-error
 import { createMockApiLog } from "@webiny/project-utils/testing/mockApiLog";
-import type { Tenant } from "@webiny/api-tenancy/types";
 import type { Context as LoggerContext } from "@webiny/api-log/types";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
 export const createContextMock = (
     params?: PartialDeep<Context & ElasticsearchContext & LoggerContext>
@@ -23,12 +22,7 @@ export const createContextMock = (
             parent: null
         } as Tenant
     ];
-    const locales = [
-        {
-            code: "en-US",
-            default: true
-        }
-    ];
+
     let currentTenant = tenants[0];
     return {
         logger: createMockApiLog(),
@@ -54,23 +48,6 @@ export const createContextMock = (
             },
             setCurrentTenant(tenant: Tenant) {
                 currentTenant = tenant;
-            }
-        },
-        i18n: {
-            locales: {
-                listLocales: async () => {
-                    return [
-                        locales,
-                        {
-                            totalCount: locales.length,
-                            hasMoreItems: false,
-                            cursor: null
-                        }
-                    ];
-                }
-            },
-            getLocales: async () => {
-                return locales;
             }
         },
         ...params,

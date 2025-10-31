@@ -157,7 +157,6 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
                 },
                 flow: "elasticsearchToDynamoDb"
             },
-            locale: "en-US",
             message: undefined,
             status: "continue",
             tenant: "root",

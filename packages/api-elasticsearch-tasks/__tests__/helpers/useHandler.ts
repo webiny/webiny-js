@@ -2,11 +2,8 @@ import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { createWcpContext } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { createDummyLocales, createIdentity, createPermissions } from "./helpers";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import i18nContext from "@webiny/api-i18n/graphql/context";
+import { createIdentity, createPermissions } from "./helpers";
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import type { PluginCollection } from "@webiny/plugins/types";
 import { createBackgroundTaskContext } from "@webiny/tasks";
@@ -19,6 +16,10 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { createLogger } from "@webiny/api-log";
+import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
+import type { SecurityStorageOperations } from "@webiny/api-core/types/security.js";
+import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import { createApiCore } from "@webiny/api-core";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -26,11 +27,12 @@ export interface UseHandlerParams {
 
 export const useHandler = (params?: UseHandlerParams) => {
     const { plugins: initialPlugins = [] } = params || {};
+    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
+    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
+    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const i18nStorage = getStorageOps<any[]>("i18n");
 
     const documentClient = getDocumentClient();
-    // const elasticsearchClient = createElasticsearchClient();
 
     const plugins = [
         [
@@ -40,7 +42,11 @@ export const useHandler = (params?: UseHandlerParams) => {
                     documentClient
                 })
             }),
-            createWcpContext(),
+            createApiCore({
+                tenancyStorageOperations: tenancyStorage.storageOperations,
+                securityStorageOperations: securityStorage.storageOperations,
+                usersStorageOperations: adminUsersStorage.storageOperations
+            }),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: false,
@@ -50,10 +56,6 @@ export const useHandler = (params?: UseHandlerParams) => {
             createLogger({
                 documentClient
             }),
-            i18nContext(),
-            i18nStorage.storageOperations,
-            createDummyLocales(),
-            mockLocalesPlugins(),
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations
             }),
