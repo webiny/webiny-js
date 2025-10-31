@@ -14468,6 +14468,7 @@ __metadata:
     "@webiny/pubsub": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
     cache-control-parser: "npm:^2.0.6"
     lodash: "npm:^4.17.21"
     object-hash: "npm:^3.0.0"

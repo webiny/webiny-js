@@ -2,6 +2,7 @@ import { ContextPlugin } from "@webiny/api";
 import type { GroupsTeamsAuthorizerConfig } from "./createGroupsTeamsAuthorizer/listPermissionsFromGroupsAndTeams.js";
 import { listPermissionsFromGroupsAndTeams } from "./createGroupsTeamsAuthorizer/listPermissionsFromGroupsAndTeams.js";
 import type { ApiCoreContext } from "~/types/core.js";
+import { getLocale } from "~/legacy/i18n/getLocale.js";
 
 export type { GroupsTeamsAuthorizerConfig };
 
@@ -23,11 +24,7 @@ export const createGroupsTeamsAuthorizerHandler = <
             return null;
         }
 
-        // @ts-expect-error Check `packages/api-security/src/plugins/tenantLinkAuthorization.ts:23`.
-        const locale = context.i18n?.getContentLocale();
-        if (!locale) {
-            return null;
-        }
+        const locale = getLocale();
 
         if (config.canAccessTenant) {
             const canAccessTenant = await config.canAccessTenant(context);

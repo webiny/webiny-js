@@ -12,6 +12,7 @@ import { FilesPermissions } from "~/createFileManager/permissions/FilesPermissio
 import { SettingsPermissions } from "~/createFileManager/permissions/SettingsPermissions.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 export class FileManagerContextSetup {
     private readonly context: FileManagerContext;
@@ -34,8 +35,14 @@ export class FileManagerContextSetup {
         }
 
         const filesPermissions = new FilesPermissions({
-            getIdentity: this.context.security.getIdentity,
-            getPermissions: () => this.context.security.getPermissions<FilePermission>("fm.file"),
+            getIdentity: () => {
+                const identityContext = this.context.container.resolve(IdentityContext);
+                return identityContext.getIdentity();
+            },
+            getPermissions: () => {
+                const identityContext = this.context.container.resolve(IdentityContext);
+                return identityContext.getPermissions<FilePermission>("fm.file");
+            },
             fullAccessPermissionName: "fm.*"
         });
 

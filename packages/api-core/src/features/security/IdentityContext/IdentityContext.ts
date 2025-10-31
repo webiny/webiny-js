@@ -117,17 +117,13 @@ class IdentityContextImpl implements Abstraction.Interface {
     // ========================================================================
 
     private applyAaclLogic(permissions: SecurityPermission[]): SecurityPermission[] {
-        const license = this.wcpContext.getProjectLicense().getRawLicense();
-        const aaclConfig = license?.package?.features?.advancedAccessControlLayer;
-
-        const aaclEnabled = aaclConfig?.enabled === true;
-        const teamsEnabled = aaclConfig?.options?.teams === true;
+        const aaclEnabled = this.wcpContext.canUseAacl();
+        const teamsEnabled = this.wcpContext.canUseTeams();
 
         if (aaclEnabled) {
             // Add AACL metadata permission
             permissions.push({
                 name: "aacl",
-                legacy: false,
                 teams: teamsEnabled
             } as AaclPermission);
 

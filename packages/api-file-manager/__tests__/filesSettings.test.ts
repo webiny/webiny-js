@@ -1,8 +1,8 @@
 import { describe, test, expect } from "vitest";
-import { SecurityIdentity } from "@webiny/api-security/types";
 import useGqlHandler from "~tests/utils/useGqlHandler";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
-const identityA: SecurityIdentity = {
+const identityA: IdentityData = {
     id: "a",
     type: "test",
     displayName: "Aa"
