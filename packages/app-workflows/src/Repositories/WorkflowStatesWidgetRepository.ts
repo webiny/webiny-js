@@ -3,11 +3,12 @@ import type {
     IWorkflowStatesWidgetRepository,
     IWorkflowStatesWidgetRepositoryApproveStateStepParams,
     IWorkflowStatesWidgetRepositoryListResult,
+    IWorkflowStatesWidgetRepositoryListStates,
     IWorkflowStatesWidgetRepositoryRejectStateStepParams,
     IWorkflowStatesWidgetRepositoryStartStateStepParams
 } from "./abstractions/WorkflowStatesWidgetRepository.js";
 import type { IWorkflowStatesWidgetGateway } from "~/Gateways/index.js";
-import { type IGenericError, type IWorkflowState, WorkflowStateValue } from "~/types.js";
+import { type IGenericError, type IWorkflowState } from "~/types.js";
 
 export interface IWorkflowStatesWidgetRepositoryParams {
     gateway: IWorkflowStatesWidgetGateway;
@@ -66,8 +67,9 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
     }
 
     public async listOwnStates(
-        state: WorkflowStateValue
+        params: IWorkflowStatesWidgetRepositoryListStates
     ): Promise<IWorkflowStatesWidgetRepositoryListResult> {
+        const { state, limit } = params;
         const key = `own.${state}`;
         runInAction(() => {
             this._loading[key] = true;
@@ -77,7 +79,7 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
             where: {
                 state
             },
-            limit: 5
+            limit
         });
         runInAction(() => {
             this._loading[key] = false;
@@ -90,8 +92,9 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
     }
 
     public async listRequestedStates(
-        state: WorkflowStateValue
+        params: IWorkflowStatesWidgetRepositoryListStates
     ): Promise<IWorkflowStatesWidgetRepositoryListResult> {
+        const { state, limit } = params;
         const key = `requested.${state}`;
         runInAction(() => {
             this._loading[key] = true;
@@ -101,7 +104,7 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
             where: {
                 state
             },
-            limit: 5
+            limit
         });
         runInAction(() => {
             this._loading[key] = false;

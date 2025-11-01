@@ -1,5 +1,8 @@
 import React, { useMemo } from "react";
-import type { IWorkflowStatesWidgetPresenter } from "~/Presenters/index.js";
+import type {
+    IWorkflowStatesWidgetPresenter,
+    IWorkflowStatesWidgetPresenterViewModel
+} from "~/Presenters/index.js";
 import { Loader, Tabs } from "@webiny/admin-ui";
 import { WorkflowStateList } from "../State/WorkflowStateList.js";
 import { observer } from "mobx-react-lite";
@@ -12,21 +15,21 @@ interface IWorkflowStatesWidgetCardTabsProps {
 
 interface IRenderTabProps {
     tab: WorkflowStateValue;
-    presenter: IWorkflowStatesWidgetPresenter;
+    vm: IWorkflowStatesWidgetPresenterViewModel;
 }
 
 const RenderTab = (props: IRenderTabProps) => {
-    const { tab, presenter } = props;
+    const { tab, vm } = props;
     switch (tab) {
         case WorkflowStateValue.pending:
             return (
                 <Tabs.Tab
                     key="pending"
                     value="pending"
-                    trigger={`Pending (${presenter.vm.pendingCount})`}
+                    trigger={`Pending (${vm.pendingCount})`}
                     content={
                         <>
-                            <WorkflowStateList states={presenter.vm.pending} />
+                            <WorkflowStateList states={vm.pending} />
                         </>
                     }
                 />
@@ -36,10 +39,10 @@ const RenderTab = (props: IRenderTabProps) => {
                 <Tabs.Tab
                     key="inReview"
                     value="inReview"
-                    trigger={`In Review (${presenter.vm.inReviewCount})`}
+                    trigger={`In Review (${vm.inReviewCount})`}
                     content={
                         <>
-                            <WorkflowStateList states={presenter.vm.inReview} />
+                            <WorkflowStateList states={vm.inReview} />
                         </>
                     }
                 />
@@ -49,10 +52,10 @@ const RenderTab = (props: IRenderTabProps) => {
                 <Tabs.Tab
                     key="approved"
                     value="approved"
-                    trigger={`Approved (${presenter.vm.approvedCount})`}
+                    trigger={`Approved (${vm.approvedCount})`}
                     content={
                         <>
-                            <WorkflowStateList states={presenter.vm.approved} />
+                            <WorkflowStateList states={vm.approved} />
                         </>
                     }
                 />
@@ -62,10 +65,10 @@ const RenderTab = (props: IRenderTabProps) => {
                 <Tabs.Tab
                     key="rejected"
                     value="rejected"
-                    trigger={`Rejected (${presenter.vm.rejectedCount})`}
+                    trigger={`Rejected (${vm.rejectedCount})`}
                     content={
                         <>
-                            <WorkflowStateList states={presenter.vm.rejected} />
+                            <WorkflowStateList states={vm.rejected} />
                         </>
                     }
                 />
@@ -73,19 +76,39 @@ const RenderTab = (props: IRenderTabProps) => {
     }
 };
 
+const getActiveTab = (
+    vm: IWorkflowStatesWidgetPresenterViewModel,
+    tabs: WorkflowStateValue[]
+): string | undefined => {
+    for (const tab of tabs) {
+        const key = `${tab}Count` as keyof IWorkflowStatesWidgetPresenterViewModel;
+        const value = vm[key];
+        if (typeof value === "number" && value > 0) {
+            return tab;
+        }
+    }
+    return undefined;
+};
+
 export const WorkflowStatesWidgetCardTabs = observer(
     (props: IWorkflowStatesWidgetCardTabsProps) => {
         const { presenter, tabs } = props;
 
         const tabComponents = useMemo(() => {
-            return tabs.map(tab => {
-                return <RenderTab key={`tab.${tab}`} tab={tab} presenter={presenter} />;
-            });
+            return tabs
+                .map(tab => {
+                    return <RenderTab key={tab} tab={tab} vm={presenter.vm} />;
+                })
+                .filter((tab): tab is React.JSX.Element => tab !== null);
         }, [tabs, presenter.vm]);
+
+        const activeTab = getActiveTab(presenter.vm, tabs);
 
         if (presenter.vm.loading) {
             return <Loader />;
         }
-        return <Tabs size="sm" separator={false} tabs={tabComponents} />;
+        return (
+            <Tabs size="sm" separator={false} defaultValue={activeTab} tabs={[...tabComponents]} />
+        );
     }
 );

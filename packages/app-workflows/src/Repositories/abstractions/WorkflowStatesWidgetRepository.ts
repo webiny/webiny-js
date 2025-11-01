@@ -20,14 +20,21 @@ export interface IWorkflowStatesWidgetRepositoryRejectStateStepParams {
     comment: string;
 }
 
+export interface IWorkflowStatesWidgetRepositoryListStates {
+    state: WorkflowStateValue;
+    limit: number;
+}
+
 export interface IWorkflowStatesWidgetRepository {
     readonly loading: boolean;
     readonly error: IGenericError | null;
     readonly actionLoading: boolean;
     readonly actionError: IGenericError | null;
-    listOwnStates(state: WorkflowStateValue): Promise<IWorkflowStatesWidgetRepositoryListResult>;
+    listOwnStates(
+        params: IWorkflowStatesWidgetRepositoryListStates
+    ): Promise<IWorkflowStatesWidgetRepositoryListResult>;
     listRequestedStates(
-        state: WorkflowStateValue
+        params: IWorkflowStatesWidgetRepositoryListStates
     ): Promise<IWorkflowStatesWidgetRepositoryListResult>;
     startStateStep(
         params: IWorkflowStatesWidgetRepositoryStartStateStepParams

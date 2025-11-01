@@ -59,8 +59,13 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             return false;
         } else if (this.state?.previousStep) {
             return false;
+        } else if (
+            this.state?.state === WorkflowStateValue.approved ||
+            this.state?.state === WorkflowStateValue.rejected
+        ) {
+            return false;
         }
-        return this.state?.currentStep.state === WorkflowStateValue.pending;
+        return true;
     }
 
     get vm(): IWorkflowStatePresenterViewModel {
