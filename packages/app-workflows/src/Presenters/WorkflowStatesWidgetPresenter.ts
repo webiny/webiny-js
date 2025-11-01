@@ -131,16 +131,28 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
     private async initOwn() {
         return await Promise.all([
             this.repository
-                .listOwnStates(WorkflowStateValue.pending)
+                .listOwnStates({
+                    state: WorkflowStateValue.pending,
+                    limit: 5
+                })
                 .then(mapListStatesResponse(WorkflowStateValue.pending)),
             this.repository
-                .listOwnStates(WorkflowStateValue.inReview)
+                .listOwnStates({
+                    state: WorkflowStateValue.inReview,
+                    limit: 5
+                })
                 .then(mapListStatesResponse(WorkflowStateValue.inReview)),
             this.repository
-                .listOwnStates(WorkflowStateValue.approved)
+                .listOwnStates({
+                    state: WorkflowStateValue.approved,
+                    limit: 5
+                })
                 .then(mapListStatesResponse(WorkflowStateValue.approved)),
             this.repository
-                .listOwnStates(WorkflowStateValue.rejected)
+                .listOwnStates({
+                    state: WorkflowStateValue.rejected,
+                    limit: 5
+                })
                 .then(mapListStatesResponse(WorkflowStateValue.rejected))
         ]).then(mapPromiseAllResponse);
     }
@@ -148,10 +160,16 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
     private async initRequested() {
         return await Promise.all([
             this.repository
-                .listRequestedStates(WorkflowStateValue.inReview)
+                .listRequestedStates({
+                    state: WorkflowStateValue.inReview,
+                    limit: 5
+                })
                 .then(mapListStatesResponse(WorkflowStateValue.inReview)),
             this.repository
-                .listRequestedStates(WorkflowStateValue.pending)
+                .listRequestedStates({
+                    state: WorkflowStateValue.pending,
+                    limit: 5
+                })
                 .then(mapListStatesResponse(WorkflowStateValue.pending))
         ]).then(mapPromiseAllResponse);
     }

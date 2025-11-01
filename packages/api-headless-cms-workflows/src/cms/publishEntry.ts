@@ -25,10 +25,10 @@ export const attachPublishEntryLifecycleEvents = (params: IParams) => {
                 return;
             }
         } catch (ex) {
+            // Swallow error if workflow state is not found.
             if (ex instanceof WorkflowStateNotFoundError) {
                 return;
             }
-            // does not matter, rethrow
             throw ex;
         }
         throw new WebinyError(
