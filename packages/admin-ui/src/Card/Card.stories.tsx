@@ -43,8 +43,8 @@ export const Default: Story = {
         ),
         actions: (
             <>
-                <Card.CancelButton />
-                <Card.ConfirmButton />
+                <Card.CancelAction />
+                <Card.ConfirmAction />
             </>
         )
     },

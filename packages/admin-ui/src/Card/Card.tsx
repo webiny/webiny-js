@@ -5,8 +5,8 @@ import { CardHeader } from "~/Card/components/CardHeader.js";
 import { CardBody } from "~/Card/components/CardBody.js";
 import { CardFooter } from "~/Card/components/CardFooter.js";
 import { Icon } from "./components/Icon.js";
-import { ConfirmButton } from "./components/ConfirmButton.js";
-import { CancelButton } from "./components/CancelButton.js";
+import { ConfirmAction } from "./components/ConfirmAction.js";
+import { CancelAction } from "./components/CancelAction.js";
 import { CardPropsProvider } from "~/Card/components/CardPropsProvider.js";
 
 interface CardProps extends Omit<React.ComponentPropsWithoutRef<typeof CardContent>, "title"> {
@@ -42,8 +42,8 @@ CardBase.displayName = "Card";
 const DecoratableCard = makeDecoratable("Card", CardBase);
 
 const Card = withStaticProps(DecoratableCard, {
-    ConfirmButton,
-    CancelButton,
+    ConfirmAction,
+    CancelAction,
     Icon
 });
 
