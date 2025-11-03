@@ -12,17 +12,7 @@ import { WorkflowStateBarWorkflow } from "./Bars/WorkflowStateBarWorkflow.js";
 import { WorkflowStateBarComponent } from "./WorkflowStateBarComponent.js";
 import { WorkflowStateBarStartReview } from "./Bars/WorkflowStateBarStartReview.js";
 import { useWorkflowState } from "../useWorkflowState.js";
-import {
-    ApproveDialog,
-    ApproveSuccessDialog,
-    CommentDialog,
-    RejectDialog,
-    RejectSuccessDialog,
-    RequestReviewDialog,
-    CancelReviewDialog,
-    StartDialog,
-    StartSuccessDialog
-} from "./Dialogs/index.js";
+import { WorkflowStateBarDialogs } from "~/Components/WorkflowState/Bar/WorkflowStateBarDialogs.js";
 
 export const WorkflowStateBar = observer(() => {
     const { presenter } = useWorkflowState();
@@ -36,25 +26,7 @@ export const WorkflowStateBar = observer(() => {
 
     return (
         <>
-            {presenter.vm.showCancelReviewDialog ? (
-                <CancelReviewDialog presenter={presenter} />
-            ) : null}
-            {presenter.vm.showRequestReviewDialog ? (
-                <RequestReviewDialog presenter={presenter} />
-            ) : null}
-            {presenter.vm.showStartDialog ? <StartDialog presenter={presenter} /> : null}
-            {presenter.vm.showStartSuccessDialog ? (
-                <StartSuccessDialog presenter={presenter} />
-            ) : null}
-            {presenter.vm.showApproveDialog ? <ApproveDialog presenter={presenter} /> : null}
-            {presenter.vm.showApproveSuccessDialog ? (
-                <ApproveSuccessDialog presenter={presenter} />
-            ) : null}
-            {presenter.vm.showRejectDialog ? <RejectDialog presenter={presenter} /> : null}
-            {presenter.vm.showRejectSuccessDialog ? (
-                <RejectSuccessDialog presenter={presenter} />
-            ) : null}
-            {presenter.vm.showStepCommentDialog ? <CommentDialog presenter={presenter} /> : null}
+            <WorkflowStateBarDialogs />
             <Plugins>
                 <WorkflowStateBarApproved />
                 <WorkflowStateBarRejected />

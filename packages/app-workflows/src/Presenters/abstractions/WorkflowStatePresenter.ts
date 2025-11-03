@@ -14,15 +14,17 @@ export interface IWorkflowStatePresenterViewModel {
     lastRejectedStep: IWorkflowStateStepModel | null;
     nextStep: IWorkflowStateStepModel | null;
     canCancel: boolean;
-    showCancelReviewDialog: boolean;
-    showRequestReviewDialog: boolean;
-    showStartDialog: boolean;
-    showStartSuccessDialog: boolean;
-    showApproveDialog: boolean;
-    showApproveSuccessDialog: boolean;
-    showRejectDialog: boolean;
-    showRejectSuccessDialog: boolean;
-    showStepCommentDialog: boolean;
+    dialog:
+        | "cancelReview"
+        | "requestReview"
+        | "start"
+        | "start:success"
+        | "approve"
+        | "approve:success"
+        | "reject"
+        | "reject:success"
+        | "comment"
+        | null;
 }
 
 export interface IWorkflowStatePresenter {

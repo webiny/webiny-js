@@ -17,21 +17,12 @@ export interface IWorkflowStatesWidgetPresenterParams {
     states: NonEmptyArray<WorkflowStateValue>;
 }
 
-interface ITotals {
-    key: WorkflowStateValue;
-    value: number;
-}
-
 interface IResultData {
     key: WorkflowStateValue;
     items: IWorkflowState[];
     totalCount: number;
 }
 
-interface IWorkflowStatesData {
-    items: IWorkflowState[];
-    totals: ITotals[];
-}
 
 const mapListStatesResponse = (key: WorkflowStateValue) => {
     return (input: IWorkflowStatesWidgetRepositoryListResult): IResultData => {
@@ -60,7 +51,6 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
     readonly #states;
     private readonly repository;
     private readonly items;
-    private readonly totals;
     private dialog:
         | "approve"
         | "reject"
@@ -100,7 +90,6 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         this.#states = params.states;
         this.values = observable.object<IWorkflowStatesWidgetPresenterViewModelValues>({});
         this.items = observable.array<IWorkflowState>([]);
-        this.totals = observable.array<ITotals>([]);
         this.dialog = null;
         this.state = null;
 
@@ -110,13 +99,20 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
     }
 
     private async init(): Promise<void> {
-        const result = await (this.#type === "requested" ? this.initRequested() : this.initOwn());
+        const result = await this.load();
 
         runInAction(() => {
             for (const key in result) {
                 set(this.values, key, result[key]);
             }
         });
+    }
+
+    private async load(): Promise<IWorkflowStatesWidgetPresenterViewModelValues> {
+        if (this.#type === "requested") {
+            return await this.initRequested();
+        }
+        return await this.initOwn();
     }
 
     private async initOwn() {
@@ -146,25 +142,30 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
     }
 
     private increaseTotals(key: WorkflowStateValue): void {
-        const total = this.totals.find(t => t.key === key);
-        if (total) {
-            total.value = total.value + 1;
+        const value = this.values[key];
+        if (!value) {
+            set(this.values, key, {
+                items: [],
+                total: 1
+            });
             return;
         }
-        this.totals.push({
-            key,
-            value: 1
+        set(this.values, key, {
+            ...value,
+            total: value.total + 1
         });
     }
 
     private decreaseTotals(key: WorkflowStateValue): void {
-        const total = this.totals.find(t => t.key === key);
-        if (!total?.value) {
+        const value = this.values[key];
+        if (!value?.total) {
             return;
         }
 
-        total.value = total.value - 1;
-        return;
+        set(this.values, key, {
+            ...value,
+            total: value.total - 1
+        });
     }
 
     startStateStep = async (state: IWorkflowState): Promise<void> => {

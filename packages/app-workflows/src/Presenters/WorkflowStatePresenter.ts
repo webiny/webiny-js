@@ -81,15 +81,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             app: this.app,
             id: this.targetRevisionId,
             canCancel: this.canCancel,
-            showCancelReviewDialog: this.dialog === "cancelReview",
-            showRequestReviewDialog: this.dialog === "requestReview",
-            showStartDialog: this.dialog === "approve",
-            showStartSuccessDialog: this.dialog === "approve:success",
-            showApproveDialog: this.dialog === "approve",
-            showApproveSuccessDialog: this.dialog === "approve:success",
-            showRejectDialog: this.dialog === "reject",
-            showRejectSuccessDialog: this.dialog === "reject:success",
-            showStepCommentDialog: this.dialog === "comment"
+            dialog: this.dialog
         };
     }
 
