@@ -156,7 +156,6 @@ export const Step = observer(
                                         <Accordion.Item
                                             key={`step-${step.id}`}
                                             title={step.title || title}
-                                            description={step.description}
                                             colorMark={step.color}
                                             onOpenChange={onOpenChange}
                                             actions={
