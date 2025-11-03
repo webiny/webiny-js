@@ -1,7 +1,5 @@
-import {
-    type IWorkflowStatesWidgetPresenter,
-    WorkflowStatesWidgetPresenter
-} from "~/Presenters/index.js";
+import type { IWorkflowStatesWidgetPresenter } from "~/Presenters/index.js";
+import { WorkflowStatesWidgetPresenter } from "~/Presenters/index.js";
 import React, { useMemo } from "react";
 import { WorkflowStatesWidgetGateway } from "~/Gateways/index.js";
 import { WorkflowStatesWidgetRepository } from "~/Repositories/index.js";
@@ -33,7 +31,7 @@ export const WorkflowStatesProvider = (props: IWorkflowStatesProviderProps) => {
         });
         return new WorkflowStatesWidgetPresenter({
             repository,
-            type,
+            type
         });
     }, []);
 

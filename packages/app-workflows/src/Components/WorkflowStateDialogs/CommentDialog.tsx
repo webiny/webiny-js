@@ -1,4 +1,3 @@
-import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
 import type { IWorkflowStateStepModel } from "~/Models/index.js";
 import { Dialog, Grid } from "@webiny/admin-ui";
 import React from "react";
@@ -7,12 +6,12 @@ import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
 import { ReactComponent as ApproveIcon } from "@webiny/icons/check.svg";
 
 interface ICommentDialogProps {
-    presenter: IWorkflowStatePresenter;
-    step: IWorkflowStateStepModel;
+    hide(): void;
+    step: Pick<IWorkflowStateStepModel, "state" | "title" | "comment">;
 }
 
 interface ITitleProps {
-    step: IWorkflowStateStepModel;
+    step: Pick<IWorkflowStateStepModel, "state" | "title">;
 }
 
 const Title = (props: ITitleProps) => {
@@ -34,15 +33,15 @@ const Title = (props: ITitleProps) => {
 };
 
 export const CommentDialog = (props: ICommentDialogProps) => {
-    const { presenter, step } = props;
+    const { hide, step } = props;
     return (
         <Dialog
             open={true}
-            onOpenChange={presenter.hideDialog}
+            onOpenChange={hide}
             title={<Title step={step} />}
             actions={
                 <>
-                    <Dialog.ConfirmButton text={"Close"} onClick={presenter.hideDialog} />
+                    <Dialog.ConfirmButton text={"Close"} onClick={hide} />
                 </>
             }
             showCloseButton={true}

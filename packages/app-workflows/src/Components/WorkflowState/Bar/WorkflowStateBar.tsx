@@ -10,12 +10,19 @@ import { WorkflowStateBarApproved } from "./Bars/WorkflowStateBarApproved.js";
 import { WorkflowStateBarRejected } from "./Bars/WorkflowStateBarRejected.js";
 import { WorkflowStateBarWorkflow } from "./Bars/WorkflowStateBarWorkflow.js";
 import { WorkflowStateBarComponent } from "./WorkflowStateBarComponent.js";
-import { ApproveDialog } from "./Bars/dialogs/ApproveDialog.js";
-import { ApproveSuccessDialog } from "./Bars/dialogs/ApproveSuccessDialog.js";
-import { RejectDialog } from "./Bars/dialogs/RejectDialog.js";
-import { RejectSuccessDialog } from "./Bars/dialogs/RejectSuccessDialog.js";
-import { CommentDialog } from "./Bars/dialogs/CommentDialog.js";
+import { WorkflowStateBarStartReview } from "./Bars/WorkflowStateBarStartReview.js";
 import { useWorkflowState } from "../useWorkflowState.js";
+import {
+    ApproveDialog,
+    ApproveSuccessDialog,
+    CommentDialog,
+    RejectDialog,
+    RejectSuccessDialog,
+    RequestReviewDialog,
+    CancelReviewDialog,
+    StartDialog,
+    StartSuccessDialog
+} from "./Dialogs/index.js";
 
 export const WorkflowStateBar = observer(() => {
     const { presenter } = useWorkflowState();
@@ -26,8 +33,19 @@ export const WorkflowStateBar = observer(() => {
     if (!presenter.vm.workflow) {
         return null;
     }
+
     return (
         <>
+            {presenter.vm.showCancelReviewDialog ? (
+                <CancelReviewDialog presenter={presenter} />
+            ) : null}
+            {presenter.vm.showRequestReviewDialog ? (
+                <RequestReviewDialog presenter={presenter} />
+            ) : null}
+            {presenter.vm.showStartDialog ? <StartDialog presenter={presenter} /> : null}
+            {presenter.vm.showStartSuccessDialog ? (
+                <StartSuccessDialog presenter={presenter} />
+            ) : null}
             {presenter.vm.showApproveDialog ? <ApproveDialog presenter={presenter} /> : null}
             {presenter.vm.showApproveSuccessDialog ? (
                 <ApproveSuccessDialog presenter={presenter} />
@@ -36,13 +54,12 @@ export const WorkflowStateBar = observer(() => {
             {presenter.vm.showRejectSuccessDialog ? (
                 <RejectSuccessDialog presenter={presenter} />
             ) : null}
-            {presenter.vm.showStepCommentDialog ? (
-                <CommentDialog presenter={presenter} step={presenter.vm.showStepCommentDialog} />
-            ) : null}
+            {presenter.vm.showStepCommentDialog ? <CommentDialog presenter={presenter} /> : null}
             <Plugins>
                 <WorkflowStateBarApproved />
                 <WorkflowStateBarRejected />
                 <WorkflowStateBarReview />
+                <WorkflowStateBarStartReview />
                 <WorkflowStateBarCancelReview />
                 <WorkflowStateBarRequestReview />
                 <WorkflowStateBarLoading />

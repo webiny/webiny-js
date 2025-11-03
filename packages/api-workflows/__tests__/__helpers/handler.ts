@@ -36,11 +36,14 @@ import {
     type IListWorkflowVariables,
     type IRejectWorkflowStateStepResponse,
     type IRejectWorkflowStateStepVariables,
+    IStartWorkflowStateStepResponse,
+    IStartWorkflowStateStepVariables,
     type IStoreWorkflowResponse,
     type IStoreWorkflowVariables,
     LIST_TARGET_WORKFLOW_STATES_QUERY,
     LIST_WORKFLOWS_QUERY,
     REJECT_WORKFLOW_STATE_STEP_MUTATION,
+    START_WORKFLOW_STATE_STEP_MUTATION,
     STORE_WORKFLOW_MUTATION
 } from "./graphql.js";
 
@@ -113,7 +116,10 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
             IListTargetWorkflowStatesVariables,
             IListTargetWorkflowStatesResponse
         >(LIST_TARGET_WORKFLOW_STATES_QUERY),
-
+        startWorkflowStateStep: handler.createMutation<
+            IStartWorkflowStateStepVariables,
+            IStartWorkflowStateStepResponse
+        >(START_WORKFLOW_STATE_STEP_MUTATION),
         approveWorkflowStateStep: handler.createMutation<
             IApproveWorkflowStateStepVariables,
             IApproveWorkflowStateStepResponse

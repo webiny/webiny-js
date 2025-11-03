@@ -10,27 +10,34 @@ import type {
     IWorkflowStateGatewayRejectStepParams,
     IWorkflowStateGatewayRejectStepResponse,
     IWorkflowStateGatewayRequestReviewStepParams,
-    IWorkflowStateGatewayRequestReviewStepResponse
+    IWorkflowStateGatewayRequestReviewStepResponse,
+    IWorkflowStateGatewayStartStepParams,
+    IWorkflowStateGatewayStartStepResponse
 } from "./abstraction/WorkflowStateGateway.js";
+import type {
+    IApproveWorkflowStateStepResponse,
+    IApproveWorkflowStateStepVariables,
+    ICancelWorkflowStateResponse,
+    ICancelWorkflowStateVariables,
+    ICreateWorkflowStateResponse,
+    ICreateWorkflowStateVariables,
+    IGetTargetWorkflowStateResponse,
+    IGetTargetWorkflowStateVariables,
+    IListWorkflowStatesResponse,
+    IListWorkflowStatesVariables,
+    IRejectWorkflowStateStepResponse,
+    IRejectWorkflowStateStepVariables,
+    IStartWorkflowStateStepResponse,
+    IStartWorkflowStateStepVariables
+} from "./graphql/workflowStates.js";
 import {
     APPROVE_WORKFLOW_STATE_STEP_MUTATION,
     CANCEL_WORKFLOW_STATE_MUTATION,
     CREATE_WORKFLOW_STATE_MUTATION,
     GET_TARGET_WORKFLOW_STATE_QUERY,
-    type IApproveWorkflowStateStepResponse,
-    type IApproveWorkflowStateStepVariables,
-    type ICancelWorkflowStateResponse,
-    type ICancelWorkflowStateVariables,
-    type ICreateWorkflowStateResponse,
-    type ICreateWorkflowStateVariables,
-    type IGetTargetWorkflowStateResponse,
-    type IGetTargetWorkflowStateVariables,
-    type IListWorkflowStatesResponse,
-    type IListWorkflowStatesVariables,
-    type IRejectWorkflowStateStepResponse,
-    type IRejectWorkflowStateStepVariables,
     LIST_WORKFLOW_STATES_QUERY,
-    REJECT_WORKFLOW_STATE_STEP_MUTATION
+    REJECT_WORKFLOW_STATE_STEP_MUTATION,
+    START_WORKFLOW_STATE_STEP_MUTATION
 } from "./graphql/workflowStates.js";
 import { WebinyError } from "@webiny/error";
 
@@ -43,6 +50,32 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
 
     public constructor(params: IWorkflowStateGatewayParams) {
         this.client = params.client;
+    }
+
+    public async startWorkflowStateStep(
+        params: IWorkflowStateGatewayStartStepParams
+    ): Promise<IWorkflowStateGatewayStartStepResponse> {
+        const { id } = params;
+        try {
+            const result = await this.client.mutate<
+                IStartWorkflowStateStepResponse,
+                IStartWorkflowStateStepVariables
+            >({
+                mutation: START_WORKFLOW_STATE_STEP_MUTATION,
+                variables: {
+                    id
+                }
+            });
+            return {
+                data: result.data?.workflows.startWorkflowStateStep.data || null,
+                error: result.data?.workflows.startWorkflowStateStep.error || null
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: WebinyError.from(ex)
+            };
+        }
     }
 
     public async approveWorkflowStateStep(
@@ -165,7 +198,7 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
                 variables: {
                     app: params.app,
                     targetRevisionId: params.targetRevisionId,
-                    title: params.title,
+                    title: params.title
                 }
             });
             return {

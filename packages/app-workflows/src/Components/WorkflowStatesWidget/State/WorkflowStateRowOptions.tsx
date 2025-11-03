@@ -1,13 +1,14 @@
 import React from "react";
-import type { IWorkflowStatesWidgetItem } from "~/types.js";
+import type { IWorkflowState } from "~/types.js";
 import { Accordion, DropdownMenu, Icon } from "@webiny/admin-ui";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { WorkflowStateRowOptionsOpenInNewWindow } from "./Options/OpenInNewWindow.js";
 import { WorkflowStateRowOptionsApprove } from "./Options/Approve.js";
-import { WorkflowStateRowOptionsDecline } from "./Options/Decline.js";
+import { WorkflowStateRowOptionsReject } from "./Options/Reject.js";
+import { WorkflowStateRowOptionsStart } from "~/Components/WorkflowStatesWidget/State/Options/Start.js";
 
 interface IWorkflowStateRowOptionsProps {
-    state: IWorkflowStatesWidgetItem;
+    state: IWorkflowState;
 }
 
 export const WorkflowStateRowOptions = ({ state }: IWorkflowStateRowOptionsProps) => {
@@ -22,8 +23,9 @@ export const WorkflowStateRowOptions = ({ state }: IWorkflowStateRowOptionsProps
             side="bottom"
         >
             <WorkflowStateRowOptionsOpenInNewWindow state={state} />
+            <WorkflowStateRowOptionsStart state={state} />
             <WorkflowStateRowOptionsApprove state={state} />
-            <WorkflowStateRowOptionsDecline state={state} />
+            <WorkflowStateRowOptionsReject state={state} />
         </DropdownMenu>
     );
 };

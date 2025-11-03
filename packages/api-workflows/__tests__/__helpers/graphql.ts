@@ -6,6 +6,7 @@ import type {
 import type { IMeta } from "~/context/abstractions/types.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 import type {
+    IWorkflowState,
     IWorkflowStateRecord,
     IWorkflowStateRecordStepWithPermissions
 } from "~/context/abstractions/WorkflowState.js";
@@ -45,6 +46,29 @@ const WORKFLOW = /* GraphQL */ `
     }
 `;
 
+const WORKFLOW_STATE_STEP = /* GraphQL */ `
+    {
+        id
+        title
+        color
+        description
+        teams {
+            id
+        }
+        notifications {
+            id
+        }
+        state
+        comment
+        savedBy {
+            id
+            displayName
+            type
+        }
+        isAllowedToReview
+    }
+`;
+
 const WORKFLOW_STATE = /* GraphQL */ `
     {
         id
@@ -68,26 +92,10 @@ const WORKFLOW_STATE = /* GraphQL */ `
         targetRevisionId
         comment
         state
-        steps {
-            id
-            title
-            color
-            description
-            teams {
-                id
-            }
-            notifications {
-                id
-            }
-            state
-            comment
-            savedBy {
-                id
-                displayName
-                type
-            }
-            isAllowedToReview
-        }
+        steps ${WORKFLOW_STATE_STEP}
+        currentStep ${WORKFLOW_STATE_STEP}
+        nextStep ${WORKFLOW_STATE_STEP}
+        previousStep ${WORKFLOW_STATE_STEP}
     }
 `;
 
@@ -300,6 +308,32 @@ export const LIST_TARGET_WORKFLOW_STATES_QUERY = /* GraphQL */ `
     }
 `;
 
+export interface IStartWorkflowStateStepVariables {
+    id: string;
+}
+
+export interface IStartWorkflowStateStepResponse {
+    data: {
+        workflows: {
+            startWorkflowStateStep: {
+                data: IWorkflowState | null;
+                error: IWorkflowError | null;
+            };
+        };
+    };
+}
+
+export const START_WORKFLOW_STATE_STEP_MUTATION = /* GraphQL */ `
+    mutation StartWorkflowStateStep($id: ID!) {
+        workflows {
+            startWorkflowStateStep(id: $id) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
 export interface IApproveWorkflowStateStepVariables {
     id: string;
     comment?: string;
@@ -309,7 +343,7 @@ export interface IApproveWorkflowStateStepResponse {
     data: {
         workflows: {
             approveWorkflowStateStep: {
-                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
+                data: IWorkflowState | null;
                 error: IWorkflowError | null;
             };
         };

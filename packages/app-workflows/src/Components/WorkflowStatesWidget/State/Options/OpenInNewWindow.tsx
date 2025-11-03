@@ -1,14 +1,15 @@
 import { DropdownMenu, Icon } from "@webiny/admin-ui";
 import React from "react";
-import type { IWorkflowStatesWidgetItem } from "~/types.js";
+import type { IWorkflowState } from "~/types.js";
 import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
 
 interface IWorkflowStateRowOptionsOpenInNewWindowProps {
-    state: IWorkflowStatesWidgetItem;
+    state: IWorkflowState;
 }
 
-
-export const WorkflowStateRowOptionsOpenInNewWindow = ({state}: IWorkflowStateRowOptionsOpenInNewWindowProps) => {
+export const WorkflowStateRowOptionsOpenInNewWindow = ({
+    state
+}: IWorkflowStateRowOptionsOpenInNewWindowProps) => {
     return (
         <DropdownMenu.Item
             icon={<Icon icon={<OpenInNewIcon />} label={"Open In New Window"} />}

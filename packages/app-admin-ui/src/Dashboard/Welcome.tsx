@@ -17,6 +17,8 @@ const Welcome = () => {
     
     const client = useApolloClient();
 
+    const client = useApolloClient();
+
     if (!identity) {
         return null;
     }
@@ -42,6 +44,7 @@ const Welcome = () => {
             <Grid gap={"spacious"}>
                 <Grid.Column span={5}>
                     {!canSeeAnyWidget && <MissingPermissionsWidget />}
+                    <WorkflowStatesRequestedWidget client={client} />
                     <div className={"flex flex-col gap-lg"}>
                         {widgets.map(pl => (
                             <ApplicationWidget

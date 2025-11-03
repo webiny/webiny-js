@@ -1,9 +1,9 @@
 import React from "react";
-import type { IIdentity, IWorkflowStatesWidgetItem } from "~/types.js";
+import type { IIdentity, IWorkflowState } from "~/types.js";
 import { TimeAgo } from "@webiny/admin-ui";
 
 interface IWorkflowStateRowDescriptionProps {
-    state: IWorkflowStatesWidgetItem;
+    state: IWorkflowState;
 }
 
 interface IIdentityProps {
@@ -21,8 +21,8 @@ export const WorkflowStateRowDescription = (props: IWorkflowStateRowDescriptionP
     const { state } = props;
     return (
         <>
-            {state.step.title}
-            <Identity identity={state.step.savedBy} />
+            {state.currentStep.title}
+            <Identity identity={state.currentStep.savedBy} />
             , <TimeAgo datetime={state.savedOn} />
         </>
     );

@@ -14,21 +14,29 @@ export interface IWorkflowStatePresenterViewModel {
     lastRejectedStep: IWorkflowStateStepModel | null;
     nextStep: IWorkflowStateStepModel | null;
     canCancel: boolean;
+    showCancelReviewDialog: boolean;
+    showRequestReviewDialog: boolean;
+    showStartDialog: boolean;
+    showStartSuccessDialog: boolean;
     showApproveDialog: boolean;
     showApproveSuccessDialog: boolean;
     showRejectDialog: boolean;
     showRejectSuccessDialog: boolean;
-    showStepCommentDialog: IWorkflowStateStepModel | undefined;
+    showStepCommentDialog: boolean;
 }
 
 export interface IWorkflowStatePresenter {
     vm: IWorkflowStatePresenterViewModel;
     requestReview(): void;
-    approve(comment?: string): void;
-    reject(comment: string): void;
-    cancel(): void;
     hideDialog(): void;
+    showCancelReviewDialog(): void;
+    showRequestReviewDialog(): void;
+    showStartDialog(): void;
     showApproveDialog(): void;
     showRejectDialog(): void;
     showCommentDialog(id: string): void;
+    start(): void;
+    approve(comment?: string): void;
+    reject(comment: string): void;
+    cancel(): void;
 }

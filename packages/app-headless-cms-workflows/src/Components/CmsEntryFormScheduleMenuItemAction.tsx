@@ -30,7 +30,14 @@ const OverrideScheduleMenuItemAction = (props: IOverrideScheduleMenuItemActionPr
 export const CmsEntryFormScheduleMenuItemAction = MenuItemAction.createDecorator(Original => {
     return function WorkflowCmsEntryScheduleMenuItemAction(props) {
         return (
-            <Original {...props} element={<OverrideScheduleMenuItemAction name={props.name}>{props.element}</OverrideScheduleMenuItemAction>} />
+            <Original
+                {...props}
+                element={
+                    <OverrideScheduleMenuItemAction name={props.name}>
+                        {props.element}
+                    </OverrideScheduleMenuItemAction>
+                }
+            />
         );
     };
 });

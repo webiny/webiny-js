@@ -45,10 +45,18 @@ export interface IWorkflowStateRecordStepWithPermissions extends IWorkflowStateR
     isAllowedToReview: boolean;
 }
 
-export interface IWorkflowState
-    extends IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> {
+export interface IWorkflowState<
+    T extends IWorkflowStateRecordStepWithPermissions = IWorkflowStateRecordStepWithPermissions
+> extends IWorkflowStateRecord<T> {
     readonly done: boolean;
-    getActiveStep(): IWorkflowStateRecordStepWithPermissions | undefined;
+    currentStep: T;
+    nextStep: T | null;
+    previousStep: T | null;
+}
+
+export interface IWorkflowStateModel extends IWorkflowState {
+    getActiveStep(): IWorkflowStateRecordStepWithPermissions | null;
+    start(): Promise<void>;
     approve(comment?: string): Promise<void>;
     reject(comment: string): Promise<void>;
 }

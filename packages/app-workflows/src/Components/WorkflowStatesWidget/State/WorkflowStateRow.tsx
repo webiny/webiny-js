@@ -1,15 +1,15 @@
 import React from "react";
-import type { IWorkflowStatesWidgetItem } from "~/types.js";
+import type { IWorkflowState } from "~/types.js";
 import { Accordion } from "@webiny/admin-ui";
-import { observer } from "mobx-react-lite";
+import { Color } from "~/Components/Workflows/Step/Color.js";
 import { WorkflowStateRowOptions } from "./WorkflowStateRowOptions.js";
 import { WorkflowStateRowDescription } from "../Row/WorkflowStateRowDescription.js";
 
 interface IWorkflowStateRowProps {
-    state: IWorkflowStatesWidgetItem;
+    state: IWorkflowState;
 }
 
-export const WorkflowStateRow = observer((props: IWorkflowStateRowProps) => {
+export const WorkflowStateRow = (props: IWorkflowStateRowProps) => {
     const { state } = props;
 
     return (
@@ -18,10 +18,10 @@ export const WorkflowStateRow = observer((props: IWorkflowStateRowProps) => {
             open={false}
             interactive={false}
             description={<WorkflowStateRowDescription state={state} />}
-            colorMark={state.step.color}
+            icon={<Color color={state.currentStep.color} />}
             actions={<WorkflowStateRowOptions state={state} />}
         >
             <></>
         </Accordion.Item>
     );
-});
+};

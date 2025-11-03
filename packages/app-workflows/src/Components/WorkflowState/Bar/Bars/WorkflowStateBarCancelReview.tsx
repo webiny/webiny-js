@@ -18,7 +18,10 @@ export const WorkflowStateBarCancelReview = WorkflowStateBarComponent.createDeco
             <Alert
                 actions={
                     <>
-                        <Alert.Action text={"Cancel Review Request"} onClick={presenter.cancel} />
+                        <Alert.Action
+                            text={"Cancel Review Request"}
+                            onClick={presenter.showCancelReviewDialog}
+                        />
                     </>
                 }
             >

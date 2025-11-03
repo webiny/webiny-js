@@ -7,6 +7,10 @@ export interface IWorkflowStateRepositoryRequestReviewParams {
     title: string;
 }
 
+export interface IWorkflowStateRepositoryStartParams {
+    id: string;
+}
+
 export interface IWorkflowStateRepositoryApproveParams {
     id: string;
     comment?: string;
@@ -28,6 +32,7 @@ export interface IWorkflowStateRepository {
     requestReview(
         params: IWorkflowStateRepositoryRequestReviewParams
     ): Promise<IWorkflowState | null>;
+    start(params: IWorkflowStateRepositoryStartParams): Promise<IWorkflowState | null>;
     approve(params: IWorkflowStateRepositoryApproveParams): Promise<IWorkflowState | null>;
     reject(params: IWorkflowStateRepositoryRejectParams): Promise<IWorkflowState | null>;
     cancel(id: string): Promise<void>;
