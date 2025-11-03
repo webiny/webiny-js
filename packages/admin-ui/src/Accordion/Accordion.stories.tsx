@@ -85,6 +85,28 @@ export const WithDescriptions: Story = {
     },
     argTypes: {}
 };
+export const WithSubtitles: Story = {
+    ...Default,
+    args: {
+        children: (
+            <>
+                <AccordionItem
+                    index={1}
+                    subtitle="(Lorem ipsum dolor sit amet...)"
+                />
+                <AccordionItem
+                    index={2}
+                    subtitle="(Lorem ipsum dolor sit amet...)"
+                />
+                <AccordionItem
+                    index={3}
+                    subtitle="(Lorem ipsum dolor sit amet...)"
+                />
+            </>
+        )
+    },
+    argTypes: {}
+};
 
 export const WithIcon: Story = {
     ...Default,
@@ -680,6 +702,22 @@ export const WithColorMark: Story = {
                 <AccordionItem
                     colorMark={"#ff6584"}
                     index={1}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+            </>
+        )
+    }
+};
+
+export const Locked: Story = {
+    ...Default,
+    args: {
+        children: (
+            <>
+                <AccordionItem
+                    index={1}
+                    locked={true}
                     description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
                     icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
                 />
