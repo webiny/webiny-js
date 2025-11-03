@@ -3,9 +3,9 @@ import { makeDecoratable } from "~/utils.js";
 import { Button, ButtonProps } from "~/Button/index.js";
 import { useCardProps } from "./CardPropsProvider.js";
 
-const ConfirmButtonBase = (props: ButtonProps) => {
+const CancelActionBase = (props: ButtonProps) => {
     const { actionsSize } = useCardProps();
 
-    return <Button text={"Confirm"} {...props} variant="primary" size={actionsSize} />;
+    return <Button text={"Cancel"} {...props} variant="secondary" size={actionsSize} />;
 };
-export const ConfirmButton = makeDecoratable("ConfirmButton", ConfirmButtonBase);
+export const CancelAction = makeDecoratable("CancelAction", CancelActionBase);

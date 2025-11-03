@@ -117,12 +117,12 @@ export const Step = observer(
                                         variant="accent"
                                         actions={
                                             <>
-                                                <Card.CancelButton onClick={onCancel}>
+                                                <Card.CancelAction onClick={onCancel}>
                                                     Cancel
-                                                </Card.CancelButton>
-                                                <Card.ConfirmButton onClick={onFormSubmit}>
+                                                </Card.CancelAction>
+                                                <Card.ConfirmAction onClick={onFormSubmit}>
                                                     Save
-                                                </Card.ConfirmButton>
+                                                </Card.ConfirmAction>
                                             </>
                                         }
                                     >
