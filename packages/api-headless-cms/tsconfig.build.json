@@ -5,6 +5,7 @@
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../handler-db/tsconfig.build.json" },
@@ -16,7 +17,8 @@
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
-    { "path": "../db-dynamodb/tsconfig.build.json" }
+    { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -145,6 +147,10 @@
       "@webiny/api-core": ["../api-core/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
@@ -168,7 +174,9 @@
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"]
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     },
     "baseUrl": "."
   }

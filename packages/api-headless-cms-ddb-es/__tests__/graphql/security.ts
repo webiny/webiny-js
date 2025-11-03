@@ -1,25 +1,12 @@
-import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
-import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
 import { ContextPlugin } from "@webiny/api";
-import { createTenancyContext } from "@webiny/api-tenancy";
-import type { TenancyStorageOperations, Tenant } from "@webiny/api-tenancy/types";
-import { createSecurityContext } from "@webiny/api-security";
-import type { SecurityStorageOperations } from "@webiny/api-security/types";
+import { Tenant } from "@webiny/api-core/types/tenancy";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { CmsContext } from "~/types";
+import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
+import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 
 export const createSecurity = () => {
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-
     return [
-        createTenancyContext({
-            storageOperations: tenancyStorage.storageOperations
-        }),
-        createSecurityContext({
-            storageOperations: securityStorage.storageOperations
-        }),
         new ContextPlugin<CmsContext>(context => {
             context.tenancy.setCurrentTenant({
                 id: "root",

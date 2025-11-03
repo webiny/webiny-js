@@ -4,6 +4,7 @@
   "references": [
     { "path": "../api/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler-client/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" }
@@ -19,6 +20,10 @@
       "@webiny/api": ["../api/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/handler-client/*": ["../handler-client/src/*"],
       "@webiny/handler-client": ["../handler-client/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

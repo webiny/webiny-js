@@ -109,7 +109,7 @@ export default async () => {
 
     project.rootDir = process.cwd();
 
-    const vitestConfig = defineConfig({
+    return defineConfig({
         plugins: [
             tsconfigPaths({
                 // This flag ensures tsconfig templates don't throw errors (e.g. project-aws/_templates).
@@ -136,6 +136,4 @@ export default async () => {
             tsconfig: `${project.dir}/tsconfig.json`
         }
     });
-
-    return vitestConfig;
 };

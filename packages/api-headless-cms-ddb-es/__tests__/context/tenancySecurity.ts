@@ -1,24 +1,19 @@
 import type { Plugin } from "@webiny/plugins/Plugin";
-import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
-import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
-import type {
-    SecurityIdentity,
-    SecurityPermission,
-    SecurityStorageOperations
-} from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import type { CmsContext } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import type { TenancyStorageOperations, Tenant } from "@webiny/api-tenancy/types";
+import { SecurityPermission } from "@webiny/api-core/types/security";
+import { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import { Tenant } from "@webiny/api-core/types/tenancy";
 
 interface Config {
     setupGraphQL?: boolean;
     permissions: SecurityPermission[];
-    identity?: SecurityIdentity | null;
+    identity?: IdentityData | null;
 }
 
-export const defaultIdentity: SecurityIdentity = {
+export const defaultIdentity: IdentityData = {
     id: "id-12345678",
     type: "admin",
     displayName: "John Doe"
@@ -31,6 +26,7 @@ const createTenant = (
         ...input,
         parent: input.parent,
         status: "active",
+        isInstalled: true,
         savedOn: new Date().toISOString(),
         createdOn: new Date().toISOString(),
         settings: {
@@ -71,18 +67,10 @@ export const tenants: Tenant[] = [
 ];
 
 export const createTenancyAndSecurity = ({
-    setupGraphQL,
     permissions,
     identity
 }: Config): Plugin[] => {
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-
     return [
-        createTenancyContext({ storageOperations: tenancyStorage.storageOperations }),
-        setupGraphQL ? createTenancyGraphQL() : null,
-        createSecurityContext({ storageOperations: securityStorage.storageOperations }),
-        setupGraphQL ? createSecurityGraphQL() : null,
         new ContextPlugin<CmsContext>(async context => {
             for (const tenant of tenants) {
                 await context.tenancy.createTenant({

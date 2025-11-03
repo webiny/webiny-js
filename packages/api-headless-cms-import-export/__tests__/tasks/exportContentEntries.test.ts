@@ -43,7 +43,6 @@ describe("export content entries task", () => {
             webinyTaskId: task.id
         });
         expect(result).toEqual({
-            locale: "en-US",
             message: undefined,
             status: "done",
             tenant: "root",
@@ -83,7 +82,6 @@ describe("export content entries task", () => {
                 },
                 message: "An error happened!"
             },
-            locale: "en-US",
             status: "error",
             tenant: "root",
             webinyTaskDefinitionId: "exportContentEntries",

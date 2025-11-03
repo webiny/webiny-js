@@ -4,12 +4,7 @@ import { createRunner } from "@webiny/project-utils/testing/tasks";
 import type { Context, ICmsImportExportValidatedFile } from "~/types";
 import { CmsImportExportFileType } from "~/types";
 import { useHandler } from "~tests/helpers/useHandler";
-import {
-    ResponseDoneResult,
-    ResponseErrorResult,
-    TaskDataStatus,
-    TaskResponseStatus
-} from "@webiny/tasks";
+import { ResponseDoneResult, TaskDataStatus, TaskResponseStatus } from "@webiny/tasks";
 import { categoryModel } from "~tests/helpers/models";
 import type { NonEmptyArray } from "@webiny/api/types";
 
@@ -44,7 +39,7 @@ describe("import from url controller", () => {
             ...task
         });
 
-        expect(result).toBeInstanceOf(ResponseErrorResult);
+        expect(result.status).toBe("error");
         expect(result).toEqual({
             error: {
                 code: "MISSING_MODEL_ID",
@@ -54,7 +49,6 @@ describe("import from url controller", () => {
                 }
             },
             status: TaskResponseStatus.ERROR,
-            locale: "en-US",
             tenant: "root",
             webinyTaskDefinitionId: definition.id,
             webinyTaskId: task.id
@@ -82,7 +76,7 @@ describe("import from url controller", () => {
             ...task
         });
 
-        expect(result).toBeInstanceOf(ResponseErrorResult);
+        expect(result.status).toBe("error");
         expect(result).toEqual({
             error: {
                 code: "NO_FILES_FOUND",
@@ -94,7 +88,6 @@ describe("import from url controller", () => {
                 }
             },
             status: TaskResponseStatus.ERROR,
-            locale: "en-US",
             tenant: "root",
             webinyTaskDefinitionId: definition.id,
             webinyTaskId: task.id
@@ -138,7 +131,7 @@ describe("import from url controller", () => {
             ...task
         });
 
-        expect(result).toBeInstanceOf(ResponseErrorResult);
+        expect(result.status).toBe("error");
         expect(result).toEqual({
             error: {
                 code: "MODEL_NOT_FOUND",
@@ -151,7 +144,6 @@ describe("import from url controller", () => {
                 }
             },
             status: TaskResponseStatus.ERROR,
-            locale: "en-US",
             tenant: "root",
             webinyTaskDefinitionId: definition.id,
             webinyTaskId: task.id
@@ -224,7 +216,6 @@ describe("import from url controller", () => {
                 // assertion #1
                 expect(result).toMatchObject({
                     status: TaskResponseStatus.CONTINUE,
-                    locale: "en-US",
                     tenant: "root",
                     webinyTaskDefinitionId: definition.id,
                     webinyTaskId: task.id,
@@ -251,14 +242,12 @@ describe("import from url controller", () => {
 
         const result = await runner({
             webinyTaskId: task.id,
-            tenant: "root",
-            locale: "en-US"
+            tenant: "root"
         });
 
         // assertion #2
         expect(result).toEqual({
             status: TaskResponseStatus.DONE,
-            locale: "en-US",
             tenant: "root",
             webinyTaskDefinitionId: definition.id,
             webinyTaskId: task.id,
@@ -273,6 +262,6 @@ describe("import from url controller", () => {
         });
 
         // assertion #3
-        expect(result).toBeInstanceOf(ResponseDoneResult);
+        expect(result.status).toBe("done");
     });
 });

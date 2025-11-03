@@ -18,7 +18,8 @@
     { "path": "../handler" },
     { "path": "../handler-aws" },
     { "path": "../handler-graphql" },
-    { "path": "../tasks" }
+    { "path": "../tasks" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -174,7 +175,9 @@
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/tasks/*": ["../tasks/src/*"],
-      "@webiny/tasks": ["../tasks/src"]
+      "@webiny/tasks": ["../tasks/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"]
     },
     "baseUrl": "."
   }

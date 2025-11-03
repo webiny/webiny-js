@@ -52,6 +52,7 @@
     "@webiny/handler-graphql": "0.0.0",
     "@webiny/project-utils": "0.0.0",
     "@webiny/tasks": "0.0.0",
+    "@webiny/wcp": "0.0.0",
     "jest-dynalite": "^3.6.1",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",

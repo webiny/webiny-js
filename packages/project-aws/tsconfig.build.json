@@ -6,7 +6,6 @@
     { "path": "../api-admin-users-so-ddb/tsconfig.build.json" },
     { "path": "../api-audit-logs/tsconfig.build.json" },
     { "path": "../api-background-tasks-ddb/tsconfig.build.json" },
-    { "path": "../api-background-tasks-es/tsconfig.build.json" },
     { "path": "../api-background-tasks-os/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },
@@ -86,8 +85,6 @@
       "@webiny/api-audit-logs": ["../api-audit-logs/src"],
       "@webiny/api-background-tasks-ddb/*": ["../api-background-tasks-ddb/src/*"],
       "@webiny/api-background-tasks-ddb": ["../api-background-tasks-ddb/src"],
-      "@webiny/api-background-tasks-es/*": ["../api-background-tasks-es/src/*"],
-      "@webiny/api-background-tasks-es": ["../api-background-tasks-es/src"],
       "@webiny/api-background-tasks-os/*": ["../api-background-tasks-os/src/*"],
       "@webiny/api-background-tasks-os": ["../api-background-tasks-os/src"],
       "@webiny/api-core/features/EventPublisher": [

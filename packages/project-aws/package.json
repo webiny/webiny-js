@@ -22,7 +22,6 @@
     "@webiny/api-admin-users-so-ddb": "0.0.0",
     "@webiny/api-audit-logs": "0.0.0",
     "@webiny/api-background-tasks-ddb": "0.0.0",
-    "@webiny/api-background-tasks-es": "0.0.0",
     "@webiny/api-background-tasks-os": "0.0.0",
     "@webiny/api-core": "0.0.0",
     "@webiny/api-dynamodb-to-elasticsearch": "0.0.0",
