@@ -52,7 +52,7 @@ export const createMockContextHandler = (opts: CreateMockContextHandlerOptions =
             createApiCore({
                 tenancyStorageOperations: tenancyStorage.storageOperations,
                 securityStorageOperations: securityStorage.storageOperations,
-                usersStorageOperations: usersStorage.storageOperations,
+                usersStorageOperations: usersStorage.storageOperations
             }),
             new ContextPlugin<ApiCoreContext>(async context => {
                 context.tenancy = {

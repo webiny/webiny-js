@@ -1,5 +1,5 @@
 import zod from "zod";
-import { WebinyError} from "@webiny/error";
+import { WebinyError } from "@webiny/error";
 import { createZodError } from "@webiny/utils/createZodError.js";
 import type { GraphQLRequestBody } from "~/types.js";
 

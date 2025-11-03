@@ -95,7 +95,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const documentClient = getDocumentClient();
     const { permissions, identity, plugins = [] } = params;
 
-
     const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
     const securityStorage = getStorageOps<SecurityStorageOperations>("security");
     const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");

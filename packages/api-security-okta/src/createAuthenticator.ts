@@ -2,7 +2,10 @@ import jwt from "jsonwebtoken";
 import { ContextPlugin } from "@webiny/api";
 import WebinyError from "@webiny/error";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { type Jwk, verifyJwtUsingJwk } from "@webiny/api-core/features/security/utils/verifyJwtUsingJwk.js";
+import {
+    type Jwk,
+    verifyJwtUsingJwk
+} from "@webiny/api-core/features/security/utils/verifyJwtUsingJwk.js";
 import { isJwt } from "@webiny/api-core/features/security/utils/isJwt.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 

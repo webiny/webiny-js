@@ -31,9 +31,7 @@ import {
 } from "~/features/folders/shared/abstractions.js";
 import { ListFlpsFeature } from "~/features/flp/ListFlps/feature.js";
 import { GetFlpFeature } from "~/features/flp/GetFlp/feature.js";
-import {
-    ListFolderLevelPermissionsTargetsFeature
-} from "~/features/folders/ListFolderLevelPermissionsTargets/feature.js";
+import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folders/ListFolderLevelPermissionsTargets/feature.js";
 import { Tenant } from "@webiny/api-core/types/tenancy";
 import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 
@@ -46,7 +44,7 @@ const setupAcoContext = async (
     context: AcoContext,
     setupAcoContextParams: CreateAcoContextParams
 ): Promise<void> => {
-    const { tenancy, security} = context;
+    const { tenancy, security } = context;
 
     const getTenant = (): Tenant => {
         return tenancy.getCurrentTenant();

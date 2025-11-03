@@ -39,7 +39,11 @@ import { OnRequestResponseSendPlugin } from "~/plugins/OnRequestResponseSendPlug
 import { Request } from "./abstractions/Request.js";
 import { Reply } from "./abstractions/Reply.js";
 
-const modifyResponseHeaders = (app: FastifyInstance, request: Request.Interface, reply: Reply.Interface) => {
+const modifyResponseHeaders = (
+    app: FastifyInstance,
+    request: Request.Interface,
+    reply: Reply.Interface
+) => {
     const modifyHeaders = app.webiny.plugins.byType<ModifyResponseHeadersPlugin>(
         ModifyResponseHeadersPlugin.type
     );

@@ -9,7 +9,10 @@ import { PluginsContainer } from "@webiny/plugins";
 import type { PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import type { SecurityPermission, SecurityStorageOperations } from "@webiny/api-core/types/security.js";
+import type {
+    SecurityPermission,
+    SecurityStorageOperations
+} from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
 import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
 import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
@@ -27,13 +30,12 @@ export const createPlugins = (params?: Params): PluginsContainer => {
     const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
-
     const container = plugins instanceof PluginsContainer ? plugins : new PluginsContainer();
     container.register([
         createApiCore({
             tenancyStorageOperations: tenancyStorage.storageOperations,
             securityStorageOperations: securityStorage.storageOperations,
-            usersStorageOperations: adminUsersStorage.storageOperations,
+            usersStorageOperations: adminUsersStorage.storageOperations
         }),
         createWebsocketsRoutePlugins(),
         ...cmsStorage.plugins,

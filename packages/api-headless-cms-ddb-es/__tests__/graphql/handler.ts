@@ -37,7 +37,6 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
     const testProjectLicense = createTestWcpLicense();
 
-
     const table = createTable({
         documentClient
     });

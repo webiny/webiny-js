@@ -356,5 +356,4 @@ describe("content model - cloning", () => {
             }
         });
     });
-
 });

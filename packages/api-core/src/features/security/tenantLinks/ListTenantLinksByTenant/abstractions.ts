@@ -12,12 +12,13 @@ type ListTenantLinksByTenantError =
     | TenantLinksRepository.Error;
 
 export interface IListTenantLinksByTenant {
-    execute(input: ListTenantLinksByTenantInput): Promise<Result<TenantLink[], ListTenantLinksByTenantError>>;
+    execute(
+        input: ListTenantLinksByTenantInput
+    ): Promise<Result<TenantLink[], ListTenantLinksByTenantError>>;
 }
 
-export const ListTenantLinksByTenant = createAbstraction<IListTenantLinksByTenant>(
-    "ListTenantLinksByTenant"
-);
+export const ListTenantLinksByTenant =
+    createAbstraction<IListTenantLinksByTenant>("ListTenantLinksByTenant");
 
 export namespace ListTenantLinksByTenant {
     export type Interface = IListTenantLinksByTenant;

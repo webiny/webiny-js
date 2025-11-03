@@ -249,7 +249,7 @@ describe("Security User CRUD Test", () => {
                         data: null,
                         error: {
                             code: "USER_EXISTS",
-                            message: "User with email \"admin@webiny.com\" already exists.",
+                            message: 'User with email "admin@webiny.com" already exists.',
                             data: {
                                 email: "admin@webiny.com"
                             }

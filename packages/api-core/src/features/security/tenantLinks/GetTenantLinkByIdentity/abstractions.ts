@@ -17,9 +17,8 @@ export interface IGetTenantLinkByIdentity {
     ): Promise<Result<TLink | null, GetTenantLinkByIdentityError>>;
 }
 
-export const GetTenantLinkByIdentity = createAbstraction<IGetTenantLinkByIdentity>(
-    "GetTenantLinkByIdentity"
-);
+export const GetTenantLinkByIdentity =
+    createAbstraction<IGetTenantLinkByIdentity>("GetTenantLinkByIdentity");
 
 export namespace GetTenantLinkByIdentity {
     export type Interface = IGetTenantLinkByIdentity;

@@ -4,7 +4,10 @@ import { AuthenticationContext as Abstraction } from "./abstractions.js";
 import { Authenticator } from "../Authenticator/index.js";
 import { BeforeAuthenticationEvent, AfterAuthenticationEvent } from "./events.js";
 import type { Identity } from "~/features/security/IdentityContext/Identity.js";
-import { AnonymousIdentity, AuthenticatedIdentity } from "~/features/security/IdentityContext/index.js";
+import {
+    AnonymousIdentity,
+    AuthenticatedIdentity
+} from "~/features/security/IdentityContext/index.js";
 
 class AuthenticationContextImpl implements Abstraction.Interface {
     private authToken?: string;

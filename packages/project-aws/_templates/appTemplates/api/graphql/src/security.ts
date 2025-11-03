@@ -1,5 +1,5 @@
 import cognitoAuthentication, { syncWithCognito } from "@webiny/api-security-cognito";
-import {authenticateUsingHttpHeader} from "@webiny/api-core/legacy/security/plugins/authenticateUsingHttpHeader.js";
+import { authenticateUsingHttpHeader } from "@webiny/api-core/legacy/security/plugins/authenticateUsingHttpHeader.js";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import tenantLinkAuthorization from "@webiny/api-core/legacy/security/plugins/tenantLinkAuthorization.js";

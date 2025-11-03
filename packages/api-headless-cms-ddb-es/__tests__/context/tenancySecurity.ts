@@ -66,10 +66,7 @@ export const tenants: Tenant[] = [
     })
 ];
 
-export const createTenancyAndSecurity = ({
-    permissions,
-    identity
-}: Config): Plugin[] => {
+export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plugin[] => {
     return [
         new ContextPlugin<CmsContext>(async context => {
             for (const tenant of tenants) {

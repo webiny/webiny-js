@@ -1,10 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { DomainEvent } from "~/features/eventPublisher/index.js";
 import type { IEventHandler } from "~/features/eventPublisher/index.js";
-import type {
-    UserBeforeCreatePayload,
-    UserAfterCreatePayload
-} from "./abstractions.js";
+import type { UserBeforeCreatePayload, UserAfterCreatePayload } from "./abstractions.js";
 
 // Before Create Event
 export class UserBeforeCreateEvent extends DomainEvent<UserBeforeCreatePayload> {
@@ -15,9 +12,8 @@ export class UserBeforeCreateEvent extends DomainEvent<UserBeforeCreatePayload> 
     }
 }
 
-export const UserBeforeCreateHandler = createAbstraction<IEventHandler<UserBeforeCreateEvent>>(
-    "UserBeforeCreateHandler"
-);
+export const UserBeforeCreateHandler =
+    createAbstraction<IEventHandler<UserBeforeCreateEvent>>("UserBeforeCreateHandler");
 
 export namespace UserBeforeCreateHandler {
     export type Interface = IEventHandler<UserBeforeCreateEvent>;
@@ -33,9 +29,8 @@ export class UserAfterCreateEvent extends DomainEvent<UserAfterCreatePayload> {
     }
 }
 
-export const UserAfterCreateHandler = createAbstraction<IEventHandler<UserAfterCreateEvent>>(
-    "UserAfterCreateHandler"
-);
+export const UserAfterCreateHandler =
+    createAbstraction<IEventHandler<UserAfterCreateEvent>>("UserAfterCreateHandler");
 
 export namespace UserAfterCreateHandler {
     export type Interface = IEventHandler<UserAfterCreateEvent>;

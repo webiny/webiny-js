@@ -3,7 +3,10 @@ import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
-import { type Jwk, verifyJwtUsingJwk } from "@webiny/api-core/features/security/utils/verifyJwtUsingJwk.js";
+import {
+    type Jwk,
+    verifyJwtUsingJwk
+} from "@webiny/api-core/features/security/utils/verifyJwtUsingJwk.js";
 import { isJwt } from "@webiny/api-core/features/security/utils/isJwt.js";
 
 type Context = ApiCoreContext;

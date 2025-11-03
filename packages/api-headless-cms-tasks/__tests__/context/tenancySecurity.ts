@@ -18,10 +18,7 @@ export const defaultIdentity: IdentityData = {
     displayName: "John Doe"
 };
 
-export const createTenancyAndSecurity = ({
-    permissions,
-    identity
-}: Config): Plugin[] => {
+export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plugin[] => {
     return [
         new ContextPlugin<HcmsTasksContext>(async context => {
             await context.tenancy.createTenant({

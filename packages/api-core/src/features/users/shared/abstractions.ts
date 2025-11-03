@@ -1,14 +1,8 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { AdminUser } from "~/types/users.js";
-import type {
-    GetUserInput,
-    ListUsersInput
-} from "./types.js";
-import {
-    UserNotFoundError,
-    UserStorageError
-} from "./errors.js";
+import type { GetUserInput, ListUsersInput } from "./types.js";
+import { UserNotFoundError, UserStorageError } from "./errors.js";
 
 // Repository error interface
 export interface IAdminUsersRepositoryErrors {
@@ -28,9 +22,8 @@ export interface IAdminUsersRepository {
 }
 
 // Abstraction constant
-export const AdminUsersRepository = createAbstraction<IAdminUsersRepository>(
-    "AdminUsersRepository"
-);
+export const AdminUsersRepository =
+    createAbstraction<IAdminUsersRepository>("AdminUsersRepository");
 
 // Namespace exports
 export namespace AdminUsersRepository {

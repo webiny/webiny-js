@@ -13,6 +13,6 @@ export const createRootTenantMock = () => {
             isInstalled: true,
             parent: null,
             tags: []
-        })
+        });
     });
 };

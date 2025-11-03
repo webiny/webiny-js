@@ -173,7 +173,7 @@ export class WebsocketsRunner implements IWebsocketsRunner {
 
         const getLocale = () => {
             return getMockLocale().code;
-        }
+        };
 
         const action = middleware<MiddlewareParams, IWebsocketsRunnerResponse>(
             plugins.map(plugin => {

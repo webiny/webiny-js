@@ -8,9 +8,8 @@ export interface IAuthorizationContext {
     clearPermissionsCache(): void;
 }
 
-export const AuthorizationContext = createAbstraction<IAuthorizationContext>(
-    "AuthorizationContext"
-);
+export const AuthorizationContext =
+    createAbstraction<IAuthorizationContext>("AuthorizationContext");
 
 export namespace AuthorizationContext {
     export type Interface = IAuthorizationContext;

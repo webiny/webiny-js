@@ -6,9 +6,8 @@ export interface IAuthenticationContext {
     getAuthToken(): string | undefined;
 }
 
-export const AuthenticationContext = createAbstraction<IAuthenticationContext>(
-    "AuthenticationContext"
-);
+export const AuthenticationContext =
+    createAbstraction<IAuthenticationContext>("AuthenticationContext");
 
 export namespace AuthenticationContext {
     export type Interface = IAuthenticationContext;

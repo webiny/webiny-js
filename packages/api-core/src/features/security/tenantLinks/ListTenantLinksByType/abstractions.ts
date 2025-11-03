@@ -17,9 +17,8 @@ export interface IListTenantLinksByType {
     ): Promise<Result<TLink[], ListTenantLinksByTypeError>>;
 }
 
-export const ListTenantLinksByType = createAbstraction<IListTenantLinksByType>(
-    "ListTenantLinksByType"
-);
+export const ListTenantLinksByType =
+    createAbstraction<IListTenantLinksByType>("ListTenantLinksByType");
 
 export namespace ListTenantLinksByType {
     export type Interface = IListTenantLinksByType;

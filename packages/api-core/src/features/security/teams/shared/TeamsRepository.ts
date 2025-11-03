@@ -3,7 +3,10 @@ import { Result } from "@webiny/feature/api";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { TeamsRepository as RepositoryAbstraction } from "./abstractions.js";
 import type { Team, GetTeamInput, ListTeamsInput } from "./types.js";
-import { SecurityStorageOperations, TeamsProvider } from "~/features/security/shared/abstractions.js";
+import {
+    SecurityStorageOperations,
+    TeamsProvider
+} from "~/features/security/shared/abstractions.js";
 import { TeamNotFoundError, TeamStorageError } from "./errors.js";
 
 class TeamsRepositoryImpl implements RepositoryAbstraction.Interface {

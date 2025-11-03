@@ -1,5 +1,9 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { SecurityStorageOperations as ISecurityStorageOperations, Group, Team } from "~/types/security.js";
+import type {
+    SecurityStorageOperations as ISecurityStorageOperations,
+    Group,
+    Team
+} from "~/types/security.js";
 
 /**
  * SecurityStorageOperations abstraction

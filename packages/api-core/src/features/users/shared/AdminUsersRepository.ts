@@ -4,15 +4,9 @@ import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { AdminUsersRepository as RepositoryAbstraction } from "./abstractions.js";
 import { AdminUsersStorageOperations } from "./storageAbstractions.js";
 import { createUserLoaders } from "./loaders.js";
-import {
-    UserNotFoundError,
-    UserStorageError
-} from "./errors.js";
+import { UserNotFoundError, UserStorageError } from "./errors.js";
 import type { AdminUser } from "./types.js";
-import type {
-    GetUserInput,
-    ListUsersInput
-} from "./types.js";
+import type { GetUserInput, ListUsersInput } from "./types.js";
 
 class AdminUsersRepositoryImpl implements RepositoryAbstraction.Interface {
     private loaders: ReturnType<typeof createUserLoaders>;

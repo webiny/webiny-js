@@ -5,14 +5,8 @@ import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { UpdateUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { AdminUsersRepository } from "~/features/users/shared/abstractions.js";
 import { updateUserValidation } from "./schema.js";
-import {
-    NotAuthorizedError,
-    UserValidationError
-} from "~/features/users/shared/errors.js";
-import {
-    UserBeforeUpdateEvent,
-    UserAfterUpdateEvent
-} from "./events.js";
+import { NotAuthorizedError, UserValidationError } from "~/features/users/shared/errors.js";
+import { UserBeforeUpdateEvent, UserAfterUpdateEvent } from "./events.js";
 import type { AdminUser } from "~/features/users/shared/types.js";
 import type { UpdateUserInput } from "~/features/users/shared/types.js";
 
@@ -23,7 +17,10 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: AdminUsersRepository.Interface
     ) {}
 
-    async execute(id: string, input: UpdateUserInput): Promise<Result<AdminUser, UseCaseAbstraction.Error>> {
+    async execute(
+        id: string,
+        input: UpdateUserInput
+    ): Promise<Result<AdminUser, UseCaseAbstraction.Error>> {
         // 1. Check permission
         const permission = await this.identityContext.getPermission("adminUsers.user");
         if (!permission) {
@@ -66,7 +63,11 @@ class UpdateUserUseCaseImpl implements UseCaseAbstraction.Interface {
 
         // 8. Publish after event
         await this.eventPublisher.publish(
-            new UserAfterUpdateEvent({ originalUser, updatedUser: result.value, input: validation.data })
+            new UserAfterUpdateEvent({
+                originalUser,
+                updatedUser: result.value,
+                input: validation.data
+            })
         );
 
         return Result.ok(result.value);

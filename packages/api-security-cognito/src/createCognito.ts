@@ -6,9 +6,7 @@ import { AdminUserInstallerFeature } from "~/features/AdminUserInstaller/feature
 import { UpdateUserPermissions } from "~/features/UpdateUserPermissions/feature.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { SecurityIdentity, SecurityPermission } from "@webiny/api-core/types/security.js";
-import {
-    createGroupsTeamsAuthorizerHandler
-} from "@webiny/api-core/features/security/utils/createGroupsTeamsAuthorizer.js";
+import { createGroupsTeamsAuthorizerHandler } from "@webiny/api-core/features/security/utils/createGroupsTeamsAuthorizer.js";
 import { ExternalIdpUserSyncFeature } from "@webiny/api-core/features/ExternalIdpUserSync";
 
 interface GetIdentityParams<TContext, TToken, TIdentity> {

@@ -10,7 +10,6 @@ export type GetPermissions = <T extends SecurityPermission = SecurityPermission>
     name: string
 ) => Promise<T[]>;
 
-
 export interface GetGroupWhere {
     id?: string;
     slug?: string;

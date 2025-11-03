@@ -61,4 +61,3 @@ export const createPermissions = (permissions?: PermissionsArg[]): PermissionsAr
 export const createIdentity = (identity: IdentityData = getSecurityIdentity()) => {
     return new AuthenticatedIdentity(identity);
 };
-

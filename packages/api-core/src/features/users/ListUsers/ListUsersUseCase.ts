@@ -13,7 +13,9 @@ class ListUsersUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: AdminUsersRepository.Interface
     ) {}
 
-    async execute(input: ListUsersInput = {}): Promise<Result<AdminUser[], UseCaseAbstraction.Error>> {
+    async execute(
+        input: ListUsersInput = {}
+    ): Promise<Result<AdminUser[], UseCaseAbstraction.Error>> {
         // 1. Check permission
         const permission = await this.identityContext.getPermission("adminUsers.user");
         if (!permission) {

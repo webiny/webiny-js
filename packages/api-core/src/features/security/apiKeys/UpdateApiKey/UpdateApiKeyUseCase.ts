@@ -24,7 +24,10 @@ export class UpdateApiKeyUseCase implements UpdateApiKey.Interface {
         this.eventPublisher = eventPublisher;
     }
 
-    async execute(id: string, input: UpdateApiKeyInput): Promise<Result<ApiKey, UpdateApiKey.Error>> {
+    async execute(
+        id: string,
+        input: UpdateApiKeyInput
+    ): Promise<Result<ApiKey, UpdateApiKey.Error>> {
         const hasPermission = await this.identityContext.getPermission("security.apiKey");
         if (!hasPermission) {
             return Result.fail(new NotAuthorizedError());

@@ -49,7 +49,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
 
     const testProjectLicense = createTestWcpLicense();
 
-
     return {
         storageOperations: cmsStorage.storageOperations,
         tenant,

@@ -11,9 +11,9 @@ export class GroupBeforeUpdateEvent extends DomainEvent<GroupBeforeUpdatePayload
     }
 }
 
-export const GroupBeforeUpdateHandler = createAbstraction<
-    IEventHandler<GroupBeforeUpdateEvent>
->("GroupBeforeUpdateHandler");
+export const GroupBeforeUpdateHandler = createAbstraction<IEventHandler<GroupBeforeUpdateEvent>>(
+    "GroupBeforeUpdateHandler"
+);
 
 export namespace GroupBeforeUpdateHandler {
     export type Interface = IEventHandler<GroupBeforeUpdateEvent>;
@@ -28,9 +28,8 @@ export class GroupAfterUpdateEvent extends DomainEvent<GroupAfterUpdatePayload> 
     }
 }
 
-export const GroupAfterUpdateHandler = createAbstraction<
-    IEventHandler<GroupAfterUpdateEvent>
->("GroupAfterUpdateHandler");
+export const GroupAfterUpdateHandler =
+    createAbstraction<IEventHandler<GroupAfterUpdateEvent>>("GroupAfterUpdateHandler");
 
 export namespace GroupAfterUpdateHandler {
     export type Interface = IEventHandler<GroupAfterUpdateEvent>;

@@ -103,7 +103,10 @@ export const createUpdateEntryData = async ({
             rawInput.revisionLastPublishedOn,
             originalEntry.revisionLastPublishedOn
         ),
-        revisionCreatedBy: getIdentity(rawInput.revisionCreatedBy, originalEntry.revisionCreatedBy)!,
+        revisionCreatedBy: getIdentity(
+            rawInput.revisionCreatedBy,
+            originalEntry.revisionCreatedBy
+        )!,
         revisionModifiedBy: getIdentity(rawInput.revisionModifiedBy, currentIdentity),
         revisionSavedBy: getIdentity(rawInput.revisionSavedBy, currentIdentity)!,
         revisionDeletedBy: getIdentity(rawInput.revisionSavedBy, null),

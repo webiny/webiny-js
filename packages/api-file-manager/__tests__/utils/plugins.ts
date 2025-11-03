@@ -15,7 +15,10 @@ import type { FileManagerStorageOperations } from "~/types";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { PluginCollection } from "@webiny/plugins/types";
 import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
-import type { SecurityPermission, SecurityStorageOperations } from "@webiny/api-core/types/security.js";
+import type {
+    SecurityPermission,
+    SecurityStorageOperations
+} from "@webiny/api-core/types/security.js";
 import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
 import { createApiCore } from "@webiny/api-core";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";

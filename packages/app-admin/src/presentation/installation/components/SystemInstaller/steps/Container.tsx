@@ -22,7 +22,11 @@ export const Container = ({ title, message, splashImage, children }: ContainerPr
                     {title}
                 </Heading>
             </Center>
-            <Text as="div" size={"md"} className={"wby-mb-lg wby-text-center wby-text-neutral-muted"}>
+            <Text
+                as="div"
+                size={"md"}
+                className={"wby-mb-lg wby-text-center wby-text-neutral-muted"}
+            >
                 {message}
             </Text>
             {children}

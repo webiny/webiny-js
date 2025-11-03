@@ -12,10 +12,7 @@ import {
     UserExistsError,
     UserValidationError
 } from "~/features/users/shared/errors.js";
-import {
-    UserBeforeCreateEvent,
-    UserAfterCreateEvent
-} from "./events.js";
+import { UserBeforeCreateEvent, UserAfterCreateEvent } from "./events.js";
 import type { AdminUser } from "~/features/users/shared/types.js";
 import type { CreateUserInput } from "~/features/users/shared/types.js";
 import type { CreatedBy } from "~/types/users.js";
@@ -86,9 +83,7 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
         };
 
         // 8. Publish before event
-        await this.eventPublisher.publish(
-            new UserBeforeCreateEvent({ user, input: data })
-        );
+        await this.eventPublisher.publish(new UserBeforeCreateEvent({ user, input: data }));
 
         // 10. Create user via repository
         const result = await this.repository.create(user);

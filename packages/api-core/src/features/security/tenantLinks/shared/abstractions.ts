@@ -10,10 +10,7 @@ import type {
     GetTenantLinkByIdentityInput,
     TenantLink
 } from "./types.js";
-import {
-    TenantLinkStorageError,
-    TenantLinkNotFoundError
-} from "./errors.js";
+import { TenantLinkStorageError, TenantLinkNotFoundError } from "./errors.js";
 
 export interface ITenantLinksRepositoryErrors {
     base: TenantLinkStorageError | TenantLinkNotFoundError;
@@ -28,7 +25,9 @@ export interface ITenantLinksRepository {
     listByType<TLink extends TenantLink = TenantLink>(
         input: ListTenantLinksByTypeInput
     ): Promise<Result<TLink[], RepositoryError>>;
-    listByTenant(input: ListTenantLinksByTenantInput): Promise<Result<TenantLink[], RepositoryError>>;
+    listByTenant(
+        input: ListTenantLinksByTenantInput
+    ): Promise<Result<TenantLink[], RepositoryError>>;
     listByIdentity(
         input: ListTenantLinksByIdentityInput
     ): Promise<Result<TenantLink[], RepositoryError>>;
@@ -37,9 +36,8 @@ export interface ITenantLinksRepository {
     ): Promise<Result<TLink | null, RepositoryError>>;
 }
 
-export const TenantLinksRepository = createAbstraction<ITenantLinksRepository>(
-    "TenantLinksRepository"
-);
+export const TenantLinksRepository =
+    createAbstraction<ITenantLinksRepository>("TenantLinksRepository");
 
 export namespace TenantLinksRepository {
     export type Interface = ITenantLinksRepository;

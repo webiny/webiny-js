@@ -260,7 +260,7 @@ describe("Settings Transporter CRUD", () => {
         expect(updateResponse).toEqual(null);
         expect(updateError).toEqual({
             message: "Not allowed to update the mailer settings.",
-            code: "NOT_AUTHORIZED",
+            code: "NOT_AUTHORIZED"
         });
     });
 });

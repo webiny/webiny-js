@@ -24,7 +24,7 @@ export default new GraphQLSchemaPlugin<SecurityContext>({
             currentTenant: Tenant
             defaultTenant: Tenant
         }
-        
+
         type TenantResponse {
             data: Tenant
             error: SecurityError
