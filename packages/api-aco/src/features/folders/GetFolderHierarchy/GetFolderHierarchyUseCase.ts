@@ -6,7 +6,7 @@ import type {
     GetFolderHierarchyParams,
     GetFolderHierarchyResponse
 } from "~/folder/folder.types.js";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { FolderStorageOperations } from "~/features/folders/shared/abstractions.js";
 
 const FIXED_FOLDER_LISTING_LIMIT = 10_000;

@@ -1,3 +1,3 @@
-export { createDecorator, createImplementation } from "@webiny/di-container";
+export { createDecorator, createImplementation } from "@webiny/di";
 export { createFeature } from "./createFeature.js";
 export { createAbstraction } from "../createAbstraction.js";

@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { Command, CommandsRegistryService } from "~/abstractions/index.js";
 
 export class DefaultCommandsRegistryService implements CommandsRegistryService.Interface {

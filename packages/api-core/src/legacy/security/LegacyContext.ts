@@ -1,4 +1,4 @@
-import { type Container } from "@webiny/di-container";
+import { type Container } from "@webiny/di";
 import type { SecurityIdentity, SecurityPermission, TenantLink } from "~/types/security.js";
 import { AuthenticationContext } from "~/features/security/authentication/AuthenticationContext/index.js";
 import { Authenticator } from "~/features/security/authentication/Authenticator/index.js";

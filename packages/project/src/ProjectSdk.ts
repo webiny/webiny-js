@@ -1,4 +1,4 @@
-import { type Container } from "@webiny/di-container";
+import { type Container } from "@webiny/di";
 import { createProjectSdkContainer } from "./createProjectSdkContainer.js";
 import {
     BuildApp,

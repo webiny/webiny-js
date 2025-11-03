@@ -1,4 +1,3 @@
-import { getLocale as getBaseLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 import type { Context } from "~/types.js";
 import type { ITaskService } from "~/plugins/index.js";
 import { TaskServicePlugin } from "~/plugins/index.js";

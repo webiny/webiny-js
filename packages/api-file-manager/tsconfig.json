@@ -13,6 +13,7 @@
     { "path": "../plugins" },
     { "path": "../pubsub" },
     { "path": "../tasks" },
+    { "path": "../wcp" },
     { "path": "../utils" }
   ],
   "compilerOptions": {
@@ -158,6 +159,8 @@
       "@webiny/pubsub": ["../pubsub/src"],
       "@webiny/tasks/*": ["../tasks/src/*"],
       "@webiny/tasks": ["../tasks/src"],
+      "@webiny/wcp/*": ["../wcp/src/*"],
+      "@webiny/wcp": ["../wcp/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"]
     },

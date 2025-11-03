@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import { WcpContextImpl } from "./WcpContext.js";
 import { WcpContext } from "./abstractions.js";
 import type { ILicense } from "@webiny/wcp/types.js";

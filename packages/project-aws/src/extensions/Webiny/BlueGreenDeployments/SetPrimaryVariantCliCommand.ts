@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { Command, GetProjectSdkService } from "@webiny/cli-core/abstractions/index.js";
 
 export interface ISetPrimaryVariantCommandParams {

@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/app";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { SystemInstallerPresenter as SystemInstallerPresenterAbstraction } from "./abstractions.js";
 import { SystemInstallerGateway } from "./SystemInstallerGateway.js";
 import { SystemInstallerRepository } from "./SystemInstallerRepository.js";

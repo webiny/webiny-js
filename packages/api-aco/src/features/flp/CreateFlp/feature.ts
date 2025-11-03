@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import { CreateFlpUseCase } from "./CreateFlpUseCase.js";
 import { CreateFlpUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { AcoContext } from "~/types.js";

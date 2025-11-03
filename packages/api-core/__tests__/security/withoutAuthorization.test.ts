@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { IdentityContextFeature } from "~/features/security/IdentityContext/feature.js";
 import { AuthorizationContextFeature } from "~/features/security/authorization/AuthorizationContext/feature.js";
 import { IdentityContext } from "~/features/security/IdentityContext/index.js";

@@ -1,4 +1,4 @@
-import { createDecorator } from "@webiny/di-container";
+import { createDecorator } from "@webiny/di";
 import { PageModelBuilder as BuilderAbstraction } from "../abstractions.js";
 
 class PageModelBuilderDecorator2Impl implements BuilderAbstraction.Interface {

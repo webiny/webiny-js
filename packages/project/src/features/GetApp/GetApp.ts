@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetApp, GetProject } from "~/abstractions/index.js";
 import { AppModel } from "~/models/index.js";
 import { APP_NAME } from "~/utils/index.js";

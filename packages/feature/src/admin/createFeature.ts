@@ -1,4 +1,4 @@
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 
 export interface FeatureDefinition<TExports = any, TParams extends any[] = []> {
     name: string;

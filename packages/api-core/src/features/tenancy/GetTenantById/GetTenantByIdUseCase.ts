@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { Result } from "@webiny/feature/api";
 import { GetTenantByIdUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetTenantByIdRepository } from "./abstractions.js";

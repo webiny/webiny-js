@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetProjectConfig, GetProjectConfigService } from "~/abstractions/index.js";
 
 export class DefaultGetProjectConfig implements GetProjectConfig.Interface {

@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { AdminAfterDeploy } from "~/abstractions/index.js";
 import { globalConfig } from "@webiny/global-config";
 

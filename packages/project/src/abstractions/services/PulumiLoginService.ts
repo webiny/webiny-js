@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import type { Options as PulumiOptions } from "@webiny/pulumi-sdk";
 import { type IAppModel } from "~/abstractions/models/index.js";
 

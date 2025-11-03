@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import { FolderAfterUpdateHandler } from "~/features/folders/UpdateFolder/index.js";
 import { UpdateFlpOnFolderUpdatedHandler } from "./UpdateFlpOnFolderUpdatedHandler.js";
 import { UpdateFlpUseCase } from "../UpdateFlp/abstractions.js";

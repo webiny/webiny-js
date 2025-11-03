@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { ModelBuilder as Builder } from "~/models/base/ModelBuilder.js";
 import { PageSchema, PageModelBuilder as BuilderAbstraction, type IPage } from "./abstractions.js";
 

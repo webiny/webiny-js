@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GraphQLClient } from "@webiny/app/features/graphqlClient";
 import { type InstallationInput, SystemInstallerGateway as Abstraction } from "./abstractions.js";
 

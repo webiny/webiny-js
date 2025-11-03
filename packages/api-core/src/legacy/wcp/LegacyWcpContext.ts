@@ -1,4 +1,4 @@
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import type { WCP_FEATURE_LABEL } from "@webiny/wcp";
 import type {
     DecryptedWcpProjectLicense,

@@ -8,7 +8,7 @@ import type {
     AcoFolderLevelPermissionsCrud,
     AcoFolderLevelPermissionsStorageOperations
 } from "~/flp/flp.types.js";
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import { FolderLevelPermissions } from "./features/flp/FolderLevelPermissions/index.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";

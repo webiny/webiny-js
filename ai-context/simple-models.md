@@ -1,7 +1,7 @@
 ```ts
 // Page/PageModelBuilder.ts
 import { ModelBuilder as Builder } from "~/models/ModelBuilder.js";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { PageSchema, PageModelBuilder as BuilderAbstraction, type IPage } from "./abstractions";
 
 class PageModelBuilderImpl implements BuilderAbstraction.Interface {
@@ -24,7 +24,7 @@ export const PageModelBuilder = createImplementation({
 
 ```ts
 // Page/PageModelFactory.ts
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import {
     PageModelFactory as FactoryAbstraction,
     PageModelBuilder,
@@ -58,7 +58,7 @@ export const PageModelFactory = createImplementation({
 
 ```ts
 // Page/__tests__/PageModelBuilderDecorator.ts
-import { createDecorator } from "@webiny/di-container";
+import { createDecorator } from "@webiny/di";
 import { PageModelBuilder as BuilderAbstraction } from "../abstractions";
 
 class PageModelBuilderDecoratorImpl implements BuilderAbstraction.Interface {
@@ -100,7 +100,7 @@ declare module "~/simple/Page/abstractions.js" {
 
 ```ts
 // Page/__tests__/PageModelBuilderDecorator2.ts
-import { createDecorator } from "@webiny/di-container";
+import { createDecorator } from "@webiny/di";
 import { PageModelBuilder as BuilderAbstraction } from "../abstractions";
 
 class PageModelBuilderDecorator2Impl implements BuilderAbstraction.Interface {
@@ -133,7 +133,7 @@ declare module "~/simple/Page/abstractions.js" {
 ```ts
 // Page/__tests__/PageModelFactory.test.ts
 import { describe, expect, it } from "vitest";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { PageModelBuilder } from "~/simple/Page/PageModelBuilder.js";
 import { PageModelFactory } from "~/simple/Page/PageModelFactory.js";
 import { PageModelFactory as FactoryAbstraction } from "~/simple/Page/abstractions.js";
@@ -176,7 +176,7 @@ describe("PageModelFactory", () => {
 
 ```ts
 // Page/abstractions.ts
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import { createModelSchema } from "~/models/ModelBuilder.js";
 import type { IModel, IModelBuilder, IModelFactory, IModelInput } from "~/models/abstractions.js";
 

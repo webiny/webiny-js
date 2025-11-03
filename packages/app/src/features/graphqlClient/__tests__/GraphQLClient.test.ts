@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { GraphQLClient } from "../abstractions.js";
 import { FetchGraphQLClient } from "../FetchGraphQLClient.js";
 import { BatchingGraphQLClient } from "../BatchingGraphQLClient.js";

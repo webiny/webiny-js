@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import { DeleteFolderUseCase } from "./DeleteFolderUseCase.js";
 import { DeleteFolderWithFolderLevelPermissions } from "./decorators/DeleteFolderWithFolderLevelPermissions.js";
 

@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import { CreateFolderUseCase } from "./CreateFolderUseCase.js";
 import { CreateFolderWithFolderLevelPermissions } from "~/features/folders/CreateFolder/decorators/CreateFolderWithFolderLevelPermissions.js";
 

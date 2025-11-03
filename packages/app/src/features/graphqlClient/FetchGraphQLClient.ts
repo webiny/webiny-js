@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GraphQLClient } from "./abstractions.js";
 import { EnvConfig } from "~/features/envConfig/index.js";
 

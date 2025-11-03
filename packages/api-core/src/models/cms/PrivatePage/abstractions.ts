@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import type { IModel, IModelData } from "~/models/base/abstractions.js";
 import type { ICmsModelBuilder, ICmsModelFactory } from "~/models/cms/abstractions.js";
 import type { PageFieldsSchema } from "./Page.fields.js";

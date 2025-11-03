@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from "vitest";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { CreateTenantLinks } from "~/features/security/tenantLinks/CreateTenantLinks/index.js";
 import { UpdateTenantLinks } from "~/features/security/tenantLinks/UpdateTenantLinks/index.js";
 import { DeleteTenantLinks } from "~/features/security/tenantLinks/DeleteTenantLinks/index.js";

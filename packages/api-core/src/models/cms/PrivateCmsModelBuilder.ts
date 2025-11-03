@@ -8,7 +8,7 @@ import type { IModelData } from "../base/abstractions.js";
 import type { PrivateCmsModel, CmsModelMetadata, FieldBuilderConfig } from "./types.js";
 // Import your existing ModelBuilder
 import { FieldBuilder } from "./FieldBuilder.js";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import {
     FieldBuilderRegistry,
     type IFieldBuilderRegistry,

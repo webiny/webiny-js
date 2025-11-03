@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { sendEvent } from "@webiny/telemetry/react";
 import { TelemetryService as Abstraction } from "./abstractions.js";
 

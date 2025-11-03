@@ -2,7 +2,7 @@ import type { GetAncestorsParams } from "./abstractions.js";
 import { GetAncestorsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { Folder } from "~/folder/folder.types.js";
 import { ROOT_FOLDER } from "~/constants.js";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { ListFoldersUseCase } from "~/features/folders/ListFolders/index.js";
 
 class GetAncestorsUseCaseImpl implements UseCaseAbstraction.Interface {

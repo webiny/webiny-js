@@ -1,4 +1,4 @@
-import { createDecorator } from "@webiny/di-container";
+import { createDecorator } from "@webiny/di";
 import { Command, ErrorHandler } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 

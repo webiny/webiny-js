@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { Command, UiService } from "@webiny/extensions/cli";
 
 export interface IMyCustomCommandParams {

@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import { CreateTenantUseCase } from "./CreateTenantUseCase.js";
 import { CreateTenantRepository } from "./CreateTenantRepository.js";
 import { CreateTenantGateway } from "./CreateTenantGateway.js";

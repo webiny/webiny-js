@@ -1,4 +1,4 @@
-import { createDecorator } from "@webiny/di-container";
+import { createDecorator } from "@webiny/di";
 import { PageCmsModelBuilder } from "~/models/cms/PrivatePage/abstractions.js";
 
 class PageSeoDecoratorImpl implements PageCmsModelBuilder.Interface {

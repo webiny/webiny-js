@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { ProjectSdkParamsService } from "~/abstractions/index.js";
 
 export class DefaultProjectSdkParamsService implements ProjectSdkParamsService.Interface {

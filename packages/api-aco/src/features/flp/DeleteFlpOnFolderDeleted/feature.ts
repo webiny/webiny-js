@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import { DeleteFlpOnFolderDeletedHandler } from "./DeleteFlpOnFolderDeletedHandler.js";
 import { DeleteFlpUseCase } from "../DeleteFlp/abstractions.js";
 import { FolderAfterDeleteHandler } from "~/features/folders/DeleteFolder/index.js";

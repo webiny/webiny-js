@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { TextFieldBuilder, ObjectFieldBuilder, type FieldBuilder } from "./FieldBuilder.js";
 import {
     FieldBuilderRegistry as RegistryAbstraction,

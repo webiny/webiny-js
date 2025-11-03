@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { EventPublisher as EventPublisherAbstraction } from "./abstractions.js";
 import { EventPublisher } from "./EventPublisher.js";
 

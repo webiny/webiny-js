@@ -1,4 +1,4 @@
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import type { CreateTenantInput, ListTenantsParams, Tenancy, Tenant } from "~/types/tenancy.js";
 import { CreateTenantUseCase } from "~/features/tenancy/CreateTenant/abstractions.js";
 import { GetRootTenantUseCase } from "~/features/tenancy/GetRootTenant/abstractions.js";

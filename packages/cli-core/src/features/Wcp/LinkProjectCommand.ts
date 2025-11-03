@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import inquirer from "inquirer";
 import { Command, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import { setTimeout } from "node:timers/promises";

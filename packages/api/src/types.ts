@@ -1,4 +1,4 @@
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import type { PluginsContainer } from "@webiny/plugins";
 import type { ICompressor } from "@webiny/utils/compression/Compressor.js";
 

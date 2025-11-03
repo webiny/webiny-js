@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 
 export type InstallationInput = Array<{ app: string; data: Record<string, any> }>;
 

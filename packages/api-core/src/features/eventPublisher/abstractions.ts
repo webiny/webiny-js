@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 
 export abstract class DomainEvent<TPayload = void> {
     public abstract readonly eventType: string;

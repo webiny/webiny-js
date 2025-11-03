@@ -1,10 +1,10 @@
+import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
 import { describe, expect, it } from "vitest";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
-import type { SecurityIdentity } from "@webiny/api-security/types";
 
-const identityA: SecurityIdentity = { id: "a", type: "admin", displayName: "A" };
-const identityB: SecurityIdentity = { id: "b", type: "admin", displayName: "B" };
-const identityC: SecurityIdentity = { id: "c", type: "admin", displayName: "C" };
+const identityA: IdentityData = { id: "a", type: "admin", displayName: "A" };
+const identityB: IdentityData = { id: "b", type: "admin", displayName: "B" };
+const identityC: IdentityData = { id: "c", type: "admin", displayName: "C" };
 
 const gqlApiTypesPermissions = [
     { _src: "x", name: "cms.endpoint.read" },
@@ -201,7 +201,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
             data: { name: "Group", icon: "x" }
         });
 
-        await manageApiA.createContentModelMutation({
+        const res1 = await manageApiA.createContentModelMutation({
             data: {
                 name: "Test Entry A",
                 singularApiName: "TestEntryA",
@@ -219,7 +219,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
             permissions
         });
 
-        await manageApiB.createContentModelMutation({
+        const res2 = await manageApiB.createContentModelMutation({
             data: {
                 name: "Test Entry B",
                 singularApiName: "TestEntryB",

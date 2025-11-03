@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { SystemRequirements } from "@webiny/system-requirements";
 import { GetNpmVersionService } from "~/abstractions/index.js";
 

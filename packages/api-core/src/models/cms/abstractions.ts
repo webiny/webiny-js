@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import type { IPrivateCmsModelConfiguration } from "./PrivateCmsModelBuilder.js";
 import type { FieldDefinitionsFactory } from "./FieldDefinitionsBuilder.js";
 import { type TextFieldBuilder, type ObjectFieldBuilder, FieldBuilder } from "./FieldBuilder.js";

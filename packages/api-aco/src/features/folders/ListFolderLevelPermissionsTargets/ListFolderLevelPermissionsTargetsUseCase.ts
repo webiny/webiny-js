@@ -4,7 +4,7 @@ import type {
     FolderLevelPermissionsTarget,
     FolderLevelPermissionsTargetListMeta
 } from "~/folder/folder.types.js";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { ListUsersUseCase } from "@webiny/api-core/features/ListUsers";
 import { ListTeamsUseCase } from "@webiny/api-core/features/ListTeams";
 

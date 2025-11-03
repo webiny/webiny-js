@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import { type DeployApp } from "~/abstractions/index.js";
 
 export interface ICoreAfterDeploy {

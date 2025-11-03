@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../di-container/tsconfig.build.json" },
     { "path": "../logger/tsconfig.build.json" },
     { "path": "../project/tsconfig.build.json" },
     { "path": "../pulumi-sdk/tsconfig.build.json" }
@@ -14,8 +13,6 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/di-container/*": ["../di-container/src/*"],
-      "@webiny/di-container": ["../di-container/src"],
       "@webiny/logger/*": ["../logger/src/*"],
       "@webiny/logger": ["../logger/src"],
       "@webiny/project/*": ["../project/src/*"],

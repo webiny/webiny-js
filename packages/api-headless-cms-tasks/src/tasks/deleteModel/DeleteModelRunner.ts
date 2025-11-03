@@ -155,7 +155,7 @@ export class DeleteModelRunner<
     }
 
     private async removeBeingDeleted(
-        model: Pick<CmsModel, "modelId" | "tenant" | "locale">
+        model: Pick<CmsModel, "modelId" | "tenant">
     ): Promise<void> {
         const key = createStoreKey(model);
         await this.context.db.store.removeValue(key);

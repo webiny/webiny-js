@@ -1,4 +1,4 @@
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import type { Team } from "~/types/security.js";
 import type {
     AdminUsers,

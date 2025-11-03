@@ -1,5 +1,5 @@
 import { makeAutoObservable, toJS } from "mobx";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { Route } from "./Route.js";
 import {
     RouterRepository,

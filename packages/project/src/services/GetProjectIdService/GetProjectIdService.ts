@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetProjectConfigService, GetProjectIdService } from "~/abstractions/index.js";
 import { projectId as projectIdExt } from "~/extensions/projectId.js";
 

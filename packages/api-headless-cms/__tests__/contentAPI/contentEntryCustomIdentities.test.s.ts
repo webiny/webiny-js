@@ -1,24 +1,24 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useCategoryManageHandler } from "~tests/testHelpers/useCategoryManageHandler";
 import { setupGroupAndModels } from "~tests/testHelpers/setup";
-import type { SecurityIdentity } from "@webiny/api-security/types";
+import { IdentityData } from "@webiny/api-core/features/IdentityContext";
 
 describe("content entry custom identities", () => {
     const manager = useCategoryManageHandler({
         path: "manage/en-US"
     });
 
-    const mockIdentityOne: SecurityIdentity = {
+    const mockIdentityOne: IdentityData = {
         id: "mock-identity-one",
         displayName: "Mock Identity One",
         type: "mockOne"
     };
-    const mockIdentityTwo: SecurityIdentity = {
+    const mockIdentityTwo: IdentityData = {
         id: "mock-identity-two",
         displayName: "Mock Identity Two",
         type: "mockTwo"
     };
-    const mockIdentityThree: SecurityIdentity = {
+    const mockIdentityThree: IdentityData = {
         id: "mock-identity-three",
         displayName: "Mock Identity Three",
         type: "mockThree"

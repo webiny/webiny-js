@@ -10,7 +10,7 @@ import { ListFoldersUseCase } from "~/features/folders/ListFolders/index.js";
 import { GetFolderHierarchyUseCase } from "~/features/folders/GetFolderHierarchy/index.js";
 import { GetAncestorsUseCase } from "~/features/folders/GetAncestors/index.js";
 import { ListFolderLevelPermissionsTargetsUseCase } from "~/features/folders/ListFolderLevelPermissionsTargets/index.js";
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 
 const FIXED_FOLDER_LISTING_LIMIT = 10_000;
 

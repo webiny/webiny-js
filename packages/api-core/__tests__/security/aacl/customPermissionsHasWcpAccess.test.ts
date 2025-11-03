@@ -28,7 +28,7 @@ describe(`Custom permissions (no WCP access) test`, () => {
         const context = await handle();
         expect(await context.security.listPermissions()).toEqual([
             ...customPermissions,
-            { name: "aacl", legacy: false, teams: false }
+            { name: "aacl", teams: false }
         ]);
     });
 });

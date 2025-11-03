@@ -61,7 +61,7 @@ The following code snippet demonstrates what `createFeature` does internally.
 In regular code, you import it as `import { createFeature } from "@webiny/feature";`
 
 ```typescript
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 
 export interface FeatureDefinition<TExports = any> {
   name: string;

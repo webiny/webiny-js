@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { WcpContext } from "@webiny/api-core/features/WcpContext";
 import { ListUserTeamsUseCase } from "@webiny/api-core/features/ListUserTeams";

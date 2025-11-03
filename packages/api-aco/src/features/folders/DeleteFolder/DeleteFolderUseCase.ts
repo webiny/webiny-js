@@ -2,7 +2,7 @@ import { EventPublisher, EventPublisher as EventPublisherAbstraction } from "@we
 import { DeleteFolderUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { FolderBeforeDeleteEvent, FolderAfterDeleteEvent } from "./events.js";
 import type { DeleteFolderParams, AcoFolderStorageOperations } from "~/folder/folder.types.js";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { FolderStorageOperations } from "~/features/folders/shared/abstractions.js";
 
 class DeleteFolderUseCaseImpl implements UseCaseAbstraction.Interface {

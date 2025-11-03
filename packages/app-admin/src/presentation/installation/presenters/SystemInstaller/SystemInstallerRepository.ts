@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { LocalStorageService } from "@webiny/app/features/localStorage";
 import {
     SystemInstallerRepository as Abstraction,

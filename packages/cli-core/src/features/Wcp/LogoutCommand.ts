@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { Command, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 
 export class LogoutCommand implements Command.Interface<void> {

@@ -1,17 +1,12 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
-  "references": [{ "path": "../di-container/tsconfig.build.json" }],
+  "references": [],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {
-      "~/*": ["./src/*"],
-      "~tests/*": ["./__tests__/*"],
-      "@webiny/di-container/*": ["../di-container/src/*"],
-      "@webiny/di-container": ["../di-container/src"]
-    },
+    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
     "baseUrl": "."
   }
 }

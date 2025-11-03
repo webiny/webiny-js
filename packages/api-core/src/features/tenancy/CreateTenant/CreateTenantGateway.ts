@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { CreateTenantGateway as GatewayAbstraction } from "./abstractions.js";
 import { TenancyStorageOperations } from "../shared/storageOperations.js";
 import type { Tenant } from "~/types/tenancy.js";

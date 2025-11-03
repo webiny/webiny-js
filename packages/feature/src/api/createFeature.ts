@@ -1,4 +1,4 @@
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 
 export interface FeatureDefinition<TRegister> {
     name: string;

@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import { DeleteTenantUseCase } from "./DeleteTenantUseCase.js";
 import { DeleteTenantRepository } from "./DeleteTenantRepository.js";
 import { DeleteTenantGateway } from "./DeleteTenantGateway.js";

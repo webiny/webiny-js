@@ -1,4 +1,4 @@
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import { EventPublisher as Abstraction, DomainEvent } from "./abstractions.js";
 
 export class EventPublisher implements Abstraction.Interface {

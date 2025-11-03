@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetTenantByIdRepository as RepositoryAbstraction } from "./abstractions.js";
 import { GetTenantByIdGateway } from "./abstractions.js";
 import { TenantCache } from "../shared/abstractions.js";

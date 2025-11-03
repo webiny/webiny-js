@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { EventPublisherFeature } from "~/features/eventPublisher/feature.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import { SystemFeature } from "~/features/system/SystemFeature.js";

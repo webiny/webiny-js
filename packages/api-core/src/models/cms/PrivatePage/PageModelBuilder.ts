@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { PageFieldDefinitions } from "./Page.fields.js";
 import { PrivateCmsModelBuilder } from "~/models/cms/abstractions.js";
 import {

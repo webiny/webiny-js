@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from "async_hooks";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { AuthorizationContext as Abstraction } from "./abstractions.js";
 import { Authorizer } from "../Authorizer/index.js";
 import type { SecurityPermission } from "~/types/security.js";

@@ -1,5 +1,5 @@
 import path from "path";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import {
     cliParamsService,
     commandsRegistryService,

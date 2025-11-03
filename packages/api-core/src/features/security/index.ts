@@ -1,4 +1,4 @@
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import type { SecurityStorageOperations as ISecurityStorageOperations } from "~/types/security.js";
 import { SecurityStorageOperations } from "./shared/abstractions.js";
 

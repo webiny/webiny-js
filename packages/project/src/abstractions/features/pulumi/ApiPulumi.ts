@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 
 export interface IApiPulumi<TApp> {
     execute(app: TApp): void | Promise<void>;

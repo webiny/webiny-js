@@ -97,7 +97,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             await storageOperations.beforeInit(context);
 
             const accessControl = new AccessControl({
-                getIdentity: context.security.getIdentity,
+                getIdentity: () => context.security.getIdentity(),
                 getGroupsPermissions: () =>
                     context.security.getPermissions("cms.contentModelGroup"),
                 getModelsPermissions: () => context.security.getPermissions("cms.contentModel"),

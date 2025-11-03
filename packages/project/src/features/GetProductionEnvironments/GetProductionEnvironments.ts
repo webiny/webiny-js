@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetProductionEnvironments, GetProjectConfigService } from "~/abstractions/index.js";
 import { productionEnvironments as productionEnvironmentsExtension } from "~/extensions/pulumi/index.js";
 

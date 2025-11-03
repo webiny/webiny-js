@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
-import type { SecurityIdentity } from "@webiny/api-security/types";
 import { CmsTestPermissions, expectNotAuthorized } from "../utils";
+import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
 
-const identityA: SecurityIdentity = { id: "a", type: "admin", displayName: "A" };
-const identityB: SecurityIdentity = { id: "b", type: "admin", displayName: "B" };
-const identityC: SecurityIdentity = { id: "c", type: "admin", displayName: "C" };
+const identityA: IdentityData = { id: "a", type: "admin", displayName: "A" };
+const identityB: IdentityData = { id: "b", type: "admin", displayName: "B" };
+const identityC: IdentityData = { id: "c", type: "admin", displayName: "C" };
 
 describe("Delete Permissions Checks", () => {
     it("should allow deletion of entries only with sufficient permission", async () => {
@@ -34,7 +34,7 @@ describe("Delete Permissions Checks", () => {
         });
 
         expectNotAuthorized(failedEntryDeletion, {
-            reason: 'Not allowed to access "testModel" entries.'
+            message: 'Not allowed to access "testModel" entries.'
         });
 
         // Adding the "d" permission to the identityC should allow the deletion of the group.

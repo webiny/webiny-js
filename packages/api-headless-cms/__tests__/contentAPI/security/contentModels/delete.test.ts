@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
-import { SecurityIdentity } from "@webiny/api-security/types";
+import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
 import { CmsTestPermissions, expectNotAuthorized } from "../utils";
 
-const identityA: SecurityIdentity = { id: "a", type: "admin", displayName: "A" };
-const identityB: SecurityIdentity = { id: "b", type: "admin", displayName: "B" };
+const identityA: IdentityData = { id: "a", type: "admin", displayName: "A" };
+const identityB: IdentityData = { id: "b", type: "admin", displayName: "B" };
 
 describe("Delete Permissions Checks", () => {
     it("should allow deletion of models only with sufficient permission", async () => {
@@ -39,7 +39,7 @@ describe("Delete Permissions Checks", () => {
         });
 
         expectNotAuthorized(modelDeletion.data.deleteContentModel, {
-            reason: "Not allowed to access content models."
+            message: "Not allowed to access content models."
         });
 
         // Adding the "d" permission to the identityB should allow the deletion of the group.

@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { DeleteTenantUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { DeleteTenantRepository } from "./abstractions.js";

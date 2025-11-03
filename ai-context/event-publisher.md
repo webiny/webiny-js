@@ -1,6 +1,6 @@
 ```ts
 // EventPublisher.ts
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import { EventPublisher as Abstraction, DomainEvent } from "./abstractions";
 
 export class EventPublisher implements Abstraction.Interface {
@@ -24,7 +24,7 @@ export class EventPublisher implements Abstraction.Interface {
 ```ts
 // __tests__/EventPublisher.test.ts
 import { describe, it, expect, beforeEach } from "vitest";
-import { Container, Abstraction, createImplementation } from "@webiny/di-container";
+import { Container, Abstraction, createImplementation } from "@webiny/di";
 import { EventPublisherFeature } from "../feature";
 import { EventPublisher as EventPublisherAbstraction } from "../abstractions";
 import type { DomainEvent, IEventHandler } from "../abstractions";
@@ -592,7 +592,7 @@ describe("EventPublisher", () => {
 
 ```ts
 // abstractions.ts
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 
 export abstract class DomainEvent<TPayload = void> {
     public abstract readonly eventType: string;
@@ -632,7 +632,7 @@ export namespace EventPublisher {
 ```ts
 // feature.ts
 import { createFeature } from "@webiny/feature";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { EventPublisher as EventPublisherAbstraction } from "./abstractions.js";
 import { EventPublisher } from "./EventPublisher";
 

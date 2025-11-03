@@ -1,7 +1,7 @@
 import { describe, it, test, expect } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { expectNotAuthorized } from "~tests/utils/expectNotAuthorized";
-import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
 
 const FOLDER_TYPE = "test-folders";
 

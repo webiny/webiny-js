@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import {
     SystemInstallerPresenter as Abstraction,
     InstallationInput,

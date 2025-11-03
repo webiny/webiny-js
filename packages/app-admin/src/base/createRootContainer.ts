@@ -1,5 +1,5 @@
 import { createBrowserHistory } from "history";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { RouterFeature } from "@webiny/app/features/router/feature.js";
 import { DefaultRouteElementRegistry } from "@webiny/app/presentation/router/RouteElementRegistry.js";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";

@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import findUp from "find-up";
 import path, { dirname } from "path";
 import { GetProjectVersionService } from "~/abstractions/index.js";

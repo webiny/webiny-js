@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { Container, Abstraction, createImplementation } from "@webiny/di-container";
+import { Container, Abstraction, createImplementation } from "@webiny/di";
 import { EventPublisherFeature } from "../feature.js";
 import { EventPublisher as EventPublisherAbstraction } from "../abstractions.js";
 import type { DomainEvent, IEventHandler } from "../abstractions.js";

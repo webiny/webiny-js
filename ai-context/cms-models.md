@@ -167,7 +167,7 @@ export class ObjectFieldBuilder<TShape extends z.ZodRawShape> extends FieldBuild
 ```ts
 // FieldBuilderRegistry.ts
 import { z } from "zod";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { TextFieldBuilder, ObjectFieldBuilder, type FieldBuilder } from "./FieldBuilder.js";
 import {
     FieldBuilderRegistry as RegistryAbstraction,
@@ -294,7 +294,7 @@ import type { PrivateCmsModel, CmsModelMetadata, FieldBuilderConfig } from "./ty
 // Import your existing ModelBuilder
 import { ModelBuilder } from "~/models/ModelBuilder.js";
 import { FieldBuilder } from "./FieldBuilder.js";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import {
     FieldBuilderRegistry,
     type IFieldBuilderRegistry,
@@ -469,7 +469,7 @@ export type PageFieldsSchema = InferFieldSchema<typeof PageFieldDefinitions>;
 
 ```ts
 // PrivatePage/PageModelBuilder.ts
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { PageFieldDefinitions } from "./Page.fields.js";
 import { PrivateCmsModelBuilder } from "~/cms/abstractions.js";
 import {
@@ -498,7 +498,7 @@ export const PageCmsModelBuilder = createImplementation({
 
 ```ts
 // PrivatePage/PageModelFactory.ts
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import {
     PageModelFactory as FactoryAbstraction,
     PageCmsModelBuilder,
@@ -544,7 +544,7 @@ export const PageModelFactory = createImplementation({
 ```ts
 // PrivatePage/__tests__/PageModelFactory.test.ts
 import { describe, it, expect } from "vitest";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { FieldBuilderRegistry } from "~/cms/FieldBuilderRegistry.js";
 import { PrivateCmsModelBuilder } from "~/cms/PrivateCmsModelBuilder.js";
 import { PageCmsModelBuilder } from "../PageModelBuilder.js";
@@ -814,7 +814,7 @@ describe("PageModelFactory", () => {
 
 ```ts
 // PrivatePage/__tests__/PagePublishingDecorator.ts
-import { createDecorator } from "@webiny/di-container";
+import { createDecorator } from "@webiny/di";
 import { PageCmsModelBuilder } from "~/cms/PrivatePage/abstractions.js";
 
 class PagePublishingDecoratorImpl implements PageCmsModelBuilder.Interface {
@@ -878,7 +878,7 @@ declare module "~/cms/PrivatePage/abstractions.js" {
 
 ```ts
 // PrivatePage/__tests__/PageSeoDecorator.ts
-import { createDecorator } from "@webiny/di-container";
+import { createDecorator } from "@webiny/di";
 import { PageCmsModelBuilder } from "~/cms/PrivatePage/abstractions.js";
 
 class PageSeoDecoratorImpl implements PageCmsModelBuilder.Interface {
@@ -933,7 +933,7 @@ declare module "~/cms/PrivatePage/abstractions.js" {
 
 ```ts
 // PrivatePage/abstractions.ts
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import type { IModel, IModelData } from "~/models/abstractions.js";
 import type { ICmsModelBuilder, ICmsModelFactory } from "~/cms/abstractions.js";
 import type { PageFieldsSchema } from "./Page.fields.js";
@@ -1252,7 +1252,7 @@ describe("PrivateCmsModelBuilder", () => {
 ```ts
 // abstractions.ts
 import { z } from "zod";
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import type { BaseModel } from "~/models/BaseModel.js";
 import type { IModelData } from "~/models/abstractions.js";
 import type { IPrivateCmsModelConfiguration } from "./PrivateCmsModelBuilder.js";

@@ -1,4 +1,4 @@
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { describe, expect, it } from "vitest";
 import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 import { WcpFeature } from "~/features/wcp/WcpFeature.js";

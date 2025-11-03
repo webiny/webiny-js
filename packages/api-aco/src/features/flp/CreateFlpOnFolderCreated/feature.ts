@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import { CreateFlpOnFolderCreatedHandler } from "./CreateFlpOnFolderCreatedHandler.js";
 import { CreateFlpUseCase } from "../CreateFlp/abstractions.js";
 import { FolderAfterCreateHandler } from "~/features/folders/CreateFolder/index.js";

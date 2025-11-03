@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { EventPublisher } from "~/features/eventPublisher/index.js";
 import { AuthenticationContext as Abstraction } from "./abstractions.js";
 import { Authenticator } from "../Authenticator/index.js";

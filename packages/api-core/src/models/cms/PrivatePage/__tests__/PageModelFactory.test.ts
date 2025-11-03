@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { FieldBuilderRegistry } from "~/models/cms/FieldBuilderRegistry.js";
 import { PrivateCmsModelBuilder } from "~/models/cms/PrivateCmsModelBuilder.js";
 import { PageCmsModelBuilder } from "../PageModelBuilder.js";
