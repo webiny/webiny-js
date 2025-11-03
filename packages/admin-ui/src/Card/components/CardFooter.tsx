@@ -1,13 +1,26 @@
 import * as React from "react";
-import { cn, cva } from "~/utils.js";
+import { cva } from "~/utils.js";
 import { useCardProps } from "./CardPropsProvider.js";
 
 const cardFooterVariants = cva("flex justify-between", {
     variants: {
         padding: {
-            sm: "p-md-extra",
-            md: "p-md-extra pt-md h-lg",
-            lg: "p-lg"
+            sm: "p-md",
+            md: "py-md-extra px-lg",
+            lg: "pt-lg pb-xl px-xl"
+        }
+    },
+    defaultVariants: {
+        padding: "md"
+    }
+});
+
+const emptyCardFooterVariants = cva("", {
+    variants: {
+        padding: {
+            sm: "h-lg",
+            md: "h-lg",
+            lg: "h-xl"
         }
     },
     defaultVariants: {
@@ -16,14 +29,14 @@ const cardFooterVariants = cva("flex justify-between", {
 });
 
 export const CardFooter = () => {
-    const { actionsPosition, actions, info, className, padding } = useCardProps();
+    const { actionsPosition, actions, info, padding } = useCardProps();
 
     if (!actions && !info) {
-        return null;
+        return <div className={emptyCardFooterVariants({ padding })} />;
     }
 
     return (
-        <div className={cn(cardFooterVariants({ padding }), className)}>
+        <div className={cardFooterVariants({ padding })}>
             {info && (
                 <div className={"text-sm flex items-center"}>
                     <div>{info}</div>
