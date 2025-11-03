@@ -8,13 +8,6 @@ export interface IGenericError {
     stack?: string;
 }
 
-export interface IGenericError {
-    message: string;
-    code: string | null;
-    data?: GenericRecord;
-    stack?: string;
-}
-
 export interface IWorkflowApplication {
     id: string;
     icon: ReactElement;
@@ -85,24 +78,4 @@ export interface IWorkflowState {
     currentStep: IWorkflowStateStep;
     nextStep: IWorkflowStateStep | null;
     previousStep: IWorkflowStateStep | null;
-}
-
-export interface IWorkflowStatesWidgetItemStep {
-    id: string;
-    title: string;
-    color: string;
-    description: string | undefined | null;
-    savedBy: IIdentity | null;
-    isAllowedToReview: boolean;
-}
-
-export interface IWorkflowStatesWidgetItem {
-    id: string;
-    app: string;
-    targetRevisionId: string;
-    title: string;
-    state: WorkflowStateValue;
-    savedBy: IIdentity;
-    savedOn: Date;
-    step: IWorkflowStatesWidgetItemStep;
 }
