@@ -1,4 +1,14 @@
-import type { IGenericError, IWorkflowState } from "~/types.js";
+import { type IGenericError, type IWorkflowState, WorkflowStateValue } from "~/types.js";
+import type { NonEmptyArray } from "@webiny/app/types.js";
+
+export interface IWorkflowStatesWidgetPresenterViewModelValuesItem {
+    items: IWorkflowState[];
+    total: number;
+}
+
+export interface IWorkflowStatesWidgetPresenterViewModelValues {
+    [key: string]: IWorkflowStatesWidgetPresenterViewModelValuesItem;
+}
 
 export interface IWorkflowStatesWidgetPresenterViewModel {
     type: "own" | "requested";
@@ -6,14 +16,8 @@ export interface IWorkflowStatesWidgetPresenterViewModel {
     error: IGenericError | null;
     dialogLoading: boolean;
     dialogError: IGenericError | null;
-    pending: IWorkflowState[];
-    pendingCount: number;
-    inReview: IWorkflowState[];
-    inReviewCount: number;
-    approved: IWorkflowState[];
-    approvedCount: number;
-    rejected: IWorkflowState[];
-    rejectedCount: number;
+    values: IWorkflowStatesWidgetPresenterViewModelValues;
+    states: NonEmptyArray<WorkflowStateValue>;
     showStartDialog: IWorkflowState | null;
     showStartSuccessDialog: IWorkflowState | null;
     showApproveDialog: IWorkflowState | null;

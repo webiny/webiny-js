@@ -23,11 +23,12 @@ export const WorkflowStatesRequestedWidget = (props: IWorkflowStatesRequestedWid
     }
 
     return (
-        <WorkflowStatesProvider type={"requested"} client={client}>
-            <WorkflowStateWidgetCard
-                title={<>Workflow States assigned to current user</>}
-                tabs={[WorkflowStateValue.pending, WorkflowStateValue.inReview]}
-            />
+        <WorkflowStatesProvider
+            type={"requested"}
+            client={client}
+            states={[WorkflowStateValue.pending, WorkflowStateValue.inReview]}
+        >
+            <WorkflowStateWidgetCard title={<>Workflow States assigned to current user</>} />
         </WorkflowStatesProvider>
     );
 };

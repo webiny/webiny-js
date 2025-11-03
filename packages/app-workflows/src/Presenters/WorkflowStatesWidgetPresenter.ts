@@ -4,14 +4,17 @@ import type {
 } from "~/Repositories/abstractions/WorkflowStatesWidgetRepository.js";
 import type {
     IWorkflowStatesWidgetPresenter,
-    IWorkflowStatesWidgetPresenterViewModel
+    IWorkflowStatesWidgetPresenterViewModel,
+    IWorkflowStatesWidgetPresenterViewModelValues
 } from "./abstractions/WorkflowStatesWidgetPresenter.js";
 import { type IWorkflowState, WorkflowStateValue } from "~/types.js";
-import { makeAutoObservable, observable, runInAction, toJS } from "mobx";
+import { makeAutoObservable, observable, runInAction, set, toJS } from "mobx";
+import type { NonEmptyArray } from "@webiny/app/types.js";
 
 export interface IWorkflowStatesWidgetPresenterParams {
     repository: IWorkflowStatesWidgetRepository;
     type: "own" | "requested";
+    states: NonEmptyArray<WorkflowStateValue>;
 }
 
 interface ITotals {
@@ -40,26 +43,21 @@ const mapListStatesResponse = (key: WorkflowStateValue) => {
     };
 };
 
-const mapPromiseAllResponse = (results: IResultData[]): IWorkflowStatesData => {
-    return results.reduce<IWorkflowStatesData>(
-        (output, result) => {
-            return {
-                items: output.items.concat(result.items),
-                totals: output.totals.concat({
-                    key: result.key,
-                    value: result.totalCount
-                })
-            };
-        },
-        {
-            items: [],
-            totals: []
-        }
-    );
+const mapPromiseAllResponse = (
+    results: IResultData[]
+): IWorkflowStatesWidgetPresenterViewModelValues => {
+    return results.reduce<IWorkflowStatesWidgetPresenterViewModelValues>((output, result) => {
+        output[result.key] = {
+            items: result.items,
+            total: result.totalCount
+        };
+        return output;
+    }, {});
 };
 
 export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPresenter {
-    readonly #type: "own" | "requested";
+    readonly #type;
+    readonly #states;
     private readonly repository;
     private readonly items;
     private readonly totals;
@@ -73,25 +71,15 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         | null;
     private state: IWorkflowState | null;
 
-    public get vm(): IWorkflowStatesWidgetPresenterViewModel {
-        const pending = this.totals.find(t => t.key === WorkflowStateValue.pending);
-        const inReview = this.totals.find(t => t.key === WorkflowStateValue.inReview);
-        const approved = this.totals.find(t => t.key === WorkflowStateValue.approved);
-        const rejected = this.totals.find(t => t.key === WorkflowStateValue.rejected);
-        const items = toJS(this.items);
+    private values;
 
+    public get vm(): IWorkflowStatesWidgetPresenterViewModel {
         return {
             type: this.#type,
-            loading: this.repository.loading,
-            error: this.repository.error,
-            pending: items.filter(item => item.state === WorkflowStateValue.pending),
-            inReview: items.filter(item => item.state === WorkflowStateValue.inReview),
-            approved: items.filter(item => item.state === WorkflowStateValue.approved),
-            rejected: items.filter(item => item.state === WorkflowStateValue.rejected),
-            pendingCount: pending?.value || 0,
-            inReviewCount: inReview?.value || 0,
-            approvedCount: approved?.value || 0,
-            rejectedCount: rejected?.value || 0,
+            states: this.#states,
+            loading: toJS(this.repository.loading),
+            error: toJS(this.repository.error),
+            values: toJS(this.values),
             dialogLoading: this.repository.actionLoading,
             dialogError: this.repository.actionError,
             showStartDialog: this.dialog === "start" && this.state ? this.state : null,
@@ -109,6 +97,8 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
     public constructor(params: IWorkflowStatesWidgetPresenterParams) {
         this.repository = params.repository;
         this.#type = params.type;
+        this.#states = params.states;
+        this.values = observable.object<IWorkflowStatesWidgetPresenterViewModelValues>({});
         this.items = observable.array<IWorkflowState>([]);
         this.totals = observable.array<ITotals>([]);
         this.dialog = null;
@@ -123,55 +113,36 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         const result = await (this.#type === "requested" ? this.initRequested() : this.initOwn());
 
         runInAction(() => {
-            this.items.replace(result.items);
-            this.totals.replace(result.totals);
+            for (const key in result) {
+                set(this.values, key, result[key]);
+            }
         });
     }
 
     private async initOwn() {
-        return await Promise.all([
-            this.repository
-                .listOwnStates({
-                    state: WorkflowStateValue.pending,
-                    limit: 5
-                })
-                .then(mapListStatesResponse(WorkflowStateValue.pending)),
-            this.repository
-                .listOwnStates({
-                    state: WorkflowStateValue.inReview,
-                    limit: 5
-                })
-                .then(mapListStatesResponse(WorkflowStateValue.inReview)),
-            this.repository
-                .listOwnStates({
-                    state: WorkflowStateValue.approved,
-                    limit: 5
-                })
-                .then(mapListStatesResponse(WorkflowStateValue.approved)),
-            this.repository
-                .listOwnStates({
-                    state: WorkflowStateValue.rejected,
-                    limit: 5
-                })
-                .then(mapListStatesResponse(WorkflowStateValue.rejected))
-        ]).then(mapPromiseAllResponse);
+        return await Promise.all(
+            this.#states.map(state => {
+                return this.repository
+                    .listOwnStates({
+                        state,
+                        limit: 5
+                    })
+                    .then(mapListStatesResponse(state));
+            })
+        ).then(mapPromiseAllResponse);
     }
 
     private async initRequested() {
-        return await Promise.all([
-            this.repository
-                .listRequestedStates({
-                    state: WorkflowStateValue.inReview,
-                    limit: 5
-                })
-                .then(mapListStatesResponse(WorkflowStateValue.inReview)),
-            this.repository
-                .listRequestedStates({
-                    state: WorkflowStateValue.pending,
-                    limit: 5
-                })
-                .then(mapListStatesResponse(WorkflowStateValue.pending))
-        ]).then(mapPromiseAllResponse);
+        return await Promise.all(
+            this.#states.map(state => {
+                return this.repository
+                    .listRequestedStates({
+                        state,
+                        limit: 5
+                    })
+                    .then(mapListStatesResponse(state));
+            })
+        ).then(mapPromiseAllResponse);
     }
 
     private increaseTotals(key: WorkflowStateValue): void {

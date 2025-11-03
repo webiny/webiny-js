@@ -10,7 +10,6 @@ import { WorkflowStateValue } from "~/types.js";
 
 interface IWorkflowStatesWidgetCardTabsProps {
     presenter: IWorkflowStatesWidgetPresenter;
-    tabs: WorkflowStateValue[];
 }
 
 interface IRenderTabProps {
@@ -18,69 +17,37 @@ interface IRenderTabProps {
     vm: IWorkflowStatesWidgetPresenterViewModel;
 }
 
+const names = {
+    [WorkflowStateValue.pending]: "Pending",
+    [WorkflowStateValue.inReview]: "In Review",
+    [WorkflowStateValue.approved]: "Approved",
+    [WorkflowStateValue.rejected]: "Rejected"
+};
+
 const RenderTab = (props: IRenderTabProps) => {
     const { tab, vm } = props;
-    switch (tab) {
-        case WorkflowStateValue.pending:
-            return (
-                <Tabs.Tab
-                    key="pending"
-                    value="pending"
-                    trigger={`Pending (${vm.pendingCount})`}
-                    content={
-                        <>
-                            <WorkflowStateList states={vm.pending} />
-                        </>
-                    }
-                />
-            );
-        case WorkflowStateValue.inReview:
-            return (
-                <Tabs.Tab
-                    key="inReview"
-                    value="inReview"
-                    trigger={`In Review (${vm.inReviewCount})`}
-                    content={
-                        <>
-                            <WorkflowStateList states={vm.inReview} />
-                        </>
-                    }
-                />
-            );
-        case WorkflowStateValue.approved:
-            return (
-                <Tabs.Tab
-                    key="approved"
-                    value="approved"
-                    trigger={`Approved (${vm.approvedCount})`}
-                    content={
-                        <>
-                            <WorkflowStateList states={vm.approved} />
-                        </>
-                    }
-                />
-            );
-        case WorkflowStateValue.rejected:
-            return (
-                <Tabs.Tab
-                    key="rejected"
-                    value="rejected"
-                    trigger={`Rejected (${vm.rejectedCount})`}
-                    content={
-                        <>
-                            <WorkflowStateList states={vm.rejected} />
-                        </>
-                    }
-                />
-            );
+    const value = vm.values[tab];
+    if (!value) {
+        return null;
     }
+    return (
+        <Tabs.Tab
+            key={tab}
+            value={tab}
+            trigger={`${names[tab] || `Unknown tab ${tab}`} (${value.total})`}
+            content={
+                <>
+                    <WorkflowStateList states={value.items} />
+                </>
+            }
+        />
+    );
 };
 
 const getActiveTab = (
     vm: IWorkflowStatesWidgetPresenterViewModel,
-    tabs: WorkflowStateValue[]
 ): string | undefined => {
-    for (const tab of tabs) {
+    for (const tab of vm.states) {
         const key = `${tab}Count` as keyof IWorkflowStatesWidgetPresenterViewModel;
         const value = vm[key];
         if (typeof value === "number" && value > 0) {
@@ -92,17 +59,17 @@ const getActiveTab = (
 
 export const WorkflowStatesWidgetCardTabs = observer(
     (props: IWorkflowStatesWidgetCardTabsProps) => {
-        const { presenter, tabs } = props;
+        const { presenter } = props;
 
         const tabComponents = useMemo(() => {
-            return tabs
+            return presenter.vm.states
                 .map(tab => {
                     return <RenderTab key={tab} tab={tab} vm={presenter.vm} />;
                 })
                 .filter((tab): tab is React.JSX.Element => tab !== null);
-        }, [tabs, presenter.vm]);
+        }, [presenter.vm]);
 
-        const activeTab = getActiveTab(presenter.vm, tabs);
+        const activeTab = getActiveTab(presenter.vm);
 
         if (presenter.vm.loading) {
             return <Loader />;

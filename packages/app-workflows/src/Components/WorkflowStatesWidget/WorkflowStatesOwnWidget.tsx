@@ -23,16 +23,17 @@ export const WorkflowStatesOwnWidget = (props: IWorkflowStatesOwnWidgetProps) =>
     }
 
     return (
-        <WorkflowStatesProvider type={"own"} client={client}>
-            <WorkflowStateWidgetCard
-                title={<>Workflow States requested by current user</>}
-                tabs={[
-                    WorkflowStateValue.pending,
-                    WorkflowStateValue.inReview,
-                    WorkflowStateValue.approved,
-                    WorkflowStateValue.rejected
-                ]}
-            />
+        <WorkflowStatesProvider
+            type={"own"}
+            client={client}
+            states={[
+                WorkflowStateValue.pending,
+                WorkflowStateValue.inReview,
+                WorkflowStateValue.approved,
+                WorkflowStateValue.rejected
+            ]}
+        >
+            <WorkflowStateWidgetCard title={<>Workflow States requested by current user</>} />
         </WorkflowStatesProvider>
     );
 };

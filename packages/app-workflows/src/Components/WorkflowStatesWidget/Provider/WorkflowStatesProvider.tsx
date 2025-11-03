@@ -4,6 +4,8 @@ import React, { useMemo } from "react";
 import { WorkflowStatesWidgetGateway } from "~/Gateways/index.js";
 import { WorkflowStatesWidgetRepository } from "~/Repositories/index.js";
 import type ApolloClient from "apollo-client";
+import type { NonEmptyArray } from "@webiny/app/types.js";
+import type { WorkflowStateValue } from "~/types.js";
 
 export interface IWorkflowStatesWidgetContext {
     presenter: IWorkflowStatesWidgetPresenter;
@@ -17,10 +19,11 @@ interface IWorkflowStatesProviderProps {
     type: "own" | "requested";
     children: React.ReactNode;
     client: ApolloClient<object>;
+    states: NonEmptyArray<WorkflowStateValue>;
 }
 
 export const WorkflowStatesProvider = (props: IWorkflowStatesProviderProps) => {
-    const { children, client, type } = props;
+    const { children, client, type, states } = props;
 
     const presenter = useMemo(() => {
         const gateway = new WorkflowStatesWidgetGateway({
@@ -31,7 +34,8 @@ export const WorkflowStatesProvider = (props: IWorkflowStatesProviderProps) => {
         });
         return new WorkflowStatesWidgetPresenter({
             repository,
-            type
+            type,
+            states
         });
     }, []);
 
