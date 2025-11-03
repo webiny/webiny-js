@@ -1,7 +1,6 @@
 import React from "react";
 import type { IWorkflowState } from "~/types.js";
 import { Accordion } from "@webiny/admin-ui";
-import { Color } from "~/Components/Workflows/Step/Color.js";
 import { WorkflowStateRowOptions } from "./WorkflowStateRowOptions.js";
 import { WorkflowStateRowDescription } from "../Row/WorkflowStateRowDescription.js";
 
@@ -15,10 +14,10 @@ export const WorkflowStateRow = (props: IWorkflowStateRowProps) => {
     return (
         <Accordion.Item
             title={state.title}
+            subtitle={<WorkflowStateRowDescription state={state} />}
             open={false}
             interactive={false}
-            description={<WorkflowStateRowDescription state={state} />}
-            icon={<Color color={state.currentStep.color} />}
+            colorMark={state.currentStep.color}
             actions={<WorkflowStateRowOptions state={state} />}
         >
             <></>

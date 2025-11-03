@@ -1,6 +1,5 @@
 import type { GenericRecord, NonEmptyArray } from "@webiny/app/types.js";
 import type { ReactElement } from "react";
-import type { GenericRecord } from "@webiny/app/types.js";
 
 export interface IGenericError {
     message: string;

@@ -17,8 +17,6 @@ const Welcome = () => {
     
     const client = useApolloClient();
 
-    const client = useApolloClient();
-
     if (!identity) {
         return null;
     }
