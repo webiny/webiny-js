@@ -4,7 +4,8 @@ import type {
     IWorkflowStateRepositoryFindOneParams,
     IWorkflowStateRepositoryRejectParams,
     IWorkflowStateRepositoryRequestReviewParams,
-    IWorkflowStateRepositoryStartParams
+    IWorkflowStateRepositoryStartParams,
+    IWorkflowStateRepositoryTakeOverParams
 } from "./abstractions/WorkflowStateRepository.js";
 import type {
     IWorkflowStateError,
@@ -91,6 +92,21 @@ export class WorkflowStateRepository implements IWorkflowStateRepository {
             this._error = result.error;
             this._loading = false;
         });
+    }
+
+    public async takeOver(
+        params: IWorkflowStateRepositoryTakeOverParams
+    ): Promise<IWorkflowState | null> {
+        runInAction(() => {
+            this._loading = true;
+            this._error = null;
+        });
+        const result = await this.gateway.takeOverWorkflowStateStep(params);
+        runInAction(() => {
+            this._error = result.error;
+            this._loading = false;
+        });
+        return result.data;
     }
 
     public async findOne(

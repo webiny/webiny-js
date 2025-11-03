@@ -39,6 +39,8 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         | "reject"
         | "reject:success"
         | "comment"
+        | "takeOver"
+        | "takeOver:success"
         | null = null;
     step: IWorkflowStateStepModel | null = null;
 
@@ -190,6 +192,19 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         });
     };
 
+    takeOver = async () => {
+        const item = await this.repository.takeOver({
+            id: this.state!.id
+        });
+        runInAction(() => {
+            this.state = item ? WorkflowStateModel.create(item) : null;
+            if (!item) {
+                return;
+            }
+            this.dialog = "takeOver:success";
+        });
+    };
+
     showCancelReviewDialog = () => {
         runInAction(() => {
             this.dialog = "cancelReview";
@@ -235,6 +250,12 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         runInAction(() => {
             this.step = step;
             this.dialog = "comment";
+        });
+    };
+
+    showTakeOverDialog = () => {
+        runInAction(() => {
+            this.dialog = "takeOver";
         });
     };
 }

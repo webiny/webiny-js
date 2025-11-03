@@ -44,9 +44,7 @@ const RenderTab = (props: IRenderTabProps) => {
     );
 };
 
-const getActiveTab = (
-    vm: IWorkflowStatesWidgetPresenterViewModel,
-): string | undefined => {
+const getActiveTab = (vm: IWorkflowStatesWidgetPresenterViewModel): string | undefined => {
     for (const tab of vm.states) {
         const key = `${tab}Count` as keyof IWorkflowStatesWidgetPresenterViewModel;
         const value = vm[key];

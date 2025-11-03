@@ -24,6 +24,8 @@ export interface IWorkflowStatePresenterViewModel {
         | "reject"
         | "reject:success"
         | "comment"
+        | "takeOver"
+        | "takeOver:success"
         | null;
 }
 
@@ -37,8 +39,10 @@ export interface IWorkflowStatePresenter {
     showApproveDialog(): void;
     showRejectDialog(): void;
     showCommentDialog(id: string): void;
+    showTakeOverDialog(): void;
     start(): void;
     approve(comment?: string): void;
     reject(comment: string): void;
     cancel(): void;
+    takeOver(): void;
 }

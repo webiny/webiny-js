@@ -14,25 +14,41 @@ export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(
         const { step } = presenter.vm;
         if (!step?.isAllowedToReview || step.state !== WorkflowStateValue.inReview) {
             return <Original {...props} />;
+        } else if (!step.isOwner) {
+            const displayName =
+                step.savedBy?.displayName || "unknown: " + step.savedBy?.id || "N/A";
+            return (
+                <Alert
+                    actions={
+                        <Alert.Action
+                            text={"Take Over"}
+                            onClick={presenter.showTakeOverDialog}
+                            className={"ml-sm"}
+                        />
+                    }
+                >
+                    This item is currently under <strong>{step.title}</strong> review, but you are
+                    not the owner of the review. Owner is {displayName}. You can take it over if you
+                    want to.
+                </Alert>
+            );
         }
 
         return (
-            <>
-                <Alert
-                    actions={
-                        <>
-                            <Alert.Action text={"Approve"} onClick={presenter.showApproveDialog} />
-                            <Alert.Action
-                                text={"Reject"}
-                                onClick={presenter.showRejectDialog}
-                                className={"ml-sm"}
-                            />
-                        </>
-                    }
-                >
-                    This item is currently under <strong>{step.title}</strong> review.
-                </Alert>
-            </>
+            <Alert
+                actions={
+                    <>
+                        <Alert.Action text={"Approve"} onClick={presenter.showApproveDialog} />
+                        <Alert.Action
+                            text={"Reject"}
+                            onClick={presenter.showRejectDialog}
+                            className={"ml-sm"}
+                        />
+                    </>
+                }
+            >
+                This item is currently under <strong>{step.title}</strong> review.
+            </Alert>
         );
     });
 });

@@ -10,7 +10,8 @@ import {
     RejectSuccessDialog,
     RequestReviewDialog,
     StartDialog,
-    StartSuccessDialog
+    StartSuccessDialog,
+    TakeOverDialog
 } from "./Dialogs/index.js";
 
 export const WorkflowStateBarDialogs = observer(() => {
@@ -35,6 +36,8 @@ export const WorkflowStateBarDialogs = observer(() => {
             return <RejectSuccessDialog presenter={presenter} />;
         case "comment":
             return <CommentDialog presenter={presenter} />;
+        case "takeOver":
+            return <TakeOverDialog presenter={presenter} />;
     }
     return null;
 });

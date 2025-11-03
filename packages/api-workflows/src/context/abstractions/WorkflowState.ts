@@ -41,12 +41,13 @@ export interface IWorkflowStateRecord<
     savedBy: IWorkflowStateIdentity;
 }
 
-export interface IWorkflowStateRecordStepWithPermissions extends IWorkflowStateRecordStep {
+export interface IEnrichedWorkflowStateRecordStep extends IWorkflowStateRecordStep {
+    isOwner: boolean;
     isAllowedToReview: boolean;
 }
 
 export interface IWorkflowState<
-    T extends IWorkflowStateRecordStepWithPermissions = IWorkflowStateRecordStepWithPermissions
+    T extends IEnrichedWorkflowStateRecordStep = IEnrichedWorkflowStateRecordStep
 > extends IWorkflowStateRecord<T> {
     readonly done: boolean;
     currentStep: T;
@@ -55,8 +56,9 @@ export interface IWorkflowState<
 }
 
 export interface IWorkflowStateModel extends IWorkflowState {
-    getActiveStep(): IWorkflowStateRecordStepWithPermissions | null;
+    getActiveStep(): IEnrichedWorkflowStateRecordStep | null;
     start(): Promise<void>;
+    takeOver(): Promise<void>;
     approve(comment?: string): Promise<void>;
     reject(comment: string): Promise<void>;
 }

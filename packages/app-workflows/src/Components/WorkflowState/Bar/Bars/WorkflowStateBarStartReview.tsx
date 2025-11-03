@@ -23,17 +23,15 @@ export const WorkflowStateBarStartReview = WorkflowStateBarComponent.createDecor
         }
 
         return (
-            <>
-                <Alert
-                    actions={
-                        <>
-                            <Alert.Action text={"Start Review"} onClick={presenter.start} />
-                        </>
-                    }
-                >
-                    You can start the review for <strong>{step.title}</strong>.
-                </Alert>
-            </>
+            <Alert
+                actions={
+                    <>
+                        <Alert.Action text={"Start Review"} onClick={presenter.start} />
+                    </>
+                }
+            >
+                You can start the review for <strong>{step.title}</strong>.
+            </Alert>
         );
     });
 });

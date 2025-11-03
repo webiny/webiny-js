@@ -11,6 +11,7 @@ import { getTargetWorkflowStateValidation } from "~/validation/getTargetWorkflow
 import { getWorkflowStateValidation } from "~/validation/getWorkflowState.js";
 import type { IWorkflowStateModel } from "~/context/abstractions/WorkflowState.js";
 import { listWidgetWorkflowStatesValidation } from "~/validation/listWidgetWorkflowStates.js";
+import { takeOverWorkflowStateStepValidation } from "~/validation/takeOverWorkflowStateStep.js";
 
 export const createWorkflowStateSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -50,6 +51,8 @@ export const createWorkflowStateSchema = () => {
                 savedBy: WorkflowStateIdentity
                 # current user can take action on this step?
                 isAllowedToReview: Boolean!
+                # is current user an owner of the step?
+                isOwner: Boolean!
             }
 
             type WorkflowState {
@@ -116,6 +119,11 @@ export const createWorkflowStateSchema = () => {
                 error: WorkflowError
             }
 
+            type TakeOverWorkflowStateStepResponse {
+                data: WorkflowState
+                error: WorkflowError
+            }
+
             type ListWidgetWorkflowStatesResponse {
                 data: [WorkflowState!]
                 meta: ListWorkflowsMeta
@@ -156,6 +164,7 @@ export const createWorkflowStateSchema = () => {
                 approveWorkflowStateStep(id: ID!, comment: String): WorkflowStateResponse!
                 rejectWorkflowStateStep(id: ID!, comment: String!): WorkflowStateResponse!
                 cancelWorkflowState(id: ID!): CancelWorkflowStateResponse!
+                takeOverWorkflowStateStep(id: ID!): TakeOverWorkflowStateStepResponse!
             }
         `,
         resolvers: {
@@ -272,6 +281,17 @@ export const createWorkflowStateSchema = () => {
                             throw createZodError(result.error);
                         }
                         await context.workflowState.cancelState(result.data.id);
+                        return true;
+                    });
+                },
+                takeOverWorkflowStateStep: (_, args, context) => {
+                    return resolve<boolean>(async () => {
+                        const result =
+                            await takeOverWorkflowStateStepValidation.safeParseAsync(args);
+                        if (!result.success) {
+                            throw createZodError(result.error);
+                        }
+                        await context.workflowState.takeOverStateStep(result.data.id);
                         return true;
                     });
                 }

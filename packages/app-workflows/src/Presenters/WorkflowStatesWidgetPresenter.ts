@@ -23,7 +23,6 @@ interface IResultData {
     totalCount: number;
 }
 
-
 const mapListStatesResponse = (key: WorkflowStateValue) => {
     return (input: IWorkflowStatesWidgetRepositoryListResult): IResultData => {
         return {
@@ -60,8 +59,7 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         | "start:success"
         | null;
     private state: IWorkflowState | null;
-
-    private values;
+    private readonly values;
 
     public get vm(): IWorkflowStatesWidgetPresenterViewModel {
         return {

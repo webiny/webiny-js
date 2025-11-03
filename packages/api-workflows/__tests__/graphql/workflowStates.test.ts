@@ -3,7 +3,7 @@ import { createGraphQLHandler } from "~tests/__helpers/handler.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 import {
     type IWorkflowStateRecord,
-    type IWorkflowStateRecordStepWithPermissions,
+    type IEnrichedWorkflowStateRecordStep,
     WorkflowStateRecordState
 } from "~/context/abstractions/WorkflowState.js";
 import { FULL_ACCESS_TEAM_ID, UNKNOWN_TEAM_ID } from "@webiny/testing";
@@ -689,7 +689,7 @@ describe("workflow states graphql", () => {
          * Reviewer handler (identity which created a workflow state) should not have permission to review.
          */
         const workflowState = createWorkflowStateResponse.data?.workflows?.createWorkflowState
-            ?.data as IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions>;
+            ?.data as IWorkflowStateRecord<IEnrichedWorkflowStateRecordStep>;
 
         expect(workflowState.steps[0]).toMatchObject({
             id: "step-1",
@@ -708,7 +708,7 @@ describe("workflow states graphql", () => {
             id: workflowState.id
         });
         const fetchedWorkflowState = getWorkflowStateResponse.data?.workflows?.getWorkflowState
-            ?.data as IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions>;
+            ?.data as IWorkflowStateRecord<IEnrichedWorkflowStateRecordStep>;
 
         expect(fetchedWorkflowState.steps[0]).toMatchObject({
             id: "step-1",

@@ -59,6 +59,7 @@ export interface IWorkflowStateStep extends IWorkflowStep {
     comment: string | null | undefined;
     savedBy: IIdentity | null | undefined;
     isAllowedToReview: boolean;
+    isOwner: boolean;
 }
 
 export interface IWorkflowState {

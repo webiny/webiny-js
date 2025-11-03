@@ -74,6 +74,15 @@ export interface IWorkflowStateGatewayRejectStepParams {
     comment: string;
 }
 
+export interface IWorkflowStateGatewayTakeOverStepParams {
+    id: string;
+}
+
+export interface IWorkflowStateGatewayTakeOverStepResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStateError | null;
+}
+
 export interface IWorkflowStateGatewayRequestReviewStepParams {
     app: string;
     targetRevisionId: string;
@@ -103,6 +112,9 @@ export interface IWorkflowStateGateway {
     rejectWorkflowStateStep(
         params: IWorkflowStateGatewayRejectStepParams
     ): Promise<IWorkflowStateGatewayRejectStepResponse>;
+    takeOverWorkflowStateStep(
+        params: IWorkflowStateGatewayTakeOverStepParams
+    ): Promise<IWorkflowStateGatewayTakeOverStepResponse>;
     cancelWorkflowState(id: string): Promise<IWorkflowStateGatewayCancelStateResponse>;
     getTargetWorkflowState(
         app: string,

@@ -137,4 +137,5 @@ export interface IWorkflowStateContext {
     startStateStep(id: string): Promise<IWorkflowStateModel>;
     approveStateStep(id: string, comment?: string): Promise<IWorkflowStateModel>;
     rejectStateStep(id: string, comment: string): Promise<IWorkflowStateModel>;
+    takeOverStateStep(id: string): Promise<IWorkflowStateModel>;
 }

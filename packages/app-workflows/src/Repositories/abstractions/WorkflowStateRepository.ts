@@ -21,6 +21,10 @@ export interface IWorkflowStateRepositoryRejectParams {
     comment: string;
 }
 
+export interface IWorkflowStateRepositoryTakeOverParams {
+    id: string;
+}
+
 export interface IWorkflowStateRepositoryFindOneParams {
     app: string;
     targetRevisionId: string;
@@ -36,6 +40,7 @@ export interface IWorkflowStateRepository {
     approve(params: IWorkflowStateRepositoryApproveParams): Promise<IWorkflowState | null>;
     reject(params: IWorkflowStateRepositoryRejectParams): Promise<IWorkflowState | null>;
     cancel(id: string): Promise<void>;
+    takeOver(params: IWorkflowStateRepositoryTakeOverParams): Promise<IWorkflowState | null>;
     getTargetState(app: string, targetRevisionId: string): Promise<IWorkflowState | null>;
     findOne(params: IWorkflowStateRepositoryFindOneParams): Promise<IWorkflowState | null>;
 }

@@ -12,23 +12,28 @@ import type {
     IWorkflowStateGatewayRequestReviewStepParams,
     IWorkflowStateGatewayRequestReviewStepResponse,
     IWorkflowStateGatewayStartStepParams,
-    IWorkflowStateGatewayStartStepResponse
+    IWorkflowStateGatewayStartStepResponse,
+    IWorkflowStateGatewayTakeOverStepParams,
+    IWorkflowStateGatewayTakeOverStepResponse
 } from "./abstraction/WorkflowStateGateway.js";
-import type {
-    IApproveWorkflowStateStepResponse,
-    IApproveWorkflowStateStepVariables,
-    ICancelWorkflowStateResponse,
-    ICancelWorkflowStateVariables,
-    ICreateWorkflowStateResponse,
-    ICreateWorkflowStateVariables,
-    IGetTargetWorkflowStateResponse,
-    IGetTargetWorkflowStateVariables,
-    IListWorkflowStatesResponse,
-    IListWorkflowStatesVariables,
-    IRejectWorkflowStateStepResponse,
-    IRejectWorkflowStateStepVariables,
-    IStartWorkflowStateStepResponse,
-    IStartWorkflowStateStepVariables
+import {
+    type IApproveWorkflowStateStepResponse,
+    type IApproveWorkflowStateStepVariables,
+    type ICancelWorkflowStateResponse,
+    type ICancelWorkflowStateVariables,
+    type ICreateWorkflowStateResponse,
+    type ICreateWorkflowStateVariables,
+    type IGetTargetWorkflowStateResponse,
+    type IGetTargetWorkflowStateVariables,
+    type IListWorkflowStatesResponse,
+    type IListWorkflowStatesVariables,
+    type IRejectWorkflowStateStepResponse,
+    type IRejectWorkflowStateStepVariables,
+    type IStartWorkflowStateStepResponse,
+    type IStartWorkflowStateStepVariables,
+    type ITakeOverWorkflowStateStepResponse,
+    type ITakeOverWorkflowStateStepVariables,
+    TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION
 } from "./graphql/workflowStates.js";
 import {
     APPROVE_WORKFLOW_STATE_STEP_MUTATION,
@@ -123,6 +128,32 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
             return {
                 data: result.data?.workflows.rejectWorkflowStateStep.data || null,
                 error: result.data?.workflows.rejectWorkflowStateStep.error || null
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: WebinyError.from(ex)
+            };
+        }
+    }
+
+    public async takeOverWorkflowStateStep(
+        params: IWorkflowStateGatewayTakeOverStepParams
+    ): Promise<IWorkflowStateGatewayTakeOverStepResponse> {
+        const { id } = params;
+        try {
+            const result = await this.client.mutate<
+                ITakeOverWorkflowStateStepResponse,
+                ITakeOverWorkflowStateStepVariables
+            >({
+                mutation: TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION,
+                variables: {
+                    id
+                }
+            });
+            return {
+                data: result.data?.workflows.takeOverWorkflowStateStep.data || null,
+                error: result.data?.workflows.takeOverWorkflowStateStep.error || null
             };
         } catch (ex) {
             return {

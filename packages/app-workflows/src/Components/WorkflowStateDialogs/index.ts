@@ -4,6 +4,7 @@ export { CancelReviewDialog } from "./CancelReviewDialog.js";
 export { CommentDialog } from "./CommentDialog.js";
 export { RejectDialog } from "./RejectDialog.js";
 export { RejectSuccessDialog } from "./RejectSuccessDialog.js";
+export { RequestReviewDialog } from "./RequestReviewDialog.js";
 export { StartDialog } from "./StartDialog.js";
 export { StartSuccessDialog } from "./StartSuccessDialog.js";
-export { RequestReviewDialog } from "./RequestReviewDialog.js";
+export { TakeOverDialog } from "./TakeOverDialog.js";

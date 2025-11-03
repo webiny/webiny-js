@@ -39,6 +39,7 @@ const WORKFLOW_STATE_STEP_FIELDS = `
     }
     state
     isAllowedToReview
+    isOwner
 }
 `;
 
@@ -166,10 +167,33 @@ export const REJECT_WORKFLOW_STATE_STEP_MUTATION = gql`
             rejectWorkflowStateStep(id: $id, comment: $comment) {
                 data ${WORKFLOW_STATE}
                 ${ERROR_FIELD}
-                
             }
         }
     }`;
+
+export interface ITakeOverWorkflowStateStepVariables {
+    id: string;
+}
+
+export interface ITakeOverWorkflowStateStepResponse {
+    workflows: {
+        takeOverWorkflowStateStep: {
+            data: IWorkflowState | null;
+            error: IWorkflowStateError | null;
+        };
+    };
+}
+
+export const TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION = gql`
+    mutation TakeOverWorkflowStateStep($id: ID!) {
+        workflows {
+            takeOverWorkflowStateStep(id: $id) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
 
 export interface ICancelWorkflowStateVariables {
     id: string;

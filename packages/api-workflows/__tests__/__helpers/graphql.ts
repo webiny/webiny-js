@@ -8,7 +8,7 @@ import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 import type {
     IWorkflowState,
     IWorkflowStateRecord,
-    IWorkflowStateRecordStepWithPermissions
+    IEnrichedWorkflowStateRecordStep
 } from "~/context/abstractions/WorkflowState.js";
 import type { IWorkflowStateContextListStatesParams } from "~/context/abstractions/WorkflowStateContext.js";
 
@@ -223,7 +223,7 @@ export interface ICreateWorkflowStateResponse {
     data: {
         workflows: {
             createWorkflowState: {
-                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
+                data: IWorkflowStateRecord<IEnrichedWorkflowStateRecordStep> | null;
                 error: IWorkflowError | null;
             };
         };
@@ -250,7 +250,7 @@ export interface IGetTargetWorkflowStateResponse {
     data: {
         workflows: {
             getTargetWorkflowState: {
-                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
+                data: IWorkflowStateRecord<IEnrichedWorkflowStateRecordStep> | null;
                 error: IWorkflowError | null;
             };
         };
@@ -274,7 +274,7 @@ export interface IListTargetWorkflowStatesResponse {
     data: {
         workflows: {
             listWorkflowStates: {
-                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions>[] | null;
+                data: IWorkflowStateRecord<IEnrichedWorkflowStateRecordStep>[] | null;
                 meta: IMeta | null;
                 error: IWorkflowError | null;
             };
@@ -370,7 +370,7 @@ export interface IRejectWorkflowStateStepResponse {
     data: {
         workflows: {
             rejectWorkflowStateStep: {
-                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
+                data: IWorkflowStateRecord<IEnrichedWorkflowStateRecordStep> | null;
                 error: IWorkflowError | null;
             };
         };
@@ -422,7 +422,7 @@ export interface IGetWorkflowStateResponse {
     data: {
         workflows: {
             getWorkflowState: {
-                data: IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> | null;
+                data: IWorkflowStateRecord<IEnrichedWorkflowStateRecordStep> | null;
                 error: IWorkflowError | null;
             };
         };

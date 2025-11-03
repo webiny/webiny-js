@@ -443,6 +443,12 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         return state;
     }
 
+    public async takeOverStateStep(id: string): Promise<IWorkflowStateModel> {
+        const state = await this.getState(id);
+        await state.takeOver();
+        return state;
+    }
+
     private async fetchOneByTargetRevisionId(
         app: string,
         targetRevisionId: string

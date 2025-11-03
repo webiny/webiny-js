@@ -1,10 +1,10 @@
 import { Context } from "~/types.js";
 import {
+    type IEnrichedWorkflowStateRecordStep,
     type IWorkflowStateIdentity,
     type IWorkflowStateModel,
     type IWorkflowStateRecord,
     type IWorkflowStateRecordStep,
-    type IWorkflowStateRecordStepWithPermissions,
     WorkflowStateRecordState
 } from "../abstractions/WorkflowState.js";
 import { WebinyError } from "@webiny/error";
@@ -69,7 +69,7 @@ export class WorkflowState implements IWorkflowStateModel {
 
     public get steps() {
         return this.#record.steps.map(step => {
-            return this.enrichStepWithPermissions({
+            return this.enrichStep({
                 createdBy: this.#record.createdBy,
                 step
             });
@@ -104,7 +104,7 @@ export class WorkflowState implements IWorkflowStateModel {
      * - first pending step
      * - last approved step
      */
-    public get currentStep(): IWorkflowStateRecordStepWithPermissions {
+    public get currentStep(): IEnrichedWorkflowStateRecordStep {
         const steps = this.steps;
         const inReview = steps.find(step => step.state === WorkflowStateRecordState.inReview);
         if (inReview) {
@@ -134,7 +134,7 @@ export class WorkflowState implements IWorkflowStateModel {
         });
     }
 
-    public get nextStep(): IWorkflowStateRecordStepWithPermissions | null {
+    public get nextStep(): IEnrichedWorkflowStateRecordStep | null {
         const steps = this.steps;
         const currentStep = this.currentStep;
         const currentIndex = steps.findIndex(step => step.id === currentStep.id);
@@ -144,7 +144,7 @@ export class WorkflowState implements IWorkflowStateModel {
         return steps[currentIndex + 1] || null;
     }
 
-    public get previousStep(): IWorkflowStateRecordStepWithPermissions | null {
+    public get previousStep(): IEnrichedWorkflowStateRecordStep | null {
         const steps = this.steps;
         const currentStep = this.currentStep;
         const currentIndex = steps.findIndex(step => step.id === currentStep.id);
@@ -162,7 +162,7 @@ export class WorkflowState implements IWorkflowStateModel {
     /**
      * Active step is the one that is currently "inReview". If there is a rejected step, returns null.
      */
-    public getActiveStep(): IWorkflowStateRecordStepWithPermissions | null {
+    public getActiveStep(): IEnrichedWorkflowStateRecordStep | null {
         const steps = this.steps;
         const hasRejected = steps.some(step => {
             return step.state === WorkflowStateRecordState.rejected;
@@ -204,11 +204,35 @@ export class WorkflowState implements IWorkflowStateModel {
         this.ensureCanReview(step);
 
         this.updateStep(step.id, {
+            savedBy: this.getIdentity(),
             state: WorkflowStateRecordState.inReview
         });
         this.updateRecord({
             savedBy: this.getIdentity(),
             state: WorkflowStateRecordState.inReview
+        });
+        return await this.updateState(this.#record);
+    }
+
+    public async takeOver(): Promise<void> {
+        this.ensureNotRejected();
+        const step = this.getActiveStep();
+        if (!step) {
+            throw new WebinyError(
+                `Cannot take over a workflow state that is not in review.`,
+                "WORKFLOW_NOT_IN_REVIEW",
+                {
+                    ...this.#record
+                }
+            );
+        }
+        this.ensureCanReview(step);
+        if (step.isOwner) {
+            return;
+        }
+
+        this.updateStep(step.id, {
+            savedBy: this.getIdentity()
         });
         return await this.updateState(this.#record);
     }
@@ -229,6 +253,7 @@ export class WorkflowState implements IWorkflowStateModel {
             );
         }
         this.ensureCanReview(step);
+        this.ensureIsOwner(step);
 
         this.approveStep(step.id, comment);
 
@@ -255,6 +280,7 @@ export class WorkflowState implements IWorkflowStateModel {
         }
 
         this.ensureCanReview(step);
+        this.ensureIsOwner(step);
 
         this.rejectStep(step.id, comment);
         this.updateRecord({
@@ -307,13 +333,27 @@ export class WorkflowState implements IWorkflowStateModel {
         await this.#context.workflowState.updateState(this.#record.id, record);
     }
 
-    private ensureCanReview(step: IWorkflowStateRecordStepWithPermissions): void {
+    private ensureCanReview(step: IEnrichedWorkflowStateRecordStep): void {
         if (step.isAllowedToReview) {
             return;
         }
         throw new WebinyError({
             message: `You do not have permissions to review this workflow state step.`,
             code: "WORKFLOW_REVIEWER_NO_PERMISSION",
+            data: {
+                step,
+                record: this.#record
+            }
+        });
+    }
+
+    private ensureIsOwner(step: IEnrichedWorkflowStateRecordStep): void {
+        if (step.isOwner) {
+            return;
+        }
+        throw new WebinyError({
+            message: `You must be the owner of this workflow state step to perform this action.`,
+            code: "WORKFLOW_REVIEWER_NOT_OWNER",
             data: {
                 step,
                 record: this.#record
@@ -330,14 +370,14 @@ export class WorkflowState implements IWorkflowStateModel {
         };
     }
 
-    private enrichStepWithPermissions(
-        params: IEnrichStepWithPermissionParams
-    ): IWorkflowStateRecordStepWithPermissions {
+    private enrichStep(params: IEnrichStepWithPermissionParams): IEnrichedWorkflowStateRecordStep {
         const { step, createdBy } = params;
         const identity = this.getIdentity();
+        const isOwner = step.savedBy?.id === identity.id;
         if (createdBy.id === identity.id) {
             return {
                 ...step,
+                isOwner,
                 isAllowedToReview: false
             };
         }
@@ -348,6 +388,7 @@ export class WorkflowState implements IWorkflowStateModel {
         });
         return {
             ...step,
+            isOwner,
             isAllowedToReview
         };
     }
