@@ -79,7 +79,7 @@ export const SimpleFormHeader = ({
 };
 
 export interface SimpleFormFooterProps {
-    children: React.ReactNode;
+    children?: React.ReactNode;
     className?: string;
 }
 
@@ -92,7 +92,7 @@ export const SimpleFormFooter = ({ children, className }: SimpleFormFooterProps)
                 className
             )}
         >
-            {children}
+            {children || null}
         </div>
     );
 };

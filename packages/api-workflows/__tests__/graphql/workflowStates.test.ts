@@ -19,8 +19,6 @@ describe("workflow states graphql", () => {
     
     const targetTitle = "App: Test Record Title";
 
-    const targetTitle = "App: Test Record Title";
-
     const createWorkflow = async () => {
         const [response] = await handler.storeWorkflow({
             app: "test",
