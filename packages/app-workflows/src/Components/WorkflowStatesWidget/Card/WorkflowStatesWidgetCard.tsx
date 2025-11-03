@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Icon } from "@webiny/admin-ui";
+import { Button, Card, Icon } from "@webiny/admin-ui";
 import { ReactComponent as ReviewRequestsIcon } from "@webiny/icons/reviews.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { observer } from "mobx-react-lite";
@@ -45,24 +45,25 @@ export const WorkflowStateWidgetCard = observer(
                     <RejectSuccessDialog state={presenter.vm.showRejectSuccessDialog} />
                 ) : null}
                 <Card
-                    title={
-                        <>
-                            <Icon
-                                icon={<ReviewRequestsIcon />}
-                                color={"accent"}
-                                label={"Review Requests"}
-                            />
-                            {title}
-                        </>
+                    icon={
+                        <Card.Icon
+                            icon={<ReviewRequestsIcon />}
+                            label={"Review Requests"}
+                            color={"accent"}
+                        />
                     }
+                    title={title}
                     actions={
-                        <>
-                            <Icon icon={<AddIcon />} label={"View All"} color={"neutral-strong"} />
+                        <Button
+                            variant={"ghost"}
+                            size={"sm"}
+                            icon={<Icon icon={<AddIcon />} label={"View All"} />}
+                        >
                             View All
-                        </>
+                        </Button>
                     }
                     actionsPosition={"header"}
-                    padding="sm"
+                    bodyPadding={false}
                     elevation="small"
                 >
                     <WorkflowStatesWidgetCardTabs presenter={presenter} tabs={tabs} />
