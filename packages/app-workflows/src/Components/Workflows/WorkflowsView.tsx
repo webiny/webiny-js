@@ -11,7 +11,7 @@ import {
 } from "@webiny/app-admin";
 import { WorkflowsDataList } from "./WorkflowsDataList.js";
 import { SimpleFormFooter } from "@webiny/app-admin/components/SimpleForm";
-import { Grid } from "@webiny/admin-ui";
+import { Grid, Alert } from "@webiny/admin-ui";
 import { NoWorkflows } from "./NoWorkflows.js";
 
 export interface IWorkflowsViewProps {
@@ -38,9 +38,10 @@ export const WorkflowsView = (props: IWorkflowsViewProps) => {
         return (
             <Grid>
                 <Grid.Column span={12}>
-                    {/*<Alert type="danger" title="No application found.">*/}
-                    {/*    Application you selected does not exist: <strong>{initialApp}</strong>.*/}
-                    {/*</Alert>*/}
+                    {/*TODO: Designer will design this page.*/}
+                    <Alert type="danger" title="No application found.">
+                        Application you selected does not exist: <strong>{initialApp}</strong>.
+                    </Alert>
                 </Grid.Column>
             </Grid>
         );
