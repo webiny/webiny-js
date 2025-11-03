@@ -12,7 +12,7 @@ export type * from "./types/file.lifecycle.js";
 export type * from "./types/file.js";
 export type * from "./types/file.js";
 
-export interface FileManagerContextObject extends FilesCRUD, SettingsCRUD, SystemCRUD {
+export interface FileManagerContextObject extends FilesCRUD, SettingsCRUD {
     storage: FileStorage;
 }
 
@@ -99,14 +99,6 @@ export interface FilesCRUD extends FileLifecycleEvents {
     updateFile(id: string, data: Partial<FileInput>): Promise<File>;
     deleteFile(id: string): Promise<boolean>;
     createFilesInBatch(data: FileInput[], meta?: Record<string, any>): Promise<File[]>;
-}
-
-export interface SystemCRUD {
-    onSystemBeforeInstall: Topic;
-    onSystemAfterInstall: Topic;
-    getVersion(): Promise<string | null>;
-    setVersion(version: string): Promise<void>;
-    install(args: { srcPrefix: string }): Promise<boolean>;
 }
 
 export interface FileManagerSettings {
@@ -410,5 +402,4 @@ export interface FileManagerStorageOperations<TContext = FileManagerContext> {
     files: FileManagerFilesStorageOperations;
     aliases: FileManagerAliasesStorageOperations;
     settings: FileManagerSettingsStorageOperations;
-    system: FileManagerSystemStorageOperations;
 }
