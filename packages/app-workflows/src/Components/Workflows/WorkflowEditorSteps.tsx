@@ -14,13 +14,13 @@ const draftStep: IInactiveStep = {
     id: "draft",
     color: "#BEC3CC",
     title: "Draft",
-    description: "This is the initial state of your content."
+    description: "(This is the initial state of your content)"
 };
 const publishedStep: IInactiveStep = {
     id: "published",
     color: "#5AC74C",
     title: "Published",
-    description: "The final state for any publish content."
+    description: "(The final state for any publish content)"
 };
 
 export const WorkflowEditorSteps = observer((props: IWorkflowEditorStepsProps) => {

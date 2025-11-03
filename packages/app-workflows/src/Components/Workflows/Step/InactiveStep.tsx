@@ -1,7 +1,6 @@
 import React from "react";
 import { IWorkflowStep } from "~/types.js";
 import { Accordion, IconButton } from "@webiny/admin-ui";
-import { LockedIndicator } from "./LockedIndicator.js";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 
 export type IInactiveStep = Required<Omit<IWorkflowStep, "teams" | "notifications">>;
@@ -17,19 +16,11 @@ export const InactiveStep = (props: IInactiveStepProps) => {
         <div className={"flex items-center justify-space-between gap-sm-plus"}>
             <Accordion variant={"container"} background={"light"}>
                 <Accordion.Item
+                    locked={true}
                     key={`step-${step.id}`}
                     title={step.title}
-                    description={step.description}
-                    colorMark={step.color}
-                    interactive={false}
-                    actions={
-                        <>
-                            <Accordion.Item.Action
-                                icon={<LockedIndicator content={step.description} />}
-                            />
-                        </>
-                    }
-                >
+                    subtitle={step.description}
+                    colorMark={step.color}>
                     <></>
                 </Accordion.Item>
             </Accordion>
