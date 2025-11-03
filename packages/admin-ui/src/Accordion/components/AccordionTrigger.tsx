@@ -92,7 +92,9 @@ const AccordionTrigger = ({
                             <div className={"text-md font-semibold webiny_accordion-item-title"}>
                                 {title}
                             </div>
-                            {subtitle && <div className={"text-neutral-muted text-md"}>{subtitle}</div>}
+                            {subtitle && (
+                                <div className={"text-neutral-muted text-md"}>{subtitle}</div>
+                            )}
                         </div>
 
                         <div className={"text-sm text-neutral-strong"}>{description}</div>

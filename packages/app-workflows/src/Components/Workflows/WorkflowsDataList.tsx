@@ -9,8 +9,8 @@ import {
     ListItemTextSecondary,
     ScrollList
 } from "@webiny/ui/List/index.js";
-import type { IWorkflow, IWorkflowApplication } from "~/types.js";
-import { SearchUI, useRouter } from "@webiny/app-admin";
+import type { IWorkflowApplication } from "~/types.js";
+import { SearchUI } from "@webiny/app-admin";
 
 const t = i18n.ns("app-workflows/admin/workflows-list");
 
@@ -21,7 +21,6 @@ export interface WorkflowsDataListProps {
 }
 
 export const WorkflowsDataList = ({ apps, activeId, onSelectApp }: WorkflowsDataListProps) => {
-    const { goToRoute } = useRouter();
     const [filter, setFilter] = useState("");
 
     const filterWorkflow = useCallback(

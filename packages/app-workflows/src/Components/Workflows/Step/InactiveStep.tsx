@@ -20,7 +20,8 @@ export const InactiveStep = (props: IInactiveStepProps) => {
                     key={`step-${step.id}`}
                     title={step.title}
                     subtitle={step.description}
-                    colorMark={step.color}>
+                    colorMark={step.color}
+                >
                     <></>
                 </Accordion.Item>
             </Accordion>

@@ -14,7 +14,7 @@ import { useApolloClient } from "@apollo/react-hooks";
 
 const Welcome = () => {
     const { identity, getPermission } = useSecurity();
-    
+
     const client = useApolloClient();
 
     if (!identity) {

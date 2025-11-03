@@ -16,7 +16,7 @@ const reviewerIdentity = {
 
 describe("workflow states graphql", () => {
     const handler = createGraphQLHandler();
-    
+
     const targetTitle = "App: Test Record Title";
 
     const createWorkflow = async () => {

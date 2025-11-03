@@ -30,8 +30,8 @@ const CardBase = (props: CardProps) => {
         <CardPropsProvider props={props}>
             <CardContent>
                 <CardHeader />
-                <CardBody/>
-                <CardFooter  />
+                <CardBody />
+                <CardFooter />
             </CardContent>
         </CardPropsProvider>
     );

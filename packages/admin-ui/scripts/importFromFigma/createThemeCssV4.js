@@ -210,7 +210,10 @@ const createThemeCssV4 = (normalizedFigmaExport, normalizedPrimitivesFigmaExport
     {
         const shadow = normalizedFigmaExport
             .filter(item => item.type === "shadow")
-            .map(variable => `--shadow-${variable.variantName}: 0 ${variable.resolvedValue}px ${variable.resolvedValue}px rgba(0, 0, 0, 0.06); `);
+            .map(
+                variable =>
+                    `--shadow-${variable.variantName}: 0 ${variable.resolvedValue}px ${variable.resolvedValue}px rgba(0, 0, 0, 0.06); `
+            );
 
         themeCss = themeCss.replace("{SHADOW}", shadow.join("\n"));
     }

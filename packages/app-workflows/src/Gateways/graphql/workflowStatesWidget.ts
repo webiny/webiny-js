@@ -22,33 +22,32 @@ const ERROR_FIELDS = /* GraphQL */ `
     }
 `;
 
-const WORKFLOW_STATE_FIELDS = /* GraphQL */ `{
-    id
-    app
-    title
-    targetRevisionId
-    state
-    savedBy {
+const WORKFLOW_STATE_FIELDS = /* GraphQL */ `
+    {
         id
-        displayName
-    }
-    savedOn
-    step {
-        id
+        app
         title
-        color
-        description
+        targetRevisionId
         state
         savedBy {
             id
             displayName
-            type
         }
-        isAllowedToReview
+        savedOn
+        step {
+            id
+            title
+            color
+            description
+            state
+            savedBy {
+                id
+                displayName
+                type
+            }
+            isAllowedToReview
+        }
     }
-    
-}
-
 `;
 
 export interface IListWidgetWorkflowStatesParamsWhere {
@@ -65,11 +64,10 @@ export interface IListOwnWorkflowStatesResponse {
         listOwnWorkflowStates: {
             data: IWorkflowStatesWidgetItem[] | null;
             meta: IWorkflowStatesWidgetMeta | null;
-            error: IWorkflowStatesWidgetError | null
-        }
+            error: IWorkflowStatesWidgetError | null;
+        };
     };
 }
-
 
 export const LIST_OWN_WORKFLOW_STATES = gql`
     query ListOwnWorkflowStates($where: ListWidgetWorkflowStatesWhereInput!, $limit: Int!) {
@@ -93,11 +91,10 @@ export interface IListRequestedWorkflowStatesResponse {
         listRequestedWorkflowStates: {
             data: IWorkflowStatesWidgetItem[] | null;
             meta: IWorkflowStatesWidgetMeta | null;
-            error: IWorkflowStatesWidgetError | null
-        }
+            error: IWorkflowStatesWidgetError | null;
+        };
     };
 }
-
 
 export const LIST_REQUESTED_WORKFLOW_STATES = gql`
     query ListRequestedWorkflowStates($where: ListWidgetWorkflowStatesWhereInput!, $limit: Int!) {
