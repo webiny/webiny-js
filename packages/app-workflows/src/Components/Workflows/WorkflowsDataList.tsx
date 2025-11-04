@@ -28,14 +28,13 @@ export const WorkflowsDataList = ({ apps, activeId, onSelectApp }: WorkflowsData
         },
         [filter]
     );
-    
+
     const items = useMemo(() => {
         if (!filter) {
             return apps;
         }
         return apps.filter(filterWorkflow);
     }, [filter, apps]);
-    
 
     return (
         <DataList

@@ -141,15 +141,12 @@ export const WithMediumElevation: Story = {
     }
 };
 
-
 export const WithLargeElevation: Story = {
     args: {
         ...Default.args,
         elevation: "large"
     }
 };
-
-
 
 export const WithIcon: Story = {
     args: {

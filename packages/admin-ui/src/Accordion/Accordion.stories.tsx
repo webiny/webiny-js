@@ -90,18 +90,9 @@ export const WithSubtitles: Story = {
     args: {
         children: (
             <>
-                <AccordionItem
-                    index={1}
-                    subtitle="(Lorem ipsum dolor sit amet...)"
-                />
-                <AccordionItem
-                    index={2}
-                    subtitle="(Lorem ipsum dolor sit amet...)"
-                />
-                <AccordionItem
-                    index={3}
-                    subtitle="(Lorem ipsum dolor sit amet...)"
-                />
+                <AccordionItem index={1} subtitle="(Lorem ipsum dolor sit amet...)" />
+                <AccordionItem index={2} subtitle="(Lorem ipsum dolor sit amet...)" />
+                <AccordionItem index={3} subtitle="(Lorem ipsum dolor sit amet...)" />
             </>
         )
     },
