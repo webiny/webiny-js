@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { i18n } from "@webiny/app/i18n/index.js";
 import {
     DataList,
@@ -6,11 +6,10 @@ import {
     ListItem,
     ListItemText,
     ListItemTextPrimary,
-    ListItemTextSecondary,
     ScrollList
 } from "@webiny/ui/List/index.js";
-import type { IWorkflow, IWorkflowApplication } from "~/types.js";
-import { SearchUI, useRouter } from "@webiny/app-admin";
+import type { IWorkflowApplication } from "~/types.js";
+import { SearchUI } from "@webiny/app-admin";
 
 const t = i18n.ns("app-workflows/admin/workflows-list");
 
@@ -21,7 +20,6 @@ export interface WorkflowsDataListProps {
 }
 
 export const WorkflowsDataList = ({ apps, activeId, onSelectApp }: WorkflowsDataListProps) => {
-    const { goToRoute } = useRouter();
     const [filter, setFilter] = useState("");
 
     const filterWorkflow = useCallback(
@@ -30,14 +28,19 @@ export const WorkflowsDataList = ({ apps, activeId, onSelectApp }: WorkflowsData
         },
         [filter]
     );
-
-    const list = filter === "" ? apps : apps.filter(filterWorkflow);
+    
+    const items = useMemo(() => {
+        if (!filter) {
+            return apps;
+        }
+        return apps.filter(filterWorkflow);
+    }, [filter, apps]);
+    
 
     return (
         <DataList
             title={t`Workflows`}
-            data={list}
-            // loading={listLoading}
+            data={items}
             search={
                 <SearchUI
                     value={filter}
@@ -55,7 +58,6 @@ export const WorkflowsDataList = ({ apps, activeId, onSelectApp }: WorkflowsData
                         <ListItem key={item.id} selected={item.id === activeId}>
                             <ListItemText onClick={() => onSelectApp(item.id)}>
                                 <ListItemTextPrimary>{item.name}</ListItemTextPrimary>
-                                <ListItemTextSecondary>descr</ListItemTextSecondary>
                             </ListItemText>
                         </ListItem>
                     ))}

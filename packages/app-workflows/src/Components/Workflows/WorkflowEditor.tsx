@@ -35,13 +35,11 @@ export const WorkflowEditor = (props: IWorkflowPresenterProps) => {
         const repository = new WorkflowsRepository({
             gateway
         });
-        const presenter = new WorkflowsPresenter({
+        return new WorkflowsPresenter({
             app,
             repository,
             defaultWorkflow
         });
-        presenter.init();
-        return presenter;
     }, [app]);
 
     return <WorkflowEditorView presenter={presenter} />;

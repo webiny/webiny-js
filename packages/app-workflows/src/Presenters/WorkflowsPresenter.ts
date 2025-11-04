@@ -39,9 +39,11 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
         this.workflows = observable.array<IWorkflowModel>([]);
 
         makeAutoObservable(this);
+
+        this.init();
     }
 
-    public async init(): Promise<void> {
+    private async init(): Promise<void> {
         const workflows = await this.repository.listWorkflows({
             where: {
                 app: this.app.id
@@ -57,7 +59,11 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
     }
 
     updateWorkflow = (workflow: IWorkflow): void => {
-        this.repository.save(toJS(workflow));
+        console.log({
+            updateWorkflow: true,
+            workflow: JSON.parse(JSON.stringify(workflow))
+        });
+        this.repository.save(workflow);
     };
 
     deleteWorkflow(workflow: IWorkflow) {
@@ -71,16 +77,29 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
     addStep = (step: IWorkflowStep): void => {
         const workflow = this.getWorkflow();
         workflow.addStep(step);
+        console.log({
+            addStep: true,
+            workflow: JSON.parse(JSON.stringify(workflow.toJS()))
+        });
+        this.updateWorkflow(workflow.toJS());
     };
 
     updateStep = (step: IWorkflowStep): void => {
         const workflow = this.getWorkflow();
         workflow.updateStep(step);
+
+        console.log({
+            updateStep: true,
+            workflow: JSON.parse(JSON.stringify(workflow.toJS()))
+        });
+
+        this.updateWorkflow(workflow.toJS());
     };
 
     removeStep = ({ id }: Pick<IWorkflowStep, "id">): void => {
         const workflow = this.getWorkflow();
         workflow.removeStep(id);
+        this.updateWorkflow(workflow.toJS());
     };
 
     canMoveStepUp = (step: Pick<IWorkflowStep, "id">): boolean => {
@@ -102,6 +121,7 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
         runInAction(() => {
             workflow.steps.replace(steps);
         });
+        this.updateWorkflow(workflow.toJS());
     };
 
     canMoveStepDown = (step: Pick<IWorkflowStep, "id">): boolean => {
@@ -123,5 +143,6 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
         runInAction(() => {
             workflow.steps.replace(steps);
         });
+        this.updateWorkflow(workflow.toJS());
     };
 }

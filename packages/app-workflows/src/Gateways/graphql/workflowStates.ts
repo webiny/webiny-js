@@ -302,7 +302,7 @@ export interface IListOwnWorkflowStatesResponse {
 }
 
 export const LIST_OWN_WORKFLOW_STATES = gql`
-    query ListOwnWorkflowStates($where: ListWidgetWorkflowStatesWhereInput!, $limit: Int!) {
+    query ListOwnWorkflowStates($where: ListOwnWorkflowStatesWhereInput!, $limit: Int!) {
         workflows {
             listOwnWorkflowStates(where: $where, limit: $limit) {
                 data ${WORKFLOW_STATE}
@@ -329,7 +329,7 @@ export interface IListRequestedWorkflowStatesResponse {
 }
 
 export const LIST_REQUESTED_WORKFLOW_STATES = gql`
-    query ListRequestedWorkflowStates($where: ListWidgetWorkflowStatesWhereInput!, $limit: Int!) {
+    query ListRequestedWorkflowStates($where: ListRequestedWorkflowStatesWhereInput!, $limit: Int!) {
         workflows {
             listRequestedWorkflowStates(where: $where, limit: $limit) {
                 data ${WORKFLOW_STATE}

@@ -1,7 +1,7 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { WorkflowEditorSteps } from "./WorkflowEditorSteps.js";
 import type { IWorkflowsPresenter } from "~/Presenters/index.js";
-import { Button, Grid, Heading, Loader } from "@webiny/admin-ui";
+import { Grid, Loader } from "@webiny/admin-ui";
 import { observer } from "mobx-react-lite";
 import { WorkflowError } from "./Error/WorkflowError.js";
 
@@ -11,16 +11,6 @@ interface WorkflowViewProps {
 
 export const WorkflowEditorView = observer((props: WorkflowViewProps) => {
     const { presenter } = props;
-
-    const saveWorkflow = useCallback(() => {
-        if (!presenter.vm.workflow || !presenter.vm.dirty) {
-            return;
-        } else if (presenter.vm.workflow.steps?.length > 0) {
-            presenter.updateWorkflow(presenter.vm.workflow);
-            return;
-        }
-        presenter.deleteWorkflow(presenter.vm.workflow);
-    }, [presenter.vm.workflow]);
 
     if (presenter.vm.loading) {
         return (
@@ -38,20 +28,9 @@ export const WorkflowEditorView = observer((props: WorkflowViewProps) => {
      */
     return (
         <Grid>
-            <Grid.Column span={12}>
-                <Heading level={2}>{presenter.vm.app.name}</Heading>
-            </Grid.Column>
             <WorkflowError error={presenter.vm.error} />
             <Grid.Column span={12}>
                 <WorkflowEditorSteps presenter={presenter} />
-            </Grid.Column>
-            <Grid.Column span={12} className={"text-right"}>
-                <Button
-                    disabled={!presenter.vm.dirty}
-                    text={"Save"}
-                    variant={"primary"}
-                    onClick={saveWorkflow}
-                />
             </Grid.Column>
         </Grid>
     );
