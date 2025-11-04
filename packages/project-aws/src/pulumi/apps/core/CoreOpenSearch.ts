@@ -42,7 +42,7 @@ function getProdClusterConfig(): aws.types.input.opensearch.DomainClusterConfig 
     };
 }
 
-const OS_ENGINE_VERSION = "OpenSearch_3.1";
+const OS_ENGINE_VERSION = "OpenSearch_2.11";
 
 export const OpenSearch = createAppModule({
     name: "OpenSearch",
