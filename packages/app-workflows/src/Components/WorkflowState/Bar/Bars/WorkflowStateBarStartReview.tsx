@@ -11,7 +11,7 @@ export const WorkflowStateBarStartReview = WorkflowStateBarComponent.createDecor
         const { step } = presenter.vm;
         if (!step || step.state !== WorkflowStateValue.pending) {
             return <Original {...props} />;
-        } else if (!step.isAllowedToReview) {
+        } else if (!step.canReview) {
             return (
                 <>
                     <Alert>

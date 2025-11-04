@@ -11,7 +11,9 @@ import {
     RejectDialog,
     RejectSuccessDialog,
     StartDialog,
-    StartSuccessDialog
+    StartSuccessDialog,
+    TakeOverDialog,
+    TakeOverSuccessDialog
 } from "../Dialogs/index.js";
 
 interface IWorkflowStateWidgetCardProps {
@@ -28,6 +30,12 @@ export const WorkflowStateWidgetCard = observer(({ title }: IWorkflowStateWidget
             ) : null}
             {presenter.vm.showStartSuccessDialog ? (
                 <StartSuccessDialog state={presenter.vm.showStartSuccessDialog} />
+            ) : null}
+            {presenter.vm.showTakeOverDialog ? (
+                <TakeOverDialog state={presenter.vm.showTakeOverDialog} />
+            ) : null}
+            {presenter.vm.showTakeOverSuccessDialog ? (
+                <TakeOverSuccessDialog state={presenter.vm.showTakeOverSuccessDialog} />
             ) : null}
             {presenter.vm.showApproveDialog ? (
                 <ApproveDialog state={presenter.vm.showApproveDialog} />

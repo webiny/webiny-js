@@ -17,7 +17,7 @@ export const WorkflowStateRowOptionsStart = observer(
             presenter.showStartStateStepDialog(state);
         }, [state.id]);
 
-        if (state.state !== WorkflowStateValue.pending || !state.currentStep.isAllowedToReview) {
+        if (state.state !== WorkflowStateValue.pending || !state.currentStep.canReview) {
             return null;
         }
         return (

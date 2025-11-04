@@ -6,11 +6,16 @@ import type {
 import type { IMeta } from "~/context/abstractions/types.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 import type {
+    IEnrichedWorkflowStateRecordStep,
     IWorkflowState,
-    IWorkflowStateRecord,
-    IEnrichedWorkflowStateRecordStep
+    IWorkflowStateRecord
 } from "~/context/abstractions/WorkflowState.js";
-import type { IWorkflowStateContextListStatesParams } from "~/context/abstractions/WorkflowStateContext.js";
+import type {
+    IWorkflowStateContextListOwnWorkflowStatesParams,
+    IWorkflowStateContextListRequestedWorkflowStatesParams,
+    IWorkflowStateContextListStatesParams
+} from "~/context/abstractions/WorkflowStateContext.js";
+import { RequiredDeep } from "type-fest";
 
 export interface IWorkflowError {
     code: string;
@@ -65,7 +70,9 @@ const WORKFLOW_STATE_STEP = /* GraphQL */ `
             displayName
             type
         }
-        isAllowedToReview
+        isOwner
+        canReview
+        canTakeOver
     }
 `;
 
@@ -308,6 +315,80 @@ export const LIST_TARGET_WORKFLOW_STATES_QUERY = /* GraphQL */ `
     }
 `;
 
+export type IListOwnWorkflowStatesVariables =
+    RequiredDeep<IWorkflowStateContextListOwnWorkflowStatesParams>;
+
+export interface IListOwnWorkflowStatesResponse {
+    data: {
+        workflows: {
+            listWorkflowStates: {
+                data: IWorkflowStateRecord<IEnrichedWorkflowStateRecordStep>[] | null;
+                meta: IMeta | null;
+                error: IWorkflowError | null;
+            };
+        };
+    };
+}
+
+export const LIST_OWN_WORKFLOW_STATES_QUERY = /* GraphQL */ `
+    query ListOwnWorkflowStates(
+        $where: ListOwnWorkflowStatesWhereInput!,
+        $limit: Int!,
+    ) {
+        workflows {
+            listOwnWorkflowStates(
+                where: $where,
+                limit: $limit,
+            ) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
+            }
+        }
+    }
+`;
+
+export type IListRequestedWorkflowStatesVariables =
+    RequiredDeep<IWorkflowStateContextListRequestedWorkflowStatesParams>;
+
+export interface IListRequestedWorkflowStatesResponse {
+    data: {
+        workflows: {
+            listWorkflowStates: {
+                data: IWorkflowStateRecord<IEnrichedWorkflowStateRecordStep>[] | null;
+                meta: IMeta | null;
+                error: IWorkflowError | null;
+            };
+        };
+    };
+}
+
+export const LIST_REQUESTED_WORKFLOW_STATES_QUERY = /* GraphQL */ `
+    query ListRequestedWorkflowStates(
+        $where: ListRequestedWorkflowStatesWhereInput!,
+        $limit: Int!,
+    ) {
+        workflows {
+            listRequestedWorkflowStates(
+                where: $where,
+                limit: $limit,
+            ) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }
+            }
+        }
+    }
+`;
+
 export interface IStartWorkflowStateStepVariables {
     id: string;
 }
@@ -327,6 +408,32 @@ export const START_WORKFLOW_STATE_STEP_MUTATION = /* GraphQL */ `
     mutation StartWorkflowStateStep($id: ID!) {
         workflows {
             startWorkflowStateStep(id: $id) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export interface ITakeOverWorkflowStateStepVariables {
+    id: string;
+}
+
+export interface ITakeOverWorkflowStateStepResponse {
+    data: {
+        workflows: {
+            takeOverWorkflowStateStep: {
+                data: IWorkflowState | null;
+                error: IWorkflowError | null;
+            };
+        };
+    };
+}
+
+export const TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION = /* GraphQL */ `
+    mutation TakeOverWorkflowStateStep($id: ID!) {
+        workflows {
+            takeOverWorkflowStateStep(id: $id) {
                 data ${WORKFLOW_STATE}
                 ${ERROR_FIELD}
             }

@@ -1,31 +1,29 @@
 import React, { useCallback } from "react";
-import { type IWorkflowState, WorkflowStateValue } from "~/types.js";
+import { type IWorkflowState } from "~/types.js";
 import { DropdownMenu, Icon } from "@webiny/admin-ui";
 import { ReactComponent as ApproveIcon } from "@webiny/icons/check.svg";
 import { useWorkflowStatesWidget } from "~/Components/WorkflowStatesWidget/Provider/useWorkflowStatesWidget.js";
 import { observer } from "mobx-react-lite";
 
-interface IWorkflowStateRowOptionsApproveProps {
+interface IWorkflowStateRowOptionsTakeOverProps {
     state: IWorkflowState;
 }
 
-export const WorkflowStateRowOptionsApprove = observer(
-    ({ state }: IWorkflowStateRowOptionsApproveProps) => {
+export const WorkflowStateRowOptionsTakeOver = observer(
+    ({ state }: IWorkflowStateRowOptionsTakeOverProps) => {
         const { presenter } = useWorkflowStatesWidget();
 
         const onClick = useCallback(() => {
-            presenter.showApproveStateStepDialog(state);
+            presenter.showTakeOverStateStepDialog(state);
         }, [state.id]);
 
-        const step = state.currentStep;
-
-        if (state.state !== WorkflowStateValue.inReview || !step.canReview || !step.isOwner) {
+        if (!state.currentStep.canTakeOver) {
             return null;
         }
         return (
             <DropdownMenu.Item
-                icon={<Icon icon={<ApproveIcon />} label={"Approve"} />}
-                text={"Approve"}
+                icon={<Icon icon={<ApproveIcon />} label={"Take Over"} />}
+                text={"Take Over"}
                 onClick={onClick}
             />
         );

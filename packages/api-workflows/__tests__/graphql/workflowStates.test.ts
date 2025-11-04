@@ -2,8 +2,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { createGraphQLHandler } from "~tests/__helpers/handler.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 import {
-    type IWorkflowStateRecord,
     type IEnrichedWorkflowStateRecordStep,
+    type IWorkflowStateRecord,
     WorkflowStateRecordState
 } from "~/context/abstractions/WorkflowState.js";
 import { FULL_ACCESS_TEAM_ID, UNKNOWN_TEAM_ID } from "@webiny/testing";
@@ -12,6 +12,12 @@ const reviewerIdentity = {
     id: "reviewer-1",
     type: "user",
     displayName: "Reviewer User"
+};
+
+const takeOverIdentity = {
+    id: "takeover-1",
+    type: "user",
+    displayName: "Takeover User"
 };
 
 describe("workflow states graphql", () => {
@@ -193,7 +199,9 @@ describe("workflow states graphql", () => {
                     startWorkflowStateStep: {
                         data: null,
                         error: {
-                            code: "WORKFLOW_REVIEWER_NO_PERMISSION"
+                            message:
+                                "You do not have permissions to review this workflow state step.",
+                            code: "Workflows/State/Step/CannotReview"
                         }
                     }
                 }
@@ -346,36 +354,26 @@ describe("workflow states graphql", () => {
                                 },
                                 {
                                     ...afterApprovedFirstStepState!.steps[1],
+                                    isOwner: true,
                                     id: afterApprovedFirstStepState!.steps[1].id,
                                     state: WorkflowStateRecordState.approved,
                                     comment: "Approving step 2",
-                                    savedBy: {
-                                        id: expect.any(String),
-                                        displayName: expect.any(String),
-                                        type: expect.any(String)
-                                    }
+                                    savedBy: reviewerIdentity
                                 }
                             ],
                             previousStep: {
                                 id: afterApprovedFirstStepState!.steps[0].id,
                                 state: WorkflowStateRecordState.approved,
                                 comment: "Approving step 1",
-                                savedBy: {
-                                    id: expect.any(String),
-                                    displayName: expect.any(String),
-                                    type: expect.any(String)
-                                }
+                                savedBy: reviewerIdentity
                             },
                             currentStep: {
                                 ...afterApprovedFirstStepState!.steps[1],
+                                isOwner: true,
                                 id: afterApprovedFirstStepState!.steps[1].id,
                                 state: WorkflowStateRecordState.approved,
                                 comment: "Approving step 2",
-                                savedBy: {
-                                    id: expect.any(String),
-                                    displayName: expect.any(String),
-                                    type: expect.any(String)
-                                }
+                                savedBy: reviewerIdentity
                             },
                             nextStep: null
                         },
@@ -485,7 +483,7 @@ describe("workflow states graphql", () => {
                     approveWorkflowStateStep: {
                         data: null,
                         error: {
-                            code: "WORKFLOW_STATE_REJECTED"
+                            code: "Workflows/State/Rejected"
                         }
                     }
                 }
@@ -502,7 +500,9 @@ describe("workflow states graphql", () => {
                     rejectWorkflowStateStep: {
                         data: null,
                         error: {
-                            code: "WORKFLOW_STATE_REJECTED"
+                            message:
+                                "Cannot perform this action on a workflow state that has been rejected.",
+                            code: "Workflows/State/Rejected"
                         }
                     }
                 }
@@ -693,12 +693,12 @@ describe("workflow states graphql", () => {
 
         expect(workflowState.steps[0]).toMatchObject({
             id: "step-1",
-            isAllowedToReview: false
+            canReview: false
         });
 
         expect(workflowState.steps[1]).toMatchObject({
             id: "step-2",
-            isAllowedToReview: false
+            canReview: false
         });
         /**
          * Regular identity should have permission to review the step which is assigned to a team it has access to.
@@ -712,12 +712,229 @@ describe("workflow states graphql", () => {
 
         expect(fetchedWorkflowState.steps[0]).toMatchObject({
             id: "step-1",
-            isAllowedToReview: true
+            canReview: true
         });
 
         expect(fetchedWorkflowState.steps[1]).toMatchObject({
             id: "step-2",
-            isAllowedToReview: false
+            canReview: false
+        });
+    });
+
+    it("should list own workflow states", async () => {
+        await handler.createWorkflowState({
+            app: workflow.app,
+            targetRevisionId,
+            title: targetTitle
+        });
+
+        const [listOwnPendingStatesResponse] = await handler.listOwnWorkflowStates({
+            where: {
+                state: WorkflowStateRecordState.pending
+            },
+            limit: 5
+        });
+
+        expect(listOwnPendingStatesResponse).toMatchObject({
+            data: {
+                workflows: {
+                    listOwnWorkflowStates: {
+                        data: [
+                            {
+                                targetRevisionId,
+                                state: WorkflowStateRecordState.pending,
+                                app: workflow.app
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            totalCount: 1,
+                            cursor: null,
+                            hasMoreItems: false
+                        }
+                    }
+                }
+            }
+        });
+
+        const listEmptyOwnResult = {
+            data: {
+                workflows: {
+                    listOwnWorkflowStates: {
+                        data: [],
+                        error: null,
+                        meta: {
+                            totalCount: 0,
+                            cursor: null,
+                            hasMoreItems: false
+                        }
+                    }
+                }
+            }
+        };
+
+        const [listOwnInReviewStatesResponse] = await handler.listOwnWorkflowStates({
+            where: {
+                state: WorkflowStateRecordState.inReview
+            },
+            limit: 5
+        });
+
+        expect(listOwnInReviewStatesResponse).toMatchObject(listEmptyOwnResult);
+
+        const [listOwnApprovedStatesResponse] = await handler.listOwnWorkflowStates({
+            where: {
+                state: WorkflowStateRecordState.approved
+            },
+            limit: 5
+        });
+
+        expect(listOwnApprovedStatesResponse).toMatchObject(listEmptyOwnResult);
+
+        const [listOwnRejectedStatesResponse] = await handler.listOwnWorkflowStates({
+            where: {
+                state: WorkflowStateRecordState.rejected
+            },
+            limit: 5
+        });
+
+        expect(listOwnRejectedStatesResponse).toMatchObject(listEmptyOwnResult);
+
+        const listEmptyRequestedResult = {
+            data: {
+                workflows: {
+                    listRequestedWorkflowStates: {
+                        data: [],
+                        error: null,
+                        meta: {
+                            totalCount: 0,
+                            cursor: null,
+                            hasMoreItems: false
+                        }
+                    }
+                }
+            }
+        };
+
+        const [listRequestedPendingStatesResponse] = await handler.listRequestedWorkflowStates({
+            where: {
+                state: WorkflowStateRecordState.pending
+            },
+            limit: 5
+        });
+
+        expect(listRequestedPendingStatesResponse).toEqual(listEmptyRequestedResult);
+
+        const [listRequestedInReviewStatesResponse] = await handler.listRequestedWorkflowStates({
+            where: {
+                state: WorkflowStateRecordState.inReview
+            },
+            limit: 5
+        });
+
+        expect(listRequestedInReviewStatesResponse).toEqual(listEmptyRequestedResult);
+
+        const [listRequestedApprovedStatesResponse] = await handler.listRequestedWorkflowStates({
+            where: {
+                state: WorkflowStateRecordState.approved
+            },
+            limit: 5
+        });
+
+        expect(listRequestedApprovedStatesResponse).toEqual(listEmptyRequestedResult);
+
+        const [listRequestedRejectedStatesResponse] = await handler.listRequestedWorkflowStates({
+            where: {
+                state: WorkflowStateRecordState.rejected
+            },
+            limit: 5
+        });
+
+        expect(listRequestedRejectedStatesResponse).toEqual(listEmptyRequestedResult);
+    });
+
+    it("should take over a workflow state step", async () => {
+        const [createStateResponse] = await handler.createWorkflowState({
+            app: workflow.app,
+            targetRevisionId,
+            title: targetTitle
+        });
+        const state = createStateResponse.data?.workflows?.createWorkflowState
+            ?.data as IWorkflowStateRecord;
+
+        const reviewerHandler = createGraphQLHandler({
+            identity: reviewerIdentity
+        });
+
+        await reviewerHandler.startWorkflowStateStep({
+            id: state.id
+        });
+
+        const [checkResponse] = await reviewerHandler.getWorkflowState({
+            id: state.id
+        });
+        expect(checkResponse).toMatchObject({
+            data: {
+                workflows: {
+                    getWorkflowState: {
+                        data: {
+                            id: state.id,
+                            currentStep: {
+                                id: state.steps[0].id
+                            },
+                            nextStep: {
+                                id: state.steps[1].id
+                            },
+                            previousStep: null
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [stateOwnerCannotTakeOverResponse] = await handler.takeOverWorkflowStateStep({
+            id: state.id
+        });
+        expect(stateOwnerCannotTakeOverResponse).toMatchObject({
+            data: {
+                workflows: {
+                    takeOverWorkflowStateStep: {
+                        data: null,
+                        error: {
+                            message:
+                                "You do not have permissions to take over this workflow state step.",
+                            code: "Workflows/State/Step/CannotTakeOver"
+                        }
+                    }
+                }
+            }
+        });
+
+        const takeOverHandler = createGraphQLHandler({
+            identity: takeOverIdentity
+        });
+
+        const [takeOverResponse] = await takeOverHandler.takeOverWorkflowStateStep({
+            id: state.id
+        });
+        expect(takeOverResponse).toMatchObject({
+            data: {
+                workflows: {
+                    takeOverWorkflowStateStep: {
+                        data: {
+                            savedBy: takeOverIdentity,
+                            id: state.id,
+                            currentStep: {
+                                id: state.steps[0].id,
+                                state: WorkflowStateRecordState.inReview,
+                                savedBy: takeOverIdentity
+                            }
+                        },
+                        error: null
+                    }
+                }
+            }
         });
     });
 });

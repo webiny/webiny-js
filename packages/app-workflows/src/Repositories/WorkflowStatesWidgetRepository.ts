@@ -5,10 +5,11 @@ import type {
     IWorkflowStatesWidgetRepositoryListResult,
     IWorkflowStatesWidgetRepositoryListStates,
     IWorkflowStatesWidgetRepositoryRejectStateStepParams,
-    IWorkflowStatesWidgetRepositoryStartStateStepParams
+    IWorkflowStatesWidgetRepositoryStartStateStepParams,
+    IWorkflowStatesWidgetRepositoryTakeOverStateStepParams
 } from "./abstractions/WorkflowStatesWidgetRepository.js";
 import type { IWorkflowStatesWidgetGateway } from "~/Gateways/index.js";
-import { type IGenericError, type IWorkflowState } from "~/types.js";
+import type { IGenericError, IWorkflowState } from "~/types.js";
 
 export interface IWorkflowStatesWidgetRepositoryParams {
     gateway: IWorkflowStatesWidgetGateway;
@@ -128,6 +129,21 @@ export class WorkflowStatesWidgetRepository implements IWorkflowStatesWidgetRepo
         runInAction(() => {
             this._loading[key] = false;
             this._error[key] = result.error;
+        });
+        return result.data || null;
+    }
+
+    public async takeOverStateStep(
+        params: IWorkflowStatesWidgetRepositoryTakeOverStateStepParams
+    ): Promise<IWorkflowState | null> {
+        runInAction(() => {
+            this._actionLoading = true;
+            this._actionError = null;
+        });
+        const result = await this.gateway.takeOverStateStep(params);
+        runInAction(() => {
+            this._actionLoading = false;
+            this._actionError = result.error;
         });
         return result.data || null;
     }

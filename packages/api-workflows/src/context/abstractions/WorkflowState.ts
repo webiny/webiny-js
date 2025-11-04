@@ -43,7 +43,8 @@ export interface IWorkflowStateRecord<
 
 export interface IEnrichedWorkflowStateRecordStep extends IWorkflowStateRecordStep {
     isOwner: boolean;
-    isAllowedToReview: boolean;
+    canTakeOver: boolean;
+    canReview: boolean;
 }
 
 export interface IWorkflowState<

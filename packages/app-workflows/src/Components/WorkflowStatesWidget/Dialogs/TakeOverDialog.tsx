@@ -1,30 +1,34 @@
 import React, { useCallback } from "react";
-import { StartDialog as BaseStartDialog } from "~/Components/WorkflowStateDialogs/index.js";
+import { TakeOverDialog as BaseTakeOverDialog } from "~/Components/WorkflowStateDialogs/index.js";
 import { useWorkflowStatesWidget } from "~/Components/WorkflowStatesWidget/Provider/useWorkflowStatesWidget.js";
 import type { IWorkflowState } from "~/types.js";
 
-interface IStartDialogProps {
+interface ITakeOverDialogProps {
     state: IWorkflowState;
 }
 
-export const StartDialog = (props: IStartDialogProps) => {
+export const TakeOverDialog = (props: ITakeOverDialogProps) => {
     const { state } = props;
     const { presenter } = useWorkflowStatesWidget();
 
-    const onStart = useCallback(() => {
-        presenter.startStateStep(state);
+    const onTakeOver = useCallback(() => {
+        presenter.takeOverStateStep(state);
     }, [state.id]);
 
-    if (!state.currentStep.canReview) {
+    const step = state.currentStep;
+
+    if (!step.canTakeOver) {
         return null;
     }
+    const displayName = step.savedBy?.displayName || "Unknown User";
 
     return (
-        <BaseStartDialog
-            onStart={onStart}
+        <BaseTakeOverDialog
+            onTakeOver={onTakeOver}
             hide={presenter.hideDialog}
             loading={presenter.vm.dialogLoading}
             title={state.currentStep.title}
+            displayName={displayName}
         />
     );
 };

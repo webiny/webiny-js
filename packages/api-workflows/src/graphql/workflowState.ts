@@ -50,9 +50,11 @@ export const createWorkflowStateSchema = () => {
                 comment: String
                 savedBy: WorkflowStateIdentity
                 # current user can take action on this step?
-                isAllowedToReview: Boolean!
+                canReview: Boolean!
                 # is current user an owner of the step?
                 isOwner: Boolean!
+                # can current user take over this step?
+                canTakeOver: Boolean!
             }
 
             type WorkflowState {
@@ -130,7 +132,11 @@ export const createWorkflowStateSchema = () => {
                 error: WorkflowError
             }
 
-            input ListWidgetWorkflowStatesWhereInput {
+            input ListOwnWorkflowStatesWhereInput {
+                state: WorkflowStateStateValue!
+            }
+
+            input ListRequestedWorkflowStatesWhereInput {
                 state: WorkflowStateStateValue!
             }
 
@@ -145,11 +151,11 @@ export const createWorkflowStateSchema = () => {
                     after: String
                 ): ListWorkflowStatesResponse!
                 listOwnWorkflowStates(
-                    where: ListWidgetWorkflowStatesWhereInput!
+                    where: ListOwnWorkflowStatesWhereInput!
                     limit: Int!
                 ): ListWidgetWorkflowStatesResponse!
                 listRequestedWorkflowStates(
-                    where: ListWidgetWorkflowStatesWhereInput!
+                    where: ListRequestedWorkflowStatesWhereInput!
                     limit: Int!
                 ): ListWidgetWorkflowStatesResponse!
             }
@@ -285,14 +291,13 @@ export const createWorkflowStateSchema = () => {
                     });
                 },
                 takeOverWorkflowStateStep: (_, args, context) => {
-                    return resolve<boolean>(async () => {
+                    return resolve<IWorkflowStateModel>(async () => {
                         const result =
                             await takeOverWorkflowStateStepValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        await context.workflowState.takeOverStateStep(result.data.id);
-                        return true;
+                        return await context.workflowState.takeOverStateStep(result.data.id);
                     });
                 }
             }

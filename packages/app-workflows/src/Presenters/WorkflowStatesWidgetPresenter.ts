@@ -57,6 +57,8 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         | "reject:success"
         | "start"
         | "start:success"
+        | "takeOver"
+        | "takeOver:success"
         | null;
     private state: IWorkflowState | null;
     private readonly values;
@@ -78,7 +80,10 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
                 this.dialog === "approve:success" && this.state ? this.state : null,
             showRejectDialog: this.dialog === "reject" && this.state ? this.state : null,
             showRejectSuccessDialog:
-                this.dialog === "reject:success" && this.state ? this.state : null
+                this.dialog === "reject:success" && this.state ? this.state : null,
+            showTakeOverDialog: this.dialog === "takeOver" && this.state ? this.state : null,
+            showTakeOverSuccessDialog:
+                this.dialog === "takeOver:success" && this.state ? this.state : null
         };
     }
 
@@ -190,6 +195,26 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         });
     };
 
+    takeOverStateStep = async (state: IWorkflowState): Promise<void> => {
+        const index = this.items.findIndex(
+            item => item.id === state.id && item.state === WorkflowStateValue.inReview
+        );
+        if (index === -1) {
+            return;
+        }
+        const result = await this.repository.takeOverStateStep({
+            id: state.id
+        });
+        if (!result) {
+            return;
+        }
+        runInAction(() => {
+            this.items[index] = result;
+            this.state = result;
+            this.dialog = "takeOver:success";
+        });
+    };
+
     approveStateStep = async (state: IWorkflowState, comment?: string): Promise<void> => {
         const index = this.items.findIndex(
             item => item.id === state.id && item.state === WorkflowStateValue.inReview
@@ -244,6 +269,13 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         runInAction(() => {
             this.state = state;
             this.dialog = "start";
+        });
+    };
+
+    showTakeOverStateStepDialog = (state: IWorkflowState): void => {
+        runInAction(() => {
+            this.state = state;
+            this.dialog = "takeOver";
         });
     };
 

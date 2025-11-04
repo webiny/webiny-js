@@ -46,13 +46,13 @@ const RenderTab = (props: IRenderTabProps) => {
 
 const getActiveTab = (vm: IWorkflowStatesWidgetPresenterViewModel): string | undefined => {
     for (const tab of vm.states) {
-        const key = `${tab}Count` as keyof IWorkflowStatesWidgetPresenterViewModel;
-        const value = vm[key];
-        if (typeof value === "number" && value > 0) {
+        const value = vm.values[tab];
+        if (value?.total && value.total > 0) {
             return tab;
         }
     }
-    return undefined;
+    const keys = Object.keys(vm.values);
+    return keys[0] || undefined;
 };
 
 export const WorkflowStatesWidgetCardTabs = observer(

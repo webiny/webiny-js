@@ -10,6 +10,10 @@ export interface IWorkflowStatesWidgetRepositoryStartStateStepParams {
     id: string;
 }
 
+export interface IWorkflowStatesWidgetRepositoryTakeOverStateStepParams {
+    id: string;
+}
+
 export interface IWorkflowStatesWidgetRepositoryApproveStateStepParams {
     id: string;
     comment?: string;
@@ -38,6 +42,9 @@ export interface IWorkflowStatesWidgetRepository {
     ): Promise<IWorkflowStatesWidgetRepositoryListResult>;
     startStateStep(
         params: IWorkflowStatesWidgetRepositoryStartStateStepParams
+    ): Promise<IWorkflowState | null>;
+    takeOverStateStep(
+        params: IWorkflowStatesWidgetRepositoryTakeOverStateStepParams
     ): Promise<IWorkflowState | null>;
     approveStateStep(
         params: IWorkflowStatesWidgetRepositoryApproveStateStepParams

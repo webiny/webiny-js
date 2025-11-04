@@ -9,6 +9,18 @@ const reviewerIdentity = {
     type: "user"
 };
 
+const takeOverIdentity = {
+    id: "takeOver-identity-id",
+    displayName: "Takeover Identity",
+    type: "user"
+};
+
+const nonOwnerIdentity = {
+    id: "non-owner-identity-id",
+    displayName: "Non Owner Identity",
+    type: "user"
+};
+
 describe("Workflow State Context", () => {
     const targetTitle = "App: Some Record Title";
 
@@ -91,7 +103,9 @@ describe("Workflow State Context", () => {
         expect(state.steps).toEqual([
             ...workflow.steps.map(step => {
                 return {
-                    isAllowedToReview: false,
+                    canReview: false,
+                    isOwner: false,
+                    canTakeOver: false,
                     id: step.id,
                     title: step.title,
                     description: step.description,
@@ -129,6 +143,11 @@ describe("Workflow State Context", () => {
     it("should approve a step and move to the next one", async () => {
         const { workflowStateContext: creatorWorkflowStateContext, workflowsContext } =
             await createContext();
+
+        const { workflowStateContext: nonOwnerWorkflowStateContext } = await createContext({
+            identity: nonOwnerIdentity
+        });
+
         const app = "testingApp";
         const targetId = "record-id#0001";
         const mockWorkflow = createMockWorkflow({
@@ -169,6 +188,13 @@ describe("Workflow State Context", () => {
          * Should start review
          */
         await state.start();
+        /**
+         * Should not be possible to start review again.
+         */
+        await expect(async () => {
+            return await state.start();
+        }).rejects.toThrow("The workflow state is already in review and cannot proceed.");
+
         const stateOnReviewStart = await workflowStateContext.getTargetState(app, targetId);
 
         expect(stateOnReviewStart.state).toEqual(WorkflowStateRecordState.inReview);
@@ -177,6 +203,14 @@ describe("Workflow State Context", () => {
         const stateAfterReviewStart = await workflowStateContext.getTargetState(app, targetId);
         expect(stateAfterReviewStart.state).toEqual(WorkflowStateRecordState.inReview);
         expect(stateAfterReviewStart.steps[0].state).toEqual(WorkflowStateRecordState.inReview);
+        /**
+         * Non-owner user should try to approve.
+         */
+        await expect(async () => {
+            return await nonOwnerWorkflowStateContext.approveStateStep(state.id);
+        }).rejects.toThrow(
+            "You must be the owner of this workflow state step to perform this action."
+        );
 
         await stateAfterReviewStart.approve("First step should be approved.");
 
@@ -186,7 +220,9 @@ describe("Workflow State Context", () => {
 
         expect(stateAfterReviewStart.steps[0]).toEqual({
             id: "step-1",
-            isAllowedToReview: true,
+            canReview: true,
+            canTakeOver: false,
+            isOwner: true,
             title: state.steps[0].title,
             description: state.steps[0].description,
             color: state.steps[0].color,
@@ -199,7 +235,9 @@ describe("Workflow State Context", () => {
 
         expect(stateAfterReviewStart.steps[1]).toEqual({
             id: "step-2",
-            isAllowedToReview: true,
+            canReview: true,
+            canTakeOver: false,
+            isOwner: false,
             title: state.steps[1].title,
             description: state.steps[1].description,
             color: state.steps[1].color,
@@ -226,7 +264,9 @@ describe("Workflow State Context", () => {
 
         expect(targetStateAfterFirstApprove.steps[1]).toEqual({
             id: "step-2",
-            isAllowedToReview: true,
+            canReview: true,
+            canTakeOver: false,
+            isOwner: true,
             title: state.steps[1].title,
             description: state.steps[1].description,
             color: state.steps[1].color,
@@ -242,6 +282,13 @@ describe("Workflow State Context", () => {
         expect(stateAfterSecondApprove.steps[0].state).toEqual(WorkflowStateRecordState.approved);
         expect(stateAfterSecondApprove.steps[1].state).toEqual(WorkflowStateRecordState.approved);
         expect(stateAfterSecondApprove.done).toBeTrue();
+
+        /**
+         * Should not be able to start review on a completed workflow.
+         */
+        await expect(async () => {
+            return await stateAfterSecondApprove.start();
+        }).rejects.toThrow("The workflow state has no pending step to proceed.");
     });
 
     it("should throw an error when trying to approve or reject a workflow state but no step is in review", async () => {
@@ -314,5 +361,135 @@ describe("Workflow State Context", () => {
             await anotherIdentityWorkflowStateContext.listOwnWorkflowStates();
 
         expect(noOwnItems).toHaveLength(0);
+    });
+
+    it("should be able to take over a step", async () => {
+        const { workflowStateContext: creatorWorkflowStateContext, workflowsContext } =
+            await createContext();
+        const app = "testingApp";
+        const targetId = "record-id#0001";
+        const mockWorkflow = createMockWorkflow({
+            app
+        });
+        await workflowsContext.storeWorkflow(app, mockWorkflow.id, mockWorkflow);
+
+        const createdState = await creatorWorkflowStateContext.createState(
+            app,
+            targetId,
+            targetTitle
+        );
+
+        expect(createdState.done).toBeFalse();
+        expect(createdState.state).toEqual(WorkflowStateRecordState.pending);
+
+        /**
+         * Use new identity to review.
+         */
+        const { workflowStateContext } = await createContext({
+            identity: reviewerIdentity
+        });
+        const state = await workflowStateContext.getTargetState(app, targetId);
+        /**
+         * Should start review
+         */
+        await state.start();
+        // Should be able to take over the step from a reviewerIdentity
+        const { workflowStateContext: takeOverWorkflowStateContext } = await createContext({
+            identity: takeOverIdentity
+        });
+        const takeOverStateStepResult = await takeOverWorkflowStateContext.takeOverStateStep(
+            state.id
+        );
+
+        expect(takeOverStateStepResult.steps).toEqual([
+            {
+                canReview: true,
+                canTakeOver: false,
+                color: "blue",
+                comment: null,
+                description: "This is step 1",
+                id: "step-1",
+                isOwner: true,
+                notifications: [
+                    {
+                        id: "notif-1"
+                    }
+                ],
+                savedBy: {
+                    displayName: "Takeover Identity",
+                    id: "takeOver-identity-id",
+                    type: "user"
+                },
+                state: "inReview",
+                teams: [
+                    {
+                        id: "full-access-team"
+                    }
+                ],
+                title: "Step 1"
+            },
+            {
+                canReview: true,
+                canTakeOver: false,
+                color: "green",
+                comment: null,
+                description: "This is step 2",
+                id: "step-2",
+                isOwner: false,
+                notifications: [
+                    {
+                        id: "notif-2"
+                    }
+                ],
+                savedBy: null,
+                state: "pending",
+                teams: [
+                    {
+                        id: "full-access-team"
+                    }
+                ],
+                title: "Step 2"
+            }
+        ]);
+    });
+
+    it("should not be able to take over a step", async () => {
+        const { workflowStateContext: creatorWorkflowStateContext, workflowsContext } =
+            await createContext();
+        const app = "testingApp";
+        const targetId = "record-id#0001";
+        const mockWorkflow = createMockWorkflow({
+            app
+        });
+        await workflowsContext.storeWorkflow(app, mockWorkflow.id, mockWorkflow);
+
+        const createdState = await creatorWorkflowStateContext.createState(
+            app,
+            targetId,
+            targetTitle
+        );
+
+        expect(createdState.done).toBeFalse();
+        expect(createdState.state).toEqual(WorkflowStateRecordState.pending);
+
+        /**
+         * Use new identity to review.
+         */
+        const { workflowStateContext } = await createContext({
+            identity: reviewerIdentity
+        });
+        const state = await workflowStateContext.getTargetState(app, targetId);
+        /**
+         * Should start review
+         */
+        await state.start();
+        // Should be able to take over the step from a reviewerIdentity
+        const { workflowStateContext: takeOverWorkflowStateContext } = await createContext({
+            identity: reviewerIdentity
+        });
+
+        await expect(() => {
+            return takeOverWorkflowStateContext.takeOverStateStep(state.id);
+        }).rejects.toThrow("You do not have permissions to take over this workflow state step.");
     });
 });

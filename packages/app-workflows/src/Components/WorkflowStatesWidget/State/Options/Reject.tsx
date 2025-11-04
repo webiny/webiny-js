@@ -16,7 +16,8 @@ export const WorkflowStateRowOptionsReject = observer(
             presenter.showRejectStateStepDialog(state);
         }, [state.id]);
 
-        if (state.state !== WorkflowStateValue.inReview || !state.currentStep.isAllowedToReview) {
+        const step = state.currentStep;
+        if (state.state !== WorkflowStateValue.inReview || !step.canReview || !step.isOwner) {
             return null;
         }
         return (

@@ -12,9 +12,17 @@ export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(
         const { presenter } = props;
 
         const { step } = presenter.vm;
-        if (!step?.isAllowedToReview || step.state !== WorkflowStateValue.inReview) {
+        /**
+         * If current user cannot review the step, continue.
+         */
+        if (!step?.canReview || step.state !== WorkflowStateValue.inReview) {
             return <Original {...props} />;
-        } else if (!step.isOwner) {
+        }
+        /**
+         * Current user can review and is not an owner of the review step - can take over the review.
+         */
+        //
+        else if (!step.isOwner) {
             const displayName =
                 step.savedBy?.displayName || "unknown: " + step.savedBy?.id || "N/A";
             return (
@@ -33,7 +41,9 @@ export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(
                 </Alert>
             );
         }
-
+        /**
+         * Current user is reviewing and can approve or reject.
+         */
         return (
             <Alert
                 actions={

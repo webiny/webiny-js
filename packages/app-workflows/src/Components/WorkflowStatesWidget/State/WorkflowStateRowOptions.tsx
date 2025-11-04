@@ -5,7 +5,8 @@ import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg"
 import { WorkflowStateRowOptionsOpenInNewWindow } from "./Options/OpenInNewWindow.js";
 import { WorkflowStateRowOptionsApprove } from "./Options/Approve.js";
 import { WorkflowStateRowOptionsReject } from "./Options/Reject.js";
-import { WorkflowStateRowOptionsStart } from "~/Components/WorkflowStatesWidget/State/Options/Start.js";
+import { WorkflowStateRowOptionsStart } from "./Options/Start.js";
+import { WorkflowStateRowOptionsTakeOver } from "./Options/TakeOver.js";
 
 interface IWorkflowStateRowOptionsProps {
     state: IWorkflowState;
@@ -24,6 +25,7 @@ export const WorkflowStateRowOptions = ({ state }: IWorkflowStateRowOptionsProps
         >
             <WorkflowStateRowOptionsOpenInNewWindow state={state} />
             <WorkflowStateRowOptionsStart state={state} />
+            <WorkflowStateRowOptionsTakeOver state={state} />
             <WorkflowStateRowOptionsApprove state={state} />
             <WorkflowStateRowOptionsReject state={state} />
         </DropdownMenu>

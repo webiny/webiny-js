@@ -8,3 +8,4 @@ export { RequestReviewDialog } from "./RequestReviewDialog.js";
 export { StartDialog } from "./StartDialog.js";
 export { StartSuccessDialog } from "./StartSuccessDialog.js";
 export { TakeOverDialog } from "./TakeOverDialog.js";
+export { TakeOverSuccessDialog } from "./TakeOverSuccessDialog.js";

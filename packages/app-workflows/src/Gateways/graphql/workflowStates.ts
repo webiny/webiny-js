@@ -38,7 +38,8 @@ const WORKFLOW_STATE_STEP_FIELDS = `
         type
     }
     state
-    isAllowedToReview
+    canReview
+    canTakeOver
     isOwner
 }
 `;

@@ -18,7 +18,7 @@ export const ApproveDialog = (props: IApproveDialogProps) => {
         [state.id]
     );
 
-    if (!state.currentStep.isAllowedToReview) {
+    if (!state.currentStep.canReview) {
         return null;
     }
 

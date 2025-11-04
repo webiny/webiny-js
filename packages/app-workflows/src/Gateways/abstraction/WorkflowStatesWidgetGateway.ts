@@ -49,6 +49,15 @@ export interface IWorkflowStatesWidgetGatewayStartStateStepResponse {
     error: IWorkflowStatesWidgetError | null;
 }
 
+export interface IWorkflowStatesWidgetGatewayTakeOverStateStepParams {
+    id: string;
+}
+
+export interface IWorkflowStatesWidgetGatewayTakeOverStateStepResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStatesWidgetError | null;
+}
+
 export interface IWorkflowStatesWidgetGatewayApproveStateStepParams {
     id: string;
     comment?: string;
@@ -79,6 +88,9 @@ export interface IWorkflowStatesWidgetGateway {
     startStateStep(
         params: IWorkflowStatesWidgetGatewayStartStateStepParams
     ): Promise<IWorkflowStatesWidgetGatewayStartStateStepResponse>;
+    takeOverStateStep(
+        params: IWorkflowStatesWidgetGatewayTakeOverStateStepParams
+    ): Promise<IWorkflowStatesWidgetGatewayTakeOverStateStepResponse>;
     approveStateStep(
         params: IWorkflowStatesWidgetGatewayApproveStateStepParams
     ): Promise<IWorkflowStatesWidgetGatewayApproveStateStepResponse>;

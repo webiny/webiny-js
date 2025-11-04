@@ -24,15 +24,19 @@ export interface IWorkflowStatesWidgetPresenterViewModel {
     showApproveSuccessDialog: IWorkflowState | null;
     showRejectDialog: IWorkflowState | null;
     showRejectSuccessDialog: IWorkflowState | null;
+    showTakeOverDialog: IWorkflowState | null;
+    showTakeOverSuccessDialog: IWorkflowState | null;
 }
 
 export interface IWorkflowStatesWidgetPresenter {
     vm: IWorkflowStatesWidgetPresenterViewModel;
+    takeOverStateStep(state: IWorkflowState): Promise<void>;
     startStateStep(state: IWorkflowState): Promise<void>;
     approveStateStep(state: IWorkflowState, comment?: string): Promise<void>;
     rejectStateStep(state: IWorkflowState, comment: string): Promise<void>;
     showStartStateStepDialog(state: IWorkflowState): void;
     showApproveStateStepDialog(state: IWorkflowState): void;
     showRejectStateStepDialog(state: IWorkflowState): void;
+    showTakeOverStateStepDialog(state: IWorkflowState): void;
     hideDialog(): void;
 }

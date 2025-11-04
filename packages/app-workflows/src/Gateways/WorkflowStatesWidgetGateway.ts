@@ -10,7 +10,9 @@ import type {
     IWorkflowStatesWidgetGatewayRejectStateStepParams,
     IWorkflowStatesWidgetGatewayRejectStateStepResponse,
     IWorkflowStatesWidgetGatewayStartStateStepParams,
-    IWorkflowStatesWidgetGatewayStartStateStepResponse
+    IWorkflowStatesWidgetGatewayStartStateStepResponse,
+    IWorkflowStatesWidgetGatewayTakeOverStateStepParams,
+    IWorkflowStatesWidgetGatewayTakeOverStateStepResponse
 } from "./abstraction/WorkflowStatesWidgetGateway.js";
 import type {
     IApproveWorkflowStateStepResponse,
@@ -22,14 +24,17 @@ import type {
     IRejectWorkflowStateStepResponse,
     IRejectWorkflowStateStepVariables,
     IStartWorkflowStateStepResponse,
-    IStartWorkflowStateStepVariables
+    IStartWorkflowStateStepVariables,
+    ITakeOverWorkflowStateStepResponse,
+    ITakeOverWorkflowStateStepVariables
 } from "~/Gateways/graphql/workflowStates.js";
 import {
     APPROVE_WORKFLOW_STATE_STEP_MUTATION,
     LIST_OWN_WORKFLOW_STATES,
     LIST_REQUESTED_WORKFLOW_STATES,
     REJECT_WORKFLOW_STATE_STEP_MUTATION,
-    START_WORKFLOW_STATE_STEP_MUTATION
+    START_WORKFLOW_STATE_STEP_MUTATION,
+    TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION
 } from "~/Gateways/graphql/workflowStates.js";
 
 interface IWorkflowStatesWidgetGatewayParams {
@@ -115,6 +120,32 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
             return {
                 data: result.data!.workflows.startWorkflowStateStep.data,
                 error: result.data!.workflows.startWorkflowStateStep.error
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: ex
+            };
+        }
+    }
+
+    public async takeOverStateStep(
+        params: IWorkflowStatesWidgetGatewayTakeOverStateStepParams
+    ): Promise<IWorkflowStatesWidgetGatewayTakeOverStateStepResponse> {
+        try {
+            const result = await this.client.mutate<
+                ITakeOverWorkflowStateStepResponse,
+                ITakeOverWorkflowStateStepVariables
+            >({
+                mutation: TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION,
+                variables: {
+                    ...params
+                },
+                fetchPolicy: "no-cache"
+            });
+            return {
+                data: result.data!.workflows.takeOverWorkflowStateStep.data,
+                error: result.data!.workflows.takeOverWorkflowStateStep.error
             };
         } catch (ex) {
             return {

@@ -18,7 +18,7 @@ export const RejectDialog = (props: IRejectDialogProps) => {
         [state.id]
     );
 
-    if (!state.currentStep.isAllowedToReview) {
+    if (!state.currentStep.canReview) {
         return null;
     }
 
