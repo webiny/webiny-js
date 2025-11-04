@@ -10,11 +10,11 @@ const DecoratableToastDescription = ({ text, className, ...props }: DescriptionP
     <div
         {...props}
         className={cn(
-            "wby-mt-xs-plus group-[.wby-default-variant]:wby-text-neutral-dimmed group-[.wby-subtle-variant]:wby-text-neutral-strong",
+            "mt-xs-plus group-[.default-variant]:text-neutral-dimmed group-[.subtle-variant]:text-neutral-strong",
             className
         )}
     >
-        <Text as={"div"} size={"md"} className={"wby-text-neutral-dimmed"}>
+        <Text as={"div"} size={"md"} className={"text-neutral-dimmed"}>
             {text}
         </Text>
     </div>

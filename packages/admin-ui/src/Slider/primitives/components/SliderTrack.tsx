@@ -5,17 +5,13 @@ import { cn } from "~/utils.js";
 const SliderTrack = () => (
     <SliderPrimitives.Track
         className={cn(
-            "wby-relative wby-h-xxs wby-w-full wby-grow wby-overflow-hidden wby-rounded-full",
-            "wby-bg-neutral-strong",
-            "data-[disabled]:wby-bg-neutral-muted"
+            "relative h-xxs w-full grow overflow-hidden rounded-full",
+            "bg-neutral-strong",
+            "data-disabled:bg-neutral-muted"
         )}
     >
         <SliderPrimitives.Range
-            className={cn([
-                "wby-absolute wby-h-full",
-                "wby-bg-primary-default",
-                "data-[disabled]:wby-bg-primary-disabled"
-            ])}
+            className={cn(["absolute h-full", "bg-primary", "data-disabled:bg-primary-disabled"])}
         />
     </SliderPrimitives.Track>
 );

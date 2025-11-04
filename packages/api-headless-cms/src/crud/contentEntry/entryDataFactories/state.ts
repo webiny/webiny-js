@@ -9,10 +9,16 @@ interface IParams {
 }
 
 export const getState = ({ input, original }: IParams): ICmsEntryState | undefined => {
-    if (!input?.state?.stepId || !input.state.state || !input.state.stepName) {
+    if (
+        !input?.state?.stepId ||
+        !input.state.state ||
+        !input.state.stepName ||
+        !input.state.workflowId
+    ) {
         return original?.state;
     }
     return {
+        workflowId: input.state.workflowId,
         stepId: input.state.stepId,
         stepName: input.state.stepName,
         state: input.state.state

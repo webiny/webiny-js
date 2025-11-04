@@ -6,7 +6,7 @@ type SelectSeparatorProps = SelectPrimitives.SelectSeparatorProps;
 
 const SelectSeparator = ({ className, ...props }: SelectSeparatorProps) => (
     <SelectPrimitives.Separator
-        className={cn("wby--mx-sm wby-my-sm wby-h-px wby-bg-neutral-strong", className)}
+        className={cn("-mx-sm my-sm h-px bg-neutral-strong", className)}
         {...props}
     />
 );

@@ -14,7 +14,7 @@ const DropdownMenuLabelBase = React.forwardRef<
     <DropdownMenuPrimitive.Label
         ref={ref}
         className={cn(
-            "wby-py-sm wby-pl-sm-extra wby-pr-md wby-text-sm wby-uppercase wby-text-neutral-strong wby-font-semibold",
+            "py-sm pl-sm-extra pr-md text-sm uppercase text-neutral-strong font-semibold",
             className
         )}
         {...props}

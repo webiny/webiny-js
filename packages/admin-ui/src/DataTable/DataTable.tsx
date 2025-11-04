@@ -207,7 +207,7 @@ const defineColumns = <T,>(
                     accessorKey: firstColumn.id as string,
                     header: props => {
                         return (
-                            <div className={"wby-flex wby-items-center wby-gap-xl"}>
+                            <div className={"flex items-center gap-xl"}>
                                 <CheckboxPrimitive
                                     indeterminate={props.table.getIsSomeRowsSelected()}
                                     checked={props.table.getIsAllRowsSelected()}
@@ -224,13 +224,13 @@ const defineColumns = <T,>(
                     },
                     cell: props => {
                         return (
-                            <div className={"wby-flex wby-items-center wby-gap-xl"}>
+                            <div className={"flex items-center gap-xl"}>
                                 <CheckboxPrimitive
                                     checked={props.row.getIsSelected()}
                                     onChange={value => props.row.toggleSelected(!!value)}
                                     disabled={!props.row.getCanSelect()}
                                     aria-label="Select row"
-                                    className={cn(!props.row.getCanSelect() ? "wby-invisible" : "")}
+                                    className={cn(!props.row.getCanSelect() ? "invisible" : "")}
                                 />
                                 {firstColumn.cell
                                     ? React.createElement(firstColumn.cell, props)
@@ -450,7 +450,7 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
                                                 onClick={header.column.getToggleSortingHandler()}
                                                 sortable={header.column.getCanSort()}
                                             >
-                                                <div className="wby-w-full wby-overflow-hidden wby-whitespace-nowrap wby-truncate">
+                                                <div className="w-full overflow-hidden whitespace-nowrap truncate">
                                                     {flexRender(
                                                         header.column.columnDef.header,
                                                         header.getContext()
@@ -460,7 +460,7 @@ const DecoratableDataTable = <T extends Record<string, any> & DataTableDefaultDa
                                                     direction={header.column.getIsSorted() || null}
                                                 />
                                                 {isLastCell && (
-                                                    <div className={"wby-mr-xs wby-h-md"}>
+                                                    <div className={"mr-xs h-md"}>
                                                         <ColumnsVisibility
                                                             columns={table.getAllColumns()}
                                                         />

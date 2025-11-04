@@ -8,9 +8,9 @@ export const CellTitle = () => {
     const { row } = useTableRow();
 
     return (
-        <div className={"wby-flex wby-items-center wby-gap-sm wby-truncate"}>
+        <div className={"flex items-center gap-sm truncate"}>
             <Icon size={"sm"} color={"neutral-strong"} icon={<File />} label={"Item"} />
-            <Text className={"wby-truncate wby-min-w-0 wby-flex-shrink"}>{row.data.title}</Text>
+            <Text className={"truncate min-w-0 shrink"}>{row.data.title}</Text>
         </div>
     );
 };

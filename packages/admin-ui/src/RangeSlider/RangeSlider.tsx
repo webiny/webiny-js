@@ -31,7 +31,7 @@ const DecoratableRangeSlider = ({ description, note, validation, ...props }: Ran
     });
 
     return (
-        <div className={"wby-w-full"}>
+        <div className={"w-full"}>
             <FormComponentLabel
                 text={props.label}
                 required={props.required}
@@ -39,11 +39,11 @@ const DecoratableRangeSlider = ({ description, note, validation, ...props }: Ran
                 invalid={invalid}
             />
             <FormComponentDescription text={description} disabled={props.disabled} />
-            <div className={"wby-flex wby-flex-row wby-items-center wby-justify-between"}>
-                <div className={"wby-basis-1/12 wby-pr-xxs"}>
+            <div className={"flex flex-row items-center justify-between"}>
+                <div className={"basis-1/12 pr-xxs"}>
                     <RangeSliderValue value={vm.textValues[0]} disabled={props.disabled} />
                 </div>
-                <div className={"wby-basis-10/12"}>
+                <div className={"basis-10/12"}>
                     <RangeSliderPrimitiveRenderer
                         {...restProps}
                         {...vm}
@@ -51,7 +51,7 @@ const DecoratableRangeSlider = ({ description, note, validation, ...props }: Ran
                         onValueCommit={commitValues}
                     />
                 </div>
-                <div className={"wby-basis-1/12 wby-pl-xxs wby-text-right"}>
+                <div className={"basis-1/12 pl-xxs text-right"}>
                     <RangeSliderValue value={vm.textValues[1]} disabled={props.disabled} />
                 </div>
             </div>

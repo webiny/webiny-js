@@ -37,7 +37,7 @@ const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMen
                 label={"Expand / Collapse"}
                 size={"sm"}
                 className={
-                    "wby-ml-auto wby-transition-transform wby-duration-175 group-data-[state=open]/menu-item-collapsible:wby-rotate-180 group-data-[state=collapsed]:wby-hidden"
+                    "ml-auto transition-transform duration-175 group-data-[state=open]/menu-item-collapsible:rotate-180 group-data-[state=collapsed]:hidden"
                 }
                 color={"neutral-strong"}
                 data-sidebar={"menu-item-expanded-indicator"}
@@ -47,17 +47,14 @@ const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMen
 
         return (
             <Collapsible.Root
-                className={cn("wby-w-full wby-group/menu-item-collapsible")}
+                className={cn("w-full group/menu-item-collapsible")}
                 open={isSectionExpanded}
                 onOpenChange={toggleSectionExpanded}
             >
                 <Collapsible.Trigger asChild>
                     <SidebarMenuRootButton {...buttonProps} action={chevron} />
                 </Collapsible.Trigger>
-                <Collapsible.Content
-                    forceMount
-                    className={"wby-hidden data-[state=open]:!wby-block"}
-                >
+                <Collapsible.Content forceMount className={"hidden data-[state=open]:block!"}>
                     <SidebarMenuSub>{children}</SidebarMenuSub>
                 </Collapsible.Content>
             </Collapsible.Root>
@@ -68,12 +65,12 @@ const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMen
         <li
             data-sidebar="menu-item"
             className={cn(
-                "wby-group/menu-item wby-relative wby-px-xs-plus",
+                "group/menu-item relative px-xs-plus",
 
                 // When the sidebar is collapsed, this ensures that the sidebar menu item is highlighted
                 // if it contains an active child (no matter how deep in the hierarchy).
-                "group-data-[state=collapsed]:[&:has([data-active=true])_[data-sidebar=menu-button]_svg]:!wby-fill-neutral-xstrong",
-                "group-data-[state=collapsed]:[&:has([data-active=true])_[data-sidebar=menu-button]]:!wby-bg-neutral-dark/5",
+                "group-data-[state=collapsed]:[&:has([data-active=true])_[data-sidebar=menu-button]_svg]:fill-neutral-xstrong!",
+                "group-data-[state=collapsed]:[&:has([data-active=true])_[data-sidebar=menu-button]]:bg-neutral-dark/5!",
                 className
             )}
         >

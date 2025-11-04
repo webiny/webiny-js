@@ -84,10 +84,15 @@ const DynamicSection = ({
                             {showLabel ? (
                                 <div
                                     className={
-                                        "wby-pb-md wby-mb-md wby-border-b-sm wby-border-neutral-dimmed"
+                                        "relative mb-xl mt-md border-b-sm border-accent-dimmed"
                                     }
                                 >
-                                    <Heading level={6} className={"webiny_group-label-text"}>
+                                    <Heading
+                                        level={6}
+                                        className={
+                                            "webiny_group-label-text absolute bottom-[-10px] pr-sm text-accent-primary bg-white"
+                                        }
+                                    >
                                         {`${field.label} ${
                                             bindFieldValue.length
                                                 ? `(${bindFieldValue.length})`
@@ -139,7 +144,7 @@ const DynamicSection = ({
                                 <Grid.Column span={12}>
                                     <div
                                         className={cn(
-                                            bindFieldValue.length > 0 ? "wby-pt-none" : "wby-pt-sm"
+                                            bindFieldValue.length > 0 ? "pt-none" : "pt-sm"
                                         )}
                                     >
                                         <Button

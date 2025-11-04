@@ -26,8 +26,8 @@ type ThumbnailProps = Pick<FileItemFormatted, "url" | "name">;
 
 const Thumbnail = ({ url, name }: ThumbnailProps) => {
     return (
-        <div className={"wby-size-full wby-bg-neutral-muted"}>
-            <img src={url} alt={name} className="wby-size-full wby-object-cover" />
+        <div className={"size-full bg-neutral-muted"}>
+            <img src={url} alt={name} className="size-full object-cover" />
         </div>
     );
 };
@@ -60,20 +60,14 @@ const FileType = ({ mimeType = "", name }: FileTypeProps) => {
         }
     };
 
-    return (
-        <img src={getMimeTypeSrc(mimeType)} alt={name} className="wby-size-full wby-p-sm-extra" />
-    );
+    return <img src={getMimeTypeSrc(mimeType)} alt={name} className="size-full p-sm-extra" />;
 };
 
 type PlaceholderProps = Pick<FileItemFormatted, "name">;
 
 const Placeholder = ({ name }: PlaceholderProps) => {
     return (
-        <div
-            className={
-                "wby-size-full wby-flex wby-justify-center wby-items-center wby-bg-transparent"
-            }
-        >
+        <div className={"size-full flex justify-center items-center bg-transparent"}>
             <Icon icon={<PlaceholderIcon />} label={name} size={"lg"} color={"neutral-light"} />
         </div>
     );
@@ -92,8 +86,8 @@ const RichItemThumbnail = ({
     return (
         <div
             className={cn(
-                "wby-size-[56px] wby-m-xs wby-rounded-sm wby-overflow-hidden wby-relative",
-                disabled && "[&_img]:wby-filter [&_img]:wby-grayscale [&_img]:wby-opacity-50",
+                "size-[56px] m-xs rounded-sm overflow-hidden relative",
+                disabled && "[&_img]:filter [&_img]:grayscale [&_img]:opacity-50",
                 className
             )}
         >

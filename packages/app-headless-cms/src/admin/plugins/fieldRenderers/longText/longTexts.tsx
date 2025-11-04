@@ -27,7 +27,7 @@ const plugin: CmsModelFieldRendererPlugin = {
             return (
                 <DynamicSection {...props}>
                     {({ bind, index }) => (
-                        <div className={"wby-relative"}>
+                        <div className={"relative"}>
                             <DelayedOnChange
                                 value={bind.index.value}
                                 onChange={bind.index.onChange}
@@ -43,7 +43,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                     }`}
                                 />
                             </DelayedOnChange>
-                            <div className={"wby-absolute wby-top-xl wby-right-sm wby-z-10"}>
+                            <div className={"absolute top-xl right-sm z-10"}>
                                 <IconButton
                                     variant={"ghost"}
                                     size={"md"}

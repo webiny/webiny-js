@@ -12,7 +12,7 @@ const DecoratableSwitch = ({ note, validation, ...props }: SwitchProps) => {
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
 
     return (
-        <div className={"wby-w-full"}>
+        <div className={"w-full"}>
             <SwitchPrimitive {...props} disabled={props.disabled} />
             <FormComponentErrorMessage
                 text={validationMessage}

@@ -14,15 +14,15 @@ const TAG_MAP: Record<HeadingLevels, HeadingTags> = {
     6: "h6"
 };
 
-const headingVariants = cva("wby-font-sans", {
+const headingVariants = cva("font-sans", {
     variants: {
         level: {
-            1: "wby-text-h1",
-            2: "wby-text-h2",
-            3: "wby-text-h3",
-            4: "wby-text-h4",
-            5: "wby-text-h5",
-            6: "wby-text-h6"
+            1: "text-h1",
+            2: "text-h2",
+            3: "text-h3",
+            4: "text-h4",
+            5: "text-h5",
+            6: "text-h6"
         }
     },
     defaultVariants: {

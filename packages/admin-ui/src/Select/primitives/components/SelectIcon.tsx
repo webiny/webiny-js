@@ -7,7 +7,7 @@ type SelectIconProps = {
 
 const SelectIcon = ({ icon }: SelectIconProps) => {
     return (
-        <SelectPrimitives.Icon asChild className={"wby-h-md wby-w-md"}>
+        <SelectPrimitives.Icon asChild className={"h-md w-md"}>
             {React.cloneElement(icon)}
         </SelectPrimitives.Icon>
     );

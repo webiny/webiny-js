@@ -61,7 +61,7 @@ export const DocumentStateEditor = observer(() => {
 
     return (
         <Button
-            className="wby-absolute wby-bottom-0 wby-w-full"
+            className="absolute bottom-0 w-full"
             variant="secondary"
             onClick={openDialog}
             text="Edit State"

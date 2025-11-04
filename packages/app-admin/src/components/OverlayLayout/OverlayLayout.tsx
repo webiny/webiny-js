@@ -5,7 +5,7 @@ import type { overlayHeaderVariants } from "./components/index.js";
 import { OverlayBackdrop, OverlayContent, OverlayHeader, OverlayRoot } from "./components/index.js";
 import { Portal, type VariantProps } from "@webiny/admin-ui";
 
-const noScrollBodyClassNames = ["wby-overflow-hidden", "wby-h-screen"];
+const noScrollBodyClassNames = ["overflow-hidden", "h-screen"];
 
 export interface OverlayLayoutProps extends VariantProps<typeof overlayHeaderVariants> {
     barMiddle?: React.ReactNode;

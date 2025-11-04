@@ -5,7 +5,7 @@ import { cn, makeDecoratable } from "~/utils.js";
 type AvatarImageProps = AvatarPrimitive.AvatarImageProps;
 
 const AvatarImageBase = ({ className, ...props }: AvatarImageProps) => (
-    <AvatarPrimitive.Image className={cn("wby-aspect-square", className)} {...props} />
+    <AvatarPrimitive.Image className={cn("aspect-square", className)} {...props} />
 );
 
 const AvatarImage = makeDecoratable("AvatarImage", AvatarImageBase);

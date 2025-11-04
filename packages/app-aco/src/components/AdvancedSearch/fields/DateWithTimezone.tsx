@@ -32,8 +32,8 @@ export const DateWithTimezone = () => {
     };
 
     return (
-        <div className={"wby-flex wby-justify-between"}>
-            <div className={"wby-w-1/2"}>
+        <div className={"flex justify-between"}>
+            <div className={"w-1/2"}>
                 <Input
                     label={"Value"}
                     type={"datetime-local"}
@@ -42,7 +42,7 @@ export const DateWithTimezone = () => {
                     size={"lg"}
                 />
             </div>
-            <div className={"wby-w-2/5"}>
+            <div className={"w-2/5"}>
                 <Select
                     label={"Time Zone"}
                     value={timeZone}

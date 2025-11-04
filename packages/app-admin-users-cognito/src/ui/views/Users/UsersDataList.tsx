@@ -148,7 +148,7 @@ const UsersDataList = () => {
                     text={t`New`}
                     icon={<AddIcon />}
                     size={"sm"}
-                    className={"wby-ml-xs"}
+                    className={"ml-xs"}
                     data-testid="new-record-button"
                     onClick={() => {
                         goToRoute(Routes.Users.List, { new: true });

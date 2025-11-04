@@ -207,7 +207,7 @@ export const ResourcesPickerButton: React.FC<ResourcesPickerButtonProps> = obser
                 acceptLabel: null,
                 cancelLabel: null,
                 content: (
-                    <div className={"wby-h-[500px] wby-overflow-scroll"}>
+                    <div className={"h-[500px] overflow-scroll"}>
                         <PickerComponent
                             {...rest}
                             resourceName={props.resourceName}
@@ -242,7 +242,7 @@ export const ResourcesPickerButton: React.FC<ResourcesPickerButtonProps> = obser
         <div style={{ display: "flex", flexDirection: "column", padding: "10px 0" }}>
             {store.loading && <Loader size={"md"} style={{ margin: "30px auto" }} />}
             {store.resourceInfo && !store.loading && (
-                <div className={"wby-relative"}>
+                <div className={"relative"}>
                     <ResourcePreviewCell
                         style={{ paddingRight: "30px" }}
                         resource={store.resourceInfo}

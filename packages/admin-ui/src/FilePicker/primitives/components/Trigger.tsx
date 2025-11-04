@@ -7,22 +7,22 @@ import { Text } from "~/Text/index.js";
 
 const triggerVariants = cva(
     [
-        "wby-w-full wby-flex wby-items-center wby-justify-center",
-        "data-[disabled=true]:wby-cursor-not-allowed data-[disabled=true]:wby-bg-neutral-disabled",
-        "focus-visible:wby-outline-none  focus-visible:wby-ring-primary-dimmed",
-        "wby-text-neutral-strong data-[disabled=true]:wby-text-neutral-disabled",
-        "wby-fill-neutral-strong data-[disabled=true]:wby-fill-neutral-disabled"
+        "w-full flex items-center justify-center",
+        "data-[disabled=true]:cursor-not-allowed data-[disabled=true]:bg-neutral-disabled",
+        "focus-visible:outline-none  focus-visible:ring-primary-dimmed",
+        "text-neutral-strong data-[disabled=true]:text-neutral-disabled",
+        "fill-neutral-strong data-[disabled=true]:fill-neutral-disabled"
     ],
     {
         variants: {
             type: {
-                area: "wby-px-xs wby-py-md-extra wby-rounded-md focus-visible:wby-ring-lg",
-                compact: "wby-px-sm wby-py-xs wby-rounded-sm focus-visible:wby-ring-md"
+                area: "px-xs py-md-extra rounded-md focus-visible:ring-lg",
+                compact: "px-sm py-xs rounded-sm focus-visible:ring-md"
             },
             variant: {
-                primary: ["wby-bg-neutral-subtle", "hover:wby-bg-neutral-light"],
-                secondary: ["wby-bg-neutral-base", "hover:wby-bg-neutral-base"],
-                ghost: ["wby-bg-neutral-subtle", "hover:wby-bg-neutral-light"]
+                primary: ["bg-neutral-subtle", "hover:bg-neutral-light"],
+                secondary: ["bg-neutral-base", "hover:bg-neutral-base"],
+                ghost: ["bg-neutral-subtle", "hover:bg-neutral-light"]
             }
         },
         compoundVariants: [
@@ -30,20 +30,20 @@ const triggerVariants = cva(
             {
                 type: "area",
                 variant: "primary",
-                className: ["wby-bg-neutral-subtle", "hover:wby-bg-neutral-light"]
+                className: ["bg-neutral-subtle", "hover:bg-neutral-light"]
             },
             {
                 type: "area",
                 variant: "secondary",
-                className: ["wby-bg-neutral-base", "hover:wby-bg-neutral-base"]
+                className: ["bg-neutral-base", "hover:bg-neutral-base"]
             },
             {
                 type: "area",
                 variant: "ghost",
                 className: [
-                    "wby-bg-neutral-subtle",
-                    "hover:wby-bg-neutral-light",
-                    "data-[disabled=true]:wby-bg-neutral-base"
+                    "bg-neutral-subtle",
+                    "hover:bg-neutral-light",
+                    "data-[disabled=true]:bg-neutral-base"
                 ]
             }
         ],
@@ -83,13 +83,9 @@ const Trigger = ({
             className={cn(triggerVariants({ type, variant }), className)}
             {...props}
         >
-            <span
-                className={
-                    "wby-inline-flex wby-items-center wby-justify-center wby-whitespace-nowrap wby-gap-xs"
-                }
-            >
+            <span className={"inline-flex items-center justify-center whitespace-nowrap gap-xs"}>
                 <Icon icon={<ImageIcon />} label={label} color={"inherit"} />
-                <Text size={"sm"} className={"wby-leading-none"}>
+                <Text size={"sm"} className={"leading-none"}>
                     {label}
                 </Text>
             </span>

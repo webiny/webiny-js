@@ -38,8 +38,17 @@ const plugin: CmsModelFieldRendererPlugin = {
                         <Bind.ValidationContainer>
                             <ParentFieldProvider value={bindProps.value} path={Bind.parentName}>
                                 <ParentValueIndexProvider index={-1}>
-                                    <div className={"wby-pb-sm"}>
-                                        <Heading level={6} className={"webiny_group-label-text"}>
+                                    <div
+                                        className={
+                                            "relative mb-xl mt-md border-b-sm border-accent-default"
+                                        }
+                                    >
+                                        <Heading
+                                            level={6}
+                                            className={
+                                                "webiny_group-label-text absolute bottom-[-10px] pr-sm text-accent-primary bg-white"
+                                            }
+                                        >
                                             {field.label}
                                         </Heading>
                                         {field.helpText && (
@@ -50,7 +59,7 @@ const plugin: CmsModelFieldRendererPlugin = {
                                     </div>
                                     <div
                                         className={
-                                            "wby-p-md wby-border-sm wby-border-neutral-dimmed-darker wby-rounded-md"
+                                            "p-md border-sm border-neutral-dimmed-darker rounded-md"
                                         }
                                     >
                                         <Fields

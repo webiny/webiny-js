@@ -16,7 +16,7 @@ import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 
 const Header = ({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) => {
     return (
-        <div className={cn("wby-flex wby-justify-between", className)} {...props}>
+        <div className={cn("flex justify-between", className)} {...props}>
             {children}
         </div>
     );
@@ -64,11 +64,11 @@ export const DomainsFieldset = (props: DomainsProps) => {
             {({ actions, header, row, empty }) => (
                 <>
                     {row(({ index }) => (
-                        <div className={"wby-mt-md"}>
-                            <Text size={"sm"} as={"div"} className={"wby-mb-sm"}>
+                        <div className={"mt-md"}>
+                            <Text size={"sm"} as={"div"} className={"mb-sm"}>
                                 {"Enter a fully qualified domain name to use for this tenant."}
                             </Text>
-                            <div className={"wby-flex wby-items-start wby-gap-sm"}>
+                            <div className={"flex items-start gap-sm"}>
                                 <Bind
                                     validators={fqdnValidator}
                                     name={`settings.domains.${index}.fqdn`}
@@ -96,7 +96,7 @@ export const DomainsFieldset = (props: DomainsProps) => {
                                     size={"sm"}
                                 />
                             </Header>
-                            <Text size={"sm"} as={"div"} className={"wby-mt-sm"}>
+                            <Text size={"sm"} as={"div"} className={"mt-sm"}>
                                 To make your tenant accessible via custom domains, you must define
                                 them here. Webiny will use these entries to route the incoming
                                 requests.

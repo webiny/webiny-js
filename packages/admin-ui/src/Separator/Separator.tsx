@@ -2,7 +2,7 @@ import * as React from "react";
 import { Separator as SeparatorPrimitive } from "radix-ui";
 import { cva, type VariantProps, makeDecoratable } from "~/utils.js";
 
-const separatorVariants = cva("wby-shrink-0", {
+const separatorVariants = cva("shrink-0", {
     variants: {
         margin: {
             none: "",
@@ -13,28 +13,28 @@ const separatorVariants = cva("wby-shrink-0", {
             xl: ""
         },
         orientation: {
-            horizontal: "wby-h-px wby-w-full",
-            vertical: "wby-h-full wby-w-px"
+            horizontal: "h-px w-full",
+            vertical: "h-full w-px"
         },
         variant: {
-            transparent: "wby-transparent",
-            base: "wby-bg-white",
-            dimmed: "wby-bg-neutral-dimmed",
-            muted: "wby-bg-neutral-muted",
-            strong: "wby-bg-neutral-strong"
+            transparent: "transparent",
+            base: "bg-white",
+            dimmed: "bg-neutral-dimmed",
+            muted: "bg-neutral-muted",
+            strong: "bg-neutral-strong"
         }
     },
     compoundVariants: [
-        { orientation: "horizontal", margin: "xs", className: "wby-my-px" },
-        { orientation: "horizontal", margin: "sm", className: "wby-my-xxs" },
-        { orientation: "horizontal", margin: "md", className: "wby-my-xs" },
-        { orientation: "horizontal", margin: "lg", className: "wby-my-sm" },
-        { orientation: "horizontal", margin: "xl", className: "wby-my-md" },
-        { orientation: "vertical", margin: "xs", className: "wby-mx-px" },
-        { orientation: "vertical", margin: "sm", className: "wby-mx-xxs" },
-        { orientation: "vertical", margin: "md", className: "wby-mx-xs" },
-        { orientation: "vertical", margin: "lg", className: "wby-mx-sm" },
-        { orientation: "vertical", margin: "xl", className: "wby-mx-md" }
+        { orientation: "horizontal", margin: "xs", className: "my-px" },
+        { orientation: "horizontal", margin: "sm", className: "my-xxs" },
+        { orientation: "horizontal", margin: "md", className: "my-xs" },
+        { orientation: "horizontal", margin: "lg", className: "my-sm" },
+        { orientation: "horizontal", margin: "xl", className: "my-md" },
+        { orientation: "vertical", margin: "xs", className: "mx-px" },
+        { orientation: "vertical", margin: "sm", className: "mx-xxs" },
+        { orientation: "vertical", margin: "md", className: "mx-xs" },
+        { orientation: "vertical", margin: "lg", className: "mx-sm" },
+        { orientation: "vertical", margin: "xl", className: "mx-md" }
     ],
     defaultVariants: {
         orientation: "horizontal",

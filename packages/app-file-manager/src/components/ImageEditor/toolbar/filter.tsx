@@ -140,7 +140,7 @@ class RenderForm extends React.Component<RenderFormProps, RenderFormState> {
                         </Grid.Column>
                     ))}
                 </>
-                <Grid.Column span={12} className={"wby-text-center"}>
+                <Grid.Column span={12} className={"text-center"}>
                     <Button
                         text={"Reset filters"}
                         variant={"secondary"}

@@ -2,19 +2,19 @@ import * as React from "react";
 import { cn, cva } from "~/utils.js";
 import type { DialogProps } from "~/Dialog/index.js";
 
-const dialogBodyVariants = cva("wby-flex-1", {
+const dialogBodyVariants = cva("flex-1", {
     // Flex grows to fill available space - we need this for the body to expand in case of a "fullscreen" dialog
     variants: {
         size: {
-            sm: "wby-px-md-extra",
-            md: "wby-px-md-extra",
-            lg: "wby-px-lg",
-            xl: "wby-px-lg",
-            full: "wby-px-lg"
+            sm: "px-md-extra",
+            md: "px-md-extra",
+            lg: "px-lg",
+            xl: "px-lg",
+            full: "px-lg"
         },
         bodyPadding: {
             true: "",
-            false: "!wby-px-none"
+            false: "px-none! py-none!"
         }
     },
     defaultVariants: {

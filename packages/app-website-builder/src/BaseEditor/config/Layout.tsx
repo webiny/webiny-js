@@ -21,14 +21,14 @@ export const Layout = makeDecoratable("EditorLayout", () => {
     return (
         <EditorLayoutContainer>
             <EditorConfig.Ui.TopBar />
-            <div className={"wby-flex wby-flex-row"}>
-                <div className={"wby-w-[300px] wby-flex-none"}>
+            <div className={"flex flex-row"}>
+                <div className={"w-[300px] flex-none"}>
                     <EditorConfig.Ui.Toolbar />
                 </div>
-                <div className={"wby-flex-auto"}>
+                <div className={"flex-auto"}>
                     <EditorConfig.Ui.Content />
                 </div>
-                <div className={"wby-w-[300px] wby-flex-none"}>
+                <div className={"w-[300px] flex-none"}>
                     <EditorConfig.Ui.Sidebar />
                 </div>
             </div>

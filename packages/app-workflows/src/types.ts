@@ -1,5 +1,4 @@
 import type { NonEmptyArray } from "@webiny/app/types.js";
-
 import type { ReactElement } from "react";
 
 export interface IWorkflowApplication {
@@ -30,4 +29,42 @@ export interface IWorkflow {
     app: string;
     name: string;
     steps: NonEmptyArray<IWorkflowStep>;
+}
+
+export enum WorkflowStateValue {
+    pending = "pending",
+    inReview = "inReview",
+    approved = "approved",
+    rejected = "rejected"
+}
+
+export interface IIdentity {
+    id: string;
+    displayName?: string;
+    type?: string;
+}
+
+/**
+ * We have all info from workflow step and extend it with a state step.
+ */
+export interface IWorkflowStateStep extends IWorkflowStep {
+    state: WorkflowStateValue;
+    comment: string | null | undefined;
+    savedBy: IIdentity | null | undefined;
+    isAllowedToReview: boolean;
+}
+
+export interface IWorkflowState {
+    id: string;
+    isActive: boolean;
+    app: string;
+    targetId: string;
+    targetRevisionId: string;
+    comment: string | null | undefined;
+    state: WorkflowStateValue;
+    steps: IWorkflowStateStep[];
+    createdBy: IIdentity;
+    savedBy: IIdentity;
+    createdOn: Date;
+    savedOn: Date;
 }

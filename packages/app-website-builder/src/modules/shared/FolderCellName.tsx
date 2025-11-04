@@ -19,7 +19,7 @@ export const FolderCellName = ({ folder }: FolderCellNameProps) => {
     return (
         <div
             className={
-                "wby-flex wby-items-center wby-gap-sm wby-truncate wby-cursor-pointer wby-font-semibold hover:wby-underline"
+                "flex items-center gap-sm truncate cursor-pointer font-semibold hover:underline"
             }
             onClick={() => navigateToFolder(folder.id)}
         >
@@ -29,7 +29,7 @@ export const FolderCellName = ({ folder }: FolderCellNameProps) => {
                 icon={icon}
                 label={`Folder - ${folder.title}`}
             />
-            <Text className={"wby-truncate wby-min-w-0 wby-flex-shrink"}>{folder.title}</Text>
+            <Text className={"truncate min-w-0 shrink"}>{folder.title}</Text>
         </div>
     );
 };

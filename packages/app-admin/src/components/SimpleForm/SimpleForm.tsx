@@ -1,12 +1,12 @@
 import * as React from "react";
 import { cn, cva, Grid, Heading, Icon, type VariantProps } from "@webiny/admin-ui";
 
-const simpleFormInnerVariants = cva("wby-mx-auto", {
+const simpleFormInnerVariants = cva("mx-auto", {
     variants: {
         size: {
-            md: "wby-max-w-[640px]",
-            lg: "wby-max-w-[800px]",
-            full: "wby-max-w-full"
+            md: "max-w-[640px]",
+            lg: "max-w-[800px]",
+            full: "max-w-full"
         }
     },
     defaultVariants: {
@@ -24,28 +24,22 @@ interface SimpleFormProps
 
 export const SimpleForm = ({ children, className, size, ...props }: SimpleFormProps) => {
     return (
-        <div
-            {...props}
-            className={cn(["webiny-data-list", "wby-mx-auto wby-p-lg", "wby-relative"], className)}
-        >
+        <div {...props} className={cn(["webiny-data-list", "mx-auto p-lg", "relative"], className)}>
             <div className={cn(simpleFormInnerVariants({ size }))}>{children}</div>
         </div>
     );
 };
 
-const simpleFormHeaderVariants = cva(
-    "wby-p-md wby-pl-lg wby-border-sm wby-border-neutral-dimmed-darker",
-    {
-        variants: {
-            rounded: {
-                true: "wby-rounded-t-3xl"
-            }
-        },
-        defaultVariants: {
-            rounded: true
+const simpleFormHeaderVariants = cva("p-md pl-lg border-sm border-neutral-dimmed-darker", {
+    variants: {
+        rounded: {
+            true: "rounded-t-3xl"
         }
+    },
+    defaultVariants: {
+        rounded: true
     }
-);
+});
 
 interface SimpleFormHeaderProps
     extends Omit<React.HTMLAttributes<HTMLDivElement>, "title">,
@@ -73,7 +67,7 @@ export const SimpleFormHeader = ({
                 <Grid.Column span={children ? 6 : 12}>
                     <>
                         {icon && <Icon label={title as string} icon={icon} />}
-                        <Heading level={4} className={"wby-truncate"}>
+                        <Heading level={4} className={"truncate"}>
                             {title}
                         </Heading>
                     </>
@@ -93,8 +87,8 @@ export const SimpleFormFooter = ({ children, className }: SimpleFormFooterProps)
     return (
         <div
             className={cn(
-                "wby-p-lg wby-pt-none wby-border-sm wby-border-t-none wby-border-neutral-dimmed-darker wby-rounded-b-3xl",
-                "wby-flex wby-justify-end wby-gap-sm",
+                "p-lg pt-none border-sm border-t-none border-neutral-dimmed-darker rounded-b-3xl",
+                "flex justify-end gap-sm",
                 className
             )}
         >
@@ -110,12 +104,7 @@ interface SimpleFormContentProps {
 
 export const SimpleFormContent = ({ children, className }: SimpleFormContentProps) => {
     return (
-        <div
-            className={cn(
-                "wby-p-lg wby-border-sm wby-border-y-none wby-border-neutral-dimmed-darker",
-                className
-            )}
-        >
+        <div className={cn("p-lg border-sm border-y-none border-neutral-dimmed-darker", className)}>
             {children}
         </div>
     );

@@ -2,15 +2,15 @@ import React from "react";
 import { cn, cva, type VariantProps } from "~/utils.js";
 
 const toastRootVariants = cva(
-    "wby-group wby-pointer-events-auto wby-relative wby-flex wby-w-full wby-items-center wby-justify-start wby-p-md wby-gap-sm-extra wby-self-stretch wby-overflow-hidden wby-rounded-md wby-border-sm wby-border-neutral-dimmed wby-shadow-lg",
+    "group pointer-events-auto relative flex w-full items-center justify-start p-md gap-sm-extra self-stretch overflow-hidden rounded-md border-sm border-neutral-dimmed shadow-lg",
     {
         variants: {
             variant: {
-                default: "wby-default-variant wby-bg-neutral-dark",
-                subtle: "wby-subtle-variant wby-bg-white"
+                default: "default-variant bg-neutral-dark",
+                subtle: "subtle-variant bg-white"
             },
             hasDescription: {
-                true: "wby-has-description wby-items-start wby-justify-start"
+                true: "has-description items-start justify-start"
             }
         },
         defaultVariants: {

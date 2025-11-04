@@ -9,10 +9,7 @@ const BaseItemPlaceholder = ({ depth }: ItemPlaceholderProps) => {
     const left = depth * 20 + 20;
 
     return (
-        <div
-            className="wby-w-full wby-h-xxs wby-bg-primary-muted wby-absolute wby-top-0 wby-right-0"
-            style={{ left }}
-        />
+        <div className="w-full h-xxs bg-primary-muted absolute top-0 right-0" style={{ left }} />
     );
 };
 

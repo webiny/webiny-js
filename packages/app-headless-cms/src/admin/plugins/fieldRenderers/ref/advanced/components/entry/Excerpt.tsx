@@ -14,7 +14,7 @@ interface ExcerptProps {
 
 export const Excerpt = ({ modelName, createdOn, createdBy, status }: ExcerptProps) => {
     return (
-        <Text size="sm" as="div" className={cn("wby-truncate wby-w-full wby-text-neutral-muted")}>
+        <Text size="sm" as="div" className={cn("truncate w-full text-neutral-muted")}>
             Model: {modelName} - Status: {status} - Created by {createdBy.displayName}{" "}
             <TimeAgo datetime={createdOn} />
         </Text>

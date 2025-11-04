@@ -19,10 +19,10 @@ export const SingletonContentEntry = makeDecoratable("SingletonContentEntry", ()
 
     return (
         <Container>
-            <div className={"wby-container wby-py-lg"}>
+            <div className={"container py-lg"}>
                 <Grid>
                     <Grid.Column span={10} offset={1}>
-                        <div className="wby-border-sm wby-border-neutral-dimmed-darker wby-rounded-t-3xl wby-rounded-b-3xl">
+                        <div className="border-sm border-neutral-dimmed-darker rounded-t-3xl rounded-b-3xl">
                             {loading && <OverlayLoader />}
                             <ContentEntryForm
                                 header={<SingletonHeader title={contentModel.name} />}

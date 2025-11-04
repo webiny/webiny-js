@@ -1,10 +1,10 @@
 import * as React from "react";
 import { cn, cva, type VariantProps } from "~/utils.js";
 
-const rangeSliderValueVariants = cva("wby-font-normal wby-text-sm wby-leading-none", {
+const rangeSliderValueVariants = cva("font-normal text-sm leading-none", {
     variants: {
         disabled: {
-            true: "wby-text-neutral-disabled wby-cursor-not-allowed"
+            true: "text-neutral-disabled cursor-not-allowed"
         }
     }
 });

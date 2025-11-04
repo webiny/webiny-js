@@ -9,11 +9,11 @@ export interface InfoMessageProps {
 
 export const InfoMessage = ({ message, icon }: InfoMessageProps) => {
     return (
-        <div className={"wby-bg-neutral-dimmed wby-p-md wby-flex wby-flex-col wby-items-center"}>
+        <div className={"bg-neutral-dimmed p-md flex flex-col items-center"}>
             {icon && (
                 <Icon label="Select an element" size={"lg"} icon={icon} color={"neutral-light"} />
             )}
-            <Text size={"md"} className={"wby-text-center wby-text-neutral-dimmed wby-my-sm"}>
+            <Text size={"md"} className={"text-center text-neutral-dimmed my-sm"}>
                 {message}
             </Text>
         </div>

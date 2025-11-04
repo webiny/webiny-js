@@ -80,7 +80,6 @@
     "ora": "4.1.1",
     "react": "18.2.0",
     "regenerator-runtime": "^0.14.1",
-    "replace-in-path": "^1.1.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

@@ -41,7 +41,7 @@ const RangeSliderPrimitiveRenderer = ({
     ...sliderProps
 }: RangeSliderPrimitiveVm) => {
     return (
-        <div className={"wby-flex wby-h-md wby-w-full"}>
+        <div className={"flex h-md w-full"}>
             <SliderRoot {...sliderProps} value={values}>
                 <SliderTrack />
                 <SliderThumb

@@ -4,11 +4,11 @@ interface IParams {
     model: Pick<CmsModel, "modelId">;
 }
 export const createWorkflowAppName = ({ model }: IParams): string => {
-    return `cms:${model.modelId}`;
+    return `cms.${model.modelId}`;
 };
 
 export const getModelIdFromAppName = (app: string): string | null => {
-    const matched = app.match(/^cms:([a-zA-Z0-9_-]+)$/);
+    const matched = app.match(/^cms\.([a-zA-Z0-9_-]+)$/);
     if (!matched) {
         return null;
     }

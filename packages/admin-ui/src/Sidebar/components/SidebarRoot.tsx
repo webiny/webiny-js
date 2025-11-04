@@ -6,16 +6,13 @@ interface SidebarRootProps extends React.ComponentProps<"div"> {
     side?: "left" | "right";
 }
 
-const variants = cva(
-    "wby-group wby-peer wby-block wby-border-r-sm wby-border-neutral-dimmed wby-bg-neutral-light",
-    {
-        variants: {
-            pinned: {
-                false: "wby-fixed wby-top-0 wby-z-10 "
-            }
+const variants = cva("group peer block border-r-sm border-neutral-dimmed bg-neutral-light", {
+    variants: {
+        pinned: {
+            false: "fixed top-0 z-10 "
         }
     }
-);
+});
 
 const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRootProps) => {
     const { state, setExpanded, pinned } = useSidebar();
@@ -63,24 +60,21 @@ const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRo
         >
             <div
                 className={cn(
-                    "wby-duration-175 wby-relative wby-h-svh wby-w-sidebar-expanded wby-bg-transparent wby-transition-[width] wby-ease-linear wby-duration-175",
-                    "group-data-[side=right]:wby-rotate-180",
-                    "group-data-[state=collapsed]:wby-w-sidebar-collapsed"
+                    "duration-175 relative h-svh w-sidebar-expanded bg-transparent transition-[width] ease-linear duration-175",
+                    "group-data-[side=right]:rotate-180",
+                    "group-data-[state=collapsed]:w-sidebar-collapsed"
                 )}
             />
             <div
                 className={cn(
-                    "wby-duration-175 wby-fixed wby-inset-y-0 wby-z-10 wby-h-svh wby-w-sidebar-expanded wby-transition-[width] wby-ease-linear md:wby-flex",
-                    side === "left" ? "wby-left-0" : "wby-right-0",
-                    "group-data-[state=collapsed]:wby-w-sidebar-collapsed group-data-[side=left]:wby-border-r-px group-data-[side=right]:wby-border-l-px",
+                    "duration-175 fixed inset-y-0 z-10 h-svh w-sidebar-expanded transition-[width] ease-linear md:flex",
+                    side === "left" ? "left-0" : "right-0",
+                    "group-data-[state=collapsed]:w-sidebar-collapsed group-data-[side=left]:border-r-px group-data-[side=right]:border-l-px",
                     className
                 )}
                 {...props}
             >
-                <div
-                    data-sidebar="sidebar"
-                    className="wby-flex wby-h-full wby-w-full wby-py-xs wby-flex-col"
-                >
+                <div data-sidebar="sidebar" className="flex h-full w-full py-xs flex-col">
                     {children}
                 </div>
             </div>

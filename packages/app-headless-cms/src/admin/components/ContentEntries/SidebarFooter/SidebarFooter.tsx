@@ -4,7 +4,7 @@ import { Scheduler } from "~/admin/components/ContentEntries/Scheduler/index.js"
 
 export const SidebarFooter = () => {
     return (
-        <div className={"wby-px-xs wby-py-sm wby-bg-neutral-base"}>
+        <div className={"px-xs py-sm bg-neutral-base"}>
             <Scheduler />
             <TrashBin />
         </div>

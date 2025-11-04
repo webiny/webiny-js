@@ -185,12 +185,8 @@ class ImageEditor extends React.Component<ImageEditorProps, ImageEditorState> {
         const { src, tools, children } = this.props;
         const { tool } = this.state;
         const editor = (
-            <div
-                className={
-                    "wby-w-full wby-h-full wby-flex wby-flex-col wby-gap-md wby-overflow-hidden"
-                }
-            >
-                <div className={"wby-flex wby-justify-center wby-items-center wby-w-full"}>
+            <div className={"w-full h-full flex flex-col gap-md overflow-hidden"}>
+                <div className={"flex justify-center items-center w-full"}>
                     {tools.map(key => {
                         const tool: ImageEditorTool = toolbar[key];
                         if (!tool) {
@@ -201,9 +197,7 @@ class ImageEditor extends React.Component<ImageEditorProps, ImageEditorState> {
                             <div
                                 key={key}
                                 className={
-                                    this.state.tool
-                                        ? "wby-opacity-50 wby-cursor wby-pointer-events-none"
-                                        : ""
+                                    this.state.tool ? "opacity-50 cursor pointer-events-none" : ""
                                 }
                             >
                                 {tool.icon({
@@ -213,7 +207,7 @@ class ImageEditor extends React.Component<ImageEditorProps, ImageEditorState> {
                         );
                     })}
                 </div>
-                <div className={"wby-w-full"}>
+                <div className={"w-full"}>
                     {tool ? (
                         <>
                             {typeof tool.renderForm === "function" &&
@@ -223,7 +217,7 @@ class ImageEditor extends React.Component<ImageEditorProps, ImageEditorState> {
                                     canvas: this.canvas
                                 })}
 
-                            <div className={"wby-flex wby-justify-center wby-gap-sm wby-mt-sm"}>
+                            <div className={"flex justify-center gap-sm mt-sm"}>
                                 <Button
                                     variant={"secondary"}
                                     text={"Cancel"}
@@ -243,14 +237,14 @@ class ImageEditor extends React.Component<ImageEditorProps, ImageEditorState> {
                             </div>
                         </>
                     ) : (
-                        <div className={"wby-text-center"}>
+                        <div className={"text-center"}>
                             Select a tool to start working on your image.
                         </div>
                     )}
                 </div>
                 <div
                     className={
-                        "wby-flex wby-justify-center wby-items-center wby-w-full wby-bg-neutral-dimmed wby-rounded-md wby-overflow-hidden"
+                        "flex justify-center items-center w-full bg-neutral-dimmed rounded-md overflow-hidden"
                     }
                     style={{ height: "calc(100vh - 256px)" }}
                 >

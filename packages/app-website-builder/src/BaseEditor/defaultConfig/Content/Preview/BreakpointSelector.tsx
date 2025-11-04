@@ -8,7 +8,7 @@ export const BreakpointSelector = () => {
     const { breakpoint, breakpoints, setBreakpoint } = useBreakpoint();
 
     return (
-        <div className={"wby-align-right wby-bg-neutral-light wby-rounded-md"}>
+        <div className={"align-right bg-neutral-light rounded-md"}>
             {breakpoints.map(bp => {
                 return (
                     <Tooltip

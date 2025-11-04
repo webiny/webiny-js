@@ -156,6 +156,8 @@ const createCypressJobs = (dbSetup: string) => {
             ...createDeployWebinySteps({ workingDirectory: DIR_TEST_PROJECT }),
             ...withCommonParams(
                 [
+                    // Commented this out b/c of an issue. Basically, the
+                    // script fails b/c its output is not pure JSON string.
                     // {
                     //     name: "Deployment Summary",
                     //     run: `${runNodeScript(

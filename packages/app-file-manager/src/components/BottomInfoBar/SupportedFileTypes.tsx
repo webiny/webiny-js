@@ -45,7 +45,7 @@ const SupportedFileTypes = ({
 
     if (accept.length === 0) {
         return (
-            <Text size={"sm"} as={"div"} className={"wby-text-neutral-strong"}>
+            <Text size={"sm"} as={"div"} className={"text-neutral-strong"}>
                 {t`Showing {currentCountLabel} out of {totalCountLabel} from all file extensions.`({
                     currentCountLabel: String(currentCount),
                     totalCountLabel: getLabel(totalCount)
@@ -55,7 +55,7 @@ const SupportedFileTypes = ({
     }
 
     return (
-        <Text size={"sm"} as={"div"} className={"wby-text-neutral-strong"}>
+        <Text size={"sm"} as={"div"} className={"text-neutral-strong"}>
             {t`Showing {currentCountLabel} out of {totalCountLabel} from the following file extensions: {files}.`(
                 {
                     currentCountLabel: String(currentCount),

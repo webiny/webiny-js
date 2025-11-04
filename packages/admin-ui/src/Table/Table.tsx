@@ -12,18 +12,18 @@ import {
     Row
 } from "~/Table/components/index.js";
 
-const tableWrapperVariants = cva("wby-relative wby-w-full wby-overflow-auto", {
+const tableWrapperVariants = cva("relative w-full overflow-auto", {
     variants: {
         sticky: {
-            true: "wby-overflow-clip"
+            true: "overflow-clip"
         }
     }
 });
 
-const tableVariants = cva("wby-w-full wby-caption-bottom wby-text-sm wby-bg-white", {
+const tableVariants = cva("w-full caption-bottom text-sm bg-white", {
     variants: {
         bordered: {
-            true: "wby-border-neutral-dimmed wby-border-solid wby-border-sm"
+            true: "border-neutral-dimmed border-solid border-sm"
         }
     }
 });

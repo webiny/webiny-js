@@ -2,7 +2,30 @@ import path from "path";
 import fs from "fs/promises";
 import { transformFileAsync } from "@babel/core";
 import chokidar from "chokidar";
-import glob from "fast-glob";
+
+let compilationQueue = [];
+let debounceTimer = null;
+const DEBOUNCE_DELAY = 1000; // 1 second
+
+const flushCompilationQueue = () => {
+    if (compilationQueue.length > 0) {
+        if (compilationQueue.length === 1) {
+            console.log(`Successfully compiled ${compilationQueue[0]}.`);
+        } else {
+            console.log(`Successfully compiled ${compilationQueue.length} files.`);
+        }
+        compilationQueue = [];
+    }
+};
+
+const logCompilation = inputPathRelative => {
+    compilationQueue.push(inputPathRelative);
+
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        flushCompilationQueue();
+    }, DEBOUNCE_DELAY);
+};
 
 const compileFile = async (cwd, inputPath, outputPath) => {
     const inputPathRelative = path.relative(cwd, inputPath);
@@ -25,7 +48,7 @@ const compileFile = async (cwd, inputPath, outputPath) => {
         await fs.writeFile(`${outputPath}.map`, JSON.stringify(result.map));
     }
 
-    console.log(`Successfully compiled ${inputPathRelative}.`);
+    logCompilation(inputPathRelative);
 };
 
 const srcToDist = filePath =>
@@ -38,11 +61,20 @@ const srcToDist = filePath =>
 export default async options => {
     const srcDir = path.join(options.cwd, "src");
 
-    const filePaths = glob.sync("**/*.{ts,tsx}", { cwd: srcDir }).map(f => path.join(srcDir, f));
+    // Watch the src directory recursively for new files
+    const watcher = chokidar.watch(srcDir, {
+        ignored: /(^|[\/\\])\../, // ignore dotfiles
+        persistent: true,
+        ignoreInitial: false
+    });
 
-    const watcher = chokidar.watch(filePaths);
+    const isTsFile = filePath => /\.(ts|tsx)$/.test(filePath);
 
     watcher.on("add", async srcPath => {
+        if (!isTsFile(srcPath)) {
+            return;
+        }
+
         const distPath = srcToDist(srcPath);
 
         try {
@@ -53,6 +85,10 @@ export default async options => {
     });
 
     watcher.on("change", async srcPath => {
+        if (!isTsFile(srcPath)) {
+            return;
+        }
+
         const distPath = srcToDist(srcPath);
 
         try {

@@ -17,6 +17,12 @@ interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {
     children: React.ReactNode;
 }
 
+const ACCORDION_ITEM_CLASSES = [
+    "group-item data-[state=open]:rounded-bl-lg data-[state=open]:rounded-br-lg",
+    "group-[.accordion-variant-container]/accordion:rounded-lg",
+    "data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+] as const;
+
 const AccordionItemBase = (props: AccordionItemProps) => {
     const { itemProps, triggerProps, contentProps } = React.useMemo(() => {
         const {
@@ -50,19 +56,7 @@ const AccordionItemBase = (props: AccordionItemProps) => {
     }, [props]);
 
     return (
-        <AccordionRoot
-            {...itemProps}
-            className={cn(
-                [
-                    "wby-group-item wby-border-b-sm wby-border-b-neutral-dimmed data-[state=open]:wby-rounded-bl-lg data-[state=open]:wby-rounded-br-lg",
-                    "group-[.wby-accordion-variant-container]:wby-rounded-lg",
-                    "group-[.wby-accordion-background-base]:wby-bg-neutral-base",
-                    "group-[.wby-accordion-background-light]:wby-bg-neutral-light",
-                    "data-[disabled]:wby-pointer-events-none data-[disabled]:wby-opacity-50"
-                ],
-                itemProps.className
-            )}
-        >
+        <AccordionRoot {...itemProps} className={cn(ACCORDION_ITEM_CLASSES, itemProps.className)}>
             <AccordionTrigger {...triggerProps} />
             <AccordionContent {...contentProps} />
         </AccordionRoot>

@@ -1,23 +1,37 @@
-import type { IWorkflowStateTransformer } from "~/context/transformer/abstractions/WorkflowStateTransformer.js";
-import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
-import type { IWorkflowStateRecord } from "~/context/abstractions/WorkflowState.js";
+import type {
+    IWorkflowStateTransformer,
+    IWorkflowStateTransformerFromCmsEntryInput,
+    IWorkflowStateTransformerFromCmsEntryOutput,
+    IWorkflowStateTransformerToCmsEntryInput,
+    IWorkflowStateTransformerToCmsEntryOutput
+} from "./abstractions/WorkflowStateTransformer.js";
 
 export class WorkflowStateTransformer implements IWorkflowStateTransformer {
-    public fromCmsEntry(input: CmsEntry<Omit<IWorkflowStateRecord, "id">>): IWorkflowStateRecord {
+    public fromCmsEntry(
+        input: IWorkflowStateTransformerFromCmsEntryInput
+    ): IWorkflowStateTransformerFromCmsEntryOutput {
         return {
             id: input.id,
             workflowId: input.values.workflowId,
             targetId: input.values.targetId,
             targetRevisionId: input.values.targetRevisionId,
             steps: input.values.steps,
+            isActive: input.values.isActive,
             app: input.values.app,
             state: input.values.state,
-            comment: input.values.comment
+            comment: input.values.comment,
+            savedBy: input.savedBy,
+            createdBy: input.createdBy,
+            savedOn: new Date(input.savedOn),
+            createdOn: new Date(input.createdOn)
         };
     }
 
-    public toCmsEntry(input: IWorkflowStateRecord): Omit<IWorkflowStateRecord, "id"> {
+    public toCmsEntry(
+        input: IWorkflowStateTransformerToCmsEntryInput
+    ): IWorkflowStateTransformerToCmsEntryOutput {
         return {
+            isActive: input.isActive,
             workflowId: input.workflowId,
             targetId: input.targetId,
             targetRevisionId: input.targetRevisionId,

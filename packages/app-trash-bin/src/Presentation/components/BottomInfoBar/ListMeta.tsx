@@ -17,7 +17,7 @@ export const ListMeta = (props: ListMetaProps) => {
     }
 
     return (
-        <Text size={"sm"} as={"div"} className={"wby-text-neutral-strong"}>{`Showing ${
+        <Text size={"sm"} as={"div"} className={"text-neutral-strong"}>{`Showing ${
             props.currentCount
         } out of ${getLabel(props.totalCount)}.`}</Text>
     );

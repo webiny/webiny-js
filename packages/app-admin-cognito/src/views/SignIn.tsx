@@ -43,7 +43,7 @@ const DefaultContent = (props: SignInDefaultContentProps) => {
         <>
             <View.Title title={title} description={description} />
             {message && !error && (
-                <div className={"wby-mb-lg"}>
+                <div className={"mb-lg"}>
                     <Alert title={message.title} type={message.type}>
                         {message.text}
                     </Alert>
@@ -76,11 +76,7 @@ const DefaultContent = (props: SignInDefaultContentProps) => {
                         </Bind>
                     </Grid.Column>
                     <Grid.Column span={12}>
-                        <div
-                            className={
-                                "wby-flex wby-flex-row-reverse wby-items-center wby-justify-between"
-                            }
-                        >
+                        <div className={"flex flex-row-reverse items-center justify-between"}>
                             <Button
                                 text={"Submit"}
                                 data-testid="submit-sign-in-form-button"

@@ -25,10 +25,10 @@ export const Title = () => {
     return (
         <>
             {(listTitle && (
-                <div className={"wby-flex wby-gap-xs wby-items-center"}>
-                    <div className={"wby-flex wby-gap-sm wby-items-center wby-truncate"}>
+                <div className={"flex gap-xs items-center"}>
+                    <div className={"flex gap-sm items-center truncate"}>
                         <Icon icon={icon} label={listTitle} size={"md"} color={"neutral-strong"} />
-                        <Heading level={4} as={"h1"} className={"wby-truncate"}>
+                        <Heading level={4} as={"h1"} className={"truncate"}>
                             {listTitle}
                         </Heading>
                     </div>
@@ -49,7 +49,7 @@ export const Title = () => {
                             />
                         </FolderProvider>
                     )}
-                    <div className={"wby-flex wby-flex-nowrap"}>
+                    <div className={"flex flex-nowrap"}>
                         <Switch
                             label={"Display subfolders"}
                             labelPosition={"end"}

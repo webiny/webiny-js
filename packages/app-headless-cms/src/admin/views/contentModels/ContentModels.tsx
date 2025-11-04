@@ -48,10 +48,10 @@ const ContentModels = () => {
     }, []);
 
     return (
-        <div className={"wby-container wby-h-main-content"}>
-            <Grid className="wby-h-full wby-pt-lg">
+        <div className={"container h-main-content"}>
+            <Grid className="h-full pt-lg">
                 <Grid.Column span={10} offset={1}>
-                    <div className="wby-h-full wby-border-sm wby-border-b-none wby-border-neutral-dimmed-darker wby-rounded-t-3xl">
+                    <div className="h-full border-sm border-b-none border-neutral-dimmed-darker rounded-t-3xl">
                         <ContentModelsDataList
                             showImportModelModal={showImportModelModal}
                             canCreate={canCreate}

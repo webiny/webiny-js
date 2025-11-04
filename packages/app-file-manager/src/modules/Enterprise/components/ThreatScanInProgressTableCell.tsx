@@ -25,9 +25,7 @@ export const ThreatScanInProgressTableCell = ({ children }: ThreatScanInProgress
         <Tooltip
             content={`This file is currently being scanned for threats.`}
             trigger={
-                <div className={"wby-pointer-events-none wby-opacity-50 wby-block wby-truncate"}>
-                    {children}
-                </div>
+                <div className={"pointer-events-none opacity-50 block truncate"}>{children}</div>
             }
         />
     );

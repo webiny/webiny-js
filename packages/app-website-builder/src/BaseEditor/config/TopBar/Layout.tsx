@@ -10,7 +10,7 @@ export const Layout = makeDecoratable("TopBarLayout", () => {
             start={<TopBar.Elements group={"left"} />}
             middle={<TopBar.Elements group={"center"} />}
             end={
-                <div className={"wby-flex wby-gap-x-sm"}>
+                <div className={"flex gap-x-sm"}>
                     <TopBar.Elements group={"actions"} />
                 </div>
             }

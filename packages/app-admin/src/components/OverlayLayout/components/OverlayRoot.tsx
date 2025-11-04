@@ -11,7 +11,7 @@ interface OverlayRootProps {
 const OverlayRoot = ({ visible, onExited, children }: OverlayRootProps) => {
     return (
         <Transition in={visible} timeout={100} appear onExited={onExited}>
-            <div className={"wby-pointer-events-auto"}>{children}</div>
+            <div className={"pointer-events-auto"}>{children}</div>
         </Transition>
     );
 };

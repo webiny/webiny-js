@@ -20,7 +20,7 @@ const meta: Meta<typeof Popover> = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-[#f4f4f4] wby-flex wby-items-center wby-justify-center wby-w-full wby-h-[300px]">
+            <div className="bg-[#f4f4f4] flex items-center justify-center w-full h-[300px]">
                 <Story />
             </div>
         )
@@ -35,7 +35,7 @@ export const Default: Story = {
     args: {
         trigger: <p>Popover trigger</p>,
         content: (
-            <div className={"wby-w-[260px]"}>
+            <div className={"w-[260px]"}>
                 <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
                 lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
                 tempus.
@@ -65,7 +65,7 @@ export const SubtleVariant: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-flex wby-items-center wby-justify-center wby-bg-neutral-dark wby-text-neutral-light wby-w-full wby-h-[300px]">
+            <div className="flex items-center justify-center bg-neutral-dark text-neutral-light w-full h-[300px]">
                 <Story />
             </div>
         )
@@ -78,7 +78,7 @@ export const WithArrowSubtleVariant: Story = {
         trigger: <p>Popover trigger</p>,
         arrow: true,
         content: (
-            <div className={"wby-w-[320px]"}>
+            <div className={"w-[260px]"}>
                 <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
                 lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
                 tempus.
@@ -97,7 +97,7 @@ export const Documentation: Story = {
         close: false,
         trigger: <p>Popover trigger</p>,
         content: (
-            <div className={"wby-w-[260px]"}>
+            <div className={"w-[260px]"}>
                 <strong>Lorem ipsum dolor sit amet</strong>, consectetur adipiscing elit. Morbi
                 lectus leo, dapibus vitae mollis dictum, vulputate eget lorem. Aliquam rutrum auctor
                 tempus.

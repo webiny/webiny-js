@@ -68,20 +68,20 @@ const BaseMultiFilePickerPrimitive = ({
             className={cn(
                 inputVariants({ variant, invalid }),
                 filePickerVariants({ type, variant }),
-                "wby-max-h-[280px]",
+                "max-h-[280px]",
                 className
             )}
             style={containerStyle}
         >
             {type === "area" && (label || description) && (
-                <div className={"wby-w-full wby-flex wby-justify-between"}>
-                    <div className={"wby-w-full"}>
+                <div className={"w-full flex justify-between"}>
+                    <div className={"w-full"}>
                         {label && (
-                            <div className={"wby-mb-xs"}>
+                            <div className={"mb-xs"}>
                                 {typeof label === "string" ? (
                                     <FilePickerLabel
                                         label={label}
-                                        className={"wby-m-0"}
+                                        className={"m-0"}
                                         disabled={disabled}
                                     />
                                 ) : (
@@ -93,7 +93,7 @@ const BaseMultiFilePickerPrimitive = ({
                             <FilePickerDescription
                                 description={description}
                                 disabled={disabled}
-                                className={"wby-m-0"}
+                                className={"m-0"}
                             />
                         )}
                     </div>
@@ -107,7 +107,7 @@ const BaseMultiFilePickerPrimitive = ({
                 </div>
             )}
             {vm.hasFiles ? (
-                <div className="wby-w-full wby-overflow-y-scroll wby-flex wby-flex-col wby-gap-xs">
+                <div className="w-full overflow-y-scroll flex flex-col gap-xs">
                     {vm.files.map((file, i) => (
                         <FilePreview
                             key={`file-preview-${i}`}

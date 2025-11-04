@@ -142,7 +142,7 @@ export const GroupsDataList = ({ activeId }: GroupsDataListProps) => {
                     text={t`New`}
                     icon={<AddIcon />}
                     size={"sm"}
-                    className={"wby-ml-xs"}
+                    className={"ml-xs"}
                     data-testid="new-record-button"
                     onClick={() => {
                         goToRoute(Routes.Roles.List, { new: true });

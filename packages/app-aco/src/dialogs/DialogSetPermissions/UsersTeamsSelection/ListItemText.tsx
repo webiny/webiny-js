@@ -17,7 +17,7 @@ export const ListItemText = ({ target }: ListItemTextProps) => {
                     {target.name}&nbsp;
                     {target.id === identity!.id && <em>(you)</em>}
                 </Text>
-                <Text as={"div"} size={"sm"} className={"wby-text-neutral-strong wby-font-normal"}>
+                <Text as={"div"} size={"sm"} className={"text-neutral-strong font-normal"}>
                     {target.meta.email || "E-mail not available."}
                 </Text>
             </div>

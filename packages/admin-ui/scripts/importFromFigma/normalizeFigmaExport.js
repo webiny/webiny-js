@@ -1,5 +1,5 @@
-const aliasTokensExport = require("./exports/Alias tokens.json");
-const { figmaRgbaToHsla } = require("./figmaRgbaToHsla");
+import aliasTokensExport from "./exports/Alias tokens.json" with { type: "json" };
+import { figmaRgbaToHsla } from "./figmaRgbaToHsla.js";
 
 const VARIABLE_TYPES = [
     "backgroundColor",
@@ -68,4 +68,4 @@ const normalizeFigmaExport = () => {
         });
 };
 
-module.exports = { normalizeFigmaExport };
+export { normalizeFigmaExport };

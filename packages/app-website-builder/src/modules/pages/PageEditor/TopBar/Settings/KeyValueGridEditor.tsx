@@ -26,7 +26,7 @@ export const KeyValueGridEditor: React.FC = () => {
     };
 
     return (
-        <Grid className={"wby-mt-md"}>
+        <Grid className={"mt-md"}>
             <>
                 <Grid.Column span={12}>
                     <Text size={"md"}>Add your SEO tags here.</Text>

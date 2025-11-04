@@ -50,4 +50,4 @@ function figmaRgbaToHsla(figmaColor) {
     return { h, s, l, a };
 }
 
-module.exports = { figmaRgbaToHsla };
+export { figmaRgbaToHsla };

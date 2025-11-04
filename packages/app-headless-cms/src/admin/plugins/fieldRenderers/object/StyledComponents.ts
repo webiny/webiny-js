@@ -1,16 +1,6 @@
 import styled from "@emotion/styled";
 import { css } from "@emotion/css";
 
-export const fieldsWrapperStyle = css`
-    border-left: 2px solid var(--mdc-theme-on-background);
-    padding-left: 16px;
-    margin-left: 6px;
-
-    &:focus-within {
-        border-color: var(--mdc-theme-primary);
-    }
-`;
-
 export const dynamicSectionTitleStyle = css`
     margin-top: 24px;
 `;
