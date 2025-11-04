@@ -59,10 +59,6 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
     }
 
     updateWorkflow = (workflow: IWorkflow): void => {
-        console.log({
-            updateWorkflow: true,
-            workflow: JSON.parse(JSON.stringify(workflow))
-        });
         this.repository.save(workflow);
     };
 
@@ -77,22 +73,12 @@ export class WorkflowsPresenter implements IWorkflowsPresenter {
     addStep = (step: IWorkflowStep): void => {
         const workflow = this.getWorkflow();
         workflow.addStep(step);
-        console.log({
-            addStep: true,
-            workflow: JSON.parse(JSON.stringify(workflow.toJS()))
-        });
         this.updateWorkflow(workflow.toJS());
     };
 
     updateStep = (step: IWorkflowStep): void => {
         const workflow = this.getWorkflow();
         workflow.updateStep(step);
-
-        console.log({
-            updateStep: true,
-            workflow: JSON.parse(JSON.stringify(workflow.toJS()))
-        });
-
         this.updateWorkflow(workflow.toJS());
     };
 
