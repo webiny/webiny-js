@@ -46,7 +46,7 @@ export class WorkflowsRepository implements IWorkflowsRepository {
 
     public async save(input: IWorkflow): Promise<void> {
         const index = this.workflows.findIndex(w => w.id === input.id);
-        const workflow = toJS(this.workflows[index] || input);
+        const original = index === -1 ? null : this.workflows[index];
         runInAction(() => {
             this._loading = true;
             this._error = null;
@@ -56,11 +56,18 @@ export class WorkflowsRepository implements IWorkflowsRepository {
                 this.workflows[index] = input;
             }
         });
-        const result = await this.gateway.storeWorkflow(workflow);
+        const result = await this.gateway.storeWorkflow(input);
 
         runInAction(() => {
             this._loading = false;
             this._error = result.error;
+            if (!result.error) {
+                return;
+            } else if (original) {
+                this.workflows[index] = original;
+                return;
+            }
+            this.workflows.pop();
         });
     }
 

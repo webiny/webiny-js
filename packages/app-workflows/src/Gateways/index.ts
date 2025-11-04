@@ -29,3 +29,14 @@ export type {
 } from "./abstraction/WorkflowStateGateway.js";
 export type { IWorkflowStateGatewayParams } from "./WorkflowStateGateway.js";
 export { WorkflowStateGateway } from "./WorkflowStateGateway.js";
+
+export type {
+    IWorkflowStatesWidgetGateway,
+    IWorkflowStatesWidgetGatewayListOwnStatesParams,
+    IWorkflowStatesWidgetGatewayListOwnStatesResponse,
+    IWorkflowStatesWidgetGatewayListRequestedStatesParams,
+    IWorkflowStatesWidgetGatewayListRequestedStatesResponse,
+    IWorkflowStatesWidgetError,
+    IWorkflowStatesWidgetMeta
+} from "./abstraction/WorkflowStatesWidgetGateway.js";
+export { WorkflowStatesWidgetGateway } from "./WorkflowStatesWidgetGateway.js";

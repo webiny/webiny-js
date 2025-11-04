@@ -1,14 +1,22 @@
 import { Context } from "~/types.js";
-import {
-    type IWorkflowState,
-    type IWorkflowStateIdentity,
-    type IWorkflowStateRecord,
-    type IWorkflowStateRecordStep,
-    type IWorkflowStateRecordStepWithPermissions,
-    WorkflowStateRecordState
+import type {
+    IEnrichedWorkflowStateRecordStep,
+    IWorkflowStateIdentity,
+    IWorkflowStateModel,
+    IWorkflowStateRecord,
+    IWorkflowStateRecordStep
 } from "../abstractions/WorkflowState.js";
+import { WorkflowStateRecordState } from "../abstractions/WorkflowState.js";
 import { WebinyError } from "@webiny/error";
 import type { IWorkflowStepTeam } from "~/context/abstractions/Workflow.js";
+import { WorkflowStateNoPendingStepError } from "../errors/index.js";
+import {
+    ensureCanReview,
+    ensureCanTakeOver,
+    ensureIsStepOwner,
+    ensureNotInReview,
+    ensureNotRejected
+} from "./guards/index.js";
 
 export interface IWorkflowStateParams {
     record: IWorkflowStateRecord;
@@ -16,10 +24,15 @@ export interface IWorkflowStateParams {
     context: Pick<Context, "workflowState" | "security" | "adminUsers">;
 }
 
-export class WorkflowState implements IWorkflowState {
-    public readonly context;
+interface IEnrichStepWithPermissionParams {
+    createdBy: Pick<IWorkflowStateIdentity, "id">;
+    step: IWorkflowStateRecordStep;
+}
+
+export class WorkflowState implements IWorkflowStateModel {
+    readonly #context;
     readonly #record;
-    private readonly teams;
+    readonly #teams;
 
     public get id() {
         return this.#record.id;
@@ -27,6 +40,10 @@ export class WorkflowState implements IWorkflowState {
 
     public get app() {
         return this.#record.app;
+    }
+
+    public get title() {
+        return this.#record.title;
     }
 
     public get workflowId() {
@@ -55,7 +72,10 @@ export class WorkflowState implements IWorkflowState {
 
     public get steps() {
         return this.#record.steps.map(step => {
-            return this.enrichStepWithPermissions(step);
+            return this.enrichStep({
+                createdBy: this.#record.createdBy,
+                step
+            });
         });
     }
 
@@ -80,30 +100,126 @@ export class WorkflowState implements IWorkflowState {
             return step.state === WorkflowStateRecordState.approved;
         });
     }
+    /**
+     * Current step can be:
+     * - in review step
+     * - rejected step - can only be one
+     * - first pending step
+     * - last approved step
+     */
+    public get currentStep(): IEnrichedWorkflowStateRecordStep {
+        const steps = this.steps;
+        const inReview = steps.find(step => step.state === WorkflowStateRecordState.inReview);
+        if (inReview) {
+            return inReview;
+        }
 
-    public constructor(params: IWorkflowStateParams) {
-        this.context = params.context;
-        this.#record = params.record;
-        this.teams = params.teams;
+        const rejected = steps.find(step => step.state === WorkflowStateRecordState.rejected);
+        if (rejected) {
+            return rejected;
+        }
+        const pending = steps.find(step => step.state === WorkflowStateRecordState.pending);
+        if (pending) {
+            return pending;
+        }
+        const approved = steps
+            .toReversed()
+            .find(step => step.state === WorkflowStateRecordState.approved);
+        if (approved) {
+            return approved;
+        }
+        throw new WebinyError({
+            message: `Cannot determine the current step of the workflow state.`,
+            code: "WORKFLOW_STATE_NO_CURRENT_STEP",
+            data: {
+                steps
+            }
+        });
     }
 
-    public getActiveStep(): IWorkflowStateRecordStepWithPermissions | undefined {
-        const hasRejected = this.#record.steps.some(step => {
+    public get nextStep(): IEnrichedWorkflowStateRecordStep | null {
+        const steps = this.steps;
+        const currentStep = this.currentStep;
+        const currentIndex = steps.findIndex(step => step.id === currentStep.id);
+        if (currentIndex === -1) {
+            return null;
+        }
+        return steps[currentIndex + 1] || null;
+    }
+
+    public get previousStep(): IEnrichedWorkflowStateRecordStep | null {
+        const steps = this.steps;
+        const currentStep = this.currentStep;
+        const currentIndex = steps.findIndex(step => step.id === currentStep.id);
+        if (currentIndex <= 0) {
+            return null;
+        }
+        return steps[currentIndex - 1] || null;
+    }
+
+    public constructor(params: IWorkflowStateParams) {
+        this.#context = params.context;
+        this.#record = params.record;
+        this.#teams = params.teams;
+    }
+    /**
+     * Active step is the one that is currently "inReview". If there is a rejected step, returns null.
+     */
+    public getActiveStep(): IEnrichedWorkflowStateRecordStep | null {
+        const steps = this.steps;
+        const hasRejected = steps.some(step => {
             return step.state === WorkflowStateRecordState.rejected;
         });
         if (hasRejected) {
-            return undefined;
+            return null;
         }
-        for (const step of this.#record.steps) {
-            if (step.state === WorkflowStateRecordState.inReview) {
-                return this.enrichStepWithPermissions(step);
-            }
+        const step = steps.find(step => {
+            return step.state === WorkflowStateRecordState.inReview;
+        });
+        return step || null;
+    }
+
+    public async start(): Promise<void> {
+        const step = this.getPendingStep();
+        ensureCanReview(step);
+
+        this.updateStep(step.id, {
+            savedBy: this.getIdentity(),
+            state: WorkflowStateRecordState.inReview
+        });
+        this.updateRecord({
+            savedBy: this.getIdentity(),
+            state: WorkflowStateRecordState.inReview
+        });
+        return await this.updateState(this.#record);
+    }
+
+    public async takeOver(): Promise<void> {
+        ensureNotRejected(this.#record);
+        const step = this.getActiveStep();
+        if (!step) {
+            throw new WebinyError(
+                `Cannot take over a workflow state that is not in review.`,
+                "WORKFLOW_NOT_IN_REVIEW",
+                {
+                    ...this.#record
+                }
+            );
         }
-        return undefined;
+        ensureCanTakeOver(step);
+        ensureCanReview(step);
+
+        this.updateStep(step.id, {
+            savedBy: this.getIdentity()
+        });
+        this.updateRecord({
+            savedBy: this.getIdentity()
+        });
+        return await this.updateState(this.#record);
     }
 
     public async approve(comment?: string): Promise<void> {
-        this.ensureNotRejected();
+        ensureNotRejected(this.#record);
         const step = this.getActiveStep();
         /**
          * Step cannot be found - all steps are either approved or rejected.
@@ -117,27 +233,22 @@ export class WorkflowState implements IWorkflowState {
                 }
             );
         }
-        await this.ensureCanReview(step);
+        ensureCanReview(step);
+        ensureIsStepOwner(step);
 
         this.approveStep(step.id, comment);
 
         const nextStep = this.getNextStep(step.id);
-        if (nextStep) {
-            this.updateStep(nextStep.id, {
-                state: WorkflowStateRecordState.inReview,
-                savedBy: null
-            });
-        }
 
         this.updateRecord({
-            state: nextStep ? WorkflowStateRecordState.inReview : WorkflowStateRecordState.approved
+            state: nextStep ? WorkflowStateRecordState.pending : WorkflowStateRecordState.approved
         });
 
-        await this.updateState(this.#record);
+        return await this.updateState(this.#record);
     }
 
     public async reject(comment: string): Promise<void> {
-        this.ensureNotRejected();
+        ensureNotRejected(this.#record);
         const step = this.getActiveStep();
         if (!step) {
             throw new WebinyError(
@@ -149,13 +260,25 @@ export class WorkflowState implements IWorkflowState {
             );
         }
 
-        await this.ensureCanReview(step);
+        ensureCanReview(step);
+        ensureIsStepOwner(step);
 
         this.rejectStep(step.id, comment);
         this.updateRecord({
             state: WorkflowStateRecordState.rejected
         });
-        await this.updateState(this.#record);
+        return await this.updateState(this.#record);
+    }
+
+    private getPendingStep() {
+        ensureNotRejected(this.#record);
+        ensureNotInReview(this.#record);
+        for (const step of this.steps) {
+            if (step.state === WorkflowStateRecordState.pending) {
+                return step;
+            }
+        }
+        throw new WorkflowStateNoPendingStepError(this.#record);
     }
 
     private updateRecord(record: Partial<Omit<IWorkflowStateRecord, "id">>): void {
@@ -199,47 +322,11 @@ export class WorkflowState implements IWorkflowState {
         const record = structuredClone(input);
         // @ts-expect-error
         delete record["id"];
-        await this.context.workflowState.updateState(this.#record.id, record);
-    }
-
-    private async ensureCanReview(step: IWorkflowStateRecordStep): Promise<void> {
-        const identity = this.context.security.getIdentity();
-        if (!identity?.id) {
-            throw new WebinyError({
-                message: `You must be logged in to be able to review a workflow state step.`,
-                code: "NOT_AUTHENTICATED"
-            });
-        }
-
-        if (this.teams.length === 0) {
-            throw new WebinyError({
-                message: `You are not assigned to any team and therefore cannot review this workflow state step.`,
-                code: "WORKFLOW_REVIEWER_NO_TEAMS",
-                data: {
-                    step,
-                    record: this.#record
-                }
-            });
-        }
-        const canReview = step.teams.some(team => {
-            return this.teams.some(t => {
-                return team.id === t.id;
-            });
-        });
-        if (canReview) {
-            return;
-        }
-        throw new WebinyError({
-            message: `You are not assigned to a team that can review this workflow state step.`,
-            code: "WORKFLOW_REVIEWER_CANNOT_REVIEW",
-            data: {
-                step
-            }
-        });
+        await this.#context.workflowState.updateState(this.#record.id, record);
     }
 
     private getIdentity(): IWorkflowStateIdentity {
-        const identity = this.context.security.getIdentity();
+        const identity = this.#context.security.getIdentity();
         return {
             id: identity.id,
             displayName: identity.displayName || null,
@@ -247,30 +334,44 @@ export class WorkflowState implements IWorkflowState {
         };
     }
 
-    private enrichStepWithPermissions(
-        step: IWorkflowStateRecordStep
-    ): IWorkflowStateRecordStepWithPermissions {
-        const isAllowedToReview = step.teams.some(team => {
-            return this.teams.some(t => {
+    private enrichStep(params: IEnrichStepWithPermissionParams): IEnrichedWorkflowStateRecordStep {
+        const { step, createdBy } = params;
+        const identity = this.getIdentity();
+        /**
+         * User which created the workflow state cannot take part in reviewing it.
+         */
+        if (createdBy.id === identity.id) {
+            return {
+                ...step,
+                isOwner: false,
+                canTakeOver: false,
+                canReview: false
+            };
+        }
+        /**
+         * Current user is step owner - they started the review.
+         */
+        const isOwner = step.savedBy?.id === identity.id;
+        /**
+         * Can current user actually review this step?
+         */
+        const canReview = step.teams.some(team => {
+            return this.#teams.some(t => {
                 return t.id === team.id;
             });
         });
+        /**
+         * Can current user take over the review from another reviewer?
+         * Taking over is only possible if current user did not start the review of the step - and review was actually started.
+         */
+        const canTakeOver =
+            canReview && !!step.savedBy?.id && step.state === WorkflowStateRecordState.inReview;
+
         return {
             ...step,
-            isAllowedToReview
+            canTakeOver: !isOwner ? canTakeOver : false,
+            isOwner,
+            canReview
         };
-    }
-
-    private ensureNotRejected(): void {
-        if (this.#record.state !== WorkflowStateRecordState.rejected) {
-            return;
-        }
-        throw new WebinyError(
-            `Cannot perform this action on a workflow state that has been rejected.`,
-            "WORKFLOW_STATE_REJECTED",
-            {
-                ...this.#record
-            }
-        );
     }
 }

@@ -6,27 +6,14 @@ import { type IWorkflowState, type IWorkflowStateStep, WorkflowStateValue } from
 
 const createSnapshot = (input: IWorkflowState) => {
     return JSON.stringify(toJS(input));
-    // return JSON.stringify({
-    //     id: input.id,
-    //     app: input.app,
-    //     targetId: input.targetId,
-    //     targetRevisionId: input.targetRevisionId,
-    //     comment: input.comment,
-    //     state: input.state,
-    //     steps: input.steps.map(step => ({
-    //         id: step.id,
-    //         comment: step.comment,
-    //         savedBy: step.savedBy,
-    //         state: step.state
-    //     }))
-    // });
 };
 
 export class WorkflowStateModel implements IWorkflowStateModel {
-    #snapshot: string;
+    snapshot: string;
     public id;
     public isActive;
     public app;
+    public title;
     public targetId;
     public targetRevisionId;
     public comment;
@@ -36,25 +23,12 @@ export class WorkflowStateModel implements IWorkflowStateModel {
     public savedBy;
     public createdOn;
     public savedOn;
+    public currentStep;
+    public nextStep;
+    public previousStep;
 
     public get dirty(): boolean {
-        return this.#snapshot !== createSnapshot(this.toJS());
-    }
-
-    public get currentStep(): IWorkflowStateStepModel | null {
-        return this.steps.find(step => step.state === WorkflowStateValue.inReview) || null;
-    }
-
-    public get nextStep(): IWorkflowStateStepModel | null {
-        const current = this.currentStep;
-        if (!current) {
-            return null;
-        }
-        const index = this.steps.findIndex(step => step.id === current.id);
-        if (index === -1) {
-            return null;
-        }
-        return this.steps[index + 1] || null;
+        return this.snapshot !== createSnapshot(this.toJS());
     }
 
     public get lastApproved(): IWorkflowStateStepModel | null {
@@ -78,9 +52,10 @@ export class WorkflowStateModel implements IWorkflowStateModel {
     }
 
     public constructor(params: IWorkflowState) {
-        this.#snapshot = createSnapshot(params);
+        this.snapshot = createSnapshot(params);
         this.id = params.id;
         this.app = params.app;
+        this.title = params.title;
         this.targetId = params.targetId;
         this.targetRevisionId = params.targetRevisionId;
         this.comment = params.comment;
@@ -91,9 +66,14 @@ export class WorkflowStateModel implements IWorkflowStateModel {
         this.savedOn = params.savedOn;
         this.isActive = params.isActive;
         this.steps = observable.array<IWorkflowStateStepModel>();
+        this.currentStep = WorkflowStateStepModel.create(params.currentStep);
+        this.previousStep = params.previousStep
+            ? WorkflowStateStepModel.create(params.previousStep)
+            : null;
+        this.nextStep = params.nextStep ? WorkflowStateStepModel.create(params.nextStep) : null;
 
         const steps = params.steps.map(step => {
-            return new WorkflowStateStepModel(step);
+            return WorkflowStateStepModel.create(step);
         });
 
         this.steps.replace(steps);
@@ -106,6 +86,7 @@ export class WorkflowStateModel implements IWorkflowStateModel {
             id: this.id,
             isActive: this.isActive,
             app: this.app,
+            title: this.title,
             targetId: this.targetId,
             targetRevisionId: this.targetRevisionId,
             comment: this.comment,
@@ -116,7 +97,10 @@ export class WorkflowStateModel implements IWorkflowStateModel {
             savedOn: this.savedOn,
             steps: this.steps.map(step => {
                 return step.toJS();
-            })
+            }),
+            currentStep: this.currentStep,
+            previousStep: this.previousStep,
+            nextStep: this.nextStep
         });
     }
 
@@ -124,7 +108,7 @@ export class WorkflowStateModel implements IWorkflowStateModel {
         runInAction(() => {
             this.steps.replace(
                 steps.map(step => {
-                    return new WorkflowStateStepModel(step);
+                    return WorkflowStateStepModel.create(step);
                 })
             );
             this.updateSnapshot();
@@ -133,7 +117,7 @@ export class WorkflowStateModel implements IWorkflowStateModel {
 
     public addStep(step: IWorkflowStateStep) {
         runInAction(() => {
-            this.steps.push(new WorkflowStateStepModel(step));
+            this.steps.push(WorkflowStateStepModel.create(step));
             this.updateSnapshot();
         });
     }
@@ -162,6 +146,10 @@ export class WorkflowStateModel implements IWorkflowStateModel {
     }
 
     private updateSnapshot() {
-        this.#snapshot = createSnapshot(this.toJS());
+        this.snapshot = createSnapshot(this.toJS());
+    }
+
+    public static create(input: IWorkflowState): IWorkflowStateModel {
+        return new WorkflowStateModel(input);
     }
 }

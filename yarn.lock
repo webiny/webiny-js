@@ -14240,7 +14240,7 @@ __metadata:
     fs-extra: "npm:^11.3.2"
     get-yarn-workspaces: "npm:1.0.2"
     load-json-file: "npm:^6.2.0"
-    type-fest: "npm:^5.0.1"
+    type-fest: "npm:^5.2.0"
     write-json-file: "npm:^4.3.0"
   bin:
     prepublish-only: ./src/index.js
@@ -14302,7 +14302,7 @@ __metadata:
     tailwindcss: "npm:^4.1.16"
     timeago-react: "npm:^3.0.7"
     tw-animate-css: "npm:^1.4.0"
-    type-fest: "npm:^5.0.1"
+    type-fest: "npm:^5.2.0"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
   languageName: unknown
@@ -14577,7 +14577,7 @@ __metadata:
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
-    type-fest: "npm:^5.0.1"
+    type-fest: "npm:^5.2.0"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
   languageName: unknown
@@ -15168,7 +15168,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     graphql: "npm:^16.11.0"
     rimraf: "npm:^6.0.1"
-    type-fest: "npm:^5.0.1"
+    type-fest: "npm:^5.2.0"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
   languageName: unknown
@@ -15449,7 +15449,7 @@ __metadata:
     "@webiny/utils": "npm:0.0.0"
     graphql: "npm:^16.11.0"
     rimraf: "npm:^6.0.1"
-    type-fest: "npm:^5.0.1"
+    type-fest: "npm:^5.2.0"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
     zod: "npm:^3.25.76"
@@ -15475,6 +15475,7 @@ __metadata:
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/testing": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
+    type-fest: "npm:^5.2.0"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
     zod: "npm:^3.25.76"
@@ -15635,6 +15636,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin-ui@workspace:packages/app-admin-ui"
   dependencies:
+    "@apollo/react-hooks": "npm:^3.1.5"
     "@emotion/babel-plugin": "npm:^11.13.5"
     "@types/react": "npm:18.2.79"
     "@types/react-helmet": "npm:^6.1.11"
@@ -15643,6 +15645,7 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-plugin-admin-welcome-screen": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
+    "@webiny/app-workflows": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
@@ -16429,6 +16432,7 @@ __metadata:
     "@webiny/error": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    "@webiny/ui": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
     apollo-client: "npm:^2.6.10"
@@ -16481,7 +16485,7 @@ __metadata:
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
     ts-invariant: "npm:^0.10.3"
-    type-fest: "npm:^5.0.1"
+    type-fest: "npm:^5.2.0"
     typescript: "npm:5.9.3"
     universal-router: "npm:^9.2.1"
     vitest: "npm:^3.2.4"
@@ -16624,7 +16628,7 @@ __metadata:
     ora: "npm:4.1.1"
     rimraf: "npm:^6.0.1"
     semver: "npm:^7.7.2"
-    type-fest: "npm:^5.0.1"
+    type-fest: "npm:^5.2.0"
     typescript: "npm:5.9.3"
     write-json-file: "npm:^4.3.0"
     yargs: "npm:^17.7.2"
@@ -16718,7 +16722,7 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     rimraf: "npm:^6.0.1"
-    type-fest: "npm:^5.0.1"
+    type-fest: "npm:^5.2.0"
     typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
@@ -17247,7 +17251,7 @@ __metadata:
     serialize-error: "npm:^12.0.0"
     ts-morph: "npm:^24.0.0"
     tsx: "npm:^4.20.5"
-    type-fest: "npm:^5.0.1"
+    type-fest: "npm:^5.2.0"
     typescript: "npm:5.9.3"
     zod: "npm:^3.25.76"
   languageName: unknown
@@ -17392,7 +17396,7 @@ __metadata:
     object-merge-advanced: "npm:^12.1.0"
     object-sizeof: "npm:^2.6.5"
     rimraf: "npm:^6.0.1"
-    type-fest: "npm:^5.0.1"
+    type-fest: "npm:^5.2.0"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
     zod: "npm:^3.25.76"
@@ -20790,7 +20794,7 @@ __metadata:
     ora: "npm:4.1.1"
     os: "npm:0.1.2"
     rimraf: "npm:^6.0.1"
-    type-fest: "npm:^5.0.1"
+    type-fest: "npm:^5.2.0"
     uuid: "npm:^13.0.0"
     validate-npm-package-name: "npm:^6.0.2"
     write-json-file: "npm:^4.3.0"
@@ -33625,7 +33629,7 @@ __metadata:
     semver: "npm:^7.7.2"
     ts-expect: "npm:^1.3.0"
     tsx: "npm:^4.20.5"
-    type-fest: "npm:^5.0.1"
+    type-fest: "npm:^5.2.0"
     typescript: "npm:5.9.3"
     typescript-transform-paths: "npm:^3.5.5"
     verdaccio: "npm:^6.2.0"
@@ -36196,12 +36200,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "type-fest@npm:5.0.1"
+"type-fest@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "type-fest@npm:5.2.0"
   dependencies:
     tagged-tag: "npm:^1.0.0"
-  checksum: 10/5ec4def4ce82e6a33cf2e1a50f7ef512226fbe85314e402155aaedd70d4aa7ccea4224a72234d5351b1b4a730b36243d5b011c147e91795d2eee0dba291c6e51
+  checksum: 10/4ce526139c05e92a1d92fa905840ff9ae725b8058df5a5571380bca1827db1f2e4e204c9d561fd63e972d45591dd4d38eab5f5529c0af93d6cfb5f99109aa74a
   languageName: node
   linkType: hard
 

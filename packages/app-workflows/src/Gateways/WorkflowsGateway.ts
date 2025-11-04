@@ -21,7 +21,6 @@ import { WebinyError } from "@webiny/error";
 import { IWorkflow } from "~/types.js";
 
 export interface IWorkflowsGatewayParams {
-    // app: IWorkflowApplication;
     client: ApolloClient<object>;
 }
 

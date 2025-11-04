@@ -38,6 +38,9 @@
 
   /* Padding. */
   {THEME_PADDING}
+  
+  /* Shadow. */
+  {SHADOW}
 
   /* Spacing. */
   {THEME_SPACING}

@@ -43,8 +43,8 @@ export const Default: Story = {
         ),
         actions: (
             <>
-                <Card.CancelButton />
-                <Card.ConfirmButton />
+                <Card.CancelAction />
+                <Card.ConfirmAction />
             </>
         )
     },
@@ -125,6 +125,26 @@ export const DropdownMenuInCard: Story = {
                 </DropdownMenu>
             </>
         )
+    }
+};
+export const WithSmallElevation: Story = {
+    args: {
+        ...Default.args,
+        elevation: "small"
+    }
+};
+
+export const WithMediumElevation: Story = {
+    args: {
+        ...Default.args,
+        elevation: "medium"
+    }
+};
+
+export const WithLargeElevation: Story = {
+    args: {
+        ...Default.args,
+        elevation: "large"
     }
 };
 

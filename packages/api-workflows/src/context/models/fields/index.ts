@@ -1,5 +1,6 @@
 export * from "./app.js";
 export * from "./color.js";
+export * from "./comment.js";
 export * from "./description.js";
 export * from "./id.js";
 export * from "./notifications.js";

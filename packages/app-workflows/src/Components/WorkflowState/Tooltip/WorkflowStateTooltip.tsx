@@ -18,7 +18,6 @@ const WorkflowStateTooltipObserver = observer((props: IWorkflowStateTooltipButto
     if (!state) {
         return null;
     }
-    // TODO figure out why Button cannot be directly used as Popover trigger
     return (
         <Popover
             trigger={

@@ -22,6 +22,7 @@ export const CmsWorkflowsMenu = () => {
     return (
         <Menu
             name={"headlessCMS.contentModels.workflows"}
+            pinnable={true}
             parent={"headlessCMS"}
             element={
                 <Menu.Link text={"Workflows"} to={router.getLink(Routes.ContentModels.Workflows)} />
@@ -43,7 +44,7 @@ const ModelIcon = ({ model }: IModelIconProps) => {
             icon={<FontAwesomeIcon icon={(model.icon || "").split("/") as IconProp} />}
             label={model.name}
             size={"sm"}
-            className={"wby-text-neutral-strong"}
+            className={"text-neutral-strong"}
         />
     );
 };

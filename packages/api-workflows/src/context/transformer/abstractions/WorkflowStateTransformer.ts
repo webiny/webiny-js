@@ -1,4 +1,4 @@
-import type { IWorkflowStateRecord } from "~/context/abstractions/WorkflowState.js";
+import { type IWorkflowStateRecord } from "~/context/abstractions/WorkflowState.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 
 export type IWorkflowStateTransformerFromCmsEntryInput = CmsEntry<
