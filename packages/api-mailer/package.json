@@ -38,7 +38,7 @@
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-db": "0.0.0",
     "@webiny/project-utils": "0.0.0",
-    "graphql": "^16.11.0",
+    "graphql": "^16.12.0",
     "jest-dynalite": "^3.6.1",
     "rimraf": "^6.0.1",
     "typescript": "5.9.3",
