@@ -9,7 +9,6 @@ import { observer } from "mobx-react-lite";
 import { Heading, type DataTableSorting, Scrollbar } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { LeftPanel, RightPanel, SplitView, OverlayLayout, useSnackbar } from "@webiny/app-admin";
-import { useI18N } from "@webiny/app-i18n";
 import { useTenancy } from "@webiny/app-admin";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
 import { outputFileSelectionError } from "./outputFileSelectionError.js";
@@ -65,15 +64,13 @@ const createSort = (sorting?: DataTableSorting): ListFilesSort | undefined => {
  */
 const useLayoutId = (applicationId: string) => {
     const { tenant } = useTenancy();
-    const { getCurrentLocale } = useI18N();
-    const localeCode = getCurrentLocale("content");
 
-    if (!tenant || !localeCode) {
+    if (!tenant) {
         console.warn("Missing tenant or localeCode while creating layoutId");
         return null;
     }
 
-    return `T#${tenant}#L#${localeCode}#A#${applicationId}`;
+    return `T#${tenant}#A#${applicationId}`;
 };
 
 const FileManagerView = () => {

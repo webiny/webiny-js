@@ -1,9 +1,7 @@
 import { createHandler } from "@webiny/handler-aws/raw";
 import { createApiCore } from "@webiny/api-core";
+import { createApiCoreDdb } from "@webiny/api-core-ddb";
 import { createDdbProjectMigration, createTable } from "@webiny/data-migration";
-import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
-import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
-import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-so-ddb";
 import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { migrations } from "@webiny/migrations/ddb";
 
@@ -12,9 +10,7 @@ const documentClient = getDocumentClient();
 export const handler = createHandler({
     plugins: [
         createApiCore({
-            tenancyStorageOperations: tenancyStorageOperations({ documentClient }),
-            securityStorageOperations: securityStorageOperations({ documentClient }),
-            usersStorageOperations: createAdminUsersStorageOperations({ documentClient })
+            storageOperations: createApiCoreDdb({ documentClient })
         }),
         createDdbProjectMigration({
             primaryTable: createTable({

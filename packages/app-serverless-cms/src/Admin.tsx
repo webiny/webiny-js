@@ -3,7 +3,6 @@ import { plugins } from "@webiny/plugins";
 import type { AdminProps as BaseAdminProps } from "@webiny/app-admin";
 import { Admin as BaseAdmin, SystemInstallerProvider } from "@webiny/app-admin";
 import { Security } from "@webiny/app-security";
-import { I18N } from "@webiny/app-i18n";
 import { HeadlessCMS } from "@webiny/app-headless-cms";
 import { AdminUI } from "@webiny/app-admin-ui";
 import { FileManager } from "@webiny/app-file-manager/app.js";
@@ -42,7 +41,6 @@ const App = (props: AdminProps) => {
             <SystemInstallerProvider />
             <FileManager />
             <GraphQLPlayground createApolloClient={createApolloClient} />
-            <I18N />
             <Websockets />
             <RecordLocking />
             <LexicalEditorActions />

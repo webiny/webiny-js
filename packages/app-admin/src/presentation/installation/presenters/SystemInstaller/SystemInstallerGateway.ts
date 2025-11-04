@@ -33,7 +33,7 @@ const INSTALL_SYSTEM = /* GraphQL */ `
 `;
 
 interface IsSystemInstalledResponse {
-    tenancy: {
+    system: {
         isSystemInstalled: {
             data: boolean;
             error?: {
@@ -46,7 +46,7 @@ interface IsSystemInstalledResponse {
 }
 
 interface InstallSystemResponse {
-    tenancy: {
+    system: {
         installSystem: {
             data: boolean;
             error?: {
@@ -66,11 +66,11 @@ class SystemInstallerGraphQLGateway implements Abstraction.Interface {
             query: IS_SYSTEM_INSTALLED
         });
 
-        if (response.tenancy.isSystemInstalled.error) {
-            throw new Error(response.tenancy.isSystemInstalled.error.message);
+        if (response.system.isSystemInstalled.error) {
+            throw new Error(response.system.isSystemInstalled.error.message);
         }
 
-        return response.tenancy.isSystemInstalled.data;
+        return response.system.isSystemInstalled.data;
     }
 
     async installSystem(data: InstallationInput): Promise<void> {
@@ -81,8 +81,8 @@ class SystemInstallerGraphQLGateway implements Abstraction.Interface {
             }
         });
 
-        if (response.tenancy.installSystem.error) {
-            throw new Error(response.tenancy.installSystem.error.message);
+        if (response.system.installSystem.error) {
+            throw new Error(response.system.installSystem.error.message);
         }
     }
 }

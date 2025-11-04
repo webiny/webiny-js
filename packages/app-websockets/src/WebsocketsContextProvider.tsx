@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTenancy } from "@webiny/app-admin";
-import { useI18N } from "@webiny/app-i18n";
 import { useSecurity } from "@webiny/app-security";
 import type {
     IncomingGenericData,
@@ -36,9 +35,7 @@ interface ICurrentData {
 
 export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps) => {
     const { tenant } = useTenancy();
-    const { getCurrentLocale } = useI18N();
     const { getIdToken } = useSecurity();
-    const locale = getCurrentLocale("default");
 
     const socketsRef = useRef<IWebsocketsManager>();
 
@@ -116,9 +113,9 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
     useEffect(() => {
         (async () => {
             const token = await getToken();
-            if (!token || !tenant || !locale) {
+            if (!token || !tenant) {
                 return;
-            } else if (current.tenant === tenant && current.locale === locale) {
+            } else if (current.tenant === tenant) {
                 return;
             } else if (socketsRef.current) {
                 await socketsRef.current.close(
@@ -131,7 +128,6 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
             if (!url) {
                 console.error("Not possible to connect to the websocket without a valid URL.", {
                     tenant,
-                    locale,
                     token
                 });
                 return;
@@ -142,28 +138,23 @@ export const WebsocketsContextProvider = (props: IWebsocketsContextProviderProps
                     subscriptionManager,
                     url,
                     tenant,
-                    locale,
                     getToken,
                     protocol: ["webiny-ws-v1"]
                 })
             );
             await socketsRef.current.connect();
 
-            setCurrent({
-                tenant,
-                locale
-            });
+            setCurrent({ tenant });
         })();
-    }, [tenant, locale, subscriptionManager, getToken]);
+    }, [tenant, subscriptionManager, getToken]);
 
     const websocketActions = useMemo(() => {
         return createWebsocketsActions({
             manager: socketsRef.current!,
             tenant,
-            locale,
             getToken
         });
-    }, [socketsRef.current, tenant, locale, getToken]);
+    }, [socketsRef.current, tenant, getToken]);
 
     const send = useCallback<IWebsocketsContextSendCallable>(
         async (action, data, timeout) => {

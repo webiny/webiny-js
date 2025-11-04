@@ -17,13 +17,12 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.
 import { createAcoAuditLogsContext } from "~/context/index.js";
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
-import type { ApiKey, SecurityStorageOperations } from "@webiny/api-core/types/security.js";
-import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import type { ApiKey } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -50,9 +49,7 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
     } = params || {};
 
     const documentClient = getDocumentClient();
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
@@ -65,9 +62,7 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
         plugins: [
             topPlugins,
             createApiCore({
-                tenancyStorageOperations: tenancyStorage.storageOperations,
-                securityStorageOperations: securityStorage.storageOperations,
-                usersStorageOperations: adminUsersStorage.storageOperations,
+                storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
             }),
             ...cmsStorage.plugins,

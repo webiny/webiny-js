@@ -64,13 +64,9 @@ import type { FileManagerStorageOperations } from "@webiny/api-file-manager/type
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
-import type {
-    SecurityPermission,
-    SecurityStorageOperations
-} from "@webiny/api-core/types/security.js";
-import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
-import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -95,9 +91,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const documentClient = getDocumentClient();
     const { permissions, identity, plugins = [] } = params;
 
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
@@ -106,9 +100,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const handler = createHandler({
         plugins: [
             createApiCore({
-                tenancyStorageOperations: tenancyStorage.storageOperations,
-                securityStorageOperations: securityStorage.storageOperations,
-                usersStorageOperations: adminUsersStorage.storageOperations,
+                storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
             }),
             ...cmsStorage.plugins,

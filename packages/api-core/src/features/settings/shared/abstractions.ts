@@ -2,18 +2,18 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type {
     SettingsStorageRecord,
-    GetSettingsStorageParams,
-    UpdateSettingsStorageParams,
-    DeleteSettingsStorageParams
+    IGetSettingsStorageParams,
+    IUpdateSettingsStorageParams,
+    IDeleteSettingsStorageParams
 } from "./types.js";
 import { SettingsNotFoundError, SettingsStorageError } from "./errors.js";
 import type { ISettings } from "~/domain/settings/index.js";
 
 // Storage Operations Abstraction (tenant-aware)
 export interface ISettingsStorageOperations {
-    getSettings(params: GetSettingsStorageParams): Promise<SettingsStorageRecord | null>;
-    updateSettings(params: UpdateSettingsStorageParams): Promise<void>;
-    deleteSettings(params: DeleteSettingsStorageParams): Promise<void>;
+    getSettings(params: IGetSettingsStorageParams): Promise<SettingsStorageRecord | null>;
+    updateSettings(params: IUpdateSettingsStorageParams): Promise<void>;
+    deleteSettings(params: IDeleteSettingsStorageParams): Promise<void>;
 }
 
 export const SettingsStorageOperations = createAbstraction<ISettingsStorageOperations>(
@@ -22,6 +22,9 @@ export const SettingsStorageOperations = createAbstraction<ISettingsStorageOpera
 
 export namespace SettingsStorageOperations {
     export type Interface = ISettingsStorageOperations;
+    export type GetSettingsParams = IGetSettingsStorageParams;
+    export type UpdateSettingsParams = IUpdateSettingsStorageParams;
+    export type DeleteSettingsParams = IDeleteSettingsStorageParams;
 }
 
 // Repository Abstraction

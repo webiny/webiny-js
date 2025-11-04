@@ -16,10 +16,8 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { createLogger } from "@webiny/api-log";
-import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
-import type { SecurityStorageOperations } from "@webiny/api-core/types/security.js";
-import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
 import { createApiCore } from "@webiny/api-core";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -27,9 +25,7 @@ export interface UseHandlerParams {
 
 export const useHandler = (params?: UseHandlerParams) => {
     const { plugins: initialPlugins = [] } = params || {};
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const documentClient = getDocumentClient();
@@ -43,9 +39,7 @@ export const useHandler = (params?: UseHandlerParams) => {
                 })
             }),
             createApiCore({
-                tenancyStorageOperations: tenancyStorage.storageOperations,
-                securityStorageOperations: securityStorage.storageOperations,
-                usersStorageOperations: adminUsersStorage.storageOperations
+                storageOperations: apiCoreStorage.storageOperations
             }),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({

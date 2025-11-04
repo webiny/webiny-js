@@ -19,13 +19,9 @@ import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import type {
-    SecurityPermission,
-    SecurityStorageOperations
-} from "@webiny/api-core/types/security.js";
-import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
-import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -55,9 +51,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
 
     const documentClient = getDocumentClient();
 
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
@@ -65,9 +59,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const handler = createHandler({
         plugins: [
             createApiCore({
-                tenancyStorageOperations: tenancyStorage.storageOperations,
-                securityStorageOperations: securityStorage.storageOperations,
-                usersStorageOperations: adminUsersStorage.storageOperations,
+                storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense
             }),
             ...cmsStorage.plugins,

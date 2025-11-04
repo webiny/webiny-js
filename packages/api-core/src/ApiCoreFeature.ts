@@ -6,21 +6,12 @@ import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import { SystemFeature } from "~/features/system/SystemFeature.js";
 import { TenancyFeature } from "./features/tenancy/TenancyFeature.js";
 import { AdminUsersFeature } from "~/features/users/AdminUsersFeature.js";
-
-import type { TenancyStorageOperations } from "~/types/tenancy.js";
-import type { SecurityStorageOperations } from "~/types/security.js";
-import type { AdminUsersStorageOperations } from "~/types/users.js";
 import { SettingsFeature } from "~/features/settings/index.js";
-
-export interface ApiCoreFeatureConfig {
-    tenancyStorageOperations: TenancyStorageOperations;
-    securityStorageOperations: SecurityStorageOperations;
-    usersStorageOperations: AdminUsersStorageOperations;
-}
+import type { ApiCoreStorageOperations } from "~/types/core.js";
 
 export const ApiCoreFeature = createFeature({
     name: "ApiCore",
-    register(container: Container, config: ApiCoreFeatureConfig) {
+    register(container: Container, config: ApiCoreStorageOperations) {
         // Register domain models
         SettingsDomain.register(container);
 
@@ -29,7 +20,7 @@ export const ApiCoreFeature = createFeature({
         TenancyFeature.register(container, config.tenancyStorageOperations);
         SecurityFeature.register(container, config.securityStorageOperations);
         AdminUsersFeature.register(container, config.usersStorageOperations);
+        SettingsFeature.register(container, config.settingsStorageOperations);
         SystemFeature.register(container);
-        SettingsFeature.register(container);
     }
 });

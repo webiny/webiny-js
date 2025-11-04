@@ -30,9 +30,8 @@
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "@webiny/api-core-ddb": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
-    "@webiny/api-security-so-ddb": "0.0.0",
-    "@webiny/api-tenancy-so-ddb": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",

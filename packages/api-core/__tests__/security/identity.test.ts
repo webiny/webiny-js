@@ -11,6 +11,7 @@ import type { TenancyStorageOperations } from "~/types/tenancy.js";
 import type { SecurityStorageOperations } from "~/types/security.js";
 import type { AdminUsersStorageOperations } from "~/types/users.js";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
+import type { ApiCoreStorageOperations } from "~/types/core.js";
 
 describe("identity test", () => {
     const tenant = "root";
@@ -20,15 +21,9 @@ describe("identity test", () => {
         // Create a new container for each test
         container = new Container();
 
-        const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-        const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-        const usersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+        const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
 
-        ApiCoreFeature.register(container, {
-            tenancyStorageOperations: tenancyStorage.storageOperations,
-            securityStorageOperations: securityStorage.storageOperations,
-            usersStorageOperations: usersStorage.storageOperations
-        });
+        ApiCoreFeature.register(container, apiCoreStorage.storageOperations);
     });
 
     it("should create, update, delete, and list tenant links", async () => {

@@ -14122,10 +14122,9 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-security-so-ddb": "npm:0.0.0"
-    "@webiny/api-tenancy-so-ddb": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
@@ -14149,22 +14148,6 @@ __metadata:
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-admin-users-so-ddb@npm:0.0.0, @webiny/api-admin-users-so-ddb@workspace:packages/api-admin-users-so-ddb":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-admin-users-so-ddb@workspace:packages/api-admin-users-so-ddb"
-  dependencies:
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/project-utils": "npm:0.0.0"
-    jest-dynalite: "npm:^3.6.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
 
@@ -14235,6 +14218,22 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     jsonwebtoken: "npm:^9.0.2"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.9.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-core-ddb@npm:0.0.0, @webiny/api-core-ddb@workspace:packages/api-core-ddb":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-core-ddb@workspace:packages/api-core-ddb"
+  dependencies:
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/db-dynamodb": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    jest-dynalite: "npm:^3.6.1"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
   languageName: unknown
@@ -14875,22 +14874,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-so-ddb@npm:0.0.0, @webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb"
-  dependencies:
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/project-utils": "npm:0.0.0"
-    jest-dynalite: "npm:^3.6.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-sync-system@workspace:packages/api-sync-system":
   version: 0.0.0-use.local
   resolution: "@webiny/api-sync-system@workspace:packages/api-sync-system"
@@ -14918,32 +14901,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-tenancy-so-ddb@npm:0.0.0, @webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb"
-  dependencies:
-    "@webiny/api-core": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/project-utils": "npm:0.0.0"
-    jest-dynalite: "npm:^3.6.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-website-builder@npm:0.0.0, @webiny/api-website-builder@workspace:packages/api-website-builder":
   version: 0.0.0-use.local
   resolution: "@webiny/api-website-builder@workspace:packages/api-website-builder"
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-security-so-ddb": "npm:0.0.0"
-    "@webiny/api-tenancy-so-ddb": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
@@ -16606,11 +16572,11 @@ __metadata:
     "@types/lodash": "npm:4.17.20"
     "@types/ncp": "npm:^2.0.8"
     "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/api-admin-users-so-ddb": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
     "@webiny/api-background-tasks-ddb": "npm:0.0.0"
     "@webiny/api-background-tasks-os": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/api-dynamodb-to-elasticsearch": "npm:0.0.0"
     "@webiny/api-elasticsearch": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
@@ -16628,8 +16594,6 @@ __metadata:
     "@webiny/api-mailer": "npm:0.0.0"
     "@webiny/api-record-locking": "npm:0.0.0"
     "@webiny/api-security-cognito": "npm:0.0.0"
-    "@webiny/api-security-so-ddb": "npm:0.0.0"
-    "@webiny/api-tenancy-so-ddb": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
@@ -16904,7 +16868,6 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/api-admin-users-so-ddb": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"

@@ -4,7 +4,6 @@
   "references": [
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-aco/tsconfig.build.json" },
-    { "path": "../api-admin-users-so-ddb/tsconfig.build.json" },
     { "path": "../api-audit-logs/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
@@ -61,8 +60,6 @@
       ],
       "@webiny/api-aco/*": ["../api-aco/src/*"],
       "@webiny/api-aco": ["../api-aco/src"],
-      "@webiny/api-admin-users-so-ddb/*": ["../api-admin-users-so-ddb/src/*"],
-      "@webiny/api-admin-users-so-ddb": ["../api-admin-users-so-ddb/src"],
       "@webiny/api-audit-logs/*": ["../api-audit-logs/src/*"],
       "@webiny/api-audit-logs": ["../api-audit-logs/src"],
       "@webiny/api-core/features/EventPublisher": [
@@ -72,6 +69,7 @@
         "../api-core/src/features/security/IdentityContext/index.js"
       ],
       "@webiny/api-core/features/WcpContext": ["../api-core/src/features/wcp/WcpContext/index.js"],
+      "@webiny/api-core/features/settings": ["../api-core/src/features/settings/index.js"],
       "@webiny/api-core/features/GetSettings": [
         "../api-core/src/features/settings/GetSettings/index.js"
       ],

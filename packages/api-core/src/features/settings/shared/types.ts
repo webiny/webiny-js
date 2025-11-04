@@ -6,11 +6,11 @@ export interface Settings<T = GenericRecord<string>> {
     data: T;
 }
 
-export interface GetSettingsInput {
+export interface IGetSettingsInput {
     name: string;
 }
 
-export interface UpdateSettingsInput {
+export interface IUpdateSettingsInput {
     name: string;
     data: GenericRecord<string>;
 }
@@ -22,18 +22,18 @@ export interface SettingsStorageRecord {
     tenant: string;
 }
 
-export interface GetSettingsStorageParams {
+export interface IGetSettingsStorageParams {
     name: string;
     tenant: string;
 }
 
-export interface UpdateSettingsStorageParams {
+export interface IUpdateSettingsStorageParams {
     name: string;
     data: GenericRecord<string>;
     tenant: string;
 }
 
-export interface DeleteSettingsStorageParams {
+export interface IDeleteSettingsStorageParams {
     name: string;
     tenant: string;
 }

@@ -1,4 +1,4 @@
-import { getPermissionsFromSecurityGroupsForLocale } from "../getPermissionsFromSecurityGroupsForLocale.js";
+import { getPermissionsFromSecurityGroups } from "../getPermissionsFromSecurityGroups.js";
 import { WcpContext } from "~/features/wcp/WcpContext/index.js";
 import type { ApiCoreContext } from "~/types/core.js";
 import type { SecurityIdentity, SecurityRole } from "~/types/security.js";
@@ -109,7 +109,7 @@ export const listPermissionsFromGroupsAndTeams = async <
     }
 
     if (loadedGroups.length > 0) {
-        return getPermissionsFromSecurityGroupsForLocale(loadedGroups, localeCode);
+        return getPermissionsFromSecurityGroups(loadedGroups, localeCode);
     }
 
     return null;

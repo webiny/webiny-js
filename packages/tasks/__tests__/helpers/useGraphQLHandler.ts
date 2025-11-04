@@ -14,12 +14,11 @@ import type { Context } from "~tests/types";
 import { createListTasksQuery } from "~tests/helpers/graphql/tasks";
 import { createListTaskLogsQuery } from "~tests/helpers/graphql/logs";
 import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
-import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
-import type { ApiKey, SecurityStorageOperations } from "@webiny/api-core/types/security.js";
-import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import type { ApiKey } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface InvokeParams {
     httpMethod?: "POST" | "GET" | "OPTIONS";
@@ -43,17 +42,13 @@ const tenant = {
 export const useGraphQLHandler = (params?: UseHandlerParams) => {
     const { plugins = [] } = params || {};
 
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const handler = createApiGatewayHandler({
         plugins: [
             createApiCore({
-                tenancyStorageOperations: tenancyStorage.storageOperations,
-                securityStorageOperations: securityStorage.storageOperations,
-                usersStorageOperations: adminUsersStorage.storageOperations
+                storageOperations: apiCoreStorage.storageOperations
             }),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({

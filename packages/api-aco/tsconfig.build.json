@@ -16,9 +16,8 @@
     { "path": "../tasks/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
     { "path": "../validation/tsconfig.build.json" },
+    { "path": "../api-core-ddb/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
-    { "path": "../api-security-so-ddb/tsconfig.build.json" },
-    { "path": "../api-tenancy-so-ddb/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
@@ -39,6 +38,7 @@
         "../api-core/src/features/security/IdentityContext/index.js"
       ],
       "@webiny/api-core/features/WcpContext": ["../api-core/src/features/wcp/WcpContext/index.js"],
+      "@webiny/api-core/features/settings": ["../api-core/src/features/settings/index.js"],
       "@webiny/api-core/features/GetSettings": [
         "../api-core/src/features/settings/GetSettings/index.js"
       ],
@@ -183,12 +183,10 @@
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
+      "@webiny/api-core-ddb/*": ["../api-core-ddb/src/*"],
+      "@webiny/api-core-ddb": ["../api-core-ddb/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
-      "@webiny/api-security-so-ddb/*": ["../api-security-so-ddb/src/*"],
-      "@webiny/api-security-so-ddb": ["../api-security-so-ddb/src"],
-      "@webiny/api-tenancy-so-ddb/*": ["../api-tenancy-so-ddb/src/*"],
-      "@webiny/api-tenancy-so-ddb": ["../api-tenancy-so-ddb/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

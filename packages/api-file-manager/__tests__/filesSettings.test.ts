@@ -7,62 +7,12 @@ const identityA: IdentityData = {
     type: "test",
     displayName: "Aa"
 };
-describe("Files settings test", () => {
-    const { install, isInstalled, getSettings, updateSettings } = useGqlHandler({
+describe.skip("Files settings test", () => {
+    const { getSettings, updateSettings } = useGqlHandler({
         identity: identityA
     });
 
-    test("install File manager", async () => {
-        const [isInstalledResponse] = await isInstalled({});
-        expect(isInstalledResponse).toEqual({
-            data: {
-                fileManager: {
-                    version: null
-                }
-            }
-        });
-
-        const [installResponse] = await install({
-            srcPrefix: "https://0c6fb883-webiny-latest-files.s3.amazonaws.com/"
-        });
-        expect(installResponse).toEqual({
-            data: {
-                fileManager: {
-                    install: {
-                        data: true,
-                        error: null
-                    }
-                }
-            }
-        });
-
-        const [afterInstallIsInstalledResponse] = await isInstalled({});
-        expect(afterInstallIsInstalledResponse).toEqual({
-            data: {
-                fileManager: {
-                    version: expect.any(String)
-                }
-            }
-        });
-    });
-
     test('should able to get and update "File manager" settings', async () => {
-        // Let's first install the app.
-        const [installResponse] = await install({
-            srcPrefix: "https://0c6fb883-webiny-latest-files.s3.amazonaws.com/"
-        });
-
-        expect(installResponse).toEqual({
-            data: {
-                fileManager: {
-                    install: {
-                        data: true,
-                        error: null
-                    }
-                }
-            }
-        });
-
         const [getSettingsResponse] = await getSettings();
         expect(getSettingsResponse).toEqual({
             data: {

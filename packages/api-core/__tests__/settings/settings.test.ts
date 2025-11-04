@@ -8,9 +8,9 @@ import { DeleteSettings } from "~/features/settings/DeleteSettings/index.js";
 import { SettingsStorageOperations } from "~/features/settings/shared/abstractions.js";
 import type {
     SettingsStorageRecord,
-    GetSettingsStorageParams,
-    UpdateSettingsStorageParams,
-    DeleteSettingsStorageParams
+    IGetSettingsStorageParams,
+    IUpdateSettingsStorageParams,
+    IDeleteSettingsStorageParams
 } from "~/features/settings/shared/types.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { TenancyFeature } from "~/features/tenancy/TenancyFeature.js";
@@ -57,12 +57,12 @@ const createTenant = (input: Pick<Tenant, "id" | "name" | "parent">): Tenant => 
 class MockSettingsStorageOperations implements SettingsStorageOperations.Interface {
     private store = new Map<string, SettingsStorageRecord>();
 
-    async getSettings(params: GetSettingsStorageParams): Promise<SettingsStorageRecord | null> {
+    async getSettings(params: IGetSettingsStorageParams): Promise<SettingsStorageRecord | null> {
         const key = `${params.tenant}:${params.name}`;
         return this.store.get(key) || null;
     }
 
-    async updateSettings(params: UpdateSettingsStorageParams): Promise<void> {
+    async updateSettings(params: IUpdateSettingsStorageParams): Promise<void> {
         const key = `${params.tenant}:${params.name}`;
         this.store.set(key, {
             name: params.name,
@@ -71,7 +71,7 @@ class MockSettingsStorageOperations implements SettingsStorageOperations.Interfa
         });
     }
 
-    async deleteSettings(params: DeleteSettingsStorageParams): Promise<void> {
+    async deleteSettings(params: IDeleteSettingsStorageParams): Promise<void> {
         const key = `${params.tenant}:${params.name}`;
         this.store.delete(key);
     }
@@ -190,14 +190,11 @@ describe("Settings Feature", () => {
         // Register real TenancyFeature with mock storage
         TenancyFeature.register(container, mockTenancyStorage);
 
-        // Register mock settings storage operations
-        container.registerInstance(SettingsStorageOperations, mockStorage);
-
         // Register EventPublisher
         EventPublisherFeature.register(container);
 
         // Register Settings feature
-        SettingsFeature.register(container);
+        SettingsFeature.register(container, mockStorage);
 
         // Resolve services
         tenantContext = container.resolve(TenantContext);
@@ -452,19 +449,18 @@ describe("Settings Feature", () => {
                 },
                 updateSettings: async () => {
                     throw new Error("Storage connection failed");
+                },
+                deleteSettings: async () => {
+                    throw new Error("Storage connection failed");
                 }
             };
-
-            // Replace storage with failing one
-            container.registerInstance(SettingsStorageOperations, failingStorage);
 
             // Create new container with failing storage
             const failingContainer = new Container();
             const mockTenancyStorage = new MockTenancyStorageOperations();
             TenancyFeature.register(failingContainer, mockTenancyStorage);
-            failingContainer.registerInstance(SettingsStorageOperations, failingStorage);
             EventPublisherFeature.register(failingContainer);
-            SettingsFeature.register(failingContainer);
+            SettingsFeature.register(failingContainer, failingStorage);
             SettingsDomain.register(failingContainer);
 
             const failingTenantContext = failingContainer.resolve(TenantContext);

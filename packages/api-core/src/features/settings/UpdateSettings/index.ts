@@ -1,6 +1,6 @@
 export { UpdateSettings } from "./abstractions.js";
 export { UpdateSettingsFeature } from "./feature.js";
-export type { UpdateSettingsInput } from "../shared/types.js";
+export type { IUpdateSettingsInput } from "../shared/types.js";
 export {
     SettingsBeforeUpdateEvent,
     SettingsAfterUpdateEvent,

@@ -9,13 +9,9 @@ import { PluginsContainer } from "@webiny/plugins";
 import type { PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import type {
-    SecurityPermission,
-    SecurityStorageOperations
-} from "@webiny/api-core/types/security.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
-import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
-import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface Params {
     plugins?: PluginCollection | PluginsContainer;
@@ -25,17 +21,13 @@ export interface Params {
 export const createPlugins = (params?: Params): PluginsContainer => {
     const { plugins, permissions } = params || {};
 
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const container = plugins instanceof PluginsContainer ? plugins : new PluginsContainer();
     container.register([
         createApiCore({
-            tenancyStorageOperations: tenancyStorage.storageOperations,
-            securityStorageOperations: securityStorage.storageOperations,
-            usersStorageOperations: adminUsersStorage.storageOperations
+            storageOperations: apiCoreStorage.storageOperations
         }),
         createWebsocketsRoutePlugins(),
         ...cmsStorage.plugins,

@@ -3,11 +3,10 @@ import { BeforeHandlerPlugin } from "@webiny/handler";
 import { createPermissions } from "./helpers";
 import type { MailerContext } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { SecurityPermission, SecurityStorageOperations } from "@webiny/api-core/types/security";
+import { SecurityPermission } from "@webiny/api-core/types/security";
 import { IdentityData } from "@webiny/api-core/features/IdentityContext";
-import { TenancyStorageOperations } from "@webiny/api-core/types/tenancy";
 import { createApiCore } from "@webiny/api-core";
-import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 interface Config {
     permissions: SecurityPermission[];
@@ -15,15 +14,11 @@ interface Config {
 }
 
 export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const usersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
 
     return [
         createApiCore({
-            tenancyStorageOperations: tenancyStorage.storageOperations,
-            securityStorageOperations: securityStorage.storageOperations,
-            usersStorageOperations: usersStorage.storageOperations
+            storageOperations: apiCoreStorage.storageOperations
         }),
         new ContextPlugin<MailerContext>(context => {
             context.tenancy.setCurrentTenant({

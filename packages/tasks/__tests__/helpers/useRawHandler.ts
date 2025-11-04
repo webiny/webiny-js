@@ -11,9 +11,7 @@ import type { PluginCollection } from "@webiny/plugins/types";
 import { createBackgroundTaskContext } from "~/index";
 import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
 import { createApiCore } from "@webiny/api-core";
-import { TenancyStorageOperations } from "@webiny/api-core/types/tenancy";
-import { SecurityStorageOperations } from "@webiny/api-core/types/security";
-import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -21,17 +19,13 @@ export interface UseHandlerParams {
 
 export const useRawHandler = <C extends Context = Context>(params?: UseHandlerParams) => {
     const { plugins = [] } = params || {};
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const handler = createRawHandler<any, C>({
         plugins: [
             createApiCore({
-                tenancyStorageOperations: tenancyStorage.storageOperations,
-                securityStorageOperations: securityStorage.storageOperations,
-                usersStorageOperations: adminUsersStorage.storageOperations
+                storageOperations: apiCoreStorage.storageOperations,
             }),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({

@@ -8,21 +8,13 @@ import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { PluginCollection } from "@webiny/plugins/types";
 import type { LambdaContext } from "@webiny/handler-aws/types";
 import { createApiCore } from "~/index.js";
-import { SecurityStorageOperations } from "~/types/security";
-import { TenancyStorageOperations } from "~/types/tenancy";
-import type { AdminUsersStorageOperations } from "~/types/users.js";
-import type { ApiCoreContext } from "~/types/core.js";
+import type { ApiCoreContext, ApiCoreStorageOperations } from "~/types/core.js";
 import { authenticateUsingHttpHeader } from "~/legacy/security/plugins/authenticateUsingHttpHeader.js";
 import { triggerAuthentication } from "~tests/mocks/triggerAuthentication.js";
 import { customAuthenticator } from "~tests/mocks/customAuthenticator.js";
 import { customAuthorizer } from "~tests/security/aacl/mocks/customAuthorizer.js";
 
-type CreateMockContextHandlerOptions = {
-    plugins?: PluginCollection;
-    overrideSecurityStorage?: (storageOperations: Record<string, any>) => void;
-};
-
-export const createMockContextHandler = (opts: CreateMockContextHandlerOptions = {}) => {
+export const createMockContextHandler = () => {
     const tableName = process.env.DB_TABLE as string;
     const documentClient = getDocumentClient();
 
@@ -39,20 +31,12 @@ export const createMockContextHandler = (opts: CreateMockContextHandlerOptions =
         }
     });
 
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const usersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
-
-    if (opts.overrideSecurityStorage) {
-        opts.overrideSecurityStorage(securityStorage);
-    }
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
 
     const handler = createRawHandler<any, ApiCoreContext>({
         plugins: [
             createApiCore({
-                tenancyStorageOperations: tenancyStorage.storageOperations,
-                securityStorageOperations: securityStorage.storageOperations,
-                usersStorageOperations: usersStorage.storageOperations
+                storageOperations: apiCoreStorage.storageOperations
             }),
             new ContextPlugin<ApiCoreContext>(async context => {
                 context.tenancy = {

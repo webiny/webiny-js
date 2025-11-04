@@ -111,18 +111,6 @@ export interface System {
     version: string;
 }
 
-export interface StorageOperationsGetSystemParams {
-    tenant: string;
-}
-
-export interface StorageOperationsCreateSystemParams {
-    system: System;
-}
-
-export interface StorageOperationsUpdateSystemParams {
-    system: System;
-}
-
 export interface AdminUsersStorageOperations {
     getUser<TUser extends AdminUser = AdminUser>(
         params: StorageOperationsGetUserParams
@@ -143,10 +131,4 @@ export interface AdminUsersStorageOperations {
     deleteUser<TUser extends AdminUser = AdminUser>(
         params: StorageOperationsDeleteUserParams<TUser>
     ): Promise<void>;
-
-    getSystemData(params: StorageOperationsGetSystemParams): Promise<System | null>;
-
-    createSystemData(params: StorageOperationsCreateSystemParams): Promise<System>;
-
-    updateSystemData(params: StorageOperationsUpdateSystemParams): Promise<System>;
 }

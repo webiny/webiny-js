@@ -28,15 +28,7 @@ import { createMockContextHandler } from "./mockContextHandler";
 
 describe(`Custom permissions (no WCP access) test`, () => {
     test("should not be able to use custom permissions if the license doesn't permit it", async () => {
-        const { handle } = createMockContextHandler({
-            overrideSecurityStorage: securityStorage => {
-                securityStorage.storageOperations.getSystemData = () => {
-                    return {
-                        installedOn: "3000-01-01T00:00:00.000Z"
-                    };
-                };
-            }
-        });
+        const { handle } = createMockContextHandler();
 
         const context = await handle();
         expect(await context.security.listPermissions()).toEqual([

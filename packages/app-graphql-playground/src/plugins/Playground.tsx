@@ -8,7 +8,6 @@ import { setContext } from "apollo-link-context";
 import loadScript from "load-script";
 import { Global } from "@emotion/react";
 import { plugins } from "@webiny/plugins";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N.js";
 import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress/index.js";
 import { playgroundDialog, PlaygroundContainer } from "./Playground.styles.js";
@@ -73,17 +72,13 @@ interface CreateApolloLinkCallable {
 
 const Playground = ({ createApolloClient }: PlaygroundProps) => {
     const [loading, setLoading] = useState(true);
-    const { getCurrentLocale } = useI18N();
     const { identity } = useSecurity();
     const links = useRef<Record<string, ApolloLink>>({});
-
-    const locale = getCurrentLocale("content");
 
     const tabs = plugins
         .byType<GraphQLPlaygroundTabPlugin>("graphql-playground-tab")
         .map(pl =>
             pl.tab({
-                locale: locale as string,
                 identity: identity as SecurityIdentity
             })
         )

@@ -11,13 +11,12 @@ import { createBackgroundTaskContext } from "@webiny/tasks";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import { createHcmsTasks } from "~/index";
 import { createMockTaskServicePlugin } from "@webiny/project-utils/testing/tasks/mockTaskTriggerTransportPlugin";
-import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
-import type { ApiKey, SecurityStorageOperations } from "@webiny/api-core/types/security.js";
-import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
+import type { ApiKey } from "@webiny/api-core/types/security.js";
 import { createApiCore } from "@webiny/api-core";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
 import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
@@ -47,9 +46,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
         setupTenancyAndSecurityGraphQL
     } = params;
 
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     return {
@@ -59,9 +56,7 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
         plugins: [
             topPlugins,
             createApiCore({
-                tenancyStorageOperations: tenancyStorage.storageOperations,
-                securityStorageOperations: securityStorage.storageOperations,
-                usersStorageOperations: adminUsersStorage.storageOperations
+                storageOperations: apiCoreStorage.storageOperations
             }),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({

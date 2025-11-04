@@ -6,25 +6,6 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
-export const IS_INSTALLED = /* GraphQL */ `
-    query IsInstalled {
-        fileManager {
-            version
-        }
-    }
-`;
-
-export const INSTALL = /* GraphQL */ `
-    mutation install($srcPrefix: String) {
-        fileManager {
-            install(srcPrefix: $srcPrefix) {
-                data
-                error ${ERROR_FIELD}
-            }
-        }
-    }
-`;
-
 export const GET_SETTINGS = /* GraphQL */ `
     query GetSettings {
         fileManager {

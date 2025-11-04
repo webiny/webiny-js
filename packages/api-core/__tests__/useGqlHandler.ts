@@ -37,11 +37,9 @@ import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createApiCore } from "~/index.js";
 import { createRootTenantMock } from "./mocks/createRootTenantMock";
-import type { AdminUsersStorageOperations } from "~/types/users.js";
-import type { TenancyStorageOperations } from "~/types/tenancy.js";
-import type { SecurityStorageOperations } from "~/types/security.js";
 import { authenticateUsingHttpHeader } from "~/legacy/security/plugins/authenticateUsingHttpHeader.js";
 import tenantLinkAuthorization from "~/legacy/security/plugins/tenantLinkAuthorization.js";
+import type { ApiCoreStorageOperations } from "~/types/core.js";
 
 type UseGqlHandlerParams = {
     plugins?: PluginCollection;
@@ -52,17 +50,13 @@ export const useGqlHandler = (opts: UseGqlHandlerParams = {}) => {
     const defaults = { plugins: [] };
     opts = Object.assign({}, defaults, opts);
 
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const usersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler({
         plugins: [
             createApiCore({
-                tenancyStorageOperations: tenancyStorage.storageOperations,
-                securityStorageOperations: securityStorage.storageOperations,
-                usersStorageOperations: usersStorage.storageOperations,
+                storageOperations: apiCoreStorage.storageOperations,
                 testProjectLicense: opts.wcpLicense
             }),
             graphqlHandlerPlugins(),

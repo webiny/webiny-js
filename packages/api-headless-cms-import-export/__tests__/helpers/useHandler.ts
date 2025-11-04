@@ -26,10 +26,8 @@ import { createValidateImportFromUrl } from "./graphql/validateImportFromUrl";
 import { createGetValidateImportFromUrl } from "./graphql/getValidateImportFromUrl";
 import { createCmsPlugins } from "~tests/helpers/models";
 import { createImportFromUrl } from "~tests/helpers/graphql/importFromUrl";
-import type { TenancyStorageOperations } from "@webiny/api-core/types/tenancy.js";
-import type { SecurityStorageOperations } from "@webiny/api-core/types/security.js";
-import type { AdminUsersStorageOperations } from "@webiny/api-core/types/users.js";
 import { createApiCore } from "@webiny/api-core";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -40,17 +38,13 @@ export const useHandler = <C extends Context = Context>(params?: UseHandlerParam
 
     process.env.S3_BUCKET = "a-mock-s3-bucket";
 
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const plugins = [
         createApiCore({
-            tenancyStorageOperations: tenancyStorage.storageOperations,
-            securityStorageOperations: securityStorage.storageOperations,
-            usersStorageOperations: adminUsersStorage.storageOperations
+            storageOperations: apiCoreStorage.storageOperations
         }),
         createModelPlugin(),
         ...cmsStorage.plugins,

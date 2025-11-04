@@ -2,9 +2,7 @@ import { getDocumentClient } from "@webiny/aws-sdk/client-dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import { createApiCore } from "@webiny/api-core";
-import { createStorageOperations as tenancyStorageOperations } from "@webiny/api-tenancy-so-ddb";
-import { createStorageOperations as securityStorageOperations } from "@webiny/api-security-so-ddb";
-import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-so-ddb";
+import { createApiCoreDdb } from "@webiny/api-core-ddb";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
@@ -38,9 +36,7 @@ const documentClient = getDocumentClient();
 export const handler = createHandler({
     plugins: [
         createApiCore({
-            tenancyStorageOperations: tenancyStorageOperations({ documentClient }),
-            securityStorageOperations: securityStorageOperations({ documentClient }),
-            usersStorageOperations: createAdminUsersStorageOperations({ documentClient })
+            storageOperations: createApiCoreDdb({ documentClient })
         }),
         dynamoDbPlugins(),
         graphqlPlugins({ debug }),
