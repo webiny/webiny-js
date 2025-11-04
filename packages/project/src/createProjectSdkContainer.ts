@@ -63,6 +63,7 @@ import {
     listDeployedEnvironmentsService,
     listPackagesInAppWorkspaceService,
     listPackagesService,
+    loadEnvVarsService,
     localStorageService,
     loggerService,
     projectInfoService,
@@ -86,6 +87,7 @@ import {
     GetProject,
     GetProjectConfig,
     ProjectSdkParamsService,
+    LoadEnvVarsService,
     ValidateProjectConfig
 } from "~/abstractions/index.js";
 
@@ -143,6 +145,7 @@ export const createProjectSdkContainer = async (
     container.register(listDeployedEnvironmentsService).inSingletonScope();
     container.register(listPackagesInAppWorkspaceService).inSingletonScope();
     container.register(listPackagesService).inSingletonScope();
+    container.register(loadEnvVarsService).inSingletonScope();
     container.register(localStorageService).inSingletonScope();
     container.register(loggerService).inSingletonScope();
     container.register(projectInfoService).inSingletonScope();
@@ -203,6 +206,8 @@ export const createProjectSdkContainer = async (
     container.registerComposite(coreAfterDeploy);
 
     container.resolve(ProjectSdkParamsService).set(params);
+
+    await container.resolve(LoadEnvVarsService).execute();
 
     // Extensions.
     const project = await container.resolve(GetProject).execute();

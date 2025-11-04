@@ -5,7 +5,6 @@ import {
     commandsRegistryService,
     getCliRunnerService,
     getProjectSdkService,
-    loadEnvVarsService,
     loggerService,
     runCliRunnerService,
     stdioService,
@@ -42,7 +41,6 @@ import chalk from "chalk";
 import {
     CliParamsService,
     GetProjectSdkService,
-    LoadEnvVarsService,
     UiService
 } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
@@ -87,7 +85,6 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(commandsRegistryService).inSingletonScope();
     container.register(getCliRunnerService).inSingletonScope();
     container.register(getProjectSdkService).inSingletonScope();
-    container.register(loadEnvVarsService).inSingletonScope();
     container.register(loggerService).inSingletonScope();
     container.register(runCliRunnerService).inSingletonScope();
     container.register(stdioService).inSingletonScope();
@@ -100,7 +97,6 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     try {
         // Immediately set CLI instance params via the `CliParamsService`.
         container.resolve(CliParamsService).set(params);
-        await container.resolve(LoadEnvVarsService).execute();
 
         const projectSdk = await container.resolve(GetProjectSdkService).execute();
 
