@@ -95,12 +95,13 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
             allExtensionDefinitions?.push(...importedExtensionDefinitions);
         }
 
-        this.loggerService.debug(`Hydrating project config with the following parameters:`, {
-            scopesFilter: tagsFilters,
-            extensionsTypes,
-            allExtensionDefinitions,
-            configDto
-        });
+        this.loggerService.trace(
+            {
+                scopesFilter: tagsFilters,
+                extensionsTypes
+            },
+            `Hydrating project project config...`
+        );
 
         return extensionsTypes.reduce<IHydratedProjectConfig>(
             (acc, extensionType: ExtensionType) => {

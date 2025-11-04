@@ -2,13 +2,16 @@ import { createImplementation } from "@webiny/di-container";
 import { ApiBeforeBuild } from "@webiny/project/abstractions/index.js";
 import path from "path";
 import fs from "fs";
-import { GetApp } from "@webiny/project/abstractions/index.js";
+import { GetApp, LoggerService } from "@webiny/project/abstractions/index.js";
 import { getTemplatesFolderPath } from "~/utils/index.js";
 
 const wait = () => new Promise(resolve => setTimeout(resolve, 10));
 
 class ReplaceApiLambdaFnHandlers implements ApiBeforeBuild.Interface {
-    constructor(private getApp: GetApp.Interface) {}
+    constructor(
+        private getApp: GetApp.Interface,
+        private logger: LoggerService.Interface
+    ) {}
 
     async execute() {
         const templatesFolderPath = getTemplatesFolderPath();
@@ -28,6 +31,8 @@ class ReplaceApiLambdaFnHandlers implements ApiBeforeBuild.Interface {
             force: true
         });
 
+        this.logger.debug("Replaced API Lambda function handlers with OpenSearch versions.");
+
         // Wait a bit and make sure the files are ready to have their content replaced.
         await wait();
     }
@@ -36,5 +41,5 @@ class ReplaceApiLambdaFnHandlers implements ApiBeforeBuild.Interface {
 export default createImplementation({
     abstraction: ApiBeforeBuild,
     implementation: ReplaceApiLambdaFnHandlers,
-    dependencies: [GetApp]
+    dependencies: [GetApp, LoggerService]
 });
