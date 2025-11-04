@@ -18,7 +18,6 @@ class BuildAppWorkspace implements BuildAppWorkspaceService.Interface {
     async execute(params: BuildAppWorkspaceService.Params) {
         const result = await this.decoratee.execute(params);
 
-        console.log('koji kurac')
         if (params.app === "core") {
             const templatesFolderPath = getTemplatesFolderPath();
 
