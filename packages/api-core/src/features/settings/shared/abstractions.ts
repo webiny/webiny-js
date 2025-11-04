@@ -3,7 +3,8 @@ import { Result } from "@webiny/feature/api";
 import type {
     SettingsStorageRecord,
     GetSettingsStorageParams,
-    UpdateSettingsStorageParams
+    UpdateSettingsStorageParams,
+    DeleteSettingsStorageParams
 } from "./types.js";
 import { SettingsNotFoundError, SettingsStorageError } from "./errors.js";
 import type { ISettings } from "~/domain/settings/index.js";
@@ -12,6 +13,7 @@ import type { ISettings } from "~/domain/settings/index.js";
 export interface ISettingsStorageOperations {
     getSettings(params: GetSettingsStorageParams): Promise<SettingsStorageRecord | null>;
     updateSettings(params: UpdateSettingsStorageParams): Promise<void>;
+    deleteSettings(params: DeleteSettingsStorageParams): Promise<void>;
 }
 
 export const SettingsStorageOperations = createAbstraction<ISettingsStorageOperations>(
@@ -32,6 +34,7 @@ type RepositoryError = ISettingsRepositoryErrors[keyof ISettingsRepositoryErrors
 export interface ISettingsRepository {
     get(name: string): Promise<Result<ISettings, RepositoryError>>;
     update(settings: ISettings): Promise<Result<void, RepositoryError>>;
+    delete(name: string): Promise<Result<void, RepositoryError>>;
 }
 
 export const SettingsRepository = createAbstraction<ISettingsRepository>("SettingsRepository");

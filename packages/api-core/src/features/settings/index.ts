@@ -3,6 +3,7 @@ export { SettingsFeature } from "./feature.js";
 // Export abstractions
 export { GetSettings } from "./GetSettings/index.js";
 export { UpdateSettings } from "./UpdateSettings/index.js";
+export { DeleteSettings } from "./DeleteSettings/index.js";
 export { SettingsRepository, SettingsStorageOperations } from "./shared/abstractions.js";
 
 // Export types
@@ -22,3 +23,10 @@ export {
     SettingsBeforeUpdateHandler,
     SettingsAfterUpdateHandler
 } from "./UpdateSettings/index.js";
+
+export {
+    SettingsBeforeDeleteEvent,
+    SettingsAfterDeleteEvent,
+    SettingsBeforeDeleteHandler,
+    SettingsAfterDeleteHandler
+} from "./DeleteSettings/index.js";

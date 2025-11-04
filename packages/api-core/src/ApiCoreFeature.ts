@@ -10,6 +10,7 @@ import { AdminUsersFeature } from "~/features/users/AdminUsersFeature.js";
 import type { TenancyStorageOperations } from "~/types/tenancy.js";
 import type { SecurityStorageOperations } from "~/types/security.js";
 import type { AdminUsersStorageOperations } from "~/types/users.js";
+import { SettingsFeature } from "~/features/settings/index.js";
 
 export interface ApiCoreFeatureConfig {
     tenancyStorageOperations: TenancyStorageOperations;
@@ -29,5 +30,6 @@ export const ApiCoreFeature = createFeature({
         SecurityFeature.register(container, config.securityStorageOperations);
         AdminUsersFeature.register(container, config.usersStorageOperations);
         SystemFeature.register(container);
+        SettingsFeature.register(container);
     }
 });

@@ -1,4 +1,4 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, runInAction, toJS } from "mobx";
 import { createImplementation } from "@webiny/di";
 import {
     SystemInstallerPresenter as Abstraction,
@@ -109,7 +109,7 @@ class SystemInstallerPresenterImpl implements Abstraction.Interface {
             this.installing = true;
         });
         try {
-            const { basicInfo, ...installerData } = this.installerData;
+            const { basicInfo, ...installerData } = toJS(this.installerData);
             const installationInput: InstallationInput = Object.keys(installerData).map(key => {
                 return {
                     app: key,

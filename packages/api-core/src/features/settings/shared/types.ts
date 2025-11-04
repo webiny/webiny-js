@@ -32,3 +32,8 @@ export interface UpdateSettingsStorageParams {
     data: GenericRecord<string>;
     tenant: string;
 }
+
+export interface DeleteSettingsStorageParams {
+    name: string;
+    tenant: string;
+}

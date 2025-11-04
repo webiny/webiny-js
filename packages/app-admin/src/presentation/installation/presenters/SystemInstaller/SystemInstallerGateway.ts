@@ -4,7 +4,7 @@ import { type InstallationInput, SystemInstallerGateway as Abstraction } from ".
 
 const IS_SYSTEM_INSTALLED = /* GraphQL */ `
     query IsSystemInstalled {
-        tenancy {
+        system {
             isSystemInstalled {
                 data
                 error {
@@ -19,7 +19,7 @@ const IS_SYSTEM_INSTALLED = /* GraphQL */ `
 
 const INSTALL_SYSTEM = /* GraphQL */ `
     mutation InstallSystem($installationInput: JSON!) {
-        tenancy {
+        system {
             installSystem(installationInput: $installationInput) {
                 data
                 error {

@@ -1,8 +1,9 @@
 import type { Table } from "@webiny/db-dynamodb/toolbox";
 import { insertDynamoDbTestData } from "~tests/utils";
-import { ACO_FOLDER_MODEL_ID } from "~/migrations/5.43.0/001/constants";
 import { createFolderData } from "./data";
 import { createLocalesData, createTenantsData } from "./common";
+
+const ACO_FOLDER_MODEL_ID = "acoFolder";
 
 export const insertTestFolders = async (table: Table<string, string, string>, type: string) => {
     const tenants = createTenantsData().map(tenant => tenant.data.id);

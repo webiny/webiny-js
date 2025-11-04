@@ -4,11 +4,13 @@ import { SettingsDomain } from "~/domain/settings/feature.js";
 import { SettingsFeature } from "~/features/settings/feature.js";
 import { GetSettings } from "~/features/settings/GetSettings/index.js";
 import { UpdateSettings } from "~/features/settings/UpdateSettings/index.js";
+import { DeleteSettings } from "~/features/settings/DeleteSettings/index.js";
 import { SettingsStorageOperations } from "~/features/settings/shared/abstractions.js";
 import type {
     SettingsStorageRecord,
     GetSettingsStorageParams,
-    UpdateSettingsStorageParams
+    UpdateSettingsStorageParams,
+    DeleteSettingsStorageParams
 } from "~/features/settings/shared/types.js";
 import { TenantContext } from "~/features/tenancy/TenantContext/index.js";
 import { TenancyFeature } from "~/features/tenancy/TenancyFeature.js";
@@ -21,11 +23,19 @@ import {
     SettingsBeforeUpdateHandler,
     SettingsAfterUpdateHandler
 } from "~/features/settings/UpdateSettings/index.js";
+import {
+    SettingsBeforeDeleteHandler,
+    SettingsAfterDeleteHandler
+} from "~/features/settings/DeleteSettings/index.js";
 import type { IEventHandler } from "~/features/eventPublisher/abstractions.js";
 import type {
     SettingsBeforeUpdateEvent,
     SettingsAfterUpdateEvent
 } from "~/features/settings/UpdateSettings/events.js";
+import type {
+    SettingsBeforeDeleteEvent,
+    SettingsAfterDeleteEvent
+} from "~/features/settings/DeleteSettings/events.js";
 
 const createTenant = (input: Pick<Tenant, "id" | "name" | "parent">): Tenant => {
     return {
@@ -59,6 +69,11 @@ class MockSettingsStorageOperations implements SettingsStorageOperations.Interfa
             data: params.data,
             tenant: params.tenant
         });
+    }
+
+    async deleteSettings(params: DeleteSettingsStorageParams): Promise<void> {
+        const key = `${params.tenant}:${params.name}`;
+        this.store.delete(key);
     }
 
     // Test helper methods
@@ -160,6 +175,7 @@ describe("Settings Feature", () => {
     let tenantContext: TenantContext.Interface;
     let getSettings: GetSettings.Interface;
     let updateSettings: UpdateSettings.Interface;
+    let deleteSettings: DeleteSettings.Interface;
 
     beforeEach(() => {
         container = new Container();
@@ -187,6 +203,7 @@ describe("Settings Feature", () => {
         tenantContext = container.resolve(TenantContext);
         getSettings = container.resolve(GetSettings);
         updateSettings = container.resolve(UpdateSettings);
+        deleteSettings = container.resolve(DeleteSettings);
 
         // Set initial tenant
         tenantContext.setTenant(createTenant({ id: "root", name: "Root Tenant", parent: null }));
@@ -500,6 +517,93 @@ describe("Settings Feature", () => {
                 theme: "light",
                 language: "en"
             });
+        });
+    });
+
+    describe("DeleteSettings", () => {
+        it("should delete settings successfully", async () => {
+            // Seed data
+            mockStorage.seed("root", "app-config", { theme: "dark" });
+
+            // Delete
+            const result = await deleteSettings.execute("app-config");
+
+            // Assert
+            expect(result.isOk()).toBe(true);
+
+            // Verify it was deleted
+            const getResult = await getSettings.execute("app-config");
+            expect(getResult.isFail()).toBe(true);
+            expect(getResult.error.code).toBe("SETTINGS_NOT_FOUND");
+        });
+
+        it("should return error when deleting non-existent settings", async () => {
+            // Try to delete non-existent settings
+            const result = await deleteSettings.execute("non-existent");
+
+            // Assert
+            expect(result.isFail()).toBe(true);
+            expect(result.error.code).toBe("SETTINGS_NOT_FOUND");
+        });
+
+        it("should respect tenant isolation when deleting", async () => {
+            // Seed data for different tenants
+            mockStorage.seed("root", "app-config", { theme: "dark" });
+            mockStorage.seed("tenant-123", "app-config", { theme: "light" });
+
+            // Delete for root tenant
+            const result = await deleteSettings.execute("app-config");
+            expect(result.isOk()).toBe(true);
+
+            // Verify root tenant settings deleted
+            const getRoot = await getSettings.execute("app-config");
+            expect(getRoot.isFail()).toBe(true);
+
+            // Switch to tenant-123
+            tenantContext.setTenant(
+                createTenant({ id: "tenant-123", name: "Tenant 123", parent: "root" })
+            );
+
+            // Verify tenant-123 settings still exist
+            const getTenant = await getSettings.execute("app-config");
+            expect(getTenant.isOk()).toBe(true);
+            expect(getTenant.value?.data).toEqual({ theme: "light" });
+        });
+
+        it("should publish before and after delete events", async () => {
+            // Seed data
+            mockStorage.seed("root", "app-config", { theme: "dark" });
+
+            // Register event handlers
+            const beforeHandler = new (class implements IEventHandler<SettingsBeforeDeleteEvent> {
+                public events: SettingsBeforeDeleteEvent[] = [];
+                async handle(event: SettingsBeforeDeleteEvent): Promise<void> {
+                    this.events.push(event);
+                }
+            })();
+
+            const afterHandler = new (class implements IEventHandler<SettingsAfterDeleteEvent> {
+                public events: SettingsAfterDeleteEvent[] = [];
+                async handle(event: SettingsAfterDeleteEvent): Promise<void> {
+                    this.events.push(event);
+                }
+            })();
+
+            container.registerInstance(SettingsBeforeDeleteHandler, beforeHandler);
+            container.registerInstance(SettingsAfterDeleteHandler, afterHandler);
+
+            // Delete settings
+            await deleteSettings.execute("app-config");
+
+            // Assert before event
+            expect(beforeHandler.events).toHaveLength(1);
+            expect(beforeHandler.events[0].eventType).toBe("settings.beforeDelete");
+            expect(beforeHandler.events[0].payload.settings.name).toBe("app-config");
+
+            // Assert after event
+            expect(afterHandler.events).toHaveLength(1);
+            expect(afterHandler.events[0].eventType).toBe("settings.afterDelete");
+            expect(afterHandler.events[0].payload.settings.name).toBe("app-config");
         });
     });
 });

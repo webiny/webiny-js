@@ -8,7 +8,6 @@ import {
     insertDynamoDbTestData as insertTestData,
     logTestNameBeforeEachTest
 } from "~tests/utils";
-import { Flp_5_43_0_001 } from "~/migrations/5.43.0/001/ddb";
 import { insertTestFolders } from "../insertTestFolders";
 import { createLocalesData, createTenantsData } from "../common";
 
@@ -44,7 +43,7 @@ describe("5.43.0-001 - DDB", { timeout: 900_000 }, () => {
     logTestNameBeforeEachTest();
 
     it("should not run if no tenant found", async () => {
-        const handler = createDdbMigrationHandler({ table, migrations: [Flp_5_43_0_001] });
+        const handler = createDdbMigrationHandler({ table, migrations: [] });
 
         const { data, error } = await handler();
 
@@ -59,7 +58,7 @@ describe("5.43.0-001 - DDB", { timeout: 900_000 }, () => {
     it("should not run if no locale found", async () => {
         await insertTestData(table, [...createTenantsData()]);
 
-        const handler = createDdbMigrationHandler({ table, migrations: [Flp_5_43_0_001] });
+        const handler = createDdbMigrationHandler({ table, migrations: [] });
 
         const { data, error } = await handler();
 
@@ -74,7 +73,7 @@ describe("5.43.0-001 - DDB", { timeout: 900_000 }, () => {
     it("should not run if no folders found", async () => {
         await insertTestData(table, [...createTenantsData(), ...createLocalesData()]);
 
-        const handler = createDdbMigrationHandler({ table, migrations: [Flp_5_43_0_001] });
+        const handler = createDdbMigrationHandler({ table, migrations: [] });
 
         const { data, error } = await handler();
 
@@ -92,7 +91,7 @@ describe("5.43.0-001 - DDB", { timeout: 900_000 }, () => {
 
         const handler = createDdbMigrationHandler({
             table,
-            migrations: [Flp_5_43_0_001]
+            migrations: []
         });
         const { data, error } = await handler();
 

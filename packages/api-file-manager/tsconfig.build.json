@@ -7,6 +7,7 @@
     { "path": "../api-headless-cms/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
@@ -37,6 +38,9 @@
       ],
       "@webiny/api-core/features/UpdateSettings": [
         "../api-core/src/features/settings/UpdateSettings/index.js"
+      ],
+      "@webiny/api-core/features/DeleteSettings": [
+        "../api-core/src/features/settings/DeleteSettings/index.js"
       ],
       "@webiny/api-core/features/CreateApiKey": [
         "../api-core/src/features/security/apiKeys/CreateApiKey/index.js"
@@ -153,6 +157,10 @@
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],

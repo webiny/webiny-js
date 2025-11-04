@@ -53,6 +53,21 @@ class SettingsRepositoryImpl implements RepositoryAbstraction.Interface {
             return Result.fail(new SettingsStorageError(error as Error));
         }
     }
+
+    async delete(name: string): Promise<Result<void, RepositoryAbstraction.Error>> {
+        try {
+            const tenant = this.tenantContext.getTenant();
+
+            await this.storageOperations.deleteSettings({
+                name,
+                tenant: tenant.id
+            });
+
+            return Result.ok();
+        } catch (error) {
+            return Result.fail(new SettingsStorageError(error as Error));
+        }
+    }
 }
 
 export const SettingsRepository = createImplementation({

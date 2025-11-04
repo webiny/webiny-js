@@ -60,6 +60,9 @@
       "@webiny/api-core/features/UpdateSettings": [
         "../api-core/src/features/settings/UpdateSettings/index.js"
       ],
+      "@webiny/api-core/features/DeleteSettings": [
+        "../api-core/src/features/settings/DeleteSettings/index.js"
+      ],
       "@webiny/api-core/features/CreateApiKey": [
         "../api-core/src/features/security/apiKeys/CreateApiKey/index.js"
       ],

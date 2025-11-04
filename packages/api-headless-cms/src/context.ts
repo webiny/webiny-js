@@ -16,6 +16,7 @@ import { createExportCrud } from "~/export/index.js";
 import { createImportCrud } from "~/export/crud/importing.js";
 import { getSchema } from "~/graphql/getSchema.js";
 import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
+import { CmsInstallerFeature } from "~/features/installer/feature.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -162,6 +163,8 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 return;
             }
             await storageOperations.init(context);
+
+            CmsInstallerFeature.register(context.container, context.cms);
         });
     });
 

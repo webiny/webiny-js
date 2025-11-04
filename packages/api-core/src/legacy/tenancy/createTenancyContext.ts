@@ -19,21 +19,9 @@ export const createTenancyContext = () => {
         }
 
         if (multiTenancy) {
-            const { headers = {}, method, params, query } = request;
+            const { headers = {} } = request;
 
-            tenantId = headers["x-tenant"] as string;
-
-            if (!tenantId) {
-                throw new WebinyError({
-                    message: `"x-tenant" header is missing in the request!`,
-                    code: "MISSING_TENANT_HEADER",
-                    data: {
-                        method,
-                        params,
-                        query
-                    }
-                });
-            }
+            tenantId = (headers["x-tenant"] as string) ?? "root";
         }
 
         // Add WCP telemetry identifier
