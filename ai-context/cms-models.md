@@ -933,7 +933,7 @@ declare module "~/cms/PrivatePage/abstractions.js" {
 
 ```ts
 // PrivatePage/abstractions.ts
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "@webiny/features/api";
 import type { IModel, IModelData } from "~/models/abstractions.js";
 import type { ICmsModelBuilder, ICmsModelFactory } from "~/cms/abstractions.js";
 import type { PageFieldsSchema } from "./Page.fields.js";
@@ -948,14 +948,14 @@ export interface IPage extends IModel<PageFieldsSchema> {
 }
 
 // Page-specific model builder abstraction
-export const PageCmsModelBuilder = new Abstraction<ICmsModelBuilder<IPage>>("PageCmsModelBuilder");
+export const PageCmsModelBuilder = createAbstraction<ICmsModelBuilder<IPage>>("PageCmsModelBuilder");
 
 export namespace PageCmsModelBuilder {
     export type Interface = ICmsModelBuilder<IPage>;
 }
 
 // Page-specific model factory abstraction
-export const PageModelFactory = new Abstraction<ICmsModelFactory<IPage>>("PageModelFactory");
+export const PageModelFactory = createAbstraction<ICmsModelFactory<IPage>>("PageModelFactory");
 
 export namespace PageModelFactory {
     export type Interface = ICmsModelFactory<IPage>;
@@ -1252,7 +1252,7 @@ describe("PrivateCmsModelBuilder", () => {
 ```ts
 // abstractions.ts
 import { z } from "zod";
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "@webiny/features/api";
 import type { BaseModel } from "~/models/BaseModel.js";
 import type { IModelData } from "~/models/abstractions.js";
 import type { IPrivateCmsModelConfiguration } from "./PrivateCmsModelBuilder.js";
@@ -1271,7 +1271,7 @@ export interface IFieldBuilderRegistry {
     ): ObjectFieldBuilder<TShape>;
 }
 
-export const FieldBuilderRegistry = new Abstraction<IFieldBuilderRegistry>("FieldBuilderRegistry");
+export const FieldBuilderRegistry = createAbstraction<IFieldBuilderRegistry>("FieldBuilderRegistry");
 
 /**
  * Private CMS Model Builder - builds CMS model configurations
@@ -1283,7 +1283,7 @@ export interface IPrivateCmsModelBuilder {
     ): IPrivateCmsModelConfiguration<TModel>;
 }
 
-export const PrivateCmsModelBuilder = new Abstraction<IPrivateCmsModelBuilder>(
+export const PrivateCmsModelBuilder = createAbstraction<IPrivateCmsModelBuilder>(
     "PrivateCmsModelBuilder"
 );
 

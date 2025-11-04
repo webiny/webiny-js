@@ -107,7 +107,7 @@ export namespace UpdateUserUseCase {
 }
 ```
 
-You MUST ALWAYS use `createAbstraction` instead of `new Abstraction`.
+You MUST ALWAYS use `createAbstraction` instead of `createAbstraction`.
 
 **Use case implementation**
 

@@ -176,7 +176,7 @@ describe("PageModelFactory", () => {
 
 ```ts
 // Page/abstractions.ts
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "@webiny/features/api";
 import { createModelSchema } from "~/models/ModelBuilder.js";
 import type { IModel, IModelBuilder, IModelFactory, IModelInput } from "~/models/abstractions.js";
 
@@ -196,14 +196,14 @@ export interface IPage extends IModel<typeof PageSchema> {
     extensions?: IPageExtensions;
 }
 
-export const PageModelFactory = new Abstraction<IModelFactory<IPage>>("PageModelFactory");
+export const PageModelFactory = createAbstraction<IModelFactory<IPage>>("PageModelFactory");
 
 export namespace PageModelFactory {
     export type Interface = IModelFactory<IPage>;
     export type CreateInput = IModelInput<IPage>;
 }
 
-export const PageModelBuilder = new Abstraction<IModelBuilder<IPage>>("PageModelBuilder");
+export const PageModelBuilder = createAbstraction<IModelBuilder<IPage>>("PageModelBuilder");
 
 export namespace PageModelBuilder {
     export type Interface = IModelBuilder<IPage>;

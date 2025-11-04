@@ -48,7 +48,7 @@ class PagePublishedEvent extends DomainEvent<PagePublishedPayload> {
     }
 }
 
-export const PagePublishedHandler = new Abstraction<IEventHandler<PagePublishedEvent>>(
+export const PagePublishedHandler = createAbstraction<IEventHandler<PagePublishedEvent>>(
     "PagePublishedHandler"
 );
 
@@ -75,7 +75,7 @@ class UserRegisteredEvent extends DomainEvent<UserRegisteredPayload> {
     }
 }
 
-export const UserRegisteredHandler = new Abstraction<IEventHandler<UserRegisteredEvent>>(
+export const UserRegisteredHandler = createAbstraction<IEventHandler<UserRegisteredEvent>>(
     "UserRegisteredHandler"
 );
 
@@ -102,7 +102,7 @@ class OrderPlacedEvent extends DomainEvent<OrderPlacedPayload> {
     }
 }
 
-export const OrderPlacedHandler = new Abstraction<IEventHandler<OrderPlacedEvent>>(
+export const OrderPlacedHandler = createAbstraction<IEventHandler<OrderPlacedEvent>>(
     "OrderPlacedHandler"
 );
 
@@ -592,7 +592,7 @@ describe("EventPublisher", () => {
 
 ```ts
 // abstractions.ts
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "@webiny/features/api";
 
 export abstract class DomainEvent<TPayload = void> {
     public abstract readonly eventType: string;
@@ -621,7 +621,7 @@ export interface IEventPublisher {
     publish<TEvent extends DomainEvent<any>>(event: TEvent): Promise<void>;
 }
 
-export const EventPublisher = new Abstraction<IEventPublisher>("EventPublisher");
+export const EventPublisher = createAbstraction<IEventPublisher>("EventPublisher");
 
 export namespace EventPublisher {
     export type Interface = IEventPublisher;

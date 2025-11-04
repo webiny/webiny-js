@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "@webiny/feature/api";
 import { createModelSchema } from "~/models/base/ModelBuilder.js";
 import type {
     IModel,
@@ -14,18 +14,16 @@ export const SettingsSchema = createModelSchema(z => ({
 
 export interface ISettings extends IModel<typeof SettingsSchema> {}
 
-export const SettingsModelFactory = new Abstraction<IModelFactory<ISettings>>(
-    "SettingsModelFactory"
-);
+export const SettingsModelFactory =
+    createAbstraction<IModelFactory<ISettings>>("SettingsModelFactory");
 
 export namespace SettingsModelFactory {
     export type Interface = IModelFactory<ISettings>;
     export type CreateInput = IModelInput<ISettings>;
 }
 
-export const SettingsModelBuilder = new Abstraction<IModelBuilder<ISettings>>(
-    "SettingsModelBuilder"
-);
+export const SettingsModelBuilder =
+    createAbstraction<IModelBuilder<ISettings>>("SettingsModelBuilder");
 
 export namespace SettingsModelBuilder {
     export type Interface = IModelBuilder<ISettings>;

@@ -5,8 +5,7 @@ import type { PluginCollection } from "@webiny/plugins/types.js";
 import type { FileManagerStorageOperations } from "@webiny/api-file-manager/types.js";
 import { FilesStorageOperations } from "~/operations/FilesStorageOperations.js";
 import { SettingsStorageOperations } from "~/operations/SettingsStorageOperations.js";
-import { SystemStorageOperations } from "~/operations/SystemStorageOperations.js";
-import { SettingsAttributePlugin, SystemAttributePlugin } from "./plugins/index.js";
+import { SettingsAttributePlugin } from "./plugins/index.js";
 import { AliasesStorageOperations } from "~/operations/AliasesStorageOperations.js";
 import { CompressorPlugin } from "@webiny/api";
 
@@ -29,18 +28,13 @@ export const createFileManagerStorageOperations = ({
 
     return {
         beforeInit: async context => {
-            const types: string[] = [
-                SettingsAttributePlugin.type,
-                SystemAttributePlugin.type,
-                CompressorPlugin.type
-            ];
+            const types: string[] = [SettingsAttributePlugin.type, CompressorPlugin.type];
             for (const type of types) {
                 plugins.mergeByType(context.plugins, type);
             }
         },
         files: new FilesStorageOperations(),
         aliases: new AliasesStorageOperations({ documentClient }),
-        settings: new SettingsStorageOperations({ documentClient }),
-        system: new SystemStorageOperations({ documentClient })
+        settings: new SettingsStorageOperations({ documentClient })
     };
 };
