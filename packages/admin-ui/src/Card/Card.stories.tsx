@@ -4,7 +4,7 @@ import { Card } from "./Card.js";
 import { Button } from "~/Button/index.js";
 import { DropdownMenu } from "~/DropdownMenu/index.js";
 import { ReactComponent as NotificationIcon } from "@webiny/icons/notifications_active.svg";
-import { Tabs } from "~/Tabs";
+import { Tabs } from "~/Tabs/index.js";
 
 const meta: Meta<typeof Card> = {
     title: "Components/Card",
