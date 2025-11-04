@@ -14,10 +14,10 @@
     "Adrian Smijulj <adrian@webiny.com>"
   ],
   "dependencies": {
-    "@babel/core": "^7.28.4",
-    "@babel/preset-env": "^7.28.3",
-    "@babel/preset-react": "^7.27.1",
-    "@babel/preset-typescript": "^7.27.1",
+    "@babel/core": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-react": "^7.28.5",
+    "@babel/preset-typescript": "^7.28.5",
     "@babel/runtime": "^7.28.4",
     "@rspack/core": "^1.5.5",
     "@rspack/dev-server": "^1.1.4",
@@ -31,7 +31,7 @@
     "chalk": "^4.1.2",
     "chokidar": "^4.0.3",
     "css-loader": "^7.1.2",
-    "eslint": "^9.37.0",
+    "eslint": "^9.39.1",
     "eslint-webpack-plugin": "^5.0.2",
     "fast-glob": "^3.3.3",
     "find-up": "^5.0.0",
