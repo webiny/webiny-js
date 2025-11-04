@@ -111,6 +111,7 @@ export interface AlertProps
     showCloseButton?: boolean;
     onClose?: () => void;
     actions?: React.ReactElement<typeof AlertAction>;
+    swatch?: string;
 }
 
 const AlertContext = React.createContext<Pick<AlertProps, "variant">>({});
@@ -133,6 +134,7 @@ const AlertBase = ({
     className,
     type,
     variant,
+    swatch,
     showCloseButton,
     onClose,
     actions,
@@ -148,6 +150,7 @@ const AlertBase = ({
                 className={cn(alertVariants({ type, variant }), className)}
                 {...props}
             >
+                {swatch && <div>TODO</div>}
                 <div className={"py-xs"}>
                     <IconComponent className={alertIconVariants({ type, variant })} />
                 </div>

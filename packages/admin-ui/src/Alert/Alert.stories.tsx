@@ -165,6 +165,16 @@ export const WithAction: Story = {
         )
     }
 };
+export const WithSwatch: Story = {
+    args: {
+        ...WithCloseButton.args,
+        children: <>An alert that can be closed and also has action button.</>,
+        showCloseButton: true,
+        actions: (
+            <Alert.Action text={"Button"} onClick={() => alert("Custom action button clicked.")} />
+        )
+    }
+};
 
 export const Documentation: Story = {
     args: {
