@@ -31,6 +31,16 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-wcp/src/features/WcpContext/abstractions.ts`
 - **Usage:** WCP (Webiny Control Panel) integration for seats/tenants management
 
+### GetSettings
+- **Import:** `import { GetSettings } from "@webiny/api-core/features/settings/GetSettings"`
+- **Interface Type:** See `packages/api-core/src/features/settings/GetSettings/abstractions.ts`
+- **Usage:** Retrieve settings records by name
+
+### UpdateSettings
+- **Import:** `import { UpdateSettings } from "@webiny/api-core/features/settings/UpdateSettings"`
+- **Interface Type:** See `packages/api-core/src/features/settings/UpdateSettings/abstractions.ts`
+- **Usage:** Create or update settings records
+
 ---
 
 ## Notes

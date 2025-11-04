@@ -14,6 +14,8 @@
     "./features/EventPublisher": "./features/eventPublisher/index.js",
     "./features/IdentityContext": "./features/security/IdentityContext/index.js",
     "./features/WcpContext": "./features/wcp/WcpContext/index.js",
+    "./features/GetSettings": "./features/settings/GetSettings/index.js",
+    "./features/UpdateSettings": "./features/settings/UpdateSettings/index.js",
     "./features/CreateApiKey": "./features/security/apiKeys/CreateApiKey/index.js",
     "./features/DeleteApiKey": "./features/security/apiKeys/DeleteApiKey/index.js",
     "./features/GetApiKey": "./features/security/apiKeys/GetApiKey/index.js",

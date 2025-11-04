@@ -1,7 +1,7 @@
 import { ContextPlugin } from "@webiny/api";
 import type { AcoContext } from "~/types";
 import { LifecycleEventTracker } from "@webiny/project-utils/testing/helpers/lifecycleTracker";
-import type { DomainEvent } from "@webiny/api-core";
+import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import {
     FolderBeforeCreateHandler,
     FolderAfterCreateHandler,

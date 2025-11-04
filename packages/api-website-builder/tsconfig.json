@@ -3,7 +3,6 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../api" },
-    { "path": "../api-admin-settings" },
     { "path": "../api-core" },
     { "path": "../api-headless-cms" },
     { "path": "../error" },
@@ -27,8 +26,6 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
-      "@webiny/api-admin-settings/*": ["../api-admin-settings/src/*"],
-      "@webiny/api-admin-settings": ["../api-admin-settings/src"],
       "@webiny/api-core/features/EventPublisher": [
         "../api-core/src/features/eventPublisher/index.js"
       ],
@@ -36,6 +33,12 @@
         "../api-core/src/features/security/IdentityContext/index.js"
       ],
       "@webiny/api-core/features/WcpContext": ["../api-core/src/features/wcp/WcpContext/index.js"],
+      "@webiny/api-core/features/GetSettings": [
+        "../api-core/src/features/settings/GetSettings/index.js"
+      ],
+      "@webiny/api-core/features/UpdateSettings": [
+        "../api-core/src/features/settings/UpdateSettings/index.js"
+      ],
       "@webiny/api-core/features/CreateApiKey": [
         "../api-core/src/features/security/apiKeys/CreateApiKey/index.js"
       ],

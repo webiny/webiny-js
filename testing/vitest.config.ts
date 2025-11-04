@@ -77,7 +77,7 @@ export default async () => {
     }
 
     // Loads environment variables defined in the project root ".env" file.
-    const { parsed } = dotenv.config({ path: path.join(import.meta.dirname, ".env") });
+    const { parsed } = dotenv.config({ path: path.join(import.meta.dirname, "..", ".env") });
     if (parsed) {
         ["WCP_PROJECT_ID", "WCP_PROJECT_ENVIRONMENT", "WCP_PROJECT_LICENSE"].forEach(key => {
             delete parsed[key];
