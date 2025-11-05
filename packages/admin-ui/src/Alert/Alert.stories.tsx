@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { Alert } from "./Alert.js";
 import React from "react";
+import { ReactComponent as LifeBuoyIcon } from "@webiny/icons/safety_check.svg";
 
 const meta: Meta<typeof Alert> = {
     title: "Components/Alert",
@@ -21,7 +22,6 @@ type Story = StoryObj<typeof Alert>;
 
 export const Default: Story = {
     args: {
-        showCloseButton: true,
         children: "This is an alert. Play around with different properties to see how it looks."
     },
     argTypes: {
@@ -144,8 +144,23 @@ export const DangerStrong: Story = {
     }
 };
 
+export const WithCustomIcon: Story = {
+    args: {
+        ...Default.args,
+        children: <>An alert that can be closed.</>,
+        icon: <LifeBuoyIcon />
+    }
+};
+
+export const WithNoIcon: Story = {
+    args: {
+        ...Default.args,
+        children: <>An alert that can be closed.</>,
+        icon: null
+    }
+};
+
 export const WithCloseButton: Story = {
-    name: "With close button",
     args: {
         ...Default.args,
         children: <>An alert that can be closed.</>,
@@ -155,13 +170,75 @@ export const WithCloseButton: Story = {
 };
 
 export const WithAction: Story = {
-    name: "With action",
     args: {
         ...WithCloseButton.args,
         children: <>An alert that can be closed and also has action button.</>,
         showCloseButton: true,
         actions: (
             <Alert.Action text={"Button"} onClick={() => alert("Custom action button clicked.")} />
+        )
+    }
+};
+
+export const WithSwatchColor: Story = {
+    args: {
+        ...WithCloseButton.args,
+        children: <>An alert that can be closed and also has action button.</>,
+        swatchColor: "#FF708F",
+        actions: (
+            <>
+                <Alert.Action
+                    text={"Reject"}
+                    onClick={() => alert("Custom action button clicked.")}
+                />
+                <Alert.Action
+                    text={"Approve"}
+                    onClick={() => alert("Custom action button clicked.")}
+                />
+            </>
+        )
+    }
+};
+
+export const WithSwatchColorNoIcon: Story = {
+    name: "With Swatch Color & No Icon",
+    args: {
+        ...WithCloseButton.args,
+        children: <>An alert that can be closed and also has action button.</>,
+        swatchColor: "#2AABF6",
+        icon: null,
+        actions: (
+            <>
+                <Alert.Action
+                    text={"Reject"}
+                    onClick={() => alert("Custom action button clicked.")}
+                />
+                <Alert.Action
+                    text={"Approve"}
+                    onClick={() => alert("Custom action button clicked.")}
+                />
+            </>
+        )
+    }
+};
+export const WithSwatchColorNoSwatchIcon: Story = {
+    name: "With Swatch Color & No Swatch Icon",
+    args: {
+        ...WithCloseButton.args,
+        children: <>An alert that can be closed and also has action button.</>,
+        swatchColor: "#BDDE46",
+        swatchColorIcon: false,
+        actions: (
+            <>
+                <Alert.Action
+                    text={"Reject"}
+                    onClick={() => alert("Custom action button clicked.")}
+                />
+                <Alert.Action
+                    text={"Approve"}
+                    onClick={() => alert("Custom action button clicked.")}
+                />
+            </>
         )
     }
 };
