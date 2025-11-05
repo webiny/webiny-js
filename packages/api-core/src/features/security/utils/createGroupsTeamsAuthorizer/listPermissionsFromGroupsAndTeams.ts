@@ -28,7 +28,6 @@ export interface ListPermissionsFromGroupsAndTeamsParams<
 > {
     config: GroupsTeamsAuthorizerConfig<TContext>;
     identity: SecurityIdentity;
-    localeCode: string;
     context: TContext;
 }
 
@@ -37,7 +36,7 @@ export const listPermissionsFromGroupsAndTeams = async <
 >(
     params: ListPermissionsFromGroupsAndTeamsParams<TContext>
 ) => {
-    const { context, identity, localeCode } = params;
+    const { context, identity } = params;
     const { security } = context;
 
     const wcp = context.container.resolve(WcpContext);
@@ -109,7 +108,7 @@ export const listPermissionsFromGroupsAndTeams = async <
     }
 
     if (loadedGroups.length > 0) {
-        return getPermissionsFromSecurityGroups(loadedGroups, localeCode);
+        return getPermissionsFromSecurityGroups(loadedGroups);
     }
 
     return null;

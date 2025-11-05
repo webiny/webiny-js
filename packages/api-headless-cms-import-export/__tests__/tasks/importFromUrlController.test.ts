@@ -4,7 +4,7 @@ import { createRunner } from "@webiny/project-utils/testing/tasks";
 import type { Context, ICmsImportExportValidatedFile } from "~/types";
 import { CmsImportExportFileType } from "~/types";
 import { useHandler } from "~tests/helpers/useHandler";
-import { ResponseDoneResult, TaskDataStatus, TaskResponseStatus } from "@webiny/tasks";
+import { TaskDataStatus, TaskResponseStatus } from "@webiny/tasks";
 import { categoryModel } from "~tests/helpers/models";
 import type { NonEmptyArray } from "@webiny/api/types";
 

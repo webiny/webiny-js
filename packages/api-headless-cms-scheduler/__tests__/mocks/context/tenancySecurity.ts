@@ -7,7 +7,6 @@ import { IdentityData } from "@webiny/api-core/features/IdentityContext";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
 interface Config {
-    setupGraphQL?: boolean;
     permissions: SecurityPermission[];
     identity?: IdentityData | null;
 }
@@ -19,7 +18,6 @@ export const defaultIdentity: IdentityData = {
 };
 
 export const createTenancyAndSecurity = ({
-    setupGraphQL,
     permissions,
     identity
 }: Config): Plugin[] => {

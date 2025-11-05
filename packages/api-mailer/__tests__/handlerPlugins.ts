@@ -42,10 +42,9 @@ export const createHandlerPlugins = (params?: CreateHandlerParams) => {
          * We're using ddb-only storageOperations here because current jest setup doesn't allow
          * usage of more than one storageOperations at a time with the help of --keyword flag.
          */
-        new CmsParametersPlugin(async context => {
+        new CmsParametersPlugin(async () => {
             return {
-                type: "read",
-                locale: "en-US"
+                type: "read"
             };
         }),
         createHeadlessCmsContext({

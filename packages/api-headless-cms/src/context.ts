@@ -39,7 +39,7 @@ export interface CrudParams {
 
 export const createContextPlugin = ({ storageOperations }: CrudParams) => {
     const plugin = new ContextPlugin<CmsContext>(async context => {
-        const { type, locale: localeCode } = await getParameters(context);
+        const { type } = await getParameters(context);
 
         const getIdentity = () => {
             return context.security.getIdentity();
@@ -112,7 +112,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
 
             context.cms = {
                 type,
-                locale: localeCode,
+                locale: getLocale().code,
                 getLocale,
                 READ: type === "read",
                 PREVIEW: type === "preview",

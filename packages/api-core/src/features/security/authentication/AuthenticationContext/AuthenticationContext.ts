@@ -15,9 +15,7 @@ class AuthenticationContextImpl implements Abstraction.Interface {
     constructor(
         private authenticators: Authenticator.Interface[],
         private eventPublisher: EventPublisher.Interface
-    ) {
-        const a = 12;
-    }
+    ) {}
 
     async authenticate(token: string): Promise<Identity> {
         await this.eventPublisher.publish(new BeforeAuthenticationEvent({ token }));

@@ -5,7 +5,6 @@ import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { Table } from "@webiny/db-dynamodb/toolbox";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import type { PluginCollection } from "@webiny/plugins/types";
 import type { LambdaContext } from "@webiny/handler-aws/types";
 import { createApiCore } from "~/index.js";
 import type { ApiCoreContext, ApiCoreStorageOperations } from "~/types/core.js";

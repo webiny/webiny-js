@@ -2,7 +2,6 @@ import type { Plugin } from "@webiny/plugins/Plugin";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import type { CmsContext } from "~/types";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import { SecurityPermission } from "@webiny/api-core/types/security";
 import { IdentityData } from "@webiny/api-core/features/IdentityContext";
 import { Tenant } from "@webiny/api-core/types/tenancy";

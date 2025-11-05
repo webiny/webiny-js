@@ -83,9 +83,9 @@ export const createPagesSchema = () => {
                     const result = await getSettings.execute(WEBSITE_BUILDER_SETTINGS);
 
                     if (result.isFail()) {
-                        return new ErrorResponse({
-                            message: result.error.message,
-                            code: result.error.code
+                        return new Response({
+                            // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
+                            previewDomain: "http://localhost:3000"
                         });
                     }
 
@@ -101,10 +101,7 @@ export const createPagesSchema = () => {
                     const getSettings = context.container.resolve(GetSettings);
                     const settings = await getSettings.execute(WEBSITE_BUILDER_INTEGRATIONS);
                     if (settings.isFail()) {
-                        return new ErrorResponse({
-                            message: settings.error.message,
-                            code: settings.error.code
-                        });
+                        return new Response({});
                     }
 
                     return new Response(settings.value.data);

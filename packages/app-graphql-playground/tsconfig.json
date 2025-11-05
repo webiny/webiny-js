@@ -4,7 +4,6 @@
   "references": [
     { "path": "../app" },
     { "path": "../app-admin" },
-    { "path": "../app-i18n" },
     { "path": "../app-security" },
     { "path": "../plugins" },
     { "path": "../ui" }
@@ -26,8 +25,6 @@
       "@webiny/app-admin/features/tenancy": ["../app-admin/src/features/tenancy/index.js"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/app-i18n/*": ["../app-i18n/src/*"],
-      "@webiny/app-i18n": ["../app-i18n/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

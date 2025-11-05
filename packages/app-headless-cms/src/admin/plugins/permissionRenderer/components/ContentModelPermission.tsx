@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import get from "lodash/get.js";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { PermissionSelector } from "./PermissionSelector.js";
 import type { CmsDataCmsModel } from "./useCmsData.js";
 import { useCmsData } from "./useCmsData.js";
 import ContentModelList from "./ContentModelList.js";
@@ -18,8 +17,7 @@ interface ContentModelPermissionProps {
     setValue: (name: string, value: string) => void;
     entity: string;
     title: string;
-    locales: string[];
-    selectedContentModelGroups?: Record<string, string[]>;
+    selectedContentModelGroups?: string[];
     disabled?: boolean;
 }
 export const ContentModelPermission = ({
@@ -28,11 +26,10 @@ export const ContentModelPermission = ({
     setValue,
     entity,
     title,
-    locales,
-    selectedContentModelGroups = {},
+    selectedContentModelGroups = [],
     disabled
 }: ContentModelPermissionProps) => {
-    const modelsGroups = useCmsData(locales);
+    const modelsGroups = useCmsData();
     // Set "cms.contentModel" access scope to "own" if "cms.contentModelGroup" === "own".
     useEffect(() => {
         if (
@@ -43,20 +40,17 @@ export const ContentModelPermission = ({
         }
     }, [data]);
 
-    const getItems = useCallback(
-        (code: string): CmsDataCmsModel[] => {
-            let list = get(modelsGroups, `${code}.models`, []) as CmsDataCmsModel[];
+    const items = useMemo((): CmsDataCmsModel[] => {
+        let list = modelsGroups.models;
 
-            const groups: string[] = selectedContentModelGroups[code] || [];
-            if (groups.length) {
-                // Filter by groups
-                list = list.filter(item => groups.includes(item.group.id));
-            }
+        const groups: string[] = selectedContentModelGroups || [];
+        if (groups.length) {
+            // Filter by groups
+            list = list.filter(item => groups.includes(item.group.id));
+        }
 
-            return list;
-        },
-        [modelsGroups]
-    );
+        return list;
+    }, [modelsGroups]);
 
     const endpoints = data.endpoints || [];
 
@@ -107,15 +101,20 @@ export const ContentModelPermission = ({
                         <>
                             {data[`${entity}AccessScope`] === "models" && (
                                 <Grid.Column span={12}>
-                                    <PermissionSelector
-                                        disabled={disabled}
-                                        locales={locales}
-                                        Bind={Bind}
-                                        entity={entity}
-                                        selectorKey={"models"}
-                                        getItems={getItems}
-                                        RenderItems={ContentModelList}
+                                    <FormComponentNote
+                                        text={`Select the model user will be allowed to access.`}
                                     />
+                                    {items.length === 0 ? (
+                                        <Bind name={`${entity}Props.models`}>
+                                            <></>
+                                        </Bind>
+                                    ) : (
+                                        <div className={"wby-mt-md"}>
+                                            <Bind name={`${entity}Props.models`}>
+                                                <ContentModelList items={items} />
+                                            </Bind>
+                                        </div>
+                                    )}
                                 </Grid.Column>
                             )}
                         </>

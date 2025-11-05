@@ -1,10 +1,8 @@
-import WebinyError from "@webiny/error";
 import { CmsParametersPlugin } from "~/plugins/CmsParametersPlugin.js";
 import type { ApiEndpoint } from "~/types/index.js";
 
 enum HeaderKeys {
-    TYPE = "x-webiny-cms-endpoint",
-    LOCALE = "x-webiny-cms-locale"
+    TYPE = "x-webiny-cms-endpoint"
 }
 
 export const createHeaderParameterPlugin = () => {
@@ -19,31 +17,13 @@ export const createHeaderParameterPlugin = () => {
         const headers = context.request.headers;
 
         const type = headers[HeaderKeys.TYPE];
-        const locale = headers[HeaderKeys.LOCALE];
 
-        if (!type && !locale) {
+        if (!type) {
             return null;
-        } else if (!locale || typeof locale !== "string") {
-            throw new WebinyError(
-                `There is a "${HeaderKeys.TYPE}" header but no "${HeaderKeys.LOCALE}".`,
-                "MALFORMED_HEADERS_ERROR",
-                {
-                    headers
-                }
-            );
-        } else if (!type || typeof type !== "string") {
-            throw new WebinyError(
-                `There is a "${HeaderKeys.LOCALE}" header but no "${HeaderKeys.TYPE}".`,
-                "MALFORMED_HEADERS_ERROR",
-                {
-                    headers
-                }
-            );
         }
 
         return {
-            type: type as ApiEndpoint,
-            locale
+            type: type as ApiEndpoint
         };
     });
 };

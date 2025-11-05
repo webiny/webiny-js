@@ -1,4 +1,5 @@
-import { Abstraction } from "@webiny/di";
+import
+{ Abstraction } from "@webiny/di";
 import { createModelSchema } from "~/models/base/ModelBuilder.js";
 import type {
     IModel,
@@ -14,7 +15,6 @@ export const PageSchema = createModelSchema(z => ({
     publishedAt: z.date().nullable()
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface IPageExtensions {}
 
 export interface IPage extends IModel<typeof PageSchema> {

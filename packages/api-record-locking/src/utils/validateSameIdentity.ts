@@ -1,5 +1,5 @@
 import type { IRecordLockingIdentity } from "~/types.js";
-import { LockUpdateError, NotAuthorizedError } from "~/utils/errors.js";
+import { LockUpdateError } from "~/utils/errors.js";
 
 export interface IValidateSameIdentityParams {
     getIdentity: () => Pick<IRecordLockingIdentity, "id">;

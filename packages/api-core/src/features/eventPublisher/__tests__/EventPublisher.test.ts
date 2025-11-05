@@ -513,7 +513,7 @@ describe("EventPublisher", () => {
     describe("Error Handling", () => {
         it("should handle handler errors gracefully", async () => {
             class FailingHandler implements IEventHandler<PagePublishedEvent> {
-                async handle(event: PagePublishedEvent): Promise<void> {
+                async handle(): Promise<void> {
                     throw new Error("Handler failed!");
                 }
             }

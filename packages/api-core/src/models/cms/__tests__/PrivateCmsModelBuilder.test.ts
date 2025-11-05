@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { describe, it, expect } from "vitest";
 import { PrivateCmsModelBuilder } from "../PrivateCmsModelBuilder.js";
 import { FieldBuilderRegistry } from "../FieldBuilderRegistry.js";

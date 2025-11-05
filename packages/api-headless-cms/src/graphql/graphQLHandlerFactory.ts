@@ -9,11 +9,12 @@ export interface GraphQLHandlerFactoryParams {
 }
 
 const cmsRoutes = new RoutePlugin<CmsContext>(({ onPost, onOptions, context }) => {
-    onPost("/cms/:type(^manage|preview|read$)/:locale", async (request, reply) => {
+    // We no longer use `:locale` but we keep it for now to support external systems created wth v5.
+    onPost("/cms/:type(^manage|preview|read$)/:locale?", async (request, reply) => {
         return handleRequest({ context, request, reply });
     });
 
-    onOptions("/cms/:type(^manage|preview|read$)/:locale", async (_, reply) => {
+    onOptions("/cms/:type(^manage|preview|read$)/:locale?", async (_, reply) => {
         return reply.status(204).send({}).hijack();
     });
 });

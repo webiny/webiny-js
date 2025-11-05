@@ -7,9 +7,6 @@ import { DeleteTenantLinks } from "~/features/security/tenantLinks/DeleteTenantL
 import { ListTenantLinksByType } from "~/features/security/tenantLinks/ListTenantLinksByType/index.js";
 import { ListTenantLinksByTenant } from "~/features/security/tenantLinks/ListTenantLinksByTenant/index.js";
 import { ListTenantLinksByIdentity } from "~/features/security/tenantLinks/ListTenantLinksByIdentity/index.js";
-import type { TenancyStorageOperations } from "~/types/tenancy.js";
-import type { SecurityStorageOperations } from "~/types/security.js";
-import type { AdminUsersStorageOperations } from "~/types/users.js";
 import { ApiCoreFeature } from "~/ApiCoreFeature.js";
 import type { ApiCoreStorageOperations } from "~/types/core.js";
 

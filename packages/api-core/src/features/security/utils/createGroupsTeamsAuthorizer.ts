@@ -2,7 +2,6 @@ import { ContextPlugin } from "@webiny/api";
 import type { GroupsTeamsAuthorizerConfig } from "./createGroupsTeamsAuthorizer/listPermissionsFromGroupsAndTeams.js";
 import { listPermissionsFromGroupsAndTeams } from "./createGroupsTeamsAuthorizer/listPermissionsFromGroupsAndTeams.js";
 import type { ApiCoreContext } from "~/types/core.js";
-import { getLocale } from "~/legacy/i18n/getLocale.js";
 
 export type { GroupsTeamsAuthorizerConfig };
 
@@ -24,8 +23,6 @@ export const createGroupsTeamsAuthorizerHandler = <
             return null;
         }
 
-        const locale = getLocale();
-
         if (config.canAccessTenant) {
             const canAccessTenant = await config.canAccessTenant(context);
             if (!canAccessTenant) {
@@ -36,8 +33,7 @@ export const createGroupsTeamsAuthorizerHandler = <
         const currentTenantPermissions = await listPermissionsFromGroupsAndTeams<TContext>({
             config,
             context,
-            identity,
-            localeCode: locale.code
+            identity
         });
 
         if (Array.isArray(currentTenantPermissions)) {
@@ -66,8 +62,7 @@ export const createGroupsTeamsAuthorizerHandler = <
             return listPermissionsFromGroupsAndTeams({
                 config,
                 context,
-                identity,
-                localeCode: locale.code
+                identity
             });
         });
 

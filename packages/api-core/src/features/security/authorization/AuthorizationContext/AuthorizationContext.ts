@@ -10,9 +10,7 @@ class AuthorizationContextImpl implements Abstraction.Interface {
     private permissions?: SecurityPermission[];
     private permissionsLoader?: Promise<SecurityPermission[]>;
 
-    constructor(private authorizers: Authorizer.Interface[]) {
-        const b = 12;
-    }
+    constructor(private authorizers: Authorizer.Interface[]) {}
 
     async loadPermissions(): Promise<SecurityPermission[]> {
         if (this.permissions) {

@@ -1,4 +1,3 @@
-import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/api";
 import { Request } from "@webiny/handler";
 import type { ApiCoreContext } from "~/types/core.js";

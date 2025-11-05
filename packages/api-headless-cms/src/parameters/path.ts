@@ -1,8 +1,5 @@
-import WebinyError from "@webiny/error";
 import { CmsParametersPlugin } from "~/plugins/CmsParametersPlugin.js";
 import type { ApiEndpoint } from "~/types/index.js";
-
-const allowedEndpoints: ApiEndpoint[] = ["manage", "read", "preview"];
 
 export const createPathParameterPlugin = () => {
     return new CmsParametersPlugin(async context => {
@@ -13,22 +10,14 @@ export const createPathParameterPlugin = () => {
             return null;
         }
 
-        const { type, locale } = context.request.params as Record<string, string | null>;
-        if (!type && !locale) {
+        const { type } = context.request.params as Record<string, string | null>;
+
+        if (!type) {
             return null;
         }
 
-        if (!type) {
-            throw new WebinyError(`Missing request parameter "type".`);
-        } else if (!locale) {
-            throw new WebinyError(`Missing request parameter "locale".`);
-        } else if (allowedEndpoints.includes(type as ApiEndpoint) === false) {
-            throw new WebinyError(`Endpoint "${type}" not allowed!`);
-        }
-
         return {
-            type: type as ApiEndpoint,
-            locale
+            type: type as ApiEndpoint
         };
     });
 };

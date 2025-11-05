@@ -38,9 +38,6 @@ describe("content model - cloning", () => {
     const manageOpts = {
         path: "manage/en-US"
     };
-    const manageDeOpts = {
-        path: "manage/de-DE"
-    };
 
     const {
         createContentModelGroupMutation,

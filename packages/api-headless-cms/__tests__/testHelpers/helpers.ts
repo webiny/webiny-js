@@ -1,6 +1,4 @@
-import { ContextPlugin } from "@webiny/api";
 import { IdentityData } from "@webiny/api-core/features/IdentityContext";
-import type { CmsContext } from "~/types";
 
 export interface PermissionsArg {
     name: string;

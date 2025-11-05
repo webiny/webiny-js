@@ -201,7 +201,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
             data: { name: "Group", icon: "x" }
         });
 
-        const res1 = await manageApiA.createContentModelMutation({
+        await manageApiA.createContentModelMutation({
             data: {
                 name: "Test Entry A",
                 singularApiName: "TestEntryA",
@@ -219,7 +219,7 @@ describe("Content Groups / Models / Entries - Base Permissions Checks", () => {
             permissions
         });
 
-        const res2 = await manageApiB.createContentModelMutation({
+        await manageApiB.createContentModelMutation({
             data: {
                 name: "Test Entry B",
                 singularApiName: "TestEntryB",

@@ -89,10 +89,9 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
         });
 
         try {
-            const result = await sync.run({
+            await sync.run({
                 flow: "elasticsearchToDynamoDb"
             });
-            const a = result;
         } catch (ex) {
             expect(ex.message).toBe("No Elasticsearch / OpenSearch indexes found.");
         }

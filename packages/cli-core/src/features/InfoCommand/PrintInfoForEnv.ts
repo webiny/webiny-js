@@ -64,9 +64,9 @@ export class PrintInfoForEnv {
                 `‣ AWS region: ${api?.region}`,
                 `‣ Main GraphQL API: ${api.apiUrl + "/graphql"}`,
                 `‣ Headless CMS GraphQL API:`,
-                `   · Manage API: ${api.apiUrl + "/cms/manage/{LOCALE_CODE}"}`,
-                `   · Read API: ${api.apiUrl + "/cms/read/{LOCALE_CODE}"}`,
-                `   · Preview API: ${api.apiUrl + "/cms/preview/{LOCALE_CODE}"}`
+                `   · Manage API: ${api.apiUrl + "/cms/manage"}`,
+                `   · Read API: ${api.apiUrl + "/cms/read"}`,
+                `   · Preview API: ${api.apiUrl + "/cms/preview"}`
             );
         } else {
             output.push(
