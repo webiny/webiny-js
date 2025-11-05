@@ -1,11 +1,12 @@
 import React, { useMemo, useRef } from "react";
-import { ElementOverlays } from "./Overlays/ElementOverlays.js";
-import { ConnectEditorToPreview } from "~/DocumentEditor/ConnectEditorToPreview.js";
 import type { Messenger } from "@webiny/website-builder-sdk";
-import { useResponsiveContainer } from "~/BaseEditor/defaultConfig/Content/Preview/useResponsiveContainer.js";
 import { OverlayLoader } from "@webiny/admin-ui";
 import type { ViewportManager } from "@webiny/website-builder-sdk";
 import { observer } from "mobx-react-lite";
+import { ElementOverlays } from "./Overlays/ElementOverlays.js";
+import { ConnectEditorToPreview } from "~/DocumentEditor/ConnectEditorToPreview.js";
+import { useResponsiveContainer } from "~/BaseEditor/defaultConfig/Content/Preview/useResponsiveContainer.js";
+import { usePreviewData } from "~/BaseEditor/hooks/usePreviewData.js";
 
 interface IframeProps {
     url: string;
@@ -17,7 +18,8 @@ interface IframeProps {
 
 export const Iframe = observer(({ url, timestamp, ...props }: IframeProps) => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
-    const previewWidth = useResponsiveContainer(props.viewportManager);
+    const previewSize = useResponsiveContainer(props.viewportManager);
+    const { viewport } = usePreviewData();
 
     const iframeUrl = useMemo(() => {
         const localUrl = new URL(url);
@@ -28,7 +30,11 @@ export const Iframe = observer(({ url, timestamp, ...props }: IframeProps) => {
     return (
         <div
             key={iframeUrl}
-            className={"relative flex flex-col items-center"}
+            /* Height = viewport height - top bar - address bar - breadcrumbs. */
+            style={{
+                height: "calc(100vh - 43px - 50px - 31px)"
+            }}
+            className={"relative flex flex-col items-center w-full overflow-auto"}
             data-role={"responsive-container"}
         >
             <ConnectEditorToPreview iframeRef={iframeRef} onConnected={props.onConnected} />
@@ -40,16 +46,21 @@ export const Iframe = observer(({ url, timestamp, ...props }: IframeProps) => {
                     className={"bg-neutral-base"}
                 />
             ) : null}
-            {/* Height = viewport height - top bar - address bar - breadcrumbs. */}
+            {/* Content wrapper - sized by iframe content */}
             <div
-                className="min-h-[calc(100vh-43px-50px-31px)] max-h-[calc(100vh-43px-50px)] box-border  overflow-hidden"
-                style={{ width: previewWidth }}
+                style={{
+                    position: "relative",
+                    width: previewSize,
+                    minHeight: `${viewport.scrollHeight}px`
+                }}
+                data-role={"content-wrapper"}
             >
                 <ElementOverlays />
                 <iframe
+                    scrolling="no"
                     id={"preview-iframe"}
                     className={
-                        "w-full bg-white border-none overflow-scroll min-h-[inherit] pointer-events-none"
+                        "absolute block top-0 left-0 w-full w-h-full bg-white border-none min-h-[inherit] pointer-events-none"
                     }
                     src={iframeUrl}
                     ref={iframeRef}

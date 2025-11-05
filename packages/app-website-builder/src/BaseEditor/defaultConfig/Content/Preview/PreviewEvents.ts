@@ -76,14 +76,6 @@ export class PreviewEvents {
                 });
             }),
 
-            // Scrolling
-            this.scrollTracker.onScroll(event => {
-                this.getMessenger().send("preview.scroll", {
-                    deltaX: event.deltaX,
-                    deltaY: event.deltaY
-                });
-            }),
-
             // Scroll end
             this.scrollTracker.onScrollEnd(() => {
                 this.editor.updateEditor(state => {

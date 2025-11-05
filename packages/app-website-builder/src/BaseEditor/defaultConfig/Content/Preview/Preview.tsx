@@ -31,7 +31,7 @@ export const Preview = () => {
                 return false;
             }
 
-            return source.dataset.role === "element-overlay";
+            return true;
         });
     }, []);
 

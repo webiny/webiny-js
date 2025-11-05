@@ -81,7 +81,7 @@ export class PreviewViewport {
             const right = left + width;
 
             const isVisible =
-                bottom > 0 && right > 0 && top < viewport.height && left < viewport.width;
+                bottom > 0 && right > 0 && top < viewport.scrollHeight && left < viewport.scrollWidth;
 
             if (isVisible) {
                 visibleBoxes[id] = box;

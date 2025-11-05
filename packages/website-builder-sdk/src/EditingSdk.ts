@@ -101,9 +101,9 @@ export class EditingSdk implements IContentSdk {
             this.documentStore.applyPatch(patch);
         });
 
-        this.messenger.on("preview.scroll", data => {
-            window.scrollBy(data.deltaX, data.deltaY);
-        });
+        // this.messenger.on("preview.scroll", data => {
+        //     window.scrollBy(data.deltaX, data.deltaY);
+        // });
     }
 
     private initPositionReporting(): void {

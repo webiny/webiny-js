@@ -5,6 +5,7 @@
     "packages": [
       "packages/*",
       "migrations",
+      "nextjs",
       "cypress-tests",
       "extensions/theme",
       "scripts/buildPackages",

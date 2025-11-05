@@ -50,7 +50,9 @@ export class Editor<TDocument extends EditorDocument = EditorDocument> {
                     width: 0,
                     height: 0,
                     scrollX: 0,
-                    scrollY: 0
+                    scrollY: 0,
+                    scrollHeight: 0,
+                    scrollWidth: 0
                 },
                 components: {},
                 componentGroups: {}

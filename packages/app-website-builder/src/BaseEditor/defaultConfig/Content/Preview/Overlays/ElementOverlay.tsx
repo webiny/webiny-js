@@ -23,6 +23,7 @@ export const ElementOverlay = React.memo(
         const componentManifest = useElementComponentManifest(previewBox.id);
 
         const onClick = useCallback((event: React.MouseEvent) => {
+            console.log("element clicked", elementId);
             event.stopPropagation();
             $selectElement(editor, elementId);
         }, []);
@@ -33,7 +34,8 @@ export const ElementOverlay = React.memo(
             return null;
         }
 
-        const pointerEvents = isSelected || isHighlighted ? "auto" : "none";
+        // const pointerEvents = isSelected || isHighlighted ? "auto" : "none";
+        const pointerEvents = "auto";
         const componentName = componentManifest.label ?? componentManifest.name;
         const boxState = isSelected ? "active" : isHighlighted && !dnd ? "hover" : null;
         const isVisible = (isHighlighted && !dnd) || isSelected;
