@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { WorkflowStatesWidgetContext } from "./WorkflowStatesProvider.js";
+import { WorkflowStatesWidgetContext } from "../Provider/WorkflowStatesProvider.js";
 
 export const useWorkflowStatesWidget = () => {
     const context = useContext(WorkflowStatesWidgetContext);

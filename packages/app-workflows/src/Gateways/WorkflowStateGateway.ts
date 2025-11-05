@@ -17,6 +17,10 @@ import type {
     IWorkflowStateGatewayTakeOverStepResponse
 } from "./abstraction/WorkflowStateGateway.js";
 import {
+    APPROVE_WORKFLOW_STATE_STEP_MUTATION,
+    CANCEL_WORKFLOW_STATE_MUTATION,
+    CREATE_WORKFLOW_STATE_MUTATION,
+    GET_TARGET_WORKFLOW_STATE_QUERY,
     type IApproveWorkflowStateStepResponse,
     type IApproveWorkflowStateStepVariables,
     type ICancelWorkflowStateResponse,
@@ -33,16 +37,10 @@ import {
     type IStartWorkflowStateStepVariables,
     type ITakeOverWorkflowStateStepResponse,
     type ITakeOverWorkflowStateStepVariables,
-    TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION
-} from "./graphql/workflowStates.js";
-import {
-    APPROVE_WORKFLOW_STATE_STEP_MUTATION,
-    CANCEL_WORKFLOW_STATE_MUTATION,
-    CREATE_WORKFLOW_STATE_MUTATION,
-    GET_TARGET_WORKFLOW_STATE_QUERY,
     LIST_WORKFLOW_STATES_QUERY,
     REJECT_WORKFLOW_STATE_STEP_MUTATION,
-    START_WORKFLOW_STATE_STEP_MUTATION
+    START_WORKFLOW_STATE_STEP_MUTATION,
+    TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION
 } from "./graphql/workflowStates.js";
 import { WebinyError } from "@webiny/error";
 
@@ -205,13 +203,16 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
             });
             const error = result.data?.workflows?.listWorkflowStates?.error || null;
             const data = result.data?.workflows?.listWorkflowStates?.data || null;
+            const meta = result.data?.workflows?.listWorkflowStates?.meta || null;
             return {
                 data,
+                meta,
                 error
             };
         } catch (ex) {
             return {
                 data: null,
+                meta: null,
                 error: WebinyError.from(ex)
             };
         }

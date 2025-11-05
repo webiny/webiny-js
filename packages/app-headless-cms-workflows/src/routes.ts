@@ -11,5 +11,11 @@ export const Routes = {
                 };
             }
         })
+    },
+    ContentEntries: {
+        WorkflowStateList: new Route({
+            name: "Cms/ContentEntries/WorkflowStateList",
+            path: "/cms/workflow-states"
+        })
     }
 };

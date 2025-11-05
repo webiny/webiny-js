@@ -91,6 +91,25 @@ export const createWorkflowStateSchema = () => {
                 savedOn_DESC
             }
 
+            input ListWorkflowStatesWhereStepsInput {
+                id: String
+                id_in: [String!]
+                state: WorkflowStateStateValue
+                state_in: [WorkflowStateStateValue!]
+                savedBy: String
+                savedBy_in: [String!]
+            }
+
+            input ListWorkflowStatesWhereTeamsInput {
+                id: String
+                id_in: [String!]
+            }
+
+            input ListWorkflowStatesWhereNotificationsInput {
+                id: String
+                id_in: [String!]
+            }
+
             input ListWorkflowStatesWhereInput {
                 app: String
                 app_in: [String!]
@@ -109,6 +128,9 @@ export const createWorkflowStateSchema = () => {
                 createdBy: String
                 savedBy: String
                 isActive: Boolean
+                steps: ListWorkflowStatesWhereStepsInput
+                teams: ListWorkflowStatesWhereTeamsInput
+                notifications: ListWorkflowStatesWhereNotificationsInput
             }
 
             type WorkflowStateResponse {
