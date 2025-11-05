@@ -4,6 +4,7 @@ import { Card } from "./Card.js";
 import { Button } from "~/Button/index.js";
 import { DropdownMenu } from "~/DropdownMenu/index.js";
 import { ReactComponent as NotificationIcon } from "@webiny/icons/notifications_active.svg";
+import { Tabs } from "~/Tabs/index.js";
 
 const meta: Meta<typeof Card> = {
     title: "Components/Card",
@@ -152,5 +153,48 @@ export const WithIcon: Story = {
     args: {
         ...Default.args,
         icon: <Card.Icon icon={<NotificationIcon />} label={"Title icon"} />
+    }
+};
+
+export const WithTabs: Story = {
+    args: {
+        ...Default.args,
+        bodyPadding: false,
+        icon: <Card.Icon icon={<NotificationIcon />} label={"Title icon"} />,
+        children: (
+            <>
+                <Tabs
+                    className={"w-[500px]"}
+                    separator={true}
+                    spacing={"lg"}
+                    tabs={[
+                        <Tabs.Tab
+                            key={"account"}
+                            value={"account"}
+                            trigger={"Account"}
+                            content={"Make changes to your account here."}
+                        />,
+                        <Tabs.Tab
+                            key={"company"}
+                            value={"company"}
+                            trigger={"Company"}
+                            content={"Make changes to your company info here."}
+                        />,
+                        <Tabs.Tab
+                            key={"security"}
+                            value={"security"}
+                            trigger={"Security"}
+                            content={"Make changes to your security settings here."}
+                        />,
+                        <Tabs.Tab
+                            key={"development"}
+                            value={"development"}
+                            trigger={"Development"}
+                            content={"Make changes to your development settings here."}
+                        />
+                    ]}
+                />
+            </>
+        )
     }
 };
