@@ -43,7 +43,7 @@ export const RequireNewPassword = () => {
                             <>
                                 {requiredAttributes.length > 0 && (
                                     <Grid.Column span={12}>
-                                        <Heading level={6} className={"wby-text-center"}>
+                                        <Heading level={6} className={"text-center"}>
                                             Please enter additional information
                                         </Heading>
                                     </Grid.Column>
@@ -63,7 +63,7 @@ export const RequireNewPassword = () => {
                                 ))}
                             </>
 
-                            <Grid.Column span={12} className={"wby-text-right"}>
+                            <Grid.Column span={12} className={"text-right"}>
                                 <Button
                                     text={"Set password"}
                                     data-testid="submit-sign-in-form-button"

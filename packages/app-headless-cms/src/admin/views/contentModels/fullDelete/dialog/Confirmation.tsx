@@ -30,8 +30,8 @@ export const Confirmation = (props: IConfirmationProps) => {
             <p>Are you sure you want to delete this content model and all of its entries?</p>
             <p>
                 If yes, please write{" "}
-                <span className={"wby-font-semibold wby-text-neutral-primary"}>{placeholder}</span>{" "}
-                in the confirmation input:
+                <span className={"font-semibold text-neutral-primary"}>{placeholder}</span> in the
+                confirmation input:
             </p>
             <p>
                 <br />
@@ -44,7 +44,7 @@ export const Confirmation = (props: IConfirmationProps) => {
                     value={confirmation}
                 />
                 {error && (
-                    <Alert type={"danger"} className={"wby-mt-sm"}>
+                    <Alert type={"danger"} className={"mt-sm"}>
                         {error.message}
                     </Alert>
                 )}

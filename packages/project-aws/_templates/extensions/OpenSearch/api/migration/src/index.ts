@@ -15,7 +15,7 @@ const elasticsearchClient = createElasticsearchClient({
 export const handler = createHandler({
     plugins: [
         createApiCore({
-            storageOperations: createApiCoreDdb({ documentClient})
+            storageOperations: createApiCoreDdb({ documentClient })
         }),
         createDdbEsProjectMigration({
             primaryTable: createTable({

@@ -40,7 +40,7 @@ export const FinishSetupStep = ({
                         )}
                         {installing ? (
                             <Grid.Column span={12}>
-                                <div className="wby-flex wby-flex-col wby-items-center wby-gap-4">
+                                <div className="flex flex-col items-center gap-4">
                                     <Loader
                                         size="md"
                                         variant="accent"
@@ -54,7 +54,7 @@ export const FinishSetupStep = ({
                         )}
                         {isInstalled ? (
                             <Grid.Column span={12}>
-                                <Text size={"md"} className={"wby-text-neutral-dimmed"}>
+                                <Text size={"md"} className={"text-neutral-dimmed"}>
                                     Setup complete! Everything went smooth as a breeze!
                                 </Text>
                             </Grid.Column>
@@ -65,8 +65,8 @@ export const FinishSetupStep = ({
                             <Grid.Column span={12}>
                                 <Button
                                     disabled={!isInstalled}
-                                    containerClassName={"wby-w-full"}
-                                    className={"wby-w-full"}
+                                    containerClassName={"w-full"}
+                                    className={"w-full"}
                                     variant={"primary"}
                                     size={"lg"}
                                     text={"Start using Webiny"}

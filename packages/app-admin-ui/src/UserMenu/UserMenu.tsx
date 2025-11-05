@@ -28,7 +28,7 @@ export const UserMenu = UserMenuRendererSpec.createDecorator(() => {
             <DropdownMenu
                 trigger={<UserMenuHandle />}
                 data-testid={"logged-in-user-menu-list"}
-                className={"wby-w-[220px]"}
+                className={"w-[220px]"}
             >
                 {dropDownMenuItems}
             </DropdownMenu>

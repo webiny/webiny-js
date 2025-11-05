@@ -31,7 +31,7 @@ const ContentModelList = ({ items, disabled, value, onChange }: ContentModelList
         <>
             {list.map(([key, items]) => {
                 return (
-                    <div key={key} className={"wby-ml-md wby-mt-sm"}>
+                    <div key={key} className={"ml-md mt-sm"}>
                         <CheckboxGroup
                             label={key}
                             value={value}

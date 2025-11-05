@@ -10,7 +10,7 @@ export const RevisionsList = () => {
     const { entry, revisions, loading } = useContentEntry();
 
     return (
-        <div className={"wby-relative"}>
+        <div className={"relative"}>
             {loading && <OverlayLoader />}
             {entry.id && revisions.length ? (
                 <List data-testid={"cms.content-form.revisions"}>
@@ -19,7 +19,7 @@ export const RevisionsList = () => {
                     ))}
                 </List>
             ) : (
-                <div className={"wby-p-lg"}>{t`No revisions to show.`}</div>
+                <div className={"p-lg"}>{t`No revisions to show.`}</div>
             )}
         </div>
     );

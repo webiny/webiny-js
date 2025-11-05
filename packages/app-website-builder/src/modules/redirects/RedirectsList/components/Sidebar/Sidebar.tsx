@@ -5,7 +5,7 @@ const Sidebar = () => {
     const { currentFolderId, navigateToFolder } = useNavigateFolder();
 
     return (
-        <div className={"wby-p-xs wby-overflow-auto"} style={{ height: "calc(100vh - 69px)" }}>
+        <div className={"p-xs overflow-auto"} style={{ height: "calc(100vh - 69px)" }}>
             <FolderTree
                 focusedFolderId={currentFolderId}
                 onFolderClick={data => navigateToFolder(data.id)}

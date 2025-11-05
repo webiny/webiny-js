@@ -9,6 +9,6 @@ export type DrawerDescriptionProps = React.ComponentPropsWithoutRef<
 export const DrawerDescription = ({ className, ...props }: DrawerDescriptionProps) => (
     <DrawerPrimitive.Description
         {...props}
-        className={cn("wby-text-sm wby-text-neutral-strong wby-text-left wby-mb-sm", className)}
+        className={cn("text-sm text-neutral-strong text-left mb-sm", className)}
     />
 );

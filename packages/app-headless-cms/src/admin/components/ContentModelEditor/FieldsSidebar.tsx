@@ -23,10 +23,10 @@ const Field = (props: FieldProps) => {
                     data-testid={`cms-editor-fields-field-${type}`}
                     onDragStart={onFieldDragStart}
                     className={
-                        "wby-bg-neutral-base wby-rounded-sm wby-mb-sm wby-py-sm wby-px-md wby-cursor-grab last-of-type:wby-mb-none hover:wby-opacity-80 wby-transition-opacity"
+                        "bg-neutral-base rounded-sm mb-sm py-sm px-md cursor-grab last-of-type:mb-none hover:opacity-80 transition-opacity"
                     }
                 >
-                    <div className={"wby-flex wby-items-center wby-gap-md"}>
+                    <div className={"flex items-center gap-md"}>
                         <div>
                             <Icon
                                 icon={icon as React.ReactElement}
@@ -37,7 +37,7 @@ const Field = (props: FieldProps) => {
                         </div>
                         <div>
                             <Heading level={6}>{label}</Heading>
-                            <Text size={"sm"} className={"wby-text-neutral-strong"}>
+                            <Text size={"sm"} className={"text-neutral-strong"}>
                                 {description}
                             </Text>
                         </div>

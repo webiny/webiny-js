@@ -5,14 +5,14 @@ import { IconProvider, IconRenderer } from "~/components/IconPicker/IconRenderer
 
 const iconPickerCellVariants = cva(
     [
-        "wby-flex wby-justify-center wby-items-center",
-        "wby-rounded-md wby-cursor-pointer wby-size-xl wby-p-xs",
-        "hover:wby-bg-neutral-dimmed wby-transition-all wby-duration-500 wby-ease-out"
+        "flex justify-center items-center",
+        "rounded-md cursor-pointer size-xl p-xs",
+        "hover:bg-neutral-dimmed transition-all duration-500 ease-out"
     ],
     {
         variants: {
             isActive: {
-                true: "wby-bg-neutral-dimmed"
+                true: "bg-neutral-dimmed"
             }
         }
     }

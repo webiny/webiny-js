@@ -8,6 +8,7 @@
     { "path": "../app-security-access-management" },
     { "path": "../error" },
     { "path": "../form" },
+    { "path": "../ui" },
     { "path": "../utils" },
     { "path": "../validation" }
   ],
@@ -36,6 +37,8 @@
       "@webiny/error": ["../error/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],

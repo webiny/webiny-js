@@ -1,6 +1,7 @@
 import type { IWorkflowState } from "~/types.js";
 import gql from "graphql-tag";
 import type { IWorkflowStateError } from "~/Gateways/abstraction/WorkflowStateGateway.js";
+import type { IWorkflowStatesWidgetError, IWorkflowStatesWidgetMeta } from "~/Gateways/index.js";
 
 const ERROR_FIELD = /* GraphQL */ `
     error {
@@ -10,11 +11,45 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
+const META_FIELDS = /* GraphQL */ `
+    meta {
+        totalCount
+        hasMoreItems
+        cursor
+    }
+`;
+
+const WORKFLOW_STATE_STEP_FIELDS = `
+{
+    id
+    title
+    color
+    description
+    teams {
+        id
+    }
+    notifications {
+        id
+    }
+    comment
+    savedBy {
+        id
+        displayName
+        type
+    }
+    state
+    canReview
+    canTakeOver
+    isOwner
+}
+`;
+
 const WORKFLOW_STATE = /* GraphQL */ `
     {
         id
         isActive
         app
+        title
         targetId
         targetRevisionId
         comment
@@ -31,32 +66,17 @@ const WORKFLOW_STATE = /* GraphQL */ `
             displayName
             type
         }
-        steps {
-            id
-            title
-            color
-            description
-            teams {
-                id
-            }
-            notifications {
-                id
-            }
-            comment
-            savedBy {
-                id
-                displayName
-                type
-            }
-            state
-            isAllowedToReview
-        }
+        steps ${WORKFLOW_STATE_STEP_FIELDS}
+        previousStep ${WORKFLOW_STATE_STEP_FIELDS}
+        nextStep ${WORKFLOW_STATE_STEP_FIELDS}
+        currentStep ${WORKFLOW_STATE_STEP_FIELDS}
     }
 `;
 
 export interface ICreateWorkflowStateVariables {
     app: string;
     targetRevisionId: string;
+    title: string;
 }
 
 export interface ICreateWorkflowStateResponse {
@@ -69,9 +89,33 @@ export interface ICreateWorkflowStateResponse {
 }
 
 export const CREATE_WORKFLOW_STATE_MUTATION = gql`
-    mutation CreateWorkflowState($app: String!, $targetRevisionId: ID!) {
+    mutation CreateWorkflowState($app: String!, $targetRevisionId: ID!, $title: String!) {
         workflows {
-            createWorkflowState(app: $app, targetRevisionId: $targetRevisionId) {
+            createWorkflowState(app: $app, targetRevisionId: $targetRevisionId, title: $title) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export interface IStartWorkflowStateStepVariables {
+    id: string;
+}
+
+export interface IStartWorkflowStateStepResponse {
+    workflows: {
+        startWorkflowStateStep: {
+            data: IWorkflowState | null;
+            error: IWorkflowStateError | null;
+        };
+    };
+}
+
+export const START_WORKFLOW_STATE_STEP_MUTATION = gql`
+    mutation StartWorkflowStateStep($id: ID!) {
+        workflows {
+            startWorkflowStateStep(id: $id) {
                 data ${WORKFLOW_STATE}
                 ${ERROR_FIELD}
             }
@@ -124,10 +168,33 @@ export const REJECT_WORKFLOW_STATE_STEP_MUTATION = gql`
             rejectWorkflowStateStep(id: $id, comment: $comment) {
                 data ${WORKFLOW_STATE}
                 ${ERROR_FIELD}
-                
             }
         }
     }`;
+
+export interface ITakeOverWorkflowStateStepVariables {
+    id: string;
+}
+
+export interface ITakeOverWorkflowStateStepResponse {
+    workflows: {
+        takeOverWorkflowStateStep: {
+            data: IWorkflowState | null;
+            error: IWorkflowStateError | null;
+        };
+    };
+}
+
+export const TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION = gql`
+    mutation TakeOverWorkflowStateStep($id: ID!) {
+        workflows {
+            takeOverWorkflowStateStep(id: $id) {
+                data ${WORKFLOW_STATE}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
 
 export interface ICancelWorkflowStateVariables {
     id: string;
@@ -208,6 +275,65 @@ export const LIST_WORKFLOW_STATES_QUERY = gql`
         workflows {
             listWorkflowStates(where: $where, limit: $limit, sort: $sort, after: $after) {
                 data ${WORKFLOW_STATE}
+                ${META_FIELDS}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export interface IListWidgetWorkflowStatesParamsWhere {
+    state: string;
+}
+
+export interface IListOwnWorkflowStatesVariables {
+    where: IListWidgetWorkflowStatesParamsWhere;
+    limit: number;
+}
+
+export interface IListOwnWorkflowStatesResponse {
+    workflows: {
+        listOwnWorkflowStates: {
+            data: IWorkflowState[] | null;
+            meta: IWorkflowStatesWidgetMeta | null;
+            error: IWorkflowStatesWidgetError | null;
+        };
+    };
+}
+
+export const LIST_OWN_WORKFLOW_STATES = gql`
+    query ListOwnWorkflowStates($where: ListOwnWorkflowStatesWhereInput!, $limit: Int!) {
+        workflows {
+            listOwnWorkflowStates(where: $where, limit: $limit) {
+                data ${WORKFLOW_STATE}
+                ${META_FIELDS}
+                ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export interface IListRequestedWorkflowStatesVariables {
+    where: IListWidgetWorkflowStatesParamsWhere;
+    limit: number;
+}
+
+export interface IListRequestedWorkflowStatesResponse {
+    workflows: {
+        listRequestedWorkflowStates: {
+            data: IWorkflowState[] | null;
+            meta: IWorkflowStatesWidgetMeta | null;
+            error: IWorkflowStatesWidgetError | null;
+        };
+    };
+}
+
+export const LIST_REQUESTED_WORKFLOW_STATES = gql`
+    query ListRequestedWorkflowStates($where: ListRequestedWorkflowStatesWhereInput!, $limit: Int!) {
+        workflows {
+            listRequestedWorkflowStates(where: $where, limit: $limit) {
+                data ${WORKFLOW_STATE}
+                ${META_FIELDS}
                 ${ERROR_FIELD}
             }
         }

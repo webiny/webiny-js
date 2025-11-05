@@ -9,6 +9,6 @@ export type DialogDescriptionProps = React.ComponentPropsWithoutRef<
 export const DialogDescription = ({ className, ...props }: DialogDescriptionProps) => (
     <DialogPrimitive.Description
         {...props}
-        className={cn("wby-text-sm wby-text-neutral-strong wby-text-left", className)}
+        className={cn("text-sm text-neutral-strong text-left", className)}
     />
 );

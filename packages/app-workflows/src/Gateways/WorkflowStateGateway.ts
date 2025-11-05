@@ -10,13 +10,13 @@ import type {
     IWorkflowStateGatewayRejectStepParams,
     IWorkflowStateGatewayRejectStepResponse,
     IWorkflowStateGatewayRequestReviewStepParams,
-    IWorkflowStateGatewayRequestReviewStepResponse
+    IWorkflowStateGatewayRequestReviewStepResponse,
+    IWorkflowStateGatewayStartStepParams,
+    IWorkflowStateGatewayStartStepResponse,
+    IWorkflowStateGatewayTakeOverStepParams,
+    IWorkflowStateGatewayTakeOverStepResponse
 } from "./abstraction/WorkflowStateGateway.js";
 import {
-    APPROVE_WORKFLOW_STATE_STEP_MUTATION,
-    CANCEL_WORKFLOW_STATE_MUTATION,
-    CREATE_WORKFLOW_STATE_MUTATION,
-    GET_TARGET_WORKFLOW_STATE_QUERY,
     type IApproveWorkflowStateStepResponse,
     type IApproveWorkflowStateStepVariables,
     type ICancelWorkflowStateResponse,
@@ -29,8 +29,20 @@ import {
     type IListWorkflowStatesVariables,
     type IRejectWorkflowStateStepResponse,
     type IRejectWorkflowStateStepVariables,
+    type IStartWorkflowStateStepResponse,
+    type IStartWorkflowStateStepVariables,
+    type ITakeOverWorkflowStateStepResponse,
+    type ITakeOverWorkflowStateStepVariables,
+    TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION
+} from "./graphql/workflowStates.js";
+import {
+    APPROVE_WORKFLOW_STATE_STEP_MUTATION,
+    CANCEL_WORKFLOW_STATE_MUTATION,
+    CREATE_WORKFLOW_STATE_MUTATION,
+    GET_TARGET_WORKFLOW_STATE_QUERY,
     LIST_WORKFLOW_STATES_QUERY,
-    REJECT_WORKFLOW_STATE_STEP_MUTATION
+    REJECT_WORKFLOW_STATE_STEP_MUTATION,
+    START_WORKFLOW_STATE_STEP_MUTATION
 } from "./graphql/workflowStates.js";
 import { WebinyError } from "@webiny/error";
 
@@ -43,6 +55,32 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
 
     public constructor(params: IWorkflowStateGatewayParams) {
         this.client = params.client;
+    }
+
+    public async startWorkflowStateStep(
+        params: IWorkflowStateGatewayStartStepParams
+    ): Promise<IWorkflowStateGatewayStartStepResponse> {
+        const { id } = params;
+        try {
+            const result = await this.client.mutate<
+                IStartWorkflowStateStepResponse,
+                IStartWorkflowStateStepVariables
+            >({
+                mutation: START_WORKFLOW_STATE_STEP_MUTATION,
+                variables: {
+                    id
+                }
+            });
+            return {
+                data: result.data?.workflows.startWorkflowStateStep.data || null,
+                error: result.data?.workflows.startWorkflowStateStep.error || null
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: WebinyError.from(ex)
+            };
+        }
     }
 
     public async approveWorkflowStateStep(
@@ -90,6 +128,32 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
             return {
                 data: result.data?.workflows.rejectWorkflowStateStep.data || null,
                 error: result.data?.workflows.rejectWorkflowStateStep.error || null
+            };
+        } catch (ex) {
+            return {
+                data: null,
+                error: WebinyError.from(ex)
+            };
+        }
+    }
+
+    public async takeOverWorkflowStateStep(
+        params: IWorkflowStateGatewayTakeOverStepParams
+    ): Promise<IWorkflowStateGatewayTakeOverStepResponse> {
+        const { id } = params;
+        try {
+            const result = await this.client.mutate<
+                ITakeOverWorkflowStateStepResponse,
+                ITakeOverWorkflowStateStepVariables
+            >({
+                mutation: TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION,
+                variables: {
+                    id
+                }
+            });
+            return {
+                data: result.data?.workflows.takeOverWorkflowStateStep.data || null,
+                error: result.data?.workflows.takeOverWorkflowStateStep.error || null
             };
         } catch (ex) {
             return {
@@ -164,7 +228,8 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
                 mutation: CREATE_WORKFLOW_STATE_MUTATION,
                 variables: {
                     app: params.app,
-                    targetRevisionId: params.targetRevisionId
+                    targetRevisionId: params.targetRevisionId,
+                    title: params.title
                 }
             });
             return {

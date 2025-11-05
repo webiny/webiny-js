@@ -24,22 +24,22 @@ export const FolderGridItem = ({ onClick }: FolderProps) => {
     return (
         <div
             className={cn([
-                "wby-group",
-                "wby-bg-neutral-base wby-rounded-lg",
-                "wby-shadow-sm hover:wby-shadow-lg",
-                "wby-border-sm wby-border-solid wby-border-neutral-base hover:wby-border-neutral-dimmed-darker",
-                "wby-transition-shadow wby-duration-250 wby-ease-in-out",
-                "wby-overflow-hidden",
-                "wby-cursor-pointer"
+                "group",
+                "bg-neutral-base rounded-lg",
+                "shadow-sm hover:shadow-lg",
+                "border-sm border-solid border-neutral-base hover:border-neutral-dimmed-darker",
+                "transition-shadow duration-250 ease-in-out",
+                "overflow-hidden",
+                "cursor-pointer"
             ])}
             onClick={() => onClick(id)}
         >
-            <div style={{ height: 150 }} className={"wby-relative"}>
+            <div style={{ height: 150 }} className={"relative"}>
                 <div
                     className={cn([
-                        "wby-absolute wby-top-0 wby-left-0",
-                        "wby-w-full wby-h-full",
-                        "wby-flex wby-items-center wby-justify-center"
+                        "absolute top-0 left-0",
+                        "w-full h-full",
+                        "flex items-center justify-center"
                     ])}
                 >
                     {icon}
@@ -47,10 +47,10 @@ export const FolderGridItem = ({ onClick }: FolderProps) => {
                 {canManageStructure && (
                     <div
                         className={cn([
-                            "wby-invisible group-hover:wby-visible",
-                            "wby-flex wby-items-center wby-gap-xxs",
-                            "wby-p-xs",
-                            "wby-absolute wby-top-xs-plus wby-right-xs-plus"
+                            "invisible group-hover:visible",
+                            "flex items-center gap-xxs",
+                            "p-xs",
+                            "absolute top-xs-plus right-xs-plus"
                         ])}
                     >
                         <OptionsMenu
@@ -67,11 +67,11 @@ export const FolderGridItem = ({ onClick }: FolderProps) => {
                     </div>
                 )}
             </div>
-            <div className={"wby-px-md wby-py-sm-extra"} data-testid={"fm-file-wrapper-file-label"}>
-                <Text size={"sm"} as={"div"} className={"wby-truncate wby-text-neutral-primary"}>
+            <div className={"px-md py-sm-extra"} data-testid={"fm-file-wrapper-file-label"}>
+                <Text size={"sm"} as={"div"} className={"truncate text-neutral-primary"}>
                     {title}
                 </Text>
-                <Text size={"sm"} as={"div"} className={"wby-truncate wby-text-neutral-dimmed"}>
+                <Text size={"sm"} as={"div"} className={"truncate text-neutral-dimmed"}>
                     {"Folder"} / <TimeAgo datetime={folder.createdOn} />
                 </Text>
             </div>

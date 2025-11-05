@@ -15,10 +15,10 @@ const ParentFolderField = ({
             <FormComponentLabel text={label} />
             <div
                 className={cn([
-                    "wby-px-sm-extra wby-py-sm-extra",
-                    "wby-border-sm wby-border-neutral-muted wby-rounded-md",
-                    "wby-bg-neutral-base",
-                    "wby-max-h-[280px] wby-overflow-x-hidden wby-overflow-y-scroll"
+                    "px-sm-extra py-sm-extra",
+                    "border-sm border-neutral-muted rounded-md",
+                    "bg-neutral-base",
+                    "max-h-[280px] overflow-x-hidden overflow-y-scroll"
                 ])}
             >
                 {children}

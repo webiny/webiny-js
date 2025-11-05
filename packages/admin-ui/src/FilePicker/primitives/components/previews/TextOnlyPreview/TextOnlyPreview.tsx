@@ -5,20 +5,17 @@ import { ItemActions } from "~/FilePicker/primitives/components/previews/ItemAct
 import type { FilePreviewDefaultProps } from "../../types.js";
 import { previewVariants } from "../variants.js";
 
-const textOnlyPreviewVariants = cva(
-    "wby-w-full wby-flex wby-items-center wby-justify-between wby-gap-sm wby-min-w-0",
-    {
-        variants: {
-            small: {
-                true: "wby-px-sm wby-py-xs wby-rounded-xs",
-                false: "wby-px-sm wby-py-xs-plus wby-rounded-md"
-            }
-        },
-        defaultVariants: {
-            small: false
+const textOnlyPreviewVariants = cva("w-full flex items-center justify-between gap-sm min-w-0", {
+    variants: {
+        small: {
+            true: "px-sm py-xs rounded-xs",
+            false: "px-sm py-xs-plus rounded-md"
         }
+    },
+    defaultVariants: {
+        small: false
     }
-);
+});
 
 type TextOnlyPreviewProps = FilePreviewDefaultProps &
     React.HTMLAttributes<HTMLDivElement> &
@@ -49,7 +46,7 @@ const DecoratableTextOnlyPreview = ({
             <div
                 data-role="select-image"
                 onClick={onReplaceItem}
-                className={"wby-overflow-hidden wby-flex-1 wby-min-w-0 wby-cursor-pointer"}
+                className={"overflow-hidden flex-1 min-w-0 cursor-pointer"}
             >
                 <ItemDescription item={value} disabled={disabled} small={!!small} />
             </div>

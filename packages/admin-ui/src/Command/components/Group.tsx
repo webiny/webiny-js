@@ -7,7 +7,7 @@ type GroupProps = React.ComponentPropsWithoutRef<typeof CommandPrimitive.Group>;
 const Group = ({ className, ...props }: GroupProps) => (
     <CommandPrimitive.Group
         className={cn(
-            "[&_[cmdk-group-heading]]:wby-px-sm [&_[cmdk-group-heading]]:wby-py-xs-plus [&_[cmdk-group-heading]]:wby-text-sm [&_[cmdk-group-heading]]:wby-font-semibold [&_[cmdk-group-heading]]:wby-text-neutral-strong",
+            "**:[[cmdk-group-heading]]:px-sm **:[[cmdk-group-heading]]:py-xs-plus **:[[cmdk-group-heading]]:text-sm **:[[cmdk-group-heading]]:font-semibold **:[[cmdk-group-heading]]:text-neutral-strong",
             className
         )}
         {...props}

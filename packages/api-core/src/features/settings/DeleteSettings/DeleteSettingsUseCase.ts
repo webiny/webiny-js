@@ -21,9 +21,7 @@ class DeleteSettingsUseCaseImpl implements DeleteSettings.Interface {
         const settings = getResult.value;
 
         // Publish before event
-        await this.eventPublisher.publish(
-            new SettingsBeforeDeleteEvent({ settings })
-        );
+        await this.eventPublisher.publish(new SettingsBeforeDeleteEvent({ settings }));
 
         // Delete settings
         const deleteResult = await this.repository.delete(name);
@@ -32,9 +30,7 @@ class DeleteSettingsUseCaseImpl implements DeleteSettings.Interface {
         }
 
         // Publish after event
-        await this.eventPublisher.publish(
-            new SettingsAfterDeleteEvent({ settings })
-        );
+        await this.eventPublisher.publish(new SettingsAfterDeleteEvent({ settings }));
 
         return Result.ok();
     }

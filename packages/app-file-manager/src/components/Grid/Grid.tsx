@@ -41,7 +41,7 @@ export const Grid = ({
 }: GridProps) => {
     if (loading) {
         return (
-            <div className={"wby-relative wby-size-full"}>
+            <div className={"relative size-full"}>
                 <OverlayLoader text={t`Loading files...`} size={"lg"} />
             </div>
         );
@@ -69,7 +69,7 @@ export const Grid = ({
 
     return (
         <div
-            className={cn(["wby-p-lg", "wby-grid wby-gap-md wby-grid"])}
+            className={cn(["p-lg", "grid gap-md grid"])}
             style={{
                 gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))"
             }}

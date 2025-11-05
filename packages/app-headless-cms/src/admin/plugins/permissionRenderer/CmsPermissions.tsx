@@ -275,8 +275,8 @@ export const CMSPermissions = ({ value, onChange }: CMSPermissionsProps) => {
                         </Grid.Column>
                     </Grid>
                     {data.accessLevel === CUSTOM_ACCESS && (
-                        <div className={"wby-mt-lg"}>
-                            <div className={"wby-mb-md"}>
+                        <div className={"mt-lg"}>
+                            <div className={"mb-md"}>
                                 <Grid>
                                     <Grid.Column span={12}>
                                         <Bind name={"endpoints"}>

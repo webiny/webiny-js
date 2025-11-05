@@ -2,16 +2,16 @@ import * as React from "react";
 import { makeDecoratable, withStaticProps, cva, type VariantProps, cn } from "~/utils.js";
 import { ListItem, type ListItemProps } from "./components/index.js";
 
-const listVariants = cva("wby-group wby-w-full", {
+const listVariants = cva("group w-full", {
     variants: {
         variant: {
-            container: "wby-list-variant-container",
-            underline: "wby-list-variant-underline"
+            container: "list-variant-container",
+            underline: "list-variant-underline"
         },
         background: {
-            base: "wby-list-background-base",
-            light: "wby-list-background-light",
-            transparent: "wby-list-background-transparent"
+            base: "list-background-base",
+            light: "list-background-light",
+            transparent: "list-background-transparent"
         }
     },
     defaultVariants: {

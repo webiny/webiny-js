@@ -13,22 +13,22 @@ interface OuterDivVerticalProps {
 const OuterDivVertical = ({ isOver, last, isDragging }: OuterDivVerticalProps) => (
     <div
         className={cn(
-            "wby-absolute wby-top-0 wby-h-full wby-w-[30%] wby-z-10 wby-bg-transparent",
-            last ? "wby-text-right -wby-right-sm" : "wby-text-left -wby-left-sm"
+            "absolute top-0 h-full w-[30%] z-10 bg-transparent",
+            last ? "text-right -right-sm" : "text-left -left-sm"
         )}
     >
         <div
             className={cn(
-                "wby-absolute wby-w-md wby-h-full wby-z-3 wby-border-dashed wby-border-sm wby-hidden",
-                isOver ? "wby-border-accent-default" : "wby-border-success-default",
-                last ? "-wby-right-sm" : "-wby-left-sm",
-                isDragging && "wby-block"
+                "absolute w-md h-full z-3 border-dashed border-sm hidden",
+                isOver ? "border-accent-default" : "border-success-default",
+                last ? "-right-sm" : "-left-sm",
+                isDragging && "block"
             )}
         >
             <div
                 className={cn(
-                    "wby-w-full wby-h-full wby-opacity-50",
-                    isOver ? "wby-bg-primary-muted" : "wby-bg-success-muted"
+                    "w-full h-full opacity-50",
+                    isOver ? "bg-primary-muted" : "bg-success-muted"
                 )}
             />
         </div>

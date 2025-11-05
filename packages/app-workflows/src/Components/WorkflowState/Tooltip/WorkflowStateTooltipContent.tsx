@@ -12,7 +12,7 @@ interface IWorkflowStateTooltipButtonProps {
 export const WorkflowStateTooltipContent = (props: IWorkflowStateTooltipButtonProps) => {
     const { state, presenter } = props;
     return (
-        <Grid className={"wby-w-[350px] wby-text-sm"} gap={"small"}>
+        <Grid className={"w-[350px] text-sm"} gap={"small"}>
             <>
                 <Grid.Column span={12}>
                     <strong>Workflow progress</strong>

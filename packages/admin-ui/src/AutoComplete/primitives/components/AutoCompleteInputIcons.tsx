@@ -17,7 +17,7 @@ interface AutoCompleteInputIconsProps {
 
 export const AutoCompleteInputIcons = (props: AutoCompleteInputIconsProps) => {
     return (
-        <div className={"wby-flex wby-items-center wby-gap-sm"}>
+        <div className={"flex items-center gap-sm"}>
             {props.loading && <Loader size={props.inputSize === "xl" ? "sm" : "xs"} />}
             {props.displayResetAction && (
                 <IconButton

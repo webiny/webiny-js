@@ -1,14 +1,14 @@
 import * as React from "react";
 import { cn, cva, type VariantProps } from "~/utils.js";
 
-const dialogFooterVariants = cva("wby-flex wby-justify-between", {
+const dialogFooterVariants = cva("flex justify-between", {
     variants: {
         size: {
-            sm: "wby-p-md-extra",
-            md: "wby-p-md-extra",
-            lg: "wby-p-lg",
-            xl: "wby-p-lg",
-            full: "wby-p-lg"
+            sm: "p-md-extra",
+            md: "p-md-extra",
+            lg: "p-lg",
+            xl: "p-lg",
+            full: "p-lg"
         }
     },
     defaultVariants: {
@@ -31,11 +31,11 @@ export const DialogFooter = ({ actions, info, className, size, ...props }: Dialo
     return (
         <div {...props} className={cn(dialogFooterVariants({ size }), className)}>
             {info && (
-                <div className={"wby-text-sm wby-flex wby-items-center"}>
+                <div className={"text-sm flex items-center"}>
                     <div>{info}</div>
                 </div>
             )}
-            {actions && <div className={"wby-flex wby-gap-x-sm wby-ml-auto"}>{actions}</div>}
+            {actions && <div className={"flex gap-x-sm ml-auto"}>{actions}</div>}
         </div>
     );
 };

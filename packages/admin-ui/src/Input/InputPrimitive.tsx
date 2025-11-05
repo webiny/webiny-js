@@ -9,7 +9,7 @@ interface InputIconProps extends React.HTMLAttributes<HTMLDivElement> {
 
 const InputIcon = ({ icon, inputSize, className }: InputIconProps) => {
     return (
-        <div className={cn("wby-fill-inherit", className)}>
+        <div className={cn("fill-inherit", className)}>
             {React.cloneElement(icon, {
                 ...icon.props,
                 size: inputSize === "xl" ? "lg" : "sm" // Map icon size based on the input size.
@@ -27,58 +27,58 @@ const InputIcon = ({ icon, inputSize, className }: InputIconProps) => {
  */
 const inputVariants = cva(
     [
-        "wby-relative wby-flex wby-items-center wby-gap-sm wby-w-full",
-        "wby-border-sm wby-text-md",
-        "has-[:disabled]:wby-cursor-not-allowed data-[disabled=true]:wby-cursor-not-allowed"
+        "relative flex items-center gap-sm w-full",
+        "border-sm text-md",
+        "has-disabled:cursor-not-allowed data-[disabled=true]:cursor-not-allowed"
     ],
     {
         variants: {
             size: {
                 md: [
-                    "wby-rounded-md",
-                    "wby-py-[calc(theme(padding.xs-plus)-theme(borderWidth.sm))] wby-px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
+                    "rounded-md",
+                    "py-[calc(var(--padding-xs-plus)-(var(--border-width-sm)))] px-[calc(var(--padding-sm-extra)-(var(--border-width-sm)))]"
                 ],
                 lg: [
-                    "wby-rounded-md",
-                    "wby-py-[calc(theme(padding.sm-plus)-theme(borderWidth.sm))] wby-px-[calc(theme(padding.sm-extra)-theme(borderWidth.sm))]"
+                    "rounded-md",
+                    "py-[calc(var(--padding-sm-plus)-(var(--border-width-sm)))] px-[calc(var(--padding-sm-extra)-(var(--border-width-sm)))]"
                 ],
                 xl: [
-                    "wby-rounded-lg wby-leading-6",
-                    "wby-py-[calc(theme(padding.md)-theme(borderWidth.sm))] wby-px-[calc(theme(padding.md)-theme(borderWidth.sm))]"
+                    "rounded-lg leading-6",
+                    "py-[calc(var(--padding-md)-(var(--border-width-sm)))] px-[calc(var(--padding-md)-(var(--border-width-sm)))]"
                 ]
             },
             variant: {
                 primary: [
-                    "wby-bg-neutral-base wby-border-neutral-muted wby-text-neutral-strong placeholder:wby-text-neutral-dimmed wby-fill-neutral-xstrong",
-                    "hover:wby-border-neutral-strong",
-                    "focus-within:!wby-border-neutral-black",
-                    "data-[focused=true]:!wby-border-neutral-black",
-                    "has-[:disabled]:wby-bg-neutral-disabled has-[:disabled]:wby-border-neutral-muted has-[:disabled]:hover:wby-border-neutral-muted has-[:disabled]:wby-text-neutral-disabled has-[:disabled]:placeholder:wby-text-neutral-disabled has-[:disabled]:wby-fill-neutral-disabled",
-                    "data-[disabled=true]:wby-bg-neutral-disabled data-[disabled=true]:wby-border-neutral-muted data-[disabled=true]:wby-text-neutral-disabled data-[disabled=true]:placeholder:wby-text-neutral-disabled data-[disabled=true]:wby-fill-neutral-disabled"
+                    "bg-neutral-base border-neutral-muted text-neutral-strong placeholder:text-neutral-dimmed fill-neutral-xstrong",
+                    "hover:border-neutral-strong",
+                    "focus-within:border-neutral-black!",
+                    "data-[focused=true]:border-neutral-black!",
+                    "has-disabled:bg-neutral-disabled has-disabled:border-neutral-muted has-disabled:hover:border-neutral-muted has-disabled:text-neutral-disabled has-disabled:placeholder:text-neutral-disabled has-disabled:fill-neutral-disabled",
+                    "data-[disabled=true]:bg-neutral-disabled data-[disabled=true]:border-neutral-muted data-[disabled=true]:text-neutral-disabled data-[disabled=true]:placeholder:text-neutral-disabled data-[disabled=true]:fill-neutral-disabled"
                 ],
                 secondary: [
-                    "wby-bg-neutral-light wby-border-neutral-subtle wby-text-neutral-strong placeholder:wby-text-neutral-dimmed wby-fill-neutral-xstrong",
-                    "hover:wby-bg-neutral-dimmed",
-                    "focus-within:!wby-bg-neutral-base focus-within:!wby-border-neutral-black",
-                    "data-[focused=true]:!wby-bg-neutral-base data-[focused=true]:!wby-border-neutral-black",
-                    "has-[:disabled]:wby-bg-neutral-disabled has-[:disabled]:wby-text-neutral-disabled has-[:disabled]:placeholder:wby-text-neutral-disabled has-[:disabled]:wby-fill-neutral-disabled",
-                    "data-[disabled=true]:wby-bg-neutral-disabled data-[disabled=true]:wby-text-neutral-disabled data-[disabled=true]:placeholder:wby-text-neutral-disabled data-[disabled=true]:wby-fill-neutral-disabled"
+                    "bg-neutral-light border-neutral-subtle text-neutral-strong placeholder:text-neutral-dimmed fill-neutral-xstrong",
+                    "hover:bg-neutral-dimmed",
+                    "focus-within:bg-neutral-base! focus-within:border-neutral-black!",
+                    "data-[focused=true]:bg-neutral-base! data-[focused=true]:border-neutral-black!",
+                    "has-disabled:bg-neutral-disabled has-disabled:text-neutral-disabled has-disabled:placeholder:text-neutral-disabled has-disabled:fill-neutral-disabled",
+                    "data-[disabled=true]:bg-neutral-disabled data-[disabled=true]:text-neutral-disabled data-[disabled=true]:placeholder:text-neutral-disabled data-[disabled=true]:fill-neutral-disabled"
                 ],
                 ghost: [
-                    "wby-bg-transparent wby-border-transparent wby-text-neutral-strong placeholder:wby-text-neutral-dimmed",
-                    "hover:wby-bg-neutral-dark/5",
-                    "focus-within:!wby-bg-neutral-dark/5",
-                    "data-[focused=true]:!wby-bg-neutral-dark/5",
-                    "has-[:disabled]:wby-bg-transparent has-[:disabled]:wby-text-neutral-disabled has-[:disabled]:placeholder:wby-text-neutral-disabled has-[:disabled]:wby-fill-neutral-disabled",
-                    "data-[disabled=true]:wby-bg-transparent data-[disabled=true]:wby-text-neutral-disabled data-[disabled=true]:placeholder:wby-text-neutral-disabled data-[disabled=true]:wby-fill-neutral-disabled"
+                    "bg-transparent border-transparent text-neutral-strong placeholder:text-neutral-dimmed",
+                    "hover:bg-neutral-dark/5",
+                    "focus-within:bg-neutral-dark/5!",
+                    "data-[focused=true]:bg-neutral-dark/5!",
+                    "has-disabled:bg-transparent has-disabled:text-neutral-disabled has-disabled:placeholder:text-neutral-disabled has-disabled:fill-neutral-disabled",
+                    "data-[disabled=true]:bg-transparent data-[disabled=true]:text-neutral-disabled data-[disabled=true]:placeholder:text-neutral-disabled data-[disabled=true]:fill-neutral-disabled"
                 ],
                 "ghost-negative": [
-                    "wby-bg-transparent wby-border-transparent wby-text-neutral-light/50 placeholder:wby-text-neutral-light/50 wby-fill-neutral-base/50",
-                    "hover:wby-bg-neutral-base/20",
-                    "focus-within:!wby-bg-neutral-base focus-within:!wby-text-neutral-primary focus-within:!placeholder:wby-text-neutral-dimmed focus-within:!wby-fill-neutral-xstrong",
-                    "data-[focused=true]:!wby-bg-neutral-base data-[focused=true]:!wby-text-neutral-primary data-[focused=true]:!placeholder:wby-text-neutral-dimmed data-[focused=true]:!wby-fill-neutral-xstrong",
-                    "has-[:disabled]:wby-bg-transparent has-[:disabled]:wby-text-neutral-disabled/50 has-[:disabled]:placeholder:wby-text-neutral-disabled/50",
-                    "data-[disabled=true]:wby-bg-transparent data-[disabled=true]:wby-text-neutral-disabled/50 data-[disabled=true]:placeholder:wby-text-neutral-disabled/50"
+                    "bg-transparent border-transparent text-neutral-light/50 placeholder:text-neutral-light/50 fill-neutral-base/50",
+                    "hover:bg-neutral-base/20",
+                    "focus-within:bg-neutral-base! focus-within:text-neutral-primary! focus-within:!placeholder:text-neutral-dimmed focus-within:fill-neutral-xstrong!",
+                    "data-[focused=true]:bg-neutral-base! data-[focused=true]:text-neutral-primary! data-[focused=true]:!placeholder:text-neutral-dimmed data-[focused=true]:fill-neutral-xstrong!",
+                    "has-disabled:bg-transparent has-disabled:text-neutral-disabled/50 has-disabled:placeholder:text-neutral-disabled/50",
+                    "data-[disabled=true]:bg-transparent data-[disabled=true]:text-neutral-disabled/50 data-[disabled=true]:placeholder:text-neutral-disabled/50"
                 ]
             },
             invalid: {
@@ -90,22 +90,22 @@ const inputVariants = cva(
             {
                 variant: "primary",
                 invalid: true,
-                class: "!wby-border-destructive-default"
+                class: "border-destructive-default!"
             },
             {
                 variant: "secondary",
                 invalid: true,
-                class: "!wby-border-destructive-default"
+                class: "border-destructive-default!"
             },
             {
                 variant: "ghost",
                 invalid: true,
-                class: "!wby-border-destructive-subtle !wby-bg-destructive-subtle"
+                class: "border-destructive-subtle! bg-destructive-subtle!"
             },
             {
                 variant: "ghost-negative",
                 invalid: true,
-                class: "!wby-border-destructive-default !wby-bg-destructive-subtle wby-text-neutral-primary placeholder:wby-text-neutral-dimmed !wby-fill-neutral-xstrong"
+                class: "border-destructive-default! bg-destructive-subtle! text-neutral-primary placeholder:text-neutral-dimmed fill-neutral-xstrong!"
             }
         ],
         defaultVariants: {
@@ -227,10 +227,10 @@ const DecoratableInputPrimitive = ({
                 {...props}
                 ref={inputRef}
                 className={cn([
-                    "wby-w-full wby-bg-transparent wby-border-none wby-text-md wby-peer",
-                    "focus-visible:wby-outline-none",
-                    "disabled:wby-cursor-not-allowed",
-                    "file:wby-text-sm file:wby-font-semibold"
+                    "w-full bg-transparent border-none text-md peer",
+                    "focus-visible:outline-none",
+                    "disabled:cursor-not-allowed",
+                    "file:text-sm file:font-semibold"
                 ])}
                 disabled={disabled}
                 size={maxLength}

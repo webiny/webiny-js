@@ -24,7 +24,7 @@ export type ElevationProps = {
  */
 const Elevation = ({ className, ...props }: ElevationProps) => {
     return (
-        <div {...props} className={cn("wby-bg-white wby-shadow-md wby-p-4", className)}>
+        <div {...props} className={cn("bg-white shadow-md p-4", className)}>
             {props.children}
         </div>
     );

@@ -79,7 +79,7 @@ export const SetNewPassword = () => {
                                 <Grid.Column span={12}>
                                     <div
                                         className={
-                                            "wby-flex wby-flex-row-reverse wby-items-center wby-justify-between"
+                                            "flex flex-row-reverse items-center justify-between"
                                         }
                                     >
                                         <Button

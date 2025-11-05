@@ -62,8 +62,8 @@ const AdminUserInputs = () => {
 
             <Grid.Column span={12}>
                 <Button
-                    containerClassName={"wby-w-full"}
-                    className={"wby-w-full"}
+                    containerClassName={"w-full"}
+                    className={"w-full"}
                     variant={"primary"}
                     size={"lg"}
                     text={"Next step"}

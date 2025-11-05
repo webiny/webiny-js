@@ -11,7 +11,7 @@ const DropdownMenuContent = React.forwardRef<
         sideOffset={sideOffset}
         collisionPadding={collisionPadding}
         className={cn(
-            "wby-flex wby-flex-col wby-z-[150] wby-min-w-[8rem] wby-overflow-hidden wby-rounded-md wby-gap-xxs wby-bg-white wby-py-xs-plus wby-text-neutral-primary wby-shadow-none data-[state=open]:wby-animate-in data-[state=closed]:wby-animate-out data-[state=closed]:wby-fade-out-0 data-[state=open]:wby-fade-in-0 data-[state=closed]:wby-zoom-out-95 data-[state=open]:wby-zoom-in-95 data-[side=bottom]:wby-slide-in-from-top-2 data-[side=left]:wby-slide-in-from-right-2 data-[side=right]:wby-slide-in-from-left-2 data-[side=top]:wby-slide-in-from-bottom-2 wby-border-sm wby-border-solid wby-border-neutral-muted",
+            "flex flex-col z-popover min-w-32 overflow-hidden rounded-md gap-xxs bg-white py-xs-plus text-neutral-primary shadow-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 border-sm border-solid border-neutral-muted",
             className
         )}
         {...props}

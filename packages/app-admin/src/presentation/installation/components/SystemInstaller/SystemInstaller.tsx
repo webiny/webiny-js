@@ -36,12 +36,12 @@ export const SystemInstaller = observer(({ children }: SystemInstallerProps) => 
 
     return (
         <Tags tags={{ installer: true }}>
-            <div className={"wby-bg-neutral-light wby-h-screen wby-w-[312px] wby-p-xl"}>
-                <div className={"wby-w-[240px] wby-p-"}>
-                    <div className={"wby-mb-lg"}>
+            <div className={"bg-neutral-light h-screen w-[312px] p-xl"}>
+                <div className={"w-[240px] p-"}>
+                    <div className={"mb-lg"}>
                         <Logo />
                     </div>
-                    <Text as="div" size={"md"} className={"wby-text-neutral-muted wby-mb-lg"}>
+                    <Text as="div" size={"md"} className={"text-neutral-muted mb-lg"}>
                         Follow these steps to create your very first Webiny project:
                     </Text>
                     <SteppedProgress
@@ -53,7 +53,7 @@ export const SystemInstaller = observer(({ children }: SystemInstallerProps) => 
                     />
                 </div>
             </div>
-            <div className={"wby-flex wby-h-screen wby-w-full wby-justify-center"}>
+            <div className={"flex h-screen w-full justify-center"}>
                 {vm.currentStep === "introduction" ? (
                     <IntroductionStep nextStep={presenter.nextStep} />
                 ) : null}

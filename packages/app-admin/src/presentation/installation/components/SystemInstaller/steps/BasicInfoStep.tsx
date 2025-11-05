@@ -72,8 +72,8 @@ const BasicInfoFormInputs = () => {
             <Grid.Column span={12}>
                 <Button
                     disabled={tosBind.value !== true}
-                    containerClassName={"wby-w-full"}
-                    className={"wby-w-full"}
+                    containerClassName={"w-full"}
+                    className={"w-full"}
                     variant={"primary"}
                     size={"lg"}
                     text={"Next step"}

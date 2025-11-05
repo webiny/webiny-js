@@ -33,7 +33,7 @@ export const UsersTeamsSelection = ({
 
     return (
         <>
-            <Text as={"div"} className={"wby-mb-md"}>
+            <Text as={"div"} className={"mb-md"}>
                 People and teams with access
             </Text>
             <Scrollbar style={{ height: "300px" }}>

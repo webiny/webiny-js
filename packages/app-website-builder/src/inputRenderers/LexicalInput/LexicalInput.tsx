@@ -59,7 +59,7 @@ const EditorDialog = (props: EditorDialogProps) => {
         <Dialog
             id={"lexical-editor-dialog"}
             open={props.open}
-            className={"wby-w-[900px] wby-max-w-[900px] wby-overflow-visible"}
+            className={"w-[900px] max-w-[900px] overflow-visible"}
             data-hover-manager={"ignore"}
             title={`Edit ${props.input.label}`}
             dismissible={false}

@@ -109,7 +109,7 @@ export const ContentModelPermission = ({
                                             <></>
                                         </Bind>
                                     ) : (
-                                        <div className={"wby-mt-md"}>
+                                        <div className={"mt-md"}>
                                             <Bind name={`${entity}Props.models`}>
                                                 <ContentModelList items={items} />
                                             </Bind>

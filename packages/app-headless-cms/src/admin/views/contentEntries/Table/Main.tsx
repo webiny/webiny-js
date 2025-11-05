@@ -89,7 +89,7 @@ export const Main = ({ folderId: initialFolderId }: MainProps) => {
 
     return (
         <>
-            <div className={"wby-h-full wby-relative wby-overflow-hidden"}>
+            <div className={"h-full relative overflow-hidden"}>
                 <Header
                     isRoot={isRoot}
                     title={!list.isListLoading ? list.listTitle : undefined}
@@ -102,9 +102,7 @@ export const Main = ({ folderId: initialFolderId }: MainProps) => {
                     onSearchChange={list.setSearch}
                 />
                 <div
-                    className={
-                        "wby-w-full wby-overflow-hidden wby-absolute wby-top-0 wby-bottom-0 wby-left-0"
-                    }
+                    className={"w-full overflow-hidden absolute top-0 bottom-0 left-0"}
                     style={{ top: "105px" }}
                 >
                     <BulkActions />

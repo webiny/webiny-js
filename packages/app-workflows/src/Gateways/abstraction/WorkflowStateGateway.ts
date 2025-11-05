@@ -40,6 +40,11 @@ export interface IWorkflowStateGatewayListWorkflowStatesResponse {
     error: IWorkflowStateError | null;
 }
 
+export interface IWorkflowStateGatewayStartStepResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStateError | null;
+}
+
 export interface IWorkflowStateGatewayApproveStepResponse {
     data: IWorkflowState | null;
     error: IWorkflowStateError | null;
@@ -55,6 +60,10 @@ export interface IWorkflowStateGatewayCancelStateResponse {
     error: IWorkflowStateError | null;
 }
 
+export interface IWorkflowStateGatewayStartStepParams {
+    id: string;
+}
+
 export interface IWorkflowStateGatewayApproveStepParams {
     id: string;
     comment?: string;
@@ -65,9 +74,19 @@ export interface IWorkflowStateGatewayRejectStepParams {
     comment: string;
 }
 
+export interface IWorkflowStateGatewayTakeOverStepParams {
+    id: string;
+}
+
+export interface IWorkflowStateGatewayTakeOverStepResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStateError | null;
+}
+
 export interface IWorkflowStateGatewayRequestReviewStepParams {
     app: string;
     targetRevisionId: string;
+    title: string;
 }
 
 export interface IWorkflowStateGatewayRequestReviewStepResponse {
@@ -84,12 +103,18 @@ export interface IWorkflowStateGateway {
     createWorkflowState(
         params: IWorkflowStateGatewayRequestReviewStepParams
     ): Promise<IWorkflowStateGatewayRequestReviewStepResponse>;
+    startWorkflowStateStep(
+        params: IWorkflowStateGatewayStartStepParams
+    ): Promise<IWorkflowStateGatewayStartStepResponse>;
     approveWorkflowStateStep(
         params: IWorkflowStateGatewayApproveStepParams
     ): Promise<IWorkflowStateGatewayApproveStepResponse>;
     rejectWorkflowStateStep(
         params: IWorkflowStateGatewayRejectStepParams
     ): Promise<IWorkflowStateGatewayRejectStepResponse>;
+    takeOverWorkflowStateStep(
+        params: IWorkflowStateGatewayTakeOverStepParams
+    ): Promise<IWorkflowStateGatewayTakeOverStepResponse>;
     cancelWorkflowState(id: string): Promise<IWorkflowStateGatewayCancelStateResponse>;
     getTargetWorkflowState(
         app: string,

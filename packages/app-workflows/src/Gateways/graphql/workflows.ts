@@ -28,6 +28,14 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
+const META_FIELDS = /* GraphQL */ `
+    meta {
+        totalCount
+        hasMoreItems
+        cursor
+    }
+`;
+
 const WORKFLOW = /* GraphQL */ `
     {
         id
@@ -132,6 +140,7 @@ export const LIST_WORKFLOWS_QUERY = gql`
         workflows {
             listWorkflows(where: $where, limit: $limit, sort: $sort, after: $after) {
                 data ${WORKFLOW}
+                ${META_FIELDS}
                 ${ERROR_FIELD}
             }
         }

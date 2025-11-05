@@ -8,7 +8,7 @@ export interface ScheduleButtonProps {
 
 export const SchedulerButton = (props: ScheduleButtonProps) => {
     return (
-        <div className={"wby-list-none"}>
+        <div className={"list-none"}>
             <Sidebar.Item
                 onClick={props.onClick}
                 text={"Schedule"}

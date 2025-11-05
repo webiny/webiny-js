@@ -5,15 +5,15 @@ import { cn, cva, Icon as IconComponent, inputVariants, type VariantProps } from
 import { IconProvider, IconRenderer } from "~/components/IconPicker/IconRenderer.js";
 import type { Icon } from "~/components/IconPicker/types.js";
 
-const iconPickerTriggerVariants = cva("wby-cursor-pointer fill-neutral-xstrong", {
+const iconPickerTriggerVariants = cva("cursor-pointer fill-neutral-xstrong", {
     variants: {
         size: {
-            md: "wby-w-[64px]",
-            lg: "wby-w-[64px]",
-            xl: "wby-w-[76px]"
+            md: "w-3xl",
+            lg: "w-3xl",
+            xl: "w-[76px]"
         },
         disabled: {
-            true: "wby-pointer-events-none"
+            true: "pointer-events-none"
         }
     },
     defaultVariants: {
@@ -41,7 +41,7 @@ const IconPickerTrigger = (props: IconPickerTriggerProps) => {
                 iconPickerTriggerVariants({ size: props.size, disabled: props.disabled })
             )}
         >
-            <div className={"wby-flex wby-items-center wby-gap-xs"}>
+            <div className={"flex items-center gap-xs"}>
                 <div>
                     {props.icon ? (
                         <IconProvider icon={props.icon} size={24}>

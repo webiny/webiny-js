@@ -14,19 +14,15 @@ export const Container = ({ title, message, splashImage, children }: ContainerPr
         <div style={{ width: 468, paddingTop: 128 }}>
             {splashImage ? (
                 <Center>
-                    <img src={splashImage} className={"wby-m-auto"} />
+                    <img src={splashImage} className={"m-auto"} />
                 </Center>
             ) : null}
             <Center>
-                <Heading level={3} className={"wby-mb-md wby-pt-xxl wby-text-accent-primary"}>
+                <Heading level={3} className={"mb-md pt-xxl text-accent-primary"}>
                     {title}
                 </Heading>
             </Center>
-            <Text
-                as="div"
-                size={"md"}
-                className={"wby-mb-lg wby-text-center wby-text-neutral-muted"}
-            >
+            <Text as="div" size={"md"} className={"mb-lg text-center text-neutral-muted"}>
                 {message}
             </Text>
             {children}

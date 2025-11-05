@@ -12,7 +12,9 @@ export class WorkflowStateStepModel implements IWorkflowStateStepModel {
     public notifications;
     public color;
     public description;
-    public isAllowedToReview;
+    public canReview;
+    public canTakeOver;
+    public isOwner;
 
     public constructor(params: IWorkflowStateStep) {
         this.id = params.id;
@@ -24,7 +26,9 @@ export class WorkflowStateStepModel implements IWorkflowStateStepModel {
         this.comment = params.comment;
         this.savedBy = params.savedBy;
         this.state = params.state;
-        this.isAllowedToReview = params.isAllowedToReview;
+        this.canReview = params.canReview;
+        this.canTakeOver = params.canTakeOver;
+        this.isOwner = params.isOwner;
 
         makeAutoObservable(this);
     }
@@ -40,7 +44,9 @@ export class WorkflowStateStepModel implements IWorkflowStateStepModel {
             teams: this.teams,
             color: this.color,
             description: this.description,
-            isAllowedToReview: this.isAllowedToReview
+            canReview: this.canReview,
+            canTakeOver: this.canTakeOver,
+            isOwner: this.isOwner
         });
     }
 
@@ -48,5 +54,9 @@ export class WorkflowStateStepModel implements IWorkflowStateStepModel {
         runInAction(() => {
             Object.assign(this, input);
         });
+    }
+
+    public static create(input: IWorkflowStateStep): IWorkflowStateStepModel {
+        return new WorkflowStateStepModel(input);
     }
 }

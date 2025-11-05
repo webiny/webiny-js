@@ -16,7 +16,7 @@ const ErrorMessage = (props: ILockedRecordForceUnlockProps) => {
     const { title, lockedBy } = props;
     return (
         <div>
-            <Alert type="warning" title="Warning" className={"wby-mb-md"}>
+            <Alert type="warning" title="Warning" className={"mb-md"}>
                 <strong>{lockedBy?.displayName || "Unknown user"}</strong> is currently editing this
                 record.
                 <br /> If you force unlock it, they could potentially lose their changes.
@@ -70,8 +70,8 @@ export const LockedRecordForceUnlock = (props: ILockedRecordForceUnlockProps) =>
     }
 
     return (
-        <div className="wby-mt-md">
-            <Text as={"div"} className={"wby-mb-md"}>
+        <div className="mt-md">
+            <Text as={"div"} className={"mb-md"}>
                 Because you have a full access to the system, you can force unlock the record.
             </Text>
             <Button onClick={onClick} text={"Unlock and go back"} />

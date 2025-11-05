@@ -69,7 +69,7 @@ const ContentModelGroupPermission = ({
                                     <></>
                                 </Bind>
                             ) : (
-                                <div className={"wby-mt-md"}>
+                                <div className={"mt-md"}>
                                     <Bind name={`${entity}Props.groups`}>
                                         <CheckboxGroup
                                             items={modelsGroups.groups.map(item => {

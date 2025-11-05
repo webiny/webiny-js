@@ -7,11 +7,7 @@ interface TitleProps {
 
 export const Title = ({ title }: TitleProps) => {
     return (
-        <Text
-            size={"sm"}
-            as={"div"}
-            className={cn("wby-truncate wby-w-full wby-text-neutral-primary")}
-        >
+        <Text size={"sm"} as={"div"} className={cn("truncate w-full text-neutral-primary")}>
             {title}
         </Text>
     );

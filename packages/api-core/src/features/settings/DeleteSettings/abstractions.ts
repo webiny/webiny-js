@@ -7,7 +7,9 @@ export interface IDeleteSettingsErrors {
     // Add use-case-specific errors here if needed
 }
 
-type DeleteSettingsError = IDeleteSettingsErrors[keyof IDeleteSettingsErrors] | SettingsRepository.Error;
+type DeleteSettingsError =
+    | IDeleteSettingsErrors[keyof IDeleteSettingsErrors]
+    | SettingsRepository.Error;
 
 export interface IDeleteSettings {
     execute(name: string): Promise<Result<void, DeleteSettingsError>>;

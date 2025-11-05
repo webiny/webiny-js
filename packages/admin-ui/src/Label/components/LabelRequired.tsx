@@ -1,10 +1,10 @@
 import * as React from "react";
 import { cn, cva, type VariantProps } from "~/utils.js";
 
-const labelRequiredVariants = cva("wby-text-destructive-primary", {
+const labelRequiredVariants = cva("text-destructive-primary", {
     variants: {
         disabled: {
-            true: "wby-text-destructive-muted"
+            true: "text-destructive-muted"
         }
     }
 });

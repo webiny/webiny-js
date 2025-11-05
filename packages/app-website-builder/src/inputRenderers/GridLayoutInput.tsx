@@ -52,7 +52,7 @@ const presets = [
 
 export const GridLayoutInputRenderer = ({ value, onChange }: ElementInputRendererProps) => {
     return (
-        <Grid className={"wby-gap-md"}>
+        <Grid className={"gap-md"}>
             {presets.map(preset => (
                 <Grid.Column span={4} key={preset.layout}>
                     <div

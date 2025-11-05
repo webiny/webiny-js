@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn, makeDecoratable, withStaticProps } from "~/utils.js";
+import { cva, cn, makeDecoratable, withStaticProps } from "~/utils.js";
 import { AccordionTrigger } from "./AccordionTrigger.js";
 import { AccordionContent } from "./AccordionContent.js";
 import { AccordionItemIcon } from "./AccordionItemIcon.js";
@@ -8,52 +8,74 @@ import { AccordionRoot, type AccordionRootProps } from "~/Accordion/components/A
 
 interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {
     title: React.ReactNode;
+    subtitle?: React.ReactNode;
     description?: React.ReactNode;
+    colorMark?: string;
     icon?: React.ReactNode;
     handle?: React.ReactNode;
     interactive?: boolean;
+    locked?: boolean;
     draggable?: boolean;
     actions?: React.ReactNode;
     children: React.ReactNode;
 }
 
-const ACCORDION_ITEM_CLASSES = [
-    "wby-group-item data-[state=open]:wby-rounded-bl-lg data-[state=open]:wby-rounded-br-lg",
-    "group-[.wby-accordion-variant-container]/accordion:wby-rounded-lg",
-    "data-[disabled]:wby-pointer-events-none data-[disabled]:wby-opacity-50"
-] as const;
-
-const splitAccordionProps = (props: AccordionItemProps) => {
-    const {
-        // AccordionRoot props
-        className,
-        defaultOpen,
-        disabled,
-        onOpenChange,
-        open,
-        // AccordionContent props
-        children,
-        icon,
-        handle,
-        // AccordionTrigger props
-        ...triggerProps
-    } = props;
-
-    return {
-        itemProps: { className, defaultOpen, disabled, onOpenChange, open },
-        contentProps: { children, withIcon: !!icon, withHandle: !!handle },
-        triggerProps
-    };
-};
+const accordionRootVariants = cva("", {
+    variants: {
+        locked: {
+            true: "pointer-events-none"
+        }
+    }
+});
 
 const AccordionItemBase = (props: AccordionItemProps) => {
-    const { itemProps, triggerProps, contentProps } = React.useMemo(
-        () => splitAccordionProps(props),
-        [props]
-    );
+    const { itemProps, triggerProps, contentProps } = React.useMemo(() => {
+        const {
+            // Item props.
+            className,
+            defaultOpen,
+            disabled,
+            onOpenChange,
+            open,
+
+            // Content props.
+            children,
+
+            // Shared props.
+            locked,
+
+            // Trigger props.
+            ...triggerProps
+        } = props;
+
+        return {
+            itemProps: {
+                className,
+                defaultOpen,
+                disabled,
+                locked,
+                onOpenChange,
+                open
+            },
+            triggerProps: {
+                locked,
+                ...triggerProps
+            },
+            contentProps: { children, withIcon: !!props.icon, withHandle: !!props.handle }
+        };
+    }, [props]);
 
     return (
-        <AccordionRoot {...itemProps} className={cn(ACCORDION_ITEM_CLASSES, itemProps.className)}>
+        <AccordionRoot
+            {...itemProps}
+            className={cn(
+                "group-item data-[state=open]:rounded-bl-lg data-[state=open]:rounded-br-lg",
+                "group-[.accordion-variant-container]/accordion:rounded-lg",
+                "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+                accordionRootVariants({ locked: itemProps.locked }),
+                itemProps.className
+            )}
+        >
             <AccordionTrigger {...triggerProps} />
             <AccordionContent {...contentProps} />
         </AccordionRoot>

@@ -1,5 +1,4 @@
-import
-{ Abstraction } from "@webiny/di";
+import { Abstraction } from "@webiny/di";
 import { createModelSchema } from "~/models/base/ModelBuilder.js";
 import type {
     IModel,

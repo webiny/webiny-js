@@ -4,23 +4,20 @@ import { type DialogProps } from "../Dialog.js";
 import { DialogTitle } from "./DialogTitle.js";
 import { DialogDescription } from "./DialogDescription.js";
 
-const dialogHeaderVariants = cva(
-    ["wby-flex wby-flex-col wby-gap-sm", "wby-text-neutral-primary", "wby-sm:text-left"],
-    {
-        variants: {
-            size: {
-                sm: "wby-pt-md wby-pb-md-extra wby-px-md-extra wby-mr-xl",
-                md: "wby-pt-md wby-pb-md-extra wby-px-md-extra wby-mr-xl",
-                lg: "wby-pt-md wby-pb-md-extra wby-px-lg wby-mr-xl",
-                xl: "wby-pt-md wby-pb-md-extra wby-px-lg wby-mr-xl",
-                full: "wby-pt-md wby-pb-md-extra wby-px-lg wby-mr-xl"
-            }
-        },
-        defaultVariants: {
-            size: "md"
+const dialogHeaderVariants = cva(["flex flex-col gap-sm", "text-neutral-primary", "sm:text-left"], {
+    variants: {
+        size: {
+            sm: "pt-md pb-md-extra px-md-extra mr-xl",
+            md: "pt-md pb-md-extra px-md-extra mr-xl",
+            lg: "pt-md pb-md-extra px-lg mr-xl",
+            xl: "pt-md pb-md-extra px-lg mr-xl",
+            full: "pt-md pb-md-extra px-lg mr-xl"
         }
+    },
+    defaultVariants: {
+        size: "md"
     }
-);
+});
 
 export type DialogHeaderProps = Omit<React.HTMLAttributes<HTMLDivElement>, "title"> &
     Pick<DialogProps, "title" | "icon" | "description" | "size">;

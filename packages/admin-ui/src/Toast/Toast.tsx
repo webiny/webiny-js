@@ -35,7 +35,7 @@ const DecoratableToast = ({
     return (
         <ToastRoot hasDescription={!!description || !!actions} {...props}>
             <ToastIcon icon={icon} />
-            <div className="wby-w-64">
+            <div className="w-64">
                 {title}
                 {description && description}
                 {actions && actions}

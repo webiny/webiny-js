@@ -5,42 +5,60 @@ import React from "react";
 import { Alert } from "@webiny/admin-ui";
 import { WorkflowStateBarComponent } from "../WorkflowStateBarComponent.js";
 import { observer } from "mobx-react-lite";
+import { WorkflowStateValue } from "~/types.js";
 
 export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(Original => {
     return observer(function WorkflowStateBarReviewDecorator(props) {
         const { presenter } = props;
 
         const { step } = presenter.vm;
-        if (!step) {
+        /**
+         * If current user cannot review the step, continue.
+         */
+        if (!step?.canReview || step.state !== WorkflowStateValue.inReview) {
             return <Original {...props} />;
-        } else if (!step.isAllowedToReview) {
-            return (
-                <>
-                    <Alert>
-                        This item is currently under <strong>{step.title}</strong> review, but you
-                        are not in the team assigned to review it.
-                    </Alert>
-                </>
-            );
         }
-
-        return (
-            <>
+        /**
+         * Current user can review and is not an owner of the review step - can take over the review.
+         */
+        //
+        else if (!step.isOwner) {
+            const displayName =
+                step.savedBy?.displayName || "unknown: " + step.savedBy?.id || "N/A";
+            return (
                 <Alert
                     actions={
-                        <>
-                            <Alert.Action text={"Approve"} onClick={presenter.showApproveDialog} />
-                            <Alert.Action
-                                text={"Reject"}
-                                onClick={presenter.showRejectDialog}
-                                className={"wby-ml-sm"}
-                            />
-                        </>
+                        <Alert.Action
+                            text={"Take Over"}
+                            onClick={presenter.showTakeOverDialog}
+                            className={"ml-sm"}
+                        />
                     }
                 >
-                    This item is currently under <strong>{step.title}</strong> review.
+                    This item is currently under <strong>{step.title}</strong> review, but you are
+                    not the owner of the review. Owner is {displayName}. You can take it over if you
+                    want to.
                 </Alert>
-            </>
+            );
+        }
+        /**
+         * Current user is reviewing and can approve or reject.
+         */
+        return (
+            <Alert
+                actions={
+                    <>
+                        <Alert.Action text={"Approve"} onClick={presenter.showApproveDialog} />
+                        <Alert.Action
+                            text={"Reject"}
+                            onClick={presenter.showRejectDialog}
+                            className={"ml-sm"}
+                        />
+                    </>
+                }
+            >
+                This item is currently under <strong>{step.title}</strong> review.
+            </Alert>
         );
     });
 });

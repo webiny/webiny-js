@@ -78,7 +78,7 @@ const SidebarComponent = () => {
                                 action={<Sidebar.Item.Action element={<MoreVertIcon />} />}
                             />
                         }
-                        className={"wby-w-[225px]"}
+                        className={"w-[225px]"}
                     >
                         <DropdownMenu.Item
                             content={"API Playground"}
@@ -90,12 +90,12 @@ const SidebarComponent = () => {
                         <DropdownMenu.Separator />
                         <DropdownMenu.Item
                             text={
-                                <div className={"flex wby-items-center"}>
+                                <div className={"flex items-center"}>
                                     Webiny 5.43.0
                                     <Tag
                                         variant={"accent"}
                                         content={"WCP "}
-                                        className={"wby-ml-sm-extra"}
+                                        className={"ml-sm-extra"}
                                     />
                                 </div>
                             }

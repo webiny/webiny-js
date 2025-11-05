@@ -11,10 +11,9 @@ import {
     withCommonParams
 } from "./steps/index.js";
 import { AbstractStorageOps } from "./storageOps/AbstractStorageOps.js";
-import { DdbStorageOps, DdbEsStorageOps, DdbOsStorageOps } from "./storageOps/index.js";
+import { DdbStorageOps, DdbOsStorageOps } from "./storageOps/index.js";
 
 const ddbStorageOps = new DdbStorageOps();
-const ddbEsStorageOps = new DdbEsStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
 
 const createPushWorkflow = (branchName: string) => {
@@ -399,10 +398,8 @@ const createPushWorkflow = (branchName: string) => {
             }),
             ...createVitestTestsJobs(),
             ...createVitestTestsJobs(ddbStorageOps),
-            ...createVitestTestsJobs(ddbEsStorageOps),
             ...createVitestTestsJobs(ddbOsStorageOps),
             ...createE2EJobs(ddbStorageOps),
-            ...createE2EJobs(ddbEsStorageOps),
             ...createE2EJobs(ddbOsStorageOps)
         }
     });

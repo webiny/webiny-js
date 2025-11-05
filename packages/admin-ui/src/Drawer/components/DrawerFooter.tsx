@@ -23,16 +23,13 @@ export const DrawerFooter = ({
     return (
         <>
             {separator && <Separator />}
-            <div
-                {...props}
-                className={cn("wby-flex wby-justify-between wby-p-lg wby-pt-md-extra", className)}
-            >
+            <div {...props} className={cn("flex justify-between p-lg pt-md-extra", className)}>
                 {info && (
-                    <div className={"wby-text-sm wby-flex wby-items-center"}>
+                    <div className={"text-sm flex items-center"}>
                         <div>{info}</div>
                     </div>
                 )}
-                {actions && <div className={"wby-flex wby-gap-x-sm wby-ml-auto"}>{actions}</div>}
+                {actions && <div className={"flex gap-x-sm ml-auto"}>{actions}</div>}
             </div>
         </>
     );

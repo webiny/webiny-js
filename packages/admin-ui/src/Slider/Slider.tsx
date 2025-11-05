@@ -22,8 +22,8 @@ interface SliderRendererWithSideValueProps extends SliderPrimitiveRendererProps 
 
 const SliderRendererWithSideValue = (props: SliderRendererWithSideValueProps) => {
     return (
-        <div className={"wby-w-full wby-flex wby-flex-row wby-items-center wby-justify-between"}>
-            <div className={"wby-basis-2/12 wby-pr-sm"}>
+        <div className={"w-full flex flex-row items-center justify-between"}>
+            <div className={"basis-2/12 pr-sm"}>
                 <Label
                     text={props.label}
                     required={props.required}
@@ -32,10 +32,10 @@ const SliderRendererWithSideValue = (props: SliderRendererWithSideValueProps) =>
                     weight={"light"}
                 />
             </div>
-            <div className={"wby-basis-9/12"}>
+            <div className={"basis-9/12"}>
                 <SliderPrimitiveRenderer {...props} />
             </div>
-            <div className={"wby-basis-1/12 wby-pl-sm wby-text-right"}>
+            <div className={"basis-1/12 pl-sm text-right"}>
                 <SliderValue value={props.textValue} disabled={props.disabled} />
             </div>
         </div>
@@ -64,7 +64,7 @@ const DecoratableSlider = ({
 
     if (labelPosition === "side") {
         return (
-            <div className={"wby-w-full"}>
+            <div className={"w-full"}>
                 <FormComponentDescription text={description} disabled={props.disabled} />
                 <SliderRendererWithSideValue
                     {...props}
@@ -84,7 +84,7 @@ const DecoratableSlider = ({
     }
 
     return (
-        <div className={"wby-w-full"}>
+        <div className={"w-full"}>
             <FormComponentLabel
                 text={<Label text={props.label} value={vm.textValue} />}
                 disabled={props.disabled}

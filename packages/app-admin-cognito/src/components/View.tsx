@@ -8,16 +8,12 @@ export interface ContainerProps {
 
 const Container = makeDecoratable("ViewContainer", ({ children }: ContainerProps) => {
     return (
-        <div className={"wby-w-full wby-h-screen wby-bg-neutral-light wby-flex-1"}>
-            <section
-                className={"wby-m-auto wby-flex wby-flex-col wby-justify-center wby-min-h-screen"}
-            >
-                <div className={"wby-mx-auto"}>
+        <div className={"w-full h-screen bg-neutral-light flex-1"}>
+            <section className={"m-auto flex flex-col justify-center min-h-screen"}>
+                <div className={"mx-auto"}>
                     <Logo />
                 </div>
-                <div className={"wby-w-full wby-max-w-[480px] wby-mx-auto wby-my-lg"}>
-                    {children}
-                </div>
+                <div className={"w-full max-w-[480px] mx-auto my-lg"}>{children}</div>
             </section>
         </div>
     );
@@ -28,9 +24,7 @@ export interface ContentProps {
 }
 
 const Content = makeDecoratable("ViewContent", ({ children }: ContentProps) => (
-    <div className={"wby-relative wby-p-lg wby-pt-md wby-bg-neutral-base wby-rounded-xl"}>
-        {children}
-    </div>
+    <div className={"relative p-lg pt-md bg-neutral-base rounded-xl"}>{children}</div>
 ));
 
 export interface FooterProps {
@@ -40,7 +34,7 @@ export interface FooterProps {
 const Footer = makeDecoratable("ViewFooter", ({ children }: FooterProps) => {
     return (
         <Grid>
-            <Grid.Column span={12} className={"wby-text-center wby-mt-lg"}>
+            <Grid.Column span={12} className={"text-center mt-lg"}>
                 {children}
             </Grid.Column>
         </Grid>
@@ -54,10 +48,10 @@ export interface TitleProps {
 
 const Title = makeDecoratable("ViewTitle", ({ title, description }: TitleProps) => {
     return (
-        <div className={"wby-mb-md"}>
+        <div className={"mb-md"}>
             <Heading level={4}>{title}</Heading>
             {description && (
-                <Text as={"div"} size={"sm"} className={"wby-text-neutral-strong"}>
+                <Text as={"div"} size={"sm"} className={"text-neutral-strong"}>
                     {description}
                 </Text>
             )}
@@ -76,7 +70,7 @@ export const Error = ({ title = "Something went wrong", description }: ErrorProp
     }
 
     return (
-        <div className={"wby-mb-lg"}>
+        <div className={"mb-lg"}>
             <Alert title={title} type={"danger"}>
                 {description}
             </Alert>

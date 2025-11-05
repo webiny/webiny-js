@@ -31,7 +31,7 @@ const ObjectsRenderer = (props: CmsModelFieldRendererProps) => {
 
                 return (
                     <Bind.ValidationContainer>
-                        <Accordion>
+                        <Accordion background={"light"}>
                             <Accordion.Item
                                 title={label}
                                 description={field.helpText}

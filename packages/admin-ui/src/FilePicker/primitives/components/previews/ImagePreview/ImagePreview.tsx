@@ -18,31 +18,25 @@ const DecoratableImagePreview = ({
     return (
         <div
             className={cn(
-                "wby-flex wby-justify-center wby-items-center wby-py-sm wby-rounded-md wby-relative",
+                "flex justify-center items-center py-sm rounded-md relative",
                 previewVariants({ variant }),
                 className
             )}
             data-testid={"image-preview"}
         >
             <div
-                className={
-                    "wby-cursor-pointer wby-size-[128px] wby-flex wby-justify-center wby-items-center"
-                }
+                className={"cursor-pointer size-[128px] flex justify-center items-center"}
                 data-role={"select-image"}
                 onClick={onReplaceItem}
             >
-                <img
-                    src={value.url}
-                    alt={value.name}
-                    className={"wby-object-contain wby-size-full"}
-                />
+                <img src={value.url} alt={value.name} className={"object-contain size-full"} />
             </div>
-            <div className={"wby-absolute wby-top-1 wby-right-1.5"}>
+            <div className={"absolute top-1 right-1.5"}>
                 <ItemActions
                     onRemoveItem={onRemoveItem}
                     onEditItem={onEditItem}
                     disabled={disabled}
-                    className={"wby-flex-col"}
+                    className={"flex-col"}
                 />
             </div>
         </div>

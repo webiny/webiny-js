@@ -9,7 +9,7 @@ interface SearchProps {
 
 export const Search = ({ onChange, value }: SearchProps) => {
     return (
-        <div className={"wby-mb-sm"}>
+        <div className={"mb-sm"}>
             <DelayedOnChange value={value} onChange={onChange}>
                 {({ value, onChange }) => (
                     <Input

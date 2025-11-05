@@ -27,7 +27,7 @@ export const Input = ({ bind, trailingIcon, ...props }: InputProps) => {
                 label={"Icon"}
                 icon={trailingIcon?.icon}
                 onClick={trailingIcon?.onClick}
-                className={"wby-cursor-pointer"}
+                className={"cursor-pointer"}
             />
         );
     }, [trailingIcon]);

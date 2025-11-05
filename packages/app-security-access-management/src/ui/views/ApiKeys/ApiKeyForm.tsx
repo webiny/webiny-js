@@ -164,7 +164,7 @@ export const ApiKeyForm = ({ id, newEntry }: ApiKeyFormProps) => {
                                         {data.token ? (
                                             <div
                                                 className={
-                                                    "wby-py-sm wby-pl-sm-extra wby-pr-xs wby-rounded-md wby-mt-xs wby-bg-neutral-disabled wby-flex wby-justify-between wby-items-center"
+                                                    "py-sm pl-sm-extra pr-xs rounded-md mt-xs bg-neutral-disabled flex justify-between items-center"
                                                 }
                                             >
                                                 <div>{data.token}</div>
@@ -177,7 +177,7 @@ export const ApiKeyForm = ({ id, newEntry }: ApiKeyFormProps) => {
                                                 />
                                             </div>
                                         ) : (
-                                            <Alert className={"wby-mt-xs"}>
+                                            <Alert className={"mt-xs"}>
                                                 {
                                                     "Your token will be shown once you submit the form."
                                                 }
@@ -188,7 +188,7 @@ export const ApiKeyForm = ({ id, newEntry }: ApiKeyFormProps) => {
                             </Grid>
                         </SimpleFormContent>
                         <SimpleFormHeader title={"Permissions"} rounded={false}>
-                            <div className={"wby-flex wby-justify-end"}>
+                            <div className={"flex justify-end"}>
                                 <Tooltip
                                     content="Copy permissions as JSON"
                                     trigger={

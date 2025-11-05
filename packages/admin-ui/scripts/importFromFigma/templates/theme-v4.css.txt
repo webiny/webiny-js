@@ -1,0 +1,107 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  /* Color. */
+  {COLOR}
+
+  /* Background color. */
+  {BG_COLOR}
+
+  /* Border color. */
+  {THEME_BORDER_COLOR}
+
+  /* Border radius. */
+  {THEME_BORDER_RADIUS}
+
+  /* Border width. */
+  {THEME_BORDER_WIDTH}
+
+  /* Fill. */
+  {FILL}
+
+  /* Font. */
+  {FONT}
+
+  /* Font weight. */
+  {FONT_WEIGHT}
+
+  /* Margin. */
+  {THEME_MARGIN}
+
+  /* Ring color */
+  {RING_COLOR}
+
+  /* Ring width */
+  {RING_WIDTH}
+
+  /* Padding. */
+  {THEME_PADDING}
+  
+  /* Shadow. */
+  {SHADOW}
+
+  /* Spacing. */
+  {THEME_SPACING}
+  --spacing-sidebar-collapsed: 44px;
+  --spacing-sidebar-expanded: 256px;
+  --spacing-main-content: calc(100vh - 45px);
+
+  /* Text color. */
+  {TEXT_COLOR}
+
+  /* Text sizes. */
+  {TEXT_SIZE}
+
+  /* Z-Index. */
+  --z-index-negative: -1;
+  --z-index-base: 1;
+  --z-index-base-overwrite: 10;
+  --z-index-header: 50;
+  --z-index-drawer-backdrop: 145;
+  --z-index-drawer: 150;
+  --z-index-overlay-backdrop: 145;
+  --z-index-overlay: 150;
+  --z-index-dialog-backdrop: 170;
+  --z-index-dialog: 175;
+  --z-index-popover: 200;
+  --z-index-dropdown: 250;
+  --z-index-tooltip: 300;
+  --z-index-toast: 350;
+  --z-index-progress-bar: 400;
+
+  /* Animation. */
+  --animate-skeleton-pulse: skeleton-pulse 1400ms ease-in-out infinite;
+  @keyframes skeleton-pulse {
+    0%,
+    100% {
+      background-color: var(--color-neutral-dimmed);
+    }
+    50% {
+      background-color: var(--color-neutral-muted);
+    }
+  }
+}
+
+@utility container {
+    @apply pr-xxl pl-xxl mx-auto w-full;
+}
+
+@layer base {
+    a {
+        @apply text-accent-primary hover:underline focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed rounded-xs;
+    }
+
+    body {
+        @apply font-sans antialiased text-md text-neutral-primary;
+    }
+
+    b, strong {
+        @apply font-semibold;
+    }
+
+    i, em {
+        @apply italic;
+    }
+}

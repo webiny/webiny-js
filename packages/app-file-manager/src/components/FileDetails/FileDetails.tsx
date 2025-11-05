@@ -70,11 +70,7 @@ const FileDetailsInner = ({ file, onForm, ...props }: FileDetailsInnerProps) => 
             {() => (
                 <Content>
                     <Content.Panel flex={parseFloat(leftPanel)}>
-                        <div
-                            className={
-                                "wby-flex wby-flex-col wby-justify-between wby-gap-md wby-h-full wby-px-lg wby-py-md"
-                            }
-                        >
+                        <div className={"flex flex-col justify-between gap-md h-full px-lg py-md"}>
                             <Actions />
                             <Preview />
                         </div>
@@ -101,9 +97,9 @@ const FileDetailsInner = ({ file, onForm, ...props }: FileDetailsInnerProps) => 
                                 ]}
                             />
                         ) : (
-                            <div className={"wby-p-lg"}>
+                            <div className={"p-lg"}>
                                 {basicFieldsElement}
-                                <div className={"wby-mt-lg"}>{extensionFieldsElement}</div>
+                                <div className={"mt-lg"}>{extensionFieldsElement}</div>
                             </div>
                         )}
                     </Content.Panel>

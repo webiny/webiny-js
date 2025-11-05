@@ -7,16 +7,16 @@ import { cn } from "@webiny/admin-ui";
 
 export const AvatarImage = ({ round, ...props }: SingleImageUploadProps) => {
     return (
-        <div className={"wby-w-full wby-flex-1"}>
+        <div className={"w-full flex-1"}>
             <div
                 className={cn([
-                    "wby-size-[128px] wby-mx-auto wby-relative wby-overflow-hidden",
-                    round && "wby-rounded-full"
+                    "size-[128px] mx-auto relative overflow-hidden",
+                    round && "rounded-full"
                 ])}
             >
                 <SingleImageUpload
                     {...props}
-                    className={"wby-p-0 !wby-border-none"}
+                    className={"p-0 border-none!"}
                     variant={"ghost"}
                     type={"area"}
                     renderFilePreview={({ onReplaceItem, onRemoveItem, value, disabled }) => {

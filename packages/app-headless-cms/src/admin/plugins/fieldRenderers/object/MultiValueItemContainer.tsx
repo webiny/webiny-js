@@ -57,7 +57,7 @@ export const MultiValueItemContainer = makeDecoratable(
         );
 
         return (
-            <Accordion>
+            <Accordion background={"light"}>
                 <Accordion.Item
                     title={props.title}
                     actions={actions}
