@@ -1,6 +1,12 @@
 import type { GenericRecord, NonEmptyArray } from "@webiny/app/types.js";
 import type { ReactElement } from "react";
 
+export interface IGenericMeta {
+    totalCount: number;
+    hasMoreItems: boolean;
+    cursor: string | null;
+}
+
 export interface IGenericError {
     message: string;
     code: string | null;

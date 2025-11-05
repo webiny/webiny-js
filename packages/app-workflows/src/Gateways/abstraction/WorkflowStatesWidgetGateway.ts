@@ -1,4 +1,5 @@
-import { type IWorkflowState, WorkflowStateValue } from "~/types.js";
+import type { IGenericMeta, IWorkflowState } from "~/types.js";
+import { WorkflowStateValue } from "~/types.js";
 import type { IWorkflowStateErrorData } from "~/Gateways/index.js";
 
 export interface IWorkflowStatesWidgetError {
@@ -22,21 +23,15 @@ export interface IWorkflowStatesWidgetGatewayListRequestedStatesParams {
     limit: number;
 }
 
-export interface IWorkflowStatesWidgetMeta {
-    totalCount: number;
-    hasMoreItems: boolean;
-    cursor: string | null;
-}
-
 export interface IWorkflowStatesWidgetGatewayListOwnStatesResponse {
     data: IWorkflowState[] | null;
-    meta: IWorkflowStatesWidgetMeta | null;
+    meta: IGenericMeta | null;
     error: IWorkflowStatesWidgetError | null;
 }
 
 export interface IWorkflowStatesWidgetGatewayListRequestedStatesResponse {
     data: IWorkflowState[] | null;
-    meta: IWorkflowStatesWidgetMeta | null;
+    meta: IGenericMeta | null;
     error: IWorkflowStatesWidgetError | null;
 }
 

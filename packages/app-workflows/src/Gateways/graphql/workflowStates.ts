@@ -1,7 +1,7 @@
-import type { IWorkflowState } from "~/types.js";
+import type { IGenericMeta, IWorkflowState, WorkflowStateValue } from "~/types.js";
 import gql from "graphql-tag";
 import type { IWorkflowStateError } from "~/Gateways/abstraction/WorkflowStateGateway.js";
-import type { IWorkflowStatesWidgetError, IWorkflowStatesWidgetMeta } from "~/Gateways/index.js";
+import type { IWorkflowStatesWidgetError } from "~/Gateways/index.js";
 
 const ERROR_FIELD = /* GraphQL */ `
     error {
@@ -245,6 +245,25 @@ export const GET_TARGET_WORKFLOW_STATE_QUERY = gql`
     }
 `;
 
+export interface IListWorkflowStatesVariablesWhereSteps {
+    id?: string;
+    id_in?: string[];
+    state?: WorkflowStateValue;
+    state_in?: WorkflowStateValue[];
+    savedBy?: string;
+    savedBy_in?: string[];
+}
+
+export interface IListWorkflowStatesVariablesWhereTeams {
+    id?: string;
+    id_in?: string[];
+}
+
+export interface IListWorkflowStatesVariablesWhereNotifications {
+    id?: string;
+    id_in?: string[];
+}
+
 export interface IListWorkflowStatesVariablesWhere {
     app?: string;
     app_in?: string[];
@@ -252,6 +271,15 @@ export interface IListWorkflowStatesVariablesWhere {
     targetId_in?: string[];
     targetRevisionId?: string;
     targetRevisionId_in?: string[];
+    state?: WorkflowStateValue;
+    state_in?: WorkflowStateValue[];
+    createdBy?: string;
+    createdBy_in?: string[];
+    savedBy?: string;
+    savedBy_in?: string[];
+    steps?: IListWorkflowStatesVariablesWhereSteps;
+    teams?: IListWorkflowStatesVariablesWhereTeams;
+    notifications?: IListWorkflowStatesVariablesWhereNotifications;
 }
 
 export interface IListWorkflowStatesVariables {
@@ -265,6 +293,7 @@ export interface IListWorkflowStatesResponse {
     workflows: {
         listWorkflowStates: {
             data: IWorkflowState[] | null;
+            meta: IGenericMeta | null;
             error: IWorkflowStateError | null;
         };
     };
@@ -295,7 +324,7 @@ export interface IListOwnWorkflowStatesResponse {
     workflows: {
         listOwnWorkflowStates: {
             data: IWorkflowState[] | null;
-            meta: IWorkflowStatesWidgetMeta | null;
+            meta: IGenericMeta | null;
             error: IWorkflowStatesWidgetError | null;
         };
     };
@@ -322,7 +351,7 @@ export interface IListRequestedWorkflowStatesResponse {
     workflows: {
         listRequestedWorkflowStates: {
             data: IWorkflowState[] | null;
-            meta: IWorkflowStatesWidgetMeta | null;
+            meta: IGenericMeta | null;
             error: IWorkflowStatesWidgetError | null;
         };
     };

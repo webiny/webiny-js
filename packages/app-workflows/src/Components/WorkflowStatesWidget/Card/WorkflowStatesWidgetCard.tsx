@@ -3,7 +3,7 @@ import { Button, Card, Icon } from "@webiny/admin-ui";
 import { ReactComponent as ReviewRequestsIcon } from "@webiny/icons/reviews.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { observer } from "mobx-react-lite";
-import { useWorkflowStatesWidget } from "../Provider/useWorkflowStatesWidget.js";
+import { useWorkflowStatesWidget } from "../hooks/useWorkflowStatesWidget.js";
 import { WorkflowStatesWidgetCardTabs } from "./WorkflowStatesWidgetCardTabs.js";
 import {
     ApproveDialog,

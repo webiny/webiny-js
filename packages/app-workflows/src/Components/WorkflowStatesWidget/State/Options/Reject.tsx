@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { type IWorkflowState, WorkflowStateValue } from "~/types.js";
 import { DropdownMenu, Icon } from "@webiny/admin-ui";
 import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
-import { useWorkflowStatesWidget } from "~/Components/WorkflowStatesWidget/Provider/useWorkflowStatesWidget.js";
+import { useWorkflowStatesWidget } from "~/Components/WorkflowStatesWidget/hooks/useWorkflowStatesWidget.js";
 import { observer } from "mobx-react-lite";
 
 interface IWorkflowStateRowOptionsRejectProps {

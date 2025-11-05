@@ -10,3 +10,5 @@ export {
 export type { IWorkflowApplication } from "~/types.js";
 
 export * from "./Components/WorkflowStatesWidget/index.js";
+
+export * from "./Components/WorkflowStateList/index.js";

@@ -12,3 +12,9 @@ export type { IWorkflowStateRepositoryParams } from "./WorkflowStateRepository.j
 
 export { WorkflowStatesWidgetRepository } from "./WorkflowStatesWidgetRepository.js";
 export type { IWorkflowStatesWidgetRepositoryParams } from "./WorkflowStatesWidgetRepository.js";
+
+export type {
+    IWorkflowStateListRepository,
+    IWorkflowStateListRepositoryListParams
+} from "./abstractions/WorkflowStateListRepository.js";
+export { WorkflowStateListRepository } from "./WorkflowStateListRepository.js";
