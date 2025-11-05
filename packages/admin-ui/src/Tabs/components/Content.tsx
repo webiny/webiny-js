@@ -5,7 +5,7 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 const tabContentVariants = cva(
     [
         "bg-neutral-base",
-        "my-lg rounded-lg",
+        "rounded-lg",
         "focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed",
         // By default, the inner content is removed by the DOM when the tab becomes inactive.
         // This is a problem when we need to keep track of the state inside a tab content, such as forms.
