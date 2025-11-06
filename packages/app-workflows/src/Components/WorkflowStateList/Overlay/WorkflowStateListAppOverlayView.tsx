@@ -22,7 +22,7 @@ export const WorkflowStateListAppOverlayView = observer(
         }, 200);
 
         return (
-            <OverlayLayout onExited={hideOverlay}>
+            <OverlayLayout onExited={hideOverlay} barLeft={<>Content Reviews</>}>
                 <Scrollbar onScrollFrame={scrollFrame => onTableScroll({ scrollFrame })}>
                     <WorkflowStateList />
                 </Scrollbar>
