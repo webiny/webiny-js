@@ -124,7 +124,7 @@ const DecoratableTag = (props: TagProps) => {
         dismissIconLabel = "Close",
         disabled,
         ...rootProps
-    } = omit(props, ["icon", "swatchColorIcon"]);
+    } = omit(props, ["icon", "swatchColor", "swatchColorIcon"]);
 
     const dismissButtonVariant = React.useMemo((): VariantProps<
         typeof iconButtonVariants
