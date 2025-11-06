@@ -11,7 +11,7 @@ export interface ILoggerFactoryParams {
     getTenant: () => string;
 }
 
-export const loggerFactory = ({ getTenant, getLocale, documentClient }: ILoggerFactoryParams) => {
+export const loggerFactory = ({ getTenant, documentClient }: ILoggerFactoryParams) => {
     const keys = new DynamoDbLoggerKeys();
     const { entity } = create({
         documentClient
