@@ -140,12 +140,11 @@ export function createComponentPropsProvider<TProps extends Record<string, any>>
         children: React.ReactNode;
     };
 
-    const PropsProvider: React.ComponentType<PropsProviderProps> = ({ props, children }: PropsProviderProps) => {
-        return (
-            <PropsContext.Provider value={props}>
-                {children}
-            </PropsContext.Provider>
-        );
+    const PropsProvider: React.ComponentType<PropsProviderProps> = ({
+        props,
+        children
+    }: PropsProviderProps) => {
+        return <PropsContext.Provider value={props}>{children}</PropsContext.Provider>;
     };
 
     const useProps = () => {
@@ -153,6 +152,12 @@ export function createComponentPropsProvider<TProps extends Record<string, any>>
     };
 
     return [PropsProvider, useProps] as const;
+}
+
+export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
+    const result = { ...obj };
+    keys.forEach(key => delete result[key]);
+    return result;
 }
 
 export { cva, type VariantProps };
