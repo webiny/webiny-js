@@ -1,3 +1,4 @@
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import { createTenancyAndSecurity } from "./tenancySecurity";
@@ -56,7 +57,8 @@ export const createHandlerCore = (params: CreateHandlerCoreParams = {}) => {
         plugins: [
             topPlugins,
             createApiCore({
-                storageOperations: apiCoreStorage.storageOperations
+                storageOperations: apiCoreStorage.storageOperations,
+                testProjectLicense: createTestWcpLicense()
             }),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({

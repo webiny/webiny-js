@@ -5,12 +5,10 @@ import { createCrud } from "~/crud/index.js";
 import { checkPermissionFactory } from "~/security/checkPermission.js";
 import { createGraphQl } from "~/graphql/index.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import { getLocale as getBaseLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 
 export interface ICreateLoggerContextParams {
     documentClient?: DynamoDBDocument;
     getTenant?: () => string;
-    getLocale?: () => string;
     createGraphQL?: boolean;
 }
 
@@ -38,13 +36,8 @@ export const createContextPlugin = (params?: ICreateLoggerContextParams) => {
 
         const getContext = () => context;
 
-        const getLocale = () => {
-            return getBaseLocale().code;
-        };
-
         const { logger, storageOperations } = loggerFactory({
             documentClient: params?.documentClient || getDocumentClient(context),
-            getLocale,
             getTenant
         });
 

@@ -9,7 +9,6 @@ import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js"
 export interface ILoggerFactoryParams {
     documentClient: DynamoDBDocument;
     getTenant: () => string;
-    getLocale: () => string;
 }
 
 export const loggerFactory = ({ getTenant, getLocale, documentClient }: ILoggerFactoryParams) => {
@@ -36,7 +35,6 @@ export const loggerFactory = ({ getTenant, getLocale, documentClient }: ILoggerF
                 }
                 return [];
             },
-            getLocale,
             getTenant
         }),
         storageOperations

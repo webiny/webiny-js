@@ -5,7 +5,6 @@ import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 export interface ILoggerLogCallableOptions {
     tenant?: string;
-    locale?: string;
 }
 export interface ILoggerLogCallable {
     (source: string, data: unknown, options?: ILoggerLogCallableOptions): void;
@@ -23,7 +22,6 @@ export interface ILoggerLog {
     id: string;
     createdOn: string;
     tenant: string;
-    locale: string;
     source: string;
     type: string;
     data: unknown;

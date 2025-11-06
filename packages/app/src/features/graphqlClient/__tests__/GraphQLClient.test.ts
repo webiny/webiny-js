@@ -36,6 +36,7 @@ describe("GraphQLClient Feature", () => {
             };
 
             global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
                 json: async () => mockResponse
             });
 
@@ -60,6 +61,7 @@ describe("GraphQLClient Feature", () => {
             };
 
             global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
                 json: async () => mockResponse
             });
 
@@ -76,6 +78,7 @@ describe("GraphQLClient Feature", () => {
             const mockResponse = { data: { user: { id: "1" } } };
 
             global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
                 json: async () => mockResponse
             });
 
@@ -114,6 +117,7 @@ describe("GraphQLClient Feature", () => {
             };
 
             global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
                 json: async () => mockResponse
             });
 
@@ -176,6 +180,7 @@ describe("GraphQLClient Feature", () => {
             };
 
             global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
                 json: async () => mockResponse
             });
 
@@ -199,6 +204,7 @@ describe("GraphQLClient Feature", () => {
             ];
 
             global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
                 json: async () => mockResponse
             });
 
@@ -212,7 +218,7 @@ describe("GraphQLClient Feature", () => {
             expect(global.fetch).toHaveBeenCalledTimes(1);
             const callBody = JSON.parse((global.fetch as any).mock.calls[0][1].body);
             expect(callBody[0]).toHaveProperty("query");
-            expect(callBody[1]).toHaveProperty("mutation");
+            expect(callBody[1]).toHaveProperty("query");
         });
 
         it("should reject all requests if batch fails", async () => {
@@ -263,6 +269,7 @@ describe("GraphQLClient Feature", () => {
                 .mockRejectedValueOnce(new Error("Network timeout"))
                 .mockRejectedValueOnce(new Error("Network timeout"))
                 .mockResolvedValueOnce({
+                    status: 200,
                     json: async () => mockResponse
                 });
 
@@ -280,6 +287,7 @@ describe("GraphQLClient Feature", () => {
             };
 
             global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
                 json: async () => mockResponse
             });
 
@@ -320,6 +328,7 @@ describe("GraphQLClient Feature", () => {
                 .fn()
                 .mockRejectedValueOnce(new Error("Network error"))
                 .mockResolvedValueOnce({
+                    status: 200,
                     json: async () => mockResponse
                 });
 

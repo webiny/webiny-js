@@ -562,7 +562,9 @@ describe("Folder Level Permissions", () => {
                         type: FOLDER_TYPE
                     }
                 })
-                .then(([response]) => response.data.aco.createFolder.data);
+                .then(([response]) => {
+                    return response.data.aco.createFolder.data;
+                });
 
             createdFolders.push(folder);
         }
@@ -573,11 +575,15 @@ describe("Folder Level Permissions", () => {
             });
         };
 
-        const foldersList = await until(listFolders, (response: any) => {
-            const firstItemExists = response.data[0].id === createdFolders[0].id;
-            const lastItemExists = response.data[19].id === createdFolders[19].id;
-            return firstItemExists && lastItemExists;
-        });
+        const foldersList = await until(
+            listFolders,
+            (response: any) => {
+                const firstItemExists = response.data[0].id === createdFolders[0].id;
+                const lastItemExists = response.data[19].id === createdFolders[19].id;
+                return firstItemExists && lastItemExists;
+            },
+            { name: "List 20 folders", wait: 200 }
+        );
 
         expect(foldersList).toMatchObject({
             meta: {

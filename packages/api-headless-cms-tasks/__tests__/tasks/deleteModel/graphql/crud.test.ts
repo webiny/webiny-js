@@ -5,7 +5,7 @@ import type { IStoreValue } from "~/tasks/deleteModel/types";
 
 describe("crud", () => {
     it("should list models being deleted", async () => {
-        const { handler, identity, tenant, locale } = useHandler();
+        const { handler, identity, tenant } = useHandler();
         const context = await handler();
 
         const results = await context.cms.listModelsBeingDeleted();
@@ -15,8 +15,7 @@ describe("crud", () => {
             modelId: "modelId",
             task: "task",
             identity,
-            tenant: tenant.id,
-            locale
+            tenant: tenant.id
         };
 
         await context.db.store.storeValue(createStoreKey(value), value);
@@ -36,7 +35,7 @@ describe("crud", () => {
     });
 
     it("should start delete of the model", async () => {
-        const { handler, identity, tenant, locale } = useHandler();
+        const { handler, identity, tenant } = useHandler();
         const context = await handler();
 
         const group = await context.cms.createGroup({
@@ -71,8 +70,7 @@ describe("crud", () => {
             modelId: model.modelId,
             task: fullyDeleteResult.id,
             identity,
-            tenant: tenant.id,
-            locale
+            tenant: tenant.id
         };
 
         const results = await context.cms.listModelsBeingDeleted();
