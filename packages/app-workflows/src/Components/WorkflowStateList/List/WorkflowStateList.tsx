@@ -1,8 +1,38 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { useWorkflowStateList } from "../hooks/index.js";
-import { Alert, DataTable, DataTableColumns } from "@webiny/admin-ui";
-import type { IGenericError, IWorkflowState } from "~/types.js";
+import { Alert, DataTable, DataTableColumns, Tag, type TagProps } from "@webiny/admin-ui";
+import { type IGenericError, type IWorkflowState, WorkflowStateValue } from "~/types.js";
+
+const getStateName = (state: WorkflowStateValue): string => {
+    switch (state) {
+        case WorkflowStateValue.pending:
+            return "Pending";
+        case WorkflowStateValue.inReview:
+            return "In Review";
+        case WorkflowStateValue.approved:
+            return "Approved";
+        case WorkflowStateValue.rejected:
+            return "Rejected";
+        default:
+            return state;
+    }
+};
+
+const getTagStateVariant = (state: WorkflowStateValue): TagProps["variant"] => {
+    switch (state) {
+        case WorkflowStateValue.pending:
+            return "neutral-base";
+        case WorkflowStateValue.inReview:
+            return "warning";
+        case WorkflowStateValue.approved:
+            return "success-light";
+        case WorkflowStateValue.rejected:
+            return "destructive";
+        default:
+            return "neutral-base";
+    }
+}
 
 const columns: DataTableColumns<IWorkflowState> = {
     title: {
@@ -24,11 +54,18 @@ const columns: DataTableColumns<IWorkflowState> = {
             return <>{row.createdBy.displayName}</>;
         }
     },
-    state: {
+    currentStep: {
         header: "Workflow",
         enableSorting: false,
         cell(row) {
-            return <>workflow: {row.currentStep.title}</>;
+            return <Tag content={row.currentStep.title} />;
+        }
+    },
+    state: {
+        header: "Status",
+        enableSorting: false,
+        cell(row) {
+            return <Tag variant={getTagStateVariant(row.state)} content={getStateName(row.state)} />;
         }
     }
 };
@@ -51,8 +88,8 @@ export const WorkflowStateList = observer(() => {
         <>
             <Error error={presenter.vm.error} />
             <DataTable
-                bordered={true}
-                stickyHeader={true}
+                bordered={false}
+                stickyHeader={false}
                 loading={presenter.vm.loading}
                 columns={columns}
                 data={presenter.vm.items}
