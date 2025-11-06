@@ -5,7 +5,7 @@ import { Alert, DataTable, DataTableColumns } from "@webiny/admin-ui";
 import { type IGenericError, type IWorkflowState } from "~/types.js";
 import { TagState } from "~/Components/Common/TagState.js";
 import { TagStep } from "~/Components/Common/TagStep.js";
-import { WorkflowStateListOptions } from "~/Components/WorkflowStateList/List/WorkflowStateListOptions.js";
+import { WorkflowStateListOptions } from "./WorkflowStateListOptions.js";
 
 const columns: DataTableColumns<IWorkflowState> = {
     title: {

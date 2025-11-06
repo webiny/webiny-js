@@ -1,20 +1,15 @@
-import { DropdownMenu, Icon } from "@webiny/admin-ui";
 import React from "react";
-import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
+import { makeDecoratable } from "@webiny/admin-ui";
+import type { IWorkflowState } from "~/types.js";
 
-interface IWorkflowStateOptionsOpenInNewWindowProps {
-    onClick: () => void;
+export interface IWorkflowStateOptionsOpenInNewWindowProps {
+    state: IWorkflowState;
 }
 
-export const WorkflowStateOptionsOpenInNewWindow = (
-    props: IWorkflowStateOptionsOpenInNewWindowProps
-) => {
-    const { onClick } = props;
-    return (
-        <DropdownMenu.Item
-            icon={<Icon icon={<OpenInNewIcon />} label={"Open In New Window"} />}
-            text={"Open in New Window"}
-            onClick={onClick}
-        />
-    );
-};
+export const WorkflowStateOptionsOpenInNewWindow = makeDecoratable(
+    "WorkflowStateOptionsOpenInNewWindow",
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    (props: IWorkflowStateOptionsOpenInNewWindowProps) => {
+        return <>Implement your decoration of WorkflowStateOptionsOpenInNewWindow</>;
+    }
+);

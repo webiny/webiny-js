@@ -27,7 +27,7 @@ export const Routes = {
                     new: zod.boolean().optional()
                 };
             }
-        })
+        }),
     },
 
     ContentModels: {

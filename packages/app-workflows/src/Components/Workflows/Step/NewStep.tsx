@@ -54,20 +54,17 @@ export const NewStep = (props: IAddNewStepProps) => {
     }
 
     return (
-        <div className={"flex items-center justify-space-between gap-sm-plus"}>
-            <Grid className={"w-full"}>
-                <Grid.Column
-                    span={12}
-                    className={
-                        "text-center p-sm-extra border-sm border-dashed border-neutral-muted rounded-lg"
-                    }
-                >
-                    <Button variant={"ghost"} onClick={onClick} icon={<Add />}>
-                        Add new custom step
-                    </Button>
-                </Grid.Column>
-            </Grid>
-            <div className={"size-lg"} />
-        </div>
+        <Grid className={"w-full"}>
+            <Grid.Column
+                span={12}
+                className={
+                    "text-center p-sm-extra border-sm border-dashed border-neutral-muted rounded-lg"
+                }
+            >
+                <Button variant={"ghost"} onClick={onClick} icon={<Add />}>
+                    Add new custom step
+                </Button>
+            </Grid.Column>
+        </Grid>
     );
 };

@@ -10,12 +10,7 @@ interface IWorkflowStateRowOptionsProps {
 
 export const WorkflowStateRowOptions = observer((props: IWorkflowStateRowOptionsProps) => {
     const { state } = props;
-
     const { presenter } = useWorkflowStatesWidget();
-
-    const onOpenInNewWindow = useCallback(() => {
-        // todo
-    }, [state]);
 
     const onStart = useCallback(() => {
         presenter.showStartStateStepDialog(state);
@@ -36,7 +31,6 @@ export const WorkflowStateRowOptions = observer((props: IWorkflowStateRowOptions
     return (
         <WorkflowStateOptions
             state={state}
-            onOpenInNewWindow={onOpenInNewWindow}
             onStart={onStart}
             onTakeOver={onTakeOver}
             onApprove={onApprove}

@@ -1,9 +1,8 @@
 import React, { useCallback, useState } from "react";
-import { Accordion, Card, Grid, IconButton } from "@webiny/admin-ui";
+import { Accordion, Card, Grid } from "@webiny/admin-ui";
 import type { IWorkflowStep } from "~/types.js";
 import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
-import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { observer } from "mobx-react-lite";
 import { Form } from "@webiny/form";
 import { StepFormTitle } from "./form/StepFormTitle.js";
@@ -149,49 +148,41 @@ export const Step = observer(
                                     <div className={"size-lg"} />
                                 </>
                             ) : (
-                                <>
-                                    <Accordion
-                                        variant={"container"}
-                                        background={"base"}
-                                        border={"accent"}
+                                <Accordion
+                                    variant={"container"}
+                                    background={"base"}
+                                    border={"accent"}
+                                >
+                                    <Accordion.Item
+                                        key={`step-${step.id}`}
+                                        title={step.title || title}
+                                        description={step.description}
+                                        colorMark={step.color}
+                                        onOpenChange={onOpenChange}
+                                        actions={
+                                            <>
+                                                {canMoveUp && (
+                                                    <Accordion.Item.Action
+                                                        onClick={moveUp}
+                                                        disabled={!canMoveUp(step)}
+                                                        icon={<ArrowUp />}
+                                                    />
+                                                )}
+                                                {canMoveDown && (
+                                                    <Accordion.Item.Action
+                                                        onClick={moveDown}
+                                                        disabled={!canMoveDown(step)}
+                                                        icon={<ArrowDown />}
+                                                    />
+                                                )}
+                                                <Accordion.Item.Action.Separator />
+                                                <RemoveStep step={step} onRemove={onRemove} />
+                                            </>
+                                        }
                                     >
-                                        <Accordion.Item
-                                            key={`step-${step.id}`}
-                                            title={step.title || title}
-                                            description={step.description}
-                                            colorMark={step.color}
-                                            onOpenChange={onOpenChange}
-                                            actions={
-                                                <>
-                                                    {canMoveUp && (
-                                                        <Accordion.Item.Action
-                                                            onClick={moveUp}
-                                                            disabled={!canMoveUp(step)}
-                                                            icon={<ArrowUp />}
-                                                        />
-                                                    )}
-                                                    {canMoveDown && (
-                                                        <Accordion.Item.Action
-                                                            onClick={moveDown}
-                                                            disabled={!canMoveDown(step)}
-                                                            icon={<ArrowDown />}
-                                                        />
-                                                    )}
-                                                    <Accordion.Item.Action.Separator />
-                                                    <RemoveStep step={step} onRemove={onRemove} />
-                                                </>
-                                            }
-                                        >
-                                            {null}
-                                        </Accordion.Item>
-                                    </Accordion>
-                                    <IconButton
-                                        icon={<AddIcon />}
-                                        variant={"ghost"}
-                                        size={"sm"}
-                                        iconSize={"lg"}
-                                    />
-                                </>
+                                        {null}
+                                    </Accordion.Item>
+                                </Accordion>
                             )}
                         </div>
                     );

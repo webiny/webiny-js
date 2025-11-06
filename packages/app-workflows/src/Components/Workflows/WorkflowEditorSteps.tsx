@@ -34,7 +34,6 @@ export const WorkflowEditorSteps = observer((props: IWorkflowEditorStepsProps) =
     return (
         <div className={"flex gap-y-md flex-col"}>
             <InactiveStep step={draftStep} />
-
             {workflow.steps.map(step => {
                 return (
                     <Step

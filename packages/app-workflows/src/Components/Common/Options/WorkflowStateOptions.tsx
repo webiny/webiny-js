@@ -10,7 +10,6 @@ import type { IWorkflowState } from "~/types.js";
 
 interface IWorkflowStateOptionsProps {
     state: IWorkflowState;
-    onOpenInNewWindow: (state: IWorkflowState) => void;
     onStart: (state: IWorkflowState) => void;
     onTakeOver: (state: IWorkflowState) => void;
     onApprove: (state: IWorkflowState) => void;
@@ -18,11 +17,7 @@ interface IWorkflowStateOptionsProps {
 }
 
 export const WorkflowStateOptions = (props: IWorkflowStateOptionsProps) => {
-    const { state, onOpenInNewWindow, onReject, onStart, onTakeOver, onApprove } = props;
-
-    const openInNewWindowOnClick = useCallback(() => {
-        onOpenInNewWindow(state);
-    }, [state, onOpenInNewWindow]);
+    const { state, onReject, onStart, onTakeOver, onApprove } = props;
 
     const startClick = useCallback(() => {
         onStart(state);
@@ -50,7 +45,7 @@ export const WorkflowStateOptions = (props: IWorkflowStateOptionsProps) => {
             align="start"
             side="bottom"
         >
-            <WorkflowStateOptionsOpenInNewWindow onClick={openInNewWindowOnClick} />
+            <WorkflowStateOptionsOpenInNewWindow state={state} />
             <WorkflowStateOptionsStart onClick={startClick} state={state} />
             <WorkflowStateOptionsTakeOver onClick={takeOverClick} state={state} />
             <WorkflowStateOptionsApprove onClick={approveClick} state={state} />
