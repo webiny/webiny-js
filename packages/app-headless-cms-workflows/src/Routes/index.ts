@@ -1,1 +1,1 @@
-export {CmsWorkflowsEditor} from "./CmsWorkflowsEditor.js"
+export { CmsWorkflowsEditor } from "./CmsWorkflowsEditor.js";

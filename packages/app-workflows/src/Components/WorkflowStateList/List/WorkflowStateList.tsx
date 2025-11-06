@@ -5,6 +5,7 @@ import { Alert, DataTable, DataTableColumns } from "@webiny/admin-ui";
 import { type IGenericError, type IWorkflowState } from "~/types.js";
 import { TagState } from "~/Components/Common/TagState.js";
 import { TagStep } from "~/Components/Common/TagStep.js";
+import { WorkflowStateListOptions } from "~/Components/WorkflowStateList/List/WorkflowStateListOptions.js";
 
 const columns: DataTableColumns<IWorkflowState> = {
     title: {
@@ -22,31 +23,32 @@ const columns: DataTableColumns<IWorkflowState> = {
     createdBy: {
         header: "Submitted By",
         enableSorting: false,
-        cell(step) {
-            return <>{step.createdBy.displayName}</>;
+        cell(state) {
+            return <>{state.createdBy.displayName}</>;
         }
     },
     currentStep: {
         header: "Workflow",
         enableSorting: false,
-        cell(step) {
-            return <TagStep step={step.currentStep} />;
+        cell(state) {
+            return <TagStep step={state.currentStep} />;
         }
     },
     state: {
         header: "Status",
         enableSorting: false,
-        cell(step) {
-            return <TagState state={step.state} />;
+        cell(state) {
+            return <TagState state={state.state} />;
         }
     },
     id: {
         header: "",
         enableSorting: false,
         enableHiding: false,
+        className: "text-right",
         enableResizing: false,
-        cell(step) {
-            return <>{step.id}</>;
+        cell(state) {
+            return <WorkflowStateListOptions state={state} />;
         }
     }
 };

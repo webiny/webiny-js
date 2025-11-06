@@ -12,7 +12,7 @@ interface IWorkflowStateTooltipButtonProps {
 
 export const WorkflowStateTooltipContent = (props: IWorkflowStateTooltipButtonProps) => {
     const { state, presenter } = props;
-    
+
     const createShowComment = useCallback((step: Pick<IWorkflowStateStep, "id">) => {
         return () => {
             presenter.showCommentDialog(step.id);

@@ -19,6 +19,6 @@ export * from "./routes.js";
 
 export const Components = {
     Sidebar: {
-        Footer: SidebarFooter,
+        Footer: SidebarFooter
     }
-}
+};
