@@ -33,6 +33,8 @@
       "@webiny/app-plugin-admin-welcome-screen": ["../app-plugin-admin-welcome-screen/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
+      "@webiny/app-workflows/*": ["../app-workflows/src/*"],
+      "@webiny/app-workflows": ["../app-workflows/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },
