@@ -1,8 +1,9 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useCallback } from "react";
 import { Grid, Tag } from "@webiny/admin-ui";
 import { WorkflowStateTooltipContentComment } from "./WorkflowStateTooltipContentComment.js";
 import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
-import { IWorkflowState } from "~/types.js";
+import { TagState } from "~/Components/Common/TagState.js";
+import type { IWorkflowState, IWorkflowStateStep } from "~/types.js";
 
 interface IWorkflowStateTooltipButtonProps {
     presenter: IWorkflowStatePresenter;
@@ -11,6 +12,12 @@ interface IWorkflowStateTooltipButtonProps {
 
 export const WorkflowStateTooltipContent = (props: IWorkflowStateTooltipButtonProps) => {
     const { state, presenter } = props;
+    
+    const createShowComment = useCallback((step: Pick<IWorkflowStateStep, "id">) => {
+        return () => {
+            presenter.showCommentDialog(step.id);
+        };
+    }, []);
     return (
         <Grid className={"w-[350px] text-sm"} gap={"small"}>
             <>
@@ -21,14 +28,18 @@ export const WorkflowStateTooltipContent = (props: IWorkflowStateTooltipButtonPr
                     return (
                         <Fragment key={`step-${step.id}`}>
                             <Grid.Column span={4}>
-                                <Tag content={step.title} variant={"neutral-light"} />
+                                <Tag
+                                    swatchColor={step.color}
+                                    content={step.title}
+                                    variant={"neutral-light"}
+                                />
                             </Grid.Column>
                             <Grid.Column span={4}>
-                                <Tag content={step.state} color={step.color} />
+                                <TagState state={step.state} />
                             </Grid.Column>
                             <Grid.Column span={4}>
                                 <WorkflowStateTooltipContentComment
-                                    presenter={presenter}
+                                    showComment={createShowComment(step)}
                                     step={step}
                                 />
                             </Grid.Column>

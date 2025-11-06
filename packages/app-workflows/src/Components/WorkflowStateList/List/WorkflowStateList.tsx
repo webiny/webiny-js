@@ -1,38 +1,10 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { useWorkflowStateList } from "../hooks/index.js";
-import { Alert, DataTable, DataTableColumns, Tag, type TagProps } from "@webiny/admin-ui";
-import { type IGenericError, type IWorkflowState, WorkflowStateValue } from "~/types.js";
-
-const getStateName = (state: WorkflowStateValue): string => {
-    switch (state) {
-        case WorkflowStateValue.pending:
-            return "Pending";
-        case WorkflowStateValue.inReview:
-            return "In Review";
-        case WorkflowStateValue.approved:
-            return "Approved";
-        case WorkflowStateValue.rejected:
-            return "Rejected";
-        default:
-            return state;
-    }
-};
-
-const getTagStateVariant = (state: WorkflowStateValue): TagProps["variant"] => {
-    switch (state) {
-        case WorkflowStateValue.pending:
-            return "neutral-base";
-        case WorkflowStateValue.inReview:
-            return "warning";
-        case WorkflowStateValue.approved:
-            return "success-light";
-        case WorkflowStateValue.rejected:
-            return "destructive";
-        default:
-            return "neutral-base";
-    }
-}
+import { Alert, DataTable, DataTableColumns, Tag } from "@webiny/admin-ui";
+import { type IGenericError, type IWorkflowState } from "~/types.js";
+import { getTagStateVariant } from "~/Components/helpers/tagStateVariant.js";
+import { getStateName } from "~/Components/helpers/stateName.js";
 
 const columns: DataTableColumns<IWorkflowState> = {
     title: {
