@@ -81,7 +81,7 @@ export function useUserForm() {
             }
             showSnackbar("User saved successfully.");
         },
-        [id]
+        [id, newUser]
     );
 
     const user = userLoading ? {} : data ? data.adminUsers.user.data : {};

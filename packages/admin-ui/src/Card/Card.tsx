@@ -14,6 +14,7 @@ interface CardProps extends Omit<React.ComponentPropsWithoutRef<typeof CardConte
     icon?: React.ReactElement;
     description?: React.ReactNode;
     padding?: "sm" | "md" | "lg";
+    bodyPadding?: boolean;
     variant?: "default" | "accent";
     elevation?: "none" | "small" | "medium" | "large";
     size?: "sm" | "md";

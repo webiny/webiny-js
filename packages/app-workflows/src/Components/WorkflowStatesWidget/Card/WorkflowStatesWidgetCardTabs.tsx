@@ -72,8 +72,14 @@ export const WorkflowStatesWidgetCardTabs = observer(
         if (presenter.vm.loading) {
             return <Loader />;
         }
+
         return (
-            <Tabs size="sm" separator={false} defaultValue={activeTab} tabs={[...tabComponents]} />
+            <Tabs
+                spacing={"lg"}
+                separator={true}
+                defaultValue={activeTab}
+                tabs={[...tabComponents]}
+            />
         );
     }
 );
