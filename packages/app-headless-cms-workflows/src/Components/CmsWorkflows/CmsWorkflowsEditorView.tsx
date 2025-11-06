@@ -8,6 +8,7 @@ import { useModels, usePermission } from "@webiny/app-headless-cms/admin/hooks/i
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { createAppName } from "~/utils/appName.js";
 
 const { Menu } = AdminConfig;
 
@@ -60,7 +61,7 @@ export const CmsWorkflowsEditorView = () => {
             .filter(model => canEdit(model, "cms.contentModel"))
             .map(model => {
                 return {
-                    id: `cms.${model.modelId}`,
+                    id: createAppName(model),
                     name: model.name,
                     icon: <ModelIcon model={model} />
                 };

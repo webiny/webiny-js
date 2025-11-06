@@ -1,6 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { useWorkflowStateList } from "./hooks/index.js";
+import { useWorkflowStateList } from "../hooks/index.js";
 import { Alert, DataTable, DataTableColumns } from "@webiny/admin-ui";
 import type { IGenericError, IWorkflowState } from "~/types.js";
 

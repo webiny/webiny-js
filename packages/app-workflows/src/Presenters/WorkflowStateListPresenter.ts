@@ -12,6 +12,8 @@ interface IWorkflowStateListPresenterParams {
 export class WorkflowStateListPresenter implements IWorkflowStateListPresenter {
     private readonly repository: IWorkflowStateListRepository;
 
+    private listParams: IWorkflowStateListPresenterListParams | undefined = undefined;
+
     public get vm() {
         return {
             items: this.repository.items,
@@ -34,11 +36,17 @@ export class WorkflowStateListPresenter implements IWorkflowStateListPresenter {
             return;
         }
         await this.repository.list({
+            ...this.listParams,
             after: this.repository.meta?.cursor || undefined
         });
     };
 
     list = async (params?: IWorkflowStateListPresenterListParams): Promise<void> => {
-        await this.repository.list(params);
+        this.listParams = {
+            after: undefined,
+            ...params,
+            limit: 25
+        };
+        await this.repository.list(this.listParams);
     };
 }
