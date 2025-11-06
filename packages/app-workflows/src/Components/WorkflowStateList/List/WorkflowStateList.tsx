@@ -19,7 +19,10 @@ const columns: DataTableColumns<IWorkflowState> = {
     },
     createdBy: {
         header: "Submitted By",
-        enableSorting: false
+        enableSorting: false,
+        cell(row) {
+            return <>{row.createdBy.displayName}</>;
+        }
     },
     state: {
         header: "Workflow",
@@ -47,7 +50,13 @@ export const WorkflowStateList = observer(() => {
     return (
         <>
             <Error error={presenter.vm.error} />
-            <DataTable loading={presenter.vm.loading} columns={columns} data={presenter.vm.items} />
+            <DataTable
+                bordered={true}
+                stickyHeader={true}
+                loading={presenter.vm.loading}
+                columns={columns}
+                data={presenter.vm.items}
+            />
         </>
     );
 });
