@@ -61,9 +61,10 @@ export class DropZoneManager {
     }
 
     tick() {
+        const scrollYOffset = this.getScrollOffset();
         const threshold = 10;
         const mouseX = this.mouse.x;
-        const mouseY = this.mouse.y;
+        const mouseY = this.mouse.y + scrollYOffset;
 
         let matchedId: string | null = null;
         let matchedPosition: DropPosition = null;
@@ -103,5 +104,14 @@ export class DropZoneManager {
                 );
             }
         }
+    }
+
+    private getScrollOffset() {
+        const container = document.getElementById("preview-container");
+        if (!container) {
+            return 0;
+        }
+
+        return container.scrollTop;
     }
 }

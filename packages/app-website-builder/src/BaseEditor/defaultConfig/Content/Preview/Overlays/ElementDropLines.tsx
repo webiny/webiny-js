@@ -13,7 +13,6 @@ interface ElementDropZonesProps {
     editorBox: Box;
     previewBox: Box;
     isFirst: boolean;
-    isHighlighted: boolean;
 }
 
 export const ElementDropLines = ({ editorBox, previewBox, isFirst }: ElementDropZonesProps) => {

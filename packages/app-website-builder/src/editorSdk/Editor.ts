@@ -20,7 +20,6 @@ export type EditorState = {
     viewport: EditorViewportData["viewport"];
     selectedElement: string | null;
     highlightedElement: string | null;
-    showOverlays: boolean;
     components: Record<string, ComponentManifest>;
     componentGroups: Record<string, SerializedComponentGroup>;
     breakpoint?: string;
@@ -51,8 +50,8 @@ export class Editor<TDocument extends EditorDocument = EditorDocument> {
                     height: 0,
                     scrollX: 0,
                     scrollY: 0,
-                    scrollHeight: 0,
-                    scrollWidth: 0
+                    scrollWidth: 0,
+                    scrollHeight: 0
                 },
                 components: {},
                 componentGroups: {}

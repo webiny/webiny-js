@@ -100,10 +100,6 @@ export class EditingSdk implements IContentSdk {
         this.messenger.on("document.patch", patch => {
             this.documentStore.applyPatch(patch);
         });
-
-        // this.messenger.on("preview.scroll", data => {
-        //     window.scrollBy(data.deltaX, data.deltaY);
-        // });
     }
 
     private initPositionReporting(): void {
@@ -140,7 +136,7 @@ export class EditingSdk implements IContentSdk {
             return;
         }
 
-        const newBoxes = this.previewViewport.getVisibleBoxes();
+        const newBoxes = this.previewViewport.getBoxes();
         const hash = hashObject.hash(newBoxes);
         if (hash === this.lastBoxesHash) {
             return;
@@ -149,7 +145,7 @@ export class EditingSdk implements IContentSdk {
         this.lastBoxesHash = hash;
         // Send positions to the editor
         this.messenger.send("preview.viewport", {
-            boxes: this.previewViewport.getVisibleBoxes(),
+            boxes: this.previewViewport.getBoxes(),
             viewport: this.previewViewport.getViewport()
         });
     }

@@ -68,28 +68,5 @@ export class PreviewViewport {
         return viewportManager.getViewport();
     }
 
-    getVisibleBoxes(): Record<string, ElementBoxData | ElementSlotBoxData> {
-        const allBoxes = this.getBoxes();
-        const viewport = this.getViewport();
-
-        const visibleBoxes: Record<string, ElementBoxData | ElementSlotBoxData> = {};
-
-        for (const [id, box] of Object.entries(allBoxes)) {
-            const { top, left, width, height } = box;
-
-            const bottom = top + height;
-            const right = left + width;
-
-            const isVisible =
-                bottom > 0 && right > 0 && top < viewport.scrollHeight && left < viewport.scrollWidth;
-
-            if (isVisible) {
-                visibleBoxes[id] = box;
-            }
-        }
-
-        return visibleBoxes;
-    }
-
     destroy(): void {}
 }

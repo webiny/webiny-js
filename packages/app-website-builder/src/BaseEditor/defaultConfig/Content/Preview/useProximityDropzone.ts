@@ -21,7 +21,9 @@ export function useProximityDropzone({ id, box }: UseProximityDropzoneParams) {
         dropzoneManager.register({
             id,
             box,
-            onProximityChange: setProximity
+            onProximityChange: (proximity) => {
+                setProximity(proximity);
+            }
         });
 
         return () => {

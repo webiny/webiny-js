@@ -1,12 +1,12 @@
 import React, { useMemo, useRef } from "react";
+import { ElementOverlays } from "./Overlays/ElementOverlays";
+import { ConnectEditorToPreview } from "~/DocumentEditor/ConnectEditorToPreview";
 import type { Messenger } from "@webiny/website-builder-sdk";
+import { useResponsiveContainer } from "~/BaseEditor/defaultConfig/Content/Preview/useResponsiveContainer";
 import { OverlayLoader } from "@webiny/admin-ui";
 import type { ViewportManager } from "@webiny/website-builder-sdk";
 import { observer } from "mobx-react-lite";
-import { ElementOverlays } from "./Overlays/ElementOverlays.js";
-import { ConnectEditorToPreview } from "~/DocumentEditor/ConnectEditorToPreview.js";
-import { useResponsiveContainer } from "~/BaseEditor/defaultConfig/Content/Preview/useResponsiveContainer.js";
-import { usePreviewData } from "~/BaseEditor/hooks/usePreviewData.js";
+import { usePreviewData } from "~/BaseEditor/hooks/usePreviewData";
 
 interface IframeProps {
     url: string;
@@ -29,13 +29,13 @@ export const Iframe = observer(({ url, timestamp, ...props }: IframeProps) => {
 
     return (
         <div
+            id={"preview-container"}
             key={iframeUrl}
             /* Height = viewport height - top bar - address bar - breadcrumbs. */
             style={{
                 height: "calc(100vh - 43px - 50px - 31px)"
             }}
             className={"relative flex flex-col items-center w-full overflow-auto"}
-            data-role={"responsive-container"}
         >
             <ConnectEditorToPreview iframeRef={iframeRef} onConnected={props.onConnected} />
             {props.showLoading ? (
@@ -48,12 +48,12 @@ export const Iframe = observer(({ url, timestamp, ...props }: IframeProps) => {
             ) : null}
             {/* Content wrapper - sized by iframe content */}
             <div
+                id={"preview-body"}
                 style={{
                     position: "relative",
                     width: previewSize,
                     minHeight: `${viewport.scrollHeight}px`
                 }}
-                data-role={"content-wrapper"}
             >
                 <ElementOverlays />
                 <iframe

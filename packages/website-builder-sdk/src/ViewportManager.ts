@@ -109,8 +109,8 @@ export class ViewportManager {
             ? {
                   width: window.innerWidth,
                   height: window.innerHeight,
-                  scrollWidth: window.document.documentElement.scrollWidth,
-                  scrollHeight: window.document.documentElement.scrollHeight,
+                  scrollWidth: window.document.body.scrollWidth,
+                  scrollHeight: window.document.body.scrollHeight,
                   scrollX: window.scrollX,
                   scrollY: window.scrollY
               }
