@@ -55,6 +55,7 @@ export interface IWorkflowStateListPresenterListParams {
 export interface IWorkflowStateListPresenter {
     vm: IWorkflowStateListPresenterViewModel;
 
+    filterBy: (where: IWorkflowStateListPresenterListParamsWhere) => Promise<void>;
     list: (params?: IWorkflowStateListPresenterListParams) => Promise<void>;
     nextPage: () => Promise<void>;
 }

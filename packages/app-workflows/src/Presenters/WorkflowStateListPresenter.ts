@@ -1,6 +1,7 @@
 import type {
     IWorkflowStateListPresenter,
-    IWorkflowStateListPresenterListParams
+    IWorkflowStateListPresenterListParams,
+    IWorkflowStateListPresenterListParamsWhere
 } from "./abstractions/WorkflowStateListPresenter.js";
 import type { IWorkflowStateListRepository } from "~/Repositories/index.js";
 import { makeAutoObservable } from "mobx";
@@ -30,12 +31,20 @@ export class WorkflowStateListPresenter implements IWorkflowStateListPresenter {
         makeAutoObservable(this);
     }
 
+    filterBy = async (where: IWorkflowStateListPresenterListParamsWhere): Promise<void> => {
+        return await this.list({
+            ...this.listParams,
+            after: undefined,
+            where
+        });
+    };
+
     nextPage = async (): Promise<void> => {
         if (!this.repository.meta?.hasMoreItems) {
             console.warn("No more items to load.");
             return;
         }
-        await this.repository.list({
+        return await this.repository.list({
             ...this.listParams,
             after: this.repository.meta?.cursor || undefined
         });
@@ -47,6 +56,6 @@ export class WorkflowStateListPresenter implements IWorkflowStateListPresenter {
             ...params,
             limit: 25
         };
-        await this.repository.list(this.listParams);
+        return await this.repository.list(this.listParams);
     };
 }
