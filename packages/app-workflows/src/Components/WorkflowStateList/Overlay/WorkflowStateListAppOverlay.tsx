@@ -35,6 +35,12 @@ export const WorkflowStateListAppOverlay = (props: IWorkflowStateListAppOverlayP
     const toggle = useCallback(() => {
         setShow(prevShow => !prevShow);
     }, []);
+    
+    if (!show) {
+        return children({
+            showOverlay: toggle
+        });
+    }
 
     return (
         <WorkflowStateListProvider client={client} where={where}>

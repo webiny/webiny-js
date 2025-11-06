@@ -43,6 +43,7 @@ export interface IWorkflowStateListPresenterListParamsWhere {
     steps?: IWorkflowStateListPresenterListParamsWhereSteps;
     teams?: IWorkflowStateListPresenterListParamsWhereTeams;
     notifications?: IWorkflowStateListPresenterListParamsWhereNotifications;
+    isActive?: boolean;
 }
 
 export interface IWorkflowStateListPresenterListParams {

@@ -54,7 +54,11 @@ export class WorkflowStateListPresenter implements IWorkflowStateListPresenter {
         this.listParams = {
             after: undefined,
             ...params,
-            limit: 25
+            limit: 25,
+            where: {
+                ...params?.where,
+                isActive: true
+            }
         };
         return await this.repository.list(this.listParams);
     };

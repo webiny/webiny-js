@@ -1,10 +1,10 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { useWorkflowStateList } from "../hooks/index.js";
-import { Alert, DataTable, DataTableColumns, Tag } from "@webiny/admin-ui";
+import { Alert, DataTable, DataTableColumns } from "@webiny/admin-ui";
 import { type IGenericError, type IWorkflowState } from "~/types.js";
-import { getTagStateVariant } from "~/Components/helpers/tagStateVariant.js";
-import { getStateName } from "~/Components/helpers/stateName.js";
+import { TagState } from "~/Components/Common/TagState.js";
+import { TagStep } from "~/Components/Common/TagStep.js";
 
 const columns: DataTableColumns<IWorkflowState> = {
     title: {
@@ -22,22 +22,31 @@ const columns: DataTableColumns<IWorkflowState> = {
     createdBy: {
         header: "Submitted By",
         enableSorting: false,
-        cell(row) {
-            return <>{row.createdBy.displayName}</>;
+        cell(step) {
+            return <>{step.createdBy.displayName}</>;
         }
     },
     currentStep: {
         header: "Workflow",
         enableSorting: false,
-        cell(row) {
-            return <Tag content={row.currentStep.title} />;
+        cell(step) {
+            return <TagStep step={step.currentStep} />;
         }
     },
     state: {
         header: "Status",
         enableSorting: false,
-        cell(row) {
-            return <Tag variant={getTagStateVariant(row.state)} content={getStateName(row.state)} />;
+        cell(step) {
+            return <TagState state={step.state} />;
+        }
+    },
+    id: {
+        header: "",
+        enableSorting: false,
+        enableHiding: false,
+        enableResizing: false,
+        cell(step) {
+            return <>{step.id}</>;
         }
     }
 };
