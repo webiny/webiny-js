@@ -1,4 +1,4 @@
-import type React from "react";
+import React from "react";
 import { clsx, type ClassValue } from "clsx";
 import { generateId as baseGenerateId } from "@webiny/utils/generateId.js";
 import { extendTailwindMerge } from "tailwind-merge";
@@ -131,5 +131,33 @@ export const withStaticProps = <TComponent extends React.ComponentType<any>, TPr
 ) => {
     return Object.assign(component, props) as TComponent & TProps;
 };
+
+export function createComponentPropsProvider<TProps extends Record<string, any>>() {
+    const PropsContext = React.createContext<TProps>({} as TProps);
+
+    type PropsProviderProps = {
+        props: TProps;
+        children: React.ReactNode;
+    };
+
+    const PropsProvider: React.ComponentType<PropsProviderProps> = ({
+        props,
+        children
+    }: PropsProviderProps) => {
+        return <PropsContext.Provider value={props}>{children}</PropsContext.Provider>;
+    };
+
+    const useProps = () => {
+        return React.useContext(PropsContext);
+    };
+
+    return [PropsProvider, useProps] as const;
+}
+
+export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
+    const result = { ...obj };
+    keys.forEach(key => delete result[key]);
+    return result;
+}
 
 export { cva, type VariantProps };
