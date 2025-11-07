@@ -3,22 +3,23 @@ import { observer } from "mobx-react-lite";
 import { useDrop } from "react-dnd";
 import styled from "@emotion/styled";
 
-import { usePreviewData } from "~/BaseEditor/hooks/usePreviewData";
-import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor";
-import { ElementOverlay } from "./ElementOverlay";
 import type { SlotInput } from "@webiny/website-builder-sdk";
-import { useIsDragging } from "../useIsDragging";
-import type { Box } from "../Box";
-import type { DropEvent } from "../useProximityDropzone";
-import { useDocumentEditor } from "~/DocumentEditor";
-import { ElementDropLines } from "./ElementDropLines";
-import { DropBox } from "./DropBox";
-import { useDropZoneManager } from "../DropZoneManagerProvider";
-import { mergeRefs } from "../mergeRefs";
-import { Commands } from "~/BaseEditor";
-import type { Editor } from "~/editorSdk/Editor";
 import { ComponentManifestToAstConverter } from "@webiny/website-builder-sdk";
 import { findMatchingAstNode } from "@webiny/website-builder-sdk";
+
+import { usePreviewData } from "~/BaseEditor/hooks/usePreviewData.js";
+import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
+import { ElementOverlay } from "./ElementOverlay.js";
+import { useIsDragging } from "../useIsDragging.js";
+import type { Box } from "../Box.js";
+import type { DropEvent } from "../useProximityDropzone.js";
+import { useDocumentEditor } from "~/DocumentEditor/index.js";
+import { ElementDropLines } from "./ElementDropLines.js";
+import { DropBox } from "./DropBox.js";
+import { useDropZoneManager } from "../DropZoneManagerProvider.js";
+import { mergeRefs } from "../mergeRefs.js";
+import { Commands } from "~/BaseEditor/index.js";
+import type { Editor } from "~/editorSdk/Editor.js";
 
 const OverlayContainer = styled("div")({
     overflow: "hidden",
@@ -39,9 +40,10 @@ export const ElementOverlays = observer(() => {
     const editor = useDocumentEditor();
     const { boxes } = usePreviewData();
     const isDragging = useIsDragging();
-    const { selectedElement } = useSelectFromEditor(state => {
+    const { selectedElement, highlightedElement } = useSelectFromEditor(state => {
         return {
-            selectedElement: state.selectedElement
+            selectedElement: state.selectedElement,
+            highlightedElement: state.highlightedElement
         };
     });
 
@@ -121,30 +123,30 @@ export const ElementOverlays = observer(() => {
         pointerEvents: isDragging ? "auto" : "none"
     };
 
+    const slots = boxes.preview.filter(filterSlots);
+
     return (
         <OverlayContainer ref={mergeRefs(dropRef)} style={viewportContainer}>
-            {/* This overlay triggers scroll in case we're hovering above something other than an editable element. */}
-            <div data-role={"element-overlay"} style={viewportContainer}></div>
             {boxes.preview.filter(filterElements).map(box => (
                 <Fragment key={box.id}>
                     <ElementOverlay
                         elementId={box.id}
                         isSelected={selectedElement === box.id}
+                        isHighlighted={highlightedElement === box.id}
                         previewBox={box}
                         editorBox={boxes.editor.get(box.id)!}
-                    >
-                        <>
-                            <ElementDropLines
-                                isFirst={box.parentIndex === 0}
-                                editorBox={boxes.editor.get(box.id)!}
-                                previewBox={box}
-                            />
-                        </>
-                    </ElementOverlay>
+                    />
+                    <ElementDropLines
+                        isFirst={box.parentIndex === 0}
+                        previewBox={box}
+                        editorBox={boxes.editor.get(box.id)!}
+                    />
+                    {slots
+                        .filter(slot => slot.parentId === box.id)
+                        .map(slot => (
+                            <DropBox key={slot.id} box={slot} onDrop={onDrop} />
+                        ))}
                 </Fragment>
-            ))}
-            {boxes.preview.filter(filterSlots).map(box => (
-                <DropBox key={box.id} box={box} onDrop={onDrop} />
             ))}
         </OverlayContainer>
     );

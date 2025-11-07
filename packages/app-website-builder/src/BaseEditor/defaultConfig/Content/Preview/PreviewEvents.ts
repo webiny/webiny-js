@@ -1,4 +1,3 @@
-import type { Editor } from "~/editorSdk/Editor";
 import type { Messenger } from "@webiny/website-builder-sdk";
 import {
     type BoxesData,
@@ -9,8 +8,9 @@ import {
     type SerializedComponentGroup
 } from "@webiny/website-builder-sdk";
 import defaultImage from "@webiny/icons/extension.svg";
-import { Commands } from "~/BaseEditor";
-import { $createElement } from "~/editorSdk/utils";
+import { Commands } from "~/BaseEditor/index.js";
+import type { Editor } from "~/editorSdk/Editor.js";
+import { $createElement } from "~/editorSdk/utils/index.js";
 
 export class PreviewEvents {
     private editor: Editor;

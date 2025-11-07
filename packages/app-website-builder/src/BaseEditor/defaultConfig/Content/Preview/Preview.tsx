@@ -2,17 +2,17 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import type { Messenger } from "@webiny/website-builder-sdk";
 import { ViewportManager } from "@webiny/website-builder-sdk";
 import { mouseTracker } from "@webiny/website-builder-sdk";
-import { useDocumentEditor } from "~/DocumentEditor";
-import { AddressBar } from "./AddressBar";
-import { Iframe } from "./Iframe";
-import { DropZoneManager } from "./DropZoneManager";
-import { DropZoneManagerProvider } from "./DropZoneManagerProvider";
-import { KeyboardShortcuts } from "./KeyboardShortcuts";
-import { Commands } from "~/BaseEditor";
-import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor";
-import { AwaitIframeUrl } from "~/BaseEditor/defaultConfig/Content/Preview/AwaitIframeUrl";
-import { PreviewEvents } from "~/BaseEditor/defaultConfig/Content/Preview/PreviewEvents";
-import { ApplyTheme } from "./ApplyTheme";
+import { useDocumentEditor } from "~/DocumentEditor/index.js";
+import { AddressBar } from "./AddressBar.js";
+import { Iframe } from "./Iframe.js";
+import { DropZoneManager } from "./DropZoneManager.js";
+import { DropZoneManagerProvider } from "./DropZoneManagerProvider.js";
+import { KeyboardShortcuts } from "./KeyboardShortcuts.js";
+import { Commands } from "~/BaseEditor/index.js";
+import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
+import { AwaitIframeUrl } from "~/BaseEditor/defaultConfig/Content/Preview/AwaitIframeUrl.js";
+import { PreviewEvents } from "~/BaseEditor/defaultConfig/Content/Preview/PreviewEvents.js";
+import { ApplyTheme } from "./ApplyTheme.js";
 
 export const Preview = () => {
     const editor = useDocumentEditor();

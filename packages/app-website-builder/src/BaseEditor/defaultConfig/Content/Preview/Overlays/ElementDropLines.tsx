@@ -40,7 +40,7 @@ export const ElementDropLines = ({ editorBox, previewBox, isFirst }: ElementDrop
     }, [proximity?.box.parentSlot]);
 
     // Figure out if we are allowed to drop the current item into the dropzone.
-    let canAcceptComponent = true;
+    let canAcceptComponent = !!targetInputNode;
     if (draggingItem && targetInputNode && targetInputNode.type === "slot") {
         const slotInput = targetInputNode.input as SlotInput;
         const whitelistedComponents = slotInput.components;
@@ -54,7 +54,9 @@ export const ElementDropLines = ({ editorBox, previewBox, isFirst }: ElementDrop
             {!isDragging && isFirst && (
                 <DropLine
                     label={elementLabel}
-                    top={0}
+                    top={previewBox.top}
+                    left={previewBox.left}
+                    width={previewBox.width}
                     visible={hoverBefore && canAcceptComponent}
                     dimmed={false}
                 />
@@ -62,7 +64,9 @@ export const ElementDropLines = ({ editorBox, previewBox, isFirst }: ElementDrop
             {!isDragging && (
                 <DropLine
                     label={elementLabel}
-                    top={previewBox?.height - 2}
+                    top={previewBox.bottom - 2}
+                    left={previewBox.left}
+                    width={previewBox.width}
                     visible={hoverAfter && canAcceptComponent}
                     dimmed={false}
                 />

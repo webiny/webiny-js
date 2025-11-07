@@ -1,10 +1,21 @@
 import React from "react";
 import { FileManager } from "@webiny/app-admin";
-import { Tabs, Grid, Input, Textarea, FilePicker } from "@webiny/admin-ui";
+import {
+    Tabs,
+    Grid,
+    Input,
+    Textarea,
+    FilePicker,
+    Switch,
+    CodeEditor,
+    Text
+} from "@webiny/admin-ui";
 import { Bind } from "@webiny/form";
 import { ReactComponent as SettingsIcon } from "@webiny/icons/settings.svg";
 import { ReactComponent as SeoIcon } from "@webiny/icons/search.svg";
+import { validation } from "@webiny/validation";
 import { ReactComponent as SocialIcon } from "@webiny/icons/thumb_up.svg";
+import { ReactComponent as SchemaIcon } from "@webiny/icons/schema.svg";
 import { MetaTags } from "./MetaTags.js";
 import { SimpleTags } from "~/modules/pages/PageEditor/TopBar/Settings/SimpleTags.js";
 import { fileManagerItemToValue } from "~/shared/fileManagerItemToValue.js";
@@ -33,6 +44,13 @@ export const SettingsDialogBody = () => {
                     trigger={"Social"}
                     icon={<SocialIcon />}
                     content={<SocialSettingsForm />}
+                />,
+                <Tabs.Tab
+                    key={"schema"}
+                    value={"schema"}
+                    trigger={"Schema"}
+                    icon={<SchemaIcon />}
+                    content={<SchemaForm />}
                 />
             ]}
         />
@@ -117,6 +135,30 @@ const SeoSettingsForm = () => {
                     valueLabel={"Content"}
                 />
             </Grid.Column>
+            <Grid.Column span={12}>
+                <Bind name={"properties.seo.canonicalUrl"} validators={[validation.create("url")]}>
+                    <Input
+                        label={"Canonical URL"}
+                        description={"The canonical URL for this page"}
+                    />
+                </Bind>
+            </Grid.Column>
+            <Grid.Column span={12}>
+                <Bind name={"properties.seo.noIndex"} defaultValue={false}>
+                    <Switch
+                        label={"No Index"}
+                        description={"Whether this page should be indexed by search engines"}
+                    />
+                </Bind>
+            </Grid.Column>
+            <Grid.Column span={12}>
+                <Bind name={"properties.seo.noFollow"} defaultValue={false}>
+                    <Switch
+                        label={"No Follow"}
+                        description={"Whether search engines should follow links on this page"}
+                    />
+                </Bind>
+            </Grid.Column>
         </Grid>
     );
 };
@@ -170,6 +212,34 @@ const SocialSettingsForm = () => {
                     valueName={"content"}
                     valueLabel={"Content"}
                 />
+            </Grid.Column>
+        </Grid>
+    );
+};
+
+const SchemaForm = () => {
+    return (
+        <Grid className={"mt-md"}>
+            <Grid.Column span={12}>
+                <Text size={"sm"} className={""}>
+                    Enter your&nbsp;
+                    <a href={"https://schema.org"} target={"_blank"} rel={"noreferrer noopener"}>
+                        schema.org
+                    </a>
+                    &nbsp; markup for this page:
+                </Text>
+            </Grid.Column>
+            <Grid.Column span={12}>
+                <Bind name={"properties.seo.structuredSchema"} defaultValue={""}>
+                    {({ value, onChange }) => (
+                        <CodeEditor
+                            value={value}
+                            height={400}
+                            onChange={onChange}
+                            language={"html"}
+                        />
+                    )}
+                </Bind>
             </Grid.Column>
         </Grid>
     );
