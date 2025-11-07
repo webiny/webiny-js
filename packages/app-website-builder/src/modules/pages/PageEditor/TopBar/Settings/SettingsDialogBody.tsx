@@ -20,6 +20,17 @@ import { MetaTags } from "./MetaTags.js";
 import { SimpleTags } from "~/modules/pages/PageEditor/TopBar/Settings/SimpleTags.js";
 import { fileManagerItemToValue } from "~/shared/fileManagerItemToValue.js";
 
+const PATHNAME_REGEX = new RegExp(
+    `^\\/(?:[a-zA-Z0-9._~:@!$&'()*+,;=%/-])*(?:\\?[a-zA-Z0-9._~:@!$&'()*+,;=?/%#[\\]-]*)?(?:#[a-zA-Z0-9._~:@!$&'()*+,;=?/%#[\\]-]*)?$`
+);
+const validatePathname = (pathname: string) => {
+    if (PATHNAME_REGEX.test(pathname)) {
+        return;
+    }
+
+    throw new Error(`Enter a valid pathname, e.g.: /path/to/page?query=value`);
+};
+
 export const SettingsDialogBody = () => {
     return (
         <Tabs
@@ -61,12 +72,12 @@ const GeneralSettingsForm = () => {
     return (
         <Grid className={"mt-md"}>
             <Grid.Column span={12}>
-                <Bind name={"properties.title"}>
+                <Bind name={"properties.title"} validators={[validation.create("required")]}>
                     <Input label={"Page title"} />
                 </Bind>
             </Grid.Column>
             <Grid.Column span={12}>
-                <Bind name={"properties.path"}>
+                <Bind name={"properties.path"} validators={[validation.create("required")]}>
                     <Input label={"Path"} />
                 </Bind>
             </Grid.Column>
@@ -136,7 +147,7 @@ const SeoSettingsForm = () => {
                 />
             </Grid.Column>
             <Grid.Column span={12}>
-                <Bind name={"properties.seo.canonicalUrl"} validators={[validation.create("url")]}>
+                <Bind name={"properties.seo.canonicalUrl"} validators={[validatePathname]}>
                     <Input
                         label={"Canonical URL"}
                         description={"The canonical URL for this page"}
