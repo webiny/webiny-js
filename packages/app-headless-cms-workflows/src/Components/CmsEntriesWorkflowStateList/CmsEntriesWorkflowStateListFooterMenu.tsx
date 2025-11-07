@@ -13,7 +13,7 @@ export const CmsEntriesWorkflowStateListFooterMenu = Footer.createDecorator(Orig
     return function CmsEntriesWorkflowStateListFooterMenu(props) {
         const { contentModel: model } = useContentEntries();
         const client = useApolloClient();
-        
+
         const app = createAppName(model);
 
         return (
