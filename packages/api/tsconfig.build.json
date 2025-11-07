@@ -3,7 +3,6 @@
   "include": ["src"],
   "references": [
     { "path": "../aws-sdk/tsconfig.build.json" },
-    { "path": "../di-container/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" }
   ],
@@ -11,7 +10,16 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
+      "@webiny/aws-sdk": ["../aws-sdk/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"]
+    },
     "baseUrl": "."
   }
 }

@@ -2,7 +2,6 @@ export { FileManager } from "~/base/ui/FileManager.js";
 export { FloatingPanel } from "~/components/FloatingPanel.js";
 export { StateInspector } from "~/components/StateInspector.js";
 export { NavigationPrompt } from "~/components/NavigationPrompt.js";
-export { AppInstaller } from "~/components/AppInstaller/index.js";
 export * from "~/components/AdminLayout.js";
 export * from "~/components/Buttons/index.js";
 export { DialogsProvider } from "~/components/Dialogs/DialogsContext.js";

@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import { type IProjectModel } from "~/abstractions/models/index.js";
 
 type IGetProjectServiceResult = IProjectModel;

@@ -9,7 +9,6 @@ import type { IResponseBaseResult } from "./ResponseBaseResult.js";
 export interface IResponseContinueParams<T = ITaskDataInput> {
     message?: string;
     tenant?: string;
-    locale?: string;
     webinyTaskId?: string;
     input: T;
     wait?: number;

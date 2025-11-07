@@ -7,7 +7,7 @@ import type {
     CmsEntryValues,
     CmsModel
 } from "~/types/index.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 export class ListEntriesSecure implements IListEntries {
     private accessControl: AccessControl;

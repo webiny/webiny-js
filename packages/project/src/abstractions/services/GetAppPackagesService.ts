@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import { type IAppModel, type IAppPackageModel } from "~/abstractions/models/index.js";
 
 export interface IGetAppPackagesService {

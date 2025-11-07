@@ -1,9 +1,8 @@
 import React, { memo } from "react";
 import { plugins } from "@webiny/plugins";
 import type { AdminProps as BaseAdminProps } from "@webiny/app-admin";
-import { Admin as BaseAdmin, AppInstaller } from "@webiny/app-admin";
+import { Admin as BaseAdmin, SystemInstallerProvider } from "@webiny/app-admin";
 import { Security } from "@webiny/app-security";
-import { I18N } from "@webiny/app-i18n";
 import { HeadlessCMS } from "@webiny/app-headless-cms";
 import { AdminUI } from "@webiny/app-admin-ui";
 import { FileManager } from "@webiny/app-file-manager/app.js";
@@ -13,7 +12,6 @@ import { imagePlugin } from "@webiny/app/plugins/index.js";
 import fileStorageS3Plugin from "@webiny/app-file-manager-s3";
 import { createApolloClient as defaultApolloClientFactory } from "./apolloClientFactory.js";
 import apolloLinks from "./apolloLinks.js";
-import { TenantManager } from "@webiny/app-tenant-manager";
 import { AuditLogs } from "@webiny/app-audit-logs";
 import { LexicalEditorActions } from "@webiny/lexical-editor-actions";
 import { Module as MailerSettings } from "@webiny/app-mailer";
@@ -40,15 +38,13 @@ const App = (props: AdminProps) => {
             <AdminUI />
             <Security />
             <AccessManagement />
-            <AppInstaller />
+            <SystemInstallerProvider />
             <FileManager />
             <GraphQLPlayground createApolloClient={createApolloClient} />
-            <I18N />
             <Websockets />
             <RecordLocking />
             <LexicalEditorActions />
             <HeadlessCMS createApolloClient={createApolloClient} />
-            <TenantManager />
             <AuditLogs />
             <MailerSettings />
             <SchedulerConfigs />

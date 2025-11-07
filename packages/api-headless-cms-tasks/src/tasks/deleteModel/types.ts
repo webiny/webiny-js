@@ -31,7 +31,6 @@ export interface IDeleteCmsModelTask {
 export interface IStoreValue {
     modelId: string;
     tenant: string;
-    locale: string;
     identity: CmsIdentity;
     task: string;
 }

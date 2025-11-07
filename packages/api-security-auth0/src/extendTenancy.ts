@@ -1,23 +1,15 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/index.js";
-import type { TenancyContext } from "@webiny/api-tenancy/types.js";
 import { ContextPlugin } from "@webiny/handler";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 export const extendTenancy = () => {
-    return new ContextPlugin<TenancyContext>(ctx => {
-        // This is only applicable to multi-tenant environments.
-        ctx.waitFor("tenantManager", () => {
+    return new ContextPlugin<ApiCoreContext>(ctx => {
+        if (ctx.wcp.canUseFeature("multiTenancy")) {
             // We can have different "appClientId" for each tenant.
             // This plugin adds the GraphQL fields to allow per-tenant appClientId storage.
             ctx.plugins.register(
-                new GraphQLSchemaPlugin<TenancyContext>({
+                new GraphQLSchemaPlugin<ApiCoreContext>({
                     typeDefs: /* GraphQL */ `
-                        extend input TenantSettingsInput {
-                            appClientId: String!
-                        }
-
-                        extend type TenantSettings {
-                            appClientId: String!
-                        }
                         extend type TenancyQuery {
                             appClientId: String
                         }
@@ -28,19 +20,10 @@ export const extendTenancy = () => {
                                 const tenant = context.tenancy.getCurrentTenant();
                                 return tenant.settings.appClientId;
                             }
-                        },
-                        TenantSettings: {
-                            /**
-                             * Root tenant will not have the `appClientId` stored in the database,
-                             * and in TenantSettings type, this field is non-nullable, so we need a fallback value.
-                             */
-                            appClientId: tenant => {
-                                return tenant.appClientId || "";
-                            }
                         }
                     }
                 })
             );
-        });
+        }
     });
 };

@@ -463,7 +463,7 @@ jobs:
       WEBINY_STORAGE: ddb-os,ddb
       AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
       ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
-      ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.package.id }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
     if: >-
       needs.vitest-ddbOs-constants.outputs.vitest-test-commands != '[]' &&
       needs.constants.outputs.is-fork-pr != 'true'

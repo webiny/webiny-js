@@ -403,7 +403,7 @@ describe("crud graphql", () => {
                     listConnections: {
                         data: null,
                         error: {
-                            code: "SECURITY_NOT_AUTHORIZED",
+                            code: "NOT_AUTHORIZED",
                             message: "Not authorized!"
                         }
                     }
@@ -418,7 +418,7 @@ describe("crud graphql", () => {
                     disconnect: {
                         data: null,
                         error: {
-                            code: "SECURITY_NOT_AUTHORIZED",
+                            code: "NOT_AUTHORIZED",
                             message: "Not authorized!",
                             data: null
                         }
@@ -434,7 +434,7 @@ describe("crud graphql", () => {
                     disconnectTenant: {
                         data: null,
                         error: {
-                            code: "SECURITY_NOT_AUTHORIZED",
+                            code: "NOT_AUTHORIZED",
                             message: "Not authorized!",
                             data: null
                         }
@@ -450,7 +450,7 @@ describe("crud graphql", () => {
                     disconnectIdentity: {
                         data: null,
                         error: {
-                            code: "SECURITY_NOT_AUTHORIZED",
+                            code: "NOT_AUTHORIZED",
                             message: "Not authorized!",
                             data: null
                         }
@@ -466,7 +466,7 @@ describe("crud graphql", () => {
                     disconnectAll: {
                         data: null,
                         error: {
-                            code: "SECURITY_NOT_AUTHORIZED",
+                            code: "NOT_AUTHORIZED",
                             message: "Not authorized!",
                             data: null
                         }

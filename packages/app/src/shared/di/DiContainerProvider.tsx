@@ -1,5 +1,5 @@
 import React from "react";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { createGenericContext } from "~/utils/createGenericContext.js";
 
 type DiContainerContext = { container: Container };

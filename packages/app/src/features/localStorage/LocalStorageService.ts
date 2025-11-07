@@ -3,7 +3,7 @@ import {
     LocalStorageService as LocalStorageServiceAbstraction,
     LocalStorageRepository
 } from "./abstractions.js";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 
 class LocalStorageServiceImpl implements LocalStorageServiceAbstraction.Interface {
     constructor(private readonly repo: LocalStorageRepository.Interface) {

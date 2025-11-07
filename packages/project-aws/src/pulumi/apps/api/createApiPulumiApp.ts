@@ -319,7 +319,10 @@ export const createApiPulumiApp = () => {
             manifest: {
                 bgTaskSfn: baseApp.resources.backgroundTask.stepFunction.output.arn,
                 cloudfront: {
-                    distributionId: baseApp.resources.cloudfront.output.id
+                    distributionId: baseApp.resources.cloudfront.output.id,
+                    domain: baseApp.resources.cloudfront.output.domainName.apply(
+                        v => `https://${v}`
+                    )
                 }
             }
         });

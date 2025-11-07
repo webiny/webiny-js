@@ -6,9 +6,8 @@ import { CMS_MODEL_SINGLETON_TAG } from "@webiny/api-headless-cms/constants.js";
 export const createDefaultGraphQL = () => {
     return new ContextPlugin<HcmsBulkActionsContext>(async context => {
         const tenant = context.tenancy.getCurrentTenant();
-        const locale = context.i18n.getContentLocale();
 
-        if (!locale || !(await isHeadlessCmsReady(context))) {
+        if (!(await isHeadlessCmsReady(context))) {
             return;
         }
 
@@ -58,9 +57,7 @@ export const createDefaultGraphQL = () => {
                         ): BulkActionResponse
                     }
                 `,
-                isApplicable: context =>
-                    context.tenancy.getCurrentTenant().id === tenant.id &&
-                    context.i18n.getContentLocale()?.code === locale.code
+                isApplicable: context => context.tenancy.getCurrentTenant().id === tenant.id
             });
 
             plugin.name = `headless-cms.graphql.schema.bulkAction.default.${model.modelId}`;

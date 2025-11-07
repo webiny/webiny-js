@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { BuildAppWorkspaceService, GetApp } from "~/abstractions/index.js";
 
 import path from "path";

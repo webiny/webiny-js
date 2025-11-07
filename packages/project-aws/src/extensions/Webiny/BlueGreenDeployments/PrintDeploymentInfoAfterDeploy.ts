@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { AfterDeploy, GetAppStackOutput, UiService } from "@webiny/project/abstractions/index.js";
 import { IBlueGreenStackOutput } from "~/pulumi/apps/blueGreen/types.js";
 import chalk from "chalk";

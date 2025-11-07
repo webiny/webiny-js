@@ -6,7 +6,6 @@ export const createMockEvent = (event?: Partial<ITaskEvent>): ITaskEvent => {
         webinyTaskDefinitionId: "mockDefinitionId",
         executionName: "someExecutionName",
         tenant: "root",
-        locale: "en-US",
         endpoint: "manage",
         stateMachineId: "randomMachineId",
         ...event

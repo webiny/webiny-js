@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { ApiBeforeBuild, UiService } from "@webiny/extensions/project";
 
 class MyApiBeforeBuild implements ApiBeforeBuild.Interface {

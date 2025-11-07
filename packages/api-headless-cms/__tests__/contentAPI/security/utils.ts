@@ -1,10 +1,11 @@
+import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
 import { expect } from "vitest";
-import { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
-export const identityA: SecurityIdentity = { id: "a", type: "admin", displayName: "A" };
-export const identityB: SecurityIdentity = { id: "b", type: "admin", displayName: "B" };
-export const identityC: SecurityIdentity = { id: "c", type: "admin", displayName: "C" };
-export const identityD: SecurityIdentity = { id: "d", type: "admin", displayName: "D" };
+export const identityA: IdentityData = { id: "a", type: "admin", displayName: "A" };
+export const identityB: IdentityData = { id: "b", type: "admin", displayName: "B" };
+export const identityC: IdentityData = { id: "c", type: "admin", displayName: "C" };
+export const identityD: IdentityData = { id: "d", type: "admin", displayName: "D" };
 
 export interface SetPermissionsParams {
     groups: {
@@ -79,9 +80,9 @@ export const expectNotAuthorized = (
     expect(testData).toEqual({
         data: null,
         error: {
-            code: "SECURITY_NOT_AUTHORIZED",
-            data: errorData || null,
-            message: "Not authorized!"
+            code: "NOT_AUTHORIZED",
+            message: errorData?.message ?? "Not authorized!",
+            data: null
         }
     });
 };

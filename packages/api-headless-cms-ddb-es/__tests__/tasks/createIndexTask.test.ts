@@ -3,7 +3,6 @@ import { useHandler } from "~tests/context/useHandler";
 import { createMockModels } from "./mocks/models";
 import { CreateElasticsearchIndexTaskPlugin } from "@webiny/api-elasticsearch-tasks";
 import { createIndexesTaskDefinition } from "@webiny/api-elasticsearch-tasks/tasks";
-import { ResponseDoneResult } from "@webiny/tasks";
 import type { Context as TasksContext } from "@webiny/tasks/types";
 import type { CmsContext } from "~/types";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
@@ -228,7 +227,6 @@ describe("create index task", () => {
             webinyTaskId: task.id,
             webinyTaskDefinitionId: createIndexesTask.id,
             tenant: "root",
-            locale: "en-US",
             message: "Indexes created.",
             output: {
                 done: [
@@ -255,7 +253,9 @@ describe("create index task", () => {
                 ]
             }
         });
-        expect(result).toBeInstanceOf(ResponseDoneResult);
+        // Note: instanceof checks fail in Vitest when classes are loaded from different module instances
+        // Check the status property instead
+        expect(result.status).toBe("done");
 
         const doneTask = await context.tasks.getTask(task.id);
 

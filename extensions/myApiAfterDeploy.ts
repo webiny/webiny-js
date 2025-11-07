@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { ApiAfterDeploy, UiService } from "@webiny/extensions/project";
 
 class MyApiAfterDeploy implements ApiAfterDeploy.Interface {

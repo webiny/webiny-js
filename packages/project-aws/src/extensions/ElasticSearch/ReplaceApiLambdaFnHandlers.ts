@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { ApiBeforeBuild } from "@webiny/project/abstractions/index.js";
 import path from "path";
 import fs from "fs";

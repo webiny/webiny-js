@@ -1,7 +1,5 @@
-import React from "react";
+import React, { useMemo } from "react";
 import type ApolloClient from "apollo-client";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N.js";
-import { CircularProgress } from "@webiny/ui/Progress/index.js";
 import { config as appConfig } from "@webiny/app/config.js";
 import type {
     CmsContentEntry,
@@ -187,8 +185,6 @@ const catchErrorOnExecute = async <T = any,>(
 };
 
 export interface CmsContext {
-    getApolloClient(locale: string): ApolloClient<any>;
-
     createApolloClient: CmsProviderProps["createApolloClient"];
     apolloClient: ApolloClient<any>;
     getEntry: (params: GetEntryParams) => Promise<GetEntryResponse>;
@@ -216,12 +212,6 @@ export interface CmsContext {
 
 export const CmsContext = React.createContext<CmsContext | undefined>(undefined);
 
-interface ApolloClientsCache {
-    [locale: string]: ApolloClient<any>;
-}
-
-const apolloClientsCache: ApolloClientsCache = {};
-
 export interface CmsProviderProps {
     createApolloClient: (params: { uri: string }) => ApolloClient<any>;
     children: React.ReactNode;
@@ -229,33 +219,13 @@ export interface CmsProviderProps {
 
 export const CmsProvider = (props: CmsProviderProps) => {
     const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
-    const { getCurrentLocale } = useI18N();
-
-    const currentLocale = getCurrentLocale("content");
-
-    if (currentLocale && !apolloClientsCache[currentLocale]) {
-        apolloClientsCache[currentLocale] = props.createApolloClient({
-            uri: `${apiUrl}/cms/manage/${currentLocale}`
-        });
-    }
-
-    if (!currentLocale) {
-        return <CircularProgress />;
-    }
-
-    const getApolloClient = (locale: string) => {
-        if (!apolloClientsCache[locale]) {
-            apolloClientsCache[locale] = props.createApolloClient({
-                uri: `${apiUrl}/cms/manage/${locale}`
-            });
-        }
-        return apolloClientsCache[locale];
-    };
+    const apolloClient = useMemo(() => {
+        return props.createApolloClient({ uri: `${apiUrl}/cms/manage` });
+    }, []);
 
     const value: CmsContext = {
-        getApolloClient,
         createApolloClient: props.createApolloClient,
-        apolloClient: getApolloClient(currentLocale),
+        apolloClient,
         getEntry: async ({ model, id }) => {
             const query = createReadQuery(model);
             const isRevisionId = id.includes("#");

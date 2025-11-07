@@ -1,6 +1,5 @@
 import omit from "lodash/omit.js";
 import type { CmsEntry, CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types/index.js";
-import type { Security } from "@webiny/api-security/types.js";
 import type {
     File,
     FileManagerAliasesStorageOperations,
@@ -26,7 +25,6 @@ interface ModelContext {
 
 export class CmsFilesStorage implements FileManagerFilesStorageOperations {
     private readonly cms: HeadlessCms;
-    private readonly security: Security;
     private readonly model: CmsModel;
     private readonly aliases: FileManagerAliasesStorageOperations;
     private readonly filesWhereProcessor: ListFilesWhereProcessor;
@@ -35,22 +33,19 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
     static async create(params: {
         fileModel: CmsModel;
         cms: HeadlessCms;
-        security: Security;
         aliases: FileManagerAliasesStorageOperations;
     }) {
-        return new CmsFilesStorage(params.fileModel, params.cms, params.security, params.aliases);
+        return new CmsFilesStorage(params.fileModel, params.cms, params.aliases);
     }
 
     private constructor(
         fileModel: CmsModel,
         cms: HeadlessCms,
-        security: Security,
         aliases: FileManagerAliasesStorageOperations
     ) {
         this.model = fileModel;
         this.aliases = aliases;
         this.cms = cms;
-        this.security = security;
         this.filesWhereProcessor = new ListFilesWhereProcessor();
         this.tagsWhereProcessor = new ListTagsWhereProcessor();
     }

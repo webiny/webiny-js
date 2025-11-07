@@ -39,7 +39,6 @@ describe("task runner error in failed state", () => {
             webinyTaskId: updatedTask.id,
             webinyTaskDefinitionId: taskDefinition.id,
             tenant: "root",
-            locale: "en-US",
             error: {
                 message: "Task has failed, cannot run it again."
             }

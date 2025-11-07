@@ -1,10 +1,9 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { i18n } from "@webiny/app/i18n/index.js";
-import { PermissionSelector } from "./PermissionSelector.js";
 import { useCmsData } from "./useCmsData.js";
 import type { BindComponent } from "@webiny/form/types.js";
 import type { CmsSecurityPermission } from "~/types.js";
-import { Grid, Select } from "@webiny/admin-ui";
+import { CheckboxGroup, FormComponentNote, Grid, Select } from "@webiny/admin-ui";
 import { PermissionsGroup } from "@webiny/app-admin";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
@@ -14,7 +13,6 @@ interface ContentModelGroupPermissionProps {
     data: CmsSecurityPermission;
     entity: string;
     title: string;
-    locales: string[];
     disabled?: boolean;
 }
 const ContentModelGroupPermission = ({
@@ -22,17 +20,9 @@ const ContentModelGroupPermission = ({
     data,
     entity,
     title,
-    locales,
     disabled
 }: ContentModelGroupPermissionProps) => {
-    const modelsGroups = useCmsData(locales);
-
-    const getItems = useCallback(
-        (code: string) => {
-            return modelsGroups[code]["groups"];
-        },
-        [modelsGroups]
-    );
+    const modelsGroups = useCmsData();
 
     const endpoints = data.endpoints || [];
 
@@ -71,14 +61,28 @@ const ContentModelGroupPermission = ({
                 <>
                     {data[`${entity}AccessScope`] === "groups" && (
                         <Grid.Column span={12}>
-                            <PermissionSelector
-                                disabled={disabled}
-                                locales={locales}
-                                Bind={Bind}
-                                entity={entity}
-                                selectorKey={"groups"}
-                                getItems={getItems}
+                            <FormComponentNote
+                                text={`Select the model user will be allowed to access.`}
                             />
+                            {modelsGroups.groups.length === 0 ? (
+                                <Bind name={`${entity}Props.groups`}>
+                                    <></>
+                                </Bind>
+                            ) : (
+                                <div className={"mt-md"}>
+                                    <Bind name={`${entity}Props.groups`}>
+                                        <CheckboxGroup
+                                            items={modelsGroups.groups.map(item => {
+                                                return {
+                                                    value: item.id,
+                                                    label: item.label,
+                                                    disabled
+                                                };
+                                            })}
+                                        />
+                                    </Bind>
+                                </div>
+                            )}
                         </Grid.Column>
                     )}
                 </>

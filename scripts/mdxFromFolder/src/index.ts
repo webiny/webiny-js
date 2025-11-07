@@ -6,7 +6,7 @@ const readFile = promisify(fs.readFile);
 const writeFile = promisify(fs.writeFile);
 const readdir = promisify(fs.readdir);
 
-const ALLOWED_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".json", ".css", ".html", ".md"]);
+const ALLOWED_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx"]);
 
 const EXTENSION_TO_LANG: Record<string, string> = {
     ".ts": "ts",
@@ -25,6 +25,13 @@ async function collectFiles(dir: string, rootDir: string): Promise<string[]> {
 
     for (const entry of entries) {
         const fullPath = path.join(dir, entry.name);
+        if (
+            fullPath.includes("/dist/") ||
+            fullPath.includes(".babelrc") ||
+            fullPath.includes("vitest.")
+        ) {
+            continue;
+        }
 
         if (entry.isDirectory()) {
             const subFiles = await collectFiles(fullPath, rootDir);

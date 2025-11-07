@@ -5,7 +5,7 @@ import type {
     ITaskResponseDoneResultOutput,
     ITaskRunParams
 } from "@webiny/tasks/types.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 export interface HcmsBulkActionsContext extends BaseContext, CmsContext, TasksContext {}
 

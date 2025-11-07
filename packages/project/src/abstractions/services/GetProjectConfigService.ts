@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import { type IProjectConfigModel } from "~/abstractions/models/index.js";
 import { type ExtensionTags } from "~/defineExtension/types.js";
 

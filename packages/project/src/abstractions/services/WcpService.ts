@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import { IUrlModel, IWcpUserModel, IWcpUserPatModel } from "~/abstractions/models/index.js";
 
 export interface IGetProjectEnvironmentParams {

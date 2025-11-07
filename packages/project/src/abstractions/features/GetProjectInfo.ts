@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import { type ProjectInfoService } from "~/abstractions/services/ProjectInfoService/index.js";
 
 type GetProjectInfoParams = void;

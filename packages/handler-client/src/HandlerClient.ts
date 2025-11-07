@@ -36,7 +36,7 @@ const getHandlerClientPlugin = (context: ClientContext): HandlerClientPlugin => 
 };
 
 class HandlerClient {
-    private readonly plugin: HandlerClientPlugin;
+    private readonly plugin: any;
     /**
      * We need the default plugin to later on fetch another plugin than initially selected.
      * If name of the required plugin is not the default one, fetch new one.

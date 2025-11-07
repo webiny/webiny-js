@@ -1,4 +1,4 @@
-import { createDecorator } from "@webiny/di-container";
+import { createDecorator } from "@webiny/di";
 import { BuildApp } from "~/abstractions/index.js";
 import {
     AdminAfterBuild,

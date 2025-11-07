@@ -38,7 +38,6 @@ export const useContextHandler = <C extends Context = Context>(
         plugins,
         identity: params.identity || defaultIdentity,
         tenant: core.tenant,
-        locale: core.locale,
         elasticsearch: elasticsearchClient,
         context: (input?: HandlerEvent) => {
             const handler = createRawHandler<HandlerEvent, C>({

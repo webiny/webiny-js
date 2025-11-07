@@ -1,5 +1,5 @@
 import { createBrowserHistory } from "history";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { RouterFeature } from "@webiny/app/features/router/feature.js";
 import { DefaultRouteElementRegistry } from "@webiny/app/presentation/router/RouteElementRegistry.js";
 import { RouterGateway } from "@webiny/app/features/router/abstractions.js";
@@ -9,6 +9,8 @@ import { GraphQLClientFeature } from "@webiny/app/features/graphqlClient";
 import { LocalStorageFeature } from "@webiny/app/features/localStorage";
 import { WcpFeature } from "~/features/wcp/feature.js";
 import { TenancyFeature } from "~/features/tenancy/feature.js";
+import { SystemInstallerFeature } from "~/presentation/installation/presenters/SystemInstaller/index.js";
+import { TelemetryFeature } from "~/features/telemetry/index.js";
 
 const isUndefined = (value: any) => [undefined, "undefined"].includes(value);
 
@@ -30,12 +32,6 @@ export function createRootContainer() {
         wcpProjectId: process.env.REACT_APP_WCP_PROJECT_ID,
         webinyVersion: String(process.env.REACT_APP_WEBINY_VERSION),
         websocketUrl: String(process.env.REACT_APP_WEBSOCKET_URL)
-        // graphqlClient: {
-        //     retries: {
-        //         maxRetries: 3,
-        //         delayInMillis: 100
-        //     }
-        // }
     });
 
     // Router
@@ -52,6 +48,10 @@ export function createRootContainer() {
     TenancyFeature.register(container);
 
     WcpFeature.register(container);
+
+    SystemInstallerFeature.register(container);
+
+    TelemetryFeature.register(container);
 
     return container;
 }

@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { PackageJson } from "@webiny/build-tools/utils/PackageJson.js";
 import { GetAppPackagesService } from "~/abstractions/index.js";
 import { type AppModel, AppPackageModel } from "~/models/index.js";

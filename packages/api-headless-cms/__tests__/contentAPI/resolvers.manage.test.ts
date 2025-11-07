@@ -195,11 +195,9 @@ describe("MANAGE - Resolvers", () => {
 
         expect(response.data.getCategory.data).toEqual(null);
         expect(response.data.getCategory.error).toEqual({
-            code: "SECURITY_NOT_AUTHORIZED",
-            data: {
-                reason: 'Not allowed to access "category" entries.'
-            },
-            message: "Not authorized!"
+            code: "NOT_AUTHORIZED",
+            message: 'Not allowed to access "category" entries.',
+            data: null
         });
     });
 

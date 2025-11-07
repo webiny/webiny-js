@@ -1,4 +1,4 @@
-import { createDecorator } from "@webiny/di-container";
+import { createDecorator } from "@webiny/di";
 import {
     AfterDeploy,
     BeforeDeploy,

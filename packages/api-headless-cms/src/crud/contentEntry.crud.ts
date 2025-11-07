@@ -54,19 +54,16 @@ import type {
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import { createTopic } from "@webiny/pubsub";
 import { assignBeforeEntryCreate } from "./contentEntry/beforeCreate.js";
 import { assignBeforeEntryUpdate } from "./contentEntry/beforeUpdate.js";
 import { assignAfterEntryDelete } from "./contentEntry/afterDelete.js";
-import type { Tenant } from "@webiny/api-tenancy/types.js";
 import {
     createTransformEntryCallable,
     entryFromStorageTransform,
     entryToStorageTransform
 } from "~/utils/entryStorage.js";
 import { getSearchableFields } from "./contentEntry/searchableFields.js";
-import type { I18NLocale } from "@webiny/api-i18n/types.js";
 import { filterAsync } from "~/utils/filterAsync.js";
 import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants.js";
 import {
@@ -94,6 +91,9 @@ import {
 } from "~/crud/contentEntry/useCases/index.js";
 import { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 
 interface CreateContentEntryCrudParams {
     storageOperations: HeadlessCmsStorageOperations;

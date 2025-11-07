@@ -1,5 +1,5 @@
-import { NotAuthorizedError } from "@webiny/api-security";
 import type { IRecordLockingIdentity } from "~/types.js";
+import { LockUpdateError } from "~/utils/errors.js";
 
 export interface IValidateSameIdentityParams {
     getIdentity: () => Pick<IRecordLockingIdentity, "id">;
@@ -12,8 +12,6 @@ export const validateSameIdentity = (params: IValidateSameIdentityParams): void 
     if (identity.id === target.id) {
         return;
     }
-    throw new NotAuthorizedError({
-        message: "Cannot update lock record. Record is locked by another user.",
-        code: "LOCK_UPDATE_ERROR"
-    });
+
+    throw new LockUpdateError("Cannot update lock record. Record is locked by another user.");
 };

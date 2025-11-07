@@ -1,13 +1,13 @@
 import { ContextPlugin } from "@webiny/api";
-import type { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types.js";
 import type { Config as CognitoConfig, TokenData } from "@webiny/api-cognito-authenticator";
 import { createAuthenticator } from "@webiny/api-cognito-authenticator";
-import { createGroupsTeamsAuthorizerHandler } from "@webiny/api-security";
-import type { CoreContext } from "~/types.js";
-import { createAdminUsersHooks } from "./createAdminUsersHooks.js";
 import adminUsersGqlPlugins from "./graphql/user.gql.js";
-import installGqlPlugins from "./graphql/install.gql.js";
-import { createExternalIdpAdminUserHooks } from "@webiny/api-admin-users/createExternalIdpAdminUserHooks.js";
+import { AdminUserInstallerFeature } from "~/features/AdminUserInstaller/feature.js";
+import { UpdateUserPermissions } from "~/features/UpdateUserPermissions/feature.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import type { SecurityIdentity, SecurityPermission } from "@webiny/api-core/types/security.js";
+import { createGroupsTeamsAuthorizerHandler } from "@webiny/api-core/features/security/utils/createGroupsTeamsAuthorizer.js";
+import { ExternalIdpUserSyncFeature } from "@webiny/api-core/features/ExternalIdpUserSync";
 
 interface GetIdentityParams<TContext, TToken, TIdentity> {
     identity: TIdentity;
@@ -38,7 +38,7 @@ export interface CognitoTokenData extends TokenData {
 }
 
 export const createCognito = <
-    TContext extends CoreContext = CoreContext,
+    TContext extends ApiCoreContext = ApiCoreContext,
     TToken extends CognitoTokenData = CognitoTokenData,
     TIdentity extends SecurityIdentity = SecurityIdentity
 >(
@@ -54,6 +54,14 @@ export const createCognito = <
 
     return [
         new ContextPlugin<TContext>(context => {
+            // Register event handlers for "admin" users
+            if (isAdminIdentity) {
+                UpdateUserPermissions.register(context.container);
+            }
+
+            // Register admin user installer
+            AdminUserInstallerFeature.register(context.container);
+
             context.security.addAuthenticator(async token => {
                 const tokenObj = await cognitoAuthenticator<TToken>(token);
                 if (!tokenObj) {
@@ -92,7 +100,7 @@ export const createCognito = <
                 // on Webiny's end. This is how other external IdP integrations work too, for
                 // example Okta or Auth0. This way we get to track distinct users in a Webiny
                 // instance, which WCP can then utilize in order to track active users.
-                createExternalIdpAdminUserHooks(context);
+                ExternalIdpUserSyncFeature.register(context.container);
 
                 return identity;
             });
@@ -105,7 +113,6 @@ export const createCognito = <
 
             const teams = context.wcp.canUseTeams();
             context.plugins.register(adminUsersGqlPlugins({ teams }));
-        }),
-        isAdminIdentity ? [installGqlPlugins, createAdminUsersHooks()] : []
+        })
     ];
 };

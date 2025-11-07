@@ -4,13 +4,15 @@ import type { FileManagerConfig } from "~/createFileManager/types.js";
 import { createFileManager } from "~/createFileManager/index.js";
 import { FileStorage } from "~/storage/FileStorage.js";
 import WebinyError from "@webiny/error";
-import type { SecurityPermission } from "@webiny/api-security/types.js";
 import { createFileModel, FILE_MODEL_ID } from "~/cmsFileStorage/file.model.js";
 import { CmsFilesStorage } from "~/cmsFileStorage/CmsFilesStorage.js";
 import { CmsModelModifierPlugin } from "~/modelModifier/CmsModelModifier.js";
 import { CmsModelPlugin, isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { FilesPermissions } from "~/createFileManager/permissions/FilesPermissions.js";
 import { SettingsPermissions } from "~/createFileManager/permissions/SettingsPermissions.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 export class FileManagerContextSetup {
     private readonly context: FileManagerContext;
@@ -33,8 +35,14 @@ export class FileManagerContextSetup {
         }
 
         const filesPermissions = new FilesPermissions({
-            getIdentity: this.context.security.getIdentity,
-            getPermissions: () => this.context.security.getPermissions<FilePermission>("fm.file"),
+            getIdentity: () => {
+                const identityContext = this.context.container.resolve(IdentityContext);
+                return identityContext.getIdentity();
+            },
+            getPermissions: () => {
+                const identityContext = this.context.container.resolve(IdentityContext);
+                return identityContext.getPermissions<FilePermission>("fm.file");
+            },
             fullAccessPermissionName: "fm.*"
         });
 
@@ -62,14 +70,7 @@ export class FileManagerContextSetup {
     }
 
     private getLocaleCode() {
-        const locale = this.context.i18n.getContentLocale();
-        if (!locale) {
-            throw new WebinyError(
-                "Missing locale on context.i18n locale in File Manager API.",
-                "LOCALE_ERROR"
-            );
-        }
-        return locale.code;
+        return getLocale().code;
     }
 
     private getIdentity() {
@@ -114,7 +115,6 @@ export class FileManagerContextSetup {
         return await CmsFilesStorage.create({
             fileModel,
             cms: this.context.cms,
-            security: this.context.security,
             aliases
         });
     }

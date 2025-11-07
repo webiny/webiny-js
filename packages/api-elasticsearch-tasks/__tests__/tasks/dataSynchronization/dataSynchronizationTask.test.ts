@@ -110,7 +110,6 @@ describe("data synchronization - elasticsearch", () => {
             webinyTaskId: task.id,
             webinyTaskDefinitionId: DATA_SYNCHRONIZATION_TASK,
             tenant: "root",
-            locale: "en-US",
             message: undefined,
             output: undefined
         });

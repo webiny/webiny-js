@@ -9,7 +9,6 @@ export type CmsParametersPluginResponseLocale = string;
 
 export interface CmsParametersPluginResponse {
     type: CmsParametersPluginResponseType;
-    locale: CmsParametersPluginResponseLocale;
 }
 
 export interface CmsParametersPluginCallable {

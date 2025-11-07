@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetPulumiService, PulumiLoginService } from "~/abstractions/index.js";
 import { type AppModel } from "~/models/index.js";
 import trimEnd from "lodash/trimEnd.js";

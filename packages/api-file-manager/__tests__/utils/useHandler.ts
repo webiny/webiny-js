@@ -20,7 +20,15 @@ export const useHandler = (params: HandlerParams = {}) => {
     return {
         plugins,
         handler: () => {
-            return handler({}, {} as LambdaContext);
+            return handler(
+                {
+                    headers: {
+                        ["x-tenant"]: "root",
+                        ["Content-Type"]: "application/json"
+                    }
+                },
+                {} as LambdaContext
+            );
         }
     };
 };

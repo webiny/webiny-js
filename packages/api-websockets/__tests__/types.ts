@@ -1,5 +1,4 @@
 import type { Context as SocketsContext } from "~/types";
-import type { SecurityContext } from "@webiny/api-security/types";
-import type { I18NContext } from "@webiny/api-i18n/types";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
-export interface Context extends SocketsContext, SecurityContext, I18NContext {}
+export interface Context extends SocketsContext, ApiCoreContext {}

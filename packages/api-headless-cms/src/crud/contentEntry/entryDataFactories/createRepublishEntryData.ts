@@ -1,9 +1,9 @@
 import type { CmsContext, CmsEntry, CmsModel } from "~/types/index.js";
 import { referenceFieldsMapping } from "~/crud/contentEntry/referenceFieldsMapping.js";
 import { STATUS_PUBLISHED } from "./statuses.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import { getIdentity } from "~/utils/identity.js";
 import { getDate } from "~/utils/date.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 type CreateRepublishEntryDataParams = {
     model: CmsModel;
@@ -38,7 +38,7 @@ export const createRepublishEntryData = async ({
          */
         savedOn: getDate(currentDateTime),
         modifiedOn: getDate(currentDateTime),
-        savedBy: getIdentity(currentIdentity),
+        savedBy: getIdentity(currentIdentity)!,
         modifiedBy: getIdentity(currentIdentity),
         firstPublishedOn: getDate(originalEntry.firstPublishedOn, currentDateTime),
         firstPublishedBy: getIdentity(originalEntry.firstPublishedBy, currentIdentity),
@@ -50,7 +50,7 @@ export const createRepublishEntryData = async ({
          */
         revisionSavedOn: getDate(currentDateTime),
         revisionModifiedOn: getDate(currentDateTime),
-        revisionSavedBy: getIdentity(currentIdentity),
+        revisionSavedBy: getIdentity(currentIdentity)!,
         revisionModifiedBy: getIdentity(currentIdentity),
         revisionFirstPublishedOn: getDate(originalEntry.revisionFirstPublishedOn, currentDateTime),
         revisionFirstPublishedBy: getIdentity(

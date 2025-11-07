@@ -47,7 +47,6 @@ export const createBaseSchema = () => {
             }
 
             type FmQuery {
-                version: String
                 getSettings: FmSettingsResponse
             }
 
@@ -57,12 +56,7 @@ export const createBaseSchema = () => {
             }
 
             type FmMutation {
-                install(srcPrefix: String): FmBooleanResponse
                 updateSettings(data: FmSettingsInput): FmSettingsResponse
-            }
-
-            input FmInstallInput {
-                srcPrefix: String!
             }
 
             extend type Query {
@@ -81,25 +75,11 @@ export const createBaseSchema = () => {
                 fileManager: emptyResolver
             },
             FmQuery: {
-                async version(_, __, context) {
-                    const { i18n, tenancy, fileManager } = context;
-                    if (!tenancy.getCurrentTenant() || !i18n.getContentLocale()) {
-                        return null;
-                    }
-
-                    const version = await fileManager.getVersion();
-                    return version ? "true" : null;
-                },
                 async getSettings(_, __, context) {
                     return resolve(() => context.fileManager.getSettings());
                 }
             },
             FmMutation: {
-                async install(_, args: any, context) {
-                    return resolve(() =>
-                        context.fileManager.install({ srcPrefix: args.srcPrefix })
-                    );
-                },
                 async updateSettings(_, args: any, context) {
                     return resolve(() => context.fileManager.updateSettings(args.data));
                 }

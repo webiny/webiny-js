@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { CoreBeforeDeploy, UiService } from "@webiny/project/abstractions/index.js";
 import ora from "ora";
 import chalk from "chalk";

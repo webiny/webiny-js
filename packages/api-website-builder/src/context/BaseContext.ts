@@ -1,6 +1,7 @@
-import type { SecurityPermission } from "@webiny/api-security/types.js";
 import { WebinyError } from "@webiny/error";
 import type { WebsiteBuilderContext } from "./types.js";
+import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 export abstract class BaseContext {
     protected context: WebsiteBuilderContext;
@@ -10,14 +11,7 @@ export abstract class BaseContext {
     }
 
     protected getLocaleCode() {
-        const locale = this.context.i18n.getContentLocale();
-        if (!locale) {
-            throw new WebinyError(
-                "Missing locale on context.i18n locale in File Manager API.",
-                "LOCALE_ERROR"
-            );
-        }
-        return locale.code;
+        return getLocale().code;
     }
 
     protected getIdentity() {

@@ -9,7 +9,6 @@ import type {
 export interface IWebsocketActionsParams {
     manager: IWebsocketsManager;
     tenant: string | null;
-    locale: string | null;
     getToken: () => Promise<string | undefined>;
 }
 
@@ -18,12 +17,10 @@ export class WebsocketsActions implements IWebsocketsActions {
 
     private readonly getToken: () => Promise<string | undefined>;
     private readonly tenant: string | null;
-    private readonly locale: string | null;
 
     public constructor(params: IWebsocketActionsParams) {
         this.manager = params.manager;
         this.tenant = params.tenant;
-        this.locale = params.locale;
         this.getToken = params.getToken;
     }
 
@@ -38,10 +35,8 @@ export class WebsocketsActions implements IWebsocketsActions {
         } else if (!this.tenant) {
             console.error("Tenant is not set - cannot send a websocket message.");
             return null;
-        } else if (!this.locale) {
-            console.error("Locale is not set - cannot send a websocket message.");
-            return null;
         }
+
         /**
          * If no timeout was sent, we will just send the message and return null.
          * No waiting for the response.
@@ -53,7 +48,6 @@ export class WebsocketsActions implements IWebsocketsActions {
                  */
                 token,
                 tenant: this.tenant as string,
-                locale: this.locale as string,
                 action,
                 data: data || ({} as T)
             });
@@ -88,7 +82,6 @@ export class WebsocketsActions implements IWebsocketsActions {
                  */
                 token,
                 tenant: this.tenant as string,
-                locale: this.locale as string,
                 messageId: subscription.id,
                 action,
                 data: data || ({} as T)

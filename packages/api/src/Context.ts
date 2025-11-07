@@ -6,7 +6,7 @@ import { BenchmarkPlugin } from "~/plugins/BenchmarkPlugin.js";
 import type { ICompressor } from "@webiny/utils/compression/Compressor.js";
 import { createDefaultCompressor } from "@webiny/utils/compression/index.js";
 import { CompressorPlugin } from "~/plugins/CompressorPlugin.js";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 
 interface Waiter {
     targets: string[];

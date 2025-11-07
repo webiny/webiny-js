@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { LeftPanel, RightPanel, SplitView, useRoute, useRouter } from "@webiny/app-admin";
 import { AcoProvider, useNavigateFolder } from "@webiny/app-aco";
-import { useI18N } from "@webiny/app-i18n";
 import { useTenancy } from "@webiny/app-admin";
 import { Sidebar } from "./Sidebar.js";
 import { Main } from "./Main.js";
@@ -20,15 +19,13 @@ import { Routes } from "~/routes.js";
  */
 const useLayoutId = (applicationId: string) => {
     const { tenant } = useTenancy();
-    const { getCurrentLocale } = useI18N();
-    const localeCode = getCurrentLocale("content");
 
-    if (!tenant || !localeCode) {
+    if (!tenant) {
         console.warn("Missing tenant or localeCode while creating layoutId");
         return null;
     }
 
-    return `T#${tenant}#L#${localeCode}#A#${applicationId}`;
+    return `T#${tenant}#A#${applicationId}`;
 };
 
 const View = () => {

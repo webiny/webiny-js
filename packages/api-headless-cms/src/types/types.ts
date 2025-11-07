@@ -1,5 +1,4 @@
 import type { Plugin } from "@webiny/plugins/types.js";
-import type { I18NContext, I18NLocale } from "@webiny/api-i18n/types.js";
 import type { Context, GenericRecord } from "@webiny/api/types.js";
 import type {
     GraphQLFieldResolver,
@@ -7,7 +6,6 @@ import type {
     Resolvers
 } from "@webiny/handler-graphql/types.js";
 import type { processRequestBody } from "@webiny/handler-graphql";
-import type { SecurityPermission } from "@webiny/api-security/types.js";
 import type { DbContext } from "@webiny/handler-db/types.js";
 import type { Topic } from "@webiny/pubsub/types.js";
 import type { CmsModelConverterCallable } from "~/utils/converters/ConverterCollection.js";
@@ -21,6 +19,9 @@ import type { CmsModel, CmsModelCreateFromInput, CmsModelCreateInput } from "./m
 import type { CmsGroup } from "./modelGroup.js";
 import type { CmsIdentity } from "./identity.js";
 import type { ISingletonModelManager } from "~/modelManager/index.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 export interface CmsError {
     message: string;
@@ -98,7 +99,7 @@ export type GetExecutableSchema = (
  *
  * @category Context
  */
-export interface CmsContext extends Context, DbContext, I18NContext {
+export interface CmsContext extends Context, DbContext, ApiCoreContext {
     cms: HeadlessCms;
 }
 

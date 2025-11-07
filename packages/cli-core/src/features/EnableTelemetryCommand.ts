@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { Command, UiService } from "~/abstractions/index.js";
 import { enable as enableTelemetry, sendEvent } from "@webiny/telemetry/cli.js";
 

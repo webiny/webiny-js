@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { Command, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
 import { measureDuration } from "~/features/utils/index.js";
 import { PulumiError } from "@webiny/pulumi-sdk";

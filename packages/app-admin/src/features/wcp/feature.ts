@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/app";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { WcpService as WcpServiceAbstraction } from "./abstractions.js";
 import { WcpService } from "./WcpService.js";
 import { WcpGateway } from "./WcpGateway.js";

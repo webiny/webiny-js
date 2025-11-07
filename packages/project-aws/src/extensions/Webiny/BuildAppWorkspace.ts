@@ -1,4 +1,4 @@
-import { createDecorator } from "@webiny/di-container";
+import { createDecorator } from "@webiny/di";
 import path from "path";
 import fs from "fs";
 import { BuildAppWorkspaceService, GetApp } from "@webiny/project/abstractions/index.js";

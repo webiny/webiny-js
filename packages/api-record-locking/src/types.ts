@@ -12,7 +12,7 @@ import type {
     Context as IWebsocketsContext,
     IWebsocketsContextObject
 } from "@webiny/api-websockets/types.js";
-import type { SecurityPermission } from "@webiny/api-security/types.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 export type { CmsError, CmsEntry };
 

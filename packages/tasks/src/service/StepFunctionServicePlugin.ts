@@ -23,13 +23,11 @@ export interface IDetailWrapper<T> {
 
 export class StepFunctionService implements ITaskService {
     private readonly getTenant: () => string;
-    private readonly getLocale: () => string;
     private readonly trigger: ReturnType<typeof triggerStepFunctionFactory>;
     private readonly get: ReturnType<typeof describeExecutionFactory>;
 
     public constructor(params: ITaskServiceCreatePluginParams) {
         this.getTenant = params.getTenant;
-        this.getLocale = params.getLocale;
         const client = createStepFunctionClient();
         this.trigger = triggerStepFunctionFactory(client);
         this.get = describeExecutionFactory(client);
@@ -50,7 +48,6 @@ export class StepFunctionService implements ITaskService {
             webinyTaskId: task.id,
             webinyTaskDefinitionId: task.definitionId,
             tenant: this.getTenant(),
-            locale: this.getLocale(),
             delay
         };
         const name = `${task.definitionId}_${task.id}_${generateAlphaNumericId(10)}`;

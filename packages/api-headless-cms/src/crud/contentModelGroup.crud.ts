@@ -16,9 +16,6 @@ import type {
     OnGroupUpdateErrorTopicParams
 } from "~/types/index.js";
 import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin.js";
-import type { Tenant } from "@webiny/api-tenancy/types.js";
-import type { I18NLocale } from "@webiny/api-i18n/types.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import { createTopic } from "@webiny/pubsub";
 import { assignBeforeGroupUpdate } from "./contentModelGroup/beforeUpdate.js";
 import { assignBeforeGroupCreate } from "./contentModelGroup/beforeCreate.js";
@@ -32,6 +29,9 @@ import { filterAsync } from "~/utils/filterAsync.js";
 import { createCacheKey, createMemoryCache } from "~/utils/index.js";
 import { listGroupsFromDatabase } from "~/crud/contentModelGroup/listGroupsFromDatabase.js";
 import type { AccessControl } from "./AccessControl/AccessControl.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;

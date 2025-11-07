@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetPulumiVersionService } from "~/abstractions/index.js";
 import execa from "execa";
 

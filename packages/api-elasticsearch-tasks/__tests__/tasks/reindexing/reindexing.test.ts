@@ -26,7 +26,6 @@ const createContextTaskAndEvent = async (handler: ReturnType<typeof useHandler>)
         webinyTaskDefinitionId: task.definitionId,
         executionName: "someExecutionName",
         tenant: "root",
-        locale: "en-US",
         stateMachineId: "someStateMachineId",
         endpoint: "manage"
     };
@@ -51,7 +50,6 @@ describe("reindexing", () => {
                 webinyTaskId: task.id,
                 webinyTaskDefinitionId: task.definitionId,
                 tenant: "root",
-                locale: "en-US",
                 message: "No more items to process - no last evaluated keys."
             })
         );
@@ -87,7 +85,6 @@ describe("reindexing", () => {
                 webinyTaskId: task.id,
                 webinyTaskDefinitionId: task.definitionId,
                 tenant: "root",
-                locale: "en-US",
                 input: {}
             })
         );
@@ -113,7 +110,6 @@ describe("reindexing", () => {
                 webinyTaskId: task.id,
                 webinyTaskDefinitionId: task.definitionId,
                 tenant: "root",
-                locale: "en-US",
                 message: "No more items to process - no last evaluated keys."
             })
         );

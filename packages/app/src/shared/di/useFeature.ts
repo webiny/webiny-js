@@ -1,4 +1,4 @@
-import type { Container } from "@webiny/di-container";
+import type { Container } from "@webiny/di";
 import { useContainer } from "./DiContainerProvider.js";
 import { FeatureDefinition } from "./createFeature.js";
 

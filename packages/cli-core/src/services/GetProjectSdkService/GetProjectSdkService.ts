@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { getProjectSdk } from "@webiny/project";
 import { CliParamsService, GetProjectSdkService } from "~/abstractions/index.js";
 

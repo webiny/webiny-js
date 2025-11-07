@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-import { SecurityIdentity } from "@webiny/api-security/types";
-import { createSecurityTeamPlugin } from "@webiny/api-security";
+import { createSecurityTeamPlugin } from "@webiny/api-core/legacy/security/plugins/SecurityTeamPlugin.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext";
 
 const FOLDER_TYPE = "test-folders";
 
-const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
+const identityA: IdentityData = { id: "1", type: "admin", displayName: "A" };
 
 describe("Folder Level Permissions - Inheritance", () => {
     const { aco } = useGraphQlHandler({

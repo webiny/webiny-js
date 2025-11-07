@@ -3,12 +3,6 @@ const data = /* GraphQL */ `
         id
         entryId
         createdOn
-        publishedOn
-        ownedBy {
-            id
-            displayName
-            type
-        }
         savedOn
         title
         slug

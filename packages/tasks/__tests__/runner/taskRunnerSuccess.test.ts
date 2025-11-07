@@ -37,7 +37,6 @@ describe("task runner trigger and end successfully", () => {
             webinyTaskId: task.id,
             webinyTaskDefinitionId: taskDefinition.id,
             tenant: "root",
-            locale: "en-US",
             message: "Task is done!",
             output: {
                 myCustomOutput: "yes!"
@@ -103,7 +102,6 @@ describe("task runner trigger and end successfully", () => {
             webinyTaskId: task.id,
             webinyTaskDefinitionId: taskDefinition.id,
             tenant: "root",
-            locale: "en-US",
             delay: -1,
             wait: undefined,
             message: undefined,
@@ -150,7 +148,6 @@ describe("task runner trigger and end successfully", () => {
             webinyTaskId: task.id,
             webinyTaskDefinitionId: taskDefinition.id,
             tenant: "root",
-            locale: "en-US",
             message: "Task is done!",
             output: {
                 myCustomOutput: "yes!"

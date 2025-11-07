@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { BeforeDeploy } from "@webiny/project/abstractions/index.js";
 
 class PrintDeploymentInfoAfterDeploy implements BeforeDeploy.Interface {

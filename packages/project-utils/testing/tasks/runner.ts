@@ -38,8 +38,7 @@ export interface ICreateRunnerParams<
     onContinue?: ICreateRunnerParamsOnContinueCallable;
 }
 
-export type IExecuteEvent = Pick<ITaskEvent, "webinyTaskId"> &
-    Partial<Pick<ITaskEvent, "tenant" | "locale">>;
+export type IExecuteEvent = Pick<ITaskEvent, "webinyTaskId"> & Partial<Pick<ITaskEvent, "tenant">>;
 
 export const createRunner = <
     C extends Context = Context,
@@ -65,7 +64,6 @@ export const createRunner = <
     const execute = async (event: IExecuteEvent) => {
         return await runner.run({
             tenant: "root",
-            locale: "en-US",
             ...event,
             stateMachineId: "aMockStateMachineId",
             webinyTaskDefinitionId: params.task.id,

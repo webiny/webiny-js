@@ -1,11 +1,11 @@
-import type { FolderLevelPermissions } from "~/flp/index.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import { ROOT_FOLDER } from "~/constants.js";
+import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 
 export class FilterEntriesByFolderFactory {
-    private readonly folderLevelPermissions: FolderLevelPermissions;
+    private readonly folderLevelPermissions: FolderLevelPermissions.Interface;
 
-    constructor(folderLevelPermissions: FolderLevelPermissions) {
+    constructor(folderLevelPermissions: FolderLevelPermissions.Interface) {
         this.folderLevelPermissions = folderLevelPermissions;
     }
 

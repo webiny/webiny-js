@@ -1,5 +1,3 @@
-import { NotAuthorizedError } from "@webiny/api-security";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import type {
     CmsEntry,
     CmsEntryPermission,
@@ -8,6 +6,8 @@ import type {
     CmsModel,
     CmsModelPermission
 } from "~/types/index.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
+import { NotAuthorizedError } from "~/utils/errors.js";
 
 export interface AccessControlParams {
     getIdentity: () => SecurityIdentity | Promise<SecurityIdentity>;
@@ -128,18 +128,10 @@ export class AccessControl {
                 groupName = `"${params.group.name}"`;
             }
 
-            throw new NotAuthorizedError({
-                data: {
-                    reason: `Not allowed to access content model group ${groupName}.`
-                }
-            });
+            throw new NotAuthorizedError(`Not allowed to access content model group ${groupName}.`);
         }
 
-        throw new NotAuthorizedError({
-            data: {
-                reason: `Not allowed to access content model groups.`
-            }
-        });
+        throw new NotAuthorizedError(`Not allowed to access content model groups.`);
     }
 
     async canAccessNonOwnedGroups(params: GetGroupsAccessControlListParams) {
@@ -258,18 +250,10 @@ export class AccessControl {
                 modelName = `"${params.model.name}"`;
             }
 
-            throw new NotAuthorizedError({
-                data: {
-                    reason: `Not allowed to access content model ${modelName}.`
-                }
-            });
+            throw new NotAuthorizedError(`Not allowed to access content model ${modelName}.`);
         }
 
-        throw new NotAuthorizedError({
-            data: {
-                reason: `Not allowed to access content models.`
-            }
-        });
+        throw new NotAuthorizedError(`Not allowed to access content models.`);
     }
 
     async canAccessNonOwnedModels(params: GetModelsAccessControlListParams) {
@@ -474,18 +458,14 @@ export class AccessControl {
         const canAccess = await this.canAccessEntry(params);
         if (!canAccess) {
             if (params.entry) {
-                throw new NotAuthorizedError({
-                    data: {
-                        reason: `Not allowed to access entry "${params.entry.entryId}".`
-                    }
-                });
+                throw new NotAuthorizedError(
+                    `Not allowed to access entry "${params.entry.entryId}".`
+                );
             }
 
-            throw new NotAuthorizedError({
-                data: {
-                    reason: `Not allowed to access "${params.model.modelId}" entries.`
-                }
-            });
+            throw new NotAuthorizedError(
+                `Not allowed to access "${params.model.modelId}" entries.`
+            );
         }
     }
 

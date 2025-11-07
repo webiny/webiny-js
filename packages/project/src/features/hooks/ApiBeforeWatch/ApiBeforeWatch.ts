@@ -1,4 +1,4 @@
-import { createComposite } from "@webiny/di-container";
+import { createComposite } from "@webiny/di";
 import { ApiBeforeWatch } from "~/abstractions/index.js";
 
 export class CompositeApiBeforeWatch implements ApiBeforeWatch.Interface {

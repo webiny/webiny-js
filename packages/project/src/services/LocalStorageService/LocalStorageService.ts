@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetProjectService, LocalStorageService } from "~/abstractions/index.js";
 import fs from "fs";
 

@@ -50,11 +50,4 @@ export { HasPermission, useSecurity, usePermission } from "@webiny/app-security"
 export { useTenancy } from "@webiny/app-admin";
 export type { Tenant } from "@webiny/app-admin";
 
-export {
-    IsTenant,
-    IsRootTenant,
-    IsNotRootTenant,
-    useCurrentTenant
-} from "@webiny/app-tenant-manager";
-
 export * from "./apolloClientFactory.js";

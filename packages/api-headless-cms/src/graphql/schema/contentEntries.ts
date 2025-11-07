@@ -7,7 +7,6 @@ import type {
     CmsIdentity,
     CmsModel
 } from "~/types/index.js";
-import { NotAuthorizedResponse } from "@webiny/api-security";
 import { getEntryTitle } from "~/utils/getEntryTitle.js";
 import type { ICmsGraphQLSchemaPlugin } from "~/plugins/index.js";
 import { createCmsGraphQLSchemaPlugin } from "~/plugins/index.js";
@@ -16,6 +15,7 @@ import { getEntryImage } from "~/utils/getEntryImage.js";
 import { entryFieldFromStorageTransform } from "~/utils/entryStorage.js";
 import type { GraphQLFieldResolver } from "@webiny/handler-graphql/types.js";
 import { ENTRY_META_FIELDS, isDateTimeEntryMetaField } from "~/constants.js";
+import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
 
 interface EntriesByModel {
     [key: string]: string[];

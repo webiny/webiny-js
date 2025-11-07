@@ -1,9 +1,6 @@
 import { createHandler } from "~/handler";
-import { createWcpContext } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "~tests/helpers/tenancySecurity";
-import { createDummyLocales, createIdentity, createPermissions } from "~tests/helpers/helpers";
-import i18nContext from "@webiny/api-i18n/graphql/context";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
+import { createIdentity, createPermissions } from "~tests/helpers/helpers";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { createBackgroundTaskContext } from "~/context";
@@ -14,6 +11,8 @@ import type { PluginCollection } from "@webiny/plugins/types";
 import type { LambdaContext } from "@webiny/handler-aws/types";
 import type { ITaskRawEvent } from "~/handler/types";
 import { createMockTaskServicePlugin } from "~tests/mocks/taskTriggerTransportPlugin";
+import { createApiCore } from "@webiny/api-core";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface UseTaskHandlerParams {
     plugins?: PluginCollection;
@@ -21,22 +20,20 @@ export interface UseTaskHandlerParams {
 
 export const useTaskHandler = (params?: UseTaskHandlerParams) => {
     const { plugins = [] } = params || {};
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const i18nStorage = getStorageOps<any[]>("i18n");
 
     const handler = createHandler({
         plugins: [
-            createWcpContext(),
+            createApiCore({
+                storageOperations: apiCoreStorage.storageOperations
+            }),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: false,
                 permissions: createPermissions(),
                 identity: createIdentity()
             }),
-            i18nContext(),
-            i18nStorage.storageOperations,
-            createDummyLocales(),
-            mockLocalesPlugins(),
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations
             }),

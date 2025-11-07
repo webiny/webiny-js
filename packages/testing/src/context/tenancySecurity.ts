@@ -1,33 +1,20 @@
 import type { Plugin } from "@webiny/plugins";
-import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
-import {
-    createSecurityContext,
-    createSecurityGraphQL,
-    createSecurityRolePlugin,
-    createSecurityTeamPlugin
-} from "@webiny/api-security";
-import type {
-    SecurityIdentity,
-    SecurityPermission,
-    SecurityStorageOperations
-} from "@webiny/api-security/types.js";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import type { Context } from "~/types.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import type { TenancyStorageOperations, Tenant } from "@webiny/api-tenancy/types.js";
-import createAdminUsersApp from "@webiny/api-admin-users";
-import { createStorageOperations as createAdminUsersStorageOperations } from "@webiny/api-admin-users-so-ddb";
-import { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb";
+import { createSecurityRolePlugin } from "@webiny/api-core/legacy/security/plugins/SecurityRolePlugin.js";
+import { createSecurityTeamPlugin } from "@webiny/api-core/legacy/security/plugins/SecurityTeamPlugin";
+import { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
 interface Config {
     setupGraphQL?: boolean;
     permissions: SecurityPermission[];
-    identity?: SecurityIdentity | null;
-    documentClient: DynamoDBDocument;
+    identity?: IdentityData | null;
 }
 
-export const defaultIdentity: SecurityIdentity = {
+export const defaultIdentity: IdentityData = {
     id: "id-12345678",
     type: "admin",
     displayName: "John Doe"
@@ -37,22 +24,8 @@ export const FULL_ACCESS_ROLE_ID = "full-access-role";
 export const FULL_ACCESS_TEAM_ID = "full-access-team";
 export const UNKNOWN_TEAM_ID = "unknown-team";
 
-export const createTenancyAndSecurity = ({
-    permissions,
-    identity,
-    documentClient
-}: Config): Plugin[] => {
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-
+export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plugin[] => {
     return [
-        createTenancyContext({ storageOperations: tenancyStorage.storageOperations }),
-        createTenancyGraphQL(),
-        createSecurityContext({ storageOperations: securityStorage.storageOperations }),
-        createSecurityGraphQL(),
-        createAdminUsersApp({
-            storageOperations: createAdminUsersStorageOperations({ documentClient })
-        }),
         createSecurityRolePlugin({
             id: FULL_ACCESS_ROLE_ID,
             name: "Full Access",

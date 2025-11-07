@@ -10,12 +10,7 @@ import {
     LIST_TAGS,
     UPDATE_FILE
 } from "~tests/graphql/file";
-import {
-    GET_SETTINGS,
-    INSTALL,
-    IS_INSTALLED,
-    UPDATE_SETTINGS
-} from "~tests/graphql/fileManagerSettings";
+import { GET_SETTINGS, UPDATE_SETTINGS } from "~tests/graphql/fileManagerSettings";
 import type { HandlerParams } from "./plugins";
 import { handlerPlugins } from "./plugins";
 import { defaultIdentity } from "~tests/utils/tenancySecurity";
@@ -84,12 +79,6 @@ export default (params: HandlerParams = {}) => {
             return invoke({ body: { query: LIST_TAGS, variables } });
         },
         // File Manager settings
-        async isInstalled(variables: Record<string, any>) {
-            return invoke({ body: { query: IS_INSTALLED, variables } });
-        },
-        async install(variables = {}) {
-            return invoke({ body: { query: INSTALL, variables } });
-        },
         async getSettings(variables = {}) {
             return invoke({ body: { query: GET_SETTINGS, variables } });
         },

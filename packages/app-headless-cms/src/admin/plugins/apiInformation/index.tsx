@@ -9,7 +9,7 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
     {
         type: "graphql-playground-tab",
         name: "graphql-playground-tab-manage",
-        tab({ locale, identity }) {
+        tab({ identity }) {
             const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
             if (
                 !identity ||
@@ -21,7 +21,7 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
 
             return {
                 name: "Headless CMS - Manage API",
-                endpoint: apiUrl + "/cms/manage/" + locale,
+                endpoint: apiUrl + "/cms/manage",
                 headers: {},
                 query: manageQuery
             };
@@ -30,7 +30,7 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
     {
         type: "graphql-playground-tab",
         name: "graphql-playground-tab-read",
-        tab({ locale, identity }) {
+        tab({ identity }) {
             const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
             if (
                 !identity ||
@@ -42,7 +42,7 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
 
             return {
                 name: "Headless CMS - Read API",
-                endpoint: apiUrl + "/cms/read/" + locale,
+                endpoint: apiUrl + "/cms/read",
                 headers: {},
                 query: readQuery
             };
@@ -51,7 +51,7 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
     {
         type: "graphql-playground-tab",
         name: "graphql-playground-tab-preview",
-        tab({ locale, identity }) {
+        tab({ identity }) {
             const apiUrl = appConfig.getKey("API_URL", process.env.REACT_APP_API_URL);
             if (
                 !identity ||
@@ -63,7 +63,7 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
 
             return {
                 name: "Headless CMS - Preview API",
-                endpoint: apiUrl + "/cms/preview/" + locale,
+                endpoint: apiUrl + "/cms/preview",
                 headers: {},
                 query: previewQuery
             };

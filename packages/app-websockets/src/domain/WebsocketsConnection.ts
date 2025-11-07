@@ -42,7 +42,6 @@ const connectionCache = window.WebinyWebsocketsConnectionCache;
 export interface IWebsocketsConnectionParams {
     url: string;
     tenant: string;
-    locale: string;
     getToken(): Promise<string | undefined>;
     subscriptionManager: IWebsocketsSubscriptionManager;
     protocol?: IWebsocketsConnectProtocol;
@@ -53,7 +52,6 @@ export class WebsocketsConnection implements IWebsocketsConnection {
     private readonly url: string;
     private readonly getToken: () => Promise<string | undefined>;
     private tenant: string;
-    private locale: string;
     private readonly protocol: IWebsocketsConnectProtocol;
     public readonly subscriptionManager: IWebsocketsSubscriptionManager;
     private readonly factory: IWebsocketsConnectionFactory;
@@ -61,7 +59,6 @@ export class WebsocketsConnection implements IWebsocketsConnection {
     public constructor(params: IWebsocketsConnectionParams) {
         this.url = params.url;
         this.tenant = params.tenant;
-        this.locale = params.locale;
         this.getToken = params.getToken;
         this.protocol = params.protocol;
         this.subscriptionManager = params.subscriptionManager;
@@ -70,10 +67,6 @@ export class WebsocketsConnection implements IWebsocketsConnection {
 
     public setTenant(tenant: string): void {
         this.tenant = tenant;
-    }
-
-    public setLocale(locale: string): void {
-        this.locale = locale;
     }
 
     public async connect(): Promise<void> {
@@ -121,7 +114,7 @@ export class WebsocketsConnection implements IWebsocketsConnection {
         }
         return {
             token,
-            url: `${this.url}?token=${token}&tenant=${this.tenant}&locale=${this.locale}`
+            url: `${this.url}?token=${token}&tenant=${this.tenant}`
         };
     }
 

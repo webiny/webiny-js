@@ -25,16 +25,12 @@ export class OnBeforeTrigger {
         if (!tenant?.id) {
             throw new Error("Something went wrong, tenant not found when triggering a task.");
         }
-        const locale = this.context.i18n.getContentLocale();
-        if (!locale) {
-            throw new Error("Something went wrong, locale not found when triggering a task.");
-        }
+
         try {
             const allIndexes = await listIndexes({
                 context: this.context,
                 plugins,
-                tenants: [tenant],
-                locales: [locale]
+                tenants: [tenant]
             });
             const indexes = allIndexes.filter(index => {
                 if (!targets?.length) {

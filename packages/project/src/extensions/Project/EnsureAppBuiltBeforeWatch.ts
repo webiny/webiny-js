@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { BeforeWatch, GetApp } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 

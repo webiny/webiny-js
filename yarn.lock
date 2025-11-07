@@ -6891,16 +6891,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ladjs/country-language@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "@ladjs/country-language@npm:0.2.1"
-  dependencies:
-    underscore: "npm:~1.13.1"
-    underscore.deep: "npm:~0.5.1"
-  checksum: 10/36e4af16927b54cda3b895991221d1b776d994bf9a8bfc26df052ab554a3a917243bc698e75dfb6b47e991533abebbfbbc8be0c933ace94f7cdb75a020f3903e
-  languageName: node
-  linkType: hard
-
 "@leichtgewicht/ip-codec@npm:^2.0.1":
   version: 2.0.5
   resolution: "@leichtgewicht/ip-codec@npm:2.0.5"
@@ -12270,13 +12260,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/accept-language-parser@npm:^1.5.8":
-  version: 1.5.8
-  resolution: "@types/accept-language-parser@npm:1.5.8"
-  checksum: 10/b14c159fe342131e87908d11e4c75e51b0f61ac1efecd2dcbc79b23dbd107a22a2ba51e8782fa69b1dcfe485752ae7685d507c4933610d22527279dd3dff6fb2
-  languageName: node
-  linkType: hard
-
 "@types/accounting@npm:^0.4.5":
   version: 0.4.5
   resolution: "@types/accounting@npm:0.4.5"
@@ -14313,21 +14296,16 @@ __metadata:
   resolution: "@webiny/api-aco@workspace:packages/api-aco"
   dependencies:
     "@webiny/api": "npm:0.0.0"
-    "@webiny/api-admin-users": "npm:0.0.0"
-    "@webiny/api-authentication": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-i18n-ddb": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-security-so-ddb": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-tenancy-so-ddb": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
+    "@webiny/di": "npm:^0.1.1"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
@@ -14348,87 +14326,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-admin-settings@npm:0.0.0, @webiny/api-admin-settings@workspace:packages/api-admin-settings":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-admin-settings@workspace:packages/api-admin-settings"
-  dependencies:
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-aws": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
-    "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/utils": "npm:0.0.0"
-    apollo-graphql: "npm:^0.9.7"
-    jest-dynalite: "npm:^3.6.1"
-    prettier: "npm:^3.6.2"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-admin-users-so-ddb@npm:0.0.0, @webiny/api-admin-users-so-ddb@workspace:packages/api-admin-users-so-ddb":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-admin-users-so-ddb@workspace:packages/api-admin-users-so-ddb"
-  dependencies:
-    "@webiny/api-admin-users": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/project-utils": "npm:0.0.0"
-    jest-dynalite: "npm:^3.6.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-admin-users@npm:0.0.0, @webiny/api-admin-users@workspace:packages/api-admin-users":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-admin-users@workspace:packages/api-admin-users"
-  dependencies:
-    "@types/md5": "npm:^2.3.5"
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/handler-graphql": "npm:0.0.0"
-    "@webiny/pubsub": "npm:0.0.0"
-    "@webiny/utils": "npm:0.0.0"
-    dataloader: "npm:^2.2.3"
-    lodash: "npm:^4.17.21"
-    md5: "npm:^2.3.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-    zod: "npm:^3.25.76"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-audit-logs@npm:0.0.0, @webiny/api-audit-logs@workspace:packages/api-audit-logs":
   version: 0.0.0-use.local
   resolution: "@webiny/api-audit-logs@workspace:packages/api-audit-logs"
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/api-admin-users": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
     "@webiny/api-mailer": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -14451,51 +14358,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-authentication-cognito@workspace:packages/api-authentication-cognito":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-authentication-cognito@workspace:packages/api-authentication-cognito"
-  dependencies:
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/api-authentication": "npm:0.0.0"
-    "@webiny/api-cognito-authenticator": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-authentication@npm:0.0.0, @webiny/api-authentication@workspace:packages/api-authentication":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-authentication@workspace:packages/api-authentication"
-  dependencies:
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    jest-dynalite: "npm:^3.6.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-background-tasks-ddb@npm:0.0.0, @webiny/api-background-tasks-ddb@workspace:packages/api-background-tasks-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-background-tasks-ddb@workspace:packages/api-background-tasks-ddb"
   dependencies:
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
-    "@webiny/tasks": "npm:0.0.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-background-tasks-es@npm:0.0.0, @webiny/api-background-tasks-es@workspace:packages/api-background-tasks-es":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-background-tasks-es@workspace:packages/api-background-tasks-es"
-  dependencies:
-    "@webiny/api-elasticsearch-tasks": "npm:0.0.0"
-    "@webiny/api-headless-cms-es-tasks": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
@@ -14524,11 +14390,63 @@ __metadata:
   dependencies:
     "@types/jsonwebtoken": "npm:^9.0.10"
     "@types/jwk-to-pem": "npm:^2.0.3"
-    "@webiny/api-security": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     jsonwebtoken: "npm:^9.0.2"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-core-ddb@npm:0.0.0, @webiny/api-core-ddb@workspace:packages/api-core-ddb":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-core-ddb@workspace:packages/api-core-ddb"
+  dependencies:
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/aws-sdk": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/db-dynamodb": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    jest-dynalite: "npm:^3.6.1"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.9.3"
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-core@npm:0.0.0, @webiny/api-core@workspace:packages/api-core":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-core@workspace:packages/api-core"
+  dependencies:
+    "@types/jsonwebtoken": "npm:^9.0.10"
+    "@types/md5": "npm:^2.3.5"
+    "@webiny/api": "npm:0.0.0"
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/db-dynamodb": "npm:0.0.0"
+    "@webiny/di": "npm:^0.1.1"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
+    "@webiny/handler": "npm:0.0.0"
+    "@webiny/handler-aws": "npm:0.0.0"
+    "@webiny/handler-db": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
+    "@webiny/plugins": "npm:0.0.0"
+    "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
+    dataloader: "npm:^2.2.3"
+    deep-equal: "npm:^2.2.3"
+    jest-dynalite: "npm:^3.6.1"
+    jose: "npm:^5.10.0"
+    jsonwebtoken: "npm:^9.0.2"
+    lodash: "npm:^4.17.21"
+    md5: "npm:^2.3.0"
+    minimatch: "npm:^5.1.6"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.9.3"
+    vitest: "npm:^3.2.4"
+    zod: "npm:^3.25.76"
   languageName: unknown
   linkType: soft
 
@@ -14555,14 +14473,11 @@ __metadata:
   resolution: "@webiny/api-elasticsearch-tasks@workspace:packages/api-elasticsearch-tasks"
   dependencies:
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-dynamodb-to-elasticsearch": "npm:0.0.0"
     "@webiny/api-elasticsearch": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
     "@webiny/api-log": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db": "npm:0.0.0"
@@ -14607,12 +14522,8 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/api-admin-users": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
@@ -14650,9 +14561,8 @@ __metadata:
   resolution: "@webiny/api-file-manager-s3@workspace:packages/api-file-manager-s3"
   dependencies:
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -14682,13 +14592,12 @@ __metadata:
   dependencies:
     "@types/object-hash": "npm:^3.0.6"
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
@@ -14697,6 +14606,7 @@ __metadata:
     "@webiny/pubsub": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
     cache-control-parser: "npm:^2.0.6"
     lodash: "npm:^4.17.21"
     object-hash: "npm:^3.0.0"
@@ -14712,12 +14622,8 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/api-admin-users": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
@@ -14737,12 +14643,8 @@ __metadata:
   resolution: "@webiny/api-headless-cms-bulk-actions@workspace:packages/api-headless-cms-bulk-actions"
   dependencies:
     "@webiny/api": "npm:0.0.0"
-    "@webiny/api-admin-users": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
@@ -14765,15 +14667,12 @@ __metadata:
     "@elastic/elasticsearch": "npm:7.12.0"
     "@types/jsonpack": "npm:^1.1.6"
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-dynamodb-to-elasticsearch": "npm:0.0.0"
     "@webiny/api-elasticsearch": "npm:0.0.0"
     "@webiny/api-elasticsearch-tasks": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
     "@webiny/api-log": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
@@ -14786,6 +14685,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
     dataloader: "npm:^2.2.3"
     jest-dynalite: "npm:^3.6.1"
     lodash: "npm:^4.17.21"
@@ -14828,13 +14728,10 @@ __metadata:
   dependencies:
     "@faker-js/faker": "npm:^9.9.0"
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-elasticsearch": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-ddb-es": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
@@ -14843,6 +14740,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
   languageName: unknown
@@ -14857,13 +14755,9 @@ __metadata:
     "@types/archiver": "npm:^6.0.3"
     "@types/unzipper": "npm:^0.10.11"
     "@webiny/api": "npm:0.0.0"
-    "@webiny/api-admin-users": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
@@ -14893,11 +14787,8 @@ __metadata:
   resolution: "@webiny/api-headless-cms-scheduler@workspace:packages/api-headless-cms-scheduler"
   dependencies:
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
@@ -14907,6 +14798,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
     aws-sdk-client-mock: "npm:^4.1.0"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
@@ -14932,13 +14824,10 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-bulk-actions": "npm:0.0.0"
     "@webiny/api-headless-cms-import-export": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
@@ -14949,6 +14838,7 @@ __metadata:
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
     zod: "npm:^3.25.76"
@@ -14982,15 +14872,13 @@ __metadata:
     "@types/babel__code-frame": "npm:^7.0.6"
     "@types/pluralize": "npm:^0.0.33"
     "@webiny/api": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/di-container": "npm:0.0.0"
+    "@webiny/di": "npm:^0.1.1"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-db": "npm:0.0.0"
@@ -15002,6 +14890,7 @@ __metadata:
     "@webiny/pubsub": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
     apollo-graphql: "npm:^0.9.7"
     dot-prop: "npm:^6.0.1"
     graphql: "npm:^16.11.0"
@@ -15022,78 +14911,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-i18n-content@npm:0.0.0, @webiny/api-i18n-content@workspace:packages/api-i18n-content":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-i18n-content@workspace:packages/api-i18n-content"
-  dependencies:
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    graphql: "npm:^16.11.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-i18n-ddb@npm:0.0.0, @webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb"
-  dependencies:
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-aws": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
-    "@webiny/handler-graphql": "npm:0.0.0"
-    "@webiny/project-utils": "npm:0.0.0"
-    jest-dynalite: "npm:^3.6.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-i18n@npm:0.0.0, @webiny/api-i18n@workspace:packages/api-i18n":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-i18n@workspace:packages/api-i18n"
-  dependencies:
-    "@types/accept-language-parser": "npm:^1.5.8"
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-aws": "npm:0.0.0"
-    "@webiny/handler-client": "npm:0.0.0"
-    "@webiny/handler-graphql": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
-    "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/pubsub": "npm:0.0.0"
-    accept-language-parser: "npm:^1.5.0"
-    i18n-locales: "npm:^0.0.5"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-log@npm:0.0.0, @webiny/api-log@workspace:packages/api-log":
   version: 0.0.0-use.local
   resolution: "@webiny/api-log@workspace:packages/api-log"
   dependencies:
     "@webiny/api": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db": "npm:0.0.0"
@@ -15120,13 +14943,12 @@ __metadata:
     "@types/crypto-js": "npm:^4.2.2"
     "@types/nodemailer": "npm:^6.4.19"
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-db": "npm:0.0.0"
@@ -15151,14 +14973,12 @@ __metadata:
   resolution: "@webiny/api-record-locking@workspace:packages/api-record-locking"
   dependencies:
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
@@ -15180,10 +15000,7 @@ __metadata:
   dependencies:
     "@types/jsonwebtoken": "npm:^9.0.10"
     "@types/jwk-to-pem": "npm:^2.0.3"
-    "@webiny/api-admin-users": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
@@ -15200,15 +15017,12 @@ __metadata:
   dependencies:
     "@types/jsonwebtoken": "npm:^9.0.10"
     "@webiny/api": "npm:0.0.0"
-    "@webiny/api-admin-users": "npm:0.0.0"
     "@webiny/api-cognito-authenticator": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
@@ -15227,65 +15041,13 @@ __metadata:
   resolution: "@webiny/api-security-okta@workspace:packages/api-security-okta"
   dependencies:
     "@webiny/api": "npm:0.0.0"
-    "@webiny/api-admin-users": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     jsonwebtoken: "npm:^9.0.2"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-security-so-ddb@npm:0.0.0, @webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-security-so-ddb@workspace:packages/api-security-so-ddb"
-  dependencies:
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/project-utils": "npm:0.0.0"
-    jest-dynalite: "npm:^3.6.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-security@npm:0.0.0, @webiny/api-security@workspace:packages/api-security":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-security@workspace:packages/api-security"
-  dependencies:
-    "@types/jsonwebtoken": "npm:^9.0.10"
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/api-authentication": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-aws": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
-    "@webiny/handler-graphql": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
-    "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/pubsub": "npm:0.0.0"
-    "@webiny/utils": "npm:0.0.0"
-    "@webiny/wcp": "npm:0.0.0"
-    deep-equal: "npm:^2.2.3"
-    jose: "npm:^5.10.0"
-    jsonwebtoken: "npm:^9.0.2"
-    minimatch: "npm:^5.1.6"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-    zod: "npm:^3.25.76"
   languageName: unknown
   linkType: soft
 
@@ -15316,98 +15078,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-tenancy-so-ddb@npm:0.0.0, @webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-tenancy-so-ddb@workspace:packages/api-tenancy-so-ddb"
-  dependencies:
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/aws-sdk": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/project-utils": "npm:0.0.0"
-    jest-dynalite: "npm:^3.6.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-tenancy@npm:0.0.0, @webiny/api-tenancy@workspace:packages/api-tenancy":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-tenancy@workspace:packages/api-tenancy"
-  dependencies:
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-db": "npm:0.0.0"
-    "@webiny/handler-graphql": "npm:0.0.0"
-    "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/pubsub": "npm:0.0.0"
-    "@webiny/utils": "npm:0.0.0"
-    dataloader: "npm:^2.2.3"
-    jest-dynalite: "npm:^3.6.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-tenant-manager@npm:0.0.0, @webiny/api-tenant-manager@workspace:packages/api-tenant-manager":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-tenant-manager@workspace:packages/api-tenant-manager"
-  dependencies:
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/handler": "npm:0.0.0"
-    "@webiny/handler-aws": "npm:0.0.0"
-    "@webiny/handler-graphql": "npm:0.0.0"
-    "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/utils": "npm:0.0.0"
-    jest-dynalite: "npm:^3.6.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-wcp@npm:0.0.0, @webiny/api-wcp@workspace:packages/api-wcp":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-wcp@workspace:packages/api-wcp"
-  dependencies:
-    "@webiny/api": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
-    "@webiny/feature": "npm:0.0.0"
-    "@webiny/handler-graphql": "npm:0.0.0"
-    "@webiny/wcp": "npm:0.0.0"
-    jest-dynalite: "npm:^3.6.1"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-website-builder@npm:0.0.0, @webiny/api-website-builder@workspace:packages/api-website-builder":
   version: 0.0.0-use.local
   resolution: "@webiny/api-website-builder@workspace:packages/api-website-builder"
   dependencies:
     "@webiny/api": "npm:0.0.0"
-    "@webiny/api-admin-settings": "npm:0.0.0"
-    "@webiny/api-admin-users": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-i18n-ddb": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-security-so-ddb": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-tenancy-so-ddb": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
@@ -15431,11 +15110,8 @@ __metadata:
   resolution: "@webiny/api-websockets@workspace:packages/api-websockets"
   dependencies:
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
@@ -15461,12 +15137,11 @@ __metadata:
   resolution: "@webiny/api-workflows@workspace:packages/api-workflows"
   dependencies:
     "@webiny/api": "npm:0.0.0"
-    "@webiny/api-admin-users": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
@@ -15488,7 +15163,7 @@ __metadata:
   dependencies:
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di-container": "npm:0.0.0"
+    "@webiny/di": "npm:^0.1.1"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -15551,13 +15226,10 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-serverless-cms": "npm:0.0.0"
-    "@webiny/app-tenant-manager": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
-    "@webiny/validation": "npm:0.0.0"
     apollo-client: "npm:^2.6.10"
     apollo-link-context: "npm:^1.0.20"
     emotion: "npm:10.0.27"
@@ -15611,13 +15283,10 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-serverless-cms": "npm:0.0.0"
-    "@webiny/app-tenant-manager": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
-    "@webiny/validation": "npm:0.0.0"
     apollo-client: "npm:^2.6.10"
     apollo-link-context: "npm:^1.0.20"
     emotion: "npm:10.0.27"
@@ -15714,7 +15383,8 @@ __metadata:
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di-container": "npm:0.0.0"
+    "@webiny/di": "npm:^0.1.1"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/lexical-editor": "npm:0.0.0"
@@ -15726,6 +15396,7 @@ __metadata:
     "@webiny/telemetry": "npm:0.0.0"
     "@webiny/ui": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
+    "@webiny/validation": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     apollo-cache: "npm:^1.3.5"
     apollo-client: "npm:^2.6.10"
@@ -15839,7 +15510,6 @@ __metadata:
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-headless-cms": "npm:0.0.0"
     "@webiny/app-headless-cms-common": "npm:0.0.0"
-    "@webiny/app-i18n": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-websockets": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -15891,7 +15561,6 @@ __metadata:
     "@emotion/styled": "npm:11.10.6"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-i18n": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
@@ -16026,7 +15695,6 @@ __metadata:
     "@webiny/app-graphql-playground": "npm:0.0.0"
     "@webiny/app-headless-cms-common": "npm:0.0.0"
     "@webiny/app-headless-cms-scheduler": "npm:0.0.0"
-    "@webiny/app-i18n": "npm:0.0.0"
     "@webiny/app-plugin-admin-welcome-screen": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-trash-bin": "npm:0.0.0"
@@ -16073,35 +15741,6 @@ __metadata:
     use-deep-compare-effect: "npm:^1.8.1"
     vitest: "npm:^3.2.4"
     zod: "npm:^3.25.76"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/app-i18n@npm:0.0.0, @webiny/app-i18n@workspace:packages/app-i18n":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-i18n@workspace:packages/app-i18n"
-  dependencies:
-    "@apollo/react-hooks": "npm:^3.1.5"
-    "@types/react": "npm:18.2.79"
-    "@webiny/app": "npm:0.0.0"
-    "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-security": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/form": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
-    "@webiny/ui": "npm:0.0.0"
-    "@webiny/validation": "npm:0.0.0"
-    apollo-cache: "npm:^1.3.5"
-    apollo-client: "npm:^2.6.10"
-    apollo-link: "npm:^1.2.14"
-    apollo-link-context: "npm:^1.0.20"
-    apollo-utilities: "npm:^1.3.4"
-    graphql: "npm:^16.11.0"
-    graphql-tag: "npm:^2.12.6"
-    prop-types: "npm:^15.8.1"
-    react: "npm:18.2.0"
-    react-dom: "npm:18.2.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
 
@@ -16235,12 +15874,10 @@ __metadata:
     "@webiny/app-headless-cms": "npm:0.0.0"
     "@webiny/app-headless-cms-scheduler": "npm:0.0.0"
     "@webiny/app-headless-cms-workflows": "npm:0.0.0"
-    "@webiny/app-i18n": "npm:0.0.0"
     "@webiny/app-mailer": "npm:0.0.0"
     "@webiny/app-record-locking": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-security-access-management": "npm:0.0.0"
-    "@webiny/app-tenant-manager": "npm:0.0.0"
     "@webiny/app-trash-bin": "npm:0.0.0"
     "@webiny/app-website-builder": "npm:0.0.0"
     "@webiny/app-websockets": "npm:0.0.0"
@@ -16253,36 +15890,6 @@ __metadata:
     apollo-link: "npm:^1.2.14"
     apollo-link-batch-http: "npm:^1.2.14"
     apollo-utilities: "npm:^1.3.4"
-    react: "npm:18.2.0"
-    react-dom: "npm:18.2.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/app-tenant-manager@npm:0.0.0, @webiny/app-tenant-manager@workspace:packages/app-tenant-manager":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-tenant-manager@workspace:packages/app-tenant-manager"
-  dependencies:
-    "@apollo/react-hooks": "npm:^3.1.5"
-    "@types/react": "npm:18.2.79"
-    "@webiny/admin-ui": "npm:0.0.0"
-    "@webiny/app": "npm:0.0.0"
-    "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-security": "npm:0.0.0"
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/form": "npm:0.0.0"
-    "@webiny/icons": "npm:0.0.0"
-    "@webiny/ui": "npm:0.0.0"
-    "@webiny/validation": "npm:0.0.0"
-    apollo-cache: "npm:^1.3.5"
-    apollo-client: "npm:^2.6.10"
-    apollo-link: "npm:^1.2.14"
-    apollo-utilities: "npm:^1.3.4"
-    graphql: "npm:^16.11.0"
-    graphql-tag: "npm:^2.12.6"
-    lodash: "npm:^4.17.21"
-    prop-types: "npm:^15.8.1"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"
@@ -16356,7 +15963,6 @@ __metadata:
     "@webiny/app-aco": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-headless-cms-common": "npm:0.0.0"
-    "@webiny/app-i18n": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-utils": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -16407,7 +16013,6 @@ __metadata:
   dependencies:
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-i18n": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -16458,7 +16063,7 @@ __metadata:
     "@types/universal-router": "npm:^8.0.0"
     "@types/warning": "npm:^3.0.3"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di-container": "npm:0.0.0"
+    "@webiny/di": "npm:^0.1.1"
     "@webiny/i18n": "npm:0.0.0"
     "@webiny/i18n-react": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
@@ -16609,7 +16214,7 @@ __metadata:
     "@types/listr": "npm:^0.14.9"
     "@types/lodash": "npm:4.17.20"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di-container": "npm:0.0.0"
+    "@webiny/di": "npm:^0.1.1"
     "@webiny/logger": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
@@ -16727,16 +16332,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/di-container@npm:0.0.0, @webiny/di-container@workspace:packages/di-container":
-  version: 0.0.0-use.local
-  resolution: "@webiny/di-container@workspace:packages/di-container"
+"@webiny/di@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "@webiny/di@npm:0.1.1"
   dependencies:
-    "@webiny/build-tools": "npm:0.0.0"
     reflect-metadata: "npm:^0.2.2"
-    typescript: "npm:5.9.3"
-    vitest: "npm:^3.2.4"
-  languageName: unknown
-  linkType: soft
+  checksum: 10/d24114b5f1c70a31494177438d2b5bc2b4ff55d087d9bc79972846ddfbf4d01173baa610d59bacc5393e56f37adbc80f9e312805bfd8c534c2b4948659168d47
+  languageName: node
+  linkType: hard
 
 "@webiny/error@npm:0.0.0, @webiny/error@workspace:packages/error":
   version: 0.0.0-use.local
@@ -16776,7 +16379,7 @@ __metadata:
   resolution: "@webiny/feature@workspace:packages/feature"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di-container": "npm:0.0.0"
+    "@webiny/di": "npm:^0.1.1"
     typescript: "npm:5.9.3"
   languageName: unknown
   linkType: soft
@@ -16892,6 +16495,7 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler-client": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
@@ -17081,7 +16685,6 @@ __metadata:
     "@webiny/logger": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
-    "@webiny/tasks": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     elastic-ts: "npm:^0.12.0"
     jest-dynalite: "npm:^3.6.1"
@@ -17114,12 +16717,11 @@ __metadata:
     "@types/lodash": "npm:4.17.20"
     "@types/ncp": "npm:^2.0.8"
     "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/api-admin-users": "npm:0.0.0"
-    "@webiny/api-admin-users-so-ddb": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
     "@webiny/api-background-tasks-ddb": "npm:0.0.0"
-    "@webiny/api-background-tasks-es": "npm:0.0.0"
     "@webiny/api-background-tasks-os": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
+    "@webiny/api-core-ddb": "npm:0.0.0"
     "@webiny/api-dynamodb-to-elasticsearch": "npm:0.0.0"
     "@webiny/api-elasticsearch": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
@@ -17133,18 +16735,10 @@ __metadata:
     "@webiny/api-headless-cms-tasks": "npm:0.0.0"
     "@webiny/api-headless-cms-tasks-ddb-es": "npm:0.0.0"
     "@webiny/api-headless-cms-workflows": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-i18n-ddb": "npm:0.0.0"
     "@webiny/api-log": "npm:0.0.0"
     "@webiny/api-mailer": "npm:0.0.0"
     "@webiny/api-record-locking": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
     "@webiny/api-security-cognito": "npm:0.0.0"
-    "@webiny/api-security-so-ddb": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-tenancy-so-ddb": "npm:0.0.0"
-    "@webiny/api-tenant-manager": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
@@ -17157,7 +16751,7 @@ __metadata:
     "@webiny/cli-core": "npm:0.0.0"
     "@webiny/data-migration": "npm:0.0.0"
     "@webiny/db-dynamodb": "npm:0.0.0"
-    "@webiny/di-container": "npm:0.0.0"
+    "@webiny/di": "npm:^0.1.1"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-db": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
@@ -17218,7 +16812,7 @@ __metadata:
     "@types/read-json-sync": "npm:^2.0.3"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/di-container": "npm:0.0.0"
+    "@webiny/di": "npm:^0.1.1"
     "@webiny/global-config": "npm:0.0.0"
     "@webiny/logger": "npm:0.0.0"
     "@webiny/pulumi-sdk": "npm:0.0.0"
@@ -17376,11 +16970,8 @@ __metadata:
   resolution: "@webiny/tasks@workspace:packages/tasks"
   dependencies:
     "@webiny/api": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
@@ -17422,21 +17013,15 @@ __metadata:
   dependencies:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-aco": "npm:0.0.0"
-    "@webiny/api-admin-users": "npm:0.0.0"
-    "@webiny/api-admin-users-so-ddb": "npm:0.0.0"
     "@webiny/api-audit-logs": "npm:0.0.0"
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/api-headless-cms-aco": "npm:0.0.0"
     "@webiny/api-headless-cms-tasks": "npm:0.0.0"
-    "@webiny/api-i18n": "npm:0.0.0"
-    "@webiny/api-i18n-content": "npm:0.0.0"
     "@webiny/api-log": "npm:0.0.0"
     "@webiny/api-mailer": "npm:0.0.0"
     "@webiny/api-record-locking": "npm:0.0.0"
-    "@webiny/api-security": "npm:0.0.0"
-    "@webiny/api-tenancy": "npm:0.0.0"
-    "@webiny/api-wcp": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
@@ -17751,13 +17336,6 @@ __metadata:
   version: 2.0.1
   resolution: "abstract-logging@npm:2.0.1"
   checksum: 10/6967d15e5abbafd17f56eaf30ba8278c99333586fa4f7935fd80e93cfdc006c37fcc819c5d63ee373a12e6cb2d0417f7c3c6b9e42b957a25af9937d26749415e
-  languageName: node
-  linkType: hard
-
-"accept-language-parser@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "accept-language-parser@npm:1.5.0"
-  checksum: 10/9d8dd3e2db701ee4de4a68b77e05c0413e234d37311c9f7784c309228871e8317389d20c6f2317fb95d5c3529c2de5add4850c88b2253c6fa9079e4c660ec3c8
   languageName: node
   linkType: hard
 
@@ -24920,6 +24498,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"globrex@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "globrex@npm:0.1.2"
+  checksum: 10/81ce62ee6f800d823d6b7da7687f841676d60ee8f51f934ddd862e4057316d26665c4edc0358d4340a923ac00a514f8b67c787e28fe693aae16350f4e60d55e9
+  languageName: node
+  linkType: hard
+
 "glur@npm:^1.1.2":
   version: 1.1.2
   resolution: "glur@npm:1.1.2"
@@ -25607,15 +25192,6 @@ __metadata:
   version: 1.2.0
   resolution: "hyperdyperid@npm:1.2.0"
   checksum: 10/64abb5568ff17aa08ac0175ae55e46e22831c5552be98acdd1692081db0209f36fff58b31432017b4e1772c178962676a2cc3c54e4d5d7f020d7710cec7ad7a6
-  languageName: node
-  linkType: hard
-
-"i18n-locales@npm:^0.0.5":
-  version: 0.0.5
-  resolution: "i18n-locales@npm:0.0.5"
-  dependencies:
-    "@ladjs/country-language": "npm:^0.2.1"
-  checksum: 10/512c4eb2b6555eb71eb029cab9f7aa944d0b306713df57a372296ef8abb7d3d3f467da871fe4e218f20f447cbfee1724239bf25f56d4b5689e73250c6ab2e99e
   languageName: node
   linkType: hard
 
@@ -33580,6 +33156,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^8.46.0"
     "@vitest/coverage-v8": "npm:^3.2.4"
     "@vitest/eslint-plugin": "npm:^1.3.16"
+    "@webiny/di": "npm:^0.1.1"
     adio: "npm:^2.0.1"
     axios: "npm:^1.12.2"
     babel-loader: "npm:^10.0.0"
@@ -33633,6 +33210,7 @@ __metadata:
     typescript: "npm:5.9.3"
     typescript-transform-paths: "npm:^3.5.5"
     verdaccio: "npm:^6.2.0"
+    vite-tsconfig-paths: "npm:^5.1.4"
     vitest: "npm:^3.2.4"
     write-json-file: "npm:^4.3.0"
     yargs: "npm:^17.7.2"
@@ -35992,6 +35570,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tsconfck@npm:^3.0.3":
+  version: 3.1.6
+  resolution: "tsconfck@npm:3.1.6"
+  peerDependencies:
+    typescript: ^5.0.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  bin:
+    tsconfck: bin/tsconfck.js
+  checksum: 10/8574595286850273bf83319b4e67ca760088df3c36f7ca1425aaf797416672e854271bd31e75c9b3e1836ed5b66410c6bc38cbbda9c638a5416c6a682ed94132
+  languageName: node
+  linkType: hard
+
 "tsconfig-paths@npm:^3.15.0":
   version: 3.15.0
   resolution: "tsconfig-paths@npm:3.15.0"
@@ -36377,26 +35969,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"underscore.deep@npm:~0.5.1":
-  version: 0.5.3
-  resolution: "underscore.deep@npm:0.5.3"
-  peerDependencies:
-    underscore: 1.x
-  checksum: 10/a5c86af663e21929f91a92d365adb450f23788e897c5a687e8b15231986b08522878b8fab0f851fbc6343c261165164f638e31d1c8405820254022f1ef826e54
-  languageName: node
-  linkType: hard
-
 "underscore@npm:1.13.1":
   version: 1.13.1
   resolution: "underscore@npm:1.13.1"
   checksum: 10/71bec536cb8068edc94f55560e0512e7b5d892631eabc9078925fb0685dc1b183c1783d0936a9ba327a82c83380b1a1d53f385a91f739c3ee63ffedb8e5e40e2
-  languageName: node
-  linkType: hard
-
-"underscore@npm:~1.13.1":
-  version: 1.13.7
-  resolution: "underscore@npm:1.13.7"
-  checksum: 10/1ce3368dbe73d1e99678fa5d341a9682bd27316032ad2de7883901918f0f5d50e80320ccc543f53c1862ab057a818abc560462b5f83578afe2dd8dd7f779766c
   languageName: node
   linkType: hard
 
@@ -36964,6 +36540,22 @@ __metadata:
   bin:
     vite-node: vite-node.mjs
   checksum: 10/343244ecabbab3b6e1a3065dabaeefa269965a7a7c54652d4b7a7207ee82185e887af97268c61755dcb2dd6a6ce5d9e114400cbd694229f38523e935703cc62f
+  languageName: node
+  linkType: hard
+
+"vite-tsconfig-paths@npm:^5.1.4":
+  version: 5.1.4
+  resolution: "vite-tsconfig-paths@npm:5.1.4"
+  dependencies:
+    debug: "npm:^4.1.1"
+    globrex: "npm:^0.1.2"
+    tsconfck: "npm:^3.0.3"
+  peerDependencies:
+    vite: "*"
+  peerDependenciesMeta:
+    vite:
+      optional: true
+  checksum: 10/b409dbd17829f560021a71dba3e473b9c06dcf5fdc9d630b72c1f787145ec478b38caff1be04868971ac8bdcbf0f5af45eeece23dbc9c59c54b901f867740ae0
   languageName: node
   linkType: hard
 
