@@ -15,7 +15,7 @@ export const adminExtension = defineExtension({
         });
     },
     async build(params, ctx) {
-        const extensionsTsxFilePath = ctx.project.paths.workspacesFolder
+        const extensionsTsxFilePath = ctx.project.paths.workspaceFolder
             .join("apps", "admin", "src", "Extensions.tsx")
             .toString();
 

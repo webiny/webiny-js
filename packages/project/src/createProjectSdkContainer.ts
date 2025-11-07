@@ -207,7 +207,6 @@ export const createProjectSdkContainer = async (
 
     // Initialize project SDK.
     container.resolve(ProjectSdkParamsService).set(params);
-    const project = container.resolve(GetProject).execute();
 
     await container.resolve(BuildProjectWorkspaceService).execute();
 
@@ -216,6 +215,8 @@ export const createProjectSdkContainer = async (
     });
 
     await container.resolve(ValidateProjectConfig).execute(projectExtensions);
+
+    const project = container.resolve(GetProject).execute();
 
     const importFromPath = (filePath: string) => {
         let importPath = filePath;

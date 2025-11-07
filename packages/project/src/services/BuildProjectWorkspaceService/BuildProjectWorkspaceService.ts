@@ -11,7 +11,6 @@ export class DefaultBuildProjectWorkspaceService implements BuildProjectWorkspac
     async execute() {
         const templatesFolderPath = getTemplatesFolderPath();
 
-        // 1. Copy internal webiny.config.internal.tsx
         const webinyConfigBaseTemplateFilePath = path.join(
             templatesFolderPath,
             "webiny.config.base.tsx"
