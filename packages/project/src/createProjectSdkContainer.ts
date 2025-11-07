@@ -46,6 +46,7 @@ import {
 } from "./features/index.js";
 
 import {
+    getAppService,
     buildAppWorkspaceService,
     getAppPackagesService,
     getCwdService,
@@ -126,6 +127,7 @@ export const createProjectSdkContainer = async (
     const container = new Container();
 
     // Services.
+    container.register(getAppService).inSingletonScope();
     container.register(buildAppWorkspaceService).inSingletonScope();
     container.register(getAppPackagesService).inSingletonScope();
     container.register(getCwdService).inSingletonScope();
