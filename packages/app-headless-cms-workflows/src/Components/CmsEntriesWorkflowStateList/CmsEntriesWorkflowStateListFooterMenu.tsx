@@ -9,37 +9,31 @@ import { useApolloClient } from "@apollo/react-hooks";
 
 const { Footer } = Components.Sidebar;
 
-interface IWorkflowStateListButtonProps {
-    onClick: () => void;
-}
-
-export const WorkflowStateListButton = (props: IWorkflowStateListButtonProps) => {
-    return (
-        <div className={"list-none"}>
-            <Sidebar.Item
-                onClick={props.onClick}
-                text={"Workflow States"}
-                icon={
-                    <Sidebar.Item.Icon
-                        element={<WorkflowStateListIcon />}
-                        label={"Workflow States"}
-                    />
-                }
-            />
-        </div>
-    );
-};
-
 export const CmsEntriesWorkflowStateListFooterMenu = Footer.createDecorator(Original => {
     return function CmsEntriesWorkflowStateListFooterMenu(props) {
         const { contentModel: model } = useContentEntries();
         const client = useApolloClient();
+        
+        const app = createAppName(model);
 
         return (
             <Original {...props}>
-                <WorkflowStateListAppOverlay client={client} app={createAppName(model)}>
+                <WorkflowStateListAppOverlay client={client} app={app}>
                     {({ showOverlay }) => {
-                        return <WorkflowStateListButton onClick={showOverlay} />;
+                        return (
+                            <div className={"list-none"}>
+                                <Sidebar.Item
+                                    onClick={showOverlay}
+                                    text={"Workflow States"}
+                                    icon={
+                                        <Sidebar.Item.Icon
+                                            element={<WorkflowStateListIcon />}
+                                            label={"Workflow States"}
+                                        />
+                                    }
+                                />
+                            </div>
+                        );
                     }}
                 </WorkflowStateListAppOverlay>
             </Original>

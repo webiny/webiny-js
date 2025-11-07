@@ -36,12 +36,6 @@ export const WorkflowStateListAppOverlay = (props: IWorkflowStateListAppOverlayP
         setShow(prevShow => !prevShow);
     }, []);
 
-    if (!show) {
-        return children({
-            showOverlay: toggle
-        });
-    }
-
     return (
         <WorkflowStateListProvider client={client} where={where}>
             {children({

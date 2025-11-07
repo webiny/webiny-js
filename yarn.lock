@@ -15661,6 +15661,8 @@ __metadata:
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-workflows": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    mobx: "npm:^6.15.0"
+    mobx-react-lite: "npm:^3.4.3"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
