@@ -21,7 +21,7 @@ export class DefaultGetApp implements GetApp.Interface {
 
         const project = this.getProject.execute();
 
-        const workspaceFolderPath = project.paths.workspacesFolder.join("apps", appName).toString();
+        const workspaceFolderPath = project.paths.workspaceFolder.join("apps", appName).toString();
 
         const localPulumiStateFilesFolderPath = project.paths.localPulumiStateFilesFolder
             .join("apps", appName)

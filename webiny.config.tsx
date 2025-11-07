@@ -1,15 +1,12 @@
 import React from "react";
 // Note: in a real project, these would be imported from `@webiny/extensions`
-import { Admin, Cli, Webiny, Infra } from "./packages/project-aws/dist/index.js";
+import { Admin, Cli, Infra } from "./packages/project-aws/dist/index.js";
 
 // import { Okta } from "@webiny/okta";
 
 export default () => {
     return (
         <>
-            {/*Webiny AWS built-in extensions. Always here, must not be removed.*/}
-            <Webiny />
-
             {/* Cloud infrastructure related extensions. All within the `Infra.` namespace. */}
             {/* For some of the extensions, we expect the user to be familiar with the
             Core, API, and Admin Pulumi apps that we deploy by default. */}

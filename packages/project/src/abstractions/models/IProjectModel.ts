@@ -5,9 +5,10 @@ export interface IProjectModelDto {
     version: string;
     paths: {
         webinyConfigFile: IPathModelDto;
+        webinyConfigBaseFile: IPathModelDto;
         rootFolder: IPathModelDto;
         dotWebinyFolder: IPathModelDto;
-        workspacesFolder: IPathModelDto;
+        workspaceFolder: IPathModelDto;
         localPulumiStateFilesFolder: IPathModelDto;
         tsConfigFile: IPathModelDto;
     };
@@ -18,9 +19,10 @@ export interface IProjectModel {
     version: string;
     paths: {
         webinyConfigFile: IPathModel;
+        webinyConfigBaseFile: IPathModel;
         rootFolder: IPathModel;
         dotWebinyFolder: IPathModel;
-        workspacesFolder: IPathModel;
+        workspaceFolder: IPathModel;
         localPulumiStateFilesFolder: IPathModel;
         tsConfigFile: IPathModel;
     };
