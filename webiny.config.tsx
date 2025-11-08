@@ -7,19 +7,31 @@ import { Admin, Cli, Infra, Project } from "./packages/webiny/dist/extensions/in
 export default () => {
     return (
         <>
-            <Project.Telemetry enabled={false} />
+
+            {/* Infra 👇 */}
+            <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
+            <Infra.ProductionEnvironments environments={["prod", "staging"]} />
+            <Infra.Core.Pulumi src={"./extensions/MyCorePulumiHandler.ts"} />
+            <Infra.Vpc enabled={false} />
+            <Infra.OpenSearch enabled={false} />
+            <Infra.AwsTags tags={{ OWNER: "me", PROJECT: "my-project" }} />
+            <Infra.AwsTags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
+
+            {/* CLI 👇 */}
             <Cli.Command src={"./extensions/MyCustomCommand.ts"} />
+
+            {/* Project 👇 */}
+            <Project.Telemetry enabled={false} />
+
             {/*<Security.ApiKeyBeforeCreate src={"./extensions/ApiKeyBeforeCreate.ts"} />*/}
 
             {/* Cloud infrastructure related extensions. All within the `Infra.` namespace. */}
-            <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
-            <Infra.ProductionEnvironments environments={["prod", "staging"]} />
+
             {/*<Infra.Api.BeforeDeploy src={"./extensions/myApiBeforeDeploy.ts"} />*/}
             {/*<Infra.Api.BeforeBuild src={"./extensions/myApiBeforeBuild.ts"} />*/}
             {/*<Infra.Api.AfterDeploy src={"./extensions/myApiAfterDeploy.ts"} />*/}
             {/*<Infra.Api.AfterBuild src={"./extensions/myApiAfterBuild.ts"} />*/}
 
-            {/*<Infra.Core.Pulumi src={"./extensions/myCorePulumiHandler2.ts"} />*/}
 
             {/*<Infra.Admin.CustomDomains*/}
             {/*    domains={["my.domain.com"]}*/}
@@ -54,13 +66,7 @@ export default () => {
             {/*    ]}*/}
             {/*/>*/}
 
-            <Infra.Vpc enabled={false} />
-            <Infra.OpenSearch enabled={false} />
-            <Infra.AwsTags tags={{ OWNER: "me", PROJECT: "my-project" }} />
-            <Infra.AwsTags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
 
-            {/* Adding custom CLI commands. These are pretty straight-forward/ */}
-            <Cli.Command src={"./extensions/myCustomCommand.ts"} />
 
             {/* App (Backend/Admin) related extensions. */}
             {/* Notice the `Admin.` and `Backend.` namespaces. These are the prefixes

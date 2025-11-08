@@ -19,5 +19,8 @@ export {
     // Pulumi.
     CorePulumi,
     ApiPulumi,
-    AdminPulumi
+    AdminPulumi,
+
+    UiService,
+    LoggerService,
 } from "@webiny/project/abstractions/index.js";
