@@ -100,7 +100,7 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
                 scopesFilter: tagsFilters,
                 extensionsTypes
             },
-            `Hydrating project project config...`
+            `Hydrating project config...`
         );
 
         return extensionsTypes.reduce<IHydratedProjectConfig>(
