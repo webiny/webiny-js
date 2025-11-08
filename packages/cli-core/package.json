@@ -16,7 +16,6 @@
     "@webiny/pulumi-sdk": "0.0.0",
     "@webiny/telemetry": "0.0.0",
     "chalk": "^4.1.2",
-    "dotenv": "^8.6.0",
     "execa": "^5.1.1",
     "find-up": "^5.0.0",
     "get-yarn-workspaces": "1.0.2",

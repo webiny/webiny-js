@@ -8,41 +8,54 @@ import findUp from "find-up";
 const DEFAULT_LOG_LEVEL = "info";
 
 export class DefaultLoggerService implements LoggerService.Interface {
-    pinoLogger: Logger;
+    pinoLogger: Logger | null = null;
 
-    constructor() {
+    trace(message?: any, ...optionalParams: any[]) {
+        const logger = this.getLogger();
+        logger.trace(message, ...optionalParams);
+    }
+
+    fatal(message?: any, ...optionalParams: any[]) {
+        const logger = this.getLogger();
+        logger.fatal(message, ...optionalParams);
+    }
+
+    debug(message?: any, ...optionalParams: any[]) {
+        const logger = this.getLogger();
+        logger.debug(message, ...optionalParams);
+    }
+
+    info(message?: any, ...optionalParams: any[]) {
+        const logger = this.getLogger();
+        logger.info(message, ...optionalParams);
+    }
+
+    warn(message?: any, ...optionalParams: any[]) {
+        const logger = this.getLogger();
+        logger.warn(message, ...optionalParams);
+    }
+
+    error(message?: any, ...optionalParams: any[]) {
+        const logger = this.getLogger();
+        logger.error(message, ...optionalParams);
+    }
+
+    log(message?: any, ...optionalParams: any[]) {
+        const logger = this.getLogger();
+        logger.info(message, ...optionalParams);
+    }
+
+    private getLogger() {
+        if (this.pinoLogger) {
+            return this.pinoLogger;
+        }
+
         const logStream = this.getLogStream();
 
         const level = process.env.LOG_LEVEL || DEFAULT_LOG_LEVEL;
         this.pinoLogger = baseCreatePinoLogger({ level }, logStream);
-    }
 
-    trace(message?: any, ...optionalParams: any[]) {
-        this.pinoLogger.trace(message, ...optionalParams);
-    }
-
-    fatal(message?: any, ...optionalParams: any[]) {
-        this.pinoLogger.fatal(message, ...optionalParams);
-    }
-
-    debug(message?: any, ...optionalParams: any[]) {
-        this.pinoLogger.debug(message, ...optionalParams);
-    }
-
-    info(message?: any, ...optionalParams: any[]) {
-        this.pinoLogger.info(message, ...optionalParams);
-    }
-
-    warn(message?: any, ...optionalParams: any[]) {
-        this.pinoLogger.warn(message, ...optionalParams);
-    }
-
-    error(message?: any, ...optionalParams: any[]) {
-        this.pinoLogger.error(message, ...optionalParams);
-    }
-
-    log(message?: any, ...optionalParams: any[]) {
-        this.pinoLogger.info(message, ...optionalParams);
+        return this.pinoLogger;
     }
 
     private getLogStream() {
