@@ -54,7 +54,6 @@ export default () => {
 
             <Infra.Vpc enabled={false} />
             <Infra.OpenSearch enabled={false} />
-            <Infra.ElasticSearch enabled={false} />
             <Infra.AwsTags tags={{ OWNER: "me", PROJECT: "my-project" }} />
             <Infra.AwsTags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
 

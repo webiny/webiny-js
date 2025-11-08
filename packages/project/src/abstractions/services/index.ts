@@ -12,6 +12,7 @@ export { ListAppLambdaFunctionsService } from "./ListAppLambdaFunctionsService.j
 export { ListDeployedEnvironmentsService } from "./ListDeployedEnvironmentsService.js";
 export { ListPackagesInAppWorkspaceService } from "./ListPackagesInAppWorkspaceService.js";
 export { ListPackagesService } from "./ListPackagesService.js";
+export { LoadEnvVarsService } from "./LoadEnvVarsService.js";
 export { LocalStorageService } from "./LocalStorageService.js";
 export { LoggerService } from "./LoggerService.js";
 export { ProjectSdkParamsService } from "./ProjectSdkParamsService.js";
