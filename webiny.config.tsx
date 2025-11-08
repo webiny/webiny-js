@@ -8,7 +8,7 @@ export default () => {
     return (
         <>
             {/* Admin 👇 */}
-            <Admin.Extension src={"./extensions/MyAdminExtension.tsx"} />
+            <Admin.Extension src={"./extensions/AdminLogo.tsx"} />
 
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
