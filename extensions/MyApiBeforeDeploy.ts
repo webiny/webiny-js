@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { ApiBeforeDeploy, UiService } from "@webiny/extensions/project";
+import { ApiBeforeDeploy, UiService } from "webiny/infra";
 
 class MyApiBeforeDeploy implements ApiBeforeDeploy.Interface {
     constructor(private ui: UiService.Interface) {}
