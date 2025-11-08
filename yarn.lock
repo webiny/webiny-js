@@ -16350,18 +16350,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/extensions@workspace:packages/extensions":
-  version: 0.0.0-use.local
-  resolution: "@webiny/extensions@workspace:packages/extensions"
-  dependencies:
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/project-aws": "npm:0.0.0"
-    "@webiny/react-properties": "npm:0.0.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
 "@webiny/feature-flags@npm:0.0.0, @webiny/feature-flags@workspace:packages/feature-flags":
   version: 0.0.0-use.local
   resolution: "@webiny/feature-flags@workspace:packages/feature-flags"
@@ -36775,6 +36763,20 @@ __metadata:
   checksum: 10/4c4f65472c010eddbe648c11b977d048dd96956a625f7f8b9d64e1b30c3c1f23ea1acfd654648426ce5c743c2108a5a757c0592f02902cf7367adb7d14e67721
   languageName: node
   linkType: hard
+
+"webiny@workspace:packages/webiny":
+  version: 0.0.0-use.local
+  resolution: "webiny@workspace:packages/webiny"
+  dependencies:
+    "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/cli-core": "npm:0.0.0"
+    "@webiny/project": "npm:0.0.0"
+    "@webiny/project-aws": "npm:0.0.0"
+    "@webiny/react-properties": "npm:0.0.0"
+    rimraf: "npm:^6.0.1"
+    typescript: "npm:5.9.3"
+  languageName: unknown
+  linkType: soft
 
 "webpack-dev-middleware@npm:^6.1.2":
   version: 6.1.3
