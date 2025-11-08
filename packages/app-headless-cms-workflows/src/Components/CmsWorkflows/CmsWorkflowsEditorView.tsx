@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { AdminConfig, useRoute, useRouter } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 import type { IWorkflowApplication } from "@webiny/app-workflows";
-import { Workflows } from "@webiny/app-workflows";
+import { WorkflowsAdmin } from "@webiny/app-workflows";
 import { Icon, Loader } from "@webiny/admin-ui";
 import { useModels, usePermission } from "@webiny/app-headless-cms/admin/hooks/index.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
@@ -12,7 +12,7 @@ import { createAppName } from "~/utils/appName.js";
 
 const { Menu } = AdminConfig;
 
-export const CmsWorkflowsMenu = () => {
+export const CmsWorkflowsEditorMenu = () => {
     const router = useRouter();
     const { canCreateContentModels } = usePermission();
 
@@ -83,5 +83,5 @@ export const CmsWorkflowsEditorView = () => {
         return <Loader size="lg" variant="accent" indeterminate={true} text="Loading..." />;
     }
 
-    return <Workflows apps={apps} onAppClick={onAppClick} app={route.params.app} />;
+    return <WorkflowsAdmin apps={apps} onAppClick={onAppClick} app={route.params.app} />;
 };

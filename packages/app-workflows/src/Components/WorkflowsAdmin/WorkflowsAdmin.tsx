@@ -1,13 +1,13 @@
 import React from "react";
-import type { IWorkflowsViewProps } from "./WorkflowsView.js";
-import { WorkflowsView } from "./WorkflowsView.js";
+import type { IWorkflowsAdminViewProps } from "./WorkflowsAdminView.js";
+import { WorkflowsAdminView } from "./WorkflowsAdminView.js";
 import { Alert } from "@webiny/admin-ui";
 import { useCanUseWorkflows } from "~/hooks/canUseWorkflows.js";
 
 /**
- * Main component which should get used to render Workflows UI.
+ * Main component which should get used to render Workflows Admin UI.
  */
-export const Workflows = (props: IWorkflowsViewProps) => {
+export const WorkflowsAdmin = (props: IWorkflowsAdminViewProps) => {
     const { apps, onAppClick, app } = props;
 
     const canUseWorkflows = useCanUseWorkflows();
@@ -18,5 +18,5 @@ export const Workflows = (props: IWorkflowsViewProps) => {
             </Alert>
         );
     }
-    return <WorkflowsView apps={apps} onAppClick={onAppClick} app={app} />;
+    return <WorkflowsAdminView apps={apps} onAppClick={onAppClick} app={app} />;
 };

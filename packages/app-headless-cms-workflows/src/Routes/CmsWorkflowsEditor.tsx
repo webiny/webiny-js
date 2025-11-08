@@ -3,7 +3,7 @@ import { Routes } from "~/routes.js";
 import Helmet from "react-helmet";
 import {
     CmsWorkflowsEditorView,
-    CmsWorkflowsMenu
+    CmsWorkflowsEditorMenu
 } from "~/Components/CmsWorkflows/CmsWorkflowsEditorView.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { SecureRoute } from "@webiny/app-security/components/index.js";
@@ -47,7 +47,7 @@ export const CmsWorkflowsEditor = () => {
                     </SecureRoute>
                 }
             />
-            <CmsWorkflowsMenu />
+            <CmsWorkflowsEditorMenu />
         </AdminConfig>
     );
 };

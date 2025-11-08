@@ -13,13 +13,13 @@ import {
 } from "@webiny/app-admin";
 import { WorkflowsDataList } from "./WorkflowsDataList.js";
 
-export interface IWorkflowsViewProps {
+export interface IWorkflowsAdminViewProps {
     apps: IWorkflowApplication[];
     app: string | null | undefined;
     onAppClick: (id: string) => void;
 }
 
-export const WorkflowsView = (props: IWorkflowsViewProps) => {
+export const WorkflowsAdminView = (props: IWorkflowsAdminViewProps) => {
     const { apps, app: initialApp, onAppClick } = props;
 
     const app = useMemo(() => {

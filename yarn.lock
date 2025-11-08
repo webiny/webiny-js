@@ -15883,6 +15883,7 @@ __metadata:
     "@webiny/app-trash-bin": "npm:0.0.0"
     "@webiny/app-website-builder": "npm:0.0.0"
     "@webiny/app-websockets": "npm:0.0.0"
+    "@webiny/app-workflows": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/lexical-editor-actions": "npm:0.0.0"
     "@webiny/lexical-theme": "npm:0.0.0"

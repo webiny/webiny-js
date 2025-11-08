@@ -20,6 +20,7 @@
     { "path": "../app-trash-bin" },
     { "path": "../app-website-builder" },
     { "path": "../app-websockets" },
+    { "path": "../app-workflows" },
     { "path": "../lexical-editor-actions" },
     { "path": "../lexical-theme" },
     { "path": "../plugins" }
@@ -73,6 +74,8 @@
       "@webiny/app-website-builder": ["../app-website-builder/src"],
       "@webiny/app-websockets/*": ["../app-websockets/src/*"],
       "@webiny/app-websockets": ["../app-websockets/src"],
+      "@webiny/app-workflows/*": ["../app-workflows/src/*"],
+      "@webiny/app-workflows": ["../app-workflows/src"],
       "@webiny/lexical-editor-actions/*": ["../lexical-editor-actions/src/*"],
       "@webiny/lexical-editor-actions": ["../lexical-editor-actions/src"],
       "@webiny/lexical-theme/*": ["../lexical-theme/src/*"],
