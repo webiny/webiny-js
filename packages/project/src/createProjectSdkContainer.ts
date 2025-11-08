@@ -210,9 +210,8 @@ export const createProjectSdkContainer = async (
 
     // Initialize project SDK.
     container.resolve(ProjectSdkParamsService).set(params);
-
-    await container.resolve(BuildProjectWorkspaceService).execute();
     await container.resolve(LoadEnvVarsService).execute();
+    await container.resolve(BuildProjectWorkspaceService).execute();
 
     const projectExtensions = await container.resolve(GetProjectConfig).execute({
         tags: { runtimeContext: "project" }

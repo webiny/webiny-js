@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { BuildAppWorkspaceService, GetApp } from "~/abstractions/index.js";
+import { BuildAppWorkspaceService, GetApp, LoggerService } from "~/abstractions/index.js";
 
 import path from "path";
 import fs from "fs";
@@ -9,9 +9,13 @@ import { getTemplatesFolderPath } from "~/utils/index.js";
 const wait = () => new Promise(resolve => setTimeout(resolve, 10));
 
 export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService.Interface {
-    constructor(private getApp: GetApp.Interface) {}
+    constructor(
+        private getApp: GetApp.Interface,
+        private loggerService: LoggerService.Interface
+    ) {}
 
     async execute(params: BuildAppWorkspaceService.Params) {
+        this.loggerService.trace("Building app workspace...");
         if (!params.env) {
             throw new Error(`Please specify environment, for example "dev".`);
         }
@@ -49,5 +53,5 @@ export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService
 export const buildAppWorkspaceService = createImplementation({
     abstraction: BuildAppWorkspaceService,
     implementation: DefaultBuildAppWorkspaceService,
-    dependencies: [GetApp]
+    dependencies: [GetApp, LoggerService]
 });

@@ -31,6 +31,11 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
     ): Promise<GetProjectConfigService.Result> {
         const project = this.getProjectService.execute();
 
+        const currentTime = Date.now();
+        this.loggerService.trace(
+            { renderArgs: params.renderArgs, currentTime },
+            `Rendering project config...`
+        );
         const cacheKey = JSON.stringify(params.renderArgs);
         if (!this.cachedRenderedConfigs[cacheKey]) {
             try {
@@ -53,7 +58,15 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
         const renderedConfig = this.cachedRenderedConfigs[cacheKey];
         const hydratedConfig = await this.hydrateConfig(renderedConfig, params);
 
-        return ProjectConfigModel.create(hydratedConfig);
+        const model = ProjectConfigModel.create(hydratedConfig);
+
+        const duration = Date.now() - currentTime;
+        this.loggerService.trace(
+            { currentTime, duration },
+            `Project config rendered and hydrated in ${duration}ms.`
+        );
+
+        return model;
     }
 
     private async hydrateConfig(

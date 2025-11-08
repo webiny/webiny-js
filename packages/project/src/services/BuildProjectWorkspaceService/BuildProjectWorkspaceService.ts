@@ -1,14 +1,22 @@
 import { createImplementation } from "@webiny/di";
-import { BuildProjectWorkspaceService, GetProjectService } from "~/abstractions/index.js";
+import {
+    BuildProjectWorkspaceService,
+    GetProjectService,
+    LoggerService
+} from "~/abstractions/index.js";
 
 import path from "path";
 import fs from "fs";
 import { getTemplatesFolderPath } from "~/utils/index.js";
 
 export class DefaultBuildProjectWorkspaceService implements BuildProjectWorkspaceService.Interface {
-    constructor(private getProjectService: GetProjectService.Interface) {}
+    constructor(
+        private getProjectService: GetProjectService.Interface,
+        private loggerService: LoggerService.Interface
+    ) {}
 
     async execute() {
+        this.loggerService.trace("Building project workspace...");
         const templatesFolderPath = getTemplatesFolderPath();
 
         const webinyConfigBaseTemplateFilePath = path.join(
@@ -28,5 +36,5 @@ export class DefaultBuildProjectWorkspaceService implements BuildProjectWorkspac
 export const buildProjectWorkspaceService = createImplementation({
     abstraction: BuildProjectWorkspaceService,
     implementation: DefaultBuildProjectWorkspaceService,
-    dependencies: [GetProjectService]
+    dependencies: [GetProjectService, LoggerService]
 });

@@ -44,7 +44,7 @@ process.on("unhandledRejection", reason => {
 const { project: projectModelDto } = JSON.parse(process.argv[2]) as RenderConfigParamsDto;
 const project = ProjectModel.fromDto(projectModelDto);
 
-const { default: WebinyConfig } = await import(project.paths.webinyConfigFile.toString());
+const { default: WebinyConfig } = await import(project.paths.webinyConfigBaseFile.toString());
 
 const onChange = debounce((value: any) => {
     sendSuccess(toObject(value));
