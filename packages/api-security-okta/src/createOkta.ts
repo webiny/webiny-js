@@ -1,6 +1,7 @@
-import type { GroupsTeamsAuthorizerConfig } from "@webiny/api-security";
-import { createGroupsTeamsAuthorizer } from "@webiny/api-security";
-import { createExternalIdpAdminUserHooksPlugin } from "@webiny/api-admin-users/createExternalIdpAdminUserHooks.js";
+import { createContextPlugin } from "@webiny/api";
+import type { GroupsTeamsAuthorizerConfig } from "@webiny/api-core/features/security/utils/createGroupsTeamsAuthorizer/listPermissionsFromGroupsAndTeams.js";
+import { createGroupsTeamsAuthorizer } from "@webiny/api-core/features/security/utils/createGroupsTeamsAuthorizer.js";
+import { ExternalIdpUserSyncFeature } from "@webiny/api-core/features/ExternalIdpUserSync";
 import type { AuthenticatorConfig } from "~/createAuthenticator.js";
 import { createAuthenticator } from "~/createAuthenticator.js";
 import { createIdentityType } from "~/createIdentityType.js";
@@ -26,14 +27,15 @@ export const createOkta = <TContext extends Context = Context>(
             getIdentity: config.getIdentity
         }),
         createGroupsTeamsAuthorizer<TContext>({
-            identityType,
-            getGroupSlug: config.getGroupSlug
+            identityType
         }),
         createIdentityType({
             identityType,
             name: graphQLIdentityType
         }),
         extendTenancy(),
-        createExternalIdpAdminUserHooksPlugin()
+        createContextPlugin(context => {
+            ExternalIdpUserSyncFeature.register(context.container);
+        })
     ];
 };

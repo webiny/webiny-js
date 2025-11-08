@@ -101,7 +101,7 @@ export const useGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         invoke,
         identity: params.identity || defaultIdentity,
         tenant: core.tenant,
-        locale: core.locale,
+        handler,
         elasticsearch: elasticsearchClient,
         async introspect() {
             return invoke({ body: { query: getIntrospectionQuery() } });

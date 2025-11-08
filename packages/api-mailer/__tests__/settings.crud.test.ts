@@ -238,11 +238,8 @@ describe("Settings Transporter CRUD", () => {
 
         expect(createResponse).toEqual(null);
         expect(createError).toEqual({
-            message: "Not authorized!",
-            code: "SECURITY_NOT_AUTHORIZED",
-            data: {
-                reason: "Not allowed to update the mailer settings."
-            }
+            message: "Not allowed to update the mailer settings.",
+            code: "NOT_AUTHORIZED"
         });
 
         let updateResponse: any = null;
@@ -262,11 +259,8 @@ describe("Settings Transporter CRUD", () => {
 
         expect(updateResponse).toEqual(null);
         expect(updateError).toEqual({
-            message: "Not authorized!",
-            code: "SECURITY_NOT_AUTHORIZED",
-            data: {
-                reason: "Not allowed to update the mailer settings."
-            }
+            message: "Not allowed to update the mailer settings.",
+            code: "NOT_AUTHORIZED"
         });
     });
 });

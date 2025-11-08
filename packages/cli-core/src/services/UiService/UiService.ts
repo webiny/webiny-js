@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import chalk from "chalk";
 import util from "util";
 import { UiService, StdioService } from "~/abstractions/index.js";

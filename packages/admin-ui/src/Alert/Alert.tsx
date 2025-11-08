@@ -1,36 +1,20 @@
 import * as React from "react";
-import { cva, type VariantProps, cn, makeDecoratable, withStaticProps } from "~/utils.js";
-import { Button, type ButtonProps, IconButton } from "~/Button/index.js";
-import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
-import { ReactComponent as WarningIcon } from "@webiny/icons/warning_amber.svg";
-import { ReactComponent as SuccessIcon } from "@webiny/icons/check_circle.svg";
-import { ReactComponent as XIcon } from "@webiny/icons/close.svg";
-import { Icon } from "~/Icon/index.js";
-
-const VARIANT_ICON_MAP = {
-    info: InfoIcon,
-    success: SuccessIcon,
-    warning: InfoIcon,
-    danger: WarningIcon
-};
-
-const variants = {
-    type: { info: "", success: "", warning: "", danger: "" },
-    variant: { strong: "", subtle: "" }
-};
-
-const DEFAULT_TYPE = "info";
-const DEFAULT_VARIANT = "subtle";
-
-const defaultVariants = {
-    type: DEFAULT_TYPE,
-    variant: DEFAULT_VARIANT
-} as const;
+import { useMemo } from "react";
+import { cn, cva, makeDecoratable, type VariantProps, withStaticProps } from "~/utils.js";
+import { Button, type ButtonProps } from "~/Button/index.js";
+import { AlertIcon } from "./AlertIcon.js";
+import { AlertSwatchBox } from "./AlertSwatchBox.js";
+import { AlertPropsProvider, useAlertProps } from "./AlertPropsProvider.js";
+import { AlertCloseButton } from "./AlertCloseButton.js";
+import { defaultVariants } from "./constants.js";
 
 const alertVariants = cva(
     "flex gap-sm-plus items-start w-full rounded-lg text-md py-sm-extra pl-md pr-sm-plus [&_a]:font-semibold [&_a]:underline",
     {
-        variants,
+        variants: {
+            type: { info: "", success: "", warning: "", danger: "" },
+            variant: { strong: "", subtle: "" }
+        },
         defaultVariants,
         compoundVariants: [
             {
@@ -77,46 +61,19 @@ const alertVariants = cva(
     }
 );
 
-const alertIconVariants = cva("size-md", {
-    variants,
-    defaultVariants,
-    compoundVariants: [
-        { type: "info", variant: "strong", className: "fill-neutral-base" },
-        { type: "info", variant: "subtle", className: "fill-neutral-xstrong" },
-        { type: "success", variant: "strong", className: "fill-neutral-base" },
-        { type: "success", variant: "subtle", className: "fill-success" },
-        { type: "warning", variant: "strong", className: "fill-neutral-xstrong" },
-        { type: "warning", variant: "subtle", className: "fill-warning" },
-        { type: "danger", variant: "strong", className: "fill-neutral-base" },
-        { type: "danger", variant: "subtle", className: "fill-destructive" }
-    ]
-});
-
-const closeButtonVariants = (props: Parameters<typeof alertVariants>[0] = {}) => {
-    const { type = DEFAULT_TYPE, variant = DEFAULT_VARIANT } = props;
-    if (variant === "subtle") {
-        return "ghost";
-    }
-
-    if (type === "warning") {
-        return "ghost";
-    }
-
-    return "ghost-negative";
-};
-
 export interface AlertProps
     extends React.HTMLAttributes<HTMLDivElement>,
         VariantProps<typeof alertVariants> {
     showCloseButton?: boolean;
+    icon?: React.ReactElement | null;
     onClose?: () => void;
     actions?: React.ReactElement<typeof AlertAction>;
+    swatchColor?: string;
+    swatchColorIcon?: boolean;
 }
 
-const AlertContext = React.createContext<Pick<AlertProps, "variant">>({});
-
 const AlertActionBase = (props: ButtonProps) => {
-    const { variant: alertVariant } = React.useContext(AlertContext);
+    const { variant: alertVariant } = useAlertProps();
     return (
         <Button
             text={"Button"}
@@ -129,40 +86,32 @@ const AlertActionBase = (props: ButtonProps) => {
 
 const AlertAction = makeDecoratable("AlertAction", AlertActionBase);
 
-const AlertBase = ({
-    className,
-    type,
-    variant,
-    showCloseButton,
-    onClose,
-    actions,
-    children,
-    ...props
-}: AlertProps) => {
-    const IconComponent = VARIANT_ICON_MAP[type || "info"];
+const AlertBase = (props: AlertProps) => {
+    const { className, type, variant, swatchColor, actions, children, ...rootRestProps } = props;
+
+    const backgroundColor = useMemo(() => {
+        if (!swatchColor) {
+            return;
+        }
+
+        return swatchColor + "66";
+    }, [swatchColor]);
 
     return (
-        <AlertContext.Provider value={{ variant }}>
+        <AlertPropsProvider props={props}>
             <div
                 role="alert"
                 className={cn(alertVariants({ type, variant }), className)}
-                {...props}
+                style={{ backgroundColor }}
+                {...rootRestProps}
             >
-                <div className={"py-xs"}>
-                    <IconComponent className={alertIconVariants({ type, variant })} />
-                </div>
+                <AlertSwatchBox />
+                <AlertIcon />
                 <div className={"grow py-xxs"}>{children}</div>
-                {actions && <div>{actions}</div>}
-                {showCloseButton && (
-                    <IconButton
-                        onClick={onClose}
-                        icon={<Icon icon={<XIcon />} label="Close" />}
-                        size={"sm"}
-                        variant={closeButtonVariants({ type, variant })}
-                    />
-                )}
+                {actions && <div className={"flex gap-sm"}>{actions}</div>}
+                <AlertCloseButton />
             </div>
-        </AlertContext.Provider>
+        </AlertPropsProvider>
     );
 };
 

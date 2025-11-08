@@ -6,6 +6,7 @@ import { setupAssetDelivery } from "./delivery/setupAssetDelivery.js";
 import { createGraphQLSchemaPlugin } from "./graphql/index.js";
 import { applyThreatScanning } from "./enterprise/applyThreatScanning.js";
 import type { FileManagerConfig } from "./createFileManager/types.js";
+import { FileManagerFeature } from "~/features/FileManagerFeature.js";
 
 export * from "./modelModifier/CmsModelModifier.js";
 export * from "./plugins/index.js";
@@ -21,6 +22,8 @@ export const createFileManagerContext = ({
         if (context.wcp.canUseFileManagerThreatDetection()) {
             context.fileManager = applyThreatScanning(context.fileManager);
         }
+
+        FileManagerFeature.register(context.container);
     });
 
     plugin.name = "file-manager.createContext";

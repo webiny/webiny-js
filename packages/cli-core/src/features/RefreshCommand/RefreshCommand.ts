@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { Command, GetProjectSdkService, StdioService } from "~/abstractions/index.js";
 import { ManuallyReportedError } from "~/utils/ManuallyReportedError.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";

@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetProjectConfigService, IsTelemetryEnabled } from "~/abstractions/index.js";
 import { telemetry as telemetryExtension } from "~/extensions/telemetry.js";
 

@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { createPinoLogger as baseCreatePinoLogger, type Logger } from "@webiny/logger";
 import { LoggerService } from "~/abstractions/index.js";
 import * as fs from "node:fs";

@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetApp, GetProjectService, ListPackagesService } from "~/abstractions/index.js";
 import fs from "fs";
 import path from "path";

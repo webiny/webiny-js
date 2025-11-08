@@ -57,54 +57,47 @@ export const createEmptyTrashBinsTask = () => {
                     return;
                 }
 
-                // Reloading locales for the current tenant to ensure the correct data is available before proceeding.
-                await context.i18n.reloadLocales();
+                if (isCloseToTimeout()) {
+                    shouldContinue = true;
+                    return;
+                }
 
-                // Fetch all locales for the tenant.
-                const locales = context.i18n.getLocales();
-                await context.i18n.withEachLocale(locales, async () => {
-                    if (isCloseToTimeout()) {
-                        shouldContinue = true;
-                        return;
-                    }
+                // List all non-private models for the current locale.
+                const models = await context.security.withoutAuthorization(async () =>
+                    (await context.cms.listModels()).filter(m => !m.isPrivate)
+                );
 
-                    // List all non-private models for the current locale.
-                    const models = await context.security.withoutAuthorization(async () =>
-                        (await context.cms.listModels()).filter(m => !m.isPrivate)
-                    );
+                // Process each model to delete trashed entries.
+                for (const model of models) {
+                    const list = createListDeletedEntries(context); // List trashed entries.
+                    const mutation = createDeleteEntry(context); // Mutation to delete entries.
 
-                    // Process each model to delete trashed entries.
-                    for (const model of models) {
-                        const list = createListDeletedEntries(context); // List trashed entries.
-                        const mutation = createDeleteEntry(context); // Mutation to delete entries.
+                    // Query parameters for fetching deleted entries older than a minute ago.
+                    const listEntriesParams = {
+                        where: { deletedOn_lt: calculateDateTimeString() },
+                        limit: 50
+                    };
 
-                        // Query parameters for fetching deleted entries older than a minute ago.
-                        const listEntriesParams = {
-                            where: { deletedOn_lt: calculateDateTimeString() },
-                            limit: 50
-                        };
-
-                        let result;
-                        // Continue deleting entries while there are entries left to delete.
-                        while (
-                            (result = await list.execute(model.modelId, listEntriesParams)) &&
-                            result.meta.totalCount > 0
-                        ) {
+                    let result;
+                    // Continue deleting entries while there are entries left to delete.
+                    while (
+                        (result = await list.execute(model.modelId, listEntriesParams)) &&
+                        result.meta.totalCount > 0
+                    ) {
+                        if (isCloseToTimeout()) {
+                            shouldContinue = true;
+                            break;
+                        }
+                        for (const entry of result.entries) {
                             if (isCloseToTimeout()) {
                                 shouldContinue = true;
                                 break;
                             }
-                            for (const entry of result.entries) {
-                                if (isCloseToTimeout()) {
-                                    shouldContinue = true;
-                                    break;
-                                }
-                                // Delete each entry individually.
-                                await mutation.execute(model, entry.id);
-                            }
+                            // Delete each entry individually.
+                            await mutation.execute(model, entry.id);
                         }
                     }
-                });
+                }
 
                 // If the task isn't continuing, add the tenant to the executed list.
                 if (!shouldContinue) {

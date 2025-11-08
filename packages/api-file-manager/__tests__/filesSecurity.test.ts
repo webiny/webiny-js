@@ -1,7 +1,8 @@
 import { describe, test, expect } from "vitest";
 import { mdbid } from "@webiny/utils";
-import type { SecurityPermission, SecurityIdentity } from "@webiny/api-security/types";
 import useGqlHandler from "~tests/utils/useGqlHandler";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 function createFileMock(prefix = "") {
     const id = mdbid();
@@ -25,7 +26,7 @@ const NOT_AUTHORIZED_RESPONSE = (operation: string) => ({
             [operation]: {
                 data: null,
                 error: {
-                    code: "SECURITY_NOT_AUTHORIZED",
+                    code: "NOT_AUTHORIZED",
                     data: null,
                     message: "Not authorized!"
                 }
@@ -34,19 +35,19 @@ const NOT_AUTHORIZED_RESPONSE = (operation: string) => ({
     }
 });
 
-const identityA: SecurityIdentity = {
+const identityA: IdentityData = {
     id: "a",
     type: "test",
     displayName: "Aa"
 };
 
-const identityB: SecurityIdentity = {
+const identityB: IdentityData = {
     id: "b",
     type: "test",
     displayName: "Bb"
 };
 
-type IdentityPermissions = Array<[SecurityPermission[], SecurityIdentity | null]>;
+type IdentityPermissions = Array<[SecurityPermission[], IdentityData | null]>;
 
 describe("Files Security Test", { timeout: 10_000 }, () => {
     const { createFile, createFiles, until } = useGqlHandler({
@@ -88,7 +89,7 @@ describe("Files Security Test", { timeout: 10_000 }, () => {
                             data: null,
                             meta: null,
                             error: {
-                                code: "SECURITY_NOT_AUTHORIZED",
+                                code: "NOT_AUTHORIZED",
                                 data: null,
                                 message: "Not authorized!"
                             }

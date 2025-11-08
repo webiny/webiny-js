@@ -1,8 +1,17 @@
 import React, { useMemo } from "react";
-import { Alert, Grid } from "@webiny/admin-ui";
 import type { IWorkflowApplication } from "~/types.js";
-import { WorkflowsApplications } from "./WorkflowsApplications.js";
+// import { WorkflowsApplications } from "./WorkflowsApplications.js";
 import { WorkflowEditor } from "./WorkflowEditor.js";
+import {
+    LeftPanel,
+    RightPanel,
+    SimpleForm,
+    SimpleFormContent,
+    SimpleFormFooter,
+    SimpleFormHeader,
+    SplitView
+} from "@webiny/app-admin";
+import { WorkflowsDataList } from "./WorkflowsDataList.js";
 
 export interface IWorkflowsViewProps {
     apps: IWorkflowApplication[];
@@ -20,34 +29,24 @@ export const WorkflowsView = (props: IWorkflowsViewProps) => {
         return apps.find(a => a.id === initialApp);
     }, [initialApp, apps]);
 
-    if (!apps.length) {
-        return (
-            <Grid>
-                <Grid.Column span={12}>
-                    <Alert type="danger" title="No applications found.">
-                        There are no applications available.
-                    </Alert>
-                </Grid.Column>
-            </Grid>
-        );
-    } else if (initialApp && !app) {
-        return (
-            <Grid>
-                <Grid.Column span={12}>
-                    <Alert type="danger" title="No application found.">
-                        Application you selected does not exist: <strong>{initialApp}</strong>.
-                    </Alert>
-                </Grid.Column>
-            </Grid>
-        );
-    }
-
     return (
-        <Grid>
-            <Grid.Column span={2}>
-                <WorkflowsApplications apps={apps} onClick={onAppClick} />
-            </Grid.Column>
-            <Grid.Column span={10}>{app ? <WorkflowEditor app={app} /> : null}</Grid.Column>
-        </Grid>
+        <SplitView>
+            <LeftPanel>
+                <WorkflowsDataList apps={apps} activeId={app?.id} onSelectApp={onAppClick} />
+            </LeftPanel>
+            <RightPanel>
+                {app && (
+                    <SimpleForm size={"lg"}>
+                        <SimpleFormHeader title={app.name} />
+                        <SimpleFormContent>
+                            <WorkflowEditor app={app} />
+                        </SimpleFormContent>
+                        <SimpleFormFooter>
+                            <></>
+                        </SimpleFormFooter>
+                    </SimpleForm>
+                )}
+            </RightPanel>
+        </SplitView>
     );
 };

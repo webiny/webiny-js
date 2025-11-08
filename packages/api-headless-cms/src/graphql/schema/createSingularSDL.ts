@@ -62,9 +62,6 @@ export const createSingularSDL: CreateSingularSDL = ({
             entryId: String!
             
             ${onByMetaGqlFields}
-
-            ownedBy: CmsIdentity @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'createdBy' field.")
-            
             ${fields.map(f => f.fields).join("\n")}
         }
 

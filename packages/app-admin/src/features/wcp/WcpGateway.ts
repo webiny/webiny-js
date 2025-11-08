@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { WcpGateway as WcpGatewayAbstraction } from "./abstractions.js";
 import { GraphQLClient } from "@webiny/app/features/graphqlClient";
 import type { GetWcpProjectResponse, WcpProjectData } from "./types.js";

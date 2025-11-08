@@ -1,5 +1,5 @@
-import { NotAuthorizedError } from "@webiny/api-security";
 import type { Context } from "~/types.js";
+import { NotAuthorizedError } from "~/utils/errors.js";
 
 /**
  * Simple permission check. Only full access can access the websockets API via GraphQL - ({name: "*"})

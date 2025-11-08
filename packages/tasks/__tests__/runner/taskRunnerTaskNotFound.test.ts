@@ -28,7 +28,6 @@ describe("task runner task not found", () => {
             webinyTaskId: "unknownTaskId",
             webinyTaskDefinitionId: "myCustomTaskDefinition",
             tenant: "root",
-            locale: "en-US",
             error: {
                 message: 'Task "unknownTaskId" cannot be executed because it does not exist.',
                 code: "TASK_NOT_FOUND"

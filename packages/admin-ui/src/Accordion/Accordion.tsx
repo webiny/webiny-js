@@ -17,6 +17,10 @@ const accordionVariants = cva("group w-full", {
             base: "bg-neutral-base",
             light: "bg-neutral-light",
             transparent: "bg-transparent"
+        },
+        border: {
+            none: "",
+            accent: "border-md border-neutral-dimmed-darker"
         }
     },
     defaultVariants: {
@@ -33,6 +37,7 @@ type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
 const AccordionBase = ({
     children,
     variant,
+    border,
     background: backgroundProp = "base",
     className
 }: AccordionProps) => {
@@ -40,7 +45,7 @@ const AccordionBase = ({
 
     return (
         <AccordionBackgroundProvider currentBackground={background}>
-            <div className={cn(accordionVariants({ variant, background }), className)}>
+            <div className={cn(accordionVariants({ variant, background, border }), className)}>
                 {children}
             </div>
         </AccordionBackgroundProvider>

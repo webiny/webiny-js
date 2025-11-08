@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetProjectService, SetProjectIdService } from "~/abstractions/index.js";
 import { Project as TsMorphProject, SyntaxKind } from "ts-morph";
 

@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { IWcpUserPatModel } from "@webiny/project/abstractions/models/index.js";
 import { Command, GetProjectSdkService, LoggerService, UiService } from "~/abstractions/index.js";
 import { setTimeout } from "node:timers/promises";

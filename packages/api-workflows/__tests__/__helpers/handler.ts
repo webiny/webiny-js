@@ -30,18 +30,30 @@ import {
     IGetWorkflowStateResponse,
     IGetWorkflowStateVariables,
     type IGetWorkflowVariables,
+    type IListOwnWorkflowStatesResponse,
+    IListOwnWorkflowStatesVariables,
+    type IListRequestedWorkflowStatesResponse,
+    type IListRequestedWorkflowStatesVariables,
     type IListTargetWorkflowStatesResponse,
     type IListTargetWorkflowStatesVariables,
     type IListWorkflowResponse,
     type IListWorkflowVariables,
     type IRejectWorkflowStateStepResponse,
     type IRejectWorkflowStateStepVariables,
+    IStartWorkflowStateStepResponse,
+    IStartWorkflowStateStepVariables,
     type IStoreWorkflowResponse,
     type IStoreWorkflowVariables,
+    type ITakeOverWorkflowStateStepResponse,
+    type ITakeOverWorkflowStateStepVariables,
+    LIST_OWN_WORKFLOW_STATES_QUERY,
+    LIST_REQUESTED_WORKFLOW_STATES_QUERY,
     LIST_TARGET_WORKFLOW_STATES_QUERY,
     LIST_WORKFLOWS_QUERY,
     REJECT_WORKFLOW_STATE_STEP_MUTATION,
-    STORE_WORKFLOW_MUTATION
+    START_WORKFLOW_STATE_STEP_MUTATION,
+    STORE_WORKFLOW_MUTATION,
+    TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION
 } from "./graphql.js";
 
 export const createContextHandler = async (params: UseContextHandlerParams = {}) => {
@@ -101,19 +113,34 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         /**
          * Workflow states
          */
-        createWorkflowState: handler.createMutation<
+        createWorkflowState: handler.createQuery<
             ICreateWorkflowStateVariables,
             ICreateWorkflowStateResponse
         >(CREATE_WORKFLOW_STATE_MUTATION),
-        getTargetWorkflowState: handler.createMutation<
+        getTargetWorkflowState: handler.createQuery<
             IGetTargetWorkflowStateVariables,
             IGetTargetWorkflowStateResponse
         >(GET_TARGET_WORKFLOW_STATE_QUERY),
-        listWorkflowStates: handler.createMutation<
+        listWorkflowStates: handler.createQuery<
             IListTargetWorkflowStatesVariables,
             IListTargetWorkflowStatesResponse
         >(LIST_TARGET_WORKFLOW_STATES_QUERY),
-
+        listOwnWorkflowStates: handler.createQuery<
+            IListOwnWorkflowStatesVariables,
+            IListOwnWorkflowStatesResponse
+        >(LIST_OWN_WORKFLOW_STATES_QUERY),
+        listRequestedWorkflowStates: handler.createQuery<
+            IListRequestedWorkflowStatesVariables,
+            IListRequestedWorkflowStatesResponse
+        >(LIST_REQUESTED_WORKFLOW_STATES_QUERY),
+        startWorkflowStateStep: handler.createMutation<
+            IStartWorkflowStateStepVariables,
+            IStartWorkflowStateStepResponse
+        >(START_WORKFLOW_STATE_STEP_MUTATION),
+        takeOverWorkflowStateStep: handler.createMutation<
+            ITakeOverWorkflowStateStepVariables,
+            ITakeOverWorkflowStateStepResponse
+        >(TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION),
         approveWorkflowStateStep: handler.createMutation<
             IApproveWorkflowStateStepVariables,
             IApproveWorkflowStateStepResponse
@@ -126,7 +153,7 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
             ICancelWorkflowStateVariables,
             ICancelWorkflowStateResponse
         >(CANCEL_WORKFLOW_STATE_MUTATION),
-        getWorkflowState: handler.createMutation<
+        getWorkflowState: handler.createQuery<
             IGetWorkflowStateVariables,
             IGetWorkflowStateResponse
         >(GET_WORKFLOW_STATE_MUTATION)

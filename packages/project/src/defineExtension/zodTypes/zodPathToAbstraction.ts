@@ -1,4 +1,4 @@
-import { type Abstraction, Metadata } from "@webiny/di-container";
+import { type Abstraction, Metadata } from "@webiny/di";
 import { z } from "zod";
 import path from "path";
 import fs from "fs";

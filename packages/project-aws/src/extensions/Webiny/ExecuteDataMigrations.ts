@@ -8,7 +8,7 @@ import {
     NonInteractiveCliStatusReporter,
     VoidStatusReporter
 } from "@webiny/data-migration/cli/index.js";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import {
     ApiAfterDeploy,
     GetAppStackOutput,

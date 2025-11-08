@@ -11,7 +11,18 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/lexical-nodes/*": ["../lexical-nodes/src/*"],
+      "@webiny/lexical-nodes": ["../lexical-nodes/src"],
+      "@webiny/lexical-theme/*": ["../lexical-theme/src/*"],
+      "@webiny/lexical-theme": ["../lexical-theme/src"],
+      "@webiny/react-composition/*": ["../react-composition/src/*"],
+      "@webiny/react-composition": ["../react-composition/src"],
+      "@webiny/react-properties/*": ["../react-properties/src/*"],
+      "@webiny/react-properties": ["../react-properties/src"]
+    },
     "baseUrl": "."
   }
 }

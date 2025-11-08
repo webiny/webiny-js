@@ -1,4 +1,4 @@
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { createCliContainer } from "./createCliContainer.js";
 import { CliParamsService, RunCliRunnerService } from "~/abstractions/index.js";
 

@@ -1,5 +1,4 @@
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { createHandler } from "@webiny/handler-aws";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
@@ -9,20 +8,19 @@ import { getIntrospectionQuery } from "graphql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { createDummyLocales, createIdentity, createPermissions } from "~tests/context/helpers";
+import { createIdentity, createPermissions } from "~tests/context/helpers";
 import { createBackgroundTaskContext, createBackgroundTaskGraphQL } from "@webiny/tasks";
 import { createHcmsBulkActions } from "~/index";
-import { createWcpContext } from "@webiny/api-wcp";
-import { createI18NContext } from "@webiny/api-i18n";
-import type { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
-import type { AdminUsersStorageOperations } from "@webiny/api-admin-users/types";
-import createAdminUsersApp from "@webiny/api-admin-users";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { createApiCore } from "@webiny/api-core";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface UseGQLHandlerParams {
+    identity?: IdentityData;
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: any[];
     testProjectLicense?: DecryptedWcpProjectLicense;
@@ -42,26 +40,19 @@ interface InvokeParams {
 export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { plugins = [] } = params;
 
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const i18nStorage = getStorageOps<any[]>("i18n");
-    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
 
     const handler = createHandler({
         plugins: [
-            createWcpContext(),
+            createApiCore({
+                storageOperations: apiCoreStorage.storageOperations
+            }),
             ...cmsStorage.plugins,
             createGraphQLHandler(),
             ...createTenancyAndSecurity({
-                setupGraphQL: true,
                 permissions: createPermissions(),
                 identity: createIdentity()
-            }),
-            createI18NContext(),
-            ...i18nStorage.storageOperations,
-            createDummyLocales(),
-            mockLocalesPlugins(),
-            createAdminUsersApp({
-                storageOperations: adminUsersStorage.storageOperations
             }),
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations

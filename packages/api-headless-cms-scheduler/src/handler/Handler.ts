@@ -4,6 +4,7 @@ import type { IHandlerAction } from "~/handler/types.js";
 import type { IScheduleEntryValues } from "~/scheduler/types.js";
 import type { ScheduleContext } from "~/types.js";
 import { createIdentifier } from "@webiny/utils/createIdentifier.js";
+import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 export interface IHandlerParams {
     actions: IHandlerAction[];
@@ -51,7 +52,13 @@ export class Handler {
         /**
          * We want to mock the identity of the user that scheduled this record.
          */
-        security.setIdentity(scheduleEntry.createdBy);
+        security.setIdentity(
+            new AuthenticatedIdentity({
+                id: scheduleEntry.createdBy.id,
+                type: scheduleEntry.createdBy.type,
+                displayName: scheduleEntry.createdBy.displayName ?? ""
+            })
+        );
 
         const targetModel = await cms.getModel(scheduleEntry.values.targetModelId);
         /**

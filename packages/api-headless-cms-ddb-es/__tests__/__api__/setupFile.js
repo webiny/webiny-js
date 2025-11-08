@@ -16,7 +16,7 @@ if (typeof createStorageOperations !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
 
-const { getElasticsearchIndexPrefix } = require("@webiny/api-elasticsearch");
+import { getElasticsearchIndexPrefix } from "@webiny/api-elasticsearch";
 
 const prefix = getElasticsearchIndexPrefix();
 if (!prefix.includes("api-")) {

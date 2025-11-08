@@ -1,4 +1,3 @@
-import type { SecurityContext } from "@webiny/api-security/types";
-import type { TenancyContext } from "@webiny/api-tenancy/types";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
-export type TestContext = SecurityContext & TenancyContext;
+export type TestContext = ApiCoreContext;

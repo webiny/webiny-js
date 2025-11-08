@@ -1,4 +1,4 @@
-import { createDecorator } from "@webiny/di-container";
+import { createDecorator } from "@webiny/di";
 import path from "path";
 import fs from "fs";
 import {
@@ -8,7 +8,7 @@ import {
 } from "@webiny/project/abstractions/index.js";
 import { getTemplatesFolderPath } from "~/utils/index.js";
 
-class BuildAppWorkspace implements BuildAppWorkspaceService.Interface {
+class InjectDdbEsLambdaFnHandler implements BuildAppWorkspaceService.Interface {
     constructor(
         private getApp: GetApp.Interface,
         private logger: LoggerService.Interface,
@@ -44,6 +44,6 @@ class BuildAppWorkspace implements BuildAppWorkspaceService.Interface {
 
 export default createDecorator({
     abstraction: BuildAppWorkspaceService,
-    decorator: BuildAppWorkspace,
+    decorator: InjectDdbEsLambdaFnHandler,
     dependencies: [GetApp, LoggerService]
 });

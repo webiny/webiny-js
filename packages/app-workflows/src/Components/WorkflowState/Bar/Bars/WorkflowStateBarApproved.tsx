@@ -16,20 +16,15 @@ export const WorkflowStateBarApproved = WorkflowStateBarComponent.createDecorato
         }
 
         return (
-            <>
-                <Alert
-                    actions={
-                        <>
-                            <Alert.Action
-                                text={"Remove Review Request"}
-                                onClick={presenter.cancel}
-                            />
-                        </>
-                    }
-                >
-                    This entry was approved.
-                </Alert>
-            </>
+            <Alert
+                actions={
+                    <>
+                        <Alert.Action text={"Remove Review Request"} onClick={presenter.cancel} />
+                    </>
+                }
+            >
+                This entry was approved.
+            </Alert>
         );
     });
 });

@@ -1,10 +1,7 @@
 import { createWebsocketsRoutePlugins } from "~/runner/routes";
-import { createWcpContext } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "~tests/helpers/tenancySecurity";
-import { createDummyLocales, createIdentity, createPermissions } from "~tests/helpers/helpers";
-import i18nContext from "@webiny/api-i18n/graphql/context";
+import { createIdentity, createPermissions } from "~tests/helpers/helpers";
 import { createWebsockets } from "~/index";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { createRawEventHandler } from "@webiny/handler-aws";
@@ -12,7 +9,9 @@ import { PluginsContainer } from "@webiny/plugins";
 import type { PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import type { SecurityPermission } from "@webiny/api-security/types";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { createApiCore } from "@webiny/api-core";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface Params {
     plugins?: PluginCollection | PluginsContainer;
@@ -21,24 +20,23 @@ export interface Params {
 
 export const createPlugins = (params?: Params): PluginsContainer => {
     const { plugins, permissions } = params || {};
+
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const i18nStorage = getStorageOps<any[]>("i18n");
 
     const container = plugins instanceof PluginsContainer ? plugins : new PluginsContainer();
     container.register([
+        createApiCore({
+            storageOperations: apiCoreStorage.storageOperations
+        }),
         createWebsocketsRoutePlugins(),
-        createWcpContext(),
         ...cmsStorage.plugins,
         ...createTenancyAndSecurity({
             setupGraphQL: false,
             permissions: permissions || createPermissions(),
             identity: createIdentity()
         }),
-        i18nContext(),
-        i18nStorage.storageOperations,
         createWebsockets(),
-        createDummyLocales(),
-        mockLocalesPlugins(),
         createHeadlessCmsContext({
             storageOperations: cmsStorage.storageOperations
         }),

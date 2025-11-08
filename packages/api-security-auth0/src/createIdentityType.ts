@@ -1,7 +1,7 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/index.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import { ContextPlugin } from "@webiny/handler";
-import type { TenancyContext } from "@webiny/api-tenancy/types.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 interface Config {
     name: string;
@@ -19,6 +19,8 @@ export const createIdentityType = (config: Config) => {
                 type: String!
                 displayName: String!
                 permissions: [JSON!]!
+                currentTenant: Tenant
+                defaultTenant: Tenant
             }
         `,
             resolvers: {
@@ -30,8 +32,9 @@ export const createIdentityType = (config: Config) => {
             }
         }),
         // This plugin is only applied in multi-tenant environments.
-        new ContextPlugin<TenancyContext>(context => {
-            if (context.tenancy.isMultiTenant()) {
+        new ContextPlugin<ApiCoreContext>(context => {
+            const multiTenancy = context.wcp.canUseFeature("multiTenancy");
+            if (multiTenancy) {
                 context.plugins.register(
                     new GraphQLSchemaPlugin({
                         typeDefs: `

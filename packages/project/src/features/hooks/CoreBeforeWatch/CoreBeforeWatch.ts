@@ -1,4 +1,4 @@
-import { createComposite } from "@webiny/di-container";
+import { createComposite } from "@webiny/di";
 import { CoreBeforeWatch } from "~/abstractions/index.js";
 
 export class CompositeCoreBeforeWatch implements CoreBeforeWatch.Interface {

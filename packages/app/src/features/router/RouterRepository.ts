@@ -2,7 +2,7 @@ import { makeAutoObservable, runInAction } from "mobx";
 import type { MatchedRoute, RouteDefinition, OnRouteExit } from "./abstractions.js";
 import * as Abstractions from "./abstractions.js";
 import { Route, RouteParamsDefinition, RouteParamsInfer } from "./Route.js";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 
 const INIT_ROUTE = { name: "__init__", path: "", pathname: "", params: {} };
 

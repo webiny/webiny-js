@@ -1,5 +1,5 @@
-import type { SecurityIdentity } from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
+import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
 import type { CmsContext } from "~/types";
 
 export interface PermissionsArg {
@@ -57,7 +57,7 @@ export const createPermissions = (permissions?: PermissionsArg[]): PermissionsAr
     ];
 };
 
-export const createIdentity = (identity?: SecurityIdentity) => {
+export const createIdentity = (identity?: IdentityData) => {
     if (!identity) {
         return getSecurityIdentity();
     }

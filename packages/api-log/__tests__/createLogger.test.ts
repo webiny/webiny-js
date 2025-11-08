@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import { Context } from "~/types";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { getTenant } from "~tests/mocks/getTenant";
-import { getLocale } from "~tests/mocks/getLocale";
 import { createLogger } from "~/index";
 import { PluginsContainer } from "@webiny/plugins";
 
@@ -22,14 +21,6 @@ describe("createLogger", () => {
                 // @ts-expect-error
                 getCurrentTenant: () => {
                     return { id: getTenant() };
-                }
-            },
-            i18n: {
-                // @ts-expect-error
-                getContentLocale: () => {
-                    return {
-                        code: getLocale()
-                    };
                 }
             }
         };
@@ -60,9 +51,6 @@ describe("createLogger", () => {
             documentClient,
             getTenant: () => {
                 return "root";
-            },
-            getLocale: () => {
-                return "en-US";
             }
         });
 

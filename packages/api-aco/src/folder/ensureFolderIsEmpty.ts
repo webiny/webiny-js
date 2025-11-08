@@ -1,6 +1,7 @@
 import WebinyError from "@webiny/error";
 import type { AcoContext, Folder } from "~/types.js";
-import { NotAuthorizedError } from "@webiny/api-security";
+import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 
 interface EnsureFolderIsEmptyParams {
     context: AcoContext;
@@ -13,6 +14,8 @@ export const ensureFolderIsEmpty = async ({
     folder,
     hasContentCallback
 }: EnsureFolderIsEmptyParams) => {
+    const flp = context.container.resolve(FolderLevelPermissions);
+
     const hasFoldersCallback = async () => {
         const { id, type } = folder;
         const [folders] = await context.aco.folder.list({
@@ -44,7 +47,7 @@ export const ensureFolderIsEmpty = async ({
     }
 
     // Let's also check if there are folders / content that are not visible because of folder permissions.
-    if (!context.aco.folderLevelPermissions.canUseFolderLevelPermissions()) {
+    if (!flp.canUseFolderLevelPermissions()) {
         // If folder level permissions are not enabled, we can skip this check. This is because
         // in that case, all folders and content are visible to the user.
         return;

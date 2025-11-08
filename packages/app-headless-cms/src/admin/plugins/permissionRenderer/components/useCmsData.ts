@@ -1,6 +1,5 @@
-import { useEffect, useReducer } from "react";
 import gql from "graphql-tag";
-import { useCms } from "../../../hooks/index.js";
+import { useQuery } from "../../../hooks/index.js";
 import type { CmsErrorResponse } from "~/types.js";
 
 export interface CmsDataCmsGroup {
@@ -73,54 +72,12 @@ export interface UseCmsDataResponseRecords {
     models: CmsDataCmsModel[];
     groups: CmsDataCmsGroup[];
 }
-interface State {
-    [key: string]: UseCmsDataResponseRecords;
-}
 
-const defaultState: State = {};
+export const useCmsData = (): UseCmsDataResponseRecords => {
+    const { data } = useQuery<ListCmsPermissionsResponse>(LIST_DATA);
 
-export interface UseCmsDataResponse {
-    [locale: string]: UseCmsDataResponseRecords;
-}
-export const useCmsData = (locales: string[]): UseCmsDataResponse => {
-    const { getApolloClient } = useCms();
-    const [state, setState] = useReducer((prev: State, next: State) => {
-        return {
-            ...prev,
-            ...next
-        };
-    }, defaultState);
-
-    const loadData = async () => {
-        for (const code of locales) {
-            const client = getApolloClient(code);
-
-            if (!state[code]) {
-                client.query<ListCmsPermissionsResponse>({ query: LIST_DATA }).then(({ data }) => {
-                    setState({
-                        [code]: {
-                            models: data.listContentModels.data,
-                            groups: data.listContentModelGroups.data
-                        }
-                    });
-                });
-            }
-        }
+    return {
+        models: data?.listContentModels.data ?? [],
+        groups: data?.listContentModelGroups.data ?? []
     };
-
-    useEffect(() => {
-        loadData();
-    }, [locales.sort().join(":")]);
-
-    return locales.reduce((acc, code) => {
-        if (!state[code]) {
-            acc[code] = {
-                models: [],
-                groups: []
-            };
-            return acc;
-        }
-        acc[code] = state[code];
-        return acc;
-    }, {} as UseCmsDataResponse);
 };

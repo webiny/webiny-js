@@ -52,11 +52,17 @@ export const fullyDeleteModel = async (
         name: `Fully delete model: ${modelId}`
     });
 
+    const identity = context.security.getIdentity();
+
     await context.db.store.storeValue(
         storeKey,
         createStoreValue({
             ...model,
-            identity: context.security.getIdentity(),
+            identity: {
+                id: identity.id,
+                type: identity.type,
+                displayName: identity.displayName
+            },
             task: task.id
         })
     );

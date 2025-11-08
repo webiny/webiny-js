@@ -29,7 +29,10 @@ class SyncFlpTask {
                      * - update the FLP records for the found folder and all its descendants.
                      */
                     if (input.folderId) {
-                        const folder = await context.aco.folder.get(input.folderId, true);
+                        const folder = await context.security.withoutAuthorization(() => {
+                            return context.aco.folder.get(input.folderId!);
+                        });
+
                         await context.tasks.trigger<IUpdateFlpTaskInput>({
                             definition: UPDATE_FLP_TASK_ID,
                             input: {
@@ -63,12 +66,13 @@ class SyncFlpTask {
                         }
 
                         for (const folderType of folderTypes) {
-                            const [folders] = await context.aco.folder.list({
-                                where: {
-                                    type: folderType,
-                                    parentId: null
-                                },
-                                disablePermissions: true
+                            const [folders] = await context.security.withoutAuthorization(() => {
+                                return context.aco.folder.list({
+                                    where: {
+                                        type: folderType,
+                                        parentId: null
+                                    }
+                                });
                             });
 
                             for (const folder of folders) {
@@ -100,12 +104,13 @@ class SyncFlpTask {
                      * - update the FLP records for the found folders and all its descendants.
                      */
                     if (input.type) {
-                        const [folders] = await context.aco.folder.list({
-                            where: {
-                                type: input.type,
-                                parentId: null
-                            },
-                            disablePermissions: true
+                        const [folders] = await context.security.withoutAuthorization(() => {
+                            return context.aco.folder.list({
+                                where: {
+                                    type: input.type!,
+                                    parentId: null
+                                }
+                            });
                         });
 
                         for (const folder of folders) {

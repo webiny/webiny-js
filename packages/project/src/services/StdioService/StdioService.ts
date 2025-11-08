@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { StdioService } from "~/abstractions/index.js";
 
 export class DefaultStdioService implements StdioService.Interface {

@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import { type IBaseAppParams } from "~/abstractions/types.js";
 import { type GetApp } from "~/abstractions/index.js";
 

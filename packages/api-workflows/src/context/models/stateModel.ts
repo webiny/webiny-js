@@ -2,11 +2,12 @@ import { createPrivateModelPlugin } from "@webiny/api-headless-cms";
 import { WORKFLOW_STATE_MODEL_ID } from "~/constants.js";
 import {
     createAppField,
+    createCommentField,
     createSavedByField,
     createStateField,
-    createStepsField
-} from "~/context/models/fields/index.js";
-import { createCommentField } from "~/context/models/fields/comment.js";
+    createStepsField,
+    createTitleField
+} from "./fields/index.js";
 
 export const createWorkflowStateModel = () => {
     return createPrivateModelPlugin({
@@ -21,6 +22,7 @@ export const createWorkflowStateModel = () => {
                 label: "Workflow ID"
             },
             createAppField(),
+            createTitleField(),
             {
                 fieldId: "targetRevisionId",
                 id: "targetRevisionId",

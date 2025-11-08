@@ -3,6 +3,7 @@ import type { Context } from "~/types.js";
 import { createWorkflowAppName } from "~/utils/appName.js";
 import { isModelAllowed } from "~/utils/modelAllowed.js";
 import type { IWorkflowState } from "@webiny/api-workflows";
+import { WorkflowStateNotFoundError } from "@webiny/api-workflows";
 
 interface IParams {
     context: Pick<Context, "workflowState" | "cms">;
@@ -23,9 +24,12 @@ export const attachPublishEntryLifecycleEvents = (params: IParams) => {
                 entry.state = undefined;
                 return;
             }
-        } catch {
-            // does not matter
-            return;
+        } catch (ex) {
+            // Swallow error if workflow state is not found.
+            if (ex instanceof WorkflowStateNotFoundError) {
+                return;
+            }
+            throw ex;
         }
         throw new WebinyError(
             "Cannot publish entry because its workflow state is not completed.",

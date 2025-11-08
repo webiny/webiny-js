@@ -9,7 +9,6 @@ const validation = zod
         webinyTaskDefinitionId: zod.string(),
         endpoint: zod.string(),
         tenant: zod.string(),
-        locale: zod.string(),
         executionName: zod.string(),
         stateMachineId: zod.string()
     })

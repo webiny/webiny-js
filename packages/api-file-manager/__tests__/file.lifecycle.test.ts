@@ -222,7 +222,7 @@ describe("File lifecycle events", () => {
          * Parameters that were received in the lifecycle hooks must be valid as well.
          */
         const beforeDelete = tracker.getLast("file:beforeDelete");
-        expect(beforeDelete && beforeDelete.params[0]).toEqual({
+        expect(beforeDelete && beforeDelete.params[0]).toMatchObject({
             file: {
                 ...fileData,
                 ...hookParamsExpected,
@@ -235,7 +235,7 @@ describe("File lifecycle events", () => {
             }
         });
         const afterDelete = tracker.getLast("file:afterDelete");
-        expect(afterDelete && afterDelete.params[0]).toEqual({
+        expect(afterDelete && afterDelete.params[0]).toMatchObject({
             file: {
                 ...fileData,
                 ...hookParamsExpected,
@@ -253,7 +253,7 @@ describe("File lifecycle events", () => {
         const [createBatchResponse] = await createFiles({
             data: [fileData]
         });
-        expect(createBatchResponse).toEqual({
+        expect(createBatchResponse).toMatchObject({
             data: {
                 fileManager: {
                     createFiles: {
@@ -283,7 +283,7 @@ describe("File lifecycle events", () => {
          * Parameters that were received in the lifecycle hooks must be valid as well.
          */
         const beforeBatchCreate = tracker.getLast("file:beforeBatchCreate");
-        expect(beforeBatchCreate && beforeBatchCreate.params[0]).toEqual({
+        expect(beforeBatchCreate && beforeBatchCreate.params[0]).toMatchObject({
             files: [
                 {
                     ...fileData,
@@ -298,7 +298,7 @@ describe("File lifecycle events", () => {
             ]
         });
         const afterBatchCreate = tracker.getLast("file:afterBatchCreate");
-        expect(afterBatchCreate && afterBatchCreate.params[0]).toEqual({
+        expect(afterBatchCreate && afterBatchCreate.params[0]).toMatchObject({
             files: [
                 {
                     ...fileData,

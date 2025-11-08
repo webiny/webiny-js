@@ -1,12 +1,11 @@
 import WebinyError from "@webiny/error";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
-import { isSearchModelEntry } from "./utils/isSearchModelEntry.js";
 import type { AuditLogsContext } from "~/types.js";
 
 export const onEntryAfterCreateHook = (context: AuditLogsContext) => {
     context.cms.onEntryAfterCreate.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate || isSearchModelEntry(entry.modelId)) {
+        if (model.isPrivate) {
             return;
         }
         try {
@@ -24,7 +23,7 @@ export const onEntryAfterCreateHook = (context: AuditLogsContext) => {
 
 export const onEntryAfterUpdateHook = (context: AuditLogsContext) => {
     context.cms.onEntryAfterUpdate.subscribe(async ({ model, entry, original }) => {
-        if (model.isPrivate || isSearchModelEntry(entry.modelId)) {
+        if (model.isPrivate) {
             return;
         }
         try {
@@ -47,7 +46,7 @@ export const onEntryAfterUpdateHook = (context: AuditLogsContext) => {
 
 export const onEntryAfterDeleteHook = (context: AuditLogsContext) => {
     context.cms.onEntryAfterDelete.subscribe(async ({ model, entry, permanent }) => {
-        if (model.isPrivate || isSearchModelEntry(entry.modelId)) {
+        if (model.isPrivate) {
             return;
         }
         try {
@@ -69,7 +68,7 @@ export const onEntryAfterDeleteHook = (context: AuditLogsContext) => {
 
 export const onEntryAfterRestoreFromTrashHook = (context: AuditLogsContext) => {
     context.cms.onEntryAfterRestoreFromBin.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate || isSearchModelEntry(entry.modelId)) {
+        if (model.isPrivate) {
             return;
         }
         try {
@@ -86,7 +85,7 @@ export const onEntryAfterRestoreFromTrashHook = (context: AuditLogsContext) => {
 
 export const onEntryRevisionAfterCreateHook = (context: AuditLogsContext) => {
     context.cms.onEntryRevisionAfterCreate.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate || isSearchModelEntry(entry.modelId)) {
+        if (model.isPrivate) {
             return;
         }
         try {
@@ -104,7 +103,7 @@ export const onEntryRevisionAfterCreateHook = (context: AuditLogsContext) => {
 
 export const onEntryRevisionAfterDeleteHook = (context: AuditLogsContext) => {
     context.cms.onEntryRevisionAfterDelete.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate || isSearchModelEntry(entry.modelId)) {
+        if (model.isPrivate) {
             return;
         }
         try {
@@ -122,7 +121,7 @@ export const onEntryRevisionAfterDeleteHook = (context: AuditLogsContext) => {
 
 export const onEntryAfterPublishHook = (context: AuditLogsContext) => {
     context.cms.onEntryAfterPublish.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate || isSearchModelEntry(entry.modelId)) {
+        if (model.isPrivate) {
             return;
         }
         try {
@@ -140,7 +139,7 @@ export const onEntryAfterPublishHook = (context: AuditLogsContext) => {
 
 export const onEntryAfterUnpublishHook = (context: AuditLogsContext) => {
     context.cms.onEntryAfterUnpublish.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate || isSearchModelEntry(entry.modelId)) {
+        if (model.isPrivate) {
             return;
         }
         try {

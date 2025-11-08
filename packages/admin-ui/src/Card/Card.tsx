@@ -5,15 +5,16 @@ import { CardHeader } from "~/Card/components/CardHeader.js";
 import { CardBody } from "~/Card/components/CardBody.js";
 import { CardFooter } from "~/Card/components/CardFooter.js";
 import { Icon } from "./components/Icon.js";
-import { ConfirmButton } from "./components/ConfirmButton.js";
-import { CancelButton } from "./components/CancelButton.js";
-import { CardProvider } from "~/Card/components/CardProvider.js";
+import { ConfirmAction } from "./components/ConfirmAction.js";
+import { CancelAction } from "./components/CancelAction.js";
+import { CardPropsProvider } from "~/Card/components/CardPropsProvider.js";
 
 interface CardProps extends Omit<React.ComponentPropsWithoutRef<typeof CardContent>, "title"> {
     title?: React.ReactNode;
     icon?: React.ReactElement;
     description?: React.ReactNode;
     padding?: "sm" | "md" | "lg";
+    bodyPadding?: boolean;
     variant?: "default" | "accent";
     elevation?: "none" | "small" | "medium" | "large";
     size?: "sm" | "md";
@@ -26,51 +27,14 @@ interface CardProps extends Omit<React.ComponentPropsWithoutRef<typeof CardConte
 }
 
 const CardBase = (props: CardProps) => {
-    const { headerProps, bodyProps, footerProps } = React.useMemo(() => {
-        const {
-            // Shared props.
-            padding,
-            actions,
-            actionsPosition,
-            size,
-            variant,
-
-            // Header props.
-            title,
-            icon,
-            description,
-
-            // Body props.
-            children,
-
-            // Footer props.
-            info
-        } = props;
-
-        return {
-            headerProps: {
-                title,
-                icon,
-                description,
-                padding,
-                actions,
-                actionsPosition,
-                size,
-                variant
-            },
-            bodyProps: { children, padding },
-            footerProps: { info, padding, actions, actionsPosition }
-        };
-    }, [props]);
-
     return (
-        <CardProvider {...props}>
+        <CardPropsProvider props={props}>
             <CardContent>
-                <CardHeader {...headerProps} />
-                <CardBody {...bodyProps} />
-                <CardFooter {...footerProps} />
+                <CardHeader />
+                <CardBody />
+                <CardFooter />
             </CardContent>
-        </CardProvider>
+        </CardPropsProvider>
     );
 };
 
@@ -79,8 +43,8 @@ CardBase.displayName = "Card";
 const DecoratableCard = makeDecoratable("Card", CardBase);
 
 const Card = withStaticProps(DecoratableCard, {
-    ConfirmButton,
-    CancelButton,
+    ConfirmAction,
+    CancelAction,
     Icon
 });
 

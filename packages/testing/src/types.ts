@@ -1,8 +1,7 @@
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import type { Context as TasksContext } from "@webiny/tasks/types.js";
-import type { WcpContext } from "@webiny/api-wcp/types.js";
-import type { AdminUsersContext } from "@webiny/api-admin-users/types.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
-export interface Context extends CmsContext, TasksContext, WcpContext, AdminUsersContext {
+export interface Context extends ApiCoreContext, CmsContext, TasksContext {
     //
 }

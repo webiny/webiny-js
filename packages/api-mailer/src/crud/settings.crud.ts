@@ -25,7 +25,7 @@ import { getSecret } from "~/crud/settings/secret.js";
 import { createValidation, updateValidation } from "~/crud/settings/validation.js";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { attachPasswordObfuscatingHooks } from "~/crud/settings/hooks.js";
-import { NotAuthorizedError } from "@webiny/api-security";
+import { NotAuthorizedError } from "~/errors.js";
 
 const defaultPort = 25;
 /**
@@ -49,11 +49,7 @@ export const createSettingsCrud = async (
         if (permission) {
             return;
         }
-        throw new NotAuthorizedError({
-            data: {
-                reason: `Not allowed to update the mailer settings.`
-            }
-        });
+        throw new NotAuthorizedError(`Not allowed to update the mailer settings.`);
     };
 
     let secret: string | null = null;

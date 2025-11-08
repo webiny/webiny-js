@@ -1,4 +1,3 @@
-import { useI18N } from "@webiny/app-i18n";
 import { useTenancy } from "@webiny/app-admin";
 
 /**
@@ -10,15 +9,13 @@ import { useTenancy } from "@webiny/app-admin";
  */
 const useLayoutId = (applicationId: string) => {
     const { tenant } = useTenancy();
-    const { getCurrentLocale } = useI18N();
-    const localeCode = getCurrentLocale("content");
 
-    if (!tenant || !localeCode) {
+    if (!tenant) {
         console.warn("Missing tenant or localeCode while creating layoutId");
         return null;
     }
 
-    return `T#${tenant}#L#${localeCode}#A#${applicationId}`;
+    return `T#${tenant}#A#${applicationId}`;
 };
 
 export { useLayoutId };

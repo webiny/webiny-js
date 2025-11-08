@@ -1,4 +1,4 @@
-import { createComposite } from "@webiny/di-container";
+import { createComposite } from "@webiny/di";
 import { CorePulumi } from "~/abstractions/index.js";
 
 export class CompositeCorePulumi implements CorePulumi.Interface {

@@ -22,10 +22,6 @@ export interface IWebsocketManagerSendData<T extends IGenericData = IGenericData
      */
     tenant: string;
     /**
-     * Current locale.
-     */
-    locale: string;
-    /**
      * A unique message ID - generated on the UI side.
      * TODO implement waiting for the message response.
      */

@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { ApiBeforeWatch, GetAppStackOutput } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 

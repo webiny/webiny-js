@@ -47,7 +47,6 @@ describe("create indexes task runner", () => {
         const result = await runner.execute(undefined, []);
 
         expect(result).toEqual({
-            locale: "en-US",
             message: "No index plugins found.",
             output: undefined,
             status: "done",
@@ -93,7 +92,6 @@ describe("create indexes task runner", () => {
         const result = await runner.execute(undefined, []);
 
         expect(result).toEqual({
-            locale: "en-US",
             message: "Indexes created.",
             output: {
                 done: ["testing-index"]

@@ -15,7 +15,12 @@ export const WorkflowStateBarRequestReview = WorkflowStateBarComponent.createDec
         }
         return (
             <Alert
-                actions={<Alert.Action text={"Request Review"} onClick={presenter.requestReview} />}
+                actions={
+                    <Alert.Action
+                        text={"Request Review"}
+                        onClick={presenter.showRequestReviewDialog}
+                    />
+                }
             >
                 This item is not under review. You can request review.
             </Alert>

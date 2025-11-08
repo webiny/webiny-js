@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import { type GetApp } from "~/abstractions/index.js";
 import { type WebinyConfigWatcher } from "~/features/Watch/watchers/WebinyConfigWatcher.js";
 import { type PackagesWatcher } from "~/features/Watch/watchers/PackagesWatcher.js";

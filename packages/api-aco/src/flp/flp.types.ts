@@ -1,4 +1,3 @@
-import type { Topic } from "@webiny/pubsub/types.js";
 import type { ITaskRunParams } from "@webiny/tasks/types.js";
 import { type AcoContext, type Folder } from "~/types.js";
 import type { FolderLevelPermission, FolderPermission } from "@webiny/shared-aco/flp/flp.types.js";
@@ -30,48 +29,6 @@ export interface UpdateFlpParams {
     type?: string;
 }
 
-export interface OnFlpBeforeCreateTopicParams {
-    input: CreateFlpParams;
-}
-
-export interface OnFlpAfterCreateTopicParams {
-    flp: FolderLevelPermission;
-}
-
-export interface OnFlpBeforeUpdateTopicParams {
-    original: FolderLevelPermission;
-    input: Record<string, any>;
-}
-
-export interface OnFlpAfterUpdateTopicParams {
-    original: FolderLevelPermission;
-    flp: FolderLevelPermission;
-    input: Record<string, any>;
-}
-
-export interface OnFlpBeforeDeleteTopicParams {
-    flp: FolderLevelPermission;
-}
-
-export interface OnFlpAfterDeleteTopicParams {
-    flp: FolderLevelPermission;
-}
-
-export interface OnFlpBatchBeforeUpdateTopicParams {
-    items: Array<{
-        original: FolderLevelPermission;
-        input: UpdateFlpParams;
-    }>;
-}
-
-export interface OnFlpBatchAfterUpdateTopicParams {
-    items: Array<{
-        original: FolderLevelPermission;
-        flp: FolderLevelPermission;
-        input: UpdateFlpParams;
-    }>;
-}
-
 export interface AcoFolderLevelPermissionsCrud {
     list(params: ListFlpsParams): Promise<FolderLevelPermission[]>;
     get(id: string): Promise<FolderLevelPermission | null>;
@@ -81,14 +38,6 @@ export interface AcoFolderLevelPermissionsCrud {
     batchUpdate(
         items: Array<{ id: string; data: UpdateFlpParams }>
     ): Promise<FolderLevelPermission[]>;
-    onFlpBeforeCreate: Topic<OnFlpBeforeCreateTopicParams>;
-    onFlpAfterCreate: Topic<OnFlpAfterCreateTopicParams>;
-    onFlpBeforeUpdate: Topic<OnFlpBeforeUpdateTopicParams>;
-    onFlpAfterUpdate: Topic<OnFlpAfterUpdateTopicParams>;
-    onFlpBeforeDelete: Topic<OnFlpBeforeDeleteTopicParams>;
-    onFlpAfterDelete: Topic<OnFlpAfterDeleteTopicParams>;
-    onFlpBatchBeforeUpdate: Topic<OnFlpBatchBeforeUpdateTopicParams>;
-    onFlpBatchAfterUpdate: Topic<OnFlpBatchAfterUpdateTopicParams>;
 }
 
 /********

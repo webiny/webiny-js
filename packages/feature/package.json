@@ -3,15 +3,18 @@
   "description": "A small utility library to build application features in a Webiny project.",
   "version": "0.0.0",
   "type": "module",
-  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
   "author": "Webiny LTD",
   "license": "MIT",
+  "exports": {
+    "./api": "./api/index.js",
+    "./admin": "./admin/index.js"
+  },
   "dependencies": {
-    "@webiny/di-container": "0.0.0"
+    "@webiny/di": "^0.1.1"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",

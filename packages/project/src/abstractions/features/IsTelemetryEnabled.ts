@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 
 interface IIsTelemetryEnabled {
     execute(): Promise<boolean>;
