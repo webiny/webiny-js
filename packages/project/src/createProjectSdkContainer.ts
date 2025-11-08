@@ -47,6 +47,7 @@ import {
 
 import {
     buildAppWorkspaceService,
+    buildProjectWorkspaceService,
     getAppPackagesService,
     getCwdService,
     getIsCiService,
@@ -86,6 +87,7 @@ import { buildAppWithHooks, deployAppWithHooks, watchWithHooks } from "./decorat
 import {
     GetProject,
     GetProjectConfig,
+    BuildProjectWorkspaceService,
     ProjectSdkParamsService,
     LoadEnvVarsService,
     ValidateProjectConfig
@@ -129,6 +131,7 @@ export const createProjectSdkContainer = async (
 
     // Services.
     container.register(buildAppWorkspaceService).inSingletonScope();
+    container.register(buildProjectWorkspaceService).inSingletonScope();
     container.register(getAppPackagesService).inSingletonScope();
     container.register(getCwdService).inSingletonScope();
     container.register(getIsCiService).inSingletonScope();
@@ -205,17 +208,18 @@ export const createProjectSdkContainer = async (
     container.registerComposite(coreAfterBuild);
     container.registerComposite(coreAfterDeploy);
 
+    // Initialize project SDK.
     container.resolve(ProjectSdkParamsService).set(params);
-
     await container.resolve(LoadEnvVarsService).execute();
+    await container.resolve(BuildProjectWorkspaceService).execute();
 
-    // Extensions.
-    const project = await container.resolve(GetProject).execute();
     const projectExtensions = await container.resolve(GetProjectConfig).execute({
         tags: { runtimeContext: "project" }
     });
 
     await container.resolve(ValidateProjectConfig).execute(projectExtensions);
+
+    const project = container.resolve(GetProject).execute();
 
     const importFromPath = (filePath: string) => {
         let importPath = filePath;

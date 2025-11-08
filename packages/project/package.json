@@ -59,6 +59,9 @@
   },
   "adio": {
     "ignore": {
+      "src": [
+        "@webiny/project-aws"
+      ],
       "dependencies": [
         "exit-hook"
       ]

@@ -24,9 +24,10 @@ export class ProjectModel implements IProjectModel {
             version: this.version,
             paths: {
                 webinyConfigFile: this.paths.webinyConfigFile.toDto(),
+                webinyConfigBaseFile: this.paths.webinyConfigBaseFile.toDto(),
                 rootFolder: this.paths.rootFolder.toDto(),
                 dotWebinyFolder: this.paths.dotWebinyFolder.toDto(),
-                workspacesFolder: this.paths.workspacesFolder.toDto(),
+                workspaceFolder: this.paths.workspaceFolder.toDto(),
                 localPulumiStateFilesFolder: this.paths.localPulumiStateFilesFolder.toDto(),
                 tsConfigFile: this.paths.tsConfigFile.toDto()
             }
@@ -39,9 +40,10 @@ export class ProjectModel implements IProjectModel {
             version: dto.version,
             paths: {
                 webinyConfigFile: PathModel.from(dto.paths.webinyConfigFile),
+                webinyConfigBaseFile: PathModel.from(dto.paths.webinyConfigBaseFile),
                 rootFolder: PathModel.from(dto.paths.rootFolder),
                 dotWebinyFolder: PathModel.from(dto.paths.dotWebinyFolder),
-                workspacesFolder: PathModel.from(dto.paths.workspacesFolder),
+                workspaceFolder: PathModel.from(dto.paths.workspaceFolder),
                 localPulumiStateFilesFolder: PathModel.from(dto.paths.localPulumiStateFilesFolder),
                 tsConfigFile: PathModel.from(dto.paths.tsConfigFile)
             }
