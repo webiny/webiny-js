@@ -38,11 +38,7 @@ import {
 } from "./features/index.js";
 
 import chalk from "chalk";
-import {
-    CliParamsService,
-    GetProjectSdkService,
-    UiService
-} from "~/abstractions/index.js";
+import { CliParamsService, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 import {
     commandsWithGracefulErrorHandling,

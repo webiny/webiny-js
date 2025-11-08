@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetProjectService, LoadEnvVarsService, LoggerService } from "~/abstractions/index.js";
 import dotenv from "dotenv";
 
