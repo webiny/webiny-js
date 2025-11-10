@@ -42,13 +42,7 @@ export async function createRspackConfig(webpackEnv, { paths, options }) {
 
     const htmlTemplate = fs.readFileSync(paths.appHtml, "utf8");
 
-    const apiCorePackageJsonPath = path.join(tailwindBasePath, "api-core", "package.json");
-    const isWebinyJsRepo = fs.existsSync(apiCorePackageJsonPath);
-
-    let tailwindBasePath = path.join(process.cwd(), "packages");
-    if (!isWebinyJsRepo) {
-        tailwindBasePath = path.join(process.cwd(), "node_modules", "@webiny");
-    }
+    const tailwindBasePath = path.join(process.cwd(), "node_modules", "@webiny");
 
     return {
         mode: isEnvProduction ? "production" : isEnvDevelopment && "development",
