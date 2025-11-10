@@ -39,10 +39,6 @@ export interface CmsGroup {
      */
     tenant: string;
     /**
-     * Locale this group belongs to.
-     */
-    locale: string;
-    /**
      * Description for the group.
      */
     description: string | null;

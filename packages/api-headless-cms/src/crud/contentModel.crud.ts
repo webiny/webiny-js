@@ -531,8 +531,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
          */
         const group = await context.cms.storageOperations.groups.get({
             id: data.group,
-            tenant: original.tenant,
-            locale: locale.code
+            tenant: original.tenant
         });
         if (!group) {
             throw new NotFoundError(`There is no group "${data.group}".`);

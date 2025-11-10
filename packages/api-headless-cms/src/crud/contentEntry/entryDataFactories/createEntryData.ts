@@ -18,7 +18,6 @@ import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
 import { getState } from "./state.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
-import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 
 type DefaultValue = boolean | number | string | null;
 
@@ -29,7 +28,6 @@ interface CreateEntryDataParams {
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
     getTenant: () => Tenant;
-    getLocale: () => I18NLocale;
     accessControl: AccessControl;
 }
 
@@ -39,7 +37,6 @@ export const createEntryData = async ({
     options,
     context,
     getIdentity: getSecurityIdentity,
-    getLocale,
     getTenant,
     accessControl
 }: CreateEntryDataParams): Promise<{
@@ -61,8 +58,6 @@ export const createEntryData = async ({
         input: initialInput,
         validateEntries: true
     });
-
-    const locale = getLocale();
 
     const { id, entryId, version } = createEntryId(rawInput);
 
@@ -138,7 +133,6 @@ export const createEntryData = async ({
         entryId,
         id,
         modelId: model.modelId,
-        locale: locale.code,
 
         /**
          * Entry-level meta fields. 👇

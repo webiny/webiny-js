@@ -26,7 +26,6 @@ interface CreateEntryRevisionFromDataParams {
     context: CmsContext;
     getIdentity: () => SecurityIdentity;
     getTenant: () => Tenant;
-    getLocale: () => I18NLocale;
     originalEntry: CmsEntry;
 }
 

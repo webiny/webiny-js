@@ -20,7 +20,6 @@ import type { CmsGroup } from "./modelGroup.js";
 import type { CmsIdentity } from "./identity.js";
 import type { ISingletonModelManager } from "~/modelManager/index.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
-import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 export interface CmsError {
@@ -39,23 +38,11 @@ export interface CmsError {
 
 export type ApiEndpoint = "manage" | "preview" | "read";
 
-export interface HeadlessCms
-    extends CmsSystemContext,
-        CmsGroupContext,
-        CmsModelContext,
-        CmsEntryContext {
+export interface HeadlessCms extends CmsGroupContext, CmsModelContext, CmsEntryContext {
     /**
      * API type
      */
     type: ApiEndpoint | null;
-    /**
-     * Requested locale
-     */
-    locale: string;
-    /**
-     * returns an instance of current locale
-     */
-    getLocale: () => I18NLocale;
     /**
      * Means this request is a READ API
      */
@@ -234,34 +221,6 @@ export interface CmsFieldTypePlugins {
     [key: string]: CmsModelFieldToGraphQLPlugin;
 }
 
-export interface OnSystemBeforeInstallTopicParams {
-    tenant: string;
-    locale: string;
-}
-
-export interface OnSystemAfterInstallTopicParams {
-    tenant: string;
-    locale: string;
-}
-
-export interface OnSystemInstallErrorTopicParams {
-    error: Error;
-    tenant: string;
-    locale: string;
-}
-
-export type CmsSystemContext = {
-    getSystemVersion: () => Promise<string | null>;
-    setSystemVersion: (version: string) => Promise<void>;
-    installSystem: () => Promise<void>;
-    /**
-     * Lifecycle Events
-     */
-    onSystemBeforeInstall: Topic<OnSystemBeforeInstallTopicParams>;
-    onSystemAfterInstall: Topic<OnSystemAfterInstallTopicParams>;
-    onSystemInstallError: Topic<OnSystemInstallErrorTopicParams>;
-};
-
 /**
  * A GraphQL `params.data` parameter received when creating content model group.
  *
@@ -298,7 +257,6 @@ export interface CmsGroupUpdateInput {
 export interface CmsGroupListParams {
     where: {
         tenant: string;
-        locale: string;
     };
 }
 
@@ -642,7 +600,6 @@ export interface CmsEntry<T = CmsEntryValues> {
      * A locale of the entry.
      * @see I18NLocale.code
      */
-    locale: string;
     /**
      * A revision version of the entry.
      */
@@ -1704,12 +1661,10 @@ export interface CmsEntryPermission extends BaseCmsSecurityPermission {
 export interface CmsGroupStorageOperationsGetParams {
     id: string;
     tenant: string;
-    locale: string;
 }
 
 export interface CmsGroupStorageOperationsListWhereParams {
     tenant: string;
-    locale: string;
 
     [key: string]: any;
 }
@@ -1761,13 +1716,11 @@ export interface CmsGroupStorageOperations {
 
 export interface CmsModelStorageOperationsGetParams {
     tenant: string;
-    locale: string;
     modelId: string;
 }
 
 export interface CmsModelStorageOperationsListWhereParams {
     tenant: string;
-    locale: string;
 
     [key: string]: string;
 }
@@ -2169,36 +2122,8 @@ export interface CmsSystem {
     tenant: string;
 }
 
-export interface CmsSystemStorageOperationsGetParams {
-    tenant: string;
-}
-
-export interface CmsSystemStorageOperationsCreateParams {
-    system: CmsSystem;
-}
-
-export interface CmsSystemStorageOperationsUpdateParams {
-    system: CmsSystem;
-}
-
-export interface CmsSystemStorageOperations {
-    /**
-     * Get the system data.
-     */
-    get: (params: CmsSystemStorageOperationsGetParams) => Promise<CmsSystem | null>;
-    /**
-     * Create the system info in the storage.
-     */
-    create: (params: CmsSystemStorageOperationsCreateParams) => Promise<CmsSystem>;
-    /**
-     * Update the system info in the storage.
-     */
-    update: (params: CmsSystemStorageOperationsUpdateParams) => Promise<CmsSystem>;
-}
-
 export interface HeadlessCmsStorageOperations<C = CmsContext> {
     name: string;
-    system: CmsSystemStorageOperations;
     groups: CmsGroupStorageOperations;
     models: CmsModelStorageOperations;
     entries: CmsEntryStorageOperations;

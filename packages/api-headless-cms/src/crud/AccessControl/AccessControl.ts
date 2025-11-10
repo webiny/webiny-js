@@ -176,24 +176,6 @@ export class AccessControl {
                 });
             }
 
-            if (groupsPermissions.groups) {
-                if ("group" in params) {
-                    const { group } = params;
-                    if (!group) {
-                        continue;
-                    }
-
-                    const { groups } = groupsPermissions;
-                    if (!Array.isArray(groups[group.locale])) {
-                        continue;
-                    }
-
-                    if (!groups[group.locale].includes(group.id)) {
-                        continue;
-                    }
-                }
-            }
-
             acl.push({
                 rwd: groupsPermissions.rwd as string,
                 canAccessNonOwned: true,

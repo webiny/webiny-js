@@ -24,7 +24,6 @@ export const assignBeforeGroupCreate = (params: AssignBeforeGroupCreateParams) =
             const groups = await storageOperations.groups.list({
                 where: {
                     tenant: group.tenant,
-                    locale: group.locale,
                     id: group.id
                 }
             });
@@ -40,7 +39,6 @@ export const assignBeforeGroupCreate = (params: AssignBeforeGroupCreateParams) =
             const groups = await storageOperations.groups.list({
                 where: {
                     tenant: group.tenant,
-                    locale: group.locale,
                     slug: group.slug
                 }
             });
@@ -55,7 +53,6 @@ export const assignBeforeGroupCreate = (params: AssignBeforeGroupCreateParams) =
             const groups = await storageOperations.groups.list({
                 where: {
                     tenant: group.tenant,
-                    locale: group.locale,
                     slug
                 }
             });

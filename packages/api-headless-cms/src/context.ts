@@ -6,7 +6,6 @@ import { processRequestBody } from "@webiny/handler-graphql";
 import type { CmsParametersPluginResponse } from "~/plugins/CmsParametersPlugin.js";
 import { CmsParametersPlugin } from "~/plugins/CmsParametersPlugin.js";
 import { AccessControl } from "~/crud/AccessControl/AccessControl.js";
-import { createSystemCrud } from "~/crud/system.crud.js";
 import { createModelGroupsCrud } from "~/crud/contentModelGroup.crud.js";
 import { createModelsCrud } from "~/crud/contentModel.crud.js";
 import { createContentEntryCrud } from "~/crud/contentEntry.crud.js";
@@ -17,6 +16,18 @@ import { createImportCrud } from "~/export/crud/importing.js";
 import { getSchema } from "~/graphql/getSchema.js";
 import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 import { CmsInstallerFeature } from "~/features/installer/feature.js";
+import { ContentEntriesFeature } from "~/features/contentEntries/ContentEntriesFeature.js";
+import {
+    StorageOperations,
+    AccessControl as AccessControlAbstraction,
+    CmsContext as CmsContextAbstraction
+} from "~/features/shared/abstractions.js";
+import {
+    EntryFromStorageTransform,
+    EntryToStorageTransform,
+    PluginsContainer
+} from "./legacy/abstractions.js";
+import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -76,7 +87,6 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 return getSchema({
                     context,
                     getTenant,
-                    getLocale,
                     type
                 });
             });
@@ -94,78 +104,80 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             )
         );
 
-        await context.benchmark.measure("headlessCms.createContext", async () => {
-            await storageOperations.beforeInit(context);
+        await storageOperations.beforeInit(context);
 
-            const accessControl = new AccessControl({
-                getIdentity: () => context.security.getIdentity(),
-                getGroupsPermissions: () =>
-                    context.security.getPermissions("cms.contentModelGroup"),
-                getModelsPermissions: () => context.security.getPermissions("cms.contentModel"),
-                getEntriesPermissions: () => context.security.getPermissions("cms.contentEntry"),
-                listAllGroups: () => {
-                    return context.security.withoutAuthorization(() => {
-                        return context.cms.listGroups();
-                    });
-                }
-            });
-
-            context.cms = {
-                type,
-                locale: getLocale().code,
-                getLocale,
-                READ: type === "read",
-                PREVIEW: type === "preview",
-                MANAGE: type === "manage",
-                storageOperations,
-                accessControl,
-                getExecutableSchema,
-                ...createSystemCrud({
-                    context,
-                    getTenant,
-                    getLocale,
-                    getIdentity,
-                    storageOperations
-                }),
-                ...createModelGroupsCrud({
-                    context,
-                    getTenant,
-                    getLocale,
-                    getIdentity,
-                    storageOperations,
-                    accessControl
-                }),
-                ...createModelsCrud({
-                    context,
-                    getLocale,
-                    getTenant,
-                    getIdentity,
-                    storageOperations,
-                    accessControl
-                }),
-                ...createContentEntryCrud({
-                    context,
-                    getIdentity,
-                    getTenant,
-                    getLocale,
-                    storageOperations,
-                    accessControl
-                }),
-                export: {
-                    ...createExportCrud(context)
-                },
-                importing: {
-                    ...createImportCrud(context)
-                }
-            };
-
-            if (!storageOperations.init) {
-                return;
+        const accessControl = new AccessControl({
+            getIdentity: () => context.security.getIdentity(),
+            getGroupsPermissions: () =>
+                context.security.getPermissions("cms.contentModelGroup"),
+            getModelsPermissions: () => context.security.getPermissions("cms.contentModel"),
+            getEntriesPermissions: () => context.security.getPermissions("cms.contentEntry"),
+            listAllGroups: () => {
+                return context.security.withoutAuthorization(() => {
+                    return context.cms.listGroups();
+                });
             }
-            await storageOperations.init(context);
-
-            CmsInstallerFeature.register(context.container, context.cms);
         });
+
+        context.cms = {
+            type,
+            READ: type === "read",
+            PREVIEW: type === "preview",
+            MANAGE: type === "manage",
+            storageOperations,
+            accessControl,
+            getExecutableSchema,
+            ...createModelGroupsCrud({
+                context,
+                getTenant,
+                getIdentity,
+                storageOperations,
+                accessControl
+            }),
+            ...createModelsCrud({
+                context,
+                getLocale,
+                getTenant,
+                getIdentity,
+                storageOperations,
+                accessControl
+            }),
+            ...createContentEntryCrud({
+                context,
+                getIdentity,
+                getTenant,
+                getLocale,
+                storageOperations,
+                accessControl
+            }),
+            export: {
+                ...createExportCrud(context)
+            },
+            importing: {
+                ...createImportCrud(context)
+            }
+        };
+
+        // Register legacy dependencies
+        context.container.registerInstance(StorageOperations, storageOperations);
+        context.container.registerInstance(AccessControlAbstraction, accessControl);
+        context.container.registerInstance(CmsContextAbstraction, context);
+        context.container.registerInstance(PluginsContainer, context.plugins);
+        context.container.registerInstance(EntryToStorageTransform, (model, entry) => {
+            return entryToStorageTransform(context, model, entry);
+        });
+        context.container.registerInstance(EntryFromStorageTransform, (model, entry) => {
+            return entryFromStorageTransform(context, model, entry);
+        });
+
+        // Register features
+        CmsInstallerFeature.register(context.container, context.cms);
+        ContentEntriesFeature.register(context.container);
+
+        if (!storageOperations.init) {
+            return;
+        }
+        await storageOperations.init(context);
     });
 
     plugin.name = "cms.createContext";

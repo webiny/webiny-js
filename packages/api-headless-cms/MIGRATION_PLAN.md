@@ -620,7 +620,7 @@ class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
     }
 }
 
-export const CreateModelUseCaseImpl = createImplementation({
+export const CreateModelUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: CreateModelUseCaseImpl,
     dependencies: [ModelsRepository, EventPublisher, ModelValidator]
@@ -1010,13 +1010,6 @@ export const createHeadlessCmsContext = () => {
         ContentModelGroupsFeature.register(container);
         ContentEntriesFeature.register(container);
 
-        // NEW: Direct access to use cases
-        context.cms.useCases = {
-            createModel: container.resolve(CreateModel),
-            getModel: container.resolve(GetModel),
-            // ... all other use cases
-        };
-
         // LEGACY: Backward compatible CRUD API
         context.cms.models = new LegacyModelContextAdapter(container);
         context.cms.groups = new LegacyGroupContextAdapter(container);
@@ -1041,31 +1034,31 @@ export const createHeadlessCmsContext = () => {
 
 ### Phase 2: Use Cases ✅
 - [ ] **Content Models:**
-  - [ ] CreateModel use case
-  - [ ] UpdateModel use case
-  - [ ] DeleteModel use case
+  - [ ] CreateModel use case (with domain events and event handler abstractions)
+  - [ ] UpdateModel use case (with domain events and event handler abstractions)
+  - [ ] DeleteModel use case (with domain events and event handler abstractions)
   - [ ] GetModel use case
   - [ ] ListModels use case
 - [ ] **Content Model Groups:**
-  - [ ] CreateGroup use case
-  - [ ] UpdateGroup use case
-  - [ ] DeleteGroup use case
+  - [ ] CreateGroup use case (with domain events and event handler abstractions)
+  - [ ] UpdateGroup use case (with domain events and event handler abstractions)
+  - [ ] DeleteGroup use case (with domain events and event handler abstractions)
   - [ ] GetGroup use case
   - [ ] ListGroups use case
 - [ ] **Content Entries:**
-  - [ ] CreateEntry use case
-  - [ ] UpdateEntry use case
-  - [ ] DeleteEntry use case (move to bin)
-  - [ ] RestoreEntry use case
+  - [ ] CreateEntry use case (with domain events and event handler abstractions)
+  - [ ] UpdateEntry use case (with domain events and event handler abstractions)
+  - [ ] DeleteEntry use case (move to bin) (with domain events and event handler abstractions)
+  - [ ] RestoreEntry use case (with domain events and event handler abstractions)
   - [ ] GetEntry use case
   - [ ] ListEntries use case
-  - [ ] PublishEntry use case
-  - [ ] UnpublishEntry use case
-  - [ ] RepublishEntry use case
-  - [ ] CreateRevision use case
-  - [ ] GetRevisions use case
-  - [ ] DeleteRevision use case
-  - [ ] MoveEntry use case
+  - [ ] PublishEntry use case (with domain events and event handler abstractions)
+  - [ ] UnpublishEntry use case (with domain events and event handler abstractions)
+  - [ ] RepublishEntry use case (with domain events and event handler abstractions)
+  - [ ] CreateRevision use case (with domain events and event handler abstractions)
+  - [ ] GetRevisions use case 
+  - [ ] DeleteRevision use case (with domain events and event handler abstractions)
+  - [ ] MoveEntry use case (with domain events and event handler abstractions)
 
 ### Phase 3: Events ✅
 - [ ] Define all domain events

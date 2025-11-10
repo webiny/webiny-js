@@ -67,12 +67,10 @@ import { getSearchableFields } from "./contentEntry/searchableFields.js";
 import { filterAsync } from "~/utils/filterAsync.js";
 import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants.js";
 import {
-    createEntryData,
     createEntryRevisionFromData,
     createPublishEntryData,
     createRepublishEntryData,
     createUnpublishEntryData,
-    createUpdateEntryData,
     mapAndCleanUpdatedInputData
 } from "./contentEntry/entryDataFactories/index.js";
 import type { AccessControl } from "./AccessControl/AccessControl.js";
@@ -94,6 +92,8 @@ import type { GenericRecord } from "@webiny/api/types.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
+import { CreateEntryUseCase } from "~/features/contentEntries/CreateEntry/index.js";
+import { UpdateEntryUseCase } from "~/features/contentEntries/UpdateEntry/index.js";
 
 interface CreateContentEntryCrudParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -410,62 +410,33 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         rawInput: CreateCmsEntryInput,
         options?: CreateCmsEntryOptionsInput
     ): Promise<CmsEntry<T>> => {
-        await accessControl.ensureCanAccessEntry({ model, rwd: "w" });
+        // Delegate to new CreateEntry use case
+        const useCase = context.container.resolve(CreateEntryUseCase);
+        const result = await useCase.execute(model, rawInput, options);
 
-        const { entry, input } = await createEntryData({
-            context,
-            model,
-            options,
-            rawInput,
-            getLocale,
-            getTenant,
-            getIdentity: getSecurityIdentity,
-            accessControl
-        });
-
-        await accessControl.ensureCanAccessEntry({ model, entry, rwd: "w" });
-
-        let storageEntry: CmsStorageEntry | null = null;
-        try {
-            await onEntryBeforeCreate.publish({
-                entry,
-                input,
-                model
-            });
-
-            storageEntry = await entryToStorageTransform(context, model, entry);
-
-            const result = await storageOperations.entries.create(model, {
-                entry,
-                storageEntry
-            });
-
-            await onEntryAfterCreate.publish({
-                entry,
-                storageEntry: result,
-                model,
-                input
-            });
-
-            return entry as CmsEntry<T>;
-        } catch (ex) {
+        if (result.isFail()) {
+            // Publish error event for backward compatibility
             await onEntryCreateError.publish({
-                error: ex,
-                entry,
+                error: result.error,
+                entry: null as any,
                 model,
-                input
+                input: rawInput
             });
+
+            // Convert Result error to WebinyError for backward compatibility
+            const error = result.error;
             throw new WebinyError(
-                ex.message || "Could not create content entry.",
-                ex.code || "CREATE_ENTRY_ERROR",
-                ex.data || {
-                    error: ex,
-                    input,
-                    entry,
-                    storageEntry
+                error.message || "Could not create content entry.",
+                error.code || "CREATE_ENTRY_ERROR",
+                {
+                    error,
+                    input: rawInput,
+                    model
                 }
             );
         }
+
+        return result.value as CmsEntry<T>;
     };
     const createEntryRevisionFrom: CmsEntryContext["createEntryRevisionFrom"] = async (
         model,
@@ -573,85 +544,33 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         metaInput?: GenericRecord,
         options?: UpdateCmsEntryOptionsInput
     ): Promise<CmsEntry<T>> => {
-        await accessControl.ensureCanAccessEntry({ model, rwd: "w" });
+        // Delegate to new UpdateEntry use case
+        const useCase = context.container.resolve(UpdateEntryUseCase);
+        const result = await useCase.execute(model, id, rawInput, metaInput, options);
 
-        /**
-         * The entry we are going to update.
-         */
-        const originalStorageEntry = await getRevisionByIdUseCase.execute(model, { id });
-
-        if (!originalStorageEntry) {
-            throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
-        }
-
-        if (originalStorageEntry.locked) {
-            throw new WebinyError(
-                `Cannot update entry because it's locked.`,
-                "CONTENT_ENTRY_UPDATE_ERROR"
-            );
-        }
-
-        const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
-
-        const { entry, input } = await createUpdateEntryData({
-            model,
-            rawInput,
-            options,
-            context,
-            getIdentity: getSecurityIdentity,
-            getTenant,
-            getLocale,
-            originalEntry,
-            metaInput
-        });
-
-        await accessControl.ensureCanAccessEntry({ model, entry, rwd: "w" });
-
-        let storageEntry: CmsStorageEntry | null = null;
-
-        try {
-            await onEntryBeforeUpdate.publish({
-                entry,
-                model,
-                input,
-                original: originalEntry
-            });
-
-            storageEntry = await entryToStorageTransform(context, model, entry);
-
-            const result = await storageOperations.entries.update(model, {
-                entry,
-                storageEntry
-            });
-
-            await onEntryAfterUpdate.publish({
-                entry,
-                storageEntry: result,
-                model,
-                input,
-                original: originalEntry
-            });
-
-            return entry as CmsEntry<T>;
-        } catch (ex) {
+        if (result.isFail()) {
+            // Publish error event for backward compatibility
             await onEntryUpdateError.publish({
-                entry,
+                error: result.error,
+                entry: null as any,
                 model,
-                input,
-                error: ex
+                input: rawInput
             });
+
+            // Convert Result error to WebinyError for backward compatibility
+            const error = result.error;
             throw new WebinyError(
-                ex.message || "Could not update existing entry.",
-                ex.code || "UPDATE_ERROR",
+                error.message || "Could not update existing entry.",
+                error.code || "UPDATE_ERROR",
                 {
-                    error: ex,
-                    entry,
-                    storageEntry,
-                    originalEntry,
-                    input
+                    error,
+                    input: rawInput,
+                    model
                 }
             );
         }
+
+        return result.value as CmsEntry<T>;
     };
 
     const validateEntry: CmsEntryContext["validateEntry"] = async (model, id, inputData) => {

@@ -234,7 +234,7 @@ Every feature should define domain-specific errors that extend `BaseError` from 
 
 ### Error Definition Pattern
 
-Create a `shared/errors.ts` file in your feature with domain-specific errors:
+Create a `errors.ts` file in your feature with domain-specific errors. If using `data`, make sure there's a type defined and passed to base class generic: `BaseError<TDataType>`.
 
 ```typescript
 // features/apiKeys/shared/errors.ts

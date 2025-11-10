@@ -28,8 +28,7 @@ export const assignBeforeGroupDelete = (params: AssignBeforeGroupDeleteParams) =
 
         const models = await storageOperations.models.list({
             where: {
-                tenant: group.tenant,
-                locale: group.locale
+                tenant: group.tenant
             }
         });
         const items = models.filter(model => {

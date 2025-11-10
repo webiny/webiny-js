@@ -30,12 +30,10 @@ import { createCacheKey, createMemoryCache } from "~/utils/index.js";
 import { listGroupsFromDatabase } from "~/crud/contentModelGroup/listGroupsFromDatabase.js";
 import type { AccessControl } from "./AccessControl/AccessControl.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
-import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;
-    getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
     accessControl: AccessControl;
     context: CmsContext;
@@ -43,7 +41,7 @@ export interface CreateModelGroupsCrudParams {
 }
 
 export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsGroupContext => {
-    const { getTenant, getIdentity, getLocale, storageOperations, accessControl, context } = params;
+    const { getTenant, getIdentity, storageOperations, accessControl, context } = params;
 
     const filterGroup = async (group?: CmsGroup) => {
         if (!group) {
@@ -62,12 +60,11 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         listFilteredDatabaseGroupsCache.clear();
     };
 
-    const fetchPluginGroups = (tenant: string, locale: string): Promise<CmsGroup[]> => {
+    const fetchPluginGroups = (tenant: string): Promise<CmsGroup[]> => {
         const pluginGroups = context.plugins.byType<CmsGroupPlugin>(CmsGroupPlugin.type);
 
         const cacheKey = createCacheKey({
             tenant,
-            locale,
             identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined,
             groups: pluginGroups
                 .map(({ contentModelGroup: group }) => {
@@ -83,10 +80,8 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
                  * If it does not have tenant or locale define, it is for every locale and tenant
                  */
                 .filter(plugin => {
-                    const { tenant: t, locale: l } = plugin.contentModelGroup;
+                    const { tenant: t } = plugin.contentModelGroup;
                     if (t && t !== tenant) {
-                        return false;
-                    } else if (l && l !== locale) {
                         return false;
                     }
                     return true;
@@ -95,7 +90,6 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
                     return {
                         ...plugin.contentModelGroup,
                         tenant,
-                        locale,
                         webinyVersion: context.WEBINY_VERSION
                     };
                 });
@@ -103,22 +97,20 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         });
     };
 
-    const fetchGroups = async (tenant: string, locale: string) => {
-        const pluginGroups = await fetchPluginGroups(tenant, locale);
+    const fetchGroups = async (tenant: string) => {
+        const pluginGroups = await fetchPluginGroups(tenant);
         /**
          * Maybe we can cache based on permissions, not the identity id?
          *
          * TODO: @adrian please check if possible.
          */
         const cacheKey = createCacheKey({
-            tenant,
-            locale
+            tenant
         });
         const databaseGroups = await listDatabaseGroupsCache.getOrSet(cacheKey, async () => {
             return await listGroupsFromDatabase({
                 storageOperations,
-                tenant,
-                locale
+                tenant
             });
         });
         const filteredCacheKey = createCacheKey({
@@ -182,7 +174,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         await accessControl.ensureCanAccessGroup();
 
         const groups = await context.security.withoutAuthorization(async () => {
-            return fetchGroups(getTenant().id, getLocale().code);
+            return fetchGroups(getTenant().id);
         });
         const group = groups.find(group => group.id === id);
         if (!group) {
@@ -197,11 +189,11 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
     const listGroups: CmsGroupContext["listGroups"] = async params => {
         const { where } = params || {};
 
-        const { tenant, locale } = where || {};
+        const { tenant } = where || {};
 
         await accessControl.ensureCanAccessGroup();
 
-        return fetchGroups(tenant || getTenant().id, locale || getLocale().code);
+        return fetchGroups(tenant || getTenant().id);
     };
 
     const createGroup: CmsGroupContext["createGroup"] = async input => {
@@ -221,7 +213,6 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
             ...data,
             id,
             tenant: getTenant().id,
-            locale: getLocale().code,
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),
             createdBy: {
@@ -291,7 +282,6 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         const group: CmsGroup = {
             ...original,
             ...data,
-            locale: getLocale().code,
             tenant: getTenant().id,
             savedOn: new Date().toISOString()
         };
