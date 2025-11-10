@@ -21,7 +21,8 @@ export class WorkflowStateListPresenter implements IWorkflowStateListPresenter {
             loading: this.repository.loading,
             error: this.repository.error,
             totalCount: this.repository.meta?.totalCount || 0,
-            hasMoreItems: this.repository.meta?.hasMoreItems || false
+            hasMoreItems: this.repository.meta?.hasMoreItems || false,
+            where: this.listParams?.where || {}
         };
     }
 
@@ -54,7 +55,7 @@ export class WorkflowStateListPresenter implements IWorkflowStateListPresenter {
         this.listParams = {
             after: undefined,
             ...params,
-            limit: 25,
+            limit: 50,
             where: {
                 ...params?.where,
                 isActive: true

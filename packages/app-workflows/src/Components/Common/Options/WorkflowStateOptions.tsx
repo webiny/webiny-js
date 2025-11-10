@@ -10,28 +10,40 @@ import type { IWorkflowState } from "~/types.js";
 
 interface IWorkflowStateOptionsProps {
     state: IWorkflowState;
-    onStart: (state: IWorkflowState) => void;
-    onTakeOver: (state: IWorkflowState) => void;
-    onApprove: (state: IWorkflowState) => void;
-    onReject: (state: IWorkflowState) => void;
+    onStart?: (state: IWorkflowState) => void;
+    onTakeOver?: (state: IWorkflowState) => void;
+    onApprove?: (state: IWorkflowState) => void;
+    onReject?: (state: IWorkflowState) => void;
 }
 
 export const WorkflowStateOptions = (props: IWorkflowStateOptionsProps) => {
     const { state, onReject, onStart, onTakeOver, onApprove } = props;
 
     const startClick = useCallback(() => {
+        if (!onStart) {
+            return;
+        }
         onStart(state);
     }, [state, onStart]);
 
     const takeOverClick = useCallback(() => {
+        if (!onTakeOver) {
+            return;
+        }
         onTakeOver(state);
     }, [state, onTakeOver]);
 
     const approveClick = useCallback(() => {
+        if (!onApprove) {
+            return;
+        }
         onApprove(state);
     }, [state, onApprove]);
 
     const rejectClick = useCallback(() => {
+        if (!onReject) {
+            return;
+        }
         onReject(state);
     }, [state, onReject]);
 
@@ -46,10 +58,14 @@ export const WorkflowStateOptions = (props: IWorkflowStateOptionsProps) => {
             side="bottom"
         >
             <WorkflowStateOptionsOpenInNewWindow state={state} />
-            <WorkflowStateOptionsStart onClick={startClick} state={state} />
-            <WorkflowStateOptionsTakeOver onClick={takeOverClick} state={state} />
-            <WorkflowStateOptionsApprove onClick={approveClick} state={state} />
-            <WorkflowStateOptionsReject onClick={rejectClick} state={state} />
+            {onStart ? <WorkflowStateOptionsStart onClick={startClick} state={state} /> : null}
+            {onTakeOver ? (
+                <WorkflowStateOptionsTakeOver onClick={takeOverClick} state={state} />
+            ) : null}
+            {onApprove ? (
+                <WorkflowStateOptionsApprove onClick={approveClick} state={state} />
+            ) : null}
+            {onReject ? <WorkflowStateOptionsReject onClick={rejectClick} state={state} /> : null}
         </DropdownMenu>
     );
 };

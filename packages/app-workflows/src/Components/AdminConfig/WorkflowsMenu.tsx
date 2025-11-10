@@ -15,7 +15,12 @@ export const WorkflowsMenu = () => {
             pinnable={true}
             element={
                 <Menu.Link
-                    icon={<WorkflowStatesListIcon />}
+                    icon={
+                        <Menu.Link.Icon
+                            label="Publishing Workflows"
+                            element={<WorkflowStatesListIcon />}
+                        />
+                    }
                     text={"Publishing Workflows"}
                     to={router.getLink(Routes.Workflows.ContentReviews)}
                 />

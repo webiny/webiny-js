@@ -6,6 +6,7 @@ export interface IWorkflowStateListPresenterViewModel {
     error: IGenericError | null;
     totalCount: number;
     hasMoreItems: boolean;
+    where: IWorkflowStateListPresenterListParamsWhere;
 }
 
 export interface IWorkflowStateListPresenterListParamsWhereSteps {
@@ -56,7 +57,7 @@ export interface IWorkflowStateListPresenterListParams {
 export interface IWorkflowStateListPresenter {
     vm: IWorkflowStateListPresenterViewModel;
 
-    filterBy: (where: IWorkflowStateListPresenterListParamsWhere) => Promise<void>;
-    list: (params?: IWorkflowStateListPresenterListParams) => Promise<void>;
-    nextPage: () => Promise<void>;
+    filterBy(where: IWorkflowStateListPresenterListParamsWhere): Promise<void>;
+    list(params?: IWorkflowStateListPresenterListParams): Promise<void>;
+    nextPage(): Promise<void>;
 }

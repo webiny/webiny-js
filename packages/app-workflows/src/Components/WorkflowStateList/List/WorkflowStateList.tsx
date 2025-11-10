@@ -6,6 +6,7 @@ import { type IGenericError, type IWorkflowState } from "~/types.js";
 import { TagState } from "~/Components/Common/TagState.js";
 import { TagStep } from "~/Components/Common/TagStep.js";
 import { WorkflowStateListOptions } from "./WorkflowStateListOptions.js";
+import { WorkflowStateListFilters } from "./WorkflowStateListFilters.js";
 
 const columns: DataTableColumns<IWorkflowState> = {
     title: {
@@ -70,6 +71,7 @@ export const WorkflowStateList = observer(() => {
     return (
         <>
             <Error error={presenter.vm.error} />
+            <WorkflowStateListFilters />
             <DataTable
                 bordered={false}
                 stickyHeader={false}
