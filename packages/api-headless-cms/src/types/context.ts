@@ -68,7 +68,7 @@ export interface CmsEntryContext {
     /**
      * Get a single content entry for a model.
      */
-    getEntry: <T = CmsEntryValues>(
+    getEntry: <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryGetParams
     ) => Promise<CmsEntry<T>>;
@@ -79,7 +79,7 @@ export interface CmsEntryContext {
     /**
      * Get the entry for a model by a given ID.
      */
-    getEntryById<T = CmsEntryValues>(model: CmsModel, revision: string): Promise<CmsEntry<T>>;
+    getEntryById<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, revision: string): Promise<CmsEntry<T>>;
     /**
      * List entries for a model. Internal method used by get, listLatest and listPublished.
      */

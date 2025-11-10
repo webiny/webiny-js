@@ -1,11 +1,27 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { PluginsContainer as PluginsContainerType } from "@webiny/plugins";
-import type { CmsEntry, CmsModel } from "~/types/index.js";
+import type { CmsEntry, CmsModel, CmsModelField } from "~/types/index.js";
 
 export const PluginsContainer = createAbstraction<PluginsContainerType>("PluginsContainer");
 
 export namespace PluginsContainer {
     export type Interface = PluginsContainerType;
+}
+
+/**
+ * SearchableFieldsProvider - Provides searchable field paths for a model.
+ * Legacy abstraction for the getSearchableFields utility function.
+ */
+export interface ISearchableFieldsProvider {
+    (params: { fields: CmsModelField[] }): string[];
+}
+
+export const SearchableFieldsProvider = createAbstraction<ISearchableFieldsProvider>(
+    "SearchableFieldsProvider"
+);
+
+export namespace SearchableFieldsProvider {
+    export type Interface = ISearchableFieldsProvider;
 }
 
 /**
@@ -16,9 +32,8 @@ export interface IEntryToStorageTransform {
     (model: CmsModel, entry: CmsEntry): Promise<CmsEntry>;
 }
 
-export const EntryToStorageTransform = createAbstraction<IEntryToStorageTransform>(
-    "EntryToStorageTransform"
-);
+export const EntryToStorageTransform =
+    createAbstraction<IEntryToStorageTransform>("EntryToStorageTransform");
 
 export namespace EntryToStorageTransform {
     export type Interface = IEntryToStorageTransform;

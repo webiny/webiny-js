@@ -21,6 +21,6 @@ export const GetRevisionByIdFeature = createFeature({
         container.register(GetRevisionByIdUseCase);
 
         // Register decorator (filters deleted entries)
-        container.register(GetRevisionByIdNotDeleted);
+        container.registerDecorator(GetRevisionByIdNotDeleted);
     }
 });

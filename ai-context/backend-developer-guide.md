@@ -486,8 +486,8 @@ Events must follow this structure with handler abstractions:
 ```typescript
 // features/teams/CreateTeam/events.ts
 import { createAbstraction } from "@webiny/feature/api";
-import { DomainEvent } from "@webiny/api-core";
-import type { IEventHandler } from "@webiny/api-core";
+import { DomainEvent } from "@webiny/api-core/features/EventPublisher";
+import type { IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { TeamBeforeCreatePayload, TeamAfterCreatePayload } from "./abstractions.js";
 
 // Before event with handler abstraction
@@ -550,7 +550,7 @@ Publish events from use cases using EventPublisher:
 
 ```typescript
 // features/teams/CreateTeam/CreateTeamUseCase.ts
-import { EventPublisher } from "@webiny/api-core";
+import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
 import { TeamBeforeCreateEvent, TeamAfterCreateEvent } from "./events.js";
 
 class CreateTeamUseCaseImpl implements CreateTeam.Interface {

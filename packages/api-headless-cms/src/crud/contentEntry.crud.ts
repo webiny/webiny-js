@@ -7,7 +7,6 @@ import type {
     CmsEntryContext,
     CmsEntryGetParams,
     CmsEntryListParams,
-    CmsEntryListWhere,
     CmsEntryMeta,
     CmsEntryValues,
     CmsModel,
@@ -65,7 +64,6 @@ import {
 } from "~/utils/entryStorage.js";
 import { getSearchableFields } from "./contentEntry/searchableFields.js";
 import { filterAsync } from "~/utils/filterAsync.js";
-import { isEntryLevelEntryMetaField, pickEntryMetaFields } from "~/constants.js";
 import {
     createEntryRevisionFromData,
     createPublishEntryData,
@@ -75,16 +73,7 @@ import {
 } from "./contentEntry/entryDataFactories/index.js";
 import type { AccessControl } from "./AccessControl/AccessControl.js";
 import {
-    deleteEntryUseCases,
-    getEntriesByIdsUseCases,
-    getLatestEntriesByIdsUseCases,
-    getLatestRevisionByEntryIdUseCases,
-    getPreviousRevisionByEntryIdUseCases,
-    getPublishedEntriesByIdsUseCases,
     getPublishedRevisionByEntryIdUseCases,
-    getRevisionByIdUseCases,
-    getRevisionsByEntryIdUseCases,
-    listEntriesUseCases,
     restoreEntryFromBinUseCases
 } from "~/crud/contentEntry/useCases/index.js";
 import { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser.js";
@@ -94,6 +83,22 @@ import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 import { CreateEntryUseCase } from "~/features/contentEntries/CreateEntry/index.js";
 import { UpdateEntryUseCase } from "~/features/contentEntries/UpdateEntry/index.js";
+import { GetRevisionByIdUseCase } from "~/features/contentEntries/GetRevisionById/index.js";
+import {
+    ListLatestEntriesUseCase,
+    ListPublishedEntriesUseCase,
+    ListDeletedEntriesUseCase
+} from "~/features/contentEntries/ListEntries/index.js";
+import { ListEntriesUseCase } from "~/features/contentEntries/ListEntries/abstractions.js";
+import { GetEntriesByIdsUseCase } from "~/features/contentEntries/GetEntriesByIds/index.js";
+import { GetEntryByIdUseCase } from "~/features/contentEntries/GetEntryById/index.js";
+import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntries/GetPublishedEntriesByIds/index.js";
+import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntries/GetLatestEntriesByIds/index.js";
+import { GetRevisionsByEntryIdUseCase } from "~/features/contentEntries/GetRevisionsByEntryId/index.js";
+import { GetEntryUseCase } from "~/features/contentEntries/GetEntry/index.js";
+import { DeleteEntryRevisionUseCase } from "~/features/contentEntries/DeleteEntryRevision/index.js";
+import { DeleteEntryUseCase } from "~/features/contentEntries/DeleteEntry/index.js";
+import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntries/GetLatestRevisionByEntryId/index.js";
 
 interface CreateContentEntryCrudParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -264,87 +269,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const transformEntryFromStorageCallable = createTransformEntryCallable({
         context
     });
-    /**
-     * List entries
-     */
-    const {
-        listEntriesUseCase,
-        listLatestUseCase,
-        listDeletedUseCase,
-        listPublishedUseCase,
-        getEntryUseCase
-    } = listEntriesUseCases({
-        transform: transformEntryFromStorageCallable,
-        operation: storageOperations.entries.list,
-        accessControl,
-        topics: { onEntryBeforeList },
-        context,
-        getIdentity: getSecurityIdentity
-    });
-
-    /**
-     * Get entries by ids
-     */
-    const { getEntriesByIdsUseCase } = getEntriesByIdsUseCases({
-        transform: transformEntryFromStorageCallable,
-        operation: storageOperations.entries.getByIds,
-        accessControl
-    });
-
-    /**
-     * Get latest entries by ids
-     */
-    const { getLatestEntriesByIdsUseCase } = getLatestEntriesByIdsUseCases({
-        transform: transformEntryFromStorageCallable,
-        operation: storageOperations.entries.getLatestByIds,
-        accessControl
-    });
-
-    /**
-     * Get published entries by ids
-     */
-    const { getPublishedEntriesByIdsUseCase } = getPublishedEntriesByIdsUseCases({
-        transform: transformEntryFromStorageCallable,
-        operation: storageOperations.entries.getPublishedByIds,
-        accessControl
-    });
-
-    /**
-     * Get revisions by entryId
-     */
-    const { getRevisionsByEntryIdUseCase } = getRevisionsByEntryIdUseCases({
-        transform: transformEntryFromStorageCallable,
-        operation: storageOperations.entries.getRevisions,
-        accessControl
-    });
-
-    /**
-     * Get revision by id
-     */
-    const { getRevisionByIdUseCase } = getRevisionByIdUseCases({
-        transform: transformEntryFromStorageCallable,
-        operation: storageOperations.entries.getRevisionById
-    });
-
-    /**
-     * Get latest revision by entryId
-     */
-    const {
-        getLatestRevisionByEntryIdUseCase,
-        getLatestRevisionByEntryIdWithDeletedUseCase,
-        getLatestRevisionByEntryIdDeletedUseCase
-    } = getLatestRevisionByEntryIdUseCases({
-        transform: transformEntryFromStorageCallable,
-        operation: storageOperations.entries.getLatestRevisionByEntryId
-    });
-
-    /**
-     * Get previous revision by entryId
-     */
-    const { getPreviousRevisionByEntryIdUseCase } = getPreviousRevisionByEntryIdUseCases({
-        transform: transformEntryFromStorageCallable,
-        operation: storageOperations.entries.getPreviousRevision
-    });
 
     /**
      * Get published revision by entryId
@@ -353,22 +277,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         transform: transformEntryFromStorageCallable,
         operation: storageOperations.entries.getPublishedRevisionByEntryId
     });
-
-    /**
-     * Delete entry
-     */
-    const { deleteEntryUseCase, moveEntryToBinUseCase, deleteEntryOperation } = deleteEntryUseCases(
-        {
-            deleteOperation: storageOperations.entries.delete,
-            moveToBinOperation: storageOperations.entries.moveToBin,
-            getEntry: getLatestRevisionByEntryIdUseCase,
-            getEntryWithDeleted: getLatestRevisionByEntryIdWithDeletedUseCase,
-            getIdentity: getSecurityIdentity,
-            topics: { onEntryBeforeDelete, onEntryAfterDelete, onEntryDeleteError },
-            accessControl,
-            context
-        }
-    );
 
     /**
      * Restore entry from bin
@@ -387,24 +295,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         context
     });
 
-    const getEntryById = async <T = CmsEntryValues>(
-        model: CmsModel,
-        id: string
-    ): Promise<CmsEntry<T>> => {
-        const where: CmsEntryListWhere = {
-            id
-        };
-        await onEntryBeforeGet.publish({
-            where,
-            model
-        });
-        const [entry] = await getEntriesByIdsUseCase.execute(model, { ids: [id] });
-        if (!entry) {
-            throw new NotFoundError(`Entry by ID "${id}" not found.`);
-        }
-        // TODO figure out without casting
-        return entry as CmsEntry<T>;
-    };
     const createEntry: CmsEntryContext["createEntry"] = async <T = CmsEntryValues>(
         model: CmsModel,
         rawInput: CreateCmsEntryInput,
@@ -451,29 +341,32 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
          */
         const { id: uniqueId } = parseIdentifier(sourceId);
 
-        const originalStorageEntry = await getRevisionByIdUseCase.execute(model, {
-            id: sourceId
-        });
-        const latestStorageEntry = await getLatestRevisionByEntryIdUseCase.execute(model, {
-            id: uniqueId
-        });
+        const useCase = context.container.resolve(GetRevisionByIdUseCase);
+        const originalResult = await useCase.execute(model, sourceId);
 
-        if (!originalStorageEntry) {
+        if (originalResult.isFail()) {
             throw new NotFoundError(
                 `Entry "${sourceId}" of model "${model.modelId}" was not found.`
             );
         }
 
-        if (!latestStorageEntry) {
+        const originalEntry = originalResult.value;
+
+        const getLatestRevisionByEntryIdUseCase = context.container.resolve(
+            GetLatestRevisionByEntryIdUseCase
+        );
+
+        const latestStorageEntryResult = await getLatestRevisionByEntryIdUseCase.execute(model, {
+            id: uniqueId
+        });
+
+        if (latestStorageEntryResult.isFail()) {
             throw new NotFoundError(
                 `Latest entry "${uniqueId}" of model "${model.modelId}" was not found.`
             );
         }
 
-        /**
-         * We need to convert data from DB to its original form before using it further.
-         */
-        const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
+        const latestStorageEntry = latestStorageEntryResult.value;
 
         const { entry, input } = await createEntryRevisionFromData({
             sourceId,
@@ -531,8 +424,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     error: ex,
                     entry,
                     storageEntry,
-                    originalEntry,
-                    originalStorageEntry
+                    originalEntry
                 }
             );
         }
@@ -582,12 +474,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             /**
              * The entry we are going to update.
              */
-            const originalStorageEntry = await getRevisionByIdUseCase.execute(model, { id });
+            const useCase = context.container.resolve(GetRevisionByIdUseCase);
+            const entryResult = await useCase.execute(model, id);
 
-            if (!originalStorageEntry) {
+            if (entryResult.isFail()) {
                 throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
             }
-            originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
+            originalEntry = entryResult.value;
         }
 
         await accessControl.ensureCanAccessEntry({ model, entry: originalEntry, rwd: "w" });
@@ -607,13 +500,14 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * The entry we are going to move to another folder.
          */
-        const originalStorageEntry = await getRevisionByIdUseCase.execute(model, { id });
+        const useCase = context.container.resolve(GetRevisionByIdUseCase);
+        const result = await useCase.execute(model, id);
 
-        if (!originalStorageEntry) {
+        if (result.isFail()) {
             throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
         }
 
-        const entry = await entryFromStorageTransform(context, model, originalStorageEntry);
+        const entry = result.value;
 
         await accessControl.ensureCanAccessEntry({ model, entry, rwd: "w" });
 
@@ -657,12 +551,13 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         /**
          * Fetch the entry from the storage.
          */
-        const originalStorageEntry = await getRevisionByIdUseCase.execute(model, { id });
-        if (!originalStorageEntry) {
+        const useCase = context.container.resolve(GetRevisionByIdUseCase);
+        const result = await useCase.execute(model, id);
+        if (result.isFail()) {
             throw new NotFoundError(`Entry "${id}" was not found!`);
         }
 
-        const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
+        const originalEntry = result.value;
 
         await accessControl.ensureCanAccessEntry({
             model,
@@ -735,105 +630,11 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         model,
         revisionId
     ) => {
-        await accessControl.ensureCanAccessEntry({ model, rwd: "d" });
+        const useCase = context.container.resolve(DeleteEntryRevisionUseCase);
+        const result = await useCase.execute(model, revisionId);
 
-        const { id: entryId, version } = parseIdentifier(revisionId);
-
-        const storageEntryToDelete = await getRevisionByIdUseCase.execute(model, {
-            id: revisionId
-        });
-        const latestStorageEntry = await getLatestRevisionByEntryIdUseCase.execute(model, {
-            id: entryId
-        });
-        const storagePreviousEntry = await getPreviousRevisionByEntryIdUseCase.execute(model, {
-            entryId,
-            version: version as number
-        });
-
-        if (!storageEntryToDelete) {
-            throw new NotFoundError(`Entry "${revisionId}" was not found!`);
-        }
-
-        const latestEntryRevisionId = latestStorageEntry ? latestStorageEntry.id : null;
-
-        const entryToDelete = await entryFromStorageTransform(context, model, storageEntryToDelete);
-
-        await accessControl.ensureCanAccessEntry({ model, entry: entryToDelete, rwd: "d" });
-
-        /**
-         * If targeted record is the latest entry record and there is no previous one, we need
-         * to run full delete with hooks. In this case, `deleteRevision` hooks are not fired.
-         */
-        if (entryToDelete.id === latestEntryRevisionId && !storagePreviousEntry) {
-            return await deleteEntryOperation.execute(model, { entry: entryToDelete });
-        }
-        /**
-         * If targeted record is the latest entry revision, set the previous one as the new latest.
-         */
-        let entryToSetAsLatest: CmsEntry | null = null;
-        let storageEntryToSetAsLatest: CmsStorageEntry | null = null;
-        let updatedEntryToSetAsLatest: CmsEntry | null = null;
-        let storageUpdatedEntryToSetAsLatest: CmsStorageEntry | null = null;
-
-        if (entryToDelete.id === latestEntryRevisionId && storagePreviousEntry) {
-            entryToSetAsLatest = await entryFromStorageTransform(
-                context,
-                model,
-                storagePreviousEntry
-            );
-            storageEntryToSetAsLatest = storagePreviousEntry;
-
-            /**
-             * Since we're setting a different revision as the latest, we need to update entry-level meta
-             * fields. The values are taken from the latest revision we're about to delete. The update of the
-             * new latest revision is performed within storage operations.
-             */
-            const pickedEntryLevelMetaFields = pickEntryMetaFields(
-                entryToDelete,
-                isEntryLevelEntryMetaField
-            );
-
-            updatedEntryToSetAsLatest = {
-                ...entryToSetAsLatest,
-                ...pickedEntryLevelMetaFields
-            };
-
-            storageUpdatedEntryToSetAsLatest = {
-                ...storageEntryToSetAsLatest,
-                ...pickedEntryLevelMetaFields
-            };
-        }
-
-        try {
-            await onEntryRevisionBeforeDelete.publish({
-                entry: entryToDelete,
-                model
-            });
-
-            await storageOperations.entries.deleteRevision(model, {
-                entry: entryToDelete,
-                storageEntry: storageEntryToDelete,
-                latestEntry: updatedEntryToSetAsLatest,
-                latestStorageEntry: storageUpdatedEntryToSetAsLatest
-            });
-
-            await onEntryRevisionAfterDelete.publish({
-                entry: entryToDelete,
-                model
-            });
-        } catch (ex) {
-            await onEntryRevisionDeleteError.publish({
-                entry: entryToDelete,
-                model,
-                error: ex
-            });
-            throw new WebinyError(ex.message, ex.code || "DELETE_REVISION_ERROR", {
-                error: ex,
-                entry: entryToDelete,
-                storageEntry: storageEntryToDelete,
-                latestEntry: updatedEntryToSetAsLatest,
-                latestStorageEntry: storageUpdatedEntryToSetAsLatest
-            });
+        if (result.isFail()) {
+            throw new WebinyError(result.error.message, result.error.code, result.error.data);
         }
     };
     const deleteMultipleEntries: CmsEntryContext["deleteMultipleEntries"] = async (
@@ -911,43 +712,36 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         }
     };
 
-    const deleteEntry: CmsEntryContext["deleteEntry"] = async (model, id, options = {}) => {
-        const { permanently = true } = options;
-
-        /**
-         * If the 'permanently' flag is set to false, the entry must be moved to the bin; otherwise, deleted.
-         */
-        if (!permanently) {
-            return await moveEntryToBinUseCase.execute(model, id, options);
-        }
-
-        return await deleteEntryUseCase.execute(model, id, options);
-    };
     const publishEntry = async <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string
     ) => {
         await accessControl.ensureCanAccessEntry({ model, pw: "p" });
 
-        const originalStorageEntry = await getRevisionByIdUseCase.execute(model, { id });
+        const useCase = context.container.resolve(GetRevisionByIdUseCase);
+        const result = await useCase.execute(model, id);
 
-        if (!originalStorageEntry) {
+        if (result.isFail()) {
             throw new NotFoundError(`Entry "${id}" in the model "${model.modelId}" was not found.`);
         }
 
-        const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
+        const originalEntry = result.value;
 
         await accessControl.ensureCanAccessEntry({ model, entry: originalEntry, pw: "p" });
 
+        const getLatestRevisionByEntryIdUseCase = context.container.resolve(
+            GetLatestRevisionByEntryIdUseCase
+        );
         // We need the latest entry to get the latest entry-level meta fields.
-        const latestStorageEntry = await getLatestRevisionByEntryIdUseCase.execute(model, {
+        const latestStorageEntryResult = await getLatestRevisionByEntryIdUseCase.execute(model, {
             id: originalEntry.entryId
         });
 
-        if (!latestStorageEntry) {
+        if (latestStorageEntryResult.isFail()) {
             throw new NotFoundError(`Entry "${id}" in the model "${model.modelId}" was not found.`);
         }
 
+        const latestStorageEntry = latestStorageEntryResult.value;
         const latestEntry = await entryFromStorageTransform(context, model, latestStorageEntry);
 
         const { entry } = await createPublishEntryData<T>({
@@ -994,8 +788,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     error: ex,
                     entry,
                     storageEntry,
-                    originalEntry,
-                    originalStorageEntry
+                    originalEntry
                 }
             );
         }
@@ -1215,16 +1008,48 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getEntriesByIds",
                 async () => {
-                    return getEntriesByIdsUseCase.execute(model, { ids });
+                    const useCase = context.container.resolve(GetEntriesByIdsUseCase);
+                    const result = await useCase.execute(model, ids);
+
+                    if (result.isFail()) {
+                        const error = result.error;
+                        throw new WebinyError(
+                            error.message || "Could not get entries by IDs.",
+                            error.code || "GET_ENTRIES_BY_IDS_ERROR",
+                            {
+                                error,
+                                ids,
+                                model
+                            }
+                        );
+                    }
+
+                    return result.value;
                 }
             );
         },
         /**
          * Get a single entry by revision ID from the database.
          */
-        async getEntryById(model, id) {
+        async getEntryById<T extends CmsEntryValues = CmsEntryValues>(model: CmsModel, id: string) {
             return context.benchmark.measure("headlessCms.crud.entries.getEntryById", async () => {
-                return getEntryById(model, id);
+                const useCase = context.container.resolve(GetEntryByIdUseCase);
+                const result = await useCase.execute<T>(model, id);
+
+                if (result.isFail()) {
+                    const error = result.error;
+                    throw new WebinyError(
+                        error.message || `Entry by ID "${id}" not found.`,
+                        error.code || "GET_ENTRY_BY_ID_ERROR",
+                        {
+                            error,
+                            id,
+                            model
+                        }
+                    );
+                }
+
+                return result.value;
             });
         },
         /**
@@ -1234,7 +1059,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getPublishedEntriesByIds",
                 async () => {
-                    return getPublishedEntriesByIdsUseCase.execute(model, { ids });
+                    const useCase = context.container.resolve(GetPublishedEntriesByIdsUseCase);
+                    const result = await useCase.execute(model, ids);
+
+                    if (result.isFail()) {
+                        const error = result.error;
+                        throw new WebinyError(
+                            error.message || "Could not get published entries by IDs.",
+                            error.code || "GET_PUBLISHED_ENTRIES_BY_IDS_ERROR",
+                            {
+                                error,
+                                ids,
+                                model
+                            }
+                        );
+                    }
+
+                    return result.value;
                 }
             );
         },
@@ -1245,7 +1086,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getLatestEntriesByIds",
                 async () => {
-                    return await getLatestEntriesByIdsUseCase.execute(model, { ids });
+                    const useCase = context.container.resolve(GetLatestEntriesByIdsUseCase);
+                    const result = await useCase.execute(model, ids);
+
+                    if (result.isFail()) {
+                        const error = result.error;
+                        throw new WebinyError(
+                            error.message || "Could not get latest entries by IDs.",
+                            error.code || "GET_LATEST_ENTRIES_BY_IDS_ERROR",
+                            {
+                                error,
+                                ids,
+                                model
+                            }
+                        );
+                    }
+
+                    return result.value;
                 }
             );
         },
@@ -1253,19 +1110,51 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return context.benchmark.measure(
                 "headlessCms.crud.entries.getEntryRevisions",
                 async () => {
-                    return getRevisionsByEntryIdUseCase.execute(model, { id: entryId });
+                    const useCase = context.container.resolve(GetRevisionsByEntryIdUseCase);
+                    const result = await useCase.execute(model, entryId);
+
+                    if (result.isFail()) {
+                        const error = result.error;
+                        throw new WebinyError(
+                            error.message || "Could not get entry revisions.",
+                            error.code || "GET_ENTRY_REVISIONS_ERROR",
+                            {
+                                error,
+                                entryId,
+                                model
+                            }
+                        );
+                    }
+
+                    return result.value;
                 }
             );
         },
         /**
          * @internal
          */
-        async getEntry<T = CmsEntryValues>(
+        async getEntry<T extends CmsEntryValues = CmsEntryValues>(
             model: CmsModel,
             params: CmsEntryGetParams
         ): Promise<CmsEntry<T>> {
             return context.benchmark.measure("headlessCms.crud.entries.getEntry", async () => {
-                return (await getEntryUseCase.execute(model, params)) as CmsEntry<T>;
+                const useCase = context.container.resolve(GetEntryUseCase);
+                const result = await useCase.execute<T>(model, params);
+
+                if (result.isFail()) {
+                    const error = result.error;
+                    throw new WebinyError(
+                        error.message || "Entry not found!",
+                        error.code || "GET_ENTRY_ERROR",
+                        {
+                            error,
+                            params,
+                            model
+                        }
+                    );
+                }
+
+                return result.value;
             });
         },
         /**
@@ -1278,7 +1167,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             params: CmsEntryListParams
         ): Promise<[CmsEntry<T>[], CmsEntryMeta]> {
             return context.benchmark.measure("headlessCms.crud.entries.listEntries", async () => {
-                return await listEntriesUseCase.execute<T>(model, params);
+                const useCase = context.container.resolve(ListEntriesUseCase);
+                const result = await useCase.execute<T>(model, params);
+
+                if (result.isFail()) {
+                    const error = result.error;
+                    throw new WebinyError(
+                        error.message || "Could not list entries.",
+                        error.code || "LIST_ENTRIES_ERROR",
+                        {
+                            error,
+                            params,
+                            model
+                        }
+                    );
+                }
+
+                return result.value;
             });
         },
         async listLatestEntries<T extends CmsEntryValues = CmsEntryValues>(
@@ -1288,7 +1193,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return context.benchmark.measure(
                 "headlessCms.crud.entries.listLatestEntries",
                 async () => {
-                    return await listLatestUseCase.execute<T>(model, params);
+                    const useCase = context.container.resolve(ListLatestEntriesUseCase);
+                    const result = await useCase.execute<T>(model, params);
+
+                    if (result.isFail()) {
+                        const error = result.error;
+                        throw new WebinyError(
+                            error.message || "Could not list latest entries.",
+                            error.code || "LIST_LATEST_ENTRIES_ERROR",
+                            {
+                                error,
+                                params,
+                                model
+                            }
+                        );
+                    }
+
+                    return result.value;
                 }
             );
         },
@@ -1299,7 +1220,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return context.benchmark.measure(
                 "headlessCms.crud.entries.listDeletedEntries",
                 async () => {
-                    return await listDeletedUseCase.execute<T>(model, params);
+                    const useCase = context.container.resolve(ListDeletedEntriesUseCase);
+                    const result = await useCase.execute<T>(model, params);
+
+                    if (result.isFail()) {
+                        const error = result.error;
+                        throw new WebinyError(
+                            error.message || "Could not list deleted entries.",
+                            error.code || "LIST_DELETED_ENTRIES_ERROR",
+                            {
+                                error,
+                                params,
+                                model
+                            }
+                        );
+                    }
+
+                    return result.value;
                 }
             );
         },
@@ -1310,7 +1247,23 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return context.benchmark.measure(
                 "headlessCms.crud.entries.listPublishedEntries",
                 async () => {
-                    return await listPublishedUseCase.execute<T>(model, params);
+                    const useCase = context.container.resolve(ListPublishedEntriesUseCase);
+                    const result = await useCase.execute<T>(model, params);
+
+                    if (result.isFail()) {
+                        const error = result.error;
+                        throw new WebinyError(
+                            error.message || "Could not list published entries.",
+                            error.code || "LIST_PUBLISHED_ENTRIES_ERROR",
+                            {
+                                error,
+                                params,
+                                model
+                            }
+                        );
+                    }
+
+                    return result.value;
                 }
             );
         },
@@ -1367,8 +1320,17 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             );
         },
         async deleteEntry(model, entryId, options) {
+            const deleteEntryUseCase = context.container.resolve(DeleteEntryUseCase);
             return context.benchmark.measure("headlessCms.crud.entries.deleteEntry", async () => {
-                return deleteEntry(model, entryId, options);
+                const result = await deleteEntryUseCase.execute(model, entryId, options ?? {});
+
+                if (result.isFail()) {
+                    throw new WebinyError(
+                        result.error.message,
+                        result.error.code,
+                        result.error.data
+                    );
+                }
             });
         },
         async restoreEntryFromBin(model, entryId) {

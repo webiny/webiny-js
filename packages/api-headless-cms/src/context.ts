@@ -25,9 +25,11 @@ import {
 import {
     EntryFromStorageTransform,
     EntryToStorageTransform,
-    PluginsContainer
+    PluginsContainer,
+    SearchableFieldsProvider
 } from "./legacy/abstractions.js";
 import { entryFromStorageTransform, entryToStorageTransform } from "~/utils/entryStorage.js";
+import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -108,8 +110,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
 
         const accessControl = new AccessControl({
             getIdentity: () => context.security.getIdentity(),
-            getGroupsPermissions: () =>
-                context.security.getPermissions("cms.contentModelGroup"),
+            getGroupsPermissions: () => context.security.getPermissions("cms.contentModelGroup"),
             getModelsPermissions: () => context.security.getPermissions("cms.contentModel"),
             getEntriesPermissions: () => context.security.getPermissions("cms.contentEntry"),
             listAllGroups: () => {
@@ -168,6 +169,9 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
         });
         context.container.registerInstance(EntryFromStorageTransform, (model, entry) => {
             return entryFromStorageTransform(context, model, entry);
+        });
+        context.container.registerInstance(SearchableFieldsProvider, params => {
+            return getSearchableFields({ plugins: context.plugins, ...params });
         });
 
         // Register features

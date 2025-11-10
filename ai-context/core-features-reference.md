@@ -12,23 +12,23 @@ This document provides the correct import paths and type definitions for commonl
 ## Features
 
 ### TenantContext
-- **Import:** `import { TenantContext } from "@webiny/api-tenancy/features/TenantContext"`
-- **Interface Type:** See `packages/api-tenancy/src/features/TenantContext/abstractions.ts`
+- **Import:** `import { TenantContext } from "@webiny/api-core/features/TenantContext"`
+- **Interface Type:** See `packages/api-core/src/features/TenantContext/abstractions.ts`
 - **Usage:** Access current tenant information
 
 ### IdentityContext
-- **Import:** `import { IdentityContext } from "@webiny/api-security/features/IdentityContext"`
-- **Interface Type:** See `packages/api-security/src/features/IdentityContext/abstractions.ts`
+- **Import:** `import { IdentityContext } from "@webiny/api-core/features/IdentityContext"`
+- **Interface Type:** See `packages/api-core/src/features/IdentityContext/abstractions.ts`
 - **Usage:** Access current user identity and permissions
 
 ### EventPublisher
-- **Import:** `import { EventPublisher } from "@webiny/api-core"`
+- **Import:** `import { EventPublisher } from "@webiny/api-core/features/EventPublisher"`
 - **Interface Type:** See `packages/api-core/src/event-publisher/abstractions.ts`
 - **Usage:** Publish domain events
 
 ### WcpContext
-- **Import:** `import { WcpContext } from "@webiny/api-wcp/features/WcpContext"`
-- **Interface Type:** See `packages/api-wcp/src/features/WcpContext/abstractions.ts`
+- **Import:** `import { WcpContext } from "@webiny/api-core/features/WcpContext"`
+- **Interface Type:** See `packages/api-core/src/features/WcpContext/abstractions.ts`
 - **Usage:** WCP (Webiny Control Panel) integration for seats/tenants management
 
 ### GetSettings
