@@ -1,7 +1,6 @@
 import React from "react";
 import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
 import { useWorkflowState } from "@webiny/app-workflows";
-import { WorkflowStateValue } from "@webiny/app-workflows/types.js";
 
 const { Actions } = ContentEntryEditorConfig;
 const { ButtonAction } = Actions;
@@ -13,16 +12,17 @@ interface IOverrideSaveButtonProps {
 
 const OverrideSaveButton = (props: IOverrideSaveButtonProps) => {
     const { presenter } = useWorkflowState();
+
     /**
      * If there is no workflow state or state is approved, we simply render the original element.
      * This is to ensure that no button will be shown if workflow state is active.
      */
-    if (!presenter.vm.state || presenter.vm.state.state === WorkflowStateValue.approved) {
+    if (props.name !== "save") {
         return props.children;
-    } else if (props.name === "save") {
-        return null;
+    } else if (!presenter.vm.state) {
+        return props.children;
     }
-    return props.children;
+    return null;
 };
 
 export const CmsEntryFormSaveButton = ButtonAction.createDecorator(Original => {

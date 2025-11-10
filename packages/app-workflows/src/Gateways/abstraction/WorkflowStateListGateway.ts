@@ -54,4 +54,10 @@ export interface IWorkflowStateListGateway {
     list(
         params?: IWorkflowStateListGatewayListParams
     ): Promise<IWorkflowStateListGatewayListResponse>;
+    listOwn(
+        params?: IWorkflowStateListGatewayListParams
+    ): Promise<IWorkflowStateListGatewayListResponse>;
+    listRequested(
+        params?: IWorkflowStateListGatewayListParams
+    ): Promise<IWorkflowStateListGatewayListResponse>;
 }

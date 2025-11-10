@@ -21,6 +21,7 @@
     "@webiny/app-security": "0.0.0",
     "@webiny/app-workflows": "0.0.0",
     "@webiny/icons": "0.0.0",
+    "mobx-react-lite": "^3.4.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-helmet": "^6.1.0"

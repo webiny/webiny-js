@@ -37,11 +37,15 @@ export const WorkflowStateListAppOverlay = (props: IWorkflowStateListAppOverlayP
     }, []);
 
     return (
-        <WorkflowStateListProvider client={client} where={where}>
+        <>
             {children({
                 showOverlay: toggle
             })}
-            {show ? <WorkflowStateListAppOverlayView hideOverlay={toggle} /> : null}
-        </WorkflowStateListProvider>
+            {show ? (
+                <WorkflowStateListProvider client={client} where={where}>
+                    <WorkflowStateListAppOverlayView hideOverlay={toggle} />
+                </WorkflowStateListProvider>
+            ) : null}
+        </>
     );
 };

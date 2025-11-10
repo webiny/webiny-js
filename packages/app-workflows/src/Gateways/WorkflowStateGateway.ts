@@ -49,10 +49,10 @@ export interface IWorkflowStateGatewayParams {
 }
 
 export class WorkflowStateGateway implements IWorkflowStateGateway {
-    private readonly client;
+    readonly #client;
 
     public constructor(params: IWorkflowStateGatewayParams) {
-        this.client = params.client;
+        this.#client = params.client;
     }
 
     public async startWorkflowStateStep(
@@ -60,7 +60,7 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
     ): Promise<IWorkflowStateGatewayStartStepResponse> {
         const { id } = params;
         try {
-            const result = await this.client.mutate<
+            const result = await this.#client.mutate<
                 IStartWorkflowStateStepResponse,
                 IStartWorkflowStateStepVariables
             >({
@@ -86,7 +86,7 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
     ): Promise<IWorkflowStateGatewayApproveStepResponse> {
         const { id, comment } = params;
         try {
-            const result = await this.client.mutate<
+            const result = await this.#client.mutate<
                 IApproveWorkflowStateStepResponse,
                 IApproveWorkflowStateStepVariables
             >({
@@ -113,7 +113,7 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
     ): Promise<IWorkflowStateGatewayRejectStepResponse> {
         const { id, comment } = params;
         try {
-            const result = await this.client.mutate<
+            const result = await this.#client.mutate<
                 IRejectWorkflowStateStepResponse,
                 IRejectWorkflowStateStepVariables
             >({
@@ -140,7 +140,7 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
     ): Promise<IWorkflowStateGatewayTakeOverStepResponse> {
         const { id } = params;
         try {
-            const result = await this.client.mutate<
+            const result = await this.#client.mutate<
                 ITakeOverWorkflowStateStepResponse,
                 ITakeOverWorkflowStateStepVariables
             >({
@@ -165,7 +165,7 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
         id: string
     ): Promise<IWorkflowStateGatewayCancelStateResponse> {
         try {
-            const result = await this.client.mutate<
+            const result = await this.#client.mutate<
                 ICancelWorkflowStateResponse,
                 ICancelWorkflowStateVariables
             >({
@@ -190,7 +190,7 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
         params?: IWorkflowStateGatewayListWorkflowStatesParams
     ): Promise<IWorkflowStateGatewayListWorkflowStatesResponse> {
         try {
-            const result = await this.client.query<
+            const result = await this.#client.query<
                 IListWorkflowStatesResponse,
                 IListWorkflowStatesVariables
             >({
@@ -222,7 +222,7 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
         params: IWorkflowStateGatewayRequestReviewStepParams
     ): Promise<IWorkflowStateGatewayRequestReviewStepResponse> {
         try {
-            const result = await this.client.mutate<
+            const result = await this.#client.mutate<
                 ICreateWorkflowStateResponse,
                 ICreateWorkflowStateVariables
             >({
@@ -250,7 +250,7 @@ export class WorkflowStateGateway implements IWorkflowStateGateway {
         targetRevisionId: string
     ): Promise<IWorkflowStateGatewayGetTargetWorkflowStateResponse> {
         try {
-            const result = await this.client.query<
+            const result = await this.#client.query<
                 IGetTargetWorkflowStateResponse,
                 IGetTargetWorkflowStateVariables
             >({

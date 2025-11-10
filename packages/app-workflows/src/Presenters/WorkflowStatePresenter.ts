@@ -101,18 +101,12 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     }
 
     private async init(): Promise<void> {
-        /**
-         * We do not want to load anything if there is no targetRevisionId.
-         * This will effectively disable the workflow state functionality - nothing will get rendered.
-         */
-        if (!this.targetRevisionId) {
-            return;
-        }
         const workflows = await this.workflowsRepository.listWorkflows({
             where: {
                 app: this.app
             }
         });
+        console.log("Fetched workflows:", workflows);
         runInAction(() => {
             if (workflows.length === 0) {
                 this.workflow = null;

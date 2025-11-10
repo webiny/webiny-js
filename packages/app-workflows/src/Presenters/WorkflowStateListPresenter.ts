@@ -12,7 +12,7 @@ interface IWorkflowStateListPresenterParams {
 
 export class WorkflowStateListPresenter implements IWorkflowStateListPresenter {
     private readonly repository: IWorkflowStateListRepository;
-
+    
     private listParams: IWorkflowStateListPresenterListParams | undefined = undefined;
 
     public get vm() {

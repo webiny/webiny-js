@@ -8,10 +8,12 @@ import type { IWorkflowStateListGateway } from "~/Gateways/index.js";
 
 interface IWorkflowStateListRepositoryParams {
     gateway: IWorkflowStateListGateway;
+    type: "own" | "requested" | undefined;
 }
 
 export class WorkflowStateListRepository implements IWorkflowStateListRepository {
-    #gateway;
+    readonly #gateway;
+    readonly #type;
 
     public readonly items;
     private readonly _meta;
@@ -33,6 +35,8 @@ export class WorkflowStateListRepository implements IWorkflowStateListRepository
 
     public constructor(params: IWorkflowStateListRepositoryParams) {
         this.#gateway = params.gateway;
+        this.#type = params.type;
+
         this.items = observable.array<IWorkflowState>([]);
         this._meta = observable.object<IGenericMeta>({
             cursor: null,
@@ -50,7 +54,7 @@ export class WorkflowStateListRepository implements IWorkflowStateListRepository
             this._loading = true;
         });
 
-        const response = await this.#gateway.list(params);
+        const response = await this.listByType(params);
 
         runInAction(() => {
             this._error = response.error;
@@ -65,6 +69,15 @@ export class WorkflowStateListRepository implements IWorkflowStateListRepository
             }
             this.items.push(...response.data);
         });
+    }
+
+    private listByType(params: IWorkflowStateListRepositoryListParams) {
+        if (this.#type === "own") {
+            return this.#gateway.listOwn(params);
+        } else if (this.#type === "requested") {
+            return this.#gateway.listRequested(params);
+        }
+        return this.#gateway.list(params);
     }
 
     private createSnapshot(input: IWorkflowStateListRepositoryListParams): string {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Card, Icon } from "@webiny/admin-ui";
+import { Button, Card, Icon, Link } from "@webiny/admin-ui";
 import { ReactComponent as ReviewRequestsIcon } from "@webiny/icons/reviews.svg";
 import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { observer } from "mobx-react-lite";
@@ -15,6 +15,8 @@ import {
     TakeOverDialog,
     TakeOverSuccessDialog
 } from "../Dialogs/index.js";
+import { Routes } from "~/routes.js";
+import { useRouter } from "@webiny/app";
 
 interface IWorkflowStateWidgetCardProps {
     title: React.ReactNode;
@@ -22,6 +24,8 @@ interface IWorkflowStateWidgetCardProps {
 
 export const WorkflowStateWidgetCard = observer(({ title }: IWorkflowStateWidgetCardProps) => {
     const { presenter } = useWorkflowStatesWidget();
+
+    const router = useRouter();
 
     return (
         <>
@@ -59,13 +63,19 @@ export const WorkflowStateWidgetCard = observer(({ title }: IWorkflowStateWidget
                 }
                 title={title}
                 actions={
-                    <Button
-                        variant={"ghost"}
-                        size={"sm"}
-                        icon={<Icon icon={<AddIcon />} label={"View All"} />}
+                    <Link
+                        to={router.getLink(Routes.Workflows.ContentReviews, {
+                            type: presenter.vm.type
+                        })}
                     >
-                        View All
-                    </Button>
+                        <Button
+                            variant={"ghost"}
+                            size={"sm"}
+                            icon={<Icon icon={<AddIcon />} label={"View All"} />}
+                        >
+                            View All
+                        </Button>
+                    </Link>
                 }
                 actionsPosition={"header"}
                 bodyPadding={false}

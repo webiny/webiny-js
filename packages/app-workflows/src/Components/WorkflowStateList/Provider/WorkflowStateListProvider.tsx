@@ -16,20 +16,22 @@ interface IWorkflowStateListProviderProps {
     children: React.ReactNode;
     client: ApolloClient<object>;
     where?: IWorkflowStateListPresenterListParamsWhere;
+    type?: "own" | "requested";
 }
 
 export const WorkflowStateListProvider = (props: IWorkflowStateListProviderProps) => {
-    const { children, client, where } = props;
+    const { children, client, where, type } = props;
 
     const presenter = useMemo(() => {
         const gateway = new WorkflowStateListGateway({
             client
         });
         const repository = new WorkflowStateListRepository({
-            gateway
+            gateway,
+            type,
         });
         const presenter = new WorkflowStateListPresenter({
-            repository
+            repository,
         });
 
         presenter.list({

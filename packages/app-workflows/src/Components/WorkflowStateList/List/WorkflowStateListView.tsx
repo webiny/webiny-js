@@ -2,6 +2,8 @@ import React from "react";
 import { WorkflowStateListProvider } from "../Provider/index.js";
 import { WorkflowStateList } from "./WorkflowStateList.js";
 import type ApolloClient from "apollo-client";
+import { useRoute } from "@webiny/app";
+import { Routes } from "~/routes.js";
 
 interface IWorkflowStateListViewProps {
     client: ApolloClient<object>;
@@ -9,8 +11,11 @@ interface IWorkflowStateListViewProps {
 
 export const WorkflowStateListView = (props: IWorkflowStateListViewProps) => {
     const { client } = props;
+
+    const { route } = useRoute(Routes.Workflows.ContentReviews);
+    
     return (
-        <WorkflowStateListProvider client={client}>
+        <WorkflowStateListProvider client={client} type={route.params?.type}>
             <WorkflowStateList />
         </WorkflowStateListProvider>
     );
