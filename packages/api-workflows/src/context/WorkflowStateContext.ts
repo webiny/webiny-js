@@ -6,8 +6,6 @@ import { WorkflowStateRecordState } from "./abstractions/WorkflowState.js";
 import { WorkflowState } from "./workflowState/WorkflowState.js";
 import type {
     IWorkflowStateContext,
-    IWorkflowStateContextListOwnWorkflowStatesParams,
-    IWorkflowStateContextListOwnWorkflowStatesResponse,
     IWorkflowStateContextListStatesParams,
     IWorkflowStateContextListStatesResponse,
     IWorkflowStateContextOnStateAfterCreate,
@@ -138,8 +136,8 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     }
 
     public async listOwnWorkflowStates(
-        params?: IWorkflowStateContextListOwnWorkflowStatesParams
-    ): Promise<IWorkflowStateContextListOwnWorkflowStatesResponse> {
+        params?: IWorkflowStateContextListStatesParams
+    ): Promise<IWorkflowStateContextListStatesResponse> {
         const identity = this.context.security.getIdentity();
         if (!identity?.id) {
             return {
@@ -163,8 +161,8 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     }
 
     public async listRequestedWorkflowStates(
-        params?: IWorkflowStateContextListOwnWorkflowStatesParams
-    ): Promise<IWorkflowStateContextListOwnWorkflowStatesResponse> {
+        params?: IWorkflowStateContextListStatesParams
+    ): Promise<IWorkflowStateContextListStatesResponse> {
         const identity = this.context.security.getIdentity();
         const teams = await this.getUserTeams(identity.id);
         if (!identity?.id || teams.length === 0) {

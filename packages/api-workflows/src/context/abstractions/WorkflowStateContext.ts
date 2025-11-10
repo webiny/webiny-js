@@ -66,29 +66,6 @@ export interface IWorkflowStateContextListStatesResponse {
     meta: IMeta;
 }
 
-export interface IWorkflowStateContextListOwnWorkflowStatesParams {
-    where?: {
-        state?: WorkflowStateRecordState;
-    };
-    limit?: number;
-}
-
-export interface IWorkflowStateContextListOwnWorkflowStatesResponse {
-    items: IWorkflowStateModel[];
-    meta: IMeta;
-}
-
-export interface IWorkflowStateContextListRequestedWorkflowStatesParams {
-    where: {
-        state: WorkflowStateRecordState;
-    };
-    limit: number;
-}
-
-export interface IWorkflowStateContextListRequestedWorkflowStatesResponse {
-    items: IWorkflowStateModel[];
-    meta: IMeta;
-}
 
 export interface IWorkflowStateContextOnStateAfterCreate {
     state: IWorkflowStateModel;
@@ -116,15 +93,15 @@ export interface IWorkflowStateContext {
      * List Workflow States where the current user is an owner of the request.
      */
     listOwnWorkflowStates(
-        params: IWorkflowStateContextListOwnWorkflowStatesParams
-    ): Promise<IWorkflowStateContextListOwnWorkflowStatesResponse>;
+        params?: IWorkflowStateContextListStatesParams
+    ): Promise<IWorkflowStateContextListStatesResponse>;
     /**
      * List Workflow States where the current user is one of the reviewers.
      * @param params
      */
     listRequestedWorkflowStates(
-        params: IWorkflowStateContextListRequestedWorkflowStatesParams
-    ): Promise<IWorkflowStateContextListRequestedWorkflowStatesResponse>;
+        params?: IWorkflowStateContextListStatesParams
+    ): Promise<IWorkflowStateContextListStatesResponse>;
 
     createState(app: string, targetRevisionId: string, title: string): Promise<IWorkflowStateModel>;
     updateState(

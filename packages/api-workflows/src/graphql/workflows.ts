@@ -94,7 +94,7 @@ export const createWorkflowsSchema = () => {
             type WorkflowsQuery {
                 listWorkflows(
                     where: ListWorkflowsWhereInput
-                    limit: Number
+                    limit: Int
                     sort: [ListWorkflowsSort!]
                     after: String
                 ): ListWorkflowsResponse!

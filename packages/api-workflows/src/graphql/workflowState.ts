@@ -10,7 +10,6 @@ import { createWorkflowStateValidation } from "~/validation/createWorkflowState.
 import { getTargetWorkflowStateValidation } from "~/validation/getTargetWorkflowState.js";
 import { getWorkflowStateValidation } from "~/validation/getWorkflowState.js";
 import type { IWorkflowStateModel } from "~/context/abstractions/WorkflowState.js";
-import { listWidgetWorkflowStatesValidation } from "~/validation/listWidgetWorkflowStates.js";
 import { takeOverWorkflowStateStepValidation } from "~/validation/takeOverWorkflowStateStep.js";
 
 export const createWorkflowStateSchema = () => {
@@ -148,20 +147,6 @@ export const createWorkflowStateSchema = () => {
                 error: WorkflowError
             }
 
-            type ListWidgetWorkflowStatesResponse {
-                data: [WorkflowState!]
-                meta: ListWorkflowsMeta
-                error: WorkflowError
-            }
-
-            input ListOwnWorkflowStatesWhereInput {
-                state: WorkflowStateStateValue!
-            }
-
-            input ListRequestedWorkflowStatesWhereInput {
-                state: WorkflowStateStateValue!
-            }
-
             extend type WorkflowsQuery {
                 getWorkflowState(id: ID!): WorkflowStateResponse!
                 # always returns active workflow state for the given targetRevisionId - or null
@@ -169,17 +154,21 @@ export const createWorkflowStateSchema = () => {
                 listWorkflowStates(
                     where: ListWorkflowStatesWhereInput
                     sort: [ListWorkflowStatesSort!]
-                    limit: Number
+                    limit: Int
                     after: String
                 ): ListWorkflowStatesResponse!
                 listOwnWorkflowStates(
-                    where: ListOwnWorkflowStatesWhereInput!
-                    limit: Int!
-                ): ListWidgetWorkflowStatesResponse!
+                    where: ListWorkflowStatesWhereInput
+                    sort: [ListWorkflowStatesSort!]
+                    limit: Int
+                    after: String
+                ): ListWorkflowStatesResponse!
                 listRequestedWorkflowStates(
-                    where: ListRequestedWorkflowStatesWhereInput!
-                    limit: Int!
-                ): ListWidgetWorkflowStatesResponse!
+                    where: ListWorkflowStatesWhereInput
+                    sort: [ListWorkflowStatesSort!]
+                    limit: Int
+                    after: String
+                ): ListWorkflowStatesResponse!
             }
 
             extend type WorkflowsMutation {
@@ -235,8 +224,7 @@ export const createWorkflowStateSchema = () => {
                 },
                 listOwnWorkflowStates: async (_, args, context) => {
                     return resolveList<IWorkflowStateModel>(async () => {
-                        const result =
-                            await listWidgetWorkflowStatesValidation.safeParseAsync(args);
+                        const result = await listWorkflowStatesValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
@@ -245,8 +233,7 @@ export const createWorkflowStateSchema = () => {
                 },
                 listRequestedWorkflowStates: async (_, args, context) => {
                     return resolveList<IWorkflowStateModel>(async () => {
-                        const result =
-                            await listWidgetWorkflowStatesValidation.safeParseAsync(args);
+                        const result = await listWorkflowStatesValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
