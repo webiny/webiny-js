@@ -34,7 +34,6 @@ context("Admin Installation", () => {
 
             cy.findByText("Next step").click();
 
-
             const firstName = Cypress.env("DEFAULT_ADMIN_USER_FIRST_NAME");
             const lastName = Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME");
             const username = Cypress.env("DEFAULT_ADMIN_USER_USERNAME");
