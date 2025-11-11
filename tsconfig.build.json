@@ -26,6 +26,7 @@
         "afterDeclarations": true
       }
     ],
+    "isolatedModules": false,
     "noUnusedParameters": false,
     "noUnusedLocals": false,
     "noImplicitUseStrict": false,
