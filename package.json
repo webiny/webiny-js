@@ -9,6 +9,7 @@
       "extensions/theme",
       "scripts/buildPackages",
       "scripts/prepublishOnly",
+      "scripts/cli",
       "scripts/cjsToEsm"
     ]
   },
@@ -159,6 +160,7 @@
     "cy:ts": "yarn cypress:ts",
     "cy:setup": "yarn setup-cypress",
     "webiny-versions": "node ./scripts/webinyVersions.js",
+    "webiny-scripts": "tsx ./scripts/cli/src/bin.ts",
     "trigger-release": "node ./scripts/release/triggerRelease.js",
     "dispatch-github-event": "node ./scripts/dispatchGitHubEvent.js",
     "link-workspaces": "node ./scripts/linkWorkspaces.js",
