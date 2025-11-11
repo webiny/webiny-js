@@ -114,7 +114,7 @@ export async function createRspackConfig(webpackEnv, { paths, options }) {
                         {
                             loader: "url-loader",
                             options: {
-                                limit: 10000,
+                                limit: 30_000,
                                 name: "static/media/[name].[hash:8].[ext]"
                             }
                         }
