@@ -44,7 +44,13 @@ context("Admin Installation", () => {
             cy.findByLabelText("Last name").type(lastName);
             cy.findByLabelText("Your email").type(username);
             cy.findByLabelText("Choose password").type(password);
-            // cy.findByTestId("install-security-button").click();
+            cy.findByText("Next step").click();
+            cy.findByText("Start using Webiny").click();
+
+            cy.findByLabelText("Email").type(username);
+            cy.findByLabelText("Password").type(password);
+            cy.findByText("Submit").click();
+            cy.findByText(/Join our community/i);
         }
     );
 });
