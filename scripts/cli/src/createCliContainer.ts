@@ -5,6 +5,7 @@ import {
     getCliRunnerService,
     getCwdService,
     getProjectService,
+    listPackagesService,
     loggerService,
     runCliRunnerService,
     stdioService,
@@ -24,6 +25,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(getCliRunnerService).inSingletonScope();
     container.register(getCwdService).inSingletonScope();
     container.register(getProjectService).inSingletonScope();
+    container.register(listPackagesService).inSingletonScope();
     container.register(loggerService).inSingletonScope();
     container.register(runCliRunnerService).inSingletonScope();
     container.register(stdioService).inSingletonScope();

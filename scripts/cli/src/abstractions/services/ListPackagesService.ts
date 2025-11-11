@@ -1,11 +1,21 @@
 import { Abstraction } from "@webiny/di";
+import { IPathModel } from "../models";
+import { PackageJson } from "type-fest";
+
+export type WebinyPackageJson = PackageJson & {
+    webiny?: {
+        exports?: Record<string, string>;
+    };
+};
 
 export interface IListPackagesPackage {
     name: string;
     paths: {
-        packageFolder: string;
-        webinyConfigFile: string;
+        packageFolder: IPathModel;
+        packageJsonFile: IPathModel;
+        webinyConfigFile: IPathModel;
     };
+    packageJson: WebinyPackageJson;
 }
 
 export type IListPackagesServiceResult = IListPackagesPackage[];

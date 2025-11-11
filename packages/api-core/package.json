@@ -57,6 +57,11 @@
     "./features/ExternalIdpUserSync": "./features/users/ExternalIdpUserSync/index.js",
     "./*": "./*"
   },
+  "webiny": {
+    "exports": {
+      "./features/GetTeam": "api/security/features/GetTeam"
+    }
+  },
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
