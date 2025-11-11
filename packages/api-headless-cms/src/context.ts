@@ -171,7 +171,11 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             return entryFromStorageTransform(context, model, entry);
         });
         context.container.registerInstance(SearchableFieldsProvider, params => {
-            return getSearchableFields({ plugins: context.plugins, ...params });
+            return getSearchableFields({
+                plugins: context.plugins,
+                fields: params.fields,
+                input: []
+            });
         });
 
         // Register features

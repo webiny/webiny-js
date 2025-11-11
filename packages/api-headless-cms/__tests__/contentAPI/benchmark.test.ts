@@ -58,14 +58,6 @@ describe("benchmark points", () => {
                     elapsed: expect.any(Number),
                     end: expect.any(Date),
                     memory: expect.any(Number),
-                    name: "headlessCms.createContext",
-                    category: "webiny",
-                    start: expect.any(Date)
-                },
-                {
-                    elapsed: expect.any(Number),
-                    end: expect.any(Date),
-                    memory: expect.any(Number),
                     name: "headlessCms.crud.models.listModels",
                     category: "webiny",
                     start: expect.any(Date)

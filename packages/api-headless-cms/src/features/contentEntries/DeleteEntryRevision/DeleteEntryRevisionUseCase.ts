@@ -48,7 +48,7 @@ class DeleteEntryRevisionUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "d" });
         if (!canAccess) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(NotAuthorizedError.fromModel(model));
         }
 
         const { id: entryId, version } = parseIdentifier(revisionId);
@@ -86,18 +86,14 @@ class DeleteEntryRevisionUseCaseImpl implements UseCaseAbstraction.Interface {
             entryId,
             version: version as number
         });
-        if (previousRevisionResult.isFail()) {
-            return Result.fail(previousRevisionResult.error);
-        }
 
-        const previousRevision = previousRevisionResult.value;
-
-        // If targeted record is the latest entry record and there is no previous one,
-        // we need to run full delete with hooks
-        if (entryToDelete.id === latestRevisionId && !previousRevision) {
+        // If targeted record is the latest entry record and there is no previous revision,
+        // delete the entire entry.
+        if (previousRevisionResult.isFail() && entryToDelete.id === latestRevisionId) {
             return await this.deleteEntry.execute(model, revisionId, {});
         }
 
+        const previousRevision = previousRevisionResult.value;
         // Determine the entry to set as latest (if deleting current latest)
         let latestEntry = null;
         if (entryToDelete.id === latestRevisionId && previousRevision) {

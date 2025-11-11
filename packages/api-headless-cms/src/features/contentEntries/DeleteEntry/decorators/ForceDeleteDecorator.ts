@@ -39,6 +39,8 @@ class ForceDeleteDecoratorImpl implements DeleteEntryUseCase.Interface {
                         entryId
                     }
                 } as any);
+
+                return Result.ok();
             } catch (error) {
                 return Result.fail(new EntryStorageError(error as Error));
             }

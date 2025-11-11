@@ -132,7 +132,7 @@ describe("delete entries", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         message: expect.any(String)
                     }
                 }
@@ -143,7 +143,7 @@ describe("delete entries", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         message: expect.any(String)
                     }
                 }
@@ -161,7 +161,7 @@ describe("delete entries", () => {
                 deleteCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         data: null,
                         message: `Entry "${categoryToDelete.entryId}" was not found!`
                     }
@@ -230,7 +230,7 @@ describe("delete entries", () => {
                 deleteCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         data: null,
                         message: `Entry "${categoryToDelete.entryId}" was not found!`
                     }
@@ -264,7 +264,7 @@ describe("delete entries", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         message: expect.any(String)
                     }
                 }
@@ -275,7 +275,7 @@ describe("delete entries", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         message: expect.any(String)
                     }
                 }
@@ -296,7 +296,7 @@ describe("delete entries", () => {
                 createCategoryFrom: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         data: null,
                         message: expect.any(String)
                     }
@@ -315,7 +315,7 @@ describe("delete entries", () => {
                 updateCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         data: null,
                         message: expect.any(String)
                     }
@@ -331,7 +331,7 @@ describe("delete entries", () => {
                 publishCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         data: null,
                         message: expect.any(String)
                     }
@@ -347,7 +347,7 @@ describe("delete entries", () => {
                 unpublishCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         data: null,
                         message: expect.any(String)
                     }
@@ -364,7 +364,7 @@ describe("delete entries", () => {
                 moveCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         data: null,
                         message: expect.any(String)
                     }
@@ -386,7 +386,7 @@ describe("delete entries", () => {
                 deleteCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         data: null,
                         message: `Entry "${categoryToDelete.entryId}" was not found!`
                     }
@@ -435,7 +435,7 @@ describe("delete entries", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         message: expect.any(String)
                     }
                 }
@@ -446,7 +446,7 @@ describe("delete entries", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         message: expect.any(String)
                     }
                 }
@@ -479,7 +479,7 @@ describe("delete entries", () => {
                 deleteCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         data: null,
                         message: `Entry "${categoryToDelete.entryId}" was not found!`
                     }

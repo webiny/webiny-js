@@ -3,9 +3,9 @@ import { BaseError } from "@webiny/feature/api";
 export class EntryNotFoundError extends BaseError {
     override readonly code = "ENTRY_NOT_FOUND" as const;
 
-    constructor(id: string) {
+    constructor(id?: string) {
         super({
-            message: `Entry "${id}" was not found!`
+            message: id ? `Entry "${id}" was not found!` : `Entry was not found!`
         });
     }
 }
@@ -19,7 +19,6 @@ export class EntryNotAccessibleError extends BaseError {
         });
     }
 }
-
 
 export class EntryStorageError extends BaseError {
     override readonly code = "ENTRY_STORAGE_ERROR" as const;
@@ -82,11 +81,11 @@ export class EntryNotInBinError extends BaseError {
 }
 
 export class EntryLockedError extends BaseError {
-    override readonly code = "ENTRY_LOCKED" as const;
+    override readonly code = "CONTENT_ENTRY_LOCKED" as const;
 
-    constructor(id: string) {
+    constructor() {
         super({
-            message: `Cannot update entry "${id}" because it's locked.`
+            message: `Cannot update entry because it's locked.`
         });
     }
 }

@@ -29,9 +29,7 @@ class GetPreviousRevisionByEntryIdRepositoryImpl implements RepositoryAbstractio
             const entry = await this.storageOperations.entries.getPreviousRevision(model, params);
 
             if (!entry) {
-                return Result.fail(
-                    new EntryNotFoundError(`Previous revision not found for entry ${params.entryId}`)
-                );
+                return Result.fail(new EntryNotFoundError(params.entryId));
             }
 
             // Transform storage entry to domain entry

@@ -32,7 +32,7 @@ class GetPreviousRevisionByEntryIdUseCaseImpl implements BaseUseCaseAbstraction.
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model });
         if (!canAccess) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(NotAuthorizedError.fromModel(model));
         }
 
         // Delegate to repository

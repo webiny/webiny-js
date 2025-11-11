@@ -93,6 +93,7 @@ export interface IGetLatestRevisionByEntryIdRepository {
 
 export interface IGetLatestRevisionByEntryIdRepositoryErrors {
     storage: EntryStorageError;
+    notFound: EntryNotFoundError;
 }
 
 type RepositoryError =

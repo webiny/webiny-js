@@ -28,7 +28,8 @@ class ListPublishedEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
             ...rest,
             where: {
                 ...where,
-                published: true
+                published: true,
+                wbyDeleted_not: true
             }
         });
     }

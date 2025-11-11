@@ -12,6 +12,8 @@ import { GetPreviousRevisionByEntryIdFeature } from "./GetPreviousRevisionByEntr
 import { GetEntryFeature } from "./GetEntry/feature.js";
 import { DeleteEntryFeature } from "./DeleteEntry/feature.js";
 import { DeleteEntryRevisionFeature } from "./DeleteEntryRevision/feature.js";
+import { RestoreEntryFromBinFeature } from "./RestoreEntryFromBin/feature.js";
+import { GetLatestRevisionByEntryIdFeature } from "./GetLatestRevisionByEntryId/feature.js";
 
 export const ContentEntriesFeature = createFeature({
     name: "ContentEntries",
@@ -22,6 +24,7 @@ export const ContentEntriesFeature = createFeature({
         GetEntryByIdFeature.register(container);
         GetPublishedEntriesByIdsFeature.register(container);
         GetLatestEntriesByIdsFeature.register(container);
+        GetLatestRevisionByEntryIdFeature.register(container);
         GetRevisionsByEntryIdFeature.register(container);
         GetPreviousRevisionByEntryIdFeature.register(container);
         GetEntryFeature.register(container);
@@ -32,5 +35,6 @@ export const ContentEntriesFeature = createFeature({
         UpdateEntryFeature.register(container);
         DeleteEntryFeature.register(container);
         DeleteEntryRevisionFeature.register(container);
+        RestoreEntryFromBinFeature.register(container);
     }
 });

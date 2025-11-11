@@ -38,7 +38,7 @@ class MoveEntryToBinUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "d" });
         if (!canAccess) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(NotAuthorizedError.fromModel(model));
         }
 
         // Get the entry to delete by ID

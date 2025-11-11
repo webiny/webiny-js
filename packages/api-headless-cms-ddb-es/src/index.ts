@@ -1,7 +1,6 @@
 import dynamoDbValueFilters from "@webiny/db-dynamodb/plugins/filters/index.js";
 import elasticsearchPlugins from "./elasticsearch/index.js";
 import dynamoDbPlugins from "./dynamoDb/index.js";
-import { createSystemStorageOperations } from "./operations/system/index.js";
 import { createModelsStorageOperations } from "./operations/model/index.js";
 import { createEntriesStorageOperations } from "./operations/entry/index.js";
 import type { StorageOperationsFactory } from "~/types.js";
@@ -12,7 +11,6 @@ import { createGroupEntity } from "~/definitions/group.js";
 import { createModelEntity } from "~/definitions/model.js";
 import { createEntryEntity } from "~/definitions/entry.js";
 import { createEntryElasticsearchEntity } from "~/definitions/entryElasticsearch.js";
-import { createSystemEntity } from "~/definitions/system.js";
 import { createElasticsearchIndex } from "~/elasticsearch/createElasticsearchIndex.js";
 import { PluginsContainer } from "@webiny/plugins";
 import { createGroupsStorageOperations } from "~/operations/group/index.js";
@@ -57,11 +55,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
     });
 
     const entities = {
-        system: createSystemEntity({
-            entityName: ENTITIES.SYSTEM,
-            table: tableInstance,
-            attributes: attributes ? attributes[ENTITIES.SYSTEM] : {}
-        }),
         groups: createGroupEntity({
             entityName: ENTITIES.GROUPS,
             table: tableInstance,
@@ -205,9 +198,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
         getEntities: () => entities,
         getTable: () => tableInstance,
         getEsTable: () => tableElasticsearchInstance,
-        system: createSystemStorageOperations({
-            entity: entities.system
-        }),
         groups: createGroupsStorageOperations({
             entity: entities.groups,
             plugins

@@ -107,7 +107,6 @@ describe("Content Entry Meta Field", () => {
                 displayName: "admin"
             },
             modelId: model.modelId,
-            locale: model.locale,
             tenant: model.tenant,
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),

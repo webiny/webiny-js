@@ -35,7 +35,7 @@ class ListEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model });
         if (!canAccess) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(NotAuthorizedError.fromModel(model));
         }
 
         const { where: initialWhere, ...rest } = params || {};

@@ -135,7 +135,7 @@ describe("restore entries", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         message: expect.any(String)
                     }
                 }
@@ -146,7 +146,7 @@ describe("restore entries", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         message: expect.any(String)
                     }
                 }
@@ -218,7 +218,7 @@ describe("restore entries", () => {
                 restoreCategoryFromBin: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         data: null,
                         message: `Entry "${categoryToRestore.entryId}" was not found!`
                     }
@@ -301,7 +301,7 @@ describe("restore entries", () => {
                 restoreCategoryFromBin: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
+                        code: "ENTRY_NOT_FOUND",
                         data: null,
                         message: `Entry "${categoryToRestore.entryId}" was not found!`
                     }

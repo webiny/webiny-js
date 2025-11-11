@@ -52,7 +52,7 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check initial access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(NotAuthorizedError.fromModel(model));
         }
 
         try {
@@ -66,7 +66,7 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
             // Check if entry is locked
             if (originalEntry.locked) {
-                return Result.fail(new EntryLockedError(id));
+                return Result.fail(new EntryLockedError());
             }
 
             // Transform raw input to updated domain entry
@@ -89,7 +89,7 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             });
 
             if (!canAccessEntry) {
-                return Result.fail(new NotAuthorizedError());
+                return Result.fail(NotAuthorizedError.fromModel(model));
             }
 
             // Publish before event

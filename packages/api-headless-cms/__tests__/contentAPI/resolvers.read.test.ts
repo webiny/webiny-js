@@ -199,7 +199,7 @@ describe("READ - Resolvers", () => {
         });
     });
 
-    it(`should return a NOT_FOUND error when getting an entry by non-existing ID`, async () => {
+    it(`should return a ENTRY_NOT_FOUND error when getting an entry by non-existing ID`, async () => {
         const { getCategory } = useCategoryReadHandler(readOpts);
 
         const [response] = await getCategory({
@@ -213,8 +213,8 @@ describe("READ - Resolvers", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_FOUND",
-                        message: "Entry not found!",
+                        code: "ENTRY_NOT_FOUND",
+                        message: "Entry was not found!",
                         data: null
                     }
                 }

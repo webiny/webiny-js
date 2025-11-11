@@ -144,7 +144,7 @@ describe("delete multiple entries", () => {
                     getCategory: {
                         data: null,
                         error: {
-                            code: "NOT_FOUND",
+                            code: "ENTRY_NOT_FOUND",
                             message: expect.any(String)
                         }
                     }
@@ -177,7 +177,7 @@ describe("delete multiple entries", () => {
                     getCategory: {
                         data: null,
                         error: {
-                            code: "NOT_FOUND",
+                            code: "ENTRY_NOT_FOUND",
                             message: expect.any(String)
                         }
                     }

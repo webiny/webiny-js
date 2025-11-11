@@ -13,12 +13,12 @@ import type {
 } from "~/types.js";
 
 interface DataLoaderParams {
-    model: Pick<CmsModel, "tenant" | "locale" | "modelId">;
+    model: Pick<CmsModel, "tenant" | "modelId">;
     ids: readonly string[];
 }
 
 interface GetLoaderParams {
-    model: Pick<CmsModel, "tenant" | "locale" | "modelId">;
+    model: Pick<CmsModel, "tenant" | "modelId">;
 }
 
 interface DataLoadersHandlerParams {
@@ -71,7 +71,6 @@ export class DataLoadersHandler implements DataLoadersHandlerInterface {
         const { model } = params;
         const cacheParams: CacheKeyParams = {
             tenant: model.tenant,
-            locale: model.locale,
             name
         };
         let loader = this.cache.getDataLoader(cacheParams);
@@ -82,7 +81,6 @@ export class DataLoadersHandler implements DataLoadersHandlerInterface {
         loader = factory({
             entity: this.entity,
             tenant: model.tenant,
-            locale: model.locale
         });
         this.cache.setDataLoader(cacheParams, loader);
         return loader;

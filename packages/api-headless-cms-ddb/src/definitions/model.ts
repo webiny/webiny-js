@@ -44,10 +44,6 @@ export const createModelEntity = (params: Params): Entity<any> => {
                 type: "string",
                 required: true
             },
-            locale: {
-                type: "string",
-                required: true
-            },
             group: {
                 type: "map",
                 required: true

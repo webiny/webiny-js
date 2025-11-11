@@ -22,7 +22,7 @@ const correctTestCases: [ApiEndpoint][] = [["manage"], ["read"], ["preview"]];
 
 describe("Header Parameter Plugin", () => {
     it.each(correctTestCases)(
-        "should properly extract type and locale from headers - %s, %s",
+        "should properly extract type from headers - %s",
         async type => {
             const plugin = createHeaderParameterPlugin();
 
@@ -52,8 +52,10 @@ describe("Header Parameter Plugin", () => {
 
         expect(isInstalledResponse).toEqual({
             data: {
-                cms: {
-                    version: null
+                system: {
+                    isSystemInstalled: {
+                        data: false
+                    }
                 }
             }
         });
@@ -88,7 +90,7 @@ describe("Header Parameter Plugin", () => {
         expect(isInstalledResponse).toMatchObject({
             errors: [
                 {
-                    message: `Cannot query field "cms" on type "Query".`
+                    message: `Cannot query field "system" on type "Query".`
                 }
             ]
         });

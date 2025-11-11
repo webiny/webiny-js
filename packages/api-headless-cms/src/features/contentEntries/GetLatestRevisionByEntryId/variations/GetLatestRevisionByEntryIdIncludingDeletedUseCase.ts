@@ -13,7 +13,7 @@ class GetLatestRevisionByEntryIdIncludingDeletedUseCaseImpl implements UseCaseAb
     async execute<T extends CmsEntryValues>(
         model: CmsModel,
         params: CmsEntryStorageOperationsGetLatestRevisionParams
-    ): Promise<Result<CmsEntry<T> | null, UseCaseAbstraction.Error>> {
+    ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
         // Simply delegate to base use case without any filtering
         return await this.baseUseCase.execute<T>(model, params);
     }

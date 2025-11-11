@@ -72,10 +72,7 @@ import {
     mapAndCleanUpdatedInputData
 } from "./contentEntry/entryDataFactories/index.js";
 import type { AccessControl } from "./AccessControl/AccessControl.js";
-import {
-    getPublishedRevisionByEntryIdUseCases,
-    restoreEntryFromBinUseCases
-} from "~/crud/contentEntry/useCases/index.js";
+import { getPublishedRevisionByEntryIdUseCases } from "~/crud/contentEntry/useCases/index.js";
 import { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
@@ -98,6 +95,7 @@ import { GetRevisionsByEntryIdUseCase } from "~/features/contentEntries/GetRevis
 import { GetEntryUseCase } from "~/features/contentEntries/GetEntry/index.js";
 import { DeleteEntryRevisionUseCase } from "~/features/contentEntries/DeleteEntryRevision/index.js";
 import { DeleteEntryUseCase } from "~/features/contentEntries/DeleteEntry/index.js";
+import { RestoreEntryFromBinUseCase } from "~/features/contentEntries/RestoreEntryFromBin/abstractions.js";
 import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntries/GetLatestRevisionByEntryId/index.js";
 
 interface CreateContentEntryCrudParams {
@@ -278,23 +276,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         operation: storageOperations.entries.getPublishedRevisionByEntryId
     });
 
-    /**
-     * Restore entry from bin
-     */
-    const { restoreEntryFromBinUseCase } = restoreEntryFromBinUseCases({
-        transform: transformEntryFromStorageCallable,
-        getEntry: getLatestRevisionByEntryIdDeletedUseCase,
-        getIdentity: getSecurityIdentity,
-        restoreOperation: storageOperations.entries.restoreFromBin,
-        topics: {
-            onEntryBeforeRestoreFromBin,
-            onEntryAfterRestoreFromBin,
-            onEntryRestoreFromBinError
-        },
-        accessControl,
-        context
-    });
-
     const createEntry: CmsEntryContext["createEntry"] = async <T = CmsEntryValues>(
         model: CmsModel,
         rawInput: CreateCmsEntryInput,
@@ -318,11 +299,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             throw new WebinyError(
                 error.message || "Could not create content entry.",
                 error.code || "CREATE_ENTRY_ERROR",
-                {
-                    error,
-                    input: rawInput,
-                    model
-                }
+                error.data
             );
         }
 
@@ -345,9 +322,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const originalResult = await useCase.execute(model, sourceId);
 
         if (originalResult.isFail()) {
-            throw new NotFoundError(
-                `Entry "${sourceId}" of model "${model.modelId}" was not found.`
-            );
+            throw originalResult.error;
         }
 
         const originalEntry = originalResult.value;
@@ -361,9 +336,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         });
 
         if (latestStorageEntryResult.isFail()) {
-            throw new NotFoundError(
-                `Latest entry "${uniqueId}" of model "${model.modelId}" was not found.`
-            );
+            throw latestStorageEntryResult.error;
         }
 
         const latestStorageEntry = latestStorageEntryResult.value;
@@ -453,12 +426,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             const error = result.error;
             throw new WebinyError(
                 error.message || "Could not update existing entry.",
-                error.code || "UPDATE_ERROR",
-                {
-                    error,
-                    input: rawInput,
-                    model
-                }
+                error.code || "UPDATE_ERROR"
             );
         }
 
@@ -478,7 +446,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             const entryResult = await useCase.execute(model, id);
 
             if (entryResult.isFail()) {
-                throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
+                throw entryResult.error;
             }
             originalEntry = entryResult.value;
         }
@@ -504,7 +472,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute(model, id);
 
         if (result.isFail()) {
-            throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
+            throw result.error;
         }
 
         const entry = result.value;
@@ -554,7 +522,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const useCase = context.container.resolve(GetRevisionByIdUseCase);
         const result = await useCase.execute(model, id);
         if (result.isFail()) {
-            throw new NotFoundError(`Entry "${id}" was not found!`);
+            throw result.error;
         }
 
         const originalEntry = result.value;
@@ -722,7 +690,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         const result = await useCase.execute(model, id);
 
         if (result.isFail()) {
-            throw new NotFoundError(`Entry "${id}" in the model "${model.modelId}" was not found.`);
+            throw result.error;
         }
 
         const originalEntry = result.value;
@@ -738,7 +706,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         });
 
         if (latestStorageEntryResult.isFail()) {
-            throw new NotFoundError(`Entry "${id}" in the model "${model.modelId}" was not found.`);
+            throw latestStorageEntryResult.error;
         }
 
         const latestStorageEntry = latestStorageEntryResult.value;
@@ -806,7 +774,10 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         });
 
         if (!originalStorageEntry) {
-            throw new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
+            const error = new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
+            // @ts-expect-error Temporary migration fix
+            error.code = "ENTRY_NOT_FOUND";
+            throw error;
         }
 
         if (originalStorageEntry.id !== id) {
@@ -1337,7 +1308,16 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
             return context.benchmark.measure(
                 "headlessCms.crud.entries.restoreEntryFromBin",
                 async () => {
-                    return await restoreEntryFromBinUseCase.execute(model, entryId);
+                    const useCase = context.container.resolve(RestoreEntryFromBinUseCase);
+                    const result = await useCase.execute(model, entryId);
+                    if (result.isFail()) {
+                        throw new WebinyError(
+                            result.error.message,
+                            result.error.code,
+                            result.error.data
+                        );
+                    }
+                    return result.value;
                 }
             );
         },

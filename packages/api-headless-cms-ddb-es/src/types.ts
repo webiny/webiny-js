@@ -150,7 +150,6 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
 export type Attributes = Record<string, AttributeDefinition>;
 
 export enum ENTITIES {
-    SYSTEM = "CmsSystem",
     GROUPS = "CmsGroups",
     MODELS = "CmsModels",
     ENTRIES = "CmsEntries",
@@ -178,7 +177,7 @@ export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOper
     getTable: () => Table<string, string, string>;
     getEsTable: () => Table<string, string, string>;
     getEntities: () => Record<
-        "system" | "groups" | "models" | "entries" | "entriesEs",
+        "groups" | "models" | "entries" | "entriesEs",
         Entity<any>
     >;
 }

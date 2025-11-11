@@ -11,8 +11,7 @@ import type {
 } from "~/types/index.js";
 
 /**
- * ListLatestEntriesUseCase - Lists latest entries for manage API.
- * Delegates to base ListEntriesUseCase with latest: true filter.
+ * Lists latest entries for manage API (non-deleted).
  */
 class ListLatestEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private listEntriesUseCase: ListEntriesUseCase.Interface) {}
@@ -23,12 +22,12 @@ class ListLatestEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
     ): Promise<Result<[CmsEntry<T>[], CmsEntryMeta], UseCaseAbstraction.Error>> {
         const { where, ...rest } = params || {};
 
-        // Add latest: true filter
         return await this.listEntriesUseCase.execute<T>(model, {
             ...rest,
             where: {
                 ...where,
-                latest: true
+                latest: true,
+                wbyDeleted_not: true
             }
         });
     }

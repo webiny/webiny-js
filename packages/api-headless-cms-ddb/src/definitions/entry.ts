@@ -49,9 +49,6 @@ export const createEntryEntity = (params: Params): Entity<any> => {
             modelId: {
                 type: "string"
             },
-            locale: {
-                type: "string"
-            },
 
             /**
              * Revision-level meta fields. 👇

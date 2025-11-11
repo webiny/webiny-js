@@ -44,7 +44,7 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check initial access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(NotAuthorizedError.fromModel(model));
         }
 
         try {
@@ -67,7 +67,7 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             });
 
             if (!canAccessEntry) {
-                return Result.fail(new NotAuthorizedError());
+                return Result.fail(NotAuthorizedError.fromEntry(entry));
             }
 
             // Publish before event
