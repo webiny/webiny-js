@@ -26,6 +26,7 @@ export class BuildWebinyPkgCommand implements Command.Interface<IBuildWebinyPkgC
 
                 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+                const allPackages = '';
 
 
                 const packages: PackageConfig[] = [
