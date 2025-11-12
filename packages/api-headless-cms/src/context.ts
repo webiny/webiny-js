@@ -144,12 +144,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 accessControl
             }),
             ...createContentEntryCrud({
-                context,
-                getIdentity,
-                getTenant,
-                getLocale,
-                storageOperations,
-                accessControl
+                context
             }),
             export: {
                 ...createExportCrud(context)

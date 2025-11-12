@@ -20,6 +20,9 @@ import { DeleteEntryRevisionFeature } from "./DeleteEntryRevision/feature.js";
 import { DeleteMultipleEntriesFeature } from "./DeleteMultipleEntries/feature.js";
 import { RestoreEntryFromBinFeature } from "./RestoreEntryFromBin/feature.js";
 import { GetLatestRevisionByEntryIdFeature } from "./GetLatestRevisionByEntryId/feature.js";
+import { GetPublishedRevisionByEntryIdFeature } from "./GetPublishedRevisionByEntryId/feature.js";
+import { UnpublishEntryFeature } from "./UnpublishEntry/feature.js";
+import { GetUniqueFieldValuesFeature } from "./GetUniqueFieldValues/feature.js";
 
 export const ContentEntriesFeature = createFeature({
     name: "ContentEntries",
@@ -29,12 +32,14 @@ export const ContentEntriesFeature = createFeature({
         GetEntriesByIdsFeature.register(container);
         GetEntryByIdFeature.register(container);
         GetPublishedEntriesByIdsFeature.register(container);
+        GetPublishedRevisionByEntryIdFeature.register(container);
         GetLatestEntriesByIdsFeature.register(container);
         GetLatestRevisionByEntryIdFeature.register(container);
         GetRevisionsByEntryIdFeature.register(container);
         GetPreviousRevisionByEntryIdFeature.register(container);
         GetEntryFeature.register(container);
         ListEntriesFeature.register(container);
+        GetUniqueFieldValuesFeature.register(container);
 
         // Command features
         CreateEntryFeature.register(container);
@@ -43,6 +48,7 @@ export const ContentEntriesFeature = createFeature({
         ValidateEntryFeature.register(container);
         MoveEntryFeature.register(container);
         PublishEntryFeature.register(container);
+        UnpublishEntryFeature.register(container);
         RepublishEntryFeature.register(container);
         DeleteEntryFeature.register(container);
         DeleteEntryRevisionFeature.register(container);

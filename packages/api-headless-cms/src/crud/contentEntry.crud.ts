@@ -1,6 +1,4 @@
-import { parseIdentifier } from "@webiny/utils";
 import WebinyError from "@webiny/error";
-import { NotFoundError } from "@webiny/handler-graphql";
 import type {
     CmsContext,
     CmsEntry,
@@ -10,13 +8,10 @@ import type {
     CmsEntryMeta,
     CmsEntryValues,
     CmsModel,
-    CmsStorageEntry,
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput,
     EntryBeforeListTopicParams,
-    HeadlessCmsStorageOperations,
     OnEntryAfterCreateTopicParams,
-    OnEntryAfterDeleteMultipleTopicParams,
     OnEntryAfterDeleteTopicParams,
     OnEntryAfterMoveTopicParams,
     OnEntryAfterPublishTopicParams,
@@ -25,7 +20,6 @@ import type {
     OnEntryAfterUnpublishTopicParams,
     OnEntryAfterUpdateTopicParams,
     OnEntryBeforeCreateTopicParams,
-    OnEntryBeforeDeleteMultipleTopicParams,
     OnEntryBeforeDeleteTopicParams,
     OnEntryBeforeGetTopicParams,
     OnEntryBeforeMoveTopicParams,
@@ -37,7 +31,6 @@ import type {
     OnEntryCreateErrorTopicParams,
     OnEntryCreateRevisionErrorTopicParams,
     OnEntryDeleteErrorTopicParams,
-    OnEntryDeleteMultipleErrorTopicParams,
     OnEntryMoveErrorTopicParams,
     OnEntryPublishErrorTopicParams,
     OnEntryRepublishErrorTopicParams,
@@ -56,20 +49,8 @@ import { createTopic } from "@webiny/pubsub";
 import { assignBeforeEntryCreate } from "./contentEntry/beforeCreate.js";
 import { assignBeforeEntryUpdate } from "./contentEntry/beforeUpdate.js";
 import { assignAfterEntryDelete } from "./contentEntry/afterDelete.js";
-import {
-    createTransformEntryCallable,
-    entryFromStorageTransform,
-    entryToStorageTransform
-} from "~/utils/entryStorage.js";
-import { getSearchableFields } from "./contentEntry/searchableFields.js";
-import { createUnpublishEntryData } from "./contentEntry/entryDataFactories/index.js";
-import type { AccessControl } from "./AccessControl/AccessControl.js";
-import { getPublishedRevisionByEntryIdUseCases } from "~/crud/contentEntry/useCases/index.js";
 import { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
-import type { Tenant } from "@webiny/api-core/types/tenancy.js";
-import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 import { CreateEntryUseCase } from "~/features/contentEntries/CreateEntry/index.js";
 import { CreateEntryRevisionFromUseCase } from "~/features/contentEntries/CreateEntryRevisionFrom/abstractions.js";
 import { UpdateEntryUseCase } from "~/features/contentEntries/UpdateEntry/index.js";
@@ -93,18 +74,15 @@ import { DeleteEntryRevisionUseCase } from "~/features/contentEntries/DeleteEntr
 import { DeleteEntryUseCase } from "~/features/contentEntries/DeleteEntry/index.js";
 import { DeleteMultipleEntriesUseCase } from "~/features/contentEntries/DeleteMultipleEntries/abstractions.js";
 import { RestoreEntryFromBinUseCase } from "~/features/contentEntries/RestoreEntryFromBin/abstractions.js";
+import { UnpublishEntryUseCase } from "~/features/contentEntries/UnpublishEntry/index.js";
+import { GetUniqueFieldValuesUseCase } from "~/features/contentEntries/GetUniqueFieldValues/index.js";
 
 interface CreateContentEntryCrudParams {
-    storageOperations: HeadlessCmsStorageOperations;
-    accessControl: AccessControl;
     context: CmsContext;
-    getIdentity: () => SecurityIdentity;
-    getTenant: () => Tenant;
-    getLocale: () => I18NLocale;
 }
 
 export const createContentEntryCrud = (params: CreateContentEntryCrudParams): CmsEntryContext => {
-    const { storageOperations, accessControl, context, getIdentity: getSecurityIdentity } = params;
+    const { context } = params;
 
     /**
      * Create
@@ -214,18 +192,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     const onEntryRevisionDeleteError = createTopic<OnEntryRevisionDeleteErrorTopicParams>(
         "cms.onEntryRevisionDeleteError"
     );
-    /**
-     * Delete multiple entries
-     */
-    const onEntryBeforeDeleteMultiple = createTopic<OnEntryBeforeDeleteMultipleTopicParams>(
-        "cms.onEntryBeforeDeleteMultiple"
-    );
-    const onEntryAfterDeleteMultiple = createTopic<OnEntryAfterDeleteMultipleTopicParams>(
-        "cms.onEntryAfterDeleteMultiple"
-    );
-    const onEntryDeleteMultipleError = createTopic<OnEntryDeleteMultipleErrorTopicParams>(
-        "cms.onEntryDeleteMultipleError"
-    );
 
     /**
      * Get entry
@@ -239,6 +205,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
     /**
      * We need to assign some default behaviors.
+     * TODO: move this to a separate feature with multiple event handlers and field locking.
      */
     assignBeforeEntryCreate({
         context,
@@ -251,18 +218,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     assignAfterEntryDelete({
         context,
         onEntryAfterDelete
-    });
-
-    const transformEntryFromStorageCallable = createTransformEntryCallable({
-        context
-    });
-
-    /**
-     * Get published revision by entryId
-     */
-    const { getPublishedRevisionByEntryIdUseCase } = getPublishedRevisionByEntryIdUseCases({
-        transform: transformEntryFromStorageCallable,
-        operation: storageOperations.entries.getPublishedRevisionByEntryId
     });
 
     const createEntry: CmsEntryContext["createEntry"] = async <T = CmsEntryValues>(
@@ -459,158 +414,31 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         model: CmsModel,
         id: string
     ) => {
-        await accessControl.ensureCanAccessEntry({ model, pw: "u" });
+        // Delegate to new UnpublishEntry use case
+        const useCase = context.container.resolve(UnpublishEntryUseCase);
+        const result = await useCase.execute(model, id);
 
-        const { id: entryId } = parseIdentifier(id);
-
-        const originalStorageEntry = await getPublishedRevisionByEntryIdUseCase.execute(model, {
-            id: entryId
-        });
-
-        if (!originalStorageEntry) {
-            const error = new NotFoundError(
-                `Entry "${id}" of model "${model.modelId}" was not found.`
-            );
-            // @ts-expect-error Temporary migration fix
-            error.code = "ENTRY_NOT_FOUND";
-            throw error;
-        }
-
-        if (originalStorageEntry.id !== id) {
-            throw new WebinyError(`Entry is not published.`, "UNPUBLISH_ERROR", {
-                entry: originalStorageEntry
-            });
-        }
-
-        const originalEntry = await entryFromStorageTransform(context, model, originalStorageEntry);
-
-        await accessControl.ensureCanAccessEntry({ model, entry: originalEntry, pw: "u" });
-
-        const { entry } = await createUnpublishEntryData<T>({
-            context,
-            model,
-            originalEntry,
-            getIdentity: getSecurityIdentity
-        });
-
-        let storageEntry: CmsStorageEntry | null = null;
-
-        try {
-            await onEntryBeforeUnpublish.publish({
-                entry,
-                model
-            });
-
-            storageEntry = await entryToStorageTransform(context, model, entry);
-
-            const result = await storageOperations.entries.unpublish(model, {
-                entry,
-                storageEntry
-            });
-
-            await onEntryAfterUnpublish.publish({
-                entry,
-                storageEntry: result,
-                model
-            });
-
-            return entry;
-        } catch (ex) {
-            await onEntryUnpublishError.publish({
-                entry,
-                model,
-                error: ex
-            });
+        if (result.isFail()) {
+            const error = result.error;
             throw new WebinyError(
-                ex.message || "Could not unpublish entry.",
-                ex.code || "UNPUBLISH_ERROR",
-                {
-                    originalEntry,
-                    originalStorageEntry,
-                    entry,
-                    storageEntry
-                }
+                error.message || "Could not unpublish entry.",
+                error.code || "UNPUBLISH_ERROR",
+                error.data
             );
         }
+
+        return result.value as CmsEntry<T>;
     };
 
     const getUniqueFieldValues: CmsEntryContext["getUniqueFieldValues"] = async (model, params) => {
-        await accessControl.ensureCanAccessEntry({ model });
+        const useCase = context.container.resolve(GetUniqueFieldValuesUseCase);
+        const result = await useCase.execute(model, params);
 
-        const { where: initialWhere, fieldId } = params;
-
-        const where = {
-            ...initialWhere
-        };
-        /**
-         * Possibly only get records which are owned by current user.
-         * Or if searching for the owner set that value - in the case that user can see other entries than their own.
-         */
-        if (await accessControl.canAccessOnlyOwnedEntries({ model })) {
-            where.createdBy = getSecurityIdentity().id;
+        if (result.isFail()) {
+            throw new WebinyError(result.error.message, result.error.code, result.error.data);
         }
 
-        /**
-         * Where must contain either latest or published keys.
-         * We cannot list entries without one of those
-         */
-        if (where.latest && where.published) {
-            throw new WebinyError(
-                "Cannot list entries that are both published and latest.",
-                "LIST_ENTRIES_ERROR",
-                {
-                    where
-                }
-            );
-        } else if (!where.latest && !where.published) {
-            throw new WebinyError(
-                "Cannot list entries if we do not have latest or published defined.",
-                "LIST_ENTRIES_ERROR",
-                {
-                    where
-                }
-            );
-        }
-        /**
-         * We need to verify that the field in question is searchable.
-         */
-        const fields = getSearchableFields({
-            fields: model.fields,
-            plugins: context.plugins,
-            input: []
-        });
-
-        if (!fields.includes(fieldId)) {
-            throw new WebinyError(
-                "Cannot list unique entry field values if the field is not searchable.",
-                "LIST_UNIQUE_ENTRY_VALUES_ERROR",
-                {
-                    fieldId
-                }
-            );
-        }
-
-        try {
-            return await storageOperations.entries.getUniqueFieldValues(model, {
-                where,
-                fieldId
-            });
-        } catch (ex) {
-            throw new WebinyError(
-                "Error while fetching unique entry values from storage.",
-                "LIST_UNIQUE_ENTRY_VALUES_ERROR",
-                {
-                    error: {
-                        message: ex.message,
-                        code: ex.code,
-                        data: ex.data
-                    },
-                    model,
-                    where,
-                    fieldId
-                }
-            );
-        }
+        return result.value;
     };
 
     const getEntryTraverser = async (modelId: string) => {
