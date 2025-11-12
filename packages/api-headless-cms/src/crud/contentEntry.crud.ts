@@ -536,11 +536,7 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
                     throw new WebinyError(
                         error.message || `Entry by ID "${id}" not found.`,
                         error.code || "GET_ENTRY_BY_ID_ERROR",
-                        {
-                            error,
-                            id,
-                            model
-                        }
+                        error.data
                     );
                 }
 
