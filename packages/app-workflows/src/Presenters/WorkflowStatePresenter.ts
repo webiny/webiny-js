@@ -72,7 +72,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
 
     get vm(): IWorkflowStatePresenterViewModel {
         return {
-            workflow: this.workflow,
+            workflow: toJS(this.workflow),
             state: this.state ? this.state.toJS() : null,
             step: toJS(this.step || this.state?.currentStep || null),
             lastApprovedStep: toJS(this.state?.lastApproved || null),

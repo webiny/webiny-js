@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { useWorkflowStateList } from "../hooks/index.js";
-import { Alert, DataTable, DataTableColumns } from "@webiny/admin-ui";
+import { Alert, DataTable, DataTableColumns, TimeAgo } from "@webiny/admin-ui";
 import { type IGenericError, type IWorkflowState } from "~/types.js";
 import { TagState } from "~/Components/Common/TagState.js";
 import { TagStep } from "~/Components/Common/TagStep.js";
@@ -13,13 +13,16 @@ const columns: DataTableColumns<IWorkflowState> = {
         header: "Title",
         enableSorting: true
     },
-    app: {
-        header: "Application",
-        enableSorting: false
-    },
+    // app: {
+    //     header: "Application",
+    //     enableSorting: false
+    // },
     savedOn: {
         header: "Last Modified",
-        enableSorting: true
+        enableSorting: true,
+        cell(state) {
+            return <TimeAgo datetime={state.savedOn} />;
+        }
     },
     createdBy: {
         header: "Submitted By",
