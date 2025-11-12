@@ -3,7 +3,10 @@ import type {
     IWorkflowStateListPresenterListParams,
     IWorkflowStateListPresenterListParamsWhere
 } from "./abstractions/WorkflowStateListPresenter.js";
-import type { IWorkflowStateListRepository } from "~/Repositories/index.js";
+import type {
+    IWorkflowStateListRepository,
+    WorkflowStateListRepositoryType
+} from "~/Repositories/index.js";
 import { makeAutoObservable } from "mobx";
 
 interface IWorkflowStateListPresenterParams {
@@ -12,7 +15,7 @@ interface IWorkflowStateListPresenterParams {
 
 export class WorkflowStateListPresenter implements IWorkflowStateListPresenter {
     private readonly repository: IWorkflowStateListRepository;
-    
+
     private listParams: IWorkflowStateListPresenterListParams | undefined = undefined;
 
     public get vm() {
@@ -22,7 +25,8 @@ export class WorkflowStateListPresenter implements IWorkflowStateListPresenter {
             error: this.repository.error,
             totalCount: this.repository.meta?.totalCount || 0,
             hasMoreItems: this.repository.meta?.hasMoreItems || false,
-            where: this.listParams?.where || {}
+            where: this.listParams?.where || {},
+            type: this.repository.type
         };
     }
 
@@ -61,6 +65,11 @@ export class WorkflowStateListPresenter implements IWorkflowStateListPresenter {
                 isActive: true
             }
         };
+        return await this.repository.list(this.listParams);
+    };
+
+    setType = async (type: WorkflowStateListRepositoryType): Promise<void> => {
+        this.repository.setType(type);
         return await this.repository.list(this.listParams);
     };
 }

@@ -66,7 +66,6 @@ export interface IWorkflowStateContextListStatesResponse {
     meta: IMeta;
 }
 
-
 export interface IWorkflowStateContextOnStateAfterCreate {
     state: IWorkflowStateModel;
 }

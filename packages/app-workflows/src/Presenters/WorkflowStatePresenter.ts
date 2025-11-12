@@ -106,7 +106,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
                 app: this.app
             }
         });
-        console.log("Fetched workflows:", workflows);
+
         runInAction(() => {
             if (workflows.length === 0) {
                 this.workflow = null;

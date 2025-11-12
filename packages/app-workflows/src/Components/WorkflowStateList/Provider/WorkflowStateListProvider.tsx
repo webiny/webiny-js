@@ -16,7 +16,7 @@ interface IWorkflowStateListProviderProps {
     children: React.ReactNode;
     client: ApolloClient<object>;
     where?: IWorkflowStateListPresenterListParamsWhere;
-    type?: "own" | "requested";
+    type?: "own" | "requested" | undefined;
 }
 
 export const WorkflowStateListProvider = (props: IWorkflowStateListProviderProps) => {
@@ -28,10 +28,10 @@ export const WorkflowStateListProvider = (props: IWorkflowStateListProviderProps
         });
         const repository = new WorkflowStateListRepository({
             gateway,
-            type,
+            type
         });
         const presenter = new WorkflowStateListPresenter({
-            repository,
+            repository
         });
 
         presenter.list({
@@ -39,7 +39,7 @@ export const WorkflowStateListProvider = (props: IWorkflowStateListProviderProps
         });
 
         return presenter;
-    }, [where]);
+    }, [where, type]);
 
     const value: IWorkflowStateListContext = {
         presenter

@@ -1,19 +1,20 @@
 import type {
     IWorkflowStateListRepository,
-    IWorkflowStateListRepositoryListParams
+    IWorkflowStateListRepositoryListParams,
+    WorkflowStateListRepositoryType
 } from "~/Repositories/abstractions/WorkflowStateListRepository.js";
-import type { IGenericError, IGenericMeta, IWorkflowState } from "~/types.js";
+import { type IGenericError, type IGenericMeta, type IWorkflowState } from "~/types.js";
 import { makeAutoObservable, observable, runInAction } from "mobx";
 import type { IWorkflowStateListGateway } from "~/Gateways/index.js";
 
 interface IWorkflowStateListRepositoryParams {
     gateway: IWorkflowStateListGateway;
-    type: "own" | "requested" | undefined;
+    type: WorkflowStateListRepositoryType;
 }
 
 export class WorkflowStateListRepository implements IWorkflowStateListRepository {
     readonly #gateway;
-    readonly #type;
+    private _type;
 
     public readonly items;
     private readonly _meta;
@@ -33,9 +34,13 @@ export class WorkflowStateListRepository implements IWorkflowStateListRepository
         return this._error;
     }
 
+    public get type() {
+        return this._type;
+    }
+
     public constructor(params: IWorkflowStateListRepositoryParams) {
         this.#gateway = params.gateway;
-        this.#type = params.type;
+        this._type = params.type;
 
         this.items = observable.array<IWorkflowState>([]);
         this._meta = observable.object<IGenericMeta>({
@@ -45,6 +50,12 @@ export class WorkflowStateListRepository implements IWorkflowStateListRepository
         });
 
         makeAutoObservable(this);
+    }
+
+    public setType(type: WorkflowStateListRepositoryType) {
+        runInAction(() => {
+            this._type = type;
+        });
     }
 
     public async list(params: IWorkflowStateListRepositoryListParams): Promise<void> {
@@ -62,6 +73,7 @@ export class WorkflowStateListRepository implements IWorkflowStateListRepository
             if (response.error || !response.data) {
                 return;
             }
+
             if (paramsSnapshot !== this.snapshot) {
                 this.snapshot = paramsSnapshot;
                 this.items.replace(response.data);
@@ -72,16 +84,19 @@ export class WorkflowStateListRepository implements IWorkflowStateListRepository
     }
 
     private listByType(params: IWorkflowStateListRepositoryListParams) {
-        if (this.#type === "own") {
+        if (this._type === "own") {
             return this.#gateway.listOwn(params);
-        } else if (this.#type === "requested") {
+        } else if (this._type === "requested") {
             return this.#gateway.listRequested(params);
         }
         return this.#gateway.list(params);
     }
 
     private createSnapshot(input: IWorkflowStateListRepositoryListParams): string {
-        const value = structuredClone(input);
+        const value = structuredClone({
+            ...input,
+            __repositoryType: this._type
+        });
         delete value.after;
         return JSON.stringify(value);
     }

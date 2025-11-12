@@ -1,4 +1,5 @@
 import type { IGenericError, IWorkflowState, WorkflowStateValue } from "~/types.js";
+import type { WorkflowStateListRepositoryType } from "~/Repositories/index.js";
 
 export interface IWorkflowStateListPresenterViewModel {
     items: IWorkflowState[];
@@ -7,6 +8,7 @@ export interface IWorkflowStateListPresenterViewModel {
     totalCount: number;
     hasMoreItems: boolean;
     where: IWorkflowStateListPresenterListParamsWhere;
+    type: WorkflowStateListRepositoryType;
 }
 
 export interface IWorkflowStateListPresenterListParamsWhereSteps {
@@ -57,7 +59,8 @@ export interface IWorkflowStateListPresenterListParams {
 export interface IWorkflowStateListPresenter {
     vm: IWorkflowStateListPresenterViewModel;
 
+    nextPage(): Promise<void>;
     filterBy(where: IWorkflowStateListPresenterListParamsWhere): Promise<void>;
     list(params?: IWorkflowStateListPresenterListParams): Promise<void>;
-    nextPage(): Promise<void>;
+    setType(type: WorkflowStateListRepositoryType): Promise<void>;
 }

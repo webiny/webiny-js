@@ -5,14 +5,14 @@ import { useWorkflowStateList } from "~/Components/WorkflowStateList/hooks/index
 import type { WorkflowStateValue } from "~/types.js";
 import { observer } from "mobx-react-lite";
 
-interface ITag {
+interface IValue {
     label: string;
     variant: TagProps["variant"];
 }
 
-type TagTypes = WorkflowStateValue | "all";
+type PossibleStates = WorkflowStateValue | "all";
 
-const tags: GenericRecord<TagTypes, ITag> = {
+const possibleStates: GenericRecord<PossibleStates, IValue> = {
     all: {
         label: "All",
         variant: "neutral-light"
@@ -35,11 +35,28 @@ const tags: GenericRecord<TagTypes, ITag> = {
     }
 };
 
+type PossibleTypes = "all" | "own" | "requested";
+
+const possibleTypes: GenericRecord<PossibleTypes, IValue> = {
+    all: {
+        label: "All",
+        variant: "neutral-base"
+    },
+    own: {
+        label: "My Content Reviews",
+        variant: "neutral-light"
+    },
+    requested: {
+        label: "I Can Access",
+        variant: "neutral-strong"
+    }
+};
+
 export const WorkflowStateListFilters = observer(() => {
     const { presenter } = useWorkflowStateList();
 
-    const clickOn = useMemo(() => {
-        return (tag: keyof typeof tags) => {
+    const clickOnState = useMemo(() => {
+        return (tag: keyof typeof possibleStates) => {
             const state = tag === "all" ? undefined : tag;
             return () => {
                 presenter.filterBy({
@@ -47,23 +64,48 @@ export const WorkflowStateListFilters = observer(() => {
                 });
             };
         };
-    }, [presenter.vm]);
+    }, [presenter]);
+
+    const clickOnType = useMemo(() => {
+        return (tag: keyof typeof possibleTypes) => {
+            const type = tag === "all" ? undefined : tag;
+            return () => {
+                presenter.setType(type);
+            };
+        };
+    }, [presenter]);
 
     return (
         <Grid>
-            <Grid.Column span={3} className={"p-sm"}>
-                {(Object.keys(tags) as TagTypes[]).map(key => {
-                    const tag = tags[key];
+            <Grid.Column span={6} className={"p-sm"}>
+                {(Object.keys(possibleStates) as PossibleStates[]).map(key => {
+                    const tag = possibleStates[key];
                     const active =
-                        presenter.vm.where.state === key ||
-                        (key === "all" && !presenter.vm.where.state);
+                        presenter.vm.where?.state === key ||
+                        (key === "all" && !presenter.vm.where?.state);
                     return (
                         <Tag
                             disabled={active}
                             variant={tag.variant}
                             key={`state-${key}`}
                             content={tag.label}
-                            onClick={clickOn(key)}
+                            onClick={clickOnState(key)}
+                        />
+                    );
+                })}
+            </Grid.Column>
+            <Grid.Column span={6} className={"text-right p-sm"}>
+                {(Object.keys(possibleTypes) as PossibleTypes[]).map(key => {
+                    const tag = possibleTypes[key];
+                    const active =
+                        presenter.vm.type === key || (key === "all" && !presenter.vm.type);
+                    return (
+                        <Tag
+                            disabled={active}
+                            variant={tag.variant}
+                            key={`type-${key}`}
+                            content={tag.label}
+                            onClick={clickOnType(key)}
                         />
                     );
                 })}
