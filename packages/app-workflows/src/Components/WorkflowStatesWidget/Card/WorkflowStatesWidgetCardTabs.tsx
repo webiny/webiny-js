@@ -4,7 +4,7 @@ import type {
     IWorkflowStatesWidgetPresenterViewModel
 } from "~/Presenters/index.js";
 import { Loader, Tabs } from "@webiny/admin-ui";
-import { WorkflowStateList } from "../State/WorkflowStateList.js";
+import { WorkflowStateList } from "../List/WorkflowStateList.js";
 import { observer } from "mobx-react-lite";
 import { WorkflowStateValue } from "~/types.js";
 

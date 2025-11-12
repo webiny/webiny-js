@@ -10,11 +10,7 @@ import type {
     IWorkflowState,
     IWorkflowStateRecord
 } from "~/context/abstractions/WorkflowState.js";
-import type {
-    IWorkflowStateContextListOwnWorkflowStatesParams,
-    IWorkflowStateContextListRequestedWorkflowStatesParams,
-    IWorkflowStateContextListStatesParams
-} from "~/context/abstractions/WorkflowStateContext.js";
+import type { IWorkflowStateContextListStatesParams } from "~/context/abstractions/WorkflowStateContext.js";
 import { RequiredDeep } from "type-fest";
 
 export interface IWorkflowError {
@@ -148,7 +144,7 @@ export interface IListWorkflowResponse {
 }
 
 export const LIST_WORKFLOWS_QUERY = /* GraphQL */ `
-    query ListWorkflows($where: ListWorkflowsWhereInput, $limit: Number, $sort: [ListWorkflowsSort!], $after: String) {
+    query ListWorkflows($where: ListWorkflowsWhereInput, $limit: Int, $sort: [ListWorkflowsSort!], $after: String) {
         workflows {
             listWorkflows(where: $where, limit: $limit, sort: $sort, after: $after) {
                 data ${WORKFLOW}
@@ -293,7 +289,7 @@ export const LIST_TARGET_WORKFLOW_STATES_QUERY = /* GraphQL */ `
     query ListWorkflowStates(
         $where: ListWorkflowStatesWhereInput,
         $sort: [ListWorkflowStatesSort!],
-        $limit: Number,
+        $limit: Int,
         $after: String
     ) {
         workflows {
@@ -315,8 +311,7 @@ export const LIST_TARGET_WORKFLOW_STATES_QUERY = /* GraphQL */ `
     }
 `;
 
-export type IListOwnWorkflowStatesVariables =
-    RequiredDeep<IWorkflowStateContextListOwnWorkflowStatesParams>;
+export type IListOwnWorkflowStatesVariables = RequiredDeep<IWorkflowStateContextListStatesParams>;
 
 export interface IListOwnWorkflowStatesResponse {
     data: {
@@ -332,7 +327,7 @@ export interface IListOwnWorkflowStatesResponse {
 
 export const LIST_OWN_WORKFLOW_STATES_QUERY = /* GraphQL */ `
     query ListOwnWorkflowStates(
-        $where: ListOwnWorkflowStatesWhereInput!,
+        $where: ListWorkflowStatesWhereInput!,
         $limit: Int!,
     ) {
         workflows {
@@ -353,7 +348,7 @@ export const LIST_OWN_WORKFLOW_STATES_QUERY = /* GraphQL */ `
 `;
 
 export type IListRequestedWorkflowStatesVariables =
-    RequiredDeep<IWorkflowStateContextListRequestedWorkflowStatesParams>;
+    RequiredDeep<IWorkflowStateContextListStatesParams>;
 
 export interface IListRequestedWorkflowStatesResponse {
     data: {
@@ -369,7 +364,7 @@ export interface IListRequestedWorkflowStatesResponse {
 
 export const LIST_REQUESTED_WORKFLOW_STATES_QUERY = /* GraphQL */ `
     query ListRequestedWorkflowStates(
-        $where: ListRequestedWorkflowStatesWhereInput!,
+        $where: ListWorkflowStatesWhereInput!,
         $limit: Int!,
     ) {
         workflows {

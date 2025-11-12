@@ -45,11 +45,15 @@ const mapPromiseAllResponse = (
     }, {});
 };
 
+interface IMoveStepBetweenStatesParams {
+    from: IWorkflowState;
+    to: IWorkflowState;
+}
+
 export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPresenter {
     readonly #type;
     readonly #states;
     private readonly repository;
-    private readonly items;
     private dialog:
         | "approve"
         | "reject"
@@ -92,7 +96,6 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         this.#type = params.type;
         this.#states = params.states;
         this.values = observable.object<IWorkflowStatesWidgetPresenterViewModelValues>({});
-        this.items = observable.array<IWorkflowState>([]);
         this.dialog = null;
         this.state = null;
 
@@ -171,13 +174,42 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         });
     }
 
+    private moveStepBetweenStates(params: IMoveStepBetweenStatesParams): void {
+        const { from: fromState, to: toState } = params;
+        if (fromState.state === toState.state) {
+            return;
+        }
+        const from = fromState.state;
+        const to = toState.state;
+
+        const fromIndex = this.values[from].items.findIndex(item => item.id === fromState.id);
+        if (fromIndex === -1) {
+            return;
+        }
+        const fromItems = Array.from(this.values[from].items);
+        fromItems.splice(fromIndex, 1);
+        set(this.values, from, {
+            ...this.values[from],
+            items: fromItems
+        });
+
+        const toItems = Array.from(this.values[to]?.items || []);
+        toItems.unshift(toState);
+        set(this.values, to, {
+            total: this.values[to]?.total || 0,
+            items: toItems
+        });
+    }
+
     startStateStep = async (state: IWorkflowState): Promise<void> => {
-        const index = this.items.findIndex(
-            item => item.id === state.id && item.state === WorkflowStateValue.pending
-        );
+        const key = WorkflowStateValue.pending;
+        const values = this.values[key];
+        const items = values.items || [];
+        const index = items.findIndex(item => item.id === state.id);
         if (index === -1) {
             return;
         }
+        const original = items[index];
         const result = await this.repository.startStateStep({
             id: state.id
         });
@@ -185,7 +217,10 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
             return;
         }
         runInAction(() => {
-            this.items[index] = result;
+            this.moveStepBetweenStates({
+                from: original,
+                to: result
+            });
             if (result.state === WorkflowStateValue.inReview) {
                 this.decreaseTotals(WorkflowStateValue.pending);
                 this.increaseTotals(WorkflowStateValue.inReview);
@@ -196,9 +231,10 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
     };
 
     takeOverStateStep = async (state: IWorkflowState): Promise<void> => {
-        const index = this.items.findIndex(
-            item => item.id === state.id && item.state === WorkflowStateValue.inReview
-        );
+        const key = WorkflowStateValue.inReview;
+        const values = this.values[key];
+        const items = values.items || [];
+        const index = items.findIndex(item => item.id === state.id);
         if (index === -1) {
             return;
         }
@@ -209,19 +245,25 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
             return;
         }
         runInAction(() => {
-            this.items[index] = result;
+            items[index] = result;
+            set(this.values, key, {
+                ...values,
+                items
+            });
             this.state = result;
             this.dialog = "takeOver:success";
         });
     };
 
     approveStateStep = async (state: IWorkflowState, comment?: string): Promise<void> => {
-        const index = this.items.findIndex(
-            item => item.id === state.id && item.state === WorkflowStateValue.inReview
-        );
-        if (index === -1) {
+        const key = WorkflowStateValue.inReview;
+        const values = this.values[key];
+        const items = values.items || [];
+        const original = items.find(item => item.id === state.id);
+        if (!original) {
             return;
         }
+
         const result = await this.repository.approveStateStep({
             id: state.id,
             comment
@@ -230,7 +272,10 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
             return;
         }
         runInAction(() => {
-            this.items[index] = result;
+            this.moveStepBetweenStates({
+                from: original,
+                to: result
+            });
             if (result.state === WorkflowStateValue.pending) {
                 this.increaseTotals(WorkflowStateValue.pending);
             }
@@ -241,10 +286,11 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
     };
 
     rejectStateStep = async (state: IWorkflowState, comment: string): Promise<void> => {
-        const index = this.items.findIndex(
-            item => item.id === state.id && item.state === WorkflowStateValue.inReview
-        );
-        if (index === -1) {
+        const key = WorkflowStateValue.inReview;
+        const values = this.values[key];
+        const items = values.items || [];
+        const original = items.find(item => item.id === state.id && item.state);
+        if (!original) {
             return;
         }
         const result = await this.repository.rejectStateStep({
@@ -256,7 +302,10 @@ export class WorkflowStatesWidgetPresenter implements IWorkflowStatesWidgetPrese
         }
 
         runInAction(() => {
-            this.items[index] = result;
+            this.moveStepBetweenStates({
+                from: original,
+                to: result
+            });
             if (result.state === WorkflowStateValue.rejected) {
                 this.decreaseTotals(WorkflowStateValue.inReview);
             }
