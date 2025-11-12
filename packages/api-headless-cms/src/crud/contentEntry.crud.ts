@@ -51,31 +51,31 @@ import { assignBeforeEntryUpdate } from "./contentEntry/beforeUpdate.js";
 import { assignAfterEntryDelete } from "./contentEntry/afterDelete.js";
 import { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import { CreateEntryUseCase } from "~/features/contentEntries/CreateEntry/index.js";
-import { CreateEntryRevisionFromUseCase } from "~/features/contentEntries/CreateEntryRevisionFrom/abstractions.js";
-import { UpdateEntryUseCase } from "~/features/contentEntries/UpdateEntry/index.js";
-import { ValidateEntryUseCase } from "~/features/contentEntries/ValidateEntry/abstractions.js";
-import { MoveEntryUseCase } from "~/features/contentEntries/MoveEntry/abstractions.js";
-import { RepublishEntryUseCase } from "~/features/contentEntries/RepublishEntry/abstractions.js";
-import { PublishEntryUseCase } from "~/features/contentEntries/PublishEntry/abstractions.js";
+import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
+import { CreateEntryRevisionFromUseCase } from "~/features/contentEntry/CreateEntryRevisionFrom/abstractions.js";
+import { UpdateEntryUseCase } from "~/features/contentEntry/UpdateEntry/index.js";
+import { ValidateEntryUseCase } from "~/features/contentEntry/ValidateEntry/abstractions.js";
+import { MoveEntryUseCase } from "~/features/contentEntry/MoveEntry/abstractions.js";
+import { RepublishEntryUseCase } from "~/features/contentEntry/RepublishEntry/abstractions.js";
+import { PublishEntryUseCase } from "~/features/contentEntry/PublishEntry/abstractions.js";
 import {
     ListLatestEntriesUseCase,
     ListPublishedEntriesUseCase,
     ListDeletedEntriesUseCase
-} from "~/features/contentEntries/ListEntries/index.js";
-import { ListEntriesUseCase } from "~/features/contentEntries/ListEntries/abstractions.js";
-import { GetEntriesByIdsUseCase } from "~/features/contentEntries/GetEntriesByIds/index.js";
-import { GetEntryByIdUseCase } from "~/features/contentEntries/GetEntryById/index.js";
-import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntries/GetPublishedEntriesByIds/index.js";
-import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntries/GetLatestEntriesByIds/index.js";
-import { GetRevisionsByEntryIdUseCase } from "~/features/contentEntries/GetRevisionsByEntryId/index.js";
-import { GetEntryUseCase } from "~/features/contentEntries/GetEntry/index.js";
-import { DeleteEntryRevisionUseCase } from "~/features/contentEntries/DeleteEntryRevision/index.js";
-import { DeleteEntryUseCase } from "~/features/contentEntries/DeleteEntry/index.js";
-import { DeleteMultipleEntriesUseCase } from "~/features/contentEntries/DeleteMultipleEntries/abstractions.js";
-import { RestoreEntryFromBinUseCase } from "~/features/contentEntries/RestoreEntryFromBin/abstractions.js";
-import { UnpublishEntryUseCase } from "~/features/contentEntries/UnpublishEntry/index.js";
-import { GetUniqueFieldValuesUseCase } from "~/features/contentEntries/GetUniqueFieldValues/index.js";
+} from "~/features/contentEntry/ListEntries/index.js";
+import { ListEntriesUseCase } from "~/features/contentEntry/ListEntries/abstractions.js";
+import { GetEntriesByIdsUseCase } from "~/features/contentEntry/GetEntriesByIds/index.js";
+import { GetEntryByIdUseCase } from "~/features/contentEntry/GetEntryById/index.js";
+import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntry/GetPublishedEntriesByIds/index.js";
+import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntry/GetLatestEntriesByIds/index.js";
+import { GetRevisionsByEntryIdUseCase } from "~/features/contentEntry/GetRevisionsByEntryId/index.js";
+import { GetEntryUseCase } from "~/features/contentEntry/GetEntry/index.js";
+import { DeleteEntryRevisionUseCase } from "~/features/contentEntry/DeleteEntryRevision/index.js";
+import { DeleteEntryUseCase } from "~/features/contentEntry/DeleteEntry/index.js";
+import { DeleteMultipleEntriesUseCase } from "~/features/contentEntry/DeleteMultipleEntries/abstractions.js";
+import { RestoreEntryFromBinUseCase } from "~/features/contentEntry/RestoreEntryFromBin/abstractions.js";
+import { UnpublishEntryUseCase } from "~/features/contentEntry/UnpublishEntry/index.js";
+import { GetUniqueFieldValuesUseCase } from "~/features/contentEntry/GetUniqueFieldValues/index.js";
 
 interface CreateContentEntryCrudParams {
     context: CmsContext;

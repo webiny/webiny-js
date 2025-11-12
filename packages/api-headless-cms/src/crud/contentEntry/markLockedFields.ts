@@ -18,7 +18,7 @@ interface MarkLockedFieldsParams {
 export const markLockedFields = async (params: MarkLockedFieldsParams): Promise<void> => {
     const { model, context } = params;
     /**
-     * If the model is registered via a plugin, we don't need do process anything.
+     * If the model is registered via a plugin, we don't need to process anything.
      */
     const plugins = context.plugins.byType<CmsModelPlugin>(CmsModelPlugin.type);
     if (plugins.find(plugin => plugin.contentModel.modelId === model.modelId)) {

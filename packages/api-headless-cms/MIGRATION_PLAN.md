@@ -259,7 +259,7 @@ export class ModelValidator {
 **Example: Repository Abstraction (Application Layer)**
 
 ```typescript
-// features/contentModels/shared/abstractions.ts
+// features/contentModel/shared/abstractions.ts
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsModel } from "~/domains/contentModels/CmsModel.js";
@@ -302,7 +302,7 @@ export namespace ModelsRepository {
 Following the pattern from `api-core` (GroupProvider/TeamProvider), create repositories that transparently handle both database-stored and plugin-defined models.
 
 ```typescript
-// features/contentModels/shared/ModelsRepository.ts
+// features/contentModel/shared/ModelsRepository.ts
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { ModelsRepository as RepositoryAbstraction } from "./abstractions.js";
@@ -516,7 +516,7 @@ interface IEntriesRepository {
 **Example: CreateModel Use Case**
 
 ```typescript
-// features/contentModels/CreateModel/abstractions.ts
+// features/contentModel/CreateModel/abstractions.ts
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { ModelsRepository } from "../shared/abstractions.js";
@@ -557,7 +557,7 @@ export namespace CreateModel {
 ```
 
 ```typescript
-// features/contentModels/CreateModel/CreateModelUseCase.ts
+// features/contentModel/CreateModel/CreateModelUseCase.ts
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import { CreateModel as UseCaseAbstraction } from "./abstractions.js";
@@ -666,7 +666,7 @@ crud/contentEntry/useCases/DeleteEntry/
 
 **Target Structure:**
 ```
-features/contentEntries/DeleteEntry/
+features/contentEntry/DeleteEntry/
 ├── abstractions.ts                     # DI abstractions
 ├── DeleteEntryUseCase.ts               # Use case with events inside ✅
 ├── decorators/
@@ -680,7 +680,7 @@ features/contentEntries/DeleteEntry/
 
 **Step 1: Create Abstractions**
 ```typescript
-// features/contentEntries/DeleteEntry/abstractions.ts
+// features/contentEntry/DeleteEntry/abstractions.ts
 import { createAbstraction } from "@webiny/feature/api";
 import type { CmsEntry } from "~/domains/contentEntries/CmsEntry.js";
 import type { CmsModel } from "~/domains/contentModels/CmsModel.js";
@@ -706,7 +706,7 @@ export namespace DeleteEntry {
 **Step 2: Refactor Use Case (Merge Operation + Events)**
 
 ```typescript
-// features/contentEntries/DeleteEntry/DeleteEntryUseCase.ts
+// features/contentEntry/DeleteEntry/DeleteEntryUseCase.ts
 import { createImplementation } from "@webiny/feature/api";
 import { DeleteEntry as UseCaseAbstraction } from "./abstractions.js";
 import { EntriesRepository } from "../shared/abstractions.js";
@@ -753,7 +753,7 @@ export const DeleteEntryUseCaseImpl = createImplementation({
 **Step 3: Refactor ONLY Real Decorators (Not Events)**
 
 ```typescript
-// features/contentEntries/DeleteEntry/decorators/DeleteEntrySecureDecorator.ts
+// features/contentEntry/DeleteEntry/decorators/DeleteEntrySecureDecorator.ts
 import { createDecorator } from "@webiny/feature/api";
 import { DeleteEntry } from "../abstractions.js";
 import { AccessControl } from "~/crud/AccessControl/abstractions.js";
@@ -783,7 +783,7 @@ export const DeleteEntrySecureDecorator = createDecorator({
 
 **Step 4: Feature Registration**
 ```typescript
-// features/contentEntries/DeleteEntry/feature.ts
+// features/contentEntry/DeleteEntry/feature.ts
 import { createFeature } from "@webiny/feature";
 import { DeleteEntryUseCaseImpl } from "./DeleteEntryUseCase.js";
 import { DeleteEntrySecureDecorator } from "./decorators/DeleteEntrySecureDecorator.js";

@@ -16,7 +16,7 @@ import { createImportCrud } from "~/export/crud/importing.js";
 import { getSchema } from "~/graphql/getSchema.js";
 import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 import { CmsInstallerFeature } from "~/features/installer/feature.js";
-import { ContentEntriesFeature } from "~/features/contentEntries/ContentEntriesFeature.js";
+import { ContentEntriesFeature } from "~/features/contentEntry/ContentEntriesFeature.js";
 import {
     StorageOperations,
     AccessControl as AccessControlAbstraction,

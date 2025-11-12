@@ -3,7 +3,7 @@ import type {
     CmsEntryListParams,
     CmsEntryResolverFactory as ResolverFactory
 } from "~/types/index.js";
-import { EntryNotFoundError } from "~/domains/contentEntries/errors.js";
+import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 
 type ResolveGet = ResolverFactory<any, CmsEntryListParams>;
 
