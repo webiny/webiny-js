@@ -52,7 +52,6 @@ import type {
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
-import { validateModelEntryData } from "./contentEntry/entryDataValidation.js";
 import { createTopic } from "@webiny/pubsub";
 import { assignBeforeEntryCreate } from "./contentEntry/beforeCreate.js";
 import { assignBeforeEntryUpdate } from "./contentEntry/beforeUpdate.js";
@@ -65,11 +64,9 @@ import {
 import { getSearchableFields } from "./contentEntry/searchableFields.js";
 import { filterAsync } from "~/utils/filterAsync.js";
 import {
-    createEntryRevisionFromData,
     createPublishEntryData,
     createRepublishEntryData,
-    createUnpublishEntryData,
-    mapAndCleanUpdatedInputData
+    createUnpublishEntryData
 } from "./contentEntry/entryDataFactories/index.js";
 import type { AccessControl } from "./AccessControl/AccessControl.js";
 import { getPublishedRevisionByEntryIdUseCases } from "~/crud/contentEntry/useCases/index.js";
@@ -79,7 +76,11 @@ import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 import { CreateEntryUseCase } from "~/features/contentEntries/CreateEntry/index.js";
+import { CreateEntryRevisionFromUseCase } from "~/features/contentEntries/CreateEntryRevisionFrom/abstractions.js";
 import { UpdateEntryUseCase } from "~/features/contentEntries/UpdateEntry/index.js";
+import { ValidateEntryUseCase } from "~/features/contentEntries/ValidateEntry/abstractions.js";
+import { MoveEntryUseCase } from "~/features/contentEntries/MoveEntry/abstractions.js";
+import { RepublishEntryUseCase } from "~/features/contentEntries/RepublishEntry/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntries/GetRevisionById/index.js";
 import {
     ListLatestEntriesUseCase,
@@ -95,6 +96,7 @@ import { GetRevisionsByEntryIdUseCase } from "~/features/contentEntries/GetRevis
 import { GetEntryUseCase } from "~/features/contentEntries/GetEntry/index.js";
 import { DeleteEntryRevisionUseCase } from "~/features/contentEntries/DeleteEntryRevision/index.js";
 import { DeleteEntryUseCase } from "~/features/contentEntries/DeleteEntry/index.js";
+import { DeleteMultipleEntriesUseCase } from "~/features/contentEntries/DeleteMultipleEntries/abstractions.js";
 import { RestoreEntryFromBinUseCase } from "~/features/contentEntries/RestoreEntryFromBin/abstractions.js";
 import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntries/GetLatestRevisionByEntryId/index.js";
 
@@ -108,14 +110,7 @@ interface CreateContentEntryCrudParams {
 }
 
 export const createContentEntryCrud = (params: CreateContentEntryCrudParams): CmsEntryContext => {
-    const {
-        storageOperations,
-        accessControl,
-        context,
-        getIdentity: getSecurityIdentity,
-        getTenant,
-        getLocale
-    } = params;
+    const { storageOperations, accessControl, context, getIdentity: getSecurityIdentity } = params;
 
     /**
      * Create
@@ -305,103 +300,30 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
 
         return result.value as CmsEntry<T>;
     };
+
     const createEntryRevisionFrom: CmsEntryContext["createEntryRevisionFrom"] = async (
         model,
         sourceId,
         rawInput,
         options
     ) => {
-        await accessControl.ensureCanAccessEntry({ model, rwd: "w" });
+        // Delegate to new CreateEntryRevisionFrom use case
+        const useCase = context.container.resolve(CreateEntryRevisionFromUseCase);
+        const result = await useCase.execute(model, sourceId, rawInput, options);
 
-        /**
-         * Entries are identified by a common parent ID + Revision number.
-         */
-        const { id: uniqueId } = parseIdentifier(sourceId);
-
-        const useCase = context.container.resolve(GetRevisionByIdUseCase);
-        const originalResult = await useCase.execute(model, sourceId);
-
-        if (originalResult.isFail()) {
-            throw originalResult.error;
-        }
-
-        const originalEntry = originalResult.value;
-
-        const getLatestRevisionByEntryIdUseCase = context.container.resolve(
-            GetLatestRevisionByEntryIdUseCase
-        );
-
-        const latestStorageEntryResult = await getLatestRevisionByEntryIdUseCase.execute(model, {
-            id: uniqueId
-        });
-
-        if (latestStorageEntryResult.isFail()) {
-            throw latestStorageEntryResult.error;
-        }
-
-        const latestStorageEntry = latestStorageEntryResult.value;
-
-        const { entry, input } = await createEntryRevisionFromData({
-            sourceId,
-            model,
-            rawInput,
-            options,
-            context,
-            getIdentity: getSecurityIdentity,
-            getTenant,
-            getLocale,
-            originalEntry,
-            latestStorageEntry,
-            accessControl
-        });
-
-        await accessControl.ensureCanAccessEntry({ model, entry, rwd: "w" });
-
-        let storageEntry: CmsStorageEntry | null = null;
-
-        try {
-            await onEntryBeforeCreateRevision.publish({
-                input,
-                entry,
-                original: originalEntry,
-                model
-            });
-
-            storageEntry = await entryToStorageTransform(context, model, entry);
-
-            const result = await storageOperations.entries.createRevisionFrom(model, {
-                entry,
-                storageEntry
-            });
-
-            await onEntryRevisionAfterCreate.publish({
-                input,
-                entry,
-                model,
-                original: originalEntry,
-                storageEntry: result
-            });
-            return entry;
-        } catch (ex) {
-            await onEntryCreateRevisionError.publish({
-                entry,
-                original: originalEntry,
-                model,
-                input,
-                error: ex
-            });
+        if (result.isFail()) {
+            // Convert Result error to WebinyError for backward compatibility
+            const error = result.error;
             throw new WebinyError(
-                ex.message || "Could not create entry from existing one.",
-                ex.code || "CREATE_FROM_REVISION_ERROR",
-                {
-                    error: ex,
-                    entry,
-                    storageEntry,
-                    originalEntry
-                }
+                error.message || "Could not create entry from existing one.",
+                error.code || "CREATE_FROM_REVISION_ERROR",
+                error.data
             );
         }
+
+        return result.value;
     };
+
     const updateEntry: CmsEntryContext["updateEntry"] = async <T = CmsEntryValues>(
         model: CmsModel,
         id: string,
@@ -434,166 +356,59 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
     };
 
     const validateEntry: CmsEntryContext["validateEntry"] = async (model, id, inputData) => {
-        await accessControl.ensureCanAccessEntry({ model, rwd: "w" });
+        // Delegate to new ValidateEntry use case
+        const useCase = context.container.resolve(ValidateEntryUseCase);
+        const result = await useCase.execute(model, id || null, inputData || {});
 
-        const input = mapAndCleanUpdatedInputData(model, inputData || {});
-        let originalEntry: CmsEntry | undefined;
-        if (id) {
-            /**
-             * The entry we are going to update.
-             */
-            const useCase = context.container.resolve(GetRevisionByIdUseCase);
-            const entryResult = await useCase.execute(model, id);
-
-            if (entryResult.isFail()) {
-                throw entryResult.error;
-            }
-            originalEntry = entryResult.value;
+        if (result.isFail()) {
+            // Convert Result error to WebinyError for backward compatibility
+            const error = result.error;
+            throw new WebinyError(
+                error.message || "Could not validate entry.",
+                error.code || "VALIDATION_ERROR",
+                error.data
+            );
         }
 
-        await accessControl.ensureCanAccessEntry({ model, entry: originalEntry, rwd: "w" });
-
-        const result = await validateModelEntryData({
-            context,
-            model,
-            data: input,
-            entry: originalEntry
-        });
-        return result.length > 0 ? result : [];
+        return result.value;
     };
 
     const moveEntry: CmsEntryContext["moveEntry"] = async (model, id, folderId) => {
-        await accessControl.ensureCanAccessEntry({ model, rwd: "w" });
-
-        /**
-         * The entry we are going to move to another folder.
-         */
-        const useCase = context.container.resolve(GetRevisionByIdUseCase);
-        const result = await useCase.execute(model, id);
+        // Delegate to new MoveEntry use case
+        const useCase = context.container.resolve(MoveEntryUseCase);
+        const result = await useCase.execute(model, id, folderId);
 
         if (result.isFail()) {
-            throw result.error;
+            // Convert Result error to WebinyError for backward compatibility
+            const error = result.error;
+            throw new WebinyError(
+                error.message || `Could not move entry "${id}" of model "${model.modelId}".`,
+                error.code || "MOVE_ENTRY_ERROR",
+                error.data
+            );
         }
 
-        const entry = result.value;
-
-        await accessControl.ensureCanAccessEntry({ model, entry, rwd: "w" });
-
-        /**
-         * No need to continue if the entry is already in the requested folder.
-         */
-        if (entry.location?.folderId === folderId) {
-            return entry;
-        }
-
-        try {
-            await onEntryBeforeMove.publish({
-                entry,
-                model,
-                folderId
-            });
-            await storageOperations.entries.move(model, id, folderId);
-            await onEntryAfterMove.publish({
-                entry,
-                model,
-                folderId
-            });
-            return entry;
-        } catch (ex) {
-            await onEntryMoveError.publish({
-                entry,
-                model,
-                folderId,
-                error: ex
-            });
-            throw WebinyError.from(ex, {
-                message: `Could not move entry "${id}" of model "${model.modelId}".`,
-                code: "MOVE_ENTRY_ERROR"
-            });
-        }
+        return result.value;
     };
 
     const republishEntry: CmsEntryContext["republishEntry"] = async (model, id) => {
-        await accessControl.ensureCanAccessEntry({ model, rwd: "w", pw: "p" });
-
-        /**
-         * Fetch the entry from the storage.
-         */
-        const useCase = context.container.resolve(GetRevisionByIdUseCase);
+        // Delegate to new RepublishEntry use case
+        const useCase = context.container.resolve(RepublishEntryUseCase);
         const result = await useCase.execute(model, id);
+
         if (result.isFail()) {
-            throw result.error;
-        }
-
-        const originalEntry = result.value;
-
-        await accessControl.ensureCanAccessEntry({
-            model,
-            entry: originalEntry,
-            rwd: "w",
-            pw: "p"
-        });
-
-        const { entry } = await createRepublishEntryData({
-            context,
-            model,
-            originalEntry,
-            getIdentity: getSecurityIdentity
-        });
-
-        const storageEntry = await entryToStorageTransform(context, model, entry);
-        /**
-         * First we need to update existing entry.
-         */
-        try {
-            await storageOperations.entries.update(model, {
-                entry,
-                storageEntry
-            });
-        } catch {
+            // Convert Result error to WebinyError for backward compatibility
+            const error = result.error;
             throw new WebinyError(
-                "Could not update existing entry with new data while re-publishing.",
-                "REPUBLISH_UPDATE_ERROR",
-                {
-                    entry
-                }
+                error.message || "Could not republish entry.",
+                error.code || "REPUBLISH_ERROR",
+                error.data
             );
         }
-        /**
-         * Then we move onto publishing it again.
-         */
-        try {
-            await onEntryBeforeRepublish.publish({
-                entry,
-                model
-            });
 
-            const result = await storageOperations.entries.publish(model, {
-                entry,
-                storageEntry
-            });
-
-            await onEntryAfterRepublish.publish({
-                entry,
-                model,
-                storageEntry: result
-            });
-            return entry;
-        } catch (ex) {
-            await onEntryRepublishError.publish({
-                entry,
-                model,
-                error: ex
-            });
-            throw new WebinyError(
-                "Could not publish existing entry while re-publishing.",
-                "REPUBLISH_PUBLISH_ERROR",
-                {
-                    entry
-                }
-            );
-        }
+        return result.value;
     };
+
     const deleteEntryRevision: CmsEntryContext["deleteEntryRevision"] = async (
         model,
         revisionId
@@ -609,75 +424,21 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         model,
         params
     ) => {
-        const { entries: input } = params;
-        const maxDeletableEntries = 50;
+        // Delegate to new DeleteMultipleEntries use case
+        const useCase = context.container.resolve(DeleteMultipleEntriesUseCase);
+        const result = await useCase.execute(model, params);
 
-        const entryIdList = new Set<string>();
-        for (const id of input) {
-            const { id: entryId } = parseIdentifier(id);
-            entryIdList.add(entryId);
-        }
-        const ids = Array.from(entryIdList);
-
-        if (ids.length > maxDeletableEntries) {
+        if (result.isFail()) {
+            // Convert Result error to WebinyError for backward compatibility
+            const error = result.error;
             throw new WebinyError(
-                "Cannot delete more than 50 entries at once.",
-                "DELETE_ENTRIES_MAX",
-                {
-                    entries: ids
-                }
+                error.message || "Could not delete multiple entries.",
+                error.code || "DELETE_ENTRIES_MULTIPLE_ERROR",
+                error.data
             );
         }
 
-        await accessControl.ensureCanAccessEntry({ model, rwd: "d" });
-
-        const { items: entries } = await storageOperations.entries.list(model, {
-            where: {
-                latest: true,
-                entryId_in: ids
-            },
-            limit: maxDeletableEntries + 1
-        });
-        /**
-         * We do not want to allow deleting entries that user does not own or cannot access.
-         */
-        const items = (
-            await filterAsync(entries, async entry => {
-                return accessControl.canAccessEntry({ model, entry: entry });
-            })
-        ).map(entry => entry.id);
-
-        try {
-            await onEntryBeforeDeleteMultiple.publish({
-                entries,
-                ids,
-                model
-            });
-            await storageOperations.entries.deleteMultipleEntries(model, {
-                entries: items
-            });
-            await onEntryAfterDeleteMultiple.publish({
-                entries,
-                ids,
-                model
-            });
-            return items.map(id => {
-                return {
-                    id
-                };
-            });
-        } catch (ex) {
-            await onEntryDeleteMultipleError.publish({
-                entries,
-                ids,
-                model,
-                error: ex
-            });
-            throw new WebinyError(ex.message, ex.code || "DELETE_ENTRIES_MULTIPLE_ERROR", {
-                error: ex,
-                entries
-            });
-        }
+        return result.value;
     };
 
     const publishEntry = async <T extends CmsEntryValues = CmsEntryValues>(
@@ -774,7 +535,9 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         });
 
         if (!originalStorageEntry) {
-            const error = new NotFoundError(`Entry "${id}" of model "${model.modelId}" was not found.`);
+            const error = new NotFoundError(
+                `Entry "${id}" of model "${model.modelId}" was not found.`
+            );
             // @ts-expect-error Temporary migration fix
             error.code = "ENTRY_NOT_FOUND";
             throw error;

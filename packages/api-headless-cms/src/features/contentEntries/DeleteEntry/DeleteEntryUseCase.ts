@@ -15,7 +15,6 @@ import { NotAuthorizedError } from "~/utils/errors.js";
  * Responsibilities:
  * - Apply access control
  * - Get the entry to delete by ID
- * - TODO: Handle force delete (for cleanup when entry might not exist in storage), and `permanently`
  * - Publish domain events
  * - Delegate to repository for storage operations
  */

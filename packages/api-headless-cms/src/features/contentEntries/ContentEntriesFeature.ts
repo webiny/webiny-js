@@ -1,6 +1,10 @@
 import { createFeature } from "@webiny/feature/api";
 import { CreateEntryFeature } from "./CreateEntry/feature.js";
+import { CreateEntryRevisionFromFeature } from "./CreateEntryRevisionFrom/feature.js";
 import { UpdateEntryFeature } from "./UpdateEntry/feature.js";
+import { ValidateEntryFeature } from "./ValidateEntry/feature.js";
+import { MoveEntryFeature } from "./MoveEntry/feature.js";
+import { RepublishEntryFeature } from "./RepublishEntry/feature.js";
 import { GetRevisionByIdFeature } from "./GetRevisionById/feature.js";
 import { ListEntriesFeature } from "./ListEntries/feature.js";
 import { GetEntriesByIdsFeature } from "./GetEntriesByIds/feature.js";
@@ -12,6 +16,7 @@ import { GetPreviousRevisionByEntryIdFeature } from "./GetPreviousRevisionByEntr
 import { GetEntryFeature } from "./GetEntry/feature.js";
 import { DeleteEntryFeature } from "./DeleteEntry/feature.js";
 import { DeleteEntryRevisionFeature } from "./DeleteEntryRevision/feature.js";
+import { DeleteMultipleEntriesFeature } from "./DeleteMultipleEntries/feature.js";
 import { RestoreEntryFromBinFeature } from "./RestoreEntryFromBin/feature.js";
 import { GetLatestRevisionByEntryIdFeature } from "./GetLatestRevisionByEntryId/feature.js";
 
@@ -32,9 +37,14 @@ export const ContentEntriesFeature = createFeature({
 
         // Command features
         CreateEntryFeature.register(container);
+        CreateEntryRevisionFromFeature.register(container);
         UpdateEntryFeature.register(container);
+        ValidateEntryFeature.register(container);
+        MoveEntryFeature.register(container);
+        RepublishEntryFeature.register(container);
         DeleteEntryFeature.register(container);
         DeleteEntryRevisionFeature.register(container);
+        DeleteMultipleEntriesFeature.register(container);
         RestoreEntryFromBinFeature.register(container);
     }
 });
