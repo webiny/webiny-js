@@ -5,6 +5,7 @@ import { UpdateEntryFeature } from "./UpdateEntry/feature.js";
 import { ValidateEntryFeature } from "./ValidateEntry/feature.js";
 import { MoveEntryFeature } from "./MoveEntry/feature.js";
 import { RepublishEntryFeature } from "./RepublishEntry/feature.js";
+import { PublishEntryFeature } from "./PublishEntry/feature.js";
 import { GetRevisionByIdFeature } from "./GetRevisionById/feature.js";
 import { ListEntriesFeature } from "./ListEntries/feature.js";
 import { GetEntriesByIdsFeature } from "./GetEntriesByIds/feature.js";
@@ -41,6 +42,7 @@ export const ContentEntriesFeature = createFeature({
         UpdateEntryFeature.register(container);
         ValidateEntryFeature.register(container);
         MoveEntryFeature.register(container);
+        PublishEntryFeature.register(container);
         RepublishEntryFeature.register(container);
         DeleteEntryFeature.register(container);
         DeleteEntryRevisionFeature.register(container);

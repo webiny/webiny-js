@@ -62,12 +62,7 @@ import {
     entryToStorageTransform
 } from "~/utils/entryStorage.js";
 import { getSearchableFields } from "./contentEntry/searchableFields.js";
-import { filterAsync } from "~/utils/filterAsync.js";
-import {
-    createPublishEntryData,
-    createRepublishEntryData,
-    createUnpublishEntryData
-} from "./contentEntry/entryDataFactories/index.js";
+import { createUnpublishEntryData } from "./contentEntry/entryDataFactories/index.js";
 import type { AccessControl } from "./AccessControl/AccessControl.js";
 import { getPublishedRevisionByEntryIdUseCases } from "~/crud/contentEntry/useCases/index.js";
 import { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser.js";
@@ -81,7 +76,7 @@ import { UpdateEntryUseCase } from "~/features/contentEntries/UpdateEntry/index.
 import { ValidateEntryUseCase } from "~/features/contentEntries/ValidateEntry/abstractions.js";
 import { MoveEntryUseCase } from "~/features/contentEntries/MoveEntry/abstractions.js";
 import { RepublishEntryUseCase } from "~/features/contentEntries/RepublishEntry/abstractions.js";
-import { GetRevisionByIdUseCase } from "~/features/contentEntries/GetRevisionById/index.js";
+import { PublishEntryUseCase } from "~/features/contentEntries/PublishEntry/abstractions.js";
 import {
     ListLatestEntriesUseCase,
     ListPublishedEntriesUseCase,
@@ -98,7 +93,6 @@ import { DeleteEntryRevisionUseCase } from "~/features/contentEntries/DeleteEntr
 import { DeleteEntryUseCase } from "~/features/contentEntries/DeleteEntry/index.js";
 import { DeleteMultipleEntriesUseCase } from "~/features/contentEntries/DeleteMultipleEntries/abstractions.js";
 import { RestoreEntryFromBinUseCase } from "~/features/contentEntries/RestoreEntryFromBin/abstractions.js";
-import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntries/GetLatestRevisionByEntryId/index.js";
 
 interface CreateContentEntryCrudParams {
     storageOperations: HeadlessCmsStorageOperations;
@@ -445,82 +439,21 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
         model: CmsModel,
         id: string
     ) => {
-        await accessControl.ensureCanAccessEntry({ model, pw: "p" });
-
-        const useCase = context.container.resolve(GetRevisionByIdUseCase);
+        // Delegate to new PublishEntry use case
+        const useCase = context.container.resolve(PublishEntryUseCase);
         const result = await useCase.execute(model, id);
 
         if (result.isFail()) {
-            throw result.error;
-        }
-
-        const originalEntry = result.value;
-
-        await accessControl.ensureCanAccessEntry({ model, entry: originalEntry, pw: "p" });
-
-        const getLatestRevisionByEntryIdUseCase = context.container.resolve(
-            GetLatestRevisionByEntryIdUseCase
-        );
-        // We need the latest entry to get the latest entry-level meta fields.
-        const latestStorageEntryResult = await getLatestRevisionByEntryIdUseCase.execute(model, {
-            id: originalEntry.entryId
-        });
-
-        if (latestStorageEntryResult.isFail()) {
-            throw latestStorageEntryResult.error;
-        }
-
-        const latestStorageEntry = latestStorageEntryResult.value;
-        const latestEntry = await entryFromStorageTransform(context, model, latestStorageEntry);
-
-        const { entry } = await createPublishEntryData<T>({
-            context,
-            model,
-            originalEntry,
-            latestEntry,
-            getIdentity: getSecurityIdentity
-        });
-
-        let storageEntry: CmsStorageEntry | null = null;
-
-        try {
-            await onEntryBeforePublish.publish({
-                original: originalEntry,
-                entry,
-                model
-            });
-
-            storageEntry = await entryToStorageTransform(context, model, entry);
-            const result = await storageOperations.entries.publish(model, {
-                entry,
-                storageEntry
-            });
-
-            await onEntryAfterPublish.publish({
-                original: originalEntry,
-                entry,
-                storageEntry: result,
-                model
-            });
-            return entry;
-        } catch (ex) {
-            await onEntryPublishError.publish({
-                original: originalEntry,
-                entry,
-                model,
-                error: ex
-            });
+            // Convert Result error to WebinyError for backward compatibility
+            const error = result.error;
             throw new WebinyError(
-                ex.message || "Could not publish entry.",
-                ex.code || "PUBLISH_ERROR",
-                {
-                    error: ex,
-                    entry,
-                    storageEntry,
-                    originalEntry
-                }
+                error.message || "Could not publish entry.",
+                error.code || "PUBLISH_ERROR",
+                error.data
             );
         }
+
+        return result.value as CmsEntry<T>;
     };
     const unpublishEntry = async <T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
