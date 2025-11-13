@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface ICommandParamDefinition<TCommandParams> {
     name: string;
@@ -34,7 +34,7 @@ export interface ICommand<TCommandParams> {
     execute(): Promise<ICommandDefinition<TCommandParams>> | ICommandDefinition<TCommandParams>;
 }
 
-export const Command = new Abstraction<ICommand<any>>("Command");
+export const Command = createAbstraction<ICommand<any>>("Command");
 
 export namespace Command {
     export type Interface<TCommandParams> = ICommand<TCommandParams>;
