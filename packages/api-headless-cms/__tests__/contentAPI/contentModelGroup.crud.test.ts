@@ -54,7 +54,7 @@ const createPermissions = (groups: string[]) => [
     }
 ];
 
-describe("Cms Group crud test", () => {
+describe("Group crud test", () => {
     const {
         getContentModelGroupQuery,
         listContentModelGroupsQuery,
@@ -187,8 +187,8 @@ describe("Cms Group crud test", () => {
                 getContentModelGroup: {
                     data: null,
                     error: {
-                        message: `Cms Group "nonExistingId" was not found!`,
-                        code: "NOT_FOUND",
+                        message: `Group "nonExistingId" was not found!`,
+                        code: "GROUP_NOT_FOUND",
                         data: null
                     }
                 }
@@ -209,8 +209,8 @@ describe("Cms Group crud test", () => {
                 updateContentModelGroup: {
                     data: null,
                     error: {
-                        message: `Cms Group "nonExistingIdUpdate" was not found!`,
-                        code: "NOT_FOUND",
+                        message: `Group "nonExistingIdUpdate" was not found!`,
+                        code: "GROUP_NOT_FOUND",
                         data: null
                     }
                 }
@@ -227,8 +227,8 @@ describe("Cms Group crud test", () => {
                 deleteContentModelGroup: {
                     data: null,
                     error: {
-                        message: `Cms Group "nonExistingIdDelete" was not found!`,
-                        code: "NOT_FOUND",
+                        message: `Group "nonExistingIdDelete" was not found!`,
+                        code: "GROUP_NOT_FOUND",
                         data: null
                     }
                 }
@@ -339,7 +339,7 @@ describe("Cms Group crud test", () => {
                 createContentModelGroup: {
                     data: null,
                     error: {
-                        message: `Cms Group with the slug "content-model-group" already exists.`,
+                        message: `Group with the slug "content-model-group" already exists.`,
                         code: "SLUG_ALREADY_EXISTS",
                         data: expect.any(Object)
                     }

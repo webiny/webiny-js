@@ -1,6 +1,6 @@
 import { ICacheKeyKeys } from "@webiny/utils";
 
-export { ICacheKeyKeys };
+export type { ICacheKeyKeys };
 
 export interface ICacheKey {
     get(): string;

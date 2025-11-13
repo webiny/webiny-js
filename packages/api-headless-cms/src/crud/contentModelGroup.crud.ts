@@ -31,6 +31,7 @@ import { listGroupsFromDatabase } from "~/crud/contentModelGroup/listGroupsFromD
 import type { AccessControl } from "./AccessControl/AccessControl.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
+import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js";
 
 export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;
@@ -171,19 +172,15 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
      * CRUD Methods
      */
     const getGroup: CmsGroupContext["getGroup"] = async id => {
-        await accessControl.ensureCanAccessGroup();
+        const useCase = context.container.resolve(GetGroupUseCase);
+        const result = await useCase.execute(id);
 
-        const groups = await context.security.withoutAuthorization(async () => {
-            return fetchGroups(getTenant().id);
-        });
-        const group = groups.find(group => group.id === id);
-        if (!group) {
-            throw new NotFoundError(`Cms Group "${id}" was not found!`);
+        if (result.isFail()) {
+            const error = result.error;
+            throw new WebinyError(error.message, error.code, error.data);
         }
 
-        await accessControl.ensureCanAccessGroup({ group });
-
-        return group;
+        return result.value;
     };
 
     const listGroups: CmsGroupContext["listGroups"] = async params => {

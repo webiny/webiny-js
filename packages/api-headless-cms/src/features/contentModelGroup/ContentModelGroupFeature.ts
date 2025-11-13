@@ -1,0 +1,18 @@
+import { createFeature } from "@webiny/feature/api";
+import { GetGroupFeature } from "~/features/contentModelGroup/GetGroup/feature.js";
+import { GroupCache } from "~/features/contentModelGroup/shared/GroupCache.js";
+import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/PluginGroupsProvider.js";
+
+export const ContentModelGroupFeature = createFeature({
+    name: "ContentModelGroup",
+    register(container) {
+        // Shared infrastructure (singletons)
+        container.register(GroupCache).inSingletonScope();
+        container.register(PluginGroupsProvider).inSingletonScope();
+
+        // Query features
+        GetGroupFeature.register(container);
+
+        // Command features
+    }
+});
