@@ -2,7 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import type { EntryNotFoundError, EntryStorageError } from "~/domain/contentEntry/errors.js";
-import type { NotAuthorizedError } from "~/utils/errors.js";
+import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * GetEntryById Use Case - Fetches a single entry by its exact revision ID.
@@ -16,7 +16,7 @@ export interface IGetEntryByIdUseCase {
 }
 
 export interface IGetEntryByIdUseCaseErrors {
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: ContentEntryNotAuthorizedError;
     notFound: EntryNotFoundError;
     storage: EntryStorageError;
 }

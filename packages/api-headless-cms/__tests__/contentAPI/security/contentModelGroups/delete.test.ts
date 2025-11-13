@@ -27,6 +27,7 @@ describe("Delete Permissions Checks", () => {
         });
 
         expectNotAuthorized(modelGroupDeletion.data.deleteContentModelGroup, {
+            code: "Cms/ModelGroup/NotAuthorized",
             message: "Not allowed to access content model groups."
         });
 

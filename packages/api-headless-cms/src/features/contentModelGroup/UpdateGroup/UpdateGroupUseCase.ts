@@ -9,7 +9,7 @@ import { GroupAfterUpdateEvent } from "./events.js";
 import { GroupUpdateErrorEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
-import { GroupValidationError } from "~/domain/contentModelGroup/errors.js";
+import { GroupNotAuthorizedError, GroupValidationError } from "~/domain/contentModelGroup/errors.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
 import { createZodError } from "@webiny/utils";
 import { createGroupUpdateValidation } from "~/domain/contentModelGroup/validation.js";
@@ -45,7 +45,7 @@ class UpdateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
         // Initial access control check
         const canAccess = await this.accessControl.canAccessGroup({ rwd: "w" });
         if (!canAccess) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(new GroupNotAuthorizedError());
         }
 
         // Fetch original group
@@ -58,7 +58,7 @@ class UpdateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
         // Access control check on original group
         const canAccessGroup = await this.accessControl.canAccessGroup({ group: original });
         if (!canAccessGroup) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(new GroupNotAuthorizedError());
         }
 
         // Validate input
@@ -107,17 +107,15 @@ class UpdateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
                 return Result.fail(result.error);
             }
 
-            const updatedGroup = result.value;
-
             // Publish after event
             await this.eventPublisher.publish(
                 new GroupAfterUpdateEvent({
                     original,
-                    group: updatedGroup
+                    group
                 })
             );
 
-            return Result.ok(updatedGroup);
+            return Result.ok(group);
         } catch (error) {
             // Publish error event for unexpected errors
             await this.eventPublisher.publish(

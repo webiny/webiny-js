@@ -12,7 +12,7 @@ import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetPublishedRevisionByEntryIdUseCase } from "~/features/contentEntry/GetPublishedRevisionByEntryId/index.js";
 import type { CmsEntry } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
-import { NotAuthorizedError } from "~/utils/errors.js";
+import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 import { EntryValidationError } from "~/domain/contentEntry/errors.js";
 import { createUnpublishEntryData } from "~/crud/contentEntry/entryDataFactories/index.js";
@@ -44,7 +44,7 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check initial access control
         const canAccess = await this.accessControl.canAccessEntry({ model, pw: "u" });
         if (!canAccess) {
-            return Result.fail(NotAuthorizedError.fromModel(model));
+            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
         }
 
         // Parse entry ID from revision ID
@@ -76,7 +76,7 @@ class UnpublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         });
 
         if (!canAccessEntry) {
-            return Result.fail(NotAuthorizedError.fromModel(model));
+            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
         }
 
         // Transform to unpublish data

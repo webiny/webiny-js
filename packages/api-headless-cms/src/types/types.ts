@@ -1703,15 +1703,15 @@ export interface CmsGroupStorageOperations {
     /**
      * Create a new content model group.
      */
-    create: (params: CmsGroupStorageOperationsCreateParams) => Promise<CmsGroup>;
+    create: (params: CmsGroupStorageOperationsCreateParams) => Promise<void>;
     /**
      * Update existing content model group.
      */
-    update: (params: CmsGroupStorageOperationsUpdateParams) => Promise<CmsGroup>;
+    update: (params: CmsGroupStorageOperationsUpdateParams) => Promise<void>;
     /**
      * Delete the content model group.
      */
-    delete: (params: CmsGroupStorageOperationsDeleteParams) => Promise<CmsGroup>;
+    delete: (params: CmsGroupStorageOperationsDeleteParams) => Promise<void>;
 }
 
 export interface CmsModelStorageOperationsGetParams {

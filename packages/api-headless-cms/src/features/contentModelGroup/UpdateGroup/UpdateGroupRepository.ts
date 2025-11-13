@@ -23,7 +23,7 @@ class UpdateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
         private storageOperations: StorageOperations.Interface
     ) {}
 
-    async execute(group: CmsGroup): Promise<Result<CmsGroup, RepositoryAbstraction.Error>> {
+    async execute(group: CmsGroup): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
             // Check if this is a plugin-based group (cannot be updated)
             const pluginGroups = await this.pluginGroupsProvider.getGroups();
@@ -34,12 +34,12 @@ class UpdateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
             }
 
             // Persist updates
-            const updatedGroup = await this.storageOperations.groups.update({ group });
+            await this.storageOperations.groups.update({ group });
 
             // Clear cache
             this.groupCache.clear();
 
-            return Result.ok(updatedGroup);
+            return Result.ok();
         } catch (error) {
             return Result.fail(new GroupStorageError(error as Error));
         }

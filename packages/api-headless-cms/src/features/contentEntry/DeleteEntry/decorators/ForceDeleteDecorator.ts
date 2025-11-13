@@ -28,7 +28,7 @@ class ForceDeleteDecoratorImpl implements DeleteEntryUseCase.Interface {
 
         const result = await this.decoratee.execute(model, id, options);
 
-        if (force && result.isFail() && result.error.code === "ENTRY_NOT_FOUND") {
+        if (force && result.isFail() && result.error.code === "Cms/Entry/NotFound") {
             const { id: entryId } = parseIdentifier(id);
 
             try {

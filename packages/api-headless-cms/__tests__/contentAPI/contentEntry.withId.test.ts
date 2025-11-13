@@ -187,7 +187,7 @@ describe("Content entry with user defined ID", () => {
                 updateCategory: {
                     data: null,
                     error: {
-                        code: "CONTENT_ENTRY_LOCKED",
+                        code: "Cms/Entry/Locked",
                         message: "Cannot update entry because it's locked.",
                         data: null
                     }
@@ -254,7 +254,7 @@ describe("Content entry with user defined ID", () => {
                 updateCategory: {
                     data: null,
                     error: {
-                        code: "CONTENT_ENTRY_LOCKED",
+                        code: "Cms/Entry/Locked",
                         message: "Cannot update entry because it's locked.",
                         data: null
                     }

@@ -37,7 +37,7 @@ const createPermissions = (groups: string[]) => [
     {
         name: "cms.contentModelGroup",
         rwd: "rwd",
-        groups: groups ? { "en-US": groups } : undefined
+        groups: groups ?? undefined
     },
     {
         name: "cms.endpoint.read"
@@ -47,10 +47,6 @@ const createPermissions = (groups: string[]) => [
     },
     {
         name: "cms.endpoint.preview"
-    },
-    {
-        name: "content.i18n",
-        locales: ["en-US"]
     }
 ];
 
@@ -188,7 +184,7 @@ describe("Group crud test", () => {
                     data: null,
                     error: {
                         message: `Group "nonExistingId" was not found!`,
-                        code: "GROUP_NOT_FOUND",
+                        code: "Cms/ModelGroup/NotFound",
                         data: null
                     }
                 }
@@ -210,7 +206,7 @@ describe("Group crud test", () => {
                     data: null,
                     error: {
                         message: `Group "nonExistingIdUpdate" was not found!`,
-                        code: "GROUP_NOT_FOUND",
+                        code: "Cms/ModelGroup/NotFound",
                         data: null
                     }
                 }
@@ -228,7 +224,7 @@ describe("Group crud test", () => {
                     data: null,
                     error: {
                         message: `Group "nonExistingIdDelete" was not found!`,
-                        code: "GROUP_NOT_FOUND",
+                        code: "Cms/ModelGroup/NotFound",
                         data: null
                     }
                 }
@@ -251,7 +247,7 @@ describe("Group crud test", () => {
                     data: null,
                     error: {
                         message: `Validation failed.`,
-                        code: "VALIDATION_FAILED_INVALID_FIELDS",
+                        code: "Cms/ModelGroup/ValidationFailed",
                         data: {
                             invalidFields: {
                                 name: expect.any(Object)
@@ -277,7 +273,7 @@ describe("Group crud test", () => {
                     data: null,
                     error: {
                         message: `Validation failed.`,
-                        code: "VALIDATION_FAILED_INVALID_FIELDS",
+                        code: "Cms/ModelGroup/ValidationFailed",
                         data: {
                             invalidFields: {
                                 icon: expect.any(Object)
@@ -303,7 +299,7 @@ describe("Group crud test", () => {
                     data: null,
                     error: {
                         message: `Validation failed.`,
-                        code: "VALIDATION_FAILED_INVALID_FIELDS",
+                        code: "Cms/ModelGroup/ValidationFailed",
                         data: {
                             invalidFields: {
                                 name: expect.any(Object),
@@ -340,7 +336,7 @@ describe("Group crud test", () => {
                     data: null,
                     error: {
                         message: `Group with the slug "content-model-group" already exists.`,
-                        code: "SLUG_ALREADY_EXISTS",
+                        code: "Cms/ModelGroup/SlugTaken",
                         data: expect.any(Object)
                     }
                 }
@@ -349,7 +345,7 @@ describe("Group crud test", () => {
     });
 
     test("list specific content model groups", async () => {
-        // Create few content model groups
+        // Create several content model groups
         const prefixes = Array.from(Array(TestHelperEnum.MODELS_AMOUNT).keys()).map(prefix => {
             return createContentModelGroupPrefix(prefix);
         });
@@ -380,9 +376,10 @@ describe("Group crud test", () => {
         }
 
         // Create listGroups query with permission for only specific groups
+        const localPermissions = createPermissions([groups[0]]);
         const { listContentModelGroupsQuery: listGroups } = useGraphQLHandler({
             path: "manage",
-            permissions: createPermissions([groups[0]])
+            permissions: localPermissions
         });
 
         const [response] = await listGroups();

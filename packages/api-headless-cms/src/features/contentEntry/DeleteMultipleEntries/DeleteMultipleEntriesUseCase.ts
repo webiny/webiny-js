@@ -11,7 +11,7 @@ import {
     EntryAfterDeleteMultipleEvent,
     EntryDeleteMultipleErrorEvent
 } from "./events.js";
-import { NotAuthorizedError } from "~/utils/errors.js";
+import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { parseIdentifier } from "@webiny/utils";
 import WebinyError from "@webiny/error";
 import { filterAsync } from "~/utils/filterAsync.js";
@@ -67,7 +67,7 @@ class DeleteMultipleEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "d" });
         if (!canAccess) {
-            return Result.fail(NotAuthorizedError.fromModel(model));
+            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
         }
 
         // Fetch entries using ListEntries use case

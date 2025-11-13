@@ -239,7 +239,7 @@ describe("READ - resolvers - api key", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_AUTHORIZED",
+                        code: "Cms/Entry/NotAuthorized",
                         message: 'Not allowed to access "category" entries.'
                     }
                 }
@@ -281,7 +281,7 @@ describe("READ - resolvers - api key", () => {
                 listCategories: {
                     data: null,
                     error: {
-                        code: "NOT_AUTHORIZED",
+                        code: "Cms/Entry/NotAuthorized",
                         message: 'Not allowed to access "category" entries.'
                     },
                     meta: null
@@ -331,7 +331,7 @@ describe("READ - resolvers - api key", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "NOT_AUTHORIZED",
+                        code: "Cms/Entry/NotAuthorized",
                         message: 'Not allowed to access "category" entries.'
                     }
                 }
@@ -380,7 +380,7 @@ describe("READ - resolvers - api key", () => {
                     listCategories: {
                         data: null,
                         error: {
-                            code: "NOT_AUTHORIZED",
+                            code: "Cms/Entry/NotAuthorized",
                             message: 'Not allowed to access "category" entries.'
                         },
                         meta: null

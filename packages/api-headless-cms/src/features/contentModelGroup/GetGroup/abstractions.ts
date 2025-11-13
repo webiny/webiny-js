@@ -1,9 +1,8 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsGroup } from "~/types/index.js";
-import type { GroupNotFoundError } from "~/domain/contentModelGroup/errors.js";
+import { GroupNotAuthorizedError, type GroupNotFoundError } from "~/domain/contentModelGroup/errors.js";
 import type { GroupStorageError } from "~/domain/contentModelGroup/errors.js";
-import type { NotAuthorizedError } from "~/utils/errors.js";
 
 /**
  * GetGroup Use Case
@@ -14,7 +13,7 @@ export interface IGetGroupUseCase {
 
 export interface IGetGroupUseCaseErrors {
     notFound: GroupNotFoundError;
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: GroupNotAuthorizedError;
     repository: RepositoryError;
 }
 

@@ -2,7 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
 import type { EntryNotFoundError, EntryStorageError } from "~/domain/contentEntry/errors.js";
-import type { NotAuthorizedError } from "~/utils/errors.js";
+import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * DeleteEntryRevision Use Case - Deletes a specific revision of an entry.
@@ -13,7 +13,7 @@ export interface IDeleteEntryRevisionUseCase {
 }
 
 export interface IDeleteEntryRevisionUseCaseErrors {
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: ContentEntryNotAuthorizedError;
     notFound: EntryNotFoundError;
     storage: EntryStorageError;
 }

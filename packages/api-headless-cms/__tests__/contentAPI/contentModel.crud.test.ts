@@ -22,12 +22,12 @@ const createPermissions = ({ models, groups }: { models?: string[]; groups?: str
     {
         name: "cms.contentModelGroup",
         rwd: "rwd",
-        groups: groups ? { "en-US": groups } : undefined
+        groups: groups ?? undefined
     },
     {
         name: "cms.contentModel",
         rwd: "rwd",
-        models: models ? { "en-US": models } : undefined
+        models: models ?? undefined
     },
     {
         name: "cms.endpoint.read"
@@ -37,10 +37,6 @@ const createPermissions = ({ models, groups }: { models?: string[]; groups?: str
     },
     {
         name: "cms.endpoint.preview"
-    },
-    {
-        name: "content.i18n",
-        locales: ["en-US"]
     }
 ];
 

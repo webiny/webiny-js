@@ -4,7 +4,7 @@ import { GetPublishedEntriesByIdsUseCase as UseCaseAbstraction } from "./abstrac
 import { GetPublishedEntriesByIdsRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import { NotAuthorizedError } from "~/utils/errors.js";
+import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * GetPublishedEntriesByIdsUseCase - Orchestrates fetching published entries by IDs.
@@ -26,7 +26,7 @@ class GetPublishedEntriesByIdsUseCaseImpl implements UseCaseAbstraction.Interfac
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model });
         if (!canAccess) {
-            return Result.fail(NotAuthorizedError.fromModel(model));
+            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
         }
 
         // Delegate to repository

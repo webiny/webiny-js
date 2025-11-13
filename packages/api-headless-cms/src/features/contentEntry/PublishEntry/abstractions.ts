@@ -2,7 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
 import type { EntryStorageError, EntryValidationError } from "~/domain/contentEntry/errors.js";
-import type { NotAuthorizedError } from "~/utils/errors.js";
+import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 
 /**
@@ -13,7 +13,7 @@ export interface IPublishEntryUseCase {
 }
 
 export interface IPublishEntryUseCaseErrors {
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: ContentEntryNotAuthorizedError;
     notFound: EntryNotFoundError;
     validation: EntryValidationError;
     storage: EntryStorageError;

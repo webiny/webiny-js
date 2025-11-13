@@ -1,7 +1,8 @@
 import { BaseError } from "@webiny/feature/api";
+import type { CmsEntry, CmsModel } from "~/types/index.js";
 
 export class EntryNotFoundError extends BaseError {
-    override readonly code = "ENTRY_NOT_FOUND" as const;
+    override readonly code = "Cms/Entry/NotFound" as const;
 
     constructor(id?: string) {
         super({
@@ -10,18 +11,8 @@ export class EntryNotFoundError extends BaseError {
     }
 }
 
-export class EntryNotAccessibleError extends BaseError {
-    override readonly code = "ENTRY_NOT_ACCESSIBLE" as const;
-
-    constructor(id: string) {
-        super({
-            message: `Entry "${id}" was not found!`
-        });
-    }
-}
-
 export class EntryStorageError extends BaseError {
-    override readonly code = "ENTRY_STORAGE_ERROR" as const;
+    override readonly code = "Cms/Entry/StorageError" as const;
 
     constructor(error: Error) {
         super({
@@ -31,7 +22,7 @@ export class EntryStorageError extends BaseError {
 }
 
 export class EntryValidationError extends BaseError {
-    override readonly code = "ENTRY_VALIDATION_ERROR" as const;
+    override readonly code = "Cms/Entry/ValidationError" as const;
 
     constructor(message: string) {
         super({
@@ -40,52 +31,30 @@ export class EntryValidationError extends BaseError {
     }
 }
 
-export class EntryAlreadyPublishedError extends BaseError {
-    override readonly code = "ENTRY_ALREADY_PUBLISHED" as const;
-
-    constructor(id: string) {
-        super({
-            message: `Entry "${id}" is already published!`
-        });
-    }
-}
-
-export class EntryNotPublishedError extends BaseError {
-    override readonly code = "ENTRY_NOT_PUBLISHED" as const;
-
-    constructor(id: string) {
-        super({
-            message: `Entry "${id}" is not published!`
-        });
-    }
-}
-
-export class EntryInBinError extends BaseError {
-    override readonly code = "ENTRY_IN_BIN" as const;
-
-    constructor(id: string) {
-        super({
-            message: `Entry "${id}" is in bin!`
-        });
-    }
-}
-
-export class EntryNotInBinError extends BaseError {
-    override readonly code = "ENTRY_NOT_IN_BIN" as const;
-
-    constructor(id: string) {
-        super({
-            message: `Entry "${id}" is not in bin!`
-        });
-    }
-}
-
 export class EntryLockedError extends BaseError {
-    override readonly code = "CONTENT_ENTRY_LOCKED" as const;
+    override readonly code = "Cms/Entry/Locked" as const;
 
     constructor() {
         super({
             message: `Cannot update entry because it's locked.`
         });
+    }
+}
+
+export class ContentEntryNotAuthorizedError extends BaseError {
+    override readonly code = "Cms/Entry/NotAuthorized" as const;
+
+    constructor(message?: string) {
+        super({
+            message: message || "Not authorized!"
+        });
+    }
+
+    static fromModel(model: CmsModel): ContentEntryNotAuthorizedError {
+        return new ContentEntryNotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
+    }
+
+    static fromEntry(entry: CmsEntry): ContentEntryNotAuthorizedError {
+        return new ContentEntryNotAuthorizedError(`Not allowed to access entry "${entry.entryId}".`);
     }
 }

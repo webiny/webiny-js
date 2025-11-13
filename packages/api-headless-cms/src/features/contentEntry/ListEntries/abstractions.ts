@@ -8,7 +8,7 @@ import type {
     CmsModel
 } from "~/types/index.js";
 import type { EntryStorageError } from "~/domain/contentEntry/errors.js";
-import type { NotAuthorizedError } from "~/utils/errors.js";
+import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * Base ListEntries Use Case - Internal base use case for listing entries.
@@ -22,7 +22,7 @@ export interface IListEntriesUseCase {
 }
 
 export interface IListEntriesUseCaseErrors {
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: ContentEntryNotAuthorizedError;
     storage: EntryStorageError;
 }
 

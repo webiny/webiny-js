@@ -1,7 +1,8 @@
 import { BaseError } from "@webiny/feature/api";
+import type { OutputErrors } from "@webiny/utils/createZodError.js";
 
 export class GroupNotFoundError extends BaseError {
-    override readonly code = "GROUP_NOT_FOUND" as const;
+    override readonly code = "Cms/ModelGroup/NotFound" as const;
 
     constructor(groupId: string) {
         super({
@@ -10,18 +11,18 @@ export class GroupNotFoundError extends BaseError {
     }
 }
 
-export class GroupAlreadyExistsError extends BaseError {
-    override readonly code = "GROUP_ALREADY_EXISTS" as const;
+export class GroupSlugTakenError extends BaseError {
+    override readonly code = "Cms/ModelGroup/SlugTaken" as const;
 
-    constructor(groupId: string) {
+    constructor(slug: string) {
         super({
-            message: `Group "${groupId}" already exists!`
+            message: `Group with the slug "${slug}" already exists.`
         });
     }
 }
 
 export class GroupStorageError extends BaseError {
-    override readonly code = "GROUP_STORAGE_ERROR" as const;
+    override readonly code = "Cms/ModelGroup/StorageError" as const;
 
     constructor(error: Error) {
         super({
@@ -30,18 +31,20 @@ export class GroupStorageError extends BaseError {
     }
 }
 
-export class GroupValidationError extends BaseError {
-    override readonly code = "GROUP_VALIDATION_ERROR" as const;
+interface ValidationParams {
+    invalidFields: OutputErrors;
+}
 
-    constructor(message: string) {
-        super({
-            message
-        });
+export class GroupValidationError extends BaseError<ValidationParams> {
+    override readonly code = "Cms/ModelGroup/ValidationFailed" as const;
+
+    constructor(message: string, invalidFields: OutputErrors) {
+        super({ message, data: { invalidFields } });
     }
 }
 
 export class GroupCannotUpdateCodeDefinedError extends BaseError {
-    override readonly code = "GROUP_CANNOT_UPDATE_CODE_DEFINED" as const;
+    override readonly code = "Cms/ModelGroup/CannotUpdateCodeGroup" as const;
 
     constructor(groupId: string) {
         super({
@@ -51,7 +54,7 @@ export class GroupCannotUpdateCodeDefinedError extends BaseError {
 }
 
 export class GroupCannotDeleteCodeDefinedError extends BaseError {
-    override readonly code = "GROUP_CANNOT_DELETE_CODE_DEFINED" as const;
+    override readonly code = "Cms/ModelGroup/CannotDeleteCodeGroup" as const;
 
     constructor(groupId: string) {
         super({
@@ -61,11 +64,21 @@ export class GroupCannotDeleteCodeDefinedError extends BaseError {
 }
 
 export class GroupHasModelsError extends BaseError {
-    override readonly code = "GROUP_HAS_MODELS" as const;
+    override readonly code = "Cms/ModelGroup/HasModels" as const;
 
     constructor() {
         super({
             message: `Cannot delete this group because there are models that belong to it.`
+        });
+    }
+}
+
+export class GroupNotAuthorizedError extends BaseError {
+    override readonly code = "Cms/ModelGroup/NotAuthorized" as const;
+
+    constructor(message?: string) {
+        super({
+            message: message || "Not allowed to access content model groups."
         });
     }
 }

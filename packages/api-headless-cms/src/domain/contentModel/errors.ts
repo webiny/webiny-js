@@ -1,7 +1,7 @@
 import { BaseError } from "@webiny/feature/api";
 
 export class ModelNotFoundError extends BaseError {
-    override readonly code = "MODEL_NOT_FOUND" as const;
+    override readonly code = "Cms/Model/NotFound" as const;
 
     constructor(modelId: string) {
         super({
@@ -11,7 +11,7 @@ export class ModelNotFoundError extends BaseError {
 }
 
 export class ModelAlreadyExistsError extends BaseError {
-    override readonly code = "MODEL_ALREADY_EXISTS" as const;
+    override readonly code = "Cms/Model/AlreadyExists" as const;
 
     constructor(modelId: string) {
         super({
@@ -21,7 +21,7 @@ export class ModelAlreadyExistsError extends BaseError {
 }
 
 export class ModelStorageError extends BaseError {
-    override readonly code = "MODEL_STORAGE_ERROR" as const;
+    override readonly code = "Cms/Model/StorageError" as const;
 
     constructor(error: Error) {
         super({
@@ -31,7 +31,7 @@ export class ModelStorageError extends BaseError {
 }
 
 export class ModelValidationError extends BaseError {
-    override readonly code = "MODEL_VALIDATION_ERROR" as const;
+    override readonly code = "Cms/Model/ValidationError" as const;
 
     constructor(message: string) {
         super({
@@ -41,7 +41,7 @@ export class ModelValidationError extends BaseError {
 }
 
 export class ModelCannotUpdateCodeDefinedError extends BaseError {
-    override readonly code = "MODEL_CANNOT_UPDATE_CODE_DEFINED" as const;
+    override readonly code = "Cms/Model/CannotUpdateCodeModel" as const;
 
     constructor(modelId: string) {
         super({
@@ -51,7 +51,7 @@ export class ModelCannotUpdateCodeDefinedError extends BaseError {
 }
 
 export class ModelCannotDeleteCodeDefinedError extends BaseError {
-    override readonly code = "MODEL_CANNOT_DELETE_CODE_DEFINED" as const;
+    override readonly code = "Cms/Model/CannotDeleteCodeModel" as const;
 
     constructor(modelId: string) {
         super({

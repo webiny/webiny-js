@@ -3,8 +3,8 @@ import { createImplementation } from "@webiny/feature/api";
 import { ListGroupsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { ListGroupsRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
-import { NotAuthorizedError } from "~/utils/errors.js";
 import type { CmsGroup } from "~/types/index.js";
+import { GroupNotAuthorizedError } from "~/domain/contentModelGroup/errors.js";
 
 /**
  * ListGroupsUseCase - Retrieves all content model groups.
@@ -24,7 +24,7 @@ class ListGroupsUseCaseImpl implements UseCaseAbstraction.Interface {
         // Initial access control check (no specific group yet)
         const canAccess = await this.accessControl.canAccessGroup();
         if (!canAccess) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(new GroupNotAuthorizedError());
         }
 
         // Repository uses GroupCache to fetch all groups

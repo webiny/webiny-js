@@ -12,7 +12,7 @@ import {
     EntryAfterRestoreFromBinEvent,
     EntryRestoreFromBinErrorEvent
 } from "./events.js";
-import { NotAuthorizedError } from "~/utils/errors.js";
+import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 import { getDate } from "~/utils/date.js";
 import { getIdentity } from "~/utils/identity.js";
@@ -45,7 +45,7 @@ class RestoreEntryFromBinUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
-            return Result.fail(NotAuthorizedError.fromModel(model));
+            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
         }
 
         // Get the deleted entry to restore by ID
@@ -65,7 +65,7 @@ class RestoreEntryFromBinUseCaseImpl implements UseCaseAbstraction.Interface {
         });
 
         if (!canAccessEntry) {
-            return Result.fail(NotAuthorizedError.fromModel(model));
+            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
         }
 
         // Create the restored entry data

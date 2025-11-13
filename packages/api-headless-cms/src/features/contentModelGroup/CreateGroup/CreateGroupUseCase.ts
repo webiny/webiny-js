@@ -10,8 +10,10 @@ import { AccessControl } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { CmsContext } from "~/features/shared/abstractions.js";
-import { GroupValidationError } from "~/domain/contentModelGroup/errors.js";
-import { NotAuthorizedError } from "~/utils/errors.js";
+import {
+    GroupNotAuthorizedError,
+    GroupValidationError
+} from "~/domain/contentModelGroup/errors.js";
 import { createZodError } from "@webiny/utils";
 import { mdbid } from "@webiny/utils";
 import { createGroupCreateValidation } from "~/domain/contentModelGroup/validation.js";
@@ -39,20 +41,20 @@ class CreateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
         private cmsContext: CmsContext.Interface
     ) {}
 
-    async execute(
-        input: CmsGroupCreateInput
-    ): Promise<Result<CmsGroup, UseCaseAbstraction.Error>> {
+    async execute(input: CmsGroupCreateInput): Promise<Result<CmsGroup, UseCaseAbstraction.Error>> {
         // Initial access control check
         const canAccess = await this.accessControl.canAccessGroup({ rwd: "w" });
         if (!canAccess) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(new GroupNotAuthorizedError());
         }
 
         // Validate input
         const validationResult = await createGroupCreateValidation().safeParseAsync(input);
         if (!validationResult.success) {
             const zodError = createZodError(validationResult.error);
-            return Result.fail(new GroupValidationError(zodError.message));
+            return Result.fail(
+                new GroupValidationError(zodError.message, zodError.data!.invalidFields)
+            );
         }
         const data = validationResult.data;
 
@@ -78,7 +80,7 @@ class CreateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
         // Access control check on created group
         const canAccessGroup = await this.accessControl.canAccessGroup({ group, rwd: "w" });
         if (!canAccessGroup) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(new GroupNotAuthorizedError());
         }
 
         try {

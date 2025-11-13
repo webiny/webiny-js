@@ -2,7 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsModel, CmsEntryUniqueValue } from "~/types/index.js";
 import type { EntryStorageError } from "~/domain/contentEntry/errors.js";
-import type { NotAuthorizedError } from "~/utils/errors.js";
+import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import type { FieldNotSearchableError, InvalidWhereConditionError } from "./errors.js";
 
 export interface GetUniqueFieldValuesParams {
@@ -27,7 +27,7 @@ export interface IGetUniqueFieldValuesUseCase {
 }
 
 export interface IGetUniqueFieldValuesUseCaseErrors {
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: ContentEntryNotAuthorizedError;
     storage: EntryStorageError;
     fieldNotSearchable: FieldNotSearchableError;
     invalidWhere: InvalidWhereConditionError;

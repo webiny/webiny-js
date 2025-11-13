@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsModel, CmsModelFieldValidation } from "~/types/index.js";
-import type { NotAuthorizedError } from "~/utils/errors.js";
+import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
 
@@ -18,7 +18,7 @@ export interface IValidateEntryUseCase {
 }
 
 export interface IValidateEntryUseCaseErrors {
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: ContentEntryNotAuthorizedError;
     notFound: EntryNotFoundError;
     getRevisionById: GetRevisionByIdUseCase.Error;
 }

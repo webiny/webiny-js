@@ -2,11 +2,10 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsGroup } from "~/types/index.js";
 import type { CmsGroupUpdateInput } from "~/types/index.js";
-import type { GroupNotFoundError } from "~/domain/contentModelGroup/errors.js";
+import { GroupNotAuthorizedError, type GroupNotFoundError } from "~/domain/contentModelGroup/errors.js";
 import type { GroupValidationError } from "~/domain/contentModelGroup/errors.js";
 import type { GroupStorageError } from "~/domain/contentModelGroup/errors.js";
 import type { GroupCannotUpdateCodeDefinedError } from "~/domain/contentModelGroup/errors.js";
-import type { NotAuthorizedError } from "~/utils/errors.js";
 
 /**
  * UpdateGroup Use Case
@@ -17,7 +16,7 @@ export interface IUpdateGroupUseCase {
 
 export interface IUpdateGroupUseCaseErrors {
     notFound: GroupNotFoundError;
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: GroupNotAuthorizedError;
     validation: GroupValidationError;
     repository: RepositoryError;
 }
@@ -35,7 +34,7 @@ export namespace UpdateGroupUseCase {
  * UpdateGroupRepository - Persists group updates to storage.
  */
 export interface IUpdateGroupRepository {
-    execute(group: CmsGroup): Promise<Result<CmsGroup, RepositoryError>>;
+    execute(group: CmsGroup): Promise<Result<void, RepositoryError>>;
 }
 
 export interface IUpdateGroupRepositoryErrors {

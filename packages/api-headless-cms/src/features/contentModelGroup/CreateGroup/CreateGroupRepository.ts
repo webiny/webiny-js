@@ -3,7 +3,7 @@ import { createImplementation } from "@webiny/feature/api";
 import { CreateGroupRepository as RepositoryAbstraction } from "./abstractions.js";
 import { GroupCache } from "~/features/contentModelGroup/shared/abstractions.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstractions.js";
-import { GroupAlreadyExistsError } from "~/domain/contentModelGroup/errors.js";
+import { GroupSlugTakenError } from "~/domain/contentModelGroup/errors.js";
 import { GroupStorageError } from "~/domain/contentModelGroup/errors.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
@@ -42,23 +42,23 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
                         id: group.id
                     }
                 });
+
                 if (existingById.length > 0) {
-                    return Result.fail(new GroupAlreadyExistsError(group.id));
+                    return Result.fail(new GroupSlugTakenError(group.slug));
                 }
             }
 
             // 2. Generate or validate slug
-            await this.ensureUniqueSlug(group, tenant.id);
+            const slugTaken = await this.isSlugTaken(group, tenant.id);
+            if (slugTaken) {
+                return Result.fail(new GroupSlugTakenError(group.slug));
+            }
 
             // 3. Check for plugin group conflicts
             const pluginGroups = await this.pluginGroupsProvider.getGroups();
             const pluginGroupConflict = pluginGroups.find(pg => pg.slug === group.slug);
             if (pluginGroupConflict) {
-                return Result.fail(
-                    new GroupAlreadyExistsError(
-                        `Cannot create "${group.slug}" because it's registered via a plugin`
-                    )
-                );
+                return Result.fail(new GroupSlugTakenError(group.slug));
             }
 
             // 4. Persist to storage
@@ -73,7 +73,7 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
         }
     }
 
-    private async ensureUniqueSlug(group: CmsGroup, tenant: string): Promise<void> {
+    private async isSlugTaken(group: CmsGroup, tenant: string): Promise<boolean> {
         // If slug is provided and not empty, validate it
         if (group.slug && group.slug.trim()) {
             const existingBySlug = await this.storageOperations.groups.list({
@@ -82,10 +82,8 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
                     slug: group.slug
                 }
             });
-            if (existingBySlug.length > 0) {
-                throw new GroupAlreadyExistsError(`Slug "${group.slug}" already exists`);
-            }
-            return;
+
+            return existingBySlug.length > 0;
         }
 
         // Generate slug from name
@@ -104,6 +102,8 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
             // Conflict, append random suffix
             group.slug = `${baseSlug}-${generateAlphaNumericId(8)}`;
         }
+
+        return false;
     }
 }
 

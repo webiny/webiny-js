@@ -2,10 +2,12 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsGroup } from "~/types/index.js";
 import type { CmsGroupCreateInput } from "~/types/index.js";
-import type { GroupAlreadyExistsError } from "~/domain/contentModelGroup/errors.js";
+import {
+    type GroupSlugTakenError,
+    GroupNotAuthorizedError
+} from "~/domain/contentModelGroup/errors.js";
 import type { GroupValidationError } from "~/domain/contentModelGroup/errors.js";
 import type { GroupStorageError } from "~/domain/contentModelGroup/errors.js";
-import type { NotAuthorizedError } from "~/utils/errors.js";
 
 /**
  * CreateGroup Use Case
@@ -15,7 +17,7 @@ export interface ICreateGroupUseCase {
 }
 
 export interface ICreateGroupUseCaseErrors {
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: GroupNotAuthorizedError;
     validation: GroupValidationError;
     repository: RepositoryError;
 }
@@ -37,15 +39,14 @@ export interface ICreateGroupRepository {
 }
 
 export interface ICreateGroupRepositoryErrors {
-    alreadyExists: GroupAlreadyExistsError;
+    alreadyExists: GroupSlugTakenError;
     storage: GroupStorageError;
 }
 
 type RepositoryError = ICreateGroupRepositoryErrors[keyof ICreateGroupRepositoryErrors];
 
-export const CreateGroupRepository = createAbstraction<ICreateGroupRepository>(
-    "CreateGroupRepository"
-);
+export const CreateGroupRepository =
+    createAbstraction<ICreateGroupRepository>("CreateGroupRepository");
 
 export namespace CreateGroupRepository {
     export type Interface = ICreateGroupRepository;

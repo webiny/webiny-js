@@ -6,7 +6,7 @@ import {
     GetUniqueFieldValuesParams
 } from "./abstractions.js";
 import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
-import { NotAuthorizedError } from "~/utils/errors.js";
+import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { FieldNotSearchableError, InvalidWhereConditionError } from "./errors.js";
 import { getSearchableFields } from "~/crud/contentEntry/searchableFields.js";
 import type { CmsModel, CmsEntryUniqueValue } from "~/types/index.js";
@@ -26,7 +26,7 @@ class GetUniqueFieldValuesUseCaseImpl implements UseCaseAbstraction.Interface {
         try {
             await this.accessControl.ensureCanAccessEntry({ model });
         } catch (error) {
-            if (error instanceof NotAuthorizedError) {
+            if (error instanceof ContentEntryNotAuthorizedError) {
                 return Result.fail(error);
             }
             throw error;

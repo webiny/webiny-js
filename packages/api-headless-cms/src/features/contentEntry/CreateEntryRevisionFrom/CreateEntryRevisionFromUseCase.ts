@@ -19,7 +19,7 @@ import {
     EntryRevisionAfterCreateEvent,
     EntryRevisionCreateErrorEvent
 } from "./events.js";
-import { NotAuthorizedError } from "~/utils/errors.js";
+import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { parseIdentifier } from "@webiny/utils";
 import { createEntryRevisionFromData } from "~/crud/contentEntry/entryDataFactories/index.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
@@ -58,7 +58,7 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
-            return Result.fail(NotAuthorizedError.fromModel(model));
+            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
         }
 
         // Get the source entry
@@ -102,7 +102,7 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
         });
 
         if (!canAccessEntry) {
-            return Result.fail(NotAuthorizedError.fromModel(model));
+            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
         }
 
         try {

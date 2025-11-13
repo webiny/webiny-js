@@ -1,11 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsGroup } from "~/types/index.js";
+import type { GroupNotAuthorizedError } from "~/domain/contentModelGroup/errors.js";
 import type { GroupNotFoundError } from "~/domain/contentModelGroup/errors.js";
 import type { GroupStorageError } from "~/domain/contentModelGroup/errors.js";
 import type { GroupCannotDeleteCodeDefinedError } from "~/domain/contentModelGroup/errors.js";
 import type { GroupHasModelsError } from "~/domain/contentModelGroup/errors.js";
-import type { NotAuthorizedError } from "~/utils/errors.js";
 
 /**
  * DeleteGroup Use Case
@@ -16,7 +16,7 @@ export interface IDeleteGroupUseCase {
 
 export interface IDeleteGroupUseCaseErrors {
     notFound: GroupNotFoundError;
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: GroupNotAuthorizedError;
     repository: RepositoryError;
 }
 
@@ -44,9 +44,8 @@ export interface IDeleteGroupRepositoryErrors {
 
 type RepositoryError = IDeleteGroupRepositoryErrors[keyof IDeleteGroupRepositoryErrors];
 
-export const DeleteGroupRepository = createAbstraction<IDeleteGroupRepository>(
-    "DeleteGroupRepository"
-);
+export const DeleteGroupRepository =
+    createAbstraction<IDeleteGroupRepository>("DeleteGroupRepository");
 
 export namespace DeleteGroupRepository {
     export type Interface = IDeleteGroupRepository;

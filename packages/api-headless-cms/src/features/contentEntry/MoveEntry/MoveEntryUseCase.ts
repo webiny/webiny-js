@@ -7,7 +7,7 @@ import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
 import { EntryBeforeMoveEvent, EntryAfterMoveEvent, EntryMoveErrorEvent } from "./events.js";
-import { NotAuthorizedError } from "~/utils/errors.js";
+import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 
 /**
@@ -36,7 +36,7 @@ class MoveEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
-            return Result.fail(NotAuthorizedError.fromModel(model));
+            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
         }
 
         // Get the entry to move
@@ -56,7 +56,7 @@ class MoveEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         });
 
         if (!canAccessEntry) {
-            return Result.fail(NotAuthorizedError.fromModel(model));
+            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
         }
 
         // Early return if entry is already in the requested folder

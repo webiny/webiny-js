@@ -7,7 +7,7 @@ import type {
     CmsEntryStorageOperationsGetPreviousRevisionParams
 } from "~/types/index.js";
 import { EntryNotFoundError, type EntryStorageError } from "~/domain/contentEntry/errors.js";
-import type { NotAuthorizedError } from "~/utils/errors.js";
+import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * Base internal use case - returns entry regardless of deleted state.
@@ -21,7 +21,7 @@ export interface IGetPreviousRevisionByEntryIdBaseUseCase {
 }
 
 export interface IGetPreviousRevisionByEntryIdUseCaseErrors {
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: ContentEntryNotAuthorizedError;
     notFound: EntryNotFoundError;
     storage: EntryStorageError;
 }

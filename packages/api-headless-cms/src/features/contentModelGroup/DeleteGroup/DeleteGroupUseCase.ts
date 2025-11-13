@@ -8,7 +8,7 @@ import { GroupBeforeDeleteEvent } from "./events.js";
 import { GroupAfterDeleteEvent } from "./events.js";
 import { GroupDeleteErrorEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
-import { NotAuthorizedError } from "~/utils/errors.js";
+import { GroupNotAuthorizedError } from "~/domain/contentModelGroup/errors.js";
 
 /**
  * DeleteGroupUseCase - Orchestrates group deletion.
@@ -32,7 +32,7 @@ class DeleteGroupUseCaseImpl implements UseCaseAbstraction.Interface {
         // Initial access control check
         const canAccess = await this.accessControl.canAccessGroup({ rwd: "d" });
         if (!canAccess) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(new GroupNotAuthorizedError());
         }
 
         // Fetch original group
@@ -45,7 +45,7 @@ class DeleteGroupUseCaseImpl implements UseCaseAbstraction.Interface {
         // Access control check on group
         const canAccessGroup = await this.accessControl.canAccessGroup({ group });
         if (!canAccessGroup) {
-            return Result.fail(new NotAuthorizedError());
+            return Result.fail(new GroupNotAuthorizedError());
         }
 
         try {

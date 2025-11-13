@@ -1,8 +1,8 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsGroup } from "~/types/index.js";
-import type { GroupStorageError } from "~/domain/contentModelGroup/errors.js";
-import type { NotAuthorizedError } from "~/utils/errors.js";
+import { GroupNotAuthorizedError } from "~/domain/contentModelGroup/errors.js";
+import { type GroupStorageError } from "~/domain/contentModelGroup/errors.js";
 
 /**
  * ListGroups Use Case
@@ -12,7 +12,7 @@ export interface IListGroupsUseCase {
 }
 
 export interface IListGroupsUseCaseErrors {
-    notAuthorized: NotAuthorizedError;
+    notAuthorized: GroupNotAuthorizedError;
     repository: RepositoryError;
 }
 
@@ -38,9 +38,8 @@ export interface IListGroupsRepositoryErrors {
 
 type RepositoryError = IListGroupsRepositoryErrors[keyof IListGroupsRepositoryErrors];
 
-export const ListGroupsRepository = createAbstraction<IListGroupsRepository>(
-    "ListGroupsRepository"
-);
+export const ListGroupsRepository =
+    createAbstraction<IListGroupsRepository>("ListGroupsRepository");
 
 export namespace ListGroupsRepository {
     export type Interface = IListGroupsRepository;
