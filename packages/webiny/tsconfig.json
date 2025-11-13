@@ -29,7 +29,7 @@
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
       "@webiny/api-core/*": ["../api-core/src/*"],
-      "@webiny/api-core": ["../api-core/src"],
+      "@webiny/api-core": ["../api-core/src"]
     },
     "baseUrl": "."
   }
