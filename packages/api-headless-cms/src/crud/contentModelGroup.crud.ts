@@ -33,6 +33,7 @@ import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js";
 import { ListGroupsUseCase } from "~/features/contentModelGroup/ListGroups/index.js";
+import { CreateGroupUseCase } from "~/features/contentModelGroup/CreateGroup/index.js";
 
 export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;
@@ -198,66 +199,15 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
     };
 
     const createGroup: CmsGroupContext["createGroup"] = async input => {
-        await accessControl.ensureCanAccessGroup({ rwd: "w" });
+        const useCase = context.container.resolve(CreateGroupUseCase);
+        const result = await useCase.execute(input);
 
-        const result = await createGroupCreateValidation().safeParseAsync(input);
-
-        if (!result.success) {
-            throw createZodError(result.error);
+        if (result.isFail()) {
+            const error = result.error;
+            throw new WebinyError(error.message, error.code, error.data);
         }
-        const data = result.data;
 
-        const identity = getIdentity();
-
-        const id = data.id || mdbid();
-        const group: CmsGroup = {
-            ...data,
-            id,
-            tenant: getTenant().id,
-            createdOn: new Date().toISOString(),
-            savedOn: new Date().toISOString(),
-            createdBy: {
-                id: identity.id,
-                displayName: identity.displayName,
-                type: identity.type
-            },
-            webinyVersion: context.WEBINY_VERSION
-        };
-
-        await accessControl.ensureCanAccessGroup({ group, rwd: "w" });
-
-        try {
-            await onGroupBeforeCreate.publish({
-                group
-            });
-
-            const result = await storageOperations.groups.create({
-                group
-            });
-
-            clearGroupsCache();
-
-            await onGroupAfterCreate.publish({
-                group: result
-            });
-
-            return group;
-        } catch (ex) {
-            await onGroupCreateError.publish({
-                input,
-                group,
-                error: ex
-            });
-            throw new WebinyError(
-                ex.message || "Could not save data model group.",
-                ex.code || "ERROR_ON_CREATE",
-                {
-                    ...(ex.data || {}),
-                    group,
-                    input
-                }
-            );
-        }
+        return result.value;
     };
     const updateGroup: CmsGroupContext["updateGroup"] = async (id, input) => {
         await accessControl.ensureCanAccessGroup({ rwd: "w" });
