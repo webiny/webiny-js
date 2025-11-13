@@ -1,5 +1,4 @@
 import WebinyError from "@webiny/error";
-import { NotFoundError } from "@webiny/handler-graphql";
 import type {
     CmsContext,
     CmsGroup,
@@ -15,44 +14,23 @@ import type {
     OnGroupDeleteErrorTopicParams,
     OnGroupUpdateErrorTopicParams
 } from "~/types/index.js";
-import { CmsGroupPlugin } from "~/plugins/CmsGroupPlugin.js";
 import { createTopic } from "@webiny/pubsub";
-import { assignBeforeGroupUpdate } from "./contentModelGroup/beforeUpdate.js";
-import { assignBeforeGroupCreate } from "./contentModelGroup/beforeCreate.js";
 import { assignBeforeGroupDelete } from "./contentModelGroup/beforeDelete.js";
-import {
-    createGroupCreateValidation,
-    createGroupUpdateValidation
-} from "~/crud/contentModelGroup/validation.js";
-import { createZodError, mdbid } from "@webiny/utils";
-import { filterAsync } from "~/utils/filterAsync.js";
-import { createCacheKey, createMemoryCache } from "~/utils/index.js";
-import { listGroupsFromDatabase } from "~/crud/contentModelGroup/listGroupsFromDatabase.js";
+import { createMemoryCache } from "~/utils/index.js";
 import type { AccessControl } from "./AccessControl/AccessControl.js";
-import type { Tenant } from "@webiny/api-core/types/tenancy.js";
-import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js";
 import { ListGroupsUseCase } from "~/features/contentModelGroup/ListGroups/index.js";
 import { CreateGroupUseCase } from "~/features/contentModelGroup/CreateGroup/index.js";
+import { UpdateGroupUseCase } from "~/features/contentModelGroup/UpdateGroup/index.js";
 
 export interface CreateModelGroupsCrudParams {
-    getTenant: () => Tenant;
     storageOperations: HeadlessCmsStorageOperations;
     accessControl: AccessControl;
     context: CmsContext;
-    getIdentity: () => SecurityIdentity;
 }
 
 export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsGroupContext => {
-    const { getTenant, getIdentity, storageOperations, accessControl, context } = params;
-
-    const filterGroup = async (group?: CmsGroup) => {
-        if (!group) {
-            return false;
-        }
-
-        return accessControl.canAccessGroup({ group });
-    };
+    const { storageOperations, accessControl, context } = params;
 
     const listDatabaseGroupsCache = createMemoryCache<Promise<CmsGroup[]>>();
     const listFilteredDatabaseGroupsCache = createMemoryCache<Promise<CmsGroup[]>>();
@@ -61,74 +39,6 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         listPluginGroupsCache.clear();
         listDatabaseGroupsCache.clear();
         listFilteredDatabaseGroupsCache.clear();
-    };
-
-    const fetchPluginGroups = (tenant: string): Promise<CmsGroup[]> => {
-        const pluginGroups = context.plugins.byType<CmsGroupPlugin>(CmsGroupPlugin.type);
-
-        const cacheKey = createCacheKey({
-            tenant,
-            identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined,
-            groups: pluginGroups
-                .map(({ contentModelGroup: group }) => {
-                    return `${group.id}#${group.slug}#${group.savedOn || "unknown"}`;
-                })
-                .join("/")
-        });
-
-        return listPluginGroupsCache.getOrSet(cacheKey, async (): Promise<CmsGroup[]> => {
-            const groups = pluginGroups
-                /**
-                 * We need to filter out groups that are not for this tenant or locale.
-                 * If it does not have tenant or locale define, it is for every locale and tenant
-                 */
-                .filter(plugin => {
-                    const { tenant: t } = plugin.contentModelGroup;
-                    if (t && t !== tenant) {
-                        return false;
-                    }
-                    return true;
-                })
-                .map(plugin => {
-                    return {
-                        ...plugin.contentModelGroup,
-                        tenant,
-                        webinyVersion: context.WEBINY_VERSION
-                    };
-                });
-            return filterAsync(groups, filterGroup);
-        });
-    };
-
-    const fetchGroups = async (tenant: string) => {
-        const pluginGroups = await fetchPluginGroups(tenant);
-        /**
-         * Maybe we can cache based on permissions, not the identity id?
-         *
-         * TODO: @adrian please check if possible.
-         */
-        const cacheKey = createCacheKey({
-            tenant
-        });
-        const databaseGroups = await listDatabaseGroupsCache.getOrSet(cacheKey, async () => {
-            return await listGroupsFromDatabase({
-                storageOperations,
-                tenant
-            });
-        });
-        const filteredCacheKey = createCacheKey({
-            dbCacheKey: cacheKey.get(),
-            identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined
-        });
-
-        const groups = await listFilteredDatabaseGroupsCache.getOrSet(
-            filteredCacheKey,
-            async () => {
-                return filterAsync(databaseGroups, filterGroup);
-            }
-        );
-
-        return groups.concat(pluginGroups);
     };
 
     /**
@@ -156,15 +66,6 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
     /**
      * We need to assign some default behaviors.
      */
-    assignBeforeGroupCreate({
-        onGroupBeforeCreate,
-        plugins: context.plugins,
-        storageOperations
-    });
-    assignBeforeGroupUpdate({
-        onGroupBeforeUpdate,
-        plugins: context.plugins
-    });
     assignBeforeGroupDelete({
         onGroupBeforeDelete,
         plugins: context.plugins,
@@ -210,64 +111,15 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         return result.value;
     };
     const updateGroup: CmsGroupContext["updateGroup"] = async (id, input) => {
-        await accessControl.ensureCanAccessGroup({ rwd: "w" });
+        const useCase = context.container.resolve(UpdateGroupUseCase);
+        const result = await useCase.execute(id, input);
 
-        const original = await getGroup(id);
-
-        await accessControl.ensureCanAccessGroup({ group: original });
-
-        const result = await createGroupUpdateValidation().safeParseAsync(input);
-
-        if (!result.success) {
-            throw createZodError(result.error);
-        }
-        const data = result.data;
-
-        /**
-         * No need to continue if no values were changed
-         */
-        if (Object.keys(data).length === 0) {
-            return original;
+        if (result.isFail()) {
+            const error = result.error;
+            throw new WebinyError(error.message, error.code, error.data);
         }
 
-        const group: CmsGroup = {
-            ...original,
-            ...data,
-            tenant: getTenant().id,
-            savedOn: new Date().toISOString()
-        };
-
-        try {
-            await onGroupBeforeUpdate.publish({
-                original,
-                group
-            });
-
-            const updatedGroup = await storageOperations.groups.update({
-                group
-            });
-            clearGroupsCache();
-
-            await onGroupAfterUpdate.publish({
-                original,
-                group: updatedGroup
-            });
-
-            return updatedGroup;
-        } catch (ex) {
-            await onGroupUpdateError.publish({
-                input,
-                original,
-                group,
-                error: ex
-            });
-            throw new WebinyError(ex.message, ex.code || "UPDATE_ERROR", {
-                error: ex,
-                original,
-                group,
-                input
-            });
-        }
+        return result.value;
     };
     const deleteGroup: CmsGroupContext["deleteGroup"] = async id => {
         await accessControl.ensureCanAccessGroup({ rwd: "d" });
