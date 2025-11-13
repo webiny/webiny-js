@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IBaseAppParams } from "~/abstractions/types.js";
 
 export type IGetAppStackOutputParams = IBaseAppParams;
@@ -26,7 +26,7 @@ export interface IGetAppStackOutput {
     ): Promise<IGetAppStackOutputResult<TOutput>>;
 }
 
-export const GetAppStackOutput = new Abstraction<IGetAppStackOutput>("GetAppStackOutput");
+export const GetAppStackOutput = createAbstraction<IGetAppStackOutput>("GetAppStackOutput");
 
 export namespace GetAppStackOutput {
     export type Interface = IGetAppStackOutput;

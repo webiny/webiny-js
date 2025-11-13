@@ -1,11 +1,11 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IAppModel, type IAppPackageModel } from "~/abstractions/models/index.js";
 
 export interface IGetAppPackagesService {
     execute(app: IAppModel): Promise<IAppPackageModel[]>;
 }
 
-export const GetAppPackagesService = new Abstraction<IGetAppPackagesService>(
+export const GetAppPackagesService = createAbstraction<IGetAppPackagesService>(
     "GetAppPackagesService"
 );
 

@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IAppModel } from "~/abstractions/models/index.js";
 import { type AppName } from "~/abstractions/types.js";
 
@@ -8,7 +8,7 @@ type IGetApp = {
     execute(appName: IGetAppParams): IAppModel;
 };
 
-export const GetApp = new Abstraction<IGetApp>("GetApp");
+export const GetApp = createAbstraction<IGetApp>("GetApp");
 
 export namespace GetApp {
     export type Interface = IGetApp;

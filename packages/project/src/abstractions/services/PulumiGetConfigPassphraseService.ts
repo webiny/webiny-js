@@ -1,10 +1,10 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface IPulumiGetConfigPassphraseService {
     execute(): string;
 }
 
-export const PulumiGetConfigPassphraseService = new Abstraction<IPulumiGetConfigPassphraseService>(
+export const PulumiGetConfigPassphraseService = createAbstraction<IPulumiGetConfigPassphraseService>(
     "PulumiGetConfigPassphraseService"
 );
 

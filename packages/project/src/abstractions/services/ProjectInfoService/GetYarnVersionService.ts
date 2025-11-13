@@ -1,10 +1,10 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 interface IGetYarnVersionService {
     execute(): string;
 }
 
-export const GetYarnVersionService = new Abstraction<IGetYarnVersionService>(
+export const GetYarnVersionService = createAbstraction<IGetYarnVersionService>(
     "GetYarnVersionService"
 );
 

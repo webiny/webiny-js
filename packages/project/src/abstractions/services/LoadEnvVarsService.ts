@@ -1,10 +1,10 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface ILoadEnvVarsService {
     execute(): Promise<void>;
 }
 
-export const LoadEnvVarsService = new Abstraction<ILoadEnvVarsService>("LoadEnvVarsService");
+export const LoadEnvVarsService = createAbstraction<ILoadEnvVarsService>("LoadEnvVarsService");
 
 export namespace LoadEnvVarsService {
     export type Interface = ILoadEnvVarsService;

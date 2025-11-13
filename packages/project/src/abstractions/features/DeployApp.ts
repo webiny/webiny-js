@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IBaseAppParams } from "~/abstractions/types.js";
 import { type ExecaChildProcess } from "execa";
 
@@ -15,7 +15,7 @@ interface IDeployApp {
     execute(params: IDeployAppParams): Promise<void>;
 }
 
-export const DeployApp = new Abstraction<IDeployApp>("DeployApp");
+export const DeployApp = createAbstraction<IDeployApp>("DeployApp");
 
 export namespace DeployApp {
     export type Interface = IDeployApp;

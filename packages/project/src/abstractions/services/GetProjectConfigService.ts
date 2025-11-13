@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IProjectConfigModel } from "~/abstractions/models/index.js";
 import { type ExtensionTags } from "~/defineExtension/types.js";
 
@@ -13,7 +13,7 @@ interface IGetProjectConfigService {
     execute(params?: IGetProjectConfigServiceParams): Promise<IGetProjectConfigServiceResult>;
 }
 
-export const GetProjectConfigService = new Abstraction<IGetProjectConfigService>(
+export const GetProjectConfigService = createAbstraction<IGetProjectConfigService>(
     "GetProjectConfigService"
 );
 

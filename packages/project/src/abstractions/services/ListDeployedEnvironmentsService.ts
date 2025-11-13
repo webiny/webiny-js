@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface IDeployedEnvironment {
     env: string;
@@ -9,7 +9,7 @@ export interface IListDeployedEnvironmentsService {
     execute(): Promise<IDeployedEnvironment[]>;
 }
 
-export const ListDeployedEnvironmentsService = new Abstraction<IListDeployedEnvironmentsService>(
+export const ListDeployedEnvironmentsService = createAbstraction<IListDeployedEnvironmentsService>(
     "ListDeployedEnvironmentsService"
 );
 

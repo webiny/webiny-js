@@ -211,6 +211,7 @@ export const createProjectSdkContainer = async (
     container.registerComposite(coreAfterDeploy);
 
     // Initialize project SDK.
+    const aa = container.resolve(ProjectSdkParamsService);
     container.resolve(ProjectSdkParamsService).set(params);
     await container.resolve(LoadEnvVarsService).execute();
     await container.resolve(BuildProjectWorkspaceService).execute();

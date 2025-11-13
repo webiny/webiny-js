@@ -1,10 +1,10 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface IPulumiGetSecretsProviderService {
     execute(): string;
 }
 
-export const PulumiGetSecretsProviderService = new Abstraction<IPulumiGetSecretsProviderService>(
+export const PulumiGetSecretsProviderService = createAbstraction<IPulumiGetSecretsProviderService>(
     "PulumiGetSecretsProviderService"
 );
 

@@ -7,7 +7,7 @@ export class Abstraction<T> extends di.Abstraction<T> {
         implementation: I;
         dependencies: di.Dependencies<I>;
     }): di.Implementation<I> {
-        return di.createImplementation({
+        return di.createImplementation<typeof this, I>({
             abstraction: this,
             implementation: params.implementation,
             dependencies: params.dependencies

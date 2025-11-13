@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import type { IBaseAppParams } from "~/abstractions/types.ts";
 
 export type IBuildAppWorkspaceServiceParams = IBaseAppParams;
@@ -9,7 +9,7 @@ export interface IBuildAppWorkspaceService {
     execute(params: IBuildAppWorkspaceServiceParams): Promise<IBuildResult>;
 }
 
-export const BuildAppWorkspaceService = new Abstraction<IBuildAppWorkspaceService>(
+export const BuildAppWorkspaceService = createAbstraction<IBuildAppWorkspaceService>(
     "BuildAppWorkspaceService"
 );
 
