@@ -78,8 +78,11 @@
       "./abstractions/features/hooks/CoreAfterDeploy.ts": "infra/features/CoreAfterDeploy.ts",
       "./abstractions/features/hooks/CoreBeforeBuild.ts":  "infra/features/CoreBeforeBuild.ts",
       "./abstractions/features/hooks/CoreBeforeDeploy.ts": "infra/features/CoreBeforeDeploy.ts",
-      "./abstractions/features/hooks/CoreBeforeWatch.ts":  "infra/features/CoreBeforeWatch.ts"
-
+      "./abstractions/services/LoggerService.ts":  "infra/features/LoggerService.ts",
+      "./abstractions/services/UiService.ts":  "infra/features/UiService.ts",
+      "./abstractions/features/pulumi/AdminPulumi.ts":  "infra/features/AdminPulumi.ts",
+      "./abstractions/features/pulumi/ApiPulumi.ts":  "infra/features/ApiPulumi.ts",
+      "./abstractions/features/pulumi/CorePulumi.ts":  "infra/features/CorePulumi.ts"
     }
   },
   "adio": {

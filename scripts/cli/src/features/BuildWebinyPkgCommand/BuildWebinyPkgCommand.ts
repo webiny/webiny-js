@@ -36,7 +36,7 @@ export class BuildWebinyPkgCommand implements Command.Interface<void> {
 
                 for (const pkgWithExports of packagesWithExports) {
                     this.ui.newLine();
-                    this.ui.info(`Processing %s package...`, pkgWithExports.name);
+                    this.ui.info(`%s`, pkgWithExports.name);
 
                     this.generateExportTsFile(pkgWithExports, webinyPackage);
                 }
@@ -65,7 +65,7 @@ export class BuildWebinyPkgCommand implements Command.Interface<void> {
 
             fs.writeFileSync(exportPath, `export * from "${fullExportPath}";\n`);
 
-            this.ui.debug(` %s → %s`, pkgExport, fullExportPath);
+            this.ui.debug(` %s → %s`, pkgExport, `webiny/${webinyPkgExport}`);
         }
     }
 }
