@@ -42,6 +42,8 @@ export async function createRspackConfig(webpackEnv, { paths, options }) {
 
     const htmlTemplate = fs.readFileSync(paths.appHtml, "utf8");
 
+    const tailwindBasePath = path.join(process.cwd(), "node_modules", "@webiny");
+
     return {
         mode: isEnvProduction ? "production" : isEnvDevelopment && "development",
         devtool: shouldUseSourceMap ? "source-map" : false,
@@ -112,7 +114,7 @@ export async function createRspackConfig(webpackEnv, { paths, options }) {
                         {
                             loader: "url-loader",
                             options: {
-                                limit: 10000,
+                                limit: 30_000,
                                 name: "static/media/[name].[hash:8].[ext]"
                             }
                         }
@@ -155,9 +157,7 @@ export async function createRspackConfig(webpackEnv, { paths, options }) {
                                             features: { "custom-properties": false }
                                         }),
                                         require("postcss-normalize")(),
-                                        tailwindcss({
-                                            base: path.join(process.cwd(), "packages")
-                                        })
+                                        tailwindcss({ base: tailwindBasePath })
                                     ]
                                 },
                                 sourceMap: shouldUseSourceMap
