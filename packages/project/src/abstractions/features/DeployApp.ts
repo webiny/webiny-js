@@ -11,7 +11,7 @@ interface IDeployAppParams extends IBaseAppParams {
     output?: (pulumiProcess: IPulumiProcess) => Promise<void>;
 }
 
-interface IDeployApp {
+export interface IDeployApp {
     execute(params: IDeployAppParams): Promise<void>;
 }
 

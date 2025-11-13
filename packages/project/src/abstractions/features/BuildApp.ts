@@ -8,7 +8,7 @@ export interface IBuildAppParams extends IBaseAppParams {
 
 export type IBuildResult = IPackagesBuilder;
 
-interface IBuildApp {
+export interface IBuildApp {
     execute(params: IBuildAppParams): Promise<IBuildResult>;
 }
 
