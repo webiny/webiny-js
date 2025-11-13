@@ -23,7 +23,7 @@ export class Abstraction<T> extends di.Abstraction<T> {
             decorator: params.decorator,
             dependencies: params.dependencies as any
         } as any);
-        return result;
+        return result as di.Constructor<any>;
     }
 
     createComposite<I extends di.Constructor<di.GetInterface<this>>>(params: {
