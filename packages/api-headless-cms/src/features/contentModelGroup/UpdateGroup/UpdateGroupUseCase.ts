@@ -12,7 +12,7 @@ import { TenantContext } from "@webiny/api-core/features/TenantContext";
 import { GroupValidationError } from "~/domain/contentModelGroup/errors.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
 import { createZodError } from "@webiny/utils";
-import { createGroupUpdateValidation } from "~/crud/contentModelGroup/validation.js";
+import { createGroupUpdateValidation } from "~/domain/contentModelGroup/validation.js";
 import type { CmsGroup } from "~/types/index.js";
 import type { CmsGroupUpdateInput } from "~/types/index.js";
 

@@ -59,3 +59,13 @@ export class GroupCannotDeleteCodeDefinedError extends BaseError {
         });
     }
 }
+
+export class GroupHasModelsError extends BaseError {
+    override readonly code = "GROUP_HAS_MODELS" as const;
+
+    constructor() {
+        super({
+            message: `Cannot delete this group because there are models that belong to it.`
+        });
+    }
+}

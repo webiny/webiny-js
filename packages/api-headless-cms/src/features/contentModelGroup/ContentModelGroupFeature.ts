@@ -3,6 +3,7 @@ import { GetGroupFeature } from "~/features/contentModelGroup/GetGroup/feature.j
 import { ListGroupsFeature } from "~/features/contentModelGroup/ListGroups/feature.js";
 import { CreateGroupFeature } from "~/features/contentModelGroup/CreateGroup/feature.js";
 import { UpdateGroupFeature } from "~/features/contentModelGroup/UpdateGroup/feature.js";
+import { DeleteGroupFeature } from "~/features/contentModelGroup/DeleteGroup/feature.js";
 import { GroupCache } from "~/features/contentModelGroup/shared/GroupCache.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/PluginGroupsProvider.js";
 
@@ -20,5 +21,6 @@ export const ContentModelGroupFeature = createFeature({
         // Command features
         CreateGroupFeature.register(container);
         UpdateGroupFeature.register(container);
+        DeleteGroupFeature.register(container);
     }
 });

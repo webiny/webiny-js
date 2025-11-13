@@ -130,11 +130,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             accessControl,
             getExecutableSchema,
             ...createModelGroupsCrud({
-                context,
-                getTenant,
-                getIdentity,
-                storageOperations,
-                accessControl
+                context
             }),
             ...createModelsCrud({
                 context,

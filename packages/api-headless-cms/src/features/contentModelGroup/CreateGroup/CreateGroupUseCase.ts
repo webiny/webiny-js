@@ -14,7 +14,7 @@ import { GroupValidationError } from "~/domain/contentModelGroup/errors.js";
 import { NotAuthorizedError } from "~/utils/errors.js";
 import { createZodError } from "@webiny/utils";
 import { mdbid } from "@webiny/utils";
-import { createGroupCreateValidation } from "~/crud/contentModelGroup/validation.js";
+import { createGroupCreateValidation } from "~/domain/contentModelGroup/validation.js";
 import type { CmsGroup } from "~/types/index.js";
 import type { CmsGroupCreateInput } from "~/types/index.js";
 

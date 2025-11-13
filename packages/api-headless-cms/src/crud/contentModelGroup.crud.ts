@@ -3,7 +3,6 @@ import type {
     CmsContext,
     CmsGroup,
     CmsGroupContext,
-    HeadlessCmsStorageOperations,
     OnGroupAfterCreateTopicParams,
     OnGroupAfterDeleteTopicParams,
     OnGroupAfterUpdateTopicParams,
@@ -15,22 +14,19 @@ import type {
     OnGroupUpdateErrorTopicParams
 } from "~/types/index.js";
 import { createTopic } from "@webiny/pubsub";
-import { assignBeforeGroupDelete } from "./contentModelGroup/beforeDelete.js";
 import { createMemoryCache } from "~/utils/index.js";
-import type { AccessControl } from "./AccessControl/AccessControl.js";
 import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js";
 import { ListGroupsUseCase } from "~/features/contentModelGroup/ListGroups/index.js";
 import { CreateGroupUseCase } from "~/features/contentModelGroup/CreateGroup/index.js";
 import { UpdateGroupUseCase } from "~/features/contentModelGroup/UpdateGroup/index.js";
+import { DeleteGroupUseCase } from "~/features/contentModelGroup/DeleteGroup/index.js";
 
 export interface CreateModelGroupsCrudParams {
-    storageOperations: HeadlessCmsStorageOperations;
-    accessControl: AccessControl;
     context: CmsContext;
 }
 
 export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsGroupContext => {
-    const { storageOperations, accessControl, context } = params;
+    const { context } = params;
 
     const listDatabaseGroupsCache = createMemoryCache<Promise<CmsGroup[]>>();
     const listFilteredDatabaseGroupsCache = createMemoryCache<Promise<CmsGroup[]>>();
@@ -64,14 +60,6 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
     const onGroupDeleteError = createTopic<OnGroupDeleteErrorTopicParams>("cms.onGroupDeleteError");
 
     /**
-     * We need to assign some default behaviors.
-     */
-    assignBeforeGroupDelete({
-        onGroupBeforeDelete,
-        plugins: context.plugins,
-        storageOperations
-    });
-    /**
      * CRUD Methods
      */
     const getGroup: CmsGroupContext["getGroup"] = async id => {
@@ -86,7 +74,7 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         return result.value;
     };
 
-    const listGroups: CmsGroupContext["listGroups"] = async params => {
+    const listGroups: CmsGroupContext["listGroups"] = async () => {
         const useCase = context.container.resolve(ListGroupsUseCase);
         const result = await useCase.execute();
 
@@ -122,32 +110,12 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
         return result.value;
     };
     const deleteGroup: CmsGroupContext["deleteGroup"] = async id => {
-        await accessControl.ensureCanAccessGroup({ rwd: "d" });
+        const useCase = context.container.resolve(DeleteGroupUseCase);
+        const result = await useCase.execute(id);
 
-        const group = await getGroup(id);
-
-        await accessControl.ensureCanAccessGroup({ group });
-
-        try {
-            await onGroupBeforeDelete.publish({
-                group
-            });
-
-            await storageOperations.groups.delete({ group });
-            clearGroupsCache();
-
-            await onGroupAfterDelete.publish({
-                group
-            });
-        } catch (ex) {
-            await onGroupDeleteError.publish({
-                group,
-                error: ex
-            });
-            throw new WebinyError(ex.message, ex.code || "DELETE_ERROR", {
-                ...(ex.data || {}),
-                id
-            });
+        if (result.isFail()) {
+            const error = result.error;
+            throw new WebinyError(error.message, error.code, error.data);
         }
 
         return true;
