@@ -1,6 +1,6 @@
 import React from "react";
 // Note: in a real project, these would be imported from `webiny/extensions`
-import { Admin, Cli, Infra, Project } from "./packages/webiny/dist/extensions/index.js";
+import { Admin, Cli, Infra, Project } from "webiny/extensions";
 
 // import { Okta } from "@webiny/okta";
 

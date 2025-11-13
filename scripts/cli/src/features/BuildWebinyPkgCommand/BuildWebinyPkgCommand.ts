@@ -38,7 +38,7 @@ export class BuildWebinyPkgCommand implements Command.Interface<void> {
                     this.ui.newLine();
                     this.ui.info(`%s`, pkgWithExports.name);
 
-                    this.generateExportTsFile(pkgWithExports, webinyPackage);
+                    this.generateExportTsFiles(pkgWithExports, webinyPackage);
                 }
 
                 this.ui.newLine();
@@ -47,25 +47,31 @@ export class BuildWebinyPkgCommand implements Command.Interface<void> {
         };
     }
 
-    private generateExportTsFile(
-        pkgWithExports: ListPackagesService.Package,
-        webinyPackage: ListPackagesService.Package
+    private generateExportTsFiles(
+        basePkg: ListPackagesService.Package,
+        wbyPkg: ListPackagesService.Package
     ) {
-        const pkgExports = pkgWithExports.packageJson.webiny?.exports!;
+        const pkgExports = basePkg.packageJson.webiny?.exports!;
 
-        for (const [pkgExport, webinyPkgExport] of Object.entries(pkgExports)) {
-            const fullExportPath = path.join(pkgWithExports.name, pkgExport).replace(".ts", ".js");
-
-            const exportPath = webinyPackage.paths.packageFolder
-                .join("src", webinyPkgExport)
+        for (const [basePkgFilePath, wbyPkgExportPath] of Object.entries(pkgExports)) {
+            let wbyExportTsFilePath = wbyPkg.paths.packageFolder
+                .join("src", wbyPkgExportPath)
                 .toString();
 
-            // Ensure directory exists
-            fs.mkdirSync(path.dirname(exportPath), { recursive: true });
+            if (wbyExportTsFilePath.endsWith(".js")) {
+                wbyExportTsFilePath = wbyExportTsFilePath.replace(".js", ".ts");
+            } else {
+                wbyExportTsFilePath = `${wbyExportTsFilePath}.ts`;
+            }
 
-            fs.writeFileSync(exportPath, `export * from "${fullExportPath}";\n`);
+            fs.mkdirSync(path.dirname(wbyExportTsFilePath), { recursive: true });
 
-            this.ui.debug(` %s → %s`, pkgExport, `webiny/${webinyPkgExport}`);
+            // Create the export file.
+            const exportPath = path.join(basePkg.name, basePkgFilePath).replace(".ts", ".js");
+
+            fs.writeFileSync(wbyExportTsFilePath, `export * from "${exportPath}";\n`);
+
+            this.ui.debug(` %s → %s`, basePkgFilePath, `webiny/${wbyPkgExportPath}`);
         }
     }
 }
