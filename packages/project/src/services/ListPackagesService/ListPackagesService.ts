@@ -28,25 +28,32 @@ export class DefaultListPackagesService implements ListPackagesService.Interface
         const app = restParams.app ? this.getApp.execute(restParams.app) : null;
 
         // List all packages in `packages` folder.
-        const packagesFullList: ListPackagesService.Result = fs
-            .readdirSync(project.paths.rootFolder.join("packages").toString())
-            .map(name => {
-                const pkgFolderPath = project.paths.rootFolder.join("/packages/", name).toString();
+        let packagesFullList: ListPackagesService.Result = [];
 
-                let webinyConfigPath = path.join(pkgFolderPath, "webiny.config.ts");
-                if (!fs.existsSync(webinyConfigPath)) {
-                    webinyConfigPath = path.join(pkgFolderPath, "webiny.config.js");
-                }
+        const packagesFolderPath = project.paths.rootFolder.join("packages").toString();
+        if (fs.existsSync(packagesFolderPath)) {
+            packagesFullList = fs
+                .readdirSync(project.paths.rootFolder.join("packages").toString())
+                .map(name => {
+                    const pkgFolderPath = project.paths.rootFolder
+                        .join("/packages/", name)
+                        .toString();
 
-                return {
-                    name: `@webiny/${name}`,
-                    paths: {
-                        packageFolder: pkgFolderPath,
-                        webinyConfigFile: webinyConfigPath
+                    let webinyConfigPath = path.join(pkgFolderPath, "webiny.config.ts");
+                    if (!fs.existsSync(webinyConfigPath)) {
+                        webinyConfigPath = path.join(pkgFolderPath, "webiny.config.js");
                     }
-                } as ListPackagesService.Package;
-            })
-            .filter(Boolean);
+
+                    return {
+                        name: `@webiny/${name}`,
+                        paths: {
+                            packageFolder: pkgFolderPath,
+                            webinyConfigFile: webinyConfigPath
+                        }
+                    } as ListPackagesService.Package;
+                })
+                .filter(Boolean);
+        }
 
         if (app) {
             const webinyConfigPaths = glob.sync("**/webiny.config.@(ts|js)", {

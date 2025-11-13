@@ -16747,6 +16747,7 @@ __metadata:
     "@webiny/api-website-builder": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
+    "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
     "@webiny/app-admin-users-cognito": "npm:0.0.0"
     "@webiny/app-serverless-cms": "npm:0.0.0"

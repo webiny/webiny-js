@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { sendEvent } from "@webiny/telemetry/react";
+import { sendEvent } from "@webiny/telemetry/react.js";
 import { TelemetryService as Abstraction } from "./abstractions.js";
 
 class TelemetryServiceImpl implements Abstraction.Interface {

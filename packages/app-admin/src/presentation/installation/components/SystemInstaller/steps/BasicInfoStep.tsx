@@ -56,7 +56,7 @@ const BasicInfoFormInputs = () => {
             <Grid.Column span={12}>
                 <Bind name={"basicInfo.referralSource"} validators={validation.create("required")}>
                     <Select
-                        label={"Where did you here about Webiny?"}
+                        label={"Where did you hear about Webiny?"}
                         displayResetAction={false}
                         options={referralOptions}
                     />
