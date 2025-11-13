@@ -2,6 +2,7 @@ export * from "./ProjectInfoService/index.js";
 export { BuildAppWorkspaceService } from "./BuildAppWorkspaceService.js";
 export { BuildProjectWorkspaceService } from "./BuildProjectWorkspaceService.js";
 export { GetAppPackagesService } from "./GetAppPackagesService.js";
+export { GetAppService } from "./GetAppService.js";
 export { GetCwdService } from "./GetCwdService.js";
 export { GetProjectConfigService } from "./GetProjectConfigService.js";
 export { GetProjectIdService } from "./GetProjectIdService.js";
