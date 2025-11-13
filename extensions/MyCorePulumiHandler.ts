@@ -1,5 +1,6 @@
 import { createImplementation } from "@webiny/di";
-import { CorePulumi, UiService } from "webiny/infra";
+import { CorePulumi  } from "webiny/infra/features/CorePulumi";
+import { UiService } from "webiny/infra/features/UiService";
 
 class MyCorePulumiHandler implements CorePulumi.Interface {
     constructor(private ui: UiService.Interface) {}

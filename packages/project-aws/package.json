@@ -80,11 +80,9 @@
     "@webiny/build-tools": "0.0.0",
     "typescript": "5.9.3"
   },
-  "webi2ny": {
+  "webiny": {
     "exports": {
-      "./exports/extensions/index.js": "extensions",
-      "./exports/cli.js": "cli",
-      "./exports/infra.js": "infra"
+      "./index.ts": "./extensions"
     }
   },
   "adio": {
