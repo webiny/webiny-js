@@ -3,6 +3,7 @@ import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
 import { useWorkflowState } from "@webiny/app-workflows";
 import { observer } from "mobx-react-lite";
 import { WorkflowStateValue } from "@webiny/app-workflows/types.js";
+import { CmsEntryFormPublishButton } from "./CmsEntryFormPublishButton.js";
 
 const { Actions } = ContentEntryEditorConfig;
 const { ButtonAction } = Actions;
@@ -21,10 +22,11 @@ const OverrideSaveAndPublishButton = observer((props: IOverrideSaveAndPublishBut
      */
     if (
         props.name !== "publish" ||
-        !presenter.vm.workflow ||
-        presenter.vm.state?.state === WorkflowStateValue.approved
+        !presenter.vm.workflow
     ) {
         return props.children;
+    } else if (presenter.vm.state?.state === WorkflowStateValue.approved) {
+        return <CmsEntryFormPublishButton/>;
     }
     return null;
 });

@@ -1,9 +1,10 @@
 import React from "react";
 import { ContentEntryForm, useContentEntry } from "@webiny/app-headless-cms";
 import { WorkflowStateBar, WorkflowStateOverlay } from "@webiny/app-workflows";
-import { Grid } from "@webiny/admin-ui";
+import { Alert, Grid } from "@webiny/admin-ui";
 import { useSecurity } from "@webiny/app-security";
 import type { PersistEntry } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/ContentEntryFormProvider.js";
+import type { IWorkflowState } from "@webiny/app-workflows/types.js";
 
 /**
  * To override storing of the entry when in workflow state.
@@ -11,6 +12,17 @@ import type { PersistEntry } from "@webiny/app-headless-cms/admin/components/Con
 // @ts-expect-error
 const emptyFunction: PersistEntry = async () => {
     return void 0;
+};
+
+interface IStoreAlertProps {
+    state: IWorkflowState | undefined;
+}
+
+const StoreAlert = ({ state }: IStoreAlertProps) => {
+    if (!state) {
+        return null;
+    }
+    return <Alert type="danger">Any changes you do on the entry will not be stored!</Alert>;
 };
 
 export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Original => {
@@ -33,10 +45,13 @@ export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Origina
                     <WorkflowStateOverlay>
                         {({ state }) => {
                             return (
-                                <Original
-                                    {...props}
-                                    persistEntry={state ? emptyFunction : props.persistEntry}
-                                />
+                                <>
+                                    <StoreAlert state={state} />
+                                    <Original
+                                        {...props}
+                                        persistEntry={state ? emptyFunction : props.persistEntry}
+                                    />
+                                </>
                             );
                         }}
                     </WorkflowStateOverlay>

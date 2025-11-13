@@ -96,6 +96,12 @@ export class WorkflowState implements IWorkflowStateModel {
     }
 
     public get done(): boolean {
+        /**
+         * A just-in-case check.
+         */
+        if (this.#record.steps.length === 0) {
+            return false;
+        }
         return this.#record.steps.every(step => {
             return step.state === WorkflowStateRecordState.approved;
         });
