@@ -1,8 +1,7 @@
-import { createImplementation } from "@webiny/di";
-import { CorePulumi  } from "webiny/infra/features/CorePulumi";
+import { CorePulumi } from "webiny/infra/features/CorePulumi";
 import { UiService } from "webiny/infra/features/UiService";
 
-class MyCorePulumiHandler implements CorePulumi.Interface {
+class MyCorePulumiHandlerImpl implements CorePulumi.Interface {
     constructor(private ui: UiService.Interface) {}
 
     execute(app: any) {
@@ -10,8 +9,7 @@ class MyCorePulumiHandler implements CorePulumi.Interface {
     }
 }
 
-export default createImplementation({
-    abstraction: CorePulumi,
-    implementation: MyCorePulumiHandler,
+export const MyCorePulumiHandler = CorePulumi.createImplementation({
+    implementation: MyCorePulumiHandlerImpl,
     dependencies: [UiService]
 });
