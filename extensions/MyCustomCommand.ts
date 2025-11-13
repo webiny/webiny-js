@@ -1,5 +1,6 @@
 import { createImplementation } from "@webiny/di";
-import { Command, UiService } from "webiny/cli";
+import { Command } from "webiny/cli/features/Command.js";
+import { UiService } from "webiny/cli/features/Ui.js";
 
 export interface IMyCustomCommandParams {
     name: string;

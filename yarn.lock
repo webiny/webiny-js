@@ -36793,6 +36793,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "webiny@workspace:packages/webiny"
   dependencies:
+    "@webiny/api-core": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
