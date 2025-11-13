@@ -20,6 +20,7 @@
     { "path": "../app-trash-bin/tsconfig.build.json" },
     { "path": "../app-website-builder/tsconfig.build.json" },
     { "path": "../app-websockets/tsconfig.build.json" },
+    { "path": "../app-workflows/tsconfig.build.json" },
     { "path": "../lexical-editor-actions/tsconfig.build.json" },
     { "path": "../lexical-theme/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" }
@@ -73,6 +74,8 @@
       "@webiny/app-website-builder": ["../app-website-builder/src"],
       "@webiny/app-websockets/*": ["../app-websockets/src/*"],
       "@webiny/app-websockets": ["../app-websockets/src"],
+      "@webiny/app-workflows/*": ["../app-workflows/src/*"],
+      "@webiny/app-workflows": ["../app-workflows/src"],
       "@webiny/lexical-editor-actions/*": ["../lexical-editor-actions/src/*"],
       "@webiny/lexical-editor-actions": ["../lexical-editor-actions/src"],
       "@webiny/lexical-theme/*": ["../lexical-theme/src/*"],

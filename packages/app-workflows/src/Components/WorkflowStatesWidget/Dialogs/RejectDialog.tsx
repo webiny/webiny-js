@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { RejectDialog as BaseRejectDialog } from "~/Components/WorkflowStateDialogs/index.js";
 import type { IWorkflowState } from "~/types.js";
-import { useWorkflowStatesWidget } from "~/Components/WorkflowStatesWidget/Provider/useWorkflowStatesWidget.js";
+import { useWorkflowStatesWidget } from "~/Components/WorkflowStatesWidget/hooks/useWorkflowStatesWidget.js";
 
 interface IRejectDialogProps {
     state: IWorkflowState;

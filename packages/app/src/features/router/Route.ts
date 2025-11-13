@@ -20,8 +20,9 @@ export class Route<TParams extends RouteParamsDefinition | undefined = undefined
     constructor(route: RouteParams<TParams>) {
         this.route = route;
         const paramsSchema = route.params ? route.params(z) : undefined;
+        // @ts-expect-error
         this.schema = paramsSchema
-            ? (z.object(this.coerceParams(paramsSchema)).passthrough() as any)
+            ? z.object(this.coerceParams(paramsSchema)).passthrough()
             : undefined;
     }
 
@@ -34,7 +35,7 @@ export class Route<TParams extends RouteParamsDefinition | undefined = undefined
     }
 
     get params(): TParams extends RouteParamsDefinition ? RouteParamsInfer<TParams> : undefined {
-        return this.schema as any;
+        return this.schema;
     }
 
     private coerceParams<T extends Record<string, z.ZodTypeAny>>(shape: T) {

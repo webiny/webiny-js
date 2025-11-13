@@ -21,6 +21,7 @@ import { TrashBinConfigs } from "@webiny/app-trash-bin";
 import { AdvancedContentOrganisation } from "@webiny/app-aco";
 import { Extension as WebsiteBuilder } from "@webiny/app-website-builder/Extension.js";
 import { SchedulerConfigs } from "@webiny/app-headless-cms-scheduler";
+import { ContentReviews } from "@webiny/app-workflows";
 import { CmsWorkflows } from "@webiny/app-headless-cms-workflows";
 
 export interface AdminProps extends Omit<BaseAdminProps, "createApolloClient"> {
@@ -48,6 +49,7 @@ const App = (props: AdminProps) => {
             <AuditLogs />
             <MailerSettings />
             <SchedulerConfigs />
+            <ContentReviews />
             <TrashBinConfigs />
             <AdvancedContentOrganisation />
             <WebsiteBuilder />

@@ -29,6 +29,7 @@
     "@webiny/app-trash-bin": "0.0.0",
     "@webiny/app-website-builder": "0.0.0",
     "@webiny/app-websockets": "0.0.0",
+    "@webiny/app-workflows": "0.0.0",
     "@webiny/lexical-editor-actions": "0.0.0",
     "@webiny/lexical-theme": "0.0.0",
     "@webiny/plugins": "0.0.0",
