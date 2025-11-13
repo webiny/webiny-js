@@ -21,7 +21,7 @@ export class DefaultGetAppService implements GetAppService.Interface {
 
         const project = this.getProjectService.execute();
 
-        const workspaceFolderPath = project.paths.workspacesFolder.join("apps", appName).toString();
+        const workspaceFolderPath = project.paths.workspaceFolder.join("apps", appName).toString();
 
         const localPulumiStateFilesFolderPath = project.paths.localPulumiStateFilesFolder
             .join("apps", appName)
