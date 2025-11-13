@@ -1,30 +1,29 @@
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
-import { GetGroupRepository as RepositoryAbstraction } from "./abstractions.js";
+import { ListGroupsRepository as RepositoryAbstraction } from "./abstractions.js";
 import { GroupCache } from "~/features/contentModelGroup/shared/abstractions.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstractions.js";
-import { GroupNotFoundError } from "~/domain/contentModelGroup/errors.js";
 import { GroupStorageError } from "~/domain/contentModelGroup/errors.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
+import { TenantContext } from "@webiny/api-core/features/TenantContext";
+import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { CmsContext } from "~/features/shared/abstractions.js";
 import { filterAsync } from "~/utils/filterAsync.js";
 import { createCacheKey } from "~/utils/index.js";
 import type { CmsGroup } from "~/types/index.js";
 
 /**
- * GetGroupRepository - Fetches a single group by ID.
+ * ListGroupsRepository - Fetches all groups (plugin + database).
  *
  * Responsibilities:
  * - Create cache keys based on tenant + identity
  * - Provide data loader functions to GroupCache
  * - Fetch from plugin groups + database groups
  * - Apply access control filtering
- * - Return the group or NotFoundError
+ * - Return all accessible groups
  */
-class GetGroupRepositoryImpl implements RepositoryAbstraction.Interface {
+class ListGroupsRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private groupCache: GroupCache.Interface,
         private pluginGroupsProvider: PluginGroupsProvider.Interface,
@@ -35,20 +34,14 @@ class GetGroupRepositoryImpl implements RepositoryAbstraction.Interface {
         private cmsContext: CmsContext.Interface
     ) {}
 
-    async execute(groupId: string): Promise<Result<CmsGroup, RepositoryAbstraction.Error>> {
+    async execute(): Promise<Result<CmsGroup[], RepositoryAbstraction.Error>> {
         try {
             const tenant = this.tenantContext.getTenant();
 
             // Fetch all groups (plugin + database) with access control filtering
             const groups = await this.fetchAllGroups(tenant.id);
 
-            const group = groups.find(g => g.id === groupId);
-
-            if (!group) {
-                return Result.fail(new GroupNotFoundError(groupId));
-            }
-
-            return Result.ok(group);
+            return Result.ok(groups);
         } catch (error) {
             return Result.fail(new GroupStorageError(error as Error));
         }
@@ -91,9 +84,9 @@ class GetGroupRepositoryImpl implements RepositoryAbstraction.Interface {
     }
 }
 
-export const GetGroupRepository = createImplementation({
+export const ListGroupsRepository = createImplementation({
     abstraction: RepositoryAbstraction,
-    implementation: GetGroupRepositoryImpl,
+    implementation: ListGroupsRepositoryImpl,
     dependencies: [
         GroupCache,
         PluginGroupsProvider,

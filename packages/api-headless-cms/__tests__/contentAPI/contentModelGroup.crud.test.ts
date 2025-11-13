@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { identity } from "../testHelpers/helpers";
 import { toSlug } from "~/utils/toSlug";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
+import * as readline from "node:readline";
 
 enum TestHelperEnum {
     MODELS_AMOUNT = 3,
@@ -61,7 +62,7 @@ describe("Group crud test", () => {
         createContentModelGroupMutation,
         updateContentModelGroupMutation,
         deleteContentModelGroupMutation
-    } = useGraphQLHandler({ path: "manage/en-us" });
+    } = useGraphQLHandler({ path: "manage" });
 
     it("content model group create, read, update, delete and list all at once", async () => {
         const updatedContentModelGroups = [];
@@ -381,7 +382,7 @@ describe("Group crud test", () => {
 
         // Create listGroups query with permission for only specific groups
         const { listContentModelGroupsQuery: listGroups } = useGraphQLHandler({
-            path: "manage/en-us",
+            path: "manage",
             permissions: createPermissions([groups[0]])
         });
 

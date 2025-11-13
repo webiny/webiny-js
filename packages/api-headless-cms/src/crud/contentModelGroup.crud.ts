@@ -32,6 +32,7 @@ import type { AccessControl } from "./AccessControl/AccessControl.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js";
+import { ListGroupsUseCase } from "~/features/contentModelGroup/ListGroups/index.js";
 
 export interface CreateModelGroupsCrudParams {
     getTenant: () => Tenant;
@@ -184,13 +185,16 @@ export const createModelGroupsCrud = (params: CreateModelGroupsCrudParams): CmsG
     };
 
     const listGroups: CmsGroupContext["listGroups"] = async params => {
-        const { where } = params || {};
+        const useCase = context.container.resolve(ListGroupsUseCase);
+        const result = await useCase.execute();
 
-        const { tenant } = where || {};
+        if (result.isFail()) {
+            const error = result.error;
 
-        await accessControl.ensureCanAccessGroup();
+            throw new WebinyError(error.message, error.code, error.data);
+        }
 
-        return fetchGroups(tenant || getTenant().id);
+        return result.value;
     };
 
     const createGroup: CmsGroupContext["createGroup"] = async input => {
