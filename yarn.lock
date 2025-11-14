@@ -8558,13 +8558,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^7.8.0":
-  version: 7.8.0
-  resolution: "@pulumi/aws@npm:7.8.0"
+"@pulumi/aws@npm:^7.11.1":
+  version: 7.11.1
+  resolution: "@pulumi/aws@npm:7.11.1"
   dependencies:
     "@pulumi/pulumi": "npm:^3.142.0"
     mime: "npm:^2.0.0"
-  checksum: 10/0ff86f5d4eee8d2a10d1843a2cdbe6e4c0eb9b2efa539ab8c6a89cfdb4d4753dfcb06b4d51c544dc5898eabb7233aba641b69924004adf9369be0f9b36ca1072
+  checksum: 10/5649ac64d16b835d1f2fd3efab4051541c42b818a981ada2f0534e184ed5af55039dd5ced235d7253d31ec166162e6e2a3ac597b9b92ab1611ee546e8bbe30f1
   languageName: node
   linkType: hard
 
@@ -8612,9 +8612,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^3.203.0":
-  version: 3.203.0
-  resolution: "@pulumi/pulumi@npm:3.203.0"
+"@pulumi/pulumi@npm:^3.207.0":
+  version: 3.207.0
+  resolution: "@pulumi/pulumi@npm:3.207.0"
   dependencies:
     "@grpc/grpc-js": "npm:^1.10.1"
     "@logdna/tail-file": "npm:^2.0.6"
@@ -8652,7 +8652,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: 10/ea6e5518996add83b032baf500d1f52ce635db64025b6fe8b1dca7cf5b78244f716303a526b12dd605fad52d31b1c3931f92d52b22e6aa1436b56be35562ff89
+  checksum: 10/24ed0bb63f80af497831894494b0d2a2a62c57ae407565789b9b3cbc75b0f8954ff489d828144232029be2119519ab90060d8131c9bb950a5de5564928180094
   languageName: node
   linkType: hard
 
@@ -16687,8 +16687,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/project-aws@workspace:packages/project-aws"
   dependencies:
-    "@pulumi/aws": "npm:^7.8.0"
-    "@pulumi/pulumi": "npm:^3.203.0"
+    "@pulumi/aws": "npm:^7.11.1"
+    "@pulumi/pulumi": "npm:^3.207.0"
     "@pulumi/random": "npm:^4.18.4"
     "@types/lodash": "npm:4.17.20"
     "@types/ncp": "npm:^2.0.8"
@@ -16844,8 +16844,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/pulumi-sdk@workspace:packages/pulumi-sdk"
   dependencies:
-    "@pulumi/aws": "npm:^7.8.0"
-    "@pulumi/pulumi": "npm:^3.203.0"
+    "@pulumi/aws": "npm:^7.11.1"
+    "@pulumi/pulumi": "npm:^3.207.0"
     "@types/lodash": "npm:4.17.20"
     "@webiny/build-tools": "npm:0.0.0"
     decompress: "npm:^4.2.1"
@@ -16865,7 +16865,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/pulumi@workspace:packages/pulumi"
   dependencies:
-    "@pulumi/pulumi": "npm:^3.203.0"
+    "@pulumi/pulumi": "npm:^3.207.0"
     "@types/lodash": "npm:4.17.20"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"
