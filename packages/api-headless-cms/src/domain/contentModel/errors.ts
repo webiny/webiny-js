@@ -76,3 +76,13 @@ export class ModelCannotDeleteCodeDefinedError extends BaseError {
         });
     }
 }
+
+export class ModelSlugTakenError extends BaseError {
+    override readonly code = "Cms/Model/SlugTaken" as const;
+
+    constructor(slug: string) {
+        super({
+            message: `Model slug/API name "${slug}" is already taken.`
+        });
+    }
+}
