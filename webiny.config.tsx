@@ -1,5 +1,5 @@
 import React from "react";
-import { Admin, Cli, Infra, Project } from "webiny/extensions";
+import { Admin, Cli, Infra, Project, Security } from "webiny/extensions";
 
 // import { Okta } from "@webiny/okta";
 
@@ -56,6 +56,10 @@ export default () => {
 
             {/* Project 👇 */}
             <Project.Telemetry enabled={false} />
+
+            {/* Security 👇 */}
+            <Security.ApiKey.AfterCreate src={"./extensions/MyApiKeyAfterCreate.ts"} />
+            <Security.ApiKey.AfterCreate src={"./extensions/MyApiKeyAfterCreate2.ts"} />
 
             {/* 🚧 WIP 👇 */}
             {/*<Security.ApiKeyBeforeCreate src={"./extensions/ApiKeyBeforeCreate.ts"} />*/}
