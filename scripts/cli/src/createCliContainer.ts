@@ -9,7 +9,7 @@ import {
     loggerService,
     runCliRunnerService,
     stdioService,
-    uiService,
+    uiService
 } from "./services/index.js";
 
 import { buildWebinyPkgCommand } from "./features/index.js";

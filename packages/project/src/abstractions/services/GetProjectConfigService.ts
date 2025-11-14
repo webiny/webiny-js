@@ -13,9 +13,8 @@ interface IGetProjectConfigService {
     execute(params?: IGetProjectConfigServiceParams): Promise<IGetProjectConfigServiceResult>;
 }
 
-export const GetProjectConfigService = createAbstraction<IGetProjectConfigService>(
-    "GetProjectConfigService"
-);
+export const GetProjectConfigService =
+    createAbstraction<IGetProjectConfigService>("GetProjectConfigService");
 
 export namespace GetProjectConfigService {
     export type Interface = IGetProjectConfigService;

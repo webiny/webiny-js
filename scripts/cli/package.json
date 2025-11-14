@@ -13,20 +13,10 @@
   "dependencies": {
     "@webiny/di": "^0.1.1",
     "chalk": "^4.1.2",
-    "execa": "^5.1.1",
     "find-up": "^5.0.0",
-    "get-yarn-workspaces": "1.0.2",
-    "glob": "^7.2.3",
-    "humanize-duration": "3.33.1",
-    "inquirer": "^12.9.6",
-    "load-json-file": "6.2.0",
-    "open": "^10.2.0",
-    "ora": "4.1.1",
-    "semver": "^7.7.2",
+    "pino": "^9.13.1",
     "type-fest": "^5.2.0",
-    "write-json-file": "^4.3.0",
-    "yargs": "^17.7.2",
-    "zod": "^3.25.76"
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "rimraf": "^6.0.1",

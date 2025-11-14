@@ -11,9 +11,8 @@ export interface IProjectSdkParamsService {
     set(params: Partial<IProjectSdkParams>): void;
 }
 
-export const ProjectSdkParamsService = createAbstraction<IProjectSdkParamsService>(
-    "ProjectSdkParamsService"
-);
+export const ProjectSdkParamsService =
+    createAbstraction<IProjectSdkParamsService>("ProjectSdkParamsService");
 
 export namespace ProjectSdkParamsService {
     export type Interface = IProjectSdkParamsService;

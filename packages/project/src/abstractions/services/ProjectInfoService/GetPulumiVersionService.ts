@@ -8,9 +8,8 @@ interface IGetPulumiVersionService {
     execute(): IGetPulumiVersionServiceResult;
 }
 
-export const GetPulumiVersionService = createAbstraction<IGetPulumiVersionService>(
-    "GetPulumiVersionService"
-);
+export const GetPulumiVersionService =
+    createAbstraction<IGetPulumiVersionService>("GetPulumiVersionService");
 
 export namespace GetPulumiVersionService {
     export type Interface = IGetPulumiVersionService;

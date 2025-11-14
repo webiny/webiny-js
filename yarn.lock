@@ -16946,22 +16946,12 @@ __metadata:
   dependencies:
     "@webiny/di": "npm:^0.1.1"
     chalk: "npm:^4.1.2"
-    execa: "npm:^5.1.1"
     find-up: "npm:^5.0.0"
-    get-yarn-workspaces: "npm:1.0.2"
-    glob: "npm:^7.2.3"
-    humanize-duration: "npm:3.33.1"
-    inquirer: "npm:^12.9.6"
-    load-json-file: "npm:6.2.0"
-    open: "npm:^10.2.0"
-    ora: "npm:4.1.1"
+    pino: "npm:^9.13.1"
     rimraf: "npm:^6.0.1"
-    semver: "npm:^7.7.2"
     type-fest: "npm:^5.2.0"
     typescript: "npm:5.9.3"
-    write-json-file: "npm:^4.3.0"
     yargs: "npm:^17.7.2"
-    zod: "npm:^3.25.76"
   languageName: unknown
   linkType: soft
 

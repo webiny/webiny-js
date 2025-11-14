@@ -32,10 +32,7 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
         const project = this.getProjectService.execute();
 
         const currentTime = Date.now();
-        this.loggerService.trace(
-            { renderArgs: params.renderArgs },
-            `Rendering project config...`
-        );
+        this.loggerService.trace({ renderArgs: params.renderArgs }, `Rendering project config...`);
         const cacheKey = JSON.stringify(params.renderArgs);
         if (!this.cachedRenderedConfigs[cacheKey]) {
             try {

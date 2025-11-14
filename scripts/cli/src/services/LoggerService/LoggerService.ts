@@ -1,14 +1,15 @@
 import { createImplementation } from "@webiny/di";
-import { createPinoLogger as baseCreatePinoLogger, type Logger } from "@webiny/logger";
-import { LoggerService } from "../../abstractions/index.js";
+import { pino } from "pino";
 import * as fs from "node:fs";
 import path from "node:path";
-import findUp from "find-up";
+import { GetProjectService, LoggerService } from "../../abstractions/index.js";
 
 const DEFAULT_LOG_LEVEL = "info";
 
 export class DefaultLoggerService implements LoggerService.Interface {
-    pinoLogger: Logger | null = null;
+    constructor(private getProjectService: GetProjectService.Interface) {}
+
+    pinoLogger: ReturnType<typeof pino> | null = null;
 
     trace(message?: any, ...optionalParams: any[]) {
         const logger = this.getLogger();
@@ -51,26 +52,16 @@ export class DefaultLoggerService implements LoggerService.Interface {
         }
 
         const logStream = this.getLogStream();
-
         const level = process.env.LOG_LEVEL || DEFAULT_LOG_LEVEL;
-        this.pinoLogger = baseCreatePinoLogger({ level }, logStream);
+        this.pinoLogger = pino({ level }, logStream);
 
         return this.pinoLogger;
     }
 
     private getLogStream() {
-        // Wanted to use `GetProjectSdkService` to get project root path, but
-        // to get that, had to call async method, which is not allowed in constructor.
-        // TODO: implement a better way to get project root path.
-        const webinyConfigPath = findUp.sync("webiny.config.tsx");
-        if (!webinyConfigPath) {
-            // Should not happen, but just in case.
-            throw new Error("Could not find project root path.");
-        }
+        const project = this.getProjectService.execute();
 
-        const projectRootPath = path.dirname(webinyConfigPath!);
-
-        const logsFolderPath = path.join(projectRootPath, ".webiny", "logs");
+        const logsFolderPath = project.paths.dotWebinyFolder.join("logs").toString();
         const logsFileName = this.getLogFileName();
 
         if (!fs.existsSync(logsFolderPath)) {
@@ -93,5 +84,5 @@ export class DefaultLoggerService implements LoggerService.Interface {
 export const loggerService = createImplementation({
     abstraction: LoggerService,
     implementation: DefaultLoggerService,
-    dependencies: []
+    dependencies: [GetProjectService]
 });

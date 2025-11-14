@@ -33,4 +33,3 @@ export const MyCustomCommand = Command.createImplementation({
     implementation: MyCustomCommandImpl,
     dependencies: [UiService]
 });
-

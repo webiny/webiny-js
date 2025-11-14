@@ -5,7 +5,8 @@ export interface IGetProjectSdkService {
     execute(): Promise<ProjectSdk>;
 }
 
-export const GetProjectSdkService = createAbstraction<IGetProjectSdkService>("GetProjectSdkService");
+export const GetProjectSdkService =
+    createAbstraction<IGetProjectSdkService>("GetProjectSdkService");
 
 export namespace GetProjectSdkService {
     export type Interface = IGetProjectSdkService;

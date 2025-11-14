@@ -5,9 +5,8 @@ interface IValidateProjectConfig {
     execute(params: IProjectConfigModel): Promise<void>;
 }
 
-export const ValidateProjectConfig = createAbstraction<IValidateProjectConfig>(
-    "ValidateProjectConfig"
-);
+export const ValidateProjectConfig =
+    createAbstraction<IValidateProjectConfig>("ValidateProjectConfig");
 
 export namespace ValidateProjectConfig {
     export type Interface = IValidateProjectConfig;
