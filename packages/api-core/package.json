@@ -60,7 +60,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
-    "@webiny/di": "^0.1.1",
+    "@webiny/di": "^0.2.0",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0",

@@ -107,7 +107,7 @@ export namespace UpdateUserUseCase {
 }
 ```
 
-You MUST ALWAYS use `createAbstraction` instead of `createAbstraction`.
+You MUST ALWAYS use `createAbstraction` instead of `new Abstraction`.
 
 **Use case implementation**
 
@@ -115,11 +115,10 @@ You MUST ALWAYS use `createAbstraction` instead of `createAbstraction`.
 1. Use case class MUST implement the abstraction's `.Interface` type
 2. Use case method return types MUST use the abstraction's `.Error` namespace type
 3. Constructor parameters MUST use `.Interface` types from their abstractions
-4. Always use `createImplementation` to wire up the use case
+4. Always use `Abstraction.createImplementation` to wire up the use case
 
 ```typescript
 // UpdateUserUseCase.ts
-import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 
 // Import abstraction you're implementing
@@ -156,8 +155,7 @@ export class UpdateUserUseCase implements UseCaseAbstraction.Interface {
 }
 
 // Wire up with createImplementation
-export const UpdateUserUseCaseImpl = createImplementation({
-  abstraction: UseCaseAbstraction,
+export const UpdateUserUseCaseImpl = UseCaseAbstraction.createImplementation({
   implementation: UpdateUserUseCase,
   dependencies: [SupportedLanguagesProvider, UserRepository]
 });
@@ -197,8 +195,7 @@ class CreatePageValidationDecoratorImpl {
   }
 }
 
-export const CreatePageValidationDecorator = createDecorator({
-  abstraction: CreatePageUseCase,
+export const CreatePageValidationDecorator = CreatePageUseCase.createDecorator({
   decorator: CreatePageValidationDecoratorImpl,
   dependencies: []
 });
