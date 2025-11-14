@@ -1,0 +1,34 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "references": [
+    { "path": "../api-website-builder/tsconfig.build.json" },
+    { "path": "../api-workflows/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../testing/tsconfig.build.json" }
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-website-builder/*": ["../api-website-builder/src/*"],
+      "@webiny/api-website-builder": ["../api-website-builder/src"],
+      "@webiny/api-workflows/*": ["../api-workflows/src/*"],
+      "@webiny/api-workflows": ["../api-workflows/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/testing/*": ["../testing/src/*"],
+      "@webiny/testing": ["../testing/src"]
+    },
+    "baseUrl": "."
+  }
+}

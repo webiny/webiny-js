@@ -1,0 +1,34 @@
+{
+  "name": "@webiny/api-website-builder-workflows",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.js",
+  "description": "Headless CMS Workflows",
+  "keywords": [
+    "api-website-builder-workflows:base"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-website-builder-workflows"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/api-website-builder": "0.0.0",
+    "@webiny/api-workflows": "0.0.0",
+    "@webiny/error": "0.0.0",
+    "@webiny/handler": "0.0.0"
+  },
+  "devDependencies": {
+    "@webiny/build-tools": "0.0.0",
+    "@webiny/plugins": "0.0.0",
+    "@webiny/project-utils": "0.0.0",
+    "@webiny/testing": "0.0.0",
+    "typescript": "5.9.3",
+    "vitest": "^3.2.4"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  }
+}
