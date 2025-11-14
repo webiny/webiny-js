@@ -5,7 +5,7 @@ type FieldNotSearchableErrorData = {
 };
 
 export class FieldNotSearchableError extends BaseError<FieldNotSearchableErrorData> {
-    override readonly code = "FIELD_NOT_SEARCHABLE" as const;
+    override readonly code = "Cms/Entry/FieldNotSearchable" as const;
 
     constructor(fieldId: string) {
         super({
@@ -20,7 +20,7 @@ type InvalidWhereConditionErrorData = {
 };
 
 export class InvalidWhereConditionError extends BaseError<InvalidWhereConditionErrorData> {
-    override readonly code = "INVALID_WHERE_CONDITION" as const;
+    override readonly code = "Cms/Entry/InvalidWhereCondition" as const;
 
     constructor(message: string, where: Record<string, any>) {
         super({

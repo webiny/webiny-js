@@ -78,7 +78,6 @@ export const createGroupsStorageOperations = (
                     ...keys
                 }
             });
-            return group;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not create group.",
@@ -103,7 +102,6 @@ export const createGroupsStorageOperations = (
                     ...keys
                 }
             });
-            return group;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not update group.",
@@ -124,7 +122,6 @@ export const createGroupsStorageOperations = (
                 entity,
                 keys
             });
-            return group;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not delete group.",
