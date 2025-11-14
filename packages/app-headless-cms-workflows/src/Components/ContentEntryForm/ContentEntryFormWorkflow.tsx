@@ -22,7 +22,11 @@ const StoreAlert = ({ state }: IStoreAlertProps) => {
     if (!state) {
         return null;
     }
-    return <Alert type="danger">Any changes you do on the entry will not be stored!</Alert>;
+    return (
+        <Alert className={"mb-md"} type="danger">
+            Any changes you do on the entry will not be stored!
+        </Alert>
+    );
 };
 
 export const ContentEntryFormWorkflow = ContentEntryForm.createDecorator(Original => {

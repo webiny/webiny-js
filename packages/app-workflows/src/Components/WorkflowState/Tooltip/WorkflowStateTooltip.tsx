@@ -1,7 +1,6 @@
 import React from "react";
 import type { IWorkflowStatePresenter } from "~/Presenters/index.js";
 import { Button, Popover } from "@webiny/admin-ui";
-// TODO need to find correct icon for the workflow state tooltip
 import { ReactComponent as WorkflowStateTooltipIcon } from "@webiny/icons/list.svg";
 import { WorkflowStateTooltipContent } from "./WorkflowStateTooltipContent.js";
 import { observer } from "mobx-react-lite";

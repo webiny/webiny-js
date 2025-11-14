@@ -1,21 +1,31 @@
 import React, { useCallback } from "react";
 import { ContentEntryEditorConfig, usePermission } from "@webiny/app-headless-cms";
 import { useContentEntryForm } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/useContentEntryForm.js";
-import { ReactComponent as ScheduleIcon } from "@webiny/icons/new_releases.svg";
-import { useContentEntry } from "@webiny/app-headless-cms/admin/views/contentEntries/hooks/index.js";
+import { ReactComponent as NewReleaseIcon } from "@webiny/icons/new_releases.svg";
+import { useWorkflowState } from "@webiny/app-workflows";
+import { usePersistEntry } from "@webiny/app-headless-cms/admin/hooks/usePersistEntry.js";
 
 const { Actions } = ContentEntryEditorConfig;
 
 const CreateNewRevisionMenuItem = () => {
+    const { presenter } = useWorkflowState();
     const { canEdit } = usePermission();
     const { OptionsMenuItem } = Actions.MenuItemAction.useOptionsMenuItem();
-    const { loading } = useContentEntry();
     const { entry, saveEntry } = useContentEntryForm();
+    const { persistEntry } = usePersistEntry({
+        addItemToListCache: true
+    });
 
     const onClick = useCallback(() => {
-        saveEntry({
-            skipValidators: ["required"]
-        });
+        persistEntry(
+            {
+                id: entry.id
+            },
+            {
+                skipValidators: ["required"],
+                createNewRevision: true
+            }
+        );
     }, [saveEntry]);
 
     if (!canEdit(entry, "cms.contentEntry")) {
@@ -24,11 +34,11 @@ const CreateNewRevisionMenuItem = () => {
 
     return (
         <OptionsMenuItem
-            icon={<ScheduleIcon />}
+            icon={<NewReleaseIcon />}
             label={`Create New Revision`}
             onAction={onClick}
-            disabled={!entry?.meta?.status || loading}
-            data-testid={"cms.content-form.header.schedule"}
+            disabled={!presenter.vm.state}
+            data-testid={"cms.content-form.header.createNewRevision"}
         />
     );
 };

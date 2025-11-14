@@ -20,13 +20,10 @@ const OverrideSaveAndPublishButton = observer((props: IOverrideSaveAndPublishBut
      * If there is no workflow state or state is approved, we simply render the original element.
      * This is to ensure that no button will be shown if workflow state is active.
      */
-    if (
-        props.name !== "publish" ||
-        !presenter.vm.workflow
-    ) {
+    if (props.name !== "publish" || !presenter.vm.workflow) {
         return props.children;
     } else if (presenter.vm.state?.state === WorkflowStateValue.approved) {
-        return <CmsEntryFormPublishButton/>;
+        return <CmsEntryFormPublishButton />;
     }
     return null;
 });
