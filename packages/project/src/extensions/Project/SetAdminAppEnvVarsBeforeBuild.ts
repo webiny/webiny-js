@@ -62,7 +62,7 @@ class SetAdminAppEnvVarsBeforeBuildImpl implements AdminBeforeBuild.Interface {
     }
 }
 
-export default AdminBeforeBuild.createImplementation({
+export const SetAdminAppEnvVarsBeforeBuild = AdminBeforeBuild.createImplementation({
     implementation: SetAdminAppEnvVarsBeforeBuildImpl,
     dependencies: [IsTelemetryEnabled, GetProjectIdService, GetProjectVersionService]
 });

@@ -12,7 +12,7 @@ export interface IEnvironment {
     };
 }
 
-class PrintDeploymentInfoAfterDeploy implements AfterDeploy.Interface {
+class PrintDeploymentInfoAfterDeployImpl implements AfterDeploy.Interface {
     constructor(
         private ui: UiService.Interface,
         private getAppStackOutput: GetAppStackOutput.Interface
@@ -91,8 +91,7 @@ class PrintDeploymentInfoAfterDeploy implements AfterDeploy.Interface {
     }
 }
 
-export default createImplementation({
-    abstraction: AfterDeploy,
-    implementation: PrintDeploymentInfoAfterDeploy,
+export const PrintDeploymentInfoAfterDeploy = AfterDeploy.createImplementation({
+    implementation: PrintDeploymentInfoAfterDeployImpl,
     dependencies: [UiService, GetAppStackOutput]
 });

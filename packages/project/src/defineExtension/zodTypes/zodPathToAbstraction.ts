@@ -25,7 +25,7 @@ export const zodPathToAbstraction = (
                 return;
             }
 
-            const exportName = path.basename(absoluteSrcPath);
+            const exportName = path.basename(absoluteSrcPath).replace(path.extname(absoluteSrcPath), "");
 
             const importedModule = await import(absoluteSrcPath);
             const exportedImplementation = importedModule?.[exportName];

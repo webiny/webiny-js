@@ -20,7 +20,7 @@ import { IDefaultStackOutput } from "~/pulumi/types.js";
 /**
  * On every deployment of the API project application, this plugin invokes the data migrations Lambda.
  */
-class ExecuteDataMigrations implements ApiAfterDeploy.Interface {
+class ExecuteDataMigrationsImpl implements ApiAfterDeploy.Interface {
     constructor(
         private ui: UiService.Interface,
         private getAppStackOutput: GetAppStackOutput.Interface,
@@ -98,8 +98,7 @@ class ExecuteDataMigrations implements ApiAfterDeploy.Interface {
     }
 }
 
-export default createImplementation({
-    abstraction: ApiAfterDeploy,
-    implementation: ExecuteDataMigrations,
+export const ExecuteDataMigrations = ApiAfterDeploy.createImplementation({
+    implementation: ExecuteDataMigrationsImpl,
     dependencies: [UiService, GetAppStackOutput, GetProject]
 });

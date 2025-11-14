@@ -1,8 +1,7 @@
-import { createImplementation } from "@webiny/di";
 import { BeforeWatch, GetApp } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
-class EnsureAppBuiltBeforeWatch implements BeforeWatch.Interface {
+class EnsureAppBuiltBeforeWatchImpl implements BeforeWatch.Interface {
     constructor(private getApp: GetApp.Interface) {}
 
     async execute(params: BeforeWatch.Params) {
@@ -30,8 +29,7 @@ class EnsureAppBuiltBeforeWatch implements BeforeWatch.Interface {
     }
 }
 
-export default createImplementation({
-    abstraction: BeforeWatch,
-    implementation: EnsureAppBuiltBeforeWatch,
+export const EnsureAppBuiltBeforeWatch = BeforeWatch.createImplementation({
+    implementation: EnsureAppBuiltBeforeWatchImpl,
     dependencies: [GetApp]
 });

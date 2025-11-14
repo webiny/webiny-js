@@ -1,7 +1,6 @@
-import { createImplementation } from "@webiny/di";
 import { BeforeDeploy } from "@webiny/project/abstractions/index.js";
 
-class PrintDeploymentInfoAfterDeploy implements BeforeDeploy.Interface {
+class PrintDeploymentInfoAfterDeployImpl implements BeforeDeploy.Interface {
     constructor() {}
 
     async execute(params: BeforeDeploy.Params) {
@@ -19,8 +18,7 @@ class PrintDeploymentInfoAfterDeploy implements BeforeDeploy.Interface {
     }
 }
 
-export default createImplementation({
-    abstraction: BeforeDeploy,
-    implementation: PrintDeploymentInfoAfterDeploy,
+export const EnsureVariantBeforeDeploy = BeforeDeploy.createImplementation({
+    implementation: PrintDeploymentInfoAfterDeployImpl,
     dependencies: []
 });

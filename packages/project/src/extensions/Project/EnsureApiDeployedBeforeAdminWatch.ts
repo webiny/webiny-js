@@ -1,10 +1,9 @@
-import { createImplementation } from "@webiny/di";
 import { AdminBeforeWatch, GetAppStackOutput } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
 const NO_DEPLOYMENT_CHECKS_FLAG_NAME = "--no-deployment-checks";
 
-class EnsureApiDeployedBeforeAdminWatch implements AdminBeforeWatch.Interface {
+class EnsureApiDeployedBeforeAdminWatchImpl implements AdminBeforeWatch.Interface {
     constructor(private getAppStackOutput: GetAppStackOutput.Interface) {}
 
     async execute(params: AdminBeforeWatch.Params) {
@@ -40,8 +39,7 @@ class EnsureApiDeployedBeforeAdminWatch implements AdminBeforeWatch.Interface {
     }
 }
 
-export default createImplementation({
-    abstraction: AdminBeforeWatch,
-    implementation: EnsureApiDeployedBeforeAdminWatch,
+export const EnsureApiDeployedBeforeAdminWatch = AdminBeforeWatch.createImplementation({
+    implementation: EnsureApiDeployedBeforeAdminWatchImpl,
     dependencies: [GetAppStackOutput]
 });
