@@ -1,4 +1,21 @@
 import { BaseError } from "@webiny/feature/api";
+import type { CmsModel } from "~/types/index.js";
+
+export class ModelNotAuthorizedError extends BaseError {
+    override readonly code = "Cms/Model/NotAuthorized" as const;
+
+    constructor(message?: string) {
+        super({
+            message: message || `Not allowed to access content models.`
+        });
+    }
+
+    static fromModel(model: CmsModel): ModelNotAuthorizedError {
+        return new ModelNotAuthorizedError(
+            `Not allowed to access content model "${model.modelId}".`
+        );
+    }
+}
 
 export class ModelNotFoundError extends BaseError {
     override readonly code = "Cms/Model/NotFound" as const;

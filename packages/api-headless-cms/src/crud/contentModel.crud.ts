@@ -27,9 +27,6 @@ import type {
 import { NotFoundError } from "@webiny/handler-graphql";
 import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory.js";
 import { createTopic } from "@webiny/pubsub";
-import { assignModelBeforeCreate } from "./contentModel/beforeCreate.js";
-import { assignModelBeforeUpdate } from "./contentModel/beforeUpdate.js";
-import { assignModelBeforeDelete } from "./contentModel/beforeDelete.js";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import {
     createModelCreateFromValidation,
@@ -282,23 +279,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
      * Initialize
      */
     const onModelInitialize = createTopic<OnModelInitializeParams>("cms.onModelInitialize");
-    /**
-     * We need to assign some default behaviors.
-     */
-    assignModelBeforeCreate({
-        onModelBeforeCreate,
-        onModelBeforeCreateFrom,
-        context,
-        storageOperations
-    });
-    assignModelBeforeUpdate({
-        onModelBeforeUpdate,
-        context
-    });
-    assignModelBeforeDelete({
-        onModelBeforeDelete,
-        context
-    });
 
     /**
      * CRUD methods
