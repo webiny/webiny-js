@@ -118,7 +118,8 @@
     "type-fest": "^5.2.0",
     "typescript": "5.9.3",
     "typescript-transform-paths": "^3.5.5",
-    "verdaccio": "^6.2.0",
+    "validator": "^13.15.23",
+    "verdaccio": "^6.2.1",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4",
     "write-json-file": "^4.3.0",
@@ -251,6 +252,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "semver": "^7.7.2",
+    "validator": "^13.15.23",
     "lerna@8.1.2": "patch:lerna@npm%3A8.1.2#./.yarn/patches/lerna-npm-8.1.2-be48ad2329.patch",
     "apollo-link@^1.2.14": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch",
     "apollo-link@^1.0.0": "patch:apollo-link@npm%3A1.2.14#./.yarn/patches/apollo-link-npm-1.2.14-74f0ba01f9.patch"
