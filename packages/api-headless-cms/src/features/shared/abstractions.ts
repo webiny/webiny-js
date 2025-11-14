@@ -32,3 +32,8 @@ export const CmsContext = createAbstraction<CmsCtx>("CmsContext");
 export namespace CmsContext {
     export type Interface = CmsCtx;
 }
+
+export interface IAccessControl {
+    canAccessModel(params: { model: any }): Promise<boolean>;
+    canAccessGroup(params: { group: any }): Promise<boolean>;
+}

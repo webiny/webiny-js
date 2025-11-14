@@ -46,9 +46,6 @@ import type {
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
 import { createTopic } from "@webiny/pubsub";
-import { assignBeforeEntryCreate } from "./contentEntry/beforeCreate.js";
-import { assignBeforeEntryUpdate } from "./contentEntry/beforeUpdate.js";
-import { assignAfterEntryDelete } from "./contentEntry/afterDelete.js";
 import { ContentEntryTraverser } from "~/utils/contentEntryTraverser/ContentEntryTraverser.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { CreateEntryUseCase } from "~/features/contentEntry/CreateEntry/index.js";
@@ -202,23 +199,6 @@ export const createContentEntryCrud = (params: CreateContentEntryCrudParams): Cm
      * List entries
      */
     const onEntryBeforeList = createTopic<EntryBeforeListTopicParams>("cms.onEntryBeforeList");
-
-    /**
-     * We need to assign some default behaviors.
-     * TODO: move this to a separate feature with multiple event handlers and field locking.
-     */
-    assignBeforeEntryCreate({
-        context,
-        onEntryBeforeCreate
-    });
-    assignBeforeEntryUpdate({
-        context,
-        onEntryBeforeUpdate
-    });
-    assignAfterEntryDelete({
-        context,
-        onEntryAfterDelete
-    });
 
     const createEntry: CmsEntryContext["createEntry"] = async <T = CmsEntryValues>(
         model: CmsModel,

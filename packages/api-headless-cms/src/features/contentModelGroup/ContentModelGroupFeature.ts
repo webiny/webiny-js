@@ -4,14 +4,15 @@ import { ListGroupsFeature } from "~/features/contentModelGroup/ListGroups/featu
 import { CreateGroupFeature } from "~/features/contentModelGroup/CreateGroup/feature.js";
 import { UpdateGroupFeature } from "~/features/contentModelGroup/UpdateGroup/feature.js";
 import { DeleteGroupFeature } from "~/features/contentModelGroup/DeleteGroup/feature.js";
-import { GroupCache } from "~/features/contentModelGroup/shared/GroupCache.js";
+import { GroupCache } from "~/features/contentModelGroup/shared/abstractions.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/PluginGroupsProvider.js";
+import { createMemoryCache } from "~/utils/index.js";
 
 export const ContentModelGroupFeature = createFeature({
     name: "ContentModelGroup",
     register(container) {
         // Shared infrastructure (singletons)
-        container.register(GroupCache).inSingletonScope();
+        container.registerInstance(GroupCache, createMemoryCache());
         container.register(PluginGroupsProvider).inSingletonScope();
 
         // Query features

@@ -1,35 +1,49 @@
+import { AccessControl, CmsContext } from "~/features/shared/abstractions.js";
 import { PluginModelsProvider as ProviderAbstraction } from "./abstractions.js";
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
 import type { CmsModel } from "~/types/index.js";
-
-export type GetCmsModels = () => CmsModel[];
+import { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
+import { ensureTypeTag } from "~/crud/contentModel/ensureTypeTag.js";
+import { filterAsync } from "~/utils/filterAsync.js";
 
 /**
- * PluginModelsProvider implementation that fetches models from plugins.
+ * PluginModelsProvider implementation that fetches models from CmsModelPlugin instances
  */
-export class PluginModelsProvider implements ProviderAbstraction.Interface {
+class PluginModelsProviderImpl implements ProviderAbstraction.Interface {
     constructor(
-        private tenantContext: TenantContext.Interface,
-        private getCmsModels: GetCmsModels
+        private cmsContext: CmsContext.Interface,
+        private accessControl: AccessControl.Interface
     ) {}
 
-    async getModels(): Promise<CmsModel[]> {
-        const tenant = this.tenantContext.getTenant();
+    async list(tenant: string): Promise<CmsModel[]> {
+        const modelPlugins = this.cmsContext.plugins.byType<CmsModelPlugin>(CmsModelPlugin.type);
 
-        const models = this.getCmsModels();
-
-        return models
-            .filter(model => {
-                // Filter by tenant/locale if specified in plugin
-                // If not specified, plugin model is available for all tenants/locales
-                if (model.tenant && model.tenant !== tenant.id) {
+        const models = modelPlugins
+            .filter(plugin => {
+                const { tenant: modelTenant } = plugin.contentModel;
+                // Filter by tenant if specified in plugin
+                if (modelTenant && modelTenant !== tenant) {
                     return false;
                 }
+
                 return true;
             })
-            .map(model => ({
-                ...model,
-                tenant: tenant.id
-            })) as CmsModel[];
+            .map(plugin => {
+                return {
+                    ...plugin.contentModel,
+                    tags: ensureTypeTag(plugin.contentModel),
+                    tenant,
+                    webinyVersion: this.cmsContext.WEBINY_VERSION
+                };
+            }) as unknown as CmsModel[];
+
+        // Apply access control filtering
+        return filterAsync(models, model => {
+            return this.accessControl.canAccessModel({ model });
+        });
     }
 }
+
+export const PluginModelsProvider = ProviderAbstraction.createImplementation({
+    implementation: PluginModelsProviderImpl,
+    dependencies: [CmsContext, AccessControl]
+});
