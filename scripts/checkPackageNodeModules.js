@@ -1,6 +1,8 @@
 import glob from "glob";
 import loadJsonFile from "load-json-file";
 
+const excludedPackages = ["@webiny/di"];
+
 const target = "./packages/*/package.json";
 
 const stripWebinyPath = p => {
@@ -15,7 +17,9 @@ const hasWebinyPackageVersion = pkg => {
             continue;
         }
         for (const p in packages) {
-            if (p.startsWith("@webiny/") === false) {
+            if (excludedPackages.includes(p)) {
+                continue;
+            } else if (p.startsWith("@webiny/") === false) {
                 continue;
             } else if (packages[p] === "*") {
                 // we can safely continue here as it means that, probably, peerDependency for @webiny is set to anything.

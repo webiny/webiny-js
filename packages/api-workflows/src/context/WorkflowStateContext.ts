@@ -451,20 +451,20 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         app: string,
         targetRevisionId: string
     ): Promise<IWorkflowStateRecord | null> {
-        const { items } = await this.fetchAll({
+        const { items, meta } = await this.fetchAll({
             where: {
                 app,
                 targetRevisionId,
                 isActive: true
             },
-            limit: 10000
+            limit: 1
         });
         /**
          * There cannot be more than one workflow. If there is, something is very wrong and all states, except one, must be deleted.
          */
         if (items.length === 0) {
             return null;
-        } else if (items.length > 1) {
+        } else if (meta.totalCount > 1) {
             throw new MultipleWorkflowsFoundError({
                 data: {
                     app,

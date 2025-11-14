@@ -1,6 +1,7 @@
 import React from "react";
 import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
 import { useWorkflowState } from "@webiny/app-workflows";
+import { observer } from "mobx-react-lite";
 
 const { Actions } = ContentEntryEditorConfig;
 const { ButtonAction } = Actions;
@@ -10,7 +11,7 @@ interface IOverrideSaveButtonProps {
     children: React.ReactElement;
 }
 
-const OverrideSaveButton = (props: IOverrideSaveButtonProps) => {
+const OverrideSaveButton = observer((props: IOverrideSaveButtonProps) => {
     const { presenter } = useWorkflowState();
 
     /**
@@ -23,7 +24,7 @@ const OverrideSaveButton = (props: IOverrideSaveButtonProps) => {
         return props.children;
     }
     return null;
-};
+});
 
 export const CmsEntryFormSaveButton = ButtonAction.createDecorator(Original => {
     return function WorkflowCmsEntryFormSaveButton(props) {

@@ -13,10 +13,6 @@ const columns: DataTableColumns<IWorkflowState> = {
         header: "Title",
         enableSorting: true
     },
-    // app: {
-    //     header: "Application",
-    //     enableSorting: false
-    // },
     savedOn: {
         header: "Last Modified",
         enableSorting: true,
