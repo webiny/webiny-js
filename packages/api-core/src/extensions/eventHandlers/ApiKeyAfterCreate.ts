@@ -1,4 +1,4 @@
-import {defineApiExtension} from "@webiny/project/defineExtension";
+import { defineApiExtension } from "@webiny/project/defineExtension";
 import { ApiKeyAfterCreateHandler } from "~/features/security/apiKeys/CreateApiKey/index.js";
 
 export const ApiKeyAfterCreate = defineApiExtension({
