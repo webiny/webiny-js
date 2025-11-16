@@ -3,7 +3,7 @@ import { Result } from "@webiny/feature/api";
 import type { CmsEntry } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
 import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
-import type { EntryStorageError } from "~/domain/contentEntry/errors.js";
+import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { EntryValidationError } from "~/domain/contentEntry/errors.js";
 import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
@@ -41,7 +41,7 @@ export interface IUnpublishEntryRepository {
 }
 
 export interface IUnpublishEntryRepositoryErrors {
-    storage: EntryStorageError;
+    storage: EntryPersistenceError;
 }
 
 type RepositoryError = IUnpublishEntryRepositoryErrors[keyof IUnpublishEntryRepositoryErrors];

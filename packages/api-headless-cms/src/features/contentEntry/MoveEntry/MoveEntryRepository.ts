@@ -3,7 +3,7 @@ import { createImplementation } from "@webiny/feature/api";
 import { MoveEntryRepository as RepositoryAbstraction } from "./abstractions.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import type { CmsModel } from "~/types/index.js";
-import { EntryStorageError } from "~/domain/contentEntry/errors.js";
+import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 
 /**
  * MoveEntryRepository - Handles storage operations for moving entries.
@@ -24,7 +24,7 @@ class MoveEntryRepositoryImpl implements RepositoryAbstraction.Interface {
             await this.storageOperations.entries.move(model, id, folderId);
             return Result.ok();
         } catch (error) {
-            return Result.fail(new EntryStorageError(error as Error));
+            return Result.fail(new EntryPersistenceError(error as Error));
         }
     }
 }

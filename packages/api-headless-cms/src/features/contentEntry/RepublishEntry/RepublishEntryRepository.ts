@@ -5,7 +5,7 @@ import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryToStorageTransform } from "~/legacy/abstractions.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
-import { EntryStorageError } from "~/domain/contentEntry/errors.js";
+import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 
 /**
  * RepublishEntryRepository - Handles storage operations for republishing entries.
@@ -49,7 +49,7 @@ class RepublishEntryRepositoryImpl implements RepositoryAbstraction.Interface {
 
             return Result.ok(transformedEntry);
         } catch (error) {
-            return Result.fail(new EntryStorageError(error as Error));
+            return Result.fail(new EntryPersistenceError(error as Error));
         }
     }
 }

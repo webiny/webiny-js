@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import type { EntryNotFoundError, EntryStorageError } from "~/domain/contentEntry/errors.js";
+import type { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
@@ -18,7 +18,7 @@ export interface IGetEntryByIdUseCase {
 export interface IGetEntryByIdUseCaseErrors {
     notAuthorized: ContentEntryNotAuthorizedError;
     notFound: EntryNotFoundError;
-    storage: EntryStorageError;
+    storage: EntryPersistenceError;
 }
 
 type UseCaseError = IGetEntryByIdUseCaseErrors[keyof IGetEntryByIdUseCaseErrors];

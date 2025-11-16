@@ -6,7 +6,7 @@ import type {
     CmsModel,
     CmsEntryStorageOperationsGetLatestRevisionParams
 } from "~/types/index.js";
-import { EntryNotFoundError, type EntryStorageError } from "~/domain/contentEntry/errors.js";
+import { EntryNotFoundError, type EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
@@ -23,7 +23,7 @@ export interface IGetLatestRevisionByEntryIdBaseUseCase {
 export interface IGetLatestRevisionByEntryIdUseCaseErrors {
     notAuthorized: ContentEntryNotAuthorizedError;
     notFound: EntryNotFoundError;
-    storage: EntryStorageError;
+    storage: EntryPersistenceError;
 }
 
 type UseCaseError =
@@ -92,7 +92,7 @@ export interface IGetLatestRevisionByEntryIdRepository {
 }
 
 export interface IGetLatestRevisionByEntryIdRepositoryErrors {
-    storage: EntryStorageError;
+    storage: EntryPersistenceError;
     notFound: EntryNotFoundError;
 }
 

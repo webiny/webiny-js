@@ -4,7 +4,7 @@ import { UpdateGroupRepository as RepositoryAbstraction } from "./abstractions.j
 import { GroupCache } from "~/features/contentModelGroup/shared/abstractions.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstractions.js";
 import { GroupCannotUpdateCodeDefinedError } from "~/domain/contentModelGroup/errors.js";
-import { GroupStorageError } from "~/domain/contentModelGroup/errors.js";
+import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import type { CmsGroup } from "~/types/index.js";
 
@@ -41,7 +41,7 @@ class UpdateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
 
             return Result.ok();
         } catch (error) {
-            return Result.fail(new GroupStorageError(error as Error));
+            return Result.fail(new GroupPersistenceError(error as Error));
         }
     }
 }

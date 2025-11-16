@@ -37,8 +37,8 @@ export class ModelAlreadyExistsError extends BaseError {
     }
 }
 
-export class ModelStorageError extends BaseError {
-    override readonly code = "Cms/Model/StorageError" as const;
+export class ModelPersistenceError extends BaseError {
+    override readonly code = "Cms/Model/PersistenceError" as const;
 
     constructor(error: Error) {
         super({

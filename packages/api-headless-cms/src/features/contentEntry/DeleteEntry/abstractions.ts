@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsModel, CmsDeleteEntryOptions } from "~/types/index.js";
-import type { EntryNotFoundError, EntryStorageError } from "~/domain/contentEntry/errors.js";
+import type { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
@@ -19,7 +19,7 @@ export interface IDeleteEntryUseCase {
 export interface IDeleteEntryUseCaseErrors {
     notAuthorized: ContentEntryNotAuthorizedError;
     notFound: EntryNotFoundError;
-    storage: EntryStorageError;
+    storage: EntryPersistenceError;
 }
 
 type UseCaseError = IDeleteEntryUseCaseErrors[keyof IDeleteEntryUseCaseErrors];
@@ -67,7 +67,7 @@ export interface IDeleteEntryRepository {
 }
 
 export interface IDeleteEntryRepositoryErrors {
-    storage: EntryStorageError;
+    storage: EntryPersistenceError;
 }
 
 type RepositoryError = IDeleteEntryRepositoryErrors[keyof IDeleteEntryRepositoryErrors];

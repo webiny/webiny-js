@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { ListEntriesRepository as RepositoryAbstraction } from "./abstractions.js";
-import { EntryStorageError } from "~/domain/contentEntry/errors.js";
+import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type {
     CmsEntry,
     CmsEntryListParams,
@@ -54,7 +54,7 @@ class ListEntriesRepositoryImpl implements RepositoryAbstraction.Interface {
 
             return Result.ok([items as CmsEntry<T>[], meta]);
         } catch (error) {
-            return Result.fail(new EntryStorageError(error as Error));
+            return Result.fail(new EntryPersistenceError(error as Error));
         }
     }
 }

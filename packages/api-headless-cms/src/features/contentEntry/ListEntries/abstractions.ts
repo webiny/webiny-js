@@ -7,7 +7,7 @@ import type {
     CmsEntryValues,
     CmsModel
 } from "~/types/index.js";
-import type { EntryStorageError } from "~/domain/contentEntry/errors.js";
+import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
@@ -23,7 +23,7 @@ export interface IListEntriesUseCase {
 
 export interface IListEntriesUseCaseErrors {
     notAuthorized: ContentEntryNotAuthorizedError;
-    storage: EntryStorageError;
+    storage: EntryPersistenceError;
 }
 
 type UseCaseError = IListEntriesUseCaseErrors[keyof IListEntriesUseCaseErrors];
@@ -103,7 +103,7 @@ export interface IListEntriesRepository {
 }
 
 export interface IListEntriesRepositoryErrors {
-    storage: EntryStorageError;
+    storage: EntryPersistenceError;
 }
 
 type RepositoryError = IListEntriesRepositoryErrors[keyof IListEntriesRepositoryErrors];

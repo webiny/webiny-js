@@ -18,7 +18,6 @@ import type { CmsModelField, CmsModelFieldValidation, CmsModelUpdateInput } from
 import type { CmsModel, CmsModelCreateFromInput, CmsModelCreateInput } from "./model.js";
 import type { CmsGroup } from "./modelGroup.js";
 import type { CmsIdentity } from "./identity.js";
-import type { ISingletonModelManager } from "~/modelManager/index.js";
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
@@ -862,25 +861,6 @@ export interface CmsModelContext {
      * Primary idea behind this is creating the index, for the code models, in the ES.
      */
     initializeModel(modelId: string, data: Record<string, any>): Promise<boolean>;
-    /**
-     * Get an instance of CmsModelManager for given content modelId.
-     *
-     * @see CmsModelManager
-     */
-    getEntryManager<T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel | string
-    ): Promise<ICmsEntryManager<T>>;
-    /**
-     * A model manager for a model which has a single entry.
-     */
-    getSingletonEntryManager<T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel | string
-    ): Promise<ISingletonModelManager<T>>;
-    /**
-     * Get all content model managers mapped by modelId.
-     * @see CmsModelManager
-     */
-    getEntryManagers(): Map<string, ICmsEntryManager>;
     /**
      * Clear all the model caches.
      */

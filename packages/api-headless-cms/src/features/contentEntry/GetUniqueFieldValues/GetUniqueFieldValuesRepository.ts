@@ -5,7 +5,7 @@ import {
     GetUniqueFieldValuesParams
 } from "./abstractions.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
-import { EntryStorageError } from "~/domain/contentEntry/errors.js";
+import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsModel, CmsEntryUniqueValue } from "~/types/index.js";
 
 class GetUniqueFieldValuesRepositoryImpl implements RepositoryAbstraction.Interface {
@@ -25,7 +25,7 @@ class GetUniqueFieldValuesRepositoryImpl implements RepositoryAbstraction.Interf
 
             return Result.ok(values);
         } catch (error) {
-            return Result.fail(new EntryStorageError(error as Error));
+            return Result.fail(new EntryPersistenceError(error as Error));
         }
     }
 }

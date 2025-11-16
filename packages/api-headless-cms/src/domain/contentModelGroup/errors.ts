@@ -21,8 +21,8 @@ export class GroupSlugTakenError extends BaseError {
     }
 }
 
-export class GroupStorageError extends BaseError {
-    override readonly code = "Cms/ModelGroup/StorageError" as const;
+export class GroupPersistenceError extends BaseError {
+    override readonly code = "Cms/ModelGroup/PersistenceError" as const;
 
     constructor(error: Error) {
         super({

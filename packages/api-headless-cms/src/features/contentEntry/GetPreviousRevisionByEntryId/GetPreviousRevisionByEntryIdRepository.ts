@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { GetPreviousRevisionByEntryIdRepository as RepositoryAbstraction } from "./abstractions.js";
-import { EntryNotFoundError, EntryStorageError } from "~/domain/contentEntry/errors.js";
+import { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type {
     CmsEntry,
     CmsEntryValues,
@@ -37,7 +37,7 @@ class GetPreviousRevisionByEntryIdRepositoryImpl implements RepositoryAbstractio
 
             return Result.ok(transformedEntry as CmsEntry<T>);
         } catch (error) {
-            return Result.fail(new EntryStorageError(error as Error));
+            return Result.fail(new EntryPersistenceError(error as Error));
         }
     }
 }

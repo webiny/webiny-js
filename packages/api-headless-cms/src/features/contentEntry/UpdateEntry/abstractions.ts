@@ -9,7 +9,7 @@ import type {
 import type { GenericRecord } from "@webiny/api/types.js";
 import type {
     EntryNotFoundError,
-    EntryStorageError,
+    EntryPersistenceError,
     EntryValidationError,
     EntryLockedError
 } from "~/domain/contentEntry/errors.js";
@@ -54,7 +54,7 @@ export interface IUpdateEntryRepository {
 }
 
 export interface IUpdateEntryRepositoryErrors {
-    storage: EntryStorageError;
+    storage: EntryPersistenceError;
 }
 
 type RepositoryError = IUpdateEntryRepositoryErrors[keyof IUpdateEntryRepositoryErrors];

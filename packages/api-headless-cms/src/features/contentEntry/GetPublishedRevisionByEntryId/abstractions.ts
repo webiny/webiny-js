@@ -3,7 +3,7 @@ import { Result } from "@webiny/feature/api";
 import type { CmsEntry } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
 import type { CmsEntryStorageOperationsGetPublishedRevisionParams } from "~/types/index.js";
-import { EntryNotFoundError, type EntryStorageError } from "~/domain/contentEntry/errors.js";
+import { EntryNotFoundError, type EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 
 /**
  * GetPublishedRevisionByEntryId Use Case
@@ -37,7 +37,7 @@ export interface IGetPublishedRevisionByEntryIdRepository {
 }
 
 export interface IGetPublishedRevisionByEntryIdRepositoryErrors {
-    storage: EntryStorageError;
+    storage: EntryPersistenceError;
     notFound: EntryNotFoundError;
 }
 

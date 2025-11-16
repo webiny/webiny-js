@@ -7,7 +7,7 @@ import {
     GroupNotAuthorizedError
 } from "~/domain/contentModelGroup/errors.js";
 import type { GroupValidationError } from "~/domain/contentModelGroup/errors.js";
-import type { GroupStorageError } from "~/domain/contentModelGroup/errors.js";
+import type { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 
 /**
  * CreateGroup Use Case
@@ -40,7 +40,7 @@ export interface ICreateGroupRepository {
 
 export interface ICreateGroupRepositoryErrors {
     alreadyExists: GroupSlugTakenError;
-    storage: GroupStorageError;
+    storage: GroupPersistenceError;
 }
 
 type RepositoryError = ICreateGroupRepositoryErrors[keyof ICreateGroupRepositoryErrors];

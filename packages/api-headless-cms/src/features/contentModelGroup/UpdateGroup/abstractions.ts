@@ -4,7 +4,7 @@ import type { CmsGroup } from "~/types/index.js";
 import type { CmsGroupUpdateInput } from "~/types/index.js";
 import { GroupNotAuthorizedError, type GroupNotFoundError } from "~/domain/contentModelGroup/errors.js";
 import type { GroupValidationError } from "~/domain/contentModelGroup/errors.js";
-import type { GroupStorageError } from "~/domain/contentModelGroup/errors.js";
+import type { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 import type { GroupCannotUpdateCodeDefinedError } from "~/domain/contentModelGroup/errors.js";
 
 /**
@@ -39,7 +39,7 @@ export interface IUpdateGroupRepository {
 
 export interface IUpdateGroupRepositoryErrors {
     cannotUpdate: GroupCannotUpdateCodeDefinedError;
-    storage: GroupStorageError;
+    storage: GroupPersistenceError;
 }
 
 type RepositoryError = IUpdateGroupRepositoryErrors[keyof IUpdateGroupRepositoryErrors];

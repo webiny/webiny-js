@@ -3,6 +3,7 @@ import { createMemoryCache } from "~/utils/index.js";
 import { PluginModelsProvider } from "~/features/contentModel/shared/PluginModelsProvider.js";
 import { ModelCache } from "~/features/contentModel/shared/abstractions.js";
 import { ModelToAstConverter } from "~/features/contentModel/shared/ModelToAstConverter.js";
+import { CreateModelFeature } from "~/features/contentModel/CreateModel/feature.js";
 
 export const ContentModelFeature = createFeature({
     name: "ContentModel",
@@ -14,5 +15,6 @@ export const ContentModelFeature = createFeature({
         // Query features
 
         // Command features
+        CreateModelFeature.register(container);
     }
 });

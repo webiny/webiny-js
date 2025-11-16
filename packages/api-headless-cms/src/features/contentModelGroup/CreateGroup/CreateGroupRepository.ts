@@ -4,7 +4,7 @@ import { CreateGroupRepository as RepositoryAbstraction } from "./abstractions.j
 import { GroupCache } from "~/features/contentModelGroup/shared/abstractions.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstractions.js";
 import { GroupSlugTakenError } from "~/domain/contentModelGroup/errors.js";
-import { GroupStorageError } from "~/domain/contentModelGroup/errors.js";
+import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
 import { CmsContext } from "~/features/shared/abstractions.js";
@@ -69,7 +69,7 @@ class CreateGroupRepositoryImpl implements RepositoryAbstraction.Interface {
 
             return Result.ok();
         } catch (error) {
-            return Result.fail(new GroupStorageError(error as Error));
+            return Result.fail(new GroupPersistenceError(error as Error));
         }
     }
 

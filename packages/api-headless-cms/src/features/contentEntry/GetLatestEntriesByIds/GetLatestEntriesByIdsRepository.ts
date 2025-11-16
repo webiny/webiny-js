@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { GetLatestEntriesByIdsRepository as RepositoryAbstraction } from "./abstractions.js";
-import { EntryStorageError } from "~/domain/contentEntry/errors.js";
+import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
@@ -32,7 +32,7 @@ class GetLatestEntriesByIdsRepositoryImpl implements RepositoryAbstraction.Inter
 
             return Result.ok(items as CmsEntry<T>[]);
         } catch (error) {
-            return Result.fail(new EntryStorageError(error as Error));
+            return Result.fail(new EntryPersistenceError(error as Error));
         }
     }
 }

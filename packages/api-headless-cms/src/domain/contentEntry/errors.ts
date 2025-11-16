@@ -11,8 +11,8 @@ export class EntryNotFoundError extends BaseError {
     }
 }
 
-export class EntryStorageError extends BaseError {
-    override readonly code = "Cms/Entry/StorageError" as const;
+export class EntryPersistenceError extends BaseError {
+    override readonly code = "Cms/Entry/PersistenceError" as const;
 
     constructor(error: Error) {
         super({

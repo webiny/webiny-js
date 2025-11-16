@@ -30,11 +30,10 @@ import { createTopic } from "@webiny/pubsub";
 import { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import {
     createModelCreateFromValidation,
-    createModelCreateValidation,
     createModelUpdateValidation
 } from "~/crud/contentModel/validation.js";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
-import { assignModelDefaultFields } from "~/crud/contentModel/defaultFields.js";
+import { CreateModelUseCase } from "~/features/contentModel/CreateModel/index.js";
 import { createCacheKey, createMemoryCache } from "~/utils/index.js";
 import { ensureTypeTag } from "./contentModel/ensureTypeTag.js";
 import { listModelsFromDatabase } from "~/crud/contentModel/listModelsFromDatabase.js";
@@ -44,7 +43,6 @@ import {
     CmsModelFieldToAstConverterFromPlugins,
     CmsModelToAstConverter
 } from "~/utils/contentModelAst/index.js";
-import { SingletonModelManager } from "~/modelManager/index.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
@@ -144,8 +142,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         return {
             ...model,
             tags: ensureTypeTag(model),
-            tenant: model.tenant || getTenant().id,
-            locale: model.locale || getLocale().code
+            tenant: model.tenant || getTenant().id
         };
     };
 
@@ -219,29 +216,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         });
     };
 
-    const getEntryManager: CmsModelContext["getEntryManager"] = async <
-        T extends CmsEntryValues = CmsEntryValues
-    >(
-        target: string | Pick<CmsModel, "modelId">
-    ): Promise<CmsModelManager<T>> => {
-        const modelId = typeof target === "string" ? target : target.modelId;
-        if (managers.has(modelId)) {
-            return managers.get(modelId) as CmsModelManager<T>;
-        }
-        const model = await getModelFromCache(modelId);
-        return await updateManager<T>(context, model);
-    };
-
-    const getSingletonEntryManager = async <T extends CmsEntryValues = CmsEntryValues>(
-        input: CmsModel | string
-    ) => {
-        const model = typeof input === "string" ? await getModel(input) : input;
-
-        const manager = await getEntryManager<T>(model);
-
-        return SingletonModelManager.create<T>(manager);
-    };
-
     /**
      * Create
      */
@@ -284,78 +258,16 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
      * CRUD methods
      */
     const createModel: CmsModelContext["createModel"] = async input => {
-        await accessControl.ensureCanAccessModel({ rwd: "w" });
+        // Delegate to new CreateModel use case
+        const useCase = context.container.resolve(CreateModelUseCase);
+        const result = await useCase.execute(input);
 
-        const result = await createModelCreateValidation().safeParseAsync(input);
-        if (!result.success) {
-            throw createZodError(result.error);
-        }
-        /**
-         * We need to extract the defaultFields because it is not for the CmsModel object.
-         */
-        const { defaultFields, ...data } = removeUndefinedValues(result.data);
-        if (defaultFields) {
-            assignModelDefaultFields(data);
+        if (result.isFail()) {
+            const code = result.error.code;
+            throw new WebinyError(result.error.message, result.error.code, result.error.data);
         }
 
-        const group = await context.cms.getGroup(data.group);
-
-        const identity = getIdentity();
-        const model: CmsModel = {
-            ...data,
-            modelId: data.modelId || "",
-            titleFieldId: "id",
-            descriptionFieldId: null,
-            imageFieldId: null,
-            locale: getLocale().code,
-            tenant: getTenant().id,
-            group: {
-                id: group.id,
-                name: group.name
-            },
-            createdBy: {
-                id: identity.id,
-                displayName: identity.displayName,
-                type: identity.type
-            },
-            createdOn: new Date().toISOString(),
-            savedOn: new Date().toISOString(),
-            lockedFields: [],
-            webinyVersion: context.WEBINY_VERSION
-        };
-
-        model.tags = ensureTypeTag(model);
-
-        await accessControl.ensureCanAccessModel({ model, rwd: "w" });
-
-        try {
-            await onModelBeforeCreate.publish({
-                input: data,
-                model
-            });
-
-            const createdModel = await storageOperations.models.create({
-                model
-            });
-
-            clearModelsCache();
-
-            await updateManager(context, model);
-
-            await onModelAfterCreate.publish({
-                input: data,
-                model: createdModel
-            });
-
-            return createdModel;
-        } catch (ex) {
-            await onModelCreateError.publish({
-                input: data,
-                model,
-                error: ex
-            });
-            throw ex;
-        }
+        return result.value;
     };
     const updateModel: CmsModelContext["updateModel"] = async (modelId, input) => {
         await accessControl.ensureCanAccessModel({ rwd: "w" });
@@ -404,7 +316,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             group,
             description: data.description || original.description,
             tenant: original.tenant || getTenant().id,
-            locale: original.locale || getLocale().code,
             webinyVersion: context.WEBINY_VERSION,
             savedOn: new Date().toISOString()
         };
@@ -450,7 +361,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         const model: CmsModel = {
             ...initialModel,
             tenant: initialModel.tenant || getTenant().id,
-            locale: initialModel.locale || getLocale().code,
             webinyVersion: context.WEBINY_VERSION
         };
 
@@ -504,8 +414,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
         const data = removeUndefinedValues(result.data);
 
-        const locale = getLocale();
-
         /**
          * Use storage operations directly because we cannot get group from different locale via context methods.
          */
@@ -522,7 +430,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             ...original,
             singularApiName: data.singularApiName,
             pluralApiName: data.pluralApiName,
-            locale: locale.code,
             group: {
                 id: group.id,
                 name: group.name
@@ -691,9 +598,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                     return initializeModel(modelId, data);
                 }
             );
-        },
-        getEntryManager,
-        getEntryManagers: () => managers,
-        getSingletonEntryManager
+        }
     };
 };

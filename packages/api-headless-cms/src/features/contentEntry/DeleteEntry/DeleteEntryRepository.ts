@@ -1,7 +1,7 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { DeleteEntryRepository as RepositoryAbstraction } from "./abstractions.js";
-import { EntryStorageError } from "~/domain/contentEntry/errors.js";
+import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { CmsEntry, CmsModel } from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 
@@ -19,7 +19,7 @@ class DeleteEntryRepositoryImpl implements RepositoryAbstraction.Interface {
             await this.storageOperations.entries.delete(model, { entry });
             return Result.ok();
         } catch (error) {
-            return Result.fail(new EntryStorageError(error as Error));
+            return Result.fail(new EntryPersistenceError(error as Error));
         }
     }
 }

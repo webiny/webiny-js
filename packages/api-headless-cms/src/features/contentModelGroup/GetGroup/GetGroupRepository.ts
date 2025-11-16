@@ -6,7 +6,7 @@ import { GetGroupRepository as RepositoryAbstraction } from "./abstractions.js";
 import { GroupCache } from "~/features/contentModelGroup/shared/abstractions.js";
 import { PluginGroupsProvider } from "~/features/contentModelGroup/shared/abstractions.js";
 import { GroupNotFoundError } from "~/domain/contentModelGroup/errors.js";
-import { GroupStorageError } from "~/domain/contentModelGroup/errors.js";
+import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
@@ -50,7 +50,7 @@ class GetGroupRepositoryImpl implements RepositoryAbstraction.Interface {
 
             return Result.ok(group);
         } catch (error) {
-            return Result.fail(new GroupStorageError(error as Error));
+            return Result.fail(new GroupPersistenceError(error as Error));
         }
     }
 

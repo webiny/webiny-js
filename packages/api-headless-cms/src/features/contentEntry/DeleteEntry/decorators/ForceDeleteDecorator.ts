@@ -4,7 +4,7 @@ import { DeleteEntryUseCase } from "../abstractions.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import type { CmsModel, CmsDeleteEntryOptions } from "~/types/index.js";
 import { parseIdentifier } from "@webiny/utils";
-import { EntryStorageError } from "~/domain/contentEntry/errors.js";
+import { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 
 /**
  * Handles force delete logic for cleanup scenarios.
@@ -42,7 +42,7 @@ class ForceDeleteDecoratorImpl implements DeleteEntryUseCase.Interface {
 
                 return Result.ok();
             } catch (error) {
-                return Result.fail(new EntryStorageError(error as Error));
+                return Result.fail(new EntryPersistenceError(error as Error));
             }
         }
 

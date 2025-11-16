@@ -40,10 +40,6 @@ export interface CmsModel {
      */
     tenant: string;
     /**
-     * Locale this model belongs to.
-     */
-    locale: string;
-    /**
      * Cms Group reference object.
      */
     group: CmsModelGroup;
@@ -199,9 +195,4 @@ export interface CmsModelCreateInput {
  * @category GraphQL params
  * @category CmsModel
  */
-export interface CmsModelCreateFromInput extends CmsModelCreateInput {
-    /**
-     * Locale into which we want to clone the model into.
-     */
-    locale?: string;
-}
+export interface CmsModelCreateFromInput extends CmsModelCreateInput {}

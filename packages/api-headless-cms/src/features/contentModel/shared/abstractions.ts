@@ -6,7 +6,7 @@ import type { ICache } from "~/utils/caching/types.js";
  * PluginModelsProvider provides access to plugin-defined (code) models.
  */
 export interface IPluginModelsProvider {
-    list(tenant: string, locale: string): Promise<CmsModel[]>;
+    list(tenant: string): Promise<CmsModel[]>;
 }
 
 export const PluginModelsProvider =

@@ -7,7 +7,7 @@ import type {
     CreateCmsEntryOptionsInput
 } from "~/types/index.js";
 import type {
-    EntryStorageError,
+    EntryPersistenceError,
     EntryValidationError,
     EntryNotFoundError
 } from "~/domain/contentEntry/errors.js";
@@ -29,7 +29,7 @@ export interface ICreateEntryRevisionFromUseCaseErrors {
     notAuthorized: ContentEntryNotAuthorizedError;
     notFound: EntryNotFoundError;
     validation: EntryValidationError;
-    storage: EntryStorageError;
+    storage: EntryPersistenceError;
 }
 
 type UseCaseError =
@@ -82,7 +82,7 @@ export interface ICreateEntryRevisionFromRepository {
 }
 
 export interface ICreateEntryRevisionFromRepositoryErrors {
-    storage: EntryStorageError;
+    storage: EntryPersistenceError;
 }
 
 type RepositoryError =
