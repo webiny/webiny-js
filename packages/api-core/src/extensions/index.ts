@@ -19,7 +19,25 @@ import {
     TeamBeforeDelete as TeamBeforeDeleteExt,
     TeamAfterDelete as TeamAfterDeleteExt,
     BeforeAuthentication as BeforeAuthenticationExt,
-    AfterAuthentication as AfterAuthenticationExt
+    AfterAuthentication as AfterAuthenticationExt,
+    UserBeforeCreate as UserBeforeCreateExt,
+    UserAfterCreate as UserAfterCreateExt,
+    UserBeforeUpdate as UserBeforeUpdateExt,
+    UserAfterUpdate as UserAfterUpdateExt,
+    UserBeforeDelete as UserBeforeDeleteExt,
+    UserAfterDelete as UserAfterDeleteExt,
+    TenantBeforeCreate as TenantBeforeCreateExt,
+    TenantAfterCreate as TenantAfterCreateExt,
+    TenantBeforeUpdate as TenantBeforeUpdateExt,
+    TenantAfterUpdate as TenantAfterUpdateExt,
+    TenantBeforeDelete as TenantBeforeDeleteExt,
+    TenantAfterDelete as TenantAfterDeleteExt,
+    TenantInstalled as TenantInstalledExt,
+    SystemInstalled as SystemInstalledExt,
+    SettingsBeforeUpdate as SettingsBeforeUpdateExt,
+    SettingsAfterUpdate as SettingsAfterUpdateExt,
+    SettingsBeforeDelete as SettingsBeforeDeleteExt,
+    SettingsAfterDelete as SettingsAfterDeleteExt
 } from "./eventHandlers/index.js";
 
 // Exports.
@@ -47,6 +65,28 @@ export const TeamAfterDelete = TeamAfterDeleteExt.ReactComponent;
 export const BeforeAuthentication = BeforeAuthenticationExt.ReactComponent;
 export const AfterAuthentication = AfterAuthenticationExt.ReactComponent;
 
+export const UserBeforeCreate = UserBeforeCreateExt.ReactComponent;
+export const UserAfterCreate = UserAfterCreateExt.ReactComponent;
+export const UserBeforeUpdate = UserBeforeUpdateExt.ReactComponent;
+export const UserAfterUpdate = UserAfterUpdateExt.ReactComponent;
+export const UserBeforeDelete = UserBeforeDeleteExt.ReactComponent;
+export const UserAfterDelete = UserAfterDeleteExt.ReactComponent;
+
+export const TenantBeforeCreate = TenantBeforeCreateExt.ReactComponent;
+export const TenantAfterCreate = TenantAfterCreateExt.ReactComponent;
+export const TenantBeforeUpdate = TenantBeforeUpdateExt.ReactComponent;
+export const TenantAfterUpdate = TenantAfterUpdateExt.ReactComponent;
+export const TenantBeforeDelete = TenantBeforeDeleteExt.ReactComponent;
+export const TenantAfterDelete = TenantAfterDeleteExt.ReactComponent;
+export const TenantInstalled = TenantInstalledExt.ReactComponent;
+
+export const SystemInstalled = SystemInstalledExt.ReactComponent;
+
+export const SettingsBeforeUpdate = SettingsBeforeUpdateExt.ReactComponent;
+export const SettingsAfterUpdate = SettingsAfterUpdateExt.ReactComponent;
+export const SettingsBeforeDelete = SettingsBeforeDeleteExt.ReactComponent;
+export const SettingsAfterDelete = SettingsAfterDeleteExt.ReactComponent;
+
 // Definitions (used internally). 👇
 export const definitions = [
     ApiKeyBeforeCreateExt.definition,
@@ -68,5 +108,23 @@ export const definitions = [
     TeamBeforeDeleteExt.definition,
     TeamAfterDeleteExt.definition,
     BeforeAuthenticationExt.definition,
-    AfterAuthenticationExt.definition
+    AfterAuthenticationExt.definition,
+    UserBeforeCreateExt.definition,
+    UserAfterCreateExt.definition,
+    UserBeforeUpdateExt.definition,
+    UserAfterUpdateExt.definition,
+    UserBeforeDeleteExt.definition,
+    UserAfterDeleteExt.definition,
+    TenantBeforeCreateExt.definition,
+    TenantAfterCreateExt.definition,
+    TenantBeforeUpdateExt.definition,
+    TenantAfterUpdateExt.definition,
+    TenantBeforeDeleteExt.definition,
+    TenantAfterDeleteExt.definition,
+    TenantInstalledExt.definition,
+    SystemInstalledExt.definition,
+    SettingsBeforeUpdateExt.definition,
+    SettingsAfterUpdateExt.definition,
+    SettingsBeforeDeleteExt.definition,
+    SettingsAfterDeleteExt.definition
 ];

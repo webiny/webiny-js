@@ -19,7 +19,7 @@ import { TenantLinksFeature } from "./tenantLinks/feature.js";
  */
 export const setupFeatures = (
     container: Container,
-    storageOperations: ISecurityStorageOperations
+    storageOperations: ISecuritySt1orageOperations
 ) => {
     // Register storage operations abstraction (singleton)
     container.registerInstance(SecurityStorageOperations, storageOperations);

@@ -25,3 +25,29 @@ export * from "./TeamAfterDelete.js";
 // Authentication event handlers
 export * from "./BeforeAuthentication.js";
 export * from "./AfterAuthentication.js";
+
+// User event handlers
+export * from "./UserBeforeCreate.js";
+export * from "./UserAfterCreate.js";
+export * from "./UserBeforeUpdate.js";
+export * from "./UserAfterUpdate.js";
+export * from "./UserBeforeDelete.js";
+export * from "./UserAfterDelete.js";
+
+// Tenant event handlers
+export * from "./TenantBeforeCreate.js";
+export * from "./TenantAfterCreate.js";
+export * from "./TenantBeforeUpdate.js";
+export * from "./TenantAfterUpdate.js";
+export * from "./TenantBeforeDelete.js";
+export * from "./TenantAfterDelete.js";
+export * from "./TenantInstalled.js";
+
+// System event handlers
+export * from "./SystemInstalled.js";
+
+// Settings event handlers
+export * from "./SettingsBeforeUpdate.js";
+export * from "./SettingsAfterUpdate.js";
+export * from "./SettingsBeforeDelete.js";
+export * from "./SettingsAfterDelete.js";
