@@ -34,6 +34,8 @@ import {
 } from "~/crud/contentModel/validation.js";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
 import { CreateModelUseCase } from "~/features/contentModel/CreateModel/index.js";
+import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
+import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 import { createCacheKey, createMemoryCache } from "~/utils/index.js";
 import { ensureTypeTag } from "./contentModel/ensureTypeTag.js";
 import { listModelsFromDatabase } from "~/crud/contentModel/listModelsFromDatabase.js";
@@ -154,65 +156,29 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
      */
     const listModels = async (input?: ICmsModelListParams) => {
         return context.benchmark.measure("headlessCms.crud.models.listModels", async () => {
-            /**
-             * Maybe we can cache based on permissions, not the identity id?
-             *
-             * TODO: @adrian please check if possible.
-             */
-            const tenant = getTenant().id;
-            const locale = getLocale().code;
-            let pluginModels = await listPluginModels(tenant, locale);
-            const dbCacheKey = createCacheKey({
-                tenant,
-                locale
-            });
-            const databaseModels = await listDatabaseModelsCache.getOrSet(dbCacheKey, async () => {
-                return await listModelsFromDatabase(params);
-            });
+            // Delegate to new ListModels use case
+            const useCase = context.container.resolve(ListModelsUseCase);
+            const result = await useCase.execute(input);
 
-            const filteredCacheKey = createCacheKey({
-                dbCacheKey: dbCacheKey.get(),
-                identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined
-            });
-
-            let filteredModels = await listFilteredModelsCache.getOrSet(
-                filteredCacheKey,
-                async () => {
-                    return filterAsync(databaseModels, async model => {
-                        return accessControl.canAccessModel({ model });
-                    });
-                }
-            );
-            /**
-             * Do we need to hide private models?
-             */
-            if (input?.includePrivate === false) {
-                filteredModels = filteredModels.filter(model => !model.isPrivate);
-                pluginModels = pluginModels.filter(model => !model.isPrivate);
-            }
-            /**
-             * Do we need to hide plugin models?
-             */
-            if (input?.includePlugins === false) {
-                return filteredModels;
+            if (result.isFail()) {
+                throw new WebinyError(result.error.message, result.error.code, result.error.data);
             }
 
-            return filteredModels.concat(pluginModels);
+            return result.value;
         });
     };
 
     const getModel = async (modelId: string): Promise<CmsModel> => {
         return context.benchmark.measure("headlessCms.crud.models.getModel", async () => {
-            const model = await context.security.withoutAuthorization(async () => {
-                return await getModelFromCache(modelId);
-            });
-            if (!model) {
-                throw new NotFoundError(`Content model "${modelId}" was not found!`);
+            // Delegate to new GetModel use case
+            const useCase = context.container.resolve(GetModelUseCase);
+            const result = await useCase.execute(modelId);
+
+            if (result.isFail()) {
+                throw new WebinyError(result.error.message, result.error.code, result.error.data);
             }
 
-            await accessControl.ensureCanAccessModel({ model });
-
-            return model;
+            return result.value;
         });
     };
 

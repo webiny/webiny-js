@@ -19,7 +19,7 @@ export namespace PluginModelsProvider {
 export const ModelCache = createAbstraction<ICache<Promise<CmsModel[]>>>("ModelCache");
 
 export namespace ModelCache {
-    export type Interface = ICache;
+    export type Interface = ICache<Promise<CmsModel[]>>;
 }
 
 /**

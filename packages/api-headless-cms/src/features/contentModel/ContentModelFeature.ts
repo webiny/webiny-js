@@ -4,6 +4,8 @@ import { PluginModelsProvider } from "~/features/contentModel/shared/PluginModel
 import { ModelCache } from "~/features/contentModel/shared/abstractions.js";
 import { ModelToAstConverter } from "~/features/contentModel/shared/ModelToAstConverter.js";
 import { CreateModelFeature } from "~/features/contentModel/CreateModel/feature.js";
+import { GetModelFeature } from "~/features/contentModel/GetModel/feature.js";
+import { ListModelsFeature } from "~/features/contentModel/ListModels/feature.js";
 
 export const ContentModelFeature = createFeature({
     name: "ContentModel",
@@ -13,6 +15,8 @@ export const ContentModelFeature = createFeature({
         container.register(ModelToAstConverter);
 
         // Query features
+        GetModelFeature.register(container);
+        ListModelsFeature.register(container);
 
         // Command features
         CreateModelFeature.register(container);
