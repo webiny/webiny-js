@@ -121,12 +121,14 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
             handler: async (params: IDeployCommandParams) => {
                 if (params.apps && params.apps.length > 0) {
                     // Deploy specified apps
-                    for (const app of params.apps) {
+                    for (const appName of params.apps) {
                         const appParams: IDeploySingleAppParams = {
                             ...params,
-                            app
+                            app: appName
                         };
-                        ui.info("Deploying %s app...", app.charAt(0).toUpperCase() + app.slice(1));
+
+                        const app = await projectSdk.getApp(appName);
+                        ui.info("Deploying %s app...", app.getDisplayName());
                         await this.deployApp(appParams);
                         ui.newLine();
                     }

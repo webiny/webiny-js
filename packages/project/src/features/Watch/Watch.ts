@@ -98,6 +98,24 @@ export class DefaultWatch implements Watch.Interface {
         const getProjectConfigService = this.getProjectConfigService;
         const validateProjectConfigService = this.validateProjectConfigService;
 
+        const projectConfig = await getProjectConfigService.execute({
+            tags: { appName: params.app, runtimeContext: "app-build" },
+            renderArgs: params
+        });
+
+        await validateProjectConfigService.execute(projectConfig);
+
+        for (const extensionType in projectConfig.config) {
+            const oneOrMoreExtensions = projectConfig.config[extensionType];
+            const extensionsArray = Array.isArray(oneOrMoreExtensions)
+                ? [...oneOrMoreExtensions]
+                : [oneOrMoreExtensions];
+
+            for (const extensionInstance of extensionsArray) {
+                await extensionInstance.build();
+            }
+        }
+
         const webinyConfigWatcher = new WebinyConfigWatcher({
             webinyConfigPath: project.paths.webinyConfigFile.toString(),
             appName: params.app,
@@ -158,7 +176,7 @@ export class DefaultWatch implements Watch.Interface {
         ui.info(`Local AWS Lambda development session started.`);
         ui.warning(
             `Note that once the session is terminated, the %s application will no longer work. To fix this, you %s redeploy it via the %s command. Learn more: %s.`,
-            app.name,
+            app.getDisplayName(),
             "MUST",
             deployCommand,
             learnMoreLink
@@ -179,7 +197,7 @@ export class DefaultWatch implements Watch.Interface {
             ui.info(`Terminating local AWS Lambda development session.`);
             ui.warning(
                 `Note that once the session is terminated, the %s application will no longer work. To fix this, you %s redeploy it via the %s command. Learn more: %s.`,
-                app?.name,
+                app?.getDisplayName(),
                 "MUST",
                 deployCommand,
                 learnMoreLink

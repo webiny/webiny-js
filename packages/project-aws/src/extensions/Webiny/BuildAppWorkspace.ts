@@ -14,14 +14,27 @@ class BuildAppWorkspaceImpl implements BuildAppWorkspaceService.Interface {
         private decoratee: BuildAppWorkspaceService.Interface
     ) {}
 
-    async execute(params: BuildAppWorkspaceService.Params) {
+    async execute(
+        params: BuildAppWorkspaceService.Params,
+        options: BuildAppWorkspaceService.Options = {}
+    ) {
         await this.decoratee.execute(params);
-
-        this.logger.debug({ appName: params.app }, "Building app workspace...");
-        const templatesFolderPath = getTemplatesFolderPath();
 
         const app = this.getApp.execute(params.app);
 
+        if (app.paths.workspaceFolder.existsSync()) {
+            if (options.forceRebuild !== true) {
+                this.logger.debug(
+                    { appName: params.app },
+                    "App workspace already exists, skipping rebuild (project-aws)."
+                );
+                return;
+            }
+        }
+
+        this.logger.debug({ appName: params.app }, "Building app workspace...");
+
+        const templatesFolderPath = getTemplatesFolderPath();
         const appWorkspaceFolderPath = app.paths.workspaceFolder.toString();
         const appTemplateFolderPath = path.join(templatesFolderPath, "appTemplates", app.name);
 
