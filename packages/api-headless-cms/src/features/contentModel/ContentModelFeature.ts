@@ -3,6 +3,7 @@ import { createMemoryCache } from "~/utils/index.js";
 import { PluginModelsProvider } from "~/features/contentModel/shared/PluginModelsProvider.js";
 import { ModelCache } from "~/features/contentModel/shared/abstractions.js";
 import { ModelToAstConverter } from "~/features/contentModel/shared/ModelToAstConverter.js";
+import { ModelsFetcher } from "~/features/contentModel/shared/ModelsFetcher.js";
 import { CreateModelFeature } from "~/features/contentModel/CreateModel/feature.js";
 import { GetModelFeature } from "~/features/contentModel/GetModel/feature.js";
 import { ListModelsFeature } from "~/features/contentModel/ListModels/feature.js";
@@ -13,6 +14,7 @@ export const ContentModelFeature = createFeature({
         container.registerInstance(ModelCache, createMemoryCache());
         container.register(PluginModelsProvider).inSingletonScope();
         container.register(ModelToAstConverter);
+        container.register(ModelsFetcher).inSingletonScope();
 
         // Query features
         GetModelFeature.register(container);

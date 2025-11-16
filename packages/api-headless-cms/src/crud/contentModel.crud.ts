@@ -38,7 +38,6 @@ import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 import { createCacheKey, createMemoryCache } from "~/utils/index.js";
 import { ensureTypeTag } from "./contentModel/ensureTypeTag.js";
-import { listModelsFromDatabase } from "~/crud/contentModel/listModelsFromDatabase.js";
 import { filterAsync } from "~/utils/filterAsync.js";
 import type { AccessControl } from "./AccessControl/AccessControl.js";
 import {
@@ -46,12 +45,10 @@ import {
     CmsModelToAstConverter
 } from "~/utils/contentModelAst/index.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
-import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
-    getLocale: () => I18NLocale;
     storageOperations: HeadlessCmsStorageOperations;
     accessControl: AccessControl;
     context: CmsContext;
@@ -59,7 +56,7 @@ export interface CreateModelsCrudParams {
 }
 
 export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContext => {
-    const { getTenant, getIdentity, getLocale, storageOperations, accessControl, context } = params;
+    const { getTenant, getIdentity, storageOperations, accessControl, context } = params;
 
     const listPluginModelsCache = createMemoryCache<Promise<CmsModel[]>>();
     const listFilteredModelsCache = createMemoryCache<Promise<CmsModel[]>>();

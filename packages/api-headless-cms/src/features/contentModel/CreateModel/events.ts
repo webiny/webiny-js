@@ -9,6 +9,7 @@ import type { CmsModelCreateInput } from "~/types/index.js";
  */
 export interface ModelBeforeCreatePayload {
     model: CmsModel;
+    input: CmsModelCreateInput;
 }
 
 export interface ModelAfterCreatePayload {

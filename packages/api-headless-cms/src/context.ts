@@ -14,7 +14,6 @@ import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/v
 import { createExportCrud } from "~/export/index.js";
 import { createImportCrud } from "~/export/crud/importing.js";
 import { getSchema } from "~/graphql/getSchema.js";
-import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 import { CmsInstallerFeature } from "~/features/installer/feature.js";
 import { ContentEntriesFeature } from "~/features/contentEntry/ContentEntriesFeature.js";
 import {
@@ -135,7 +134,6 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             }),
             ...createModelsCrud({
                 context,
-                getLocale,
                 getTenant,
                 getIdentity,
                 storageOperations,

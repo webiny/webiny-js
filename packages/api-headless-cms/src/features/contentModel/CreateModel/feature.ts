@@ -6,12 +6,12 @@ import { CreateModelRepository } from "./CreateModelRepository.js";
  * CreateModel Feature
  *
  * Provides functionality for creating new content models.
- * Includes validation, API name uniqueness checks, and plugin conflict checks.
+ * All validation (modelId generation, domain rules, uniqueness) is handled by the repository.
  */
 export const CreateModelFeature = createFeature({
     name: "CreateModel",
     register(container) {
-        // Register use case in transient scope (new instance per request)
+        // Register core use case
         container.register(CreateModelUseCase);
 
         // Register repository in singleton scope (shared instance)

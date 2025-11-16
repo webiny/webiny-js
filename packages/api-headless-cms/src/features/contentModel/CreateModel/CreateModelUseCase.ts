@@ -15,16 +15,15 @@ import {
     ModelValidationError
 } from "~/domain/contentModel/errors.js";
 import { createZodError } from "@webiny/utils";
-import { mdbid } from "@webiny/utils";
 import { removeUndefinedValues } from "@webiny/utils";
-import { createModelCreateValidation } from "~/domain/contentModel/validation.js";
+import { createModelCreateValidation } from "~/domain/contentModel/schemas.js";
 import { assignModelDefaultFields } from "~/crud/contentModel/defaultFields.js";
 import type { CmsModel } from "~/types/index.js";
 import type { CmsModelCreateInput } from "~/types/index.js";
 import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js";
 
 /**
- * CreateModelUseCase - Orchestrates model creation.
+ * CreateModelUseCase - Core model creation orchestration.
  *
  * Responsibilities:
  * - Validate input (Zod)
@@ -34,6 +33,12 @@ import { GetGroupUseCase } from "~/features/contentModelGroup/GetGroup/index.js"
  * - Publish before event
  * - Delegate to repository
  * - Publish after event or error event
+ *
+ * Note: This use case is decorated by CreateModelValidator which handles:
+ * - ModelId generation
+ * - ModelId allowed validation
+ * - API name ending validation
+ * - Field validation and plugin conflict checks
  */
 class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -72,7 +77,6 @@ class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
         const groupResult = await this.getGroupUseCase.execute(input.group);
 
         if (groupResult.isFail()) {
-
             const error = groupResult.error;
             if (error.code === "Cms/ModelGroup/PersistenceError") {
                 return Result.fail(new ModelPersistenceError(error));
@@ -87,10 +91,9 @@ class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
         const identity = this.identityContext.getIdentity();
         const tenant = this.tenantContext.getTenant();
 
-        const modelId = data.modelId || mdbid();
         const model: CmsModel = {
             ...data,
-            modelId,
+            modelId: "", // Will be set by repository
             tenant: tenant.id,
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),
@@ -121,9 +124,9 @@ class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Publish before event
-        await this.eventPublisher.publish(new ModelBeforeCreateEvent({ model }));
+        await this.eventPublisher.publish(new ModelBeforeCreateEvent({ model, input: data }));
 
-        // Persist via repository
+        // Persist via repository (repository will validate and set modelId)
         const result = await this.repository.execute(model);
         if (result.isFail()) {
             // Publish error event
