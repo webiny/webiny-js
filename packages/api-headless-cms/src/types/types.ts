@@ -596,10 +596,6 @@ export interface CmsEntry<T = CmsEntryValues> {
      */
     modelId: string;
     /**
-     * A locale of the entry.
-     * @see I18NLocale.code
-     */
-    /**
      * A revision version of the entry.
      */
     version: number;

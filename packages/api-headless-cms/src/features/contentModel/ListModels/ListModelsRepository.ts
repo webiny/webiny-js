@@ -23,7 +23,6 @@ class ListModelsRepositoryImpl implements RepositoryAbstraction.Interface {
         const includePrivate = params?.includePrivate !== false; // defaults to true
         const includePlugins = params?.includePlugins !== false; // defaults to true
 
-        // Use ModelsFetcher which handles all caching, access control, and merging
         const result = await this.modelsFetcher.fetchAll();
 
         if (result.isFail()) {

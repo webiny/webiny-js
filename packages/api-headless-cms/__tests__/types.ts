@@ -7,7 +7,6 @@ export type CmsModel = Omit<
     | "locale"
     | "tenant"
     | "webinyVersion"
-    | "lockedFields"
     | "createdOn"
     | "createdBy"
     | "savedOn"

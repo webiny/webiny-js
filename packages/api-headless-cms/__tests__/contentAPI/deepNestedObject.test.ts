@@ -59,7 +59,7 @@ describe("Cars Model Deep Nested Object Fields", () => {
 
     const handler = useGraphQLHandler({
         plugins: [...createCarsModel(), onModelInitialize(tracker)],
-        path: "manage/en-US"
+        path: "manage"
     });
 
     beforeEach(async () => {

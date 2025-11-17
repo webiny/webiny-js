@@ -11,7 +11,6 @@ export const createTestModel = (model: Partial<CmsModel> = {}): CmsModel => {
         layout: [],
         titleFieldId: "id",
         tenant: "root",
-        locale: "en-US",
         group: {
             id: "group",
             name: "Group"

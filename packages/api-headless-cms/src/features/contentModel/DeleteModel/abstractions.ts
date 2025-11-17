@@ -5,7 +5,10 @@ import {
     ModelNotAuthorizedError,
     type ModelNotFoundError,
     type ModelValidationError,
-    type ModelPersistenceError
+    type ModelPersistenceError,
+    ModelCannotDeleteCodeModelError,
+    ModelCannotDeleteHasEntriesError,
+    ModelCannotDeleteHasEntriesInTrashError
 } from "~/domain/contentModel/errors.js";
 
 /**
@@ -20,6 +23,9 @@ export interface IDeleteModelUseCaseErrors {
     notAuthorized: ModelNotAuthorizedError;
     persistence: ModelPersistenceError;
     validation: ModelValidationError;
+    codeModel: ModelCannotDeleteCodeModelError;
+    hasEntries: ModelCannotDeleteHasEntriesError;
+    hasEntriesInTrash: ModelCannotDeleteHasEntriesInTrashError;
 }
 
 type UseCaseError = IDeleteModelUseCaseErrors[keyof IDeleteModelUseCaseErrors];
@@ -41,6 +47,7 @@ export interface IDeleteModelRepository {
 export interface IDeleteModelRepositoryErrors {
     validation: ModelValidationError;
     persistence: ModelPersistenceError;
+    codeModel: ModelCannotDeleteCodeModelError;
 }
 
 type RepositoryError = IDeleteModelRepositoryErrors[keyof IDeleteModelRepositoryErrors];

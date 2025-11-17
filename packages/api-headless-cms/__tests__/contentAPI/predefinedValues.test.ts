@@ -5,7 +5,7 @@ import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import { useBugManageHandler } from "../testHelpers/useBugManageHandler";
 
 describe("predefined values", () => {
-    const manageOpts = { path: "manage/en-US" };
+    const manageOpts = { path: "manage" };
 
     const {
         createContentModelMutation,

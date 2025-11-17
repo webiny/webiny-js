@@ -36,7 +36,7 @@ const createExpectedModel = (original: CmsModel, group?: CmsGroup) => {
 
 describe("content model - cloning", () => {
     const manageOpts = {
-        path: "manage/en-US"
+        path: "manage"
     };
 
     const {
@@ -202,11 +202,11 @@ describe("content model - cloning", () => {
                 createContentModelFrom: {
                     data: null,
                     error: {
-                        code: "MODEL_ID_EXISTS",
+                        code: "Cms/Model/AlreadyExists",
                         data: {
-                            input: originalModel.modelId
+                            modelId: originalModel.modelId
                         },
-                        message: `Content model with modelId "product" already exists.`
+                        message: `Model "${originalModel.modelId}" already exists!`
                     }
                 }
             }
@@ -231,11 +231,11 @@ describe("content model - cloning", () => {
                 createContentModelFrom: {
                     data: null,
                     error: {
-                        code: "MODEL_ID_EXISTS",
+                        code: "Cms/Model/AlreadyExists",
                         data: {
-                            input: originalModel.modelId
+                            modelId: originalModel.modelId
                         },
-                        message: `Content model with modelId "${originalModel.modelId}" already exists.`
+                        message: `Model "${originalModel.modelId}" already exists!`
                     }
                 }
             }
@@ -259,10 +259,8 @@ describe("content model - cloning", () => {
                 createContentModelFrom: {
                     data: null,
                     error: {
-                        code: "MODEL_SINGULAR_API_NAME_EXISTS",
-                        data: {
-                            input: originalModel.singularApiName
-                        },
+                        code: "Cms/Model/ValidationError",
+                        data: null,
                         message: `Content model with singularApiName "${originalModel.singularApiName}" already exists.`
                     }
                 }
@@ -287,10 +285,8 @@ describe("content model - cloning", () => {
                 createContentModelFrom: {
                     data: null,
                     error: {
-                        code: "MODEL_PLURAL_API_NAME_EXISTS",
-                        data: {
-                            input: originalModel.pluralApiName
-                        },
+                        code: "Cms/Model/ValidationError",
+                        data: null,
                         message: `Content model with pluralApiName "${originalModel.pluralApiName}" already exists.`
                     }
                 }
@@ -315,10 +311,8 @@ describe("content model - cloning", () => {
                 createContentModelFrom: {
                     data: null,
                     error: {
-                        code: "MODEL_PLURAL_API_NAME_EXISTS",
-                        data: {
-                            input: originalModel.pluralApiName
-                        },
+                        code: "Cms/Model/ValidationError",
+                        data: null,
                         message: `Content model with pluralApiName "${originalModel.pluralApiName}" already exists.`
                     }
                 }
@@ -343,10 +337,8 @@ describe("content model - cloning", () => {
                 createContentModelFrom: {
                     data: null,
                     error: {
-                        code: "MODEL_SINGULAR_API_NAME_EXISTS",
-                        data: {
-                            input: originalModel.singularApiName
-                        },
+                        code: "Cms/Model/ValidationError",
+                        data: null,
                         message: `Content model with singularApiName "${originalModel.singularApiName}" already exists.`
                     }
                 }

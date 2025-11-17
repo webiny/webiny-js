@@ -30,7 +30,6 @@ export const pageEntry = {
         folderId: "667d2ca4fcae6a000ac38af5#0001"
     },
     revisionSavedOn: "2024-07-05T09:18:51.860Z",
-    locale: "en-US",
     savedOn: "2024-07-05T09:18:51.860Z",
     values: {
         pageTitle: "From the Playground",

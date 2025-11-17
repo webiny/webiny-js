@@ -1,12 +1,12 @@
 import { Result } from "@webiny/feature/api";
-import { ModelCache, ModelsFetcher as FetcherAbstraction } from "~/features/contentModel/shared/abstractions.js";
+import {
+    ModelCache,
+    ModelsFetcher as FetcherAbstraction
+} from "~/features/contentModel/shared/abstractions.js";
 import { PluginModelsProvider } from "~/features/contentModel/shared/abstractions.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
-import { AccessControl } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { ModelNotFoundError, ModelPersistenceError } from "~/domain/contentModel/errors.js";
-import { filterAsync } from "~/utils/filterAsync.js";
 import { createCacheKey } from "~/utils/index.js";
 import { ensureTypeTag } from "~/domain/contentModel/ensureTypeTag.js";
 import type { CmsModel } from "~/types/index.js";
@@ -25,9 +25,7 @@ class ModelsFetcherImpl implements FetcherAbstraction.Interface {
         private modelCache: ModelCache.Interface,
         private pluginModelsProvider: PluginModelsProvider.Interface,
         private storageOperations: StorageOperations.Interface,
-        private accessControl: AccessControl.Interface,
-        private tenantContext: TenantContext.Interface,
-        private identityContext: IdentityContext.Interface
+        private tenantContext: TenantContext.Interface
     ) {}
 
     async fetchAll(): Promise<Result<CmsModel[], FetcherAbstraction.Error>> {
@@ -36,10 +34,7 @@ class ModelsFetcherImpl implements FetcherAbstraction.Interface {
 
             // Create a cache key based on tenant + identity
             const cacheKey = createCacheKey({
-                tenant: tenant.id,
-                identity: this.identityContext.isAuthorizationEnabled()
-                    ? this.identityContext.getIdentity().id
-                    : undefined
+                tenant: tenant.id
             });
 
             // Try to get from cache first
@@ -72,47 +67,23 @@ class ModelsFetcherImpl implements FetcherAbstraction.Interface {
         const pluginModels = await this.pluginModelsProvider.list(tenant);
 
         // 2. Fetch database models (with caching)
-        const dbCacheKey = createCacheKey({ tenant });
-        const databaseModels = await this.modelCache.getOrSet(dbCacheKey, () => {
+        const dbCacheKey = createCacheKey({ tenant, id: "storage" });
+        const databaseModels = await this.modelCache.getOrSet(dbCacheKey, async () => {
             return this.storageOperations.models.list({ where: { tenant } });
         });
 
-        // 3. Apply access control to database models (with caching)
-        const filteredCacheKey = createCacheKey({
-            dbCacheKey: dbCacheKey.get(),
-            identity: this.identityContext.isAuthorizationEnabled()
-                ? this.identityContext.getIdentity()?.id
-                : undefined
-        });
-
-        const filteredDatabaseModels = await this.modelCache.getOrSet(filteredCacheKey, () => {
-            return filterAsync(databaseModels, async (model: CmsModel) => {
-                if (!model) {
-                    return false;
-                }
-                return this.accessControl.canAccessModel({ model });
-            });
-        });
-
-        // 4. Ensure type tags on database models
-        const taggedDatabaseModels = filteredDatabaseModels.map(model => {
+        // 3. Ensure type tags on database models
+        const taggedDatabaseModels = databaseModels.map(model => {
             model.tags = ensureTypeTag(model);
             return model;
         });
 
-        // 5. Merge plugin + database models
-        return [...pluginModels, ...taggedDatabaseModels];
+        // 4. Return merged models.
+        return [...taggedDatabaseModels, ...pluginModels];
     }
 }
 
 export const ModelsFetcher = FetcherAbstraction.createImplementation({
     implementation: ModelsFetcherImpl,
-    dependencies: [
-        ModelCache,
-        PluginModelsProvider,
-        StorageOperations,
-        AccessControl,
-        TenantContext,
-        IdentityContext
-    ]
+    dependencies: [ModelCache, PluginModelsProvider, StorageOperations, TenantContext]
 });

@@ -93,7 +93,7 @@ class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
 
         const model: CmsModel = {
             ...data,
-            modelId: "", // Will be set by repository
+            modelId: data.modelId ?? "", // Will be set by repository
             tenant: tenant.id,
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),
@@ -103,7 +103,7 @@ class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
                 type: identity.type
             },
             webinyVersion: this.cmsContext.WEBINY_VERSION,
-            description: data.description || null,
+            description: data.description || "",
             group: {
                 id: group.id,
                 name: group.name

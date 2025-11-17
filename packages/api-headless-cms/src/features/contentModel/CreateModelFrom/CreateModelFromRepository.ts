@@ -4,7 +4,7 @@ import { CreateModelFromRepository as RepositoryAbstraction } from "./abstractio
 import { ModelCache } from "~/features/contentModel/shared/abstractions.js";
 import { PluginModelsProvider } from "~/features/contentModel/shared/abstractions.js";
 import { ModelsFetcher } from "~/features/contentModel/shared/abstractions.js";
-import { ModelSlugTakenError } from "~/domain/contentModel/errors.js";
+import { ModelAlreadyExistsError } from "~/domain/contentModel/errors.js";
 import { ModelPersistenceError } from "~/domain/contentModel/errors.js";
 import { ModelValidationError } from "~/domain/contentModel/errors.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
@@ -88,15 +88,14 @@ class CreateModelFromRepositoryImpl implements RepositoryAbstraction.Interface {
             }
 
             // Validate modelId uniqueness (database)
-            const existingById = await this.storageOperations.models.list({
-                where: {
-                    tenant: tenant.id,
-                    modelId: model.modelId
-                }
-            });
+            const modelsResult = await this.modelsFetcher.fetchAll();
+            if (modelsResult.isFail()) {
+                return Result.fail(new ModelPersistenceError(modelsResult.error));
+            }
 
-            if (existingById.length > 0) {
-                return Result.fail(new ModelSlugTakenError(model.modelId));
+            const existingModel = modelsResult.value.find(m => m.modelId === modelId);
+            if (existingModel) {
+                return Result.fail(new ModelAlreadyExistsError({ modelId }));
             }
 
             // Check for plugin model conflicts
@@ -111,17 +110,11 @@ class CreateModelFromRepositoryImpl implements RepositoryAbstraction.Interface {
 
             if (pluginModelConflict) {
                 return Result.fail(
-                    new ModelSlugTakenError(`${model.singularApiName}/${model.pluralApiName}`)
+                    new ModelAlreadyExistsError({
+                        modelId,
+                        message: `Model "${modelId}" is already registered via a plugin.`
+                    })
                 );
-            }
-
-            // Get all models for further validation
-            const modelsResult = await this.cmsContext.security.withoutAuthorization(async () => {
-                return await this.modelsFetcher.fetchAll();
-            });
-
-            if (modelsResult.isFail()) {
-                return Result.fail(new ModelPersistenceError(modelsResult.error));
             }
 
             const models = modelsResult.value;

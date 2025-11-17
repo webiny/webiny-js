@@ -326,8 +326,8 @@ type Values = {
 };
 
 describe("dynamicZone field", () => {
-    const manageOpts = { path: "manage/en-US" };
-    const previewOpts = { path: "preview/en-US" };
+    const manageOpts = { path: "manage" };
+    const previewOpts = { path: "preview" };
 
     const eventEntryContent: {
         beforeCreate: CmsEntry<Values> | undefined;

@@ -5,7 +5,7 @@ import models from "./mocks/contentModels";
 import { useFruitManageHandler } from "../testHelpers/useFruitManageHandler";
 
 describe("fieldValidations", () => {
-    const manageOpts = { path: "manage/en-US" };
+    const manageOpts = { path: "manage" };
 
     const { createContentModelMutation, createContentModelGroupMutation } =
         useGraphQLHandler(manageOpts);

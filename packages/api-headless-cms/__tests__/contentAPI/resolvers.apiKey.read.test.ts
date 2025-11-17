@@ -37,9 +37,9 @@ describe("READ - resolvers - api key", () => {
     const API_TOKEN = "aToken";
 
     const manageOpts = {
-        path: "manage/en-US"
+        path: "manage"
     };
-    const readOpts = { path: "read/en-US", permissions: [] };
+    const readOpts = { path: "read", permissions: [] };
 
     const {
         createContentModelMutation,

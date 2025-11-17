@@ -83,10 +83,6 @@ export const createModelEntity = (params: CreateModelEntityParams): Entity<any> 
                 required: false,
                 default: []
             },
-            lockedFields: {
-                type: "list",
-                required: true
-            },
             titleFieldId: {
                 type: "string"
             },

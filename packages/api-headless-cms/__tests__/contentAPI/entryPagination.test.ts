@@ -27,7 +27,6 @@ const createFruitData = (counter: number) => {
         tenant: "root",
         firstPublishedOn: new Date().toISOString(),
         lastPublishedOn: new Date().toISOString(),
-        locale: "en-US",
         values: {
             name: `Fruit ${counter}`,
             isSomething: false,
@@ -52,7 +51,7 @@ const createFruitData = (counter: number) => {
 };
 
 describe("entry pagination", () => {
-    const manageOpts = { path: "manage/en-US" };
+    const manageOpts = { path: "manage" };
 
     const manager = useFruitManageHandler(manageOpts);
     const { storageOperations } = manager;
@@ -63,7 +62,6 @@ describe("entry pagination", () => {
         const group = await setupContentModelGroup(manager);
         await setupContentModels(manager, group, ["fruit"]);
         const model = (await storageOperations.models.get({
-            locale: "en-US",
             tenant: "root",
             modelId: "fruit"
         })) as CmsModel;

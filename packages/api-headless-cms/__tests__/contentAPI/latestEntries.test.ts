@@ -11,9 +11,9 @@ vi.setConfig({
 });
 
 describe("latest entries", function () {
-    const manageOpts = { path: "manage/en-US" };
-    const previewOpts = { path: "preview/en-US" };
-    const readOpts = { path: "read/en-US" };
+    const manageOpts = { path: "manage" };
+    const previewOpts = { path: "preview" };
+    const readOpts = { path: "read" };
 
     const {
         createContentModelMutation,

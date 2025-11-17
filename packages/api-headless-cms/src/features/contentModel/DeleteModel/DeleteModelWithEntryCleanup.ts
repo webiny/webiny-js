@@ -2,7 +2,13 @@ import { Result } from "@webiny/feature/api";
 import { DeleteModelUseCase } from "./abstractions.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
 import { CMS_MODEL_SINGLETON_TAG } from "~/constants.js";
-import { ModelPersistenceError, ModelValidationError } from "~/domain/contentModel/errors.js";
+import {
+    ModelCannotDeleteHasEntriesError,
+    ModelCannotDeleteHasEntriesInTrashError,
+    ModelPersistenceError,
+    ModelValidationError
+} from "~/domain/contentModel/errors.js";
+import { CmsModel } from "~/types/model.js";
 
 /**
  * DeleteModelWithEntryCleanup - Decorator that handles entry cleanup/validation before deletion.
@@ -38,20 +44,15 @@ class DeleteModelWithEntryCleanupImpl implements DeleteModelUseCase.Interface {
                     )
                 );
             }
-        } else {
-            const hasEntriesResult = await this.checkForExistingEntries(model);
-            if (hasEntriesResult.isFail()) {
-                return Result.fail(hasEntriesResult.error);
-            }
 
-            const hasEntries = hasEntriesResult.value;
-            if (hasEntries) {
-                return Result.fail(
-                    new ModelValidationError(
-                        `Cannot delete content model "${model.modelId}" because there are existing entries.`
-                    )
-                );
-            }
+            // Proceed with the actual deletion
+            return this.decoratee.execute(modelId);
+        }
+
+        // Regular models
+        const canDelete = await this.canDelete(model);
+        if (canDelete.isFail()) {
+            return Result.fail(canDelete.error);
         }
 
         // Proceed with the actual deletion
@@ -82,9 +83,16 @@ class DeleteModelWithEntryCleanupImpl implements DeleteModelUseCase.Interface {
         }
     }
 
-    private async checkForExistingEntries(
-        model: any
-    ): Promise<Result<boolean, ModelPersistenceError>> {
+    private async canDelete(
+        model: CmsModel
+    ): Promise<
+        Result<
+            boolean,
+            | ModelCannotDeleteHasEntriesError
+            | ModelCannotDeleteHasEntriesInTrashError
+            | ModelPersistenceError
+        >
+    > {
         try {
             // Check for latest entries
             const [latestEntries] = await this.cmsContext.cms.listLatestEntries(model, {
@@ -92,7 +100,7 @@ class DeleteModelWithEntryCleanupImpl implements DeleteModelUseCase.Interface {
             });
 
             if (latestEntries.length > 0) {
-                return Result.ok(true);
+                return Result.fail(new ModelCannotDeleteHasEntriesError(model.modelId));
             }
 
             // Check for deleted entries (trash)
@@ -100,10 +108,14 @@ class DeleteModelWithEntryCleanupImpl implements DeleteModelUseCase.Interface {
                 limit: 1
             });
 
-            return Result.ok(deletedEntries.length > 0);
+            if (deletedEntries.length > 0) {
+                return Result.fail(new ModelCannotDeleteHasEntriesInTrashError(model.modelId));
+            }
         } catch (error) {
             return Result.fail(new ModelPersistenceError(error));
         }
+
+        return Result.ok(true);
     }
 }
 

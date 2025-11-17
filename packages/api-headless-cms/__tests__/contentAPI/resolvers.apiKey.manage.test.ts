@@ -46,8 +46,8 @@ describe("MANAGE - resolvers - api key", () => {
         authorization: API_TOKEN
     };
 
-    const manageOpts = { path: "manage/en-US" };
-    const readOpts = { path: "read/en-US" };
+    const manageOpts = { path: "manage" };
+    const readOpts = { path: "read" };
 
     const {
         createContentModelMutation,

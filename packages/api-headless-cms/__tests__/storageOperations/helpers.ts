@@ -15,7 +15,6 @@ const webinyVersion = "0.0.0";
 const baseGroup = new CmsGroupPlugin({
     name: "Base group",
     tenant: "root",
-    locale: "en-US",
     id: "group",
     slug: "group",
     description: "",
@@ -85,7 +84,6 @@ export const createPersonModel = (): CmsModel => {
             name: baseGroup.contentModelGroup.name
         },
         modelId: "personEntriesModel",
-        locale: "en-US",
         tenant: "root",
         titleFieldId: personModelFields.name.id,
         fields: Object.values(personModelFields),
@@ -145,7 +143,6 @@ export const createPersonEntries = async (
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),
             modelId: personModel.modelId,
-            locale: personModel.locale,
             tenant: personModel.tenant,
             webinyVersion: personModel.webinyVersion,
             locked: false,
@@ -181,7 +178,6 @@ export const createPersonEntries = async (
                 createdOn: new Date().toISOString(),
                 savedOn: new Date().toISOString(),
                 modelId: personModel.modelId,
-                locale: personModel.locale,
                 tenant: personModel.tenant,
                 webinyVersion: personModel.webinyVersion,
                 locked: false,

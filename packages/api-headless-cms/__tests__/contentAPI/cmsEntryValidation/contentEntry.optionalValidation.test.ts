@@ -15,7 +15,7 @@ describe("content entry picked validation", () => {
             fields: [createTextField({})]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -79,7 +79,7 @@ describe("content entry picked validation", () => {
             ]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -146,7 +146,7 @@ describe("content entry picked validation", () => {
             ]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -215,7 +215,7 @@ describe("content entry picked validation", () => {
             ]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -283,7 +283,7 @@ describe("content entry picked validation", () => {
             ]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -351,7 +351,7 @@ describe("content entry picked validation", () => {
             ]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -407,7 +407,7 @@ describe("content entry picked validation", () => {
             fields: [createNumberField({})]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -463,7 +463,7 @@ describe("content entry picked validation", () => {
             fields: [createDateField({})]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -519,7 +519,7 @@ describe("content entry picked validation", () => {
             fields: [createDateField({})]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -587,7 +587,7 @@ describe("content entry picked validation", () => {
             ]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -643,7 +643,7 @@ describe("content entry picked validation", () => {
             fields: [createTimeField()]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -699,7 +699,7 @@ describe("content entry picked validation", () => {
             fields: [createTextField({})]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });
@@ -763,7 +763,7 @@ describe("content entry picked validation", () => {
             fields: [createTextField({})]
         });
         const manager = useValidationManageHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins,
             model
         });

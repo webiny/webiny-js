@@ -62,6 +62,7 @@ describe("Write Permissions Checks", () => {
             entries: { rwd: "r" }
         });
 
+        const p = permissions.getPermissions();
         const { manage: manageApiB } = useTestModelHandler({
             identity: identityB,
             permissions: permissions.getPermissions()

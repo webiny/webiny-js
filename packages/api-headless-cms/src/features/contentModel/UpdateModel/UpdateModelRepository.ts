@@ -2,7 +2,7 @@ import { Result } from "@webiny/feature/api";
 import { UpdateModelRepository as RepositoryAbstraction } from "./abstractions.js";
 import { ModelCache } from "~/features/contentModel/shared/abstractions.js";
 import { ModelsFetcher } from "~/features/contentModel/shared/abstractions.js";
-import { ModelSlugTakenError } from "~/domain/contentModel/errors.js";
+import { ModelCannotUpdateCodeModelError } from "~/domain/contentModel/errors.js";
 import { ModelPersistenceError } from "~/domain/contentModel/errors.js";
 import { ModelValidationError } from "~/domain/contentModel/errors.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
@@ -55,6 +55,16 @@ class UpdateModelRepositoryImpl implements RepositoryAbstraction.Interface {
 
             const allModels = modelsResult.value;
             const models = allModels.filter(m => m.modelId !== model.modelId);
+
+            // Check if this is a plugin model
+            const existingModelResult = await this.modelsFetcher.fetchById(model.modelId);
+            if (existingModelResult.isFail()) {
+                return Result.fail(new ModelPersistenceError(existingModelResult.error));
+            }
+
+            if (existingModelResult.value.isPlugin) {
+                return Result.fail(new ModelCannotUpdateCodeModelError(model.modelId));
+            }
 
             // Validate uniqueness
             try {

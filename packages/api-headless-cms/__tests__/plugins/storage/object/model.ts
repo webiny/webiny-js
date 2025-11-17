@@ -3,13 +3,11 @@ import type { CmsModel } from "~/types";
 export const createObjectMockModel = (): CmsModel => {
     return {
         tenant: "root",
-        locale: "en-US",
         modelId: "objectModel",
         singularApiName: "ObjectModel",
         pluralApiName: "ObjectModels",
         name: "Object Model",
         titleFieldId: "titleFieldId",
-        lockedFields: [],
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
         createdBy: {

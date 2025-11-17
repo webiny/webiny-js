@@ -7,7 +7,7 @@ import {
     ModelNotAuthorizedError,
     type ModelNotFoundError,
     type ModelValidationError,
-    type ModelPersistenceError
+    type ModelPersistenceError, ModelCannotUpdateCodeModelError
 } from "~/domain/contentModel/errors.js";
 import {
     type GroupNotFoundError,
@@ -27,6 +27,7 @@ export interface IUpdateModelUseCaseErrors {
     validation: ModelValidationError;
     alreadyExists: ModelSlugTakenError;
     persistence: ModelPersistenceError;
+    updateCodeModel: ModelCannotUpdateCodeModelError;
     groupNotFound: GroupNotFoundError;
     groupNotAccessible: GroupNotAuthorizedError;
 }
@@ -51,6 +52,7 @@ export interface IUpdateModelRepositoryErrors {
     alreadyExists: ModelSlugTakenError;
     validation: ModelValidationError;
     persistence: ModelPersistenceError;
+    updateCodeModel: ModelCannotUpdateCodeModelError;
 }
 
 type RepositoryError = IUpdateModelRepositoryErrors[keyof IUpdateModelRepositoryErrors];

@@ -41,8 +41,8 @@ const createPermissions = ({ models, groups }: { models?: string[]; groups?: str
 ];
 
 describe("content model test", () => {
-    const readHandlerOpts = { path: "read/en-US" };
-    const manageHandlerOpts = { path: "manage/en-US" };
+    const readHandlerOpts = { path: "read" };
+    const manageHandlerOpts = { path: "manage" };
 
     const {
         createContentModelGroupMutation,
@@ -366,10 +366,8 @@ describe("content model test", () => {
                     data: null,
                     error: {
                         message: `Cannot delete content model "${model.modelId}" because there are existing entries.`,
-                        code: "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED",
-                        data: {
-                            model: expect.any(Object)
-                        }
+                        code: "Cms/Model/CannotDeleteHasEntries",
+                        data: null
                     }
                 }
             }
@@ -391,10 +389,8 @@ describe("content model test", () => {
                     data: null,
                     error: {
                         message: `Cannot delete content model "${model.modelId}" because there are existing entries in the trash.`,
-                        code: "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED",
-                        data: {
-                            model: expect.any(Object)
-                        }
+                        code: "Cms/Model/CannotDeleteHasEntriesInTrash",
+                        data: null
                     }
                 }
             }
@@ -467,8 +463,8 @@ describe("content model test", () => {
                 getContentModel: {
                     data: null,
                     error: {
-                        message: `Content model "${modelId}" was not found!`,
-                        code: "NOT_FOUND",
+                        message: `Model "${modelId}" was not found!`,
+                        code: "Cms/Model/NotFound",
                         data: null
                     }
                 }
@@ -493,8 +489,8 @@ describe("content model test", () => {
                 updateContentModel: {
                     data: null,
                     error: {
-                        message: `Content model "${modelId}" was not found!`,
-                        code: "NOT_FOUND",
+                        message: `Model "${modelId}" was not found!`,
+                        code: "Cms/Model/NotFound",
                         data: null
                     }
                 }
@@ -515,8 +511,8 @@ describe("content model test", () => {
                 deleteContentModel: {
                     data: null,
                     error: {
-                        message: `Content model "${modelId}" was not found!`,
-                        code: "NOT_FOUND",
+                        message: `Model "${modelId}" was not found!`,
+                        code: "Cms/Model/NotFound",
                         data: null
                     }
                 }
@@ -1056,8 +1052,8 @@ describe("content model test", () => {
 
         expect(response.data.getContentModel.data).toEqual(null);
         expect(response.data.getContentModel.error).toEqual({
-            code: "NOT_AUTHORIZED",
-            message: `Not allowed to access content model "Test Content model instance-0".`,
+            code: "Cms/Model/NotAuthorized",
+            message: `Not allowed to access content model "testContentModel0".`,
             data: null
         });
     });

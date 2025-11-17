@@ -9,7 +9,7 @@ import { createStorageOperationsContext } from "~tests/storageOperations/context
 
 describe("field unique values listing", () => {
     const { storageOperations, plugins } = useGraphQLHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
 
     /**

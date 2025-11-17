@@ -297,7 +297,6 @@ export const createModelsSchema = ({
                 savedOn: DateTime
                 createdBy: CmsIdentity
                 fields: [CmsContentModelField!]!
-                lockedFields: [JSON]
                 layout: [[String!]!]!
                 titleFieldId: String
                 descriptionFieldId: String

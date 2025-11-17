@@ -96,9 +96,7 @@ const models: CmsModel[] = [
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "title",
-        lockedFields: [],
         name: "Test Entry",
         description: "This is a test model with test entries.",
         modelId: "testModel",
@@ -174,9 +172,7 @@ const models: CmsModel[] = [
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "title",
-        lockedFields: [],
         name: "Category",
         description: "Product category",
         modelId: "category",
@@ -251,9 +247,7 @@ const models: CmsModel[] = [
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "title",
-        lockedFields: [],
         name: "Category Singleton",
         description: "Product category Singleton",
         modelId: "categorySingleton",
@@ -354,9 +348,7 @@ const models: CmsModel[] = [
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "title",
-        lockedFields: [],
         name: "Product",
         modelId: "product",
         singularApiName: "ProductApiSingular",
@@ -959,9 +951,7 @@ const models: CmsModel[] = [
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "text",
-        lockedFields: [],
         name: "Review",
         description: "Product review",
         modelId: "review",
@@ -1068,9 +1058,7 @@ const models: CmsModel[] = [
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "fullName",
-        lockedFields: [],
         name: "Author",
         description: "Author",
         modelId: "author",
@@ -1114,9 +1102,7 @@ const models: CmsModel[] = [
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "name",
-        lockedFields: [],
         name: "Fruit",
         description: "Fruit",
         modelId: "fruit",
@@ -1622,9 +1608,7 @@ const models: CmsModel[] = [
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "name",
-        lockedFields: [],
         name: "Bug",
         description: "Debuggable bugs",
         modelId: "bug",
@@ -1762,9 +1746,7 @@ const models: CmsModel[] = [
     {
         createdOn: new Date().toISOString(),
         savedOn: new Date().toISOString(),
-        locale: "en-US",
         titleFieldId: "title",
-        lockedFields: [],
         name: "Article",
         description: "Article with multiple categories",
         modelId: "article",
@@ -1921,7 +1903,6 @@ const models: CmsModel[] = [
         ],
         layout: [],
         tenant: "root",
-        locale: "en-US",
         titleFieldId: "title",
         description: "Wrapper model for ref field with multiple models",
         webinyVersion

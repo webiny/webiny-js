@@ -16,8 +16,8 @@ interface CreateEntryResult {
 }
 
 describe("Republish entries", () => {
-    const readOpts = { path: "read/en-US" };
-    const manageOpts = { path: "manage/en-US" };
+    const readOpts = { path: "read" };
+    const manageOpts = { path: "manage" };
 
     const {
         createContentModelMutation,
@@ -75,8 +75,7 @@ describe("Republish entries", () => {
         });
         return {
             ...update.data.updateContentModel.data,
-            tenant: "root",
-            locale: "en-US"
+            tenant: "root"
         };
     };
 
@@ -145,7 +144,6 @@ describe("Republish entries", () => {
             entry: {
                 id: `${id}#0001`,
                 entryId: id,
-                locale: model.locale,
                 tenant: model.tenant,
                 webinyVersion,
                 locked: false,

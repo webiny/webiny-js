@@ -1,11 +1,11 @@
 import { Result } from "@webiny/feature/api";
 import { DeleteModelRepository as RepositoryAbstraction } from "./abstractions.js";
-import { ModelCache } from "~/features/contentModel/shared/abstractions.js";
-import { ModelPersistenceError } from "~/domain/contentModel/errors.js";
-import { ModelValidationError } from "~/domain/contentModel/errors.js";
+import { ModelCache, ModelsFetcher } from "~/features/contentModel/shared/abstractions.js";
+import {
+    ModelCannotDeleteCodeModelError,
+    ModelPersistenceError
+} from "~/domain/contentModel/errors.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
-import { CmsContext } from "~/features/shared/abstractions.js";
-import { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
 import type { CmsModel } from "~/types/index.js";
 
 /**
@@ -21,23 +21,20 @@ import type { CmsModel } from "~/types/index.js";
 class DeleteModelRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private modelCache: ModelCache.Interface,
-        private storageOperations: StorageOperations.Interface,
-        private cmsContext: CmsContext.Interface
+        private modelsFetcher: ModelsFetcher.Interface,
+        private storageOperations: StorageOperations.Interface
     ) {}
 
     async execute(model: CmsModel): Promise<Result<void, RepositoryAbstraction.Error>> {
         try {
-            // Check if model is defined via plugin (core domain rule)
-            const modelPlugin = this.cmsContext.plugins
-                .byType<CmsModelPlugin>(CmsModelPlugin.type)
-                .find(item => item.contentModel.modelId === model.modelId);
+            // Check if this is a plugin model
+            const existingModelResult = await this.modelsFetcher.fetchById(model.modelId);
+            if (existingModelResult.isFail()) {
+                return Result.fail(new ModelPersistenceError(existingModelResult.error));
+            }
 
-            if (modelPlugin) {
-                return Result.fail(
-                    new ModelValidationError(
-                        "Content models defined via plugins cannot be deleted."
-                    )
-                );
+            if (existingModelResult.value.isPlugin) {
+                return Result.fail(new ModelCannotDeleteCodeModelError(model.modelId));
             }
 
             // Delete from storage
@@ -55,5 +52,5 @@ class DeleteModelRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const DeleteModelRepository = RepositoryAbstraction.createImplementation({
     implementation: DeleteModelRepositoryImpl,
-    dependencies: [ModelCache, StorageOperations, CmsContext]
+    dependencies: [ModelCache, ModelsFetcher, StorageOperations]
 });

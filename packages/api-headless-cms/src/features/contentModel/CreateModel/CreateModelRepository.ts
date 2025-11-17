@@ -4,7 +4,7 @@ import { CreateModelRepository as RepositoryAbstraction } from "./abstractions.j
 import { ModelCache } from "~/features/contentModel/shared/abstractions.js";
 import { PluginModelsProvider } from "~/features/contentModel/shared/abstractions.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
-import { ModelSlugTakenError } from "~/domain/contentModel/errors.js";
+import { ModelAlreadyExistsError } from "~/domain/contentModel/errors.js";
 import { ModelPersistenceError } from "~/domain/contentModel/errors.js";
 import { ModelValidationError } from "~/domain/contentModel/errors.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
@@ -77,41 +77,38 @@ class CreateModelRepositoryImpl implements RepositoryAbstraction.Interface {
             try {
                 validateModelIdAllowed({ model });
             } catch (error) {
-                return Result.fail(new ModelValidationError((error as Error).message));
+                return Result.fail(
+                    new ModelValidationError({
+                        message: error.message,
+                        data: error.data
+                    })
+                );
             }
 
             // Validate API name endings
             try {
                 validateEndingAllowed({ model });
             } catch (error) {
-                return Result.fail(new ModelValidationError((error as Error).message));
-            }
-
-            // Validate modelId uniqueness (database)
-            const existingById = await this.storageOperations.models.list({
-                where: {
-                    tenant: tenant.id,
-                    modelId: model.modelId
-                }
-            });
-
-            if (existingById.length > 0) {
-                return Result.fail(new ModelSlugTakenError(model.modelId));
+                return Result.fail(
+                    new ModelValidationError({
+                        message: error.message,
+                        data: error.data
+                    })
+                );
             }
 
             // Check for plugin model conflicts
             const pluginModels = await this.pluginModelsProvider.list(tenant.id);
             const pluginModelConflict = pluginModels.find(pm => {
-                return (
-                    pm.modelId === model.modelId ||
-                    pm.singularApiName === model.singularApiName ||
-                    pm.pluralApiName === model.pluralApiName
-                );
+                return pm.modelId === model.modelId;
             });
 
             if (pluginModelConflict) {
                 return Result.fail(
-                    new ModelSlugTakenError(`${model.singularApiName}/${model.pluralApiName}`)
+                    new ModelAlreadyExistsError({
+                        modelId,
+                        message: `Model "${modelId}" is already registered via a plugin.`
+                    })
                 );
             }
 

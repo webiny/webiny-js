@@ -5,6 +5,7 @@ import { AccessControl } from "~/features/shared/abstractions.js";
 import type { CmsModel } from "~/types/index.js";
 import type { ICmsModelListParams } from "~/types/index.js";
 import { ModelNotAuthorizedError } from "~/domain/contentModel/errors.js";
+import { filterAsync } from "~/utils/filterAsync.js";
 
 /**
  * ListModelsUseCase - Retrieves all content models.
@@ -20,7 +21,9 @@ class ListModelsUseCaseImpl implements UseCaseAbstraction.Interface {
         private accessControl: AccessControl.Interface
     ) {}
 
-    async execute(params?: ICmsModelListParams): Promise<Result<CmsModel[], UseCaseAbstraction.Error>> {
+    async execute(
+        params?: ICmsModelListParams
+    ): Promise<Result<CmsModel[], UseCaseAbstraction.Error>> {
         // Initial access control check (no specific model yet)
         const canAccess = await this.accessControl.canAccessModel({ rwd: "r" });
         if (!canAccess) {
@@ -35,7 +38,12 @@ class ListModelsUseCaseImpl implements UseCaseAbstraction.Interface {
             return result;
         }
 
-        return Result.ok(result.value);
+        // Model-specific access control check
+        const filteredModels = await filterAsync(result.value, model => {
+            return this.accessControl.canAccessModel({ model, rwd: "r" });
+        });
+
+        return Result.ok(filteredModels);
     }
 }
 

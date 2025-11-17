@@ -4,7 +4,7 @@ import { setupGroupAndModels } from "~tests/testHelpers/setup";
 
 describe("content entry custom dates", () => {
     const manager = useCategoryManageHandler({
-        path: "manage/en-US"
+        path: "manage"
     });
 
     beforeEach(async () => {

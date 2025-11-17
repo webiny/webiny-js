@@ -6,7 +6,7 @@ import {
     type ModelSlugTakenError,
     ModelNotAuthorizedError,
     type ModelValidationError,
-    type ModelPersistenceError
+    type ModelPersistenceError, ModelAlreadyExistsError
 } from "~/domain/contentModel/errors.js";
 import {
     type GroupNotFoundError,
@@ -23,7 +23,8 @@ export interface ICreateModelUseCase {
 export interface ICreateModelUseCaseErrors {
     notAuthorized: ModelNotAuthorizedError;
     validation: ModelValidationError;
-    alreadyExists: ModelSlugTakenError;
+    slugTaken: ModelSlugTakenError;
+    alreadyExists: ModelAlreadyExistsError;
     persistence: ModelPersistenceError;
     groupNotFound: GroupNotFoundError;          // Reused from Group domain
     groupNotAccessible: GroupNotAuthorizedError; // Reused from Group domain
@@ -46,7 +47,7 @@ export interface ICreateModelRepository {
 }
 
 export interface ICreateModelRepositoryErrors {
-    alreadyExists: ModelSlugTakenError;
+    alreadyExists: ModelAlreadyExistsError;
     validation: ModelValidationError;
     persistence: ModelPersistenceError;
 }

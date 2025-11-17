@@ -220,24 +220,6 @@ export class AccessControl {
         return true;
     }
 
-    async ensureCanAccessModel(params: CanAccessModelParams = {}) {
-        const canAccess = await this.canAccessModel(params);
-        if (canAccess) {
-            return;
-        }
-
-        if ("model" in params) {
-            let modelName = "(could not determine name)";
-            if (params.model?.name) {
-                modelName = `"${params.model.name}"`;
-            }
-
-            throw new NotAuthorizedError(`Not allowed to access content model ${modelName}.`);
-        }
-
-        throw new NotAuthorizedError(`Not allowed to access content models.`);
-    }
-
     async canAccessNonOwnedModels(params: GetModelsAccessControlListParams) {
         const acl = await this.getModelsAccessControlList(params);
         return acl.some(ace => ace.canAccessNonOwned);

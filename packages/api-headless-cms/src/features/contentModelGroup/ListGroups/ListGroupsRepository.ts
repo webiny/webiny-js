@@ -79,8 +79,8 @@ class ListGroupsRepositoryImpl implements RepositoryAbstraction.Interface {
             }
         );
 
-        // 4. Merge plugin + database groups
-        return [...pluginGroups, ...filteredDatabaseGroups];
+        // 4. Merge groups
+        return [...filteredDatabaseGroups, ...pluginGroups];
     }
 }
 

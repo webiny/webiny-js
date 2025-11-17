@@ -23,6 +23,7 @@ class ListLatestEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
         const { where, ...rest } = params || {};
 
         return await this.listEntriesUseCase.execute<T>(model, {
+            sort: ["createdOn_DESC"],
             ...rest,
             where: {
                 ...where,

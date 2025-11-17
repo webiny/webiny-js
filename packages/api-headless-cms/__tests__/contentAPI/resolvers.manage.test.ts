@@ -45,8 +45,8 @@ vi.setConfig({
 describe("MANAGE - Resolvers", () => {
     let contentModelGroup: CmsGroup;
 
-    const manageOpts = { path: "manage/en-US" };
-    const readOpts = { path: "read/en-US" };
+    const manageOpts = { path: "manage" };
+    const readOpts = { path: "read" };
 
     const { createContentModelMutation, createContentModelGroupMutation } =
         useGraphQLHandler(manageOpts);

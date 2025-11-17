@@ -13,7 +13,7 @@ const graphqlSchemaPlugin = createCmsGraphQLSchemaPlugin({
 describe("invalid schema error formatting", () => {
     it("print invalid part of the schema", async () => {
         const { invoke } = useGraphQLHandler({
-            path: "manage/en-US",
+            path: "manage",
             plugins: [graphqlSchemaPlugin]
         });
 

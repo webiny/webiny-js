@@ -67,7 +67,7 @@ describe("export cms structure", () => {
             createContentModelGroupMutation,
             createContentModelMutation
         } = useGraphQLHandler({
-            path: "manage/en-US"
+            path: "manage"
         });
 
         const createdGroups = await insertGroups(createContentModelGroupMutation);

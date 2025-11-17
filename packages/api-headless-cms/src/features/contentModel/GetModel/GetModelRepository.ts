@@ -15,7 +15,6 @@ class GetModelRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(private modelsFetcher: ModelsFetcher.Interface) {}
 
     async execute(modelId: string): Promise<Result<CmsModel, RepositoryAbstraction.Error>> {
-        // Use ModelsFetcher which handles all caching, access control, and merging
         const result = await this.modelsFetcher.fetchById(modelId);
 
         if (result.isFail()) {
