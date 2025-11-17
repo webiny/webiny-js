@@ -55,10 +55,6 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
     const plugin = new ContextPlugin<CmsContext>(async context => {
         const { type } = await getParameters(context);
 
-        const getIdentity = () => {
-            return context.security.getIdentity();
-        };
-
         const getTenant = () => {
             return context.tenancy.getCurrentTenant();
         };
@@ -134,9 +130,6 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             }),
             ...createModelsCrud({
                 context,
-                getTenant,
-                getIdentity,
-                storageOperations,
                 accessControl
             }),
             ...createContentEntryCrud({

@@ -842,11 +842,6 @@ export interface CmsModelContext {
      */
     createModelFrom(modelId: string, data: CmsModelCreateFromInput): Promise<CmsModel>;
     /**
-     * Update content model without data validation. Used internally.
-     * @hidden
-     */
-    updateModelDirect(params: CmsModelUpdateDirectParams): Promise<CmsModel>;
-    /**
      * Update content model.
      */
     updateModel(modelId: string, data: CmsModelUpdateInput): Promise<CmsModel>;

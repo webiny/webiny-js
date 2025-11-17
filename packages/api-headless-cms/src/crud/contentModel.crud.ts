@@ -1,13 +1,9 @@
 import WebinyError from "@webiny/error";
 import type {
     CmsContext,
-    CmsEntryValues,
     CmsModel,
     CmsModelContext,
     CmsModelFieldToGraphQLPlugin,
-    CmsModelManager,
-    CmsModelUpdateInput,
-    HeadlessCmsStorageOperations,
     ICmsModelListParams,
     OnModelAfterCreateFromTopicParams,
     OnModelAfterCreateTopicParams,
@@ -23,12 +19,9 @@ import type {
     OnModelInitializeParams,
     OnModelUpdateErrorTopicParams
 } from "~/types/index.js";
-import { NotFoundError } from "@webiny/handler-graphql";
-import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory.js";
 import { createTopic } from "@webiny/pubsub";
-import { createModelCreateFromValidation } from "~/crud/contentModel/validation.js";
-import { createZodError, removeUndefinedValues } from "@webiny/utils";
 import { CreateModelUseCase } from "~/features/contentModel/CreateModel/index.js";
+import { CreateModelFromUseCase } from "~/features/contentModel/CreateModelFrom/index.js";
 import { UpdateModelUseCase } from "~/features/contentModel/UpdateModel/index.js";
 import { DeleteModelUseCase } from "~/features/contentModel/DeleteModel/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
@@ -39,35 +32,20 @@ import {
     CmsModelFieldToAstConverterFromPlugins,
     CmsModelToAstConverter
 } from "~/utils/contentModelAst/index.js";
-import type { Tenant } from "@webiny/api-core/types/tenancy.js";
-import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 export interface CreateModelsCrudParams {
-    getTenant: () => Tenant;
-    storageOperations: HeadlessCmsStorageOperations;
     accessControl: AccessControl;
     context: CmsContext;
-    getIdentity: () => SecurityIdentity;
 }
 
 export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContext => {
-    const { getTenant, getIdentity, storageOperations, accessControl, context } = params;
+    const { accessControl, context } = params;
 
     const listFilteredModelsCache = createMemoryCache<Promise<CmsModel[]>>();
     const listDatabaseModelsCache = createMemoryCache<Promise<CmsModel[]>>();
     const clearModelsCache = (): void => {
         listDatabaseModelsCache.clear();
         listFilteredModelsCache.clear();
-    };
-
-    const managers = new Map<string, CmsModelManager>();
-    const updateManager = async <T extends CmsEntryValues = CmsEntryValues>(
-        context: CmsContext,
-        model: CmsModel
-    ): Promise<CmsModelManager<T>> => {
-        const manager = await contentModelManagerFactory<T>(context, model);
-        managers.set(model.modelId, manager);
-        return manager;
     };
 
     const fieldTypePlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
@@ -175,137 +153,19 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             throw new WebinyError(result.error.message, result.error.code, result.error.data);
         }
 
-        // Update manager after successful update
-        await updateManager(context, result.value);
-
         return result.value;
     };
-    const updateModelDirect: CmsModelContext["updateModelDirect"] = async params => {
-        const { model: initialModel, original } = params;
 
-        const model: CmsModel = {
-            ...initialModel,
-            tenant: initialModel.tenant || getTenant().id,
-            webinyVersion: context.WEBINY_VERSION
-        };
-
-        try {
-            await onModelBeforeUpdate.publish({
-                input: {} as CmsModelUpdateInput,
-                original,
-                model
-            });
-
-            const resultModel = await storageOperations.models.update({
-                model
-            });
-
-            await updateManager(context, resultModel);
-
-            clearModelsCache();
-
-            await onModelAfterUpdate.publish({
-                input: {} as CmsModelUpdateInput,
-                original,
-                model: resultModel
-            });
-
-            return resultModel;
-        } catch (ex) {
-            await onModelUpdateError.publish({
-                input: {} as CmsModelUpdateInput,
-                original,
-                model,
-                error: ex
-            });
-            throw ex;
-        }
-    };
     const createModelFrom: CmsModelContext["createModelFrom"] = async (modelId, input) => {
-        await accessControl.ensureCanAccessModel({ rwd: "w" });
+        // Delegate to new CreateModelFrom use case
+        const useCase = context.container.resolve(CreateModelFromUseCase);
+        const result = await useCase.execute(modelId, input);
 
-        /**
-         * Get a model record; this will also perform ownership validation.
-         */
-        const original = await getModel(modelId);
-
-        const result = await createModelCreateFromValidation().safeParseAsync({
-            ...input,
-            description: input.description || original.description
-        });
-        if (!result.success) {
-            throw createZodError(result.error);
+        if (result.isFail()) {
+            throw new WebinyError(result.error.message, result.error.code, result.error.data);
         }
 
-        const data = removeUndefinedValues(result.data);
-
-        /**
-         * Use storage operations directly because we cannot get group from different locale via context methods.
-         */
-        const group = await context.cms.storageOperations.groups.get({
-            id: data.group,
-            tenant: original.tenant
-        });
-        if (!group) {
-            throw new NotFoundError(`There is no group "${data.group}".`);
-        }
-
-        const identity = getIdentity();
-        const model: CmsModel = {
-            ...original,
-            singularApiName: data.singularApiName,
-            pluralApiName: data.pluralApiName,
-            group: {
-                id: group.id,
-                name: group.name
-            },
-            icon: data.icon,
-            name: data.name,
-            modelId: data.modelId || "",
-            description: data.description || "",
-            createdBy: {
-                id: identity.id,
-                displayName: identity.displayName,
-                type: identity.type
-            },
-            createdOn: new Date().toISOString(),
-            savedOn: new Date().toISOString(),
-            webinyVersion: context.WEBINY_VERSION
-        };
-
-        await accessControl.ensureCanAccessModel({ model, rwd: "w" });
-
-        try {
-            await onModelBeforeCreateFrom.publish({
-                input: data,
-                model,
-                original
-            });
-
-            const createdModel = await storageOperations.models.create({
-                model
-            });
-
-            clearModelsCache();
-
-            await updateManager(context, model);
-
-            await onModelAfterCreateFrom.publish({
-                input: data,
-                original,
-                model: createdModel
-            });
-
-            return createdModel;
-        } catch (ex) {
-            await onModelCreateFromError.publish({
-                input: data,
-                original,
-                model,
-                error: ex
-            });
-            throw ex;
-        }
+        return result.value;
     };
     const deleteModel: CmsModelContext["deleteModel"] = async modelId => {
         // Delegate to new DeleteModel use case
@@ -315,9 +175,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         if (result.isFail()) {
             throw new WebinyError(result.error.message, result.error.code, result.error.data);
         }
-
-        // Clean up manager after successful deletion
-        managers.delete(modelId);
     };
     const initializeModel: CmsModelContext["initializeModel"] = async (modelId, data) => {
         /**
@@ -355,18 +212,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
                 return createModel(input);
             });
         },
-        /**
-         * Method does not check for permissions or ownership.
-         * @internal
-         */
-        async updateModelDirect(params) {
-            return context.benchmark.measure(
-                "headlessCms.crud.models.updateModelDirect",
-                async () => {
-                    return updateModelDirect(params);
-                }
-            );
-        },
+
         async createModelFrom(modelId, userInput) {
             return context.benchmark.measure(
                 "headlessCms.crud.models.createModelFrom",

@@ -5,6 +5,7 @@ import { ModelCache } from "~/features/contentModel/shared/abstractions.js";
 import { ModelToAstConverter } from "~/features/contentModel/shared/ModelToAstConverter.js";
 import { ModelsFetcher } from "~/features/contentModel/shared/ModelsFetcher.js";
 import { CreateModelFeature } from "~/features/contentModel/CreateModel/feature.js";
+import { CreateModelFromFeature } from "~/features/contentModel/CreateModelFrom/feature.js";
 import { UpdateModelFeature } from "~/features/contentModel/UpdateModel/feature.js";
 import { DeleteModelFeature } from "~/features/contentModel/DeleteModel/feature.js";
 import { GetModelFeature } from "~/features/contentModel/GetModel/feature.js";
@@ -24,6 +25,7 @@ export const ContentModelFeature = createFeature({
 
         // Command features
         CreateModelFeature.register(container);
+        CreateModelFromFeature.register(container);
         UpdateModelFeature.register(container);
         DeleteModelFeature.register(container);
     }
