@@ -7,7 +7,7 @@ import { GetLatestRevisionByEntryIdIncludingDeletedUseCase } from "~/features/co
 import type { CmsDeleteEntryOptions, CmsModel } from "~/types/index.js";
 import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
 import { EntryBeforeDeleteEvent, EntryAfterDeleteEvent, EntryDeleteErrorEvent } from "./events.js";
-import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * DeleteEntryUseCase - Orchestrates permanent deletion of an entry.
@@ -41,7 +41,7 @@ class DeleteEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "d" });
         if (!canAccess) {
-            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
+            return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
         // Get the entry to delete by ID
@@ -61,7 +61,7 @@ class DeleteEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         });
 
         if (!canAccessEntry) {
-            return Result.fail(new ContentEntryNotAuthorizedError());
+            return Result.fail(new EntryNotAuthorizedError());
         }
 
         try {

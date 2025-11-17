@@ -9,6 +9,9 @@ import type {
 import { createTypeName } from "~/utils/createTypeName.js";
 import { parseIdentifier } from "@webiny/utils";
 import { createGraphQLInputField } from "./helpers.js";
+import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
+import { GetPublishedEntriesByIdsUseCase } from "~/features/contentEntry/GetPublishedEntriesByIds/index.js";
+import { GetLatestEntriesByIdsUseCase } from "~/features/contentEntry/GetLatestEntriesByIds/index.js";
 
 interface RefFieldValue {
     /**
@@ -150,7 +153,11 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                 }
 
                 return async (parent, args, context: CmsContext) => {
-                    const { cms } = context;
+                    const { cms, container } = context;
+
+                    const getModel = container.resolve(GetModelUseCase);
+                    const getPublishedByIds = container.resolve(GetPublishedEntriesByIdsUseCase);
+                    const getLatestByIds = container.resolve(GetLatestEntriesByIdsUseCase);
 
                     // Get field value for this entry
                     const initialValue = parent[field.fieldId] as RefFieldValue | RefFieldValue[];
@@ -192,17 +199,24 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
 
                         const getters = Object.keys(entriesByModel).map(async modelId => {
                             const idList = entriesByModel[modelId];
+
                             // Get model manager, to get access to CRUD methods
-                            const model = await cms.getEntryManager(modelId);
+                            const modelResult = await getModel.execute(modelId);
+                            const model = modelResult.value;
 
                             let entries: CmsEntry[];
                             // `read` API works with `published` data
                             if (cms.READ) {
-                                entries = await model.getPublishedByIds(idList);
+                                const getPublishedResult = await getPublishedByIds.execute(
+                                    model,
+                                    idList
+                                );
+                                entries = getPublishedResult.value;
                             }
                             // `preview` and `manage` with `latest` data
                             else {
-                                entries = await model.getLatestByIds(idList);
+                                const latestByIsResult = await getLatestByIds.execute(model, idList);
+                                entries = latestByIsResult.value;
                             }
                             return appendTypename(entries, modelIdToTypeName.get(modelId));
                         });
@@ -228,16 +242,21 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                     const value = initialValue as RefFieldValue;
 
                     // Get model manager, to get access to CRUD methods
-                    const model = await cms.getEntryManager(value.modelId);
+                    const modelResult = await getModel.execute(value.modelId);
+                    const model = modelResult.value;
 
                     let revisions: CmsEntry[];
                     // `read` API works with `published` data
                     if (cms.READ) {
-                        revisions = await model.getPublishedByIds([value.entryId]);
+                        const publishedByIdsResult = await getPublishedByIds.execute(model, [
+                            value.entryId
+                        ]);
+                        revisions = publishedByIdsResult.value;
                     }
                     // `preview` API works with `latest` data
                     else {
-                        revisions = await model.getLatestByIds([value.entryId]);
+                        const latestByIdsResult = await getLatestByIds.execute(model, [value.entryId]);
+                        revisions = latestByIdsResult.value;
                     }
 
                     /**

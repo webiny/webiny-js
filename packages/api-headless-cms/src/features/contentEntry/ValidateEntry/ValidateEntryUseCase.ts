@@ -4,7 +4,7 @@ import { ValidateEntryUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/index.js";
 import type { CmsModel, CmsModelFieldValidation } from "~/types/index.js";
-import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { mapAndCleanUpdatedInputData } from "~/crud/contentEntry/entryDataFactories/index.js";
 import { validateModelEntryData } from "~/crud/contentEntry/entryDataValidation.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
@@ -34,7 +34,7 @@ class ValidateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
-            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
+            return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
         // Map and clean input data
@@ -59,7 +59,7 @@ class ValidateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             });
 
             if (!canAccessEntry) {
-                return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
+                return Result.fail(EntryNotAuthorizedError.fromModel(model));
             }
         }
 

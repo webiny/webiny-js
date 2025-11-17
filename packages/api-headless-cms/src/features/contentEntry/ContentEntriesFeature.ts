@@ -23,6 +23,8 @@ import { GetLatestRevisionByEntryIdFeature } from "./GetLatestRevisionByEntryId/
 import { GetPublishedRevisionByEntryIdFeature } from "./GetPublishedRevisionByEntryId/feature.js";
 import { UnpublishEntryFeature } from "./UnpublishEntry/feature.js";
 import { GetUniqueFieldValuesFeature } from "./GetUniqueFieldValues/feature.js";
+import { GetSingletonEntryFeature } from "./GetSingletonEntry/feature.js";
+import { UpdateSingletonEntryFeature } from "./UpdateSingletonEntry/feature.js";
 
 export const ContentEntriesFeature = createFeature({
     name: "ContentEntries",
@@ -40,6 +42,7 @@ export const ContentEntriesFeature = createFeature({
         GetEntryFeature.register(container);
         ListEntriesFeature.register(container);
         GetUniqueFieldValuesFeature.register(container);
+        GetSingletonEntryFeature.register(container);
 
         // Command features
         CreateEntryFeature.register(container);
@@ -54,5 +57,6 @@ export const ContentEntriesFeature = createFeature({
         DeleteEntryRevisionFeature.register(container);
         DeleteMultipleEntriesFeature.register(container);
         RestoreEntryFromBinFeature.register(container);
+        UpdateSingletonEntryFeature.register(container);
     }
 });

@@ -4,7 +4,7 @@ import { GetRevisionsByEntryIdUseCase as UseCaseAbstraction } from "./abstractio
 import { GetRevisionsByEntryIdRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * GetRevisionsByEntryIdUseCase - Orchestrates fetching all revisions for an entry.
@@ -26,7 +26,7 @@ class GetRevisionsByEntryIdUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model });
         if (!canAccess) {
-            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
+            return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
         // Delegate to repository

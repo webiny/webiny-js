@@ -11,7 +11,7 @@ import type {
     EntryValidationError,
     EntryNotFoundError
 } from "~/domain/contentEntry/errors.js";
-import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * CreateEntryRevisionFrom Use Case - Creates a new revision from an existing entry.
@@ -26,7 +26,7 @@ export interface ICreateEntryRevisionFromUseCase {
 }
 
 export interface ICreateEntryRevisionFromUseCaseErrors {
-    notAuthorized: ContentEntryNotAuthorizedError;
+    notAuthorized: EntryNotAuthorizedError;
     notFound: EntryNotFoundError;
     validation: EntryValidationError;
     storage: EntryPersistenceError;

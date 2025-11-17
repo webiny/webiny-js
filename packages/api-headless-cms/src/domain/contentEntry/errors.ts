@@ -41,7 +41,7 @@ export class EntryLockedError extends BaseError {
     }
 }
 
-export class ContentEntryNotAuthorizedError extends BaseError {
+export class EntryNotAuthorizedError extends BaseError {
     override readonly code = "Cms/Entry/NotAuthorized" as const;
 
     constructor(message?: string) {
@@ -50,11 +50,11 @@ export class ContentEntryNotAuthorizedError extends BaseError {
         });
     }
 
-    static fromModel(model: CmsModel): ContentEntryNotAuthorizedError {
-        return new ContentEntryNotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
+    static fromModel(model: CmsModel): EntryNotAuthorizedError {
+        return new EntryNotAuthorizedError(`Not allowed to access "${model.modelId}" entries.`);
     }
 
-    static fromEntry(entry: CmsEntry): ContentEntryNotAuthorizedError {
-        return new ContentEntryNotAuthorizedError(`Not allowed to access entry "${entry.entryId}".`);
+    static fromEntry(entry: CmsEntry): EntryNotAuthorizedError {
+        return new EntryNotAuthorizedError(`Not allowed to access entry "${entry.entryId}".`);
     }
 }

@@ -2,7 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsEntry, CmsModel, CmsDeleteEntryOptions } from "~/types/index.js";
 import type { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * DeleteEntry Use Case - Permanently deletes an entry from the database.
@@ -17,7 +17,7 @@ export interface IDeleteEntryUseCase {
 }
 
 export interface IDeleteEntryUseCaseErrors {
-    notAuthorized: ContentEntryNotAuthorizedError;
+    notAuthorized: EntryNotAuthorizedError;
     notFound: EntryNotFoundError;
     storage: EntryPersistenceError;
 }

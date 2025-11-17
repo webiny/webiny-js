@@ -11,7 +11,7 @@ import type {
     CmsEntryValues,
     CmsModel
 } from "~/types/index.js";
-import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * ListEntriesUseCase - Base use case for orchestrating entry listing with access control.
@@ -35,7 +35,7 @@ class ListEntriesUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model });
         if (!canAccess) {
-            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
+            return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
         const { where: initialWhere, ...rest } = params || {};

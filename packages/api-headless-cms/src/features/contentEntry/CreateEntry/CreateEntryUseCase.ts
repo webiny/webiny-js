@@ -11,7 +11,7 @@ import type {
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput
 } from "~/types/index.js";
-import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { createEntryData } from "~/crud/contentEntry/entryDataFactories/createEntryData.js";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
@@ -44,7 +44,7 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check initial access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
-            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
+            return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
         try {
@@ -67,7 +67,7 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             });
 
             if (!canAccessEntry) {
-                return Result.fail(ContentEntryNotAuthorizedError.fromEntry(entry));
+                return Result.fail(EntryNotAuthorizedError.fromEntry(entry));
             }
 
             // Publish before event

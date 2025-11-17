@@ -5,7 +5,7 @@ import type { CmsModel } from "~/types/index.js";
 import type { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 import type { EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 import type { EntryValidationError } from "~/domain/contentEntry/errors.js";
-import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * UnpublishEntry Use Case
@@ -15,7 +15,7 @@ export interface IUnpublishEntryUseCase {
 }
 
 export interface IUnpublishEntryUseCaseErrors {
-    notAuthorized: ContentEntryNotAuthorizedError;
+    notAuthorized: EntryNotAuthorizedError;
     notFound: EntryNotFoundError;
     validation: EntryValidationError;
     repository: RepositoryError;

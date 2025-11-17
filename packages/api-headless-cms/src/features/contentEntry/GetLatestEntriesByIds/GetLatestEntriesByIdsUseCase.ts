@@ -4,7 +4,7 @@ import { GetLatestEntriesByIdsUseCase as UseCaseAbstraction } from "./abstractio
 import { GetLatestEntriesByIdsRepository } from "./abstractions.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
-import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * GetLatestEntriesByIdsUseCase - Orchestrates fetching latest entries by IDs.
@@ -26,7 +26,7 @@ class GetLatestEntriesByIdsUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model });
         if (!canAccess) {
-            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
+            return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
         // Delegate to repository

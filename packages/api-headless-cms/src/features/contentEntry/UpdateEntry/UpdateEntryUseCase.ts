@@ -16,7 +16,7 @@ import type {
     UpdateCmsEntryOptionsInput
 } from "~/types/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
-import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryLockedError } from "~/domain/contentEntry/errors.js";
 import { createUpdateEntryData } from "~/crud/contentEntry/entryDataFactories/createUpdateEntryData.js";
 
@@ -52,7 +52,7 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check initial access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
-            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
+            return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
         try {
@@ -89,7 +89,7 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             });
 
             if (!canAccessEntry) {
-                return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
+                return Result.fail(EntryNotAuthorizedError.fromModel(model));
             }
 
             // Publish before event

@@ -13,7 +13,7 @@ import type {
     EntryValidationError,
     EntryLockedError
 } from "~/domain/contentEntry/errors.js";
-import type { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * UpdateEntry Use Case
@@ -29,7 +29,7 @@ export interface IUpdateEntryUseCase {
 }
 
 export interface IUpdateEntryUseCaseErrors {
-    notAuthorized: ContentEntryNotAuthorizedError;
+    notAuthorized: EntryNotAuthorizedError;
     notFound: EntryNotFoundError;
     locked: EntryLockedError;
     validation: EntryValidationError;

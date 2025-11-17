@@ -13,7 +13,7 @@ import {
     EntryAfterPublishEvent,
     EntryPublishErrorEvent
 } from "./events.js";
-import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 import { EntryNotFoundError } from "~/domain/contentEntry/errors.js";
 import { createPublishEntryData } from "~/crud/contentEntry/entryDataFactories/index.js";
 import { CmsContext } from "~/features/shared/abstractions.js";
@@ -48,7 +48,7 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check access control (publish permission)
         const canAccess = await this.accessControl.canAccessEntry({ model, pw: "p" });
         if (!canAccess) {
-            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
+            return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
         // Get the entry to publish
@@ -68,7 +68,7 @@ class PublishEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         });
 
         if (!canAccessEntry) {
-            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
+            return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
         // Get the latest revision for entry-level metadata

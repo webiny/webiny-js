@@ -15,7 +15,7 @@ import {
     EntryRevisionDeleteErrorEvent
 } from "./events.js";
 import { parseIdentifier } from "@webiny/utils";
-import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * DeleteEntryRevisionUseCase - Orchestrates deletion of a specific entry revision.
@@ -48,7 +48,7 @@ class DeleteEntryRevisionUseCaseImpl implements UseCaseAbstraction.Interface {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "d" });
         if (!canAccess) {
-            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
+            return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
         const { id: entryId, version } = parseIdentifier(revisionId);
@@ -69,7 +69,7 @@ class DeleteEntryRevisionUseCaseImpl implements UseCaseAbstraction.Interface {
         });
 
         if (!canAccessEntry) {
-            return Result.fail(new ContentEntryNotAuthorizedError());
+            return Result.fail(new EntryNotAuthorizedError());
         }
 
         // Get the latest revision

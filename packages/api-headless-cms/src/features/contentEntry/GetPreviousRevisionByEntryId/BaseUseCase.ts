@@ -9,7 +9,7 @@ import type {
     CmsModel,
     CmsEntryStorageOperationsGetPreviousRevisionParams
 } from "~/types/index.js";
-import { ContentEntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
 /**
  * Orchestrates fetching previous revision by entry ID and version.
@@ -32,7 +32,7 @@ class GetPreviousRevisionByEntryIdUseCaseImpl implements BaseUseCaseAbstraction.
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model });
         if (!canAccess) {
-            return Result.fail(ContentEntryNotAuthorizedError.fromModel(model));
+            return Result.fail(EntryNotAuthorizedError.fromModel(model));
         }
 
         // Delegate to repository

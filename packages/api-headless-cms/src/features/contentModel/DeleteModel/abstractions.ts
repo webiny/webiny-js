@@ -4,6 +4,7 @@ import type { CmsModel } from "~/types/index.js";
 import {
     ModelNotAuthorizedError,
     type ModelNotFoundError,
+    type ModelValidationError,
     type ModelPersistenceError
 } from "~/domain/contentModel/errors.js";
 
@@ -18,6 +19,7 @@ export interface IDeleteModelUseCaseErrors {
     notFound: ModelNotFoundError;
     notAuthorized: ModelNotAuthorizedError;
     persistence: ModelPersistenceError;
+    validation: ModelValidationError;
 }
 
 type UseCaseError = IDeleteModelUseCaseErrors[keyof IDeleteModelUseCaseErrors];
@@ -30,13 +32,14 @@ export namespace DeleteModelUseCase {
 }
 
 /**
- * DeleteModelRepository - Deletes a model from storage.
+ * DeleteModelRepository - Validates and deletes a model from storage.
  */
 export interface IDeleteModelRepository {
     execute(model: CmsModel): Promise<Result<void, RepositoryError>>;
 }
 
 export interface IDeleteModelRepositoryErrors {
+    validation: ModelValidationError;
     persistence: ModelPersistenceError;
 }
 
