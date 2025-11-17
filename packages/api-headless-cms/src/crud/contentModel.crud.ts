@@ -24,22 +24,21 @@ import { CreateModelUseCase } from "~/features/contentModel/CreateModel/index.js
 import { CreateModelFromUseCase } from "~/features/contentModel/CreateModelFrom/index.js";
 import { UpdateModelUseCase } from "~/features/contentModel/UpdateModel/index.js";
 import { DeleteModelUseCase } from "~/features/contentModel/DeleteModel/index.js";
+import { InitializeModelUseCase } from "~/features/contentModel/InitializeModel/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 import { createMemoryCache } from "~/utils/index.js";
-import type { AccessControl } from "./AccessControl/AccessControl.js";
 import {
     CmsModelFieldToAstConverterFromPlugins,
     CmsModelToAstConverter
 } from "~/utils/contentModelAst/index.js";
 
 export interface CreateModelsCrudParams {
-    accessControl: AccessControl;
     context: CmsContext;
 }
 
 export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContext => {
-    const { accessControl, context } = params;
+    const { context } = params;
 
     const listFilteredModelsCache = createMemoryCache<Promise<CmsModel[]>>();
     const listDatabaseModelsCache = createMemoryCache<Promise<CmsModel[]>>();
@@ -177,15 +176,13 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         }
     };
     const initializeModel: CmsModelContext["initializeModel"] = async (modelId, data) => {
-        /**
-         * We require that users have write permissions to initialize models.
-         * Maybe introduce another permission for it?
-         */
-        const model = await getModel(modelId);
+        // Delegate to new InitializeModel use case
+        const useCase = context.container.resolve(InitializeModelUseCase);
+        const result = await useCase.execute(modelId, data);
 
-        await accessControl.ensureCanAccessModel({ model, rwd: "w" });
-
-        await onModelInitialize.publish({ model, data });
+        if (result.isFail()) {
+            throw new WebinyError(result.error.message, result.error.code, result.error.data);
+        }
 
         return true;
     };

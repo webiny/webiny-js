@@ -129,8 +129,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 context
             }),
             ...createModelsCrud({
-                context,
-                accessControl
+                context
             }),
             ...createContentEntryCrud({
                 context
