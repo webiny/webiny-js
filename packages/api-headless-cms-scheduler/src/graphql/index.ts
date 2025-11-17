@@ -1,7 +1,6 @@
 import { CmsGraphQLSchemaPlugin } from "@webiny/api-headless-cms/plugins/index.js";
-import type { ScheduleContext } from "~/types.js";
 import { ErrorResponse, ListErrorResponse, ListResponse, Response } from "@webiny/handler-graphql";
-import type { CmsEntryMeta } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsContext, CmsEntryMeta } from "@webiny/api-headless-cms/types/index.js";
 import {
     cancelScheduleSchema,
     createScheduleSchema,
@@ -10,6 +9,7 @@ import {
     updateScheduleSchema
 } from "~/graphql/schema.js";
 import { createZodError } from "@webiny/utils";
+import { SchedulerFactory } from "~/features/Scheduler/index.js";
 
 const resolve = async (cb: () => Promise<unknown>) => {
     try {
@@ -37,12 +37,17 @@ const resolveList = async (cb: () => Promise<IResolveListCallableResponse>) => {
 };
 
 export const createSchedulerGraphQL = () => {
-    return new CmsGraphQLSchemaPlugin<ScheduleContext>({
+    return new CmsGraphQLSchemaPlugin<CmsContext>({
         /**
-         * Make sure scheduler is available. No point in adding GraphQL if scheduler is unavailable for any reason.
+         * Make sure SchedulerFactory is available. No point in adding GraphQL if scheduler is unavailable for any reason.
          */
         isApplicable: context => {
-            return !!context.cms?.scheduler;
+            try {
+                context.container.resolve(SchedulerFactory);
+                return true;
+            } catch {
+                return false;
+            }
         },
         typeDefs: /* GraphQL */ `
             enum CmsScheduleRecordType {
@@ -150,8 +155,10 @@ export const createSchedulerGraphQL = () => {
                         if (validated.error) {
                             throw createZodError(validated.error);
                         }
+
+                        const schedulerFactory = context.container.resolve(SchedulerFactory);
                         const model = await context.cms.getModel(validated.data.modelId);
-                        const scheduler = context.cms.scheduler(model);
+                        const scheduler = schedulerFactory.useModel(model);
 
                         return scheduler.getScheduled(validated.data.id);
                     });
@@ -162,8 +169,9 @@ export const createSchedulerGraphQL = () => {
                         if (validated.error) {
                             throw createZodError(validated.error);
                         }
+                        const schedulerFactory = context.container.resolve(SchedulerFactory);
                         const model = await context.cms.getModel(validated.data.modelId);
-                        const scheduler = context.cms.scheduler(model);
+                        const scheduler = schedulerFactory.useModel(model);
 
                         return scheduler.listScheduled({
                             where: validated.data.where || {},
@@ -182,8 +190,9 @@ export const createSchedulerGraphQL = () => {
                             throw createZodError(validated.error);
                         }
 
+                        const schedulerFactory = context.container.resolve(SchedulerFactory);
                         const model = await context.cms.getModel(validated.data.modelId);
-                        const scheduler = context.cms.scheduler(model);
+                        const scheduler = schedulerFactory.useModel(model);
 
                         return await scheduler.schedule(validated.data.id, validated.data.input);
                     });
@@ -194,8 +203,10 @@ export const createSchedulerGraphQL = () => {
                         if (validated.error) {
                             throw createZodError(validated.error);
                         }
+
+                        const schedulerFactory = context.container.resolve(SchedulerFactory);
                         const model = await context.cms.getModel(validated.data.modelId);
-                        const scheduler = context.cms.scheduler(model);
+                        const scheduler = schedulerFactory.useModel(model);
 
                         return scheduler.schedule(validated.data.id, validated.data.input);
                     });
@@ -206,8 +217,10 @@ export const createSchedulerGraphQL = () => {
                         if (validated.error) {
                             throw createZodError(validated.error);
                         }
+
+                        const schedulerFactory = context.container.resolve(SchedulerFactory);
                         const model = await context.cms.getModel(validated.data.modelId);
-                        const scheduler = context.cms.scheduler(model);
+                        const scheduler = schedulerFactory.useModel(model);
 
                         await scheduler.cancel(validated.data.id);
                         return true;
