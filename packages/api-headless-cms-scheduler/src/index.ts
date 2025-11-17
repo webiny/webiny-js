@@ -9,8 +9,8 @@ export type ICreateHeadlessCmsScheduleParams = ICreateHeadlessCmsSchedulerContex
 
 /**
  * This will register both API and Handler plugins for the Headless CMS Scheduler.
- * * Handler plugin will handle the scheduled CMS action event - a lambda call from the EventBridge Scheduler.
- * * API plugin will provide the GraphQL API and code for managing the scheduled CMS actions.
+ * Handler plugin will handle the scheduled CMS action event - a lambda call from the EventBridge Scheduler.
+ * API plugin will provide the GraphQL API and code for managing the scheduled CMS actions.
  */
 export const createHeadlessCmsScheduler = (params: ICreateHeadlessCmsScheduleParams): Plugin[] => {
     return [

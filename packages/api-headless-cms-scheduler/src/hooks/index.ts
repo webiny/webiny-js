@@ -3,22 +3,21 @@
  * This is due the possibility that the user publishes/unpublishes/deletes entry which is scheduled.
  * At that point, there is no need to run the scheduled job as the user already did the action manually.
  */
-import type { CmsModel } from "@webiny/api-headless-cms/types/model.js";
-import type { CmsEntry } from "@webiny/api-headless-cms/types/types.js";
-import type { ScheduleContext } from "~/types.js";
+import type { CmsContext, CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import { SCHEDULE_MODEL_ID } from "~/constants.js";
 
 export interface IAttachLifecycleHookParams {
-    cms: ScheduleContext["cms"];
-    schedulerModel: Pick<CmsModel, "modelId">;
+    cms: CmsContext["cms"];
 }
 
 export const attachLifecycleHooks = (params: IAttachLifecycleHookParams): void => {
-    const { cms, schedulerModel } = params;
+    const { cms } = params;
 
     const shouldContinue = (model: Pick<CmsModel, "modelId" | "isPrivate">): boolean => {
-        if (model.modelId === schedulerModel.modelId) {
+        if (model.modelId === SCHEDULE_MODEL_ID) {
             return false;
         }
+
         // TODO maybe change with a list of private models which are allowed?
         else if (model.isPrivate) {
             return false;

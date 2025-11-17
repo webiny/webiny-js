@@ -1,10 +1,10 @@
 import type { CreateHandlerCoreParams } from "./plugins";
 import { createHandlerCore } from "./plugins";
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
-import type { ScheduleContext } from "~/types.js";
 import { defaultIdentity } from "./tenancySecurity";
 import type { LambdaContext } from "@webiny/handler-aws/types";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
+import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 
 interface CmsHandlerEvent {
     path: string;
@@ -14,9 +14,7 @@ interface CmsHandlerEvent {
     };
 }
 
-export const useHandler = <C extends ScheduleContext = ScheduleContext>(
-    params: CreateHandlerCoreParams
-) => {
+export const useHandler = <C extends CmsContext>(params: CreateHandlerCoreParams) => {
     const core = createHandlerCore(params);
 
     const plugins = [...core.plugins].concat([
@@ -40,10 +38,9 @@ export const useHandler = <C extends ScheduleContext = ScheduleContext>(
         elasticsearch: elasticsearchClient,
         handler: (input?: CmsHandlerEvent) => {
             const payload: CmsHandlerEvent = {
-                path: "/cms/manage/en-US",
+                path: "/cms/manage",
                 headers: {
                     "x-webiny-cms-endpoint": "manage",
-                    "x-webiny-cms-locale": "en-US",
                     "x-tenant": "root"
                 },
                 ...input

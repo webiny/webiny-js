@@ -1,4 +1,3 @@
-import type { CmsScheduleCallable } from "~/types.js";
 import type { ISchedulerService } from "~/service/types.js";
 import type { CmsContext, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { IScheduler } from "./types.js";
@@ -18,12 +17,14 @@ export interface ICreateSchedulerParams {
     schedulerModel: CmsModel;
 }
 
+type CmsScheduleCallable = (targetModel: CmsModel) => IScheduler;
+
 export const createScheduler = async (
     params: ICreateSchedulerParams
 ): Promise<CmsScheduleCallable> => {
     const { cms, security, schedulerModel, service } = params;
 
-    return (targetModel): IScheduler => {
+    return (targetModel: CmsModel): IScheduler => {
         if (targetModel.isPrivate) {
             throw new WebinyError(
                 "Cannot create a scheduler for private models.",

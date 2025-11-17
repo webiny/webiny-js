@@ -24,8 +24,8 @@ import { WebinyError } from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { dateInTheFuture } from "~/utils/dateInTheFuture.js";
 import { SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
-import type { IWebinyScheduledCmsActionEventValues } from "~/handler/Handler.js";
 import { parseIdentifier } from "@webiny/utils";
+import type { IWebinyScheduledCmsActionEventValues } from "~/features/ProcessRecords/abstractions.js";
 
 export interface ISchedulerServiceParams {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;

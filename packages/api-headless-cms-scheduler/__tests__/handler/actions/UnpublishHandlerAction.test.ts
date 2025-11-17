@@ -1,16 +1,15 @@
-import { UnpublishHandlerAction } from "~/handler/actions/UnpublishHandlerAction.js";
 import { useHandler } from "~tests/mocks/context/useHandler.js";
 import { createMockScheduleClient } from "~tests/mocks/scheduleClient.js";
 import { MOCK_TARGET_MODEL_ID } from "~tests/mocks/targetModel.js";
-import type { ScheduleContext } from "~/types.js";
 import { ScheduleType } from "~/scheduler/types.js";
 import { describe, expect, it, vi } from "vitest";
+import { UnpublishRecordAction } from "~/features/ProcessRecords/actions/UnpublishRecordAction.js";
+import { RecordAction } from "~/features/ProcessRecords/index.js";
 
 describe("UnpublishHandlerAction", () => {
     it("should only handle unpublish action", async () => {
-        const action = new UnpublishHandlerAction({
-            cms: {} as ScheduleContext["cms"]
-        });
+        // @ts-expect-error No deps provided; we only test a `canHandle`.
+        const action = new UnpublishRecordAction();
 
         expect(action.canHandle({ type: ScheduleType.publish })).toBe(false);
         expect(action.canHandle({ type: ScheduleType.unpublish })).toBe(true);
@@ -26,18 +25,21 @@ describe("UnpublishHandlerAction", () => {
 
         const model = await context.cms.getModel(MOCK_TARGET_MODEL_ID);
 
-        const action = new UnpublishHandlerAction({
-            cms: context.cms
-        });
+        const testContainer = context.container.createChildContainer();
+        testContainer.register(UnpublishRecordAction);
+
+        const action = testContainer.resolveAll(RecordAction)[0];
+        expect(action).toBeInstanceOf(UnpublishRecordAction);
 
         try {
+            // @ts-expect-error We only want to test the base execution.
             const result = await action.handle({
                 targetId: "target-id#0001",
                 model
             });
             expect(result).toEqual("Should not reach here.");
         } catch (ex) {
-            expect(ex.message).toBe(`Entry by ID "target-id#0001" not found.`);
+            expect(ex.message).toBe(`Entry "target-id#0001" was not found!`);
         }
     });
 
@@ -49,9 +51,11 @@ describe("UnpublishHandlerAction", () => {
         });
         const context = await handler.handler();
 
-        const action = new UnpublishHandlerAction({
-            cms: context.cms
-        });
+        const testContainer = context.container.createChildContainer();
+        testContainer.register(UnpublishRecordAction);
+
+        const action = testContainer.resolveAll(RecordAction)[0];
+        expect(action).toBeInstanceOf(UnpublishRecordAction);
 
         const model = await context.cms.getModel(MOCK_TARGET_MODEL_ID);
 
@@ -63,6 +67,7 @@ describe("UnpublishHandlerAction", () => {
 
         console.warn = vi.fn();
 
+        // @ts-expect-error We only want to test the base execution.
         const result = await action.handle({
             targetId: "target-id#0001",
             model
@@ -89,9 +94,11 @@ describe("UnpublishHandlerAction", () => {
         });
         const context = await handler.handler();
 
-        const action = new UnpublishHandlerAction({
-            cms: context.cms
-        });
+        const testContainer = context.container.createChildContainer();
+        testContainer.register(UnpublishRecordAction);
+
+        const action = testContainer.resolveAll(RecordAction)[0];
+        expect(action).toBeInstanceOf(UnpublishRecordAction);
 
         const model = await context.cms.getModel(MOCK_TARGET_MODEL_ID);
 
@@ -109,6 +116,7 @@ describe("UnpublishHandlerAction", () => {
 
         expect(publishedEntry.id).toBe("target-id#0001");
 
+        // @ts-expect-error We only want to test the base execution.
         const result = await action.handle({
             targetId: "target-id#0001",
             model
@@ -116,6 +124,7 @@ describe("UnpublishHandlerAction", () => {
 
         expect(result).toBeUndefined();
 
+        // @ts-expect-error We only want to test the base execution.
         await action.handle({
             targetId: "target-id#0001",
             model
@@ -135,9 +144,11 @@ describe("UnpublishHandlerAction", () => {
         });
         const context = await handler.handler();
 
-        const action = new UnpublishHandlerAction({
-            cms: context.cms
-        });
+        const testContainer = context.container.createChildContainer();
+        testContainer.register(UnpublishRecordAction);
+
+        const action = testContainer.resolveAll(RecordAction)[0];
+        expect(action).toBeInstanceOf(UnpublishRecordAction);
 
         const model = await context.cms.getModel(MOCK_TARGET_MODEL_ID);
 
@@ -173,6 +184,7 @@ describe("UnpublishHandlerAction", () => {
 
         expect(publishedOverwriteEntry.id).toBe("target-id#0002");
 
+        // @ts-expect-error We only want to test the base execution.
         const result = await action.handle({
             targetId: "target-id#0001",
             model
@@ -180,6 +192,7 @@ describe("UnpublishHandlerAction", () => {
 
         expect(result).toBeUndefined();
 
+        // @ts-expect-error We only want to test the base execution.
         await action.handle({
             targetId: "target-id#0001",
             model

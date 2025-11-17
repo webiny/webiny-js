@@ -6,6 +6,8 @@ import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUnti
 import type { Context } from "~/types.js";
 import { ElasticsearchCatClusterHealthStatus } from "@webiny/api-elasticsearch/operations/types.js";
 import { mdbid } from "@webiny/utils";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 
 export class MockDataCreator<
     C extends Context,
@@ -23,12 +25,15 @@ export class MockDataCreator<
             });
         }
 
-        let manager: CmsModelManager;
-        try {
-            manager = await context.cms.getEntryManager("cars");
-        } catch (ex) {
-            return response.error(ex);
+        const getModel = context.container.resolve(GetModelUseCase);
+        const createEntry = context.container.resolve(CreateEntryUseCase);
+
+        const modelResult = await getModel.execute("cars");
+        if (modelResult.isFail()) {
+            return response.error(modelResult.error);
         }
+
+        const model = modelResult.value;
 
         const healthCheck = createWaitUntilHealthy(context.elasticsearch, {
             waitingTimeStep: 20,
@@ -94,13 +99,14 @@ export class MockDataCreator<
                 }
             }
             const taskId = params.store.getTask().id;
-            try {
-                await manager.create({
-                    id: `${taskId}${mdbid()}`,
-                    ...mockData
-                });
-            } catch (ex) {
-                return response.error(ex);
+
+            const createResult = await createEntry.execute(model, {
+                id: `${taskId}${mdbid()}`,
+                ...mockData
+            });
+
+            if (createResult.isFail()) {
+                return response.error(createResult.error);
             }
         }
 

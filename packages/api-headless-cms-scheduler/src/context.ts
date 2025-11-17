@@ -6,14 +6,14 @@ import type {
 import { createSchedulerService } from "~/service/SchedulerService.js";
 import { getManifest } from "~/manifest.js";
 import { convertException } from "@webiny/utils";
-import type { ScheduleContext } from "~/types.js";
 import { createScheduler } from "./scheduler/createScheduler.js";
-import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsContext, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { SCHEDULE_MODEL_ID } from "./constants.js";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { attachLifecycleHooks } from "~/hooks/index.js";
+import { SchedulerFactory } from "~/features/Scheduler/index.js";
 
 export interface ICreateHeadlessCmsSchedulerContextParams {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
@@ -22,7 +22,7 @@ export interface ICreateHeadlessCmsSchedulerContextParams {
 export const createHeadlessCmsScheduleContext = (
     params: ICreateHeadlessCmsSchedulerContextParams
 ) => {
-    return new ContextPlugin<ScheduleContext>(async context => {
+    return new ContextPlugin<CmsContext>(async context => {
         /**
          * If the Headless CMS is not ready, it means the system is not fully installed yet.
          * We do not want to continue because it would break anyway.
@@ -63,15 +63,21 @@ export const createHeadlessCmsScheduleContext = (
         }
 
         attachLifecycleHooks({
-            cms: context.cms,
-            schedulerModel
+            cms: context.cms
         });
 
-        context.cms.scheduler = await createScheduler({
+        const schedulerFactory = await createScheduler({
             cms: context.cms,
             security: context.security,
             service,
             schedulerModel
+        });
+
+        // Register an adapter
+        context.container.registerInstance(SchedulerFactory, {
+            useModel(model) {
+                return schedulerFactory(model);
+            }
         });
     });
 };

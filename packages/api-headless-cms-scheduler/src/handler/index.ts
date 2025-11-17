@@ -3,11 +3,9 @@ import type { HandlerFactoryParams } from "@webiny/handler-aws/types.js";
 import { createSourceHandler } from "@webiny/handler-aws/sourceHandler.js";
 import { createEventHandler, createHandler } from "@webiny/handler-aws/raw/index.js";
 import { SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
-import type { IWebinyScheduledCmsActionEvent } from "./Handler.js";
-import { Handler } from "./Handler.js";
-import type { ScheduleContext } from "~/types.js";
-import { PublishHandlerAction } from "./actions/PublishHandlerAction.js";
-import { UnpublishHandlerAction } from "./actions/UnpublishHandlerAction.js";
+import { ProcessRecordsFeature } from "~/features/ProcessRecords/feature.js";
+import { ProcessRecordsUseCase } from "~/features/ProcessRecords/index.js";
+import type { IWebinyScheduledCmsActionEvent } from "~/features/ProcessRecords/abstractions.js";
 
 export interface HandlerParams extends HandlerFactoryParams {
     debug?: boolean;
@@ -37,29 +35,21 @@ const handler = createSourceHandler<IWebinyScheduledCmsActionEvent, HandlerParam
 registry.register(handler);
 
 export const createScheduledCmsActionEventHandler = () => {
-    return createEventHandler<IWebinyScheduledCmsActionEvent, ScheduleContext>({
+    return createEventHandler<IWebinyScheduledCmsActionEvent>({
         canHandle: event => {
             return canHandle(event);
         },
         handle: async params => {
             const { payload, context } = params;
 
-            const handler = new Handler({
-                actions: [
-                    new PublishHandlerAction({
-                        cms: context.cms
-                    }),
-                    new UnpublishHandlerAction({
-                        cms: context.cms
-                    })
-                ]
-            });
+            ProcessRecordsFeature.register(context.container);
 
-            return handler.handle({
-                payload,
-                cms: context.cms,
-                security: context.security
-            });
+            const processRecords = context.container.resolve(ProcessRecordsUseCase);
+            const result = await processRecords.execute(payload);
+
+            if (result.isFail()) {
+                throw result.error;
+            }
         }
     });
 };
