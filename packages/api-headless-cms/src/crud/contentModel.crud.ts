@@ -5,7 +5,6 @@ import type {
     CmsModel,
     CmsModelContext,
     CmsModelFieldToGraphQLPlugin,
-    CmsModelGroup,
     CmsModelManager,
     CmsModelUpdateInput,
     HeadlessCmsStorageOperations,
@@ -27,18 +26,14 @@ import type {
 import { NotFoundError } from "@webiny/handler-graphql";
 import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory.js";
 import { createTopic } from "@webiny/pubsub";
-import { CmsModelPlugin } from "~/plugins/CmsModelPlugin.js";
-import {
-    createModelCreateFromValidation,
-    createModelUpdateValidation
-} from "~/crud/contentModel/validation.js";
+import { createModelCreateFromValidation } from "~/crud/contentModel/validation.js";
 import { createZodError, removeUndefinedValues } from "@webiny/utils";
 import { CreateModelUseCase } from "~/features/contentModel/CreateModel/index.js";
+import { UpdateModelUseCase } from "~/features/contentModel/UpdateModel/index.js";
+import { DeleteModelUseCase } from "~/features/contentModel/DeleteModel/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
-import { createCacheKey, createMemoryCache } from "~/utils/index.js";
-import { ensureTypeTag } from "./contentModel/ensureTypeTag.js";
-import { filterAsync } from "~/utils/filterAsync.js";
+import { createMemoryCache } from "~/utils/index.js";
 import type { AccessControl } from "./AccessControl/AccessControl.js";
 import {
     CmsModelFieldToAstConverterFromPlugins,
@@ -58,7 +53,6 @@ export interface CreateModelsCrudParams {
 export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContext => {
     const { getTenant, getIdentity, storageOperations, accessControl, context } = params;
 
-    const listPluginModelsCache = createMemoryCache<Promise<CmsModel[]>>();
     const listFilteredModelsCache = createMemoryCache<Promise<CmsModel[]>>();
     const listDatabaseModelsCache = createMemoryCache<Promise<CmsModel[]>>();
     const clearModelsCache = (): void => {
@@ -84,65 +78,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         return new CmsModelToAstConverter(
             new CmsModelFieldToAstConverterFromPlugins(fieldTypePlugins)
         );
-    };
-
-    const listPluginModels = async (tenant: string, locale: string): Promise<CmsModel[]> => {
-        const modelPlugins = context.plugins.byType<CmsModelPlugin>(CmsModelPlugin.type);
-        const cacheKey = createCacheKey({
-            tenant,
-            locale,
-            models: modelPlugins
-                .map(({ contentModel: model }) => {
-                    return `${model.modelId}#${model.pluralApiName}#${model.singularApiName}#${
-                        model.savedOn || "savedOn:plugin"
-                    }`;
-                })
-                .join("/"),
-            identity: context.security.isAuthorizationEnabled() ? getIdentity()?.id : undefined
-        });
-        return listPluginModelsCache.getOrSet(cacheKey, async () => {
-            const models = modelPlugins
-                /**
-                 * We need to filter out models that are not for this tenant or locale.
-                 * If it does not have tenant or locale define, it is for every locale and tenant
-                 */
-                .filter(plugin => {
-                    const { tenant: modelTenant, locale: modelLocale } = plugin.contentModel;
-                    if (modelTenant && modelTenant !== tenant) {
-                        return false;
-                    } else if (modelLocale && modelLocale !== locale) {
-                        return false;
-                    }
-                    return true;
-                })
-                .map(plugin => {
-                    return {
-                        ...plugin.contentModel,
-                        tags: ensureTypeTag(plugin.contentModel),
-                        tenant,
-                        locale,
-                        webinyVersion: context.WEBINY_VERSION
-                    };
-                }) as unknown as CmsModel[];
-
-            return filterAsync(models, async model => {
-                return accessControl.canAccessModel({ model });
-            });
-        });
-    };
-
-    const getModelFromCache = async (modelId: string) => {
-        const models = await listModels();
-        const model = models.find(m => m.modelId === modelId);
-        if (!model) {
-            throw new NotFoundError(`Content model "${modelId}" was not found!`);
-        }
-
-        return {
-            ...model,
-            tags: ensureTypeTag(model),
-            tenant: model.tenant || getTenant().id
-        };
     };
 
     /**
@@ -226,97 +161,24 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         const result = await useCase.execute(input);
 
         if (result.isFail()) {
-            const code = result.error.code;
             throw new WebinyError(result.error.message, result.error.code, result.error.data);
         }
 
         return result.value;
     };
     const updateModel: CmsModelContext["updateModel"] = async (modelId, input) => {
-        await accessControl.ensureCanAccessModel({ rwd: "w" });
+        // Delegate to new UpdateModel use case
+        const useCase = context.container.resolve(UpdateModelUseCase);
+        const result = await useCase.execute(modelId, input);
 
-        // Get a model record; this will also perform ownership validation.
-        const original = await getModel(modelId);
-
-        const result = await createModelUpdateValidation().safeParseAsync(input);
-        if (!result.success) {
-            throw createZodError(result.error);
+        if (result.isFail()) {
+            throw new WebinyError(result.error.message, result.error.code, result.error.data);
         }
 
-        const data = removeUndefinedValues(result.data);
+        // Update manager after successful update
+        await updateManager(context, result.value);
 
-        if (Object.keys(data).length === 0) {
-            /**
-             * We need to return the original if nothing is to be updated.
-             */
-            return original;
-        }
-        let group: CmsModelGroup = {
-            id: original.group.id,
-            name: original.group.name
-        };
-        const groupId = data.group;
-        if (groupId) {
-            const groupData = await context.cms.getGroup(groupId);
-            group = {
-                id: groupData.id,
-                name: groupData.name
-            };
-        }
-        const model: CmsModel = {
-            ...original,
-            ...data,
-            titleFieldId:
-                data.titleFieldId === undefined
-                    ? original.titleFieldId
-                    : (data.titleFieldId as string),
-            descriptionFieldId:
-                data.descriptionFieldId === undefined
-                    ? original.descriptionFieldId
-                    : data.descriptionFieldId,
-            imageFieldId:
-                data.imageFieldId === undefined ? original.imageFieldId : data.imageFieldId,
-            group,
-            description: data.description || original.description,
-            tenant: original.tenant || getTenant().id,
-            webinyVersion: context.WEBINY_VERSION,
-            savedOn: new Date().toISOString()
-        };
-
-        await accessControl.ensureCanAccessModel({ model, rwd: "w" });
-
-        model.tags = ensureTypeTag(model);
-
-        try {
-            await onModelBeforeUpdate.publish({
-                input: data,
-                original,
-                model
-            });
-
-            const resultModel = await storageOperations.models.update({
-                model
-            });
-
-            await updateManager(context, resultModel);
-
-            await onModelAfterUpdate.publish({
-                input: data,
-                original,
-                model: resultModel
-            });
-
-            return resultModel;
-        } catch (ex) {
-            await onModelUpdateError.publish({
-                input: data,
-                model,
-                original,
-                error: ex
-            });
-
-            throw ex;
-        }
+        return result.value;
     };
     const updateModelDirect: CmsModelContext["updateModelDirect"] = async params => {
         const { model: initialModel, original } = params;
@@ -408,7 +270,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             },
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),
-            lockedFields: [],
             webinyVersion: context.WEBINY_VERSION
         };
 
@@ -447,46 +308,16 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         }
     };
     const deleteModel: CmsModelContext["deleteModel"] = async modelId => {
-        await accessControl.ensureCanAccessModel({ rwd: "d" });
+        // Delegate to new DeleteModel use case
+        const useCase = context.container.resolve(DeleteModelUseCase);
+        const result = await useCase.execute(modelId);
 
-        const model = await getModel(modelId);
-
-        await accessControl.ensureCanAccessModel({ model, rwd: "d" });
-
-        try {
-            await onModelBeforeDelete.publish({
-                model
-            });
-
-            try {
-                await storageOperations.models.delete({
-                    model
-                });
-            } catch (ex) {
-                throw new WebinyError(
-                    ex.message || "Could not delete the content model",
-                    ex.code || "CONTENT_MODEL_DELETE_ERROR",
-                    {
-                        error: ex,
-                        modelId: model.modelId
-                    }
-                );
-            }
-
-            clearModelsCache();
-
-            await onModelAfterDelete.publish({
-                model
-            });
-
-            managers.delete(model.modelId);
-        } catch (ex) {
-            await onModelDeleteError.publish({
-                model,
-                error: ex
-            });
-            throw ex;
+        if (result.isFail()) {
+            throw new WebinyError(result.error.message, result.error.code, result.error.data);
         }
+
+        // Clean up manager after successful deletion
+        managers.delete(modelId);
     };
     const initializeModel: CmsModelContext["initializeModel"] = async (modelId, data) => {
         /**

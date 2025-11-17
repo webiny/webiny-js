@@ -1,5 +1,5 @@
 import type { CmsIdentity } from "./identity.js";
-import type { CmsModelField, CmsModelFieldInput, LockedField } from "./modelField.js";
+import type { CmsModelField, CmsModelFieldInput } from "./modelField.js";
 import type { CmsModelGroup } from "./modelGroup.js";
 
 /**
@@ -82,10 +82,6 @@ export interface CmsModel {
      * Models can be tagged to give them contextual meaning.
      */
     tags?: string[];
-    /**
-     * List of locked fields. Updated when entry is saved and a field has been used.
-     */
-    lockedFields?: LockedField[];
     /**
      * The field that is used as an entry title.
      * If not specified by the user, the system tries to assign the first available `text` field.

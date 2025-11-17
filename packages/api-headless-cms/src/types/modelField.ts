@@ -226,31 +226,6 @@ export interface CmsModelUpdateInput {
 }
 
 /**
- * Locked field in the content model
- *
- * @see CmsModel.lockedFields
- *
- * @category ModelField
- */
-export interface LockedField {
-    /**
-     * Locked field storage ID - one used to store values.
-     * We cannot change this due to old systems.
-     */
-    fieldId: string;
-    /**
-     * Is the field multiple values field?
-     */
-    multipleValues: boolean;
-    /**
-     * Field type.
-     */
-    type: string;
-
-    [key: string]: any;
-}
-
-/**
  * Object containing content model field renderer options.
  *
  * @category CmsModelField
