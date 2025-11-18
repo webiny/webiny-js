@@ -16,6 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/api": "0.0.0",
+    "@webiny/api-core": "0.0.0",
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/error": "0.0.0",
     "@webiny/feature": "0.0.0",
@@ -29,6 +30,7 @@
     "@webiny/db-dynamodb": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/project-utils": "0.0.0",
+    "@webiny/wcp": "0.0.0",
     "jest-dynalite": "^3.6.1",
     "rimraf": "^6.0.1",
     "typescript": "5.9.3",

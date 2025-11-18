@@ -1,10 +1,10 @@
 import type { Plugin } from "@webiny/plugins/Plugin";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import type { ScheduleContext } from "~/types.js";
 import { SecurityPermission } from "@webiny/api-core/types/security";
 import { IdentityData } from "@webiny/api-core/features/IdentityContext";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 interface Config {
     permissions: SecurityPermission[];
@@ -19,7 +19,7 @@ export const defaultIdentity: IdentityData = {
 
 export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plugin[] => {
     return [
-        new ContextPlugin<ScheduleContext>(async context => {
+        new ContextPlugin<ApiCoreContext>(async context => {
             await context.tenancy.createTenant({
                 id: "root",
                 name: "Root",
@@ -52,7 +52,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
                 tags: []
             });
         }),
-        new ContextPlugin<ScheduleContext>(async context => {
+        new ContextPlugin<ApiCoreContext>(async context => {
             context.tenancy.setCurrentTenant({
                 id: "root",
                 name: "Root",
@@ -72,7 +72,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plu
                 return permissions || [{ name: "*" }];
             });
         }),
-        new BeforeHandlerPlugin<ScheduleContext>(context => {
+        new BeforeHandlerPlugin<ApiCoreContext>(context => {
             const { headers = {} } = context.request || {};
             if (headers["authorization"]) {
                 return context.security.authenticate(headers["authorization"]);

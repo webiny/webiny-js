@@ -1,8 +1,4 @@
-import { SchedulerService } from "~/service/SchedulerService.js";
-import type {
-    ISchedulerServiceCreateInput,
-    ISchedulerServiceUpdateInput
-} from "~/service/types.js";
+import { EventBridgeSchedulerService } from "~/features/SchedulerService/EventBridgeSchedulerService.js";
 import { WebinyError } from "@webiny/error";
 import { mockClient } from "aws-sdk-client-mock";
 import {
@@ -13,6 +9,9 @@ import {
     UpdateScheduleCommand
 } from "@webiny/aws-sdk/client-scheduler/index.js";
 import { describe, expect, it, vi } from "vitest";
+import type { ISchedulerService } from "~/shared/abstractions.js";
+
+type SchedulerServiceCreateInput = Parameters<ISchedulerService["create"]>[0];
 
 describe("SchedulerService", () => {
     const lambdaArn = "arn:aws:lambda:us-east-1:123456789012:function:test";
@@ -30,32 +29,23 @@ describe("SchedulerService", () => {
             }
         });
 
-        const service = new SchedulerService({
-            getClient: () => client,
-            config
-        });
+        const service = new EventBridgeSchedulerService(() => client, config);
 
-        const input: ISchedulerServiceCreateInput = {
+        const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
             scheduleOn: new Date(Date.now() + 1000000)
         };
 
-        const result = await service.create(input);
-        expect(result).toEqual({
-            $metadata: {
-                httpStatusCode: 999
-            }
-        });
+        await service.create(input);
+        // We are simply testing if running the service succeeds.
+        // The service returns `void`, so there's no value to expect.
     });
 
     it("throws if creating a schedule in the past", async () => {
         const client = mockClient(SchedulerClient);
-        const service = new SchedulerService({
-            getClient: () => client,
-            config
-        });
+        const service = new EventBridgeSchedulerService(() => client, config);
 
-        const input: ISchedulerServiceCreateInput = {
+        const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
             scheduleOn: new Date(Date.now() - 100000)
         };
@@ -66,7 +56,7 @@ describe("SchedulerService", () => {
         } catch (ex) {
             expect(ex).toBeInstanceOf(WebinyError);
             expect(ex.message).toContain(
-                `Cannot create a schedule for "schedule-1" with date in the past:`
+                `Cannot create a schedule for "schedule-1" with date in the past`
             );
         }
     });
@@ -84,33 +74,23 @@ describe("SchedulerService", () => {
             }
         });
 
-        const service = new SchedulerService({
-            getClient: () => client,
-            config
-        });
+        const service = new EventBridgeSchedulerService(() => client, config);
 
-        const input: ISchedulerServiceUpdateInput = {
+        const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
             scheduleOn: new Date(Date.now() + 1000000)
         };
 
-        const result = await service.update(input);
-
-        expect(result).toEqual({
-            $metadata: {
-                httpStatusCode: 999
-            }
-        });
+        await service.update(input);
+        // We are simply testing if running the service succeeds.
+        // The service returns `void`, so there's no value to expect.
     });
 
     it("throws if updating a schedule in the past", async () => {
         const client = mockClient(SchedulerClient);
-        const service = new SchedulerService({
-            getClient: () => client,
-            config
-        });
+        const service = new EventBridgeSchedulerService(() => client, config);
 
-        const input: ISchedulerServiceUpdateInput = {
+        const input: SchedulerServiceCreateInput = {
             id: "schedule-1",
             scheduleOn: new Date(Date.now())
         };
@@ -121,41 +101,31 @@ describe("SchedulerService", () => {
         } catch (ex) {
             expect(ex).toBeInstanceOf(WebinyError);
             expect(ex.message).toContain(
-                `Cannot update an existing schedule for "schedule-1" with date in the past:`
+                `Cannot update an existing schedule for "schedule-1" with date in the past`
             );
         }
     });
 
     it("deletes a schedule successfully if it exists", async () => {
         const client = mockClient(SchedulerClient);
-
         client.on(DeleteScheduleCommand).resolves({
             $metadata: {
                 httpStatusCode: 999
             }
         });
 
-        const service = new SchedulerService({
-            getClient: () => client,
-            config
-        });
+        const service = new EventBridgeSchedulerService(() => client, config);
         vi.spyOn(service, "exists").mockResolvedValue(true);
 
-        const result = await service.delete("schedule-1");
+        await service.delete("schedule-1");
 
-        expect(result).toEqual({
-            $metadata: {
-                httpStatusCode: 999
-            }
-        });
+        // We are simply testing if running the service succeeds.
+        // The service returns `void`, so there's no value to expect.
     });
 
     it("does not delete a schedule if it does not exist", async () => {
         const client = mockClient(SchedulerClient);
-        const service = new SchedulerService({
-            getClient: () => client,
-            config
-        });
+        const service = new EventBridgeSchedulerService(() => client, config);
         vi.spyOn(service, "exists").mockResolvedValue(false);
 
         try {
@@ -177,10 +147,7 @@ describe("SchedulerService", () => {
             }
         });
 
-        const service = new SchedulerService({
-            getClient: () => client,
-            config
-        });
+        const service = new EventBridgeSchedulerService(() => client, config);
 
         const result = await service.exists("schedule-1");
 
@@ -194,10 +161,8 @@ describe("SchedulerService", () => {
             error.name = "ResourceNotFoundException";
             throw error;
         });
-        const service = new SchedulerService({
-            getClient: () => client,
-            config
-        });
+
+        const service = new EventBridgeSchedulerService(() => client, config);
 
         const result = await service.exists("schedule-1");
         expect(result).toBe(false);
@@ -208,13 +173,9 @@ describe("SchedulerService", () => {
         client.on(GetScheduleCommand).callsFake(async () => {
             throw new Error("Unknown error.");
         });
-        const service = new SchedulerService({
-            getClient: () => client,
-            config
-        });
 
-        const result = await service.exists("schedule-1");
+        const service = new EventBridgeSchedulerService(() => client, config);
 
-        expect(result).toEqual(false);
+        await expect(() => service.exists("schedule-1")).rejects.toThrow();
     });
 });

@@ -1,10 +1,10 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { PutCommand } from "@webiny/aws-sdk/client-dynamodb/index.js";
-import type { ScheduleContext } from "~/types.js";
 import { ContextPlugin } from "@webiny/api";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 export const createSchedulerManifestPlugin = () => {
-    return new ContextPlugin<ScheduleContext>(async context => {
+    return new ContextPlugin<ApiCoreContext>(async context => {
         const manifest = {
             lambdaArn: "arn:aws:lambda:us-east-1:123456789012:function:my-scheduler-function",
             roleArn: "arn:aws:iam::123456789012:role/my-scheduler-role"

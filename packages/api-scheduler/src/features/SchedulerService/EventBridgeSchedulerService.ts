@@ -7,6 +7,7 @@ import {
     GetScheduleCommand,
     type SchedulerClient
 } from "@webiny/aws-sdk/client-scheduler";
+import { NotFoundError } from "@webiny/handler-graphql";
 
 export interface ISchedulerConfig {
     lambdaArn: string;
@@ -27,15 +28,18 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         private config: ISchedulerConfig
     ) {}
 
-    async create(params: { id: string; scheduleOn: Date; payload: any }): Promise<void> {
+    async create(params: { id: string; scheduleOn: Date; payload?: any }): Promise<void> {
         const { id, scheduleOn, payload } = params;
 
         // Validate date is in future
         if (scheduleOn <= new Date()) {
             throw new WebinyError(
-                "Cannot schedule in the past",
+                `Cannot create a schedule for "${id}" with date in the past`,
                 "INVALID_SCHEDULE_DATE",
-                { scheduleOn, id }
+                {
+                    scheduleOn,
+                    id
+                }
             );
         }
 
@@ -65,13 +69,13 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
         );
     }
 
-    async update(params: { id: string; scheduleOn: Date; payload: any }): Promise<void> {
+    async update(params: { id: string; scheduleOn: Date; payload?: any }): Promise<void> {
         const { id, scheduleOn, payload } = params;
 
         // Validate date is in future
         if (scheduleOn <= new Date()) {
             throw new WebinyError(
-                "Cannot schedule in the past",
+                `Cannot update an existing schedule for "${id}" with date in the past`,
                 "INVALID_SCHEDULE_DATE",
                 { scheduleOn, id }
             );
@@ -99,14 +103,15 @@ export class EventBridgeSchedulerService implements SchedulerService.Interface {
     async delete(id: string): Promise<void> {
         const client = this.getClient();
 
+        const exists = await this.exists(id);
+        if (!exists) {
+            throw new WebinyError(`Cannot delete schedule "${id}" because it does not exist.`);
+        }
+
         try {
             await client.send(new DeleteScheduleCommand({ Name: id }));
         } catch (ex) {
-            // Ignore if schedule doesn't exist
-            if (ex.name === "ResourceNotFoundException") {
-                return;
-            }
-            throw ex;
+            throw WebinyError.from(ex);
         }
     }
 

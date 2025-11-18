@@ -1,29 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useHandler } from "~tests/mocks/context/useHandler.js";
-import { createMockScheduleClient } from "~tests/mocks/scheduleClient.js";
 import { SCHEDULE_MODEL_ID, SCHEDULED_CMS_ACTION_EVENT_IDENTIFIER } from "~/constants.js";
-import { type IScheduleEntryValues, ScheduleType } from "~/scheduler/types.js";
 import type { CmsContext, CmsEntry } from "@webiny/api-headless-cms/types/index.js";
-import {
-    createScheduleRecordId,
-    createScheduleRecordIdWithVersion
-} from "~/scheduler/createScheduleRecordId.js";
-import { MOCK_TARGET_MODEL_ID } from "~tests/mocks/targetModel.js";
-import { dateToISOString } from "~/scheduler/dates.js";
-import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
-import { ProcessRecordsUseCase } from "~/features/ProcessRecords/ProcessRecordsUseCase.js";
-import {
-    ProcessRecordsUseCase as ProcessRecordsAbstraction,
-    RecordAction
-} from "~/features/ProcessRecords/index.js";
-import { UnpublishRecordAction } from "~/features/ProcessRecords/actions/UnpublishRecordAction.js";
-import { PublishRecordAction } from "~/features/ProcessRecords/actions/PublishRecordAction.js";
-import { SchedulerFactory } from "~/features/Scheduler/abstractions";
-
-const createEventScheduleRecordId = (targetId: string): string => {
-    return `${createScheduleRecordIdWithVersion(targetId)}`;
-};
+import { createMockScheduleClient } from "./mocks/scheduleClient";
+import { createScheduleRecordId } from "./domain/createScheduleRecordId";
 
 describe("Handler", () => {
     const targetId = "target-id#0001";
@@ -38,24 +18,6 @@ describe("Handler", () => {
         });
         context = await contextHandler.handler();
     });
-
-    const createScheduleEntry = async (
-        values: Omit<IScheduleEntryValues, "targetModelId">
-    ): Promise<CmsEntry<IScheduleEntryValues>> => {
-        const getModel = context.container.resolve(GetModelUseCase);
-        const createEntry = context.container.resolve(CreateEntryUseCase);
-
-        const modelResult = await getModel.execute(SCHEDULE_MODEL_ID);
-        const model = modelResult.value;
-
-        const res = await createEntry.execute(model, {
-            id: createScheduleRecordId(values.targetId),
-            ...values,
-            targetModelId: MOCK_TARGET_MODEL_ID
-        });
-
-        return res.value as CmsEntry<IScheduleEntryValues>;
-    };
 
     it("should fail to handle due to missing schedule entry", async () => {
         const testContainer = context.container.createChildContainer();

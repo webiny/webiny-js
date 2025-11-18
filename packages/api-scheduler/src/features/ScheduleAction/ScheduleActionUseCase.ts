@@ -8,6 +8,7 @@ import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstrac
 import { ScheduledActionModel, SchedulerService } from "~/shared/abstractions.js";
 import type { IScheduledAction, ISchedulerInput, Identity } from "~/shared/abstractions.js";
 import { ScheduledActionPersistenceError, SchedulerServiceError } from "~/domain/errors.js";
+import { createScheduleRecordIdWithVersion } from "~/domain/createScheduleRecordId.js";
 
 /**
  * Schedules an action for future execution
@@ -42,7 +43,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         const identity = this.identityContext.getIdentity();
 
         // Generate unique schedule ID
-        const scheduleId = this.generateScheduleId(namespace, actionType, targetId);
+        const scheduleId = createScheduleRecordIdWithVersion(targetId);
 
         const existingResult = await this.getScheduledAction.execute(scheduleId);
 
@@ -187,18 +188,6 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
             scheduledOn: input.scheduleOn,
             payload
         });
-    }
-
-    /**
-     * Generates a unique schedule ID from namespace + actionType + targetId
-     *
-     * Format: "namespace-actionType-targetId" with special chars replaced
-     * Example: "Cms_Entry_Article-Publish-article-1#0001"
-     */
-    private generateScheduleId(namespace: string, actionType: string, targetId: string): string {
-        // TODO: is this really necessary?
-        const namespaceNormalized = namespace.replace(/\//g, "_");
-        return `${namespaceNormalized}-${actionType}-${targetId}`;
     }
 }
 

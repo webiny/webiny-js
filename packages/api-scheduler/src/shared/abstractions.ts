@@ -65,8 +65,8 @@ export namespace ScheduledActionHandler {
  * Abstracts the underlying scheduling infrastructure (AWS EventBridge, Azure Logic Apps, etc.)
  */
 export interface ISchedulerService {
-    create(params: { id: string; scheduleOn: Date; payload: any }): Promise<void>;
-    update(params: { id: string; scheduleOn: Date; payload: any }): Promise<void>;
+    create(params: { id: string; scheduleOn: Date; payload?: any }): Promise<void>;
+    update(params: { id: string; scheduleOn: Date; payload?: any }): Promise<void>;
     delete(id: string): Promise<void>;
     exists(id: string): Promise<boolean>;
 }

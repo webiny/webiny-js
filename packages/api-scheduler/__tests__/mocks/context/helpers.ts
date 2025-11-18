@@ -47,10 +47,6 @@ export const createPermissions = (permissions?: PermissionsArg[]): PermissionsAr
         },
         {
             name: "cms.endpoint.preview"
-        },
-        {
-            name: "content.i18n",
-            locales: ["en-US", "de-DE"]
         }
     ];
 };

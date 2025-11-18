@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
     createScheduleRecordId,
     createScheduleRecordIdWithVersion
-} from "~/scheduler/createScheduleRecordId.js";
+} from "~/domain/createScheduleRecordId.js";
 import { SCHEDULE_ID_PREFIX } from "~/constants.js";
 
 describe("createScheduleRecordId", () => {
