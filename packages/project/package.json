@@ -30,7 +30,7 @@
     "exit-hook": "^4.0.0",
     "fast-glob": "^3.3.3",
     "find-up": "^5.0.0",
-    "graphql-request": "^7.2.0",
+    "graphql-request": "^7.3.3",
     "humanize-duration": "3.33.1",
     "jsdom": "^25.0.1",
     "lodash": "^4.17.21",

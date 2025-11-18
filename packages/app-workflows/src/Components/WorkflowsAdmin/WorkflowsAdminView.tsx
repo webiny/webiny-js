@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import type { IWorkflowApplication } from "~/types.js";
-// import { WorkflowsApplications } from "./WorkflowsApplications.js";
 import { WorkflowEditor } from "./WorkflowEditor.js";
 import {
     LeftPanel,

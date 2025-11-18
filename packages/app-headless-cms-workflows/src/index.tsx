@@ -11,6 +11,7 @@ import {
 } from "~/Components/ContentEntryForm/index.js";
 import { CmsEntriesWorkflowStateListFooterMenu } from "~/Components/CmsEntriesWorkflowStateList/index.js";
 import { ListOpenInNewWindow } from "~/Components/OptionItem/OpenInNewWindow.js";
+import { CmsEntryFormCreateNewRevisionButton } from "~/Components/ContentEntryForm/CmsEntryFormCreateNewRevisionButton.js";
 
 export const CmsWorkflows = () => {
     return (
@@ -24,6 +25,7 @@ export const CmsWorkflows = () => {
             <CmsEntryFormScheduleMenuItemAction />
             <CmsEntryFormSaveAndPublishButton />
             <CmsEntryFormSaveButton />
+            <CmsEntryFormCreateNewRevisionButton />
         </Wcp.CanUseWorkflows>
     );
 };

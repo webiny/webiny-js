@@ -1,6 +1,7 @@
 import React from "react";
 import { Dialog, Grid } from "@webiny/admin-ui";
 import { ReactComponent as StartIcon } from "@webiny/icons/check.svg";
+import { YouCanTrackAllContentReviewsHere } from "~/Components/Common/index.js";
 
 interface ITakeOverSuccessDialogProps {
     hide(): void;
@@ -33,7 +34,7 @@ export const TakeOverSuccessDialog = (props: ITakeOverSuccessDialogProps) => {
                     <strong>{title}</strong> content review successfully taken over.
                 </Grid.Column>
                 <Grid.Column span={12}>
-                    You can track all Content Reviews <u>here</u>.
+                    <YouCanTrackAllContentReviewsHere />
                 </Grid.Column>
             </Grid>
         </Dialog>

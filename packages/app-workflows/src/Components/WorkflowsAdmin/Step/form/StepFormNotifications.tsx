@@ -37,7 +37,6 @@ export const StepFormNotifications = () => {
                 return (
                     <CheckboxGroup
                         label={"Notifications"}
-                        // TODO figure out how to add possible notifications
                         items={items}
                         value={convertInputValue(value)}
                         onChange={(input: string[]) => {
