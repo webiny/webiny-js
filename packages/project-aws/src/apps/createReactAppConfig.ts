@@ -2,7 +2,7 @@ import path from "path";
 import invariant from "invariant";
 import { getStackOutput } from "@webiny/project";
 import { type GetApp } from "@webiny/project/abstractions/index.js";
-import { type BuildAppConfigOverrides, createBuildApp, createWatchApp } from "@webiny/build-tools";
+import { type BuildAppConfigOverrides, createBuildAdmin, createWatchAdmin } from "@webiny/build-tools";
 import { type PulumiAppModule } from "@webiny/pulumi";
 import { type Unwrap } from "@pulumi/pulumi";
 
@@ -149,14 +149,14 @@ function createEmptyReactConfig(options: RunCommandOptions): ReactAppConfig {
 
             await loadEnvVars();
 
-            return createBuildApp({ cwd: process.cwd(), overrides: createOverrides() })(options);
+            return createBuildAdmin({ cwd: process.cwd(), overrides: createOverrides() })(options);
         },
         async watch() {
             invariant(options.env, NO_ENV_MESSAGE);
 
             await loadEnvVars();
 
-            return createWatchApp({ cwd: process.cwd(), overrides: createOverrides() })(options);
+            return createWatchAdmin({ cwd: process.cwd(), overrides: createOverrides() })(options);
         }
     };
 

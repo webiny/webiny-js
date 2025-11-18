@@ -1,4 +1,4 @@
-import "tsx";
+import "tsx/esm";
 import { requireConfigWithExecute } from "./utils/requireConfig.js";
 import { serializeError } from "serialize-error";
 
