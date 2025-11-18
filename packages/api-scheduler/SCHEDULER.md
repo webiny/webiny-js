@@ -66,14 +66,20 @@ The scheduler becomes a **generic action scheduler** similar to how EventPublish
 
 ### Key Design Decisions
 
-1. **Action Identifier**: Hierarchical string format `{namespace}/{entity}/{operation}`
-   - Examples: `"Cms/Entry/Publish"`, `"Mailer/Email/Send"`, `"Website/Page/Delete"`
+1. **Action Identifier**: Separate `namespace` and `actionType` fields
+   - **namespace**: Identifies the resource scope (e.g., `"Cms/Entry/Article"`, `"Mailer/Email"`)
+   - **actionType**: Identifies the operation (e.g., `"Publish"`, `"Unpublish"`, `"Send"`)
+   - **Why separate**: Enables efficient queries by namespace (e.g., "all scheduled actions for Article model")
+   - Examples:
+     - `namespace: "Cms/Entry/Article", actionType: "Publish"`
+     - `namespace: "Cms/Entry/Product", actionType: "Unpublish"`
+     - `namespace: "Mailer/Email", actionType: "Send"`
 
 2. **No CMS-specific logic in core** - All CMS logic moves to handlers
 
 3. **Apps register handlers** - Just like event handlers
 
-4. **Method parameter pattern** - `actionId` passed as parameter (varies per request)
+4. **Method parameter pattern** - `namespace` and `actionType` passed as parameters (vary per request)
 
 5. **No god objects** - No `context.cms.scheduler`, use `context.container` to register and resolve implementations
 
@@ -317,7 +323,8 @@ return scheduleUseCase.execute(
  */
 export interface IScheduledAction {
     id: string;
-    actionId: string;        // "Cms/Entry/Publish", "Mailer/Email/Send"
+    namespace: string;       // Resource scope: "Cms/Entry/Article", "Mailer/Email"
+    actionType: string;      // Operation: "Publish", "Unpublish", "Send", "Delete"
     targetId: string;        // Resource identifier (entry ID, email ID, etc.)
     scheduledBy: Identity;
     scheduledOn: Date;
@@ -337,9 +344,10 @@ export interface ISchedulerInput {
  */
 export interface ISchedulerListParams {
     where?: {
-        actionId?: string;
-        targetId?: string;
-        scheduledBy?: string;
+        namespace?: string;      // Filter by resource scope
+        actionType?: string;     // Filter by operation type
+        targetId?: string;       // Filter by specific resource
+        scheduledBy?: string;    // Filter by who scheduled
         scheduledOn_gte?: string;
         scheduledOn_lte?: string;
     };
@@ -370,8 +378,11 @@ export interface ISchedulerListResponse {
 export interface IScheduledActionHandler {
     /**
      * Determines if this handler can handle the given action
+     *
+     * @param namespace - Resource scope (e.g., "Cms/Entry/Article")
+     * @param actionType - Operation type (e.g., "Publish")
      */
-    canHandle(actionId: string): boolean;
+    canHandle(namespace: string, actionType: string): boolean;
 
     /**
      * Executes the scheduled action
@@ -398,7 +409,8 @@ export namespace ScheduledActionHandler {
  */
 export interface IScheduleActionUseCase {
     execute(
-        actionId: string,
+        namespace: string,
+        actionType: string,
         targetId: string,
         input: ISchedulerInput,
         payload?: any
@@ -1096,12 +1108,13 @@ import { ScheduledActionHandler } from "@webiny/api-scheduler";
 import type { IScheduledAction } from "@webiny/api-scheduler";
 import { PublishEntryUseCase } from "~/features/contentEntry/PublishEntry/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
-import { CMS_ENTRY_PUBLISH_ACTION } from "../constants.js";
+import { CMS_ACTION_TYPES } from "../constants.js";
 
 /**
  * Handles scheduled publish actions for CMS entries
  *
- * Action ID: "Cms/Entry/Publish"
+ * Namespace: "Cms/Entry/{modelId}" (e.g., "Cms/Entry/Article")
+ * Action Type: "Publish"
  */
 class CmsEntryPublishHandlerImpl implements ScheduledActionHandler.Interface {
     constructor(
@@ -1109,14 +1122,17 @@ class CmsEntryPublishHandlerImpl implements ScheduledActionHandler.Interface {
         private getModel: GetModelUseCase.Interface
     ) {}
 
-    canHandle(actionId: string): boolean {
-        return actionId === CMS_ENTRY_PUBLISH_ACTION;
+    canHandle(namespace: string, actionType: string): boolean {
+        return namespace.startsWith("Cms/Entry/") && actionType === CMS_ACTION_TYPES.PUBLISH;
     }
 
     async handle(action: IScheduledAction): Promise<void> {
-        // Parse targetId to extract model and entry
-        // Format: "modelId#version" e.g., "product#0001"
-        const [modelId, version] = action.targetId.split("#");
+        // Extract model ID from namespace: "Cms/Entry/Article" -> "Article"
+        const modelId = action.namespace.split("/").pop()!;
+
+        // Parse targetId to extract entry version
+        // Format: "entryId#version" e.g., "article-1#0001"
+        const [entryId, version] = action.targetId.split("#");
 
         // Get model (could be cached in payload for optimization)
         const model = action.payload?.model || await this.getModel.execute(modelId);
@@ -1146,12 +1162,13 @@ import { ScheduledActionHandler } from "@webiny/api-scheduler";
 import type { IScheduledAction } from "@webiny/api-scheduler";
 import { UnpublishEntryUseCase } from "~/features/contentEntry/UnpublishEntry/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
-import { CMS_ENTRY_UNPUBLISH_ACTION } from "../constants.js";
+import { CMS_ACTION_TYPES } from "../constants.js";
 
 /**
  * Handles scheduled unpublish actions for CMS entries
  *
- * Action ID: "Cms/Entry/Unpublish"
+ * Namespace: "Cms/Entry/{modelId}" (e.g., "Cms/Entry/Article")
+ * Action Type: "Unpublish"
  */
 class CmsEntryUnpublishHandlerImpl implements ScheduledActionHandler.Interface {
     constructor(
@@ -1159,12 +1176,13 @@ class CmsEntryUnpublishHandlerImpl implements ScheduledActionHandler.Interface {
         private getModel: GetModelUseCase.Interface
     ) {}
 
-    canHandle(actionId: string): boolean {
-        return actionId === CMS_ENTRY_UNPUBLISH_ACTION;
+    canHandle(namespace: string, actionType: string): boolean {
+        return namespace.startsWith("Cms/Entry/") && actionType === CMS_ACTION_TYPES.UNPUBLISH;
     }
 
     async handle(action: IScheduledAction): Promise<void> {
-        const [modelId, version] = action.targetId.split("#");
+        const modelId = action.namespace.split("/").pop()!;
+        const [entryId, version] = action.targetId.split("#");
         const model = action.payload?.model || await this.getModel.execute(modelId);
 
         const result = await this.unpublishEntry.execute(model, action.targetId);
@@ -1188,10 +1206,21 @@ export const CmsEntryUnpublishHandler = ScheduledActionHandler.createImplementat
 
 ```typescript
 /**
- * CMS Scheduled Action IDs
+ * CMS Action Types
  */
-export const CMS_ENTRY_PUBLISH_ACTION = "Cms/Entry/Publish";
-export const CMS_ENTRY_UNPUBLISH_ACTION = "Cms/Entry/Unpublish";
+export const CMS_ACTION_TYPES = {
+    PUBLISH: "Publish",
+    UNPUBLISH: "Unpublish",
+    DELETE: "Delete"
+} as const;
+
+/**
+ * Helper to create CMS Entry namespace for a specific model
+ *
+ * @param modelId - Content model ID (e.g., "Article", "Product")
+ * @returns Namespace string (e.g., "Cms/Entry/Article")
+ */
+export const getCmsEntryNamespace = (modelId: string) => `Cms/Entry/${modelId}`;
 ```
 
 **File**: `packages/api-headless-cms/src/features/scheduler/feature.ts`
@@ -1264,7 +1293,7 @@ const createCmsSchedule = async (_, args, context) => {
 ```typescript
 import { ScheduleActionUseCase } from "@webiny/api-scheduler";
 import { PublishEntryUseCase } from "~/features/contentEntry/PublishEntry/index.js";
-import { CMS_ENTRY_PUBLISH_ACTION } from "../constants.js";
+import { getCmsEntryNamespace, CMS_ACTION_TYPES } from "../constants.js";
 
 const createCmsSchedule = async (_, args, context) => {
     // Get model
@@ -1286,10 +1315,11 @@ const createCmsSchedule = async (_, args, context) => {
     const scheduleUseCase = context.container.resolve(ScheduleActionUseCase);
 
     const result = await scheduleUseCase.execute(
-        CMS_ENTRY_PUBLISH_ACTION,        // "Cms/Entry/Publish"
-        args.id,                          // Entry ID e.g., "product#0001"
-        { scheduleOn: args.scheduleOn },  // When to schedule
-        { model }                         // Payload (optional, for optimization)
+        getCmsEntryNamespace(args.modelId),  // "Cms/Entry/Article"
+        CMS_ACTION_TYPES.PUBLISH,            // "Publish"
+        args.id,                              // Entry ID e.g., "article-1#0001"
+        { scheduleOn: args.scheduleOn },      // When to schedule
+        { model }                             // Payload (optional, for optimization)
     );
 
     return result;
@@ -1302,9 +1332,12 @@ const getCmsSchedule = async (_, args, context) => {
 
 const listCmsSchedules = async (_, args, context) => {
     const listUseCase = context.container.resolve(ListScheduledActionsUseCase);
+
+    // Query all scheduled actions for this model (all action types: publish, unpublish, delete, etc.)
     return listUseCase.execute({
         where: {
-            actionId: args.actionId,  // Filter by action ID
+            namespace: getCmsEntryNamespace(args.modelId),  // "Cms/Entry/Article" - gets ALL actions for Article model
+            actionType: args.actionType,  // Optional filter by specific action type
             ...args.where
         },
         sort: args.sort,
@@ -1620,10 +1653,14 @@ Start with Option A to avoid breaking changes. Later, if we want to consolidate,
 
 To demonstrate extensibility, here's how you'd add email scheduling:
 
-**Step 1: Define Action ID**
+**Step 1: Define Constants**
 ```typescript
 // packages/api-mailer/src/scheduler/constants.ts
-export const MAILER_EMAIL_SEND_ACTION = "Mailer/Email/Send";
+export const MAILER_ACTION_TYPES = {
+    SEND: "Send"
+} as const;
+
+export const MAILER_EMAIL_NAMESPACE = "Mailer/Email";
 ```
 
 **Step 2: Create Handler**
@@ -1632,8 +1669,8 @@ export const MAILER_EMAIL_SEND_ACTION = "Mailer/Email/Send";
 class MailerEmailSendHandlerImpl implements ScheduledActionHandler.Interface {
     constructor(private emailService: EmailService) {}
 
-    canHandle(actionId: string): boolean {
-        return actionId === MAILER_EMAIL_SEND_ACTION;
+    canHandle(namespace: string, actionType: string): boolean {
+        return namespace === MAILER_EMAIL_NAMESPACE && actionType === MAILER_ACTION_TYPES.SEND;
     }
 
     async handle(action: IScheduledAction): Promise<void> {
@@ -1675,9 +1712,10 @@ const scheduleEmail = async (_, args, context) => {
     const scheduleUseCase = context.container.resolve(ScheduleActionUseCase);
 
     return scheduleUseCase.execute(
-        MAILER_EMAIL_SEND_ACTION,
-        `email-${generateId()}`,
-        { scheduleOn: args.sendAt },
+        MAILER_EMAIL_NAMESPACE,         // "Mailer/Email"
+        MAILER_ACTION_TYPES.SEND,       // "Send"
+        `email-${generateId()}`,        // Unique email ID
+        { scheduleOn: args.sendAt },    // When to send
         {
             to: args.to,
             subject: args.subject,
