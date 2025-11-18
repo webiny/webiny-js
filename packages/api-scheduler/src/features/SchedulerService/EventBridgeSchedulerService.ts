@@ -1,5 +1,5 @@
 import { WebinyError } from "@webiny/error";
-import { SchedulerService } from "./abstractions.js";
+import { SchedulerService } from "~/shared/abstractions.js";
 import {
     CreateScheduleCommand,
     UpdateScheduleCommand,
@@ -21,9 +21,9 @@ export interface ISchedulerConfig {
  * Manages schedules in AWS EventBridge Scheduler for triggering Lambda functions
  * at specified future times.
  */
-class EventBridgeSchedulerServiceImpl implements SchedulerService.Interface {
+export class EventBridgeSchedulerService implements SchedulerService.Interface {
     constructor(
-        private getClient: (config?: any) => SchedulerClient,
+        private getClient: (config?: any) => Pick<SchedulerClient, "send">,
         private config: ISchedulerConfig
     ) {}
 
@@ -124,9 +124,3 @@ class EventBridgeSchedulerServiceImpl implements SchedulerService.Interface {
         }
     }
 }
-
-export const EventBridgeSchedulerService = SchedulerService.createImplementation({
-    implementation: EventBridgeSchedulerServiceImpl,
-    // Dependencies will be registered as instances in context
-    dependencies: []
-});

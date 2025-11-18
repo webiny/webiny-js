@@ -1,3 +1,4 @@
+import type { CmsModel } from "@webiny/api-headless-cms/types/model.js";
 import { createAbstraction } from "@webiny/feature/api";
 
 /**
@@ -14,46 +15,20 @@ export interface Identity {
  */
 export interface IScheduledAction {
     id: string;
-    namespace: string;       // Resource scope: "Cms/Entry/Article", "Mailer/Email"
-    actionType: string;      // Operation: "Publish", "Unpublish", "Send", "Delete"
-    targetId: string;        // Resource identifier (entry ID, email ID, etc.)
+    namespace: string; // Resource scope: "Cms/Entry/Article", "Mailer/Email"
+    actionType: string; // Operation: "Publish", "Unpublish", "Send", "Delete"
+    targetId: string; // Resource identifier (entry ID, email ID, etc.)
     scheduledBy: Identity;
     scheduledOn: Date;
-    payload?: any;           // Action-specific data
-    error?: string;          // Error if execution failed
+    payload?: any; // Action-specific data
+    error?: string; // Error if execution failed
 }
 
 /**
  * Scheduler Input - When to schedule
  */
 export interface ISchedulerInput {
-    scheduleOn: Date;        // Future date (required)
-}
-
-/**
- * List Parameters
- */
-export interface ISchedulerListParams {
-    where?: {
-        namespace?: string;      // Filter by resource scope
-        actionType?: string;     // Filter by operation type
-        targetId?: string;       // Filter by specific resource
-        scheduledBy?: string;    // Filter by who scheduled
-        scheduledOn_gte?: string;
-        scheduledOn_lte?: string;
-    };
-    sort?: Array<string>;
-    limit?: number;
-    after?: string;
-}
-
-export interface ISchedulerListResponse {
-    data: IScheduledAction[];
-    meta: {
-        hasMoreItems: boolean;
-        totalCount: number;
-        cursor: string | null;
-    };
+    scheduleOn: Date; // Future date (required)
 }
 
 /**
@@ -77,9 +52,8 @@ export interface IScheduledActionHandler {
     handle(action: IScheduledAction): Promise<void>;
 }
 
-export const ScheduledActionHandler = createAbstraction<IScheduledActionHandler>(
-    "ScheduledActionHandler"
-);
+export const ScheduledActionHandler =
+    createAbstraction<IScheduledActionHandler>("ScheduledActionHandler");
 
 export namespace ScheduledActionHandler {
     export type Interface = IScheduledActionHandler;
@@ -97,10 +71,17 @@ export interface ISchedulerService {
     exists(id: string): Promise<boolean>;
 }
 
-export const SchedulerService = createAbstraction<ISchedulerService>(
-    "SchedulerService"
-);
+export const SchedulerService = createAbstraction<ISchedulerService>("SchedulerService");
 
 export namespace SchedulerService {
     export type Interface = ISchedulerService;
+}
+
+/**
+ * ScheduledActionModel - A CMS model used by the scheduler for persistence.
+ */
+export const ScheduledActionModel = createAbstraction<CmsModel>("ScheduledActionModel");
+
+export namespace ScheduledActionModel {
+    export type Interface = CmsModel;
 }
