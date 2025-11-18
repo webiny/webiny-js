@@ -1,3 +1,4 @@
+// @ts-nocheck TODO migrate lifecycle events
 /**
  * We are attaching hooks so we can make sure that the scheduled jobs are removed.
  * This is due the possibility that the user publishes/unpublishes/deletes entry which is scheduled.

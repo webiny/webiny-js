@@ -1,889 +1,1698 @@
-# Scheduler Migration Plan
+# Scheduler Migration Plan - Generic Action Scheduler
 
 ## Overview
 
-This document outlines the migration plan for refactoring the scheduler component (`src/scheduler/`) to utilize the DI container, abstractions, and the features architecture pattern. The goal is to align the scheduler implementation with the same patterns used in the ProcessRecords feature.
+This document outlines the migration plan for refactoring the scheduler package from a CMS-specific implementation to a **generic action scheduler** that can be used by any application (Headless CMS, Mailer, Website Builder, etc.). The scheduler will use DI container, abstractions, and follow the same patterns as EventPublisher with EventHandlers.
 
 ## Current State Analysis
 
-### Current Architecture
+### Current Architecture (CMS-Specific)
 
-**Factory Pattern (`createScheduler.ts`)**
-- Factory function creates model-specific scheduler instances
-- Manually instantiates actions: `new PublishScheduleAction()`, `new UnpublishScheduleAction()`
-- No DI container usage - tight coupling
-- Comment exists: `// TODO: inject actions!!!` (line 51)
+**Package Name**: `@webiny/api-headless-cms-scheduler`
 
-**Core Components**
-1. **Scheduler** - Main interface (composition pattern)
-2. **ScheduleExecutor** - Coordinates action execution
-3. **ScheduleFetcher** - Retrieves schedule records
-4. **Schedule Actions** - PublishScheduleAction, UnpublishScheduleAction (implement IScheduleAction)
-5. **SchedulerService** - AWS EventBridge wrapper
+**Current Design**:
+- Tightly coupled to Headless CMS
+- Hard-coded `ScheduleType` enum (`publish`, `unpublish`)
+- `targetModel` is CMS model
+- **Two different "action" patterns** (confusing):
+  1. **Scheduling side** (`scheduler/actions/`): `PublishScheduleAction`, `UnpublishScheduleAction` - handle creating schedules
+  2. **Execution side** (`handler/actions/`): `PublishHandlerAction`, `UnpublishHandlerAction` - handle executing schedules
+- Factory pattern creates scheduler per model
+- Manual instantiation with no DI
+- `reschedule()` method mixed with `schedule()` logic
 
-### Current Dependency Flow
+**Current Flow - Scheduling Side**:
 ```
-createScheduler (factory)
-  ↓
-Manually creates:
-  - ScheduleFetcher
-  - PublishScheduleAction (with many dependencies)
-  - UnpublishScheduleAction (with many dependencies)
-  - ScheduleExecutor (with actions array)
-  - Scheduler (with fetcher + executor)
+GraphQL Mutation
+  → context.cms.scheduler(model)
+  → scheduler.schedule(entryId, { type: "publish" })
+  → ScheduleExecutor.schedule()
+  → PublishScheduleAction (decides: immediate vs. future, create vs. reschedule)
+       ├─ immediate → publishes entry directly
+       ├─ past date → updates metadata + publishes
+       └─ future date → creates DB entry + AWS EventBridge schedule
 ```
 
-## Problems with Current Implementation
+**Current Flow - Execution Side**:
+```
+AWS EventBridge (at scheduled time)
+  → Lambda invocation
+  → Handler.handle()
+  → PublishHandlerAction.handle()
+  → cms.publishEntry()
+  → Delete schedule entry
+```
 
-1. **Tight Coupling**: Actions are manually instantiated with all dependencies
-2. **No Abstraction Layer**: No proper abstraction for Scheduler, Executor, or Fetcher
-3. **Testing Difficulty**: Cannot easily mock dependencies
-4. **Extensibility Issues**: Adding new schedule types requires modifying factory
-5. **Inconsistent Patterns**: Handler layer uses DI but scheduler doesn't
-6. **Repeated Dependency Injection**: Each action receives same CMS dependencies manually
+### Problems with Current Implementation
 
-## Proposed Architecture
+1. **Not Reusable** - Only works for CMS entries
+2. **Hard-coded Types** - Can't schedule emails, page deletions, etc.
+3. **Two Action Patterns** - Confusing: scheduling actions vs. execution actions
+4. **Mixed Concerns** - Scheduling logic mixed with execution logic (immediate publish)
+5. **Tight Coupling** - Actions know about CMS models
+6. **No Abstraction** - Manual instantiation everywhere
+7. **God Object** - `context.cms.scheduler` is growing
+8. **No Extensibility** - Adding new action types requires code changes
+9. **Reschedule Complexity** - Separate `reschedule()` method instead of smart `schedule()`
+
+## Proposed Architecture - Generic Scheduler
+
+### Core Concept
+
+The scheduler becomes a **generic action scheduler** similar to how EventPublisher works:
+
+- **EventPublisher** publishes events → **EventHandlers** handle them
+- **Scheduler** schedules actions → **ScheduledActionHandlers** execute them
+
+### Key Design Decisions
+
+1. **Action Identifier**: Hierarchical string format `{namespace}/{entity}/{operation}`
+   - Examples: `"Cms/Entry/Publish"`, `"Mailer/Email/Send"`, `"Website/Page/Delete"`
+
+2. **No CMS-specific logic in core** - All CMS logic moves to handlers
+
+3. **Apps register handlers** - Just like event handlers
+
+4. **Method parameter pattern** - `actionId` passed as parameter (varies per request)
+
+5. **No god objects** - No `context.cms.scheduler`, use `context.container` to register and resolve implementations
+
+6. **Single action pattern** - Only `ScheduledActionHandler` (execution side)
+   - Scheduling side is generic use case logic (no action-specific behavior)
+
+7. **No separate reschedule** - `schedule()` detects existing schedules and updates them
+
+8. **No immediate execution in scheduler** - Apps use direct methods for immediate actions
+
+### Package Structure
+
+```
+packages/
+├── api-scheduler/                          # Generic scheduler (new)
+│   └── src/
+│       ├── shared/
+│       │   └── abstractions.ts             # Shared abstractions (ScheduledActionHandler, IScheduledAction, etc.)
+│       └── features/
+│           ├── ScheduleAction/
+│           │   ├── abstractions.ts
+│           │   ├── ScheduleActionUseCase.ts
+│           │   └── feature.ts
+│           ├── CancelScheduledAction/
+│           │   ├── abstractions.ts
+│           │   ├── CancelScheduledActionUseCase.ts
+│           │   └── feature.ts
+│           ├── GetScheduledAction/
+│           │   ├── abstractions.ts
+│           │   ├── GetScheduledActionUseCase.ts
+│           │   └── feature.ts
+│           ├── ListScheduledActions/
+│           │   ├── abstractions.ts
+│           │   ├── ListScheduledActionsUseCase.ts
+│           │   └── feature.ts
+│           └── ExecuteScheduledAction/
+│               ├── abstractions.ts
+│               ├── ExecuteScheduledActionUseCase.ts
+│               └── feature.ts
+│
+└── api-headless-cms-scheduler/                       # CMS handlers
+    └── src/
+        └── features/
+            └── scheduler/
+                ├── handlers/
+                │   ├── CmsEntryPublishHandler.ts
+                │   └── CmsEntryUnpublishHandler.ts
+                ├── graphql/
+                │   └── resolvers.ts             # CMS-specific GraphQL
+                ├── feature.ts
+                └── constants.ts
+```
+
+We need a new `api-headless-cms-scheduler` package for CMS-specific implementations, because `api-scheduler` internally depends on `api-headless-cms` for internal storage, and we would get a circular dependency.
+
+## Detailed Architecture
 
 ### Feature Structure
 
 ```
-src/features/Scheduler/
-├── abstractions.ts                          # All abstractions
+src/
 ├── index.ts                                 # Exports
-├── feature.ts                               # Feature registration
-├── ScheduleExecutorUseCase.ts               # Executor with DI
-├── ScheduleFetcherUseCase.ts                # Fetcher with DI
-├── ScheduleRecordUseCase.ts                 # Command: Schedule a record
-├── CancelScheduledRecordUseCase.ts          # Command: Cancel a schedule
-├── GetScheduledRecordUseCase.ts             # Query: Get single schedule
-├── ListScheduledRecordsUseCase.ts           # Query: List schedules
-├── ValidateNotPrivateModelDecorator.ts      # Validation decorator
-├── EventBridgeSchedulerService.ts           # AWS EventBridge wrapper
-└── actions/
-    ├── PublishScheduleAction.ts             # Publish action with DI
-    └── UnpublishScheduleAction.ts           # Unpublish action with DI
+└── features/
+    ├── shared/
+    │   └── abstractions.ts                  # Shared abstractions (ScheduledActionHandler, IScheduledAction, etc.)
+    ├── ScheduleAction/
+    │   ├── abstractions.ts                  # ScheduleActionUseCase abstraction
+    │   ├── ScheduleActionUseCase.ts         # Implementation
+    │   └── feature.ts                       # Feature registration
+    ├── CancelScheduledAction/
+    │   ├── abstractions.ts                  # CancelScheduledActionUseCase abstraction
+    │   ├── CancelScheduledActionUseCase.ts  # Implementation
+    │   └── feature.ts                       # Feature registration
+    ├── GetScheduledAction/
+    │   ├── abstractions.ts                  # GetScheduledActionUseCase abstraction
+    │   ├── GetScheduledActionUseCase.ts     # Implementation
+    │   └── feature.ts                       # Feature registration
+    ├── ListScheduledActions/
+    │   ├── abstractions.ts                  # ListScheduledActionsUseCase abstraction
+    │   ├── ListScheduledActionsUseCase.ts   # Implementation
+    │   └── feature.ts                       # Feature registration
+    └── ExecuteScheduledAction/
+        ├── abstractions.ts                  # ExecuteScheduledActionUseCase abstraction
+        ├── ExecuteScheduledActionUseCase.ts # Implementation
+        └── feature.ts                       # Feature registration
 ```
+
+### Consumer App Structure (Headless CMS Example)
+
+```
+packages/api-headless-cms-scheduler/src/features/scheduler/
+├── handlers/
+│   ├── CmsEntryPublishHandler.ts
+│   └── CmsEntryUnpublishHandler.ts
+├── graphql/
+│   └── resolvers.ts                         # CMS-specific GraphQL
+├── feature.ts                               # Registers CMS handlers
+└── constants.ts                             # Action ID constants
+```
+
+## Architecture Clarification: Scheduling vs. Execution
+
+### The Two Sides of Scheduling
+
+**OLD Architecture** had two confusing "action" patterns:
+- `scheduler/actions/PublishScheduleAction` - **Scheduling side** (create schedule)
+- `handler/actions/PublishHandlerAction` - **Execution side** (execute schedule)
+
+**NEW Architecture** has clear separation:
+
+#### 1. Scheduling Side (Generic Use Cases)
+
+**What**: Creating, updating, canceling schedules
+**When**: User calls GraphQL mutation to schedule an action
+**Where**: `ScheduleActionUseCase`, `CancelScheduledActionUseCase`
+
+**Logic (Generic)**:
+```
+// ScheduleActionUseCase.execute()
+1. Validate schedule date is in future
+2. Check if schedule already exists
+   - If exists: UPDATE existing schedule (reschedule)
+   - If new: CREATE new schedule
+3. Store schedule entry in database
+4. Create/update EventBridge schedule
+5. Return scheduled action
+```
+
+**Key Point**: This code knows NOTHING about publishing, emails, or any specific action. It just manages schedules.
+
+**Files to DELETE from old architecture**:
+- ❌ `scheduler/actions/PublishScheduleAction.ts`
+- ❌ `scheduler/actions/UnpublishScheduleAction.ts`
+- ❌ `scheduler/ScheduleExecutor.ts`
+- ❌ `scheduler/ScheduleFetcher.ts`
+
+#### 2. Execution Side (Orchestration + Handlers)
+
+**What**: Executing scheduled actions when EventBridge triggers
+**When**: EventBridge invokes Lambda at scheduled time
+**Where**: `ExecuteScheduledActionUseCase` orchestrates, `ScheduledActionHandler` implementations execute
+
+**Logic (Orchestration - Generic)**:
+```
+// ExecuteScheduledActionUseCase.execute()
+1. Fetch schedule entry from storage
+2. Set identity to the user who scheduled the action
+3. Get target model/context
+4. Find appropriate handler by actionId
+5. Execute handler
+6. Delete schedule entry on success
+7. Update with error on failure
+```
+
+**Logic (Handler - Action-Specific)**:
+```
+// CmsEntryPublishHandler.handle()
+1. Parse action data (targetId, payload)
+2. Execute business logic (publish entry, send email, etc.)
+3. Return success/failure
+```
+
+**Key Point**: `ExecuteScheduledActionUseCase` handles orchestration (generic), handlers contain business logic (app-specific).
+
+**Files to KEEP and migrate**:
+- ✅ `ProcessRecordsUseCase.ts` → rename to `ExecuteScheduledActionUseCase.ts` (generic orchestration)
+- ✅ `PublishRecordAction.ts` → becomes `CmsEntryPublishHandler.ts` in api-headless-cms-scheduler
+- ✅ `UnpublishRecordAction.ts` → becomes `CmsEntryUnpublishHandler.ts` in api-headless-cms-scheduler
+
+### What About `reschedule()`?
+
+**OLD**: Separate `reschedule()` method in `PublishScheduleAction`
+```typescript
+if (original) {
+    return action.reschedule(original, input);
+}
+return action.schedule(params);
+```
+
+**NEW**: Smart `schedule()` use case that detects existing schedules
+```typescript
+// ScheduleActionUseCase.execute()
+const existing = await this.fetcher.get(scheduleId);
+
+if (existing) {
+    // UPDATE existing schedule
+    await this.updateEntry(...);
+    await this.eventBridge.update(...);
+} else {
+    // CREATE new schedule
+    await this.createEntry(...);
+    await this.eventBridge.create(...);
+}
+```
+
+**Key Point**: "Reschedule" is just "schedule with existing record". No separate method needed.
+
+### What About Immediate Execution?
+
+**OLD**: `PublishScheduleAction` handles immediate execution
+```typescript
+if (input.immediately) {
+    await this.cms.publishEntry(this.targetModel, targetId);
+    return createScheduleRecord(...);
+}
+```
+
+**NEW**: Apps don't use scheduler for immediate execution
+
+**CMS GraphQL Resolver**:
+```typescript
+// For immediate publish
+if (args.immediately) {
+    const publishUseCase = context.container.resolve(PublishEntryUseCase);
+    return publishUseCase.execute(model, entryId);
+}
+
+// For scheduled publish
+const scheduleUseCase = context.container.resolve(ScheduleActionUseCase);
+return scheduleUseCase.execute(
+    "Cms/Entry/Publish",
+    entryId,
+    { scheduleOn: args.scheduleOn },
+    { model }
+);
+```
+
+**Key Point**: Scheduler is ONLY for future actions. Immediate actions use direct use cases.
 
 ## Migration Steps
 
-### Phase 1: Create Abstractions
+### Phase 1: Create Shared Abstractions
 
-**File**: `features/Scheduler/abstractions.ts`
+**File**: `src/abstractions.ts`
 
-Create the following abstractions:
-
-1. **ScheduleAction** - Abstraction for schedule actions (already exists as interface `IScheduleAction`)
-   ```typescript
-   export const ScheduleAction = createAbstraction<IScheduleAction>("ScheduleAction");
-   ```
-
-2. **ScheduleFetcher** - Abstraction for fetching schedule records
-   ```typescript
-   export interface IScheduleFetcherUseCase {
-       getScheduled(targetId: string): Promise<IScheduleRecord | null>;
-       listScheduled(params: ISchedulerListParams): Promise<ISchedulerListResponse>;
-   }
-   export const ScheduleFetcher = createAbstraction<IScheduleFetcherUseCase>("ScheduleFetcher");
-   ```
-
-3. **ScheduleExecutor** - Abstraction for executing schedules
-   ```typescript
-   export interface IScheduleExecutorUseCase {
-       schedule(targetId: string, input: ISchedulerInput): Promise<IScheduleRecord>;
-       cancel(id: string): Promise<IScheduleRecord>;
-   }
-   export const ScheduleExecutor = createAbstraction<IScheduleExecutorUseCase>("ScheduleExecutor");
-   ```
-
-4. **Individual Use Cases** - One responsibility per use case
-
-   **ScheduleRecord** - Create or update a schedule
-   ```typescript
-   export interface IScheduleRecordUseCase {
-       execute(targetModel: CmsModel, targetId: string, input: ISchedulerInput): Promise<IScheduleRecord>;
-   }
-   export const ScheduleRecordUseCase = createAbstraction<IScheduleRecordUseCase>("ScheduleRecordUseCase");
-   ```
-
-   **CancelScheduledRecord** - Cancel an existing schedule
-   ```typescript
-   export interface ICancelScheduledRecordUseCase {
-       execute(targetModel: CmsModel, id: string): Promise<IScheduleRecord>;
-   }
-   export const CancelScheduledRecordUseCase = createAbstraction<ICancelScheduledRecordUseCase>("CancelScheduledRecordUseCase");
-   ```
-
-   **GetScheduledRecord** - Get a single schedule
-   ```typescript
-   export interface IGetScheduledRecordUseCase {
-       execute(targetModel: CmsModel, id: string): Promise<IScheduleRecord | null>;
-   }
-   export const GetScheduledRecordUseCase = createAbstraction<IGetScheduledRecordUseCase>("GetScheduledRecordUseCase");
-   ```
-
-   **ListScheduledRecords** - List schedules with filtering
-   ```typescript
-   export interface IListScheduledRecordsUseCase {
-       execute(targetModel: CmsModel, params: ISchedulerListParams): Promise<ISchedulerListResponse>;
-   }
-   export const ListScheduledRecordsUseCase = createAbstraction<IListScheduledRecordsUseCase>("ListScheduledRecordsUseCase");
-   ```
-
-   **Note**: `targetModel` is passed as a method parameter, not injected via constructor. This is because the model varies per request while dependencies (executor, fetcher) remain constant.
-
-5. **SchedulerService** - AWS EventBridge abstraction (from service layer)
-   ```typescript
-   export const SchedulerService = createAbstraction<ISchedulerService>("SchedulerService");
-   ```
-
-
-### Phase 2: Refactor Actions to Use DI
-
-**Files**:
-- `features/Scheduler/actions/PublishScheduleAction.ts`
-- `features/Scheduler/actions/UnpublishScheduleAction.ts`
-
-**Current Dependencies** (manually injected):
-- `service: ISchedulerService`
-- `cms: PublishScheduleActionCms`
-- `targetModel: CmsModel` ← Now passed as method parameter
-- `schedulerModel: CmsModel` ← Injected as instance
-- `getIdentity: () => CmsIdentity` ← Injected as factory
-- `fetcher: IScheduleFetcher`
-
-**Proposed Approach**:
+#### 1.1 Scheduled Action Data Types
 
 ```typescript
-class PublishScheduleActionImpl implements ScheduleAction.Interface {
-    constructor(
-        private eventBridgeService: EventBridgeSchedulerService.Interface,
-        private schedulerModel: CmsModel, // Registered as instance
-        private getIdentity: () => CmsIdentity, // Registered as factory
-        // TODO: Create CMS use case abstractions for:
-        // - GetEntryByIdUseCase
-        // - PublishEntryUseCase
-        // - CreateEntryUseCase
-        // - UpdateEntryUseCase
-        // - DeleteEntryUseCase
-    ) {}
-
-    canHandle(input: ISchedulerInput): boolean {
-        return input.type === ScheduleType.publish;
-    }
-
-    async schedule(targetModel: CmsModel, params: IScheduleActionScheduleParams): Promise<IScheduleRecord> {
-        // targetModel passed as parameter
-        const { targetId, input, scheduleRecordId } = params;
-
-        // TODO: Use GetEntryByIdUseCase with targetModel
-        const targetEntry = await this.getEntryById.execute(targetModel, targetId);
-
-        // ... rest of implementation
-    }
-
-    // reschedule and cancel also receive targetModel as parameter
+/**
+ * Scheduled Action Record - The data stored for a scheduled action
+ */
+export interface IScheduledAction {
+    id: string;
+    actionId: string;        // "Cms/Entry/Publish", "Mailer/Email/Send"
+    targetId: string;        // Resource identifier (entry ID, email ID, etc.)
+    scheduledBy: Identity;
+    scheduledOn: Date;
+    payload?: any;           // Action-specific data
+    error?: string;          // Error if execution failed
 }
 
-export const PublishScheduleAction = ScheduleAction.createImplementation({
-    implementation: PublishScheduleActionImpl,
+/**
+ * Scheduler Input - When to schedule
+ */
+export interface ISchedulerInput {
+    scheduleOn: Date;        // Future date (required)
+}
+
+/**
+ * List Parameters
+ */
+export interface ISchedulerListParams {
+    where?: {
+        actionId?: string;
+        targetId?: string;
+        scheduledBy?: string;
+        scheduledOn_gte?: string;
+        scheduledOn_lte?: string;
+    };
+    sort?: Array<string>;
+    limit?: number;
+    after?: string;
+}
+
+export interface ISchedulerListResponse {
+    data: IScheduledAction[];
+    meta: {
+        hasMoreItems: boolean;
+        totalCount: number;
+        cursor: string | null;
+    };
+}
+```
+
+#### 1.2 ScheduledActionHandler Abstraction
+
+```typescript
+/**
+ * ScheduledActionHandler - Similar to EventHandler pattern
+ *
+ * Each application (CMS, Mailer, etc.) implements handlers for their actions.
+ * This is the ONLY action abstraction needed.
+ */
+export interface IScheduledActionHandler {
+    /**
+     * Determines if this handler can handle the given action
+     */
+    canHandle(actionId: string): boolean;
+
+    /**
+     * Executes the scheduled action
+     */
+    handle(action: IScheduledAction): Promise<void>;
+}
+
+export const ScheduledActionHandler = createAbstraction<IScheduledActionHandler>(
+    "ScheduledActionHandler"
+);
+
+export namespace ScheduledActionHandler {
+    export type Interface = IScheduledActionHandler;
+}
+```
+
+#### 1.3 Core Use Case Abstractions
+
+```typescript
+/**
+ * ScheduleActionUseCase - Schedule an action for future execution
+ *
+ * Handles both new schedules and rescheduling (update) automatically
+ */
+export interface IScheduleActionUseCase {
+    execute(
+        actionId: string,
+        targetId: string,
+        input: ISchedulerInput,
+        payload?: any
+    ): Promise<IScheduledAction>;
+}
+
+export const ScheduleActionUseCase = createAbstraction<IScheduleActionUseCase>(
+    "ScheduleActionUseCase"
+);
+
+export namespace ScheduleActionUseCase {
+    export type Interface = IScheduleActionUseCase;
+}
+
+/**
+ * CancelScheduledActionUseCase - Cancel a scheduled action
+ */
+export interface ICancelScheduledActionUseCase {
+    execute(id: string): Promise<IScheduledAction>;
+}
+
+export const CancelScheduledActionUseCase = createAbstraction<ICancelScheduledActionUseCase>(
+    "CancelScheduledActionUseCase"
+);
+
+export namespace CancelScheduledActionUseCase {
+    export type Interface = ICancelScheduledActionUseCase;
+}
+
+/**
+ * GetScheduledActionUseCase - Get a single scheduled action
+ */
+export interface IGetScheduledActionUseCase {
+    execute(id: string): Promise<IScheduledAction | null>;
+}
+
+export const GetScheduledActionUseCase = createAbstraction<IGetScheduledActionUseCase>(
+    "GetScheduledActionUseCase"
+);
+
+export namespace GetScheduledActionUseCase {
+    export type Interface = IGetScheduledActionUseCase;
+}
+
+/**
+ * ListScheduledActionsUseCase - List scheduled actions with filtering
+ */
+export interface IListScheduledActionsUseCase {
+    execute(params: ISchedulerListParams): Promise<ISchedulerListResponse>;
+}
+
+export const ListScheduledActionsUseCase = createAbstraction<IListScheduledActionsUseCase>(
+    "ListScheduledActionsUseCase"
+);
+
+export namespace ListScheduledActionsUseCase {
+    export type Interface = IListScheduledActionsUseCase;
+}
+```
+
+#### 1.4 Infrastructure Abstractions
+
+```typescript
+/**
+ * ExecuteScheduledActionUseCase - Orchestrates execution of scheduled actions
+ *
+ * This is a use case, not just an executor. It handles:
+ * - Fetching schedule entry
+ * - Setting identity
+ * - Finding appropriate handler
+ * - Executing handler
+ * - Cleanup/error handling
+ */
+export interface IExecuteScheduledActionUseCase {
+    execute(payload: any): Promise<void>;
+}
+
+export const ExecuteScheduledActionUseCase = createAbstraction<IExecuteScheduledActionUseCase>(
+    "ExecuteScheduledActionUseCase"
+);
+
+export namespace ExecuteScheduledActionUseCase {
+    export type Interface = IExecuteScheduledActionUseCase;
+}
+
+/**
+ * EventBridgeSchedulerService - AWS EventBridge wrapper
+ */
+export interface IEventBridgeSchedulerService {
+    create(params: { id: string; scheduleOn: Date; payload: any }): Promise<void>;
+    update(params: { id: string; scheduleOn: Date; payload: any }): Promise<void>;
+    delete(id: string): Promise<void>;
+    exists(id: string): Promise<boolean>;
+}
+
+export const EventBridgeSchedulerService = createAbstraction<IEventBridgeSchedulerService>(
+    "EventBridgeSchedulerService"
+);
+
+export namespace EventBridgeSchedulerService {
+    export type Interface = IEventBridgeSchedulerService;
+}
+```
+
+### Phase 2: Implement Features
+
+#### 2.1 ExecuteScheduledAction Feature
+
+**File**: `features/ExecuteScheduledAction/abstractions.ts`
+
+```typescript
+import { createAbstraction } from "@webiny/feature/api";
+
+export interface IExecuteScheduledActionUseCase {
+    execute(payload: any): Promise<void>;
+}
+
+export const ExecuteScheduledActionUseCase = createAbstraction<IExecuteScheduledActionUseCase>(
+    "ExecuteScheduledActionUseCase"
+);
+
+export namespace ExecuteScheduledActionUseCase {
+    export type Interface = IExecuteScheduledActionUseCase;
+}
+```
+
+**File**: `features/ExecuteScheduledAction/ExecuteScheduledActionUseCase.ts`
+
+```typescript
+import { WebinyError } from "@webiny/error";
+import { ExecuteScheduledActionUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { ScheduledActionHandler } from "~/abstractions.js";
+import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
+
+/**
+ * Orchestrates execution of scheduled actions
+ *
+ * Responsibilities:
+ * - Fetch schedule entry from storage
+ * - Set identity to the user who scheduled the action
+ * - Find appropriate handler by actionId
+ * - Execute handler
+ * - Delete schedule entry on success or update with error
+ *
+ * This is similar to the current ProcessRecordsUseCase but generic.
+ */
+class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(
+        private handlers: ScheduledActionHandler.Interface[],
+        private getScheduledAction: GetScheduledActionUseCase.Interface,
+        // TODO: Add identity context, CMS use cases (GetModel, UpdateEntry, DeleteEntry)
+    ) {}
+
+    async execute(payload: any): Promise<void> {
+        // 1. Extract schedule ID from payload
+        const { id, actionId, targetId } = payload.ScheduledAction;
+
+        // 2. Fetch schedule entry
+        const scheduledAction = await this.getScheduledAction.execute(id);
+
+        if (!scheduledAction) {
+            throw new WebinyError(`Scheduled action not found: ${id}`, "NOT_FOUND");
+        }
+
+        // 3. Set identity to original scheduler
+        // TODO: this.identityContext.setIdentity(scheduledAction.scheduledBy);
+
+        // 4. Find appropriate handler
+        const handler = this.handlers.find(h => h.canHandle(scheduledAction.actionId));
+
+        if (!handler) {
+            // Update schedule entry with error
+            // TODO: await this.updateEntry(..., { error: "No handler found" });
+
+            throw new WebinyError(
+                `No handler found for action: ${scheduledAction.actionId}`,
+                "NO_HANDLER_FOUND",
+                { actionId: scheduledAction.actionId, targetId: scheduledAction.targetId }
+            );
+        }
+
+        // 5. Execute handler
+        try {
+            await handler.handle(scheduledAction);
+        } catch (ex) {
+            // Update schedule entry with error
+            // TODO: await this.updateEntry(..., { error: ex.message });
+            throw ex;
+        }
+
+        // 6. Delete schedule entry on success
+        // TODO: await this.deleteEntry(...);
+    }
+}
+
+export const ExecuteScheduledActionUseCase = UseCaseAbstraction.createImplementation({
+    implementation: ExecuteScheduledActionUseCaseImpl,
     dependencies: [
-        EventBridgeSchedulerService,
-        SchedulerModel, // Instance
-        IdentityProvider, // Factory
-        // TODO: Add CMS use case abstractions
+        [ScheduledActionHandler, { multiple: true }],
+        GetScheduledActionUseCase,
+        // TODO: Add IdentityContext, CMS use cases
     ]
 });
 ```
 
-**Key Change**: `targetModel` is now a method parameter, not a constructor dependency.
+**File**: `features/ExecuteScheduledAction/feature.ts`
 
-### Phase 3: Create Use Case Implementations
-
-#### 3.1 ScheduleFetcherUseCase
-
-**File**: `features/Scheduler/ScheduleFetcherUseCase.ts`
-
-**Current Dependencies**:
-- `cms: Pick<HeadlessCms, "getEntryById" | "listLatestEntries">`
-- `targetModel: CmsModel` ← Now passed as method parameter
-- `schedulerModel: CmsModel` ← Injected as instance
-
-**Proposed**:
 ```typescript
-class ScheduleFetcherUseCaseImpl implements ScheduleFetcher.Interface {
+import { createFeature } from "@webiny/feature/api";
+import { ExecuteScheduledActionUseCase } from "./ExecuteScheduledActionUseCase.js";
+
+export const ExecuteScheduledActionFeature = createFeature({
+    name: "ExecuteScheduledAction",
+    register(container) {
+        container.register(ExecuteScheduledActionUseCase);
+    }
+});
+```
+
+#### 2.2 ScheduleAction Feature
+
+**File**: `features/ScheduleAction/abstractions.ts`
+
+```typescript
+import { createAbstraction } from "@webiny/feature/api";
+import type { IScheduledAction, ISchedulerInput } from "~/abstractions.js";
+
+export interface IScheduleActionUseCase {
+    execute(
+        actionId: string,
+        targetId: string,
+        input: ISchedulerInput,
+        payload?: any
+    ): Promise<IScheduledAction>;
+}
+
+export const ScheduleActionUseCase = createAbstraction<IScheduleActionUseCase>(
+    "ScheduleActionUseCase"
+);
+
+export namespace ScheduleActionUseCase {
+    export type Interface = IScheduleActionUseCase;
+}
+```
+
+**File**: `features/ScheduleAction/ScheduleActionUseCase.ts`
+
+```typescript
+// Implementation similar to current ScheduleActionUseCase
+// See Phase 3.1 below for full implementation
+```
+
+**File**: `features/ScheduleAction/feature.ts`
+
+```typescript
+import { createFeature } from "@webiny/feature/api";
+import { ScheduleActionUseCase } from "./ScheduleActionUseCase.js";
+
+export const ScheduleActionFeature = createFeature({
+    name: "ScheduleAction",
+    register(container) {
+        container.register(ScheduleActionUseCase);
+    }
+});
+```
+
+#### 2.3 Other Features
+
+The following features follow the same pattern (abstractions.ts + UseCase.ts + feature.ts):
+
+- **CancelScheduledAction** - See Phase 3.2
+- **GetScheduledAction** - See Phase 3.3
+- **ListScheduledActions** - See Phase 3.4
+
+#### 2.4 Shared Infrastructure (EventBridgeSchedulerService)
+
+**Note**: `EventBridgeSchedulerService` is NOT a feature, it's infrastructure registered globally.
+
+**File**: `src/EventBridgeSchedulerService.ts`
+
+```typescript
+import { EventBridgeSchedulerService as ServiceAbstraction } from "./abstractions.js";
+import { WebinyError } from "@webiny/error";
+import {
+    CreateScheduleCommand,
+    UpdateScheduleCommand,
+    DeleteScheduleCommand,
+    GetScheduleCommand
+} from "@webiny/aws-sdk/client-scheduler";
+
+/**
+ * AWS EventBridge Scheduler wrapper
+ */
+class EventBridgeSchedulerServiceImpl implements ServiceAbstraction.Interface {
     constructor(
-        private schedulerModel: CmsModel, // Registered as instance
-        // TODO: Create abstractions for:
-        // - GetEntryByIdUseCase
-        // - ListLatestEntriesUseCase
+        private getClient: (config?: any) => any, // Scheduler client factory
+        private config: { lambdaArn: string; roleArn: string }
     ) {}
 
-    async getScheduled(targetModel: CmsModel, targetId: string): Promise<IScheduleRecord | null> {
-        const scheduleRecordId = createScheduleRecordIdWithVersion(targetId);
+    async create(params: { id: string; scheduleOn: Date; payload: any }): Promise<void> {
+        const { id, scheduleOn, payload } = params;
 
-        // TODO: Use GetEntryByIdUseCase
-        const entry = await this.getEntryById.execute(this.schedulerModel, scheduleRecordId);
-
-        // Filter by targetModel
-        if (entry.values.targetModelId !== targetModel.modelId) {
-            return null;
+        if (scheduleOn <= new Date()) {
+            throw new WebinyError(
+                "Cannot schedule in the past",
+                "INVALID_SCHEDULE_DATE",
+                { scheduleOn }
+            );
         }
 
-        return transformScheduleEntry(targetModel, entry);
+        const client = this.getClient();
+
+        await client.send(new CreateScheduleCommand({
+            Name: id,
+            ScheduleExpression: `at(${scheduleOn.toISOString().replace(/\.\d{3}Z$/, "")})`,
+            FlexibleTimeWindow: { Mode: "OFF" },
+            Target: {
+                Arn: this.config.lambdaArn,
+                RoleArn: this.config.roleArn,
+                Input: JSON.stringify(payload)
+            },
+            ActionAfterCompletion: "DELETE"
+        }));
     }
 
-    async listScheduled(targetModel: CmsModel, params: ISchedulerListParams): Promise<ISchedulerListResponse> {
-        // TODO: Use ListLatestEntriesUseCase
-        const [data, meta] = await this.listLatestEntries.execute(this.schedulerModel, {
-            ...params,
-            where: {
-                ...params.where,
-                targetModelId: targetModel.modelId
-            }
-        });
+    async update(params: { id: string; scheduleOn: Date; payload: any }): Promise<void> {
+        // Similar to create but uses UpdateScheduleCommand
+    }
 
+    async delete(id: string): Promise<void> {
+        const client = this.getClient();
+        await client.send(new DeleteScheduleCommand({ Name: id }));
+    }
+
+    async exists(id: string): Promise<boolean> {
+        try {
+            const client = this.getClient();
+            await client.send(new GetScheduleCommand({ Name: id }));
+            return true;
+        } catch (ex) {
+            if (ex.name === "ResourceNotFoundException") {
+                return false;
+            }
+            throw ex;
+        }
+    }
+}
+
+export const EventBridgeSchedulerService = ServiceAbstraction.createImplementation({
+    implementation: EventBridgeSchedulerServiceImpl,
+    dependencies: [
+        // Registered as instances/factories in context
+        SchedulerClientFactory,
+        SchedulerConfig
+    ]
+});
+```
+
+### Phase 3: Implement Use Cases
+
+#### 3.1 ScheduleActionUseCase
+
+**File**: `features/Scheduler/ScheduleActionUseCase.ts`
+
+```typescript
+import { ScheduleActionUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { GetScheduledActionUseCase } from "./abstractions.js";
+import { EventBridgeSchedulerService } from "./abstractions.js";
+import type { IScheduledAction, ISchedulerInput } from "./abstractions.js";
+
+/**
+ * Schedules an action for future execution
+ *
+ * Flow:
+ * 1. Check if already scheduled (reschedule if exists)
+ * 2. Validate schedule date is in future
+ * 3. Create/update schedule entry in storage
+ * 4. Create/update EventBridge schedule
+ *
+ * Note: Does NOT handle immediate execution - apps use direct use cases for that
+ */
+class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(
+        private getScheduledAction: GetScheduledActionUseCase.Interface,
+        private eventBridge: EventBridgeSchedulerService.Interface,
+        private getIdentity: () => Identity, // Factory
+        // TODO: Add CreateEntryUseCase, UpdateEntryUseCase
+    ) {}
+
+    async execute(
+        actionId: string,
+        targetId: string,
+        input: ISchedulerInput,
+        payload?: any
+    ): Promise<IScheduledAction> {
+        const identity = this.getIdentity();
+
+        // Generate schedule ID
+        const scheduleId = this.generateScheduleId(actionId, targetId);
+
+        // Check if already scheduled (for reschedule logic)
+        const existing = await this.getScheduledAction.execute(scheduleId);
+
+        if (existing) {
+            // RESCHEDULE: Update existing schedule
+            await this.updateEntry(schedulerModel, scheduleId, {
+                scheduledBy: identity,
+                scheduledOn: input.scheduleOn,
+                payload
+            });
+
+            await this.eventBridge.update({
+                id: scheduleId,
+                scheduleOn: input.scheduleOn,
+                payload: {
+                    scheduleId,
+                    actionId,
+                    targetId
+                }
+            });
+
+            return {
+                ...existing,
+                scheduledBy: identity,
+                scheduledOn: input.scheduleOn,
+                payload
+            };
+        }
+
+        // CREATE: New schedule
+        const scheduledAction: IScheduledAction = {
+            id: scheduleId,
+            actionId,
+            targetId,
+            scheduledBy: identity,
+            scheduledOn: input.scheduleOn,
+            payload
+        };
+
+        // TODO: Use CreateEntryUseCase
+        await this.createEntry(schedulerModel, scheduledAction);
+
+        // Create EventBridge schedule
+        try {
+            await this.eventBridge.create({
+                id: scheduleId,
+                scheduleOn: input.scheduleOn,
+                payload: {
+                    scheduleId,
+                    actionId,
+                    targetId
+                }
+            });
+        } catch (ex) {
+            // Rollback - delete entry if EventBridge fails
+            await this.deleteEntry(schedulerModel, scheduleId);
+            throw ex;
+        }
+
+        return scheduledAction;
+    }
+
+    private generateScheduleId(actionId: string, targetId: string): string {
+        // Create unique ID from actionId + targetId
+        return `${actionId.replace(/\//g, "_")}_${targetId}`;
+    }
+}
+
+export const ScheduleActionUseCase = UseCaseAbstraction.createImplementation({
+    implementation: ScheduleActionUseCaseImpl,
+    dependencies: [
+        GetScheduledActionUseCase,
+        EventBridgeSchedulerService,
+        IdentityProvider, // Factory
+        // TODO: Add CMS use cases
+    ]
+});
+```
+
+#### 3.2 CancelScheduledActionUseCase
+
+**File**: `features/Scheduler/CancelScheduledActionUseCase.ts`
+
+```typescript
+import { CancelScheduledActionUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { GetScheduledActionUseCase } from "./abstractions.js";
+import { EventBridgeSchedulerService } from "./abstractions.js";
+import type { IScheduledAction } from "./abstractions.js";
+import { WebinyError } from "@webiny/error";
+
+/**
+ * Cancels a scheduled action
+ *
+ * Flow:
+ * 1. Fetch scheduled action
+ * 2. Delete EventBridge schedule
+ * 3. Delete storage entry
+ */
+class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(
+        private getScheduledAction: GetScheduledActionUseCase.Interface,
+        private eventBridge: EventBridgeSchedulerService.Interface,
+        // TODO: Add DeleteEntryUseCase
+    ) {}
+
+    async execute(id: string): Promise<IScheduledAction> {
+        const scheduledAction = await this.getScheduledAction.execute(id);
+
+        if (!scheduledAction) {
+            throw new WebinyError(
+                `Scheduled action not found: ${id}`,
+                "SCHEDULED_ACTION_NOT_FOUND",
+                { id }
+            );
+        }
+
+        // Delete EventBridge schedule
+        try {
+            await this.eventBridge.delete(id);
+        } catch (ex) {
+            // Continue even if EventBridge delete fails
+            console.error("Failed to delete EventBridge schedule:", ex);
+        }
+
+        // Delete storage entry
+        // TODO: Use DeleteEntryUseCase
+        await this.deleteEntry(schedulerModel, id);
+
+        return scheduledAction;
+    }
+}
+
+export const CancelScheduledActionUseCase = UseCaseAbstraction.createImplementation({
+    implementation: CancelScheduledActionUseCaseImpl,
+    dependencies: [
+        GetScheduledActionUseCase,
+        EventBridgeSchedulerService,
+        // TODO: Add CMS use cases
+    ]
+});
+```
+
+#### 3.3 GetScheduledActionUseCase
+
+**File**: `features/Scheduler/GetScheduledActionUseCase.ts`
+
+```typescript
+import { GetScheduledActionUseCase as UseCaseAbstraction } from "./abstractions.js";
+import type { IScheduledAction } from "./abstractions.js";
+
+/**
+ * Gets a single scheduled action by ID
+ *
+ * Fetches schedule entry from CMS storage and transforms to IScheduledAction
+ */
+class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(
+        // TODO: Inject GetEntryByIdUseCase from CMS
+        // TODO: Inject SchedulerModel instance
+    ) {}
+
+    async execute(id: string): Promise<IScheduledAction | null> {
+        try {
+            // TODO: const entry = await this.getEntryById.execute(schedulerModel, id);
+            // TODO: return this.transformEntry(entry);
+        } catch (ex) {
+            if (ex.code === "NOT_FOUND") {
+                return null;
+            }
+            throw ex;
+        }
+    }
+
+    private transformEntry(entry: any): IScheduledAction {
         return {
-            data: data.map(item => transformScheduleEntry(targetModel, item)),
-            meta
+            id: entry.id,
+            actionId: entry.values.actionId,
+            targetId: entry.values.targetId,
+            scheduledBy: entry.values.scheduledBy,
+            scheduledOn: new Date(entry.values.scheduledOn),
+            payload: entry.values.payload,
+            error: entry.values.error
         };
     }
 }
 
-export const ScheduleFetcherUseCase = ScheduleFetcher.createImplementation({
-    implementation: ScheduleFetcherUseCaseImpl,
+export const GetScheduledActionUseCase = UseCaseAbstraction.createImplementation({
+    implementation: GetScheduledActionUseCaseImpl,
     dependencies: [
-        SchedulerModel, // Instance
-        // TODO: Add CMS use case abstractions
+        // TODO: Add CMS use cases
     ]
 });
 ```
 
-**Note**: `targetModel` is passed as method parameter, `schedulerModel` is injected once.
+#### 3.4 ListScheduledActionsUseCase
 
-#### 3.2 ScheduleExecutorUseCase
+**File**: `features/Scheduler/ListScheduledActionsUseCase.ts`
 
-**File**: `features/Scheduler/ScheduleExecutorUseCase.ts`
-
-**Current Dependencies**:
-- `actions: IScheduleAction[]`
-- `fetcher: IScheduleFetcher`
-
-**Proposed**:
 ```typescript
-class ScheduleExecutorUseCaseImpl implements ScheduleExecutor.Interface {
+import { ListScheduledActionsUseCase as UseCaseAbstraction } from "./abstractions.js";
+import type { ISchedulerListParams, ISchedulerListResponse } from "./abstractions.js";
+
+/**
+ * Lists scheduled actions with filtering
+ *
+ * Fetches schedule entries from CMS storage and transforms to IScheduledAction[]
+ */
+class ListScheduledActionsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private actions: ScheduleAction.Interface[],
-        private fetcher: ScheduleFetcher.Interface
+        // TODO: Inject ListLatestEntriesUseCase from CMS
+        // TODO: Inject SchedulerModel instance
     ) {}
 
-    async schedule(targetModel: CmsModel, targetId: string, input: ISchedulerInput): Promise<IScheduleRecord> {
-        const scheduleRecordId = createScheduleRecordIdWithVersion(targetId);
-
-        // Pass targetModel to fetcher
-        const original = await this.fetcher.getScheduled(targetModel, targetId);
-
-        const action = this.getAction(input.type);
-
-        if (original) {
-            // Pass targetModel to action
-            return action.reschedule(targetModel, original, input);
-        }
-
-        // Pass targetModel to action
-        return action.schedule(targetModel, {
-            scheduleRecordId,
-            targetId,
-            input
+    async execute(params: ISchedulerListParams): Promise<ISchedulerListResponse> {
+        // TODO: Use ListLatestEntriesUseCase
+        const [data, meta] = await this.listLatestEntries.execute(schedulerModel, {
+            where: params.where,
+            sort: params.sort,
+            limit: params.limit,
+            after: params.after
         });
+
+        return {
+            data: data.map(item => this.transformEntry(item)),
+            meta
+        };
     }
 
-    async cancel(targetModel: CmsModel, initialId: string): Promise<IScheduleRecord> {
-        const id = createScheduleRecordIdWithVersion(initialId);
-
-        // Pass targetModel to fetcher
-        const original = await this.fetcher.getScheduled(targetModel, id);
-
-        if (!original) {
-            throw new WebinyError(`No scheduled record found for ID "${id}".`, "SCHEDULED_RECORD_NOT_FOUND");
-        }
-
-        const action = this.getAction(original.type);
-
-        // Pass targetModel to action
-        await action.cancel(targetModel, original.id);
-
-        return original;
-    }
-
-    private getAction(type: ScheduleType): ScheduleAction.Interface {
-        const action = this.actions.find(action => action.canHandle({ type }));
-        if (!action) {
-            throw new WebinyError(`No action found for input type "${type}".`, "NO_ACTION_FOUND");
-        }
-        return action;
+    private transformEntry(entry: any): IScheduledAction {
+        return {
+            id: entry.id,
+            actionId: entry.values.actionId,
+            targetId: entry.values.targetId,
+            scheduledBy: entry.values.scheduledBy,
+            scheduledOn: new Date(entry.values.scheduledOn),
+            payload: entry.values.payload,
+            error: entry.values.error
+        };
     }
 }
 
-export const ScheduleExecutorUseCase = ScheduleExecutor.createImplementation({
-    implementation: ScheduleExecutorUseCaseImpl,
+export const ListScheduledActionsUseCase = UseCaseAbstraction.createImplementation({
+    implementation: ListScheduledActionsUseCaseImpl,
     dependencies: [
-        [ScheduleAction, { multiple: true }],
-        ScheduleFetcher
+        // TODO: Add CMS use cases
     ]
 });
 ```
 
-**Key Change**: Executor receives `targetModel` and passes it down to fetcher and actions.
-
-#### 3.3 Individual Use Case Implementations
-
-**ScheduleRecordUseCase** - Delegates to ScheduleExecutor
-```typescript
-class ScheduleRecordUseCaseImpl implements ScheduleRecordUseCase.Interface {
-    constructor(private executor: ScheduleExecutor.Interface) {}
-
-    async execute(targetModel: CmsModel, targetId: string, input: ISchedulerInput): Promise<IScheduleRecord> {
-        return this.executor.schedule(targetModel, targetId, input);
-    }
-}
-
-export const ScheduleRecordUseCaseImplementation = ScheduleRecordUseCase.createImplementation({
-    implementation: ScheduleRecordUseCaseImpl,
-    dependencies: [ScheduleExecutor]
-});
-```
-
-**CancelScheduledRecordUseCase** - Delegates to ScheduleExecutor
-```typescript
-class CancelScheduledRecordUseCaseImpl implements CancelScheduledRecordUseCase.Interface {
-    constructor(private executor: ScheduleExecutor.Interface) {}
-
-    async execute(targetModel: CmsModel, id: string): Promise<IScheduleRecord> {
-        return this.executor.cancel(targetModel, id);
-    }
-}
-
-export const CancelScheduledRecordUseCaseImplementation = CancelScheduledRecordUseCase.createImplementation({
-    implementation: CancelScheduledRecordUseCaseImpl,
-    dependencies: [ScheduleExecutor]
-});
-```
-
-**GetScheduledRecordUseCase** - Delegates to ScheduleFetcher
-```typescript
-class GetScheduledRecordUseCaseImpl implements GetScheduledRecordUseCase.Interface {
-    constructor(private fetcher: ScheduleFetcher.Interface) {}
-
-    async execute(targetModel: CmsModel, id: string): Promise<IScheduleRecord | null> {
-        return this.fetcher.getScheduled(targetModel, id);
-    }
-}
-
-export const GetScheduledRecordUseCaseImplementation = GetScheduledRecordUseCase.createImplementation({
-    implementation: GetScheduledRecordUseCaseImpl,
-    dependencies: [ScheduleFetcher]
-});
-```
-
-**ListScheduledRecordsUseCase** - Delegates to ScheduleFetcher
-```typescript
-class ListScheduledRecordsUseCaseImpl implements ListScheduledRecordsUseCase.Interface {
-    constructor(private fetcher: ScheduleFetcher.Interface) {}
-
-    async execute(targetModel: CmsModel, params: ISchedulerListParams): Promise<ISchedulerListResponse> {
-        return this.fetcher.listScheduled(targetModel, params);
-    }
-}
-
-export const ListScheduledRecordsUseCaseImplementation = ListScheduledRecordsUseCase.createImplementation({
-    implementation: ListScheduledRecordsUseCaseImpl,
-    dependencies: [ScheduleFetcher]
-});
-```
-
-**Key Change**: All use cases pass `targetModel` through to their dependencies.
-
-
-### Phase 4: Add Model Validation Decorator
-
-**File**: `features/Scheduler/ValidateNotPrivateModelDecorator.ts`
-
-**Purpose**: Validate that `targetModel` is not private before executing any schedule operation.
-
-```typescript
-class ValidateNotPrivateModelDecorator implements ScheduleRecordUseCase.Interface {
-    constructor(private decoratee: ScheduleRecordUseCase.Interface) {}
-
-    async execute(targetModel: CmsModel, targetId: string, input: ISchedulerInput): Promise<IScheduleRecord> {
-        if (targetModel.isPrivate) {
-            throw new WebinyError(
-                "Cannot schedule operations on private models.",
-                "PRIVATE_MODEL_ERROR",
-                { modelId: targetModel.modelId }
-            );
-        }
-
-        return this.decoratee.execute(targetModel, targetId, input);
-    }
-}
-
-export const ValidateNotPrivateModel = ScheduleRecordUseCase.createDecorator({
-    decorator: ValidateNotPrivateModelDecorator,
-    dependencies: []
-});
-```
-
-**Registration**:
-```typescript
-// In feature.ts
-container.registerDecorator(ValidateNotPrivateModel);
-```
-
-**Note**: This decorator only needs to be registered for command use cases (ScheduleRecordUseCase, CancelScheduledRecordUseCase). Query use cases (Get, List) don't need validation since they're read-only.
-
-### Phase 5: Create Feature Registration
-
-**File**: `features/Scheduler/feature.ts`
-
-```typescript
-export const SchedulerFeature = createFeature({
-    name: "Scheduler",
-    register(container) {
-        // Register AWS EventBridge service layer
-        // TODO: SchedulerService needs to be refactored to use abstraction
-        // container.register(EventBridgeSchedulerServiceImpl).inSingletonScope();
-
-        // Register infrastructure components
-        container.register(ScheduleFetcherUseCase);
-        container.register(ScheduleExecutorUseCase);
-
-        // Register individual use cases
-        container.register(ScheduleRecordUseCaseImplementation);
-        container.register(CancelScheduledRecordUseCaseImplementation);
-        container.register(GetScheduledRecordUseCaseImplementation);
-        container.register(ListScheduledRecordsUseCaseImplementation);
-
-        // Register action implementations
-        container.register(PublishScheduleAction);
-        container.register(UnpublishScheduleAction);
-
-        // Register validation decorator for commands
-        container.registerDecorator(ValidateNotPrivateModel);
-    }
-});
-```
-
-### Phase 6: Refactor SchedulerService
-
-**File**: `features/Scheduler/SchedulerServiceImpl.ts`
-
-**Current State**: Class with constructor injection of client and config
-
-**Proposed**:
-```typescript
-class SchedulerServiceImpl implements SchedulerService.Interface {
-    constructor(
-        private getClient: (config?: SchedulerClientConfig) => Pick<SchedulerClient, "send">,
-        private config: ISchedulerServiceConfig
-    ) {}
-
-    // ... existing methods
-}
-
-export const SchedulerServiceImplementation = SchedulerService.createImplementation({
-    implementation: SchedulerServiceImpl,
-    dependencies: [
-        // TODO: How to inject AWS client factory?
-        // TODO: How to inject config (from manifest)?
-    ]
-});
-```
-
-**Challenge**: `getClient` and `config` come from external sources (manifest, AWS SDK).
-
-**Solution**: Register as instances in context setup:
-```typescript
-// In context.ts after loading manifest
-container.registerInstance(SchedulerServiceConfig, {
-    lambdaArn: manifest.scheduler.lambdaArn,
-    roleArn: manifest.scheduler.roleArn
-});
-container.registerFactory(SchedulerServiceClientFactory, () => getClient);
-```
-
-### Phase 7: Update Context Integration
+### Phase 4: Register All Features in Context
 
 **File**: `src/context.ts`
 
-**Current State**:
 ```typescript
-const scheduler = await createScheduler({
-    security,
-    cms,
-    service: schedulerService,
-    schedulerModel
+import { ExecuteScheduledActionFeature } from "~/features/ExecuteScheduledAction/feature.js";
+import { ScheduleActionFeature } from "~/features/ScheduleAction/feature.js";
+import { CancelScheduledActionFeature } from "~/features/CancelScheduledAction/feature.js";
+import { GetScheduledActionFeature } from "~/features/GetScheduledAction/feature.js";
+import { ListScheduledActionsFeature } from "~/features/ListScheduledActions/feature.js";
+import { EventBridgeSchedulerService } from "~/EventBridgeSchedulerService.js";
+
+// Register all features
+ExecuteScheduledActionFeature.register(context.container);
+ScheduleActionFeature.register(context.container);
+CancelScheduledActionFeature.register(context.container);
+GetScheduledActionFeature.register(context.container);
+ListScheduledActionsFeature.register(context.container);
+
+// Register shared infrastructure
+context.container.register(EventBridgeSchedulerService).inSingletonScope();
+
+// Register manifest-based instances
+context.container.registerInstance(SchedulerConfig, {
+    lambdaArn: manifest.scheduler.lambdaArn,
+    roleArn: manifest.scheduler.roleArn
 });
-context.cms.scheduler = scheduler;
+
+context.container.registerInstance(SchedulerModel, schedulerModel);
+
+// Register AWS client factory
+context.container.registerFactory(SchedulerClientFactory, () => getClient);
+
+// Register identity provider
+context.container.registerFactory(IdentityProvider, () => security.getIdentity());
 ```
 
-**Proposed**:
+**Note**: Each feature is self-contained and registers only its own use case. This follows the pattern used in other packages where each feature is independent.
+
+### Phase 5: Create CMS Handlers (Consumer App)
+
+**File**: `packages/api-headless-cms/src/features/scheduler/handlers/CmsEntryPublishHandler.ts`
+
 ```typescript
-// Register feature
+import { ScheduledActionHandler } from "@webiny/api-scheduler";
+import type { IScheduledAction } from "@webiny/api-scheduler";
+import { PublishEntryUseCase } from "~/features/contentEntry/PublishEntry/index.js";
+import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
+import { CMS_ENTRY_PUBLISH_ACTION } from "../constants.js";
+
+/**
+ * Handles scheduled publish actions for CMS entries
+ *
+ * Action ID: "Cms/Entry/Publish"
+ */
+class CmsEntryPublishHandlerImpl implements ScheduledActionHandler.Interface {
+    constructor(
+        private publishEntry: PublishEntryUseCase.Interface,
+        private getModel: GetModelUseCase.Interface
+    ) {}
+
+    canHandle(actionId: string): boolean {
+        return actionId === CMS_ENTRY_PUBLISH_ACTION;
+    }
+
+    async handle(action: IScheduledAction): Promise<void> {
+        // Parse targetId to extract model and entry
+        // Format: "modelId#version" e.g., "product#0001"
+        const [modelId, version] = action.targetId.split("#");
+
+        // Get model (could be cached in payload for optimization)
+        const model = action.payload?.model || await this.getModel.execute(modelId);
+
+        // Execute publish
+        const result = await this.publishEntry.execute(model, action.targetId);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+    }
+}
+
+export const CmsEntryPublishHandler = ScheduledActionHandler.createImplementation({
+    implementation: CmsEntryPublishHandlerImpl,
+    dependencies: [
+        PublishEntryUseCase,
+        GetModelUseCase
+    ]
+});
+```
+
+**File**: `packages/api-headless-cms/src/features/scheduler/handlers/CmsEntryUnpublishHandler.ts`
+
+```typescript
+import { ScheduledActionHandler } from "@webiny/api-scheduler";
+import type { IScheduledAction } from "@webiny/api-scheduler";
+import { UnpublishEntryUseCase } from "~/features/contentEntry/UnpublishEntry/index.js";
+import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
+import { CMS_ENTRY_UNPUBLISH_ACTION } from "../constants.js";
+
+/**
+ * Handles scheduled unpublish actions for CMS entries
+ *
+ * Action ID: "Cms/Entry/Unpublish"
+ */
+class CmsEntryUnpublishHandlerImpl implements ScheduledActionHandler.Interface {
+    constructor(
+        private unpublishEntry: UnpublishEntryUseCase.Interface,
+        private getModel: GetModelUseCase.Interface
+    ) {}
+
+    canHandle(actionId: string): boolean {
+        return actionId === CMS_ENTRY_UNPUBLISH_ACTION;
+    }
+
+    async handle(action: IScheduledAction): Promise<void> {
+        const [modelId, version] = action.targetId.split("#");
+        const model = action.payload?.model || await this.getModel.execute(modelId);
+
+        const result = await this.unpublishEntry.execute(model, action.targetId);
+
+        if (result.isFail()) {
+            throw result.error;
+        }
+    }
+}
+
+export const CmsEntryUnpublishHandler = ScheduledActionHandler.createImplementation({
+    implementation: CmsEntryUnpublishHandlerImpl,
+    dependencies: [
+        UnpublishEntryUseCase,
+        GetModelUseCase
+    ]
+});
+```
+
+**File**: `packages/api-headless-cms/src/features/scheduler/constants.ts`
+
+```typescript
+/**
+ * CMS Scheduled Action IDs
+ */
+export const CMS_ENTRY_PUBLISH_ACTION = "Cms/Entry/Publish";
+export const CMS_ENTRY_UNPUBLISH_ACTION = "Cms/Entry/Unpublish";
+```
+
+**File**: `packages/api-headless-cms/src/features/scheduler/feature.ts`
+
+```typescript
+import { createFeature } from "@webiny/feature/api";
+import { CmsEntryPublishHandler } from "./handlers/CmsEntryPublishHandler.js";
+import { CmsEntryUnpublishHandler } from "./handlers/CmsEntryUnpublishHandler.js";
+
+/**
+ * CMS Scheduler Handlers Feature
+ *
+ * Registers CMS-specific scheduled action handlers
+ */
+export const CmsSchedulerHandlersFeature = createFeature({
+    name: "CmsSchedulerHandlers",
+    register(container) {
+        container.register(CmsEntryPublishHandler);
+        container.register(CmsEntryUnpublishHandler);
+    }
+});
+```
+
+### Phase 6: Update Context Integration
+
+**File**: `src/context.ts` (Generic Scheduler Package)
+
+```typescript
+// Register scheduler feature
 SchedulerFeature.register(context.container);
 
 // Register manifest-based instances
-container.registerInstance(SchedulerServiceConfig, manifestConfig);
+container.registerInstance(SchedulerConfig, {
+    lambdaArn: manifest.scheduler.lambdaArn,
+    roleArn: manifest.scheduler.roleArn
+});
+
 container.registerInstance(SchedulerModel, schedulerModel);
 
-// Register identity provider as factory
+// Register AWS client factory
+container.registerFactory(SchedulerClientFactory, () => getClient);
+
+// Register identity provider
 container.registerFactory(IdentityProvider, () => security.getIdentity());
 
-// No context.cms.scheduler - GraphQL resolvers use container directly
+// No context.cms.scheduler - apps use container directly
 ```
 
-**Note**: We're removing `context.cms.scheduler` entirely. GraphQL resolvers will resolve use cases from `context.container`.
+**File**: `packages/api-headless-cms/src/context.ts` (Consumer App)
 
-### Phase 8: Update GraphQL Resolvers
+```typescript
+// Register CMS handlers
+CmsSchedulerHandlersFeature.register(context.container);
+```
 
-**File**: `src/graphql/index.ts`
+### Phase 7: Update GraphQL Resolvers
 
-**Before (with context.cms.scheduler)**:
+**File**: `packages/api-headless-cms/src/features/scheduler/graphql/resolvers.ts`
+
+**Before (old pattern):**
 ```typescript
 const createCmsSchedule = async (_, args, context) => {
     const model = await context.cms.getModel(args.modelId);
     const scheduler = context.cms.scheduler(model);
-    return scheduler.schedule(args.id, args.input);
+    return scheduler.schedule(args.id, { type: "publish", scheduleOn: args.scheduleOn });
 };
 ```
 
-**After (with container)**:
+**After (new pattern):**
 ```typescript
+import { ScheduleActionUseCase } from "@webiny/api-scheduler";
+import { PublishEntryUseCase } from "~/features/contentEntry/PublishEntry/index.js";
+import { CMS_ENTRY_PUBLISH_ACTION } from "../constants.js";
+
 const createCmsSchedule = async (_, args, context) => {
     // Get model
     const model = await context.cms.getModel(args.modelId);
 
-    // Resolve use case from container
-    const scheduleUseCase = context.container.resolve(ScheduleRecordUseCase);
+    // Handle immediate execution (not via scheduler)
+    if (args.immediately) {
+        const publishUseCase = context.container.resolve(PublishEntryUseCase);
+        const result = await publishUseCase.execute(model, args.id);
 
-    // Execute with targetModel as parameter
-    const result = await scheduleUseCase.execute(model, args.id, args.input);
+        if (result.isFail()) {
+            throw result.error;
+        }
+
+        return result.value;
+    }
+
+    // Schedule for future
+    const scheduleUseCase = context.container.resolve(ScheduleActionUseCase);
+
+    const result = await scheduleUseCase.execute(
+        CMS_ENTRY_PUBLISH_ACTION,        // "Cms/Entry/Publish"
+        args.id,                          // Entry ID e.g., "product#0001"
+        { scheduleOn: args.scheduleOn },  // When to schedule
+        { model }                         // Payload (optional, for optimization)
+    );
 
     return result;
 };
 
 const getCmsSchedule = async (_, args, context) => {
-    const model = await context.cms.getModel(args.modelId);
-    const getUseCase = context.container.resolve(GetScheduledRecordUseCase);
-    return getUseCase.execute(model, args.id);
+    const getUseCase = context.container.resolve(GetScheduledActionUseCase);
+    return getUseCase.execute(args.id);
 };
 
 const listCmsSchedules = async (_, args, context) => {
-    const model = await context.cms.getModel(args.modelId);
-    const listUseCase = context.container.resolve(ListScheduledRecordsUseCase);
-    return listUseCase.execute(model, args);
+    const listUseCase = context.container.resolve(ListScheduledActionsUseCase);
+    return listUseCase.execute({
+        where: {
+            actionId: args.actionId,  // Filter by action ID
+            ...args.where
+        },
+        sort: args.sort,
+        limit: args.limit,
+        after: args.after
+    });
 };
 
 const cancelCmsSchedule = async (_, args, context) => {
-    const model = await context.cms.getModel(args.modelId);
-    const cancelUseCase = context.container.resolve(CancelScheduledRecordUseCase);
-    return cancelUseCase.execute(model, args.id);
+    const cancelUseCase = context.container.resolve(CancelScheduledActionUseCase);
+    return cancelUseCase.execute(args.id);
 };
 ```
 
-**Pattern**:
-1. Get model from args
-2. Resolve specific use case from container
-3. Execute with model as first parameter
+**Key Points**:
+- CMS apps have their own GraphQL resolvers (not generic)
+- Immediate execution bypasses scheduler entirely
+- Each app wraps generic use cases with their own business logic
+
+### Phase 8: Update Event Handler (Execution Side)
+
+**File**: `src/handler/index.ts`
+
+```typescript
+import { createEventHandler } from "@webiny/handler-aws/raw/index.js";
+import { ExecuteScheduledActionUseCase } from "~/features/Scheduler/index.js";
+
+export const createScheduledActionEventHandler = () => {
+    return createEventHandler({
+        canHandle: event => {
+            return event?.ScheduledAction?.id && event?.ScheduledAction?.actionId;
+        },
+        handle: async params => {
+            const { payload, context } = params;
+
+            // Resolve use case from container
+            const executeUseCase = context.container.resolve(ExecuteScheduledActionUseCase);
+
+            // Execute (this handles everything: fetch, identity, find handler, execute, cleanup)
+            await executeUseCase.execute(payload);
+        }
+    });
+};
+```
+
+**Key Points**:
+- Event handler is now extremely simple - just delegates to use case
+- All orchestration logic is in `ExecuteScheduledActionUseCase`
+- Follows single responsibility principle
 
 ## Dependency Chain Analysis
 
-### Before (Manual Instantiation)
+### Before (Manual Instantiation, CMS-Specific)
 ```
 createScheduler (factory)
   ├─ new ScheduleFetcher({ cms, targetModel, schedulerModel })
-  ├─ new PublishScheduleAction({
-  │    cms,
-  │    schedulerModel,
-  │    targetModel,
-  │    service,
-  │    getIdentity,
-  │    fetcher
-  │  })
-  ├─ new UnpublishScheduleAction({ ... same ... })
+  ├─ new PublishScheduleAction({ cms, schedulerModel, targetModel, service, getIdentity, fetcher })
+  ├─ new UnpublishScheduleAction({ ... })
   ├─ new ScheduleExecutor({ actions, fetcher })
   └─ new Scheduler({ fetcher, executor })
 ```
 
-### After (DI Container with Method Parameters)
+### After (DI Container, Generic)
 ```
-GraphQL Resolver
-  ├─ Get targetModel from args
-  └─ Container.resolve(ScheduleRecordUseCase)
+CMS GraphQL Resolver
+  ├─ Get model from args
+  ├─ IF immediate: Container.resolve(PublishEntryUseCase)
+  └─ IF scheduled: Container.resolve(ScheduleActionUseCase)
        │
-       ├─ Inject: ScheduleExecutor
-       │    ├─ Inject: [ScheduleAction] (multiple)
-       │    │    │
-       │    │    ├─ PublishScheduleAction
-       │    │    │    ├─ Inject: EventBridgeSchedulerService
-       │    │    │    ├─ Inject: SchedulerModel (instance)
-       │    │    │    ├─ Inject: IdentityProvider (factory)
-       │    │    │    └─ Inject: CMS Use Cases (TODO)
-       │    │    │
-       │    │    └─ UnpublishScheduleAction
-       │    │         ├─ Inject: EventBridgeSchedulerService
-       │    │         ├─ Inject: SchedulerModel (instance)
-       │    │         ├─ Inject: IdentityProvider (factory)
-       │    │         └─ Inject: CMS Use Cases (TODO)
+       ├─ Inject: GetScheduledActionUseCase
+       │    └─ Inject: CMS Use Cases (GetEntryById, SchedulerModel)
+       │
+       ├─ Inject: EventBridgeSchedulerService
+       │    ├─ Inject: SchedulerClientFactory (factory)
+       │    └─ Inject: SchedulerConfig (instance)
+       │
+       └─ Inject: IdentityProvider (factory)
+
+  → Execute: useCase.execute(actionId, targetId, input, payload)
+       │
+       └─ actionId = "Cms/Entry/Publish" (passed as parameter)
+
+Event Handler (when schedule executes)
+  └─ Container.resolve(ExecuteScheduledActionUseCase)
+       │
+       ├─ Inject: GetScheduledActionUseCase
+       │    └─ Inject: CMS Use Cases (GetEntryById, SchedulerModel)
+       │
+       ├─ Inject: [ScheduledActionHandler] (multiple)
        │    │
-       │    └─ Inject: ScheduleFetcher
-       │         ├─ Inject: SchedulerModel (instance)
-       │         └─ Inject: CMS Use Cases (TODO)
+       │    ├─ CmsEntryPublishHandler (from api-headless-cms)
+       │    │    ├─ Inject: PublishEntryUseCase
+       │    │    └─ Inject: GetModelUseCase
+       │    │
+       │    ├─ CmsEntryUnpublishHandler (from api-headless-cms)
+       │    │    ├─ Inject: UnpublishEntryUseCase
+       │    │    └─ Inject: GetModelUseCase
+       │    │
+       │    └─ MailerEmailSendHandler (from api-mailer - future)
+       │         └─ Inject: EmailService
        │
-       └─ Wrapped by: ValidateNotPrivateModelDecorator
-            └─ Validates targetModel.isPrivate
+       └─ Inject: IdentityContext, CMS Use Cases (UpdateEntry, DeleteEntry, etc.)
 
-  → Execute: useCase.execute(targetModel, id, input)
+  → Execute: executeUseCase.execute(payload)
        │
-       └─ targetModel passed as parameter through:
-            ScheduleRecordUseCase
-              → ScheduleExecutor.schedule(targetModel, ...)
-                  → ScheduleAction.schedule(targetModel, ...)
-                      → EventBridgeSchedulerService
-                  → ScheduleFetcher.getScheduled(targetModel, ...)
+       ├─ Fetches schedule entry
+       ├─ Sets identity to scheduler
+       ├─ Finds handler by actionId
+       ├─ Calls handler.handle(scheduledAction)
+       └─ Cleanup (delete or update with error)
 ```
 
-**Key Differences**:
-- No child containers needed
-- `targetModel` passed as method parameter
-- `schedulerModel` injected once as instance
-- All use cases registered once in parent container
-- Validation transparent via decorator
+**Key Differences:**
+- Generic `actionId` instead of CMS-specific `targetModel`
+- Handlers registered by consumer apps, not built into scheduler
+- No factory pattern needed
+- Parallel to EventPublisher/EventHandler pattern
+- Immediate execution bypasses scheduler entirely
 
-## Benefits of Proposed Architecture
+## Files to Delete vs. Migrate
 
-1. **Single Responsibility**: Each use case has one clear responsibility
-   - `ScheduleRecordUseCase` - Only schedules records
-   - `CancelScheduledRecordUseCase` - Only cancels schedules
-   - `GetScheduledRecordUseCase` - Only retrieves single schedule
-   - `ListScheduledRecordsUseCase` - Only lists schedules
+### DELETE (Old Scheduling Logic)
+- ❌ `scheduler/actions/PublishScheduleAction.ts`
+- ❌ `scheduler/actions/UnpublishScheduleAction.ts`
+- ❌ `scheduler/ScheduleExecutor.ts`
+- ❌ `scheduler/Scheduler.ts`
+- ❌ `scheduler/createScheduler.ts`
 
-2. **Testability**: Easy to mock dependencies via container
-   - Test each use case in isolation
-   - Mock only what each use case needs
+### MIGRATE to Generic
+- ✅ `service/SchedulerService.ts` → `EventBridgeSchedulerService.ts` (generic)
 
-3. **Extensibility**: New schedule types = new action registration
-   - Add new actions without modifying use cases
-   - Actions are discovered via DI container
+### MIGRATE to CMS Package
+- ✅ `handler/actions/PublishHandlerAction.ts` → `api-headless-cms/src/features/scheduler/handlers/CmsEntryPublishHandler.ts`
+- ✅ `handler/actions/UnpublishHandlerAction.ts` → `api-headless-cms/src/features/scheduler/handlers/CmsEntryUnpublishHandler.ts`
+- ✅ `graphql/` → `api-headless-cms/src/features/scheduler/graphql/`
 
-4. **Consistency**: Matches ProcessRecords feature pattern
-   - Same DI patterns throughout codebase
-   - Same abstraction/implementation split
+### KEEP and Update
+- ✅ `ProcessRecordsUseCase.ts` → rename to `ExecuteScheduledActionUseCase.ts` (generic orchestration)
+- ✅ `scheduler/model.ts` → update to generic `webinyScheduledAction` model
 
-5. **Separation of Concerns**: Clear abstraction boundaries
-   - Use cases don't know about AWS EventBridge
-   - Actions don't know about each other
-   - Service object is just a facade
+### NO LONGER NEEDED
+- ❌ `scheduler/ScheduleFetcher.ts` - Replaced by `GetScheduledActionUseCase` and `ListScheduledActionsUseCase`
 
-6. **Type Safety**: TypeScript enforces dependency contracts
-   - Container validates dependencies at registration
-   - Compile-time checking of dependency types
+## Benefits of Generic Architecture
 
-7. **Maintainability**: Dependencies declared explicitly
-   - Easy to see what each component needs
-   - Refactoring dependencies is straightforward
+1. **Reusable Across Apps**
+   - CMS can schedule entry publish/unpublish
+   - Mailer can schedule email sending
+   - Website Builder can schedule page deletion
+   - Any app can schedule any action
 
-8. **Reusability**: Components can be reused in different contexts
-   - Use cases can be composed differently
-   - Actions can be used outside scheduler context
+2. **Clear Separation of Concerns**
+   - Scheduling logic (generic) vs. Execution logic (app-specific)
+   - No confusion between two action patterns
+   - Single responsibility per class
 
-9. **No God Objects**: No convenience wrappers that grow over time
-   - Each use case is resolved individually
-   - GraphQL resolvers explicitly choose which use case to call
-   - Prevents accidental dependencies between operations
+3. **No Immediate Execution Confusion**
+   - Scheduler is ONLY for future actions
+   - Immediate actions use direct use cases
+   - Clear boundary
 
-## Challenges and Solutions
+4. **Smart Reschedule**
+   - No separate `reschedule()` method
+   - `schedule()` detects existing and updates automatically
+   - Less API surface area
 
-### Challenge 1: Model-Specific Context
-**Problem**: Scheduler needs model context (targetModel varies per request, schedulerModel is constant)
+5. **Extensible**
+   - Apps register handlers like event handlers
+   - No core code changes needed for new actions
+   - Type-safe with constants
 
-**Solution**: Pass `targetModel` as method parameter, inject `schedulerModel` as instance
-- `targetModel` → method parameter (varies per request)
-- `schedulerModel` → registered as instance (constant)
+6. **No God Objects**
+   - No `context.cms.scheduler`
+   - Direct container resolution
+   - Explicit dependencies
 
-### Challenge 2: CMS Use Cases Not Abstracted
-**Problem**: Actions depend on CMS methods like `getEntryById`, `publishEntry`, etc.
+7. **Consistent Patterns**
+   - Same as EventPublisher/EventHandler
+   - Same as ProcessRecords feature
+   - Developers know the pattern
 
-**Solution**:
-- **Short-term**: Leave as TODOs in dependencies, inject CMS context
-- **Long-term**: Create proper use case abstractions for all CMS operations
+## Migration Strategy
 
-### Challenge 3: External Dependencies (AWS Client, Manifest Config)
-**Problem**: EventBridgeSchedulerService depends on AWS client factory and manifest config
+### Option A: Keep CMS-Specific Package, Extract Core
 
-**Solution**: Register as instances during context setup:
+```
+packages/
+├── scheduler-core/                  # Generic scheduler (new)
+│   └── src/features/Scheduler/
+│
+└── api-headless-cms-scheduler/      # CMS integration (existing)
+    └── src/
+        ├── handlers/                # CMS handlers
+        └── graphql/                 # CMS GraphQL
+```
+
+**Pros:**
+- No breaking changes for consumers
+- Clear separation
+- Can version independently
+
+**Cons:**
+- Two packages to maintain
+- Import paths change
+
+### Option B: Rename Package to Generic
+
+```
+packages/
+└── api-scheduler/                   # Generic (renamed)
+    └── src/
+        └── features/
+            └── Scheduler/           # Core
+```
+
+CMS handlers move to:
+```
+packages/api-headless-cms/src/features/scheduler/
+```
+
+**Pros:**
+- Single package
+- Clear that it's generic
+- CMS handlers where they belong
+
+**Cons:**
+- Breaking change (package rename)
+- Migration effort for consumers
+
+### Recommendation: **Option A** (Extract Core)
+
+Start with Option A to avoid breaking changes. Later, if we want to consolidate, we can deprecate the old package.
+
+## Data Model Changes
+
+### Current Model: `webinyCmsSchedule`
+
 ```typescript
-container.registerInstance(SchedulerServiceConfig, manifestConfig);
-container.registerFactory(SchedulerServiceClientFactory, clientFactory);
+{
+    targetId: string;         // Entry ID with version
+    targetModelId: string;    // CMS model ID
+    scheduledBy: Identity;
+    scheduledOn: Date;
+    type: "publish" | "unpublish";
+    title: string;            // Entry title
+    error?: string;
+}
 ```
 
-### Challenge 4: Identity Provider
-**Problem**: Actions need current user identity (runtime value)
+### New Model: `webinyScheduledAction`
 
-**Solution**: Register identity factory in parent container:
 ```typescript
-container.registerFactory(IdentityProvider, () => security.getIdentity());
+{
+    id: string;               // Unique schedule ID
+    actionId: string;         // "Cms/Entry/Publish", "Mailer/Email/Send"
+    targetId: string;         // Resource identifier (entry ID, email ID, etc.)
+    scheduledBy: Identity;
+    scheduledOn: Date;
+    payload?: any;            // Action-specific data (model, email data, etc.)
+    error?: string;           // Execution error
+}
 ```
-
-### Challenge 5: Model Validation
-**Problem**: Need to validate `targetModel.isPrivate` before operations
-
-**Solution**: Use decorator pattern (transparent to consumers):
-```typescript
-container.registerDecorator(ValidateNotPrivateModel);
-```
-
-### Challenge 6: Context God Object
-**Problem**: Don't want to add `context.cms.scheduler`
-
-**Solution**: GraphQL resolvers resolve use cases directly from `context.container`
-
-## Migration Sequence
-
-### Step 1: Create Abstractions (No Breaking Changes)
-- Create `features/Scheduler/abstractions.ts`
-- Define all abstractions
-- No existing code changes
-
-### Step 2: Refactor SchedulerService (Independent)
-- Create SchedulerService abstraction and implementation
-- Register in feature
-- Test independently
-
-### Step 3: Refactor ScheduleFetcher (Minimal Dependencies)
-- Create ScheduleFetcherUseCase
-- Leave CMS dependencies as TODOs
-- Register in feature
-
-### Step 4: Refactor Actions (Complex Dependencies)
-- Create PublishScheduleAction with DI
-- Create UnpublishScheduleAction with DI
-- Leave CMS use cases as TODOs
-- Register in feature
-
-### Step 5: Refactor ScheduleExecutor (Uses Actions + Fetcher)
-- Create ScheduleExecutorUseCase
-- Inject actions and fetcher
-- Register in feature
-
-### Step 6: Refactor Scheduler (Uses Executor + Fetcher)
-- Create SchedulerUseCase
-- Inject executor and fetcher
-- Register in feature
-
-### Step 7: Create Factory (Uses Container)
-- Create SchedulerFactory
-- Implement child container pattern
-- Register in feature
-
-### Step 8: Update Context Integration
-- Update `context.ts` to use factory
-- Remove old `createScheduler` factory
-- Test end-to-end
-
-### Step 9: Clean Up
-- Remove old files from `scheduler/` directory
-- Update imports throughout codebase
-- Update tests
-
-## Testing Strategy
-
-### Unit Tests
-- Test each use case in isolation with mocked dependencies
-- Test actions with mocked services
-- Test factory with mocked container
-
-### Integration Tests
-- Test scheduler creation flow
-- Test schedule/cancel operations end-to-end
-- Test with real AWS EventBridge (optional)
-
-### Migration Tests
-- Ensure behavior identical before/after migration
-- Test all schedule types (publish, unpublish, immediate, past date, future date)
-- Test error scenarios
-
-## Rollback Plan
-
-If migration causes issues:
-
-1. **Keep old code**: Don't delete old files until migration complete
-2. **Feature flag**: Use environment variable to toggle old/new implementation
-3. **Gradual rollout**: Test in dev → staging → production
-
-## Timeline Estimate
-
-- **Phase 1** (Abstractions): 2-3 hours
-- **Phase 2** (Actions refactor): 4-6 hours
-- **Phase 3** (Use cases): 3-4 hours
-- **Phase 4** (Factory): 3-4 hours
-- **Phase 5** (Feature registration): 1-2 hours
-- **Phase 6** (SchedulerService): 2-3 hours
-- **Phase 7** (Context integration): 2-3 hours
-- **Testing**: 4-6 hours
-
-**Total**: ~20-30 hours
-
-## Open Questions
-
-1. **CMS Use Case Abstractions**: Should we create them now or leave as TODOs?
-   - **Recommendation**: Leave as TODOs, create separately when migrating CMS core
-
-2. **targetModel Parameter**: Should it be first or last parameter in execute() methods?
-   - **Recommendation**: First parameter - it's the primary context
-
-3. **Identity Management**: Should identity be injected or fetched on-demand?
-   - **Recommendation**: Register factory in parent container for on-demand access
-
-4. **EventBridge Service Layer**: Should SchedulerService stay in `service/` or move to `features/`?
-   - **Recommendation**: Move to `features/Scheduler/` and rename to `EventBridgeSchedulerService` for clarity
-
-5. **GraphQL Resolver Pattern**: Resolve use case every request or cache?
-   - **Recommendation**: Resolve every request - containers are fast and we avoid memory leaks
-
-6. **Validation Decorator Scope**: Apply to all use cases or just commands?
-   - **Recommendation**: Just commands (Schedule, Cancel) - queries don't mutate so don't need validation
 
 ## Success Criteria
 
-- ✅ All scheduler operations work identically to before
-- ✅ No manual instantiation (everything via DI container)
-- ✅ All dependencies injected via DI container
+- ✅ Generic scheduler works for any app (CMS, Mailer, etc.)
+- ✅ No CMS-specific logic in core scheduler
+- ✅ Handlers registered like event handlers
+- ✅ Action IDs are hierarchical strings
+- ✅ Each use case has single responsibility
+- ✅ No god objects (`context.cms.scheduler` removed)
+- ✅ GraphQL resolvers use `context.container` directly
 - ✅ Tests pass with mocked dependencies
-- ✅ New schedule types can be added via registration only
-- ✅ Code follows same patterns as ProcessRecords feature
-- ✅ Each use case has single responsibility with one `execute()` method
-- ✅ No convenience wrapper/god objects
-- ✅ No factory pattern needed
-- ✅ No child containers needed
-- ✅ GraphQL resolvers explicitly resolve individual use cases from `context.container`
-- ✅ No `context.cms.scheduler` - avoiding god object pattern
-- ✅ `targetModel` passed as method parameter
-- ✅ Validation transparent via decorator
+- ✅ New actions added via handler registration only
+- ✅ Code follows EventPublisher/EventHandler pattern
+- ✅ CMS scheduling works identically to before
+- ✅ Can schedule non-CMS actions (email, page delete, etc.)
+- ✅ No confusion between scheduling and execution logic
+- ✅ No separate `reschedule()` method needed
+- ✅ Immediate execution bypasses scheduler
 
 ## Future Enhancements
 
-After migration:
+1. **Typed Action Schemas**
+   - Define TypeScript types for each action's payload
+   - Validate payloads at registration time
 
-1. **CMS Use Case Abstractions**: Create proper abstractions for all CMS operations
-2. **Event Publishing**: Add domain events (ScheduleCreated, ScheduleCanceled, etc.)
-3. **Error Handling**: Use Result pattern instead of throwing exceptions
-4. **Validation**: Move validation to dedicated use cases/validators
-5. **Decorators**: Add decorators for access control, logging, etc.
-6. **Composite Actions**: Support complex schedule types with composite pattern
+2. **Recurring Schedules**
+   - Support cron expressions
+   - Repeat actions on schedule
+
+3. **Action Groups**
+   - Schedule multiple actions together
+   - All-or-nothing execution
+
+4. **Priority Queues**
+   - High-priority actions execute first
+   - Background vs. urgent actions
+
+5. **Retry Logic**
+   - Automatic retry on failure
+   - Exponential backoff
+
+6. **Audit Trail**
+   - Log all schedule creations/executions
+   - Track who scheduled what and when
+
+7. **UI Components**
+   - Admin UI to view/manage schedules
+   - Calendar view of upcoming actions
+
+## Example: Adding Mailer Support
+
+To demonstrate extensibility, here's how you'd add email scheduling:
+
+**Step 1: Define Action ID**
+```typescript
+// packages/api-mailer/src/scheduler/constants.ts
+export const MAILER_EMAIL_SEND_ACTION = "Mailer/Email/Send";
+```
+
+**Step 2: Create Handler**
+```typescript
+// packages/api-mailer/src/scheduler/handlers/MailerEmailSendHandler.ts
+class MailerEmailSendHandlerImpl implements ScheduledActionHandler.Interface {
+    constructor(private emailService: EmailService) {}
+
+    canHandle(actionId: string): boolean {
+        return actionId === MAILER_EMAIL_SEND_ACTION;
+    }
+
+    async handle(action: IScheduledAction): Promise<void> {
+        // Payload contains email data
+        const { to, subject, body, from } = action.payload;
+
+        await this.emailService.send({
+            to,
+            subject,
+            body,
+            from
+        });
+    }
+}
+
+export const MailerEmailSendHandler = ScheduledActionHandler.createImplementation({
+    implementation: MailerEmailSendHandlerImpl,
+    dependencies: [EmailService]
+});
+```
+
+**Step 3: Register Handler**
+```typescript
+// packages/api-mailer/src/scheduler/feature.ts
+export const MailerSchedulerHandlersFeature = createFeature({
+    name: "MailerSchedulerHandlers",
+    register(container) {
+        container.register(MailerEmailSendHandler);
+    }
+});
+
+// In context.ts
+MailerSchedulerHandlersFeature.register(context.container);
+```
+
+**Step 4: Use in GraphQL/API**
+```typescript
+const scheduleEmail = async (_, args, context) => {
+    const scheduleUseCase = context.container.resolve(ScheduleActionUseCase);
+
+    return scheduleUseCase.execute(
+        MAILER_EMAIL_SEND_ACTION,
+        `email-${generateId()}`,
+        { scheduleOn: args.sendAt },
+        {
+            to: args.to,
+            subject: args.subject,
+            body: args.body,
+            from: args.from
+        }
+    );
+};
+```
+
+**Done!** No changes to core scheduler needed.
 
 ## References
 
-- ProcessRecords feature implementation: `src/features/ProcessRecords/`
-- DI Container documentation: `ai-context/di-container.md`
-- Backend Developer Guide: `ai-context/backend-developer-guide.md`
+- ProcessRecords feature: `src/features/ProcessRecords/`
+- EventPublisher pattern: `@webiny/event-publisher`
+- DI Container docs: `ai-context/di-container.md`
 - Current architecture: `ARCHITECTURE.md`
