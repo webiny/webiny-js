@@ -30,7 +30,6 @@ export const createMockTargetModel = (): CmsModel => {
         savedOn: new Date().toISOString(),
         webinyVersion: "0.0.0",
         tenant: "root",
-        locale: "en-US",
         titleFieldId: "title"
     };
 };

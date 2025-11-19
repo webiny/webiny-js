@@ -9,7 +9,15 @@ import {
     updateScheduleSchema
 } from "~/graphql/schema.js";
 import { createZodError } from "@webiny/utils";
-import { SchedulerFactory } from "~/features/Scheduler/index.js";
+import { ListScheduledActionsUseCase } from "@webiny/api-scheduler/features/ListScheduledActions";
+import { ScheduleEntryActionUseCase } from "~/features/ScheduleEntryAction/index.js";
+import { CancelScheduledEntryActionUseCase } from "~/features/CancelScheduledEntryAction/index.js";
+import { ActionMapper } from "~/graphql/ActionMapper.js";
+
+const typeMap = {
+    publish: "Publish",
+    unpublish: "Unpublish"
+} as const;
 
 const resolve = async (cb: () => Promise<unknown>) => {
     try {
@@ -38,17 +46,6 @@ const resolveList = async (cb: () => Promise<IResolveListCallableResponse>) => {
 
 export const createSchedulerGraphQL = () => {
     return new CmsGraphQLSchemaPlugin<CmsContext>({
-        /**
-         * Make sure SchedulerFactory is available. No point in adding GraphQL if scheduler is unavailable for any reason.
-         */
-        isApplicable: context => {
-            try {
-                context.container.resolve(SchedulerFactory);
-                return true;
-            } catch {
-                return false;
-            }
-        },
         typeDefs: /* GraphQL */ `
             enum CmsScheduleRecordType {
                 publish
@@ -107,7 +104,6 @@ export const createSchedulerGraphQL = () => {
                 targetId: ID
                 title_contains: String
                 title_not_contains: String
-                targetEntryId: ID
                 type: CmsScheduleRecordType
                 scheduledBy: ID
                 scheduledOn: DateTime
@@ -156,11 +152,22 @@ export const createSchedulerGraphQL = () => {
                             throw createZodError(validated.error);
                         }
 
-                        const schedulerFactory = context.container.resolve(SchedulerFactory);
-                        const model = await context.cms.getModel(validated.data.modelId);
-                        const scheduler = schedulerFactory.useModel(model);
+                        const listActions = context.container.resolve(ListScheduledActionsUseCase);
 
-                        return scheduler.getScheduled(validated.data.id);
+                        const actions = await listActions.execute({
+                            where: { namespace: `Cms/Entry/${args.modelId}`, targetId: args.id }
+                        });
+
+                        if (actions.isFail()) {
+                            return new ErrorResponse({
+                                code: actions.error.code,
+                                message: actions.error.message
+                            });
+                        }
+
+                        const action = actions.value.items[0];
+
+                        return new Response(ActionMapper.fromScheduledAction(args.modelId, action));
                     });
                 },
                 async listCmsSchedules(_, args, context) {
@@ -169,16 +176,31 @@ export const createSchedulerGraphQL = () => {
                         if (validated.error) {
                             throw createZodError(validated.error);
                         }
-                        const schedulerFactory = context.container.resolve(SchedulerFactory);
-                        const model = await context.cms.getModel(validated.data.modelId);
-                        const scheduler = schedulerFactory.useModel(model);
 
-                        return scheduler.listScheduled({
-                            where: validated.data.where || {},
+                        const listActions = context.container.resolve(ListScheduledActionsUseCase);
+
+                        const { type, targetId, ...where } = validated.data.where ?? {};
+
+                        if (type) {
+                            // @ts-expect-error
+                            where["actionType"] = typeMap[type];
+                        }
+
+                        const actions = await listActions.execute({
+                            where: { ...where, namespace: `Cms/Entry/${args.modelId}` },
                             sort: validated.data.sort,
                             limit: validated.data.limit,
                             after: validated.data.after
                         });
+
+                        if (actions.isFail()) {
+                            throw actions.error;
+                        }
+
+                        return {
+                            data: actions.value.items,
+                            meta: actions.value.meta
+                        };
                     });
                 }
             },
@@ -190,11 +212,22 @@ export const createSchedulerGraphQL = () => {
                             throw createZodError(validated.error);
                         }
 
-                        const schedulerFactory = context.container.resolve(SchedulerFactory);
-                        const model = await context.cms.getModel(validated.data.modelId);
-                        const scheduler = schedulerFactory.useModel(model);
+                        const data = validated.data;
 
-                        return await scheduler.schedule(validated.data.id, validated.data.input);
+                        const scheduleEntry = context.container.resolve(ScheduleEntryActionUseCase);
+                        const result = await scheduleEntry.execute({
+                            modelId: data.modelId,
+                            targetId: data.id,
+                            scheduleOn: data.input.scheduleOn,
+                            immediately: data.input.immediately,
+                            actionType: typeMap[data.input.type]
+                        });
+
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+
+                        return ActionMapper.fromScheduledAction(data.modelId, result.value);
                     });
                 },
                 async updateCmsSchedule(_, args, context) {
@@ -204,11 +237,22 @@ export const createSchedulerGraphQL = () => {
                             throw createZodError(validated.error);
                         }
 
-                        const schedulerFactory = context.container.resolve(SchedulerFactory);
-                        const model = await context.cms.getModel(validated.data.modelId);
-                        const scheduler = schedulerFactory.useModel(model);
+                        const data = validated.data;
 
-                        return scheduler.schedule(validated.data.id, validated.data.input);
+                        const scheduleEntry = context.container.resolve(ScheduleEntryActionUseCase);
+                        const result = await scheduleEntry.execute({
+                            modelId: data.modelId,
+                            targetId: data.id,
+                            scheduleOn: data.input.scheduleOn,
+                            immediately: data.input.immediately,
+                            actionType: typeMap[data.input.type]
+                        });
+
+                        if (result.isFail()) {
+                            throw result.error;
+                        }
+
+                        return ActionMapper.fromScheduledAction(data.modelId, result.value);
                     });
                 },
                 async cancelCmsSchedule(_, args, context) {
@@ -218,11 +262,19 @@ export const createSchedulerGraphQL = () => {
                             throw createZodError(validated.error);
                         }
 
-                        const schedulerFactory = context.container.resolve(SchedulerFactory);
-                        const model = await context.cms.getModel(validated.data.modelId);
-                        const scheduler = schedulerFactory.useModel(model);
+                        const cancelEntryAction = context.container.resolve(
+                            CancelScheduledEntryActionUseCase
+                        );
 
-                        await scheduler.cancel(validated.data.id);
+                        const res = await cancelEntryAction.execute({
+                            modelId: validated.data.modelId,
+                            targetId: validated.data.id
+                        });
+
+                        if (res.isFail()) {
+                            throw res.error;
+                        }
+
                         return true;
                     });
                 }

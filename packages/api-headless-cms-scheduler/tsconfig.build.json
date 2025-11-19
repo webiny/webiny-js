@@ -4,7 +4,7 @@
   "references": [
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
-    { "path": "../aws-sdk/tsconfig.build.json" },
+    { "path": "../api-scheduler/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../feature/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
@@ -26,8 +26,23 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
-      "@webiny/aws-sdk": ["../aws-sdk/src"],
+      "@webiny/api-scheduler/features/ScheduleAction": [
+        "../api-scheduler/src/features/ScheduleAction/index.js"
+      ],
+      "@webiny/api-scheduler/features/GetScheduledAction": [
+        "../api-scheduler/src/features/GetScheduledAction/index.js"
+      ],
+      "@webiny/api-scheduler/features/ListScheduledActions": [
+        "../api-scheduler/src/features/ListScheduledActions/index.js"
+      ],
+      "@webiny/api-scheduler/features/CancelScheduledAction": [
+        "../api-scheduler/src/features/CancelScheduledAction/index.js"
+      ],
+      "@webiny/api-scheduler/features/ExecuteScheduledAction": [
+        "../api-scheduler/src/features/ExecuteScheduledAction/index.js"
+      ],
+      "@webiny/api-scheduler/*": ["../api-scheduler/src/*"],
+      "@webiny/api-scheduler": ["../api-scheduler/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/feature/api": ["../feature/src/api/index.js"],

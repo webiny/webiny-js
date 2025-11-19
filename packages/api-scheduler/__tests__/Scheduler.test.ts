@@ -6,7 +6,6 @@ import { ExecuteScheduledActionUseCase } from "~/features/ExecuteScheduledAction
 import { ScheduleActionUseCase } from "~/features/ScheduleAction/abstractions.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
 import { ScheduledActionHandler } from "~/shared/abstractions.js";
-import type { IScheduledAction } from "~/shared/abstractions.js";
 import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
 import { ListScheduledActionsUseCase } from "~/features/ListScheduledActions/index.js";
 import { CancelScheduledActionUseCase } from "~/features/CancelScheduledAction/index.js";
@@ -45,13 +44,13 @@ describe("Scheduler", () => {
         const executeScheduledAction = testContainer.resolve(ExecuteScheduledActionUseCase);
 
         // Schedule an action
-        const scheduleResult = await scheduleAction.execute(
+        const scheduleResult = await scheduleAction.execute({
             namespace,
             actionType,
             targetId,
-            { scheduleOn: new Date(Date.now() + 1000000) },
-            { some: "payload" }
-        );
+            input: { scheduleOn: new Date(Date.now() + 1000000) },
+            payload: { some: "payload" }
+        });
 
         expect(scheduleResult.isFail()).toBe(false);
 
@@ -72,7 +71,7 @@ describe("Scheduler", () => {
         // Create a mock handler that tracks if it was called
         const mockHandler = {
             canHandle: vi.fn((ns: string, type: string) => ns === namespace && type === actionType),
-            handle: vi.fn(async (action: IScheduledAction) => {
+            handle: vi.fn(async () => {
                 // Handler was invoked successfully
             })
         };
@@ -84,13 +83,13 @@ describe("Scheduler", () => {
         const getScheduledAction = testContainer.resolve(GetScheduledActionUseCase);
 
         // Schedule an action
-        const scheduleResult = await scheduleAction.execute(
+        const scheduleResult = await scheduleAction.execute({
             namespace,
             actionType,
             targetId,
-            { scheduleOn: new Date(Date.now() + 1000000) },
-            { some: "payload" }
-        );
+            input: { scheduleOn: new Date(Date.now() + 1000000) },
+            payload: { some: "payload" }
+        });
 
         expect(scheduleResult.isFail()).toBe(false);
 
@@ -143,13 +142,13 @@ describe("Scheduler", () => {
         const getScheduledAction = testContainer.resolve(GetScheduledActionUseCase);
 
         // Schedule an action
-        const scheduleResult = await scheduleAction.execute(
+        const scheduleResult = await scheduleAction.execute({
             namespace,
             actionType,
             targetId,
-            { scheduleOn: new Date(Date.now() + 1000000) },
-            { some: "payload" }
-        );
+            input: { scheduleOn: new Date(Date.now() + 1000000) },
+            payload: { some: "payload" }
+        });
 
         expect(scheduleResult.isFail()).toBe(false);
 
@@ -186,13 +185,13 @@ describe("Scheduler", () => {
         const secondDate = new Date(Date.now() + 2000000);
 
         // Schedule first time
-        const firstResult = await scheduleAction.execute(
+        const firstResult = await scheduleAction.execute({
             namespace,
             actionType,
             targetId,
-            { scheduleOn: firstDate },
-            { version: 1 }
-        );
+            input: { scheduleOn: firstDate },
+            payload: { version: 1 }
+        });
 
         expect(firstResult.isFail()).toBe(false);
 
@@ -203,13 +202,13 @@ describe("Scheduler", () => {
         expect(getFirstResult.value.payload).toEqual({ version: 1 });
 
         // Reschedule (same namespace + actionType + targetId)
-        const secondResult = await scheduleAction.execute(
+        const secondResult = await scheduleAction.execute({
             namespace,
             actionType,
             targetId,
-            { scheduleOn: secondDate },
-            { version: 2 }
-        );
+            input: { scheduleOn: secondDate },
+            payload: { version: 2 }
+        });
 
         expect(secondResult.isFail()).toBe(false);
 
@@ -229,26 +228,26 @@ describe("Scheduler", () => {
         const listScheduledActions = testContainer.resolve(ListScheduledActionsUseCase);
 
         // Schedule an action
-        const scheduleResult1 = await scheduleAction.execute(
+        const scheduleResult1 = await scheduleAction.execute({
             namespace,
             actionType,
             targetId,
-            { scheduleOn: new Date(Date.now() + 1000000) },
-            { some: "payload" }
-        );
+            input: { scheduleOn: new Date(Date.now() + 1000000) },
+            payload: { some: "payload" }
+        });
 
-        const scheduleResult2 = await scheduleAction.execute(
+        const scheduleResult2 = await scheduleAction.execute({
             namespace,
-            "ColonizeMars",
+            actionType: "ColonizeMars",
             targetId,
-            { scheduleOn: new Date(Date.now() + 1000000) },
-            { some: "payload" }
-        );
+            input: { scheduleOn: new Date(Date.now() + 1000000) },
+            payload: { some: "payload" }
+        });
 
         expect(scheduleResult1.isOk()).toBe(true);
         expect(scheduleResult2.isOk()).toBe(true);
 
-        const scheduledActionsResult = await listScheduledActions.execute({ where: { namespace } });
+        const scheduledActionsResult = await listScheduledActions.execute({ where: { namespace, targetId } });
         expect(scheduledActionsResult.isOk()).toBe(true);
 
         const scheduledActions = scheduledActionsResult.value.items;

@@ -23,21 +23,24 @@ export interface IScheduleActionErrors {
 
 type ScheduleActionError = IScheduleActionErrors[keyof IScheduleActionErrors];
 
-export interface IScheduleActionUseCase {
-    execute(
-        namespace: string,
-        actionType: string,
-        targetId: string,
-        input: ISchedulerInput,
-        payload?: any
-    ): Promise<Result<IScheduledAction, ScheduleActionError>>;
+interface IScheduleActionParams {
+    namespace: string;
+    actionType: string;
+    targetId: string;
+    input: ISchedulerInput;
+    title: string;
+    payload?: any;
 }
 
-export const ScheduleActionUseCase = createAbstraction<IScheduleActionUseCase>(
-    "ScheduleActionUseCase"
-);
+export interface IScheduleActionUseCase {
+    execute(params: IScheduleActionParams): Promise<Result<IScheduledAction, ScheduleActionError>>;
+}
+
+export const ScheduleActionUseCase =
+    createAbstraction<IScheduleActionUseCase>("ScheduleActionUseCase");
 
 export namespace ScheduleActionUseCase {
     export type Interface = IScheduleActionUseCase;
+    export type Params = IScheduleActionParams;
     export type Error = ScheduleActionError;
 }

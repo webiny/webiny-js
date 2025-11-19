@@ -20,6 +20,7 @@ export interface IScheduledAction {
     targetId: string; // Resource identifier (entry ID, email ID, etc.)
     scheduledBy: Identity;
     scheduledOn: Date;
+    title?: string;
     payload?: any; // Action-specific data
     error?: string; // Error if execution failed
 }
@@ -65,8 +66,8 @@ export namespace ScheduledActionHandler {
  * Abstracts the underlying scheduling infrastructure (AWS EventBridge, Azure Logic Apps, etc.)
  */
 export interface ISchedulerService {
-    create(params: { id: string; scheduleOn: Date; payload?: any }): Promise<void>;
-    update(params: { id: string; scheduleOn: Date; payload?: any }): Promise<void>;
+    create(params: { id: string; scheduleOn: Date }): Promise<void>;
+    update(params: { id: string; scheduleOn: Date }): Promise<void>;
     delete(id: string): Promise<void>;
     exists(id: string): Promise<boolean>;
 }

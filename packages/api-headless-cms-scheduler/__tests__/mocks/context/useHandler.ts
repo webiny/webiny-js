@@ -34,7 +34,6 @@ export const useHandler = <C extends CmsContext>(params: CreateHandlerCoreParams
         plugins,
         identity: params.identity || defaultIdentity,
         tenant: core.tenant,
-        locale: core.locale,
         elasticsearch: elasticsearchClient,
         handler: (input?: CmsHandlerEvent) => {
             const payload: CmsHandlerEvent = {

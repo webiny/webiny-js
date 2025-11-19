@@ -58,36 +58,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
                 identity
             }),
             createSchedulerManifestPlugin(),
-            // {
-            //     type: "context",
-            //     name: "context-security-tenant",
-            //     async apply(context) {
-            //         context.container.register()
-            //         context.security.getApiKeyByToken = async (
-            //             token: string
-            //         ): Promise<ApiKey | null> => {
-            //             if (!token || token !== "aToken") {
-            //                 return null;
-            //             }
-            //             const apiKey = "a1234567890";
-            //             return {
-            //                 id: apiKey,
-            //                 name: apiKey,
-            //                 tenant: tenant.id,
-            //                 permissions: identity?.permissions || [],
-            //                 token,
-            //                 createdBy: {
-            //                     id: "test",
-            //                     displayName: "test",
-            //                     type: "admin"
-            //                 },
-            //                 description: "test",
-            //                 createdOn: new Date().toISOString(),
-            //                 webinyVersion: context.WEBINY_VERSION
-            //             };
-            //         };
-            //     }
-            // } as ContextPlugin,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             createHeadlessCmsContext({

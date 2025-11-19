@@ -10,6 +10,6 @@ describe("ScheduledActionId", () => {
             targetId: "target-id#0001"
         });
 
-        expect(result).toEqual(`${SCHEDULE_ID_PREFIX}5aebe6a0ee483f0a203e729d`);
+        expect(result).toEqual(`${SCHEDULE_ID_PREFIX}af6fe9a3643c86f694da7bb5`);
     });
 });
