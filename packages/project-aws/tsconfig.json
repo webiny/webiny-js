@@ -2,132 +2,49 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    {
-      "path": "../api-aco"
-    },
-    {
-      "path": "../api-audit-logs"
-    },
-    {
-      "path": "../api-background-tasks-ddb"
-    },
-    {
-      "path": "../api-background-tasks-os"
-    },
-    {
-      "path": "../api-core"
-    },
-    {
-      "path": "../api-core-ddb"
-    },
-    {
-      "path": "../api-dynamodb-to-elasticsearch"
-    },
-    {
-      "path": "../api-elasticsearch"
-    },
-    {
-      "path": "../api-file-manager"
-    },
-    {
-      "path": "../api-file-manager-ddb"
-    },
-    {
-      "path": "../api-file-manager-s3"
-    },
-    {
-      "path": "../api-headless-cms"
-    },
-    {
-      "path": "../api-headless-cms-aco"
-    },
-    {
-      "path": "../api-headless-cms-ddb"
-    },
-    {
-      "path": "../api-headless-cms-ddb-es"
-    },
-    {
-      "path": "../api-headless-cms-scheduler"
-    },
-    {
-      "path": "../api-headless-cms-tasks"
-    },
-    {
-      "path": "../api-headless-cms-tasks-ddb-es"
-    },
-    {
-      "path": "../api-headless-cms-workflows"
-    },
-    {
-      "path": "../api-log"
-    },
-    {
-      "path": "../api-mailer"
-    },
-    {
-      "path": "../api-record-locking"
-    },
-    {
-      "path": "../api-security-cognito"
-    },
-    {
-      "path": "../api-website-builder"
-    },
-    {
-      "path": "../api-websockets"
-    },
-    {
-      "path": "../api-workflows"
-    },
-    {
-      "path": "../app-admin"
-    },
-    {
-      "path": "../app-admin-users-cognito"
-    },
-    {
-      "path": "../app-serverless-cms"
-    },
-    {
-      "path": "../aws-sdk"
-    },
-    {
-      "path": "../cli-core"
-    },
-    {
-      "path": "../data-migration"
-    },
-    {
-      "path": "../db-dynamodb"
-    },
-    {
-      "path": "../handler-aws"
-    },
-    {
-      "path": "../handler-db"
-    },
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../migrations"
-    },
-    {
-      "path": "../project"
-    },
-    {
-      "path": "../pulumi"
-    },
-    {
-      "path": "../utils"
-    },
-    {
-      "path": "../wcp"
-    },
-    {
-      "path": "../app"
-    }
+    { "path": "../api-aco" },
+    { "path": "../api-audit-logs" },
+    { "path": "../api-background-tasks-ddb" },
+    { "path": "../api-background-tasks-os" },
+    { "path": "../api-core" },
+    { "path": "../api-core-ddb" },
+    { "path": "../api-dynamodb-to-elasticsearch" },
+    { "path": "../api-elasticsearch" },
+    { "path": "../api-file-manager" },
+    { "path": "../api-file-manager-ddb" },
+    { "path": "../api-file-manager-s3" },
+    { "path": "../api-headless-cms" },
+    { "path": "../api-headless-cms-aco" },
+    { "path": "../api-headless-cms-ddb" },
+    { "path": "../api-headless-cms-ddb-es" },
+    { "path": "../api-headless-cms-scheduler" },
+    { "path": "../api-headless-cms-tasks" },
+    { "path": "../api-headless-cms-tasks-ddb-es" },
+    { "path": "../api-headless-cms-workflows" },
+    { "path": "../api-log" },
+    { "path": "../api-mailer" },
+    { "path": "../api-record-locking" },
+    { "path": "../api-security-cognito" },
+    { "path": "../api-website-builder" },
+    { "path": "../api-website-builder-workflows" },
+    { "path": "../api-websockets" },
+    { "path": "../api-workflows" },
+    { "path": "../app" },
+    { "path": "../app-admin" },
+    { "path": "../app-admin-users-cognito" },
+    { "path": "../app-serverless-cms" },
+    { "path": "../aws-sdk" },
+    { "path": "../cli-core" },
+    { "path": "../data-migration" },
+    { "path": "../db-dynamodb" },
+    { "path": "../handler-aws" },
+    { "path": "../handler-db" },
+    { "path": "../handler-graphql" },
+    { "path": "../migrations" },
+    { "path": "../project" },
+    { "path": "../pulumi" },
+    { "path": "../utils" },
+    { "path": "../wcp" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -332,10 +249,18 @@
       "@webiny/api-security-cognito": ["../api-security-cognito/src"],
       "@webiny/api-website-builder/*": ["../api-website-builder/src/*"],
       "@webiny/api-website-builder": ["../api-website-builder/src"],
+      "@webiny/api-website-builder-workflows/*": ["../api-website-builder-workflows/src/*"],
+      "@webiny/api-website-builder-workflows": ["../api-website-builder-workflows/src"],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
       "@webiny/api-websockets": ["../api-websockets/src"],
       "@webiny/api-workflows/*": ["../api-workflows/src/*"],
       "@webiny/api-workflows": ["../api-workflows/src"],
+      "@webiny/app/features/envConfig": ["../app/src/features/envConfig/index.js"],
+      "@webiny/app/features/localStorage": ["../app/src/features/localStorage/index.js"],
+      "@webiny/app/features/router": ["../app/src/features/router/index.js"],
+      "@webiny/app/features/graphqlClient": ["../app/src/features/graphqlClient/index.js"],
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
       "@webiny/app-admin/features/wcp": ["../app-admin/src/features/wcp/index.js"],
       "@webiny/app-admin/features/tenancy": ["../app-admin/src/features/tenancy/index.js"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
@@ -367,9 +292,7 @@
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
-      "@webiny/wcp": ["../wcp/src"],
-      "@webiny/app/*": ["../app/src/*"],
-      "@webiny/app": ["../app/src"]
+      "@webiny/wcp": ["../wcp/src"]
     },
     "baseUrl": "."
   }

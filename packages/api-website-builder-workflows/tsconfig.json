@@ -6,6 +6,7 @@
     { "path": "../api-workflows" },
     { "path": "../error" },
     { "path": "../handler" },
+    { "path": "../handler-graphql" },
     { "path": "../plugins" },
     { "path": "../testing" }
   ],
@@ -24,6 +25,8 @@
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/testing/*": ["../testing/src/*"],
