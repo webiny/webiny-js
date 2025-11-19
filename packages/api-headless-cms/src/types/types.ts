@@ -467,7 +467,7 @@ export interface ICmsEntryLocation {
     folderId?: string | null;
 }
 
-export interface ICmsEntryState {
+export interface IEntryState {
     state: string;
     workflowId: string;
     stepId: string;
@@ -686,7 +686,7 @@ export interface CmsEntry<T = CmsEntryValues> {
      */
     binOriginalFolderId?: string | null;
 
-    state?: ICmsEntryState;
+    state?: IEntryState;
 }
 
 export interface CmsStorageEntry extends CmsEntry {
@@ -1471,7 +1471,7 @@ export type CreateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
         folderId?: string | null;
     };
 
-    state?: Partial<ICmsEntryState>;
+    state?: Partial<IEntryState>;
 };
 
 export interface CreateCmsEntryOptionsInput {
@@ -1511,7 +1511,7 @@ export interface CreateFromCmsEntryInput {
     firstPublishedBy?: CmsIdentity;
     lastPublishedBy?: CmsIdentity;
 
-    state?: Partial<ICmsEntryState>;
+    state?: Partial<IEntryState>;
 
     [key: string]: any;
 }
@@ -1565,7 +1565,7 @@ export type UpdateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
         folderId?: string | null;
     };
 
-    state?: Partial<ICmsEntryState>;
+    state?: Partial<IEntryState>;
 };
 
 export interface UpdateCmsEntryOptionsInput {

@@ -148,6 +148,7 @@ export class PagesStorage implements WbPagesStorageOperations {
             tenant: entry.tenant,
             locale: entry.locale,
             webinyVersion: entry.webinyVersion,
+            state: entry.state,
             ...entry.values
         } as WbPage;
     }
