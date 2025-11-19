@@ -77,7 +77,7 @@ describe("model field traverser", () => {
     });
 
     // TODO: update the test
-    it.skip("should properly traverse through model fields - page builder", async () => {
+    it("should properly traverse through model fields - page builder", async () => {
         const model = await context.cms.getModel(pageModel.modelId);
         const ast = converter.toAst(model);
         const traverser = new ModelFieldTraverser();
@@ -97,6 +97,18 @@ describe("model field traverser", () => {
         });
 
         expect(result.sort()).toEqual([
+            "datetime@content.content.date#s",
+            "datetime@content.content.dateTimeWithTimezone#s",
+            "datetime@content.content.dateTimeWithoutTimezone#s",
+            "datetime@content.content.nestedObject.objectNestedObject.date#s",
+            "datetime@content.content.nestedObject.objectNestedObject.dateTimeWithTimezone#s",
+            "datetime@content.content.nestedObject.objectNestedObject.dateTimeWithoutTimezone#s",
+            "datetime@content.content.nestedObject.objectNestedObject.time#s",
+            "datetime@content.content.time#s",
+            "datetime@objective.objective.nestedObject.objectNestedObject.date#s",
+            "datetime@objective.objective.nestedObject.objectNestedObject.dateTimeWithTimezone#s",
+            "datetime@objective.objective.nestedObject.objectNestedObject.dateTimeWithoutTimezone#s",
+            "datetime@objective.objective.nestedObject.objectNestedObject.time#s",
             "dynamicZone@content#m",
             "dynamicZone@content.content#m",
             "dynamicZone@content.content#m",
