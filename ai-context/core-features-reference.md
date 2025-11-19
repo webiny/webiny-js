@@ -43,6 +43,99 @@ This document provides the correct import paths and type definitions for commonl
 
 ---
 
+## Headless CMS Features
+
+### Content Entry Features
+
+#### GetEntryById
+- **Import:** `import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/GetEntryById/abstractions.ts`
+- **Usage:** Fetch single entry by exact revision ID
+
+#### GetEntry
+- **Import:** `import { GetEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntry"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/GetEntry/abstractions.ts`
+- **Usage:** Get single entry by query parameters (where + sort)
+
+#### ListEntries
+- **Import:** `import { ListEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/ListEntries/abstractions.ts`
+- **Usage:** Base abstraction for listing entries with filtering and pagination
+
+#### ListLatestEntries
+- **Import:** `import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/ListEntries/abstractions.ts`
+- **Usage:** List latest entries (manage API)
+
+#### ListPublishedEntries
+- **Import:** `import { ListPublishedEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/ListEntries/abstractions.ts`
+- **Usage:** List published entries (read API)
+
+#### ListDeletedEntries
+- **Import:** `import { ListDeletedEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/ListEntries/abstractions.ts`
+- **Usage:** List deleted entries (manage API)
+
+#### CreateEntry
+- **Import:** `import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/CreateEntry/abstractions.ts`
+- **Usage:** Create new content entry
+
+#### UpdateEntry
+- **Import:** `import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/UpdateEntry/abstractions.ts`
+- **Usage:** Update existing content entry
+
+#### DeleteEntry
+- **Import:** `import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/DeleteEntry/abstractions.ts`
+- **Usage:** Delete content entry
+
+#### ListEntriesRepository
+- **Import:** `import { ListEntriesRepository } from "@webiny/api-headless-cms/features/contentEntry/ListEntries"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/ListEntries/abstractions.ts`
+- **Usage:** Repository for fetching entries from storage
+
+### Content Model Features
+
+#### GetModel
+- **Import:** `import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentModel/GetModel/abstractions.ts`
+- **Usage:** Retrieve single model by ID with access control
+
+#### ListModels
+- **Import:** `import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentModel/ListModels/abstractions.ts`
+- **Usage:** List all accessible content models
+
+#### GetModelRepository
+- **Import:** `import { GetModelRepository } from "@webiny/api-headless-cms/features/contentModel/GetModel"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentModel/GetModel/abstractions.ts`
+- **Usage:** Fetch model from cache (plugin + DB models)
+
+#### ListModelsRepository
+- **Import:** `import { ListModelsRepository } from "@webiny/api-headless-cms/features/contentModel/ListModels"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentModel/ListModels/abstractions.ts`
+- **Usage:** Fetch all models from cache
+
+#### ModelsFetcher
+- **Import:** `import { ModelsFetcher } from "@webiny/api-headless-cms/features/contentModel/shared"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentModel/shared/abstractions.ts`
+- **Usage:** Centralized model fetching with caching and access control
+
+#### ModelCache
+- **Import:** `import { ModelCache } from "@webiny/api-headless-cms/features/contentModel/shared"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentModel/shared/abstractions.ts`
+- **Usage:** Cache for content models
+
+#### PluginModelsProvider
+- **Import:** `import { PluginModelsProvider } from "@webiny/api-headless-cms/features/contentModel/shared"`
+- **Interface Type:** See `packages/api-headless-cms/src/features/contentModel/shared/abstractions.ts`
+- **Usage:** Access to plugin-defined models
+
+---
+
 ## Notes
 
 - Always import abstractions from the feature path (not from package root)

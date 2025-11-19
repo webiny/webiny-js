@@ -350,12 +350,10 @@ This pattern provides:
 
 ### Use Case Error Handling Pattern
 
-**CRITICAL:** Use cases MUST extend repository errors with their own use-case-specific errors.
-
 Every use case abstraction must define:
 
 1. An extendable error interface for use-case-specific errors
-2. A union type combining use-case errors with repository errors
+2. A union type combining domain errors that can be returned from the use case
 3. An exported error type in the namespace
 
 ```typescript
