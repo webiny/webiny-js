@@ -7,7 +7,18 @@ export const createRsbuildConfig = ({ cwd }) => {
 
     return {
         source: { entry: { index: paths.fn.entryFile } },
-        output: { target: "node", distPath: { root: paths.fn.outputFolder } },
+        output: {
+            target: "node",
+            filename: {
+                js: pathData => {
+                    if (pathData.chunk?.name === "index") {
+                        return "handler.js";
+                    }
+                    return "[name].js";
+                }
+            },
+            distPath: { root: paths.fn.outputFolder }
+        },
         tools: {
             rspack: {
                 plugins: [
