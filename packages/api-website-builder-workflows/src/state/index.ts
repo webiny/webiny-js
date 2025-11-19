@@ -13,7 +13,7 @@ export const attachStateLifecycleEvents = ({ context }: IParams) => {
     ): Promise<void> => {
         try {
             await context.websiteBuilder.pages.update(state.targetRevisionId, {
-                metadata: values
+                state: values
             });
         } catch (ex) {
             // no need to do anything, just log the error

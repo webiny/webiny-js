@@ -48,6 +48,8 @@ export interface UpdateWbPageData {
     metadata?: Record<string, any>;
     bindings?: Record<string, any>;
     elements?: Record<string, any>;
+    // Workflows - remove when workflows are more generic
+    state?: Partial<IEntryState>;
 }
 
 export interface DeleteWbPageParams {

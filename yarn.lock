@@ -15049,7 +15049,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-website-builder-workflows@workspace:packages/api-website-builder-workflows":
+"@webiny/api-website-builder-workflows@npm:0.0.0, @webiny/api-website-builder-workflows@workspace:packages/api-website-builder-workflows":
   version: 0.0.0-use.local
   resolution: "@webiny/api-website-builder-workflows@workspace:packages/api-website-builder-workflows"
   dependencies:
@@ -15058,6 +15058,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
+    "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
     "@webiny/testing": "npm:0.0.0"
@@ -16733,6 +16734,7 @@ __metadata:
     "@webiny/api-record-locking": "npm:0.0.0"
     "@webiny/api-security-cognito": "npm:0.0.0"
     "@webiny/api-website-builder": "npm:0.0.0"
+    "@webiny/api-website-builder-workflows": "npm:0.0.0"
     "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/api-workflows": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"

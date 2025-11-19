@@ -5,7 +5,6 @@ export interface Context extends WebsiteBuilderContext, WorkflowsContext {
     //
 }
 
-
 export interface IWbPageState {
     workflowId: string;
     stepId: string;
