@@ -4,6 +4,7 @@ import type { IScheduledAction } from "~/shared/abstractions.js";
 import { ScheduledActionModel } from "~/shared/abstractions.js";
 import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~/domain/errors.js";
 import { GetEntryByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetEntryById/index.js";
+import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 
 /**
  * Retrieves a scheduled action by its ID
@@ -19,8 +20,9 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         private model: ScheduledActionModel.Interface
     ) {}
 
-    async execute(scheduleId: string): Promise<Result<IScheduledAction, UseCaseAbstraction.Error>> {
+    async execute(id: string): Promise<Result<IScheduledAction, UseCaseAbstraction.Error>> {
         // Get entry from CMS
+        const scheduleId = ScheduledActionIdWithVersion.from(id);
         const entryResult = await this.getEntryByIdUseCase.execute(this.model, scheduleId);
 
         if (entryResult.isFail()) {
@@ -34,13 +36,14 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         const entry = entryResult.value;
 
         return Result.ok({
-            id: entry.id,
+            id: entry.entryId,
             namespace: entry.values.namespace,
             actionType: entry.values.actionType,
             targetId: entry.values.targetId,
             scheduledBy: entry.values.scheduledBy,
             scheduledOn: new Date(entry.values.scheduledOn),
             payload: entry.values.payload,
+            title: entry.values.title,
             error: entry.values.error
         });
     }

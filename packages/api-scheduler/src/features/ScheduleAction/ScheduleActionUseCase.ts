@@ -3,12 +3,14 @@ import { IdentityContext } from "@webiny/api-core/features/security/IdentityCont
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
+import { parseIdentifier } from "@webiny/utils";
 import { ScheduleActionUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
 import { ScheduledActionModel, SchedulerService } from "~/shared/abstractions.js";
 import type { IScheduledAction, ISchedulerInput, Identity } from "~/shared/abstractions.js";
 import { ScheduledActionPersistenceError, SchedulerServiceError } from "~/domain/errors.js";
-import { createScheduleRecordIdWithVersion } from "~/domain/createScheduleRecordId.js";
+import { ScheduledActionId } from "~/domain/ScheduledActionId.js";
+import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 
 /**
  * Schedules an action for future execution
@@ -43,7 +45,8 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         const identity = this.identityContext.getIdentity();
 
         // Generate unique schedule ID
-        const scheduleId = createScheduleRecordIdWithVersion(targetId);
+        const actionId = ScheduledActionId.from({ namespace, actionType, targetId });
+        const scheduleId = ScheduledActionIdWithVersion.from(actionId);
 
         const existingResult = await this.getScheduledAction.execute(scheduleId);
 
@@ -78,7 +81,7 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
      * Creates a new schedule
      */
     private async createSchedule(
-        scheduleId: string,
+        id: string,
         namespace: string,
         actionType: string,
         targetId: string,
@@ -86,6 +89,8 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         identity: Identity,
         payload?: any
     ): Promise<Result<IScheduledAction, UseCaseAbstraction.Error>> {
+        const { id: scheduleId } = parseIdentifier(id);
+
         const scheduledAction: IScheduledAction = {
             id: scheduleId,
             namespace,
@@ -152,7 +157,8 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         payload?: any
     ): Promise<Result<IScheduledAction, UseCaseAbstraction.Error>> {
         // Update CMS entry
-        const updateResult = await this.updateEntryUseCase.execute(this.model, existing.id, {
+        const existingId = ScheduledActionIdWithVersion.from(existing.id);
+        const updateResult = await this.updateEntryUseCase.execute(this.model, existingId, {
             scheduledBy: identity,
             scheduledOn: input.scheduleOn.toISOString(),
             payload
@@ -167,11 +173,11 @@ class ScheduleActionUseCaseImpl implements UseCaseAbstraction.Interface {
         // Update EventBridge schedule
         try {
             await this.schedulerService.update({
-                id: existing.id,
+                id: existingId,
                 scheduleOn: input.scheduleOn,
                 payload: {
                     ScheduledAction: {
-                        id: existing.id,
+                        id: existingId,
                         namespace: existing.namespace,
                         actionType: existing.actionType,
                         targetId: existing.targetId
@@ -196,8 +202,8 @@ export const ScheduleActionUseCase = UseCaseAbstraction.createImplementation({
     dependencies: [
         IdentityContext,
         ScheduledActionModel,
-        GetScheduledActionUseCase,
         SchedulerService,
+        GetScheduledActionUseCase,
         CreateEntryUseCase,
         UpdateEntryUseCase,
         DeleteEntryUseCase

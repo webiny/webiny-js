@@ -6,12 +6,10 @@ import {
 } from "./abstractions.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
 import { ScheduledActionHandler, ScheduledActionModel } from "~/shared/abstractions.js";
-import {
-    ScheduledActionNotFoundError,
-    ScheduledActionPersistenceError
-} from "~/domain/errors.js";
+import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~/domain/errors.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
+import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 
 /**
  * Executes a scheduled action
@@ -32,23 +30,24 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
         private model: ScheduledActionModel.Interface
     ) {}
 
-    async execute(scheduleId: string): Promise<Result<void, UseCaseAbstraction.Error>> {
+    async execute(id: string): Promise<Result<void, UseCaseAbstraction.Error>> {
         // Load scheduled action
-        const getResult = await this.getScheduledActionUseCase.execute(scheduleId);
+        const getResult = await this.getScheduledActionUseCase.execute(id);
 
         if (getResult.isFail()) {
             const error = getResult.error;
 
             if (error.code === "Scheduler/ScheduledAction/NotFound") {
-                return Result.fail(new ScheduledActionNotFoundError(scheduleId));
+                return Result.fail(new ScheduledActionNotFoundError(id));
             }
 
             return Result.fail(error);
         }
 
         const scheduledAction = getResult.value;
+        const scheduleId = ScheduledActionIdWithVersion.from(id);
 
-        // Check if handler can handle this action
+        // Check if the handler can handle this action
         if (!this.actionHandler.canHandle(scheduledAction.namespace, scheduledAction.actionType)) {
             const error = new HandlerNotFoundError(
                 scheduledAction.namespace,
@@ -68,14 +67,10 @@ class ExecuteScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface 
             await this.actionHandler.handle(scheduledAction);
 
             // Delete schedule entry on success
-            const deleteResult = await this.deleteEntryUseCase.execute(
-                this.model,
-                scheduleId,
-                {
-                    force: true,
-                    permanently: true
-                }
-            );
+            const deleteResult = await this.deleteEntryUseCase.execute(this.model, scheduleId, {
+                force: true,
+                permanently: true
+            });
 
             if (deleteResult.isFail()) {
                 return Result.fail(

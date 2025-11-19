@@ -7,7 +7,6 @@ import {
     GetScheduleCommand,
     type SchedulerClient
 } from "@webiny/aws-sdk/client-scheduler";
-import { NotFoundError } from "@webiny/handler-graphql";
 
 export interface ISchedulerConfig {
     lambdaArn: string;

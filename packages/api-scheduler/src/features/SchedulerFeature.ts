@@ -4,7 +4,6 @@ import { GetScheduledActionFeature } from "./GetScheduledAction/feature.js";
 import { ListScheduledActionsFeature } from "./ListScheduledActions/feature.js";
 import { CancelScheduledActionFeature } from "./CancelScheduledAction/feature.js";
 import { ExecuteScheduledActionFeature } from "./ExecuteScheduledAction/feature.js";
-import { ScheduledActionHandlerComposite } from "./ExecuteScheduledAction/ScheduledActionHandlerComposite.js";
 
 /**
  * Main Scheduler Feature
@@ -16,9 +15,6 @@ import { ScheduledActionHandlerComposite } from "./ExecuteScheduledAction/Schedu
 export const SchedulerFeature = createFeature({
     name: "Scheduler",
     register(container) {
-        // Register the composite handler
-        container.registerComposite(ScheduledActionHandlerComposite);
-
         // Register all features
         ScheduleActionFeature.register(container);
         GetScheduledActionFeature.register(container);

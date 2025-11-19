@@ -2,12 +2,9 @@ import { Result } from "@webiny/feature/api";
 import { CancelScheduledActionUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { GetScheduledActionUseCase } from "~/features/GetScheduledAction/abstractions.js";
 import { ScheduledActionModel, SchedulerService } from "~/shared/abstractions.js";
-import {
-    ScheduledActionNotFoundError,
-    ScheduledActionPersistenceError,
-    SchedulerServiceError
-} from "~/domain/errors.js";
+import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~/domain/errors.js";
 import { DeleteEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/index.js";
+import { ScheduledActionIdWithVersion } from "~/domain/ScheduledActionIdWithVersion.js";
 
 /**
  * Cancels a scheduled action
@@ -26,19 +23,21 @@ class CancelScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
         private model: ScheduledActionModel.Interface
     ) {}
 
-    async execute(scheduleId: string): Promise<Result<void, UseCaseAbstraction.Error>> {
-        // Check if schedule exists
-        const getResult = await this.getScheduledActionUseCase.execute(scheduleId);
+    async execute(id: string): Promise<Result<void, UseCaseAbstraction.Error>> {
+        // Check if scheduled action exists
+        const getResult = await this.getScheduledActionUseCase.execute(id);
 
         if (getResult.isFail()) {
             const error = getResult.error;
 
             if (error.code === "Scheduler/ScheduledAction/NotFound") {
-                return Result.fail(new ScheduledActionNotFoundError(scheduleId));
+                return Result.fail(new ScheduledActionNotFoundError(id));
             }
 
             return Result.fail(error);
         }
+
+        const scheduleId = ScheduledActionIdWithVersion.from(id);
 
         // Delete EventBridge schedule
         // Note: We continue even if this fails, as the schedule might already be executed/deleted

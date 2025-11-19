@@ -87,6 +87,13 @@ export const createSchedulerModel = () => {
                 storageId: "text@error",
                 type: "text",
                 label: "Error"
+            },
+            {
+                id: "payload",
+                fieldId: "payload",
+                storageId: "json@payload",
+                type: "json",
+                label: "Payload"
             }
         ]
     });
