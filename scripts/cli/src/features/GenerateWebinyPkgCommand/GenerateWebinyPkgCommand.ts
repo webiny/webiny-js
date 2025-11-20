@@ -23,12 +23,7 @@ export class GenerateWebinyPkgCommand implements Command.Interface<void> {
                 const wbyPkg = fullPackagesList.find(pkg => pkg.packageJson.name === "webiny")!;
 
                 // Reset exports in `webiny` package.json
-                const wbyPkgJsonPath = wbyPkg.paths.packageJsonFile.toString();
-                const webinyPkgJson = JSON.parse(fs.readFileSync(wbyPkgJsonPath, "utf-8"));
-
-                webinyPkgJson.exports = {};
-
-                fs.writeFileSync(wbyPkgJsonPath, JSON.stringify(webinyPkgJson, null, 2) + "\n");
+                wbyPkg.packageJson.exports = {};
 
                 const packagesWithExports = fullPackagesList
                     .filter(pkg => pkg !== wbyPkg)
@@ -47,6 +42,11 @@ export class GenerateWebinyPkgCommand implements Command.Interface<void> {
                     this.generateExportsForPkg(pkgWithExports, wbyPkg);
                 }
 
+                fs.writeFileSync(
+                    wbyPkg.paths.packageJsonFile.toString(),
+                    JSON.stringify(wbyPkg.packageJson, null, 2) + "\n"
+                );
+
                 this.ui.newLine();
                 this.ui.success(`%s package generated.`, "webiny");
             }
@@ -57,9 +57,6 @@ export class GenerateWebinyPkgCommand implements Command.Interface<void> {
         pkgWithExports: ListPackagesService.Package,
         wbyPkg: ListPackagesService.Package
     ) {
-        const wbyPkgJsonPath = wbyPkg.paths.packageJsonFile.toString();
-        const webinyPkgJson = JSON.parse(fs.readFileSync(wbyPkgJsonPath, "utf-8"));
-
         const pkgExports = pkgWithExports.packageJson.webiny?.exports!;
 
         for (const [basePkgFilePath, wbyPkgExportPathOrSettings] of Object.entries(pkgExports)) {
@@ -82,21 +79,7 @@ export class GenerateWebinyPkgCommand implements Command.Interface<void> {
                     ? { exportPath: wbyPkgExportPathOrSettings }
                     : wbyPkgExportPathOrSettings;
 
-            // 3. ss
-            let wbyExportTsFilePath = wbyPkg.paths.packageFolder
-                .join("src", wbyPkgExportSettings.exportPath)
-                .toString();
-
-            if (wbyExportTsFilePath.endsWith(".js")) {
-                wbyExportTsFilePath = wbyExportTsFilePath.replace(".js", ".ts");
-            } else {
-                wbyExportTsFilePath = path.join(wbyExportTsFilePath, "index.ts");
-            }
-
-            // 4. Create the directory if it doesn't exist.
-            fs.mkdirSync(path.dirname(wbyExportTsFilePath), { recursive: true });
-
-            // 5. Create the export TS file.
+            // 3. Create the export TS file.
             const exportPath = path
                 .join(pkgWithExports.name, basePkgFilePath)
                 .replace(".tsx", ".js")
@@ -107,20 +90,23 @@ export class GenerateWebinyPkgCommand implements Command.Interface<void> {
                 namedExports = `{ ${wbyPkgExportSettings.namedExports.join(", ")} }`;
             }
 
+            let wbyExportTsFilePath = [
+                wbyPkg.paths.packageFolder.join("src", wbyPkgExportSettings.exportPath).toString(),
+                ".ts"
+            ].join("");
+
+            fs.mkdirSync(path.dirname(wbyExportTsFilePath), { recursive: true });
             fs.writeFileSync(wbyExportTsFilePath, `export ${namedExports} from "${exportPath}";\n`);
 
-            // 6. Update `exports` in `package.json`.
-            if (!webinyPkgJson.exports) {
-                webinyPkgJson.exports = {};
-            }
-
+            // 4. Update `exports` in `package.json`.
             const exportEntryKey = `./${path.join(wbyPkgExportSettings.exportPath).replace(/\.js$/, "")}`;
-            webinyPkgJson.exports[exportEntryKey] = `./${path.relative(
+
+            // @ts-ignore
+            wbyPkg.packageJson.exports![exportEntryKey] = `./${path.relative(
                 wbyPkg.paths.packageFolder.join("src").toString(),
                 wbyExportTsFilePath.replace(".ts", ".js")
             )}`;
 
-            console.log(webinyPkgJson.exports);
 
             this.ui.debug(
                 ` %s → %s`,
@@ -128,9 +114,6 @@ export class GenerateWebinyPkgCommand implements Command.Interface<void> {
                 path.join(`webiny`, wbyPkgExportSettings.exportPath)
             );
         }
-
-        // 7. Write back the updated `package.json`.
-        fs.writeFileSync(wbyPkgJsonPath, JSON.stringify(webinyPkgJson, null, 2) + "\n");
     }
 }
 

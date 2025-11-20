@@ -19,7 +19,7 @@
   "webiny": {
     "exports": {
       "./config/AdminConfig.tsx": {
-        "exportPath": "admin/configs",
+        "exportPath": "./admin/configs",
         "namedExports": [
           "AdminConfig"
         ]
