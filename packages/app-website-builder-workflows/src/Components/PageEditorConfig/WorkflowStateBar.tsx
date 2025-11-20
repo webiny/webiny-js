@@ -1,15 +1,22 @@
 import React from "react";
-import { useApolloClient } from "@apollo/react-hooks";
-import { useSecurity } from "@webiny/app-security";
 import { WorkflowStateProvider } from "@webiny/app-workflows";
 import { WB_PAGE_APP } from "~/constants.js";
-import { usePage } from "@webiny/app-website-builder/modules/pages/PagesList/hooks/usePage.js";
+import { PageFormWorkflow } from "./PageFormWorkflow.js";
+import { useApolloClient } from "@apollo/react-hooks";
+import { useSecurity } from "@webiny/app-security";
 
-export const WorkflowStateBar = () => {
-    const { page } = usePage();
-    
+interface IWorkflowStateBarPropsPage {
+    id: string;
+    title: string;
+}
+
+interface IWorkflowStateBarProps {
+    page: IWorkflowStateBarPropsPage;
+}
+
+export const WorkflowStateBar = (props: IWorkflowStateBarProps) => {
+    const { page } = props;
     const client = useApolloClient();
-
     const { identity } = useSecurity();
 
     return (
@@ -18,9 +25,9 @@ export const WorkflowStateBar = () => {
             id={page.id}
             identity={identity}
             client={client}
-            title={`Testing`}
+            title={page.title}
         >
-            <></>
+            <PageFormWorkflow />
         </WorkflowStateProvider>
     );
 };
