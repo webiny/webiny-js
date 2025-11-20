@@ -2,12 +2,11 @@
  * Nodemailer docs
  * https://nodemailer.com/about/
  */
-import type {Transport} from "~/types.js";
+import type { Transport } from "~/types.js";
 import WebinyError from "@webiny/error";
-import type {Transporter} from "nodemailer";
+import type { Transporter } from "nodemailer";
 import nodemailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
-
 
 export type SmtpTransportConfig = SMTPTransport.Options;
 
@@ -76,7 +75,7 @@ export const createSmtpTransport = (
                         error: null
                     };
                 }
-                
+
                 return {
                     result: null,
                     error: {

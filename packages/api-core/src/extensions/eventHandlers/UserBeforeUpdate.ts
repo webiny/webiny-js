@@ -1,4 +1,4 @@
-import {defineApiExtension} from "@webiny/project/defineExtension";
+import { defineApiExtension } from "@webiny/project/defineExtension";
 import { UserBeforeUpdateHandler } from "~/features/users/UpdateUser/index.js";
 
 export const UserBeforeUpdate = defineApiExtension({

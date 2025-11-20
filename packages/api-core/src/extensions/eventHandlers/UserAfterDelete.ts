@@ -1,4 +1,4 @@
-import {defineApiExtension} from "@webiny/project/defineExtension";
+import { defineApiExtension } from "@webiny/project/defineExtension";
 import { UserAfterDeleteHandler } from "~/features/users/DeleteUser/index.js";
 
 export const UserAfterDelete = defineApiExtension({

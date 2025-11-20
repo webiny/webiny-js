@@ -1,4 +1,4 @@
-import {defineApiExtension} from "@webiny/project/defineExtension";
+import { defineApiExtension } from "@webiny/project/defineExtension";
 import { SettingsBeforeUpdateHandler } from "~/features/settings/UpdateSettings/index.js";
 
 export const SettingsBeforeUpdate = defineApiExtension({

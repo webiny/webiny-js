@@ -1,4 +1,4 @@
-import {defineApiExtension} from "@webiny/project/defineExtension";
+import { defineApiExtension } from "@webiny/project/defineExtension";
 import { UserBeforeCreateHandler } from "~/features/users/CreateUser/index.js";
 
 export const UserBeforeCreate = defineApiExtension({

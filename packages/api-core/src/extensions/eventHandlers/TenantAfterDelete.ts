@@ -1,4 +1,4 @@
-import {defineApiExtension} from "@webiny/project/defineExtension";
+import { defineApiExtension } from "@webiny/project/defineExtension";
 import { TenantAfterDeleteHandler } from "~/features/tenancy/DeleteTenant/index.js";
 
 export const TenantAfterDelete = defineApiExtension({

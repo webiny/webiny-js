@@ -1,4 +1,4 @@
-import {defineApiExtension} from "@webiny/project/defineExtension";
+import { defineApiExtension } from "@webiny/project/defineExtension";
 import { SettingsAfterDeleteHandler } from "~/features/settings/DeleteSettings/index.js";
 
 export const SettingsAfterDelete = defineApiExtension({

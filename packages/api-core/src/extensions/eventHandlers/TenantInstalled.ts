@@ -1,4 +1,4 @@
-import {defineApiExtension} from "@webiny/project/defineExtension";
+import { defineApiExtension } from "@webiny/project/defineExtension";
 import { TenantInstalledHandler } from "~/features/tenancy/InstallTenant/index.js";
 
 export const TenantInstalled = defineApiExtension({

@@ -10,4 +10,3 @@ export const MyApiKeyAfterUpdate = ApiKeyAfterUpdateHandler.createImplementation
     implementation: MyApiKeyAfterUpdateImpl,
     dependencies: []
 });
-

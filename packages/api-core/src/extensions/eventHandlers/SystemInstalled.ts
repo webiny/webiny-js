@@ -1,4 +1,4 @@
-import {defineApiExtension} from "@webiny/project/defineExtension";
+import { defineApiExtension } from "@webiny/project/defineExtension";
 import { SystemInstalledHandler } from "~/features/system/InstallSystem/index.js";
 
 export const SystemInstalled = defineApiExtension({
