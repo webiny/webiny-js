@@ -18,7 +18,8 @@
     "eslint": "^8.57.1",
     "eslint-plugin-react": "^7.37.5",
     "prettier": "^2.8.8",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "webiny": "latest"
   },
   "scripts": {
     "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\" --max-warnings=0",

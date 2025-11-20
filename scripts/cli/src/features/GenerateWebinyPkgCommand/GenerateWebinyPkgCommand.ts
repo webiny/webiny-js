@@ -95,8 +95,15 @@ export class GenerateWebinyPkgCommand implements Command.Interface<void> {
                 ".ts"
             ].join("");
 
-            fs.mkdirSync(path.dirname(wbyExportTsFilePath), { recursive: true });
-            fs.writeFileSync(wbyExportTsFilePath, `export ${namedExports} from "${exportPath}";\n`);
+            const exportStatement = `export ${namedExports} from "${exportPath}";\n`;
+
+            if (fs.existsSync(wbyExportTsFilePath)) {
+                const wbyExportFileContent = fs.readFileSync(wbyExportTsFilePath, "utf-8");
+                fs.writeFileSync(wbyExportTsFilePath, `${wbyExportFileContent}${exportStatement}`);
+            } else {
+                fs.mkdirSync(path.dirname(wbyExportTsFilePath), { recursive: true });
+                fs.writeFileSync(wbyExportTsFilePath, exportStatement);
+            }
 
             // 4. Update `exports` in `package.json`.
             const exportEntryKey = `./${path.join(wbyPkgExportSettings.exportPath).replace(/\.js$/, "")}`;
@@ -106,7 +113,6 @@ export class GenerateWebinyPkgCommand implements Command.Interface<void> {
                 wbyPkg.paths.packageFolder.join("src").toString(),
                 wbyExportTsFilePath.replace(".ts", ".js")
             )}`;
-
 
             this.ui.debug(
                 ` %s → %s`,

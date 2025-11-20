@@ -77,7 +77,7 @@ export default () => {
             {/*<Fm.OnFileBeforeCreate src={"./extensions/myOnEntryBeforeCreate.ts"} />*/}
 
             {/*Finally, we have these extra extensions that are not even included in the default*/}
-            {/*`@webiny/extensions` package. These will most probably always be without any*/}
+            {/*`webiny/extensions` package. These will most probably always be without any*/}
             {/*namespace prefix, just like the `Okta` extension below.*/}
             {/*<Okta*/}
             {/*    backendSrc={"./extensions/myOktaIdProvider.ts"}*/}
