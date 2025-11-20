@@ -34,7 +34,8 @@ export function usePageListConfig() {
                 ...browser,
                 bulkActions: [...(browser.bulkActions || [])],
                 filters: [...(browser.filters || [])],
-                filtersToWhere: [...(browser.filtersToWhere || [])]
+                filtersToWhere: [...(browser.filtersToWhere || [])],
+                sidebarFooter: [...(browser.sidebarFooter || [])]
             }
         }),
         [config]

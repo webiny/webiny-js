@@ -1,5 +1,6 @@
 import React from "react";
 import { FolderTree, useNavigateFolder } from "@webiny/app-aco";
+import { SidebarFooter } from "./SidebarFooter.js";
 
 const Sidebar = () => {
     const { currentFolderId, navigateToFolder } = useNavigateFolder();
@@ -12,6 +13,9 @@ const Sidebar = () => {
                 enableActions={true}
                 enableCreate={true}
             />
+            <div className="absolute bottom-0">
+                <SidebarFooter />
+            </div>
         </div>
     );
 };
