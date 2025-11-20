@@ -92,9 +92,6 @@ export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> 
             modelId: {
                 type: "string"
             },
-            locale: {
-                type: "string"
-            },
             version: {
                 type: "number"
             },

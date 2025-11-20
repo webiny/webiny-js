@@ -16,8 +16,6 @@ export interface WbRedirect {
     modifiedOn: string;
     modifiedBy: WbIdentity;
     tenant: string;
-    locale: string;
-
     redirectFrom: string;
     redirectTo: string;
     redirectType: string;

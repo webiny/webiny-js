@@ -15,6 +15,7 @@ import { emptyResolver, resolve, resolveList } from "./utils.js";
 import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { checkPermissions } from "./checkPermissions.js";
 import type { Plugin } from "@webiny/plugins/types.js";
+import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 
 interface IGetTaskQueryParams {
     id: string;
@@ -57,15 +58,12 @@ const createGraphQL = () => {
         const taskModel = await ctx.tasks.getTaskModel();
         const logModel = await ctx.tasks.getLogModel();
 
+        const listModels = ctx.container.resolve(ListModelsUseCase);
+
         const models = await ctx.security.withoutAuthorization(async () => {
-            return (await ctx.cms.listModels()).filter(model => {
-                if (model.fields.length === 0) {
-                    return false;
-                } else if (model.isPrivate) {
-                    return false;
-                }
-                return true;
-            });
+            const modelsResult = await listModels.execute({ includePrivate: false });
+
+            return modelsResult.value.filter(model => model.fields.length > 0);
         });
         const fieldTypePlugins = createFieldTypePluginRecords(ctx.plugins);
 

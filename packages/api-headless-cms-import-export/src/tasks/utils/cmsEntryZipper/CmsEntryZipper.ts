@@ -36,7 +36,6 @@ const createBufferData = (params: ICmsEntryEntriesJson) => {
                  * We need to remove some fields that are not needed in the export.
                  */
                 delete item.tenant;
-                delete item.locale;
                 delete item.locked;
                 delete item.webinyVersion;
                 delete item.version;

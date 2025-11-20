@@ -38,8 +38,7 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
      * We need the operator plugins, which we execute on our where conditions.
      */
     const operatorPlugins = createOperatorPluginList({
-        plugins,
-        locale: model.locale
+        plugins
     });
 
     const applyFiltering = createApplyFiltering({

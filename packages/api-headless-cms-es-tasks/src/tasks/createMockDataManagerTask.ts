@@ -42,8 +42,7 @@ export const createMockDataManagerTask = () => {
                 client: context.elasticsearch,
                 model: {
                     modelId: CARS_MODEL_ID,
-                    tenant: "root",
-                    locale: "en-US"
+                    tenant: "root"
                 }
             });
         },
@@ -52,8 +51,7 @@ export const createMockDataManagerTask = () => {
                 client: context.elasticsearch,
                 model: {
                     modelId: CARS_MODEL_ID,
-                    tenant: "root",
-                    locale: "en-US"
+                    tenant: "root"
                 }
             });
         }

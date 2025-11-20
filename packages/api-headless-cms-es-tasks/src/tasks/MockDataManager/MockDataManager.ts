@@ -47,8 +47,7 @@ export class MockDataManager<
                 client: context.elasticsearch,
                 model: {
                     modelId: input.modelId,
-                    tenant: "root",
-                    locale: "en-US"
+                    tenant: "root"
                 }
             });
             return response.done();

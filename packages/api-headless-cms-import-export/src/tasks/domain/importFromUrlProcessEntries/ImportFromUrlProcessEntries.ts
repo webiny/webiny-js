@@ -6,11 +6,12 @@ import type {
     IImportFromUrlProcessEntriesOutput
 } from "./abstractions/ImportFromUrlProcessEntries.js";
 import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
-import type { ICmsEntryManager } from "@webiny/api-headless-cms/types/index.js";
 import { ImportFromUrlProcessEntriesDecompress } from "~/tasks/domain/importFromUrlProcessEntries/ImportFromUrlProcessEntriesDecompress.js";
 import type { IFileFetcher } from "~/tasks/utils/fileFetcher/index.js";
 import { ImportFromUrlProcessEntriesInsert } from "./ImportFromUrlProcessEntriesInsert.js";
 import type { ICompressedFileReader, IDecompressor } from "~/tasks/utils/decompressor/index.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
 
 export interface IImportFromUrlProcessEntriesParams {
     fileFetcher: IFileFetcher;
@@ -37,6 +38,9 @@ export class ImportFromUrlProcessEntries<
     public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
         const { context, response, input } = params;
 
+        const getModel = context.container.resolve(GetModelUseCase);
+        const createEntry = context.container.resolve(CreateEntryUseCase);
+
         if (!input.modelId) {
             return response.error({
                 message: `Missing "modelId" in the input.`,
@@ -54,10 +58,8 @@ export class ImportFromUrlProcessEntries<
             });
         }
 
-        let entryManager: ICmsEntryManager;
-        try {
-            entryManager = await context.cms.getEntryManager(input.modelId);
-        } catch {
+        const modelResult = await getModel.execute(input.modelId);
+        if (modelResult.isFail()) {
             return response.error({
                 message: `Model "${input.modelId}" not found.`,
                 code: "MODEL_NOT_FOUND"
@@ -85,7 +87,8 @@ export class ImportFromUrlProcessEntries<
 
         try {
             const insert = new ImportFromUrlProcessEntriesInsert<C, I, O>({
-                entryManager,
+                model: modelResult.value,
+                createEntry,
                 fileFetcher: this.fileFetcher
             });
             return await insert.run(params);

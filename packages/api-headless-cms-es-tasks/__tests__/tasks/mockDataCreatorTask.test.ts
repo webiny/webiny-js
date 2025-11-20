@@ -50,8 +50,7 @@ describe("mock data creator task", () => {
 
         const result = await runner({
             webinyTaskId: task.id,
-            tenant: "root",
-            locale: "en-US"
+            tenant: "root"
         });
 
         await enableIndexing({

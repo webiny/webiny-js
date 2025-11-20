@@ -57,11 +57,6 @@ This document provides the correct import paths and type definitions for commonl
 - **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/GetEntry/abstractions.ts`
 - **Usage:** Get single entry by query parameters (where + sort)
 
-#### ListEntries
-- **Import:** `import { ListEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries"`
-- **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/ListEntries/abstractions.ts`
-- **Usage:** Base abstraction for listing entries with filtering and pagination
-
 #### ListLatestEntries
 - **Import:** `import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries"`
 - **Interface Type:** See `packages/api-headless-cms/src/features/contentEntry/ListEntries/abstractions.ts`

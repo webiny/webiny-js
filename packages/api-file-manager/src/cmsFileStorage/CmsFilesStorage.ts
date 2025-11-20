@@ -50,8 +50,8 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
         this.tagsWhereProcessor = new ListTagsWhereProcessor();
     }
 
-    private modelWithContext({ tenant, locale }: ModelContext): CmsModel {
-        return { ...this.model, tenant, locale };
+    private modelWithContext({ tenant }: ModelContext): CmsModel {
+        return { ...this.model, tenant };
     }
 
     async create({ file }: FileManagerFilesStorageOperationsCreateParams): Promise<File> {
@@ -175,8 +175,6 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
             createdOn: entry.createdOn,
             modifiedOn: entry.modifiedOn || null,
             savedOn: entry.savedOn,
-
-            locale: entry.locale,
             tenant: entry.tenant,
             webinyVersion: entry.webinyVersion,
             ...entry.values

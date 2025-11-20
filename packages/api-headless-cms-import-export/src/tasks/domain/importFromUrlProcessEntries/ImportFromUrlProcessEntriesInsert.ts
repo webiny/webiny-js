@@ -9,14 +9,16 @@ import type {
     IImportFromUrlProcessEntriesInsertProcessedFileInput,
     IImportFromUrlProcessEntriesOutput
 } from "./abstractions/ImportFromUrlProcessEntries.js";
-import type { ICmsEntryManager } from "@webiny/api-headless-cms/types/index.js";
 import type { Context } from "~/types.js";
 import { MANIFEST_JSON } from "~/tasks/constants.js";
 import type { IFileFetcher } from "~/tasks/utils/fileFetcher/index.js";
 import type { ICmsEntryEntriesJson } from "~/tasks/utils/types.js";
+import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 
 export interface IImportFromUrlProcessEntriesInsertParams {
-    entryManager: ICmsEntryManager;
+    model: CmsModel;
+    createEntry: CreateEntryUseCase.Interface;
     fileFetcher: IFileFetcher;
 }
 
@@ -26,11 +28,13 @@ export class ImportFromUrlProcessEntriesInsert<
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
 > implements IImportFromUrlProcessEntriesInsert<C, I, O>
 {
-    private readonly entryManager: ICmsEntryManager;
+    private readonly createEntry: CreateEntryUseCase.Interface;
     private readonly fileFetcher: IFileFetcher;
+    private readonly model: CmsModel;
 
     public constructor(params: IImportFromUrlProcessEntriesInsertParams) {
-        this.entryManager = params.entryManager;
+        this.model = params.model;
+        this.createEntry = params.createEntry;
         this.fileFetcher = params.fileFetcher;
     }
 
@@ -103,15 +107,17 @@ export class ImportFromUrlProcessEntriesInsert<
                         }
                     });
                 }
-                try {
-                    await this.entryManager.create(item);
-                    success++;
-                } catch (ex) {
-                    console.error(`Failed to insert entry "${item.id}"`, ex);
+
+                const createResult = await this.createEntry.execute(this.model, item);
+
+                if (createResult.isFail()) {
+                    console.error(`Failed to insert entry "${item.id}"`, createResult.error);
                     errors.push({
                         id: item.id,
-                        message: ex.message
+                        message: createResult.error.message
                     });
+                } else {
+                    success++;
                 }
             }
             processed.push({

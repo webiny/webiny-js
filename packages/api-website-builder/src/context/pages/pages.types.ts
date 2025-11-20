@@ -21,7 +21,6 @@ export interface WbPage {
     modifiedOn: string;
     modifiedBy: WbIdentity;
     tenant: string;
-    locale: string;
     webinyVersion: string;
 
     properties: Record<string, any>;

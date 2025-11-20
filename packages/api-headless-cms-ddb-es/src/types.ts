@@ -191,7 +191,7 @@ export interface CmsEntryStorageOperations extends BaseCmsEntryStorageOperations
 }
 
 export interface DataLoadersHandlerInterfaceClearAllParams {
-    model: Pick<CmsModel, "tenant" | "locale">;
+    model: Pick<CmsModel, "tenant">;
 }
 export interface DataLoadersHandlerInterface {
     clearAll: (params?: DataLoadersHandlerInterfaceClearAllParams) => void;

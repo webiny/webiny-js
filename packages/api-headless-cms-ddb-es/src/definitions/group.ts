@@ -34,9 +34,6 @@ export const createGroupEntity = (params: CreateGroupEntityParams): Entity<any> 
             slug: {
                 type: "string"
             },
-            locale: {
-                type: "string"
-            },
             description: {
                 type: "string"
             },

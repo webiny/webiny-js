@@ -1,4 +1,3 @@
-import type { Plugin } from "@webiny/plugins/types.js";
 import type { Context, GenericRecord } from "@webiny/api/types.js";
 import type {
     GraphQLFieldResolver,
@@ -385,32 +384,6 @@ export interface CmsGroupContext {
 }
 
 /**
- * A plugin to load a CmsModelManager.
- *
- * @see CmsModelManager
- *
- * @category Plugin
- * @category CmsModel
- * @category CmsEntry
- */
-export interface ModelManagerPlugin extends Plugin {
-    /**
-     * A plugin type.
-     */
-    type: "cms-content-model-manager";
-    /**
-     * Specific model CmsModelManager loader. Can target exact modelId(s).
-     * Be aware that if you define multiple plugins without `modelId`, last one will run.
-     */
-    modelId?: string[] | string;
-    /**
-     * Create a CmsModelManager for specific type - or new default one.
-     * For reference in how is this plugin run check [contentModelManagerFactory](https://github.com/webiny/webiny-js/blob/f15676/packages/api-headless-cms/src/content/plugins/CRUD/contentModel/contentModelManagerFactory.ts)
-     */
-    create<T = any>(context: CmsContext, model: CmsModel): Promise<CmsModelManager<T>>;
-}
-
-/**
  * A content entry values definition for and from the database.
  *
  * @category Database model
@@ -703,8 +676,6 @@ export interface CmsModelManager<T = CmsEntryValues> {
     delete(id: string, options?: CmsDeleteEntryOptions): Promise<void>;
 }
 
-export type ICmsEntryManager<T = GenericRecord> = CmsModelManager<T>;
-
 /**
  * Create
  */
@@ -790,14 +761,6 @@ export interface OnModelDeleteErrorTopicParams {
 export interface OnModelInitializeParams {
     model: CmsModel;
     data: Record<string, any>;
-}
-
-/**
- *
- */
-export interface CmsModelUpdateDirectParams {
-    model: CmsModel;
-    original: CmsModel;
 }
 
 export interface ICmsModelListParams {

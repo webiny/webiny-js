@@ -6,7 +6,7 @@ import type { CmsContext } from "~/types.js";
 export const createIndexTaskPluginTest = () => {
     return createElasticsearchIndexTaskPlugin<CmsContext>({
         name: "elasticsearch.cms.createIndexTaskPlugin",
-        getIndexList: async ({ context, locale, tenant }) => {
+        getIndexList: async ({ context, tenant }) => {
             const originalTenant = context.tenancy.getCurrentTenant();
             if (!originalTenant) {
                 return [];
@@ -27,17 +27,13 @@ export const createIndexTaskPluginTest = () => {
                 const { index } = configurations.es({
                     model: {
                         modelId: model.modelId,
-                        tenant,
-                        locale
+                        tenant
                     }
                 });
                 return {
                     index,
                     settings: configurations.indexSettings({
                         context,
-                        model: {
-                            locale
-                        }
                     })
                 };
             });

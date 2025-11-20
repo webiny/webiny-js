@@ -31,8 +31,7 @@ describe("mock data manager task", () => {
 
         const result = await runner({
             webinyTaskId: task.id,
-            tenant: "root",
-            locale: "en-US"
+            tenant: "root"
         });
 
         expect(result).toMatchObject({
