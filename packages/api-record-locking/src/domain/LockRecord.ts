@@ -11,7 +11,7 @@ import type {
     LockRecordValues
 } from "./types.js";
 import { removeLockRecordDatabasePrefix } from "~/utils/lockRecordDatabaseId.js";
-import { calculateExpiresOn } from "~/utils/calculateExpiresOn.js";
+import { calculateExpiresOn } from "./calculateExpiresOn.js";
 
 export interface ILockRecord {
     readonly id: string;
@@ -85,7 +85,7 @@ export class LockRecord implements ILockRecord {
         this._lockedBy = input.createdBy;
         this._lockedOn = new Date(input.createdOn);
         this._updatedOn = new Date(input.savedOn);
-        this._expiresOn = calculateExpiresOn(input, timeout);
+        this._expiresOn = calculateExpiresOn(input.savedOn, timeout);
         this._actions = input.values.actions;
     }
 

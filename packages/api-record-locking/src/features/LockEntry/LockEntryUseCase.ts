@@ -30,7 +30,6 @@ class LockEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         const result = await this.repository.create(input);
 
         if (result.isFail()) {
-            // Wrap persistence errors in domain error
             return Result.fail(new LockEntryError(result.error));
         }
 

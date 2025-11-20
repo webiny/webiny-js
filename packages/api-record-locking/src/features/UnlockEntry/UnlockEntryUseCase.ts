@@ -9,7 +9,7 @@ import { KickOutCurrentUserUseCase } from "../KickOutCurrentUser/abstractions.js
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import type { ILockRecord } from "~/domain/LockRecord.js";
 import { LockRecordNotFoundError, NotSameIdentityError } from "~/domain/errors.js";
-import { hasFullAccessPermission } from "~/utils/hasFullAccessPermission.js";
+import { hasFullAccessPermission } from "./hasFullAccessPermission.js";
 
 class UnlockEntryUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -38,7 +38,8 @@ class UnlockEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         // If expired, cleanup and return error
         if (record.isExpired()) {
             await this.repository.delete(record.id);
-            return Result.fail(new LockRecordNotFoundError({ id: input.id }));
+            const error = new LockRecordNotFoundError({ id: input.id });
+            return Result.fail(error);
         }
 
         // Check if user is the owner
@@ -50,23 +51,21 @@ class UnlockEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         // If not the owner, check if force unlock is allowed
         if (!isSameUser) {
             if (!input.force) {
-                return Result.fail(
-                    new NotSameIdentityError({
-                        currentId: identity.id,
-                        targetId: record.lockedBy.id
-                    })
-                );
+                const error = new NotSameIdentityError({
+                    currentId: identity.id,
+                    targetId: record.lockedBy.id
+                });
+                return Result.fail(error);
             }
 
             // Check if user has permission to force unlock
             const hasAccess = await hasFullAccessPermission(this.identityContext);
             if (!hasAccess) {
-                return Result.fail(
-                    new NotSameIdentityError({
-                        currentId: identity.id,
-                        targetId: record.lockedBy.id
-                    })
-                );
+                const error = new NotSameIdentityError({
+                    currentId: identity.id,
+                    targetId: record.lockedBy.id
+                });
+                return Result.fail(error);
             }
 
             shouldKickOut = true;

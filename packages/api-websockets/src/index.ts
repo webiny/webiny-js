@@ -14,5 +14,4 @@ export * from "./registry/index.js";
 export * from "./context/index.js";
 
 export * from "./plugins/index.js";
-export * from "./abstractions.js";
 export type * from "./types.js";

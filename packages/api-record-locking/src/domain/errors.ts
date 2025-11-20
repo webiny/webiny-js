@@ -82,3 +82,35 @@ export class IdentityMissingError extends BaseError {
         });
     }
 }
+
+export class EntryNotLockedError extends BaseError<{ id: string; type: string }> {
+    override readonly code = "RecordLocking/Entry/NotLockedError" as const;
+
+    constructor(data: { id: string; type: string }) {
+        super({
+            message: "Entry is not locked.",
+            data
+        });
+    }
+}
+
+export class UnlockRequestAlreadySentError extends BaseError<{ id: string; type: string; identityId: string }> {
+    override readonly code = "RecordLocking/Entry/UnlockRequestAlreadySentError" as const;
+
+    constructor(data: { id: string; type: string; identityId: string }) {
+        super({
+            message: "Unlock request already sent.",
+            data
+        });
+    }
+}
+
+export class UnlockEntryRequestError extends BaseError {
+    override readonly code = "RecordLocking/Entry/UnlockRequestError" as const;
+
+    constructor(error: Error) {
+        super({
+            message: `Could not request unlock: ${error.message}`
+        });
+    }
+}

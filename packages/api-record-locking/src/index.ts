@@ -1,14 +1,13 @@
-import { createGraphQLSchema } from "~/graphql/schema.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { ContextPlugin } from "@webiny/api";
-import type { Context } from "~/types.js";
-import { createRecordLockingCrud } from "~/crud/crud.js";
-import { createLockingModel } from "~/crud/model.js";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
-import { RecordLockingConfig, RecordLockingModel } from "~/domain/index.js";
+import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
-import { RECORD_LOCKING_MODEL_ID } from "~/domain/model.js";
+import { createLockingModel, RECORD_LOCKING_MODEL_ID } from "~/domain/model.js";
 import { getTimeout } from "~/utils/getTimeout.js";
 import { RecordLockingFeature } from "~/features/RecordLockingFeature.js";
+import { createGraphQLSchema } from "~/graphql/schema.js";
+import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords.js";
 
 export interface ICreateContextPluginParams {
     /**
@@ -18,28 +17,33 @@ export interface ICreateContextPluginParams {
 }
 
 const createContextPlugin = (params?: ICreateContextPluginParams) => {
-    const plugin = new ContextPlugin<Context>(async context => {
+    const plugin = new ContextPlugin<ApiCoreContext>(async context => {
         const wcp = context.container.resolve(WcpContext);
         const getModel = context.container.resolve(GetModelUseCase);
+        const listModels = context.container.resolve(ListModelsUseCase);
 
         if (!wcp.canUseRecordLocking()) {
             return;
         }
 
+        // Register model plugin
         context.plugins.register(createLockingModel());
 
+        // Determine timeout value
         const timeout = getTimeout(params?.timeout);
 
-        context.recordLocking = await createRecordLockingCrud({
-            context,
-            timeout
+        // Fetch CMS model to use for storing record locking data
+        const recordLockingModel = await getModel.execute(RECORD_LOCKING_MODEL_ID);
+        const publicModels = await listModels.execute({ includePrivate: false });
+
+        // Register GraphQL schema plugin
+        const graphQlPlugin = await createGraphQLSchema({
+            model: recordLockingModel.value,
+            models: publicModels.value,
+            fieldTypePlugins: createFieldTypePluginRecords(context.plugins)
         });
 
-        const graphQlPlugin = await createGraphQLSchema({ context });
-
         context.plugins.register(graphQlPlugin);
-
-        const recordLockingModel = await getModel.execute(RECORD_LOCKING_MODEL_ID);
 
         // Register features
         RecordLockingFeature.register(context.container, {
