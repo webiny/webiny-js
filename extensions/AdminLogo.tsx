@@ -1,5 +1,5 @@
 import React from "react";
-import { AdminConfig } from "@webiny/app-serverless-cms"; // TODO: webiny/admin/config?
+import { AdminConfig } from "webiny/admin/configs";
 import logo from "./logo.png";
 
 const { Tenant } = AdminConfig;

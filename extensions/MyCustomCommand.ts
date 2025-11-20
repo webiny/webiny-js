@@ -1,5 +1,5 @@
-import { Command } from "webiny/cli/features/Command.js";
-import { UiService } from "webiny/cli/features/Ui.js";
+import { Command } from "webiny/cli/features/Command";
+import { UiService } from "webiny/cli/features/Ui";
 
 export interface IMyCustomCommandParams {
     name: string;

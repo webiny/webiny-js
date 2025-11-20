@@ -1,4 +1,4 @@
-import { ApiKeyAfterCreateHandler } from "webiny/api/security/features/CreateApiKey.js";
+import { ApiKeyAfterCreateHandler } from "webiny/api/security/features/CreateApiKey";
 
 class MyApiKeyAfterCreateImpl implements ApiKeyAfterCreateHandler.Interface {
     async handle() {
