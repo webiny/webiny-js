@@ -1,5 +1,6 @@
 import { createImplementation } from "@webiny/di";
 import {
+    BuildAppWorkspaceService,
     GetApp,
     GetProductionEnvironments,
     GetProject,
@@ -34,7 +35,8 @@ export class DefaultWatch implements Watch.Interface {
         private getProductionEnvironments: GetProductionEnvironments.Interface,
         private ui: UiService.Interface,
         private pulumiGetStackOutputService: PulumiGetStackOutputService.Interface,
-        private pulumiGetStackExportService: PulumiGetStackOutputService.Interface
+        private pulumiGetStackExportService: PulumiGetStackOutputService.Interface,
+        private buildAppWorkspaceService: BuildAppWorkspaceService.Interface
     ) {}
 
     async execute(params: Watch.Params) {
@@ -91,6 +93,8 @@ export class DefaultWatch implements Watch.Interface {
                 `When increasing the timeout, the maximum value that can be passed is 900 seconds (15 minutes).`
             );
         }
+
+        await this.buildAppWorkspaceService.execute(params, { forceRebuild: true });
 
         const ui = this.ui;
         const logger = this.logger;
@@ -287,6 +291,7 @@ export const watch = createImplementation({
         GetProductionEnvironments,
         UiService,
         PulumiGetStackOutputService,
-        PulumiGetStackExportService
+        PulumiGetStackExportService,
+        BuildAppWorkspaceService
     ]
 });

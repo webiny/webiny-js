@@ -59,7 +59,7 @@ export default () => {
 
             {/* Security 👇 */}
             <Security.ApiKey.AfterCreate src={"./extensions/MyApiKeyAfterCreate.ts"} />
-            <Security.ApiKey.AfterCreate src={"./extensions/MyApiKeyAfterCreate2.ts"} />
+            <Security.ApiKey.AfterUpdate src={"./extensions/MyApiKeyAfterUpdate.ts"} />
 
             {/* 🚧 WIP 👇 */}
             {/*<Security.ApiKeyBeforeCreate src={"./extensions/ApiKeyBeforeCreate.ts"} />*/}
