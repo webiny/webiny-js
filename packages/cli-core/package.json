@@ -41,8 +41,8 @@
   },
   "webiny": {
     "exports": {
-      "./abstractions/features/Command.ts": "cli/features/Command.js",
-      "./abstractions/services/UiService.ts": "cli/features/Ui.js"
+      "./abstractions/features/Command.ts": "cli/features/Command",
+      "./abstractions/services/UiService.ts": "cli/features/Ui"
     }
   },
   "publishConfig": {
