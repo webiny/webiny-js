@@ -5,7 +5,7 @@ import type { LockRecordEntryType } from "~/domain/types.js";
 import {
     type LockRecordNotFoundError,
     LockRecordPersistenceError,
-    type NotSameIdentityError,
+    type IdentityMismatchError,
     type UnlockEntryError
 } from "~/domain/errors.js";
 
@@ -25,7 +25,7 @@ export interface IUnlockEntryUseCase {
 
 export interface IUnlockEntryUseCaseErrors {
     notFound: LockRecordNotFoundError;
-    notSameIdentity: NotSameIdentityError;
+    notSameIdentity: IdentityMismatchError;
     unlockError: UnlockEntryError;
     persistence: LockRecordPersistenceError;
 }

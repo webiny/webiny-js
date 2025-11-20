@@ -1,7 +1,11 @@
 import type { DecryptedWcpProjectLicense } from "~/types.js";
 import { MT_OPTIONS_MAX_COUNT_TYPE, PROJECT_PACKAGE_FEATURE_NAME } from "~/types.js";
 
-export const createTestWcpLicense = (): DecryptedWcpProjectLicense => {
+interface LicenseOptions {
+    recordLocking?: boolean;
+}
+
+export const createTestWcpLicense = (options?: LicenseOptions): DecryptedWcpProjectLicense => {
     return {
         orgId: "org-id",
         projectId: "project-id",
@@ -30,7 +34,7 @@ export const createTestWcpLicense = (): DecryptedWcpProjectLicense => {
                     enabled: false
                 },
                 [PROJECT_PACKAGE_FEATURE_NAME.RECORD_LOCKING]: {
-                    enabled: false
+                    enabled: options?.recordLocking ?? false
                 },
                 [PROJECT_PACKAGE_FEATURE_NAME.SEATS]: {
                     enabled: true,

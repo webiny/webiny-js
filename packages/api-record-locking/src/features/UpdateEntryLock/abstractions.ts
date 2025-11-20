@@ -2,7 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { ILockRecord } from "~/domain/LockRecord.js";
 import type { LockRecordEntryType } from "~/domain/types.js";
-import type { LockRecordNotFoundError, LockRecordPersistenceError, NotSameIdentityError, UpdateEntryLockError } from "~/domain/errors.js";
+import type { LockRecordNotFoundError, LockRecordPersistenceError, IdentityMismatchError, UpdateEntryLockError } from "~/domain/errors.js";
 
 // Input types
 export interface UpdateEntryLockInput {
@@ -19,7 +19,7 @@ export interface IUpdateEntryLockUseCase {
 
 export interface IUpdateEntryLockUseCaseErrors {
     notFound: LockRecordNotFoundError;
-    notSameIdentity: NotSameIdentityError;
+    notSameIdentity: IdentityMismatchError;
     persistence: LockRecordPersistenceError;
     updateError: UpdateEntryLockError;
 }

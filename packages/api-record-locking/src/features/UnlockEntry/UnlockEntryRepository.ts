@@ -26,7 +26,7 @@ class UnlockEntryRepositoryImpl implements RepositoryAbstraction.Interface {
 
             if (result.isFail()) {
                 if (result.error.code === "Cms/Entry/NotFound") {
-                    return Result.fail(new LockRecordNotFoundError({ id: entryId }));
+                    return Result.fail(new LockRecordNotFoundError());
                 }
                 return Result.fail(new UnlockEntryError(result.error));
             }

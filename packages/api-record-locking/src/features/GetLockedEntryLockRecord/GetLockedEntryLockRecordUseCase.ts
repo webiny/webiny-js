@@ -22,7 +22,7 @@ class GetLockedEntryLockRecordUseCaseImpl implements UseCaseAbstraction.Interfac
 
         // If not found or error, return not found error
         if (result.isFail()) {
-            return Result.fail(new LockRecordNotFoundError({ id: input.id }));
+            return Result.fail(new LockRecordNotFoundError());
         }
 
         const record = result.value;
@@ -34,7 +34,7 @@ class GetLockedEntryLockRecordUseCaseImpl implements UseCaseAbstraction.Interfac
         const lockedByCurrentUser = record.lockedBy.id === identity.id;
 
         if (record.isExpired() || lockedByCurrentUser) {
-            return Result.fail(new LockRecordNotFoundError({ id: input.id }));
+            return Result.fail(new LockRecordNotFoundError());
         }
 
         // Locked by another user, return the record

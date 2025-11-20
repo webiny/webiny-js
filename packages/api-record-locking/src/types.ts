@@ -1,8 +1,7 @@
 import type {
     CmsEntryListParams,
     CmsEntryMeta,
-    CmsIdentity,
-    CmsModelManager
+    CmsIdentity
 } from "@webiny/api-headless-cms/types/index.js";
 import { CmsEntry, CmsError } from "@webiny/api-headless-cms/types/index.js";
 
@@ -10,15 +9,8 @@ export type { CmsError, CmsEntry };
 
 export type IRecordLockingIdentity = CmsIdentity;
 
-export type IRecordLockingModelManager = CmsModelManager<IRecordLockingLockRecordValues>;
-
 export type IRecordLockingMeta = CmsEntryMeta;
 
-export interface IRecordLockingLockRecordValues {
-    targetId: string;
-    type: IRecordLockingLockRecordEntryType;
-    actions?: IRecordLockingLockRecordAction[];
-}
 export enum RecordLockingLockRecordActionType {
     requested = "requested",
     approved = "approved",
@@ -82,4 +74,3 @@ export type IRecordLockingListAllLockRecordsParams = Pick<
 >;
 
 export type IRecordLockingListLockRecordsParams = IRecordLockingListAllLockRecordsParams;
-

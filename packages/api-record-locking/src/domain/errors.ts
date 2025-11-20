@@ -11,13 +11,12 @@ export class EntryAlreadyLockedError extends BaseError<{ id: string; type: strin
     }
 }
 
-export class LockRecordNotFoundError extends BaseError<{ id: string }> {
+export class LockRecordNotFoundError extends BaseError {
     override readonly code = "RecordLocking/LockRecord/NotFoundError" as const;
 
-    constructor(data: { id: string }) {
+    constructor() {
         super({
-            message: "Lock Record not found.",
-            data
+            message: "Lock record not found."
         });
     }
 }
@@ -32,8 +31,8 @@ export class LockRecordPersistenceError extends BaseError {
     }
 }
 
-export class NotSameIdentityError extends BaseError<{ currentId: string; targetId: string }> {
-    override readonly code = "RecordLocking/Identity/NotSameError" as const;
+export class IdentityMismatchError extends BaseError<{ currentId: string; targetId: string }> {
+    override readonly code = "RecordLocking/Identity/MismatchError" as const;
 
     constructor(data: { currentId: string; targetId: string }) {
         super({

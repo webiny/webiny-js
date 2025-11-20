@@ -8,7 +8,7 @@ import { GetLockRecordUseCase } from "../GetLockRecord/abstractions.js";
 import { KickOutCurrentUserUseCase } from "../KickOutCurrentUser/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import type { ILockRecord } from "~/domain/LockRecord.js";
-import { LockRecordNotFoundError, NotSameIdentityError } from "~/domain/errors.js";
+import { LockRecordNotFoundError, IdentityMismatchError } from "~/domain/errors.js";
 import { hasFullAccessPermission } from "./hasFullAccessPermission.js";
 
 class UnlockEntryUseCaseImpl implements UseCaseAbstraction.Interface {
@@ -38,7 +38,7 @@ class UnlockEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         // If expired, cleanup and return error
         if (record.isExpired()) {
             await this.repository.delete(record.id);
-            const error = new LockRecordNotFoundError({ id: input.id });
+            const error = new LockRecordNotFoundError();
             return Result.fail(error);
         }
 
@@ -51,7 +51,7 @@ class UnlockEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         // If not the owner, check if force unlock is allowed
         if (!isSameUser) {
             if (!input.force) {
-                const error = new NotSameIdentityError({
+                const error = new IdentityMismatchError({
                     currentId: identity.id,
                     targetId: record.lockedBy.id
                 });
@@ -61,7 +61,7 @@ class UnlockEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             // Check if user has permission to force unlock
             const hasAccess = await hasFullAccessPermission(this.identityContext);
             if (!hasAccess) {
-                const error = new NotSameIdentityError({
+                const error = new IdentityMismatchError({
                     currentId: identity.id,
                     targetId: record.lockedBy.id
                 });

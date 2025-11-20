@@ -8,7 +8,7 @@ import { GetLockRecordUseCase } from "../GetLockRecord/abstractions.js";
 import { LockEntryUseCase } from "../LockEntry/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import type { ILockRecord } from "~/domain/LockRecord.js";
-import { LockRecordNotFoundError, NotSameIdentityError, UpdateEntryLockError } from "~/domain/errors.js";
+import { LockRecordNotFoundError, IdentityMismatchError, UpdateEntryLockError } from "~/domain/errors.js";
 
 class UpdateEntryLockUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -49,7 +49,7 @@ class UpdateEntryLockUseCaseImpl implements UseCaseAbstraction.Interface {
         const identity = this.identityContext.getIdentity();
         if (record.lockedBy.id !== identity.id) {
             return Result.fail(
-                new NotSameIdentityError({
+                new IdentityMismatchError({
                     currentId: identity.id,
                     targetId: record.lockedBy.id
                 })

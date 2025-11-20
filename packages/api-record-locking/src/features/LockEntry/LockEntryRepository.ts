@@ -28,7 +28,7 @@ class LockEntryRepositoryImpl implements RepositoryAbstraction.Interface {
 
             const result = await this.createEntry.execute(this.model, {
                 id,
-                values
+                ...values
             });
 
             if (result.isFail()) {

@@ -7,11 +7,15 @@ import type { ILockRecord } from "~/domain/index.js";
 
 class KickOutCurrentUserUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private websocketsContext: WebsocketsContext.Interface,
-        private identityContext: IdentityContext.Interface
+        private identityContext: IdentityContext.Interface,
+        private websocketsContext?: WebsocketsContext.Interface
     ) {}
 
     async execute(record: ILockRecord): Promise<Result<void, UseCaseAbstraction.Error>> {
+        if (!this.websocketsContext) {
+            return Result.ok();
+        }
+
         const { lockedBy, id } = record;
 
         const { id: entryId } = parseIdentifier(id);
@@ -44,5 +48,5 @@ class KickOutCurrentUserUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const KickOutCurrentUserUseCase = UseCaseAbstraction.createImplementation({
     implementation: KickOutCurrentUserUseCaseImpl,
-    dependencies: [WebsocketsContext, IdentityContext]
+    dependencies: [IdentityContext, [WebsocketsContext, { optional: true }]]
 });
