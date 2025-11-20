@@ -1,5 +1,5 @@
 import { createAbstraction, Result } from "@webiny/feature/api";
-import type { CmsModel, CmsModelAst } from "~/types/index.js";
+import type { CmsModel } from "~/types/index.js";
 import type { ICache } from "~/utils/caching/types.js";
 import { ModelNotFoundError, ModelPersistenceError } from "~/domain/contentModel/errors.js";
 
@@ -21,19 +21,6 @@ export const ModelCache = createAbstraction<ICache<Promise<CmsModel[]>>>("ModelC
 
 export namespace ModelCache {
     export type Interface = ICache<Promise<CmsModel[]>>;
-}
-
-/**
- * Convert model to AST
- */
-export interface IModelToAstConverter {
-    toAST(model: CmsModel): CmsModelAst;
-}
-
-export const ModelToAstConverter = createAbstraction<IModelToAstConverter>("ModelToAstConverter");
-
-export namespace ModelToAstConverter {
-    export type Interface = IModelToAstConverter;
 }
 
 /**

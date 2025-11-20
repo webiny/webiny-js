@@ -5,7 +5,7 @@ type StandardFileKey = keyof FileManagerFilesStorageOperationsListParamsWhere;
 type CmsEntryListWhereKey = keyof CmsEntryListWhere;
 
 export class ListTagsWhereProcessor {
-    private readonly skipKeys = ["tenant", "locale"];
+    private readonly skipKeys = ["tenant"];
     private readonly keyMap: Partial<Record<StandardFileKey, CmsEntryListWhereKey>> = {
         tag_startsWith: "tags_startsWith",
         tag_not_startsWith: "tags_not_startsWith"

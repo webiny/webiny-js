@@ -5,7 +5,7 @@ type StandardFileKey = keyof FileManagerFilesStorageOperationsListParamsWhere;
 type CmsEntryListWhereKey = keyof CmsEntryListWhere;
 
 export class ListFilesWhereProcessor {
-    private readonly skipKeys = ["tenant", "locale"];
+    private readonly skipKeys = ["tenant"];
     private readonly keyMap: Partial<Record<StandardFileKey, CmsEntryListWhereKey>> = {
         id: "entryId",
         id_in: "entryId_in"

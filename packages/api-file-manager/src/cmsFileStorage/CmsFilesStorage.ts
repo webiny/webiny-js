@@ -20,7 +20,6 @@ import { ROOT_FOLDER } from "~/contants.js";
 
 interface ModelContext {
     tenant: string;
-    locale: string;
 }
 
 export class CmsFilesStorage implements FileManagerFilesStorageOperations {
@@ -92,8 +91,8 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
     }
 
     async get({ where }: FileManagerFilesStorageOperationsGetParams): Promise<File | null> {
-        const { id, tenant, locale } = where;
-        const model = this.modelWithContext({ tenant, locale });
+        const { id, tenant } = where;
+        const model = this.modelWithContext({ tenant });
         const entry = await this.cms.getEntry(model, { where: { entryId: id, latest: true } });
         return entry ? this.getFileFieldValues(entry) : null;
     }
@@ -102,9 +101,8 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
         params: FileManagerFilesStorageOperationsListParams
     ): Promise<FileManagerFilesStorageOperationsListResponse> {
         const tenant = params.where.tenant;
-        const locale = params.where.locale;
 
-        const model = this.modelWithContext({ tenant, locale });
+        const model = this.modelWithContext({ tenant });
 
         const where = this.filesWhereProcessor.process(params.where);
         const [entries, meta] = await this.cms.listLatestEntries(model, {
@@ -122,8 +120,7 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
         params: FileManagerFilesStorageOperationsTagsParams
     ): Promise<FileManagerFilesStorageOperationsTagsResponse[]> {
         const tenant = params.where.tenant;
-        const locale = params.where.locale;
-        const model = this.modelWithContext({ tenant, locale });
+        const model = this.modelWithContext({ tenant});
         const uniqueValues = await this.cms.getUniqueFieldValues(model, {
             fieldId: "tags",
             where: {
@@ -152,7 +149,7 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
             where: { entryId: file.id, latest: true }
         });
 
-        const values = omit(file, ["id", "tenant", "locale", "webinyVersion"]);
+        const values = omit(file, ["id", "tenant", "webinyVersion"]);
 
         const updatedEntry = await this.cms.updateEntry(model, entry.id, {
             ...values,

@@ -21,7 +21,6 @@ export class S3AssetResolver implements AssetResolver {
             const asset = new Asset({
                 id: metadata.id,
                 tenant: metadata.tenant,
-                locale: metadata.locale,
                 size: metadata.size,
                 contentType: metadata.contentType,
                 key: request.getKey()

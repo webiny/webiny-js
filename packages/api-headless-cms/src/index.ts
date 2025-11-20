@@ -1,6 +1,5 @@
 import type { CreateGraphQLParams } from "~/graphql/index.js";
 import { createGraphQL as baseCreateGraphQL } from "~/graphql/index.js";
-import { createDefaultModelManager } from "~/modelManager/index.js";
 import { createGraphQLFields } from "~/graphqlFields/index.js";
 import { createValidators } from "~/validators/index.js";
 import {
@@ -52,7 +51,6 @@ export const createHeadlessCmsContext = (params: ContentContextParams) => {
          * Context for all Lambdas - everything is loaded now.
          */
         createContextPlugin(params),
-        createDefaultModelManager(),
         createGraphQLFields(),
         createFieldConverters(),
         createValidators(),

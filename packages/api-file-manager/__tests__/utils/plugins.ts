@@ -46,7 +46,6 @@ export const handlerPlugins = (params: HandlerParams) => {
         ...createTenancyAndSecurity({ permissions, identity }),
         new CmsParametersPlugin(async () => {
             return {
-                locale: "en-US",
                 type: "manage"
             };
         }),

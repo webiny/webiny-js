@@ -67,7 +67,6 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             ...createTenancyAndSecurity({ permissions, identity: identity || defaultIdentity }),
             new CmsParametersPlugin(async () => {
                 return {
-                    locale: "en-US",
                     type: "manage"
                 };
             }),

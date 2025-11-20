@@ -261,7 +261,6 @@ export interface FileManagerFilesStorageOperationsGetParams {
     where: {
         id: string;
         tenant: string;
-        locale: string;
     };
 }
 /**
@@ -340,7 +339,6 @@ export interface FileManagerFilesStorageOperationsTagsResponse {
 }
 
 export interface FileManagerFilesStorageOperationsTagsParamsWhere extends FilesCrudListTagsWhere {
-    locale: string;
     tenant: string;
 }
 /**

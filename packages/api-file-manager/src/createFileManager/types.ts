@@ -9,7 +9,6 @@ export interface FileManagerConfig {
     filesPermissions: FilesPermissions;
     settingsPermissions: SettingsPermissions;
     getTenantId: () => string;
-    getLocaleCode: () => string;
     getIdentity: () => SecurityIdentity;
     getPermissions: GetPermissions;
     storage: FileStorage;

@@ -40,7 +40,6 @@ describe("File lifecycle events", () => {
             type: "admin"
         },
         tenant: "root",
-        locale: "en-US",
         meta: {
             private: false
         },

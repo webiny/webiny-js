@@ -32,8 +32,7 @@ export const createThreatDetectionEventHandler = () => {
 
             request.headers = {
                 ...request.headers,
-                "x-tenant": metadata.tenant,
-                "x-i18n-locale": `default:${metadata.locale};content:${metadata.locale};`
+                "x-tenant": metadata.tenant
             };
         } catch {
             // If metadata can't be loaded, we ignore the file.

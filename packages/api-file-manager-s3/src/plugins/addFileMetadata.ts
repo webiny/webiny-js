@@ -41,7 +41,6 @@ export class MetadataWriter {
         return {
             id: file.id,
             tenant: file.tenant,
-            locale: file.locale,
             size: file.size,
             contentType: file.type
         };

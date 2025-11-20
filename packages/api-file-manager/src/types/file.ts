@@ -32,7 +32,6 @@ export interface File {
      * Added with new storage operations refactoring.
      */
     tenant: string;
-    locale: string;
     webinyVersion: string;
     /**
      * User can add new fields to the File object, so we must allow it in the types.
@@ -43,7 +42,6 @@ export interface File {
 
 export interface FileAlias {
     tenant: string;
-    locale: string;
     fileId: string;
     alias: string;
 }

@@ -1,15 +1,11 @@
-import type {
-    CmsModel,
-    CmsModelAst,
-    CmsModelField,
-    HeadlessCms
-} from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModel, CmsModelAst, CmsModelField } from "@webiny/api-headless-cms/types/index.js";
 import type { IExportedCmsModel } from "~/tasks/domain/abstractions/ExportContentEntriesController.js";
 import { ModelFieldTraverser } from "@webiny/api-headless-cms/utils/index.js";
 import { WebinyError } from "@webiny/error";
+import { ModelToAstConverter } from "@webiny/api-headless-cms/features/contentModel/ModelToAstConverter/index.js";
 
 export interface IMakeSureModelsAreIdenticalParams {
-    getModelToAstConverter: HeadlessCms["getModelToAstConverter"];
+    modelToAstConverter: ModelToAstConverter.Interface;
     model: CmsModel;
     target: IExportedCmsModel;
 }
@@ -45,12 +41,10 @@ const getModelValues = (ast: CmsModelAst): IResult[] => {
 };
 
 export const makeSureModelsAreIdentical = (params: IMakeSureModelsAreIdenticalParams): void => {
-    const { getModelToAstConverter, model, target } = params;
+    const { modelToAstConverter, model, target } = params;
 
-    const converter = getModelToAstConverter();
-
-    const modelAst = converter.toAst(model);
-    const targetAst = converter.toAst(target);
+    const modelAst = modelToAstConverter.toAst(model);
+    const targetAst = modelToAstConverter.toAst(target as CmsModel);
 
     const modelValues = getModelValues(modelAst);
     const targetValues = getModelValues(targetAst);

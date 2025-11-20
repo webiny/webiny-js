@@ -18,7 +18,6 @@ interface AliasesStorageOperationsConfig {
 }
 
 interface CreatePartitionKeyParams {
-    locale: string;
     tenant: string;
     id: string;
 }
@@ -45,8 +44,7 @@ export class AliasesStorageOperations implements FileManagerAliasesStorageOperat
                 return {
                     PK: this.createPartitionKey({
                         id: item.fileId,
-                        tenant: item.tenant,
-                        locale: item.locale
+                        tenant: item.tenant
                     }),
                     SK: `ALIAS#${item.alias}`
                 };
@@ -93,8 +91,8 @@ export class AliasesStorageOperations implements FileManagerAliasesStorageOperat
     }
 
     private createPartitionKey(params: CreatePartitionKeyParams): string {
-        const { tenant, locale, id } = params;
-        return `T#${tenant}#L#${locale}#FM#F${id}`;
+        const { tenant, id } = params;
+        return `T#${tenant}#FM#F${id}`;
     }
 
     private createNewAliasesRecords(
@@ -118,7 +116,6 @@ export class AliasesStorageOperations implements FileManagerAliasesStorageOperat
                     data: {
                         alias,
                         tenant: file.tenant,
-                        locale: file.locale,
                         fileId: file.id,
                         key: file.key
                     }

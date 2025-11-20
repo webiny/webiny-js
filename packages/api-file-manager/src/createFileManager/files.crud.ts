@@ -20,7 +20,6 @@ export const createFilesCrud = (
         FileManagerConfig,
         | "storageOperations"
         | "filesPermissions"
-        | "getLocaleCode"
         | "getTenantId"
         | "getIdentity"
         | "WEBINY_VERSION"
@@ -29,7 +28,6 @@ export const createFilesCrud = (
     const {
         storageOperations,
         filesPermissions,
-        getLocaleCode,
         getTenantId,
         getIdentity,
         WEBINY_VERSION
@@ -50,8 +48,7 @@ export const createFilesCrud = (
             const file = await storageOperations.files.get({
                 where: {
                     id,
-                    tenant: getTenantId(),
-                    locale: getLocaleCode()
+                    tenant: getTenantId()
                 }
             });
 
@@ -93,7 +90,6 @@ export const createFilesCrud = (
                 savedBy: utilsGetIdentity(input.savedBy, currentIdentity)!,
 
                 tenant: getTenantId(),
-                locale: getLocaleCode(),
                 webinyVersion: WEBINY_VERSION
             };
 
@@ -126,8 +122,7 @@ export const createFilesCrud = (
             const original = await storageOperations.files.get({
                 where: {
                     id,
-                    tenant: getTenantId(),
-                    locale: getLocaleCode()
+                    tenant: getTenantId()
                 }
             });
 
@@ -201,8 +196,7 @@ export const createFilesCrud = (
             const file = await storageOperations.files.get({
                 where: {
                     id,
-                    tenant: getTenantId(),
-                    locale: getLocaleCode()
+                    tenant: getTenantId()
                 }
             });
 
@@ -238,7 +232,6 @@ export const createFilesCrud = (
             await filesPermissions.ensure({ rwd: "w" });
 
             const tenant = getTenantId();
-            const locale = getLocaleCode();
 
             const currentIdentity = getIdentity();
             const currentDateTime = new Date();
@@ -264,7 +257,6 @@ export const createFilesCrud = (
                     savedBy: utilsGetIdentity(currentIdentity)!,
 
                     tenant,
-                    locale,
                     webinyVersion: WEBINY_VERSION
                 };
             });
@@ -300,7 +292,6 @@ export const createFilesCrud = (
 
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
                 ...{ meta: { private_not: true }, ...initialWhere },
-                locale: getLocaleCode(),
                 tenant: getTenantId()
             };
 
@@ -341,8 +332,7 @@ export const createFilesCrud = (
 
             const where: FileManagerFilesStorageOperationsTagsParamsWhere = {
                 ...initialWhere,
-                tenant: getTenantId(),
-                locale: getLocaleCode()
+                tenant: getTenantId()
             };
 
             const params = {

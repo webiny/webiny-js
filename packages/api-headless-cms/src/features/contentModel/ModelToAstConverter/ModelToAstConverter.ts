@@ -15,7 +15,7 @@ import { PluginsContainer } from "~/legacy/abstractions.js";
 class ModelToAstConverterImpl implements ConverterAbstraction.Interface {
     constructor(private pluginsContainer: PluginsContainer.Interface) {}
 
-    toAST(model: CmsModel): CmsModelAst {
+    toAst(model: CmsModel): CmsModelAst {
         const fieldTypePlugins = this.pluginsContainer.byType<CmsModelFieldToGraphQLPlugin>(
             "cms-model-field-to-graphql"
         );
