@@ -1,1 +1,1 @@
-export * from "./BuildWebinyPkgCommand/index.js";
+export * from "./GenerateWebinyPkgCommand/index.js";

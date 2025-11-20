@@ -1,6 +1,5 @@
 import { ApiKeyAfterCreateHandler } from "webiny/api/security/features/CreateApiKey.js";
 
-console.log('dasd')
 class MyApiKeyAfterCreateImpl implements ApiKeyAfterCreateHandler.Interface {
     async handle() {
         console.log("An API key was created!");

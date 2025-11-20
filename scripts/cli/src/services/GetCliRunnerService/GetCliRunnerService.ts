@@ -75,12 +75,9 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                 ui.error(realError.message);
 
                 // Unfortunately, yargs doesn't provide passed args here, so we had to do it via process.argv.
-                const debugEnabled = process.argv.includes("--debug");
-                if (debugEnabled) {
-                    ui.newLine();
-                    ui.debug("Stack trace:");
-                    ui.text(realError.stack || "");
-                }
+                ui.newLine();
+                ui.debug("Stack trace:");
+                ui.text(realError.stack || "");
 
                 process.exit(1);
             });

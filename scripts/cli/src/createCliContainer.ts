@@ -12,7 +12,7 @@ import {
     uiService
 } from "./services/index.js";
 
-import { buildWebinyPkgCommand } from "./features/index.js";
+import { generateWebinyPkgCommand } from "./features/index.js";
 
 import { CliParamsService } from "./abstractions/index.js";
 
@@ -32,7 +32,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(uiService).inSingletonScope();
 
     // Features (commands).
-    container.register(buildWebinyPkgCommand).inSingletonScope();
+    container.register(generateWebinyPkgCommand).inSingletonScope();
 
     container.resolve(CliParamsService).set(params);
 
