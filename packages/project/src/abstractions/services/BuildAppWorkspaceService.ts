@@ -9,7 +9,10 @@ export type IBuildAppWorkspaceServiceOptions = {
 export type IBuildResult = void;
 
 export interface IBuildAppWorkspaceService {
-    execute(params: IBuildAppWorkspaceServiceParams, options?: IBuildAppWorkspaceServiceOptions): Promise<IBuildResult>;
+    execute(
+        params: IBuildAppWorkspaceServiceParams,
+        options?: IBuildAppWorkspaceServiceOptions
+    ): Promise<IBuildResult>;
 }
 
 export const BuildAppWorkspaceService = createAbstraction<IBuildAppWorkspaceService>(

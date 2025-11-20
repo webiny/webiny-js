@@ -14,7 +14,10 @@ export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService
         private loggerService: LoggerService.Interface
     ) {}
 
-    async execute(params: BuildAppWorkspaceService.Params, options: BuildAppWorkspaceService.Options = {}) {
+    async execute(
+        params: BuildAppWorkspaceService.Params,
+        options: BuildAppWorkspaceService.Options = {}
+    ) {
         this.loggerService.debug({ appName: params.app }, "Building app workspace baseline...");
 
         if (!params.env) {
