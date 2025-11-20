@@ -7,6 +7,8 @@ import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { RecordLockingConfig, RecordLockingModel } from "~/domain/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel";
 import { RECORD_LOCKING_MODEL_ID } from "~/domain/model.js";
+import { getTimeout } from "~/utils/getTimeout.js";
+import { RecordLockingFeature } from "~/features/RecordLockingFeature.js";
 
 export interface ICreateContextPluginParams {
     /**
@@ -26,9 +28,11 @@ const createContextPlugin = (params?: ICreateContextPluginParams) => {
 
         context.plugins.register(createLockingModel());
 
+        const timeout = getTimeout(params?.timeout);
+
         context.recordLocking = await createRecordLockingCrud({
             context,
-            timeout: params?.timeout
+            timeout
         });
 
         const graphQlPlugin = await createGraphQLSchema({ context });
@@ -37,10 +41,10 @@ const createContextPlugin = (params?: ICreateContextPluginParams) => {
 
         const recordLockingModel = await getModel.execute(RECORD_LOCKING_MODEL_ID);
 
-        // Register new abstractions
-        context.container.registerInstance(RecordLockingModel, recordLockingModel.value);
-        context.container.registerInstance(RecordLockingConfig, {
-            timeout: params?.timeout
+        // Register features
+        RecordLockingFeature.register(context.container, {
+            timeout,
+            model: recordLockingModel.value
         });
     });
     plugin.name = "context.recordLocking";
