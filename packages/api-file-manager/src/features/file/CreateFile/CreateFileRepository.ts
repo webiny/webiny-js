@@ -14,7 +14,7 @@ class CreateFileRepositoryImpl implements RepositoryAbstraction.Interface {
         private identityContext: IdentityContext.Interface
     ) {}
 
-    async create(data: FileInput): Promise<Result<File, RepositoryAbstraction.Error>> {
+    async execute(data: FileInput): Promise<Result<File, RepositoryAbstraction.Error>> {
         const result = await this.identityContext.withoutAuthorization(async () => {
             return await this.createEntry.execute(this.fileModel, data);
         });

@@ -24,7 +24,7 @@ export interface CreateFileInput {
  * CreateFile repository interface
  */
 export interface ICreateFileRepository {
-    create(data: FileInput): Promise<Result<File, RepositoryError>>;
+    execute(data: FileInput): Promise<Result<File, RepositoryError>>;
 }
 
 export interface ICreateFileRepositoryErrors {

@@ -51,7 +51,7 @@ class CreateFileUseCaseImpl implements UseCaseAbstraction.Interface {
 
         await this.eventPublisher.publish(new FileBeforeCreateEvent({ file: fileInput, meta }));
 
-        const result = await this.repository.create(fileInput);
+        const result = await this.repository.execute(fileInput);
 
         if (result.isFail()) {
             return Result.fail(result.error);

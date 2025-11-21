@@ -20,8 +20,6 @@ export class EntryToFileMapper {
             location: entry.values.location || { folderId: "root" },
             tags: entry.values.tags || [],
             aliases: entry.values.aliases || [],
-            tenant: entry.tenant,
-            webinyVersion: entry.webinyVersion,
             extensions: entry.values.extensions
         };
     }
