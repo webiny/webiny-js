@@ -1,4 +1,4 @@
-import { ApiKeyAfterUpdateHandler } from "webiny/api/security/features/Event";
+import { ApiKeyAfterUpdateHandler } from "webiny/api/security/features/UpdateApiKey";
 
 class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
     async handle() {
