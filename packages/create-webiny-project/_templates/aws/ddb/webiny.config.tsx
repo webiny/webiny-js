@@ -1,5 +1,5 @@
 import React from "react";
 
-export default () => {
+export const Extensions = () => {
     return <>{/* Register extensions here. */}</>;
 };

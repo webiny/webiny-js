@@ -3,7 +3,7 @@ import { Admin, Cli, Infra, Project, Security } from "webiny/extensions";
 
 // import { Okta } from "@webiny/okta";
 
-export default () => {
+export const Extensions = () => {
     return (
         <>
             {/* Admin 👇 */}

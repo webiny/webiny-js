@@ -1,7 +1,7 @@
 import React from "react";
 import { Infra } from "webiny/extensions";
 
-export default () => {
+export const Extensions = () => {
     return (
         <>
             <Infra.OpenSearch enabled={true} />
