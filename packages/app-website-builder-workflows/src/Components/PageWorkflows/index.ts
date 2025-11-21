@@ -1,1 +1,1 @@
-export * from "./PageWorkflowsEditorView.js"
+export * from "./PageWorkflowsEditorView.js";
