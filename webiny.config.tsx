@@ -58,7 +58,6 @@ export const Extensions = () => {
             <Project.Telemetry enabled={false} />
 
             {/* Security 👇 */}
-            <Security.ApiKey.AfterCreate src={"./extensions/MyApiKeyAfterCreate.ts"} />
             <Security.ApiKey.AfterUpdate src={"./extensions/MyApiKeyAfterUpdate.ts"} />
 
             {/* 🚧 WIP 👇 */}
