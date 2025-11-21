@@ -21,6 +21,7 @@
     "@webiny/telemetry": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
+    "case": "^1.6.3",
     "chalk": "^4.1.2",
     "chokidar": "^4.0.3",
     "ci-info": "^4.3.0",

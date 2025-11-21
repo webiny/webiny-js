@@ -16787,6 +16787,7 @@ __metadata:
     "@webiny/telemetry": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
+    case: "npm:^1.6.3"
     chalk: "npm:^4.1.2"
     chokidar: "npm:^4.0.3"
     ci-info: "npm:^4.3.0"
@@ -33154,7 +33155,6 @@ __metadata:
     tsx: "npm:^4.20.5"
     type-fest: "npm:^5.2.0"
     typescript: "npm:5.9.3"
-    typescript-transform-paths: "npm:^3.5.5"
     validator: "npm:^13.15.23"
     verdaccio: "npm:^6.2.1"
     vite-tsconfig-paths: "npm:^5.1.4"
@@ -35827,17 +35827,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript-transform-paths@npm:^3.5.5":
-  version: 3.5.5
-  resolution: "typescript-transform-paths@npm:3.5.5"
-  dependencies:
-    minimatch: "npm:^9.0.5"
-  peerDependencies:
-    typescript: ">=3.6.5"
-  checksum: 10/9d952db35c94d2b9ecb89e0cf85188106d0366eb1b534e663c811eef5567018f1b0f93540eb58ef0e997d06000d0be0a80942d196180e683f2265395bf95ebb9
-  languageName: node
-  linkType: hard
-
 "typescript@npm:5.9.3":
   version: 5.9.3
   resolution: "typescript@npm:5.9.3"
@@ -36728,6 +36717,7 @@ __metadata:
   resolution: "webiny@workspace:packages/webiny"
   dependencies:
     "@webiny/api-core": "npm:0.0.0"
+    "@webiny/app-admin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/cli-core": "npm:0.0.0"
     "@webiny/project": "npm:0.0.0"

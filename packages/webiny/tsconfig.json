@@ -1,36 +1,71 @@
 {
-  "extends": "../../tsconfig.json",
-  "include": ["src", "__tests__"],
-  "references": [
-    {
-      "path": "../cli-core"
-    },
-    {
-      "path": "../project-aws"
-    },
-    {
-      "path": "../project"
-    },
-    {
-      "path": "../api-core"
-    }
-  ],
-  "compilerOptions": {
-    "rootDirs": ["./src", "./__tests__"],
-    "outDir": "./dist",
-    "declarationDir": "./dist",
-    "paths": {
-      "~/*": ["./src/*"],
-      "~tests/*": ["./__tests__/*"],
-      "@webiny/cli-core/*": ["../cli-core/src/*"],
-      "@webiny/cli-core": ["../cli-core/src"],
-      "@webiny/project-aws/*": ["../project-aws/src/*"],
-      "@webiny/project-aws": ["../project-aws/src"],
-      "@webiny/project/*": ["../project/src/*"],
-      "@webiny/project": ["../project/src"],
-      "@webiny/api-core/*": ["../api-core/src/*"],
-      "@webiny/api-core": ["../api-core/src"]
-    },
-    "baseUrl": "."
-  }
+	"extends": "../../tsconfig.json",
+	"include": [
+		"src",
+		"__tests__"
+	],
+	"references": [
+		{
+			"path": "../cli-core"
+		},
+		{
+			"path": "../project-aws"
+		},
+		{
+			"path": "../project"
+		},
+		{
+			"path": "../api-core"
+		},
+		{
+			"path": "../app-admin"
+		}
+	],
+	"compilerOptions": {
+		"rootDirs": [
+			"./src",
+			"./__tests__"
+		],
+		"outDir": "./dist",
+		"declarationDir": "./dist",
+		"paths": {
+			"~/*": [
+				"./src/*"
+			],
+			"~tests/*": [
+				"./__tests__/*"
+			],
+			"@webiny/cli-core/*": [
+				"../cli-core/src/*"
+			],
+			"@webiny/cli-core": [
+				"../cli-core/src"
+			],
+			"@webiny/project-aws/*": [
+				"../project-aws/src/*"
+			],
+			"@webiny/project-aws": [
+				"../project-aws/src"
+			],
+			"@webiny/project/*": [
+				"../project/src/*"
+			],
+			"@webiny/project": [
+				"../project/src"
+			],
+			"@webiny/api-core/*": [
+				"../api-core/src/*"
+			],
+			"@webiny/api-core": [
+				"../api-core/src"
+			],
+			"@webiny/app-admin/*": [
+				"../app-admin/src/*"
+			],
+			"@webiny/app-admin": [
+				"../app-admin/src"
+			]
+		},
+		"baseUrl": "."
+	}
 }
