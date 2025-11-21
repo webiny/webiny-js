@@ -1,1 +1,1 @@
-export * from "@webiny/project-aws/index.js";
+export * from "@webiny/project-aws";

@@ -1,4 +1,3 @@
-import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { ExtensionDefinitionModel } from "@webiny/project/extensions/index.js";
 import { Abstraction } from "@webiny/di";
 

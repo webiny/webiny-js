@@ -82,7 +82,7 @@
   },
   "webiny": {
     "exports": {
-      "./index.ts": "./extensions"
+      ".": "./extensions"
     }
   },
   "adio": {

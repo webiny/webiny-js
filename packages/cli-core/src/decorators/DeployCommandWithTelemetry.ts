@@ -1,4 +1,3 @@
-import { createDecorator } from "@webiny/di";
 import {
     isEnabled as globalIsTelemetryEnabled,
     sendEvent as telemetrySendEvent

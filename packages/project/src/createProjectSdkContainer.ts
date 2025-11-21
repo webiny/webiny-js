@@ -1,5 +1,5 @@
 import path from "path";
-import { Abstraction, Container } from "@webiny/di";
+import { Container } from "@webiny/di";
 import {
     beforeBuild,
     afterBuild,
