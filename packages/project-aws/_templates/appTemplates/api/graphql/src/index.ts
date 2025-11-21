@@ -69,7 +69,7 @@ export const handler = createHandler({
         createAcoHcmsContext(),
         createHcmsTasks(),
         createHeadlessCmsScheduler({
-            getClient: config => {
+            getClient: (config:any) => {
                 return createSchedulerClient(config);
             }
         }),

@@ -21,7 +21,7 @@ export class BuildRunner extends BaseBuildRunner {
     }
 
     private getRunnerClass() {
-        const packagesCount = this.packagesBuilder.getPackages().length;
+        const packagesCount = 1
         if (packagesCount === 0) {
             return ZeroBuildsRunner;
         }

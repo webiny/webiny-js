@@ -1,11 +1,12 @@
 import path from "path";
 import rspack from "@rspack/core";
+import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 
 export const createRsbuildConfig = ({ cwd }) => {
     const paths = getPaths(cwd);
     const mode = getMode();
 
-    return {
+    return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.fn.entryFile } },
         output: {
             target: "node",
@@ -21,6 +22,7 @@ export const createRsbuildConfig = ({ cwd }) => {
         },
         tools: {
             rspack: {
+                externals: [/^@aws-sdk/, /^sharp$/],
                 plugins: [
                     // This is necessary to enable JSDOM usage in Lambda.
                     // https://rspack.dev/plugins/webpack/ignore-plugin
@@ -33,14 +35,14 @@ export const createRsbuildConfig = ({ cwd }) => {
         },
         mode,
         plugins: [
-            // pluginTypeCheck({
-            //     tsCheckerOptions: {
-            //         typescript: { configFile: paths.fn.tsConfig },
-            //         async: mode === "development"
-            //     }
-            // })
+            pluginTypeCheck({
+                tsCheckerOptions: {
+                    typescript: { configFile: paths.fn.tsConfig },
+                    async: mode === "development"
+                }
+            })
         ]
-    };
+    });
 };
 
 const getPaths = cwd => {

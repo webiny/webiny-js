@@ -10,7 +10,7 @@ export const createRsbuildConfig = () => {
     const envVars = getEnvVars();
     const mode = getMode();
 
-    return {
+    return /** @type {import("@rsbuild/core").RsbuildConfig} */ ({
         source: { entry: { index: paths.admin.entryFile }, define: envVars },
         output: { distPath: { root: paths.admin.outputFolder } },
         mode,
@@ -52,7 +52,7 @@ export const createRsbuildConfig = () => {
                 }
             })
         ]
-    };
+    });
 };
 
 const getPaths = () => {
