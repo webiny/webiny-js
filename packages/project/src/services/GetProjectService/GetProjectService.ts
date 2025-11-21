@@ -40,7 +40,6 @@ export class DefaultGetProjectService implements GetProjectService.Interface {
         const tsConfigFilePath = projectRootFolderPath.join("tsconfig.json");
         const projectVersion = this.getProjectVersionService.execute();
 
-        console.log('eyeaaaaa', projectVersion)
         this.cachedProject = new ProjectModel({
             // TODO: read project name from config file.
             name: path.basename(projectRootFolderPath.toString()),
