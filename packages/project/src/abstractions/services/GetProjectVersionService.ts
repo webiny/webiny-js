@@ -3,7 +3,7 @@ import { createAbstraction } from "~/abstractions/createAbstraction.js";
 type IGetProjectVersionServiceResult = string;
 
 interface IGetProjectVersionService {
-    execute(cwd?: string): IGetProjectVersionServiceResult;
+    execute(): IGetProjectVersionServiceResult;
 }
 
 export const GetProjectVersionService = createAbstraction<IGetProjectVersionService>(
