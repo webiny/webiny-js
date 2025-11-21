@@ -1,7 +1,7 @@
 import React from "react";
-import { PageWorkflowsEditor } from "~/Routes/index.js";
+import { WebsiteBuilderWorkflowsMenu } from "~/Routes/index.js";
 import { Wcp } from "@webiny/app-admin";
-import { WorkflowsPageEditorConfig } from "~/Components/PageEditorConfig/index.js";
+import { PageEditor } from "~/Components/PageEditor/index.js";
 import { PagesListContentReviews } from "~/Components/PagesList/PagesListContentReviews.js";
 import { PageListConfig } from "@webiny/app-website-builder/modules/pages/configs/index.js";
 import { ListOpenInNewWindow } from "~/Components/PagesList/OptionItem/OpenInNewWindow.js";
@@ -9,8 +9,8 @@ import { ListOpenInNewWindow } from "~/Components/PagesList/OptionItem/OpenInNew
 export const WebsiteBuilderWorkflows = () => {
     return (
         <Wcp.CanUseWorkflows>
-            <PageWorkflowsEditor />
-            <WorkflowsPageEditorConfig />
+            <WebsiteBuilderWorkflowsMenu />
+            <PageEditor />
             <ListOpenInNewWindow />
             <PageListConfig>
                 <PagesListContentReviews />

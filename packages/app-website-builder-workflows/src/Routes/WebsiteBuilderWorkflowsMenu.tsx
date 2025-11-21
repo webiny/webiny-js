@@ -25,7 +25,7 @@ const Loader = ({ children, ...props }: LoaderProps) => (
 
 const { Route } = AdminConfig;
 
-export const PageWorkflowsEditor = () => {
+export const WebsiteBuilderWorkflowsMenu = () => {
     const { canUseWorkflows } = useCanUseWorkflows();
     if (!canUseWorkflows) {
         return null;

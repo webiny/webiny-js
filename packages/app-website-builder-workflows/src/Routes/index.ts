@@ -1,1 +1,1 @@
-export { PageWorkflowsEditor } from "./PageWorkflowsEditor.js";
+export { WebsiteBuilderWorkflowsMenu } from "./WebsiteBuilderWorkflowsMenu.js";
