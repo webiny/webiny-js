@@ -110,21 +110,14 @@ SettingsNotFoundError          // Settings not found
 SettingsUpdateError            // Error updating settings
 ```
 
-#### Abstractions (`domain/settings/abstractions.ts`)
-
-```typescript
-FileManagerConfig {            // Settings configuration
-  uploadMinFileSize: number;
-  uploadMaxFileSize: number;
-  srcPrefix: string;
-}
-```
-
 #### Types (`domain/settings/types.ts`)
 
 ```typescript
-FileManagerSettings            // Settings entity
+FileManagerSettings            // Settings entity (loaded from DB)
+UpdateSettingsInput            // Input for updating settings
 ```
+
+**Note:** Unlike RecordLocking which has runtime config, FileManager settings are stored in the database and accessed via GetSettings/UpdateSettings use cases. No abstraction needed.
 
 ---
 
@@ -567,20 +560,16 @@ export interface ICreateFileUseCase {
 **Registers:**
 - All sub-features in dependency order
 - Domain abstractions:
-  - `FileModel` (from `domain/file/abstractions.ts`)
-  - `FileManagerConfig` (from `domain/settings/abstractions.ts`)
+  - `FileModel` (from `domain/file/abstractions.ts`) via `container.registerInstance()`
 
 **Configuration:**
 ```typescript
 {
   model: CmsModel;              # The fmFile model
-  config: {
-    uploadMinFileSize: number;
-    uploadMaxFileSize: number;
-    srcPrefix: string;
-  }
 }
 ```
+
+**Note:** Settings are stored in DB and accessed via GetSettings/UpdateSettings use cases. No runtime config needed.
 
 ---
 
@@ -685,8 +674,9 @@ From `@webiny/api-headless-cms/features/contentModel/`:
 3. Create `domain/file/abstractions.ts` for FileModel abstraction
 4. Create `domain/file/types.ts` for file domain types
 5. Create `domain/settings/errors.ts` with all settings error types (extend BaseError)
-6. Create `domain/settings/abstractions.ts` for FileManagerConfig abstraction
-7. Create `domain/settings/types.ts` for settings domain types
+6. Create `domain/settings/types.ts` for settings domain types
+
+**Note:** No abstractions file for settings - settings are loaded from DB via use cases, not runtime config.
 
 ### Phase 2: Level 0 Features (2 features)
 Each feature includes: abstractions, use case implementation, repository (if needed), events decorator (if needed), and feature registration.
@@ -757,7 +747,7 @@ Each feature includes: abstractions, repository, use case, events decorator, and
 ### Phase 6: Integration
 17. **FileManagerFeature** (`features/FileManagerFeature.ts`)
     - Composite feature that registers all sub-features in dependency order
-    - Registers FileModel and FileManagerConfig via container.registerInstance
+    - Registers FileModel via container.registerInstance (no config needed)
 
 18. Update GraphQL schema (`graphql/schema.ts`)
     - Replace `context.fileManager.*` with `context.container.resolve(UseCase)`
@@ -765,7 +755,7 @@ Each feature includes: abstractions, repository, use case, events decorator, and
 
 19. Update context setup
     - Register FileManagerFeature in main plugin
-    - Pass CMS model and config to feature
+    - Pass CMS model to feature (settings from DB, no runtime config)
     - Remove old CRUD factory pattern
 
 ---
@@ -838,8 +828,9 @@ features/file/CreateFile/
 
 ## Estimated Effort
 
-- **Domain Layer** (7 files): 3-4 hours
+- **Domain Layer** (6 files): 2-3 hours
   - Move model file, create errors, abstractions, types for both subdomains
+  - Note: No settings abstraction needed (settings from DB)
 - **Level 0 Features** (2 features, 5 files): 4-6 hours
   - GetSettings (3 files), GetFile (4 files with repository)
 - **Level 1 Features** (3 features, 11 files): 8-12 hours
@@ -873,5 +864,6 @@ features/file/CreateFile/
 10. ✅ No breaking changes to public API (GraphQL schema remains the same)
 11. ✅ FileModel registered as abstraction via `container.registerInstance()`
 12. ✅ Each feature is complete vertical slice (abstractions, repo, use case, events, registration)
-13. ✅ Settings features use `@webiny/api-core` GetSettings/UpdateSettings
+13. ✅ Settings features use `@webiny/api-core` GetSettings/UpdateSettings (no runtime config)
 14. ✅ All errors extend BaseError from `@webiny/feature/api`
+15. ✅ Settings loaded from DB, not runtime config (unlike RecordLocking)

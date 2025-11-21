@@ -1,4 +1,4 @@
-import { createPrivateModel, createModelField } from "@webiny/api-headless-cms";
+import { createCmsModel, createPrivateModel, createModelField } from "@webiny/api-headless-cms";
 
 const required = () => {
     return {
@@ -175,17 +175,19 @@ export const createFileModel = (params: CreateFileModelDefinitionParams) => {
         fields.push(accessControlField());
     }
 
-    return createPrivateModel({
-        name: "FmFile",
-        modelId: FILE_MODEL_ID,
-        titleFieldId: "name",
-        authorization: {
-            // Disables base permission checks, but leaves FLP checks enabled.
-            permissions: false
+    return createCmsModel(
+        createPrivateModel({
+            name: "FmFile",
+            modelId: FILE_MODEL_ID,
+            titleFieldId: "name",
+            authorization: {
+                // Disables base permission checks, but leaves FLP checks enabled.
+                permissions: false
 
-            // We're leaving FLP enabled (no need to set `flp: true`).
-            // flp: true
-        },
-        fields
-    });
+                // We're leaving FLP enabled (no need to set `flp: true`).
+                // flp: true
+            },
+            fields
+        })
+    );
 };

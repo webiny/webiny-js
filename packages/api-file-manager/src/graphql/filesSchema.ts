@@ -22,6 +22,7 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
             },
             FmFile: {
                 async src(file, _, context) {
+                    // TODO: create `FileUrlGenerator` service to use here
                     const settings = await context.fileManager.getSettings();
                     return (settings?.srcPrefix || "") + file.key;
                 }
@@ -60,7 +61,7 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
             FmMutation: {
                 async createFile(_, args: any, context) {
                     return resolve(() => {
-                        return context.fileManager.createFile(args.data, args.meta);
+                        return context.fileManager.createFile(args.data);
                     });
                 },
                 async createFiles(_, args: any, context) {
@@ -75,12 +76,13 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
                 },
                 async deleteFile(_, args: any, context) {
                     return resolve(async () => {
-                        // TODO: Ideally, this should work via a lifecycle hook; first we delete a record from DB, then from cloud storage.
-                        const file = await context.fileManager.getFile(args.id);
-                        return await context.fileManager.storage.delete({
-                            id: file.id,
-                            key: file.key
-                        });
+                        // TODO: 1) implement via a DeleteFile use case
+                        // TODO: 2) deletion from Cloud storage should be implemented in the `api-file-manager-s3` as an event handler
+                        // const file = await context.fileManager.getFile(args.id);
+                        // return await context.fileManager.storage.delete({
+                        //     id: file.id,
+                        //     key: file.key
+                        // });
                     });
                 }
             }

@@ -1,12 +1,14 @@
 import { ContextPlugin } from "@webiny/api";
-import type { FileManagerContext } from "~/types.js";
-import { FileManagerContextSetup } from "./FileManagerContextSetup.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { FileManagerContext, FilePermission, SettingsPermission } from "~/types.js";
 import type { AssetDeliveryParams } from "./delivery/setupAssetDelivery.js";
 import { setupAssetDelivery } from "./delivery/setupAssetDelivery.js";
 import { createGraphQLSchemaPlugin } from "./graphql/index.js";
-import { applyThreatScanning } from "./enterprise/applyThreatScanning.js";
 import type { FileManagerConfig } from "./createFileManager/types.js";
 import { FileManagerFeature } from "~/features/FileManagerFeature.js";
+import { FilesPermissions as FilePermissionsImpl } from "~/createFileManager/permissions/FilesPermissions.js";
+import { SettingsPermissions as SettingsPermissionsImpl } from "~/createFileManager/permissions/SettingsPermissions.js";
+import { FilePermissions, SettingsPermissions } from "~/features/shared/abstractions.js";
 
 export * from "./modelModifier/CmsModelModifier.js";
 export * from "./plugins/index.js";
@@ -16,12 +18,27 @@ export const createFileManagerContext = ({
     storageOperations
 }: Pick<FileManagerConfig, "storageOperations">) => {
     const plugin = new ContextPlugin<FileManagerContext>(async context => {
-        const fmContext = new FileManagerContextSetup(context);
-        context.fileManager = await fmContext.setupContext(storageOperations);
+        // TODO: implements as a decorator
+        // if (context.wcp.canUseFileManagerThreatDetection()) {
+        //     context.fileManager = applyThreatScanning(context.fileManager);
+        // }
 
-        if (context.wcp.canUseFileManagerThreatDetection()) {
-            context.fileManager = applyThreatScanning(context.fileManager);
-        }
+        const identityContext = context.container.resolve(IdentityContext);
+
+        const filePermissions = new FilePermissionsImpl({
+            getIdentity: () => identityContext.getIdentity(),
+            getPermissions: () => identityContext.getPermissions<FilePermission>("fm.file"),
+            fullAccessPermissionName: "fm.*"
+        });
+
+        const settingsPermissions = new SettingsPermissionsImpl({
+            getIdentity: () => identityContext.getIdentity(),
+            getPermissions: () => identityContext.getPermissions<SettingsPermission>("fm.settings"),
+            fullAccessPermissionName: "fm.*"
+        });
+
+        context.container.registerInstance(FilePermissions, filePermissions);
+        context.container.registerInstance(SettingsPermissions, settingsPermissions);
 
         FileManagerFeature.register(context.container);
     });

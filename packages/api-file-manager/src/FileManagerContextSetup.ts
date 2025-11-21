@@ -1,13 +1,13 @@
-import type { FileManagerAliasesStorageOperations, FilePermission } from "~/types.js";
+// @ts-nocheck Being removed
+import type { FileAliasesStorageOperations, FilePermission } from "~/types.js";
 import { type FileManagerContext, type SettingsPermission } from "~/types.js";
 import type { FileManagerConfig } from "~/createFileManager/types.js";
 import { createFileManager } from "~/createFileManager/index.js";
 import { FileStorage } from "~/storage/FileStorage.js";
 import WebinyError from "@webiny/error";
-import { createFileModel, FILE_MODEL_ID } from "~/cmsFileStorage/file.model.js";
+import { createFileModel, FILE_MODEL_ID } from "~/domain/file/fileModel.js";
 import { CmsFilesStorage } from "~/cmsFileStorage/CmsFilesStorage.js";
-import { CmsModelModifierPlugin } from "~/modelModifier/CmsModelModifier.js";
-import { CmsModelPlugin, isHeadlessCmsReady } from "@webiny/api-headless-cms";
+import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { FilesPermissions } from "~/createFileManager/permissions/FilesPermissions.js";
 import { SettingsPermissions } from "~/createFileManager/permissions/SettingsPermissions.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
@@ -22,18 +22,6 @@ export class FileManagerContextSetup {
     }
 
     async setupContext(storageOperations: FileManagerConfig["storageOperations"]) {
-        if (storageOperations.beforeInit) {
-            await storageOperations.beforeInit(this.context);
-        }
-
-        const fileStorageOps = await this.context.security.withoutAuthorization(() => {
-            return this.setupCmsStorageOperations(storageOperations.aliases);
-        });
-
-        if (fileStorageOps) {
-            storageOperations.files = fileStorageOps;
-        }
-
         const filesPermissions = new FilesPermissions({
             getIdentity: () => {
                 const identityContext = this.context.container.resolve(IdentityContext);
@@ -58,7 +46,6 @@ export class FileManagerContextSetup {
             filesPermissions,
             settingsPermissions,
             getTenantId: this.getTenantId.bind(this),
-            getLocaleCode: this.getLocaleCode.bind(this),
             getIdentity: this.getIdentity.bind(this),
             getPermissions: this.getPermissions.bind(this),
             storage: new FileStorage({
@@ -67,10 +54,6 @@ export class FileManagerContextSetup {
             // TODO: maybe this is no longer necessary, as this wil be managed by CMS?
             WEBINY_VERSION: this.context.WEBINY_VERSION
         });
-    }
-
-    private getLocaleCode() {
-        return getLocale().code;
     }
 
     private getIdentity() {
@@ -87,26 +70,25 @@ export class FileManagerContextSetup {
         return this.context.security.getPermissions(name);
     }
 
-    private async setupCmsStorageOperations(aliases: FileManagerAliasesStorageOperations) {
+    private async setupCmsStorageOperations(aliases: FileAliasesStorageOperations) {
         if (!(await isHeadlessCmsReady(this.context))) {
             return;
         }
 
         const withPrivateFiles = this.context.wcp.canUsePrivateFiles();
 
-        // This registers code plugins (model group, models)
-        const fileModelDefinition = createFileModel({ withPrivateFiles });
-
-        const modelModifiers = this.context.plugins.byType<CmsModelModifierPlugin>(
-            CmsModelModifierPlugin.type
-        );
-
-        for (const modifier of modelModifiers) {
-            await modifier.modifyModel(fileModelDefinition);
-        }
+        // TODO: model modifier need to be implemented differently, via CMS model builder
+        // const modelModifiers = this.context.plugins.byType<CmsModelModifierPlugin>(
+        //     CmsModelModifierPlugin.type
+        // );
+        //
+        // for (const modifier of modelModifiers) {
+        //     await modifier.modifyModel(fileModelDefinition);
+        // }
 
         // Finally, register all plugins
-        this.context.plugins.register([new CmsModelPlugin(fileModelDefinition)]);
+        const fileModelDefinition = createFileModel({ withPrivateFiles });
+        this.context.plugins.register(fileModelDefinition);
 
         // Now load the file model registered in the previous step
         const fileModel = await this.getModel(FILE_MODEL_ID);

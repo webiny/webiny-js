@@ -1,10 +1,6 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { Entity, Table } from "@webiny/db-dynamodb/toolbox.js";
-import type {
-    File,
-    FileAlias,
-    FileManagerAliasesStorageOperations
-} from "@webiny/api-file-manager/types.js";
+import type { File, FileAlias, FileAliasesStorageOperations } from "@webiny/api-file-manager/types.js";
 import type { DbItem } from "@webiny/db-dynamodb";
 import {
     createEntityWriteBatch,
@@ -22,7 +18,7 @@ interface CreatePartitionKeyParams {
     id: string;
 }
 
-export class AliasesStorageOperations implements FileManagerAliasesStorageOperations {
+export class AliasesStorageOperations implements FileAliasesStorageOperations {
     private readonly aliasEntity: Entity<any>;
     private readonly table: Table<string, string, string>;
 

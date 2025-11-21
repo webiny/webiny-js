@@ -550,20 +550,6 @@ export interface CmsEntry<T = CmsEntryValues> {
     lastPublishedBy: CmsIdentity | null;
 
     /**
-     * Deprecated fields. 👇
-     */
-
-    /**
-     * @deprecated Will be removed with the 5.41.0 release. Use `createdBy` field instead.
-     */
-    ownedBy?: CmsIdentity | null;
-
-    /**
-     * @deprecated Will be removed with the 5.41.0 release. Use `firstPublishedOn` or `lastPublishedOn` field instead.
-     */
-    publishedOn?: string | null;
-
-    /**
      * Model ID of the definition for the entry.
      * @see CmsModel
      */

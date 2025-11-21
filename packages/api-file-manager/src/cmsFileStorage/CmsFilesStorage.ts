@@ -1,19 +1,7 @@
+// @ts-nocheck This is being removed
 import omit from "lodash/omit.js";
 import type { CmsEntry, CmsModel, HeadlessCms } from "@webiny/api-headless-cms/types/index.js";
-import type {
-    File,
-    FileManagerAliasesStorageOperations,
-    FileManagerFilesStorageOperations,
-    FileManagerFilesStorageOperationsCreateBatchParams,
-    FileManagerFilesStorageOperationsCreateParams,
-    FileManagerFilesStorageOperationsDeleteParams,
-    FileManagerFilesStorageOperationsGetParams,
-    FileManagerFilesStorageOperationsListParams,
-    FileManagerFilesStorageOperationsListResponse,
-    FileManagerFilesStorageOperationsTagsParams,
-    FileManagerFilesStorageOperationsTagsResponse,
-    FileManagerFilesStorageOperationsUpdateParams
-} from "~/types.js";
+import type { File, FileAliasesStorageOperations } from "~/types.js";
 import { ListFilesWhereProcessor } from "~/cmsFileStorage/ListFilesWhereProcessor.js";
 import { ListTagsWhereProcessor } from "~/cmsFileStorage/ListTagsWhereProcessor.js";
 import { ROOT_FOLDER } from "~/contants.js";
@@ -22,17 +10,17 @@ interface ModelContext {
     tenant: string;
 }
 
-export class CmsFilesStorage implements FileManagerFilesStorageOperations {
+export class CmsFilesStorage implements FileStorageOperations {
     private readonly cms: HeadlessCms;
     private readonly model: CmsModel;
-    private readonly aliases: FileManagerAliasesStorageOperations;
+    private readonly aliases: FileAliasesStorageOperations;
     private readonly filesWhereProcessor: ListFilesWhereProcessor;
     private readonly tagsWhereProcessor: ListTagsWhereProcessor;
 
     static async create(params: {
         fileModel: CmsModel;
         cms: HeadlessCms;
-        aliases: FileManagerAliasesStorageOperations;
+        aliases: FileAliasesStorageOperations;
     }) {
         return new CmsFilesStorage(params.fileModel, params.cms, params.aliases);
     }
@@ -40,7 +28,7 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
     private constructor(
         fileModel: CmsModel,
         cms: HeadlessCms,
-        aliases: FileManagerAliasesStorageOperations
+        aliases: FileAliasesStorageOperations
     ) {
         this.model = fileModel;
         this.aliases = aliases;
@@ -120,7 +108,7 @@ export class CmsFilesStorage implements FileManagerFilesStorageOperations {
         params: FileManagerFilesStorageOperationsTagsParams
     ): Promise<FileManagerFilesStorageOperationsTagsResponse[]> {
         const tenant = params.where.tenant;
-        const model = this.modelWithContext({ tenant});
+        const model = this.modelWithContext({ tenant });
         const uniqueValues = await this.cms.getUniqueFieldValues(model, {
             fieldId: "tags",
             where: {

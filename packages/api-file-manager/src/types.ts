@@ -108,11 +108,6 @@ export interface FileManagerSettings {
     srcPrefix: string;
 }
 
-export interface FileManagerSystem {
-    version: string;
-    tenant: string;
-}
-
 export interface OnSettingsBeforeUpdateTopicParams {
     input: Partial<FileManagerSettings>;
     original: FileManagerSettings;
@@ -140,264 +135,22 @@ export type SettingsCRUD = {
 
 /**
  * @category StorageOperations
- * @category SystemStorageOperations
- * @category SystemStorageOperationsParams
- */
-export interface FileManagerSystemStorageOperationsUpdateParams {
-    /**
-     * The system data to be updated.
-     */
-    original: FileManagerSystem;
-    /**
-     * The system data with the updated fields.
-     */
-    data: FileManagerSystem;
-}
-/**
- * @category StorageOperations
- * @category SystemStorageOperations
- * @category SystemStorageOperationsParams
- */
-export interface FileManagerSystemStorageOperationsCreateParams {
-    /**
-     * The system fields.
-     */
-    data: FileManagerSystem;
-}
-
-export interface FileManagerSystemStorageOperationsGetParams {
-    tenant: string;
-}
-
-/**
- * @category StorageOperations
- * @category SystemStorageOperations
- */
-export interface FileManagerSystemStorageOperations {
-    /**
-     * Get the FileManager system data.
-     */
-    get: (params: FileManagerSystemStorageOperationsGetParams) => Promise<FileManagerSystem | null>;
-    /**
-     * Update the FileManager system data..
-     */
-    update: (params: FileManagerSystemStorageOperationsUpdateParams) => Promise<FileManagerSystem>;
-    /**
-     * Create the FileManagerSystemData
-     */
-    create: (params: FileManagerSystemStorageOperationsCreateParams) => Promise<FileManagerSystem>;
-}
-
-/**
- * @category StorageOperations
- * @category SettingsStorageOperations
- * @category SettingsStorageOperationsParams
- */
-export interface FileManagerSettingsStorageOperationsUpdateParams {
-    /**
-     * Original settings to be updated.
-     */
-    original: FileManagerSettings;
-    /**
-     * The settings with the updated fields.
-     */
-    data: FileManagerSettings;
-}
-/**
- * @category StorageOperations
- * @category SettingsStorageOperations
- * @category SettingsStorageOperationsParams
- */
-export interface FileManagerSettingsStorageOperationsCreateParams {
-    /**
-     * The settings fields.
-     */
-    data: FileManagerSettings;
-}
-
-export interface FileManagerStorageOperationsGetSettingsParams {
-    tenant: string;
-}
-
-export interface FileManagerStorageOperationsDeleteSettings {
-    tenant: string;
-}
-
-/**
- * @category StorageOperations
- * @category SettingsStorageOperations
- */
-export interface FileManagerSettingsStorageOperations {
-    /**
-     * Get the FileManager system data.
-     */
-    get: (
-        params: FileManagerStorageOperationsGetSettingsParams
-    ) => Promise<FileManagerSettings | null>;
-    /**
-     * Create the FileManagerSettingsData
-     */
-    create: (
-        params: FileManagerSettingsStorageOperationsCreateParams
-    ) => Promise<FileManagerSettings>;
-    /**
-     * Update the FileManager system data..
-     */
-    update: (
-        params: FileManagerSettingsStorageOperationsUpdateParams
-    ) => Promise<FileManagerSettings>;
-    /**
-     * Delete the existing settings.
-     */
-    delete: (params: FileManagerStorageOperationsDeleteSettings) => Promise<void>;
-}
-
-/**
- * @category StorageOperations
- * @category FilesStorageOperations
- * @category FilesStorageOperationsParams
- */
-export interface FileManagerFilesStorageOperationsGetParams {
-    where: {
-        id: string;
-        tenant: string;
-    };
-}
-/**
- * @category StorageOperations
- * @category FilesStorageOperations
- * @category FilesStorageOperationsParams
- */
-export interface FileManagerFilesStorageOperationsCreateParams {
-    file: File;
-}
-/**
- * @category StorageOperations
- * @category FilesStorageOperations
- * @category FilesStorageOperationsParams
- */
-export interface FileManagerFilesStorageOperationsUpdateParams {
-    original: File;
-    file: File;
-}
-
-/**
- * @category StorageOperations
- * @category FilesStorageOperations
- * @category FilesStorageOperationsParams
- */
-export interface FileManagerFilesStorageOperationsDeleteParams {
-    file: File;
-}
-/**
- * @category StorageOperations
- * @category FilesStorageOperations
- * @category FilesStorageOperationsParams
- */
-export interface FileManagerFilesStorageOperationsCreateBatchParams {
-    files: File[];
-}
-/**
- * @category StorageOperations
  * @category FilesStorageOperations
  * @category FilesStorageOperationsParams
  */
 export interface FileManagerFilesStorageOperationsListParamsWhere {
     [key: string]: any;
 }
-/**
- * @category StorageOperations
- * @category FilesStorageOperations
- * @category FilesStorageOperationsParams
- */
-export interface FileManagerFilesStorageOperationsListParams {
-    where: FileManagerFilesStorageOperationsListParamsWhere;
-    sort: CmsEntryListSort;
-    limit: number;
-    after: string | null;
-    search?: string;
-}
-
-/**
- * @category StorageOperations
- * @category FilesStorageOperations
- * @category FilesStorageOperationsParams
- */
-export interface FileManagerFilesStorageOperationsListResponseMeta {
-    hasMoreItems: boolean;
-    totalCount: number;
-    cursor: string | null;
-}
-export type FileManagerFilesStorageOperationsListResponse = [
-    File[],
-    FileManagerFilesStorageOperationsListResponseMeta
-];
-
-export interface FileManagerFilesStorageOperationsTagsResponse {
-    tag: string;
-    count: number;
-}
 
 export interface FileManagerFilesStorageOperationsTagsParamsWhere extends FilesCrudListTagsWhere {
     tenant: string;
 }
-/**
- * @category StorageOperations
- * @category FilesStorageOperations
- * @category FilesStorageOperationsParams
- */
-export interface FileManagerFilesStorageOperationsTagsParams {
-    where: FileManagerFilesStorageOperationsTagsParamsWhere;
-    limit: number;
-    after?: string;
-}
-/**
- * @category StorageOperations
- * @category FilesStorageOperations
- */
-export interface FileManagerFilesStorageOperations {
-    /**
-     * Get a single file with given ID from the storage.
-     */
-    get: (params: FileManagerFilesStorageOperationsGetParams) => Promise<File | null>;
-    /**
-     * Insert the file data into the database.
-     */
-    create: (params: FileManagerFilesStorageOperationsCreateParams) => Promise<File>;
-    /**
-     * Update the file data in the database.
-     */
-    update: (params: FileManagerFilesStorageOperationsUpdateParams) => Promise<File>;
-    /**
-     * Delete the file from the database.
-     */
-    delete: (params: FileManagerFilesStorageOperationsDeleteParams) => Promise<void>;
-    /**
-     * Store multiple files at once to the database.
-     */
-    createBatch: (params: FileManagerFilesStorageOperationsCreateBatchParams) => Promise<File[]>;
-    /**
-     * Get a list of files filtered by given parameters.
-     */
-    list: (
-        params: FileManagerFilesStorageOperationsListParams
-    ) => Promise<FileManagerFilesStorageOperationsListResponse>;
-    /**
-     * Get a list of all file tags filtered by given parameters.
-     */
-    tags: (
-        params: FileManagerFilesStorageOperationsTagsParams
-    ) => Promise<FileManagerFilesStorageOperationsTagsResponse[]>;
-}
 
-export interface FileManagerAliasesStorageOperations {
+export interface FileAliasesStorageOperations {
     storeAliases(file: File): Promise<void>;
     deleteAliases(file: File): Promise<void>;
 }
 
-export interface FileManagerStorageOperations<TContext = FileManagerContext> {
-    beforeInit?: (context: TContext) => Promise<void>;
-    files: FileManagerFilesStorageOperations;
-    aliases: FileManagerAliasesStorageOperations;
-    settings: FileManagerSettingsStorageOperations;
+export interface FileManagerStorageOperations {
+    aliases: FileAliasesStorageOperations;
 }

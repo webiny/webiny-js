@@ -15,10 +15,6 @@ export type EnsureParams = Partial<{
     owns: CreatedBy;
 }>;
 
-export type Options = Partial<{
-    throw: boolean;
-}>;
-
 export class AppPermissions<TPermission extends SecurityPermission = SecurityPermission> {
     getIdentity: () => SecurityIdentity | Promise<SecurityIdentity>;
     getPermissions: () => TPermission[] | Promise<TPermission[]>;
@@ -37,7 +33,7 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
         ].filter(Boolean);
     }
 
-    async ensure(params: EnsureParams = {}, options: Options = {}): Promise<boolean> {
+    async ensure(params: EnsureParams = {}): Promise<boolean> {
         if (await this.hasFullAccess()) {
             return true;
         }
@@ -52,10 +48,6 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
             const identity = await this.getIdentity();
             if (identity.id === params.owns.id) {
                 return true;
-            }
-
-            if (options.throw !== false) {
-                throw new NotAuthorizedError();
             }
 
             return false;
@@ -76,10 +68,6 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
 
         if (hasPermission) {
             return true;
-        }
-
-        if (options.throw === false) {
-            return false;
         }
 
         throw new NotAuthorizedError();
