@@ -6,5 +6,15 @@ export default [
   { languageOptions: { globals: globals.browser } },
   js.configs.recommended,
   ...ts.configs.recommended,
-  { ignores: ['dist/'] },
+  {
+    ignores: [
+      '**/node_modules/',
+      '**/dist/',
+      '**/build/',
+      '**/.out/',
+      '**/*.d.ts',
+      'idea.js',
+      'scripts'
+    ]
+  },
 ];
