@@ -27,7 +27,6 @@ export interface File {
     };
     tags: string[];
     aliases: string[];
-
     createdOn: string;
     modifiedOn: string | null;
     savedOn: string;
@@ -35,9 +34,6 @@ export interface File {
     modifiedBy: CreatedBy | null;
     savedBy: CreatedBy;
     extensions?: Record<string, any>;
-
-    tenant: string;
-    webinyVersion: string;
 }
 
 export interface FileAlias {

@@ -13,7 +13,6 @@ export class FileToEntryMapper {
             modifiedBy: file.modifiedBy,
             savedBy: file.savedBy,
             location: file.location || { folderId: "root" },
-            webinyVersion: file.webinyVersion,
             values: {
                 name: file.name,
                 key: file.key,
@@ -23,7 +22,6 @@ export class FileToEntryMapper {
                 accessControl: file.accessControl,
                 tags: file.tags || [],
                 aliases: file.aliases || [],
-                tenant: file.tenant,
                 extensions: file.extensions
             }
         };
