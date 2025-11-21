@@ -8,6 +8,7 @@ import { WB_PAGE_APP } from "~/constants.js";
 import { PageFormWorkflowState } from "./PageFormWorkflowState.js";
 import { PageEditorConfig } from "@webiny/app-website-builder";
 import { PageFormWorkflowStatePublishButton } from "./PageFormWorkflowStatePublishButton.js";
+import { PageEditorAutoSave } from "./PageEditorAutoSave.js";
 
 const { Ui } = PageEditorConfig;
 
@@ -31,6 +32,8 @@ export const PageEditor = Ui.TopBar.Layout.createDecorator(Original => {
                 client={client}
                 title={`Website Builder: ${page.title}`}
             >
+                {/* Should remove autosave feature */}
+                <PageEditorAutoSave />
                 {/* Should add a button with list of steps and their states + comment button in each row */}
                 <PageFormWorkflowStateTooltip />
                 {/* should remove publish button from the form */}
