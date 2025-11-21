@@ -25,7 +25,7 @@ export const WorkflowStateBar = (props: IWorkflowStateBarProps) => {
             id={page.id}
             identity={identity}
             client={client}
-            title={page.title}
+            title={`Website Builder: ${page.title}`}
         >
             <PageFormWorkflow />
         </WorkflowStateProvider>

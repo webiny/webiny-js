@@ -7,18 +7,21 @@ const { Ui } = PageEditorConfig;
 
 export const TopBar = Ui.TopBar.Layout.createDecorator(Original => {
     return function TopBarWorkflowsState() {
-
         const page = useSelectFromDocument(doc => {
             return {
                 id: doc.id,
                 title: doc.properties.title || "unknown page"
             };
         });
-        
+
         return (
             <>
                 <Original />
-                <WorkflowStateBar page={page} />
+                <div className={"max-w-screen bg-white pt-sm pb-sm"}>
+                    <div className={"max-w-[960px] mx-auto"}>
+                        <WorkflowStateBar page={page} />
+                    </div>
+                </div>
             </>
         );
     };

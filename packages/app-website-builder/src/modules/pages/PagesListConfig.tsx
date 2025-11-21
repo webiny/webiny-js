@@ -80,7 +80,6 @@ export const PagesListConfig = () => {
                     hideable={false}
                     className={"text-right"}
                 />
-                <Browser.Sidebar.Footer name={"workflows"} element={<div>Moj button</div>} />
             </PageListConfig>
         </>
     );

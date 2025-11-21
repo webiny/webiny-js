@@ -1,5 +1,5 @@
 import React from "react";
-import { usePageListConfig } from "~/modules/pages/configs";
+import { usePageListConfig } from "~/modules/pages/configs/index.js";
 
 export const SidebarFooter = () => {
     const { browser } = usePageListConfig();

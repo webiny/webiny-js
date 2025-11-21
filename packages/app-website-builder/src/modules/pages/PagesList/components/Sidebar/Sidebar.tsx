@@ -6,14 +6,14 @@ const Sidebar = () => {
     const { currentFolderId, navigateToFolder } = useNavigateFolder();
 
     return (
-        <div className={"p-xs overflow-auto"} style={{ height: "calc(100vh - 69px)" }}>
+        <div className={"p-xs overflow-auto relative"} style={{ height: "calc(100vh - 69px)" }}>
             <FolderTree
                 focusedFolderId={currentFolderId}
                 onFolderClick={data => navigateToFolder(data.id)}
                 enableActions={true}
                 enableCreate={true}
             />
-            <div className="absolute bottom-0">
+            <div className="absolute bottom-0 w-full">
                 <SidebarFooter />
             </div>
         </div>
