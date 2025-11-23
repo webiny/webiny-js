@@ -74,6 +74,10 @@ class CreateFilesInBatchUseCaseImpl implements UseCaseAbstraction.Interface {
     ): Promise<Result<void, InvalidFileSizeError>> {
         const settingsResult = await this.getSettings.execute();
 
+        if (settingsResult.isFail()) {
+            return Result.ok();
+        }
+
         const settings = settingsResult.value;
 
         if (settings) {

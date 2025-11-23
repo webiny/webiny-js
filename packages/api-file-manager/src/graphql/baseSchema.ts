@@ -1,6 +1,12 @@
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import {
+    ErrorResponse,
+    GraphQLSchemaPlugin,
+    Response
+} from "@webiny/handler-graphql";
 import type { FileManagerContext } from "~/types.js";
-import { emptyResolver, resolve } from "./utils.js";
+import { emptyResolver } from "./utils.js";
+import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
+import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 
 export const createBaseSchema = () => {
     const fileManagerGraphQL = new GraphQLSchemaPlugin<FileManagerContext>({
@@ -76,12 +82,26 @@ export const createBaseSchema = () => {
             },
             FmQuery: {
                 async getSettings(_, __, context) {
-                    return resolve(() => context.fileManager.getSettings());
+                    const getSettings = context.container.resolve(GetSettingsUseCase);
+                    const result = await getSettings.execute();
+
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+
+                    return new Response(result.value);
                 }
             },
             FmMutation: {
                 async updateSettings(_, args: any, context) {
-                    return resolve(() => context.fileManager.updateSettings(args.data));
+                    const updateSettings = context.container.resolve(UpdateSettingsUseCase);
+                    const result = await updateSettings.execute(args.data);
+
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+
+                    return new Response(result.value);
                 }
             }
         }

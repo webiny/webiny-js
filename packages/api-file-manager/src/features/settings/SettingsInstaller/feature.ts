@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { SettingsInstaller } from "~/features/settings/SettingsInstaller.js";
+import { SettingsInstaller } from "./SettingsInstaller.js";
 
 export const SettingsInstallerFeature = createFeature({
     name: "FileManager/SettingsInstaller",

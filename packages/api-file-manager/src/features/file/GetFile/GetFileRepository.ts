@@ -14,9 +14,9 @@ class GetFileRepositoryImpl implements RepositoryAbstraction.Interface {
         private identityContext: IdentityContext.Interface
     ) {}
 
-    async getById(id: string): Promise<Result<File, RepositoryAbstraction.Error>> {
+    async execute(id: string): Promise<Result<File, RepositoryAbstraction.Error>> {
         const result = await this.identityContext.withoutAuthorization(async () => {
-            return await this.getEntryById.execute(this.fileModel, id);
+            return await this.getEntryById.execute(this.fileModel, `${id}#0001`);
         });
 
         if (result.isFail()) {

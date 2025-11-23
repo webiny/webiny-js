@@ -7,15 +7,11 @@ import {
     FileNotAuthorizedError
 } from "~/domain/file/errors.js";
 
-export interface GetFileInput {
-    id: string;
-}
-
 /**
  * GetFile repository interface
  */
 export interface IGetFileRepository {
-    getById(id: string): Promise<Result<File, RepositoryError>>;
+    execute(id: string): Promise<Result<File, RepositoryError>>;
 }
 
 export interface IGetFileRepositoryErrors {
@@ -36,7 +32,7 @@ export namespace GetFileRepository {
  * GetFile use case interface
  */
 export interface IGetFileUseCase {
-    execute(input: GetFileInput): Promise<Result<File, UseCaseError>>;
+    execute(id: string): Promise<Result<File, UseCaseError>>;
 }
 
 export interface IGetFileUseCaseErrors {

@@ -1,5 +1,4 @@
 export interface FileManagerSettings {
-    tenant: string;
     uploadMinFileSize: number;
     uploadMaxFileSize: number;
     srcPrefix: string;

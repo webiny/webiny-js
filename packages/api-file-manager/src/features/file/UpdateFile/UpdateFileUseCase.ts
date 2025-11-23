@@ -27,7 +27,7 @@ class UpdateFileUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Get original file (includes ownership check)
-        const getResult = await this.getFile.execute({ id: input.id });
+        const getResult = await this.getFile.execute(input.id);
         if (getResult.isFail()) {
             return Result.fail(getResult.error);
         }

@@ -9,6 +9,14 @@ import { emptyResolver, resolve } from "./utils.js";
 import type { CreateFilesTypeDefsParams } from "~/graphql/createFilesTypeDefs.js";
 import { createFilesTypeDefs } from "~/graphql/createFilesTypeDefs.js";
 import NotAuthorizedResponse from "@webiny/api-core/graphql/security/NotAuthorizedResponse.js";
+import { GetFileUseCase } from "~/features/file/GetFile/abstractions.js";
+import { ListFilesUseCase } from "~/features/file/ListFiles/abstractions.js";
+import { ListTagsUseCase } from "~/features/file/ListTags/abstractions.js";
+import { CreateFileUseCase } from "~/features/file/CreateFile/abstractions.js";
+import { CreateFilesInBatchUseCase } from "~/features/file/CreateFilesInBatch/abstractions.js";
+import { UpdateFileUseCase } from "~/features/file/UpdateFile/abstractions.js";
+import { DeleteFileUseCase } from "~/features/file/DeleteFile/abstractions.js";
+import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
 
 export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
     const fileManagerGraphQL = new GraphQLSchemaPlugin<FileManagerContext>({
@@ -23,7 +31,9 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
             FmFile: {
                 async src(file, _, context) {
                     // TODO: create `FileUrlGenerator` service to use here
-                    const settings = await context.fileManager.getSettings();
+                    const getSettings = context.container.resolve(GetSettingsUseCase);
+                    const result = await getSettings.execute();
+                    const settings = result.value;
                     return (settings?.srcPrefix || "") + file.key;
                 }
             },
@@ -36,54 +46,84 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
 
                     return resolve(() => context.cms.getModel("fmFile"));
                 },
-                getFile(_, args: any, context) {
-                    return resolve(() => context.fileManager.getFile(args.id));
+                async getFile(_, args: any, context) {
+                    const getFile = context.container.resolve(GetFileUseCase);
+                    const result = await getFile.execute(args.id);
+
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+
+                    return new Response(result.value);
                 },
                 async listFiles(_, args: FilesListOpts, context) {
-                    try {
-                        const [data, meta] = await context.fileManager.listFiles(args);
+                    const listFiles = context.container.resolve(ListFilesUseCase);
+                    const result = await listFiles.execute(args);
 
-                        return new ListResponse(data, meta);
-                    } catch (e) {
-                        return new ErrorResponse(e);
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
                     }
+
+                    return new ListResponse(result.value.items, result.value.meta);
                 },
                 async listTags(_, args: any, context) {
-                    try {
-                        const tags = await context.fileManager.listTags(args || {});
+                    const listTags = context.container.resolve(ListTagsUseCase);
+                    const result = await listTags.execute(args || {});
 
-                        return new Response(tags);
-                    } catch (error) {
-                        return new ErrorResponse(error);
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
                     }
+
+                    return new Response(result.value);
                 }
             },
             FmMutation: {
                 async createFile(_, args: any, context) {
-                    return resolve(() => {
-                        return context.fileManager.createFile(args.data);
-                    });
+                    const createFile = context.container.resolve(CreateFileUseCase);
+                    const result = await createFile.execute(args.data);
+
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+
+                    return new Response(result.value);
                 },
                 async createFiles(_, args: any, context) {
-                    return resolve(() => {
-                        return context.fileManager.createFilesInBatch(args.data, args.meta);
+                    const createFilesInBatch = context.container.resolve(CreateFilesInBatchUseCase);
+                    const result = await createFilesInBatch.execute({
+                        files: args.data,
+                        meta: args.meta
                     });
+
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+
+                    return new Response(result.value);
                 },
                 async updateFile(_, args: any, context) {
-                    return resolve(() => {
-                        return context.fileManager.updateFile(args.id, args.data);
+                    const updateFile = context.container.resolve(UpdateFileUseCase);
+                    const result = await updateFile.execute({
+                        id: args.id,
+                        ...args.data
                     });
+
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+
+                    return new Response(result.value);
                 },
                 async deleteFile(_, args: any, context) {
-                    return resolve(async () => {
-                        // TODO: 1) implement via a DeleteFile use case
-                        // TODO: 2) deletion from Cloud storage should be implemented in the `api-file-manager-s3` as an event handler
-                        // const file = await context.fileManager.getFile(args.id);
-                        // return await context.fileManager.storage.delete({
-                        //     id: file.id,
-                        //     key: file.key
-                        // });
-                    });
+                    const deleteFile = context.container.resolve(DeleteFileUseCase);
+                    const result = await deleteFile.execute({ id: args.id });
+
+                    if (result.isFail()) {
+                        return new ErrorResponse(result.error);
+                    }
+
+                    // TODO: deletion from Cloud storage should be implemented in the `api-file-manager-s3` as an event handler
+                    return new Response(true);
                 }
             }
         }
