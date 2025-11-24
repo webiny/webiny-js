@@ -50,7 +50,7 @@ class WcpInjectTelemetryClientAfterBuildImpl implements ApiAfterBuild.Interface 
 
             const telemetryCodeAsString = await response.text().then(text => {
                 // Quick fix, until we make it so that build outputs `.js` files instead of `.cjs`.
-                return text.replace("./_handler.cjs", "./_handler.cjs");
+                return text.replace("./_handler.js", "./_handler.cjs");
             });
 
             // 2. Wrap the initially built code with the telemetry client code.
