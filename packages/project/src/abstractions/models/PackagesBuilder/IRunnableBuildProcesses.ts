@@ -3,8 +3,8 @@ import { type IRunnableBuildProcess } from "./IRunnableBuildProcess.js";
 import { type IPackagesBuilder } from "./IPackagesBuilder.js";
 
 export interface IRunOptions {
-    beforeBuild?: (process: IRunnableBuildProcess) => void  | Promise<void>;
-    afterBuild?: (process: IRunnableBuildProcess) => void  | Promise<void>;
+    beforeBuild?: (process: IRunnableBuildProcess) => void | Promise<void>;
+    afterBuild?: (process: IRunnableBuildProcess) => void | Promise<void>;
 }
 
 export interface IRunnableBuildProcesses {

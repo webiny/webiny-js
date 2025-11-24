@@ -6,10 +6,7 @@ import { replaceTscAliases } from "./tsAliasReplacer.js";
 export const tsCompile = async ({ cwd = "", overrides, debug }) => {
     const tsConfigPath = join(cwd, "tsconfig.build.json");
 
-    let { config: readTsConfig } = ts.readConfigFile(
-        tsConfigPath,
-        ts.sys.readFile
-    );
+    let { config: readTsConfig } = ts.readConfigFile(tsConfigPath, ts.sys.readFile);
 
     if (overrides.tsConfig) {
         if (typeof overrides.tsConfig === "function") {

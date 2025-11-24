@@ -20,7 +20,9 @@ export const replaceTscAliases = async ({ distDir, cwd, debug = false }) => {
                 // Calculate relative path from current file to dist root
                 const fileDir = dirname(dtsFile);
                 const relativePath = relative(fileDir, distDir);
-                const finalPath = relativePath ? `${relativePath}/${importPath}` : `./${importPath}`;
+                const finalPath = relativePath
+                    ? `${relativePath}/${importPath}`
+                    : `./${importPath}`;
                 // Normalize to always start with ./
                 const normalized = finalPath.startsWith(".") ? finalPath : `./${finalPath}`;
                 return `${prefix}${normalized}${suffix}`;

@@ -6,7 +6,7 @@ export const createBuildFunction =
     async ({ cwd }) => {
         process.env.NODE_ENV = "production";
 
-        const rsbuildConfig = createRsbuildConfig({cwd});
+        const rsbuildConfig = createRsbuildConfig({ cwd });
 
         const rsbuild = await createRsbuild({ rsbuildConfig });
 
