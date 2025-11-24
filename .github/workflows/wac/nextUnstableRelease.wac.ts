@@ -59,7 +59,7 @@ export const nextUnstableRelease = createWorkflow({
             ]
         }),
         npmUnstableRelease: createJob({
-            needs: ["constants"],
+            needs: ["constants", "build"],
             name: 'NPM release ("unstable" tag)',
             environment: "release",
             env: {

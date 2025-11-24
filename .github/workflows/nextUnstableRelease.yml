@@ -71,6 +71,7 @@ jobs:
   npmUnstableRelease:
     needs:
       - constants
+      - build
     name: NPM release ("unstable" tag)
     environment: release
     env:
