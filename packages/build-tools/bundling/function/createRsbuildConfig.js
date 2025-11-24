@@ -13,9 +13,9 @@ export const createRsbuildConfig = ({ cwd }) => {
             filename: {
                 js: pathData => {
                     if (pathData.chunk?.name === "index") {
-                        return "handler.js";
+                        return "handler.cjs";
                     }
-                    return "[name].js";
+                    return "[name].cjs";
                 }
             },
             distPath: { root: paths.fn.outputFolder }
@@ -30,7 +30,14 @@ export const createRsbuildConfig = ({ cwd }) => {
                         resourceRegExp: /canvas/,
                         contextRegExp: /jsdom$/
                     })
-                ]
+                ],
+                resolve: {
+                    fallback: {
+                        // Disable optional native dependency used by 'ws' package for performance optimizations.
+                        // Not needed in Lambda environment and can cause bundling/deployment issues.
+                        bufferutil: false
+                    }
+                }
             }
         },
         mode,

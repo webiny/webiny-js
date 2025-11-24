@@ -20,9 +20,9 @@ export class RunnableBuildProcesses implements IRunnableBuildProcesses {
             await onBeforeBuildCallback(buildParams);
         }
 
-        await Promise.all(
-            this.runnableBuildProcesses.map(runnableBuildProcess => runnableBuildProcess.run())
-        );
+        for (const runnableBuildProcess of this.runnableBuildProcesses) {
+            await runnableBuildProcess.run();
+        }
 
         const onAfterBuildCallbacks = this.builder.getOnAfterBuildCallbacks();
         for (const onAfterBuildCallback of onAfterBuildCallbacks) {

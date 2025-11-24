@@ -39,24 +39,14 @@ export class RunnableBuildProcess implements IRunnableBuildProcess {
         return new Promise<void>((resolve, reject) => {
             buildProcess.on("message", (message: Record<string, any>) => {
                 if (message.error) {
-                    reject(
+                    return reject(
                         new Error(
                             message.error.message || "Unknown error occurred in build process"
                         )
                     );
                 }
-            });
 
-            buildProcess.on("exit", code => {
-                if (code === 0) {
-                    resolve();
-                } else {
-                    reject(
-                        new Error(
-                            `Build failed for package ${this.pkg.name} with exit code ${code}`
-                        )
-                    );
-                }
+                return resolve();
             });
         });
     }
