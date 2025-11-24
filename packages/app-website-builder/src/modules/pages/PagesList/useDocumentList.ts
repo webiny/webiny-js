@@ -1,4 +1,4 @@
-import { useCallback, useState, useMemo, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { autorun } from "mobx";
 import {
     useGetFolderHierarchy,
@@ -8,8 +8,9 @@ import {
 import { useDocumentListPresenter } from "./presenters/DocumentListPresenterContext.js";
 import { useFilterPages, useLoadPages } from "~/features/pages/index.js";
 import { useSelectPages } from "~/features/pages/selectPages/useSelectPages.js";
+import { makeDecoratableHook } from "@webiny/react-composition";
 
-export const useDocumentList = () => {
+export const useDocumentList = makeDecoratableHook(() => {
     const isFirstLoad = useRef(true);
     const { folders, getFolderHierarchy } = useGetFolderHierarchy();
     const { listFoldersByParentIds } = useListFoldersByParentIds();
@@ -77,4 +78,4 @@ export const useDocumentList = () => {
         vm,
         showFilters
     };
-};
+});

@@ -18,11 +18,11 @@ const PageListContentReviewsButton = () => {
                     <Sidebar.Item
                         className={"w-full"}
                         onClick={showOverlay}
-                        text={"Workflow States"}
+                        text={"Content Reviews"}
                         icon={
                             <Sidebar.Item.Icon
                                 element={<WorkflowStateListIcon />}
-                                label={"Workflow States"}
+                                label={"Content Reviews"}
                             />
                         }
                     />

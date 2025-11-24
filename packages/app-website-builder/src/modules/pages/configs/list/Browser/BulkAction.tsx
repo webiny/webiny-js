@@ -6,6 +6,7 @@ import { useDocumentList } from "~/modules/pages/PagesList/useDocumentList.js";
 import { useSelectPages } from "~/features/pages/selectPages/useSelectPages.js";
 import { Page, type PageDto, PageDtoMapper } from "~/domain/Page/index.js";
 import type { TableRow } from "~/modules/pages/types.js";
+import { makeDecoratable } from "@webiny/react-composition";
 
 export interface BulkActionConfig {
     name: string;
@@ -20,36 +21,33 @@ export interface BulkActionProps {
     element?: React.ReactElement;
 }
 
-export const BaseBulkAction = ({
-    name,
-    after = undefined,
-    before = undefined,
-    remove = false,
-    element
-}: BulkActionProps) => {
-    const getId = useIdGenerator("bulkAction");
+export const BaseBulkAction = makeDecoratable(
+    "BulkAction",
+    ({ name, after = undefined, before = undefined, remove = false, element }: BulkActionProps) => {
+        const getId = useIdGenerator("bulkAction");
 
-    const placeAfter = after !== undefined ? getId(after) : undefined;
-    const placeBefore = before !== undefined ? getId(before) : undefined;
+        const placeAfter = after !== undefined ? getId(after) : undefined;
+        const placeBefore = before !== undefined ? getId(before) : undefined;
 
-    return (
-        <Property id="browser" name={"browser"}>
-            <Property
-                id={getId(name)}
-                name={"bulkActions"}
-                remove={remove}
-                array={true}
-                before={placeBefore}
-                after={placeAfter}
-            >
-                <Property id={getId(name, "name")} name={"name"} value={name} />
-                {element ? (
-                    <Property id={getId(name, "element")} name={"element"} value={element} />
-                ) : null}
+        return (
+            <Property id="browser" name={"browser"}>
+                <Property
+                    id={getId(name)}
+                    name={"bulkActions"}
+                    remove={remove}
+                    array={true}
+                    before={placeBefore}
+                    after={placeAfter}
+                >
+                    <Property id={getId(name, "name")} name={"name"} value={name} />
+                    {element ? (
+                        <Property id={getId(name, "element")} name={"element"} value={element} />
+                    ) : null}
+                </Property>
             </Property>
-        </Property>
-    );
-};
+        );
+    }
+);
 
 const useWorker = () => {
     const { vm } = useDocumentList();
