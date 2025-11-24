@@ -1,7 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
 import { renames } from "./renames.js";
-import { updatePackageJson } from "./updatePackageJson.js";
 import { runInteractivePrompt } from "./runInteractivePrompt.js";
 import { CliParams } from "../../../../types.js";
 import { GetProjectRootPath } from "../../../../services/index.js";
@@ -33,8 +32,6 @@ export class SetupAwsWebinyProject {
                 }
             );
         }
-
-        updatePackageJson(cliArgs);
 
         // Update .env file.
         const rootEnvFilePath = path.join(projectRootFolderPath, ".env");

@@ -1,10 +1,10 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 interface IIsCi {
     execute(): boolean;
 }
 
-export const IsCi = new Abstraction<IIsCi>("IsCi");
+export const IsCi = createAbstraction<IIsCi>("IsCi");
 
 export namespace IsCi {
     export type Interface = IIsCi;

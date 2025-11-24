@@ -1,4 +1,3 @@
-import { createDecorator } from "@webiny/di";
 import {
     isEnabled as globalIsTelemetryEnabled,
     sendEvent as telemetrySendEvent
@@ -115,8 +114,7 @@ export class DeployCommandWithTelemetry<TParams> implements Command.Interface<TP
     }
 }
 
-export const deployCommandWithTelemetry = createDecorator({
-    abstraction: Command,
+export const deployCommandWithTelemetry = Command.createDecorator({
     decorator: DeployCommandWithTelemetry,
     dependencies: [GetProjectSdkService]
 });

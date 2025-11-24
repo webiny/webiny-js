@@ -1,10 +1,11 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 interface IGetNpxVersionService {
     execute(): string;
 }
 
-export const GetNpxVersionService = new Abstraction<IGetNpxVersionService>("GetNpxVersionService");
+export const GetNpxVersionService =
+    createAbstraction<IGetNpxVersionService>("GetNpxVersionService");
 
 export namespace GetNpxVersionService {
     export type Interface = IGetNpxVersionService;

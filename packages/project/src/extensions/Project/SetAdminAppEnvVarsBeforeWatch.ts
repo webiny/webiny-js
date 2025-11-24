@@ -1,4 +1,3 @@
-import { createImplementation } from "@webiny/di";
 import {
     AdminBeforeWatch,
     IsTelemetryEnabled,
@@ -9,7 +8,7 @@ import { isEnabled as telemetryEnabledViaGlobalCfg } from "@webiny/telemetry/cli
 import { globalConfig } from "@webiny/global-config";
 import { isCI } from "ci-info";
 
-class SetAdminAppEnvVarsBeforeWatch implements AdminBeforeWatch.Interface {
+class SetAdminAppEnvVarsBeforeWatchImpl implements AdminBeforeWatch.Interface {
     constructor(
         private isTelemetryEnabled: IsTelemetryEnabled.Interface,
         private getProjectIdService: GetProjectIdService.Interface,
@@ -63,8 +62,7 @@ class SetAdminAppEnvVarsBeforeWatch implements AdminBeforeWatch.Interface {
     }
 }
 
-export default createImplementation({
-    abstraction: AdminBeforeWatch,
-    implementation: SetAdminAppEnvVarsBeforeWatch,
+export const SetAdminAppEnvVarsBeforeWatch = AdminBeforeWatch.createImplementation({
+    implementation: SetAdminAppEnvVarsBeforeWatchImpl,
     dependencies: [IsTelemetryEnabled, GetProjectIdService, GetProjectVersionService]
 });

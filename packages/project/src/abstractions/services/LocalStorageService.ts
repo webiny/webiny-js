@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export type LocalStorageValue = any;
 
@@ -16,7 +16,7 @@ export interface ILocalStorageService {
     unset(key: string): LocalStorageData;
 }
 
-export const LocalStorageService = new Abstraction<ILocalStorageService>("LocalStorageService");
+export const LocalStorageService = createAbstraction<ILocalStorageService>("LocalStorageService");
 
 export namespace LocalStorageService {
     export type Interface = ILocalStorageService;

@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IBaseAppParams } from "~/abstractions/types.js";
 import { type GetApp } from "~/abstractions/index.js";
 
@@ -22,7 +22,7 @@ export interface IListPackagesService {
     execute(params: IListPackagesServiceParams): Promise<IListPackagesServiceResult>;
 }
 
-export const ListPackagesService = new Abstraction<IListPackagesService>("ListPackagesService");
+export const ListPackagesService = createAbstraction<IListPackagesService>("ListPackagesService");
 
 export namespace ListPackagesService {
     export type Interface = IListPackagesService;

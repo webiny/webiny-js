@@ -1,10 +1,10 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface IGetPulumiResourceNamePrefix {
     execute(): Promise<string>;
 }
 
-export const GetPulumiResourceNamePrefix = new Abstraction<IGetPulumiResourceNamePrefix>(
+export const GetPulumiResourceNamePrefix = createAbstraction<IGetPulumiResourceNamePrefix>(
     "GetPulumiResourceNamePrefix"
 );
 

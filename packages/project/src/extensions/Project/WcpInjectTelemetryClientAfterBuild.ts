@@ -1,4 +1,3 @@
-import { createImplementation } from "@webiny/di";
 import {
     ApiAfterBuild,
     GetApp,
@@ -9,7 +8,7 @@ import {
 } from "~/abstractions/index.js";
 import fs from "fs";
 
-class WcpInjectTelemetryClientAfterBuild implements ApiAfterBuild.Interface {
+class WcpInjectTelemetryClientAfterBuildImpl implements ApiAfterBuild.Interface {
     constructor(
         private getProjectIdService: GetProjectIdService.Interface,
         private wcpService: WcpService.Interface,
@@ -75,8 +74,7 @@ class WcpInjectTelemetryClientAfterBuild implements ApiAfterBuild.Interface {
     }
 }
 
-export default createImplementation({
-    abstraction: ApiAfterBuild,
-    implementation: WcpInjectTelemetryClientAfterBuild,
+export const WcpInjectTelemetryClientAfterBuild = ApiAfterBuild.createImplementation({
+    implementation: WcpInjectTelemetryClientAfterBuildImpl,
     dependencies: [GetProjectIdService, WcpService, LoggerService, GetApp, UiService]
 });

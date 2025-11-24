@@ -1,10 +1,10 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface IGetProductionEnvironments {
     execute(): Promise<string[]>;
 }
 
-export const GetProductionEnvironments = new Abstraction<IGetProductionEnvironments>(
+export const GetProductionEnvironments = createAbstraction<IGetProductionEnvironments>(
     "GetProductionEnvironments"
 );
 

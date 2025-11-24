@@ -22,12 +22,8 @@ export const renames = [
         next: ".prettierignore"
     },
     {
-        prev: "example.eslintignore",
-        next: ".eslintignore"
-    },
-    {
-        prev: "example.eslintrc.cjs",
-        next: ".eslintrc.cjs"
+        prev: "example.eslint.config.js",
+        next: "eslint.config.js"
     },
     {
         prev: "template.package.json",

@@ -24,7 +24,6 @@ export const Project = () => {
             <AdminBeforeBuild src={p("EnsureApiDeployedBeforeAdminBuild.js")} />
             <AdminBeforeWatch src={p("EnsureApiDeployedBeforeAdminWatch.js")} />
             <AdminAfterDeploy src={p("TelemetryNoLongerNewUser.js")} />
-            <BeforeWatch src={p("EnsureAppBuiltBeforeWatch.js")} />
             <BeforeBuild src={p("WcpSetEnvVarsBeforeBuild.js")} />
             <BeforeWatch src={p("WcpSetEnvVarsBeforeWatch.js")} />
         </>

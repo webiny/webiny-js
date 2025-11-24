@@ -15,7 +15,7 @@ export class ProjectModel implements IProjectModel {
     constructor(params: ProjectModelConstructorParams) {
         this.name = params.name;
         this.paths = params.paths;
-        this.version = "0.0.0";
+        this.version = params.version || "0.0.0";
     }
 
     toDto(): IProjectModelDto {

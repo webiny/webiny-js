@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export type IBuildResult = void;
 
@@ -6,7 +6,7 @@ export interface IBuildProjectWorkspaceService {
     execute(): Promise<IBuildResult>;
 }
 
-export const BuildProjectWorkspaceService = new Abstraction<IBuildProjectWorkspaceService>(
+export const BuildProjectWorkspaceService = createAbstraction<IBuildProjectWorkspaceService>(
     "BuildProjectWorkspaceService"
 );
 

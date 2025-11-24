@@ -4,7 +4,6 @@ import {
     GetProjectService,
     LoggerService
 } from "~/abstractions/index.js";
-
 import path from "path";
 import fs from "fs";
 import { getTemplatesFolderPath } from "~/utils/index.js";

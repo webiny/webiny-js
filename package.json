@@ -9,6 +9,7 @@
       "extensions/theme",
       "scripts/buildPackages",
       "scripts/prepublishOnly",
+      "scripts/cli",
       "scripts/cjsToEsm"
     ]
   },
@@ -117,7 +118,6 @@
     "tsx": "^4.20.5",
     "type-fest": "^5.2.0",
     "typescript": "5.9.3",
-    "typescript-transform-paths": "^3.5.5",
     "validator": "^13.15.23",
     "verdaccio": "^6.2.1",
     "vite-tsconfig-paths": "^5.1.4",
@@ -160,6 +160,7 @@
     "cy:ts": "yarn cypress:ts",
     "cy:setup": "yarn setup-cypress",
     "webiny-versions": "node ./scripts/webinyVersions.js",
+    "webiny-scripts": "tsx ./scripts/cli/src/bin.ts",
     "trigger-release": "node ./scripts/release/triggerRelease.js",
     "dispatch-github-event": "node ./scripts/dispatchGitHubEvent.js",
     "link-workspaces": "node ./scripts/linkWorkspaces.js",
@@ -260,7 +261,7 @@
   "packageManager": "yarn@4.10.2",
   "dependencies": {
     "@types/hoist-non-react-statics": "^3.3.7",
-    "@webiny/di": "^0.1.1"
+    "@webiny/di": "^0.2.0"
   },
   "engines": {
     "node": ">=22.0.0"
