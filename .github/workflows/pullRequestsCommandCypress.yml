@@ -265,12 +265,9 @@ jobs:
       - name: Deploy Admin Area
         working-directory: new-webiny-project
         run: yarn webiny deploy admin --env dev
-      - name: Deployment Summary
-        run: >-
-          node
-          .github/workflows/wac/utils/runNodeScripts/printDeploymentSummary.js
-          '../new-webiny-project' >> $GITHUB_STEP_SUMMARY
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Deploy Website
+        working-directory: new-webiny-project
+        run: yarn webiny deploy website --env dev
       - name: Create Cypress config
         run: yarn setup-cypress --projectFolder ../new-webiny-project
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -497,12 +494,9 @@ jobs:
       - name: Deploy Admin Area
         working-directory: new-webiny-project
         run: yarn webiny deploy admin --env dev
-      - name: Deployment Summary
-        run: >-
-          node
-          .github/workflows/wac/utils/runNodeScripts/printDeploymentSummary.js
-          '../new-webiny-project' >> $GITHUB_STEP_SUMMARY
-        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Deploy Website
+        working-directory: new-webiny-project
+        run: yarn webiny deploy website --env dev
       - name: Create Cypress config
         run: yarn setup-cypress --projectFolder ../new-webiny-project
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
