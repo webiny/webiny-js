@@ -11,7 +11,7 @@ import {
     withCommonParams
 } from "./steps/index.js";
 import { AbstractStorageOps } from "./storageOps/AbstractStorageOps.js";
-import { DdbStorageOps, DdbOsStorageOps } from "./storageOps/index.js";
+import { DdbOsStorageOps, DdbStorageOps } from "./storageOps/index.js";
 
 const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
@@ -403,45 +403,6 @@ const createPushWorkflow = (branchName: string) => {
             ...createE2EJobs(ddbOsStorageOps)
         }
     });
-
-    if (branchName === "next") {
-        const vitestJobsNames = Object.keys(workflow.jobs).filter(
-            name => name.startsWith("vitest") && name.endsWith("run")
-        );
-        const e2eJobsNames = Object.keys(workflow.jobs).filter(
-            name => name.startsWith("e2eTests") && name.endsWith("setup")
-        );
-
-        workflow.jobs.npmReleaseUnstable = createJob({
-            needs: ["constants", "codeAnalysis", ...vitestJobsNames, ...e2eJobsNames],
-            name: 'NPM release ("unstable" tag)',
-            environment: "release",
-            env: {
-                GH_TOKEN: "${{ secrets.GH_TOKEN }}",
-                NPM_TOKEN: "${{ secrets.NPM_TOKEN }}"
-            },
-            checkout: { "fetch-depth": 0 },
-            steps: [
-                ...yarnCacheSteps,
-                ...runBuildCacheSteps,
-                ...installBuildSteps,
-                ...withCommonParams(
-                    [
-                        {
-                            name: 'Create ".npmrc" file in the project root',
-                            run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
-                        },
-                        {
-                            name: "Set git info",
-                            run: 'git config --global user.email "webiny-bot@webiny.com"\ngit config --global user.name "webiny-bot"\n'
-                        },
-                        { name: "Version and publish to NPM", run: "yarn release --type=unstable" }
-                    ],
-                    { "working-directory": DIR_WEBINY_JS }
-                )
-            ]
-        });
-    }
 
     return workflow;
 };
