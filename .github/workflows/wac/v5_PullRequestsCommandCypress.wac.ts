@@ -233,7 +233,7 @@ export const pullRequestsCommandCypress = createWorkflow({
     },
     jobs: {
         checkComment: createJob({
-            name: `Check comment for /v5-cypress`,
+            name: `Check comment for /v5_cypress`,
             if: "${{ github.event.issue.pull_request }}",
             checkout: false,
             steps: [
@@ -243,7 +243,7 @@ export const pullRequestsCommandCypress = createWorkflow({
                     uses: "xt0rted/slash-command-action@v2",
                     with: {
                         "repo-token": "${{ secrets.GITHUB_TOKEN }}",
-                        command: "v5-cypress",
+                        command: "v5_cypress",
                         reaction: "true",
                         "reaction-type": "eyes",
                         "allow-edits": "false",
