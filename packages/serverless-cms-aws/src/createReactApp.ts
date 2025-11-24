@@ -6,7 +6,19 @@ export interface CreateReactAppParams extends CreateReactPulumiAppParams {
     plugins?: PluginCollection;
 }
 
-export function createReactApp(projectAppParams: CreateReactAppParams) {
+interface CreateReactAppResult {
+    id: string;
+    name: string;
+    cli: {
+        watch: {
+            deploy: boolean;
+        };
+    };
+    pulumi: ReturnType<typeof createReactPulumiApp>;
+    plugins: PluginCollection;
+}
+
+export function createReactApp(projectAppParams: CreateReactAppParams): CreateReactAppResult {
     const builtInPlugins = [uploadAppToS3({ folder: projectAppParams.folder })];
     const customPlugins = projectAppParams.plugins ? [...projectAppParams.plugins] : [];
 
