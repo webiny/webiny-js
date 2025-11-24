@@ -17,17 +17,12 @@ export class MultipleBuildsRunner extends BaseBuildRunner {
         ui.info(`Building %s packages... `, buildProcesses.length);
         ui.newLine();
 
-        const onBeforeBuildCallbacks = builder.getOnBeforeBuildCallbacks();
-        for (const onBeforeBuildCallback of onBeforeBuildCallbacks) {
-            await onBeforeBuildCallback(builder.getBuildParams());
-        }
-
-        await buildProcesses.run();
-
-        const onAfterBuildCallbacks = builder.getOnAfterBuildCallbacks();
-        for (const onAfterBuildCallback of onAfterBuildCallbacks) {
-            await onAfterBuildCallback(builder.getBuildParams());
-        }
+        await buildProcesses.run({
+            beforeBuild: buildProcess => {
+                ui.info(`Building package: %s`, buildProcess.getPackage().name);
+                ui.newLine();
+            }
+        });
 
         ui.success(`Built ${buildProcesses.length} packages in ${getBuildDuration()}.`);
     }
