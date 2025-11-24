@@ -31,7 +31,7 @@
     "strictFunctionTypes": true,
     "noImplicitOverride": true,
     "strict": true,
-    "noPropertyAccessFromIndexSignature": true,
+    "noPropertyAccessFromIndexSignature": false,
     "suppressImplicitAnyIndexErrors": false,
     "suppressExcessPropertyErrors": false,
     "keyofStringsOnly": false,
