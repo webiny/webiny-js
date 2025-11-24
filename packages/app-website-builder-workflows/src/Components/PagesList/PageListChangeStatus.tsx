@@ -17,7 +17,21 @@ const decoratePage = (page: PageDto): WithWorkflowState<PageDto> => {
 
 export const PageListChangeStatus = Browser.Page.Action.createDecorator(Original => {
     return function PageListChangeStatusAction(props) {
-        const { page } = usePage();
+        /**
+         * This is wrong to do, but its here to show that this should work.
+         * The component is inside the PageListConfig, so usePage should work
+         */
+        let page: PageDto;
+        try {
+            page = usePage().page;
+        } catch(ex) {
+            console.log({
+                error: ex.message,
+                ...props,
+            })
+            return <Original {...props} />;
+        }
+        // const { page } = usePage();
         const { state } = decoratePage(page);
         if (
             props.name !== "changeStatus" ||
