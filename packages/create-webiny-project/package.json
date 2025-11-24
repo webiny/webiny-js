@@ -19,7 +19,7 @@
     "find-up": "^5.0.0",
     "fs-extra": "^11.3.2",
     "inquirer": "^12.9.6",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "listr": "0.14.3",
     "load-json-file": "6.2.0",
     "ora": "4.1.1",
