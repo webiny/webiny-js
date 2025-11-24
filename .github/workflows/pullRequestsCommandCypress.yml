@@ -2,14 +2,14 @@
 # DO NOT MODIFY IT BY HAND. Instead, modify the source *.wac.ts file(s)
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
-name: Pull Requests Command - Cypress
+name: (v5) Pull Requests Command - Cypress
 'on': issue_comment
 env:
   NODE_OPTIONS: '--max_old_space_size=4096'
   AWS_REGION: eu-central-1
 jobs:
   checkComment:
-    name: Check comment for /cypress
+    name: Check comment for /v5-cypress
     if: ${{ github.event.issue.pull_request }}
     steps:
       - uses: actions/setup-node@v4
@@ -20,7 +20,7 @@ jobs:
         uses: xt0rted/slash-command-action@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          command: cypress
+          command: v5-cypress
           reaction: 'true'
           reaction-type: eyes
           allow-edits: 'false'
@@ -265,6 +265,12 @@ jobs:
       - name: Deploy Admin Area
         working-directory: new-webiny-project
         run: yarn webiny deploy admin --env dev
+      - name: Deployment Summary
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/printDeploymentSummary.js
+          '../new-webiny-project' >> $GITHUB_STEP_SUMMARY
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Create Cypress config
         run: yarn setup-cypress --projectFolder ../new-webiny-project
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
@@ -491,6 +497,12 @@ jobs:
       - name: Deploy Admin Area
         working-directory: new-webiny-project
         run: yarn webiny deploy admin --env dev
+      - name: Deployment Summary
+        run: >-
+          node
+          .github/workflows/wac/utils/runNodeScripts/printDeploymentSummary.js
+          '../new-webiny-project' >> $GITHUB_STEP_SUMMARY
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
       - name: Create Cypress config
         run: yarn setup-cypress --projectFolder ../new-webiny-project
         working-directory: ${{ needs.baseBranch.outputs.base-branch }}
