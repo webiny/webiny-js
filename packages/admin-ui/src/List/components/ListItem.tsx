@@ -42,6 +42,7 @@ interface ListItemProps
     handle?: React.ReactNode;
     icon?: React.ReactNode;
     colorMark?: string;
+    sidePadding?: "md" | "lg";
 }
 
 const DecoratableListItem = ({
@@ -55,10 +56,13 @@ const DecoratableListItem = ({
     handle,
     icon,
     colorMark,
+    sidePadding = "md",
     onClick,
     title,
     ...props
 }: ListItemProps) => {
+    const paddingClasses = sidePadding === "md" ? "px-md" : "pl-lg pr-md";
+
     return (
         <div
             {...props}
@@ -75,7 +79,7 @@ const DecoratableListItem = ({
                     className={"block w-[4px] h-[48px] rounded-lg ml-sm flex-shrink-0"}
                 />
             )}
-            <div className={"w-full flex justify-between items-center pl-lg pr-md py-sm-extra"}>
+            <div className={cn("w-full flex justify-between items-center py-sm-extra", paddingClasses)}>
                 <div className={"w-full flex items-center gap-md"} onClick={onClick}>
                     {icon && <div>{icon}</div>}
                     <div className={"flex flex-col gap-xxs grow text-left"}>
