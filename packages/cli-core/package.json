@@ -22,7 +22,6 @@
     "glob": "^7.2.3",
     "humanize-duration": "3.33.1",
     "inquirer": "^12.9.6",
-    "listr": "^0.14.3",
     "load-json-file": "6.2.0",
     "open": "^10.2.0",
     "ora": "4.1.1",

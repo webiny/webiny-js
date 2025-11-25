@@ -1,21 +1,11 @@
 {
   "type": "module",
-  "private": true,
-  "keywords": [],
-  "dependencies": {},
   "devDependencies": {
-    "@babel/cli": "^7.28.3",
-    "@babel/core": "^7.28.4",
-    "@babel/plugin-transform-runtime": "^7.28.3",
-    "@babel/preset-env": "^7.28.3",
-    "@babel/preset-typescript": "^7.27.1",
     "@eslint/js": "^9.35.0",
     "@types/node": "^22.18.0",
     "@types/react": "18.2.79",
     "@types/react-dom": "18.2.25",
     "@webiny/cli": "latest",
-    "babel-plugin-dynamic-import-node": "^2.3.3",
-    "babel-plugin-module-resolver": "^5.0.2",
     "eslint": "^9.35.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.3.0",
@@ -30,12 +20,6 @@
     "format": "prettier \"**/**/*.{js,jsx,ts,tsx,json}\" --config .prettierrc.js",
     "format:check": "yarn format --check",
     "format:fix": "yarn format --write"
-  },
-  "resolutions": {
-    "@types/react": "18.2.79",
-    "@types/react-dom": "18.2.25",
-    "react": "18.2.0",
-    "react-dom": "18.2.0"
   },
   "engines": {
     "node": "^22.0.0"

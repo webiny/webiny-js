@@ -1,7 +1,7 @@
 import { createRsbuild } from "@rsbuild/core";
 import { createRsbuildConfig } from "./createRsbuildConfig.js";
 
-export const createWatchFunction =
+export const createWatchAdmin =
     () =>
     async ({ cwd }) => {
         process.env.NODE_ENV = "development";
@@ -10,5 +10,5 @@ export const createWatchFunction =
 
         const rsbuild = await createRsbuild({ rsbuildConfig });
 
-        await rsbuild.build({ watch: true });
+        await rsbuild.startDevServer();
     };

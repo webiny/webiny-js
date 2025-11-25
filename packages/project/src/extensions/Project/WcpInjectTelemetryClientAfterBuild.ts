@@ -57,12 +57,12 @@ class WcpInjectTelemetryClientAfterBuildImpl implements ApiAfterBuild.Interface 
             for (let i = 0; i < handlersPaths.length; i++) {
                 const current = handlersPaths[i];
 
-                // 2.1 Move initially built `handler.js` into `_handler.js`.
+                // 2.1 Move initially built `handler.cjs` into `_handler.cjs`.
                 const builtHandlerPath = current.join("handler.cjs").toString();
                 const renamedHandlerPath = current.join("_handler.cjs").toString();
                 fs.renameSync(builtHandlerPath, renamedHandlerPath);
 
-                // 2.2 Write downloaded telemetry client code as a new `handler.js`.
+                // 2.2 Write downloaded telemetry client code as a new `handler.cjs`.
                 fs.writeFileSync(builtHandlerPath, telemetryCodeAsString);
             }
 

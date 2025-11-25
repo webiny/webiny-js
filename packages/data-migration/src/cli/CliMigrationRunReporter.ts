@@ -1,7 +1,7 @@
 import type { MigrationRunnerResult, MigrationRunReporter } from "~/cli/index.js";
 import center from "center-align";
 import type { LogReporter } from "~/cli/index.js";
-import { UiService } from "@webiny/project/abstractions";
+import { UiService } from "@webiny/project/abstractions/index.js";
 
 export interface CliMigrationRunReporterDi {
     uiService: UiService.Interface;

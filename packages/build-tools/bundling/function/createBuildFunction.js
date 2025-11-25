@@ -1,9 +1,14 @@
-import { prepareOptions } from "../../utils.js";
+import { createRsbuild } from "@rsbuild/core";
+import { createRsbuildConfig } from "./createRsbuildConfig.js";
 
-export const createBuildFunction = config => async options => {
-    const preparedOptions = prepareOptions({ config, options });
-    //eslint-disable-next-line import/dynamic-import-chunkname
-    const { FunctionBundler } = await import("./bundlers/FunctionBundler.js");
-    const bundler = new FunctionBundler(preparedOptions);
-    return bundler.build();
-};
+export const createBuildFunction =
+    () =>
+    async ({ cwd }) => {
+        process.env.NODE_ENV = "production";
+
+        const rsbuildConfig = createRsbuildConfig({ cwd });
+
+        const rsbuild = await createRsbuild({ rsbuildConfig });
+
+        await rsbuild.build();
+    };
