@@ -2,7 +2,9 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { Widget } from "./Widget.js";
 import { Button } from "~/Button/index.js";
+import { List } from "~/List/index.js";
 import { ReactComponent as NotificationIcon } from "@webiny/icons/notifications_active.svg";
+import { ReactComponent as ArrowForwardIcon } from "@webiny/icons/arrow_forward.svg";
 import { Tabs } from "~/Tabs/index.js";
 import { ReactComponent as HistoryIcon } from "@webiny/icons/history.svg";
 import { ReactComponent as PlusIcon } from "@webiny/icons/add.svg";
@@ -114,6 +116,75 @@ export const AccentVariant: Story = {
                 <Widget.Action icon={<PlusIcon />}>New Page</Widget.Action>
                 <Widget.Action icon={<PlusIcon />}>New Template</Widget.Action>
             </>
+        )
+    }
+};
+
+export const LightVariant: Story = {
+    args: {
+        variant: "light",
+        title: "Need some assistance?",
+        icon: <Widget.Icon icon={<NotificationIcon />} label={"Help icon"} />,
+        padding: "md",
+        bodyPadding: false,
+        children: (
+            <List variant="underline" background="transparent">
+                <List.Item
+                    title="Start Webiny tour"
+                    description="Let us show you around. You pick what you..."
+                    actions={<ArrowForwardIcon />}
+                />
+                <List.Item
+                    title="Documentation"
+                    description="Explore the Webiny documentation, learn a..."
+                    actions={<ArrowForwardIcon />}
+                />
+                <List.Item
+                    title="Contact us"
+                    description="Contact Sales, Explore Partnerships or Sla..."
+                    actions={<ArrowForwardIcon />}
+                />
+            </List>
+        )
+    }
+};
+
+export const BaseVariant: Story = {
+    args: {
+        variant: "base",
+        title: "Review Requests",
+        icon: <Widget.Icon icon={<HistoryIcon />} label={"Review icon"} />,
+        padding: "md",
+        outline: true,
+        bodyPadding: false,
+        children: (
+            <List variant="underline" background="transparent">
+                <List.Item
+                    title="Page: Product Group"
+                    description="Marketing review Sven Al Hamad, 2 days ago"
+                    icon={<div className="w-1 h-12 bg-red-500 rounded" />}
+                />
+                <List.Item
+                    title="Article: Region"
+                    description="Legal review Sven Al Hamad, 2 days ago"
+                    icon={<div className="w-1 h-12 bg-red-500 rounded" />}
+                />
+                <List.Item
+                    title="Article: Organization"
+                    description="Specialist review Sven Al Hamad, 2 days ago"
+                    icon={<div className="w-1 h-12 bg-blue-500 rounded" />}
+                />
+                <List.Item
+                    title="Product Group: Products"
+                    description="Marketing review Sven Al Hamad, 2 days ago"
+                    icon={<div className="w-1 h-12 bg-yellow-500 rounded" />}
+                />
+                <List.Item
+                    title="Page: Product Group"
+                    description="Marketing review Sven Al Hamad, 2 days ago"
+                    icon={<div className="w-1 h-12 bg-yellow-500 rounded" />}
+                />
+            </List>
         )
     }
 };
