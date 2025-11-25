@@ -83,7 +83,7 @@ export const WithFooterEndActions: Story = {
 export const WithBothFooterActions: Story = {
     args: {
         ...Default.args,
-        footerEndActions: <Button variant="primary" text={"Save"} />
+        footerEndActions: <Widget.Action>Save</Widget.Action>
     }
 };
 
@@ -140,7 +140,7 @@ export const BaseVariant: Story = {
         className: "w-[657px]",
         title: "Review Requests",
         icon: <Widget.Icon icon={<ManageSearchIcon />} label={"Review icon"} />,
-        headerActions: <Widget.Action>New Review Request</Widget.Action>,
+        headerActions: <Widget.Action>View All</Widget.Action>,
         padding: "md",
         bodyPadding: false,
         outline: true,

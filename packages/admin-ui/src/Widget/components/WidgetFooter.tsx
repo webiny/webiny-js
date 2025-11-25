@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva } from "~/utils.js";
 import { useWidgetProps } from "./WidgetPropsProvider.js";
+import { WidgetActionsProvider } from "./WidgetActionsContext.js";
 
 const widgetFooterVariants = cva("flex justify-between", {
     variants: {
@@ -36,12 +37,16 @@ export const WidgetFooter = () => {
     return (
         <div className={widgetFooterVariants({ padding })}>
             {footerStartActions && (
-                <div className={"flex gap-x-sm"}>
-                    {footerStartActions}
-                </div>
+                <WidgetActionsProvider location="footer-start">
+                    <div className={"flex gap-x-sm"}>
+                        {footerStartActions}
+                    </div>
+                </WidgetActionsProvider>
             )}
             {footerEndActions && (
-                <div className={"flex gap-x-sm ml-auto"}>{footerEndActions}</div>
+                <WidgetActionsProvider location="footer-end">
+                    <div className={"flex gap-x-sm ml-auto"}>{footerEndActions}</div>
+                </WidgetActionsProvider>
             )}
         </div>
     );
