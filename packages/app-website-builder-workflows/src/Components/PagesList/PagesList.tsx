@@ -4,7 +4,7 @@ import { PagesListContentReviews } from "./PagesListContentReviews.js";
 import { PageListChangeStatus } from "./PageListChangeStatus.js";
 import { UseDocumentListHookDecorator } from "./UseDocumentListHookDecorator.js";
 
-export const PageList = () => {
+export const PagesList = () => {
     return (
         <PageListConfig>
             {/* Attach the decorator for useDocumentList - need it to make pages with states unselectable */}
