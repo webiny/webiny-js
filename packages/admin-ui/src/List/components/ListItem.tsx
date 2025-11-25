@@ -41,6 +41,7 @@ interface ListItemProps
     description?: React.ReactNode;
     handle?: React.ReactNode;
     icon?: React.ReactNode;
+    colorMark?: string;
 }
 
 const DecoratableListItem = ({
@@ -53,6 +54,7 @@ const DecoratableListItem = ({
     selected,
     handle,
     icon,
+    colorMark,
     onClick,
     title,
     ...props
@@ -67,6 +69,12 @@ const DecoratableListItem = ({
             )}
         >
             {handle}
+            {colorMark && (
+                <div
+                    style={{ backgroundColor: colorMark }}
+                    className={"block w-[4px] h-[48px] rounded-lg ml-sm"}
+                />
+            )}
             <div className={"w-full flex justify-between items-center pl-lg pr-md py-sm-extra"}>
                 <div className={"w-full flex items-center gap-md"} onClick={onClick}>
                     {icon && <div>{icon}</div>}

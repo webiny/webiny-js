@@ -163,27 +163,27 @@ export const BaseVariant: Story = {
                                     <List.Item
                                         title="Page: Product Group"
                                         description="Marketing review Sven Al Hamad, 2 days ago"
-                                        icon={<div className="w-1 h-12 bg-red-500 rounded" />}
+                                        colorMark="#ef4444"
                                     />
                                     <List.Item
                                         title="Article: Region"
                                         description="Legal review Sven Al Hamad, 2 days ago"
-                                        icon={<div className="w-1 h-12 bg-red-500 rounded" />}
+                                        colorMark="#ef4444"
                                     />
                                     <List.Item
                                         title="Article: Organization"
                                         description="Specialist review Sven Al Hamad, 2 days ago"
-                                        icon={<div className="w-1 h-12 bg-blue-500 rounded" />}
+                                        colorMark="#3b82f6"
                                     />
                                     <List.Item
                                         title="Product Group: Products"
                                         description="Marketing review Sven Al Hamad, 2 days ago"
-                                        icon={<div className="w-1 h-12 bg-yellow-500 rounded" />}
+                                        colorMark="#eab308"
                                     />
                                     <List.Item
                                         title="Page: Product Group"
                                         description="Marketing review Sven Al Hamad, 2 days ago"
-                                        icon={<div className="w-1 h-12 bg-yellow-500 rounded" />}
+                                        colorMark="#eab308"
                                     />
                                 </List>
                             </>
