@@ -10,7 +10,7 @@ const listItemVariant = cva(
         "w-full flex items-center",
         "group-[.list-background-base]:bg-neutral-base",
         "group-[.list-background-light]:bg-neutral-light",
-        "group-[.list-variant-container]:rounded-sm",
+        "group-[.list-variant-container]:rounded-lg",
         "group-[.list-variant-underline]:border-b-sm group-[.list-variant-underline]:border-b-neutral-dimmed",
         "hover:bg-neutral-dimmed!",
         "focus-visible:outline-none focus-visible:ring-sm focus-visible:ring-inset focus-visible:ring-primary-dimmed"

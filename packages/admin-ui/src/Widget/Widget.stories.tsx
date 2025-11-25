@@ -8,6 +8,7 @@ import { ReactComponent as ArrowForwardIcon } from "@webiny/icons/arrow_forward.
 import { Tabs } from "~/Tabs/index.js";
 import { ReactComponent as HistoryIcon } from "@webiny/icons/history.svg";
 import { ReactComponent as PlusIcon } from "@webiny/icons/add.svg";
+import { ReactComponent as ManageSearchIcon } from "@webiny/icons/manage_search.svg";
 
 const meta: Meta<typeof Widget> = {
     title: "Components/Widget",
@@ -65,22 +66,6 @@ export const WithOutline: Story = {
     }
 };
 
-export const WithOutlineAccent: Story = {
-    args: {
-        ...Default.args,
-        outline: true,
-        variant: "accent"
-    }
-};
-
-export const WithOutlineLight: Story = {
-    args: {
-        ...Default.args,
-        outline: true,
-        variant: "light"
-    }
-};
-
 export const WithFooterStartActions: Story = {
     args: {
         ...Default.args
@@ -105,7 +90,7 @@ export const WithBothFooterActions: Story = {
 export const AccentVariant: Story = {
     args: {
         ...Default.args,
-        className: "max-w-[406px]",
+        className: "w-[406px]",
         variant: "accent",
         title: "Pages",
         icon: <Widget.Icon icon={<HistoryIcon />} label={"Pages icon"} />,
@@ -123,26 +108,26 @@ export const AccentVariant: Story = {
 export const LightVariant: Story = {
     args: {
         variant: "light",
+        className: "w-[406px]",
         title: "Need some assistance?",
         icon: <Widget.Icon icon={<NotificationIcon />} label={"Help icon"} />,
         padding: "md",
-        bodyPadding: false,
         children: (
-            <List variant="underline" background="transparent">
+            <List variant="container" background={"base"} className="flex flex-col gap-y-sm">
                 <List.Item
                     title="Start Webiny tour"
                     description="Let us show you around. You pick what you..."
-                    actions={<ArrowForwardIcon />}
+                    actions={<List.Item.Action icon={<ArrowForwardIcon />} />}
                 />
                 <List.Item
                     title="Documentation"
                     description="Explore the Webiny documentation, learn a..."
-                    actions={<ArrowForwardIcon />}
+                    actions={<List.Item.Action icon={<ArrowForwardIcon />} />}
                 />
                 <List.Item
                     title="Contact us"
                     description="Contact Sales, Explore Partnerships or Sla..."
-                    actions={<ArrowForwardIcon />}
+                    actions={<List.Item.Action icon={<ArrowForwardIcon />} />}
                 />
             </List>
         )
@@ -152,39 +137,66 @@ export const LightVariant: Story = {
 export const BaseVariant: Story = {
     args: {
         variant: "base",
+        className: "w-[657px]",
         title: "Review Requests",
-        icon: <Widget.Icon icon={<HistoryIcon />} label={"Review icon"} />,
+        icon: <Widget.Icon icon={<ManageSearchIcon />} label={"Review icon"} />,
+        headerActions: <Widget.Action>New Review Request</Widget.Action>,
         padding: "md",
-        outline: true,
         bodyPadding: false,
+        outline: true,
         children: (
-            <List variant="underline" background="transparent">
-                <List.Item
-                    title="Page: Product Group"
-                    description="Marketing review Sven Al Hamad, 2 days ago"
-                    icon={<div className="w-1 h-12 bg-red-500 rounded" />}
-                />
-                <List.Item
-                    title="Article: Region"
-                    description="Legal review Sven Al Hamad, 2 days ago"
-                    icon={<div className="w-1 h-12 bg-red-500 rounded" />}
-                />
-                <List.Item
-                    title="Article: Organization"
-                    description="Specialist review Sven Al Hamad, 2 days ago"
-                    icon={<div className="w-1 h-12 bg-blue-500 rounded" />}
-                />
-                <List.Item
-                    title="Product Group: Products"
-                    description="Marketing review Sven Al Hamad, 2 days ago"
-                    icon={<div className="w-1 h-12 bg-yellow-500 rounded" />}
-                />
-                <List.Item
-                    title="Page: Product Group"
-                    description="Marketing review Sven Al Hamad, 2 days ago"
-                    icon={<div className="w-1 h-12 bg-yellow-500 rounded" />}
-                />
-            </List>
+            <Tabs
+                separator={true}
+                spacing={"lg"}
+                tabs={[
+                    <Tabs.Tab
+                        key={"inReview"}
+                        value={"inReview"}
+                        trigger={"In Review (8)"}
+                        content={
+                            <>
+                                <List
+                                    variant="container"
+                                    background={"light"}
+                                    className="flex flex-col gap-y-sm"
+                                >
+                                    <List.Item
+                                        title="Page: Product Group"
+                                        description="Marketing review Sven Al Hamad, 2 days ago"
+                                        icon={<div className="w-1 h-12 bg-red-500 rounded" />}
+                                    />
+                                    <List.Item
+                                        title="Article: Region"
+                                        description="Legal review Sven Al Hamad, 2 days ago"
+                                        icon={<div className="w-1 h-12 bg-red-500 rounded" />}
+                                    />
+                                    <List.Item
+                                        title="Article: Organization"
+                                        description="Specialist review Sven Al Hamad, 2 days ago"
+                                        icon={<div className="w-1 h-12 bg-blue-500 rounded" />}
+                                    />
+                                    <List.Item
+                                        title="Product Group: Products"
+                                        description="Marketing review Sven Al Hamad, 2 days ago"
+                                        icon={<div className="w-1 h-12 bg-yellow-500 rounded" />}
+                                    />
+                                    <List.Item
+                                        title="Page: Product Group"
+                                        description="Marketing review Sven Al Hamad, 2 days ago"
+                                        icon={<div className="w-1 h-12 bg-yellow-500 rounded" />}
+                                    />
+                                </List>
+                            </>
+                        }
+                    />,
+                    <Tabs.Tab
+                        key={"approved"}
+                        value={"approved"}
+                        trigger={"Approved"}
+                        content={<>No review requests approved yet.</>}
+                    />
+                ]}
+            />
         )
     }
 };
@@ -214,49 +226,6 @@ export const WithIcon: Story = {
     args: {
         ...Default.args,
         icon: <Widget.Icon icon={<NotificationIcon />} label={"Title icon"} />
-    }
-};
-
-export const WithTabs: Story = {
-    args: {
-        ...Default.args,
-        bodyPadding: false,
-        icon: <Widget.Icon icon={<NotificationIcon />} label={"Title icon"} />,
-        children: (
-            <>
-                <Tabs
-                    className={"w-[500px]"}
-                    separator={true}
-                    spacing={"lg"}
-                    tabs={[
-                        <Tabs.Tab
-                            key={"account"}
-                            value={"account"}
-                            trigger={"Account"}
-                            content={"Make changes to your account here."}
-                        />,
-                        <Tabs.Tab
-                            key={"company"}
-                            value={"company"}
-                            trigger={"Company"}
-                            content={"Make changes to your company info here."}
-                        />,
-                        <Tabs.Tab
-                            key={"security"}
-                            value={"security"}
-                            trigger={"Security"}
-                            content={"Make changes to your security settings here."}
-                        />,
-                        <Tabs.Tab
-                            key={"development"}
-                            value={"development"}
-                            trigger={"Development"}
-                            content={"Make changes to your development settings here."}
-                        />
-                    ]}
-                />
-            </>
-        )
     }
 };
 

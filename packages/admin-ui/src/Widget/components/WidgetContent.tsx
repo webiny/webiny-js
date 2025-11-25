@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn, cva, type VariantProps } from "~/utils.js";
 import { useWidgetProps } from "~/Widget/components/WidgetPropsProvider.js";
 
-const widgetContentVariants = cva(["text-md text-neutral-primary overflow-hidden rounded-lg"], {
+const widgetContentVariants = cva("text-md text-neutral-primary overflow-hidden rounded-lg", {
     variants: {
         variant: {
             accent: "bg-primary-subtle",
