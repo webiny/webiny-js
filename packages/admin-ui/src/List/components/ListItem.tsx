@@ -72,7 +72,7 @@ const DecoratableListItem = ({
             {colorMark && (
                 <div
                     style={{ backgroundColor: colorMark }}
-                    className={"block w-[4px] h-[48px] rounded-lg ml-sm"}
+                    className={"block w-[4px] h-[48px] rounded-lg ml-sm flex-shrink-0"}
                 />
             )}
             <div className={"w-full flex justify-between items-center pl-lg pr-md py-sm-extra"}>
