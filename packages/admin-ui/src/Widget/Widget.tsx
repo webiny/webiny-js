@@ -17,8 +17,8 @@ interface WidgetProps extends Omit<React.ComponentPropsWithoutRef<typeof WidgetC
     variant?: "accent" | "light" | "base";
     elevation?: "none" | "small" | "medium" | "large";
     headerActions?: React.ReactNode;
-    footerLeftActions?: React.ReactNode;
-    footerRightActions?: React.ReactNode;
+    footerLeadingActions?: React.ReactNode;
+    footerTrailingActions?: React.ReactNode;
     outline?: boolean;
     children: React.ReactNode;
 }

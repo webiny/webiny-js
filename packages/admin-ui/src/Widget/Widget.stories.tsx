@@ -79,24 +79,24 @@ export const WithOutlineLight: Story = {
     }
 };
 
-export const WithFooterLeftActions: Story = {
+export const WithFooterLeadingActions: Story = {
     args: {
         ...Default.args
     }
 };
 
-export const WithFooterRightActions: Story = {
+export const WithFooterTrailingActions: Story = {
     args: {
         ...Default.args,
-        footerLeftActions: undefined,
-        footerRightActions: <Button variant="primary" text={"Action"} />
+        footerLeadingActions: undefined,
+        footerTrailingActions: <Button variant="primary" text={"Action"} />
     }
 };
 
 export const WithBothFooterActions: Story = {
     args: {
         ...Default.args,
-        footerRightActions: <Button variant="primary" text={"Save"} />
+        footerTrailingActions: <Button variant="primary" text={"Save"} />
     }
 };
 
@@ -109,7 +109,7 @@ export const AccentVariant: Story = {
         icon: <Widget.Icon icon={<HistoryIcon />} label={"Pages icon"} />,
         description: null,
         children: <>Build stunning landing pages with an easy-to-use drag and drop editor.</>,
-        footerLeftActions: (
+        footerLeadingActions: (
             <>
                 <Widget.Action icon={<PlusIcon />}>New Page</Widget.Action>
                 <Widget.Action icon={<PlusIcon />}>New Template</Widget.Action>
@@ -197,7 +197,7 @@ export const Documentation: Story = {
         title: "Widget title goes here",
         description: "Widget description goes here",
         children: <>This is widget content. Anything can go in here.</>,
-        footerLeftActions: (
+        footerLeadingActions: (
             <>
                 <Button variant={"secondary"} text={"Cancel"} />
                 <Button variant={"primary"} text={"Confirm"} />
@@ -219,7 +219,7 @@ export const Documentation: Story = {
             description:
                 "The main content of the widget. Please refer to the example code for details on usage."
         },
-        footerRightActions: {
+        footerTrailingActions: {
             description:
                 "Buttons or other interactive elements displayed at the bottom of the widget. Please refer to the example code for details on usage."
         },
