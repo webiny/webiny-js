@@ -27,21 +27,21 @@ const emptyWidgetFooterVariants = cva("", {
 });
 
 export const WidgetFooter = () => {
-    const { footerLeadingActions, footerTrailingActions, padding } = useWidgetProps();
+    const { footerStartActions, footerEndActions, padding } = useWidgetProps();
 
-    if (!footerLeadingActions && !footerTrailingActions) {
+    if (!footerStartActions && !footerEndActions) {
         return <div className={emptyWidgetFooterVariants({ padding })} />;
     }
 
     return (
         <div className={widgetFooterVariants({ padding })}>
-            {footerLeadingActions && (
+            {footerStartActions && (
                 <div className={"flex gap-x-sm"}>
-                    {footerLeadingActions}
+                    {footerStartActions}
                 </div>
             )}
-            {footerTrailingActions && (
-                <div className={"flex gap-x-sm ml-auto"}>{footerTrailingActions}</div>
+            {footerEndActions && (
+                <div className={"flex gap-x-sm ml-auto"}>{footerEndActions}</div>
             )}
         </div>
     );
