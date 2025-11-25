@@ -5,8 +5,7 @@ import { WidgetHeader } from "~/Widget/components/WidgetHeader.js";
 import { WidgetBody } from "~/Widget/components/WidgetBody.js";
 import { WidgetFooter } from "~/Widget/components/WidgetFooter.js";
 import { Icon } from "./components/Icon.js";
-import { ConfirmAction } from "./components/ConfirmAction.js";
-import { CancelAction } from "./components/CancelAction.js";
+import { WidgetAction } from "./components/WidgetAction.js";
 import { WidgetPropsProvider } from "~/Widget/components/WidgetPropsProvider.js";
 
 interface WidgetProps extends Omit<React.ComponentPropsWithoutRef<typeof WidgetContent>, "title"> {
@@ -17,10 +16,9 @@ interface WidgetProps extends Omit<React.ComponentPropsWithoutRef<typeof WidgetC
     bodyPadding?: boolean;
     variant?: "accent" | "light" | "base";
     elevation?: "none" | "small" | "medium" | "large";
-    actions?: React.ReactNode;
-    actionsPosition?: "header" | "footer";
-    actionsSize?: "sm" | "md";
-    info?: React.ReactNode;
+    headerActions?: React.ReactNode;
+    footerLeftActions?: React.ReactNode;
+    footerRightActions?: React.ReactNode;
     outline?: boolean;
     children: React.ReactNode;
 }
@@ -42,8 +40,7 @@ WidgetBase.displayName = "Widget";
 const DecoratableWidget = makeDecoratable("Widget", WidgetBase);
 
 const Widget = withStaticProps(DecoratableWidget, {
-    ConfirmAction,
-    CancelAction,
+    Action: WidgetAction,
     Icon
 });
 

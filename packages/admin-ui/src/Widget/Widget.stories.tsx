@@ -2,10 +2,10 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { Widget } from "./Widget.js";
 import { Button } from "~/Button/index.js";
-import { DropdownMenu } from "~/DropdownMenu/index.js";
 import { ReactComponent as NotificationIcon } from "@webiny/icons/notifications_active.svg";
 import { Tabs } from "~/Tabs/index.js";
 import { ReactComponent as HistoryIcon } from "@webiny/icons/history.svg";
+import { ReactComponent as PlusIcon } from "@webiny/icons/add.svg";
 
 const meta: Meta<typeof Widget> = {
     title: "Components/Widget",
@@ -29,11 +29,6 @@ export const Default: Story = {
         padding: "md",
         title: "Widget Title",
         description: "A short widget description.",
-        info: (
-            <>
-                Learn more about this <a href={"#"}>here</a>.
-            </>
-        ),
         children: (
             <>
                 The amazing, splendid, and most useful umbrella, resistant to rain and friendly to
@@ -41,12 +36,6 @@ export const Default: Story = {
                 bravely withstands storms and gently shades the rays of the sun. A remarkable
                 innovation, with an ergonomically designed grip most suited to the hand, it remains
                 stable even in the fiercest weather.
-            </>
-        ),
-        actions: (
-            <>
-                <Widget.CancelAction />
-                <Widget.ConfirmAction />
             </>
         )
     },
@@ -90,26 +79,26 @@ export const WithOutlineLight: Story = {
     }
 };
 
-export const WithActions: Story = {
+export const WithFooterLeftActions: Story = {
     args: {
         ...Default.args
     }
 };
-export const WithHeaderActions: Story = {
+
+export const WithFooterRightActions: Story = {
     args: {
         ...Default.args,
-        actionsPosition: "header"
+        footerLeftActions: undefined,
+        footerRightActions: <Button variant="primary" text={"Action"} />
     }
 };
 
-export const WithSmallHeaderActions: Story = {
+export const WithBothFooterActions: Story = {
     args: {
         ...Default.args,
-        actionsPosition: "header",
-        actionsSize: "sm"
+        footerRightActions: <Button variant="primary" text={"Save"} />
     }
 };
-
 
 export const AccentVariant: Story = {
     args: {
@@ -119,24 +108,16 @@ export const AccentVariant: Story = {
         title: "Pages",
         icon: <Widget.Icon icon={<HistoryIcon />} label={"Pages icon"} />,
         description: null,
-        children: <>Build stunning landing pages with an easy-to-use drag and drop editor.</>
-    }
-};
-
-export const DropdownMenuInWidget: Story = {
-    args: {
-        ...Default.args,
-        children: (
+        children: <>Build stunning landing pages with an easy-to-use drag and drop editor.</>,
+        footerLeftActions: (
             <>
-                <DropdownMenu trigger={<Button variant="primary" text={"Open"} />}>
-                    <DropdownMenu.Item text={"Billing"} />
-                    <DropdownMenu.Item text={"Settings"} />
-                    <DropdownMenu.Item text={"Keyboard shortcuts"} />
-                </DropdownMenu>
+                <Widget.Action icon={<PlusIcon />}>New Page</Widget.Action>
+                <Widget.Action icon={<PlusIcon />}>New Template</Widget.Action>
             </>
         )
     }
 };
+
 export const WithSmallElevation: Story = {
     args: {
         ...Default.args,
@@ -216,7 +197,7 @@ export const Documentation: Story = {
         title: "Widget title goes here",
         description: "Widget description goes here",
         children: <>This is widget content. Anything can go in here.</>,
-        actions: (
+        footerLeftActions: (
             <>
                 <Button variant={"secondary"} text={"Cancel"} />
                 <Button variant={"primary"} text={"Confirm"} />
@@ -238,7 +219,7 @@ export const Documentation: Story = {
             description:
                 "The main content of the widget. Please refer to the example code for details on usage."
         },
-        actions: {
+        footerRightActions: {
             description:
                 "Buttons or other interactive elements displayed at the bottom of the widget. Please refer to the example code for details on usage."
         },
@@ -254,4 +235,3 @@ export const Documentation: Story = {
         }
     }
 };
-
