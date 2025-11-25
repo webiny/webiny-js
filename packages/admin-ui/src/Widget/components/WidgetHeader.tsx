@@ -22,16 +22,8 @@ const widgetHeaderVariants = cva("text-neutral-primary", {
 });
 
 export const WidgetHeader = () => {
-    const {
-        actionsPosition,
-        actions,
-        title,
-        icon,
-        description,
-        padding,
-        variant,
-        className
-    } = useWidgetProps();
+    const { actionsPosition, actions, title, icon, description, padding, className } =
+        useWidgetProps();
 
     const nothingToRender = React.useMemo(() => {
         return !title && !description && !icon;
@@ -42,10 +34,13 @@ export const WidgetHeader = () => {
     }
 
     return (
-        <div className={cn(widgetHeaderVariants({ padding, variant }), className)}>
+        <div
+            data-widget="header"
+            className={cn(widgetHeaderVariants({ padding }), className)}
+        >
             <div className={"flex justify-between"}>
-                <div className="flex flex-col gap-xs mb-sm text-sm text-neutral-strong pb-md">
-                    <WidgetTitle padding={padding} variant={variant}>
+                <div className="flex flex-col gap-xs text-sm text-neutral-strong pb-sm-extra">
+                    <WidgetTitle>
                         {icon}
                         {title}
                     </WidgetTitle>
@@ -58,4 +53,3 @@ export const WidgetHeader = () => {
         </div>
     );
 };
-

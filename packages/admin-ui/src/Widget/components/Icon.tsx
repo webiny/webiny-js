@@ -6,7 +6,7 @@ import { makeDecoratable } from "~/utils.js";
 type IconProps = IconComponentProps;
 
 const IconBase = (props: IconProps) => {
-    return <IconComponent size={"md"} color={"neutral-strong"} {...props} />;
+    return <IconComponent size={"md"} color={"accent"} {...props} />;
 };
 
 export const Icon = makeDecoratable("Icon", IconBase);

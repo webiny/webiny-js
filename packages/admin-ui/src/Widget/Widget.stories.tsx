@@ -5,6 +5,7 @@ import { Button } from "~/Button/index.js";
 import { DropdownMenu } from "~/DropdownMenu/index.js";
 import { ReactComponent as NotificationIcon } from "@webiny/icons/notifications_active.svg";
 import { Tabs } from "~/Tabs/index.js";
+import { ReactComponent as HistoryIcon } from "@webiny/icons/history.svg";
 
 const meta: Meta<typeof Widget> = {
     title: "Components/Widget",
@@ -73,11 +74,19 @@ export const WithOutline: Story = {
     }
 };
 
-export const WithOutlineAndAccent: Story = {
+export const WithOutlineAccent: Story = {
     args: {
         ...Default.args,
         outline: true,
         variant: "accent"
+    }
+};
+
+export const WithOutlineLight: Story = {
+    args: {
+        ...Default.args,
+        outline: true,
+        variant: "light"
     }
 };
 
@@ -105,7 +114,12 @@ export const WithSmallHeaderActions: Story = {
 export const AccentVariant: Story = {
     args: {
         ...Default.args,
-        variant: "accent"
+        className: "max-w-[406px]",
+        variant: "accent",
+        title: "Pages",
+        icon: <Widget.Icon icon={<HistoryIcon />} label={"Pages icon"} />,
+        description: null,
+        children: <>Build stunning landing pages with an easy-to-use drag and drop editor.</>
     }
 };
 

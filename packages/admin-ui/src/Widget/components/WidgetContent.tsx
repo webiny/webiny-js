@@ -2,31 +2,29 @@ import * as React from "react";
 import { cn, cva, type VariantProps } from "~/utils.js";
 import { useWidgetProps } from "~/Widget/components/WidgetPropsProvider.js";
 
-const widgetContentVariants = cva(
-    ["bg-neutral-base text-md text-neutral-strong overflow-hidden rounded-lg"],
-    {
-        variants: {
-            variant: {
-                default: "",
-                accent: "border-md border-solid border-accent-dimmed"
-            },
-            elevation: {
-                none: "",
-                small: "shadow-sm",
-                medium: "shadow-md",
-                large: "shadow-lg"
-            },
-            outline: {
-                true: "border-sm border-solid border-neutral-dimmed-darker",
-                false: ""
-            }
+const widgetContentVariants = cva(["text-md text-neutral-primary overflow-hidden rounded-lg"], {
+    variants: {
+        variant: {
+            accent: "bg-primary-subtle",
+            light: "bg-neutral-light",
+            base: "bg-neutral-base"
         },
-        defaultVariants: {
-            variant: "default",
-            outline: false
+        elevation: {
+            none: "",
+            small: "shadow-sm",
+            medium: "shadow-md",
+            large: "shadow-lg"
+        },
+        outline: {
+            true: "border-sm border-solid border-neutral-dimmed-darker",
+            false: ""
         }
+    },
+    defaultVariants: {
+        variant: "base",
+        outline: false
     }
-);
+});
 
 export interface WidgetContentProps extends VariantProps<typeof widgetContentVariants> {
     className?: string;
@@ -51,4 +49,3 @@ const WidgetContent = ({ children }: WidgetContentProps) => {
 WidgetContent.displayName = "WidgetContent";
 
 export { WidgetContent };
-

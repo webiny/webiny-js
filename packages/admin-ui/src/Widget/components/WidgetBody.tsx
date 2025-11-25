@@ -21,14 +21,13 @@ const widgetBodyVariants = cva("flex-1", {
 });
 
 export const WidgetBody = () => {
-    const { padding, variant, bodyPadding, children } = useWidgetProps();
+    const { padding, bodyPadding, children } = useWidgetProps();
     return (
         <div
             data-widget="body"
             className={cn(
                 widgetBodyVariants({
-                    padding: bodyPadding !== false ? padding : "none",
-                    variant
+                    padding: bodyPadding !== false ? padding : "none"
                 })
             )}
         >
