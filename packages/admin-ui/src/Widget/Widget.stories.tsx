@@ -95,7 +95,7 @@ export const WithFooterEndActions: Story = {
 
 export const WithBothFooterActions: Story = {
     args: {
-        ...Default.args,
+        ...Default.args,sd
         footerEndActions: <Button variant="primary" text={"Save"} />
     }
 };
