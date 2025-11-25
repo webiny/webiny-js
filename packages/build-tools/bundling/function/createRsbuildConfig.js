@@ -60,7 +60,7 @@ const getPaths = cwd => {
     const fnTsConfigFilePath = path.join(fnRootFolderPath, "tsconfig.json");
 
     return {
-        cwd,
+        projectRootFolder: process.cwd(),
         fn: {
             rootFolder: fnRootFolderPath,
             tsConfig: fnTsConfigFilePath,

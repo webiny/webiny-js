@@ -1,12 +1,14 @@
 import { createRsbuild } from "@rsbuild/core";
 import { createRsbuildConfig } from "./createRsbuildConfig.js";
 
-export const createWatchAdmin = config => async options => {
-    process.env.NODE_ENV = "development";
+export const createWatchAdmin =
+    () =>
+    async ({ cwd }) => {
+        process.env.NODE_ENV = "development";
 
-    const rsbuildConfig = createRsbuildConfig();
+        const rsbuildConfig = createRsbuildConfig({ cwd });
 
-    const rsbuild = await createRsbuild({ rsbuildConfig });
+        const rsbuild = await createRsbuild({ rsbuildConfig });
 
-    await rsbuild.startDevServer();
-};
+        await rsbuild.startDevServer();
+    };

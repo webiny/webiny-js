@@ -4,9 +4,10 @@ import { pluginSvgr } from "@rsbuild/plugin-svgr";
 import { pluginSass } from "@rsbuild/plugin-sass";
 import { pluginTypeCheck } from "@rsbuild/plugin-type-check";
 import tailwindcss from "@tailwindcss/postcss";
+import fs from "fs";
 
-export const createRsbuildConfig = () => {
-    const paths = getPaths();
+export const createRsbuildConfig = ({ cwd }) => {
+    const paths = getPaths(cwd);
     const envVars = getEnvVars();
     const mode = getMode();
 
@@ -19,7 +20,7 @@ export const createRsbuildConfig = () => {
             postcss: (_, { addPlugins }) => {
                 addPlugins(
                     tailwindcss({
-                        base: path.join(paths.cwd, "packages")
+                        base: getTailwindBasePath(paths.projectRootFolder)
                     })
                 );
             }
@@ -55,9 +56,8 @@ export const createRsbuildConfig = () => {
     });
 };
 
-const getPaths = () => {
-    const cwd = process.cwd();
-    const adminRootFolderPath = path.join(cwd, ".webiny", "workspace", "apps", "admin");
+const getPaths = cwd => {
+    const adminRootFolderPath = cwd;
     const adminOutputFolderPath = path.join(adminRootFolderPath, "build");
     const adminEntryFilePath = path.join(adminRootFolderPath, "src", "index.tsx");
     const adminFaviconFilePath = path.join(
@@ -70,7 +70,7 @@ const getPaths = () => {
     const adminTsConfigFilePath = path.join(adminRootFolderPath, "tsconfig.json");
 
     return {
-        cwd,
+        projectRootFolder: process.cwd(),
         admin: {
             rootFolder: adminRootFolderPath,
             tsConfig: adminTsConfigFilePath,
@@ -79,6 +79,18 @@ const getPaths = () => {
             faviconFile: adminFaviconFilePath
         }
     };
+};
+
+const getTailwindBasePath = projectRootFolderPath => {
+    const adminUiPkgPath = path.join(projectRootFolderPath, "packages", "admin-ui");
+
+    const isWebinyJsRepo = fs.existsSync(adminUiPkgPath);
+
+    if (isWebinyJsRepo) {
+        return path.join(projectRootFolderPath, "packages");
+    }
+
+    return path.join(projectRootFolderPath, "node_modules", "@webiny");
 };
 
 const getEnvVars = () => {
@@ -106,12 +118,12 @@ const getEnvVars = () => {
     // Provide values one by one, not as a single process.env object,
     // because otherwise plugin will put a big JSON object every time process.env is used in code.
     // This way minifier also removes redundant code on prod (like if(process.env.NODE_ENV === 'development')).
-    const stringified = {};
+    const envVarsAsStrings = {};
     for (const key of Object.keys(raw)) {
-        stringified[`process.env.${key}`] = JSON.stringify(raw[key]);
+        envVarsAsStrings[`process.env.${key}`] = JSON.stringify(raw[key]);
     }
 
-    return stringified;
+    return envVarsAsStrings;
 };
 
 const getMode = () => {
