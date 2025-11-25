@@ -17,50 +17,26 @@ export class LoggerService implements Abstraction.Interface {
     }
 
     fatal(msgOrObj: string | object, ...args: any[]): void {
-        if (typeof msgOrObj === "string") {
-            this.logger.fatal(msgOrObj, ...args);
-        } else {
-            this.logger.fatal(msgOrObj, ...args);
-        }
+        this.logger.fatal(msgOrObj, ...args);
     }
 
     error(msgOrObj: string | object, ...args: any[]): void {
-        if (typeof msgOrObj === "string") {
-            this.logger.error(msgOrObj, ...args);
-        } else {
-            this.logger.error(msgOrObj, ...args);
-        }
+        this.logger.error(msgOrObj, ...args);
     }
 
     warn(msgOrObj: string | object, ...args: any[]): void {
-        if (typeof msgOrObj === "string") {
-            this.logger.warn(msgOrObj, ...args);
-        } else {
-            this.logger.warn(msgOrObj, ...args);
-        }
+        this.logger.warn(msgOrObj, ...args);
     }
 
     info(msgOrObj: string | object, ...args: any[]): void {
-        if (typeof msgOrObj === "string") {
-            this.logger.info(msgOrObj, ...args);
-        } else {
-            this.logger.info(msgOrObj, ...args);
-        }
+        this.logger.info(msgOrObj, ...args);
     }
 
     debug(msgOrObj: string | object, ...args: any[]): void {
-        if (typeof msgOrObj === "string") {
-            this.logger.debug(msgOrObj, ...args);
-        } else {
-            this.logger.debug(msgOrObj, ...args);
-        }
+        this.logger.debug(msgOrObj, ...args);
     }
 
     trace(msgOrObj: string | object, ...args: any[]): void {
-        if (typeof msgOrObj === "string") {
-            this.logger.trace(msgOrObj, ...args);
-        } else {
-            this.logger.trace(msgOrObj, ...args);
-        }
+        this.logger.trace(msgOrObj, ...args);
     }
 }
