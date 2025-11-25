@@ -9,6 +9,7 @@ import { Tabs } from "~/Tabs/index.js";
 import { ReactComponent as HistoryIcon } from "@webiny/icons/history.svg";
 import { ReactComponent as PlusIcon } from "@webiny/icons/add.svg";
 import { ReactComponent as ManageSearchIcon } from "@webiny/icons/manage_search.svg";
+import { ReactComponent as MoreIcon } from "@webiny/icons/more_vert.svg";
 
 const meta: Meta<typeof Widget> = {
     title: "Components/Widget",
@@ -164,26 +165,51 @@ export const BaseVariant: Story = {
                                         title="Page: Product Group"
                                         description="Marketing review Sven Al Hamad, 2 days ago"
                                         colorMark="#ef4444"
+                                        actions={
+                                            <>
+                                                <List.Item.Action icon={<MoreIcon />} />
+                                            </>
+                                        }
                                     />
                                     <List.Item
                                         title="Article: Region"
                                         description="Legal review Sven Al Hamad, 2 days ago"
                                         colorMark="#ef4444"
+                                        actions={
+                                            <>
+                                                <List.Item.Action icon={<MoreIcon />} />
+                                            </>
+                                        }
                                     />
                                     <List.Item
                                         title="Article: Organization"
                                         description="Specialist review Sven Al Hamad, 2 days ago"
                                         colorMark="#3b82f6"
+                                        actions={
+                                            <>
+                                                <List.Item.Action icon={<MoreIcon />} />
+                                            </>
+                                        }
                                     />
                                     <List.Item
                                         title="Product Group: Products"
                                         description="Marketing review Sven Al Hamad, 2 days ago"
                                         colorMark="#eab308"
+                                        actions={
+                                            <>
+                                                <List.Item.Action icon={<MoreIcon />} />
+                                            </>
+                                        }
                                     />
                                     <List.Item
                                         title="Page: Product Group"
                                         description="Marketing review Sven Al Hamad, 2 days ago"
                                         colorMark="#eab308"
+                                        actions={
+                                            <>
+                                                <List.Item.Action icon={<MoreIcon />} />
+                                            </>
+                                        }
                                     />
                                 </List>
                             </>
