@@ -19,16 +19,11 @@ const widgetContentVariants = cva(
             outline: {
                 true: "border-sm border-solid border-neutral-dimmed-darker",
                 false: ""
-            },
-            padding: {
-                sm: "px-md",
-                md: "px-lg"
             }
         },
         defaultVariants: {
             variant: "default",
-            outline: false,
-            padding: "md"
+            outline: false
         }
     }
 );
@@ -39,12 +34,12 @@ export interface WidgetContentProps extends VariantProps<typeof widgetContentVar
 }
 
 const WidgetContent = ({ children }: WidgetContentProps) => {
-    const { variant, elevation, outline, padding, className } = useWidgetProps();
+    const { variant, elevation, outline, className } = useWidgetProps();
 
     return (
         <div
             data-widget="content"
-            className={cn(widgetContentVariants({ variant, elevation, outline, padding }), className)}
+            className={cn(widgetContentVariants({ variant, elevation, outline }), className)}
         >
             <div className={"flex flex-col justify-between w-full max-w-full h-full relative"}>
                 {children}
