@@ -4,6 +4,30 @@ import type { Logger } from "@webiny/logger";
 /**
  * LoggerService abstraction
  * Provides structured logging capabilities throughout the API
+ *
+ * @example
+ * ```typescript
+ * // Register the feature
+ * import { LoggerServiceFeature } from "@webiny/api-core/features/LoggerService";
+ * LoggerServiceFeature.register(container);
+ *
+ * // Use in your code via DI
+ * import { LoggerService } from "@webiny/api-core/features/LoggerService";
+ *
+ * class MyService {
+ *   constructor(private logger: LoggerService.Interface) {}
+ *
+ *   doWork() {
+ *     this.logger.info("Starting work");
+ *     this.logger.info({ userId: "123" }, "User action");
+ *     this.logger.error({ error: err }, "Operation failed");
+ *
+ *     // Create child logger with context
+ *     const child = this.logger.child({ requestId: "abc-123" });
+ *     child.info("Processing request");
+ *   }
+ * }
+ * ```
  */
 export interface ILoggerService {
     /**
