@@ -52,13 +52,6 @@ export const Default: Story = {
     argTypes: {}
 };
 
-export const SmallSize: Story = {
-    args: {
-        ...Default.args,
-        size: "sm"
-    }
-};
-
 export const PaddingSmall: Story = {
     args: {
         ...Default.args,
@@ -73,10 +66,18 @@ export const PaddingMedium: Story = {
     }
 };
 
-export const PaddingLarge: Story = {
+export const WithOutline: Story = {
     args: {
         ...Default.args,
-        padding: "lg"
+        outline: true
+    }
+};
+
+export const WithOutlineAndAccent: Story = {
+    args: {
+        ...Default.args,
+        outline: true,
+        variant: "accent"
     }
 };
 
@@ -100,12 +101,6 @@ export const WithSmallHeaderActions: Story = {
     }
 };
 
-export const WithLargeCorners: Story = {
-    args: {
-        ...Default.args,
-        cornerSize: "lg"
-    }
-};
 
 export const AccentVariant: Story = {
     args: {

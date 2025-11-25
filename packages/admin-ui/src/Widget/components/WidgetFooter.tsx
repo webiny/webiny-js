@@ -6,8 +6,7 @@ const widgetFooterVariants = cva("flex justify-between", {
     variants: {
         padding: {
             sm: "p-md",
-            md: "py-md-extra px-lg",
-            lg: "pt-lg pb-xl px-xl"
+            md: "py-md-extra px-lg"
         }
     },
     defaultVariants: {
@@ -19,8 +18,7 @@ const emptyWidgetFooterVariants = cva("", {
     variants: {
         padding: {
             sm: "h-lg",
-            md: "h-lg",
-            lg: "h-xl"
+            md: "h-lg"
         }
     },
     defaultVariants: {

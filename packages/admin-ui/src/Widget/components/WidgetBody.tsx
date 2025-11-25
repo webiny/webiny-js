@@ -8,8 +8,7 @@ const widgetBodyVariants = cva("flex-1", {
         padding: {
             none: "",
             sm: "px-md",
-            md: "px-lg",
-            lg: "px-xl"
+            md: "px-lg"
         },
         variant: {
             default: "",

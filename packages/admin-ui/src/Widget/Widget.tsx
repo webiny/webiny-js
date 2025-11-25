@@ -13,16 +13,15 @@ interface WidgetProps extends Omit<React.ComponentPropsWithoutRef<typeof WidgetC
     title?: React.ReactNode;
     icon?: React.ReactElement;
     description?: React.ReactNode;
-    padding?: "sm" | "md" | "lg";
+    padding?: "sm" | "md";
     bodyPadding?: boolean;
     variant?: "default" | "accent";
     elevation?: "none" | "small" | "medium" | "large";
-    size?: "sm" | "md";
-    cornerSize?: "md" | "lg";
     actions?: React.ReactNode;
     actionsPosition?: "header" | "footer";
     actionsSize?: "sm" | "md";
     info?: React.ReactNode;
+    outline?: boolean;
     children: React.ReactNode;
 }
 

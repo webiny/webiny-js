@@ -7,9 +7,8 @@ import { useWidgetProps } from "./WidgetPropsProvider.js";
 const widgetHeaderVariants = cva("text-neutral-primary", {
     variants: {
         padding: {
-            sm: "pt-sm-extra pl-md pr-sm-plus",
-            md: "pt-md pl-lg pr-md",
-            lg: "pt-lg pl-xl pr-lg"
+            sm: "pt-sm-extra pl-md pr-sm-extra",
+            md: "pt-md pl-lg pr-md"
         },
         variant: {
             default: "",
@@ -31,7 +30,6 @@ export const WidgetHeader = () => {
         description,
         padding,
         variant,
-        size,
         className
     } = useWidgetProps();
 
@@ -47,7 +45,7 @@ export const WidgetHeader = () => {
         <div className={cn(widgetHeaderVariants({ padding, variant }), className)}>
             <div className={"flex justify-between"}>
                 <div className="flex flex-col gap-xs mb-sm text-sm text-neutral-strong pb-md">
-                    <WidgetTitle padding={padding} size={size} variant={variant}>
+                    <WidgetTitle padding={padding} variant={variant}>
                         {icon}
                         {title}
                     </WidgetTitle>

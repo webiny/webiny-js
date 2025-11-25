@@ -1,16 +1,11 @@
 import * as React from "react";
 import { cn, cva, type VariantProps } from "~/utils.js";
 
-const widgetTitleVariants = cva("flex items-center gap-sm text-neutral-primary font-semibold", {
+const widgetTitleVariants = cva("flex items-center gap-sm text-neutral-primary font-semibold pt-xs", {
     variants: {
         padding: {
             sm: "text-h6",
-            md: "text-h5",
-            lg: "text-h5"
-        },
-        size: {
-            sm: "",
-            md: "pt-xs"
+            md: "text-h5"
         },
         variant: {
             default: "",
@@ -18,15 +13,14 @@ const widgetTitleVariants = cva("flex items-center gap-sm text-neutral-primary f
         }
     },
     defaultVariants: {
-        padding: "md",
-        size: "md"
+        padding: "md"
     }
 });
 
 export type WidgetTitleProps = React.HTMLAttributes<HTMLDivElement> &
     VariantProps<typeof widgetTitleVariants>;
 
-export const WidgetTitle = ({ className, padding, size, variant, ...props }: WidgetTitleProps) => (
-    <div {...props} className={cn(widgetTitleVariants({ padding, size, variant }), className)} />
+export const WidgetTitle = ({ className, padding, variant, ...props }: WidgetTitleProps) => (
+    <div {...props} className={cn(widgetTitleVariants({ padding, variant }), className)} />
 );
 
