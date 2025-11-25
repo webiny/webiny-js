@@ -2,6 +2,7 @@ import { createFeature } from "@webiny/feature/api";
 import { Container } from "@webiny/di";
 import { SettingsDomain } from "~/domain/settings/index.js";
 import { EventPublisherFeature } from "~/features/eventPublisher/feature.js";
+import { LoggerServiceFeature } from "~/features/logger/feature.js";
 import { SecurityFeature } from "~/features/security/SecurityFeature.js";
 import { SystemFeature } from "~/features/system/SystemFeature.js";
 import { TenancyFeature } from "./features/tenancy/TenancyFeature.js";
@@ -17,6 +18,7 @@ export const ApiCoreFeature = createFeature({
 
         // Register features
         EventPublisherFeature.register(container);
+        LoggerServiceFeature.register(container);
         TenancyFeature.register(container, config.tenancyStorageOperations);
         SecurityFeature.register(container, config.securityStorageOperations);
         AdminUsersFeature.register(container, config.usersStorageOperations);

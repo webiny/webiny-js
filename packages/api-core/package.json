@@ -12,6 +12,7 @@
   "exports": {
     ".": "./index.js",
     "./features/EventPublisher": "./features/eventPublisher/index.js",
+    "./features/LoggerService": "./features/logger/index.js",
     "./features/IdentityContext": "./features/security/IdentityContext/index.js",
     "./features/WcpContext": "./features/wcp/WcpContext/index.js",
     "./features/settings": "./features/settings/index.js",
@@ -60,6 +61,7 @@
   "webiny": {
     "exports": {
       "./features/eventPublisher/index.ts": "./api/features/eventPublisher",
+      "./features/logger/index.ts": "./api/features/logger",
       "./features/security/IdentityContext/index.ts": "./api/security/features/IdentityContext",
       "./features/wcp/WcpContext/index.ts": "./api/wcp/WcpContext",
       "./features/settings/GetSettings/index.ts": "./api/features/GetSettings",
@@ -113,6 +115,7 @@
     "@webiny/handler": "0.0.0",
     "@webiny/handler-db": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
+    "@webiny/logger": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/utils": "0.0.0",
