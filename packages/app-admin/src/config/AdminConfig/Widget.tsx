@@ -1,5 +1,5 @@
 import React from "react";
-import { Property } from "@webiny/react-properties";
+import { ConnectToProperties, Property } from "@webiny/react-properties";
 
 export interface WidgetConfig {
     name: string;
@@ -17,12 +17,13 @@ export interface WidgetProps {
 
 export const Widget = ({ name, element, column = 1, order = 0 }: WidgetProps) => {
     return (
-        <Property
-            id={name}
-            name={"widgets"}
-            array={true}
-            value={{ name, element, column, order }}
-        />
+        <ConnectToProperties name={"AdminConfig"}>
+            <Property
+                id={name}
+                name={"widgets"}
+                array={true}
+                value={{ name, element, column, order }}
+            />
+        </ConnectToProperties>
     );
 };
-
