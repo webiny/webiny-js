@@ -4,7 +4,7 @@ import { Components } from "@webiny/app-workflows";
 import { Alert, Grid } from "@webiny/admin-ui";
 import { useSecurity } from "@webiny/app-security";
 import type { PersistEntry } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/ContentEntryFormProvider.js";
-import type { IWorkflowState } from "@webiny/app-workflows/types.js";
+import type { IWorkflowState } from "@webiny/app-workflows";
 
 const {
     ContentReview: { WorkflowStateBar, WorkflowStateOverlay }

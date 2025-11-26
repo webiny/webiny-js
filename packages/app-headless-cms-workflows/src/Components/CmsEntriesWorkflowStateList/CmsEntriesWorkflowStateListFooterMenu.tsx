@@ -7,7 +7,6 @@ import { useContentEntries } from "@webiny/app-headless-cms/admin/views/contentE
 import { createAppName } from "~/utils/appName.js";
 import { useApolloClient } from "@apollo/react-hooks";
 
-
 const {
     Overlay: { WorkflowStateListAppOverlay }
 } = WorkflowsComponents;

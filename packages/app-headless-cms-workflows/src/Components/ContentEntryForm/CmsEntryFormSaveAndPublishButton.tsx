@@ -2,7 +2,7 @@ import React from "react";
 import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
 import { useWorkflowState } from "@webiny/app-workflows";
 import { observer } from "mobx-react-lite";
-import { WorkflowStateValue } from "@webiny/app-workflows/types.js";
+import { WorkflowStateValue } from "@webiny/app-workflows";
 import { CmsEntryFormPublishButton } from "./CmsEntryFormPublishButton.js";
 
 const { Actions } = ContentEntryEditorConfig;

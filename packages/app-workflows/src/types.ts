@@ -89,7 +89,4 @@ export interface IWorkflowState {
     previousStep: IWorkflowStateStep | null;
 }
 
-
-export interface IWorkflowsSecurityPermission extends SecurityPermission{
-
-}
+export interface IWorkflowsSecurityPermission extends SecurityPermission {}

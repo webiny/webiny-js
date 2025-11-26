@@ -16,7 +16,8 @@ import { WorkflowsEditor } from "./Components/WorkflowsEditor/index.js";
 
 export { useCanUseWorkflows } from "./hooks/canUseWorkflows.js";
 export { useWorkflowState } from "./Components/WorkflowState/useWorkflowState.js";
-export type { IWorkflowApplication } from "~/types.js";
+export type { IWorkflowApplication, IWorkflowState } from "~/types.js";
+export { WorkflowStateValue } from "~/types.js";
 
 export const Components = {
     App: {
@@ -44,4 +45,3 @@ export const Components = {
         }
     }
 };
-

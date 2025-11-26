@@ -1,1 +1,1 @@
-export * from "./WorkflowsAdminApp.js"
+export * from "./WorkflowsAdminApp.js";

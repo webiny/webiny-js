@@ -1,7 +1,6 @@
 import React from "react";
 import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
-import { useWorkflowState } from "@webiny/app-workflows";
-import { WorkflowStateValue } from "@webiny/app-workflows/types.js";
+import { useWorkflowState, WorkflowStateValue } from "@webiny/app-workflows";
 
 const { Actions } = ContentEntryEditorConfig;
 const { MenuItemAction } = Actions;
