@@ -32,9 +32,9 @@ export const defaultRenderUrlFunction = async (
     try {
         browser = await puppeteer.launch({
             args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
+            defaultViewport: null,
             executablePath: await chromium.executablePath(),
-            headless: chromium.headless,
+            headless: true,
             acceptInsecureCerts: true
         });
 
