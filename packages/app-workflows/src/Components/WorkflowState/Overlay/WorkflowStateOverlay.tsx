@@ -11,7 +11,7 @@ interface IWorkflowStateOverlayPropsChildren {
     (props: IWorkflowStateOverlayPropsChildrenProps): React.ReactNode;
 }
 
-interface IWorkflowStateOverlayProps {
+export interface IWorkflowStateOverlayProps {
     children: React.ReactNode | IWorkflowStateOverlayPropsChildren;
 }
 

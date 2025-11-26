@@ -11,7 +11,7 @@ import {
 import type { IWorkflowApplication } from "~/types.js";
 import { SearchUI } from "@webiny/app-admin";
 
-const t = i18n.ns("app-workflows/admin/workflows-list");
+const t = i18n.ns("app-workflows/workflows-editor/data-list");
 
 export interface WorkflowsDataListProps {
     activeId: string | undefined;
