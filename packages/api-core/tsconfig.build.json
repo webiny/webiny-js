@@ -2,42 +2,18 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    {
-      "path": "../api/tsconfig.build.json"
-    },
-    {
-      "path": "../error/tsconfig.build.json"
-    },
-    {
-      "path": "../feature/tsconfig.build.json"
-    },
-    {
-      "path": "../handler/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-db/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-graphql/tsconfig.build.json"
-    },
-    {
-      "path": "../plugins/tsconfig.build.json"
-    },
-    {
-      "path": "../utils/tsconfig.build.json"
-    },
-    {
-      "path": "../wcp/tsconfig.build.json"
-    },
-    {
-      "path": "../db-dynamodb/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-aws/tsconfig.build.json"
-    },
-    {
-      "path": "../project/tsconfig.build.json"
-    }
+    { "path": "../api/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
+    { "path": "../handler/tsconfig.build.json" },
+    { "path": "../handler-db/tsconfig.build.json" },
+    { "path": "../handler-graphql/tsconfig.build.json" },
+    { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../project/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" },
+    { "path": "../wcp/tsconfig.build.json" },
+    { "path": "../db-dynamodb/tsconfig.build.json" },
+    { "path": "../handler-aws/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -62,6 +38,8 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],

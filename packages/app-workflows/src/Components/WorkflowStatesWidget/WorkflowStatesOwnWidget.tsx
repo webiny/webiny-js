@@ -6,7 +6,7 @@ import { WorkflowStatesProvider } from "./Provider/WorkflowStatesProvider.js";
 import { WorkflowStateWidgetCard } from "./Card/WorkflowStatesWidgetCard.js";
 import { WorkflowStateValue } from "~/types.js";
 
-interface IWorkflowStatesOwnWidgetProps {
+export interface IWorkflowStatesOwnWidgetProps {
     client: ApolloClient<object>;
 }
 

@@ -9,8 +9,12 @@ import {
     CommunityWidget,
     MissingPermissionsWidget
 } from "./components/index.js";
-import { WorkflowStatesOwnWidget, WorkflowStatesRequestedWidget } from "@webiny/app-workflows";
+import { Components } from "@webiny/app-workflows";
 import { useApolloClient } from "@apollo/react-hooks";
+
+const {
+    Widget: { OwnWidget: WorkflowStatesOwnWidget, RequestedWidget: WorkflowStatesRequestedWidget }
+} = Components;
 
 const Welcome = () => {
     const { identity, getPermission } = useSecurity();

@@ -2,42 +2,18 @@
   "extends": "../../tsconfig.json",
   "include": ["src", "__tests__"],
   "references": [
-    {
-      "path": "../api"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../feature"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-db"
-    },
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../utils"
-    },
-    {
-      "path": "../wcp"
-    },
-    {
-      "path": "../db-dynamodb"
-    },
-    {
-      "path": "../handler-aws"
-    },
-    {
-      "path": "../project"
-    }
+    { "path": "../api" },
+    { "path": "../error" },
+    { "path": "../feature" },
+    { "path": "../handler" },
+    { "path": "../handler-db" },
+    { "path": "../handler-graphql" },
+    { "path": "../plugins" },
+    { "path": "../project" },
+    { "path": "../utils" },
+    { "path": "../wcp" },
+    { "path": "../db-dynamodb" },
+    { "path": "../handler-aws" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -62,6 +38,8 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/project/*": ["../project/src/*"],
+      "@webiny/project": ["../project/src"],
       "@webiny/utils/*": ["../utils/src/*"],
       "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
@@ -69,9 +47,7 @@
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
-      "@webiny/handler-aws": ["../handler-aws/src"],
-      "@webiny/project/*": ["../project/src/*"],
-      "@webiny/project": ["../project/src"]
+      "@webiny/handler-aws": ["../handler-aws/src"]
     },
     "baseUrl": "."
   }

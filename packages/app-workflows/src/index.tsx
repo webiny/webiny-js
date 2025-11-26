@@ -1,26 +1,44 @@
 import { WorkflowStateOptionsOpenInNewWindow } from "~/Components/Common/index.js";
-
-export { useCanUseWorkflows } from "./hooks/canUseWorkflows.js";
-export { useWorkflowState } from "./Components/WorkflowState/useWorkflowState.js";
-export { WorkflowsAdmin } from "./Components/WorkflowsAdmin/index.js";
-export {
-    WorkflowStateProvider,
-    WorkflowStateTooltip,
-    WorkflowStateOverlay,
-    WorkflowStateBar
-} from "./Components/WorkflowState/index.js";
-export type { IWorkflowApplication } from "~/types.js";
-
-export {
+import {
     WorkflowStatesOwnWidget,
     WorkflowStatesRequestedWidget
 } from "./Components/WorkflowStatesWidget/index.js";
 
-export { WorkflowStateListAppOverlay } from "./Components/WorkflowStateList/index.js";
+import { WorkflowStateListAppOverlay } from "./Components/WorkflowStateList/index.js";
+import { WorkflowsAdminApp } from "./Components/App/index.js";
+import {
+    WorkflowStateBar,
+    WorkflowStateOverlay,
+    WorkflowStateProvider,
+    WorkflowStateTooltip
+} from "./Components/WorkflowState/index.js";
+import { WorkflowsEditor } from "./Components/WorkflowsEditor/index.js";
 
-export { ContentReviews } from "./ContentReviews.js";
+export { useCanUseWorkflows } from "./hooks/canUseWorkflows.js";
+export { useWorkflowState } from "./Components/WorkflowState/useWorkflowState.js";
+export type { IWorkflowApplication, IWorkflowState } from "~/types.js";
+export { WorkflowStateValue } from "~/types.js";
 
 export const Components = {
+    App: {
+        WorkflowsAdminApp
+    },
+    ContentReview: {
+        WorkflowStateProvider,
+        WorkflowStateTooltip,
+        WorkflowStateOverlay,
+        WorkflowStateBar
+    },
+    Admin: {
+        WorkflowsEditor
+    },
+    Overlay: {
+        WorkflowStateListAppOverlay
+    },
+    Widget: {
+        OwnWidget: WorkflowStatesOwnWidget,
+        RequestedWidget: WorkflowStatesRequestedWidget
+    },
     List: {
         Options: {
             OpenInNewWindow: WorkflowStateOptionsOpenInNewWindow
