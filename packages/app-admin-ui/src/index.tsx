@@ -12,20 +12,20 @@ import { AssistanceWidget, CommunityWidget } from "./Dashboard/components/index.
 export const AdminUI = () => {
     return (
         <>
-            <AdminConfig.Public>
+            <AdminConfig>
                 <AdminConfig.Dashboard.Widget
                     name="admin.assistance"
-                    column={2}
-                    order={100}
+                    column="right"
+                    pin="last"
                     element={<AssistanceWidget />}
                 />
                 <AdminConfig.Dashboard.Widget
                     name="admin.community"
-                    column={2}
-                    order={110}
+                    pin="last"
+                    column="right"
                     element={<CommunityWidget />}
                 />
-            </AdminConfig.Public>
+            </AdminConfig>
             <Dashboard />
             <Dialog />
             <Layout />

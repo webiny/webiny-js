@@ -114,10 +114,9 @@ export const RoutesConfig = () => {
             <CmsMenuLoader />
 
             <HasPermission name={"cms.contentModel"}>
-                <Dashboard.Widget
+                <AdminConfig.Dashboard.Widget
                     name="cms.contentModels"
-                    column={1}
-                    order={20}
+                    column="left"
                     element={<ContentModelsWidget />}
                 />
             </HasPermission>

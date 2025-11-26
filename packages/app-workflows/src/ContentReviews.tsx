@@ -35,16 +35,14 @@ export const ContentReviews = () => {
 
             <HasPermission name={"workflows.contentReviews"}>
                 <AdminConfig.Dashboard.Widget
-                    name="workflows.own"
-                    column={2}
-                    order={10}
-                    element={<WorkflowStatesOwnWidget client={client} />}
+                    name="workflows.requested"
+                    column="right"
+                    element={<WorkflowStatesRequestedWidget client={client} />}
                 />
                 <AdminConfig.Dashboard.Widget
-                    name="workflows.requested"
-                    column={2}
-                    order={20}
-                    element={<WorkflowStatesRequestedWidget client={client} />}
+                    name="workflows.assigned"
+                    column="right"
+                    element={<WorkflowStatesOwnWidget client={client} />}
                 />
             </HasPermission>
         </AdminConfig>

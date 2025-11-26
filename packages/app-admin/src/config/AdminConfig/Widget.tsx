@@ -1,28 +1,45 @@
 import React from "react";
-import { ConnectToProperties, Property } from "@webiny/react-properties";
+import { ConnectToProperties, Property, useIdGenerator } from "@webiny/react-properties";
+
+export type WidgetColumn = "left" | "right";
 
 export interface WidgetConfig {
     name: string;
     element: React.ReactElement;
-    column?: 1 | 2;
-    order?: number;
+    column?: WidgetColumn;
+    pin?: "first" | "last";
 }
 
 export interface WidgetProps {
     name: string;
-    column?: 1 | 2;
-    order?: number;
     element: React.ReactElement;
+    column?: WidgetColumn;
+    pin?: "first" | "last";
 }
 
-export const Widget = ({ name, element, column = 1, order = 0 }: WidgetProps) => {
+export const Widget = ({ name, element, column = "left", pin }: WidgetProps) => {
+    const getId = useIdGenerator("DashboardWidget");
+
+    let placeAfter: string | undefined;
+    let placeBefore: string | undefined;
+
+    if (pin) {
+        if (pin === "first") {
+            placeBefore = "$first";
+        } else if (pin === "last") {
+            placeAfter = "$last";
+        }
+    }
+
     return (
         <ConnectToProperties name={"AdminConfig"}>
             <Property
-                id={name}
+                id={getId(name)}
                 name={"widgets"}
                 array={true}
-                value={{ name, element, column, order }}
+                before={placeBefore}
+                after={placeAfter}
+                value={{ name, element, column, pin }}
             />
         </ConnectToProperties>
     );

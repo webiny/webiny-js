@@ -58,7 +58,7 @@ export const Extension = () => {
                             <Menu.Link text={"Pages"} to={router.getLink(Routes.Pages.List)} />
                         }
                     />
-                    <Dashboard.Widget name="wb.pages" column={1} order={10} element={<PagesWidget />} />
+                    <Dashboard.Widget name="wb.pages" column={'left'} element={<PagesWidget />} />
                 </HasPermission>
                 <HasPermission name={"wb.redirect"}>
                     <Route route={Routes.Redirects.List} element={<RedirectsList />} />
@@ -75,10 +75,9 @@ export const Extension = () => {
                     />
                 </HasPermission>
                 <HasPermission name={"wb.page"}>
-                    <Dashboard.Widget
+                    <AdminConfig.Dashboard.Widget
                         name="wb.pages"
-                        column={1}
-                        order={10}
+                        column="left"
                         element={<PagesWidget />}
                     />
                 </HasPermission>

@@ -7,13 +7,21 @@ const Welcome = () => {
     const { identity } = useSecurity();
     const { widgets } = useAdminConfig();
 
-    console.log("123wdgs", widgets);
-    // Sort widgets by order and group by column
-    const { column1Widgets, column2Widgets } = useMemo(() => {
-        const sorted = [...widgets].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    // Group by column and sort by pin
+    const { leftWidgets, rightWidgets } = useMemo(() => {
+        const sortByPin = (widgets: typeof widgets) => {
+            const pinFirst = widgets.filter(w => w.pin === "first");
+            const pinLast = widgets.filter(w => w.pin === "last");
+            const regular = widgets.filter(w => !w.pin);
+            return [...pinFirst, ...regular, ...pinLast];
+        };
+
+        const left = widgets.filter(w => w.column === "left" || !w.column);
+        const right = widgets.filter(w => w.column === "right");
+
         return {
-            column1Widgets: sorted.filter(w => w.column === 1),
-            column2Widgets: sorted.filter(w => w.column === 2)
+            leftWidgets: sortByPin(left),
+            rightWidgets: sortByPin(right)
         };
     }, [widgets]);
 
@@ -27,14 +35,14 @@ const Welcome = () => {
             <Grid gap={"spacious"} className={"max-w-[1200px]"}>
                 <Grid.Column span={6}>
                     <div className={"flex flex-col gap-lg"}>
-                        {column1Widgets.map(widget => (
+                        {leftWidgets.map(widget => (
                             <React.Fragment key={widget.name}>{widget.element}</React.Fragment>
                         ))}
                     </div>
                 </Grid.Column>
                 <Grid.Column span={6}>
                     <div className={"flex flex-col gap-lg"}>
-                        {column2Widgets.map(widget => (
+                        {rightWidgets.map(widget => (
                             <React.Fragment key={widget.name}>{widget.element}</React.Fragment>
                         ))}
                     </div>
