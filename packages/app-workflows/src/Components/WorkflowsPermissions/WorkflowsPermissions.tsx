@@ -1,13 +1,13 @@
 import React from "react";
 import { Accordion } from "@webiny/admin-ui";
-import type { IWorkflowsSecurityPermission } from "~/types.js";
+import type { IWorkflowsEditorSecurityPermission } from "~/types.js";
 import { ReactComponent as PermissionsIcon } from "@webiny/icons/devices_other.svg";
 import { WorkflowsPermissionsForm } from "~/Components/WorkflowsPermissions/WorkflowsPermissionsForm.js";
 import { useCanUseWorkflows } from "~/hooks/canUseWorkflows.js";
 
 interface IWorkflowsPermissionsProps {
-    value: IWorkflowsSecurityPermission[];
-    onChange: (value: IWorkflowsSecurityPermission[]) => void;
+    value: IWorkflowsEditorSecurityPermission[];
+    onChange: (value: IWorkflowsEditorSecurityPermission[]) => void;
 }
 
 export const WorkflowsPermissions = (props: IWorkflowsPermissionsProps) => {

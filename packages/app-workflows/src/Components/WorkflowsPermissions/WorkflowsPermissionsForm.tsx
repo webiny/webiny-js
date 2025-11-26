@@ -2,39 +2,40 @@ import React, { useCallback, useMemo } from "react";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { gridWithPaddingClass, PermissionInfo } from "@webiny/app-admin";
 import { Form } from "@webiny/form";
-import type { IWorkflowsSecurityPermission } from "~/types.js";
+import {
+    type IWorkflowsEditorSecurityPermission,
+    WorkflowsSecurityPermissionAccessLevel
+} from "~/types.js";
 import { Grid, Select } from "@webiny/admin-ui";
+import { WORKFLOWS_EDITOR_PERMISSION } from "./constants.js";
 
 const t = i18n.ns("app-workflows/Components/WorkflowsPermissionsForm");
 
-const WORKFLOWS_PERMISSION = "workflows";
-const WORKFLOWS_PERMISSION_FULL_ACCESS = "workflows.*";
-const FULL_ACCESS = "full";
-const NO_ACCESS = "no";
 
 interface IWorkflowsPermissionsFormProps {
-    value: IWorkflowsSecurityPermission[];
-    onChange: (value: IWorkflowsSecurityPermission[]) => void;
+    value: IWorkflowsEditorSecurityPermission[];
+    onChange: (value: IWorkflowsEditorSecurityPermission[]) => void;
 }
 
 export const WorkflowsPermissionsForm = ({ value, onChange }: IWorkflowsPermissionsFormProps) => {
     const onFormChange = useCallback(
-        (data: IWorkflowsSecurityPermission) => {
-            let newValue: IWorkflowsSecurityPermission[] = [];
+        (data: IWorkflowsEditorSecurityPermission) => {
+            let newValue: IWorkflowsEditorSecurityPermission[] = [];
             if (Array.isArray(value)) {
                 // Let's just filter out the `cms*` permission objects.
                 // Based on the `data` we rebuild new permission object from scratch.
-                newValue = value.filter(item => !item.name.startsWith(WORKFLOWS_PERMISSION));
+                newValue = value.filter(item => !item.name.startsWith(WORKFLOWS_EDITOR_PERMISSION));
             }
 
-            if (data.accessLevel === NO_ACCESS) {
+            if (data.accessLevel === WorkflowsSecurityPermissionAccessLevel.NONE) {
                 onChange(newValue);
                 return;
             }
 
-            if (data.accessLevel === FULL_ACCESS) {
+            if (data.accessLevel === WorkflowsSecurityPermissionAccessLevel.FULL) {
                 newValue.push({
-                    name: WORKFLOWS_PERMISSION_FULL_ACCESS
+                    name: WORKFLOWS_EDITOR_PERMISSION,
+                    accessLevel: WorkflowsSecurityPermissionAccessLevel.FULL
                 });
                 onChange(newValue);
                 return;
@@ -48,30 +49,30 @@ export const WorkflowsPermissionsForm = ({ value, onChange }: IWorkflowsPermissi
     const initialFormData = useMemo(() => {
         if (!Array.isArray(value) || !value.length) {
             return {
-                name: WORKFLOWS_PERMISSION,
-                accessLevel: NO_ACCESS
+                name: WORKFLOWS_EDITOR_PERMISSION,
+                accessLevel: WorkflowsSecurityPermissionAccessLevel.NONE
             };
         }
 
         const hasFullAccess = value.some(
-            item => item.name === WORKFLOWS_PERMISSION_FULL_ACCESS || item.name === "*"
+            item => item.name === WORKFLOWS_EDITOR_PERMISSION || item.name === "*"
         );
 
         if (hasFullAccess) {
             return {
-                name: WORKFLOWS_PERMISSION,
-                accessLevel: FULL_ACCESS
+                name: WORKFLOWS_EDITOR_PERMISSION,
+                accessLevel: WorkflowsSecurityPermissionAccessLevel.FULL
             };
         }
 
         return {
-            name: WORKFLOWS_PERMISSION,
-            accessLevel: NO_ACCESS
+            name: WORKFLOWS_EDITOR_PERMISSION,
+            accessLevel: WorkflowsSecurityPermissionAccessLevel.NONE
         };
     }, []);
 
     return (
-        <Form<IWorkflowsSecurityPermission> data={initialFormData} onChange={onFormChange}>
+        <Form<IWorkflowsEditorSecurityPermission> data={initialFormData} onChange={onFormChange}>
             {({ Bind }) => (
                 <>
                     <Grid className={gridWithPaddingClass}>
@@ -83,11 +84,11 @@ export const WorkflowsPermissionsForm = ({ value, onChange }: IWorkflowsPermissi
                                 <Select
                                     options={[
                                         {
-                                            value: NO_ACCESS,
+                                            value: WorkflowsSecurityPermissionAccessLevel.NONE,
                                             label: t`No access`
                                         },
                                         {
-                                            value: FULL_ACCESS,
+                                            value: WorkflowsSecurityPermissionAccessLevel.FULL,
                                             label: t`Full access`
                                         }
                                     ]}

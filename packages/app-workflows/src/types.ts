@@ -89,4 +89,11 @@ export interface IWorkflowState {
     previousStep: IWorkflowStateStep | null;
 }
 
-export interface IWorkflowsSecurityPermission extends SecurityPermission {}
+export enum WorkflowsSecurityPermissionAccessLevel {
+    NONE = "none",
+    FULL = "full"
+}
+
+export interface IWorkflowsEditorSecurityPermission extends SecurityPermission {
+    accessLevel: WorkflowsSecurityPermissionAccessLevel;
+}
