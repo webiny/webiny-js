@@ -13,7 +13,7 @@ import { Routes } from "~/routes.js";
 import { useRouter } from "@webiny/app-admin";
 import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
 
-const { Menu, Route, Widget } = AdminConfig;
+const { Menu, Route, Dashboard } = AdminConfig;
 
 export const Extension = () => {
     const router = useRouter();
@@ -74,12 +74,12 @@ export const Extension = () => {
                         }
                     />
                 </HasPermission>
-                <HasPermission name={"wb.settings"}>
-                    <Menu
-                        name="wb.settings"
-                        parent="wb"
-                        pinnable={true}
-                        element={<SettingsMenuItem />}
+                <HasPermission name={"wb.page"}>
+                    <Dashboard.Widget
+                        name="wb.pages"
+                        column={1}
+                        order={10}
+                        element={<PagesWidget />}
                     />
                 </HasPermission>
                 <Menu

@@ -11,7 +11,7 @@ import {
 } from "~/Components/WorkflowStatesWidget/index.js";
 import { useApolloClient } from "@apollo/react-hooks";
 
-const { Route, Widget } = AdminConfig;
+const { Route } = AdminConfig;
 
 export const ContentReviews = () => {
     const client = useApolloClient();
@@ -34,13 +34,13 @@ export const ContentReviews = () => {
             <WorkflowsMenu />
 
             <HasPermission name={"workflows.contentReviews"}>
-                <Widget
+                <AdminConfig.Dashboard.Widget
                     name="workflows.own"
                     column={2}
                     order={10}
                     element={<WorkflowStatesOwnWidget client={client} />}
                 />
-                <Widget
+                <AdminConfig.Dashboard.Widget
                     name="workflows.requested"
                     column={2}
                     order={20}

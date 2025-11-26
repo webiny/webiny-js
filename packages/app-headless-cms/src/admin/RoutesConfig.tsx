@@ -45,7 +45,7 @@ const ContentModelGroupsView = lazy(
         )
 );
 
-const { Route, Widget } = AdminConfig;
+const { Route, Dashboard } = AdminConfig;
 
 export const RoutesConfig = () => {
     return (
@@ -114,7 +114,7 @@ export const RoutesConfig = () => {
             <CmsMenuLoader />
 
             <HasPermission name={"cms.contentModel"}>
-                <Widget
+                <Dashboard.Widget
                     name="cms.contentModels"
                     column={1}
                     order={20}
