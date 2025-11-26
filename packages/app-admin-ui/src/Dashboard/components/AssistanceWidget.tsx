@@ -17,13 +17,15 @@ export const AssistanceWidget = () => {
                     title="Documentation"
                     description="Explore the Webiny documentation and check out code examples and guides."
                     actions={
-                        <SimpleLink
-                            to="https://www.webiny.com/docs"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <ArrowForwardIcon />
-                        </SimpleLink>
+                        <>
+                            <SimpleLink
+                                to="https://www.webiny.com/docs"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <List.Item.Action icon={<ArrowForwardIcon />} />
+                            </SimpleLink>
+                        </>
                     }
                 />
                 <List.Item
