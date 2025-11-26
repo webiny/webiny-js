@@ -11,10 +11,6 @@ export {
 } from "./Components/WorkflowState/index.js";
 export type { IWorkflowApplication } from "~/types.js";
 
-export {
-    WorkflowStatesOwnWidget,
-    WorkflowStatesRequestedWidget
-} from "./Components/WorkflowStatesWidget/index.js";
 
 export { WorkflowStateListAppOverlay } from "./Components/WorkflowStateList/index.js";
 

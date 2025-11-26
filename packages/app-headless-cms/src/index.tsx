@@ -12,7 +12,6 @@ export { ContentEntryListConfig };
 export { ContentEntryEditorConfig } from "./ContentEntryEditorConfig.js";
 export * from "~/admin/views/contentEntries/ContentEntry.js";
 export * from "~/admin/components/ContentEntryForm/ContentEntryForm.js";
-export * from "~/admin/components/ContentModelsWidget";
 
 export * from "./plugins/index.js";
 

@@ -7,6 +7,7 @@ import type { SupportMenuConfig } from "./AdminConfig/Menu/SupportMenu.js";
 import type { UserMenuConfig } from "./AdminConfig/Menu/UserMenu.js";
 import { Route } from "./AdminConfig/Route.js";
 import { Theme } from "./AdminConfig/Theme.js";
+import { Widget, type WidgetConfig } from "./AdminConfig/Widget.js";
 import { createAdminConfig } from "./createAdminConfig.js";
 
 const base = createAdminConfig<AdminConfig>();
@@ -20,6 +21,7 @@ interface AdminConfig {
     supportMenus: SupportMenuConfig[];
     userMenus: UserMenuConfig[];
     tenant: TenantConfig;
+    widgets: WidgetConfig[];
 }
 
 export const AdminConfigProvider = AppContainer.createDecorator(Original => {
@@ -45,11 +47,13 @@ export const AdminConfigProvider = AppContainer.createDecorator(Original => {
 export const useAdminConfig = () => {
     const baseConfig = base.useConfig();
 
+    console.log('baseConfig', baseConfig)
     return {
         menus: baseConfig.menus ?? [],
         userMenus: baseConfig.userMenus ?? [],
         supportMenus: baseConfig.supportMenus ?? [],
-        tenant: baseConfig.tenant || {}
+        tenant: baseConfig.tenant || {},
+        widgets: baseConfig.widgets ?? []
     };
 };
 
@@ -75,5 +79,9 @@ export const AdminConfig = Object.assign(Private, {
     Menu,
     Route,
     Tenant,
+    Widget,
     useAdminConfig
 });
+
+export type { WidgetConfig };
+

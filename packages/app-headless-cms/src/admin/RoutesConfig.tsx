@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from "react";
 import Helmet from "react-helmet";
-import { SecureRoute } from "@webiny/app-security/components/index.js";
+import { SecureRoute, HasPermission } from "@webiny/app-security/components/index.js";
 import { OverlayLoader } from "@webiny/admin-ui";
 import { CompositionScope } from "@webiny/react-composition";
 import { AdminConfig, AdminLayout } from "@webiny/app-admin";
@@ -9,6 +9,7 @@ import { ContentEntriesContainer } from "~/admin/views/contentEntries/ContentEnt
 import { ContentEntries } from "~/admin/views/contentEntries/ContentEntries.js";
 import { Routes } from "~/routes.js";
 import { CmsMenuLoader } from "~/admin/menus/CmsMenuLoader.js";
+import { ContentModelsWidget } from "~/admin/components/ContentModelsWidget.js";
 
 const t = i18n.ns("app-headless-cms/admin/routes");
 
@@ -44,7 +45,7 @@ const ContentModelGroupsView = lazy(
         )
 );
 
-const { Route } = AdminConfig;
+const { Route, Widget } = AdminConfig;
 
 export const RoutesConfig = () => {
     return (
@@ -111,6 +112,15 @@ export const RoutesConfig = () => {
             />
 
             <CmsMenuLoader />
+
+            <HasPermission name={"cms.contentModel"}>
+                <Widget
+                    name="cms.contentModels"
+                    column={1}
+                    order={20}
+                    element={<ContentModelsWidget />}
+                />
+            </HasPermission>
         </AdminConfig>
     );
 };

@@ -11,8 +11,9 @@ import { RedirectsList } from "~/modules/redirects/RedirectsList.js";
 import { RedirectsListConfig } from "~/modules/redirects/RedirectsListConfig.js";
 import { Routes } from "~/routes.js";
 import { useRouter } from "@webiny/app-admin";
+import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
 
-const { Menu, Route } = AdminConfig;
+const { Menu, Route, Widget } = AdminConfig;
 
 export const Extension = () => {
     const router = useRouter();
@@ -86,6 +87,8 @@ export const Extension = () => {
                     pinnable={true}
                     element={<IntegrationsMenuItem />}
                 />
+                <Widget name="wb.pages" column={1} order={10} element={<PagesWidget />} />
+
             </AdminConfig>
             <PagesListConfig />
             <RedirectsListConfig />

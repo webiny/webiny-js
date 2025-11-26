@@ -5,7 +5,6 @@
     { "path": "../admin-ui" },
     { "path": "../app" },
     { "path": "../app-admin" },
-    { "path": "../app-plugin-admin-welcome-screen" },
     { "path": "../app-security" },
     { "path": "../app-workflows" },
     { "path": "../plugins" }
@@ -29,8 +28,6 @@
       "@webiny/app-admin/features/tenancy": ["../app-admin/src/features/tenancy/index.js"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
-      "@webiny/app-plugin-admin-welcome-screen/*": ["../app-plugin-admin-welcome-screen/src/*"],
-      "@webiny/app-plugin-admin-welcome-screen": ["../app-plugin-admin-welcome-screen/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
       "@webiny/app-workflows/*": ["../app-workflows/src/*"],

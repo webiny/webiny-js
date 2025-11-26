@@ -14886,7 +14886,6 @@ __metadata:
     "@webiny/admin-ui": "npm:0.0.0"
     "@webiny/app": "npm:0.0.0"
     "@webiny/app-admin": "npm:0.0.0"
-    "@webiny/app-plugin-admin-welcome-screen": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-workflows": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -15271,7 +15270,6 @@ __metadata:
     "@webiny/app-graphql-playground": "npm:0.0.0"
     "@webiny/app-headless-cms-common": "npm:0.0.0"
     "@webiny/app-headless-cms-scheduler": "npm:0.0.0"
-    "@webiny/app-plugin-admin-welcome-screen": "npm:0.0.0"
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-trash-bin": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
@@ -15340,19 +15338,6 @@ __metadata:
     graphql: "npm:^16.12.0"
     graphql-tag: "npm:^2.12.6"
     prop-types: "npm:^15.8.1"
-    react: "npm:18.2.0"
-    react-dom: "npm:18.2.0"
-    rimraf: "npm:^6.0.1"
-    typescript: "npm:5.9.3"
-  languageName: unknown
-  linkType: soft
-
-"@webiny/app-plugin-admin-welcome-screen@npm:0.0.0, @webiny/app-plugin-admin-welcome-screen@workspace:packages/app-plugin-admin-welcome-screen":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-plugin-admin-welcome-screen@workspace:packages/app-plugin-admin-welcome-screen"
-  dependencies:
-    "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/plugins": "npm:0.0.0"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     rimraf: "npm:^6.0.1"

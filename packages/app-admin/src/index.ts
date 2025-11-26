@@ -18,6 +18,7 @@ export * from "./base/ui/NotFound.js";
 // Base admin app
 export { Admin } from "./base/Admin.js";
 export * from "./config/AdminConfig.js";
+export type { WidgetConfig } from "./config/AdminConfig.js";
 
 export type { AdminProps } from "./base/Admin.js";
 
