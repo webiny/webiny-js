@@ -1,5 +1,5 @@
 import React from "react";
-import { Widget, List, Link as AdminLink, Text } from "@webiny/admin-ui";
+import { Widget, List, Link, Text } from "@webiny/admin-ui";
 import { ReactComponent as HelpIcon } from "@webiny/icons/help_outline.svg";
 import { ReactComponent as ArrowForwardIcon } from "@webiny/icons/arrow_forward.svg";
 import { SimpleLink } from "@webiny/app-admin";
@@ -32,7 +32,7 @@ export const AssistanceWidget = () => {
                     title="Contact us"
                     description={
                         <Text size={"sm"} className={"text-neutral-strong"}>
-                            <AdminLink
+                            <Link
                                 to={"https://www.webiny.com/forms/product-demo"}
                                 target={"_blank"}
                                 rel={"noopener noreferrer"}
@@ -40,9 +40,9 @@ export const AssistanceWidget = () => {
                                 underline
                             >
                                 Contact Sales
-                            </AdminLink>
+                            </Link>
                             ,{" "}
-                            <AdminLink
+                            <Link
                                 to={"https://www.webiny.com/partners"}
                                 target={"_blank"}
                                 rel={"noopener noreferrer"}
@@ -50,9 +50,9 @@ export const AssistanceWidget = () => {
                                 underline
                             >
                                 Explore Partnerships
-                            </AdminLink>{" "}
+                            </Link>{" "}
                             or{" "}
-                            <AdminLink
+                            <Link
                                 to={"https://www.webiny.com/slack"}
                                 target={"_blank"}
                                 rel={"noopener noreferrer"}
@@ -60,7 +60,7 @@ export const AssistanceWidget = () => {
                                 underline
                             >
                                 Slack us
-                            </AdminLink>
+                            </Link>
                             .
                         </Text>
                     }
