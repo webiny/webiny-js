@@ -24,11 +24,11 @@ export const PageListChangeStatus = Browser.Page.Action.createDecorator(Original
         let page: PageDto;
         try {
             page = usePage().page;
-        } catch(ex) {
+        } catch (ex) {
             console.log({
                 error: ex.message,
-                ...props,
-            })
+                ...props
+            });
             return <Original {...props} />;
         }
         // const { page } = usePage();

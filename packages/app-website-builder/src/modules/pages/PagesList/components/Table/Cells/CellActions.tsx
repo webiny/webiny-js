@@ -21,7 +21,7 @@ const DefaultCellActions = () => {
             </FolderProvider>
         );
     }
-    
+
     console.log({
         ...documentConfig.actions
     });
