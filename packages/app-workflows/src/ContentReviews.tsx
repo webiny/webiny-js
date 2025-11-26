@@ -5,7 +5,10 @@ import Helmet from "react-helmet";
 import { Routes } from "~/routes.js";
 import { SecureRoute, HasPermission } from "@webiny/app-security/components/index.js";
 import { WorkflowStateListView } from "~/Components/WorkflowStateList/index.js";
-import { WorkflowStatesOwnWidget, WorkflowStatesRequestedWidget } from "~/Components/WorkflowStatesWidget/index.js";
+import {
+    WorkflowStatesOwnWidget,
+    WorkflowStatesRequestedWidget
+} from "~/Components/WorkflowStatesWidget/index.js";
 import { useApolloClient } from "@apollo/react-hooks";
 
 const { Route, Widget } = AdminConfig;

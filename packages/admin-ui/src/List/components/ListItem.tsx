@@ -79,7 +79,12 @@ const DecoratableListItem = ({
                     className={"block w-[4px] h-[48px] rounded-lg ml-sm flex-shrink-0"}
                 />
             )}
-            <div className={cn("w-full flex justify-between items-center py-sm-extra", paddingClasses)}>
+            <div
+                className={cn(
+                    "w-full flex justify-between items-center py-sm-extra",
+                    paddingClasses
+                )}
+            >
                 <div className={"w-full flex items-center gap-md"} onClick={onClick}>
                     {icon && <div>{icon}</div>}
                     <div className={"flex flex-col gap-xxs grow text-left"}>

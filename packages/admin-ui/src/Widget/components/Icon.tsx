@@ -10,4 +10,3 @@ const IconBase = (props: IconProps) => {
 };
 
 export const Icon = makeDecoratable("Icon", IconBase);
-

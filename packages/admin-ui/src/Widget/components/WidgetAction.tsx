@@ -36,4 +36,3 @@ const WidgetActionBase = (props: ButtonProps) => {
 };
 
 export const WidgetAction = makeDecoratable("WidgetAction", WidgetActionBase);
-

@@ -58,6 +58,7 @@ export const Extension = () => {
                             <Menu.Link text={"Pages"} to={router.getLink(Routes.Pages.List)} />
                         }
                     />
+                    <Widget name="wb.pages" column={1} order={10} element={<PagesWidget />} />
                 </HasPermission>
                 <HasPermission name={"wb.redirect"}>
                     <Route route={Routes.Redirects.List} element={<RedirectsList />} />
@@ -87,8 +88,6 @@ export const Extension = () => {
                     pinnable={true}
                     element={<IntegrationsMenuItem />}
                 />
-                <Widget name="wb.pages" column={1} order={10} element={<PagesWidget />} />
-
             </AdminConfig>
             <PagesListConfig />
             <RedirectsListConfig />

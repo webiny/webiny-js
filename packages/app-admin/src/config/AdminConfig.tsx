@@ -47,7 +47,6 @@ export const AdminConfigProvider = AppContainer.createDecorator(Original => {
 export const useAdminConfig = () => {
     const baseConfig = base.useConfig();
 
-    console.log('baseConfig', baseConfig)
     return {
         menus: baseConfig.menus ?? [],
         userMenus: baseConfig.userMenus ?? [],
@@ -82,6 +81,3 @@ export const AdminConfig = Object.assign(Private, {
     Widget,
     useAdminConfig
 });
-
-export type { WidgetConfig };
-

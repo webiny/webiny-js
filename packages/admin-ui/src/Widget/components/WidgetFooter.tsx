@@ -38,9 +38,7 @@ export const WidgetFooter = () => {
         <div className={widgetFooterVariants({ padding })}>
             {footerStartActions && (
                 <WidgetActionsProvider location="footer-start">
-                    <div className={"flex gap-x-sm"}>
-                        {footerStartActions}
-                    </div>
+                    <div className={"flex gap-x-sm"}>{footerStartActions}</div>
                 </WidgetActionsProvider>
             )}
             {footerEndActions && (
@@ -51,4 +49,3 @@ export const WidgetFooter = () => {
         </div>
     );
 };
-

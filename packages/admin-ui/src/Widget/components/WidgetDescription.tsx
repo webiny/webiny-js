@@ -6,4 +6,3 @@ export type WidgetDescriptionProps = React.HTMLAttributes<HTMLDivElement>;
 export const WidgetDescription = ({ className, ...props }: WidgetDescriptionProps) => (
     <div {...props} className={cn("text-sm text-neutral-strong text-left", className)} />
 );
-

@@ -11,13 +11,10 @@ interface WidgetActionsProviderProps {
 
 export const WidgetActionsProvider = ({ location, children }: WidgetActionsProviderProps) => {
     return (
-        <WidgetActionsContext.Provider value={location}>
-            {children}
-        </WidgetActionsContext.Provider>
+        <WidgetActionsContext.Provider value={location}>{children}</WidgetActionsContext.Provider>
     );
 };
 
 export const useWidgetActionsLocation = () => {
     return React.useContext(WidgetActionsContext);
 };
-

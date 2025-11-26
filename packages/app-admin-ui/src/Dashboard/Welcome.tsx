@@ -7,7 +7,7 @@ const Welcome = () => {
     const { identity } = useSecurity();
     const { widgets } = useAdminConfig();
 
-    console.log('123wdgs', widgets)
+    console.log("123wdgs", widgets);
     // Sort widgets by order and group by column
     const { column1Widgets, column2Widgets } = useMemo(() => {
         const sorted = [...widgets].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));

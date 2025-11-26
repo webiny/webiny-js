@@ -15,10 +15,7 @@ export const PagesWidget = () => {
             icon={<Widget.Icon icon={<HistoryIcon />} label={"Website Builder"} />}
             padding="md"
             footerStartActions={
-                <Widget.Action
-                    icon={<AddIcon />}
-                    onClick={() => goToRoute(Routes.Pages.List)}
-                >
+                <Widget.Action icon={<AddIcon />} onClick={() => goToRoute(Routes.Pages.List)}>
                     New Page
                 </Widget.Action>
             }
