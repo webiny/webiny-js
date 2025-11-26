@@ -30,7 +30,7 @@ export const ContentReviews = () => {
             />
             <WorkflowsMenu />
 
-            <SecureRoute permission={"workflows.contentReviews"}>
+            <HasPermission name={"workflows.contentReviews"}>
                 <Widget
                     name="workflows.own"
                     column={2}
@@ -43,7 +43,7 @@ export const ContentReviews = () => {
                     order={20}
                     element={<WorkflowStatesRequestedWidget client={client} />}
                 />
-            </SecureRoute>
+            </HasPermission>
         </AdminConfig>
     );
 };
