@@ -55,4 +55,5 @@ export * from "./TimeAgo/index.js";
 export * from "./Toast/index.js";
 export * from "./Tooltip/index.js";
 export * from "./Tree/index.js";
+export * from "./Widget/index.js";
 export * from "./utils.js";
