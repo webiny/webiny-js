@@ -30,9 +30,9 @@ type Story = StoryObj<typeof Widget>;
 
 export const Default: Story = {
     args: {
-        padding: "md",
+        icon: <Widget.Icon icon={<HistoryIcon />} label={"Pages icon"} />,
         title: "Widget Title",
-        description: "A short widget description.",
+        variant: "accent",
         children: (
             <>
                 The amazing, splendid, and most useful umbrella, resistant to rain and friendly to
@@ -63,28 +63,47 @@ export const PaddingMedium: Story = {
 export const WithOutline: Story = {
     args: {
         ...Default.args,
+        variant: "base",
         outline: true
     }
 };
 
 export const WithFooterStartActions: Story = {
     args: {
-        ...Default.args
+        ...Default.args,
+        variant: "base",
+        outline: true,
+        footerStartActions: (
+            <>
+                <Widget.Action icon={<PlusIcon />}>New Page</Widget.Action>
+                <Widget.Action icon={<PlusIcon />}>New Template</Widget.Action>
+            </>
+        )
     }
 };
 
 export const WithFooterEndActions: Story = {
     args: {
         ...Default.args,
+        variant: "base",
+        outline: true,
         footerStartActions: undefined,
-        footerEndActions: <Button variant="primary" text={"Action"} />
+        footerEndActions: <Widget.Action>View All</Widget.Action>
     }
 };
 
 export const WithBothFooterActions: Story = {
     args: {
         ...Default.args,
-        footerEndActions: <Widget.Action>Save</Widget.Action>
+        variant: "base",
+        outline: true,
+        footerStartActions: (
+            <>
+                <Widget.Action icon={<PlusIcon />}>New Page</Widget.Action>
+                <Widget.Action icon={<PlusIcon />}>New Template</Widget.Action>
+            </>
+        ),
+        footerEndActions: <Widget.Action>View All</Widget.Action>
     }
 };
 
@@ -230,21 +249,21 @@ export const BaseVariant: Story = {
 export const WithSmallElevation: Story = {
     args: {
         ...Default.args,
-        elevation: "small"
+        elevation: "sm"
     }
 };
 
 export const WithMediumElevation: Story = {
     args: {
         ...Default.args,
-        elevation: "medium"
+        elevation: "md"
     }
 };
 
 export const WithLargeElevation: Story = {
     args: {
         ...Default.args,
-        elevation: "large"
+        elevation: "lg"
     }
 };
 
@@ -252,6 +271,13 @@ export const WithIcon: Story = {
     args: {
         ...Default.args,
         icon: <Widget.Icon icon={<NotificationIcon />} label={"Title icon"} />
+    }
+};
+
+export const WithoutIcon: Story = {
+    args: {
+        ...Default.args,
+        icon: undefined
     }
 };
 
@@ -270,7 +296,7 @@ export const Documentation: Story = {
             </>
         ),
         padding: "sm",
-        elevation: "small"
+        elevation: "sm"
     },
     argTypes: {
         title: {

@@ -1,5 +1,3 @@
-- dbl check wdgt stories
-- ------ adminconfig.dashboard.widgets
-- ------ check apis (props, column1/2 wtf)
+------------------ dbl check wdgt stories
 - list styles
-- widget styles
+- widget styles`

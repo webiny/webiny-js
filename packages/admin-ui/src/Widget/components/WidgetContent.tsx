@@ -11,9 +11,9 @@ const widgetContentVariants = cva("text-md text-neutral-primary overflow-hidden 
         },
         elevation: {
             none: "",
-            small: "shadow-sm",
-            medium: "shadow-md",
-            large: "shadow-lg"
+            sm: "shadow-sm",
+            md: "shadow-md",
+            lg: "shadow-lg"
         },
         outline: {
             true: "border-sm border-solid border-neutral-dimmed-darker",
