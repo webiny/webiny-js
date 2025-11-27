@@ -5,7 +5,7 @@ import type {
     SegmentedControlItemFormatted
 } from "../domains/index.js";
 import { useSegmentedControl } from "./useSegmentedControl.js";
-import { Icon } from "~/Icon";
+import { Icon } from "~/Icon/index.js";
 
 /**
  * Segmented Control Item Button
