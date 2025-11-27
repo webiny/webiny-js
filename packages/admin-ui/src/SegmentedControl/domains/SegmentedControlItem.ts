@@ -53,4 +53,3 @@ export class SegmentedControlItem {
         return this._icon;
     }
 }
-

@@ -7,4 +7,3 @@ export interface SegmentedControlItemFormatted {
     disabled: boolean;
     icon?: React.ReactNode;
 }
-

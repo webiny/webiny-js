@@ -31,4 +31,3 @@ export const useSegmentedControl = (props: SegmentedControlPrimitiveProps) => {
 
     return { vm, changeValue: presenter.changeValue };
 };
-

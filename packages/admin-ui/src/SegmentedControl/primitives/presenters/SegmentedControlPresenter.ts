@@ -15,9 +15,7 @@ interface ISegmentedControlPresenter<TValue = string> {
     changeValue: (value: TValue) => void;
 }
 
-class SegmentedControlPresenter<TValue = string>
-    implements ISegmentedControlPresenter<TValue>
-{
+class SegmentedControlPresenter<TValue = string> implements ISegmentedControlPresenter<TValue> {
     private params?: SegmentedControlPresenterParams<TValue> = undefined;
 
     constructor() {
@@ -54,4 +52,3 @@ export {
     type SegmentedControlPresenterParams,
     type ISegmentedControlPresenter
 };
-

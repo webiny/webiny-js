@@ -7,5 +7,3 @@ export interface SegmentedControlItemParams {
     disabled?: boolean;
     icon?: React.ReactNode;
 }
-
-

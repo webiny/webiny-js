@@ -69,7 +69,9 @@ export const WorkflowStateList = observer(() => {
 
     return (
         <>
-            <Heading level={4} className={"px-lg py-md"}> Content Reviews</Heading>
+            <Heading level={4} className={"px-lg py-md"}>
+                Content Reviews
+            </Heading>
             <Error error={presenter.vm.error} />
             <WorkflowStateListFilters />
             <DataTable

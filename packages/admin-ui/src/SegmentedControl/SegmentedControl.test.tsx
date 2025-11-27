@@ -30,4 +30,3 @@ describe("SegmentedControl", () => {
         }).not.toThrow();
     });
 });
-

@@ -52,4 +52,3 @@ const DecoratableSegmentedControl = ({
 const SegmentedControl = makeDecoratable("SegmentedControl", DecoratableSegmentedControl);
 
 export { SegmentedControl, type SegmentedControlProps };
-
