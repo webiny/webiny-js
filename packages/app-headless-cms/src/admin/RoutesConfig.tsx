@@ -45,7 +45,7 @@ const ContentModelGroupsView = lazy(
         )
 );
 
-const { Route, Dashboard } = AdminConfig;
+const { Route } = AdminConfig;
 
 export const RoutesConfig = () => {
     return (

@@ -81,6 +81,14 @@ export const Extension = () => {
                         element={<PagesWidget />}
                     />
                 </HasPermission>
+                <HasPermission name={"wb.settings"}>
+                    <Menu
+                        name="wb.settings"
+                        parent="wb"
+                        pinnable={true}
+                        element={<SettingsMenuItem />}
+                    />
+                </HasPermission>
                 <Menu
                     name="wb.integrations"
                     parent="wb"
