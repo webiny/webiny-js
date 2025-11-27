@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { useWorkflowStateList } from "../hooks/index.js";
-import { Alert, DataTable, DataTableColumns, TimeAgo } from "@webiny/admin-ui";
+import { Alert, DataTable, DataTableColumns, TimeAgo, Heading } from "@webiny/admin-ui";
 import { type IGenericError, type IWorkflowState } from "~/types.js";
 import { TagState } from "~/Components/Common/TagState.js";
 import { TagStep } from "~/Components/Common/TagStep.js";
@@ -69,6 +69,7 @@ export const WorkflowStateList = observer(() => {
 
     return (
         <>
+            <Heading level={4} className={"px-lg py-md"}> Content Reviews</Heading>
             <Error error={presenter.vm.error} />
             <WorkflowStateListFilters />
             <DataTable
