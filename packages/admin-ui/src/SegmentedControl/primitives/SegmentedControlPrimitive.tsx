@@ -12,10 +12,10 @@ import { Icon } from "~/Icon";
  */
 const segmentedControlItemVariants = cva(
     [
-        "inline-flex items-center justify-center whitespace-nowrap transition-colors cursor-pointer relative z-10",
+        "inline-flex items-center justify-center whitespace-nowrap transition-colors cursor-pointer relative z-10 rounded-md",
         "text-md px-sm-extra py-xs [&>svg]:size-md gap-xs",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-        "disabled:cursor-not-allowed disabled:opacity-50 rounded-md"
+        "disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed"
     ],
     {
         variants: {
@@ -80,7 +80,12 @@ const SegmentedControlItemButton = ({
             {...props}
         >
             {item.icon && (
-                <Icon icon={item.icon} size={"sm"} label={String(item.label)} color={"neutral-strong"} />
+                <Icon
+                    icon={item.icon}
+                    size={"sm"}
+                    label={String(item.label)}
+                    color={"neutral-strong"}
+                />
             )}
             {item.label}
         </button>

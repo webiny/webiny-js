@@ -20,31 +20,19 @@ const items = [
 ];
 
 const itemsWithIcons = [
-    { label: "Item", value: "item1", icon: <Icon icon={<LockIcon />} label="Lock" /> },
-    { label: "Item", value: "item2", icon: <Icon icon={<LockIcon />} label="Lock" /> },
-    { label: "Item", value: "item3", icon: <Icon icon={<LockIcon />} label="Lock" /> },
-    { label: "Item", value: "item4", icon: <Icon icon={<LockIcon />} label="Lock" /> }
+    { label: "Item 1", value: "item1", icon: <Icon icon={<LockIcon />} label="Lock" /> },
+    { label: "Item 1", value: "item2", icon: <Icon icon={<LockIcon />} label="Lock" /> },
+    { label: "Item 1", value: "item3", icon: <Icon icon={<LockIcon />} label="Lock" /> },
+    { label: "Item 1", value: "item4", icon: <Icon icon={<LockIcon />} label="Lock" /> }
 ];
 
-export const General: Story = {
-    render: () => {
-        const [value, setValue] = useState("item1");
-        return (
-            <div className="space-y-md">
-                <div>
-                    <h3 className="text-lg font-semibold mb-sm">Selected Item</h3>
-                    <SegmentedControl items={items} value={value} onChange={setValue} />
-                </div>
-                <div>
-                    <h3 className="text-lg font-semibold mb-sm">Resting Item</h3>
-                    <SegmentedControl items={items} value={value} onChange={setValue} />
-                </div>
-                <div>
-                    <h3 className="text-lg font-semibold mb-sm">With Icons (optional)</h3>
-                    <SegmentedControl items={itemsWithIcons} value={value} onChange={setValue} />
-                </div>
-            </div>
-        );
+export const Default: Story = {
+    render: args => {
+        const [value, setValue] = useState(args.value);
+        return <SegmentedControl {...args} value={value} onChange={value => setValue(value)} />;
+    },
+    args: {
+        items: itemsWithIcons
     }
 };
 
@@ -53,12 +41,7 @@ export const VariantAccent: Story = {
         const [value, setValue] = useState("item1");
 
         return (
-            <SegmentedControl
-                items={items}
-                value={value}
-                onChange={setValue}
-                variant="accent"
-            />
+            <SegmentedControl items={items} value={value} onChange={setValue} variant="accent" />
         );
     }
 };
@@ -69,132 +52,18 @@ export const VariantGhost: Story = {
 
         return (
             <div className="p-md rounded-md">
-                <SegmentedControl
-                    items={items}
-                    value={value}
-                    onChange={setValue}
-                    variant="ghost"
-                />
+                <SegmentedControl items={items} value={value} onChange={setValue} variant="ghost" />
             </div>
         );
     }
 };
-
-export const StatesAccent: Story = {
-    render: () => {
-        const [value, setValue] = useState("item1");
-
-        return (
-            <div className="space-y-md">
-                <div>
-                    <p className="text-sm mb-xs">Default</p>
-                    <SegmentedControl
-                        items={items}
-                        value={value}
-                        onChange={setValue}
-                        variant="accent"
-                    />
-                </div>
-                <div>
-                    <p className="text-sm mb-xs bg-neutral-strong text-neutral-light px-xs-plus py-xs rounded inline-block">
-                        Active
-                    </p>
-                    <SegmentedControl
-                        items={items}
-                        value="item1"
-                        onChange={() => {}}
-                        variant="accent"
-                    />
-                </div>
-                <div>
-                    <p className="text-sm mb-xs bg-neutral-strong text-neutral-light px-xs-plus py-xs rounded inline-block">
-                        Enabled
-                    </p>
-                    <SegmentedControl
-                        items={items}
-                        value={value}
-                        onChange={setValue}
-                        variant="accent"
-                    />
-                </div>
-                <div>
-                    <p className="text-sm mb-xs bg-neutral-strong text-neutral-light px-xs-plus py-xs rounded inline-block">
-                        Hover
-                    </p>
-                    <SegmentedControl
-                        items={items}
-                        value={value}
-                        onChange={setValue}
-                        variant="accent"
-                    />
-                </div>
-            </div>
-        );
-    }
-};
-
-export const StatesGhost: Story = {
-    render: () => {
-        const [value, setValue] = useState("item1");
-
-        return (
-            <div className="bg-neutral-xstrong p-md rounded-md">
-                <div className="space-y-md">
-                    <div>
-                        <p className="text-sm mb-xs text-neutral-light">Default</p>
-                        <SegmentedControl
-                            items={items}
-                            value={value}
-                            onChange={setValue}
-                            variant="ghost"
-                        />
-                    </div>
-                    <div>
-                        <p className="text-sm mb-xs bg-neutral-light text-neutral-strong px-xs-plus py-xs rounded inline-block">
-                            Active
-                        </p>
-                        <SegmentedControl
-                            items={items}
-                            value="item1"
-                            onChange={() => {}}
-                            variant="ghost"
-                        />
-                    </div>
-                    <div>
-                        <p className="text-sm mb-xs bg-neutral-light text-neutral-strong px-xs-plus py-xs rounded inline-block">
-                            Enabled
-                        </p>
-                        <SegmentedControl
-                            items={items}
-                            value={value}
-                            onChange={setValue}
-                            variant="ghost"
-                        />
-                    </div>
-                    <div>
-                        <p className="text-sm mb-xs bg-neutral-light text-neutral-strong px-xs-plus py-xs rounded inline-block">
-                            Hover
-                        </p>
-                        <SegmentedControl
-                            items={items}
-                            value={value}
-                            onChange={setValue}
-                            variant="ghost"
-                        />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-};
-
 
 export const WithFormComponent: Story = {
     render: () => {
         const [value, setValue] = useState("item1");
 
         return (
-            <div className="space-y-lg max-w-md">
+            <div className="space-y-lg">
                 <SegmentedControl
                     label="Select an option"
                     description="Choose one of the available options"
@@ -251,4 +120,3 @@ export const Disabled: Story = {
         );
     }
 };
-
