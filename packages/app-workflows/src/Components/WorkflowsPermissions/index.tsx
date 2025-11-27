@@ -1,13 +1,4 @@
-import React from "react";
-import type { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types.js";
-import { WorkflowsPermissions } from "./WorkflowsPermissions.js";
-
+export { workflowsPermissions } from "./permissionPlugin.js";
 export { useWorkflowsPermission } from "./useWorkflowsPermission.js";
-
-export const workflowsPermissions: AdminAppPermissionRendererPlugin = {
-    type: "admin-app-permissions-renderer",
-    name: "admin-app-permissions-renderer-workflows",
-    render(props) {
-        return <WorkflowsPermissions {...props} />;
-    }
-};
+export type { IHasWorkflowsSecurityPermissionProps } from "./HasWorkflowsEditorPermission.js";
+export { HasWorkflowsEditorPermission } from "./HasWorkflowsEditorPermission.js";

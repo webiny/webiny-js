@@ -157,7 +157,9 @@ export class WorkflowsContext implements IWorkflowsContext {
                 WORKFLOWS_PERMISSION
             );
         for (const permission of permissions) {
-            if (permission.editor === WorkflowsSecurityPermissionAccessLevel.YES) {
+            if (permission.name === "*") {
+                return;
+            } else if (permission.editor === WorkflowsSecurityPermissionAccessLevel.YES) {
                 return;
             }
         }

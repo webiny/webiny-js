@@ -11,7 +11,8 @@ import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { createAppName } from "~/utils/appName.js";
 
 const {
-    Admin: { WorkflowsEditor }
+    Admin: { WorkflowsEditor },
+    Permissions: { HasWorkflowsEditorPermission }
 } = Components;
 
 const { Menu } = AdminConfig;
@@ -25,14 +26,19 @@ export const CmsWorkflowsEditorMenu = () => {
     }
 
     return (
-        <Menu
-            name={"headlessCMS.contentModels.workflows"}
-            pinnable={true}
-            parent={"headlessCMS"}
-            element={
-                <Menu.Link text={"Workflows"} to={router.getLink(Routes.ContentModels.Workflows)} />
-            }
-        />
+        <HasWorkflowsEditorPermission>
+            <Menu
+                name={"headlessCMS.contentModels.workflows"}
+                pinnable={true}
+                parent={"headlessCMS"}
+                element={
+                    <Menu.Link
+                        text={"Workflows"}
+                        to={router.getLink(Routes.ContentModels.Workflows)}
+                    />
+                }
+            />
+        </HasWorkflowsEditorPermission>
     );
 };
 
@@ -72,6 +78,13 @@ export const CmsWorkflowsEditorView = () => {
             });
     }, [models, canEdit]);
 
+    const app = useMemo(() => {
+        if (!route.params.app) {
+            return apps.find(() => true);
+        }
+        return apps.find(a => a.id === route.params.app) || null;
+    }, [route.params.app]);
+
     const onAppClick = useCallback(
         (id: string) => {
             goToRoute(Routes.ContentModels.Workflows, {
@@ -87,5 +100,5 @@ export const CmsWorkflowsEditorView = () => {
         return <Loader size="lg" variant="accent" indeterminate={true} text="Loading..." />;
     }
 
-    return <WorkflowsEditor apps={apps} onAppClick={onAppClick} app={route.params.app} />;
+    return <WorkflowsEditor apps={apps} onAppClick={onAppClick} app={app?.id} />;
 };

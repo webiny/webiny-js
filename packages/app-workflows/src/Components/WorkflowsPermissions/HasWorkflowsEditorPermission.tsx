@@ -1,7 +1,7 @@
 import React from "react";
 import { useWorkflowsPermission } from "~/Components/WorkflowsPermissions/useWorkflowsPermission.js";
 
-interface IHasWorkflowsSecurityPermissionProps {
+export interface IHasWorkflowsSecurityPermissionProps {
     children: React.ReactElement | React.ReactElement[];
 }
 
