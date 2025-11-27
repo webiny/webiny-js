@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { SegmentedControl } from "./SegmentedControl.js";
 import { Icon } from "~/Icon/index.js";
-import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
+import { ReactComponent as LockIcon } from "@webiny/icons/notifications.svg";
 
 const meta: Meta<typeof SegmentedControl> = {
     title: "Components/SegmentedControl",
@@ -188,21 +188,6 @@ export const StatesGhost: Story = {
     }
 };
 
-export const SizeSmall: Story = {
-    render: () => {
-        const [value, setValue] = useState("item1");
-
-        return <SegmentedControl items={items} value={value} onChange={setValue} size="sm" />;
-    }
-};
-
-export const SizeMedium: Story = {
-    render: () => {
-        const [value, setValue] = useState("item1");
-
-        return <SegmentedControl items={items} value={value} onChange={setValue} size="md" />;
-    }
-};
 
 export const WithFormComponent: Story = {
     render: () => {

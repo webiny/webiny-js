@@ -1,7 +1,11 @@
 import * as React from "react";
 import { cn, cva, type VariantProps } from "~/utils.js";
-import type { SegmentedControlItemParams, SegmentedControlItemFormatted } from "../domains/index.js";
+import type {
+    SegmentedControlItemParams,
+    SegmentedControlItemFormatted
+} from "../domains/index.js";
 import { useSegmentedControl } from "./useSegmentedControl.js";
+import { Icon } from "~/Icon";
 
 /**
  * Segmented Control Item Button
@@ -9,6 +13,7 @@ import { useSegmentedControl } from "./useSegmentedControl.js";
 const segmentedControlItemVariants = cva(
     [
         "inline-flex items-center justify-center whitespace-nowrap transition-colors cursor-pointer relative z-10",
+        "text-md px-sm-extra py-xs [&>svg]:size-md gap-xs",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
         "disabled:cursor-not-allowed disabled:opacity-50 rounded-md"
     ],
@@ -18,7 +23,7 @@ const segmentedControlItemVariants = cva(
                 accent: [
                     "text-neutral-strong fill-neutral-xstrong",
                     "data-[state=active]:text-neutral-primary data-[state=active]:fill-neutral-xstrong data-[state=active]:bg-neutral-base/80",
-                    "hover:data-[state=inactive]:bg-neutral-dimmed",
+                    "hover:data-[state=inactive]:bg-neutral-base/80",
                     "active:data-[state=inactive]:bg-neutral-muted"
                 ],
                 ghost: [
@@ -27,26 +32,6 @@ const segmentedControlItemVariants = cva(
                     "hover:data-[state=inactive]:bg-neutral-dimmed",
                     "active:data-[state=inactive]:bg-neutral-muted"
                 ]
-            },
-            size: {
-                sm: "text-sm px-sm py-xs [&>svg]:size-md gap-xs",
-                md: "text-md px-sm-extra py-xs-plus [&>svg]:size-md gap-xs-plus"
-            }
-        },
-        defaultVariants: {
-            variant: "accent",
-            size: "md"
-        }
-    }
-);
-
-const segmentedControlRootVariants = cva(
-    "inline-flex bg-neutral-light rounded-md p-xxs gap-xs",
-    {
-        variants: {
-            variant: {
-                accent: "",
-                ghost: ""
             }
         },
         defaultVariants: {
@@ -55,13 +40,24 @@ const segmentedControlRootVariants = cva(
     }
 );
 
+const segmentedControlRootVariants = cva("inline-flex bg-neutral-light rounded-md p-xxs gap-xs", {
+    variants: {
+        variant: {
+            accent: "",
+            ghost: ""
+        }
+    },
+    defaultVariants: {
+        variant: "accent"
+    }
+});
+
 interface SegmentedControlItemProps
     extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "value"> {
     item: SegmentedControlItemFormatted;
     isActive: boolean;
     onValueChange: (value: string) => void;
     variant?: VariantProps<typeof segmentedControlItemVariants>["variant"];
-    size?: VariantProps<typeof segmentedControlItemVariants>["size"];
 }
 
 const SegmentedControlItemButton = ({
@@ -69,7 +65,6 @@ const SegmentedControlItemButton = ({
     isActive,
     onValueChange,
     variant,
-    size,
     className,
     ...props
 }: SegmentedControlItemProps) => {
@@ -81,10 +76,12 @@ const SegmentedControlItemButton = ({
             data-state={isActive ? "active" : "inactive"}
             disabled={item.disabled}
             onClick={() => onValueChange(item.value)}
-            className={cn(segmentedControlItemVariants({ variant, size }), className)}
+            className={cn(segmentedControlItemVariants({ variant }), className)}
             {...props}
         >
-            {item.icon && <span className="flex-shrink-0">{item.icon}</span>}
+            {item.icon && (
+                <Icon icon={item.icon} size={"sm"} label={String(item.label)} color={"neutral-strong"} />
+            )}
             {item.label}
         </button>
     );
@@ -107,10 +104,6 @@ interface SegmentedControlPrimitiveProps {
      * Visual style variant.
      */
     variant?: VariantProps<typeof segmentedControlItemVariants>["variant"];
-    /**
-     * Size of the control.
-     */
-    size?: VariantProps<typeof segmentedControlItemVariants>["size"];
     /**
      * Additional class name.
      */
@@ -135,15 +128,11 @@ const SegmentedControlRenderer = ({
     changeValue,
     value,
     variant = "accent",
-    size = "md",
     className,
     disabled
 }: SegmentedControlRendererProps) => {
     return (
-        <div
-            role="radiogroup"
-            className={cn(segmentedControlRootVariants({ variant }), className)}
-        >
+        <div role="radiogroup" className={cn(segmentedControlRootVariants({ variant }), className)}>
             {items.map(item => (
                 <SegmentedControlItemButton
                     key={item.id}
@@ -151,7 +140,6 @@ const SegmentedControlRenderer = ({
                     isActive={value === item.value}
                     onValueChange={changeValue}
                     variant={variant}
-                    size={size}
                 />
             ))}
         </div>
@@ -172,4 +160,3 @@ export {
     type SegmentedControlPrimitiveProps,
     type SegmentedControlVm
 };
-
