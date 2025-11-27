@@ -10,7 +10,7 @@ const listItemVariant = cva(
         "w-full flex items-center",
         "group-[.list-background-base]:bg-neutral-base",
         "group-[.list-background-light]:bg-neutral-light",
-        "group-[.list-variant-container]:rounded-sm",
+        "group-[.list-variant-container]:rounded-lg",
         "group-[.list-variant-underline]:border-b-sm group-[.list-variant-underline]:border-b-neutral-dimmed",
         "hover:bg-neutral-dimmed!",
         "focus-visible:outline-none focus-visible:ring-sm focus-visible:ring-inset focus-visible:ring-primary-dimmed"
@@ -41,6 +41,8 @@ interface ListItemProps
     description?: React.ReactNode;
     handle?: React.ReactNode;
     icon?: React.ReactNode;
+    colorMark?: string;
+    sidePadding?: "md" | "lg";
 }
 
 const DecoratableListItem = ({
@@ -53,10 +55,14 @@ const DecoratableListItem = ({
     selected,
     handle,
     icon,
+    colorMark,
+    sidePadding = "md",
     onClick,
     title,
     ...props
 }: ListItemProps) => {
+    const paddingClasses = sidePadding === "md" ? "px-md" : "pl-lg pr-md";
+
     return (
         <div
             {...props}
@@ -67,7 +73,18 @@ const DecoratableListItem = ({
             )}
         >
             {handle}
-            <div className={"w-full flex justify-between items-center pl-lg pr-md py-sm-extra"}>
+            {colorMark && (
+                <div
+                    style={{ backgroundColor: colorMark }}
+                    className={"block w-[4px] h-[48px] rounded-lg ml-sm flex-shrink-0"}
+                />
+            )}
+            <div
+                className={cn(
+                    "w-full flex justify-between items-center py-sm-extra",
+                    paddingClasses
+                )}
+            >
                 <div className={"w-full flex items-center gap-md"} onClick={onClick}>
                     {icon && <div>{icon}</div>}
                     <div className={"flex flex-col gap-xxs grow text-left"}>

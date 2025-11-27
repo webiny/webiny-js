@@ -1,11 +1,12 @@
 import React from "react";
-import { Heading, Icon, Text } from "@webiny/admin-ui";
+import { Widget, Icon, Text } from "@webiny/admin-ui";
 import { SimpleLink } from "@webiny/app-admin";
 // Icons
 import { ReactComponent as YouTubeIcon } from "./assets/youtube.svg";
 import { ReactComponent as GithubIcon } from "./assets/github.svg";
 import { ReactComponent as SlackIcon } from "./assets/slack.svg";
 import { ReactComponent as TwitterIcon } from "./assets/x-twitter.svg";
+import { ReactComponent as PeopleAltIcon } from "@webiny/icons/people_alt.svg";
 
 interface SocialLinkProps {
     link: string;
@@ -41,13 +42,13 @@ const SocialLink = ({ link, label, icon }: SocialLinkProps) => {
 
 export const CommunityWidget = () => {
     return (
-        <div className={"bg-neutral-light rounded-xl p-lg"}>
-            <div className={"mb-md"}>
-                <Heading level={6}>{"Join our community:"}</Heading>
-                <Text size={"sm"} className={"text-neutral-strong"}>
-                    {"Get to know Webiny team members, discuss new ideas and get help:"}
-                </Text>
-            </div>
+        <Widget
+            icon={<Widget.Icon icon={<PeopleAltIcon />} label={"Join our community"} />}
+            variant="light"
+            title="Join our community"
+            description="Get to know Webiny team members, discuss new ideas and get help:"
+            padding="md"
+        >
             <div className={"flex justify-start items-stretch gap-md"}>
                 <SocialLink
                     link={"https://github.com/webiny/webiny-js"}
@@ -70,6 +71,6 @@ export const CommunityWidget = () => {
                     icon={<TwitterIcon />}
                 />
             </div>
-        </div>
+        </Widget>
     );
 };
