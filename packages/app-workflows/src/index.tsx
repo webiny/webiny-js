@@ -13,11 +13,13 @@ import {
     WorkflowStateTooltip
 } from "./Components/WorkflowState/index.js";
 import { WorkflowsEditor } from "./Components/WorkflowsEditor/index.js";
+import { HasWorkflowsEditorPermission } from "./Components/WorkflowsPermissions/index.js";
 
 export { useCanUseWorkflows } from "./hooks/canUseWorkflows.js";
 export { useWorkflowState } from "./Components/WorkflowState/useWorkflowState.js";
 export type { IWorkflowApplication, IWorkflowState } from "~/types.js";
 export { WorkflowStateValue } from "~/types.js";
+export { useWorkflowsPermission } from "./Components/WorkflowsPermissions/index.js";
 
 export const Components = {
     App: {
@@ -28,6 +30,9 @@ export const Components = {
         WorkflowStateTooltip,
         WorkflowStateOverlay,
         WorkflowStateBar
+    },
+    Permissions: {
+        HasWorkflowsEditorPermission
     },
     Admin: {
         WorkflowsEditor
