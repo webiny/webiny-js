@@ -1,0 +1,125 @@
+import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+
+import * as SegmentedControlStories from './SegmentedControl.stories';
+
+<Meta of={SegmentedControlStories} />
+
+# SegmentedControl
+
+A segmented control component that allows users to select a single option from a set of mutually exclusive choices. It's visually similar to a button group where the selected item is highlighted. Unlike tabs, it doesn't have associated content panels.
+
+## Features
+
+- **Radio-like behavior**: Only one item can be selected at a time
+- **Visual variants**: Accent (default) and Ghost styles
+- **Icon support**: Optional icons can be added to items
+- **Sizes**: Small and medium sizes available
+- **Form integration**: Works with form labels, descriptions, and validation
+- **Accessibility**: Built with proper ARIA attributes and keyboard navigation
+
+## Basic Usage
+
+```tsx
+import { SegmentedControl } from "@webiny/admin-ui";
+import { useState } from "react";
+
+const MyComponent = () => {
+    const [value, setValue] = useState("option1");
+
+    return (
+        <SegmentedControl
+            items={[
+                { label: "Option 1", value: "option1" },
+                { label: "Option 2", value: "option2" },
+                { label: "Option 3", value: "option3" }
+            ]}
+            value={value}
+            onChange={setValue}
+        />
+    );
+};
+```
+
+## With Icons
+
+```tsx
+import { SegmentedControl } from "@webiny/admin-ui";
+import { Icon } from "@webiny/admin-ui";
+
+<SegmentedControl
+    items={[
+        { label: "Lock", value: "lock", icon: <Icon name="lock" /> },
+        { label: "Unlock", value: "unlock", icon: <Icon name="lock-open" /> },
+        { label: "Settings", value: "settings", icon: <Icon name="settings" /> }
+    ]}
+    value={value}
+    onChange={setValue}
+/>
+```
+
+## Variants
+
+### Accent (Default)
+The accent variant uses the primary color for the selected state.
+
+### Ghost
+The ghost variant is designed for use on dark backgrounds, using a more subtle appearance.
+
+## Form Integration
+
+```tsx
+<SegmentedControl
+    label="Select a plan"
+    description="Choose your subscription plan"
+    required
+    items={plans}
+    value={selectedPlan}
+    onChange={setSelectedPlan}
+    validation={{
+        isValid: false,
+        message: "Please select a plan"
+    }}
+/>
+```
+
+## API
+
+### SegmentedControl Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `items` | `SegmentedControlItemParams[]` | - | Array of items to display |
+| `value` | `string` | - | Currently selected value |
+| `onChange` | `(value: string) => void` | - | Callback when selection changes |
+| `variant` | `"accent" \| "ghost"` | `"accent"` | Visual style variant |
+| `size` | `"sm" \| "md"` | `"md"` | Size of the control |
+| `disabled` | `boolean` | `false` | Disable all items |
+| `className` | `string` | - | Additional CSS class |
+| `label` | `string \| React.ReactNode` | - | Form label |
+| `description` | `string \| React.ReactNode` | - | Form description |
+| `note` | `string \| React.ReactNode` | - | Form note |
+| `required` | `boolean` | - | Show required indicator |
+| `validation` | `object` | - | Validation state and message |
+
+### SegmentedControlItemParams
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `label` | `string \| React.ReactNode` | - | Item label |
+| `value` | `string \| number` | - | Item value |
+| `disabled` | `boolean` | `false` | Disable this specific item |
+| `icon` | `React.ReactNode` | - | Optional icon to display |
+| `id` | `string` | - | Optional custom ID |
+
+## Examples
+
+<Canvas of={SegmentedControlStories.General} />
+<Canvas of={SegmentedControlStories.VariantAccent} />
+<Canvas of={SegmentedControlStories.VariantGhost} />
+<Canvas of={SegmentedControlStories.SizeSmall} />
+<Canvas of={SegmentedControlStories.SizeMedium} />
+<Canvas of={SegmentedControlStories.StatesAccent} />
+<Canvas of={SegmentedControlStories.StatesGhost} />
+<Canvas of={SegmentedControlStories.WithFormComponent} />
+<Canvas of={SegmentedControlStories.Disabled} />
+
