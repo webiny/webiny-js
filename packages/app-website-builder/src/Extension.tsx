@@ -58,7 +58,7 @@ export const Extension = () => {
                             <Menu.Link text={"Pages"} to={router.getLink(Routes.Pages.List)} />
                         }
                     />
-                    <Dashboard.Widget name="wb.pages" column={'left'} element={<PagesWidget />} />
+                    <Dashboard.Widget name="wb.pages" column={"left"} element={<PagesWidget />} />
                 </HasPermission>
                 <HasPermission name={"wb.redirect"}>
                     <Route route={Routes.Redirects.List} element={<RedirectsList />} />
