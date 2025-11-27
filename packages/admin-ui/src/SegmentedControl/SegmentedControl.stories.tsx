@@ -68,7 +68,7 @@ export const VariantGhost: Story = {
         const [value, setValue] = useState("item1");
 
         return (
-            <div className="bg-neutral-xstrong p-md rounded-md">
+            <div className="p-md rounded-md">
                 <SegmentedControl
                     items={items}
                     value={value}
