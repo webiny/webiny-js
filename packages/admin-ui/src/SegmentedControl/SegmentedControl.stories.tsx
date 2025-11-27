@@ -5,7 +5,7 @@ import { Icon } from "~/Icon/index.js";
 import { ReactComponent as LockIcon } from "@webiny/icons/notifications.svg";
 
 const meta: Meta<typeof SegmentedControl> = {
-    title: "Components/SegmentedControl",
+    title: "Components/Form/SegmentedControl",
     component: SegmentedControl
 };
 
