@@ -1,9 +1,13 @@
 import React from "react";
 import { ContentEntryEditorConfig, useContentEntry } from "@webiny/app-headless-cms";
-import { WorkflowStateProvider } from "@webiny/app-workflows";
+import { Components } from "@webiny/app-workflows";
 import { useSecurity } from "@webiny/app-security";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createAppName } from "~/utils/appName.js";
+
+const {
+    ContentReview: { WorkflowStateProvider }
+} = Components;
 
 const { ContentEntry } = ContentEntryEditorConfig;
 

@@ -1,15 +1,15 @@
 import React from "react";
 import { WorkflowsMenu } from "~/Components/AdminConfig/WorkflowsMenu.js";
 import { AdminConfig, AdminLayout } from "@webiny/app-admin";
+import { useApolloClient } from "@apollo/react-hooks";
 import Helmet from "react-helmet";
 import { Routes } from "~/routes.js";
-import { SecureRoute, HasPermission } from "@webiny/app-security/components/index.js";
 import { WorkflowStateListView } from "~/Components/WorkflowStateList/index.js";
 import {
     WorkflowStatesOwnWidget,
     WorkflowStatesRequestedWidget
 } from "~/Components/WorkflowStatesWidget/index.js";
-import { useApolloClient } from "@apollo/react-hooks";
+import { HasPermission } from "@webiny/app-security/components/index.js";
 
 const { Route } = AdminConfig;
 
@@ -20,15 +20,12 @@ export const ContentReviews = () => {
             <Route
                 route={Routes.Workflows.ContentReviews}
                 element={
-                    <SecureRoute permission={"workflows.contentReviews"}>
-                        <AdminLayout>
-                            <Helmet>
-                                <title>{`Content Reviews`}</title>
-                            </Helmet>
-
-                            <WorkflowStateListView client={client} />
-                        </AdminLayout>
-                    </SecureRoute>
+                    <AdminLayout>
+                        <Helmet>
+                            <title>{`Content Reviews`}</title>
+                        </Helmet>
+                        <WorkflowStateListView client={client} />
+                    </AdminLayout>
                 }
             />
             <WorkflowsMenu />

@@ -5,12 +5,12 @@ import { ReactComponent as ArrowUp } from "@webiny/icons/arrow_upward.svg";
 import { ReactComponent as ArrowDown } from "@webiny/icons/arrow_downward.svg";
 import { observer } from "mobx-react-lite";
 import { Form } from "@webiny/form";
-import { StepFormTitle } from "./form/StepFormTitle.js";
-import { StepFormColor } from "./form/StepFormColor.js";
-import { StepFormDescription } from "./form/StepFormDescription.js";
-import { StepFormTeams } from "./form/StepFormTeams.js";
-import { StepFormNotifications } from "./form/StepFormNotifications.js";
-import { RemoveStep } from "./step/RemoveStep.js";
+import { StepFormTitle } from "./Form/StepFormTitle.js";
+import { StepFormColor } from "./Form/StepFormColor.js";
+import { StepFormDescription } from "./Form/StepFormDescription.js";
+import { StepFormTeams } from "./Form/StepFormTeams.js";
+import { StepFormNotifications } from "./Form/StepFormNotifications.js";
+import { RemoveStep } from "./Step/RemoveStep.js";
 
 export interface IStepProps {
     step: IWorkflowStep;

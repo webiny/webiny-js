@@ -1,10 +1,14 @@
 import React from "react";
 import { ContentEntryForm, useContentEntry } from "@webiny/app-headless-cms";
-import { WorkflowStateBar, WorkflowStateOverlay } from "@webiny/app-workflows";
+import { Components } from "@webiny/app-workflows";
 import { Alert, Grid } from "@webiny/admin-ui";
 import { useSecurity } from "@webiny/app-security";
 import type { PersistEntry } from "@webiny/app-headless-cms/admin/components/ContentEntryForm/ContentEntryFormProvider.js";
-import type { IWorkflowState } from "@webiny/app-workflows/types.js";
+import type { IWorkflowState } from "@webiny/app-workflows";
+
+const {
+    ContentReview: { WorkflowStateBar, WorkflowStateOverlay }
+} = Components;
 
 /**
  * To override storing of the entry when in workflow state.

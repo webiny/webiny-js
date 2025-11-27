@@ -1,6 +1,10 @@
 import React from "react";
-import { WorkflowStateTooltip } from "@webiny/app-workflows";
+import { Components } from "@webiny/app-workflows";
 import { ContentEntryEditorConfig } from "@webiny/app-headless-cms";
+
+const {
+    ContentReview: { WorkflowStateTooltip }
+} = Components;
 
 const { Actions } = ContentEntryEditorConfig;
 
