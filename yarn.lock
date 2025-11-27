@@ -10243,7 +10243,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sparticuz/chromium@npm:^141.0.0":
+"@sparticuz/chromium@npm:141.0.0":
   version: 141.0.0
   resolution: "@sparticuz/chromium@npm:141.0.0"
   dependencies:
@@ -13564,7 +13564,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/api-prerendering-service@workspace:packages/api-prerendering-service"
   dependencies:
-    "@sparticuz/chromium": "npm:^141.0.0"
+    "@sparticuz/chromium": "npm:141.0.0"
     "@types/object-hash": "npm:^2.2.1"
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-log": "npm:0.0.0"
@@ -13584,7 +13584,7 @@ __metadata:
     posthtml-noopener: "npm:^1.0.5"
     posthtml-plugin-link-preload: "npm:^1.0.0"
     prettier: "npm:^2.8.8"
-    puppeteer-core: "npm:^24.31.0"
+    puppeteer-core: "npm:24.31.0"
     rimraf: "npm:^6.0.1"
     srcset: "npm:^4.0.0"
     typescript: "npm:5.3.3"
@@ -33832,7 +33832,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"puppeteer-core@npm:^24.31.0":
+"puppeteer-core@npm:24.31.0":
   version: 24.31.0
   resolution: "puppeteer-core@npm:24.31.0"
   dependencies:
