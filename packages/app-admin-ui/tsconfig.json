@@ -5,9 +5,7 @@
     { "path": "../admin-ui" },
     { "path": "../app" },
     { "path": "../app-admin" },
-    { "path": "../app-security" },
-    { "path": "../app-workflows" },
-    { "path": "../plugins" }
+    { "path": "../app-security" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -29,11 +27,7 @@
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
-      "@webiny/app-security": ["../app-security/src"],
-      "@webiny/app-workflows/*": ["../app-workflows/src/*"],
-      "@webiny/app-workflows": ["../app-workflows/src"],
-      "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/app-security": ["../app-security/src"]
     },
     "baseUrl": "."
   }
