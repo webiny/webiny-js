@@ -90,10 +90,10 @@ export interface IWorkflowState {
 }
 
 export enum WorkflowsSecurityPermissionAccessLevel {
-    NONE = "none",
-    FULL = "full"
+    NO = "no",
+    YES = "yes"
 }
 
-export interface IWorkflowsEditorSecurityPermission extends SecurityPermission {
-    accessLevel: WorkflowsSecurityPermissionAccessLevel;
+export interface IWorkflowsSecurityPermission extends SecurityPermission {
+    editor: WorkflowsSecurityPermissionAccessLevel;
 }

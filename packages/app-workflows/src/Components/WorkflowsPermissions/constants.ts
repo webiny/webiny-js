@@ -1,1 +1,1 @@
-export const WORKFLOWS_EDITOR_PERMISSION = "workflows.editor";
+export const WORKFLOWS_PERMISSION = "workflows";

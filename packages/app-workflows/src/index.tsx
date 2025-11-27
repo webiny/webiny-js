@@ -18,6 +18,7 @@ export { useCanUseWorkflows } from "./hooks/canUseWorkflows.js";
 export { useWorkflowState } from "./Components/WorkflowState/useWorkflowState.js";
 export type { IWorkflowApplication, IWorkflowState } from "~/types.js";
 export { WorkflowStateValue } from "~/types.js";
+export { useWorkflowsPermission } from "./Components/WorkflowsPermissions/index.js";
 
 export const Components = {
     App: {

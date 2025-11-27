@@ -1,11 +1,11 @@
-import { HasWorkflowsSecurityPermission } from "../WorkflowsPermissions/HasWorkflowsSecurityPermission.js";
+import { HasWorkflowsEditorPermission } from "../WorkflowsPermissions/HasWorkflowsEditorPermission.js";
 import { type IWorkflowsEditorProps, WorkflowsEditorBase } from "./WorkflowsEditorBase.js";
 import React from "react";
 
 export const WorkflowsEditor = (props: IWorkflowsEditorProps) => {
     return (
-        <HasWorkflowsSecurityPermission>
+        <HasWorkflowsEditorPermission>
             <WorkflowsEditorBase {...props} />
-        </HasWorkflowsSecurityPermission>
+        </HasWorkflowsEditorPermission>
     );
 };
