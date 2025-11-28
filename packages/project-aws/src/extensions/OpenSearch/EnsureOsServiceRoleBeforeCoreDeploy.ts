@@ -1,4 +1,3 @@
-import { createImplementation } from "@webiny/di";
 import { CoreBeforeDeploy, UiService } from "@webiny/project/abstractions/index.js";
 import ora from "ora";
 import chalk from "chalk";
@@ -8,7 +7,7 @@ const { green } = chalk;
 
 const NO_SUCH_ENTITY_IAM_ERROR = "NoSuchEntity";
 
-class EnsureOsServiceRoleBeforeCoreDeploy implements CoreBeforeDeploy.Interface {
+class EnsureOsServiceRoleBeforeCoreDeployImpl implements CoreBeforeDeploy.Interface {
     constructor(private uiService: UiService.Interface) {}
 
     async execute() {
@@ -55,8 +54,7 @@ class EnsureOsServiceRoleBeforeCoreDeploy implements CoreBeforeDeploy.Interface 
     }
 }
 
-export default createImplementation({
-    abstraction: CoreBeforeDeploy,
-    implementation: EnsureOsServiceRoleBeforeCoreDeploy,
+export const EnsureOsServiceRoleBeforeCoreDeploy = CoreBeforeDeploy.createImplementation({
+    implementation: EnsureOsServiceRoleBeforeCoreDeployImpl,
     dependencies: [UiService]
 });

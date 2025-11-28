@@ -1,4 +1,3 @@
-import { createDecorator } from "@webiny/di";
 import path from "path";
 import fs from "fs";
 import {
@@ -8,14 +7,17 @@ import {
 } from "@webiny/project/abstractions/index.js";
 import { getTemplatesFolderPath } from "~/utils/index.js";
 
-class ReplaceApiLambdaFnHandler implements BuildAppWorkspaceService.Interface {
+class ReplaceApiLambdaFnHandlerDecorator implements BuildAppWorkspaceService.Interface {
     constructor(
         private getApp: GetApp.Interface,
         private logger: LoggerService.Interface,
         private decoratee: BuildAppWorkspaceService.Interface
     ) {}
 
-    async execute(params: BuildAppWorkspaceService.Params, options: BuildAppWorkspaceService.Options) {
+    async execute(
+        params: BuildAppWorkspaceService.Params,
+        options: BuildAppWorkspaceService.Options = {}
+    ) {
         const result = await this.decoratee.execute(params, options);
         if (params.app === "api") {
             const templatesFolderPath = getTemplatesFolderPath();
@@ -42,8 +44,7 @@ class ReplaceApiLambdaFnHandler implements BuildAppWorkspaceService.Interface {
     }
 }
 
-export default createDecorator({
-    abstraction: BuildAppWorkspaceService,
-    decorator: ReplaceApiLambdaFnHandler,
+export const ReplaceApiLambdaFnHandlers = BuildAppWorkspaceService.createDecorator({
+    decorator: ReplaceApiLambdaFnHandlerDecorator,
     dependencies: [GetApp, LoggerService]
 });

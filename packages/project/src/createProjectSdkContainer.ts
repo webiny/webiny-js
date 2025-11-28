@@ -214,6 +214,7 @@ export const createProjectSdkContainer = async (
     // Initialize project SDK.
     container.resolve(ProjectSdkParamsService).set(params);
     await container.resolve(LoadEnvVarsService).execute();
+    await container.resolve(BuildProjectWorkspaceService).execute();
 
     const logger = container.resolve(LoggerService);
     logger.log("Initializing Project SDK container...");
@@ -292,14 +293,9 @@ export const createProjectSdkContainer = async (
 
     const projectDecorators = [...projectExtensions.extensionsByType(projectDecoratorExt)];
 
-    console.log('kobajooooon')
-    console.log(projectDecorators)
     for (const projectDecorator of projectDecorators) {
         const projectDecoratorImpl = await importFromPath(projectDecorator.params.src);
         container.registerDecorator(projectDecoratorImpl);
     }
-
-    await container.resolve(BuildProjectWorkspaceService).execute();
-
     return container;
 };
