@@ -11,7 +11,6 @@
   "license": "MIT",
   "dependencies": {
     "@webiny/di": "^0.2.1",
-    "@webiny/logger": "0.0.0",
     "@webiny/project": "0.0.0",
     "@webiny/pulumi-sdk": "0.0.0",
     "@webiny/telemetry": "0.0.0",
@@ -25,6 +24,8 @@
     "load-json-file": "6.2.0",
     "open": "^10.2.0",
     "ora": "4.1.1",
+    "pino": "^9.13.1",
+    "pino-pretty": "^9.4.1",
     "semver": "^7.7.2",
     "type-fest": "^5.2.0",
     "write-json-file": "^4.3.0",

@@ -28,10 +28,7 @@ import {
     Vpc
 } from "./pulumi/extensions/index.js";
 
-import {
-    OpenSearch,
-    ElasticSearch
-} from "./extensions/index.js";
+import { OpenSearch, ElasticSearch } from "./extensions/index.js";
 
 export const Infra = {
     Vpc,

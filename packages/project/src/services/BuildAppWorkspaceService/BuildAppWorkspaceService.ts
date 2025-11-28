@@ -63,7 +63,6 @@ export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService
         ]);
 
         this.loggerService.info("App workspace built successfully.");
-
     }
 }
 
