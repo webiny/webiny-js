@@ -124,7 +124,7 @@ export interface AcoListProviderProps {
 
 export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) => {
     const { identity } = useSecurity();
-    const { currentFolderId } = useNavigateFolder();
+    const { currentFolderId, navigateToFolder } = useNavigateFolder();
     const { folderIdPath, folderIdInPath } = useAcoApp();
     const {
         folders: originalFolders,
@@ -147,35 +147,72 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
 
     const { records: originalRecords, loading: recordsLoading, listRecords, meta } = searchContext;
 
+    const withFallbackToRoot = async (cb: () => Promise<any>, success: () => void) => {
+        try {
+            await cb();
+            success();
+        } catch (error) {
+            if (error.code === "FOLDER_NOT_FOUND") {
+                navigateToFolder("root");
+            }
+        }
+    };
+
     /**
      * On first mount, call `getFolderHierarchy` and `setState`, which will either issue a network request, or load folders and records from cache.
      * We don't need to store the result of it to any local state; that is managed by the context provider.
      *
      * We don't call `listRecords` directly, instead we call `setState` making it the only driver to fetch records from the apis.
      */
-    useEffect(() => {
+
+    const loadHierarchy = async (currentFolderId: string) => {
         // The folders collection is empty, it must be the first render, let's load the full hierarchy.
         if (folders.length === 0) {
-            getFolderHierarchy(currentFolderId);
+            await withFallbackToRoot(
+                () => getFolderHierarchy(currentFolderId),
+                () => {
+                    setState(state => {
+                        return {
+                            ...state,
+                            after: undefined,
+                            filters: undefined,
+                            folderId: currentFolderId,
+                            isSearch: false,
+                            searchQuery: "",
+                            selected: [],
+                            showingFilters: false,
+                            showingSelectAll: false,
+                            isSelectedAll: false
+                        };
+                    });
+                }
+            );
         } else {
             // Otherwise let's load only the current folder sub-tree
-            listFoldersByParentIds([currentFolderId]);
+            await withFallbackToRoot(
+                () => listFoldersByParentIds([currentFolderId]),
+                () => {
+                    setState(state => {
+                        return {
+                            ...state,
+                            after: undefined,
+                            filters: undefined,
+                            folderId: currentFolderId,
+                            isSearch: false,
+                            searchQuery: "",
+                            selected: [],
+                            showingFilters: false,
+                            showingSelectAll: false,
+                            isSelectedAll: false
+                        };
+                    });
+                }
+            );
         }
+    };
 
-        setState(state => {
-            return {
-                ...state,
-                after: undefined,
-                filters: undefined,
-                folderId: currentFolderId,
-                isSearch: false,
-                searchQuery: "",
-                selected: [],
-                showingFilters: false,
-                showingSelectAll: false,
-                isSelectedAll: false
-            };
-        });
+    useEffect(() => {
+        loadHierarchy(currentFolderId);
     }, [currentFolderId]);
 
     /**

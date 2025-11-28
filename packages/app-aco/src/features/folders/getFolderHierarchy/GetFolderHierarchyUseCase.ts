@@ -12,8 +12,6 @@ export class GetFolderHierarchyUseCase implements IGetFolderHierarchyUseCase {
     }
 
     async execute({ id }: GetFolderHierarchyUseCaseParams) {
-        await this.repository.execute({
-            id
-        });
+        await this.repository.execute({ id });
     }
 }
