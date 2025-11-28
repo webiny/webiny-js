@@ -8,7 +8,7 @@ import {
     GetYarnVersionService,
     GetProjectVersionService
 } from "~/abstractions/index.js";
-import { IProjectInfoServiceResult } from "~/abstractions/services/ProjectInfoService/ProjectInfoService";
+import { IProjectInfoServiceResult } from "~/abstractions/services/ProjectInfoService/ProjectInfoService.js";
 
 export class DefaultProjectInfoService implements ProjectInfoService.Interface {
     constructor(
