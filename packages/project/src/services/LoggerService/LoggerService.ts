@@ -1,8 +1,9 @@
 import { createImplementation } from "@webiny/di";
-import { createPinoLogger as baseCreatePinoLogger, type Logger } from "@webiny/logger";
-import { LoggerService, GetProjectService } from "~/abstractions/index.js";
+import { GetProjectService, LoggerService } from "~/abstractions/index.js";
 import * as fs from "node:fs";
 import path from "node:path";
+import { type Logger, pino } from "pino";
+import pinoPretty from "pino-pretty";
 
 const DEFAULT_LOG_LEVEL = "info";
 
@@ -54,12 +55,19 @@ export class DefaultLoggerService implements LoggerService.Interface {
         const logStream = this.getLogStream();
 
         const level = process.env.LOG_LEVEL || DEFAULT_LOG_LEVEL;
-        this.pinoLogger = baseCreatePinoLogger({ level }, logStream);
+        this.pinoLogger = pino({ level }, logStream);
 
         return this.pinoLogger;
     }
 
     private getLogStream() {
+        const debugEnabled = process.argv.includes("--debug");
+        if (debugEnabled) {
+            return pinoPretty({
+                ignore: "pid,hostname"
+            });
+        }
+
         const project = this.getProjectService.execute();
 
         const logsFolderPath = project.paths.dotWebinyFolder.join("logs").toString();

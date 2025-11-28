@@ -1,14 +1,15 @@
 import { createImplementation } from "@webiny/di";
-import { createPinoLogger as baseCreatePinoLogger, type Logger } from "@webiny/logger";
 import { LoggerService } from "~/abstractions/index.js";
 import * as fs from "node:fs";
 import path from "node:path";
 import findUp from "find-up";
+import { pino, type Logger } from "pino";
+import pinoPretty from "pino-pretty";
 
 const DEFAULT_LOG_LEVEL = "info";
 
 export class DefaultLoggerService implements LoggerService.Interface {
-    pinoLogger: Logger | null = null;
+    private pinoLogger: Logger | null = null;
 
     trace(message?: any, ...optionalParams: any[]) {
         const logger = this.getLogger();
@@ -51,14 +52,21 @@ export class DefaultLoggerService implements LoggerService.Interface {
         }
 
         const logStream = this.getLogStream();
+        const level = process.env.WEBINY_LOG_LEVEL || DEFAULT_LOG_LEVEL;
 
-        const level = process.env.LOG_LEVEL || DEFAULT_LOG_LEVEL;
-        this.pinoLogger = baseCreatePinoLogger({ level }, logStream);
+        this.pinoLogger = pino({ level }, logStream);
 
         return this.pinoLogger;
     }
 
     private getLogStream() {
+        const debugEnabled = process.argv.includes("--debug");
+        if (debugEnabled) {
+            return pinoPretty({
+                ignore: "pid,hostname"
+            });
+        }
+
         // Wanted to use `GetProjectSdkService` to get project root path, but
         // to get that, had to call async method, which is not allowed in constructor.
         // TODO: implement a better way to get project root path.

@@ -18,7 +18,7 @@ export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService
         params: BuildAppWorkspaceService.Params,
         options: BuildAppWorkspaceService.Options = {}
     ) {
-        this.loggerService.debug({ appName: params.app }, "Building app workspace baseline...");
+        this.loggerService.debug({ params, options }, "Building app workspace...");
 
         if (!params.env) {
             throw new Error(`Please specify environment, for example "dev".`);
@@ -61,6 +61,9 @@ export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService
                 replaceWith: !variant || variant === "undefined" ? "" : variant
             }
         ]);
+
+        this.loggerService.info("App workspace built successfully.");
+
     }
 }
 

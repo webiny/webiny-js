@@ -14,7 +14,7 @@ export const Extensions = () => {
             <Infra.ProductionEnvironments environments={["prod", "staging"]} />
             <Infra.Core.Pulumi src={"./extensions/MyCorePulumiHandler.ts"} />
             <Infra.Vpc enabled={false} />
-            <Infra.OpenSearch enabled={false} />
+            <Infra.OpenSearch enabled={true} />
             <Infra.AwsTags tags={{ OWNER: "me", PROJECT: "my-project" }} />
             <Infra.AwsTags tags={{ OWNER2: "me2", PROJECT2: "my-project-2" }} />
 
