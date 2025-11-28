@@ -6,7 +6,6 @@ import { cva, type VariantProps } from "class-variance-authority";
 export { makeDecoratable } from "@webiny/react-composition";
 
 const twMerge = extendTailwindMerge({
-    prefix: "",
     override: {
         theme: {
             borderWidth: ["sm", "md", "none"]
