@@ -5,8 +5,10 @@ import {
     GetNpmVersionService,
     GetNpxVersionService,
     GetPulumiVersionService,
-    GetYarnVersionService
+    GetYarnVersionService,
+    GetProjectVersionService
 } from "~/abstractions/index.js";
+import { IProjectInfoServiceResult } from "~/abstractions/services/ProjectInfoService/ProjectInfoService";
 
 export class DefaultProjectInfoService implements ProjectInfoService.Interface {
     constructor(
@@ -14,7 +16,8 @@ export class DefaultProjectInfoService implements ProjectInfoService.Interface {
         private getNpmVersion: GetNpmVersionService.Interface,
         private getNpxVersion: GetNpxVersionService.Interface,
         private getPulumiVersion: GetPulumiVersionService.Interface,
-        private getYarnVersion: GetYarnVersionService.Interface
+        private getYarnVersion: GetYarnVersionService.Interface,
+        private getProjectVersion: GetProjectVersionService.Interface
     ) {}
 
     async execute() {
@@ -31,6 +34,7 @@ export class DefaultProjectInfoService implements ProjectInfoService.Interface {
 
         return {
             webiny: {
+                version: this.getProjectVersion.execute(),
                 debugEnabled: process.env.DEBUG === "true",
                 featureFlags: process.env.WEBINY_FEATURE_FLAGS || {}
             },
@@ -53,7 +57,7 @@ export class DefaultProjectInfoService implements ProjectInfoService.Interface {
                 secretsProvider: process.env.PULUMI_SECRETS_PROVIDER || "",
                 usingPassword: !!process.env.PULUMI_CONFIG_PASSPHRASE
             }
-        };
+        } as IProjectInfoServiceResult;
     }
 }
 
@@ -65,6 +69,7 @@ export const projectInfoService = createImplementation({
         GetNpmVersionService,
         GetNpxVersionService,
         GetPulumiVersionService,
-        GetYarnVersionService
+        GetYarnVersionService,
+        GetProjectVersionService
     ]
 });

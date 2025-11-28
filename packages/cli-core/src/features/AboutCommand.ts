@@ -43,7 +43,7 @@ export class AboutCommand implements Command.Interface<IAboutCommandParams> {
                         sectionName: "Webiny Project",
                         data: {
                             // Name: data.project.name,
-                            // Version: context.project.version,
+                            Version: data.webiny.version,
                             // "Database Setup": getDatabaseSetupLabel(),
                             "Debug Enabled": webiny.debugEnabled ? "Yes" : "No"
                             // "Feature Flags": process.env.WEBINY_FEATURE_FLAGS
