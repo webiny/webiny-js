@@ -24,7 +24,7 @@ const segmentedControlItemVariants = cva(
                     "text-neutral-strong fill-neutral-xstrong",
                     "data-[state=active]:text-neutral-primary data-[state=active]:fill-neutral-xstrong data-[state=active]:bg-neutral-base/80",
                     "hover:data-[state=inactive]:bg-neutral-base/80",
-                    "active:data-[state=inactive]:bg-neutral-muted"
+                    "active:data-[state=inactive]:bg-neutral-base/80"
                 ],
                 ghost: [
                     "text-neutral-strong fill-neutral-xstrong",
