@@ -12,10 +12,9 @@ import { Icon } from "~/Icon/index.js";
  */
 const segmentedControlItemVariants = cva(
     [
-        "inline-flex items-center justify-center whitespace-nowrap transition-colors cursor-pointer relative z-10 rounded-md border-md border-transparent",
-        "text-md [&>svg]:size-md gap-xs",
-        "py-[calc(var(--padding-xs)-(var(--border-width-md)))] px-[calc(var(--padding-sm-extra)-(var(--border-width-md)))]",
-        "focus-visible:outline-none focus-visible:border-accent-dimmed",
+        "inline-flex items-center justify-center whitespace-nowrap transition-colors cursor-pointer relative z-10 rounded-md",
+        "text-md px-sm-extra py-xs [&>svg]:size-md gap-xs",
+        "focus-visible:outline-none focus-visible:ring-md focus-visible:ring-primary-dimmed focus-visible:ring-offset-0",
         "disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed"
     ],
     {
@@ -23,9 +22,9 @@ const segmentedControlItemVariants = cva(
             variant: {
                 accent: [
                     "text-neutral-strong fill-neutral-xstrong",
-                    "data-[state=active]:text-neutral-primary data-[state=active]:fill-neutral-xstrong data-[state=active]:bg-neutral-base/80 data-[state=active]:border-primary-dimmed",
+                    "data-[state=active]:text-neutral-primary data-[state=active]:fill-neutral-xstrong data-[state=active]:bg-neutral-base/80",
                     "hover:data-[state=inactive]:bg-neutral-base/80",
-                    "active:data-[state=inactive]:bg-neutral-base/80"
+                    "active:data-[state=inactive]:bg-neutral-muted"
                 ],
                 ghost: [
                     "text-neutral-strong fill-neutral-xstrong",
