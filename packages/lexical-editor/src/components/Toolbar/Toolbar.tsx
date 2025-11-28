@@ -17,6 +17,12 @@ import { useRichTextEditor } from "~/hooks";
 import { isChildOfFloatingToolbar } from "~/utils/isChildOfFloatingToolbar";
 import { HIDE_FLOATING_TOOLBAR } from "~/commands";
 
+declare global {
+    interface Document {
+        floatingToolbar: boolean;
+    }
+}
+
 interface FloatingToolbarProps {
     anchorElem: HTMLElement;
     editor: LexicalEditor;
@@ -163,12 +169,25 @@ const FloatingToolbar: FC<FloatingToolbarProps> = ({ anchorElem, editor }) => {
         );
     }, [editor, updateTextFormatFloatingToolbar]);
 
+    const onMouseEnter = useCallback(() => {
+        document["floatingToolbar"] = true;
+    }, []);
+
+    const onMouseLeave = useCallback(() => {
+        document["floatingToolbar"] = false;
+    }, []);
+
     if (!isVisible) {
         return null;
     }
 
     return (
-        <div ref={popupCharStylesEditorRef} className="floating-toolbar">
+        <div
+            ref={popupCharStylesEditorRef}
+            className="floating-toolbar"
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+        >
             {editor.isEditable() && (
                 <>
                     {toolbarElements.map(action => (
