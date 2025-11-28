@@ -172,7 +172,7 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
         }
 
         yargsRunner.help(true);
-
+        yargsRunner.version(projectSdk.getProjectVersion());
         this.yargsRunner = yargsRunner;
         return this.yargsRunner;
     }
