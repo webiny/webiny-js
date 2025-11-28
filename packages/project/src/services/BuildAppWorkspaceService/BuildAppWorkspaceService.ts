@@ -28,6 +28,7 @@ export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService
 
         const app = this.getApp.execute(params.app);
         if (app.paths.workspaceFolder.existsSync()) {
+            // Only skip rebuild if the forceRebuild option is not set to true.
             if (options.forceRebuild !== true) {
                 this.loggerService.debug(
                     { appName: params.app },
@@ -35,6 +36,11 @@ export class DefaultBuildAppWorkspaceService implements BuildAppWorkspaceService
                 );
                 return;
             }
+        }
+
+        // Clean up existing workspace folder if it exists.
+        if (app.paths.workspaceFolder.existsSync()) {
+            fs.rmSync(app.paths.workspaceFolder.toString(), { recursive: true, force: true });
         }
 
         const appWorkspaceFolderPath = app.paths.workspaceFolder.toString();

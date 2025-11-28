@@ -2,6 +2,7 @@ import { createImplementation } from "@webiny/di";
 import {
     Command,
     CommandsRegistryService,
+    GetArgvService,
     GetCliRunnerService,
     GetProjectSdkService,
     UiService
@@ -18,7 +19,8 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
     constructor(
         private readonly commandsRegistryService: CommandsRegistryService.Interface,
         private readonly uiService: UiService.Interface,
-        private readonly getProjectSdkService: GetProjectSdkService.Interface
+        private readonly getProjectSdkService: GetProjectSdkService.Interface,
+        private readonly getArgvService: GetArgvService.Interface
     ) {}
 
     private yargsRunner: Argv | null = null;
@@ -37,6 +39,28 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
             .demandCommand(1)
             .recommendCommands()
             .scriptName("webiny")
+
+            // These should be registered via an abstraction to be technically correct,
+            // but for now, this will do.
+            .option("show-logs", {
+                type: "boolean",
+                default: false,
+                desc: "Print logs directly in the terminal",
+                global: true
+            })
+            .option("log-level", {
+                type: "string",
+                default: "info",
+                choices: ["silent", "fatal", "error", "warn", "info", "debug", "trace"],
+                desc: "Set the verbosity of logs",
+                global: true
+            })
+            .option("stack-trace", {
+                type: "boolean",
+                default: false,
+                desc: "Show stack traces for errors",
+                global: true
+            })
             .epilogue(
                 `To find more information, docs and tutorials, see ${blue(
                     "https://www.webiny.com/docs"
@@ -92,12 +116,11 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                     ui.error(realError.message);
                 }
 
-                // Unfortunately, yargs doesn't provide passed args here, so we had to do it via process.argv.
-                const debugEnabled = process.argv.includes("--debug");
-                if (debugEnabled) {
+                const argv = this.getArgvService.execute();
+                if (argv.stackTrace && realError.stack) {
                     ui.newLine();
                     ui.debug("Stack trace:");
-                    ui.text(realError.stack || "");
+                    ui.text(realError.stack);
                 }
 
                 if (error instanceof GracefulError) {
@@ -181,5 +204,5 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
 export const getCliRunnerService = createImplementation({
     abstraction: GetCliRunnerService,
     implementation: DefaultGetCliRunnerService,
-    dependencies: [CommandsRegistryService, UiService, GetProjectSdkService]
+    dependencies: [CommandsRegistryService, UiService, GetProjectSdkService, GetArgvService]
 });

@@ -1,8 +1,10 @@
 import path from "path";
 import { Container } from "@webiny/di";
 import {
+    argvParserService,
     cliParamsService,
     commandsRegistryService,
+    getArgvService,
     getCliRunnerService,
     getProjectSdkService,
     loggerService,
@@ -38,7 +40,7 @@ import {
 } from "./features/index.js";
 
 import chalk from "chalk";
-import { CliParamsService, GetProjectSdkService, UiService } from "~/abstractions/index.js";
+import { CliParamsService, GetArgvService, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 import {
     commandsWithGracefulErrorHandling,
@@ -77,8 +79,10 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(pendingOperationsGracefulErrorHandler).inSingletonScope();
 
     // Services.
+    container.register(argvParserService).inSingletonScope();
     container.register(cliParamsService).inSingletonScope();
     container.register(commandsRegistryService).inSingletonScope();
+    container.register(getArgvService).inSingletonScope();
     container.register(getCliRunnerService).inSingletonScope();
     container.register(getProjectSdkService).inSingletonScope();
     container.register(loggerService).inSingletonScope();
@@ -131,10 +135,11 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
 
         ui.error(realError.message);
 
-        // Unfortunately, yargs doesn't provide passed args here, so we had to do it via process.argv.
-        const debugEnabled = process.argv.includes("--debug");
-        if (debugEnabled) {
-            realError.stack && ui.debug(realError.stack);
+        const argv = container.resolve(GetArgvService).execute();
+        if (argv.stackTrace && realError.stack) {
+            ui.newLine();
+            ui.debug("Stack trace:");
+            ui.text(realError.stack);
         }
 
         if (error && error instanceof GracefulError) {

@@ -61,7 +61,7 @@ export class DefaultLoggerService implements LoggerService.Interface {
     }
 
     private getLogStream() {
-        const debugEnabled = process.argv.includes("--debug");
+        const debugEnabled = process.argv.includes("--show-logs");
         if (debugEnabled) {
             return pinoPretty({
                 ignore: "pid,hostname"
