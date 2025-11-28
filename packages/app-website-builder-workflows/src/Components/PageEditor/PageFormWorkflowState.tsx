@@ -1,7 +1,11 @@
 import React from "react";
-import { WorkflowStateBar } from "@webiny/app-workflows";
+import { Components } from "@webiny/app-workflows";
 import { Alert, Grid } from "@webiny/admin-ui";
 import type { IWorkflowState } from "@webiny/app-workflows/types.js";
+
+const {
+    ContentReview: { WorkflowStateBar }
+} = Components;
 
 interface IStoreAlertProps {
     state: IWorkflowState | undefined | null;

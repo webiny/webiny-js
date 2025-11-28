@@ -3,7 +3,7 @@ import { PageFormWorkflowStateTooltip } from "./PageFormWorkflowStateTooltip.js"
 import { useSelectFromDocument } from "@webiny/app-website-builder/BaseEditor/hooks/useSelectFromDocument.js";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useSecurity } from "@webiny/app-security";
-import { WorkflowStateProvider } from "@webiny/app-workflows";
+import { Components } from "@webiny/app-workflows";
 import { WB_PAGE_APP } from "~/constants.js";
 import { PageFormWorkflowState } from "./PageFormWorkflowState.js";
 import { PageEditorConfig } from "@webiny/app-website-builder";
@@ -11,6 +11,10 @@ import { PageFormWorkflowStatePublishButton } from "./PageFormWorkflowStatePubli
 import { PageEditorAutoSave } from "./PageEditorAutoSave.js";
 
 const { Ui } = PageEditorConfig;
+
+const {
+    ContentReview: { WorkflowStateProvider }
+} = Components;
 
 export const PageEditor = Ui.TopBar.Layout.createDecorator(Original => {
     return function PageEditorTopBarWorkflowsState() {

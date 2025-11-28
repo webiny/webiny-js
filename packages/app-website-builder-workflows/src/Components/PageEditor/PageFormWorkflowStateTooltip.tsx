@@ -1,6 +1,10 @@
 import React from "react";
-import { WorkflowStateTooltip } from "@webiny/app-workflows";
+import { Components } from "@webiny/app-workflows";
 import { PageEditorConfig } from "@webiny/app-website-builder";
+
+const {
+    ContentReview: { WorkflowStateTooltip }
+} = Components;
 
 const { Ui } = PageEditorConfig;
 

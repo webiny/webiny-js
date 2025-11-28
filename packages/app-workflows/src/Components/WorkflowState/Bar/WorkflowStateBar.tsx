@@ -24,7 +24,7 @@ interface IWorkflowStateBarPropsChildren {
         params: IWorkflowStateBarPropsChildrenParams
     ): React.ReactElement | React.ReactElement[] | null;
 }
-interface IWorkflowStateBarProps {
+export interface IWorkflowStateBarProps {
     /**
      * To have access to a state and workflow, render function is meant to be used.
      * It will rerender on every state change, and it will provide the latest state and workflow.

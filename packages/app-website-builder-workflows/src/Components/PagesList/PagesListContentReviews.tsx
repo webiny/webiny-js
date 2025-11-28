@@ -1,10 +1,14 @@
 import React from "react";
 import { Sidebar } from "@webiny/admin-ui";
 import { PageListConfig } from "@webiny/app-website-builder";
-import { WorkflowStateListAppOverlay } from "@webiny/app-workflows";
+import { Components } from "@webiny/app-workflows";
 import { useApolloClient } from "@apollo/react-hooks";
 import { WB_PAGE_APP } from "~/constants.js";
 import { ReactComponent as WorkflowStateListIcon } from "@webiny/icons/work.svg";
+
+const {
+    Overlay: { WorkflowStateListAppOverlay }
+} = Components;
 
 const { Browser } = PageListConfig;
 
