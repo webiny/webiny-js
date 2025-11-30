@@ -26,8 +26,8 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
-      "@webiny/api-websockets/features/WebsocketsContext": [
-        "../api-websockets/src/src/features/WebsocketsContext/index.js"
+      "@webiny/api-websockets/features/WebsocketService": [
+        "../api-websockets/src/src/features/WebsocketService/index.js"
       ],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
       "@webiny/api-websockets": ["../api-websockets/src"],

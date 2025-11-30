@@ -36,7 +36,7 @@ export namespace DeleteFileRepository {
  * DeleteFile use case interface
  */
 export interface IDeleteFileUseCase {
-    execute(input: DeleteFileInput): Promise<Result<void, UseCaseError>>;
+    execute(id: string): Promise<Result<void, UseCaseError>>;
 }
 
 export interface IDeleteFileUseCaseErrors {

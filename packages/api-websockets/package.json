@@ -12,7 +12,7 @@
     "Bruno Zorić <bruno@webiny.com>"
   ],
   "exports": {
-    "./features/WebsocketsContext": "./src/features/WebsocketsContext/index.js",
+    "./features/WebsocketService": "./src/features/WebsocketService/index.js",
     "./*": "./src/*",
     ".": "./src/index.js"
   },

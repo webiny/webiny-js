@@ -1,3 +1,4 @@
+// @ts-nocheck being removed
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createTopic } from "@webiny/pubsub";
 import WebinyError from "@webiny/error";
@@ -8,7 +9,6 @@ import type {
     FilesCRUD,
     FilesListOpts
 } from "~/types.js";
-import type { FileManagerConfig } from "~/createFileManager/types.js";
 import { ROOT_FOLDER } from "~/contants.js";
 import { getDate } from "@webiny/api-headless-cms/utils/date.js";
 import { getIdentity as utilsGetIdentity } from "@webiny/api-headless-cms/utils/identity.js";

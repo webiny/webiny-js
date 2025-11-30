@@ -1,11 +1,12 @@
-import type { FileManagerContext, FilePermission } from "@webiny/api-file-manager/types.js";
+import type { FilePermission } from "@webiny/api-file-manager/types.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
+import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 
 export const checkPermissions = async (
-    context: FileManagerContext,
+    identityContext: IdentityContext.Interface,
     check: { rwd?: string } = {}
 ) => {
-    const filePermissions = await context.security.getPermissions<FilePermission>("fm.file");
+    const filePermissions = await identityContext.getPermissions<FilePermission>("fm.file");
 
     const relevantFilePermissions = filePermissions.filter(current => {
         if (check.rwd && !hasRwd(current, check.rwd)) {

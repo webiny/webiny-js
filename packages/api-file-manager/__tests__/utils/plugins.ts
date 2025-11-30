@@ -5,11 +5,7 @@ import {
     createHeadlessCmsContext,
     createHeadlessCmsGraphQL
 } from "@webiny/api-headless-cms";
-import {
-    createFileManagerContext,
-    createFileManagerGraphQL,
-    FilePhysicalStoragePlugin
-} from "~/index";
+import { createFileManagerContext, createFileManagerGraphQL } from "~/index";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { FileManagerStorageOperations } from "~/types";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
@@ -51,18 +47,8 @@ export const handlerPlugins = (params: HandlerParams) => {
         }),
         createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
         createHeadlessCmsGraphQL(),
-        createFileManagerContext({
-            storageOperations: fileManagerStorage.storageOperations
-        }),
+        createFileManagerContext(),
         createFileManagerGraphQL(),
-        /**
-         * Mock physical file storage plugin.
-         */
-        new FilePhysicalStoragePlugin({
-            upload: async () => {},
-
-            delete: async () => {}
-        }),
         /**
          * Make sure we dont have undefined plugins value.
          */

@@ -5,7 +5,6 @@ import {
     createRoute,
     ResponseHeaders
 } from "@webiny/handler";
-import type { FileManagerContext } from "~/types.js";
 import { PrivateFilesAssetProcessor } from "./AssetDelivery/privateFiles/PrivateFilesAssetProcessor.js";
 import { PrivateAuthenticatedAuthorizer } from "./AssetDelivery/privateFiles/PrivateAuthenticatedAuthorizer.js";
 import { PrivateFileAssetRequestResolver } from "./AssetDelivery/privateFiles/PrivateFileAssetRequestResolver.js";
@@ -18,6 +17,7 @@ import {
     createAssetDeliveryConfig
 } from "./index.js";
 import type { Reply } from "@webiny/handler/types.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 const noCacheHeaders = ResponseHeaders.create({
     "content-type": "application/json",
@@ -106,7 +106,7 @@ export const setupAssetDelivery = (params: AssetDeliveryParams) => {
             });
 
             // Create the `Route` plugin, to handle all GET requests, and output the resolved asset.
-            const deliveryRoute = createRoute<FileManagerContext>(({ onGet, context }) => {
+            const deliveryRoute = createRoute<ApiCoreContext>(({ onGet, context }) => {
                 onGet(
                     "*",
                     async (_, reply) => {

@@ -1,5 +1,5 @@
 import { Result } from "@webiny/feature/api";
-import { WebsocketsContext } from "@webiny/api-websockets/features/WebsocketsContext";
+import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { parseIdentifier } from "@webiny/utils";
 import { KickOutCurrentUserUseCase as UseCaseAbstraction } from "./abstractions.js";
@@ -8,11 +8,11 @@ import type { ILockRecord } from "~/domain/index.js";
 class KickOutCurrentUserUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private websocketsContext?: WebsocketsContext.Interface
+        private websocketService?: WebsocketService.Interface
     ) {}
 
     async execute(record: ILockRecord): Promise<Result<void, UseCaseAbstraction.Error>> {
-        if (!this.websocketsContext) {
+        if (!this.websocketService) {
             return Result.ok();
         }
 
@@ -25,7 +25,7 @@ class KickOutCurrentUserUseCaseImpl implements UseCaseAbstraction.Interface {
          * We do not want any errors to leak out of this method.
          */
         try {
-            await this.websocketsContext.send(
+            await this.websocketService.send(
                 { id: lockedBy.id },
                 {
                     action: `recordLocking.entry.kickOut.${entryId}`,
@@ -48,5 +48,5 @@ class KickOutCurrentUserUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const KickOutCurrentUserUseCase = UseCaseAbstraction.createImplementation({
     implementation: KickOutCurrentUserUseCaseImpl,
-    dependencies: [IdentityContext, [WebsocketsContext, { optional: true }]]
+    dependencies: [IdentityContext, [WebsocketService, { optional: true }]]
 });

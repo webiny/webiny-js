@@ -66,11 +66,7 @@ export class AppPermissions<TPermission extends SecurityPermission = SecurityPer
             return true;
         });
 
-        if (hasPermission) {
-            return true;
-        }
-
-        throw new NotAuthorizedError();
+        return hasPermission;
     }
 
     async hasFullAccess() {

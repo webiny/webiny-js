@@ -1,12 +1,14 @@
+import { TenantContext } from "@webiny/api-core/features/TenantContext";
 import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
-import { ContextPlugin } from "@webiny/api";
-import type { FileManagerContext, File } from "@webiny/api-file-manager/types.js";
+import type { File } from "@webiny/api-file-manager/domain/file/types.js";
 import { executeWithRetry } from "@webiny/utils";
 
 export class MetadataWriter {
     private readonly bucket: string;
+    private tenantContext: TenantContext.Interface;
 
-    constructor(bucket: string) {
+    constructor(tenantContext: TenantContext.Interface, bucket: string) {
+        this.tenantContext = tenantContext;
         this.bucket = bucket;
     }
 
@@ -38,25 +40,12 @@ export class MetadataWriter {
     }
 
     private getMetadata(file: File) {
+        const tenant = this.tenantContext.getTenant();
         return {
             id: file.id,
-            tenant: file.tenant,
+            tenant: tenant.id,
             size: file.size,
             contentType: file.type
         };
     }
 }
-
-export const addFileMetadata = () => {
-    return new ContextPlugin<FileManagerContext>(context => {
-        const metadataWriter = new MetadataWriter(String(process.env.S3_BUCKET));
-
-        context.fileManager.onFileAfterCreate.subscribe(({ file }) => {
-            return metadataWriter.write([file]);
-        });
-
-        context.fileManager.onFileAfterBatchCreate.subscribe(({ files }) => {
-            return metadataWriter.write(files);
-        });
-    });
-};

@@ -18,7 +18,7 @@ class DeleteFileUseCaseImpl implements UseCaseAbstraction.Interface {
         private eventPublisher: EventPublisher.Interface
     ) {}
 
-    async execute(input: DeleteFileInput): Promise<Result<void, UseCaseAbstraction.Error>> {
+    async execute(id: string): Promise<Result<void, UseCaseAbstraction.Error>> {
         // Check delete permission
         const hasPermission = await this.filePermissions.ensure({ rwd: "d" });
         if (!hasPermission) {
@@ -26,7 +26,7 @@ class DeleteFileUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         // Get file (includes ownership check)
-        const getResult = await this.getFile.execute({ id: input.id });
+        const getResult = await this.getFile.execute(id);
         if (getResult.isFail()) {
             return Result.fail(getResult.error);
         }

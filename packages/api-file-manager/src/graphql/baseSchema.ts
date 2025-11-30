@@ -1,15 +1,11 @@
-import {
-    ErrorResponse,
-    GraphQLSchemaPlugin,
-    Response
-} from "@webiny/handler-graphql";
-import type { FileManagerContext } from "~/types.js";
+import { ErrorResponse, GraphQLSchemaPlugin, Response } from "@webiny/handler-graphql";
 import { emptyResolver } from "./utils.js";
 import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
 import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 export const createBaseSchema = () => {
-    const fileManagerGraphQL = new GraphQLSchemaPlugin<FileManagerContext>({
+    const fileManagerGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
         typeDefs: /* GraphQL */ `
             type FmError {
                 code: String

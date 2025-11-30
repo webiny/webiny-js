@@ -3,7 +3,7 @@ import type { Context } from "~/types.js";
 import { WebsocketsContext as WebsocketsImplementation } from "./WebsocketsContext.js";
 import { WebsocketsConnectionRegistry } from "~/registry/index.js";
 import { WebsocketsTransport } from "~/transport/index.js";
-import { WebsocketsContext } from "~/features/WebsocketsContext/abstractions.js";
+import { WebsocketService } from "~/features/WebsocketService/abstractions.js";
 
 export type * from "./abstractions/IWebsocketsContext.js";
 
@@ -18,7 +18,7 @@ export const createWebsocketsContext = () => {
         const transport = new WebsocketsTransport();
         context.websockets = new WebsocketsImplementation(registry, transport);
 
-        context.container.registerInstance(WebsocketsContext, context.websockets);
+        context.container.registerInstance(WebsocketService, context.websockets);
     });
 
     plugin.name = "websockets.context";

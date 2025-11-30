@@ -10,9 +10,12 @@ import type { File, FileInput } from "~/domain/file/types.js";
 import { FileNotAuthorizedError, InvalidFileSizeError } from "~/domain/file/errors.js";
 import { FileBeforeCreateEvent, FileAfterCreateEvent } from "./events.js";
 import { FilePermissions } from "~/features/shared/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { Identity } from "~/domain/identity/Identity.js";
 
 class CreateFileUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private identityContext: IdentityContext.Interface,
         private filePermissions: FilePermissions.Interface,
         private repository: CreateFileRepository.Interface,
         private getSettings: GetSettingsUseCase.Interface,
@@ -34,6 +37,7 @@ class CreateFileUseCaseImpl implements UseCaseAbstraction.Interface {
         }
 
         const [id] = input.key.split("/");
+        const currentIdentity = this.identityContext.getIdentity();
 
         // Prepare file input
         const fileInput: FileInput = {
@@ -46,7 +50,16 @@ class CreateFileUseCaseImpl implements UseCaseAbstraction.Interface {
             location: input.location || { folderId: "root" },
             tags: input.tags || [],
             aliases: input.aliases || [],
-            extensions: meta || {}
+            extensions: meta || {},
+            // system attributes
+            createdOn: input.createdOn,
+            modifiedOn: input.modifiedOn,
+            savedOn: input.savedOn,
+            createdBy: input.createdBy
+                ? Identity.from(input.createdBy)
+                : Identity.from(currentIdentity),
+            modifiedBy: input.modifiedBy ? Identity.from(input.modifiedBy) : undefined,
+            savedBy: input.savedBy ? Identity.from(input.savedBy) : Identity.from(currentIdentity)
         };
 
         await this.eventPublisher.publish(new FileBeforeCreateEvent({ file: fileInput, meta }));
@@ -95,5 +108,11 @@ class CreateFileUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const CreateFileUseCase = UseCaseAbstraction.createImplementation({
     implementation: CreateFileUseCaseImpl,
-    dependencies: [FilePermissions, CreateFileRepository, GetSettingsUseCase, EventPublisher]
+    dependencies: [
+        IdentityContext,
+        FilePermissions,
+        CreateFileRepository,
+        GetSettingsUseCase,
+        EventPublisher
+    ]
 });

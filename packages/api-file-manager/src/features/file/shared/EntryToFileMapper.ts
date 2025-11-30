@@ -6,10 +6,10 @@ export class EntryToFileMapper {
         return {
             id: entry.entryId,
             createdOn: entry.createdOn,
-            modifiedOn: entry.modifiedOn,
+            modifiedOn: entry.modifiedOn ?? undefined,
             savedOn: entry.savedOn,
             createdBy: entry.createdBy,
-            modifiedBy: entry.modifiedBy,
+            modifiedBy: entry.modifiedBy ?? undefined,
             savedBy: entry.savedBy,
             name: entry.values.name,
             key: entry.values.key,

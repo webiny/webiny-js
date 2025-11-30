@@ -1,6 +1,5 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { Entity, Table } from "@webiny/db-dynamodb/toolbox.js";
-import type { File, FileAlias, FileAliasesStorageOperations } from "@webiny/api-file-manager/types.js";
 import type { DbItem } from "@webiny/db-dynamodb";
 import {
     createEntityWriteBatch,
@@ -8,6 +7,8 @@ import {
     createTable,
     queryAll
 } from "@webiny/db-dynamodb";
+import type { FileAliasStorageOperations } from "@webiny/api-file-manager/types.js";
+import type { FileAliasStorageDto, FileStorageDto } from "@webiny/api-file-manager/types.js";
 
 interface AliasesStorageOperationsConfig {
     documentClient: DynamoDBDocument;
@@ -18,7 +19,7 @@ interface CreatePartitionKeyParams {
     id: string;
 }
 
-export class AliasesStorageOperations implements FileAliasesStorageOperations {
+export class AliasesStorageOperations implements FileAliasStorageOperations {
     private readonly aliasEntity: Entity<any>;
     private readonly table: Table<string, string, string>;
 
@@ -27,11 +28,11 @@ export class AliasesStorageOperations implements FileAliasesStorageOperations {
 
         this.aliasEntity = createStandardEntity({
             table: this.table,
-            name: "FM.FileAlias"
+            name: "FM.FileAliasStorageDto"
         });
     }
 
-    async deleteAliases(file: File): Promise<void> {
+    async deleteAliases(file: FileStorageDto): Promise<void> {
         const aliasItems = await this.getExistingAliases(file);
 
         const batchWrite = createEntityWriteBatch({
@@ -50,7 +51,7 @@ export class AliasesStorageOperations implements FileAliasesStorageOperations {
         await batchWrite.execute();
     }
 
-    async storeAliases(file: File): Promise<void> {
+    async storeAliases(file: FileStorageDto): Promise<void> {
         const existingAliases = await this.getExistingAliases(file);
         const newAliases = this.createNewAliasesRecords(file, existingAliases);
 
@@ -74,8 +75,8 @@ export class AliasesStorageOperations implements FileAliasesStorageOperations {
         await batchWrite.execute();
     }
 
-    private async getExistingAliases(file: File): Promise<FileAlias[]> {
-        const aliases = await queryAll<{ data: FileAlias }>({
+    private async getExistingAliases(file: FileStorageDto): Promise<FileAliasStorageDto[]> {
+        const aliases = await queryAll<{ data: FileAliasStorageDto }>({
             entity: this.aliasEntity,
             partitionKey: this.createPartitionKey(file),
             options: {
@@ -92,9 +93,9 @@ export class AliasesStorageOperations implements FileAliasesStorageOperations {
     }
 
     private createNewAliasesRecords(
-        file: File,
-        existingAliases: FileAlias[] = []
-    ): DbItem<FileAlias>[] {
+        file: FileStorageDto,
+        existingAliases: FileAliasStorageDto[] = []
+    ): DbItem<FileAliasStorageDto>[] {
         return (file.aliases || [])
             .map(alias => {
                 // If alias is already in the DB, skip it.
@@ -117,6 +118,6 @@ export class AliasesStorageOperations implements FileAliasesStorageOperations {
                     }
                 };
             })
-            .filter(Boolean) as DbItem<FileAlias>[];
+            .filter(Boolean) as DbItem<FileAliasStorageDto>[];
     }
 }

@@ -10,7 +10,7 @@ export type FileAccess = PublicAccess | PrivateAuthenticatedAccess;
 
 export interface CreatedBy {
     id: string;
-    displayName: string | null;
+    displayName: string;
     type: string;
 }
 
@@ -28,10 +28,10 @@ export interface File {
     tags: string[];
     aliases: string[];
     createdOn: string;
-    modifiedOn: string | null;
+    modifiedOn: string | undefined;
     savedOn: string;
     createdBy: CreatedBy;
-    modifiedBy: CreatedBy | null;
+    modifiedBy: CreatedBy | undefined;
     savedBy: CreatedBy;
     extensions?: Record<string, any>;
 }
@@ -46,9 +46,9 @@ export interface FileInput {
     id: string;
 
     // Entry-level fields (we don't use revisions for files)
-    createdOn?: string | Date;
-    modifiedOn?: string | Date;
-    savedOn?: string | Date;
+    createdOn?: string;
+    modifiedOn?: string;
+    savedOn?: string;
     createdBy?: CreatedBy;
     modifiedBy?: CreatedBy;
     savedBy?: CreatedBy;

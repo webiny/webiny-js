@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
-import type { File, FileInput } from "~/domain/file/types.js";
+import type { CreatedBy, File, FileInput } from "~/domain/file/types.js";
 import {
     type FilePersistenceError,
     type InvalidFileSizeError,
@@ -18,6 +18,13 @@ export interface CreateFileInput {
     tags?: string[];
     location?: { folderId: string };
     aliases?: string[];
+    // System attributes
+    createdOn?: string;
+    createdBy?: CreatedBy;
+    modifiedOn?: string;
+    modifiedBy?: CreatedBy;
+    savedOn?: string;
+    savedBy?: CreatedBy;
 }
 
 /**

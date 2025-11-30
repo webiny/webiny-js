@@ -10,9 +10,12 @@ import type { File } from "~/domain/file/types.js";
 import { FileNotAuthorizedError } from "~/domain/file/errors.js";
 import { FileBeforeUpdateEvent, FileAfterUpdateEvent } from "./events.js";
 import { FilePermissions } from "~/features/shared/abstractions.js";
+import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { Identity } from "~/domain/identity/Identity.js";
 
 class UpdateFileUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
+        private identityContext: IdentityContext.Interface,
         private filePermissions: FilePermissions.Interface,
         private getFile: GetFileUseCase.Interface,
         private repository: UpdateFileRepository.Interface,
@@ -26,15 +29,24 @@ class UpdateFileUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.fail(new FileNotAuthorizedError());
         }
 
-        // Get original file (includes ownership check)
-        const getResult = await this.getFile.execute(input.id);
+        // Get the original file (includes ownership check)
+        const getResult = await this.identityContext.withoutAuthorization(() => {
+            return this.getFile.execute(input.id);
+        });
+
         if (getResult.isFail()) {
             return Result.fail(getResult.error);
         }
 
         const original = getResult.value;
 
-        // Build updated file for event
+        const isOwn = await this.filePermissions.ensure({ owns: original.createdBy });
+        if (!isOwn) {
+            return Result.fail(new FileNotAuthorizedError());
+        }
+
+        const currentIdentity = this.identityContext.getIdentity();
+
         const file: File = {
             ...original,
             ...input,
@@ -43,12 +55,19 @@ class UpdateFileUseCaseImpl implements UseCaseAbstraction.Interface {
             key: original.key,
             size: original.size,
             type: original.type,
-            createdOn: original.createdOn,
-            createdBy: original.createdBy,
             // Update mutable fields
             tags: input.tags !== undefined ? input.tags : original.tags,
             aliases: input.aliases !== undefined ? input.aliases : original.aliases,
-            location: input.location !== undefined ? input.location : original.location
+            location: input.location !== undefined ? input.location : original.location,
+            // System fields
+            createdOn: input.createdOn ?? original.createdOn,
+            modifiedOn: input.modifiedOn ?? undefined,
+            savedOn: input.savedOn ?? original.savedOn,
+            createdBy: input.createdBy ? Identity.from(input.createdBy) : original.createdBy,
+            modifiedBy: input.modifiedBy
+                ? Identity.from(input.modifiedBy)
+                : Identity.from(currentIdentity),
+            savedBy: input.savedBy ? Identity.from(input.savedBy) : Identity.from(currentIdentity)
         };
 
         await this.eventPublisher.publish(new FileBeforeUpdateEvent({ original, file, input }));
@@ -67,5 +86,11 @@ class UpdateFileUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UpdateFileUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateFileUseCaseImpl,
-    dependencies: [FilePermissions, GetFileUseCase, UpdateFileRepository, EventPublisher]
+    dependencies: [
+        IdentityContext,
+        FilePermissions,
+        GetFileUseCase,
+        UpdateFileRepository,
+        EventPublisher
+    ]
 });

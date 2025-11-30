@@ -1,11 +1,8 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { FileManagerSettings } from "~/domain/settings/types.js";
-import { SettingsNotFoundError } from "~/domain/settings/errors.js";
 
-export interface IGetSettingsUseCaseErrors {
-    notFound: SettingsNotFoundError;
-}
+export interface IGetSettingsUseCaseErrors {}
 
 type UseCaseError = IGetSettingsUseCaseErrors[keyof IGetSettingsUseCaseErrors];
 

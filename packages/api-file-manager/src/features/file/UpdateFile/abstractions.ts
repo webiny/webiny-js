@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
-import type { File } from "~/domain/file/types.js";
+import type { CreatedBy, File } from "~/domain/file/types.js";
 import {
     type FilePersistenceError,
     type FileNotFoundError,
@@ -14,6 +14,12 @@ export interface UpdateFileInput {
     tags?: string[];
     location?: { folderId: string };
     aliases?: string[];
+    createdOn?: string;
+    modifiedOn?: string;
+    savedOn?: string;
+    createdBy?: CreatedBy;
+    modifiedBy?: CreatedBy;
+    savedBy?: CreatedBy;
 }
 
 /**

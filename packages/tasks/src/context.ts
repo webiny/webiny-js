@@ -7,6 +7,7 @@ import { createServiceCrud } from "~/crud/service.tasks.js";
 import { createTaskCrud } from "./crud/crud.tasks.js";
 import { createTestingRunTask } from "~/tasks/testingRunTask.js";
 import { createServicePlugins } from "~/service/index.js";
+import { TaskService } from "~/features/TaskService/abstractions.js";
 
 const createTasksCrud = () => {
     const plugin = new ContextPlugin<Context>(async context => {
@@ -27,5 +28,12 @@ const createTasksContext = (): Plugin[] => {
 };
 
 export const createBackgroundTaskContext = (): Plugin[] => {
-    return [createTestingRunTask(), ...createTasksContext()];
+    return [
+        createTestingRunTask(),
+        ...createTasksContext(),
+        new ContextPlugin<Context>(context => {
+            // Register legacy tasks context via a new abstraction
+            context.container.registerInstance(TaskService, context.tasks);
+        })
+    ];
 };

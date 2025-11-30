@@ -1,20 +1,18 @@
-import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import pMap from "p-map";
-import type { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types.js";
+import { createGraphQLSchemaPlugin } from "@webiny/handler-graphql";
+import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
+import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses.js";
-import type { FileManagerContext } from "@webiny/api-file-manager/types.js";
 import { getPresignedPostPayload } from "~/utils/getPresignedPostPayload.js";
-import WebinyError from "@webiny/error";
-import { checkPermissions } from "~/plugins/checkPermissions.js";
+import { checkPermissions } from "./checkPermissions.js";
 import type { PresignedPostPayloadData } from "~/types.js";
 import { CreateMultiPartUploadUseCase } from "~/multiPartUpload/CreateMultiPartUploadUseCase.js";
 import { CompleteMultiPartUploadUseCase } from "~/multiPartUpload/CompleteMultiPartUploadUseCase.js";
 import { createFileNormalizerFromContext } from "~/utils/createFileNormalizerFromContext.js";
+import { GetSettingsUseCase } from "@webiny/api-file-manager/features/settings/GetSettings/abstractions.js";
 
-const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
-    type: "graphql-schema",
-    name: "graphql-schema-api-file-manager-s3",
-    schema: {
+export const createS3GraphQLSchema = () => {
+    return createGraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type UploadFileResponseDataFile {
                 id: ID!
@@ -107,19 +105,16 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
         resolvers: {
             FmQuery: {
                 getPreSignedPostPayload: async (_, args: any, context) => {
+                    const identityContext = context.container.resolve(IdentityContext);
+                    const getSettings = context.container.resolve(GetSettingsUseCase);
+
                     try {
-                        await checkPermissions(context, { rwd: "w" });
+                        await checkPermissions(identityContext, { rwd: "w" });
 
                         const data = args.data as PresignedPostPayloadData;
 
-                        const settings = await context.fileManager.getSettings();
-                        if (!settings) {
-                            throw new WebinyError(
-                                "Missing File Manager Settings.",
-                                "FILE_MANAGER_SETTINGS_ERROR",
-                                { file: data }
-                            );
-                        }
+                        const settingsResult = await getSettings.execute();
+                        const settings = settingsResult.value;
 
                         const normalizer = createFileNormalizerFromContext(context);
                         const presignedPayload = await getPresignedPostPayload(
@@ -137,19 +132,15 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     }
                 },
                 getPreSignedPostPayloads: async (_, args, context) => {
-                    await checkPermissions(context, { rwd: "w" });
+                    const identityContext = context.container.resolve(IdentityContext);
+                    const getSettings = context.container.resolve(GetSettingsUseCase);
+                    await checkPermissions(identityContext, { rwd: "w" });
 
                     const files = args.data as PresignedPostPayloadData[];
 
                     try {
-                        const settings = await context.fileManager.getSettings();
-                        if (!settings) {
-                            throw new WebinyError(
-                                "Missing File Manager Settings.",
-                                "FILE_MANAGER_SETTINGS_ERROR",
-                                { files }
-                            );
-                        }
+                        const settingsResult = await getSettings.execute();
+                        const settings = settingsResult.value;
 
                         const normalizer = createFileNormalizerFromContext(context);
 
@@ -172,7 +163,8 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             },
             FmMutation: {
                 createMultiPartUpload: async (_, args, context) => {
-                    await checkPermissions(context, { rwd: "w" });
+                    const identityContext = context.container.resolve(IdentityContext);
+                    await checkPermissions(identityContext, { rwd: "w" });
 
                     const s3Client = new S3({
                         region: process.env.AWS_REGION
@@ -201,7 +193,8 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     }
                 },
                 completeMultiPartUpload: async (_, args, context) => {
-                    await checkPermissions(context, { rwd: "w" });
+                    const identityContext = context.container.resolve(IdentityContext);
+                    await checkPermissions(identityContext, { rwd: "w" });
 
                     const s3Client = new S3({
                         region: process.env.AWS_REGION
@@ -229,7 +222,5 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 }
             }
         }
-    }
+    });
 };
-
-export default plugin;

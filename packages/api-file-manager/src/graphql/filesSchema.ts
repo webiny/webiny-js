@@ -4,7 +4,6 @@ import {
     ListResponse,
     Response
 } from "@webiny/handler-graphql";
-import type { FileManagerContext, FilesListOpts } from "~/types.js";
 import { emptyResolver, resolve } from "./utils.js";
 import type { CreateFilesTypeDefsParams } from "~/graphql/createFilesTypeDefs.js";
 import { createFilesTypeDefs } from "~/graphql/createFilesTypeDefs.js";
@@ -17,9 +16,11 @@ import { CreateFilesInBatchUseCase } from "~/features/file/CreateFilesInBatch/ab
 import { UpdateFileUseCase } from "~/features/file/UpdateFile/abstractions.js";
 import { DeleteFileUseCase } from "~/features/file/DeleteFile/abstractions.js";
 import { GetSettingsUseCase } from "~/features/settings/GetSettings/abstractions.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import { FileModel } from "~/domain/file/abstractions.js";
 
 export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
-    const fileManagerGraphQL = new GraphQLSchemaPlugin<FileManagerContext>({
+    const fileManagerGraphQL = new GraphQLSchemaPlugin<ApiCoreContext>({
         typeDefs: createFilesTypeDefs(params),
         resolvers: {
             Query: {
@@ -44,7 +45,9 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
                         return new NotAuthorizedResponse();
                     }
 
-                    return resolve(() => context.cms.getModel("fmFile"));
+                    return resolve(async () => {
+                        return context.container.resolve(FileModel);
+                    });
                 },
                 async getFile(_, args: any, context) {
                     const getFile = context.container.resolve(GetFileUseCase);
@@ -56,7 +59,7 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
 
                     return new Response(result.value);
                 },
-                async listFiles(_, args: FilesListOpts, context) {
+                async listFiles(_, args, context) {
                     const listFiles = context.container.resolve(ListFilesUseCase);
                     const result = await listFiles.execute(args);
 
@@ -116,7 +119,7 @@ export const createFilesSchema = (params: CreateFilesTypeDefsParams) => {
                 },
                 async deleteFile(_, args: any, context) {
                     const deleteFile = context.container.resolve(DeleteFileUseCase);
-                    const result = await deleteFile.execute({ id: args.id });
+                    const result = await deleteFile.execute(args.id);
 
                     if (result.isFail()) {
                         return new ErrorResponse(result.error);
