@@ -21,6 +21,7 @@ export interface SettingsPermission extends SecurityPermission {
     name: "fm.setting";
 }
 
+// TODO: implement alias storage
 export interface FileAliasStorageOperations {
     storeAliases(file: FileStorageDto): Promise<void>;
     deleteAliases(file: FileStorageDto): Promise<void>;

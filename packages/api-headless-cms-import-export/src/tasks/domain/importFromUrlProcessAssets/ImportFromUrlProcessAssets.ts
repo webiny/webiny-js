@@ -17,6 +17,9 @@ import { getFilePath } from "~/tasks/utils/helpers/getFilePath.js";
 import { WebinyError } from "@webiny/error";
 import type { ICmsAssetsManifestJson } from "~/tasks/utils/types.js";
 import type { IResolvedAsset } from "~/tasks/utils/entryAssets/index.js";
+import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
+import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
+import { CreateFileUseCase } from "@webiny/api-file-manager/features/file/CreateFile/index.js";
 
 export interface IImportFromUrlProcessAssetsParams {
     fileFetcher: IFileFetcher;
@@ -42,6 +45,9 @@ export class ImportFromUrlProcessAssets<
 
     public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
         const { context, response, input, isCloseToTimeout, isAborted } = params;
+        const getFile = context.container.resolve(GetFileUseCase);
+        const createFile = context.container.resolve(CreateFileUseCase);
+        const updateFile = context.container.resolve(UpdateFileUseCase);
 
         const maxInsertErrors = input.maxInsertErrors || 100;
 
@@ -64,8 +70,8 @@ export class ImportFromUrlProcessAssets<
 
         const recordExists = async (id: string): Promise<boolean> => {
             try {
-                const result = await context.fileManager.getFile(id);
-                return !!result;
+                const result = await getFile.execute(id);
+                return result.isOk();
             } catch {
                 return false;
             }
@@ -173,39 +179,38 @@ export class ImportFromUrlProcessAssets<
              * Update an existing file record.
              */
             if (exists) {
-                try {
-                    await context.fileManager.updateFile(record.id, {
-                        ...record
-                    });
-                } catch (ex) {
+                const updateResult = await updateFile.execute(record);
+
+                if (updateResult.isFail()) {
                     result.errors.push({
                         file: record.key,
-                        message: ex.message
+                        message: updateResult.error.message
                     });
                 }
+
                 continue;
             }
             /**
              * Create a new file record.
              */
-            try {
-                await context.fileManager.createFile({
-                    ...record,
-                    id: record.id,
-                    key: record.key,
-                    size: record.size,
-                    type: record.type,
-                    name: record.name,
-                    meta: record.meta,
-                    aliases: record.aliases,
-                    extensions: record.extensions,
-                    location: record.location,
-                    tags: record.tags
-                });
-            } catch (ex) {
+            const createResult = await createFile.execute({
+                ...record,
+                id: record.id,
+                key: record.key,
+                size: record.size,
+                type: record.type,
+                name: record.name,
+                meta: record.meta,
+                aliases: record.aliases,
+                extensions: record.extensions,
+                location: record.location,
+                tags: record.tags
+            });
+
+            if (createResult.isFail()) {
                 result.errors.push({
                     file: record.key,
-                    message: ex.message
+                    message: createResult.error.message
                 });
             }
         }

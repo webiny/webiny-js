@@ -15,6 +15,7 @@ export interface CreateFileInput {
     type: string;
     name: string;
     meta?: Record<string, any>;
+    extensions?: Record<string, any>;
     tags?: string[];
     location?: { folderId: string };
     aliases?: string[];

@@ -1,9 +1,8 @@
 import { createPrivateTaskDefinition } from "@webiny/tasks";
-import type { FileManagerContext } from "@webiny/api-file-manager/types.js";
 import { InvalidateCloudfrontCacheTask } from "./InvalidateCacheTask.js";
 
 export const createInvalidateCacheTask = () => {
-    return createPrivateTaskDefinition<FileManagerContext>({
+    return createPrivateTaskDefinition({
         id: "cloudfrontInvalidateCache",
         title: "Invalidate Cloudfront Cache",
         description: "A task to invalidate Cloudfront cache by given paths.",

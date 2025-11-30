@@ -1,10 +1,11 @@
 import { S3 } from "@webiny/aws-sdk/client-s3/index.js";
 import { createEventBridgeEventHandler } from "@webiny/handler-aws";
 import { createHandlerOnRequest } from "@webiny/handler";
-import type { GuardDutyEvent, ThreatDetectionContext } from "./types.js";
+import type { GuardDutyEvent } from "./types.js";
 import { processThreatScanResult } from "./processThreatScanResult.js";
 import { S3AssetMetadataReader } from "~/assetDelivery/s3/S3AssetMetadataReader.js";
 import type { EventBridgeEvent } from "@webiny/aws-sdk/types/index.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 const detailType = "GuardDuty Malware Protection Object Scan Result";
 
@@ -43,7 +44,7 @@ export const createThreatDetectionEventHandler = () => {
     // Guard Duty event handler.
     const threatScanEventHandler = createEventBridgeEventHandler<typeof detailType, GuardDutyEvent>(
         async ({ payload, next, ...rest }) => {
-            const context = rest.context as ThreatDetectionContext;
+            const context = rest.context as ApiCoreContext;
 
             const threatDetectionEnabled = context.wcp.canUseFileManagerThreatDetection();
 

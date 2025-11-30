@@ -1,11 +1,12 @@
-import type { GuardDutyEvent, ThreatDetectionContext } from "./types.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import type { GuardDutyEvent } from "./types.js";
 import { ListFilesUseCase } from "@webiny/api-file-manager/features/file/ListFiles/index.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { DeleteFileUseCase } from "@webiny/api-file-manager/features/file/DeleteFile/index.js";
 import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js";
 
 export const processThreatScanResult = async (
-    context: ThreatDetectionContext,
+    context: ApiCoreContext,
     eventDetail: GuardDutyEvent
 ) => {
     const websocketService = context.container.resolve(WebsocketService);

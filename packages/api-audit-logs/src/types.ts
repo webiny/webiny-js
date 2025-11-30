@@ -2,7 +2,6 @@ import type { GenericRecord } from "@webiny/api/types.js";
 import type { Topic } from "@webiny/pubsub/types.js";
 import type { MailerContext } from "@webiny/api-mailer/types.js";
 import type { IAuditLog } from "~/storage/types.js";
-import type { FileManagerContext } from "@webiny/api-file-manager/types.js";
 import type { AcoContext } from "@webiny/api-aco/types.js";
 import type { IStorageListParams } from "~/storage/abstractions/Storage.js";
 import type { Action, App, Entity } from "@webiny/common-audit-logs/types.js";
@@ -80,7 +79,6 @@ export interface AuditLogsContext
         Pick<DbContext, "db">,
         Pick<AcoContext, "aco">,
         Pick<MailerContext, "mailer">,
-        Pick<FileManagerContext, "fileManager">,
         Pick<WebsiteBuilderContext, "websiteBuilder"> {
     auditLogs: AuditLogsContextValue;
 }

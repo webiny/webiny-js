@@ -1,5 +1,4 @@
 import type { Context as BaseContext } from "@webiny/handler/types.js";
-import type { FileManagerContext } from "@webiny/api-file-manager/types.js";
 import type { Context as TasksContext } from "@webiny/tasks/types.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import type { AcoFolderCrud, AcoFolderStorageOperations } from "~/folder/folder.types.js";
@@ -21,7 +20,7 @@ export type * from "./flp/flp.types.js";
 export interface User {
     id: string;
     type: string;
-    displayName: string | null;
+    displayName: string;
 }
 
 export interface ListMeta {
@@ -72,7 +71,6 @@ export interface AcoContext
     extends BaseContext,
         ApiCoreContext,
         CmsContext,
-        FileManagerContext,
         TasksContext {
     aco: AdvancedContentOrganisation;
 }

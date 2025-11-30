@@ -27,6 +27,7 @@ import { getBucket } from "~/tasks/utils/helpers/getBucket.js";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client.js";
 import { UniqueResolver } from "~/tasks/utils/uniqueResolver/UniqueResolver.js";
 import { WEBINY_EXPORT_ASSETS_EXTENSION } from "~/tasks/constants.js";
+import { ListFilesUseCase } from "@webiny/api-file-manager/features/file/ListFiles/index.js";
 
 export interface ICreateCmsAssetsZipperCallableConfig {
     filename: string;
@@ -119,11 +120,10 @@ export class ExportContentAssets<
             createEntryAssetsResolver: () => {
                 return new EntryAssetsResolver({
                     fetchFiles: async params => {
-                        const [items, meta] = await context.fileManager.listFiles(params);
-                        return {
-                            items,
-                            meta
-                        };
+                        const listFiles = context.container.resolve(ListFilesUseCase);
+                        const listResult = await listFiles.execute(params ?? {});
+
+                        return listResult.value;
                     }
                 });
             }

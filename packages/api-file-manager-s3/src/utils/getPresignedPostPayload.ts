@@ -1,8 +1,8 @@
 import type { PresignedPostOptions } from "@webiny/aws-sdk/client-s3/index.js";
 import { S3Client, createPresignedPost } from "@webiny/aws-sdk/client-s3/index.js";
 import { validation } from "@webiny/validation";
-import type { FileManagerSettings } from "@webiny/api-file-manager/types.js";
 import type { FileData, PresignedPostPayloadDataResponse } from "~/types.js";
+import type { FileManagerSettings } from "@webiny/api-file-manager/domain/settings/types.js";
 
 const S3_BUCKET = process.env.S3_BUCKET;
 const UPLOAD_MAX_FILE_SIZE_DEFAULT = 1099511627776; // 1TB

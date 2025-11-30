@@ -1,19 +1,14 @@
-import type {
-    File,
-    FileListMeta,
-    FileListWhereParams,
-    FilesListOpts
-} from "@webiny/api-file-manager/types.js";
+import type { File } from "@webiny/api-file-manager/domain/file/types.js";
 import type { IEntryAssetsResolver, IResolvedAsset } from "./abstractions/EntryAssetsResolver.js";
 import type { IAsset } from "./abstractions/EntryAssets.js";
 
 export interface IFetchFilesCbResult {
     items: File[];
-    meta: FileListMeta;
+    meta: Record<string, any>;
 }
 
 export interface IFetchFilesCb {
-    (opts?: FilesListOpts): Promise<IFetchFilesCbResult>;
+    (opts?: Record<string, any>): Promise<IFetchFilesCbResult>;
 }
 
 export interface IEntryAssetsResolverParams {
@@ -21,28 +16,18 @@ export interface IEntryAssetsResolverParams {
 }
 
 const createResolvedAsset = (file: File): IResolvedAsset => {
-    const result: IResolvedAsset = {
-        ...file,
-        aliases: file.aliases || []
+    return {
+        id: file.id,
+        key: file.key,
+        size: file.size,
+        type: file.type,
+        name: file.name,
+        meta: file.meta,
+        aliases: file.aliases || [],
+        location: file.location,
+        tags: file.tags,
+        extensions: file.extensions
     };
-    /**
-     * We need to remove unnecessary fields from the resolved assets.
-     *
-     * We cannot return specific fields, rather than deleting unnecessary ones, because a user can extend the file model
-     * so we would not know which fields to return.
-     */
-    delete result.savedBy;
-    delete result.savedOn;
-    delete result.modifiedBy;
-    delete result.modifiedOn;
-    delete result.accessControl;
-    delete result.createdBy;
-    delete result.createdOn;
-    delete result.tenant;
-    delete result.locale;
-    delete result.webinyVersion;
-
-    return result;
 };
 
 export class EntryAssetsResolver implements IEntryAssetsResolver {
@@ -64,7 +49,7 @@ export class EntryAssetsResolver implements IEntryAssetsResolver {
         }
 
         const assets: IResolvedAsset[] = [];
-        const where: FileListWhereParams = {};
+        const where: Record<string, any> = {};
         if (keys.length > 0 && aliases.length > 0) {
             where.OR = [
                 {

@@ -3,12 +3,16 @@ import { FolderBeforeDeleteHandler } from "~/features/folders/DeleteFolder/abstr
 import type { FolderBeforeDeleteEvent } from "~/features/folders/DeleteFolder/events.js";
 import { ensureFolderIsEmpty } from "~/folder/ensureFolderIsEmpty.js";
 import type { AcoContext } from "~/types.js";
+import { ListFilesUseCase } from "@webiny/api-file-manager/features/file/ListFiles/index.js";
 
+// TODO: refactor this handler to remove the need for `context`
 export class FmFolderBeforeDeleteHandler implements FolderBeforeDeleteHandler.Interface {
     constructor(private context: AcoContext) {}
 
     async handle(event: FolderBeforeDeleteEvent): Promise<void> {
         const { folder } = event.payload;
+
+        const listFiles = this.context.container.resolve(ListFilesUseCase);
 
         try {
             const { id, type } = folder;
@@ -24,7 +28,7 @@ export class FmFolderBeforeDeleteHandler implements FolderBeforeDeleteHandler.In
                 context: this.context,
                 folder,
                 hasContentCallback: async () => {
-                    const [content] = await this.context.fileManager.listFiles({
+                    const result = await listFiles.execute({
                         where: {
                             location: {
                                 folderId: id
@@ -33,7 +37,9 @@ export class FmFolderBeforeDeleteHandler implements FolderBeforeDeleteHandler.In
                         limit: 1
                     });
 
-                    return content.length > 0;
+                    const { items } = result.value;
+
+                    return items.length > 0;
                 }
             });
         } catch (error) {

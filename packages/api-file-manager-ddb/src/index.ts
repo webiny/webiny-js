@@ -1,6 +1,6 @@
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { PluginCollection } from "@webiny/plugins/types.js";
-import type { FileManagerStorageOperations } from "@webiny/api-file-manager/types.js";
+import type { FileAliasStorageOperations } from "@webiny/api-file-manager/types.js";
 import { AliasesStorageOperations } from "./AliasesStorageOperations.js";
 
 export interface StorageOperationsConfig {
@@ -10,8 +10,6 @@ export interface StorageOperationsConfig {
 
 export const createFileManagerStorageOperations = ({
     documentClient
-}: StorageOperationsConfig): FileManagerStorageOperations => {
-    return {
-        aliases: new AliasesStorageOperations({ documentClient })
-    };
+}: StorageOperationsConfig): FileAliasStorageOperations => {
+    return new AliasesStorageOperations({ documentClient });
 };

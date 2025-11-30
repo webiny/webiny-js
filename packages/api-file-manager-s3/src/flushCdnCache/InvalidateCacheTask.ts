@@ -1,7 +1,6 @@
 import { ServiceDiscovery } from "@webiny/api";
 import { CloudFront } from "@webiny/aws-sdk/client-cloudfront/index.js";
 import type { ITaskRunParams } from "@webiny/tasks/types.js";
-import type { FileManagerContext } from "@webiny/api-file-manager/types.js";
 import { executeWithRetry } from "@webiny/utils";
 import type { ITaskResponseResult } from "@webiny/tasks/response/abstractions/index.js";
 
@@ -25,7 +24,7 @@ export class InvalidateCloudfrontCacheTask {
         input,
         response,
         isCloseToTimeout
-    }: ITaskRunParams<FileManagerContext, InvalidateCacheInput>): Promise<ITaskResponseResult> {
+    }: ITaskRunParams<any, InvalidateCacheInput>): Promise<ITaskResponseResult> {
         const manifest = await ServiceDiscovery.load();
 
         if (!manifest) {

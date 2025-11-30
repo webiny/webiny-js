@@ -1,4 +1,3 @@
-import type { FileManagerContext } from "@webiny/api-file-manager/types.js";
 import type { Context as TasksContext, TaskDataStatus } from "@webiny/tasks/types.js";
 import type { ICmsImportExportRecord } from "./domain/abstractions/CmsImportExportRecord.js";
 import type { GenericRecord, NonEmptyArray } from "@webiny/api/types.js";
@@ -7,6 +6,7 @@ import type {
     CmsEntryListWhere,
     CmsEntryMeta
 } from "@webiny/api-headless-cms/types/index.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 export type * from "./domain/abstractions/CmsImportExportRecord.js";
 
@@ -164,6 +164,6 @@ export interface CmsImportExportObject {
     ): Promise<ICmsImportExportObjectImportFromUrlResult>;
 }
 
-export interface Context extends FileManagerContext, TasksContext {
+export interface Context extends ApiCoreContext, TasksContext {
     cmsImportExport: CmsImportExportObject;
 }

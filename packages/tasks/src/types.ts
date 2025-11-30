@@ -77,7 +77,7 @@ export enum TaskDataStatus {
 
 export interface ITaskIdentity {
     id: string;
-    displayName: string | null;
+    displayName: string;
     type: string;
 }
 
