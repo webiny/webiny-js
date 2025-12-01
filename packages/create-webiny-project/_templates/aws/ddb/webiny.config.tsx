@@ -1,10 +1,5 @@
 import React from "react";
-import { Webiny } from "@webiny/extensions";
 
-export default () => {
-    return (
-        <>
-            <Webiny />
-        </>
-    );
+export const Extensions = () => {
+    return <>{/* Register extensions here. */}</>;
 };

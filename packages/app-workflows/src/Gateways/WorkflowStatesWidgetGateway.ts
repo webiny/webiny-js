@@ -17,10 +17,8 @@ import type {
 import type {
     IApproveWorkflowStateStepResponse,
     IApproveWorkflowStateStepVariables,
-    IListOwnWorkflowStatesResponse,
-    IListOwnWorkflowStatesVariables,
-    IListRequestedWorkflowStatesResponse,
-    IListRequestedWorkflowStatesVariables,
+    IListWorkflowStatesResponse,
+    IListWorkflowStatesVariables,
     IRejectWorkflowStateStepResponse,
     IRejectWorkflowStateStepVariables,
     IStartWorkflowStateStepResponse,
@@ -30,8 +28,8 @@ import type {
 } from "~/Gateways/graphql/workflowStates.js";
 import {
     APPROVE_WORKFLOW_STATE_STEP_MUTATION,
-    LIST_OWN_WORKFLOW_STATES,
-    LIST_REQUESTED_WORKFLOW_STATES,
+    LIST_OWN_WORKFLOW_STATES_QUERY,
+    LIST_REQUESTED_WORKFLOW_STATES_QUERY,
     REJECT_WORKFLOW_STATE_STEP_MUTATION,
     START_WORKFLOW_STATE_STEP_MUTATION,
     TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION
@@ -42,30 +40,30 @@ interface IWorkflowStatesWidgetGatewayParams {
 }
 
 export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway {
-    private readonly client;
+    readonly #client;
 
     public constructor(params: IWorkflowStatesWidgetGatewayParams) {
-        this.client = params.client;
+        this.#client = params.client;
     }
 
     public async listOwnStates(
         params: IWorkflowStatesWidgetGatewayListOwnStatesParams
     ): Promise<IWorkflowStatesWidgetGatewayListOwnStatesResponse> {
         try {
-            const result = await this.client.query<
-                IListOwnWorkflowStatesResponse,
-                IListOwnWorkflowStatesVariables
+            const result = await this.#client.query<
+                IListWorkflowStatesResponse,
+                IListWorkflowStatesVariables
             >({
-                query: LIST_OWN_WORKFLOW_STATES,
+                query: LIST_OWN_WORKFLOW_STATES_QUERY,
                 variables: {
                     ...params
                 },
                 fetchPolicy: "no-cache"
             });
             return {
-                data: result.data.workflows.listOwnWorkflowStates.data,
-                meta: result.data.workflows.listOwnWorkflowStates.meta,
-                error: result.data.workflows.listOwnWorkflowStates.error
+                data: result.data.workflows.listWorkflowStates.data,
+                meta: result.data.workflows.listWorkflowStates.meta,
+                error: result.data.workflows.listWorkflowStates.error
             };
         } catch (ex) {
             return {
@@ -80,20 +78,20 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
         params: IWorkflowStatesWidgetGatewayListRequestedStatesParams
     ): Promise<IWorkflowStatesWidgetGatewayListRequestedStatesResponse> {
         try {
-            const result = await this.client.query<
-                IListRequestedWorkflowStatesResponse,
-                IListRequestedWorkflowStatesVariables
+            const result = await this.#client.query<
+                IListWorkflowStatesResponse,
+                IListWorkflowStatesVariables
             >({
-                query: LIST_REQUESTED_WORKFLOW_STATES,
+                query: LIST_REQUESTED_WORKFLOW_STATES_QUERY,
                 variables: {
                     ...params
                 },
                 fetchPolicy: "no-cache"
             });
             return {
-                data: result.data.workflows.listRequestedWorkflowStates.data,
-                meta: result.data.workflows.listRequestedWorkflowStates.meta,
-                error: result.data.workflows.listRequestedWorkflowStates.error
+                data: result.data.workflows.listWorkflowStates.data,
+                meta: result.data.workflows.listWorkflowStates.meta,
+                error: result.data.workflows.listWorkflowStates.error
             };
         } catch (ex) {
             return {
@@ -107,7 +105,7 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
         params: IWorkflowStatesWidgetGatewayStartStateStepParams
     ): Promise<IWorkflowStatesWidgetGatewayStartStateStepResponse> {
         try {
-            const result = await this.client.mutate<
+            const result = await this.#client.mutate<
                 IStartWorkflowStateStepResponse,
                 IStartWorkflowStateStepVariables
             >({
@@ -133,7 +131,7 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
         params: IWorkflowStatesWidgetGatewayTakeOverStateStepParams
     ): Promise<IWorkflowStatesWidgetGatewayTakeOverStateStepResponse> {
         try {
-            const result = await this.client.mutate<
+            const result = await this.#client.mutate<
                 ITakeOverWorkflowStateStepResponse,
                 ITakeOverWorkflowStateStepVariables
             >({
@@ -159,7 +157,7 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
         params: IWorkflowStatesWidgetGatewayApproveStateStepParams
     ): Promise<IWorkflowStatesWidgetGatewayApproveStateStepResponse> {
         try {
-            const result = await this.client.mutate<
+            const result = await this.#client.mutate<
                 IApproveWorkflowStateStepResponse,
                 IApproveWorkflowStateStepVariables
             >({
@@ -185,7 +183,7 @@ export class WorkflowStatesWidgetGateway implements IWorkflowStatesWidgetGateway
         params: IWorkflowStatesWidgetGatewayRejectStateStepParams
     ): Promise<IWorkflowStatesWidgetGatewayRejectStateStepResponse> {
         try {
-            const result = await this.client.mutate<
+            const result = await this.#client.mutate<
                 IRejectWorkflowStateStepResponse,
                 IRejectWorkflowStateStepVariables
             >({

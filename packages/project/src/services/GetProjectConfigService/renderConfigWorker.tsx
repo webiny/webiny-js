@@ -44,7 +44,7 @@ process.on("unhandledRejection", reason => {
 const { project: projectModelDto } = JSON.parse(process.argv[2]) as RenderConfigParamsDto;
 const project = ProjectModel.fromDto(projectModelDto);
 
-const { default: WebinyConfig } = await import(project.paths.webinyConfigBaseFile.toString());
+const { Extensions } = await import(project.paths.webinyConfigBaseFile.toString());
 
 const onChange = debounce((value: any) => {
     sendSuccess(toObject(value));
@@ -62,6 +62,6 @@ const reactRoot = createRoot(root);
 
 reactRoot.render(
     <Properties onChange={onChange}>
-        <WebinyConfig />
+        <Extensions />
     </Properties>
 );

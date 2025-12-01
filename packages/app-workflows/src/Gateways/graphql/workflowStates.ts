@@ -1,7 +1,6 @@
-import type { IWorkflowState } from "~/types.js";
+import type { IGenericMeta, IWorkflowState, WorkflowStateValue } from "~/types.js";
 import gql from "graphql-tag";
 import type { IWorkflowStateError } from "~/Gateways/abstraction/WorkflowStateGateway.js";
-import type { IWorkflowStatesWidgetError, IWorkflowStatesWidgetMeta } from "~/Gateways/index.js";
 
 const ERROR_FIELD = /* GraphQL */ `
     error {
@@ -245,6 +244,25 @@ export const GET_TARGET_WORKFLOW_STATE_QUERY = gql`
     }
 `;
 
+export interface IListWorkflowStatesVariablesWhereSteps {
+    id?: string;
+    id_in?: string[];
+    state?: WorkflowStateValue;
+    state_in?: WorkflowStateValue[];
+    savedBy?: string;
+    savedBy_in?: string[];
+}
+
+export interface IListWorkflowStatesVariablesWhereTeams {
+    id?: string;
+    id_in?: string[];
+}
+
+export interface IListWorkflowStatesVariablesWhereNotifications {
+    id?: string;
+    id_in?: string[];
+}
+
 export interface IListWorkflowStatesVariablesWhere {
     app?: string;
     app_in?: string[];
@@ -252,6 +270,15 @@ export interface IListWorkflowStatesVariablesWhere {
     targetId_in?: string[];
     targetRevisionId?: string;
     targetRevisionId_in?: string[];
+    state?: WorkflowStateValue;
+    state_in?: WorkflowStateValue[];
+    createdBy?: string;
+    createdBy_in?: string[];
+    savedBy?: string;
+    savedBy_in?: string[];
+    steps?: IListWorkflowStatesVariablesWhereSteps;
+    teams?: IListWorkflowStatesVariablesWhereTeams;
+    notifications?: IListWorkflowStatesVariablesWhereNotifications;
 }
 
 export interface IListWorkflowStatesVariables {
@@ -265,13 +292,14 @@ export interface IListWorkflowStatesResponse {
     workflows: {
         listWorkflowStates: {
             data: IWorkflowState[] | null;
+            meta: IGenericMeta | null;
             error: IWorkflowStateError | null;
         };
     };
 }
 
 export const LIST_WORKFLOW_STATES_QUERY = gql`
-    query ListWorkflowStates($where: ListWorkflowStatesWhereInput, $limit: Number, $sort: [ListWorkflowStatesSort!], $after: String) {
+    query ListWorkflowStates($where: ListWorkflowStatesWhereInput, $limit: Int, $sort: [ListWorkflowStatesSort!], $after: String) {
         workflows {
             listWorkflowStates(where: $where, limit: $limit, sort: $sort, after: $after) {
                 data ${WORKFLOW_STATE}
@@ -282,29 +310,10 @@ export const LIST_WORKFLOW_STATES_QUERY = gql`
     }
 `;
 
-export interface IListWidgetWorkflowStatesParamsWhere {
-    state: string;
-}
-
-export interface IListOwnWorkflowStatesVariables {
-    where: IListWidgetWorkflowStatesParamsWhere;
-    limit: number;
-}
-
-export interface IListOwnWorkflowStatesResponse {
-    workflows: {
-        listOwnWorkflowStates: {
-            data: IWorkflowState[] | null;
-            meta: IWorkflowStatesWidgetMeta | null;
-            error: IWorkflowStatesWidgetError | null;
-        };
-    };
-}
-
-export const LIST_OWN_WORKFLOW_STATES = gql`
-    query ListOwnWorkflowStates($where: ListOwnWorkflowStatesWhereInput!, $limit: Int!) {
+export const LIST_OWN_WORKFLOW_STATES_QUERY = gql`
+    query ListOwnWorkflowStates($where: ListWorkflowStatesWhereInput, $limit: Int, $sort: [ListWorkflowStatesSort!], $after: String) {
         workflows {
-            listOwnWorkflowStates(where: $where, limit: $limit) {
+            listWorkflowStates: listOwnWorkflowStates(where: $where, limit: $limit, sort: $sort, after: $after) {
                 data ${WORKFLOW_STATE}
                 ${META_FIELDS}
                 ${ERROR_FIELD}
@@ -313,25 +322,10 @@ export const LIST_OWN_WORKFLOW_STATES = gql`
     }
 `;
 
-export interface IListRequestedWorkflowStatesVariables {
-    where: IListWidgetWorkflowStatesParamsWhere;
-    limit: number;
-}
-
-export interface IListRequestedWorkflowStatesResponse {
-    workflows: {
-        listRequestedWorkflowStates: {
-            data: IWorkflowState[] | null;
-            meta: IWorkflowStatesWidgetMeta | null;
-            error: IWorkflowStatesWidgetError | null;
-        };
-    };
-}
-
-export const LIST_REQUESTED_WORKFLOW_STATES = gql`
-    query ListRequestedWorkflowStates($where: ListRequestedWorkflowStatesWhereInput!, $limit: Int!) {
+export const LIST_REQUESTED_WORKFLOW_STATES_QUERY = gql`
+    query ListRequestedWorkflowStates($where: ListWorkflowStatesWhereInput, $limit: Int, $sort: [ListWorkflowStatesSort!], $after: String) {
         workflows {
-            listRequestedWorkflowStates(where: $where, limit: $limit) {
+            listWorkflowStates: listRequestedWorkflowStates(where: $where, limit: $limit, sort: $sort, after: $after) {
                 data ${WORKFLOW_STATE}
                 ${META_FIELDS}
                 ${ERROR_FIELD}

@@ -104,19 +104,22 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
 
         const project = projectSdk.getProject();
 
-        const importFromPath = (filePath: string) => {
+        const importFromPath = async (filePath: string) => {
             let importPath = filePath;
             if (!path.isAbsolute(filePath)) {
                 // If the path is not absolute, we assume it's relative to the current working directory.
                 importPath = project.paths.rootFolder.join(filePath).toString();
             }
 
-            return import(importPath);
+            const exportName = path.basename(filePath).replace(path.extname(filePath), "");
+
+            const importedModule = await import(importPath);
+            return importedModule[exportName];
         };
 
         const commands = projectConfig.extensionsByType<any>("Cli/Command");
         for (const command of commands) {
-            const { default: commandImplementation } = await importFromPath(command.params.src);
+            const commandImplementation = await importFromPath(command.params.src);
 
             container.register(commandImplementation).inSingletonScope();
         }

@@ -1,5 +1,10 @@
-import type { IWorkflowState } from "~/types.js";
+import type { IGenericMeta, IWorkflowState, WorkflowStateValue } from "~/types.js";
 import type { NonEmptyArray } from "@webiny/app/types.js";
+import type {
+    IWorkflowStateListGatewayListParamsWhereNotifications,
+    IWorkflowStateListGatewayListParamsWhereSteps,
+    IWorkflowStateListGatewayListParamsWhereTeams
+} from "~/Gateways/abstraction/WorkflowStateListGateway.js";
 
 export interface IWorkflowStateErrorDataInvalidFieldData {
     path: NonEmptyArray<string>;
@@ -26,17 +31,33 @@ export interface IWorkflowStateError {
     stack?: string;
 }
 
+export interface IWorkflowStateGatewayListWorkflowStatesParamsWhere {
+    app?: string;
+    app_in?: string[];
+    targetId?: string;
+    targetId_in?: string[];
+    targetRevisionId?: string;
+    targetRevisionId_in?: string[];
+    state?: WorkflowStateValue;
+    state_in?: WorkflowStateValue[];
+    createdBy?: string;
+    createdBy_in?: string[];
+    savedBy?: string;
+    savedBy_in?: string[];
+    steps?: IWorkflowStateListGatewayListParamsWhereSteps;
+    teams?: IWorkflowStateListGatewayListParamsWhereTeams;
+    notifications?: IWorkflowStateListGatewayListParamsWhereNotifications;
+}
+
 export interface IWorkflowStateGatewayListWorkflowStatesParams {
-    where?: {
-        app?: string;
-        targetRevisionId?: string;
-    };
+    where?: IWorkflowStateGatewayListWorkflowStatesParamsWhere;
     limit?: number;
     after?: string;
 }
 
 export interface IWorkflowStateGatewayListWorkflowStatesResponse {
     data: IWorkflowState[] | null;
+    meta: IGenericMeta | null;
     error: IWorkflowStateError | null;
 }
 

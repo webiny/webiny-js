@@ -1,12 +1,12 @@
 import React from "react";
 import { Webiny } from "@webiny/project-aws/extensions/Webiny.js";
-import WebinyConfigTsx from "../../webiny.config.js";
+import { Extensions as WebinyConfigTsx } from "../../webiny.config.js";
 
-export default function WebinyConfigBase() {
+export const Extensions = () => {
     return (
         <>
             <Webiny />
             <WebinyConfigTsx />
         </>
     );
-}
+};

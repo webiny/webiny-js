@@ -56,11 +56,12 @@ export const Table = () => {
     const navigateToFolder = useCallback(
         (folderId: string) => {
             goToRoute(Routes.ContentEntries.List, {
+                ...route.params,
                 modelId: model.modelId,
                 folderId
             });
         },
-        [model.modelId]
+        [model.modelId, route.params]
     );
 
     const createNavigateFolderStorageKey = useCallback(() => {

@@ -1,6 +1,7 @@
 import React from "react";
 import { Dialog, Grid } from "@webiny/admin-ui";
 import { ReactComponent as RejectIcon } from "@webiny/icons/do_not_disturb.svg";
+import { YouCanTrackAllContentReviewsHere } from "~/Components/Common/index.js";
 
 interface IRejectSuccessDialogProps {
     hide: () => void;
@@ -34,7 +35,7 @@ export const RejectSuccessDialog = (props: IRejectSuccessDialogProps) => {
                     been notified.
                 </Grid.Column>
                 <Grid.Column span={12}>
-                    You can track all Content Reviews <u>here</u>.
+                    <YouCanTrackAllContentReviewsHere />
                 </Grid.Column>
             </Grid>
         </Dialog>

@@ -1,5 +1,5 @@
-import { Abstraction } from "@webiny/di";
 import { ExtensionDefinitionModel } from "@webiny/project/extensions/index.js";
+import { Abstraction } from "@webiny/di";
 
 export interface ICliParams {
     cwd?: string;
@@ -12,6 +12,7 @@ export interface ICliParamsService {
 }
 
 export const CliParamsService = new Abstraction<ICliParamsService>("CliParamsService");
+// export const CliParamsService = createAbstraction<ICliParamsService>("CliParamsService");
 
 export namespace CliParamsService {
     export type Interface = ICliParamsService;

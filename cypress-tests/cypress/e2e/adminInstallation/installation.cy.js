@@ -19,42 +19,37 @@ context("Admin Installation", () => {
         },
         () => {
             cy.clearLocalStorage();
-            // 1. Security installation.
+
+            cy.visit(Cypress.env("ADMIN_URL"));
+            cy.findByText("Let's get started").click();
+
+            cy.findByLabelText("Project name").type("Webiny (Cypress Test)");
+            cy.findByLabelText("Organization name").type("Webiny");
+
+            // Where did you hear about Webiny?
+            cy.findByRole("combobox").click();
+            cy.findByText("GitHub").click();
+
+            cy.findByLabelText("I agree to Webiny’s Terms of Service and Privacy policy.").click();
+
+            cy.findByText("Next step").click();
+
             const firstName = Cypress.env("DEFAULT_ADMIN_USER_FIRST_NAME");
             const lastName = Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME");
             const username = Cypress.env("DEFAULT_ADMIN_USER_USERNAME");
             const password = Cypress.env("DEFAULT_ADMIN_USER_PASSWORD");
 
-            cy.visit(Cypress.env("ADMIN_URL"));
-            cy.findByTestId("install-security-button").click();
-            cy.findByLabelText("First Name").type(firstName);
-            cy.findByLabelText("Last Name").type(lastName);
-            cy.findAllByLabelText("Email").first().type(lastName);
-            cy.findByTestId("install-security-button").click();
+            cy.findByLabelText("First name").type(firstName);
+            cy.findByLabelText("Last name").type(lastName);
+            cy.findByLabelText("Your email").type(username);
+            cy.findByLabelText("Choose password").type(password);
+            cy.findByText("Next step").click();
+            cy.findByText("Start using Webiny").click();
 
-            cy.findByText("Value must be a valid e-mail address.").should("exist");
-
-            cy.findAllByLabelText("Email").first().clear().type(username);
-            cy.findAllByLabelText("Password").first().type(password);
-
-            cy.findByTestId("install-security-button").click();
-
-            // 1.1. Log in with the newly created user.
             cy.findByLabelText("Email").type(username);
             cy.findByLabelText("Password").type(password);
-            cy.findByTestId("submit-sign-in-form-button").click();
-
-            // TODO: finish the test once we've updated the UI.
-
-            // // 3. Headless CMS installation (happens automatically, nothing to type / select here).
-            //
-            // // 4. File Manager installation (happens automatically, nothing to type / select here).
-            // // Wait for the File Manager installation to finish.
-            // cy.get(".react-spinner-material").should("not.exist");
-            //
-            // // 5. Installation complete, click the button and check if the dashboard is loaded.
-            // cy.findByTestId("open-webiny-cms-admin-button").click();
-            // cy.findByText(/what are we doing today?/i).should("exist");
+            cy.findByText("Submit").click();
+            cy.findByText(/Join our community/i);
         }
     );
 });

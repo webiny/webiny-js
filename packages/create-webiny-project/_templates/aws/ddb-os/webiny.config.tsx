@@ -1,10 +1,9 @@
 import React from "react";
-import { Webiny, Project } from "@webiny/extensions";
+import { Infra } from "webiny/extensions";
 
-export default () => {
+export const Extensions = () => {
     return (
         <>
-            <Webiny />
             <Infra.OpenSearch enabled={true} />
         </>
     );

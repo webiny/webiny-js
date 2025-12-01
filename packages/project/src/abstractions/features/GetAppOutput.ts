@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IBaseAppParams } from "~/abstractions/types.js";
 import { type ExecaChildProcess } from "execa";
 
@@ -12,7 +12,7 @@ export interface IGetAppOutput {
     execute(params: IGetAppOutputParams): Promise<{ pulumiProcess: IPulumiProcess }>;
 }
 
-export const GetAppOutput = new Abstraction<IGetAppOutput>("GetAppOutput");
+export const GetAppOutput = createAbstraction<IGetAppOutput>("GetAppOutput");
 
 export namespace GetAppOutput {
     export type Interface = IGetAppOutput;

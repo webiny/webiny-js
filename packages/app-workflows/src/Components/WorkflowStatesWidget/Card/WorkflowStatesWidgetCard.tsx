@@ -1,9 +1,8 @@
 import React from "react";
-import { Button, Card, Icon } from "@webiny/admin-ui";
+import { Card, Widget } from "@webiny/admin-ui";
 import { ReactComponent as ReviewRequestsIcon } from "@webiny/icons/reviews.svg";
-import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { observer } from "mobx-react-lite";
-import { useWorkflowStatesWidget } from "../Provider/useWorkflowStatesWidget.js";
+import { useWorkflowStatesWidget } from "../hooks/useWorkflowStatesWidget.js";
 import { WorkflowStatesWidgetCardTabs } from "./WorkflowStatesWidgetCardTabs.js";
 import {
     ApproveDialog,
@@ -15,6 +14,8 @@ import {
     TakeOverDialog,
     TakeOverSuccessDialog
 } from "../Dialogs/index.js";
+import { Routes } from "~/routes.js";
+import { useRouter } from "@webiny/app";
 
 interface IWorkflowStateWidgetCardProps {
     title: React.ReactNode;
@@ -22,6 +23,8 @@ interface IWorkflowStateWidgetCardProps {
 
 export const WorkflowStateWidgetCard = observer(({ title }: IWorkflowStateWidgetCardProps) => {
     const { presenter } = useWorkflowStatesWidget();
+
+    const router = useRouter();
 
     return (
         <>
@@ -49,7 +52,9 @@ export const WorkflowStateWidgetCard = observer(({ title }: IWorkflowStateWidget
             {presenter.vm.showRejectSuccessDialog ? (
                 <RejectSuccessDialog state={presenter.vm.showRejectSuccessDialog} />
             ) : null}
-            <Card
+            <Widget
+                variant={"base"}
+                outline={true}
                 icon={
                     <Card.Icon
                         icon={<ReviewRequestsIcon />}
@@ -58,21 +63,21 @@ export const WorkflowStateWidgetCard = observer(({ title }: IWorkflowStateWidget
                     />
                 }
                 title={title}
-                actions={
-                    <Button
-                        variant={"ghost"}
-                        size={"sm"}
-                        icon={<Icon icon={<AddIcon />} label={"View All"} />}
+                headerActions={
+                    <Widget.Action
+                        onClick={() => {
+                            router.goToRoute(Routes.Workflows.ContentReviews, {
+                                type: presenter.vm.type
+                            });
+                        }}
                     >
                         View All
-                    </Button>
+                    </Widget.Action>
                 }
-                actionsPosition={"header"}
                 bodyPadding={false}
-                elevation="small"
             >
                 <WorkflowStatesWidgetCardTabs presenter={presenter} />
-            </Card>
+            </Widget>
         </>
     );
 });

@@ -19,7 +19,7 @@ export class DefaultBuildApp implements BuildApp.Interface {
     ) {}
 
     async execute(params: BuildApp.Params) {
-        await this.buildAppWorkspaceService.execute(params);
+        await this.buildAppWorkspaceService.execute(params, { forceRebuild: true });
 
         const projectConfig = await this.getProjectConfigService.execute({
             tags: { appName: params.app, runtimeContext: "app-build" },

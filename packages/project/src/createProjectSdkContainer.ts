@@ -46,6 +46,7 @@ import {
 } from "./features/index.js";
 
 import {
+    getAppService,
     buildAppWorkspaceService,
     buildProjectWorkspaceService,
     getAppPackagesService,
@@ -130,6 +131,7 @@ export const createProjectSdkContainer = async (
     const container = new Container();
 
     // Services.
+    container.register(getAppService).inSingletonScope();
     container.register(buildAppWorkspaceService).inSingletonScope();
     container.register(buildProjectWorkspaceService).inSingletonScope();
     container.register(getAppPackagesService).inSingletonScope();
@@ -221,14 +223,17 @@ export const createProjectSdkContainer = async (
 
     const project = container.resolve(GetProject).execute();
 
-    const importFromPath = (filePath: string) => {
+    const importFromPath = async (filePath: string) => {
         let importPath = filePath;
         if (!path.isAbsolute(filePath)) {
             // If the path is not absolute, we assume it's relative to the current working directory.
             importPath = project.paths.rootFolder.join(filePath).toString();
         }
 
-        return import(importPath);
+        const exportName = path.basename(filePath).replace(path.extname(filePath), "");
+
+        const importedModule = await import(importPath);
+        return importedModule[exportName];
     };
 
     // Hooks.
@@ -257,7 +262,7 @@ export const createProjectSdkContainer = async (
     ];
 
     for (const hookExtension of hooksExtensions) {
-        const { default: hookImpl } = await importFromPath(hookExtension.params.src);
+        const hookImpl = await importFromPath(hookExtension.params.src);
         container.register(hookImpl).inSingletonScope();
     }
 
@@ -268,7 +273,7 @@ export const createProjectSdkContainer = async (
     ];
 
     for (const pulumiExtension of pulumiExtensions) {
-        const { default: pulumiImpl } = await importFromPath(pulumiExtension.params.src);
+        const pulumiImpl = await importFromPath(pulumiExtension.params.src);
         container.register(pulumiImpl).inSingletonScope();
     }
 
@@ -285,7 +290,7 @@ export const createProjectSdkContainer = async (
     const projectDecorators = [...projectExtensions.extensionsByType(projectDecoratorExt)];
 
     for (const projectDecorator of projectDecorators) {
-        const { default: projectDecoratorImpl } = await importFromPath(projectDecorator.params.src);
+        const projectDecoratorImpl = await importFromPath(projectDecorator.params.src);
         container.registerDecorator(projectDecoratorImpl);
     }
 

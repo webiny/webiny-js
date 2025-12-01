@@ -124,21 +124,22 @@ export class WatchCommand implements Command.Interface<IWatchCommandParams> {
                 }
             ],
             handler: async (params: IWatchCommandParams) => {
-                const { packagesWatcher, webinyConfigWatcher } = await projectSdk.watch(params);
+                const { packagesWatcher } = await projectSdk.watch(params);
 
-                if (webinyConfigWatcher) {
-                    webinyConfigWatcher
-                        .onError(err => {
-                            ui.error(
-                                `There is an error in your %s file: ${err.message}`,
-                                "webiny.config.tsx"
-                            );
-                        })
-                        .onSuccess(() => {
-                            ui.success(`%s compiled successfully!`, "webiny.config.tsx");
-                        })
-                        .run();
-                }
+                // TODO: Revisit this.
+                // if (webinyConfigWatcher) {
+                //     webinyConfigWatcher
+                //         .onError(err => {
+                //             ui.error(
+                //                 `There is an error in your %s file: ${err.message}`,
+                //                 "webiny.config.tsx"
+                //             );
+                //         })
+                //         .onSuccess(() => {
+                //             ui.success(`%s compiled successfully!`, "webiny.config.tsx");
+                //         })
+                //         .run();
+                // }
 
                 // TODO: Extract this logic into WatchRunners, same thing we have with BuildRunners.
                 const watchProcesses = packagesWatcher.prepare();

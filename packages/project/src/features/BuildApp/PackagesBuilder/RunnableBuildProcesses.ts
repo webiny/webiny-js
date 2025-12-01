@@ -1,7 +1,7 @@
 import { type RunnableBuildProcess } from "./RunnableBuildProcess.js";
 import { type ForkOptions } from "child_process";
 import { type PackagesBuilder } from "./PackagesBuilder.js";
-import { type IRunnableBuildProcesses } from "~/abstractions/models/index.js";
+import { type IRunnableBuildProcesses, IRunOptions } from "~/abstractions/models/index.js";
 
 export class RunnableBuildProcesses implements IRunnableBuildProcesses {
     builder: PackagesBuilder;
@@ -12,7 +12,7 @@ export class RunnableBuildProcesses implements IRunnableBuildProcesses {
         this.runnableBuildProcesses = runnableBuildProcesses;
     }
 
-    async run() {
+    async run(options?: IRunOptions) {
         const buildParams = this.builder.getBuildParams();
 
         const onBeforeBuildCallbacks = this.builder.getOnBeforeBuildCallbacks();
@@ -20,9 +20,15 @@ export class RunnableBuildProcesses implements IRunnableBuildProcesses {
             await onBeforeBuildCallback(buildParams);
         }
 
-        await Promise.all(
-            this.runnableBuildProcesses.map(runnableBuildProcess => runnableBuildProcess.run())
-        );
+        for (const runnableBuildProcess of this.runnableBuildProcesses) {
+            if (options?.beforeBuild) {
+                await options.beforeBuild(runnableBuildProcess);
+            }
+            await runnableBuildProcess.run();
+            if (options?.afterBuild) {
+                await options.afterBuild(runnableBuildProcess);
+            }
+        }
 
         const onAfterBuildCallbacks = this.builder.getOnAfterBuildCallbacks();
         for (const onAfterBuildCallback of onAfterBuildCallbacks) {

@@ -56,7 +56,7 @@ const AdminUserInputs = () => {
                     name={"AdminUser.password"}
                     validators={[passwordValidator, validation.create("required")]}
                 >
-                    <Input label={"Choose Password"} type={"password"} autoComplete={"off"} />
+                    <Input label={"Choose password"} type={"password"} autoComplete={"off"} />
                 </Bind>
             </Grid.Column>
 

@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface IProjectInfoServiceResult {
     webiny: {
@@ -30,7 +30,7 @@ export interface IProjectInfoService {
     execute(): Promise<IProjectInfoServiceResult>;
 }
 
-export const ProjectInfoService = new Abstraction<IProjectInfoService>("ProjectInfoService");
+export const ProjectInfoService = createAbstraction<IProjectInfoService>("ProjectInfoService");
 
 export namespace ProjectInfoService {
     export type Interface = IProjectInfoService;
