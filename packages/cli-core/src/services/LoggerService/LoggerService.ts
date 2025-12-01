@@ -53,9 +53,8 @@ export class DefaultLoggerService implements LoggerService.Interface {
             return this.pinoLogger;
         }
 
-        const argv = this.getArgvService.execute();
         const logStream = this.getLogStream();
-        const level = process.env.WEBINY_LOG_LEVEL || argv.logLevel || DEFAULT_LOG_LEVEL;
+        const level = this.getLogLevel();
 
         this.pinoLogger = pino({ level }, logStream);
 
@@ -98,6 +97,11 @@ export class DefaultLoggerService implements LoggerService.Interface {
         const now = new Date();
         const dateStr = now.toISOString().split("T")[0];
         return `logs-${dateStr}.log`;
+    }
+
+    private getLogLevel() {
+        const argv = this.getArgvService.execute();
+        return process.env.WEBINY_LOG_LEVEL || argv.logLevel || DEFAULT_LOG_LEVEL;
     }
 }
 
