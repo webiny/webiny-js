@@ -7,7 +7,6 @@ import { GroupSlugTakenError } from "~/domain/contentModelGroup/errors.js";
 import { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
-import { CmsContext } from "~/features/shared/abstractions.js";
 import { toSlug } from "~/utils/toSlug.js";
 import { generateAlphaNumericId } from "@webiny/utils";
 import type { CmsGroup } from "~/types/index.js";

@@ -179,7 +179,7 @@ export const createSchedulerGraphQL = () => {
 
                         const listActions = context.container.resolve(ListScheduledActionsUseCase);
 
-                        const { type, targetId, ...where } = validated.data.where ?? {};
+                        const { type, ...where } = validated.data.where ?? {};
 
                         if (type) {
                             // @ts-expect-error

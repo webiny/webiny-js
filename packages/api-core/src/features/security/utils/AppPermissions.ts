@@ -1,5 +1,4 @@
 import type { SecurityPermission, SecurityIdentity, CreatedBy } from "~/types/security.js";
-import { NotAuthorizedError } from "~/features/security/shared/index.js";
 
 const FULL_ACCESS_PERMISSION_NAME = "*";
 

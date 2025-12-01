@@ -3,7 +3,6 @@ import { Result } from "@webiny/feature/api";
 import type { CmsModel } from "~/types/index.js";
 import type { CmsModelCreateFromInput } from "~/types/index.js";
 import {
-    type ModelSlugTakenError,
     ModelNotAuthorizedError,
     type ModelNotFoundError,
     type ModelValidationError,

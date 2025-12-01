@@ -16,7 +16,6 @@ import { removeNullValues, removeUndefinedValues } from "@webiny/utils";
 import { getState } from "./state.js";
 import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
-import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 
 interface CreateEntryRevisionFromDataParams {
     metaInput?: Record<string, any>;

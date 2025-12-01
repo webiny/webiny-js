@@ -24,7 +24,7 @@ class CancelScheduledActionOnPublishHandlerImpl implements EntryAfterPublishHand
                 modelId: model.modelId,
                 targetId: entry.id
             });
-        } catch (error) {
+        } catch {
             // Silently ignore errors - this is non-critical cleanup
             // The entry was published successfully, cancelling scheduled actions is best-effort
         }

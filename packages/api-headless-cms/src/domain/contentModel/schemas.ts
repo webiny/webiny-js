@@ -182,28 +182,6 @@ const refinementPluralValidationMessage = (value?: string) => {
     };
 };
 
-const refinementModelIdValidation = (value?: string) => {
-    if (!value) {
-        return true;
-    } else if (value.match(/^[a-zA-Z]/) === null) {
-        return false;
-    }
-    const camelCasedValue = camelCase(value).toLowerCase();
-    return camelCasedValue === value.toLowerCase();
-};
-const refinementModelIdValidationMessage = (value?: string) => {
-    if (!value) {
-        return {};
-    } else if (value.match(/^[a-zA-Z]/) === null) {
-        return {
-            message: `The modelId "${value}" is not valid. It must start with a A-Z or a-z.`
-        };
-    }
-    return {
-        message: `The modelId "${value}" is not valid.`
-    };
-};
-
 const modelIdTransformation = (value?: string) => {
     if (!value) {
         return value;

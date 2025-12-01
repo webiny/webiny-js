@@ -24,7 +24,7 @@ class CancelScheduledActionOnUnpublishHandlerImpl implements EntryAfterUnpublish
                 modelId: model.modelId,
                 targetId: entry.id
             });
-        } catch (error) {
+        } catch {
             // Silently ignore errors - this is non-critical cleanup
             // The entry was unpublished successfully, cancelling scheduled actions is best-effort
         }

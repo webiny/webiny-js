@@ -24,7 +24,7 @@ class CancelScheduledActionOnDeleteHandlerImpl implements EntryAfterDeleteHandle
                 modelId: model.modelId,
                 targetId: entry.id
             });
-        } catch (error) {
+        } catch {
             // Silently ignore errors - this is non-critical cleanup
             // The entry was deleted successfully, cancelling scheduled actions is best-effort
         }

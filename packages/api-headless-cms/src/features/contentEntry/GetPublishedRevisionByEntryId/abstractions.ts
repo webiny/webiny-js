@@ -2,7 +2,6 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsEntry } from "~/types/index.js";
 import type { CmsModel } from "~/types/index.js";
-import type { CmsEntryStorageOperationsGetPublishedRevisionParams } from "~/types/index.js";
 import { EntryNotFoundError, type EntryPersistenceError } from "~/domain/contentEntry/errors.js";
 
 /**

@@ -7,10 +7,6 @@ import {
 } from "~/domain/file/errors.js";
 import { File } from "~/domain/file/types.js";
 
-export interface DeleteFileInput {
-    id: string;
-}
-
 /**
  * DeleteFile repository interface
  */

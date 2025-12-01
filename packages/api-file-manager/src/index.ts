@@ -22,7 +22,7 @@ interface FileManagerContextParams {
     fileAliasStorageOperations: FileAliasStorageOperations;
 }
 
-export const createFileManagerContext = (params: FileManagerContextParams) => {
+export const createFileManagerContext = (_: FileManagerContextParams) => {
     const plugin = new ContextPlugin<ApiCoreContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);
         const getModel = context.container.resolve(GetModelUseCase);

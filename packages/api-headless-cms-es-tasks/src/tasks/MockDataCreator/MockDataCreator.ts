@@ -1,6 +1,5 @@
 import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import type { IMockDataCreatorInput, IMockDataCreatorOutput } from "./types.js";
-import type { CmsModelManager } from "@webiny/api-headless-cms/types/index.js";
 import { mockData } from "./mockData.js";
 import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy/index.js";
 import type { Context } from "~/types.js";
