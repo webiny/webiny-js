@@ -25,6 +25,7 @@ export const createRsbuildConfig = ({ cwd }) => {
                 );
             }
         },
+        server: { port: 3001 },
         html: {
             title: "Webiny",
             favicon: paths.admin.faviconFile
