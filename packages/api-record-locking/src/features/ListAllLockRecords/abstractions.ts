@@ -5,7 +5,10 @@ import type { LockRecordPersistenceError } from "~/domain/errors.js";
 import type { CmsEntryListParams, CmsEntryMeta } from "@webiny/api-headless-cms/types";
 
 // Input/Output types
-export type ListAllLockRecordsInput = Pick<CmsEntryListParams, "where" | "limit" | "sort" | "after">;
+export type ListAllLockRecordsInput = Pick<
+    CmsEntryListParams,
+    "where" | "limit" | "sort" | "after"
+>;
 
 export interface ListAllLockRecordsOutput {
     items: ILockRecord[];
@@ -16,7 +19,9 @@ export interface ListAllLockRecordsOutput {
  * ListAllLockRecords Use Case - Lists all lock records without filtering
  */
 export interface IListAllLockRecordsUseCase {
-    execute(input?: ListAllLockRecordsInput): Promise<Result<ListAllLockRecordsOutput, UseCaseError>>;
+    execute(
+        input?: ListAllLockRecordsInput
+    ): Promise<Result<ListAllLockRecordsOutput, UseCaseError>>;
 }
 
 export interface IListAllLockRecordsUseCaseErrors {
@@ -25,7 +30,9 @@ export interface IListAllLockRecordsUseCaseErrors {
 
 type UseCaseError = IListAllLockRecordsUseCaseErrors[keyof IListAllLockRecordsUseCaseErrors];
 
-export const ListAllLockRecordsUseCase = createAbstraction<IListAllLockRecordsUseCase>("ListAllLockRecordsUseCase");
+export const ListAllLockRecordsUseCase = createAbstraction<IListAllLockRecordsUseCase>(
+    "ListAllLockRecordsUseCase"
+);
 
 export namespace ListAllLockRecordsUseCase {
     export type Interface = IListAllLockRecordsUseCase;
@@ -36,16 +43,21 @@ export namespace ListAllLockRecordsUseCase {
  * ListAllLockRecordsRepository - Fetches all lock records from storage
  */
 export interface IListAllLockRecordsRepository {
-    execute(input?: ListAllLockRecordsInput): Promise<Result<ListAllLockRecordsOutput, RepositoryError>>;
+    execute(
+        input?: ListAllLockRecordsInput
+    ): Promise<Result<ListAllLockRecordsOutput, RepositoryError>>;
 }
 
 export interface IListAllLockRecordsRepositoryErrors {
     persistence: LockRecordPersistenceError;
 }
 
-type RepositoryError = IListAllLockRecordsRepositoryErrors[keyof IListAllLockRecordsRepositoryErrors];
+type RepositoryError =
+    IListAllLockRecordsRepositoryErrors[keyof IListAllLockRecordsRepositoryErrors];
 
-export const ListAllLockRecordsRepository = createAbstraction<IListAllLockRecordsRepository>("ListAllLockRecordsRepository");
+export const ListAllLockRecordsRepository = createAbstraction<IListAllLockRecordsRepository>(
+    "ListAllLockRecordsRepository"
+);
 
 export namespace ListAllLockRecordsRepository {
     export type Interface = IListAllLockRecordsRepository;

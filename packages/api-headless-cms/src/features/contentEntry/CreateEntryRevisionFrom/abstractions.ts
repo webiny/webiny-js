@@ -35,8 +35,9 @@ export interface ICreateEntryRevisionFromUseCaseErrors {
 type UseCaseError =
     ICreateEntryRevisionFromUseCaseErrors[keyof ICreateEntryRevisionFromUseCaseErrors];
 
-export const CreateEntryRevisionFromUseCase =
-    createAbstraction<ICreateEntryRevisionFromUseCase>("CreateEntryRevisionFromUseCase");
+export const CreateEntryRevisionFromUseCase = createAbstraction<ICreateEntryRevisionFromUseCase>(
+    "CreateEntryRevisionFromUseCase"
+);
 
 export namespace CreateEntryRevisionFromUseCase {
     export type Interface = ICreateEntryRevisionFromUseCase;

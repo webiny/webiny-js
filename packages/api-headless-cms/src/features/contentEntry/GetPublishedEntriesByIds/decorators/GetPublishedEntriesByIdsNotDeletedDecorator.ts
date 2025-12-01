@@ -9,7 +9,9 @@ import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
  * This decorator wraps the GetPublishedEntriesByIdsUseCase and filters out
  * entries marked as deleted (wbyDeleted flag).
  */
-class GetPublishedEntriesByIdsNotDeletedDecoratorImpl implements GetPublishedEntriesByIdsUseCase.Interface {
+class GetPublishedEntriesByIdsNotDeletedDecoratorImpl
+    implements GetPublishedEntriesByIdsUseCase.Interface
+{
     constructor(private decoratee: GetPublishedEntriesByIdsUseCase.Interface) {}
 
     async execute<T extends CmsEntryValues>(

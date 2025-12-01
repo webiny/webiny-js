@@ -21,9 +21,8 @@ export interface IInitializeModelUseCaseErrors {
 
 type UseCaseError = IInitializeModelUseCaseErrors[keyof IInitializeModelUseCaseErrors];
 
-export const InitializeModelUseCase = createAbstraction<IInitializeModelUseCase>(
-    "InitializeModelUseCase"
-);
+export const InitializeModelUseCase =
+    createAbstraction<IInitializeModelUseCase>("InitializeModelUseCase");
 
 export namespace InitializeModelUseCase {
     export type Interface = IInitializeModelUseCase;

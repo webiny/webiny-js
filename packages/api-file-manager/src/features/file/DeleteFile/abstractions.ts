@@ -25,7 +25,8 @@ export interface IDeleteFileRepositoryErrors {
 
 type RepositoryError = IDeleteFileRepositoryErrors[keyof IDeleteFileRepositoryErrors];
 
-export const DeleteFileRepository = createAbstraction<IDeleteFileRepository>("DeleteFileRepository");
+export const DeleteFileRepository =
+    createAbstraction<IDeleteFileRepository>("DeleteFileRepository");
 
 export namespace DeleteFileRepository {
     export type Interface = IDeleteFileRepository;

@@ -2,12 +2,19 @@ import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { GetLatestRevisionByEntryIdIncludingDeletedUseCase as UseCaseAbstraction } from "../abstractions.js";
 import { GetLatestRevisionByEntryIdBaseUseCase } from "../abstractions.js";
-import type { CmsEntry, CmsEntryValues, CmsModel, CmsEntryStorageOperationsGetLatestRevisionParams } from "~/types/index.js";
+import type {
+    CmsEntry,
+    CmsEntryValues,
+    CmsModel,
+    CmsEntryStorageOperationsGetLatestRevisionParams
+} from "~/types/index.js";
 
 /**
  * Returns any latest revision (deled and non-deleted)
  */
-class GetLatestRevisionByEntryIdIncludingDeletedUseCaseImpl implements UseCaseAbstraction.Interface {
+class GetLatestRevisionByEntryIdIncludingDeletedUseCaseImpl
+    implements UseCaseAbstraction.Interface
+{
     constructor(private baseUseCase: GetLatestRevisionByEntryIdBaseUseCase.Interface) {}
 
     async execute<T extends CmsEntryValues>(

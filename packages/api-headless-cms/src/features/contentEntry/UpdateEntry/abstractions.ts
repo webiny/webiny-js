@@ -59,9 +59,8 @@ export interface IUpdateEntryRepositoryErrors {
 
 type RepositoryError = IUpdateEntryRepositoryErrors[keyof IUpdateEntryRepositoryErrors];
 
-export const UpdateEntryRepository = createAbstraction<IUpdateEntryRepository>(
-    "UpdateEntryRepository"
-);
+export const UpdateEntryRepository =
+    createAbstraction<IUpdateEntryRepository>("UpdateEntryRepository");
 
 export namespace UpdateEntryRepository {
     export type Interface = IUpdateEntryRepository;

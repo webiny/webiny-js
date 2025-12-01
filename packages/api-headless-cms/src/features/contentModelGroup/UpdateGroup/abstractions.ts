@@ -2,7 +2,10 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsGroup } from "~/types/index.js";
 import type { CmsGroupUpdateInput } from "~/types/index.js";
-import { GroupNotAuthorizedError, type GroupNotFoundError } from "~/domain/contentModelGroup/errors.js";
+import {
+    GroupNotAuthorizedError,
+    type GroupNotFoundError
+} from "~/domain/contentModelGroup/errors.js";
 import type { GroupValidationError } from "~/domain/contentModelGroup/errors.js";
 import type { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 import type { GroupCannotUpdateCodeDefinedError } from "~/domain/contentModelGroup/errors.js";
@@ -44,9 +47,8 @@ export interface IUpdateGroupRepositoryErrors {
 
 type RepositoryError = IUpdateGroupRepositoryErrors[keyof IUpdateGroupRepositoryErrors];
 
-export const UpdateGroupRepository = createAbstraction<IUpdateGroupRepository>(
-    "UpdateGroupRepository"
-);
+export const UpdateGroupRepository =
+    createAbstraction<IUpdateGroupRepository>("UpdateGroupRepository");
 
 export namespace UpdateGroupRepository {
     export type Interface = IUpdateGroupRepository;

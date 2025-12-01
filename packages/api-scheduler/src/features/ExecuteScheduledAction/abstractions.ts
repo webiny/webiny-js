@@ -1,9 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import {
-    ScheduledActionNotFoundError,
-    ScheduledActionPersistenceError
-} from "~/domain/errors.js";
+import { ScheduledActionNotFoundError, ScheduledActionPersistenceError } from "~/domain/errors.js";
 
 /**
  * ExecuteScheduledActionUseCase - Execute a scheduled action
@@ -26,7 +23,8 @@ export interface IExecuteScheduledActionErrors {
     executionFailed: ExecutionFailedError;
 }
 
-type ExecuteScheduledActionError = IExecuteScheduledActionErrors[keyof IExecuteScheduledActionErrors];
+type ExecuteScheduledActionError =
+    IExecuteScheduledActionErrors[keyof IExecuteScheduledActionErrors];
 
 export interface IExecuteScheduledActionUseCase {
     execute(scheduleId: string): Promise<Result<void, ExecuteScheduledActionError>>;
@@ -48,9 +46,7 @@ export class HandlerNotFoundError extends Error {
     readonly code = "Scheduler/Handler/NotFound" as const;
 
     constructor(namespace: string, actionType: string) {
-        super(
-            `No handler registered for namespace "${namespace}" and actionType "${actionType}"`
-        );
+        super(`No handler registered for namespace "${namespace}" and actionType "${actionType}"`);
         this.name = "HandlerNotFoundError";
     }
 }
@@ -61,7 +57,10 @@ export class HandlerNotFoundError extends Error {
 export class ExecutionFailedError extends Error {
     readonly code = "Scheduler/Execution/Failed" as const;
 
-    constructor(message: string, public readonly originalError?: Error) {
+    constructor(
+        message: string,
+        public readonly originalError?: Error
+    ) {
         super(message);
         this.name = "ExecutionFailedError";
     }

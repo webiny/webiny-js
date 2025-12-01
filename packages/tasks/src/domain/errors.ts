@@ -13,7 +13,6 @@ export class TaskDefinitionNotFoundError extends BaseError<{ id: string }> {
     }
 }
 
-
 export class TaskNotFoundError extends BaseError {
     override readonly code = "BackgroundTasks/Task/NotFoundError" as const;
 

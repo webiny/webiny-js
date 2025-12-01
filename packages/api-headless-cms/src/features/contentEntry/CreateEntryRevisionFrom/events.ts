@@ -18,10 +18,9 @@ export class EntryRevisionBeforeCreateEvent extends DomainEvent<EntryRevisionBef
     }
 }
 
-export const EntryRevisionBeforeCreateHandler =
-    createAbstraction<IEventHandler<EntryRevisionBeforeCreateEvent>>(
-        "EntryRevisionBeforeCreateHandler"
-    );
+export const EntryRevisionBeforeCreateHandler = createAbstraction<
+    IEventHandler<EntryRevisionBeforeCreateEvent>
+>("EntryRevisionBeforeCreateHandler");
 
 export namespace EntryRevisionBeforeCreateHandler {
     export type Interface = IEventHandler<EntryRevisionBeforeCreateEvent>;
@@ -39,10 +38,9 @@ export class EntryRevisionAfterCreateEvent extends DomainEvent<EntryRevisionAfte
     }
 }
 
-export const EntryRevisionAfterCreateHandler =
-    createAbstraction<IEventHandler<EntryRevisionAfterCreateEvent>>(
-        "EntryRevisionAfterCreateHandler"
-    );
+export const EntryRevisionAfterCreateHandler = createAbstraction<
+    IEventHandler<EntryRevisionAfterCreateEvent>
+>("EntryRevisionAfterCreateHandler");
 
 export namespace EntryRevisionAfterCreateHandler {
     export type Interface = IEventHandler<EntryRevisionAfterCreateEvent>;
@@ -60,10 +58,9 @@ export class EntryRevisionCreateErrorEvent extends DomainEvent<EntryRevisionCrea
     }
 }
 
-export const EntryRevisionCreateErrorHandler =
-    createAbstraction<IEventHandler<EntryRevisionCreateErrorEvent>>(
-        "EntryRevisionCreateErrorHandler"
-    );
+export const EntryRevisionCreateErrorHandler = createAbstraction<
+    IEventHandler<EntryRevisionCreateErrorEvent>
+>("EntryRevisionCreateErrorHandler");
 
 export namespace EntryRevisionCreateErrorHandler {
     export type Interface = IEventHandler<EntryRevisionCreateErrorEvent>;

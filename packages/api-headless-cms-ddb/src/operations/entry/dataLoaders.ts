@@ -80,7 +80,7 @@ export class DataLoadersHandler implements DataLoadersHandlerInterface {
         const factory = getDataLoaderFactory(name);
         loader = factory({
             entity: this.entity,
-            tenant: model.tenant,
+            tenant: model.tenant
         });
         this.cache.setDataLoader(cacheParams, loader);
         return loader;

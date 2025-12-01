@@ -25,7 +25,7 @@ export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) 
                 },
                 description: "",
                 createdOn: new Date().toISOString(),
-                savedOn: new Date().toISOString(),
+                savedOn: new Date().toISOString()
             });
 
             context.security.addAuthenticator(async () => {

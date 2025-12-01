@@ -89,7 +89,9 @@ class DeleteEntryRevisionUseCaseImpl implements UseCaseAbstraction.Interface {
 
         // If targeted record is the latest entry record and there is no previous revision,
         // delete the entire entry.
-        const previousRevision = previousRevisionResult.isFail() ? null : previousRevisionResult.value;
+        const previousRevision = previousRevisionResult.isFail()
+            ? null
+            : previousRevisionResult.value;
         if (previousRevisionResult.isFail() && entryToDelete.id === latestRevisionId) {
             return await this.deleteEntry.execute(model, revisionId, {});
         }

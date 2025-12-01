@@ -18,7 +18,8 @@ export interface IUpdateSettingsUseCase {
     execute(input: IUpdateSettingsInput): Promise<Result<ISettings, UpdateSettingsError>>;
 }
 
-export const UpdateSettingsUseCase = createAbstraction<IUpdateSettingsUseCase>("UpdateSettingsUseCase");
+export const UpdateSettingsUseCase =
+    createAbstraction<IUpdateSettingsUseCase>("UpdateSettingsUseCase");
 
 export namespace UpdateSettingsUseCase {
     export type Interface = IUpdateSettingsUseCase;

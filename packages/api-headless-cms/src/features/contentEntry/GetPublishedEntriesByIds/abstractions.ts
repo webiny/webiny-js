@@ -20,7 +20,8 @@ export interface IGetPublishedEntriesByIdsUseCaseErrors {
     storage: EntryPersistenceError;
 }
 
-type UseCaseError = IGetPublishedEntriesByIdsUseCaseErrors[keyof IGetPublishedEntriesByIdsUseCaseErrors];
+type UseCaseError =
+    IGetPublishedEntriesByIdsUseCaseErrors[keyof IGetPublishedEntriesByIdsUseCaseErrors];
 
 export const GetPublishedEntriesByIdsUseCase = createAbstraction<IGetPublishedEntriesByIdsUseCase>(
     "GetPublishedEntriesByIdsUseCase"
@@ -45,11 +46,11 @@ export interface IGetPublishedEntriesByIdsRepositoryErrors {
     storage: EntryPersistenceError;
 }
 
-type RepositoryError = IGetPublishedEntriesByIdsRepositoryErrors[keyof IGetPublishedEntriesByIdsRepositoryErrors];
+type RepositoryError =
+    IGetPublishedEntriesByIdsRepositoryErrors[keyof IGetPublishedEntriesByIdsRepositoryErrors];
 
-export const GetPublishedEntriesByIdsRepository = createAbstraction<IGetPublishedEntriesByIdsRepository>(
-    "GetPublishedEntriesByIdsRepository"
-);
+export const GetPublishedEntriesByIdsRepository =
+    createAbstraction<IGetPublishedEntriesByIdsRepository>("GetPublishedEntriesByIdsRepository");
 
 export namespace GetPublishedEntriesByIdsRepository {
     export type Interface = IGetPublishedEntriesByIdsRepository;

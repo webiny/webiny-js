@@ -23,7 +23,8 @@ export interface IIsEntryLockedUseCaseErrors {
 
 type UseCaseError = IIsEntryLockedUseCaseErrors[keyof IIsEntryLockedUseCaseErrors];
 
-export const IsEntryLockedUseCase = createAbstraction<IIsEntryLockedUseCase>("IsEntryLockedUseCase");
+export const IsEntryLockedUseCase =
+    createAbstraction<IIsEntryLockedUseCase>("IsEntryLockedUseCase");
 
 export namespace IsEntryLockedUseCase {
     export type Interface = IIsEntryLockedUseCase;

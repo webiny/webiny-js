@@ -7,7 +7,8 @@ import {
     ModelNotAuthorizedError,
     type ModelNotFoundError,
     type ModelValidationError,
-    type ModelPersistenceError, ModelAlreadyExistsError
+    type ModelPersistenceError,
+    ModelAlreadyExistsError
 } from "~/domain/contentModel/errors.js";
 import {
     type GroupNotFoundError,
@@ -36,9 +37,8 @@ export interface ICreateModelFromUseCaseErrors {
 
 type UseCaseError = ICreateModelFromUseCaseErrors[keyof ICreateModelFromUseCaseErrors];
 
-export const CreateModelFromUseCase = createAbstraction<ICreateModelFromUseCase>(
-    "CreateModelFromUseCase"
-);
+export const CreateModelFromUseCase =
+    createAbstraction<ICreateModelFromUseCase>("CreateModelFromUseCase");
 
 export namespace CreateModelFromUseCase {
     export type Interface = ICreateModelFromUseCase;

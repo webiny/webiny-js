@@ -24,6 +24,7 @@
     { "path": "../api-log/tsconfig.build.json" },
     { "path": "../api-mailer/tsconfig.build.json" },
     { "path": "../api-record-locking/tsconfig.build.json" },
+    { "path": "../api-scheduler/tsconfig.build.json" },
     { "path": "../api-security-cognito/tsconfig.build.json" },
     { "path": "../api-website-builder/tsconfig.build.json" },
     { "path": "../api-websockets/tsconfig.build.json" },
@@ -244,13 +245,27 @@
       "@webiny/api-mailer": ["../api-mailer/src"],
       "@webiny/api-record-locking/*": ["../api-record-locking/src/*"],
       "@webiny/api-record-locking": ["../api-record-locking/src"],
+      "@webiny/api-scheduler/features/ScheduleAction": [
+        "../api-scheduler/src/features/ScheduleAction/index.js"
+      ],
+      "@webiny/api-scheduler/features/GetScheduledAction": [
+        "../api-scheduler/src/features/GetScheduledAction/index.js"
+      ],
+      "@webiny/api-scheduler/features/ListScheduledActions": [
+        "../api-scheduler/src/features/ListScheduledActions/index.js"
+      ],
+      "@webiny/api-scheduler/features/CancelScheduledAction": [
+        "../api-scheduler/src/features/CancelScheduledAction/index.js"
+      ],
+      "@webiny/api-scheduler/features/ExecuteScheduledAction": [
+        "../api-scheduler/src/features/ExecuteScheduledAction/index.js"
+      ],
+      "@webiny/api-scheduler/*": ["../api-scheduler/src/*"],
+      "@webiny/api-scheduler": ["../api-scheduler/src"],
       "@webiny/api-security-cognito/*": ["../api-security-cognito/src/*"],
       "@webiny/api-security-cognito": ["../api-security-cognito/src"],
       "@webiny/api-website-builder/*": ["../api-website-builder/src/*"],
       "@webiny/api-website-builder": ["../api-website-builder/src"],
-      "@webiny/api-websockets/features/WebsocketService": [
-        "../api-websockets/src/src/features/WebsocketService/index.js"
-      ],
       "@webiny/api-websockets/*": ["../api-websockets/src/*"],
       "@webiny/api-websockets": ["../api-websockets/src"],
       "@webiny/api-workflows/*": ["../api-workflows/src/*"],

@@ -51,9 +51,8 @@ export class EntryAfterUpdateEvent extends DomainEvent<EntryAfterUpdatePayload> 
     }
 }
 
-export const EntryAfterUpdateHandler = createAbstraction<IEventHandler<EntryAfterUpdateEvent>>(
-    "EntryAfterUpdateHandler"
-);
+export const EntryAfterUpdateHandler =
+    createAbstraction<IEventHandler<EntryAfterUpdateEvent>>("EntryAfterUpdateHandler");
 
 export namespace EntryAfterUpdateHandler {
     export type Interface = IEventHandler<EntryAfterUpdateEvent>;

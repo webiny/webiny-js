@@ -15,7 +15,9 @@ class ListLockRecordsUseCaseImpl implements UseCaseAbstraction.Interface {
         private config: RecordLockingConfig.Interface
     ) {}
 
-    async execute(input?: ListLockRecordsInput): Promise<Result<ListLockRecordsOutput, UseCaseAbstraction.Error>> {
+    async execute(
+        input?: ListLockRecordsInput
+    ): Promise<Result<ListLockRecordsOutput, UseCaseAbstraction.Error>> {
         const identity = this.identityContext.getIdentity();
 
         // Filter out expired locks and exclude current user's locks

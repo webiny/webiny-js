@@ -176,10 +176,7 @@ export interface CmsContext extends BaseCmsContext {
 export interface HeadlessCmsStorageOperations extends BaseHeadlessCmsStorageOperations<CmsContext> {
     getTable: () => Table<string, string, string>;
     getEsTable: () => Table<string, string, string>;
-    getEntities: () => Record<
-        "groups" | "models" | "entries" | "entriesEs",
-        Entity<any>
-    >;
+    getEntities: () => Record<"groups" | "models" | "entries" | "entriesEs", Entity<any>>;
 }
 
 export interface StorageOperationsFactory {

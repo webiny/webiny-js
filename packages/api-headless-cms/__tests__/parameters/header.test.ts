@@ -21,18 +21,15 @@ const createContext = (type?: ApiEndpoint | null): CmsContext => {
 const correctTestCases: [ApiEndpoint][] = [["manage"], ["read"], ["preview"]];
 
 describe("Header Parameter Plugin", () => {
-    it.each(correctTestCases)(
-        "should properly extract type from headers - %s",
-        async type => {
-            const plugin = createHeaderParameterPlugin();
+    it.each(correctTestCases)("should properly extract type from headers - %s", async type => {
+        const plugin = createHeaderParameterPlugin();
 
-            const result = await plugin.getParameters(createContext(type));
+        const result = await plugin.getParameters(createContext(type));
 
-            expect(result).toEqual({
-                type
-            });
-        }
-    );
+        expect(result).toEqual({
+            type
+        });
+    });
 
     it("should return null on missing both headers - code will move onto the next available plugin", async () => {
         const plugin = createHeaderParameterPlugin();

@@ -22,9 +22,8 @@ export interface IGetEntriesByIdsUseCaseErrors {
 
 type UseCaseError = IGetEntriesByIdsUseCaseErrors[keyof IGetEntriesByIdsUseCaseErrors];
 
-export const GetEntriesByIdsUseCase = createAbstraction<IGetEntriesByIdsUseCase>(
-    "GetEntriesByIdsUseCase"
-);
+export const GetEntriesByIdsUseCase =
+    createAbstraction<IGetEntriesByIdsUseCase>("GetEntriesByIdsUseCase");
 
 export namespace GetEntriesByIdsUseCase {
     export type Interface = IGetEntriesByIdsUseCase;

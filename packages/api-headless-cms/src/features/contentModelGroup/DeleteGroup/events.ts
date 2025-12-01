@@ -50,9 +50,8 @@ export class GroupAfterDeleteEvent extends DomainEvent<GroupAfterDeletePayload> 
     }
 }
 
-export const GroupAfterDeleteHandler = createAbstraction<IEventHandler<GroupAfterDeleteEvent>>(
-    "GroupAfterDeleteHandler"
-);
+export const GroupAfterDeleteHandler =
+    createAbstraction<IEventHandler<GroupAfterDeleteEvent>>("GroupAfterDeleteHandler");
 
 export namespace GroupAfterDeleteHandler {
     export type Interface = IEventHandler<GroupAfterDeleteEvent>;
@@ -70,9 +69,8 @@ export class GroupDeleteErrorEvent extends DomainEvent<GroupDeleteErrorPayload> 
     }
 }
 
-export const GroupDeleteErrorHandler = createAbstraction<IEventHandler<GroupDeleteErrorEvent>>(
-    "GroupDeleteErrorHandler"
-);
+export const GroupDeleteErrorHandler =
+    createAbstraction<IEventHandler<GroupDeleteErrorEvent>>("GroupDeleteErrorHandler");
 
 export namespace GroupDeleteErrorHandler {
     export type Interface = IEventHandler<GroupDeleteErrorEvent>;

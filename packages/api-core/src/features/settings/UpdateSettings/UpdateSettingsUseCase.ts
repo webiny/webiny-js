@@ -1,6 +1,6 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { UpdateSettingsUseCase } from "./abstractions.js";
+import { UpdateSettingsUseCase as UseCase } from "./abstractions.js";
 import { SettingsRepository } from "../shared/abstractions.js";
 import { EventPublisher } from "~/features/eventPublisher/abstractions.js";
 import { type ISettings, SettingsModelFactory } from "~/domain/settings/index.js";
@@ -8,14 +8,14 @@ import type { IUpdateSettingsInput } from "../shared/types.js";
 import { SettingsValidationError } from "../shared/errors.js";
 import { SettingsBeforeUpdateEvent, SettingsAfterUpdateEvent } from "./events.js";
 
-class UpdateSettingsUseCaseImpl implements UpdateSettingsUseCase.Interface {
+class UpdateSettingsUseCaseImpl implements UseCase.Interface {
     constructor(
         private repository: SettingsRepository.Interface,
         private eventPublisher: EventPublisher.Interface,
         private modelFactory: SettingsModelFactory.Interface
     ) {}
 
-    async execute(input: IUpdateSettingsInput): Promise<Result<ISettings, UpdateSettingsUseCase.Error>> {
+    async execute(input: IUpdateSettingsInput): Promise<Result<ISettings, UseCase.Error>> {
         // Validation
         if (!input.name || input.name.trim().length === 0) {
             return Result.fail(new SettingsValidationError("Settings name is required"));
@@ -63,7 +63,7 @@ class UpdateSettingsUseCaseImpl implements UpdateSettingsUseCase.Interface {
 }
 
 export const UpdateSettingsUseCase = createImplementation({
-    abstraction: UpdateSettingsUseCase,
+    abstraction: UseCase,
     implementation: UpdateSettingsUseCaseImpl,
     dependencies: [SettingsRepository, EventPublisher, SettingsModelFactory]
 });

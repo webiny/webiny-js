@@ -1,7 +1,10 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { CmsGroup } from "~/types/index.js";
-import { GroupNotAuthorizedError, type GroupNotFoundError } from "~/domain/contentModelGroup/errors.js";
+import {
+    GroupNotAuthorizedError,
+    type GroupNotFoundError
+} from "~/domain/contentModelGroup/errors.js";
 import type { GroupPersistenceError } from "~/domain/contentModelGroup/errors.js";
 
 /**

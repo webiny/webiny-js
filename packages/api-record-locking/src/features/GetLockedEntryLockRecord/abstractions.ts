@@ -23,9 +23,12 @@ export interface IGetLockedEntryLockRecordUseCaseErrors {
     notFound: LockRecordNotFoundError;
 }
 
-type UseCaseError = IGetLockedEntryLockRecordUseCaseErrors[keyof IGetLockedEntryLockRecordUseCaseErrors];
+type UseCaseError =
+    IGetLockedEntryLockRecordUseCaseErrors[keyof IGetLockedEntryLockRecordUseCaseErrors];
 
-export const GetLockedEntryLockRecordUseCase = createAbstraction<IGetLockedEntryLockRecordUseCase>("GetLockedEntryLockRecordUseCase");
+export const GetLockedEntryLockRecordUseCase = createAbstraction<IGetLockedEntryLockRecordUseCase>(
+    "GetLockedEntryLockRecordUseCase"
+);
 
 export namespace GetLockedEntryLockRecordUseCase {
     export type Interface = IGetLockedEntryLockRecordUseCase;

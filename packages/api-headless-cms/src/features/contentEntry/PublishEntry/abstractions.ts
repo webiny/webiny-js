@@ -69,9 +69,8 @@ export interface IPublishEntryRepositoryErrors {
 
 type RepositoryError = IPublishEntryRepositoryErrors[keyof IPublishEntryRepositoryErrors];
 
-export const PublishEntryRepository = createAbstraction<IPublishEntryRepository>(
-    "PublishEntryRepository"
-);
+export const PublishEntryRepository =
+    createAbstraction<IPublishEntryRepository>("PublishEntryRepository");
 
 export namespace PublishEntryRepository {
     export type Interface = IPublishEntryRepository;

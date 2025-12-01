@@ -23,7 +23,8 @@ export interface ICreateFilesInBatchRepositoryErrors {
     persistence: FilePersistenceError;
 }
 
-type RepositoryError = ICreateFilesInBatchRepositoryErrors[keyof ICreateFilesInBatchRepositoryErrors];
+type RepositoryError =
+    ICreateFilesInBatchRepositoryErrors[keyof ICreateFilesInBatchRepositoryErrors];
 
 export const CreateFilesInBatchRepository = createAbstraction<ICreateFilesInBatchRepository>(
     "CreateFilesInBatchRepository"

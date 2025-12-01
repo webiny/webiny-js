@@ -18,10 +18,9 @@ export class EntryBeforeRestoreFromBinEvent extends DomainEvent<EntryBeforeResto
     }
 }
 
-export const EntryBeforeRestoreFromBinHandler =
-    createAbstraction<IEventHandler<EntryBeforeRestoreFromBinEvent>>(
-        "EntryBeforeRestoreFromBinHandler"
-    );
+export const EntryBeforeRestoreFromBinHandler = createAbstraction<
+    IEventHandler<EntryBeforeRestoreFromBinEvent>
+>("EntryBeforeRestoreFromBinHandler");
 
 export namespace EntryBeforeRestoreFromBinHandler {
     export type Interface = IEventHandler<EntryBeforeRestoreFromBinEvent>;
@@ -39,10 +38,9 @@ export class EntryAfterRestoreFromBinEvent extends DomainEvent<EntryAfterRestore
     }
 }
 
-export const EntryAfterRestoreFromBinHandler =
-    createAbstraction<IEventHandler<EntryAfterRestoreFromBinEvent>>(
-        "EntryAfterRestoreFromBinHandler"
-    );
+export const EntryAfterRestoreFromBinHandler = createAbstraction<
+    IEventHandler<EntryAfterRestoreFromBinEvent>
+>("EntryAfterRestoreFromBinHandler");
 
 export namespace EntryAfterRestoreFromBinHandler {
     export type Interface = IEventHandler<EntryAfterRestoreFromBinEvent>;
@@ -60,10 +58,9 @@ export class EntryRestoreFromBinErrorEvent extends DomainEvent<EntryRestoreFromB
     }
 }
 
-export const EntryRestoreFromBinErrorHandler =
-    createAbstraction<IEventHandler<EntryRestoreFromBinErrorEvent>>(
-        "EntryRestoreFromBinErrorHandler"
-    );
+export const EntryRestoreFromBinErrorHandler = createAbstraction<
+    IEventHandler<EntryRestoreFromBinErrorEvent>
+>("EntryRestoreFromBinErrorHandler");
 
 export namespace EntryRestoreFromBinErrorHandler {
     export type Interface = IEventHandler<EntryRestoreFromBinErrorEvent>;

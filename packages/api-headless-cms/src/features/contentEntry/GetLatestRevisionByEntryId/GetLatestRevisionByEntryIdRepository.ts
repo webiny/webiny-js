@@ -2,7 +2,12 @@ import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import { GetLatestRevisionByEntryIdRepository as RepositoryAbstraction } from "./abstractions.js";
 import { EntryNotFoundError, EntryPersistenceError } from "~/domain/contentEntry/errors.js";
-import type { CmsEntry, CmsEntryValues, CmsModel, CmsEntryStorageOperationsGetLatestRevisionParams } from "~/types/index.js";
+import type {
+    CmsEntry,
+    CmsEntryValues,
+    CmsModel,
+    CmsEntryStorageOperationsGetLatestRevisionParams
+} from "~/types/index.js";
 import { StorageOperations } from "~/features/shared/abstractions.js";
 import { EntryFromStorageTransform } from "~/legacy/abstractions.js";
 
@@ -21,7 +26,10 @@ class GetLatestRevisionByEntryIdRepositoryImpl implements RepositoryAbstraction.
         params: CmsEntryStorageOperationsGetLatestRevisionParams
     ): Promise<Result<CmsEntry<T>, RepositoryAbstraction.Error>> {
         try {
-            const entry = await this.storageOperations.entries.getLatestRevisionByEntryId(model, params);
+            const entry = await this.storageOperations.entries.getLatestRevisionByEntryId(
+                model,
+                params
+            );
 
             if (!entry) {
                 return Result.fail(new EntryNotFoundError(params.id));

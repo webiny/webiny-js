@@ -9,7 +9,9 @@ import type { CmsEntry, CmsEntryValues, CmsModel } from "~/types/index.js";
  * This decorator wraps the GetLatestEntriesByIdsUseCase and filters out
  * entries marked as deleted (wbyDeleted flag).
  */
-class GetLatestEntriesByIdsNotDeletedDecoratorImpl implements GetLatestEntriesByIdsUseCase.Interface {
+class GetLatestEntriesByIdsNotDeletedDecoratorImpl
+    implements GetLatestEntriesByIdsUseCase.Interface
+{
     constructor(private decoratee: GetLatestEntriesByIdsUseCase.Interface) {}
 
     async execute<T extends CmsEntryValues>(

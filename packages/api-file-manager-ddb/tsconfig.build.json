@@ -2,11 +2,9 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "references": [
-    { "path": "../api/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../db-dynamodb/tsconfig.build.json" },
-    { "path": "../error/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -16,16 +14,12 @@
     "paths": {
       "~/*": ["./src/*"],
       "~tests/*": ["./__tests__/*"],
-      "@webiny/api/*": ["../api/src/*"],
-      "@webiny/api": ["../api/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"]
     },

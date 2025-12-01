@@ -31,7 +31,8 @@ class CancelScheduledActionOnUnpublishHandlerImpl implements EntryAfterUnpublish
     }
 }
 
-export const CancelScheduledActionOnUnpublishHandler = EntryAfterUnpublishHandler.createImplementation({
-    implementation: CancelScheduledActionOnUnpublishHandlerImpl,
-    dependencies: [CancelScheduledEntryActionUseCase]
-});
+export const CancelScheduledActionOnUnpublishHandler =
+    EntryAfterUnpublishHandler.createImplementation({
+        implementation: CancelScheduledActionOnUnpublishHandlerImpl,
+        dependencies: [CancelScheduledEntryActionUseCase]
+    });

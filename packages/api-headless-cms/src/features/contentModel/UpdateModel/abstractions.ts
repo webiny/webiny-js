@@ -7,7 +7,8 @@ import {
     ModelNotAuthorizedError,
     type ModelNotFoundError,
     type ModelValidationError,
-    type ModelPersistenceError, ModelCannotUpdateCodeModelError
+    type ModelPersistenceError,
+    ModelCannotUpdateCodeModelError
 } from "~/domain/contentModel/errors.js";
 import {
     type GroupNotFoundError,

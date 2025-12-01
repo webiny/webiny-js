@@ -1,8 +1,5 @@
 import { Result } from "@webiny/feature/api";
-import {
-    IsEntryLockedUseCase as UseCaseAbstraction,
-    IsEntryLockedInput
-} from "./abstractions.js";
+import { IsEntryLockedUseCase as UseCaseAbstraction, IsEntryLockedInput } from "./abstractions.js";
 import { GetLockRecordUseCase } from "../GetLockRecord/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { LockRecordNotFoundError } from "~/domain/errors.js";

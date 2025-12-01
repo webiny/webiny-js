@@ -2,7 +2,12 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { ILockRecord } from "~/domain/LockRecord.js";
 import type { LockRecordEntryType } from "~/domain/types.js";
-import type { LockRecordNotFoundError, LockRecordPersistenceError, IdentityMismatchError, UpdateEntryLockError } from "~/domain/errors.js";
+import type {
+    LockRecordNotFoundError,
+    LockRecordPersistenceError,
+    IdentityMismatchError,
+    UpdateEntryLockError
+} from "~/domain/errors.js";
 
 // Input types
 export interface UpdateEntryLockInput {
@@ -26,7 +31,8 @@ export interface IUpdateEntryLockUseCaseErrors {
 
 type UseCaseError = IUpdateEntryLockUseCaseErrors[keyof IUpdateEntryLockUseCaseErrors];
 
-export const UpdateEntryLockUseCase = createAbstraction<IUpdateEntryLockUseCase>("UpdateEntryLockUseCase");
+export const UpdateEntryLockUseCase =
+    createAbstraction<IUpdateEntryLockUseCase>("UpdateEntryLockUseCase");
 
 export namespace UpdateEntryLockUseCase {
     export type Interface = IUpdateEntryLockUseCase;
@@ -37,7 +43,10 @@ export namespace UpdateEntryLockUseCase {
  * UpdateEntryLockRepository - Updates lock record in storage
  */
 export interface IUpdateEntryLockRepository {
-    update(lockRecordId: string, updateOwner: boolean): Promise<Result<ILockRecord, RepositoryError>>;
+    update(
+        lockRecordId: string,
+        updateOwner: boolean
+    ): Promise<Result<ILockRecord, RepositoryError>>;
 }
 
 export interface IUpdateEntryLockRepositoryErrors {
@@ -46,7 +55,9 @@ export interface IUpdateEntryLockRepositoryErrors {
 
 type RepositoryError = IUpdateEntryLockRepositoryErrors[keyof IUpdateEntryLockRepositoryErrors];
 
-export const UpdateEntryLockRepository = createAbstraction<IUpdateEntryLockRepository>("UpdateEntryLockRepository");
+export const UpdateEntryLockRepository = createAbstraction<IUpdateEntryLockRepository>(
+    "UpdateEntryLockRepository"
+);
 
 export namespace UpdateEntryLockRepository {
     export type Interface = IUpdateEntryLockRepository;

@@ -21,9 +21,9 @@ export class EntryBeforeUnlockRequestEvent extends DomainEvent<EntryBeforeUnlock
     }
 }
 
-export const EntryBeforeUnlockRequestHandler = createAbstraction<IEventHandler<EntryBeforeUnlockRequestEvent>>(
-    "EntryBeforeUnlockRequestHandler"
-);
+export const EntryBeforeUnlockRequestHandler = createAbstraction<
+    IEventHandler<EntryBeforeUnlockRequestEvent>
+>("EntryBeforeUnlockRequestHandler");
 
 export namespace EntryBeforeUnlockRequestHandler {
     export type Interface = IEventHandler<EntryBeforeUnlockRequestEvent>;
@@ -48,9 +48,9 @@ export class EntryAfterUnlockRequestEvent extends DomainEvent<EntryAfterUnlockRe
     }
 }
 
-export const EntryAfterUnlockRequestHandler = createAbstraction<IEventHandler<EntryAfterUnlockRequestEvent>>(
-    "EntryAfterUnlockRequestHandler"
-);
+export const EntryAfterUnlockRequestHandler = createAbstraction<
+    IEventHandler<EntryAfterUnlockRequestEvent>
+>("EntryAfterUnlockRequestHandler");
 
 export namespace EntryAfterUnlockRequestHandler {
     export type Interface = IEventHandler<EntryAfterUnlockRequestEvent>;
@@ -75,9 +75,9 @@ export class EntryUnlockRequestErrorEvent extends DomainEvent<EntryUnlockRequest
     }
 }
 
-export const EntryUnlockRequestErrorHandler = createAbstraction<IEventHandler<EntryUnlockRequestErrorEvent>>(
-    "EntryUnlockRequestErrorHandler"
-);
+export const EntryUnlockRequestErrorHandler = createAbstraction<
+    IEventHandler<EntryUnlockRequestErrorEvent>
+>("EntryUnlockRequestErrorHandler");
 
 export namespace EntryUnlockRequestErrorHandler {
     export type Interface = IEventHandler<EntryUnlockRequestErrorEvent>;

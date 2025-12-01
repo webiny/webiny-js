@@ -33,7 +33,7 @@ export const createIndexTaskPluginTest = () => {
                 return {
                     index,
                     settings: configurations.indexSettings({
-                        context,
+                        context
                     })
                 };
             });

@@ -18,9 +18,8 @@ export interface IGetRevisionByIdUseCaseErrors {
 
 type UseCaseError = IGetRevisionByIdUseCaseErrors[keyof IGetRevisionByIdUseCaseErrors];
 
-export const GetRevisionByIdUseCase = createAbstraction<IGetRevisionByIdUseCase>(
-    "GetRevisionByIdUseCase"
-);
+export const GetRevisionByIdUseCase =
+    createAbstraction<IGetRevisionByIdUseCase>("GetRevisionByIdUseCase");
 
 export namespace GetRevisionByIdUseCase {
     export type Interface = IGetRevisionByIdUseCase;

@@ -215,7 +215,10 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                             }
                             // `preview` and `manage` with `latest` data
                             else {
-                                const latestByIsResult = await getLatestByIds.execute(model, idList);
+                                const latestByIsResult = await getLatestByIds.execute(
+                                    model,
+                                    idList
+                                );
                                 entries = latestByIsResult.value;
                             }
                             return appendTypename(entries, modelIdToTypeName.get(modelId));
@@ -255,7 +258,9 @@ export const createRefField = (): CmsModelFieldToGraphQLPlugin => {
                     }
                     // `preview` API works with `latest` data
                     else {
-                        const latestByIdsResult = await getLatestByIds.execute(model, [value.entryId]);
+                        const latestByIdsResult = await getLatestByIds.execute(model, [
+                            value.entryId
+                        ]);
                         revisions = latestByIdsResult.value;
                     }
 

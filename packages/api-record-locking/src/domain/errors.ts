@@ -93,7 +93,11 @@ export class EntryNotLockedError extends BaseError<{ id: string; type: string }>
     }
 }
 
-export class UnlockRequestAlreadySentError extends BaseError<{ id: string; type: string; identityId: string }> {
+export class UnlockRequestAlreadySentError extends BaseError<{
+    id: string;
+    type: string;
+    identityId: string;
+}> {
     override readonly code = "RecordLocking/Entry/UnlockRequestAlreadySentError" as const;
 
     constructor(data: { id: string; type: string; identityId: string }) {

@@ -69,7 +69,8 @@ export interface IDeleteEntryRevisionRepositoryErrors {
     storage: EntryPersistenceError;
 }
 
-type RepositoryError = IDeleteEntryRevisionRepositoryErrors[keyof IDeleteEntryRevisionRepositoryErrors];
+type RepositoryError =
+    IDeleteEntryRevisionRepositoryErrors[keyof IDeleteEntryRevisionRepositoryErrors];
 
 export const DeleteEntryRevisionRepository = createAbstraction<IDeleteEntryRevisionRepository>(
     "DeleteEntryRevisionRepository"

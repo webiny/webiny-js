@@ -45,7 +45,8 @@ export interface IGetRevisionsByEntryIdRepositoryErrors {
     storage: EntryPersistenceError;
 }
 
-type RepositoryError = IGetRevisionsByEntryIdRepositoryErrors[keyof IGetRevisionsByEntryIdRepositoryErrors];
+type RepositoryError =
+    IGetRevisionsByEntryIdRepositoryErrors[keyof IGetRevisionsByEntryIdRepositoryErrors];
 
 export const GetRevisionsByEntryIdRepository = createAbstraction<IGetRevisionsByEntryIdRepository>(
     "GetRevisionsByEntryIdRepository"

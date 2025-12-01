@@ -9,7 +9,9 @@ import {
 class ListAllLockRecordsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private repository: ListAllLockRecordsRepository.Interface) {}
 
-    async execute(input?: ListAllLockRecordsInput): Promise<Result<ListAllLockRecordsOutput, UseCaseAbstraction.Error>> {
+    async execute(
+        input?: ListAllLockRecordsInput
+    ): Promise<Result<ListAllLockRecordsOutput, UseCaseAbstraction.Error>> {
         return await this.repository.execute(input);
     }
 }

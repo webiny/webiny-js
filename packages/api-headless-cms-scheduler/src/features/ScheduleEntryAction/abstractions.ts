@@ -40,7 +40,9 @@ export interface IScheduleEntryActionErrors {
 type ScheduleEntryActionError = IScheduleEntryActionErrors[keyof IScheduleEntryActionErrors];
 
 export interface IScheduleEntryActionUseCase {
-    execute(input: IScheduleEntryActionInput): Promise<Result<IScheduledAction, ScheduleEntryActionError>>;
+    execute(
+        input: IScheduleEntryActionInput
+    ): Promise<Result<IScheduledAction, ScheduleEntryActionError>>;
 }
 
 export const ScheduleEntryActionUseCase = createAbstraction<IScheduleEntryActionUseCase>(

@@ -1,6 +1,11 @@
 import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import type { CmsEntry, CmsModel, CreateCmsEntryInput, CreateCmsEntryOptionsInput } from "~/types/index.js";
+import type {
+    CmsEntry,
+    CmsModel,
+    CreateCmsEntryInput,
+    CreateCmsEntryOptionsInput
+} from "~/types/index.js";
 import type { EntryPersistenceError, EntryValidationError } from "~/domain/contentEntry/errors.js";
 import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
 
@@ -44,9 +49,8 @@ export interface ICreateEntryRepositoryErrors {
 
 type RepositoryError = ICreateEntryRepositoryErrors[keyof ICreateEntryRepositoryErrors];
 
-export const CreateEntryRepository = createAbstraction<ICreateEntryRepository>(
-    "CreateEntryRepository"
-);
+export const CreateEntryRepository =
+    createAbstraction<ICreateEntryRepository>("CreateEntryRepository");
 
 export namespace CreateEntryRepository {
     export type Interface = ICreateEntryRepository;

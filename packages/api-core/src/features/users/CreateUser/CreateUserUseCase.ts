@@ -78,7 +78,7 @@ class CreateUserUseCaseImpl implements UseCaseAbstraction.Interface {
             displayName,
             createdOn: new Date().toISOString(),
             createdBy,
-            tenant,
+            tenant
         };
 
         // 8. Publish before event

@@ -4,12 +4,7 @@ import type { useProductManageHandler } from "./testHelpers/useProductManageHand
 
 export type CmsModel = Omit<
     BaseCmsModel,
-    | "locale"
-    | "tenant"
-    | "createdOn"
-    | "createdBy"
-    | "savedOn"
-    | "isPrivate"
+    "locale" | "tenant" | "createdOn" | "createdBy" | "savedOn" | "isPrivate"
 >;
 export type CmsGroup = Omit<BaseCmsGroup, "tenant">;
 /**

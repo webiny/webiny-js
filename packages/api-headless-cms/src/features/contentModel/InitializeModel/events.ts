@@ -24,9 +24,8 @@ export class ModelInitializeEvent extends DomainEvent<ModelInitializePayload> {
     }
 }
 
-export const ModelInitializeHandler = createAbstraction<IEventHandler<ModelInitializeEvent>>(
-    "ModelInitializeHandler"
-);
+export const ModelInitializeHandler =
+    createAbstraction<IEventHandler<ModelInitializeEvent>>("ModelInitializeHandler");
 
 export namespace ModelInitializeHandler {
     export type Interface = IEventHandler<ModelInitializeEvent>;

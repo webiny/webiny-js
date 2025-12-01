@@ -19,7 +19,8 @@ export interface IUpdateSettingsUseCaseErrors {
 
 type UseCaseError = IUpdateSettingsUseCaseErrors[keyof IUpdateSettingsUseCaseErrors];
 
-export const UpdateSettingsUseCase = createAbstraction<IUpdateSettingsUseCase>("UpdateSettingsUseCase");
+export const UpdateSettingsUseCase =
+    createAbstraction<IUpdateSettingsUseCase>("UpdateSettingsUseCase");
 
 export namespace UpdateSettingsUseCase {
     export type Interface = IUpdateSettingsUseCase;

@@ -65,7 +65,8 @@ export interface IRestoreEntryFromBinRepositoryErrors {
     storage: EntryPersistenceError;
 }
 
-type RepositoryError = IRestoreEntryFromBinRepositoryErrors[keyof IRestoreEntryFromBinRepositoryErrors];
+type RepositoryError =
+    IRestoreEntryFromBinRepositoryErrors[keyof IRestoreEntryFromBinRepositoryErrors];
 
 export const RestoreEntryFromBinRepository = createAbstraction<IRestoreEntryFromBinRepository>(
     "RestoreEntryFromBinRepository"

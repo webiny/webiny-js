@@ -23,9 +23,8 @@ export interface IUnpublishEntryUseCaseErrors {
 
 type UseCaseError = IUnpublishEntryUseCaseErrors[keyof IUnpublishEntryUseCaseErrors];
 
-export const UnpublishEntryUseCase = createAbstraction<IUnpublishEntryUseCase>(
-    "UnpublishEntryUseCase"
-);
+export const UnpublishEntryUseCase =
+    createAbstraction<IUnpublishEntryUseCase>("UnpublishEntryUseCase");
 
 export namespace UnpublishEntryUseCase {
     export type Interface = IUnpublishEntryUseCase;

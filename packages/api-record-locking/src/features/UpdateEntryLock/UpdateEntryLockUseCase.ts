@@ -8,7 +8,11 @@ import { GetLockRecordUseCase } from "../GetLockRecord/abstractions.js";
 import { LockEntryUseCase } from "../LockEntry/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import type { ILockRecord } from "~/domain/LockRecord.js";
-import { LockRecordNotFoundError, IdentityMismatchError, UpdateEntryLockError } from "~/domain/errors.js";
+import {
+    LockRecordNotFoundError,
+    IdentityMismatchError,
+    UpdateEntryLockError
+} from "~/domain/errors.js";
 
 class UpdateEntryLockUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
@@ -18,7 +22,9 @@ class UpdateEntryLockUseCaseImpl implements UseCaseAbstraction.Interface {
         private identityContext: IdentityContext.Interface
     ) {}
 
-    async execute(input: UpdateEntryLockInput): Promise<Result<ILockRecord, UseCaseAbstraction.Error>> {
+    async execute(
+        input: UpdateEntryLockInput
+    ): Promise<Result<ILockRecord, UseCaseAbstraction.Error>> {
         // Try to get existing lock record
         const recordResult = await this.getLockRecord.execute(input);
 
@@ -68,5 +74,10 @@ class UpdateEntryLockUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UpdateEntryLockUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateEntryLockUseCaseImpl,
-    dependencies: [GetLockRecordUseCase, LockEntryUseCase, UpdateEntryLockRepository, IdentityContext]
+    dependencies: [
+        GetLockRecordUseCase,
+        LockEntryUseCase,
+        UpdateEntryLockRepository,
+        IdentityContext
+    ]
 });

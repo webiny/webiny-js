@@ -15,7 +15,8 @@ export interface IDeleteSettingsUseCase {
     execute(name: string): Promise<Result<void, DeleteSettingsError>>;
 }
 
-export const DeleteSettingsUseCase = createAbstraction<IDeleteSettingsUseCase>("DeleteSettingsUseCase");
+export const DeleteSettingsUseCase =
+    createAbstraction<IDeleteSettingsUseCase>("DeleteSettingsUseCase");
 
 export namespace DeleteSettingsUseCase {
     export type Interface = IDeleteSettingsUseCase;

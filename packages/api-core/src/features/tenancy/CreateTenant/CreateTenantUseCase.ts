@@ -24,7 +24,7 @@ class CreateTenantUseCaseImpl implements UseCaseAbstraction.Interface {
             },
             savedOn: new Date().toISOString(),
             createdOn: new Date().toISOString(),
-            parent: data.parent || null,
+            parent: data.parent || null
         };
 
         await this.eventPublisher.publish(new TenantBeforeCreateEvent({ tenant, input: data }));

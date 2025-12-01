@@ -57,7 +57,7 @@ class PluginGroupsProviderImpl implements ProviderAbstraction.Interface {
                 .map(plugin => {
                     return {
                         ...plugin.contentModelGroup,
-                        tenant: tenant.id,
+                        tenant: tenant.id
                     };
                 });
 

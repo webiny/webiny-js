@@ -33,8 +33,7 @@ export interface IGetUniqueFieldValuesUseCaseErrors {
     invalidWhere: InvalidWhereConditionError;
 }
 
-type UseCaseError =
-    IGetUniqueFieldValuesUseCaseErrors[keyof IGetUniqueFieldValuesUseCaseErrors];
+type UseCaseError = IGetUniqueFieldValuesUseCaseErrors[keyof IGetUniqueFieldValuesUseCaseErrors];
 
 export const GetUniqueFieldValuesUseCase = createAbstraction<IGetUniqueFieldValuesUseCase>(
     "GetUniqueFieldValuesUseCase"

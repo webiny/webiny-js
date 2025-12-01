@@ -1,7 +1,11 @@
 import { Result } from "@webiny/feature/api";
 import { GetUniqueFieldValuesUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetUniqueFieldValues";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
-import { ListTagsRepository as RepositoryAbstraction, ListTagsInput, TagItem } from "./abstractions.js";
+import {
+    ListTagsRepository as RepositoryAbstraction,
+    ListTagsInput,
+    TagItem
+} from "./abstractions.js";
 import { FileModel } from "~/domain/file/abstractions.js";
 import { FilePersistenceError } from "~/domain/file/errors.js";
 

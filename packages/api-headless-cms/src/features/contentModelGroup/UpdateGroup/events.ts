@@ -55,9 +55,8 @@ export class GroupAfterUpdateEvent extends DomainEvent<GroupAfterUpdatePayload> 
     }
 }
 
-export const GroupAfterUpdateHandler = createAbstraction<IEventHandler<GroupAfterUpdateEvent>>(
-    "GroupAfterUpdateHandler"
-);
+export const GroupAfterUpdateHandler =
+    createAbstraction<IEventHandler<GroupAfterUpdateEvent>>("GroupAfterUpdateHandler");
 
 export namespace GroupAfterUpdateHandler {
     export type Interface = IEventHandler<GroupAfterUpdateEvent>;
@@ -75,9 +74,8 @@ export class GroupUpdateErrorEvent extends DomainEvent<GroupUpdateErrorPayload> 
     }
 }
 
-export const GroupUpdateErrorHandler = createAbstraction<IEventHandler<GroupUpdateErrorEvent>>(
-    "GroupUpdateErrorHandler"
-);
+export const GroupUpdateErrorHandler =
+    createAbstraction<IEventHandler<GroupUpdateErrorEvent>>("GroupUpdateErrorHandler");
 
 export namespace GroupUpdateErrorHandler {
     export type Interface = IEventHandler<GroupUpdateErrorEvent>;

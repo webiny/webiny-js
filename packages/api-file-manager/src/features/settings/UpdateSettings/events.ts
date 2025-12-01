@@ -22,8 +22,9 @@ export class SettingsBeforeUpdateEvent extends DomainEvent<SettingsBeforeUpdateP
     }
 }
 
-export const SettingsBeforeUpdateHandler =
-    createAbstraction<IEventHandler<SettingsBeforeUpdateEvent>>("SettingsBeforeUpdateHandler");
+export const SettingsBeforeUpdateHandler = createAbstraction<
+    IEventHandler<SettingsBeforeUpdateEvent>
+>("SettingsBeforeUpdateHandler");
 
 export namespace SettingsBeforeUpdateHandler {
     export type Interface = IEventHandler<SettingsBeforeUpdateEvent>;
@@ -48,8 +49,9 @@ export class SettingsAfterUpdateEvent extends DomainEvent<SettingsAfterUpdatePay
     }
 }
 
-export const SettingsAfterUpdateHandler =
-    createAbstraction<IEventHandler<SettingsAfterUpdateEvent>>("SettingsAfterUpdateHandler");
+export const SettingsAfterUpdateHandler = createAbstraction<
+    IEventHandler<SettingsAfterUpdateEvent>
+>("SettingsAfterUpdateHandler");
 
 export namespace SettingsAfterUpdateHandler {
     export type Interface = IEventHandler<SettingsAfterUpdateEvent>;

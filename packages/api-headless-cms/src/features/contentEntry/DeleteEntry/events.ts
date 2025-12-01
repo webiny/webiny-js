@@ -38,9 +38,8 @@ export class EntryAfterDeleteEvent extends DomainEvent<EntryAfterDeletePayload> 
     }
 }
 
-export const EntryAfterDeleteHandler = createAbstraction<IEventHandler<EntryAfterDeleteEvent>>(
-    "EntryAfterDeleteHandler"
-);
+export const EntryAfterDeleteHandler =
+    createAbstraction<IEventHandler<EntryAfterDeleteEvent>>("EntryAfterDeleteHandler");
 
 export namespace EntryAfterDeleteHandler {
     export type Interface = IEventHandler<EntryAfterDeleteEvent>;
@@ -58,9 +57,8 @@ export class EntryDeleteErrorEvent extends DomainEvent<EntryDeleteErrorPayload> 
     }
 }
 
-export const EntryDeleteErrorHandler = createAbstraction<IEventHandler<EntryDeleteErrorEvent>>(
-    "EntryDeleteErrorHandler"
-);
+export const EntryDeleteErrorHandler =
+    createAbstraction<IEventHandler<EntryDeleteErrorEvent>>("EntryDeleteErrorHandler");
 
 export namespace EntryDeleteErrorHandler {
     export type Interface = IEventHandler<EntryDeleteErrorEvent>;

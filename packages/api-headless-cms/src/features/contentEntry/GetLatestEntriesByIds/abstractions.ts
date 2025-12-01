@@ -45,7 +45,8 @@ export interface IGetLatestEntriesByIdsRepositoryErrors {
     storage: EntryPersistenceError;
 }
 
-type RepositoryError = IGetLatestEntriesByIdsRepositoryErrors[keyof IGetLatestEntriesByIdsRepositoryErrors];
+type RepositoryError =
+    IGetLatestEntriesByIdsRepositoryErrors[keyof IGetLatestEntriesByIdsRepositoryErrors];
 
 export const GetLatestEntriesByIdsRepository = createAbstraction<IGetLatestEntriesByIdsRepository>(
     "GetLatestEntriesByIdsRepository"

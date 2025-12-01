@@ -67,10 +67,6 @@ export interface AcoStorageOperations {
     flp: AcoFolderLevelPermissionsStorageOperations;
 }
 
-export interface AcoContext
-    extends BaseContext,
-        ApiCoreContext,
-        CmsContext,
-        TasksContext {
+export interface AcoContext extends BaseContext, ApiCoreContext, CmsContext, TasksContext {
     aco: AdvancedContentOrganisation;
 }

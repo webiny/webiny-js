@@ -18,9 +18,8 @@ export class EntryBeforeMoveEvent extends DomainEvent<EntryBeforeMovePayload> {
     }
 }
 
-export const EntryBeforeMoveHandler = createAbstraction<IEventHandler<EntryBeforeMoveEvent>>(
-    "EntryBeforeMoveHandler"
-);
+export const EntryBeforeMoveHandler =
+    createAbstraction<IEventHandler<EntryBeforeMoveEvent>>("EntryBeforeMoveHandler");
 
 export namespace EntryBeforeMoveHandler {
     export type Interface = IEventHandler<EntryBeforeMoveEvent>;
@@ -38,9 +37,8 @@ export class EntryAfterMoveEvent extends DomainEvent<EntryAfterMovePayload> {
     }
 }
 
-export const EntryAfterMoveHandler = createAbstraction<IEventHandler<EntryAfterMoveEvent>>(
-    "EntryAfterMoveHandler"
-);
+export const EntryAfterMoveHandler =
+    createAbstraction<IEventHandler<EntryAfterMoveEvent>>("EntryAfterMoveHandler");
 
 export namespace EntryAfterMoveHandler {
     export type Interface = IEventHandler<EntryAfterMoveEvent>;
@@ -58,9 +56,8 @@ export class EntryMoveErrorEvent extends DomainEvent<EntryMoveErrorPayload> {
     }
 }
 
-export const EntryMoveErrorHandler = createAbstraction<IEventHandler<EntryMoveErrorEvent>>(
-    "EntryMoveErrorHandler"
-);
+export const EntryMoveErrorHandler =
+    createAbstraction<IEventHandler<EntryMoveErrorEvent>>("EntryMoveErrorHandler");
 
 export namespace EntryMoveErrorHandler {
     export type Interface = IEventHandler<EntryMoveErrorEvent>;

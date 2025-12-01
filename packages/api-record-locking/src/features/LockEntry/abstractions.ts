@@ -2,7 +2,11 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type { ILockRecord } from "~/domain/LockRecord.js";
 import type { LockRecordEntryType } from "~/domain/types.js";
-import type { EntryAlreadyLockedError, LockEntryError, LockRecordPersistenceError } from "~/domain/errors.js";
+import type {
+    EntryAlreadyLockedError,
+    LockEntryError,
+    LockRecordPersistenceError
+} from "~/domain/errors.js";
 
 // Input types
 export interface LockEntryInput {

@@ -25,7 +25,8 @@ export interface IListLockRecordsUseCaseErrors {
 
 type UseCaseError = IListLockRecordsUseCaseErrors[keyof IListLockRecordsUseCaseErrors];
 
-export const ListLockRecordsUseCase = createAbstraction<IListLockRecordsUseCase>("ListLockRecordsUseCase");
+export const ListLockRecordsUseCase =
+    createAbstraction<IListLockRecordsUseCase>("ListLockRecordsUseCase");
 
 export namespace ListLockRecordsUseCase {
     export type Interface = IListLockRecordsUseCase;
@@ -45,7 +46,9 @@ export interface IListLockRecordsRepositoryErrors {
 
 type RepositoryError = IListLockRecordsRepositoryErrors[keyof IListLockRecordsRepositoryErrors];
 
-export const ListLockRecordsRepository = createAbstraction<IListLockRecordsRepository>("ListLockRecordsRepository");
+export const ListLockRecordsRepository = createAbstraction<IListLockRecordsRepository>(
+    "ListLockRecordsRepository"
+);
 
 export namespace ListLockRecordsRepository {
     export type Interface = IListLockRecordsRepository;

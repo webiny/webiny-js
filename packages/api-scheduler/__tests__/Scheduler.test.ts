@@ -247,7 +247,9 @@ describe("Scheduler", () => {
         expect(scheduleResult1.isOk()).toBe(true);
         expect(scheduleResult2.isOk()).toBe(true);
 
-        const scheduledActionsResult = await listScheduledActions.execute({ where: { namespace, targetId } });
+        const scheduledActionsResult = await listScheduledActions.execute({
+            where: { namespace, targetId }
+        });
         expect(scheduledActionsResult.isOk()).toBe(true);
 
         const scheduledActions = scheduledActionsResult.value.items;

@@ -9,7 +9,10 @@ import { GroupAfterUpdateEvent } from "./events.js";
 import { GroupUpdateErrorEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
-import { GroupNotAuthorizedError, GroupValidationError } from "~/domain/contentModelGroup/errors.js";
+import {
+    GroupNotAuthorizedError,
+    GroupValidationError
+} from "~/domain/contentModelGroup/errors.js";
 import { createZodError } from "@webiny/utils";
 import { createGroupUpdateValidation } from "~/domain/contentModelGroup/validation.js";
 import type { CmsGroup } from "~/types/index.js";
@@ -64,7 +67,9 @@ class UpdateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
         const validationResult = await createGroupUpdateValidation().safeParseAsync(input);
         if (!validationResult.success) {
             const zodError = createZodError(validationResult.error);
-            return Result.fail(new GroupValidationError(zodError.message, zodError.data!.invalidFields));
+            return Result.fail(
+                new GroupValidationError(zodError.message, zodError.data!.invalidFields)
+            );
         }
         const data = validationResult.data;
 

@@ -31,7 +31,9 @@ export interface IUnlockEntryRequestUseCaseErrors {
 
 type UseCaseError = IUnlockEntryRequestUseCaseErrors[keyof IUnlockEntryRequestUseCaseErrors];
 
-export const UnlockEntryRequestUseCase = createAbstraction<IUnlockEntryRequestUseCase>("UnlockEntryRequestUseCase");
+export const UnlockEntryRequestUseCase = createAbstraction<IUnlockEntryRequestUseCase>(
+    "UnlockEntryRequestUseCase"
+);
 
 export namespace UnlockEntryRequestUseCase {
     export type Interface = IUnlockEntryRequestUseCase;
@@ -49,9 +51,12 @@ export interface IUnlockEntryRequestRepositoryErrors {
     persistence: UnlockEntryRequestError;
 }
 
-type RepositoryError = IUnlockEntryRequestRepositoryErrors[keyof IUnlockEntryRequestRepositoryErrors];
+type RepositoryError =
+    IUnlockEntryRequestRepositoryErrors[keyof IUnlockEntryRequestRepositoryErrors];
 
-export const UnlockEntryRequestRepository = createAbstraction<IUnlockEntryRequestRepository>("UnlockEntryRequestRepository");
+export const UnlockEntryRequestRepository = createAbstraction<IUnlockEntryRequestRepository>(
+    "UnlockEntryRequestRepository"
+);
 
 export namespace UnlockEntryRequestRepository {
     export type Interface = IUnlockEntryRequestRepository;

@@ -108,9 +108,8 @@ export interface IListEntriesRepositoryErrors {
 
 type RepositoryError = IListEntriesRepositoryErrors[keyof IListEntriesRepositoryErrors];
 
-export const ListEntriesRepository = createAbstraction<IListEntriesRepository>(
-    "ListEntriesRepository"
-);
+export const ListEntriesRepository =
+    createAbstraction<IListEntriesRepository>("ListEntriesRepository");
 
 export namespace ListEntriesRepository {
     export type Interface = IListEntriesRepository;
