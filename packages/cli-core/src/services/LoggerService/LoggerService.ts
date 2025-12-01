@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { LoggerService } from "~/abstractions/index.js";
+import { GetArgvService, LoggerService } from "~/abstractions/index.js";
 import * as fs from "node:fs";
 import path from "node:path";
 import findUp from "find-up";
@@ -10,6 +10,8 @@ const DEFAULT_LOG_LEVEL = "info";
 
 export class DefaultLoggerService implements LoggerService.Interface {
     private pinoLogger: Logger | null = null;
+
+    constructor(private readonly getArgvService: GetArgvService.Interface) {}
 
     trace(message?: any, ...optionalParams: any[]) {
         const logger = this.getLogger();
@@ -51,8 +53,9 @@ export class DefaultLoggerService implements LoggerService.Interface {
             return this.pinoLogger;
         }
 
+        const argv = this.getArgvService.execute();
         const logStream = this.getLogStream();
-        const level = process.env.WEBINY_LOG_LEVEL || DEFAULT_LOG_LEVEL;
+        const level = process.env.WEBINY_LOG_LEVEL || argv.logLevel || DEFAULT_LOG_LEVEL;
 
         this.pinoLogger = pino({ level }, logStream);
 
@@ -60,8 +63,8 @@ export class DefaultLoggerService implements LoggerService.Interface {
     }
 
     private getLogStream() {
-        const debugEnabled = process.argv.includes("--show-logs");
-        if (debugEnabled) {
+        const argv = this.getArgvService.execute();
+        if (argv.showLogs) {
             return pinoPretty({
                 ignore: "pid,hostname"
             });
@@ -101,5 +104,5 @@ export class DefaultLoggerService implements LoggerService.Interface {
 export const loggerService = createImplementation({
     abstraction: LoggerService,
     implementation: DefaultLoggerService,
-    dependencies: []
+    dependencies: [GetArgvService]
 });
