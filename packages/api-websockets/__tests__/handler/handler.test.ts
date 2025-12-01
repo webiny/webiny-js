@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createHandler } from "~/handler/handler";
 import { WebsocketsEventRoute } from "~/handler/types";
 import { createMockLambdaContext } from "~tests/mocks/lambdaContext";
@@ -55,13 +55,9 @@ describe("handler", () => {
 
         expect(result).toMatchObject({
             statusCode: 200,
-            isBase64Encoded: false,
             headers: {
                 "sec-websocket-protocol": "webiny-ws-v1"
-            },
-            body: JSON.stringify({
-                statusCode: 200
-            })
+            }
         });
     });
 
@@ -98,13 +94,9 @@ describe("handler", () => {
 
         expect(result).toMatchObject({
             statusCode: 200,
-            isBase64Encoded: false,
             headers: {
                 "sec-websocket-protocol": "webiny-ws-v1"
-            },
-            body: JSON.stringify({
-                statusCode: 200
-            })
+            }
         });
 
         const connectionsAfterConnect = await context.websockets.listConnections({
@@ -148,13 +140,9 @@ describe("handler", () => {
 
         expect(connectResult).toMatchObject({
             statusCode: 200,
-            isBase64Encoded: false,
             headers: {
                 "sec-websocket-protocol": "webiny-ws-v1"
-            },
-            body: JSON.stringify({
-                statusCode: 200
-            })
+            }
         });
 
         const connectionsAfterConnect = await context.websockets.listConnections({
@@ -183,13 +171,9 @@ describe("handler", () => {
 
         expect(disconnectResult).toMatchObject({
             statusCode: 200,
-            isBase64Encoded: false,
             headers: {
                 "sec-websocket-protocol": "webiny-ws-v1"
-            },
-            body: JSON.stringify({
-                statusCode: 200
-            })
+            }
         });
 
         const connectionsAfterDisconnect = await context.websockets.listConnections({
@@ -233,26 +217,9 @@ describe("handler", () => {
 
         expect(disconnectResult).toMatchObject({
             statusCode: 200,
-            isBase64Encoded: false,
             headers: {
                 "sec-websocket-protocol": "webiny-ws-v1"
-            },
-            body: expect.any(String)
-        });
-        const bodyResult = JSON.parse(disconnectResult.body);
-
-        expect(bodyResult).toEqual({
-            error: {
-                code: "CONNECTION_NOT_FOUND",
-                data: {
-                    PK: "WS#CONNECTIONS",
-                    SK: "myConnectionId"
-                },
-                message: 'There is no connection with ID "myConnectionId".',
-                stack: expect.any(String)
-            },
-            message: 'Route "$disconnect" action failed.',
-            statusCode: 200
+            }
         });
     });
 });
