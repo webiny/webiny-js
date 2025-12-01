@@ -1,6 +1,11 @@
 import { createImplementation } from "@webiny/di";
 import { IWcpUserPatModel } from "@webiny/project/abstractions/models/index.js";
-import { CliCommand, GetProjectSdkService, LoggerService, UiService } from "~/abstractions/index.js";
+import {
+    CliCommand,
+    GetProjectSdkService,
+    LoggerService,
+    UiService
+} from "~/abstractions/index.js";
 import { setTimeout } from "node:timers/promises";
 import { WcpUserPatModel } from "@webiny/project/models/index.js";
 import open from "open";

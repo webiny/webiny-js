@@ -9,4 +9,3 @@ export const GetArgvService = createAbstraction<IGetArgvService>("GetArgvService
 export namespace GetArgvService {
     export type Interface = IGetArgvService;
 }
-

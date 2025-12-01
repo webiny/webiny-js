@@ -31,7 +31,9 @@ export interface ICliCommandDefinition<TCommandParams> {
 }
 
 export interface ICliCommand<TCommandParams> {
-    execute(): Promise<ICliCommandDefinition<TCommandParams>> | ICliCommandDefinition<TCommandParams>;
+    execute():
+        | Promise<ICliCommandDefinition<TCommandParams>>
+        | ICliCommandDefinition<TCommandParams>;
 }
 
 export const CliCommand = createAbstraction<ICliCommand<any>>("CliCommand");

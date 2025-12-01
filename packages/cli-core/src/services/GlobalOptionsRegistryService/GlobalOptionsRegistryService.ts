@@ -1,9 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import { GlobalCliOption, GlobalOptionsRegistryService } from "~/abstractions/index.js";
 
-export class DefaultGlobalOptionsRegistryService
-    implements GlobalOptionsRegistryService.Interface
-{
+export class DefaultGlobalOptionsRegistryService implements GlobalOptionsRegistryService.Interface {
     constructor(private globalOptions: GlobalCliOption.Interface[]) {}
 
     execute() {
@@ -16,4 +14,3 @@ export const globalOptionsRegistryService = createImplementation({
     implementation: DefaultGlobalOptionsRegistryService,
     dependencies: [[GlobalCliOption, { multiple: true }]]
 });
-

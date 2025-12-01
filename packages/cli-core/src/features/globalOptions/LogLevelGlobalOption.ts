@@ -20,4 +20,3 @@ export const logLevelGlobalOption = createImplementation({
     implementation: LogLevelGlobalOption,
     dependencies: []
 });
-

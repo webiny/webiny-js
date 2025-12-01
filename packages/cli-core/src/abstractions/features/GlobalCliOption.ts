@@ -24,5 +24,3 @@ export namespace GlobalCliOption {
     export type Definition = IGlobalCliOptionDefinition;
     export type Config = IGlobalCliOptionConfig;
 }
-
-

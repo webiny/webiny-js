@@ -63,69 +63,69 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
         }
 
         yargsRunner.fail((invalidParamsMessage, error) => {
-                if (invalidParamsMessage) {
-                    if (invalidParamsMessage.includes("Not enough non-option arguments")) {
-                        ui.newLine();
-                        ui.error("Command was not invoked as expected.");
-                        ui.info(
-                            `Some non-optional arguments are missing. See the usage examples printed below.`
-                        );
-                        ui.newLine();
-                        yargsRunner.showHelp();
-                        process.exit(1);
-                    }
-
-                    if (invalidParamsMessage.includes("Missing required argument")) {
-                        const args = invalidParamsMessage
-                            .split(":")[1]
-                            .split(",")
-                            .map(v => v.trim());
-
-                        ui.newLine();
-                        ui.error("Command was not invoked as expected.");
-                        ui.info(
-                            `Missing required argument(s): ${args.join(
-                                ", "
-                            )}. See the usage examples printed below.`
-                        );
-                        ui.newLine();
-                        yargsRunner.showHelp();
-                        process.exit(1);
-                    }
-
+            if (invalidParamsMessage) {
+                if (invalidParamsMessage.includes("Not enough non-option arguments")) {
                     ui.newLine();
-                    ui.error(invalidParamsMessage);
-
+                    ui.error("Command was not invoked as expected.");
+                    ui.info(
+                        `Some non-optional arguments are missing. See the usage examples printed below.`
+                    );
+                    ui.newLine();
+                    yargsRunner.showHelp();
                     process.exit(1);
                 }
 
-                const logger = projectSdk.getLogger();
-                logger.error({ err: error }, "CLI command execution failed.");
+                if (invalidParamsMessage.includes("Missing required argument")) {
+                    const args = invalidParamsMessage
+                        .split(":")[1]
+                        .split(",")
+                        .map(v => v.trim());
 
-                const realError = (error.cause as Error) || error;
-
-                if (realError instanceof ManuallyReportedError) {
-                    // Do nothing as the error reporting has already been
-                    // handled within the invoked CLI command.
-                } else {
-                    ui.error(realError.message);
-                }
-
-                const argv = this.getArgvService.execute();
-                if (argv.stackTrace && realError.stack) {
                     ui.newLine();
-                    ui.debug("Stack trace:");
-                    ui.text(realError.stack);
+                    ui.error("Command was not invoked as expected.");
+                    ui.info(
+                        `Missing required argument(s): ${args.join(
+                            ", "
+                        )}. See the usage examples printed below.`
+                    );
+                    ui.newLine();
+                    yargsRunner.showHelp();
+                    process.exit(1);
                 }
 
-                if (error instanceof GracefulError) {
-                    ui.newLine();
-                    ui.text(bgYellow(bold("💡 How can I resolve this?")));
-                    ui.text(error.message);
-                }
+                ui.newLine();
+                ui.error(invalidParamsMessage);
 
                 process.exit(1);
-            });
+            }
+
+            const logger = projectSdk.getLogger();
+            logger.error({ err: error }, "CLI command execution failed.");
+
+            const realError = (error.cause as Error) || error;
+
+            if (realError instanceof ManuallyReportedError) {
+                // Do nothing as the error reporting has already been
+                // handled within the invoked CLI command.
+            } else {
+                ui.error(realError.message);
+            }
+
+            const argv = this.getArgvService.execute();
+            if (argv.stackTrace && realError.stack) {
+                ui.newLine();
+                ui.debug("Stack trace:");
+                ui.text(realError.stack);
+            }
+
+            if (error instanceof GracefulError) {
+                ui.newLine();
+                ui.text(bgYellow(bold("💡 How can I resolve this?")));
+                ui.text(error.message);
+            }
+
+            process.exit(1);
+        });
 
         const commands = this.commandsRegistryService.execute();
 

@@ -1,8 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import {
-    ArgvParserService,
-    GlobalOptionsRegistryService
-} from "~/abstractions/index.js";
+import { ArgvParserService, GlobalOptionsRegistryService } from "~/abstractions/index.js";
 import yargs from "yargs";
 
 export class DefaultArgvParserService implements ArgvParserService.Interface {
@@ -41,4 +38,3 @@ export const argvParserService = createImplementation({
     implementation: DefaultArgvParserService,
     dependencies: [GlobalOptionsRegistryService]
 });
-

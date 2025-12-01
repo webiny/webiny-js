@@ -9,4 +9,3 @@ export const ArgvParserService = createAbstraction<IArgvParserService>("ArgvPars
 export namespace ArgvParserService {
     export type Interface = IArgvParserService;
 }
-

@@ -12,4 +12,3 @@ export const GlobalOptionsRegistryService = createAbstraction<IGlobalOptionsRegi
 export namespace GlobalOptionsRegistryService {
     export type Interface = IGlobalOptionsRegistryService;
 }
-

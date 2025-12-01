@@ -19,4 +19,3 @@ export const showLogsGlobalOption = createImplementation({
     implementation: ShowLogsGlobalOption,
     dependencies: []
 });
-
