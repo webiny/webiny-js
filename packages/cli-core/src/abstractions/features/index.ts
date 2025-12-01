@@ -1,3 +1,3 @@
-export { Command } from "./Command.js";
+export { CliCommand } from "./CliCommand.js";
 export { ErrorHandler } from "./ErrorHandler.js";
-export { GlobalOption } from "./GlobalOption.js";
+export { GlobalCliOption } from "./GlobalCliOption.js";

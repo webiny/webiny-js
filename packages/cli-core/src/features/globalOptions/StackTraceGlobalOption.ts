@@ -1,8 +1,8 @@
 import { createImplementation } from "@webiny/di";
-import { GlobalOption } from "~/abstractions/index.js";
+import { GlobalCliOption } from "~/abstractions/index.js";
 
-export class StackTraceGlobalOption implements GlobalOption.Interface {
-    execute(): GlobalOption.Definition {
+export class StackTraceGlobalOption implements GlobalCliOption.Interface {
+    execute(): GlobalCliOption.Definition {
         return {
             name: "stack-trace",
             config: {
@@ -15,7 +15,7 @@ export class StackTraceGlobalOption implements GlobalOption.Interface {
 }
 
 export const stackTraceGlobalOption = createImplementation({
-    abstraction: GlobalOption,
+    abstraction: GlobalCliOption,
     implementation: StackTraceGlobalOption,
     dependencies: []
 });

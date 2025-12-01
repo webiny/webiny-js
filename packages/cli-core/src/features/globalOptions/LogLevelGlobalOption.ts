@@ -1,8 +1,8 @@
 import { createImplementation } from "@webiny/di";
-import { GlobalOption } from "~/abstractions/index.js";
+import { GlobalCliOption } from "~/abstractions/index.js";
 
-export class LogLevelGlobalOption implements GlobalOption.Interface {
-    execute(): GlobalOption.Definition {
+export class LogLevelGlobalOption implements GlobalCliOption.Interface {
+    execute(): GlobalCliOption.Definition {
         return {
             name: "log-level",
             config: {
@@ -16,7 +16,7 @@ export class LogLevelGlobalOption implements GlobalOption.Interface {
 }
 
 export const logLevelGlobalOption = createImplementation({
-    abstraction: GlobalOption,
+    abstraction: GlobalCliOption,
     implementation: LogLevelGlobalOption,
     dependencies: []
 });

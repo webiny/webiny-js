@@ -1,8 +1,8 @@
 import { createImplementation } from "@webiny/di";
-import { GlobalOption } from "~/abstractions/index.js";
+import { GlobalCliOption } from "~/abstractions/index.js";
 
-export class ShowLogsGlobalOption implements GlobalOption.Interface {
-    execute(): GlobalOption.Definition {
+export class ShowLogsGlobalOption implements GlobalCliOption.Interface {
+    execute(): GlobalCliOption.Definition {
         return {
             name: "show-logs",
             config: {
@@ -15,7 +15,7 @@ export class ShowLogsGlobalOption implements GlobalOption.Interface {
 }
 
 export const showLogsGlobalOption = createImplementation({
-    abstraction: GlobalOption,
+    abstraction: GlobalCliOption,
     implementation: ShowLogsGlobalOption,
     dependencies: []
 });

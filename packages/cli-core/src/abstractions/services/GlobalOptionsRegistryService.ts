@@ -1,8 +1,8 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-import { GlobalOption } from "~/abstractions/index.js";
+import { GlobalCliOption } from "~/abstractions/index.js";
 
 export interface IGlobalOptionsRegistryService {
-    execute(): GlobalOption.Interface[];
+    execute(): GlobalCliOption.Interface[];
 }
 
 export const GlobalOptionsRegistryService = createAbstraction<IGlobalOptionsRegistryService>(
