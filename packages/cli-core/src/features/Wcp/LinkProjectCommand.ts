@@ -1,11 +1,11 @@
 import { createImplementation } from "@webiny/di";
 import inquirer from "inquirer";
-import { Command, GetProjectSdkService, UiService } from "~/abstractions/index.js";
+import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import { setTimeout } from "node:timers/promises";
 
 const sleep = (ms: number = 1500) => setTimeout(ms);
 
-export class LinkProjectCommand implements Command.Interface<void> {
+export class LinkProjectCommand implements CliCommand.Interface<void> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface
@@ -163,7 +163,7 @@ export class LinkProjectCommand implements Command.Interface<void> {
 }
 
 export const linkProjectCommand = createImplementation({
-    abstraction: Command,
+    abstraction: CliCommand,
     implementation: LinkProjectCommand,
     dependencies: [GetProjectSdkService, UiService]
 });

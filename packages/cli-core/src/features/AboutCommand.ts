@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { Command, GetProjectSdkService, UiService } from "~/abstractions/index.js";
+import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import chalk from "chalk";
 
 interface IAboutCommandParams {
@@ -8,13 +8,13 @@ interface IAboutCommandParams {
 
 const NO_VALUE = "-";
 
-export class AboutCommand implements Command.Interface<IAboutCommandParams> {
+export class AboutCommand implements CliCommand.Interface<IAboutCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface
     ) {}
 
-    execute(): Command.CommandDefinition<IAboutCommandParams> {
+    execute(): CliCommand.CommandDefinition<IAboutCommandParams> {
         return {
             name: "about",
             description: "Display information about the current Webiny project.",
@@ -101,7 +101,7 @@ export class AboutCommand implements Command.Interface<IAboutCommandParams> {
 }
 
 export const aboutCommand = createImplementation({
-    abstraction: Command,
+    abstraction: CliCommand,
     implementation: AboutCommand,
     dependencies: [GetProjectSdkService, UiService]
 });

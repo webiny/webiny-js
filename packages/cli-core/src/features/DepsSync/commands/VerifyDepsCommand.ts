@@ -1,11 +1,11 @@
 import { createImplementation } from "@webiny/di";
-import { Command, GetProjectSdkService, UiService } from "~/abstractions/index.js";
+import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import loadJsonFile from "load-json-file";
 import { getDuplicatesFilePath, getReferencesFilePath } from "../paths.js";
 import fs from "fs";
 import { createDependencyTree } from "../createDependencyTree.js";
 
-export class VerifyDepsCommand implements Command.Interface<unknown> {
+export class VerifyDepsCommand implements CliCommand.Interface<unknown> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface
@@ -74,7 +74,7 @@ export class VerifyDepsCommand implements Command.Interface<unknown> {
 }
 
 export const verifyDepsCommand = createImplementation({
-    abstraction: Command,
+    abstraction: CliCommand,
     implementation: VerifyDepsCommand,
     dependencies: [GetProjectSdkService, UiService]
 });

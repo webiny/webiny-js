@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { Command, GetProjectSdkService, StdioService } from "~/abstractions/index.js";
+import { CliCommand, GetProjectSdkService, StdioService } from "~/abstractions/index.js";
 import { ManuallyReportedError } from "~/utils/ManuallyReportedError.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
 
@@ -7,13 +7,13 @@ export interface IRefreshCommandParams extends IBaseAppParams {
     command: string[];
 }
 
-export class RefreshCommand implements Command.Interface<IRefreshCommandParams> {
+export class RefreshCommand implements CliCommand.Interface<IRefreshCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private stdioService: StdioService.Interface
     ) {}
 
-    async execute(): Promise<Command.CommandDefinition<IRefreshCommandParams>> {
+    async execute(): Promise<CliCommand.CommandDefinition<IRefreshCommandParams>> {
         const projectSdk = await this.getProjectSdkService.execute();
 
         return {
@@ -83,7 +83,7 @@ export class RefreshCommand implements Command.Interface<IRefreshCommandParams> 
 }
 
 export const refreshCommand = createImplementation({
-    abstraction: Command,
+    abstraction: CliCommand,
     implementation: RefreshCommand,
     dependencies: [GetProjectSdkService, StdioService]
 });
