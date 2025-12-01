@@ -1,4 +1,3 @@
-import { createImplementation } from "@webiny/di";
 import {
     BeforeWatch,
     GetProjectIdService,
@@ -7,7 +6,7 @@ import {
 } from "~/abstractions/index.js";
 import { WcpSetEnvVars } from "./WcpSetEnvVars.js";
 
-class WcpSetEnvVarsBeforeWatch implements BeforeWatch.Interface {
+class WcpSetEnvVarsBeforeWatchImpl implements BeforeWatch.Interface {
     constructor(
         private getProjectIdService: GetProjectIdService.Interface,
         private wcpService: WcpService.Interface,
@@ -27,8 +26,7 @@ class WcpSetEnvVarsBeforeWatch implements BeforeWatch.Interface {
     }
 }
 
-export default createImplementation({
-    abstraction: BeforeWatch,
-    implementation: WcpSetEnvVarsBeforeWatch,
+export const WcpSetEnvVarsBeforeWatch = BeforeWatch.createImplementation({
+    implementation: WcpSetEnvVarsBeforeWatchImpl,
     dependencies: [GetProjectIdService, WcpService, LoggerService]
 });

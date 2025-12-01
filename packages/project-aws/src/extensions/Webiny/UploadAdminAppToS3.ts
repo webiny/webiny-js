@@ -1,4 +1,3 @@
-import { createImplementation } from "@webiny/di";
 import {
     AdminAfterDeploy,
     GetApp,
@@ -9,7 +8,7 @@ import fs from "fs";
 import { uploadFolderToS3 } from "~/pulumi/index.js";
 import { type IDefaultStackOutput } from "~/pulumi/types.js";
 
-class UploadAdminAppToS3 implements AdminAfterDeploy.Interface {
+class UploadAdminAppToS3Impl implements AdminAfterDeploy.Interface {
     constructor(
         private ui: UiService.Interface,
         private getApp: GetApp.Interface,
@@ -74,8 +73,7 @@ class UploadAdminAppToS3 implements AdminAfterDeploy.Interface {
     }
 }
 
-export default createImplementation({
-    abstraction: AdminAfterDeploy,
-    implementation: UploadAdminAppToS3,
+export const UploadAdminAppToS3 = AdminAfterDeploy.createImplementation({
+    implementation: UploadAdminAppToS3Impl,
     dependencies: [UiService, GetApp, GetAppStackOutput]
 });

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { ApproveDialog as BaseApproveDialog } from "~/Components/WorkflowStateDialogs/index.js";
-import { useWorkflowStatesWidget } from "~/Components/WorkflowStatesWidget/Provider/useWorkflowStatesWidget.js";
+import { useWorkflowStatesWidget } from "~/Components/WorkflowStatesWidget/hooks/useWorkflowStatesWidget.js";
 import type { IWorkflowState } from "~/types.js";
 
 interface IApproveDialogProps {

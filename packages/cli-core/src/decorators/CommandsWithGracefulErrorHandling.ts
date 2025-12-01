@@ -1,4 +1,3 @@
-import { createDecorator } from "@webiny/di";
 import { Command, ErrorHandler } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
@@ -37,8 +36,7 @@ export class CommandsWithGracefulErrorHandling<TParams> implements Command.Inter
     }
 }
 
-export const commandsWithGracefulErrorHandling = createDecorator({
-    abstraction: Command,
+export const commandsWithGracefulErrorHandling = Command.createDecorator({
     decorator: CommandsWithGracefulErrorHandling,
     dependencies: [[ErrorHandler, { multiple: true }]]
 });

@@ -1,6 +1,7 @@
 import React from "react";
 import { Dialog, Grid } from "@webiny/admin-ui";
 import { ReactComponent as ApproveIcon } from "@webiny/icons/check.svg";
+import { YouCanTrackAllContentReviewsHere } from "~/Components/Common/index.js";
 
 interface IApproveSuccessDialogProps {
     hide(): void;
@@ -34,7 +35,7 @@ export const ApproveSuccessDialog = (props: IApproveSuccessDialogProps) => {
                     been notified.
                 </Grid.Column>
                 <Grid.Column span={12}>
-                    You can track all Content Reviews <u>here</u>.
+                    <YouCanTrackAllContentReviewsHere />
                 </Grid.Column>
             </Grid>
         </Dialog>

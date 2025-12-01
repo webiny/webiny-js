@@ -17,17 +17,21 @@ export class SetWebinyPackageVersions {
         const projectPackageJson = loadJsonFile.sync<Record<string, any>>(projectPackageJsonPath);
 
         for (const dependency in projectPackageJson.dependencies) {
-            if (dependency.startsWith("@webiny/")) {
+            if (this.isWebinyDependency(dependency)) {
                 projectPackageJson.dependencies[dependency] = cwpVersion;
             }
         }
 
         for (const dependency in projectPackageJson.devDependencies) {
-            if (dependency.startsWith("@webiny/")) {
+            if (this.isWebinyDependency(dependency)) {
                 projectPackageJson.devDependencies[dependency] = cwpVersion;
             }
         }
 
         writeJsonFile.sync(projectPackageJsonPath, projectPackageJson);
+    }
+
+    private isWebinyDependency(depName: string): boolean {
+        return depName === "webiny" || depName.startsWith("@webiny/");
     }
 }

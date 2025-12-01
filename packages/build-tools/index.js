@@ -1,4 +1,4 @@
-export { createWatchApp, createBuildApp } from "./bundling/app/index.js";
+export { createWatchAdmin, createBuildAdmin } from "./bundling/admin/index.js";
 export { createBuildFunction, createWatchFunction } from "./bundling/function/index.js";
 export {
     createWatchPackage,

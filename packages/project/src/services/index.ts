@@ -1,6 +1,7 @@
 export * from "./BuildAppWorkspaceService/index.js";
 export * from "./BuildProjectWorkspaceService/index.js";
 export * from "./GetAppPackagesService/index.js";
+export * from "./GetAppService/index.js";
 export * from "./GetCwdService/index.js";
 export * from "./GetProjectConfigService/index.js";
 export * from "./GetProjectIdService/index.js";

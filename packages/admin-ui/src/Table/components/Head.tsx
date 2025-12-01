@@ -9,7 +9,7 @@ const Head = ({ className, children, ...props }: React.ThHTMLAttributes<HTMLTabl
                 "hover:bg-neutral-subtle",
                 "overflow-hidden whitespace-nowrap truncate",
                 "[&:has([role=checkbox])]:pl-lg",
-                "text-0 leading-none"
+                "leading-none"
             ],
             className
         )}

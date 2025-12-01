@@ -1,24 +1,6 @@
-export {
-    UiService,
-    LoggerService,
+import { ProjectId, Telemetry } from "@webiny/project/extensions/index.js";
 
-    // Hooks.
-    AdminAfterBuild,
-    AdminAfterDeploy,
-    AdminBeforeBuild,
-    AdminBeforeDeploy,
-    AdminBeforeWatch,
-    ApiAfterBuild,
-    ApiAfterDeploy,
-    ApiBeforeBuild,
-    ApiBeforeDeploy,
-    ApiBeforeWatch,
-    CoreAfterBuild,
-    CoreAfterDeploy,
-    CoreBeforeBuild,
-    CoreBeforeDeploy,
-    CoreBeforeWatch,
-
-    // Pulumi.
-    CorePulumi
-} from "@webiny/project/abstractions/index.js";
+export const Project = {
+    Id: ProjectId,
+    Telemetry
+};

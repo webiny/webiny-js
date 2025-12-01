@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type AppName } from "~/abstractions/types.js";
 
 export interface IListPackagesInAppWorkspacePackage {
@@ -19,7 +19,7 @@ export interface IListPackagesInAppWorkspaceService {
 }
 
 export const ListPackagesInAppWorkspaceService =
-    new Abstraction<IListPackagesInAppWorkspaceService>("ListPackagesInAppWorkspaceService");
+    createAbstraction<IListPackagesInAppWorkspaceService>("ListPackagesInAppWorkspaceService");
 
 export namespace ListPackagesInAppWorkspaceService {
     export type Interface = IListPackagesInAppWorkspaceService;

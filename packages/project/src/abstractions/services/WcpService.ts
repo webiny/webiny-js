@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { IUrlModel, IWcpUserModel, IWcpUserPatModel } from "~/abstractions/models/index.js";
 
 export interface IGetProjectEnvironmentParams {
@@ -31,7 +31,7 @@ export interface IWcpService {
     getProjectEnvironment(params: IGetProjectEnvironmentParams): Promise<any>;
 }
 
-export const WcpService = new Abstraction<IWcpService>("WcpService");
+export const WcpService = createAbstraction<IWcpService>("WcpService");
 
 export namespace WcpService {
     export type Interface = IWcpService;

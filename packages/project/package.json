@@ -21,6 +21,7 @@
     "@webiny/telemetry": "0.0.0",
     "@webiny/utils": "0.0.0",
     "@webiny/wcp": "0.0.0",
+    "case": "^1.6.3",
     "chalk": "^4.1.2",
     "chokidar": "^4.0.3",
     "ci-info": "^4.3.0",
@@ -30,7 +31,7 @@
     "exit-hook": "^4.0.0",
     "fast-glob": "^3.3.3",
     "find-up": "^5.0.0",
-    "graphql-request": "^7.2.0",
+    "graphql-request": "^7.3.3",
     "humanize-duration": "3.33.1",
     "jsdom": "^25.0.1",
     "lodash": "^4.17.21",
@@ -56,6 +57,34 @@
     "rimraf": "^6.0.1",
     "type-fest": "^5.2.0",
     "typescript": "5.9.3"
+  },
+  "webiny": {
+    "exports": {
+      "./abstractions/features/hooks/AdminAfterBuild.ts": "./infra/features/AdminAfterBuild",
+      "./abstractions/features/hooks/AdminAfterDeploy.ts": "./infra/features/AdminAfterDeploy",
+      "./abstractions/features/hooks/AdminBeforeBuild.ts": "./infra/features/AdminBeforeBuild",
+      "./abstractions/features/hooks/AdminBeforeDeploy.ts": "./infra/features/AdminBeforeDeploy",
+      "./abstractions/features/hooks/AdminBeforeWatch.ts": "./infra/features/AdminBeforeWatch",
+      "./abstractions/features/hooks/AfterBuild.ts": "./infra/features/AfterBuild",
+      "./abstractions/features/hooks/AfterDeploy.ts": "./infra/features/AfterDeploy",
+      "./abstractions/features/hooks/ApiAfterBuild.ts": "./infra/features/ApiAfterBuild",
+      "./abstractions/features/hooks/ApiAfterDeploy.ts": "./infra/features/ApiAfterDeploy",
+      "./abstractions/features/hooks/ApiBeforeBuild.ts": "./infra/features/ApiBeforeBuild",
+      "./abstractions/features/hooks/ApiBeforeDeploy.ts": "./infra/features/ApiBeforeDeploy",
+      "./abstractions/features/hooks/ApiBeforeWatch.ts": "./infra/features/ApiBeforeWatch",
+      "./abstractions/features/hooks/BeforeBuild.ts": "./infra/features/BeforeBuild",
+      "./abstractions/features/hooks/BeforeDeploy.ts": "./infra/features/BeforeDeploy",
+      "./abstractions/features/hooks/BeforeWatch.ts": "./infra/features/BeforeWatch",
+      "./abstractions/features/hooks/CoreAfterBuild.ts": "./infra/features/CoreAfterBuild",
+      "./abstractions/features/hooks/CoreAfterDeploy.ts": "./infra/features/CoreAfterDeploy",
+      "./abstractions/features/hooks/CoreBeforeBuild.ts": "./infra/features/CoreBeforeBuild",
+      "./abstractions/features/hooks/CoreBeforeDeploy.ts": "./infra/features/CoreBeforeDeploy",
+      "./abstractions/services/LoggerService.ts": "./infra/features/LoggerService",
+      "./abstractions/services/UiService.ts": "./infra/features/UiService",
+      "./abstractions/features/pulumi/AdminPulumi.ts": "./infra/features/AdminPulumi",
+      "./abstractions/features/pulumi/ApiPulumi.ts": "./infra/features/ApiPulumi",
+      "./abstractions/features/pulumi/CorePulumi.ts": "./infra/features/CorePulumi"
+    }
   },
   "adio": {
     "ignore": {

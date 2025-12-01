@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface IStdioService {
     getStdout(): NodeJS.WriteStream;
@@ -8,7 +8,7 @@ export interface IStdioService {
     getStdin(): NodeJS.ReadStream;
 }
 
-export const StdioService = new Abstraction<IStdioService>("StdioService");
+export const StdioService = createAbstraction<IStdioService>("StdioService");
 
 export namespace StdioService {
     export type Interface = IStdioService;

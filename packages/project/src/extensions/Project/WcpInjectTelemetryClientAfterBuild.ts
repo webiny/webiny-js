@@ -1,4 +1,3 @@
-import { createImplementation } from "@webiny/di";
 import {
     ApiAfterBuild,
     GetApp,
@@ -9,7 +8,7 @@ import {
 } from "~/abstractions/index.js";
 import fs from "fs";
 
-class WcpInjectTelemetryClientAfterBuild implements ApiAfterBuild.Interface {
+class WcpInjectTelemetryClientAfterBuildImpl implements ApiAfterBuild.Interface {
     constructor(
         private getProjectIdService: GetProjectIdService.Interface,
         private wcpService: WcpService.Interface,
@@ -58,12 +57,12 @@ class WcpInjectTelemetryClientAfterBuild implements ApiAfterBuild.Interface {
             for (let i = 0; i < handlersPaths.length; i++) {
                 const current = handlersPaths[i];
 
-                // 2.1 Move initially built `handler.js` into `_handler.js`.
+                // 2.1 Move initially built `handler.cjs` into `_handler.cjs`.
                 const builtHandlerPath = current.join("handler.cjs").toString();
                 const renamedHandlerPath = current.join("_handler.cjs").toString();
                 fs.renameSync(builtHandlerPath, renamedHandlerPath);
 
-                // 2.2 Write downloaded telemetry client code as a new `handler.js`.
+                // 2.2 Write downloaded telemetry client code as a new `handler.cjs`.
                 fs.writeFileSync(builtHandlerPath, telemetryCodeAsString);
             }
 
@@ -75,8 +74,7 @@ class WcpInjectTelemetryClientAfterBuild implements ApiAfterBuild.Interface {
     }
 }
 
-export default createImplementation({
-    abstraction: ApiAfterBuild,
-    implementation: WcpInjectTelemetryClientAfterBuild,
+export const WcpInjectTelemetryClientAfterBuild = ApiAfterBuild.createImplementation({
+    implementation: WcpInjectTelemetryClientAfterBuildImpl,
     dependencies: [GetProjectIdService, WcpService, LoggerService, GetApp, UiService]
 });

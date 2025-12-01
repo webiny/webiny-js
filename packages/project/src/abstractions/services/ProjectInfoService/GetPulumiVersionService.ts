@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export type PulumiVersion = string;
 export type PulumiAwsVersion = string;
@@ -8,9 +8,8 @@ interface IGetPulumiVersionService {
     execute(): IGetPulumiVersionServiceResult;
 }
 
-export const GetPulumiVersionService = new Abstraction<IGetPulumiVersionService>(
-    "GetPulumiVersionService"
-);
+export const GetPulumiVersionService =
+    createAbstraction<IGetPulumiVersionService>("GetPulumiVersionService");
 
 export namespace GetPulumiVersionService {
     export type Interface = IGetPulumiVersionService;

@@ -1,8 +1,7 @@
-import { createImplementation } from "@webiny/di";
 import { ApiBeforeDeploy, GetAppStackOutput } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
-class EnsureCoreDeployedBeforeApiDeploy implements ApiBeforeDeploy.Interface {
+class EnsureCoreDeployedBeforeApiDeployImpl implements ApiBeforeDeploy.Interface {
     constructor(private getAppStackOutput: GetAppStackOutput.Interface) {}
 
     async execute(params: ApiBeforeDeploy.Params) {
@@ -31,8 +30,7 @@ class EnsureCoreDeployedBeforeApiDeploy implements ApiBeforeDeploy.Interface {
     }
 }
 
-export default createImplementation({
-    abstraction: ApiBeforeDeploy,
-    implementation: EnsureCoreDeployedBeforeApiDeploy,
+export const EnsureCoreDeployedBeforeApiDeploy = ApiBeforeDeploy.createImplementation({
+    implementation: EnsureCoreDeployedBeforeApiDeployImpl,
     dependencies: [GetAppStackOutput]
 });

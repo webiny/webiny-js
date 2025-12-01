@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type ExtensionDefinitionModel } from "~/defineExtension/models/ExtensionDefinitionModel.js";
 
 export interface IProjectSdkParams {
@@ -11,9 +11,8 @@ export interface IProjectSdkParamsService {
     set(params: Partial<IProjectSdkParams>): void;
 }
 
-export const ProjectSdkParamsService = new Abstraction<IProjectSdkParamsService>(
-    "ProjectSdkParamsService"
-);
+export const ProjectSdkParamsService =
+    createAbstraction<IProjectSdkParamsService>("ProjectSdkParamsService");
 
 export namespace ProjectSdkParamsService {
     export type Interface = IProjectSdkParamsService;

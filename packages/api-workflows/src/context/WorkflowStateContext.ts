@@ -6,8 +6,6 @@ import { WorkflowStateRecordState } from "./abstractions/WorkflowState.js";
 import { WorkflowState } from "./workflowState/WorkflowState.js";
 import type {
     IWorkflowStateContext,
-    IWorkflowStateContextListOwnWorkflowStatesParams,
-    IWorkflowStateContextListOwnWorkflowStatesResponse,
     IWorkflowStateContextListStatesParams,
     IWorkflowStateContextListStatesResponse,
     IWorkflowStateContextOnStateAfterCreate,
@@ -138,8 +136,8 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     }
 
     public async listOwnWorkflowStates(
-        params?: IWorkflowStateContextListOwnWorkflowStatesParams
-    ): Promise<IWorkflowStateContextListOwnWorkflowStatesResponse> {
+        params?: IWorkflowStateContextListStatesParams
+    ): Promise<IWorkflowStateContextListStatesResponse> {
         const identity = this.context.security.getIdentity();
         if (!identity?.id) {
             return {
@@ -163,8 +161,8 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     }
 
     public async listRequestedWorkflowStates(
-        params?: IWorkflowStateContextListOwnWorkflowStatesParams
-    ): Promise<IWorkflowStateContextListOwnWorkflowStatesResponse> {
+        params?: IWorkflowStateContextListStatesParams
+    ): Promise<IWorkflowStateContextListStatesResponse> {
         const identity = this.context.security.getIdentity();
         const teams = await this.getUserTeams(identity.id);
         if (!identity?.id || teams.length === 0) {
@@ -453,20 +451,20 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         app: string,
         targetRevisionId: string
     ): Promise<IWorkflowStateRecord | null> {
-        const { items } = await this.fetchAll({
+        const { items, meta } = await this.fetchAll({
             where: {
                 app,
                 targetRevisionId,
                 isActive: true
             },
-            limit: 10000
+            limit: 1
         });
         /**
          * There cannot be more than one workflow. If there is, something is very wrong and all states, except one, must be deleted.
          */
         if (items.length === 0) {
             return null;
-        } else if (items.length > 1) {
+        } else if (meta.totalCount > 1) {
             throw new MultipleWorkflowsFoundError({
                 data: {
                     app,

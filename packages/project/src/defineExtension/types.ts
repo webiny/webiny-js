@@ -1,4 +1,4 @@
-import { type z } from "zod";
+import { z } from "zod";
 import { type ExtensionInstanceModelContext } from "~/defineExtension/index.js";
 import { type AppName } from "~/abstractions/types.js";
 

@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IAppModel } from "~/abstractions/models/IAppModel.js";
 import { type IBaseAppParams } from "~/abstractions/types.js";
 
@@ -24,7 +24,7 @@ export interface IListAppLambdaFunctionsService {
     ): Promise<IListAppLambdaFunctionsServiceResult>;
 }
 
-export const ListAppLambdaFunctionsService = new Abstraction<IListAppLambdaFunctionsService>(
+export const ListAppLambdaFunctionsService = createAbstraction<IListAppLambdaFunctionsService>(
     "ListAppLambdaFunctionsService"
 );
 

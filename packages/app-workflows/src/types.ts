@@ -1,5 +1,12 @@
 import type { GenericRecord, NonEmptyArray } from "@webiny/app/types.js";
 import type { ReactElement } from "react";
+import type { SecurityPermission } from "@webiny/app-security/types.js";
+
+export interface IGenericMeta {
+    totalCount: number;
+    hasMoreItems: boolean;
+    cursor: string | null;
+}
 
 export interface IGenericError {
     message: string;
@@ -80,4 +87,13 @@ export interface IWorkflowState {
     currentStep: IWorkflowStateStep;
     nextStep: IWorkflowStateStep | null;
     previousStep: IWorkflowStateStep | null;
+}
+
+export enum WorkflowsSecurityPermissionAccessLevel {
+    NO = "no",
+    YES = "yes"
+}
+
+export interface IWorkflowsSecurityPermission extends SecurityPermission {
+    editor: WorkflowsSecurityPermissionAccessLevel;
 }

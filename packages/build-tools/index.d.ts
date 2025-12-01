@@ -29,8 +29,8 @@ export interface BuildAppConfig {
     overrides?: BuildAppConfigOverrides;
 }
 
-export function createBuildApp(options: BuildAppConfig): BuildCommand;
-export function createWatchApp(options: BuildAppConfig): BuildCommand;
+export function createBuildAdmin(options: BuildAppConfig): BuildCommand;
+export function createWatchAdmin(options: BuildAppConfig): BuildCommand;
 
 // Build commands - functions.
 interface BuildFunctionConfig {

@@ -36,7 +36,7 @@ const DecoratableTooltip = ({
     return (
         <TooltipRoot delayDuration={delay} onOpenChange={onOpenChange}>
             <TooltipTrigger asChild>
-                <span className={"inline-block text-0 leading-none"}>{trigger}</span>
+                <span className={"inline-block leading-none"}>{trigger}</span>
             </TooltipTrigger>
             <TooltipContent
                 side={side}
