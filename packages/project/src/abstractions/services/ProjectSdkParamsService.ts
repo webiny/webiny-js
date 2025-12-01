@@ -1,4 +1,5 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
+import { type ExtensionDefinitionModel } from "~/defineExtension/models/ExtensionDefinitionModel.js";
 
 export interface ILoggingParams {
     level?: "info" | "silent" | "fatal" | "error" | "warn" | "debug" | "trace";
@@ -7,7 +8,8 @@ export interface ILoggingParams {
 
 export interface IProjectSdkParams {
     cwd: string;
-    logging?: ILoggingParams;
+    extensions: ExtensionDefinitionModel<any>[];
+    logging: ILoggingParams;
 }
 
 export interface IProjectSdkParamsService {
