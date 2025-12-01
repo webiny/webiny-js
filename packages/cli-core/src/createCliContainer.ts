@@ -6,6 +6,7 @@ import {
     commandsRegistryService,
     getArgvService,
     getCliRunnerService,
+    globalOptionsRegistryService,
     getProjectSdkService,
     loggerService,
     runCliRunnerService,
@@ -36,7 +37,12 @@ import {
     linkProjectCommand,
     loginCommand,
     logoutCommand,
-    whoAmICommand
+    whoAmICommand,
+
+    // Global Options
+    showLogsGlobalOption,
+    logLevelGlobalOption,
+    stackTraceGlobalOption
 } from "./features/index.js";
 
 import chalk from "chalk";
@@ -78,12 +84,18 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(missingFilesInBuildGracefulErrorHandler).inSingletonScope();
     container.register(pendingOperationsGracefulErrorHandler).inSingletonScope();
 
+    // Global options.
+    container.register(showLogsGlobalOption).inSingletonScope();
+    container.register(logLevelGlobalOption).inSingletonScope();
+    container.register(stackTraceGlobalOption).inSingletonScope();
+
     // Services.
     container.register(argvParserService).inSingletonScope();
     container.register(cliParamsService).inSingletonScope();
     container.register(commandsRegistryService).inSingletonScope();
     container.register(getArgvService).inSingletonScope();
     container.register(getCliRunnerService).inSingletonScope();
+    container.register(globalOptionsRegistryService).inSingletonScope();
     container.register(getProjectSdkService).inSingletonScope();
     container.register(loggerService).inSingletonScope();
     container.register(runCliRunnerService).inSingletonScope();

@@ -4,6 +4,7 @@ import {
     CommandsRegistryService,
     GetArgvService,
     GetCliRunnerService,
+    GlobalOptionsRegistryService,
     GetProjectSdkService,
     UiService
 } from "~/abstractions/index.js";
@@ -18,6 +19,7 @@ const { blue, bgYellow, bold } = chalk;
 export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface {
     constructor(
         private readonly commandsRegistryService: CommandsRegistryService.Interface,
+        private readonly globalOptionsRegistryService: GlobalOptionsRegistryService.Interface,
         private readonly uiService: UiService.Interface,
         private readonly getProjectSdkService: GetProjectSdkService.Interface,
         private readonly getArgvService: GetArgvService.Interface
@@ -39,35 +41,28 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
             .demandCommand(1)
             .recommendCommands()
             .scriptName("webiny")
-
-            // These should be registered via an abstraction to be technically correct,
-            // but for now, this will do.
-            .option("show-logs", {
-                type: "boolean",
-                default: false,
-                desc: "Print logs directly in the terminal",
-                global: true
-            })
-            .option("log-level", {
-                type: "string",
-                default: "info",
-                choices: ["silent", "fatal", "error", "warn", "info", "debug", "trace"],
-                desc: "Set the verbosity of logs",
-                global: true
-            })
-            .option("stack-trace", {
-                type: "boolean",
-                default: false,
-                desc: "Show stack traces for errors",
-                global: true
-            })
             .epilogue(
                 `To find more information, docs and tutorials, see ${blue(
                     "https://www.webiny.com/docs"
                 )}.`
             )
-            .epilogue(`Want to contribute? ${blue("https://github.com/webiny/webiny-js")}.`)
-            .fail((invalidParamsMessage, error) => {
+            .epilogue(`Want to contribute? ${blue("https://github.com/webiny/webiny-js")}.`);
+
+        // Register global options.
+        const globalOptions = this.globalOptionsRegistryService.execute();
+        for (const globalOption of globalOptions) {
+            const { name, config } = await globalOption.execute();
+            yargsRunner.option(name, {
+                type: config.type,
+                default: config.default,
+                desc: config.description,
+                alias: config.alias,
+                choices: config.choices,
+                global: true
+            });
+        }
+
+        yargsRunner.fail((invalidParamsMessage, error) => {
                 if (invalidParamsMessage) {
                     if (invalidParamsMessage.includes("Not enough non-option arguments")) {
                         ui.newLine();
@@ -204,5 +199,11 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
 export const getCliRunnerService = createImplementation({
     abstraction: GetCliRunnerService,
     implementation: DefaultGetCliRunnerService,
-    dependencies: [CommandsRegistryService, UiService, GetProjectSdkService, GetArgvService]
+    dependencies: [
+        CommandsRegistryService,
+        GlobalOptionsRegistryService,
+        UiService,
+        GetProjectSdkService,
+        GetArgvService
+    ]
 });

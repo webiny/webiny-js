@@ -16,3 +16,4 @@ export * from "./Wcp/LoginCommand.js";
 export * from "./Wcp/LogoutCommand.js";
 export * from "./Wcp/WhoAmICommand.js";
 export * from "./gracefulErrorHandlers/index.js";
+export * from "./globalOptions/index.js";

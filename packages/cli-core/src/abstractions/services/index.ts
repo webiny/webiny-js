@@ -3,6 +3,7 @@ export * from "./CliParamsService.js";
 export * from "./CommandsRegistryService.js";
 export * from "./GetArgvService.js";
 export * from "./GetCliRunnerService.js";
+export * from "./GlobalOptionsRegistryService.js";
 export * from "./GetProjectSdkService.js";
 export * from "./LoggerService.js";
 export * from "./RunCliRunnerService.js";
