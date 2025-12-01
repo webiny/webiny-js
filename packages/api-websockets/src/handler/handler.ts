@@ -63,12 +63,14 @@ export const createHandler = (params: HandlerParams): HandlerCallable => {
 
             const result = await handler.run(event);
 
-            return reply
-                .status(result.statusCode)
-                .headers({
-                    "Sec-WebSocket-Protocol": "webiny-ws-v1"
-                })
-                .send(result);
+            app.__webiny_raw_result = {
+                statusCode: result.statusCode,
+                headers: {
+                    "sec-websocket-protocol": "webiny-ws-v1"
+                }
+            };
+
+            return reply.send();
         });
 
         const { tenant, locale, endpoint, token } = getEventValues(event);
