@@ -1,10 +1,10 @@
 import { createImplementation } from "@webiny/di";
-import { ArgvParserService, GetArgvService, type ParsedArgv } from "~/abstractions/index.js";
+import { ArgvParserService, GetArgvService } from "~/abstractions/index.js";
 
 export class DefaultGetArgvService implements GetArgvService.Interface {
     constructor(private readonly argvParserService: ArgvParserService.Interface) {}
 
-    execute<T = Record<string, any>>(): ParsedArgv<T> {
+    execute<T = Record<string, any>>(): T {
         return this.argvParserService.parse<T>(process.argv.slice(2));
     }
 }

@@ -1,8 +1,7 @@
 import { createImplementation } from "@webiny/di";
 import {
     ArgvParserService,
-    GlobalOptionsRegistryService,
-    type ParsedArgv
+    GlobalOptionsRegistryService
 } from "~/abstractions/index.js";
 import yargs from "yargs";
 
@@ -11,7 +10,7 @@ export class DefaultArgvParserService implements ArgvParserService.Interface {
         private readonly globalOptionsRegistryService: GlobalOptionsRegistryService.Interface
     ) {}
 
-    parse<T = Record<string, any>>(argv: string[]): ParsedArgv<T> {
+    parse<T = Record<string, any>>(argv: string[]): T {
         const yargsInstance = yargs(argv).help(false).version(false);
 
         // Register global options dynamically.
@@ -33,7 +32,7 @@ export class DefaultArgvParserService implements ArgvParserService.Interface {
         const parsed = yargsInstance.parseSync();
 
         // Yargs automatically converts kebab-case to camelCase, so we can use the parsed result directly
-        return parsed as unknown as ParsedArgv<T>;
+        return parsed as unknown as T;
     }
 }
 
