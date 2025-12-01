@@ -1,11 +1,11 @@
-import { Command } from "webiny/cli/features/Command";
+import { CliCommand } from "webiny/cli/features/CliCommand";
 import { UiService } from "webiny/cli/features/Ui";
 
 export interface IMyCustomCommandParams {
     name: string;
 }
 
-class MyCustomCommandImpl implements Command.Interface<IMyCustomCommandParams> {
+class MyCustomCommandImpl implements CliCommand.Interface<IMyCustomCommandParams> {
     constructor(private ui: UiService.Interface) {}
 
     execute(): Command.CommandDefinition<IMyCustomCommandParams> {
@@ -29,7 +29,7 @@ class MyCustomCommandImpl implements Command.Interface<IMyCustomCommandParams> {
     }
 }
 
-export const MyCustomCommand = Command.createImplementation({
+export const MyCustomCommand = CliCommand.createImplementation({
     implementation: MyCustomCommandImpl,
     dependencies: [UiService]
 });
