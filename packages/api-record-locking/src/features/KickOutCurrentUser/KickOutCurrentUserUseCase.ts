@@ -1,9 +1,9 @@
 import { Result } from "@webiny/feature/api";
-import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { parseIdentifier } from "@webiny/utils";
 import { KickOutCurrentUserUseCase as UseCaseAbstraction } from "./abstractions.js";
 import type { ILockRecord } from "~/domain/index.js";
+import { WebsocketService } from "@webiny/api-websockets/features/WebsocketService/index.js";
 
 class KickOutCurrentUserUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(

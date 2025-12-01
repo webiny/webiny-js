@@ -12,9 +12,8 @@
     "Bruno Zorić <bruno@webiny.com>"
   ],
   "exports": {
-    "./features/WebsocketService": "./src/features/WebsocketService/index.js",
-    "./*": "./src/*",
-    ".": "./src/index.js"
+    "./*": "./*",
+    ".": "./index.js"
   },
   "license": "MIT",
   "dependencies": {

@@ -22,6 +22,7 @@ import { createWebsockets } from "@webiny/api-websockets";
 import { createRecordLocking } from "@webiny/api-record-locking";
 import { createLogger } from "@webiny/api-log";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
+import { createScheduler } from "@webiny/api-scheduler";
 import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler";
 import { createMailerContext, createMailerGraphQL } from "@webiny/api-mailer";
 import { createWorkflows } from "@webiny/api-workflows";
@@ -57,7 +58,7 @@ export const handler = createHandler({
         createRecordLocking(),
         createBackgroundTasks(),
         createFileManagerContext({
-            storageOperations: createFileManagerStorageOperations({ documentClient })
+            fileAliasStorageOperations: createFileManagerStorageOperations({ documentClient })
         }),
         createFileManagerGraphQL(),
         createAssetDelivery({ documentClient }),
@@ -68,11 +69,12 @@ export const handler = createHandler({
         createAuditLogs(),
         createAcoHcmsContext(),
         createHcmsTasks(),
-        createHeadlessCmsScheduler({
+        createScheduler({
             getClient: config => {
                 return createSchedulerClient(config);
             }
         }),
+        createHeadlessCmsScheduler(),
         extensions()
     ],
     debug

@@ -1,7 +1,7 @@
 import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 import { ContextPlugin } from "@webiny/api";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import type { FilePermission, SettingsPermission } from "~/types.js";
+import type { FileAliasStorageOperations, FilePermission, SettingsPermission } from "~/types.js";
 import type { AssetDeliveryParams } from "./delivery/setupAssetDelivery.js";
 import { setupAssetDelivery } from "./delivery/setupAssetDelivery.js";
 import { createGraphQLSchemaPlugin } from "./graphql/index.js";
@@ -13,15 +13,25 @@ import { createFileModel, FILE_MODEL_ID } from "~/domain/file/fileModel.js";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FileModel } from "~/domain/file/abstractions.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 
 export * from "./modelModifier/CmsModelModifier.js";
 export * from "./delivery/index.js";
 
-export const createFileManagerContext = () => {
+interface FileManagerContextParams {
+    fileAliasStorageOperations: FileAliasStorageOperations;
+}
+
+export const createFileManagerContext = (params: FileManagerContextParams) => {
     const plugin = new ContextPlugin<ApiCoreContext>(async context => {
+        const tenantContext = context.container.resolve(TenantContext);
         const getModel = context.container.resolve(GetModelUseCase);
         const wcpContext = context.container.resolve(WcpContext);
         const withPrivateFiles = wcpContext.canUsePrivateFiles();
+
+        if (!tenantContext.getTenant()) {
+            return;
+        }
 
         const fileModelDefinition = createFileModel({ withPrivateFiles });
         context.plugins.register(fileModelDefinition);

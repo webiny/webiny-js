@@ -10,17 +10,17 @@ export { createFileUploadModifier } from "./utils/FileUploadModifier.js";
 export { createAssetDelivery } from "./assetDelivery/createAssetDelivery.js";
 export { createCustomAssetDelivery } from "./assetDelivery/createCustomAssetDelivery.js";
 
-export const createFileManagerS3 = () => [
-    new ContextPlugin(context => {
-        FlushCacheFeature.register(context.container);
-        DeleteFileFromBucketFeature.register(context.container);
-        WriteFileMetadataFeature.register(context.container);
+const contextPlugin = new ContextPlugin(context => {
+    FlushCacheFeature.register(context.container);
+    DeleteFileFromBucketFeature.register(context.container);
+    WriteFileMetadataFeature.register(context.container);
 
-        const wcp = context.container.resolve(WcpContext);
-        if (wcp.canUseFileManagerThreatDetection()) {
-            ApplyThreatScanningFeature.register(context.container);
-        }
-    }),
-    createS3GraphQLSchema(),
-    flushCdnCache()
-];
+    const wcp = context.container.resolve(WcpContext);
+    if (wcp.canUseFileManagerThreatDetection()) {
+        ApplyThreatScanningFeature.register(context.container);
+    }
+});
+
+contextPlugin.name = `fileManagerS3.context`;
+
+export const createFileManagerS3 = () => [contextPlugin, createS3GraphQLSchema(), flushCdnCache()];

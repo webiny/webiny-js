@@ -4,6 +4,6 @@ import { CreateFileWithThreatScanDecorator } from "./CreateFileWithThreatScanDec
 export const ApplyThreatScanningFeature = createFeature({
     name: "FileManagerS3/ApplyThreatScanning",
     register(container) {
-        container.register(CreateFileWithThreatScanDecorator);
+        container.registerDecorator(CreateFileWithThreatScanDecorator);
     }
 });

@@ -1,5 +1,5 @@
+import { createAbstraction } from "@webiny/feature/api";
 import type { CmsModel, CmsModelAst } from "~/types/index.js";
-import { createAbstraction } from "@webiny/feature/createAbstraction.js";
 
 /**
  * Convert model to AST

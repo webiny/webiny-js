@@ -12,6 +12,8 @@ import { EventBridgeSchedulerService } from "~/features/SchedulerService/EventBr
 import { VoidSchedulerService } from "~/features/SchedulerService/VoidSchedulerService.js";
 import { createSchedulerModel } from "~/domain/model.js";
 import { SchedulerFeature } from "./features/SchedulerFeature.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 export interface ICreateHeadlessCmsSchedulerContextParams {
     getClient(config?: SchedulerClientConfig): Pick<SchedulerClient, "send">;
@@ -19,6 +21,13 @@ export interface ICreateHeadlessCmsSchedulerContextParams {
 
 export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContextParams) => {
     return new ContextPlugin<CmsContext>(async context => {
+        const tenantContext = context.container.resolve(TenantContext);
+        const identityContext = context.container.resolve(IdentityContext);
+
+        if (!tenantContext.getTenant()) {
+            return;
+        }
+
         const manifest = await getManifest({
             client: context.db.driver.getClient() as DynamoDBDocument
         });
@@ -37,7 +46,9 @@ export const createSchedulerContext = (params: ICreateHeadlessCmsSchedulerContex
         }
 
         context.plugins.register(createSchedulerModel());
-        const schedulerModel = await context.cms.getModel(SCHEDULE_MODEL_ID);
+        const schedulerModel = await identityContext.withoutAuthorization(() => {
+            return context.cms.getModel(SCHEDULE_MODEL_ID);
+        });
 
         // Register model via a dedicated abstraction
         context.container.registerInstance(ScheduledActionModel, schedulerModel);

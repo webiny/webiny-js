@@ -8,6 +8,7 @@ import { createBaseSchema } from "~/graphql/baseSchema.js";
 import { createFilesSchema } from "~/graphql/filesSchema.js";
 import { getFileByUrl } from "~/graphql/getFileByUrl.js";
 import { FileModel } from "~/domain/file/abstractions.js";
+import { TenantContext } from "@webiny/api-core/features/TenantContext";
 
 export const createGraphQLSchemaPlugin = () => {
     return [
@@ -15,6 +16,11 @@ export const createGraphQLSchemaPlugin = () => {
         // Files schema is generated dynamically, based on a CMS model, so we need to
         // register it from a ContextPlugin, to perform additional bootstrap.
         new ContextPlugin<ApiCoreContext>(async context => {
+            const tenantContext = context.container.resolve(TenantContext);
+            if (!tenantContext.getTenant()) {
+                return;
+            }
+
             const fileModel = context.container.resolve(FileModel);
             const listModels = context.container.resolve(ListModelsUseCase);
 
