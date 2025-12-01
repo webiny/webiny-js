@@ -8,7 +8,7 @@ export interface IMyCustomCommandParams {
 class MyCustomCommandImpl implements CliCommand.Interface<IMyCustomCommandParams> {
     constructor(private ui: UiService.Interface) {}
 
-    execute(): Command.CommandDefinition<IMyCustomCommandParams> {
+    execute(): CliCommand.CommandDefinition<IMyCustomCommandParams> {
         return {
             name: "my-custom-command",
             description: "This is my custom command",
