@@ -18,8 +18,7 @@ const cleanupApiKey = (apiKey: ApiKey): Omit<ApiKey, "token"> => {
         description: apiKey.description,
         name: apiKey.name,
         permissions: apiKey.permissions,
-        tenant: apiKey.tenant,
-        webinyVersion: apiKey.webinyVersion
+        tenant: apiKey.tenant
     };
 };
 

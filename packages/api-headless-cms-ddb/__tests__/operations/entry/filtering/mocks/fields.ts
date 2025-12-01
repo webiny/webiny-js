@@ -58,8 +58,7 @@ export const createModel = (): CmsModel => {
             id: "group",
             name: "Group"
         },
-        titleFieldId: "title",
-        webinyVersion: "x.x.x"
+        titleFieldId: "title"
     };
 };
 

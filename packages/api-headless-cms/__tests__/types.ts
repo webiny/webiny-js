@@ -6,13 +6,12 @@ export type CmsModel = Omit<
     BaseCmsModel,
     | "locale"
     | "tenant"
-    | "webinyVersion"
     | "createdOn"
     | "createdBy"
     | "savedOn"
     | "isPrivate"
 >;
-export type CmsGroup = Omit<BaseCmsGroup, "tenant" | "locale" | "webinyVersion">;
+export type CmsGroup = Omit<BaseCmsGroup, "tenant">;
 /**
  * Managers / Readers
  */

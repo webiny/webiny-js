@@ -67,7 +67,7 @@ export class RedirectsStorage implements WbRedirectsStorageOperations {
     }: WbRedirectsStorageOperationsUpdateParams): Promise<WbRedirect> => {
         const entry = await this.cms.getEntryById(this.model, id + "#0001");
 
-        const values = omit(data, ["id", "tenant", "webinyVersion"]);
+        const values = omit(data, ["id", "tenant"]);
 
         const updatedEntry = await this.cms.updateEntry(this.model, entry.id, values);
 

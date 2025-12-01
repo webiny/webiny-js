@@ -102,7 +102,6 @@ class CreateModelUseCaseImpl implements UseCaseAbstraction.Interface {
                 displayName: identity.displayName,
                 type: identity.type
             },
-            webinyVersion: this.cmsContext.WEBINY_VERSION,
             description: data.description || "",
             group: {
                 id: group.id,

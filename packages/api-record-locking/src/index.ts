@@ -38,16 +38,21 @@ const createContextPlugin = (params?: ICreateContextPluginParams) => {
         const timeout = getTimeout(params?.timeout);
 
         // Fetch CMS model to use for storing record locking data
-        const recordLockingModel = await identityContext.withoutAuthorization(() => {
-            return getModel.execute(RECORD_LOCKING_MODEL_ID);
-        });
+        const [model, publicModels] = await identityContext.withoutAuthorization(async () => {
+            const [model, publicModels] = await Promise.all([
+                // Get a record locking model
+                getModel.execute(RECORD_LOCKING_MODEL_ID),
+                // Get all models
+                listModels.execute({ includePrivate: false })
+            ]);
 
-        const publicModels = await listModels.execute({ includePrivate: false });
+            return [model.value, publicModels.value];
+        });
 
         // Register GraphQL schema plugin
         const graphQlPlugin = await createGraphQLSchema({
-            model: recordLockingModel.value,
-            models: publicModels.value,
+            model,
+            models: publicModels,
             fieldTypePlugins: createFieldTypePluginRecords(context.plugins)
         });
 
@@ -56,7 +61,7 @@ const createContextPlugin = (params?: ICreateContextPluginParams) => {
         // Register features
         RecordLockingFeature.register(context.container, {
             timeout,
-            model: recordLockingModel.value
+            model
         });
     });
     plugin.name = "context.recordLocking";

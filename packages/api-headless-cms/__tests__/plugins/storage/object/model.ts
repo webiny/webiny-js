@@ -15,7 +15,6 @@ export const createObjectMockModel = (): CmsModel => {
             displayName: "admin",
             id: "admin"
         },
-        webinyVersion: "w.w.w",
 
         group: {
             name: "Group",

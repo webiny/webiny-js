@@ -411,11 +411,6 @@ export interface ICmsEntryState {
  */
 export interface CmsEntry<T = CmsEntryValues> {
     /**
-     * A version of the webiny this entry was created with.
-     * This can be used when upgrading the system, so we know which entries to update.
-     */
-    webinyVersion: string;
-    /**
      * Tenant id which is this entry for. Can be used in case of shared storage.
      */
     tenant: string;

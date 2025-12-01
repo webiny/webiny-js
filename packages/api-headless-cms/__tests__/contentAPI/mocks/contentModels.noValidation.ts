@@ -64,8 +64,7 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion: "0.0.0"
+        tenant: "root"
     }
 ];
 

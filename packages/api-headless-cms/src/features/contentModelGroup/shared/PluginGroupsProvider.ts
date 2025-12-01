@@ -58,7 +58,6 @@ class PluginGroupsProviderImpl implements ProviderAbstraction.Interface {
                     return {
                         ...plugin.contentModelGroup,
                         tenant: tenant.id,
-                        webinyVersion: this.cmsContext.WEBINY_VERSION
                     };
                 });
 

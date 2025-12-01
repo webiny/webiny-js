@@ -4,7 +4,6 @@ import type { CmsGroupPlugin, CmsModelInput, CmsModelPlugin } from "~/plugins";
 import { createCmsGroupPlugin, createCmsModelPlugin } from "~/plugins";
 
 const contentModelGroup = createContentModelGroup();
-const webinyVersion = "0.0.0";
 
 export interface Fruit {
     id?: string;
@@ -164,8 +163,7 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion: "0.0.0"
+        tenant: "root"
     },
 
     // category
@@ -240,8 +238,7 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion: "0.0.0"
+        tenant: "root"
     },
     // category
     {
@@ -341,8 +338,7 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion: "0.0.0"
+        tenant: "root"
     },
     // product
     {
@@ -944,8 +940,7 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion: "0.0.0"
+        tenant: "root"
     },
     // product review
     {
@@ -1051,8 +1046,7 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion
+        tenant: "root"
     },
     // author
     {
@@ -1095,8 +1089,7 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion
+        tenant: "root"
     },
     // fruit
     {
@@ -1601,8 +1594,7 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion
+        tenant: "root"
     },
     // bug
     {
@@ -1739,8 +1731,7 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion
+        tenant: "root"
     },
     // article
     {
@@ -1841,8 +1832,7 @@ const models: CmsModel[] = [
                 }
             }
         ],
-        tenant: "root",
-        webinyVersion
+        tenant: "root"
     },
     // Wrap
     /**
@@ -1904,8 +1894,7 @@ const models: CmsModel[] = [
         layout: [],
         tenant: "root",
         titleFieldId: "title",
-        description: "Wrapper model for ref field with multiple models",
-        webinyVersion
+        description: "Wrapper model for ref field with multiple models"
     }
 ];
 

@@ -31,8 +31,7 @@ class PluginModelsProviderImpl implements ProviderAbstraction.Interface {
                 return {
                     ...plugin.contentModel,
                     tags: ensureTypeTag(plugin.contentModel),
-                    tenant,
-                    webinyVersion: this.cmsContext.WEBINY_VERSION
+                    tenant
                 };
             }) as unknown as CmsModel[];
 

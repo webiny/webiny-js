@@ -117,8 +117,7 @@ class CreateModelFromUseCaseImpl implements UseCaseAbstraction.Interface {
             },
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),
-            tenant: original.tenant || tenant.id,
-            webinyVersion: this.cmsContext.WEBINY_VERSION
+            tenant: original.tenant || tenant.id
         };
 
         // Access control check on the new model

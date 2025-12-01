@@ -4,22 +4,35 @@ import { WorkflowsTransformer } from "~/context/transformer/WorkflowsTransformer
 import { WORKFLOW_STATE_MODEL_ID, WORKFLOW_MODEL_ID } from "~/constants.js";
 import { WorkflowStateContext } from "./WorkflowStateContext.js";
 import { WorkflowStateTransformer } from "./transformer/WorkflowStateTransformer.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 export const createContext = async (
-    context: Pick<Context, "cms" | "security" | "workflows" | "workflowState" | "adminUsers">
+    context: Pick<
+        Context,
+        "container" | "cms" | "security" | "workflows" | "workflowState" | "adminUsers"
+    >
 ) => {
-    const workflowModel = await context.cms.getModel(WORKFLOW_MODEL_ID);
-    const stateModel = await context.cms.getModel(WORKFLOW_STATE_MODEL_ID);
+    const identityContext = context.container.resolve(IdentityContext);
+    const getModel = context.container.resolve(GetModelUseCase);
+
+    const workflowModel = await identityContext.withoutAuthorization(() => {
+        return getModel.execute(WORKFLOW_MODEL_ID);
+    });
+
+    const stateModel = await identityContext.withoutAuthorization(() => {
+        return getModel.execute(WORKFLOW_STATE_MODEL_ID);
+    });
 
     context.workflows = new WorkflowsContext({
         context,
-        model: workflowModel,
+        model: workflowModel.value,
         transformer: new WorkflowsTransformer()
     });
 
     context.workflowState = new WorkflowStateContext({
         context,
-        model: stateModel,
+        model: stateModel.value,
         transformer: new WorkflowStateTransformer()
     });
 };

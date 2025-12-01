@@ -17,7 +17,6 @@ const createFruitData = (counter: number) => {
         id,
         entryId,
         version: counter,
-        webinyVersion: "version",
         modelId: "fruit",
         createdBy: {
             id: "admin",

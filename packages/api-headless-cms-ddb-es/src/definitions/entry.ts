@@ -27,9 +27,6 @@ export const createEntryEntity = (params: CreateEntryEntityParams): Entity<any> 
             __type: {
                 type: "string"
             },
-            webinyVersion: {
-                type: "string"
-            },
             tenant: {
                 type: "string"
             },

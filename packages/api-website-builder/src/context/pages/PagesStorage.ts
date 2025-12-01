@@ -95,7 +95,7 @@ export class PagesStorage implements WbPagesStorageOperations {
     public update = async ({ id, data }: WbPagesStorageOperationsUpdateParams): Promise<WbPage> => {
         const entry = await this.cms.getEntryById(this.getModel(), id);
 
-        const values = omit(data, ["id", "tenant", "webinyVersion"]);
+        const values = omit(data, ["id", "tenant"]);
 
         const updatedEntry = await this.cms.updateEntry(this.getModel(), entry.id, values);
 
@@ -146,7 +146,6 @@ export class PagesStorage implements WbPagesStorageOperations {
             modifiedBy: entry.modifiedBy,
             locked: entry.locked,
             tenant: entry.tenant,
-            webinyVersion: entry.webinyVersion,
             ...entry.values
         } as WbPage;
     }

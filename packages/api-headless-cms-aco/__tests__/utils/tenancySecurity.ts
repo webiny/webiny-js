@@ -24,8 +24,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
                 parent: null,
                 tags: [],
                 savedOn: new Date().toISOString(),
-                createdOn: new Date().toISOString(),
-                webinyVersion: "w.w.w"
+                createdOn: new Date().toISOString()
             });
 
             context.security.addAuthenticator(async () => {

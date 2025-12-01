@@ -37,12 +37,15 @@ class ModelsFetcherImpl implements FetcherAbstraction.Interface {
                 tenant: tenant.id
             });
 
+            // Fetch plugin models (with caching and access control)
+            const pluginModels = await this.pluginModelsProvider.list(tenant.id);
+
             // Try to get from cache first
             const cached = await this.modelCache.getOrSet(cacheKey, async () => {
                 return this.fetchAndMergeModels(tenant.id);
             });
 
-            return Result.ok(cached);
+            return Result.ok([...cached, ...pluginModels]);
         } catch (error) {
             return Result.fail(new ModelPersistenceError(error as Error));
         }
@@ -63,23 +66,20 @@ class ModelsFetcherImpl implements FetcherAbstraction.Interface {
     }
 
     private async fetchAndMergeModels(tenant: string): Promise<CmsModel[]> {
-        // 1. Fetch plugin models (with caching and access control)
-        const pluginModels = await this.pluginModelsProvider.list(tenant);
-
-        // 2. Fetch database models (with caching)
+        // 1. Fetch database models (with caching)
         const dbCacheKey = createCacheKey({ tenant, id: "storage" });
         const databaseModels = await this.modelCache.getOrSet(dbCacheKey, async () => {
             return this.storageOperations.models.list({ where: { tenant } });
         });
 
-        // 3. Ensure type tags on database models
+        // 2. Ensure type tags on database models
         const taggedDatabaseModels = databaseModels.map(model => {
             model.tags = ensureTypeTag(model);
             return model;
         });
 
-        // 4. Return merged models.
-        return [...taggedDatabaseModels, ...pluginModels];
+        // 3. Return merged models.
+        return taggedDatabaseModels;
     }
 }
 

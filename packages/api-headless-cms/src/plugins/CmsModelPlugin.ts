@@ -87,7 +87,7 @@ export interface CmsPrivateModelFull
 export type CmsModelInput = CmsApiModel | CmsPrivateModel | CmsApiModelFull | CmsPrivateModelFull;
 
 export interface CmsModelPluginModel
-    extends Omit<CmsModelBase, "locale" | "tenant" | "webinyVersion"> {
+    extends Omit<CmsModelBase, "locale" | "tenant"> {
     locale?: string;
     tenant?: string;
 }

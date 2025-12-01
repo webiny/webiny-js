@@ -1,5 +1,5 @@
 import { GetSettings } from "@webiny/api-core/features/GetSettings";
-import { UpdateSettings } from "@webiny/api-core/features/UpdateSettings";
+import { UpdateSettingsUseCase } from "@webiny/api-core/features/UpdateSettings";
 import {
     ErrorResponse,
     GraphQLSchemaPlugin,
@@ -156,7 +156,7 @@ export const createPagesSchema = () => {
                 },
                 updateSettings: async (_, args, context) => {
                     ensureAuthentication(context);
-                    const saveSettings = context.container.resolve(UpdateSettings);
+                    const saveSettings = context.container.resolve(UpdateSettingsUseCase);
 
                     await saveSettings.execute({
                         name: WEBSITE_BUILDER_SETTINGS,
@@ -167,7 +167,7 @@ export const createPagesSchema = () => {
                 },
                 updateIntegrations: async (_, args, context) => {
                     ensureAuthentication(context);
-                    const saveSettings = context.container.resolve(UpdateSettings);
+                    const saveSettings = context.container.resolve(UpdateSettingsUseCase);
 
                     await saveSettings.execute({
                         name: WEBSITE_BUILDER_INTEGRATIONS,

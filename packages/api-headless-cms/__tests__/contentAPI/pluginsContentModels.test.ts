@@ -146,16 +146,14 @@ describe("content model plugins", () => {
     beforeEach(async () => {
         await storageOperations.models.delete({
             model: {
-                ...(contentModelPlugin.contentModel as CmsModel),
-                webinyVersion: "x.x.x"
+                ...(contentModelPlugin.contentModel as CmsModel)
             }
         });
     });
     afterEach(async () => {
         await storageOperations.models.delete({
             model: {
-                ...(contentModelPlugin.contentModel as CmsModel),
-                webinyVersion: "x.x.x"
+                ...(contentModelPlugin.contentModel as CmsModel)
             }
         });
     });

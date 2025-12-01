@@ -128,7 +128,6 @@ export const createEntryData = async ({
     }
 
     const entry: CmsEntry = {
-        webinyVersion: context.WEBINY_VERSION,
         tenant: getTenant().id,
         entryId,
         id,

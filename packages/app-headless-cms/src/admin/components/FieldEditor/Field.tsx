@@ -9,7 +9,7 @@ import type { CmsModelField, CmsEditorFieldOptionPlugin, CmsModel } from "~/type
 import { i18n } from "@webiny/app/i18n/index.js";
 import { useModelEditor } from "~/admin/hooks/index.js";
 import { useModelFieldEditor } from "~/admin/components/FieldEditor/useModelFieldEditor.js";
-import { useSnackbar, useConfirmationDialog } from "@webiny/app-admin";
+import { useSnackbar } from "@webiny/app-admin";
 import { IconButton, Heading, Text, DropdownMenu, Tag } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/components/editor/field");
@@ -84,20 +84,6 @@ const Field = (props: FieldProps) => {
     const { setData: setModel, data: model } = useModelEditor();
     const { getFieldPlugin, getFieldRendererPlugin } = useModelFieldEditor();
 
-    const { showConfirmation } = useConfirmationDialog({
-        title: t`Warning - You are trying to delete a locked field!`,
-        message: (
-            <>
-                <p>{t`You are about to delete a field which is used in the data storage`}</p>
-                <p>{t`All data in that field will be lost and there is no going back!`}</p>
-                <p>&nbsp;</p>
-                <p>{t`Are you sure you want to continue?`}</p>
-            </>
-        )
-    });
-    const lockedFields = model?.lockedFields || [];
-    const isLocked = lockedFields.some(lockedField => lockedField.fieldId === field.storageId);
-
     const removeFieldFromSelected = useCallback(async () => {
         if (model.titleFieldId === field.fieldId) {
             await setModel(data => {
@@ -124,16 +110,10 @@ const Field = (props: FieldProps) => {
     }, [field.id, setModel, model]);
 
     const onDelete = useCallback(async () => {
-        if (!isLocked) {
-            await removeFieldFromSelected();
-            props.onDelete(field);
-            return;
-        }
-        showConfirmation(async () => {
-            await removeFieldFromSelected();
-            props.onDelete(field);
-        });
-    }, [field.fieldId, lockedFields]);
+        await removeFieldFromSelected();
+        props.onDelete(field);
+        return;
+    }, [field.fieldId]);
 
     const setAsTitle = useCallback(async (): Promise<void> => {
         const response = await setModel(data => {

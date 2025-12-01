@@ -1,4 +1,3 @@
-import { version as webinyVersion } from "@webiny/api/package.json";
 import type {
     CmsModel as BaseCmsModel,
     CmsModelField as BaseCmsModelField,
@@ -19,7 +18,6 @@ interface CmsModel extends Omit<BaseCmsModel, "fields"> {
 
 export const pageModel: CmsModel = {
     tenant: "root",
-    webinyVersion,
     name: "Page",
     group: {
         id: "62f39c13ebe1d800091bf33c",

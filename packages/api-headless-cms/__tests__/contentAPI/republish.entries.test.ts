@@ -8,8 +8,6 @@ import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
 import { useProductManageHandler } from "../testHelpers/useProductManageHandler";
 import { createStorageOperationsContext } from "~tests/storageOperations/context";
 
-const webinyVersion = "0.0.0";
-
 interface CreateEntryResult {
     entry: CmsEntry;
     input: Record<string, any>;
@@ -145,7 +143,6 @@ describe("Republish entries", () => {
                 id: `${id}#0001`,
                 entryId: id,
                 tenant: model.tenant,
-                webinyVersion,
                 locked: false,
                 values: input,
                 createdOn: date.toISOString(),

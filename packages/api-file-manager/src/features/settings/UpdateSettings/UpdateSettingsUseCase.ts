@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { UpdateSettingsUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { UpdateSettings } from "@webiny/api-core/features/settings/UpdateSettings";
+import { UpdateSettingsUseCase } from "@webiny/api-core/features/settings/UpdateSettings";
 import { GetSettingsUseCase } from "../GetSettings/abstractions.js";
 import type { FileManagerSettings } from "~/domain/settings/types.js";
 import type { UpdateSettingsInput } from "~/domain/settings/types.js";
@@ -14,7 +14,7 @@ import { createZodError } from "@webiny/utils";
 
 class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private updateSettings: UpdateSettings.Interface,
+        private updateSettings: UpdateSettingsUseCase.Interface,
         private getSettings: GetSettingsUseCase.Interface,
         private eventPublisher: EventPublisher.Interface
     ) {}
@@ -76,5 +76,5 @@ class UpdateSettingsUseCaseImpl implements UseCaseAbstraction.Interface {
 
 export const UpdateSettingsUseCase = UseCaseAbstraction.createImplementation({
     implementation: UpdateSettingsUseCaseImpl,
-    dependencies: [UpdateSettings, GetSettingsUseCase, EventPublisher]
+    dependencies: [UpdateSettingsUseCase, GetSettingsUseCase, EventPublisher]
 });

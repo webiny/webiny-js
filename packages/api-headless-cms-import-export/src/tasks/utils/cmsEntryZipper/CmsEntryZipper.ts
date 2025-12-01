@@ -37,7 +37,6 @@ const createBufferData = (params: ICmsEntryEntriesJson) => {
                  */
                 delete item.tenant;
                 delete item.locked;
-                delete item.webinyVersion;
                 delete item.version;
                 delete item.entryId;
                 delete item.modelId;

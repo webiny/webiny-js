@@ -16,13 +16,7 @@ import { Grid, Label, MultiAutoComplete } from "@webiny/admin-ui";
 const t = i18n.ns("app-headless-cms/admin/fields");
 
 const RefFieldSettings = () => {
-    const { model } = useModel();
     const { data: formData } = useForm();
-    const lockedFields = model.lockedFields || [];
-    const fieldId = (formData || {}).fieldId || null;
-    const isFieldLocked = lockedFields.some(
-        lockedField => fieldId && lockedField.fieldId === fieldId
-    );
 
     const { data, loading, error } = useQuery<ListCmsModelsQueryResponse>(LIST_CONTENT_MODELS);
     const { showSnackbar } = useSnackbar();
@@ -91,7 +85,7 @@ const RefFieldSettings = () => {
                                     )
                                 }
                                 options={options}
-                                disabled={isFieldLocked || loading}
+                                disabled={loading}
                             />
                         );
                     }}

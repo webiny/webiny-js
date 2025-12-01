@@ -2,12 +2,12 @@ import { Plugin } from "@webiny/plugins";
 import type { CmsGroup as BaseCmsGroup } from "~/types/index.js";
 
 export interface CmsGroupInput
-    extends Omit<BaseCmsGroup, "locale" | "tenant" | "webinyVersion" | "isPlugin"> {
+    extends Omit<BaseCmsGroup, "locale" | "tenant" | "isPlugin"> {
     tenant?: string;
     locale?: string;
 }
 
-export interface CmsGroup extends Omit<BaseCmsGroup, "locale" | "tenant" | "webinyVersion"> {
+export interface CmsGroup extends Omit<BaseCmsGroup, "locale" | "tenant"> {
     tenant?: string;
     locale?: string;
 }

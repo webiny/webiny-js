@@ -73,8 +73,7 @@ class CreateGroupUseCaseImpl implements UseCaseAbstraction.Interface {
                 id: identity.id,
                 displayName: identity.displayName,
                 type: identity.type
-            },
-            webinyVersion: this.cmsContext.WEBINY_VERSION
+            }
         };
 
         // Access control check on created group

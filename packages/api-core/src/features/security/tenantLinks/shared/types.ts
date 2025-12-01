@@ -41,5 +41,4 @@ export interface TenantLink<TData = any> {
     tenant: string;
     type: string;
     data?: TData;
-    webinyVersion: string;
 }

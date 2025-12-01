@@ -194,7 +194,6 @@ export const createModel = (): CmsModel => {
                 label: "Settings"
             }
         ],
-        tenant: "root",
-        webinyVersion: "x.x.x"
+        tenant: "root"
     };
 };

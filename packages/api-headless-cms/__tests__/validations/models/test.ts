@@ -15,7 +15,6 @@ export const createTestModel = (model: Partial<CmsModel> = {}): CmsModel => {
             id: "group",
             name: "Group"
         },
-        webinyVersion: "x.x.x",
         ...model
     };
 };

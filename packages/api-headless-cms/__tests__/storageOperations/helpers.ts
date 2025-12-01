@@ -10,8 +10,6 @@ import { createIdentifier, generateAlphaNumericLowerCaseId, mdbid } from "@webin
 import crypto from "crypto";
 import type { PluginsContainer } from "@webiny/plugins";
 
-const webinyVersion = "0.0.0";
-
 const baseGroup = new CmsGroupPlugin({
     name: "Base group",
     tenant: "root",
@@ -90,8 +88,7 @@ export const createPersonModel = (): CmsModel => {
         layout: Object.values(personModelFields).map(field => {
             return [field.id];
         }),
-        description: "",
-        webinyVersion
+        description: ""
     };
 };
 
@@ -144,7 +141,6 @@ export const createPersonEntries = async (
             savedOn: new Date().toISOString(),
             modelId: personModel.modelId,
             tenant: personModel.tenant,
-            webinyVersion: personModel.webinyVersion,
             locked: false,
             status: "draft",
             values: {
@@ -179,7 +175,6 @@ export const createPersonEntries = async (
                 savedOn: new Date().toISOString(),
                 modelId: personModel.modelId,
                 tenant: personModel.tenant,
-                webinyVersion: personModel.webinyVersion,
                 locked: false,
                 status: "draft",
                 values: {

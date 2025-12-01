@@ -15,9 +15,6 @@ export const createLocaleEntity = (table: Table<string, string, string>) => {
         default: {
             type: "boolean"
         },
-        webinyVersion: {
-            type: "string"
-        },
         tenant: {
             type: "string"
         }

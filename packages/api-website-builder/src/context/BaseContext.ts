@@ -2,6 +2,8 @@ import { WebinyError } from "@webiny/error";
 import type { WebsiteBuilderContext } from "./types.js";
 import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 export abstract class BaseContext {
     protected context: WebsiteBuilderContext;
@@ -29,14 +31,20 @@ export abstract class BaseContext {
     }
 
     protected async getModel(modelId: string) {
-        const model = await this.context.cms.getModel(modelId);
-        if (!model) {
+        const getModel = this.context.container.resolve(GetModelUseCase);
+        const identityContext = this.context.container.resolve(IdentityContext);
+        const modelResult = await identityContext.withoutAuthorization(() => {
+            return getModel.execute(modelId);
+        });
+
+        if (modelResult.isFail()) {
+            console.error("Get model error", modelResult.error.message);
             throw new WebinyError({
                 code: "MODEL_NOT_FOUND",
                 message: `Content model "${modelId}" was not found!`
             });
         }
 
-        return model;
+        return modelResult.value;
     }
 }

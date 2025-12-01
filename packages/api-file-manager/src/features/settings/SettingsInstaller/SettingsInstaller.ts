@@ -1,9 +1,9 @@
 import { ServiceDiscovery } from "@webiny/api";
 import { createImplementation } from "@webiny/feature/api";
 import { AppInstaller } from "@webiny/api-core/features/InstallTenant";
-import { UpdateSettings } from "@webiny/api-core/features/UpdateSettings";
-import { DeleteSettings } from "@webiny/api-core/features/DeleteSettings";
+import { DeleteSettingsUseCase } from "@webiny/api-core/features/DeleteSettings";
 import { FILE_MANAGER_GENERAL_SETTINGS } from "~/domain/settings/constants.js";
+import { UpdateSettingsUseCase } from "~/features/settings/UpdateSettings/abstractions.js";
 
 class SettingsInstallerImpl implements AppInstaller.Interface {
     readonly alwaysRun = true;
@@ -11,8 +11,8 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
     readonly dependsOn = [];
 
     constructor(
-        private updateSettings: UpdateSettings.Interface,
-        private deleteSettings: DeleteSettings.Interface
+        private updateSettings: UpdateSettingsUseCase.Interface,
+        private deleteSettings: DeleteSettingsUseCase.Interface
     ) {}
 
     async install(): Promise<void> {
@@ -21,10 +21,7 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
         const { domain } = manifest?.api.cloudfront;
 
         await this.updateSettings.execute({
-            name: FILE_MANAGER_GENERAL_SETTINGS,
-            data: {
-                srcPrefix: `${domain}/files`
-            }
+            srcPrefix: `${domain}/files`
         });
     }
 
@@ -36,5 +33,5 @@ class SettingsInstallerImpl implements AppInstaller.Interface {
 export const SettingsInstaller = createImplementation({
     abstraction: AppInstaller,
     implementation: SettingsInstallerImpl,
-    dependencies: [UpdateSettings, DeleteSettings]
+    dependencies: [UpdateSettingsUseCase, DeleteSettingsUseCase]
 });

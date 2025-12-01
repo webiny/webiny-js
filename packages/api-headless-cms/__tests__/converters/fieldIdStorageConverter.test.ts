@@ -97,9 +97,7 @@ describe("field id storage converter", () => {
      * Conversion feature is not enabled.
      */
     it("should not convert field value paths to storage ones", () => {
-        const model = createModel({
-            webinyVersion: "disable"
-        });
+        const model = createModel();
 
         const entry = createRawEntry();
         /**
@@ -131,9 +129,7 @@ describe("field id storage converter", () => {
         expect(result).toEqual(createRawEntry().values);
     });
     it("should not convert field value paths from storage ones", () => {
-        const model = createModel({
-            webinyVersion: "disable"
-        });
+        const model = createModel();
 
         const entry = createStoredEntry();
         /**

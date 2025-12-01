@@ -32,7 +32,6 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
                 },
                 isInstalled: true,
                 tags: [],
-                webinyVersion: context.WEBINY_VERSION,
                 createdOn: new Date().toISOString(),
                 savedOn: new Date().toISOString()
             });

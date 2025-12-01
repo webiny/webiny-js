@@ -9,7 +9,6 @@ export interface ApiKey {
     permissions: SecurityPermission[];
     createdBy: CreatedBy;
     createdOn: string;
-    webinyVersion?: string;
 }
 
 export interface CreateApiKeyInput {

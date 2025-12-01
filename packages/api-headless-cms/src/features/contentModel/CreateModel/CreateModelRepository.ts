@@ -155,6 +155,8 @@ class CreateModelRepositoryImpl implements RepositoryAbstraction.Interface {
             // TODO: ideally, this will eventually be handled by the Model domain object
             model.tags = ensureTypeTag(model);
 
+            console.log("create model", model);
+
             // Persist to storage
             await this.storageOperations.models.create({ model });
 
@@ -163,6 +165,7 @@ class CreateModelRepositoryImpl implements RepositoryAbstraction.Interface {
 
             return Result.ok();
         } catch (error) {
+            console.error(error, error.stack);
             return Result.fail(new ModelPersistenceError(error as Error));
         }
     }

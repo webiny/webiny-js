@@ -1,4 +1,4 @@
-export { UpdateSettings } from "./abstractions.js";
+export { UpdateSettingsUseCase } from "./abstractions.js";
 export { UpdateSettingsFeature } from "./feature.js";
 export type { IUpdateSettingsInput } from "../shared/types.js";
 export {

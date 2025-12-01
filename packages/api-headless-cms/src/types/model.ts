@@ -97,10 +97,6 @@ export interface CmsModel {
      * If not set by the user, the system will try to assign a `file` field which has `imagesOnly` enabled.
      */
     imageFieldId?: string | null;
-    /**
-     * The version of Webiny which this record was stored with.
-     */
-    webinyVersion: string;
 
     /**
      * Is model private?

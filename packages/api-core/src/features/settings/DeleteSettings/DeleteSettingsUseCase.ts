@@ -1,17 +1,17 @@
 import { createImplementation } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
-import { DeleteSettings } from "./abstractions.js";
+import { DeleteSettingsUseCase } from "./abstractions.js";
 import { SettingsRepository } from "../shared/abstractions.js";
 import { EventPublisher } from "~/features/eventPublisher/abstractions.js";
 import { SettingsBeforeDeleteEvent, SettingsAfterDeleteEvent } from "./events.js";
 
-class DeleteSettingsUseCaseImpl implements DeleteSettings.Interface {
+class DeleteSettingsUseCaseImpl implements DeleteSettingsUseCase.Interface {
     constructor(
         private repository: SettingsRepository.Interface,
         private eventPublisher: EventPublisher.Interface
     ) {}
 
-    async execute(name: string): Promise<Result<void, DeleteSettings.Error>> {
+    async execute(name: string): Promise<Result<void, DeleteSettingsUseCase.Error>> {
         // Get existing settings first (needed for events)
         const getResult = await this.repository.get(name);
         if (getResult.isFail()) {
@@ -37,7 +37,7 @@ class DeleteSettingsUseCaseImpl implements DeleteSettings.Interface {
 }
 
 export const DeleteSettingsUseCase = createImplementation({
-    abstraction: DeleteSettings,
+    abstraction: DeleteSettingsUseCase,
     implementation: DeleteSettingsUseCaseImpl,
     dependencies: [SettingsRepository, EventPublisher]
 });

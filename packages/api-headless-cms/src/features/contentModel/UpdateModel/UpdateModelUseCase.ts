@@ -126,7 +126,6 @@ class UpdateModelUseCaseImpl implements UseCaseAbstraction.Interface {
             group,
             description: data.description || original.description,
             tenant: original.tenant || tenant.id,
-            webinyVersion: this.cmsContext.WEBINY_VERSION,
             savedOn: new Date().toISOString()
         };
 
