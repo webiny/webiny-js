@@ -166,7 +166,6 @@ export const v5PullRequestsCommandJest = createWorkflow({
         }),
         jestTestsNoStorage: createJestTestsJob(null),
         jestTestsDdb: createJestTestsJob("ddb"),
-        jestTestsDdbEs: createJestTestsJob("ddb-es"),
         jestTestsDdbOs: createJestTestsJob("ddb-os")
     }
 });
