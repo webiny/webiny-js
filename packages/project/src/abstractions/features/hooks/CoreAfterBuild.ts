@@ -1,11 +1,11 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type BuildApp } from "~/abstractions/index.js";
 
 export interface ICoreAfterBuild {
     execute(params: BuildApp.Params): void | Promise<void>;
 }
 
-export const CoreAfterBuild = new Abstraction<ICoreAfterBuild>("CoreAfterBuild");
+export const CoreAfterBuild = createAbstraction<ICoreAfterBuild>("CoreAfterBuild");
 
 export namespace CoreAfterBuild {
     export type Interface = ICoreAfterBuild;

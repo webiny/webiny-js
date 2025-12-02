@@ -7,7 +7,7 @@ export const expectNotAuthorized = async (
     await expect(promise).resolves.toMatchObject({
         data: null,
         error: {
-            code: "SECURITY_NOT_AUTHORIZED",
+            code: "NOT_AUTHORIZED",
             data,
             message: "Not authorized!"
         }

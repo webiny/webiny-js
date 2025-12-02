@@ -1,5 +1,5 @@
 import path from "path";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import {
     beforeBuild,
     afterBuild,
@@ -46,7 +46,9 @@ import {
 } from "./features/index.js";
 
 import {
+    getAppService,
     buildAppWorkspaceService,
+    buildProjectWorkspaceService,
     getAppPackagesService,
     getCwdService,
     getIsCiService,
@@ -63,6 +65,7 @@ import {
     listDeployedEnvironmentsService,
     listPackagesInAppWorkspaceService,
     listPackagesService,
+    loadEnvVarsService,
     localStorageService,
     loggerService,
     projectInfoService,
@@ -85,8 +88,11 @@ import { buildAppWithHooks, deployAppWithHooks, watchWithHooks } from "./decorat
 import {
     GetProject,
     GetProjectConfig,
+    BuildProjectWorkspaceService,
     ProjectSdkParamsService,
-    ValidateProjectConfig
+    LoadEnvVarsService,
+    ValidateProjectConfig,
+    LoggerService
 } from "~/abstractions/index.js";
 
 import {
@@ -126,7 +132,9 @@ export const createProjectSdkContainer = async (
     const container = new Container();
 
     // Services.
+    container.register(getAppService).inSingletonScope();
     container.register(buildAppWorkspaceService).inSingletonScope();
+    container.register(buildProjectWorkspaceService).inSingletonScope();
     container.register(getAppPackagesService).inSingletonScope();
     container.register(getCwdService).inSingletonScope();
     container.register(getIsCiService).inSingletonScope();
@@ -143,6 +151,7 @@ export const createProjectSdkContainer = async (
     container.register(listDeployedEnvironmentsService).inSingletonScope();
     container.register(listPackagesInAppWorkspaceService).inSingletonScope();
     container.register(listPackagesService).inSingletonScope();
+    container.register(loadEnvVarsService).inSingletonScope();
     container.register(localStorageService).inSingletonScope();
     container.register(loggerService).inSingletonScope();
     container.register(projectInfoService).inSingletonScope();
@@ -202,24 +211,33 @@ export const createProjectSdkContainer = async (
     container.registerComposite(coreAfterBuild);
     container.registerComposite(coreAfterDeploy);
 
+    // Initialize project SDK.
     container.resolve(ProjectSdkParamsService).set(params);
+    await container.resolve(LoadEnvVarsService).execute();
+    await container.resolve(BuildProjectWorkspaceService).execute();
 
-    // Extensions.
-    const project = await container.resolve(GetProject).execute();
+    const logger = container.resolve(LoggerService);
+    logger.log("Initializing Project SDK container...");
+
     const projectExtensions = await container.resolve(GetProjectConfig).execute({
         tags: { runtimeContext: "project" }
     });
 
     await container.resolve(ValidateProjectConfig).execute(projectExtensions);
 
-    const importFromPath = (filePath: string) => {
+    const project = container.resolve(GetProject).execute();
+
+    const importFromPath = async (filePath: string) => {
         let importPath = filePath;
         if (!path.isAbsolute(filePath)) {
             // If the path is not absolute, we assume it's relative to the current working directory.
             importPath = project.paths.rootFolder.join(filePath).toString();
         }
 
-        return import(importPath);
+        const exportName = path.basename(filePath).replace(path.extname(filePath), "");
+
+        const importedModule = await import(importPath);
+        return importedModule[exportName];
     };
 
     // Hooks.
@@ -248,7 +266,7 @@ export const createProjectSdkContainer = async (
     ];
 
     for (const hookExtension of hooksExtensions) {
-        const { default: hookImpl } = await importFromPath(hookExtension.params.src);
+        const hookImpl = await importFromPath(hookExtension.params.src);
         container.register(hookImpl).inSingletonScope();
     }
 
@@ -259,7 +277,7 @@ export const createProjectSdkContainer = async (
     ];
 
     for (const pulumiExtension of pulumiExtensions) {
-        const { default: pulumiImpl } = await importFromPath(pulumiExtension.params.src);
+        const pulumiImpl = await importFromPath(pulumiExtension.params.src);
         container.register(pulumiImpl).inSingletonScope();
     }
 
@@ -276,9 +294,8 @@ export const createProjectSdkContainer = async (
     const projectDecorators = [...projectExtensions.extensionsByType(projectDecoratorExt)];
 
     for (const projectDecorator of projectDecorators) {
-        const { default: projectDecoratorImpl } = await importFromPath(projectDecorator.params.src);
+        const projectDecoratorImpl = await importFromPath(projectDecorator.params.src);
         container.registerDecorator(projectDecoratorImpl);
     }
-
     return container;
 };

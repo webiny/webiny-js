@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type GetApp } from "~/abstractions/index.js";
 import { type WebinyConfigWatcher } from "~/features/Watch/watchers/WebinyConfigWatcher.js";
 import { type PackagesWatcher } from "~/features/Watch/watchers/PackagesWatcher.js";
@@ -32,7 +32,7 @@ export interface IWatch {
     execute(params: IWatchParams): Promise<IWatchResult>;
 }
 
-export const Watch = new Abstraction<IWatch>("Watch");
+export const Watch = createAbstraction<IWatch>("Watch");
 
 export namespace Watch {
     export type Interface = IWatch;

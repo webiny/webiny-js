@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { ValidateProjectConfig, ValidateProjectConfigService } from "~/abstractions/index.js";
 
 export class DefaultValidateProjectConfig implements ValidateProjectConfig.Interface {

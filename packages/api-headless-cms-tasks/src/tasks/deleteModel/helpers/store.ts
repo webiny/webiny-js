@@ -4,11 +4,10 @@ import type { StorageKey } from "@webiny/db/types.js";
 export interface ICreateStoreKeyParams {
     modelId: string;
     tenant: string;
-    locale: string;
 }
 
-export const createStoreNamespace = (params: Pick<ICreateStoreKeyParams, "tenant" | "locale">) => {
-    return `deletingCmsModel#T#${params.tenant}#L#${params.locale}#`;
+export const createStoreNamespace = (params: Pick<ICreateStoreKeyParams, "tenant">) => {
+    return `deletingCmsModel#T#${params.tenant}#`;
 };
 
 export const createStoreKey = (params: ICreateStoreKeyParams): StorageKey => {
@@ -20,7 +19,6 @@ export const createStoreValue = (params: IStoreValue): IStoreValue => {
         modelId: params.modelId,
         task: params.task,
         identity: params.identity,
-        tenant: params.tenant,
-        locale: params.locale
+        tenant: params.tenant
     };
 };

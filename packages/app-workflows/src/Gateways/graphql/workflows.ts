@@ -28,6 +28,14 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
+const META_FIELDS = /* GraphQL */ `
+    meta {
+        totalCount
+        hasMoreItems
+        cursor
+    }
+`;
+
 const WORKFLOW = /* GraphQL */ `
     {
         id
@@ -128,10 +136,11 @@ export interface IListWorkflowResponse {
 }
 
 export const LIST_WORKFLOWS_QUERY = gql`
-    query ListWorkflows($where: ListWorkflowsWhereInput, $limit: Number, $sort: [ListWorkflowsSort!], $after: String) {
+    query ListWorkflows($where: ListWorkflowsWhereInput, $limit: Int, $sort: [ListWorkflowsSort!], $after: String) {
         workflows {
             listWorkflows(where: $where, limit: $limit, sort: $sort, after: $after) {
                 data ${WORKFLOW}
+                ${META_FIELDS}
                 ${ERROR_FIELD}
             }
         }

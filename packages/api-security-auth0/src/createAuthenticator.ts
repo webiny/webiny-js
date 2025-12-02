@@ -1,16 +1,21 @@
 import jwt from "jsonwebtoken";
-import { isJwt, verifyJwtUsingJwk } from "@webiny/api-security";
-import type { SecurityContext, SecurityIdentity, Jwk } from "@webiny/api-security/types.js";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import {
+    type Jwk,
+    verifyJwtUsingJwk
+} from "@webiny/api-core/features/security/utils/verifyJwtUsingJwk.js";
+import { isJwt } from "@webiny/api-core/features/security/utils/isJwt.js";
 
-type Context = SecurityContext;
+type Context = ApiCoreContext;
 
 export interface AuthenticatorConfig {
     // Auth0 domain endpoint
     domain: string;
     // Create an identity object using the verified idToken
-    getIdentity(params: { token: { [key: string]: any } }): SecurityIdentity;
+    getIdentity(params: { token: { [key: string]: any } }): IdentityData;
 }
 
 const jwksCache = new Map<string, Jwk[]>();

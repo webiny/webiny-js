@@ -9,14 +9,15 @@ import {
     type IWorkflowStateStepModel,
     WorkflowStateModel
 } from "~/Models/index.js";
-import { type IIdentity, type IWorkflow } from "~/types.js";
+import { type IIdentity, type IWorkflow, WorkflowStateValue } from "~/types.js";
 
 export interface IWorkflowStatePresenterParams {
     repository: IWorkflowStateRepository;
     workflowsRepository: IWorkflowsRepository;
     app: string;
     targetRevisionId: string;
-    identity: IIdentity;
+    title: string;
+    identity: IIdentity | null;
 }
 
 export class WorkflowStatePresenter implements IWorkflowStatePresenter {
@@ -25,28 +26,55 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     private workflow: IWorkflow | null = null;
     private readonly app;
     private readonly targetRevisionId;
+    private readonly title;
     private readonly identity;
     private state: IWorkflowStateModel | null | undefined = undefined;
-    private dialog: "approve" | "approve:success" | "reject" | "reject:success" | "comment" | null =
-        null;
-    private comment: IWorkflowStateStepModel | undefined = undefined;
+    private dialog:
+        | "cancelReview"
+        | "requestReview"
+        | "start"
+        | "start:success"
+        | "approve"
+        | "approve:success"
+        | "reject"
+        | "reject:success"
+        | "comment"
+        | "takeOver"
+        | "takeOver:success"
+        | null = null;
+    step: IWorkflowStateStepModel | null = null;
 
     private get isOwner(): boolean {
+        if (!this.identity) {
+            return false;
+        }
         return this.state?.createdBy?.id === this.identity.id;
     }
     /**
      * Determines whether the current user can cancel the review request.
-     * User must be the owner of the requested review and current step must exist.
+     * User must be the owner of the requested review.
+     * Previous step must not exist (only the initial request can be cancelled).
+     * Current step must be in pending state.
      */
     private get canCancel(): boolean {
-        return this.isOwner && !!this.state?.currentStep;
+        if (!this.isOwner) {
+            return false;
+        } else if (this.state?.previousStep) {
+            return false;
+        } else if (
+            this.state?.state === WorkflowStateValue.approved ||
+            this.state?.state === WorkflowStateValue.rejected
+        ) {
+            return false;
+        }
+        return true;
     }
 
     get vm(): IWorkflowStatePresenterViewModel {
         return {
-            workflow: this.workflow,
+            workflow: toJS(this.workflow),
             state: this.state ? this.state.toJS() : null,
-            step: toJS(this.state ? this.state.currentStep : null),
+            step: toJS(this.step || this.state?.currentStep || null),
             lastApprovedStep: toJS(this.state?.lastApproved || null),
             lastRejectedStep: toJS(this.state?.lastRejected || null),
             nextStep: toJS(this.state ? this.state.nextStep : null),
@@ -55,11 +83,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             app: this.app,
             id: this.targetRevisionId,
             canCancel: this.canCancel,
-            showApproveDialog: this.dialog === "approve",
-            showApproveSuccessDialog: this.dialog === "approve:success",
-            showRejectDialog: this.dialog === "reject",
-            showRejectSuccessDialog: this.dialog === "reject:success",
-            showStepCommentDialog: this.comment
+            dialog: this.dialog
         };
     }
 
@@ -67,8 +91,9 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         this.repository = params.repository;
         this.workflowsRepository = params.workflowsRepository;
         this.app = params.app;
-        this.targetRevisionId = params.targetRevisionId;
+        this.title = params.title;
         this.identity = params.identity;
+        this.targetRevisionId = params.targetRevisionId;
 
         makeAutoObservable(this);
 
@@ -81,6 +106,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
                 app: this.app
             }
         });
+
         runInAction(() => {
             if (workflows.length === 0) {
                 this.workflow = null;
@@ -95,17 +121,32 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
 
         const state = await this.repository.getTargetState(this.app, this.targetRevisionId);
         runInAction(() => {
-            this.state = state ? new WorkflowStateModel(state) : null;
+            this.state = state ? WorkflowStateModel.create(state) : null;
         });
     }
 
     requestReview = async () => {
         const item = await this.repository.requestReview({
             app: this.app,
-            targetRevisionId: this.targetRevisionId
+            targetRevisionId: this.targetRevisionId,
+            title: this.title
         });
         runInAction(() => {
-            this.state = item ? new WorkflowStateModel(item) : null;
+            this.state = item ? WorkflowStateModel.create(item) : null;
+            this.dialog = null;
+        });
+    };
+
+    start = async () => {
+        const item = await this.repository.start({
+            id: this.state!.id
+        });
+        runInAction(() => {
+            this.state = item ? WorkflowStateModel.create(item) : null;
+            if (!item) {
+                return;
+            }
+            this.dialog = "start:success";
         });
     };
 
@@ -115,7 +156,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             comment
         });
         runInAction(() => {
-            this.state = item ? new WorkflowStateModel(item) : null;
+            this.state = item ? WorkflowStateModel.create(item) : null;
             if (!item) {
                 return;
             }
@@ -129,7 +170,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             comment
         });
         runInAction(() => {
-            this.state = item ? new WorkflowStateModel(item) : null;
+            this.state = item ? WorkflowStateModel.create(item) : null;
             if (!item) {
                 return;
             }
@@ -141,6 +182,38 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         await this.repository.cancel(this.state!.id);
         runInAction(() => {
             this.state = null;
+            this.dialog = null;
+        });
+    };
+
+    takeOver = async () => {
+        const item = await this.repository.takeOver({
+            id: this.state!.id
+        });
+        runInAction(() => {
+            this.state = item ? WorkflowStateModel.create(item) : null;
+            if (!item) {
+                return;
+            }
+            this.dialog = "takeOver:success";
+        });
+    };
+
+    showCancelReviewDialog = () => {
+        runInAction(() => {
+            this.dialog = "cancelReview";
+        });
+    };
+
+    showRequestReviewDialog = () => {
+        runInAction(() => {
+            this.dialog = "requestReview";
+        });
+    };
+
+    showStartDialog = () => {
+        runInAction(() => {
+            this.dialog = "start";
         });
     };
 
@@ -153,7 +226,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     hideDialog = () => {
         runInAction(() => {
             this.dialog = null;
-            this.comment = undefined;
+            this.step = null;
         });
     };
 
@@ -169,7 +242,14 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             return;
         }
         runInAction(() => {
-            this.comment = step;
+            this.step = step;
+            this.dialog = "comment";
+        });
+    };
+
+    showTakeOverDialog = () => {
+        runInAction(() => {
+            this.dialog = "takeOver";
         });
     };
 }

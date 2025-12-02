@@ -6,6 +6,7 @@ import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index"
 import { attachAuditLogOnCreateEvent } from "~/context/lifecycle.js";
 import { auditAction } from "~tests/mocks/auditAction.js";
 import type { IAuditLog } from "~/storage/types.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 const convertDates = (item: IAuditLog | null) => {
     return {
@@ -23,6 +24,14 @@ interface ITestPayloadData {
     evenMoreStringData: string;
     additionalData?: string;
 }
+
+const getIdentitySnapshot = (identity: SecurityIdentity) => {
+    return {
+        id: identity.id,
+        type: identity.type,
+        displayName: identity.displayName
+    };
+};
 
 describe("create audit log", () => {
     const client = getDocumentClient();
@@ -54,7 +63,7 @@ describe("create audit log", () => {
             action: ActionType.CREATE,
             app: "cms",
             entity: "user",
-            createdBy: context.security.getIdentity(),
+            createdBy: getIdentitySnapshot(context.security.getIdentity()),
             createdOn: expect.any(Date),
             content: JSON.stringify(data),
             tags: []
@@ -111,7 +120,7 @@ describe("create audit log", () => {
             action: ActionType.CREATE,
             app: "cms",
             entity: "user",
-            createdBy: context.security.getIdentity(),
+            createdBy: getIdentitySnapshot(context.security.getIdentity()),
             createdOn: expect.any(Date),
             content: JSON.stringify(data),
             tags: []
@@ -177,7 +186,7 @@ describe("create audit log", () => {
             action: ActionType.CREATE,
             app: "cms",
             entity: "user",
-            createdBy: context.security.getIdentity(),
+            createdBy: getIdentitySnapshot(context.security.getIdentity()),
             createdOn: expect.any(Date),
             content: JSON.stringify({
                 ...data,

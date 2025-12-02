@@ -2,7 +2,7 @@ import { describe, test, expect, beforeEach } from "vitest";
 import useGqlHandler from "./useGqlHandler";
 import mocks from "./mocks/securityUser";
 import md5 from "md5";
-import { AdminUser } from "@webiny/api-admin-users/types";
+import type { AdminUser } from "@webiny/api-core/types/users.js";
 
 const createGravatar = (email: string) => `https://www.gravatar.com/avatar/${md5(email)}`;
 
@@ -16,7 +16,9 @@ describe("Security User CRUD Test", () => {
     };
 
     beforeEach(async () => {
-        await install.install({ data: { ...adminData, password: "12345678" } });
+        await install.install({
+            installationInput: [{ app: "AdminUser", data: { ...adminData, password: "12345678" } }]
+        });
 
         const [groupResponseA] = await securityGroups.get({ slug: "full-access" });
         const fullAccessGroup = groupResponseA.data.security.getGroup.data;
@@ -247,7 +249,7 @@ describe("Security User CRUD Test", () => {
                         data: null,
                         error: {
                             code: "USER_EXISTS",
-                            message: "User with that email already exists.",
+                            message: 'User with email "admin@webiny.com" already exists.',
                             data: {
                                 email: "admin@webiny.com"
                             }
@@ -302,7 +304,7 @@ describe("Security User CRUD Test", () => {
                         data: null,
                         error: {
                             message: `You can't delete your own user account.`,
-                            code: "",
+                            code: "CANNOT_DELETE_OWN_ACCOUNT",
                             data: null
                         }
                     }

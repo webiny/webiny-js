@@ -14,12 +14,12 @@ import type {
     ITaskResponseResult
 } from "~/response/abstractions/index.js";
 import type { IIsCloseToTimeoutCallable, ITaskManagerStore } from "./runner/abstractions/index.js";
-import type { SecurityPermission } from "@webiny/api-security/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { IStepFunctionServiceFetchResult } from "~/service/StepFunctionServicePlugin.js";
 import type { ITimer } from "@webiny/handler-aws";
 
 import type zod from "zod";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 
 export * from "./handler/types.js";
 export * from "./response/abstractions/index.js";

@@ -1,6 +1,8 @@
 export * from "./ProjectInfoService/index.js";
 export { BuildAppWorkspaceService } from "./BuildAppWorkspaceService.js";
+export { BuildProjectWorkspaceService } from "./BuildProjectWorkspaceService.js";
 export { GetAppPackagesService } from "./GetAppPackagesService.js";
+export { GetAppService } from "./GetAppService.js";
 export { GetCwdService } from "./GetCwdService.js";
 export { GetProjectConfigService } from "./GetProjectConfigService.js";
 export { GetProjectIdService } from "./GetProjectIdService.js";
@@ -11,6 +13,7 @@ export { ListAppLambdaFunctionsService } from "./ListAppLambdaFunctionsService.j
 export { ListDeployedEnvironmentsService } from "./ListDeployedEnvironmentsService.js";
 export { ListPackagesInAppWorkspaceService } from "./ListPackagesInAppWorkspaceService.js";
 export { ListPackagesService } from "./ListPackagesService.js";
+export { LoadEnvVarsService } from "./LoadEnvVarsService.js";
 export { LocalStorageService } from "./LocalStorageService.js";
 export { LoggerService } from "./LoggerService.js";
 export { ProjectSdkParamsService } from "./ProjectSdkParamsService.js";

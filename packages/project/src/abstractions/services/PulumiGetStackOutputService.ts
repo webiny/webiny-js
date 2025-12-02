@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IAppModel } from "~/abstractions/models/IAppModel.js";
 import { type IBaseAppParams } from "~/abstractions/types.js";
 
@@ -13,7 +13,7 @@ export interface IPulumiGetStackOutputService {
     ): Promise<TOutput | null>;
 }
 
-export const PulumiGetStackOutputService = new Abstraction<IPulumiGetStackOutputService>(
+export const PulumiGetStackOutputService = createAbstraction<IPulumiGetStackOutputService>(
     "PulumiGetStackOutputService"
 );
 

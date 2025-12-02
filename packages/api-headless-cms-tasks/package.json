@@ -27,15 +27,13 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@webiny/api-i18n": "0.0.0",
-    "@webiny/api-security": "0.0.0",
-    "@webiny/api-tenancy": "0.0.0",
-    "@webiny/api-wcp": "0.0.0",
+    "@webiny/api-core": "0.0.0",
     "@webiny/build-tools": "0.0.0",
     "@webiny/handler": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/plugins": "0.0.0",
     "@webiny/project-utils": "0.0.0",
+    "@webiny/wcp": "0.0.0",
     "typescript": "5.9.3",
     "vitest": "^3.2.4"
   },

@@ -7,13 +7,12 @@ import { Select } from "@webiny/ui/Select/index.js";
 import { useToast } from "@webiny/admin-ui";
 import { CircularProgress } from "@webiny/ui/Progress/index.js";
 import { validation } from "@webiny/validation";
-import { useApolloClient, useMutation, useQueryLocale } from "../../hooks/index.js";
+import { useApolloClient, useMutation, useQuery } from "../../hooks/index.js";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { ButtonDefault } from "@webiny/ui/Button/index.js";
 import { Cell, Grid } from "@webiny/ui/Grid/index.js";
 import { addModelToGroupCache, addModelToListCache } from "./cache.js";
 import type { CmsModel } from "~/types.js";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N.js";
 import type {
     CreateCmsModelFromMutationResponse,
     CreateCmsModelFromMutationVariables,
@@ -56,11 +55,8 @@ export const CloneContentModelDialog = ({
     const [loading, setLoading] = useState<boolean>(false);
     const { showWarningToast } = useToast();
     const { goToRoute } = useRouter();
-    const { getLocales, getCurrentLocale, setCurrentLocale } = useI18N();
     const client = useApolloClient();
 
-    const currentLocale = getCurrentLocale("content");
-    const [locale, setLocale] = useState<string>(currentLocale || "");
     const [groups, setGroups] = useState<CmsGroupOption[] | null>(null);
     const [models, setModels] = useState<CmsModel[]>([]);
 
@@ -88,12 +84,6 @@ export const CloneContentModelDialog = ({
                 return;
             }
 
-            if (currentLocale !== locale) {
-                setCurrentLocale(locale, "content");
-                window.location.reload();
-                return;
-            }
-
             addModelToListCache(cache, model);
             addModelToGroupCache(cache, model);
 
@@ -102,16 +92,8 @@ export const CloneContentModelDialog = ({
         }
     });
 
-    const locales = getLocales().map(({ code }) => {
-        return {
-            value: code,
-            label: code === currentLocale ? `Current locale (${code})` : code
-        };
-    });
-
-    const listMenuGroupsQuery = useQueryLocale<ListMenuCmsGroupsQueryResponse>(
-        LIST_MENU_CONTENT_GROUPS_MODELS,
-        locale
+    const listMenuGroupsQuery = useQuery<ListMenuCmsGroupsQueryResponse>(
+        LIST_MENU_CONTENT_GROUPS_MODELS
     );
 
     useEffect(() => {
@@ -150,7 +132,6 @@ export const CloneContentModelDialog = ({
             <Form
                 data={{
                     group: selectedGroup,
-                    locale,
                     name: contentModel.name
                 }}
                 onSubmit={data => {
@@ -183,25 +164,6 @@ export const CloneContentModelDialog = ({
                                         <Input
                                             label={t`Name`}
                                             description={t`The name of the content model`}
-                                        />
-                                    </Bind>
-                                </Cell>
-                                <Cell span={12}>
-                                    <Bind
-                                        name={"locale"}
-                                        validators={validation.create("required")}
-                                        afterChange={(value?: string) => {
-                                            if (!value) {
-                                                return;
-                                            }
-                                            setLocale(value);
-                                            setGroups(null);
-                                        }}
-                                    >
-                                        <Select
-                                            description={t`Choose a locale into which you wish to clone the model`}
-                                            label={t`Content model locale`}
-                                            options={locales}
                                         />
                                     </Bind>
                                 </Cell>

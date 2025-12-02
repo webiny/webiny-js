@@ -2,13 +2,15 @@ import type { Context } from "~/types.js";
 import { GraphQLSchemaPlugin, resolve, resolveList } from "@webiny/handler-graphql";
 import { createZodError } from "@webiny/utils";
 import { listWorkflowStatesValidation } from "~/validation/listWorkflowStates.js";
+import { startWorkflowStateValidation } from "~/validation/startWorkflowState.js";
 import { approveWorkflowStateValidation } from "~/validation/approveWorkflowState.js";
 import { rejectWorkflowStateValidation } from "~/validation/rejectWorkflowState.js";
 import { cancelWorkflowStateValidation } from "~/validation/cancelWorkflowState.js";
 import { createWorkflowStateValidation } from "~/validation/createWorkflowState.js";
 import { getTargetWorkflowStateValidation } from "~/validation/getTargetWorkflowState.js";
 import { getWorkflowStateValidation } from "~/validation/getWorkflowState.js";
-import type { IWorkflowState } from "~/context/abstractions/WorkflowState.js";
+import type { IWorkflowStateModel } from "~/context/abstractions/WorkflowState.js";
+import { takeOverWorkflowStateStepValidation } from "~/validation/takeOverWorkflowStateStep.js";
 
 export const createWorkflowStateSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -47,13 +49,19 @@ export const createWorkflowStateSchema = () => {
                 comment: String
                 savedBy: WorkflowStateIdentity
                 # current user can take action on this step?
-                isAllowedToReview: Boolean!
+                canReview: Boolean!
+                # is current user an owner of the step?
+                isOwner: Boolean!
+                # can current user take over this step?
+                canTakeOver: Boolean!
             }
 
             type WorkflowState {
                 id: String!
                 app: String!
+                title: String!
                 isActive: Boolean!
+                done: Boolean!
                 workflowId: String!
                 targetId: String!
                 targetRevisionId: String!
@@ -64,6 +72,9 @@ export const createWorkflowStateSchema = () => {
                 savedOn: DateTime!
                 createdBy: WorkflowStateIdentity!
                 savedBy: WorkflowStateIdentity!
+                currentStep: WorkflowStateStep!
+                nextStep: WorkflowStateStep
+                previousStep: WorkflowStateStep
             }
 
             type ListWorkflowStatesResponse {
@@ -77,6 +88,25 @@ export const createWorkflowStateSchema = () => {
                 createdOn_DESC
                 savedOn_ASC
                 savedOn_DESC
+            }
+
+            input ListWorkflowStatesWhereStepsInput {
+                id: String
+                id_in: [String!]
+                state: WorkflowStateStateValue
+                state_in: [WorkflowStateStateValue!]
+                savedBy: String
+                savedBy_in: [String!]
+            }
+
+            input ListWorkflowStatesWhereTeamsInput {
+                id: String
+                id_in: [String!]
+            }
+
+            input ListWorkflowStatesWhereNotificationsInput {
+                id: String
+                id_in: [String!]
             }
 
             input ListWorkflowStatesWhereInput {
@@ -97,6 +127,9 @@ export const createWorkflowStateSchema = () => {
                 createdBy: String
                 savedBy: String
                 isActive: Boolean
+                steps: ListWorkflowStatesWhereStepsInput
+                teams: ListWorkflowStatesWhereTeamsInput
+                notifications: ListWorkflowStatesWhereNotificationsInput
             }
 
             type WorkflowStateResponse {
@@ -109,6 +142,11 @@ export const createWorkflowStateSchema = () => {
                 error: WorkflowError
             }
 
+            type TakeOverWorkflowStateStepResponse {
+                data: WorkflowState
+                error: WorkflowError
+            }
+
             extend type WorkflowsQuery {
                 getWorkflowState(id: ID!): WorkflowStateResponse!
                 # always returns active workflow state for the given targetRevisionId - or null
@@ -116,28 +154,45 @@ export const createWorkflowStateSchema = () => {
                 listWorkflowStates(
                     where: ListWorkflowStatesWhereInput
                     sort: [ListWorkflowStatesSort!]
-                    limit: Number
+                    limit: Int
+                    after: String
+                ): ListWorkflowStatesResponse!
+                listOwnWorkflowStates(
+                    where: ListWorkflowStatesWhereInput
+                    sort: [ListWorkflowStatesSort!]
+                    limit: Int
+                    after: String
+                ): ListWorkflowStatesResponse!
+                listRequestedWorkflowStates(
+                    where: ListWorkflowStatesWhereInput
+                    sort: [ListWorkflowStatesSort!]
+                    limit: Int
                     after: String
                 ): ListWorkflowStatesResponse!
             }
 
             extend type WorkflowsMutation {
-                createWorkflowState(app: String!, targetRevisionId: ID!): WorkflowStateResponse!
+                createWorkflowState(
+                    app: String!
+                    targetRevisionId: ID!
+                    title: String!
+                ): WorkflowStateResponse!
                 startWorkflowStateStep(id: ID!): WorkflowStateResponse!
                 approveWorkflowStateStep(id: ID!, comment: String): WorkflowStateResponse!
                 rejectWorkflowStateStep(id: ID!, comment: String!): WorkflowStateResponse!
                 cancelWorkflowState(id: ID!): CancelWorkflowStateResponse!
+                takeOverWorkflowStateStep(id: ID!): TakeOverWorkflowStateStepResponse!
             }
         `,
         resolvers: {
             WorkflowState: {
-                isActive: (parent: Partial<IWorkflowState>) => {
+                isActive: (parent: Partial<IWorkflowStateModel>) => {
                     return parent.isActive || false;
                 }
             },
             WorkflowsQuery: {
                 getWorkflowState: async (_, args, context) => {
-                    return resolve<IWorkflowState>(async () => {
+                    return resolve<IWorkflowStateModel>(async () => {
                         const result = await getWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -147,7 +202,7 @@ export const createWorkflowStateSchema = () => {
                     });
                 },
                 getTargetWorkflowState: async (_, args, context) => {
-                    return resolve<IWorkflowState>(async () => {
+                    return resolve<IWorkflowStateModel>(async () => {
                         const result = await getTargetWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -159,18 +214,36 @@ export const createWorkflowStateSchema = () => {
                     });
                 },
                 listWorkflowStates: async (_, args, context) => {
-                    return resolveList<IWorkflowState>(async () => {
+                    return resolveList<IWorkflowStateModel>(async () => {
                         const result = await listWorkflowStatesValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
                         return await context.workflowState.listStates(result.data);
                     });
+                },
+                listOwnWorkflowStates: async (_, args, context) => {
+                    return resolveList<IWorkflowStateModel>(async () => {
+                        const result = await listWorkflowStatesValidation.safeParseAsync(args);
+                        if (!result.success) {
+                            throw createZodError(result.error);
+                        }
+                        return await context.workflowState.listOwnWorkflowStates(result.data);
+                    });
+                },
+                listRequestedWorkflowStates: async (_, args, context) => {
+                    return resolveList<IWorkflowStateModel>(async () => {
+                        const result = await listWorkflowStatesValidation.safeParseAsync(args);
+                        if (!result.success) {
+                            throw createZodError(result.error);
+                        }
+                        return await context.workflowState.listRequestedWorkflowStates(result.data);
+                    });
                 }
             },
             WorkflowsMutation: {
                 createWorkflowState: async (_, args, context) => {
-                    return resolve<IWorkflowState>(async () => {
+                    return resolve<IWorkflowStateModel>(async () => {
                         const result = await createWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -178,12 +251,22 @@ export const createWorkflowStateSchema = () => {
 
                         return await context.workflowState.createState(
                             result.data.app,
-                            result.data.targetRevisionId
+                            result.data.targetRevisionId,
+                            result.data.title
                         );
                     });
                 },
+                startWorkflowStateStep(_, args, context) {
+                    return resolve<IWorkflowStateModel>(async () => {
+                        const result = await startWorkflowStateValidation.safeParseAsync(args);
+                        if (!result.success) {
+                            throw createZodError(result.error);
+                        }
+                        return await context.workflowState.startStateStep(result.data.id);
+                    });
+                },
                 approveWorkflowStateStep: (_, args, context) => {
-                    return resolve<IWorkflowState>(async () => {
+                    return resolve<IWorkflowStateModel>(async () => {
                         const result = await approveWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -195,7 +278,7 @@ export const createWorkflowStateSchema = () => {
                     });
                 },
                 rejectWorkflowStateStep: (_, args, context) => {
-                    return resolve<IWorkflowState>(async () => {
+                    return resolve<IWorkflowStateModel>(async () => {
                         const result = await rejectWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -214,6 +297,16 @@ export const createWorkflowStateSchema = () => {
                         }
                         await context.workflowState.cancelState(result.data.id);
                         return true;
+                    });
+                },
+                takeOverWorkflowStateStep: (_, args, context) => {
+                    return resolve<IWorkflowStateModel>(async () => {
+                        const result =
+                            await takeOverWorkflowStateStepValidation.safeParseAsync(args);
+                        if (!result.success) {
+                            throw createZodError(result.error);
+                        }
+                        return await context.workflowState.takeOverStateStep(result.data.id);
                     });
                 }
             }

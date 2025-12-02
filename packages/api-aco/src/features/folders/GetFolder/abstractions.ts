@@ -1,0 +1,40 @@
+import { createAbstraction } from "@webiny/feature/api";
+import { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
+import type { Folder, GetFolderParams } from "~/folder/folder.types.js";
+
+// Use Case Abstraction
+export interface IGetFolderUseCase {
+    execute: (params: GetFolderParams) => Promise<Folder>;
+}
+
+export const GetFolderUseCase = createAbstraction<IGetFolderUseCase>("GetFolderUseCase");
+
+export namespace GetFolderUseCase {
+    export type Interface = IGetFolderUseCase;
+}
+
+// Event Payload Types
+export interface FolderBeforeGetPayload {
+    params: GetFolderParams;
+}
+
+export interface FolderAfterGetPayload {
+    folder: Folder;
+}
+
+// Event Handler Abstractions
+export const FolderBeforeGetHandler =
+    createAbstraction<IEventHandler<DomainEvent<FolderBeforeGetPayload>>>("FolderBeforeGetHandler");
+
+export namespace FolderBeforeGetHandler {
+    export type Interface = IEventHandler<DomainEvent<FolderBeforeGetPayload>>;
+    export type Event = DomainEvent<FolderBeforeGetPayload>;
+}
+
+export const FolderAfterGetHandler =
+    createAbstraction<IEventHandler<DomainEvent<FolderAfterGetPayload>>>("FolderAfterGetHandler");
+
+export namespace FolderAfterGetHandler {
+    export type Interface = IEventHandler<DomainEvent<FolderAfterGetPayload>>;
+    export type Event = DomainEvent<FolderAfterGetPayload>;
+}

@@ -10,7 +10,6 @@ export class ResponseDoneResult<
     public readonly webinyTaskId: string;
     public readonly webinyTaskDefinitionId: string;
     public readonly tenant: string;
-    public readonly locale: string;
     public readonly output?: O;
     public readonly status: TaskResponseStatus.DONE = TaskResponseStatus.DONE;
 
@@ -19,7 +18,6 @@ export class ResponseDoneResult<
         this.webinyTaskId = params.webinyTaskId;
         this.webinyTaskDefinitionId = params.webinyTaskDefinitionId;
         this.tenant = params.tenant;
-        this.locale = params.locale;
         this.output = Object.keys(params.output || {}).length > 0 ? params.output : undefined;
     }
 }

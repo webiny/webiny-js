@@ -1,4 +1,5 @@
-import { GetSettings, SaveSettings } from "@webiny/api-admin-settings";
+import { GetSettings } from "@webiny/api-core/features/GetSettings";
+import { UpdateSettings } from "@webiny/api-core/features/UpdateSettings";
 import {
     ErrorResponse,
     GraphQLSchemaPlugin,
@@ -77,20 +78,33 @@ export const createPagesSchema = () => {
                 },
                 getSettings: async (_, __, context) => {
                     ensureAuthentication(context);
-                    const getSettings = GetSettings.create(context);
-                    const settings = await getSettings.execute(WEBSITE_BUILDER_SETTINGS);
-                    const data = settings.getData();
+
+                    const getSettings = context.container.resolve(GetSettings);
+                    const result = await getSettings.execute(WEBSITE_BUILDER_SETTINGS);
+
+                    if (result.isFail()) {
+                        return new Response({
+                            // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
+                            previewDomain: "http://localhost:3000"
+                        });
+                    }
+
+                    const settings = result.value.data;
 
                     return new Response({
-                        // TODO: add a GetSettings use case and a Settings domain model with defaults.
-                        previewDomain: data.previewDomain ?? "http://localhost:3000"
+                        // TODO: add a WB GetSettings use case and a Settings domain model with defaults.
+                        previewDomain: settings.previewDomain ?? "http://localhost:3000"
                     });
                 },
                 getIntegrations: async (_, __, context) => {
                     ensureAuthentication(context);
-                    const getSettings = GetSettings.create(context);
+                    const getSettings = context.container.resolve(GetSettings);
                     const settings = await getSettings.execute(WEBSITE_BUILDER_INTEGRATIONS);
-                    return new Response(settings.getData());
+                    if (settings.isFail()) {
+                        return new Response({});
+                    }
+
+                    return new Response(settings.value.data);
                 }
             },
             WbMutation: {
@@ -142,20 +156,24 @@ export const createPagesSchema = () => {
                 },
                 updateSettings: async (_, args, context) => {
                     ensureAuthentication(context);
-                    const saveSettings = SaveSettings.create(context);
+                    const saveSettings = context.container.resolve(UpdateSettings);
+
                     await saveSettings.execute({
                         name: WEBSITE_BUILDER_SETTINGS,
-                        settings: args.data
+                        data: args.data
                     });
+
                     return new Response(true);
                 },
                 updateIntegrations: async (_, args, context) => {
                     ensureAuthentication(context);
-                    const saveSettings = SaveSettings.create(context);
+                    const saveSettings = context.container.resolve(UpdateSettings);
+
                     await saveSettings.execute({
                         name: WEBSITE_BUILDER_INTEGRATIONS,
-                        settings: args.data
+                        data: args.data
                     });
+
                     return new Response(true);
                 }
             }

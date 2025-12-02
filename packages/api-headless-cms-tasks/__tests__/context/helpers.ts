@@ -1,6 +1,4 @@
-import type { SecurityIdentity } from "@webiny/api-security/types";
-import { ContextPlugin } from "@webiny/api";
-import type { HcmsTasksContext } from "~/types";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 export interface PermissionsArg {
     name: string;
@@ -57,34 +55,9 @@ export const createPermissions = (permissions?: PermissionsArg[]): PermissionsAr
     ];
 };
 
-export const createIdentity = (identity?: SecurityIdentity) => {
+export const createIdentity = (identity?: IdentityData) => {
     if (!identity) {
         return getSecurityIdentity();
     }
     return identity;
-};
-
-export const createDummyLocales = () => {
-    return new ContextPlugin<HcmsTasksContext>(async context => {
-        const { i18n, security } = context;
-
-        await security.authenticate("");
-
-        await security.withoutAuthorization(async () => {
-            const [items] = await i18n.locales.listLocales({
-                where: {}
-            });
-            if (items.length > 0) {
-                return;
-            }
-            await i18n.locales.createLocale({
-                code: "en-US",
-                default: true
-            });
-            await i18n.locales.createLocale({
-                code: "de-DE",
-                default: true
-            });
-        });
-    });
 };

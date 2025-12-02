@@ -1,36 +1,23 @@
-import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
-import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
-import type {
-    SecurityContext,
-    SecurityIdentity,
-    SecurityStorageOperations
-} from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import type { TenancyContext, TenancyStorageOperations } from "@webiny/api-tenancy/types";
-import type { AdminUsersContext } from "@webiny/api-admin-users/types";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
-import { createTenantLinkAuthorizer } from "@webiny/api-security/plugins/tenantLinkAuthorization";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import { createTenantLinkAuthorizer } from "@webiny/api-core/legacy/security/plugins/tenantLinkAuthorization.js";
+import { UserBeforeCreateHandler } from "@webiny/api-core/features/CreateUser";
 
 interface Config {
     fullAccess?: boolean;
-    identity?: SecurityIdentity;
+    identity?: IdentityData;
 }
 
 export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) => {
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-
     return [
-        createTenancyContext({ storageOperations: tenancyStorage.storageOperations }),
-        createTenancyGraphQL(),
-        createSecurityContext({ storageOperations: securityStorage.storageOperations }),
-        createSecurityGraphQL(),
-        new ContextPlugin<SecurityContext & TenancyContext>(context => {
+        new ContextPlugin<ApiCoreContext>(context => {
             context.tenancy.setCurrentTenant({
                 id: "root",
                 name: "Root",
                 status: "unknown",
+                isInstalled: true,
                 parent: null,
                 tags: [],
                 settings: {
@@ -64,12 +51,17 @@ export const createTenancyAndSecurity = ({ fullAccess, identity }: Config = {}) 
                 return tenantLinkAuthorizer();
             });
         }),
-        new BeforeHandlerPlugin<SecurityContext & AdminUsersContext>(context => {
-            // We need to set an exact user ID to match the Identity ID
-            context.adminUsers.onUserBeforeCreate.subscribe(({ user }) => {
-                if (user.email === "admin@webiny.com") {
-                    user.id = "12345678";
-                }
+        new BeforeHandlerPlugin<ApiCoreContext>(context => {
+            context.container.registerFactory(UserBeforeCreateHandler, () => {
+                return {
+                    handle(event) {
+                        const { user } = event.payload;
+
+                        if (user.email === "admin@webiny.com") {
+                            user.id = "12345678";
+                        }
+                    }
+                };
             });
 
             return context.security.authenticate("");

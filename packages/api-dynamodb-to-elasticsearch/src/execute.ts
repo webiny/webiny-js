@@ -128,8 +128,7 @@ export const execute = (params: IExecuteParams) => {
             checkErrors(res);
         } catch (error) {
             log.error(error, {
-                tenant: "root",
-                locale: "unknown"
+                tenant: "root"
             });
 
             if (process.env.DEBUG !== "true") {

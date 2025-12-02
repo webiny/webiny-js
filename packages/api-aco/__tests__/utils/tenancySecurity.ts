@@ -1,19 +1,12 @@
-import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
-import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
-import type {
-    SecurityContext,
-    SecurityIdentity,
-    SecurityPermission,
-    SecurityStorageOperations
-} from "@webiny/api-security/types";
 import { ContextPlugin } from "@webiny/api";
+import { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { BeforeHandlerPlugin } from "@webiny/handler";
-import type { TenancyContext, TenancyStorageOperations } from "@webiny/api-tenancy/types";
-import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 interface Config {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity | null;
+    identity?: IdentityData | null;
 }
 
 export const defaultIdentity = {
@@ -23,20 +16,15 @@ export const defaultIdentity = {
 };
 
 export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
     return [
-        createTenancyContext({ storageOperations: tenancyStorage.storageOperations }),
-        createTenancyGraphQL(),
-        createSecurityContext({ storageOperations: securityStorage.storageOperations }),
-        createSecurityGraphQL(),
-        new ContextPlugin<SecurityContext & TenancyContext>(context => {
+        new ContextPlugin<ApiCoreContext>(context => {
             context.tenancy.setCurrentTenant({
                 id: "root",
                 name: "Root",
                 settings: {
                     domains: []
                 },
+                isInstalled: true,
                 status: "unknown",
                 description: "",
                 parent: null,
@@ -55,7 +43,7 @@ export const createTenancyAndSecurity = ({ permissions, identity }: Config) => {
                 return typeof permissions === "undefined" ? [{ name: "*" }] : permissions;
             });
         }),
-        new BeforeHandlerPlugin<SecurityContext>(context => {
+        new BeforeHandlerPlugin<ApiCoreContext>(context => {
             return context.security.authenticate("");
         })
     ];

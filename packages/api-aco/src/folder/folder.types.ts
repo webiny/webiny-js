@@ -1,6 +1,5 @@
 import type { ListMeta, ListSort, User } from "~/types.js";
 import { type FolderPermission } from "~/types.js";
-import type { Topic } from "@webiny/pubsub/types.js";
 
 export interface Folder {
     id: string;
@@ -48,7 +47,6 @@ export interface ListFoldersParams {
     sort?: ListSort;
     limit?: number;
     after?: string | null;
-    disablePermissions?: boolean;
 }
 
 export type ListAllFoldersParams = Omit<ListFoldersParams, "limit" | "after">;
@@ -140,7 +138,7 @@ export interface OnFolderAfterDeleteTopicParams {
 }
 
 export interface AcoFolderCrud {
-    get(id: string, disablePermissions?: boolean): Promise<Folder>;
+    get(id: string): Promise<Folder>;
 
     list(params: ListFoldersParams): Promise<[Folder[], ListMeta]>;
 
@@ -159,18 +157,6 @@ export interface AcoFolderCrud {
     getAncestors(folder: Folder): Promise<Folder[]>;
 
     getFolderHierarchy(params: GetFolderHierarchyParams): Promise<GetFolderHierarchyResponse>;
-
-    /**
-     * @deprecated use `getAncestors` instead
-     */
-    getFolderWithAncestors(id: string): Promise<Folder[]>;
-
-    onFolderBeforeCreate: Topic<OnFolderBeforeCreateTopicParams>;
-    onFolderAfterCreate: Topic<OnFolderAfterCreateTopicParams>;
-    onFolderBeforeUpdate: Topic<OnFolderBeforeUpdateTopicParams>;
-    onFolderAfterUpdate: Topic<OnFolderAfterUpdateTopicParams>;
-    onFolderBeforeDelete: Topic<OnFolderBeforeDeleteTopicParams>;
-    onFolderAfterDelete: Topic<OnFolderAfterDeleteTopicParams>;
 }
 
 export interface AcoFolderStorageOperations {

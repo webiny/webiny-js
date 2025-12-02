@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetLogger, LoggerService } from "~/abstractions/index.js";
 
 export class DefaultGetLogger implements GetLogger.Interface {

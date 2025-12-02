@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 import type { Route, RouteParamsDefinition, RouteParamsInfer } from "./Route.js";
 import type { RequiredKeysOf } from "type-fest";
 

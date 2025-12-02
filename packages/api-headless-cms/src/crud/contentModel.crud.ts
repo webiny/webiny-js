@@ -26,9 +26,6 @@ import type {
 } from "~/types/index.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory.js";
-import type { Tenant } from "@webiny/api-tenancy/types.js";
-import type { I18NLocale } from "@webiny/api-i18n/types.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import { createTopic } from "@webiny/pubsub";
 import { assignModelBeforeCreate } from "./contentModel/beforeCreate.js";
 import { assignModelBeforeUpdate } from "./contentModel/beforeUpdate.js";
@@ -51,6 +48,9 @@ import {
     CmsModelToAstConverter
 } from "~/utils/contentModelAst/index.js";
 import { SingletonModelManager } from "~/modelManager/index.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 export interface CreateModelsCrudParams {
     getTenant: () => Tenant;
@@ -524,10 +524,8 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
 
         const data = removeUndefinedValues(result.data);
 
-        const locale = await context.i18n.getLocale(data.locale || original.locale);
-        if (!locale) {
-            throw new NotFoundError(`There is no locale "${data.locale}".`);
-        }
+        const locale = getLocale();
+
         /**
          * Use storage operations directly because we cannot get group from different locale via context methods.
          */

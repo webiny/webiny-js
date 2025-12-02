@@ -1,5 +1,5 @@
-import { NotAuthorizedError } from "@webiny/api-security";
 import type { Context } from "~/types.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 
 export const checkPermissions = async (context: Pick<Context, "security">): Promise<void> => {
     try {

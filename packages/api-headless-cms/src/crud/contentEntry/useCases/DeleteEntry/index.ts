@@ -16,8 +16,8 @@ import type {
     OnEntryDeleteErrorTopicParams
 } from "~/types/index.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import type { IGetLatestRevisionByEntryId } from "~/crud/contentEntry/abstractions/index.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 export interface DeleteEntryUseCasesTopics {
     onEntryBeforeDelete: Topic<OnEntryBeforeDeleteTopicParams>;

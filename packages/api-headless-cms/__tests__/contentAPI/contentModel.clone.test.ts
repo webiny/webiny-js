@@ -38,9 +38,6 @@ describe("content model - cloning", () => {
     const manageOpts = {
         path: "manage/en-US"
     };
-    const manageDeOpts = {
-        path: "manage/de-DE"
-    };
 
     const {
         createContentModelGroupMutation,
@@ -352,76 +349,6 @@ describe("content model - cloning", () => {
                         },
                         message: `Content model with singularApiName "${originalModel.singularApiName}" already exists.`
                     }
-                }
-            }
-        });
-    });
-
-    it("should clone a model into another locale", async () => {
-        const {
-            createContentModelGroupMutation: createDeContentModelGroupMutation,
-            listContentModelsQuery,
-            getContentModelQuery
-        } = useGraphQLHandler(manageDeOpts);
-        const [createGroupResponse] = await createDeContentModelGroupMutation({
-            data: {
-                name: "Default group DE",
-                slug: "default-group-de",
-                icon: "ico/ico",
-                description: "description DE"
-            }
-        });
-        const deGroup = createGroupResponse.data.createContentModelGroup.data;
-
-        const [response] = await createContentModelFromMutation({
-            modelId: originalModel.modelId,
-            data: {
-                name: "Cloned model",
-                group: deGroup.id,
-                singularApiName: "ClonedModel",
-                pluralApiName: "ClonedModels",
-                description: "Cloned model description",
-                locale: "de-DE"
-            }
-        });
-
-        const expectedModel: CmsModel = createExpectedModel(
-            {
-                ...originalModel,
-                singularApiName: "ClonedModel",
-                pluralApiName: "ClonedModels"
-            },
-            deGroup
-        );
-
-        expect(response).toEqual({
-            data: {
-                createContentModelFrom: {
-                    data: expectedModel,
-                    error: null
-                }
-            }
-        });
-
-        const [listDeResponse] = await listContentModelsQuery({});
-        expect(listDeResponse).toEqual({
-            data: {
-                listContentModels: {
-                    data: [expectedModel],
-                    error: null
-                }
-            }
-        });
-
-        const [getDeResponse] = await getContentModelQuery({
-            modelId: "clonedModel"
-        });
-
-        expect(getDeResponse).toEqual({
-            data: {
-                getContentModel: {
-                    data: expectedModel,
-                    error: null
                 }
             }
         });

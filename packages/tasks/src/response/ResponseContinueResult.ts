@@ -7,7 +7,6 @@ export class ResponseContinueResult<T = ITaskDataInput> implements IResponseCont
     public readonly webinyTaskId: string;
     public readonly webinyTaskDefinitionId: string;
     public readonly tenant: string;
-    public readonly locale: string;
     public readonly status: TaskResponseStatus.CONTINUE = TaskResponseStatus.CONTINUE;
     public readonly input: T;
     /**
@@ -21,7 +20,6 @@ export class ResponseContinueResult<T = ITaskDataInput> implements IResponseCont
         this.webinyTaskId = params.webinyTaskId;
         this.webinyTaskDefinitionId = params.webinyTaskDefinitionId;
         this.tenant = params.tenant;
-        this.locale = params.locale;
         this.input = params.input;
         this.wait = params.wait;
     }

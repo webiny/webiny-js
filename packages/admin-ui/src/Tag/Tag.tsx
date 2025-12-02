@@ -1,9 +1,12 @@
 import * as React from "react";
 import { ReactComponent as Close } from "@webiny/icons/close.svg";
-import { cn, cva, makeDecoratable, type VariantProps } from "~/utils.js";
+import { cn, cva, makeDecoratable, omit, type VariantProps } from "~/utils.js";
 import { Icon, type IconProps } from "~/Icon/index.js";
 import type { iconButtonVariants } from "~/Button/index.js";
 import { IconButton } from "~/Button/index.js";
+import { TagPropsProvider } from "~/Tag/TagPropsProvider.js";
+import { TagSwatchBox } from "./TagSwatchBox.js";
+import { TagIcon } from "./TagIcon.js";
 
 const tagVariants = cva(
     [
@@ -70,7 +73,7 @@ const tagVariants = cva(
                     "aria-disabled:bg-primary-subtle aria-disabled:text-neutral-muted"
                 ],
                 success: [
-                    "bg-success-default text-neutral-light",
+                    "bg-success text-neutral-light",
                     "hover:bg-success-strong",
                     "aria-disabled:bg-success-disabled"
                 ],
@@ -81,11 +84,11 @@ const tagVariants = cva(
                 ],
                 warning: [
                     "bg-warning-muted text-neutral-primary",
-                    "hover:bg-warning-default",
+                    "hover:bg-warning",
                     "aria-disabled:bg-warning-disabled aria-disabled:text-neutral-disabled"
                 ],
                 destructive: [
-                    "bg-destructive-default text-neutral-light",
+                    "bg-destructive text-neutral-light",
                     "hover:bg-destructive-strong",
                     "aria-disabled:bg-destructive-disabled"
                 ]
@@ -104,20 +107,25 @@ export interface TagProps
     onDismiss?: (event: React.SyntheticEvent<HTMLSpanElement>) => void;
     dismissIconElement?: React.ReactElement;
     dismissIconLabel?: string;
+    swatchColor?: string;
+    swatchColorIcon?: boolean;
+    icon?: React.ReactElement | null;
     disabled?: boolean;
 }
 
-const DecoratableTag = ({
-    className,
-    variant,
-    content,
-    onClick,
-    onDismiss,
-    dismissIconElement = <Close />,
-    dismissIconLabel = "Close",
-    disabled,
-    ...props
-}: TagProps) => {
+const DecoratableTag = (props: TagProps) => {
+    const {
+        className,
+        variant,
+        content,
+        onClick,
+        onDismiss,
+        dismissIconElement = <Close />,
+        dismissIconLabel = "Close",
+        disabled,
+        ...rootProps
+    } = omit(props, ["icon", "swatchColor", "swatchColorIcon"]);
+
     const dismissButtonVariant = React.useMemo((): VariantProps<
         typeof iconButtonVariants
     >["variant"] => {
@@ -161,41 +169,45 @@ const DecoratableTag = ({
     }, [variant]);
 
     return (
-        <span
-            {...props}
-            onClick={onClick}
-            className={cn(
-                tagVariants({
-                    variant,
-                    isDismissible: Boolean(onDismiss),
-                    isInteractive: Boolean(onClick),
-                    isDisabled: Boolean(disabled)
-                }),
-                className
-            )}
-            aria-disabled={disabled}
-        >
-            <span className={"overflow-hidden truncate whitespace-nowrap"}>{content}</span>
-            {onDismiss && (
-                <IconButton
-                    icon={
-                        <Icon
-                            icon={dismissIconElement}
-                            label={dismissIconLabel}
-                            color={dismissIconColor}
-                            size={"sm"}
-                        />
-                    }
-                    size={"xxs"}
-                    variant={dismissButtonVariant}
-                    disabled={disabled}
-                    onClick={event => {
-                        event.stopPropagation();
-                        onDismiss(event);
-                    }}
-                />
-            )}
-        </span>
+        <TagPropsProvider props={props}>
+            <span
+                {...rootProps}
+                onClick={onClick}
+                className={cn(
+                    tagVariants({
+                        variant,
+                        isDismissible: Boolean(onDismiss),
+                        isInteractive: Boolean(onClick),
+                        isDisabled: Boolean(disabled)
+                    }),
+                    className
+                )}
+                aria-disabled={disabled}
+            >
+                <TagSwatchBox />
+                <TagIcon />
+                <span className={"overflow-hidden truncate whitespace-nowrap"}>{content}</span>
+                {onDismiss && (
+                    <IconButton
+                        icon={
+                            <Icon
+                                icon={dismissIconElement}
+                                label={dismissIconLabel}
+                                color={dismissIconColor}
+                                size={"sm"}
+                            />
+                        }
+                        size={"xxs"}
+                        variant={dismissButtonVariant}
+                        disabled={disabled}
+                        onClick={event => {
+                            event.stopPropagation();
+                            onDismiss(event);
+                        }}
+                    />
+                )}
+            </span>
+        </TagPropsProvider>
     );
 };
 const Tag = makeDecoratable("Tag", DecoratableTag);

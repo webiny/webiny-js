@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IBaseAppParams } from "~/abstractions/types.js";
 import { type IPackagesBuilder } from "~/abstractions/models/index.js";
 
@@ -8,11 +8,11 @@ export interface IBuildAppParams extends IBaseAppParams {
 
 export type IBuildResult = IPackagesBuilder;
 
-interface IBuildApp {
+export interface IBuildApp {
     execute(params: IBuildAppParams): Promise<IBuildResult>;
 }
 
-export const BuildApp = new Abstraction<IBuildApp>("BuildApp");
+export const BuildApp = createAbstraction<IBuildApp>("BuildApp");
 
 export namespace BuildApp {
     export type Interface = IBuildApp;

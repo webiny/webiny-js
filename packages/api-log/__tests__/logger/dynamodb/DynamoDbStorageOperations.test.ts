@@ -7,13 +7,11 @@ import { DynamoDbLoggerKeys } from "~/logger";
 import { mdbid } from "@webiny/utils";
 import { ILoggerLog, LogType } from "~/types";
 import { getTenant } from "~tests/mocks/getTenant";
-import { getLocale } from "~tests/mocks/getLocale";
 
 describe("DynamoDbStorageOperations", () => {
     const documentClient = getDocumentClient();
 
     const tenant = getTenant();
-    const locale = getLocale();
 
     let entity: Entity;
     let keys: DynamoDbLoggerKeys;
@@ -35,7 +33,6 @@ describe("DynamoDbStorageOperations", () => {
             id: mdbid(),
             createdOn: new Date().toISOString(),
             tenant,
-            locale,
             source: "some-source",
             type: LogType.ERROR,
             data: {

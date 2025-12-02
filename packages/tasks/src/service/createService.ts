@@ -22,12 +22,8 @@ export const createService = (params: ICreateTransport): ITaskService => {
     const getTenant = (): string => {
         return params.context.tenancy.getCurrentTenant().id;
     };
-    const getLocale = (): string => {
-        return params.context.cms.getLocale().code;
-    };
 
     return plugin.createService({
-        getTenant,
-        getLocale
+        getTenant
     });
 };

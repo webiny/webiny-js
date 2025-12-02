@@ -1,39 +1,50 @@
-import { createImplementation } from "@webiny/di-container";
-import { CoreBeforeBuild } from "@webiny/project/abstractions/index.js";
 import path from "path";
 import fs from "fs";
-import { GetApp } from "@webiny/project/abstractions/index.js";
+import {
+    BuildAppWorkspaceService,
+    GetApp,
+    LoggerService
+} from "@webiny/project/abstractions/index.js";
 import { getTemplatesFolderPath } from "~/utils/index.js";
 
-const wait = () => new Promise(resolve => setTimeout(resolve, 10));
+class InjectDdbEsLambdaFnHandlerDecorator implements BuildAppWorkspaceService.Interface {
+    constructor(
+        private getApp: GetApp.Interface,
+        private logger: LoggerService.Interface,
+        private decoratee: BuildAppWorkspaceService.Interface
+    ) {}
 
-class InjectDdbEsLambdaFnHandler implements CoreBeforeBuild.Interface {
-    constructor(private getApp: GetApp.Interface) {}
+    async execute(
+        params: BuildAppWorkspaceService.Params,
+        options: BuildAppWorkspaceService.Options
+    ) {
+        const result = await this.decoratee.execute(params, options);
 
-    async execute() {
-        const templatesFolderPath = getTemplatesFolderPath();
+        if (params.app === "core") {
+            const templatesFolderPath = getTemplatesFolderPath();
 
-        const app = this.getApp.execute("core");
+            const app = this.getApp.execute("core");
 
-        const appWorkspaceFolderPath = app.paths.workspaceFolder.toString();
-        const ddbToEsHandlerTemplateFolderPath = path.join(
-            templatesFolderPath,
-            "extensions",
-            "OpenSearch",
-            "coreDdbToEsHandler"
-        );
+            const appWorkspaceFolderPath = app.paths.workspaceFolder.toString();
+            const ddbToEsHandlerTemplateFolderPath = path.join(
+                templatesFolderPath,
+                "extensions",
+                "OpenSearch",
+                "coreDdbToEsHandler"
+            );
 
-        fs.cpSync(ddbToEsHandlerTemplateFolderPath, appWorkspaceFolderPath, {
-            recursive: true
-        });
+            fs.cpSync(ddbToEsHandlerTemplateFolderPath, appWorkspaceFolderPath, {
+                recursive: true
+            });
 
-        // Wait a bit and make sure the files are ready to have their content replaced.
-        await wait();
+            this.logger.debug("Injected DDB to OpenSearch Lambda function handler.");
+        }
+
+        return result;
     }
 }
 
-export default createImplementation({
-    abstraction: CoreBeforeBuild,
-    implementation: InjectDdbEsLambdaFnHandler,
-    dependencies: [GetApp]
+export const InjectDdbEsLambdaFnHandler = BuildAppWorkspaceService.createDecorator({
+    decorator: InjectDdbEsLambdaFnHandlerDecorator,
+    dependencies: [GetApp, LoggerService]
 });

@@ -1,6 +1,6 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import findUp from "find-up";
-import path, { dirname } from "path";
+import path from "path";
 import { GetProjectVersionService } from "~/abstractions/index.js";
 import readJsonSync from "read-json-sync";
 import type { PackageJson } from "type-fest";
@@ -8,7 +8,7 @@ import type { PackageJson } from "type-fest";
 class DefaultGetProjectVersionService implements GetProjectVersionService.Interface {
     cachedProjectVersion: string | null = null;
 
-    execute(cwd = process.cwd()) {
+    execute() {
         if (this.cachedProjectVersion) {
             return this.cachedProjectVersion;
         }
@@ -19,15 +19,13 @@ class DefaultGetProjectVersionService implements GetProjectVersionService.Interf
             return this.cachedProjectVersion;
         }
 
-        const webinyConfigFilePathString = findUp.sync("webiny.config.tsx", { cwd });
-        if (!webinyConfigFilePathString) {
-            throw new Error(`Could not detect project in given directory (${cwd}).`);
-        }
+        const pkgJsonPath = findUp.sync("package.json", {
+            cwd: path.dirname(import.meta.dirname)
+        });
 
-        const pkgJsonPath = path.join(dirname(webinyConfigFilePathString), "package.json");
-        const pkgJson = readJsonSync(pkgJsonPath) as PackageJson;
+        const pkgJson = pkgJsonPath ? (readJsonSync(pkgJsonPath) as PackageJson) : null;
 
-        if (pkgJson.version) {
+        if (pkgJson?.version) {
             this.cachedProjectVersion = pkgJson.version;
             return this.cachedProjectVersion;
         }

@@ -1,12 +1,7 @@
 {
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "composite": true,
-    "isolatedModules": true,
     "noEmit": true,
-    "noUnusedParameters": false,
-    "noUnusedLocals": false,
-    "emitDeclarationOnly": false,
-    "allowImportingTsExtensions": true
+    "emitDeclarationOnly": false
   }
 }

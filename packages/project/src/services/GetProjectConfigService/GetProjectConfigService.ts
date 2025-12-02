@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import path from "path";
 import {
     GetProjectConfigService,
@@ -31,8 +31,14 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
     ): Promise<GetProjectConfigService.Result> {
         const project = this.getProjectService.execute();
 
+        const currentTime = Date.now();
         const cacheKey = JSON.stringify(params.renderArgs);
         if (!this.cachedRenderedConfigs[cacheKey]) {
+            this.loggerService.info(
+                { renderArgs: params.renderArgs },
+                `Rendering project config...`
+            );
+
             try {
                 this.cachedRenderedConfigs[cacheKey] = await renderConfig({
                     project,
@@ -48,12 +54,25 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
                     `An error occurred while rendering "webiny.config.tsx" config file:\n${err.message}`
                 );
             }
+        } else {
+            this.loggerService.info(
+                { renderArgs: params.renderArgs },
+                `Skipping rendering project config (cache hit)...`
+            );
         }
 
         const renderedConfig = this.cachedRenderedConfigs[cacheKey];
-        const hydratedConfig = await this.hydrateConfig(renderedConfig, params);
+        this.loggerService.debug({ config: renderedConfig }, `Project config rendering complete.`);
 
-        return ProjectConfigModel.create(hydratedConfig);
+        const hydratedConfig = await this.hydrateConfig(renderedConfig, params);
+        this.loggerService.debug({ config: hydratedConfig }, `Project config hydration complete.`);
+
+        const model = ProjectConfigModel.create(hydratedConfig);
+
+        const duration = Date.now() - currentTime;
+        this.loggerService.info(`Project config rendered and hydrated in ${duration}ms.`);
+
+        return model;
     }
 
     private async hydrateConfig(
@@ -95,12 +114,7 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
             allExtensionDefinitions?.push(...importedExtensionDefinitions);
         }
 
-        this.loggerService.debug(`Hydrating project config with the following parameters:`, {
-            scopesFilter: tagsFilters,
-            extensionsTypes,
-            allExtensionDefinitions,
-            configDto
-        });
+        this.loggerService.info({ scopesFilter: tagsFilters }, `Hydrating project config...`);
 
         return extensionsTypes.reduce<IHydratedProjectConfig>(
             (acc, extensionType: ExtensionType) => {

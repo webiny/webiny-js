@@ -1,10 +1,9 @@
-import { createDecorator } from "@webiny/di-container";
-import { Watch } from "~/abstractions/index.js";
 import {
     AdminBeforeWatch,
     ApiBeforeWatch,
+    BeforeWatch,
     CoreBeforeWatch,
-    BeforeWatch
+    Watch
 } from "~/abstractions/index.js";
 
 export class WatchWithHooks implements Watch.Interface {
@@ -40,8 +39,7 @@ export class WatchWithHooks implements Watch.Interface {
     }
 }
 
-export const watchWithHooks = createDecorator({
-    abstraction: Watch,
+export const watchWithHooks = Watch.createDecorator({
     decorator: WatchWithHooks,
     dependencies: [AdminBeforeWatch, ApiBeforeWatch, CoreBeforeWatch, BeforeWatch]
 });

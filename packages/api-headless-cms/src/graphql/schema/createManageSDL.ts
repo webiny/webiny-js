@@ -81,10 +81,6 @@ export const createManageSDL: CreateManageSDL = ({
             entryId: String!
             
             ${onByMetaGqlFields}
-            
-            publishedOn: DateTime @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'firstPublishedOn' or 'lastPublishedOn' field.")
-            ownedBy: CmsIdentity @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'createdBy' field.")
-            
             meta: ${singularName}Meta
             ${fields.map(f => f.fields).join("\n")}
             # Advanced Content Organization - make required in 5.38.0

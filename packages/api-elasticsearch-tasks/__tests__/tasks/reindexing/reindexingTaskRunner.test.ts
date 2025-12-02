@@ -47,7 +47,6 @@ describe("reindexing task runner", () => {
                 webinyTaskId: "mockEventId",
                 webinyTaskDefinitionId: "mockDefinitionId",
                 tenant: "root",
-                locale: "en-US",
                 input: {
                     keys: {
                         PK: "my-pk",
@@ -87,8 +86,7 @@ describe("reindexing task runner", () => {
             new ResponseAbortedResult({
                 webinyTaskId: "mockEventId",
                 webinyTaskDefinitionId: "mockDefinitionId",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         );
     });
@@ -118,8 +116,7 @@ describe("reindexing task runner", () => {
                 message: "No more items to process.",
                 webinyTaskId: "mockEventId",
                 webinyTaskDefinitionId: "mockDefinitionId",
-                tenant: "root",
-                locale: "en-US"
+                tenant: "root"
             })
         );
     });

@@ -1,5 +1,10 @@
-import type { IWorkflowState } from "~/types.js";
+import type { IGenericMeta, IWorkflowState, WorkflowStateValue } from "~/types.js";
 import type { NonEmptyArray } from "@webiny/app/types.js";
+import type {
+    IWorkflowStateListGatewayListParamsWhereNotifications,
+    IWorkflowStateListGatewayListParamsWhereSteps,
+    IWorkflowStateListGatewayListParamsWhereTeams
+} from "~/Gateways/abstraction/WorkflowStateListGateway.js";
 
 export interface IWorkflowStateErrorDataInvalidFieldData {
     path: NonEmptyArray<string>;
@@ -26,17 +31,38 @@ export interface IWorkflowStateError {
     stack?: string;
 }
 
+export interface IWorkflowStateGatewayListWorkflowStatesParamsWhere {
+    app?: string;
+    app_in?: string[];
+    targetId?: string;
+    targetId_in?: string[];
+    targetRevisionId?: string;
+    targetRevisionId_in?: string[];
+    state?: WorkflowStateValue;
+    state_in?: WorkflowStateValue[];
+    createdBy?: string;
+    createdBy_in?: string[];
+    savedBy?: string;
+    savedBy_in?: string[];
+    steps?: IWorkflowStateListGatewayListParamsWhereSteps;
+    teams?: IWorkflowStateListGatewayListParamsWhereTeams;
+    notifications?: IWorkflowStateListGatewayListParamsWhereNotifications;
+}
+
 export interface IWorkflowStateGatewayListWorkflowStatesParams {
-    where?: {
-        app?: string;
-        targetRevisionId?: string;
-    };
+    where?: IWorkflowStateGatewayListWorkflowStatesParamsWhere;
     limit?: number;
     after?: string;
 }
 
 export interface IWorkflowStateGatewayListWorkflowStatesResponse {
     data: IWorkflowState[] | null;
+    meta: IGenericMeta | null;
+    error: IWorkflowStateError | null;
+}
+
+export interface IWorkflowStateGatewayStartStepResponse {
+    data: IWorkflowState | null;
     error: IWorkflowStateError | null;
 }
 
@@ -55,6 +81,10 @@ export interface IWorkflowStateGatewayCancelStateResponse {
     error: IWorkflowStateError | null;
 }
 
+export interface IWorkflowStateGatewayStartStepParams {
+    id: string;
+}
+
 export interface IWorkflowStateGatewayApproveStepParams {
     id: string;
     comment?: string;
@@ -65,9 +95,19 @@ export interface IWorkflowStateGatewayRejectStepParams {
     comment: string;
 }
 
+export interface IWorkflowStateGatewayTakeOverStepParams {
+    id: string;
+}
+
+export interface IWorkflowStateGatewayTakeOverStepResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStateError | null;
+}
+
 export interface IWorkflowStateGatewayRequestReviewStepParams {
     app: string;
     targetRevisionId: string;
+    title: string;
 }
 
 export interface IWorkflowStateGatewayRequestReviewStepResponse {
@@ -84,12 +124,18 @@ export interface IWorkflowStateGateway {
     createWorkflowState(
         params: IWorkflowStateGatewayRequestReviewStepParams
     ): Promise<IWorkflowStateGatewayRequestReviewStepResponse>;
+    startWorkflowStateStep(
+        params: IWorkflowStateGatewayStartStepParams
+    ): Promise<IWorkflowStateGatewayStartStepResponse>;
     approveWorkflowStateStep(
         params: IWorkflowStateGatewayApproveStepParams
     ): Promise<IWorkflowStateGatewayApproveStepResponse>;
     rejectWorkflowStateStep(
         params: IWorkflowStateGatewayRejectStepParams
     ): Promise<IWorkflowStateGatewayRejectStepResponse>;
+    takeOverWorkflowStateStep(
+        params: IWorkflowStateGatewayTakeOverStepParams
+    ): Promise<IWorkflowStateGatewayTakeOverStepResponse>;
     cancelWorkflowState(id: string): Promise<IWorkflowStateGatewayCancelStateResponse>;
     getTargetWorkflowState(
         app: string,

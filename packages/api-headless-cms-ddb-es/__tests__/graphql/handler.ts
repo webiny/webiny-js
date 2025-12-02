@@ -1,11 +1,9 @@
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
 import dbPlugins from "@webiny/handler-db";
 import { PluginCollection } from "@webiny/plugins/types";
-import i18nContext from "@webiny/api-i18n/graphql/context";
 import { createRawEventHandler, createRawHandler } from "@webiny/handler-aws";
 import { CmsParametersPlugin, createHeadlessCmsContext } from "@webiny/api-headless-cms";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { CmsContext } from "~/types";
-import { createDummyLocales } from "~tests/graphql/dummyLocales";
 import { createSecurity } from "~tests/graphql/security";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { createIndexConfigurationPlugin } from "~tests/graphql/createIndexConfigurationPlugin";
@@ -16,6 +14,8 @@ import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsea
 import { createTable } from "~/definitions/table";
 import { createEntryEntity } from "~/definitions/entry";
 import { LambdaContext } from "@webiny/handler-aws/types";
+import { createApiCore } from "@webiny/api-core";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -27,8 +27,11 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
     const documentClient = getDocumentClient();
     const { elasticsearchClient } = getElasticsearchClient({ name: "api-headless-cms-ddb-es" });
-    const i18nStorage = getStorageOps<any[]>("i18n");
+
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
+
+    const testProjectLicense = createTestWcpLicense();
 
     const table = createTable({
         documentClient
@@ -41,6 +44,11 @@ export const useHandler = (params: UseHandlerParams = {}) => {
 
     const handler = createRawHandler<any, CmsContext>({
         plugins: [
+            createApiCore({
+                storageOperations: apiCoreStorage.storageOperations,
+                testProjectLicense
+            }),
+            ...cmsStorage.plugins,
             createIndexConfigurationPlugin(),
             new CmsParametersPlugin(async () => {
                 return {
@@ -55,10 +63,6 @@ export const useHandler = (params: UseHandlerParams = {}) => {
                 })
             }),
             createSecurity(),
-            i18nContext(),
-            ...i18nStorage.storageOperations,
-            createDummyLocales(),
-            mockLocalesPlugins(),
             createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
             createRawEventHandler(async ({ context }) => {
                 return context;

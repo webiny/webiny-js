@@ -343,11 +343,8 @@ describe("READ - Resolvers", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "SECURITY_NOT_AUTHORIZED",
-                        message: `Not authorized!`,
-                        data: {
-                            reason: 'Not allowed to access "category" entries.'
-                        }
+                        code: "NOT_AUTHORIZED",
+                        message: 'Not allowed to access "category" entries.'
                     }
                 }
             }
@@ -381,11 +378,8 @@ describe("READ - Resolvers", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "SECURITY_NOT_AUTHORIZED",
-                        message: `Not authorized!`,
-                        data: {
-                            reason: 'Not allowed to access "category" entries.'
-                        }
+                        code: "NOT_AUTHORIZED",
+                        message: 'Not allowed to access "category" entries.'
                     }
                 }
             }

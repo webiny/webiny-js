@@ -1,4 +1,4 @@
-import { createDecorator } from "@webiny/di-container";
+import { createDecorator } from "@webiny/di";
 import { GraphQLClient } from "./abstractions.js";
 import { EnvConfig } from "~/features/envConfig/index.js";
 
@@ -44,7 +44,7 @@ class RetryGraphQLClientImpl implements GraphQLClient.Interface {
     }
 
     private isGraphQLError(error: Error): boolean {
-        return error.message.includes("GraphQL errors");
+        return error.message.includes("GraphQL");
     }
 
     private calculateBackoff(attempt: number): number {

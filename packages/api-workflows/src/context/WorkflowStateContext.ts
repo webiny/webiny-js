@@ -1,7 +1,7 @@
 import type { Context } from "~/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { IWorkflowStateTransformer } from "~/context/transformer/abstractions/WorkflowStateTransformer.js";
-import type { IWorkflowState, IWorkflowStateRecord } from "./abstractions/WorkflowState.js";
+import type { IWorkflowStateModel, IWorkflowStateRecord } from "./abstractions/WorkflowState.js";
 import { WorkflowStateRecordState } from "./abstractions/WorkflowState.js";
 import { WorkflowState } from "./workflowState/WorkflowState.js";
 import type {
@@ -64,7 +64,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         this.onStateAfterDelete = createTopic<IWorkflowStateContextOnStateAfterDelete>();
     }
 
-    public async getState(id: string): Promise<IWorkflowState> {
+    public async getState(id: string): Promise<IWorkflowStateModel> {
         const record = await this.fetchOne(id);
         if (!record) {
             throw new WorkflowStateNotFoundError({
@@ -79,7 +79,10 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         });
     }
 
-    public async getTargetState(app: string, targetRevisionId: string): Promise<IWorkflowState> {
+    public async getTargetState(
+        app: string,
+        targetRevisionId: string
+    ): Promise<IWorkflowStateModel> {
         const { version } = parseIdentifier(targetRevisionId);
         if (!version) {
             throw new WebinyError(
@@ -111,11 +114,13 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     public async listStates(
         params?: IWorkflowStateContextListStatesParams
     ): Promise<IWorkflowStateContextListStatesResponse> {
-        const { items: states, meta } = await this.fetchAll(params);
+        const id = this.context.security.getIdentity().id;
         /**
          * Let's prefetch user teams for the current identity to avoid multiple calls later.
          */
-        await this.getUserTeams();
+        await this.getUserTeams(id);
+
+        const { items: states, meta } = await this.fetchAll(params);
 
         /**
          * Convert records to workflow state instances.
@@ -130,7 +135,67 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         };
     }
 
-    public async createState(app: string, targetRevisionId: string): Promise<IWorkflowState> {
+    public async listOwnWorkflowStates(
+        params?: IWorkflowStateContextListStatesParams
+    ): Promise<IWorkflowStateContextListStatesResponse> {
+        const identity = this.context.security.getIdentity();
+        if (!identity?.id) {
+            return {
+                items: [],
+                meta: {
+                    cursor: null,
+                    hasMoreItems: false,
+                    totalCount: 0
+                }
+            };
+        }
+
+        return await this.listStates({
+            ...params,
+            where: {
+                ...params?.where,
+                isActive: true,
+                createdBy: identity.id
+            }
+        });
+    }
+
+    public async listRequestedWorkflowStates(
+        params?: IWorkflowStateContextListStatesParams
+    ): Promise<IWorkflowStateContextListStatesResponse> {
+        const identity = this.context.security.getIdentity();
+        const teams = await this.getUserTeams(identity.id);
+        if (!identity?.id || teams.length === 0) {
+            return {
+                items: [],
+                meta: {
+                    cursor: null,
+                    hasMoreItems: false,
+                    totalCount: 0
+                }
+            };
+        }
+
+        return await this.listStates({
+            ...params,
+            where: {
+                ...params?.where,
+                isActive: true,
+                createdBy_not: identity.id,
+                steps: {
+                    teams: {
+                        id_in: teams.map(team => team.id)
+                    }
+                }
+            }
+        });
+    }
+
+    public async createState(
+        app: string,
+        targetRevisionId: string,
+        title: string
+    ): Promise<IWorkflowStateModel> {
         const { id: targetId, version } = parseIdentifier(targetRevisionId);
         if (!version) {
             throw new WebinyError(
@@ -201,21 +266,16 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         const entry: ICreateWorkflowStateEntryInput = {
             workflowId: workflow.id,
             comment: undefined,
-            state: WorkflowStateRecordState.inReview,
+            state: WorkflowStateRecordState.pending,
             app,
+            title,
             targetId,
             isActive: true,
             targetRevisionId,
-            steps: workflow.steps.map((step, index) => {
+            steps: workflow.steps.map(step => {
                 return {
                     ...step,
-                    /**
-                     * First step is in review state, all others are pending.
-                     */
-                    state:
-                        index > 0
-                            ? WorkflowStateRecordState.pending
-                            : WorkflowStateRecordState.inReview,
+                    state: WorkflowStateRecordState.pending,
                     savedBy: null,
                     comment: null
                 };
@@ -247,7 +307,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     public async updateState(
         id: string,
         input: Partial<Omit<IWorkflowStateRecord, "id">>
-    ): Promise<IWorkflowState> {
+    ): Promise<IWorkflowStateModel> {
         const originalRecord = await this.fetchOne(id);
         if (!originalRecord) {
             throw new WorkflowStateNotFoundError({
@@ -302,7 +362,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         });
     }
 
-    public async cancelState(id: string): Promise<IWorkflowState> {
+    public async cancelState(id: string): Promise<IWorkflowStateModel> {
         return await this.updateState(id, {
             isActive: false
         });
@@ -363,15 +423,27 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         }
     }
 
-    public async approveStateStep(id: string, comment?: string): Promise<IWorkflowState> {
+    public async startStateStep(id: string): Promise<IWorkflowStateModel> {
+        const state = await this.getState(id);
+        await state.start();
+        return state;
+    }
+
+    public async approveStateStep(id: string, comment?: string): Promise<IWorkflowStateModel> {
         const state = await this.getState(id);
         await state.approve(comment);
         return state;
     }
 
-    public async rejectStateStep(id: string, comment: string): Promise<IWorkflowState> {
+    public async rejectStateStep(id: string, comment: string): Promise<IWorkflowStateModel> {
         const state = await this.getState(id);
         await state.reject(comment);
+        return state;
+    }
+
+    public async takeOverStateStep(id: string): Promise<IWorkflowStateModel> {
+        const state = await this.getState(id);
+        await state.takeOver();
         return state;
     }
 
@@ -379,20 +451,20 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         app: string,
         targetRevisionId: string
     ): Promise<IWorkflowStateRecord | null> {
-        const { items } = await this.fetchAll({
+        const { items, meta } = await this.fetchAll({
             where: {
                 app,
                 targetRevisionId,
                 isActive: true
             },
-            limit: 10000
+            limit: 1
         });
         /**
          * There cannot be more than one workflow. If there is, something is very wrong and all states, except one, must be deleted.
          */
         if (items.length === 0) {
             return null;
-        } else if (items.length > 1) {
+        } else if (meta.totalCount > 1) {
             throw new MultipleWorkflowsFoundError({
                 data: {
                     app,
@@ -442,16 +514,18 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         };
     }
 
-    private async createWorkflowState(params: ICreateWorkflowStateParams): Promise<IWorkflowState> {
+    private async createWorkflowState(
+        params: ICreateWorkflowStateParams
+    ): Promise<IWorkflowStateModel> {
+        const id = this.context.security.getIdentity().id;
         return new WorkflowState({
             context: this.context,
             record: params.record,
-            teams: await this.getUserTeams()
+            teams: await this.getUserTeams(id)
         });
     }
 
-    private async getUserTeams(): Promise<IWorkflowStepTeam[]> {
-        const id = this.context.security.getIdentity().id;
+    private async getUserTeams(id: string): Promise<IWorkflowStepTeam[]> {
         if (!this._userTeamsCache[id]) {
             const teams = await this.context.adminUsers.listUserTeams(id);
             return (this._userTeamsCache[id] = teams.map(team => {

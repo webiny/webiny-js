@@ -1,10 +1,10 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 interface IGetNpmVersion {
     execute(): string;
 }
 
-export const GetNpmVersionService = new Abstraction<IGetNpmVersion>("GetNpmVersion");
+export const GetNpmVersionService = createAbstraction<IGetNpmVersion>("GetNpmVersion");
 
 export namespace GetNpmVersionService {
     export type Interface = IGetNpmVersion;

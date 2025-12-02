@@ -206,6 +206,14 @@
   --padding-xxl: 48px;
   --padding-xxs: 2px;
 
+  /* Shadow. */
+  --shadow-flat: 0 0px 0px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 16px 16px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 8px rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 4px 4px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 24px 24px rgba(0, 0, 0, 0.06);
+  --shadow-xxl: 0 48px 48px rgba(0, 0, 0, 0.06);
+
   /* Spacing. */
   --spacing-3xl: 64px;
   --spacing-lg: 24px;
@@ -223,6 +231,10 @@
   --spacing-sidebar-collapsed: 44px;
   --spacing-sidebar-expanded: 256px;
   --spacing-main-content: calc(100vh - 45px);
+
+  /* With TW4, `leading-none` maps to `--spacing-none`, which is 0px. So, we
+     need to redefine it here to be 1 to avoid issues with line-height. */
+  --leading-none: 1;
 
   /* Text color. */
   --text-color-accent-muted: var(--color-primary-300);

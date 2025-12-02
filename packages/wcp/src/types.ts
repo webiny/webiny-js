@@ -3,6 +3,9 @@ import type { WCP_FEATURE_LABEL } from "~/index.js";
 export interface WcpProject {
     orgId: string;
     projectId: string;
+    package: {
+        features: ProjectPackageFeatures;
+    };
 }
 
 export interface ILicense {

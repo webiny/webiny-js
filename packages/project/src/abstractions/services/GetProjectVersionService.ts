@@ -1,12 +1,12 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 type IGetProjectVersionServiceResult = string;
 
 interface IGetProjectVersionService {
-    execute(cwd?: string): IGetProjectVersionServiceResult;
+    execute(): IGetProjectVersionServiceResult;
 }
 
-export const GetProjectVersionService = new Abstraction<IGetProjectVersionService>(
+export const GetProjectVersionService = createAbstraction<IGetProjectVersionService>(
     "GetProjectVersionService"
 );
 

@@ -21,22 +21,21 @@ import { WebinyError } from "@webiny/error";
 import { IWorkflow } from "~/types.js";
 
 export interface IWorkflowsGatewayParams {
-    // app: IWorkflowApplication;
     client: ApolloClient<object>;
 }
 
 export class WorkflowsGateway implements IWorkflowsGateway {
-    private readonly client;
+    readonly #client;
 
     public constructor(params: IWorkflowsGatewayParams) {
-        this.client = params.client;
+        this.#client = params.client;
     }
 
     public async storeWorkflow(
         workflow: IWorkflow
     ): Promise<IWorkflowsGatewayStoreWorkflowResponse> {
         try {
-            const result = await this.client.mutate<
+            const result = await this.#client.mutate<
                 IStoreWorkflowResponse,
                 IStoreWorkflowVariables
             >({
@@ -66,7 +65,7 @@ export class WorkflowsGateway implements IWorkflowsGateway {
         workflow: IWorkflow
     ): Promise<IWorkflowsGatewayDeleteWorkflowResponse> {
         try {
-            const result = await this.client.mutate({
+            const result = await this.#client.mutate({
                 mutation: DELETE_WORKFLOW_MUTATION,
                 variables: {
                     app: workflow.app,
@@ -89,7 +88,7 @@ export class WorkflowsGateway implements IWorkflowsGateway {
         params?: IWorkflowsGatewayListParams
     ): Promise<IWorkflowsGatewayListWorkflowsResponse> {
         try {
-            const result = await this.client.query<IListWorkflowResponse, IListWorkflowVariables>({
+            const result = await this.#client.query<IListWorkflowResponse, IListWorkflowVariables>({
                 query: LIST_WORKFLOWS_QUERY,
                 variables: {
                     ...params,

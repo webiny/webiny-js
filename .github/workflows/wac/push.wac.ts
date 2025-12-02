@@ -11,7 +11,7 @@ import {
     withCommonParams
 } from "./steps/index.js";
 import { AbstractStorageOps } from "./storageOps/AbstractStorageOps.js";
-import { DdbStorageOps, DdbOsStorageOps } from "./storageOps/index.js";
+import { DdbOsStorageOps, DdbStorageOps } from "./storageOps/index.js";
 
 const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
@@ -63,11 +63,7 @@ const createPushWorkflow = (branchName: string) => {
             YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
         };
 
-        if (storageOps.id === "ddb-es,ddb") {
-            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
-            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
-        } else if (storageOps.id === "ddb-os,ddb") {
+        if (storageOps.id === "ddb-os,ddb") {
             // We still use the same environment variables as for "ddb-es" setup, it's
             // just that the values are read from different secrets.
             env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
@@ -234,12 +230,8 @@ const createPushWorkflow = (branchName: string) => {
 
         if (storageOps) {
             env["WEBINY_STORAGE"] = storageOps.id;
-            if (storageOps.id === "ddb-es,ddb") {
-                env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] =
-                    "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
-                env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-                env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
-            } else if (storageOps.id === "ddb-os,ddb") {
+
+            if (storageOps.id === "ddb-os,ddb") {
                 // We still use the same environment variables as for "ddb-es" setup, it's
                 // just that the values are read from different secrets.
                 env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] =
@@ -403,45 +395,6 @@ const createPushWorkflow = (branchName: string) => {
             ...createE2EJobs(ddbOsStorageOps)
         }
     });
-
-    if (branchName === "next") {
-        const vitestJobsNames = Object.keys(workflow.jobs).filter(
-            name => name.startsWith("vitest") && name.endsWith("run")
-        );
-        const e2eJobsNames = Object.keys(workflow.jobs).filter(
-            name => name.startsWith("e2eTests") && name.endsWith("setup")
-        );
-
-        workflow.jobs.npmReleaseUnstable = createJob({
-            needs: ["constants", "codeAnalysis", ...vitestJobsNames, ...e2eJobsNames],
-            name: 'NPM release ("unstable" tag)',
-            environment: "release",
-            env: {
-                GH_TOKEN: "${{ secrets.GH_TOKEN }}",
-                NPM_TOKEN: "${{ secrets.NPM_TOKEN }}"
-            },
-            checkout: { "fetch-depth": 0 },
-            steps: [
-                ...yarnCacheSteps,
-                ...runBuildCacheSteps,
-                ...installBuildSteps,
-                ...withCommonParams(
-                    [
-                        {
-                            name: 'Create ".npmrc" file in the project root',
-                            run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
-                        },
-                        {
-                            name: "Set git info",
-                            run: 'git config --global user.email "webiny-bot@webiny.com"\ngit config --global user.name "webiny-bot"\n'
-                        },
-                        { name: "Version and publish to NPM", run: "yarn release --type=unstable" }
-                    ],
-                    { "working-directory": DIR_WEBINY_JS }
-                )
-            ]
-        });
-    }
 
     return workflow;
 };

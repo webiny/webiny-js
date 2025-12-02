@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface IUiService {
     raw(text: string): void;
@@ -20,7 +20,7 @@ export interface IUiService {
     debug(text: string, ...args: any[]): void;
 }
 
-export const UiService = new Abstraction<IUiService>("UiService");
+export const UiService = createAbstraction<IUiService>("UiService");
 
 export namespace UiService {
     export type Interface = IUiService;

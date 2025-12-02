@@ -1,5 +1,3 @@
-import { createDecorator } from "@webiny/di-container";
-import { BuildApp } from "~/abstractions/index.js";
 import {
     AdminAfterBuild,
     AdminBeforeBuild,
@@ -7,6 +5,7 @@ import {
     ApiAfterBuild,
     ApiBeforeBuild,
     BeforeBuild,
+    BuildApp,
     CoreAfterBuild,
     CoreBeforeBuild
 } from "~/abstractions/index.js";
@@ -61,8 +60,7 @@ export class BuildAppWithHooks implements BuildApp.Interface {
     }
 }
 
-export const buildAppWithHooks = createDecorator({
-    abstraction: BuildApp,
+export const buildAppWithHooks = BuildApp.createDecorator({
     decorator: BuildAppWithHooks,
     dependencies: [
         BeforeBuild,

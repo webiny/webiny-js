@@ -1,5 +1,19 @@
-import type { NonEmptyArray } from "@webiny/app/types.js";
+import type { GenericRecord, NonEmptyArray } from "@webiny/app/types.js";
 import type { ReactElement } from "react";
+import type { SecurityPermission } from "@webiny/app-security/types.js";
+
+export interface IGenericMeta {
+    totalCount: number;
+    hasMoreItems: boolean;
+    cursor: string | null;
+}
+
+export interface IGenericError {
+    message: string;
+    code: string | null;
+    data?: GenericRecord;
+    stack?: string;
+}
 
 export interface IWorkflowApplication {
     id: string;
@@ -51,11 +65,14 @@ export interface IWorkflowStateStep extends IWorkflowStep {
     state: WorkflowStateValue;
     comment: string | null | undefined;
     savedBy: IIdentity | null | undefined;
-    isAllowedToReview: boolean;
+    canTakeOver: boolean;
+    canReview: boolean;
+    isOwner: boolean;
 }
 
 export interface IWorkflowState {
     id: string;
+    title: string;
     isActive: boolean;
     app: string;
     targetId: string;
@@ -67,4 +84,16 @@ export interface IWorkflowState {
     savedBy: IIdentity;
     createdOn: Date;
     savedOn: Date;
+    currentStep: IWorkflowStateStep;
+    nextStep: IWorkflowStateStep | null;
+    previousStep: IWorkflowStateStep | null;
+}
+
+export enum WorkflowsSecurityPermissionAccessLevel {
+    NO = "no",
+    YES = "yes"
+}
+
+export interface IWorkflowsSecurityPermission extends SecurityPermission {
+    editor: WorkflowsSecurityPermissionAccessLevel;
 }

@@ -1,14 +1,13 @@
 import * as React from "react";
-import { cn, cva } from "~/utils.js";
-import { useCardProps } from "./CardProvider.js";
-import type { CardProps } from "~/Card/index.js";
+import { cva } from "~/utils.js";
+import { useCardProps } from "./CardPropsProvider.js";
 
 const cardFooterVariants = cva("flex justify-between", {
     variants: {
         padding: {
-            sm: "p-md-extra",
-            md: "p-md-extra",
-            lg: "p-lg"
+            sm: "p-md",
+            md: "py-md-extra px-lg",
+            lg: "pt-lg pb-xl px-xl"
         }
     },
     defaultVariants: {
@@ -16,18 +15,28 @@ const cardFooterVariants = cva("flex justify-between", {
     }
 });
 
-export type CardFooterProps = React.HTMLAttributes<HTMLDivElement> &
-    Pick<CardProps, "padding" | "info" | "actions" | "actionsPosition">;
+const emptyCardFooterVariants = cva("", {
+    variants: {
+        padding: {
+            sm: "h-lg",
+            md: "h-lg",
+            lg: "h-xl"
+        }
+    },
+    defaultVariants: {
+        padding: "md"
+    }
+});
 
-export const CardFooter = ({ actions, info, className, padding, ...props }: CardFooterProps) => {
-    const { actionsPosition } = useCardProps();
+export const CardFooter = () => {
+    const { actionsPosition, actions, info, padding } = useCardProps();
 
     if (!actions && !info) {
-        return null;
+        return <div className={emptyCardFooterVariants({ padding })} />;
     }
 
     return (
-        <div {...props} className={cn(cardFooterVariants({ padding }), className)}>
+        <div className={cardFooterVariants({ padding })}>
             {info && (
                 <div className={"text-sm flex items-center"}>
                     <div>{info}</div>

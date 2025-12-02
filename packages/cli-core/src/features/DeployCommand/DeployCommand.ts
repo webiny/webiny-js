@@ -1,5 +1,5 @@
-import { createImplementation } from "@webiny/di-container";
-import { Command, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
+import { createImplementation } from "@webiny/di";
+import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
 import { DeployOutput } from "./deployOutputs/DeployOutput.js";
 import { AppName } from "@webiny/project";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
@@ -32,14 +32,14 @@ export interface IDeploySingleAppParams {
 
 const sleep = (ms: number = 1500) => setTimeout(ms);
 
-export class DeployCommand implements Command.Interface<IDeployCommandParams> {
+export class DeployCommand implements CliCommand.Interface<IDeployCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface,
         private stdioService: StdioService.Interface
     ) {}
 
-    async execute(): Promise<Command.CommandDefinition<IDeployCommandParams>> {
+    async execute(): Promise<CliCommand.CommandDefinition<IDeployCommandParams>> {
         const projectSdk = await this.getProjectSdkService.execute();
         const ui = this.uiService;
 
@@ -121,12 +121,14 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
             handler: async (params: IDeployCommandParams) => {
                 if (params.apps && params.apps.length > 0) {
                     // Deploy specified apps
-                    for (const app of params.apps) {
+                    for (const appName of params.apps) {
                         const appParams: IDeploySingleAppParams = {
                             ...params,
-                            app
+                            app: appName
                         };
-                        ui.info("Deploying %s app...", app.charAt(0).toUpperCase() + app.slice(1));
+
+                        const app = await projectSdk.getApp(appName);
+                        ui.info("Deploying %s app...", app.getDisplayName());
                         await this.deployApp(appParams);
                         ui.newLine();
                     }
@@ -256,7 +258,7 @@ export class DeployCommand implements Command.Interface<IDeployCommandParams> {
 }
 
 export const deployCommand = createImplementation({
-    abstraction: Command,
+    abstraction: CliCommand,
     implementation: DeployCommand,
     dependencies: [GetProjectSdkService, UiService, StdioService]
 });

@@ -11,8 +11,9 @@ import { RedirectsList } from "~/modules/redirects/RedirectsList.js";
 import { RedirectsListConfig } from "~/modules/redirects/RedirectsListConfig.js";
 import { Routes } from "~/routes.js";
 import { useRouter } from "@webiny/app-admin";
+import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
 
-const { Menu, Route } = AdminConfig;
+const { Menu, Route, Dashboard } = AdminConfig;
 
 export const Extension = () => {
     const router = useRouter();
@@ -57,6 +58,7 @@ export const Extension = () => {
                             <Menu.Link text={"Pages"} to={router.getLink(Routes.Pages.List)} />
                         }
                     />
+                    <Dashboard.Widget name="wb.pages" column={"left"} element={<PagesWidget />} />
                 </HasPermission>
                 <HasPermission name={"wb.redirect"}>
                     <Route route={Routes.Redirects.List} element={<RedirectsList />} />
@@ -70,6 +72,13 @@ export const Extension = () => {
                                 to={router.getLink(Routes.Redirects.List)}
                             />
                         }
+                    />
+                </HasPermission>
+                <HasPermission name={"wb.page"}>
+                    <AdminConfig.Dashboard.Widget
+                        name="wb.pages"
+                        column="left"
+                        element={<PagesWidget />}
                     />
                 </HasPermission>
                 <HasPermission name={"wb.settings"}>

@@ -1,4 +1,4 @@
-import { createComposite } from "@webiny/di-container";
+import { createComposite } from "@webiny/di";
 import { AdminAfterDeploy } from "~/abstractions/index.js";
 
 export class CompositeAdminAfterDeploy implements AdminAfterDeploy.Interface {

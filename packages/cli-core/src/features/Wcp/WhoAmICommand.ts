@@ -1,7 +1,6 @@
-import { createImplementation } from "@webiny/di-container";
-import { Command, GetProjectSdkService, UiService } from "~/abstractions/index.js";
+import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 
-export class WhoAmICommand implements Command.Interface<void> {
+export class WhoAmICommand implements CliCommand.Interface<void> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface
@@ -33,8 +32,7 @@ export class WhoAmICommand implements Command.Interface<void> {
     }
 }
 
-export const whoAmICommand = createImplementation({
-    abstraction: Command,
+export const whoAmICommand = CliCommand.createImplementation({
     implementation: WhoAmICommand,
     dependencies: [GetProjectSdkService, UiService]
 });

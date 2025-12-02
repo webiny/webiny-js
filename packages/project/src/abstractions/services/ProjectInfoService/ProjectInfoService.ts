@@ -1,9 +1,10 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface IProjectInfoServiceResult {
     webiny: {
         debugEnabled: boolean;
         featureFlags: Record<string, boolean>;
+        version: string;
     };
     wcp: {
         projectId: string;
@@ -30,7 +31,7 @@ export interface IProjectInfoService {
     execute(): Promise<IProjectInfoServiceResult>;
 }
 
-export const ProjectInfoService = new Abstraction<IProjectInfoService>("ProjectInfoService");
+export const ProjectInfoService = createAbstraction<IProjectInfoService>("ProjectInfoService");
 
 export namespace ProjectInfoService {
     export type Interface = IProjectInfoService;

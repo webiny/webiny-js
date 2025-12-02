@@ -1,4 +1,4 @@
-import { createComposite } from "@webiny/di-container";
+import { createComposite } from "@webiny/di";
 import { BeforeBuild } from "~/abstractions/index.js";
 
 export class CompositeBeforeBuild implements BeforeBuild.Interface {

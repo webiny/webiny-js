@@ -1,11 +1,13 @@
 import path from "path";
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import {
+    argvParserService,
     cliParamsService,
     commandsRegistryService,
+    getArgvService,
     getCliRunnerService,
+    globalOptionsRegistryService,
     getProjectSdkService,
-    loadEnvVarsService,
     loggerService,
     runCliRunnerService,
     stdioService,
@@ -35,14 +37,19 @@ import {
     linkProjectCommand,
     loginCommand,
     logoutCommand,
-    whoAmICommand
+    whoAmICommand,
+
+    // Global Options
+    showLogsGlobalOption,
+    logLevelGlobalOption,
+    stackTraceGlobalOption
 } from "./features/index.js";
 
 import chalk from "chalk";
 import {
     CliParamsService,
+    GetArgvService,
     GetProjectSdkService,
-    LoadEnvVarsService,
     UiService
 } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
@@ -82,12 +89,19 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(missingFilesInBuildGracefulErrorHandler).inSingletonScope();
     container.register(pendingOperationsGracefulErrorHandler).inSingletonScope();
 
+    // Global options.
+    container.register(showLogsGlobalOption).inSingletonScope();
+    container.register(logLevelGlobalOption).inSingletonScope();
+    container.register(stackTraceGlobalOption).inSingletonScope();
+
     // Services.
+    container.register(argvParserService).inSingletonScope();
     container.register(cliParamsService).inSingletonScope();
     container.register(commandsRegistryService).inSingletonScope();
+    container.register(getArgvService).inSingletonScope();
     container.register(getCliRunnerService).inSingletonScope();
+    container.register(globalOptionsRegistryService).inSingletonScope();
     container.register(getProjectSdkService).inSingletonScope();
-    container.register(loadEnvVarsService).inSingletonScope();
     container.register(loggerService).inSingletonScope();
     container.register(runCliRunnerService).inSingletonScope();
     container.register(stdioService).inSingletonScope();
@@ -100,7 +114,6 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     try {
         // Immediately set CLI instance params via the `CliParamsService`.
         container.resolve(CliParamsService).set(params);
-        await container.resolve(LoadEnvVarsService).execute();
 
         const projectSdk = await container.resolve(GetProjectSdkService).execute();
 
@@ -112,19 +125,22 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
 
         const project = projectSdk.getProject();
 
-        const importFromPath = (filePath: string) => {
+        const importFromPath = async (filePath: string) => {
             let importPath = filePath;
             if (!path.isAbsolute(filePath)) {
                 // If the path is not absolute, we assume it's relative to the current working directory.
                 importPath = project.paths.rootFolder.join(filePath).toString();
             }
 
-            return import(importPath);
+            const exportName = path.basename(filePath).replace(path.extname(filePath), "");
+
+            const importedModule = await import(importPath);
+            return importedModule[exportName];
         };
 
         const commands = projectConfig.extensionsByType<any>("Cli/Command");
         for (const command of commands) {
-            const { default: commandImplementation } = await importFromPath(command.params.src);
+            const commandImplementation = await importFromPath(command.params.src);
 
             container.register(commandImplementation).inSingletonScope();
         }
@@ -136,10 +152,11 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
 
         ui.error(realError.message);
 
-        // Unfortunately, yargs doesn't provide passed args here, so we had to do it via process.argv.
-        const debugEnabled = process.argv.includes("--debug");
-        if (debugEnabled) {
-            realError.stack && ui.debug(realError.stack);
+        const argv = container.resolve(GetArgvService).execute();
+        if (argv.stackTrace && realError.stack) {
+            ui.newLine();
+            ui.debug("Stack trace:");
+            ui.text(realError.stack);
         }
 
         if (error && error instanceof GracefulError) {

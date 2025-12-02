@@ -122,16 +122,23 @@ export const ElementOverlays = observer(() => {
         [editor]
     );
 
+    const viewportContainer: React.CSSProperties = {
+        width: `${viewport.width}px`,
+        height: `${viewport.height}px`,
+        display: showOverlays ? "block" : "none",
+        pointerEvents: "auto"
+    };
+
     return (
         <OverlayContainer
             ref={mergeRefs(dropRef)}
             style={{
-                width: `${viewport.width}px`,
-                height: `${viewport.height}px`,
-                display: showOverlays ? "block" : "none",
+                ...viewportContainer,
                 pointerEvents: isDragging ? "auto" : "none"
             }}
         >
+            {/* This overlay triggers scroll in case we're hovering above something other than an editable element. */}
+            <div data-role={"element-overlay"} style={viewportContainer}></div>
             {boxes.preview
                 .filter(filterElements)
                 .filter(filterVisibleBoxes(viewport))

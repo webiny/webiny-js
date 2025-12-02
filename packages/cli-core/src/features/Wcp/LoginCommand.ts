@@ -1,6 +1,11 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { IWcpUserPatModel } from "@webiny/project/abstractions/models/index.js";
-import { Command, GetProjectSdkService, LoggerService, UiService } from "~/abstractions/index.js";
+import {
+    CliCommand,
+    GetProjectSdkService,
+    LoggerService,
+    UiService
+} from "~/abstractions/index.js";
 import { setTimeout } from "node:timers/promises";
 import { WcpUserPatModel } from "@webiny/project/models/index.js";
 import open from "open";
@@ -15,14 +20,14 @@ interface ILoginCommandParams {
     pat?: string;
 }
 
-export class LoginCommand implements Command.Interface<ILoginCommandParams> {
+export class LoginCommand implements CliCommand.Interface<ILoginCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface,
         private loggerService: LoggerService.Interface
     ) {}
 
-    async execute(): Promise<Command.CommandDefinition<ILoginCommandParams>> {
+    async execute(): Promise<CliCommand.CommandDefinition<ILoginCommandParams>> {
         return {
             name: "login",
             description: "Log in to Webiny Control Panel",
@@ -154,7 +159,7 @@ export class LoginCommand implements Command.Interface<ILoginCommandParams> {
 }
 
 export const loginCommand = createImplementation({
-    abstraction: Command,
+    abstraction: CliCommand,
     implementation: LoginCommand,
     dependencies: [GetProjectSdkService, UiService, LoggerService]
 });

@@ -1,50 +1,76 @@
-import { createImplementation } from "@webiny/di-container";
-import { createPinoLogger as baseCreatePinoLogger, type Logger } from "@webiny/logger";
-import { LoggerService, GetProjectService } from "~/abstractions/index.js";
+import { createImplementation } from "@webiny/di";
+import { GetProjectService, LoggerService, ProjectSdkParamsService } from "~/abstractions/index.js";
 import * as fs from "node:fs";
 import path from "node:path";
+import { type Logger, pino } from "pino";
+import pinoPretty from "pino-pretty";
 
 const DEFAULT_LOG_LEVEL = "info";
 
 export class DefaultLoggerService implements LoggerService.Interface {
-    pinoLogger: Logger;
+    pinoLogger: Logger | null = null;
 
-    constructor(private getProjectService: GetProjectService.Interface) {
-        const logStream = this.getLogStream();
-
-        const level = process.env.LOG_LEVEL || DEFAULT_LOG_LEVEL;
-        this.pinoLogger = baseCreatePinoLogger({ level }, logStream);
-    }
+    constructor(
+        private getProjectService: GetProjectService.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
+    ) {}
 
     trace(message?: any, ...optionalParams: any[]) {
-        this.pinoLogger.trace(message, ...optionalParams);
+        const logger = this.getLogger();
+        logger.trace(message, ...optionalParams);
     }
 
     fatal(message?: any, ...optionalParams: any[]) {
-        this.pinoLogger.fatal(message, ...optionalParams);
+        const logger = this.getLogger();
+        logger.fatal(message, ...optionalParams);
     }
 
     debug(message?: any, ...optionalParams: any[]) {
-        this.pinoLogger.debug(message, ...optionalParams);
+        const logger = this.getLogger();
+        logger.debug(message, ...optionalParams);
     }
 
     info(message?: any, ...optionalParams: any[]) {
-        this.pinoLogger.info(message, ...optionalParams);
+        const logger = this.getLogger();
+        logger.info(message, ...optionalParams);
     }
 
     warn(message?: any, ...optionalParams: any[]) {
-        this.pinoLogger.warn(message, ...optionalParams);
+        const logger = this.getLogger();
+        logger.warn(message, ...optionalParams);
     }
 
     error(message?: any, ...optionalParams: any[]) {
-        this.pinoLogger.error(message, ...optionalParams);
+        const logger = this.getLogger();
+        logger.error(message, ...optionalParams);
     }
 
     log(message?: any, ...optionalParams: any[]) {
-        this.pinoLogger.info(message, ...optionalParams);
+        const logger = this.getLogger();
+        logger.info(message, ...optionalParams);
+    }
+
+    private getLogger() {
+        if (this.pinoLogger) {
+            return this.pinoLogger;
+        }
+
+        const logStream = this.getLogStream();
+        const level = this.getLogLevel();
+        this.pinoLogger = pino({ level }, logStream);
+
+        return this.pinoLogger;
     }
 
     private getLogStream() {
+        const { logging } = this.projectSdkParamsService.get();
+
+        if (logging?.streamToStdout) {
+            return pinoPretty({
+                ignore: "pid,hostname"
+            });
+        }
+
         const project = this.getProjectService.execute();
 
         const logsFolderPath = project.paths.dotWebinyFolder.join("logs").toString();
@@ -65,10 +91,15 @@ export class DefaultLoggerService implements LoggerService.Interface {
         const dateStr = now.toISOString().split("T")[0];
         return `logs-${dateStr}.log`;
     }
+
+    private getLogLevel() {
+        const { logging } = this.projectSdkParamsService.get();
+        return process.env.WEBINY_LOG_LEVEL || logging?.level || DEFAULT_LOG_LEVEL;
+    }
 }
 
 export const loggerService = createImplementation({
     abstraction: LoggerService,
     implementation: DefaultLoggerService,
-    dependencies: [GetProjectService]
+    dependencies: [GetProjectService, ProjectSdkParamsService]
 });

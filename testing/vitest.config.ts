@@ -1,5 +1,7 @@
 import "tsx";
 import { defineConfig } from "vitest/config";
+import tsconfigPaths from "vite-tsconfig-paths";
+
 import fg from "fast-glob";
 import path from "path";
 import chalk from "chalk";
@@ -75,7 +77,7 @@ export default async () => {
     }
 
     // Loads environment variables defined in the project root ".env" file.
-    const { parsed } = dotenv.config({ path: path.join(import.meta.dirname, ".env") });
+    const { parsed } = dotenv.config({ path: path.join(import.meta.dirname, "..", ".env") });
     if (parsed) {
         ["WCP_PROJECT_ID", "WCP_PROJECT_ENVIRONMENT", "WCP_PROJECT_LICENSE"].forEach(key => {
             delete parsed[key];
@@ -108,6 +110,13 @@ export default async () => {
     project.rootDir = process.cwd();
 
     return defineConfig({
+        plugins: [
+            tsconfigPaths({
+                // This flag ensures tsconfig templates don't throw errors (e.g. project-aws/_templates).
+                // Ideally, we would want to list all valid packages ONLY, and disable tsconfig auto-discovery.
+                ignoreConfigErrors: true
+            })
+        ],
         resolve: {
             alias: {
                 "graphql/language/index.js": "graphql/language/index.js",
@@ -117,9 +126,14 @@ export default async () => {
         },
         test: {
             fileParallelism: process.env.CI === "true",
+            hookTimeout: 30000,
             testTimeout: 30000, // 30 seconds
             ...project,
-            setupFiles: [path.resolve(import.meta.dirname, "./setupFile.js"), ...project.setupFiles]
+            setupFiles: [
+                path.resolve(import.meta.dirname, "./setupFile.js"),
+                ...project.setupFiles
+            ],
+            tsconfig: `${project.dir}/tsconfig.json`
         }
     });
 };

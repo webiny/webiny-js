@@ -36,6 +36,8 @@ export type {
     FileManagerOnChange
 } from "./base/ui/FileManager.js";
 
+export { SystemInstallerProvider } from "./presentation/installation/components/SystemInstaller/index.js";
+
 // Feature types
 export type { AaclPermission } from "./features/wcp/types.js";
 export type { Tenant } from "./features/tenancy/types.js";

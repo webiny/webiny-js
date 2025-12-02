@@ -1,6 +1,9 @@
 import jwt from "jsonwebtoken";
-import { isJwt, verifyJwtUsingJwk } from "@webiny/api-security";
-import type { Jwk } from "@webiny/api-security/types";
+import {
+    type Jwk,
+    verifyJwtUsingJwk
+} from "@webiny/api-core/features/security/utils/verifyJwtUsingJwk.js";
+import { isJwt } from "@webiny/api-core/features/security/utils/isJwt.js";
 
 export interface Config {
     region: string;

@@ -1,4 +1,4 @@
-import { Container } from "@webiny/di-container";
+import { Container } from "@webiny/di";
 import { createFeature } from "@webiny/app";
 import { TenancyService as TenancyServiceAbstraction } from "./abstractions.js";
 import { TenancyService } from "./TenancyService.js";

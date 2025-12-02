@@ -27,6 +27,7 @@ export interface IWorkflowStateRecord<
 > {
     id: string;
     app: string;
+    title: string;
     workflowId: string;
     targetId: string;
     targetRevisionId: string;
@@ -40,14 +41,25 @@ export interface IWorkflowStateRecord<
     savedBy: IWorkflowStateIdentity;
 }
 
-export interface IWorkflowStateRecordStepWithPermissions extends IWorkflowStateRecordStep {
-    isAllowedToReview: boolean;
+export interface IEnrichedWorkflowStateRecordStep extends IWorkflowStateRecordStep {
+    isOwner: boolean;
+    canTakeOver: boolean;
+    canReview: boolean;
 }
 
-export interface IWorkflowState
-    extends IWorkflowStateRecord<IWorkflowStateRecordStepWithPermissions> {
+export interface IWorkflowState<
+    T extends IEnrichedWorkflowStateRecordStep = IEnrichedWorkflowStateRecordStep
+> extends IWorkflowStateRecord<T> {
     readonly done: boolean;
-    getActiveStep(): IWorkflowStateRecordStepWithPermissions | undefined;
+    currentStep: T;
+    nextStep: T | null;
+    previousStep: T | null;
+}
+
+export interface IWorkflowStateModel extends IWorkflowState {
+    getActiveStep(): IEnrichedWorkflowStateRecordStep | null;
+    start(): Promise<void>;
+    takeOver(): Promise<void>;
     approve(comment?: string): Promise<void>;
     reject(comment: string): Promise<void>;
 }

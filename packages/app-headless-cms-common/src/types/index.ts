@@ -547,7 +547,6 @@ export interface CmsSecurityPermission extends SecurityPermission {
     models?: Record<string, string>;
     groups?: Record<string, string>;
     endpoints?: string[];
-    locales?: string[];
     rwd?: string;
     own?: boolean;
     pw?: string;

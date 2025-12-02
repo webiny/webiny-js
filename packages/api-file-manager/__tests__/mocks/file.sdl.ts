@@ -61,6 +61,21 @@ export default /* GraphQL */ `
         originalKey_not_startsWith: String
     }
 
+    type FmFile_AccessControl {
+        type: String
+    }
+
+    input FmFile_AccessControlWhereInput {
+        type: String
+        type_not: String
+        type_in: [String]
+        type_not_in: [String]
+        type_contains: String
+        type_not_contains: String
+        type_startsWith: String
+        type_not_startsWith: String
+    }
+
     type FmFile_Extensions {
         carMake: String
         year: Number
@@ -110,6 +125,7 @@ export default /* GraphQL */ `
         meta: FmFile_Meta
         tags: [String]
         aliases: [String]
+        accessControl: FmFile_AccessControl
         extensions: FmFile_Extensions
     }
 
@@ -122,6 +138,10 @@ export default /* GraphQL */ `
         width: Number
         height: Number
         originalKey: String
+    }
+
+    input FmFile_AccessControlInput {
+        type: String
     }
 
     input FmFile_ExtensionsInput {
@@ -152,6 +172,7 @@ export default /* GraphQL */ `
         meta: FmFile_MetaInput
         tags: [String!]
         aliases: [String!]
+        accessControl: FmFile_AccessControlInput
         extensions: FmFile_ExtensionsInput
     }
 
@@ -170,6 +191,7 @@ export default /* GraphQL */ `
         meta: FmFile_MetaInput
         tags: [String]
         aliases: [String]
+        accessControl: FmFile_AccessControlInput
         extensions: FmFile_ExtensionsInput
     }
 
@@ -399,6 +421,7 @@ export default /* GraphQL */ `
         aliases_startsWith: String
         aliases_not_startsWith: String
 
+        accessControl: FmFile_AccessControlWhereInput
         extensions: FmFile_ExtensionsWhereInput
         AND: [FmFileListWhereInput!]
         OR: [FmFileListWhereInput!]

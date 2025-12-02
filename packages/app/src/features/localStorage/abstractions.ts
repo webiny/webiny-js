@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 
 /** Gateway: raw IO into localStorage (or other storage). */
 export interface ILocalStorageGateway {

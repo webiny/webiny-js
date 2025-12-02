@@ -18,7 +18,6 @@ export interface IEntityAttributes {
     GSI4_SK: string;
     id: string;
     tenant: string;
-    locale: string;
     source: string;
     type: string;
     data: string;
@@ -85,10 +84,6 @@ export const createEntity = (params: IParams): Entity<any> => {
                 required: true
             },
             tenant: {
-                type: "string",
-                required: true
-            },
-            locale: {
                 type: "string",
                 required: true
             },

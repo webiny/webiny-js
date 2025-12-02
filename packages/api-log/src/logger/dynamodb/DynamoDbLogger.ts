@@ -20,7 +20,6 @@ export interface IDynamoDbLoggerOptions {
 
 export interface IDynamoDbLoggerParams {
     readonly getTenant: () => string;
-    readonly getLocale: () => string;
     readonly onFlush: IDynamoDbLoggerParamsOnFlushCallable;
     readonly options?: IDynamoDbLoggerOptions;
 }
@@ -34,7 +33,6 @@ const defaultWaitForFlushMs = 1000;
 export class DynamoDbLogger implements ILogger {
     private readonly items = new Set<ILoggerLog>();
     private readonly getTenant: () => string;
-    private readonly getLocale: () => string;
     private readonly onFlush: IDynamoDbLoggerParamsOnFlushCallable;
     private readonly options?: IDynamoDbLoggerOptions;
 
@@ -43,7 +41,6 @@ export class DynamoDbLogger implements ILogger {
 
     public constructor(params: IDynamoDbLoggerParams) {
         this.getTenant = params.getTenant;
-        this.getLocale = params.getLocale;
         this.onFlush = params.onFlush;
         this.options = params.options;
     }
@@ -153,7 +150,6 @@ export class DynamoDbLogger implements ILogger {
             id: mdbid(),
             createdOn: new Date().toISOString(),
             tenant: params.options?.tenant || this.getTenant(),
-            locale: params.options?.locale || this.getLocale(),
             data: params.data,
             source: params.source,
             type: params.type

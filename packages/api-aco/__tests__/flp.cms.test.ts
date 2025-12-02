@@ -1,11 +1,11 @@
 import { describe, test, expect } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-import { SecurityIdentity } from "@webiny/api-security/types";
 import { expectNotAuthorized } from "./utils/expectNotAuthorized";
+import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
-const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
-const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
-const identityC: SecurityIdentity = { id: "3", type: "admin", displayName: "C" };
+const identityA = new AuthenticatedIdentity({ id: "1", type: "admin", displayName: "A" });
+const identityB = new AuthenticatedIdentity({ id: "2", type: "admin", displayName: "B" });
+const identityC = new AuthenticatedIdentity({ id: "3", type: "admin", displayName: "C" });
 
 describe("Folder Level Permissions - CMS GraphQL API", () => {
     const gqlIdentityA = useGraphQlHandler({ identity: identityA });

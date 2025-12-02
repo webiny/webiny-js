@@ -4,7 +4,7 @@ import {
     LocalStorageConfig,
     LocalStorageGateway
 } from "./abstractions.js";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 
 export class LocalStorageRepositoryImpl implements LocalStorageRepositoryAbstraction.Interface {
     private readonly prefix: string;

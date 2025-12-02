@@ -1,13 +1,12 @@
-import { Abstraction } from "@webiny/di-container";
-import { Command } from "~/abstractions/index.js";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
+import { CliCommand } from "~/abstractions/index.js";
 
 export interface ICommandsRegistryService {
-    execute(): Command.Interface<any>[];
+    execute(): CliCommand.Interface<any>[];
 }
 
-export const CommandsRegistryService = new Abstraction<ICommandsRegistryService>(
-    "CommandsRegistryService"
-);
+export const CommandsRegistryService =
+    createAbstraction<ICommandsRegistryService>("CommandsRegistryService");
 
 export namespace CommandsRegistryService {
     export type Interface = ICommandsRegistryService;

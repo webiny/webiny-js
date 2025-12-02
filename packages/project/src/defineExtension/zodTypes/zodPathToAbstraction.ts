@@ -1,4 +1,4 @@
-import { type Abstraction, Metadata } from "@webiny/di-container";
+import { type Abstraction, Metadata } from "@webiny/di";
 import { z } from "zod";
 import path from "path";
 import fs from "fs";
@@ -25,12 +25,16 @@ export const zodPathToAbstraction = (
                 return;
             }
 
-            const { default: exportedImplementation } = await import(absoluteSrcPath);
+            const exportName = path
+                .basename(absoluteSrcPath)
+                .replace(path.extname(absoluteSrcPath), "");
 
+            const importedModule = await import(absoluteSrcPath);
+            const exportedImplementation = importedModule?.[exportName];
             if (!exportedImplementation) {
                 ctx.addIssue({
                     code: z.ZodIssueCode.custom,
-                    message: `Source file for extension "${src}" (type: ${expectedAbstraction.token.toString()}) must export a default implementation.`
+                    message: `Source file for extension "${src}" (type: ${expectedAbstraction.token.toString()}) must export a class named "${exportName}".`
                 });
                 return;
             }

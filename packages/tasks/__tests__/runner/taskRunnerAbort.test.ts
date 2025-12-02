@@ -37,8 +37,7 @@ describe("task runner abort", () => {
             status: "aborted",
             webinyTaskId: abortedTask.id,
             webinyTaskDefinitionId: taskDefinition.id,
-            tenant: "root",
-            locale: "en-US"
+            tenant: "root"
         });
     });
 });

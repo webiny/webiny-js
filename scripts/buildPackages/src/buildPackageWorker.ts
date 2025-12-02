@@ -22,13 +22,11 @@ const sendSuccess = () => {
 
 process.on("uncaughtException", err => {
     sendError(err);
-    process.exit(1);
 });
 
 process.on("unhandledRejection", reason => {
     const err = reason instanceof Error ? reason : new Error(String(reason));
     sendError(err);
-    process.exit(1);
 });
 
 const buildOverrides = JSON.parse(process.argv[2]);

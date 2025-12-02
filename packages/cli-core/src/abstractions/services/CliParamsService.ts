@@ -1,5 +1,5 @@
-import { Abstraction } from "@webiny/di-container";
 import { ExtensionDefinitionModel } from "@webiny/project/extensions/index.js";
+import { Abstraction } from "@webiny/di";
 
 export interface ICliParams {
     cwd?: string;

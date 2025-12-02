@@ -1,425 +1,128 @@
-import { Canvas, Meta, Controls } from '@storybook/addon-docs/blocks';
+import { Canvas, Meta, Controls } from "@storybook/addon-docs/blocks";
 
-import * as CardStories from './Card.stories';
+import * as CardStories from "./Card.stories";
 
 <Meta of={CardStories} />
 
-# Card
+# Cards
 
-A Card is used to display content or actions in a focused, overlay window that requires user interaction before returning to the main interface. Modals are valuable for drawing attention to important information, capturing user input, and streamlining workflows without navigating away from the current page.
+A Card component in design systems is a versatile UI element used to encapsulate content and actions about a single subject. It serves as a modular container that can include images, text, links, buttons, and other interactive elements. Cards are designed to present information in a concise and organized manner, making it easier for users to scan and interact with multiple pieces of content.
 
 ## Usage
 
 <Canvas of={CardStories.Documentation} source={ { code: `
-import React, { useState } from "react";
-import { Card, Button } from "@webiny/admin-ui";
+import React from 'react';
+import { Card, Button, IconButton, Icon } from '@webiny/admin-ui';
+import { ReactComponent as MoreVertical } from "@webiny/icons/more_vert.svg";
 
 const CardExample = () => {
-    const [open, setOpen] = useState(false);
+return (
 
-    return (
-        <>
-            <Button
-                variant="primary"
-                text="Open Card"
-                onClick={() => setOpen(true)}
-            />
+<Card
+  title="Card title"
+  description="Card description"
+  padding="standard"
+  elevation="sm"
+  borderRadius="md"
+  actions={
+    <>
+      <Button variant="secondary" text="Cancel" />
+      <Button variant="primary" text="Confirm" />
+    </>
+  }
+  options={
+    <IconButton
+      variant={"ghost"}
+      icon={<Icon icon={<MoreVertical />} label={"More options"} />}
+      size={"sm"}
+      iconSize={"lg"}
+      onClick={() => alert("Custom action button clicked.")}
+    />
+  }
+>
+  This is card content. Anything can go in here.
+</Card>
+); };
 
-            <Card
-                open={open}
-                onOpenChange={open => setOpen(open)}
-                title="Card Title"
-                description="A short card description."
-                info={<>Learn more about this <a href={"#"}>here</a>.</>}
-                actions={
-                    <>
-                        <Card.CancelButton />
-                        <Card.ConfirmButton />
-                    </>
-                }
-                showCloseButton={true}
-                dismissible={true}
-            >
-                This is the card content area. You can place any content here including
-                forms, text, images, or other components.
-            </Card>
-        </>
-    );
-};
-
-export default CardExample;
+    export default CardExample;
 
 ` } }
-        additionalActions={[
-            {
-                title: 'Open in GitHub',
-                onClick: () => {
-                    window.open(
-                        'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Card/Card.tsx',
-                        '_blank'
-                    );
-                },
-            }
-        ]}
+additionalActions={[
+{
+title: 'Open in GitHub',
+onClick: () => {
+window.open(
+'https://github.com/webiny/webiny-js/blob/feat/new-admin-ui/packages/admin-ui/src/Card/Card.tsx',
+'_blank'
+);
+},
+}
+]}
 />
 
-<Controls of={CardStories.Documentation} exclude={["onOpenChange", "trigger"]}/>
+<Controls of={CardStories.Documentation} />
 
 ```tsx
-import React, { useState } from "react";
-import { Card, Button } from "@webiny/admin-ui";
+import React from "react";
+import { Card, Button, IconButton, Icon } from "@webiny/admin-ui";
+import { ReactComponent as MoreVertical } from "@webiny/icons/more_vert.svg";
 
 const CardExample = () => {
-    const [open, setOpen] = useState(false);
-
-    return (
+  return (
+    <Card
+      title="Card title"
+      description="Card description"
+      padding="standard"
+      elevation="sm"
+      borderRadius="md"
+      actions={
         <>
-            <Button
-                variant="primary"
-                text="Open Card"
-                onClick={() => setOpen(true)}
-            />
-
-            <Card
-                open={open}
-                onOpenChange={open => setOpen(open)}
-                title="Card Title"
-                description="A short card description."
-                info={<>Learn more about this <a href={"#"}>here</a>.</>}
-                actions={
-                    <>
-                        <Card.CancelButton />
-                        <Card.ConfirmButton />
-                    </>
-                }
-                showCloseButton={true}
-                dismissible={true}
-            >
-                This is the card content area. You can place any content here including
-                forms, text, images, or other components.
-            </Card>
+          <Button variant="secondary" text="Cancel" />
+          <Button variant="primary" text="Confirm" />
         </>
-    );
+      }
+      options={
+        <IconButton
+          variant={"ghost"}
+          icon={<Icon icon={<MoreVertical />} label={"More options"} />}
+          size={"sm"}
+          iconSize={"lg"}
+          onClick={() => alert("Custom action button clicked.")}
+        />
+      }
+    >
+      This is card content. Anything can go in here.
+    </Card>
+  );
 };
 
 export default CardExample;
 ```
 
-## Examples
-
-### Controlled Visibility
-
-Controlled Visibility demonstrates how to manually control the open/close state of the Card component from the outside, using React useState. Here we are following the “controlled component” pattern, where the visibility (open state) of the Card is not managed internally by the component itself, but instead controlled by the parent using React state.
-
-<Canvas of={CardStories.ControlledVisibility} source={ { code: `
-import React, { useState } from "react";
-import { Card, Button } from "@webiny/admin-ui";
-
-const ControlledVisibilityExample = () => {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <>
-            <Button
-                variant="primary"
-                text="Open Card"
-                onClick={() => setOpen(true)}
-            />
-
-            <Card
-                open={open}
-                onOpenChange={open => {
-                    if (!open) {
-                        setOpen(false);
-                    }
-                }}
-                title="Card Title"
-                description="A short card description."
-                actions={
-                    <>
-                        <Card.CancelButton />
-                        <Card.ConfirmButton />
-                    </>
-                }
-            >
-                This card&apos;s visibility is controlled by the open state.
-            </Card>
-        </>
-    );
-};
-
-export default ControlledVisibilityExample;
-` } } />
-
-### With Dropdown Menu
-
-<Canvas of={CardStories.WithDropdownMenu} source={ { code: `
-import React, { useState } from "react";
-import { Card, Button, DropdownMenu } from "@webiny/admin-ui";
-
-const WithDropdownMenuExample = () => {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <>
-            <DropdownMenu trigger={<Button variant="primary" text="Open Menu" />}>
-                <DropdownMenu.Item text={"Open Card"} content="Open Card" onClick={() => setOpen(true)} />
-            </DropdownMenu>
-
-            <Card
-                open={open}
-                onOpenChange={() => setOpen(false)}
-                title="Card Title"
-                description="A short card description."
-                actions={
-                    <>
-                        <Card.CancelButton />
-                        <Card.ConfirmButton />
-                    </>
-                }
-            >
-                This card is opened from a dropdown menu item.
-            </Card>
-        </>
-    );
-};
-
-export default WithDropdownMenuExample;
-` } } />
-
-### Without Close Button
-
-<Canvas of={CardStories.WithoutCloseButton} source={ { code: `
-import React, { useState } from "react";
-import { Card, Button } from "@webiny/admin-ui";
-
-const WithoutCloseButtonExample = () => {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <>
-            <Button
-                variant="primary"
-                text="Open Card"
-                onClick={() => setOpen(true)}
-            />
-
-            <Card
-                open={open}
-                onOpenChange={open => setOpen(open)}
-                title="Card Title"
-                description="A short card description."
-                showCloseButton={false}
-                actions={
-                    <>
-                        <Card.CancelButton />
-                        <Card.ConfirmButton />
-                    </>
-                }
-            >
-                This card doesn&apos;st have a close button in the top-right corner.
-            </Card>
-        </>
-    );
-};
-
-export default WithoutCloseButtonExample;
-` } } />
-
-### Alert Card
-
-<Canvas of={CardStories.AlertCard} source={ { code: `
-import React, { useState } from "react";
-import { Card, Button } from "@webiny/admin-ui";
-
-const AlertCardExample = () => {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <>
-            <Button
-                variant="primary"
-                text="Open Alert Card"
-                onClick={() => setOpen(true)}
-            />
-
-            <Card
-                open={open}
-                onOpenChange={open => setOpen(open)}
-                title="Confirm Action"
-                description="Are you sure you want to delete this item?"
-                showCloseButton={false}
-                actions={
-                    <>
-                        <Card.CancelButton text="Cancel" />
-                        <Card.ConfirmButton text="Delete" />
-                    </>
-                }
-            >
-                <p>This action cannot be undone.</p>
-                <p>Deleted items cannot be recovered.</p>
-            </Card>
-        </>
-    );
-};
-
-export default AlertCardExample;
-` } } />
-
-### With Icon
-
-<Canvas of={CardStories.WithIcon} source={ { code: `
-import React, { useState } from "react";
-import { Card, Button } from "@webiny/admin-ui";
-import { ReactComponent as DoorbellIcon } from "@webiny/icons/ring_volume.svg";
-
-const WithIconExample = () => {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <>
-            <Button
-                variant="primary"
-                text="Open Card with Icon"
-                onClick={() => setOpen(true)}
-            />
-
-            <Card
-                open={open}
-                onOpenChange={open => setOpen(open)}
-                title="Card with Icon"
-                description="This card has an icon in the header."
-                icon={<Card.Icon icon={<DoorbellIcon />} label="Title icon" />}
-                actions={
-                    <>
-                        <Card.CancelButton />
-                        <Card.ConfirmButton />
-                    </>
-                }
-            >
-                The icon helps to visually identify the purpose of this card.
-            </Card>
-        </>
-    );
-};
-
-export default WithIconExample;
-` } } />
-
-### Prevent Outside Dismiss
-
-<Canvas of={CardStories.PreventOutsideDismiss} source={ { code: `
-import React, { useState } from "react";
-import { Card, Button } from "@webiny/admin-ui";
-
-const PreventOutsideDismissExample = () => {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <>
-            <Button
-                variant="primary"
-                text="Open Modal Card"
-                onClick={() => setOpen(true)}
-            />
-
-            <Card
-                open={open}
-                onOpenChange={open => setOpen(open)}
-                title="Important Action"
-                description="This card requires explicit action."
-                dismissible={false}
-                actions={
-                    <>
-                        <Card.CancelButton />
-                        <Card.ConfirmButton />
-                    </>
-                }
-            >
-                This card cannot be dismissed by clicking outside or pressing Escape.
-                You must use one of the action buttons to close it.
-            </Card>
-        </>
-    );
-};
-
-export default PreventOutsideDismissExample;
-` } } />
-
-### With Tabs
-
-<Canvas of={CardStories.WithTabs} source={ { code: `
-import React, { useState } from "react";
-import { Card, Button, Tabs } from "@webiny/admin-ui";
-
-const WithTabsExample = () => {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <>
-            <Button
-                variant="primary"
-                text="Open Card with Tabs"
-                onClick={() => setOpen(true)}
-            />
-
-            <Card
-                open={open}
-                onOpenChange={open => setOpen(open)}
-                title="Settings"
-                description="Configure your preferences"
-                bodyPadding={false}
-                actions={
-                    <>
-                        <Card.CancelButton />
-                        <Card.ConfirmButton text="Save" />
-                    </>
-                }
-            >
-                <Tabs
-                    spacing="lg"
-                    tabs={[
-                        <Tabs.Tab
-                            key="account"
-                            value="account"
-                            trigger="Account"
-                            content="Make changes to your account here."
-                        />,
-                        <Tabs.Tab
-                            key="company"
-                            value="company"
-                            trigger="Company"
-                            content="Make changes to your company info here."
-                        />,
-                        <Tabs.Tab
-                            key="security"
-                            value="security"
-                            trigger="Security"
-                            content="Make changes to your security settings here."
-                        />,
-                        <Tabs.Tab
-                            key="development"
-                            value="development"
-                            trigger="Development"
-                            content="Make changes to your development settings here."
-                        />
-                    ]}
-                />
-            </Card>
-        </>
-    );
-};
-
-export default WithTabsExample;
-` } } />
-
 ## Anatomy
 
-### Card Construction
-<img src="/images/storybook/card/anatomy.png" alt="Anatomy"/>
+### Construction
 
-### Overlay and Positioning
-<img src="/images/storybook/card/overlay-and-positioning.png" alt="Card Overlay and Positioning"/>
+Depending on the content type and card usage, there are several elevation options available.
+
+<img src="/images/storybook/card/construction.png" alt="Construction" />
+
+### Elevation
+
+<img src="/images/storybook/card/elevation.png" alt="Elevation" />
+
+### Radius
+
+Depending on the content type and card usage, there are three basic paddings options to consider. Border radius can vary from 4px - 12px
+
+<img src="/images/storybook/card/radius.png" alt="Radius" />
+
+### Padding
+
+<img src="/images/storybook/card/padding.png" alt="Padding" />
 
 ## Usage
-<img src="/images/storybook/card/usage.png" alt="Usage"/>
+
+### Stacked
+
+<img src="/images/storybook/card/stacked.png" alt="Stacked" />

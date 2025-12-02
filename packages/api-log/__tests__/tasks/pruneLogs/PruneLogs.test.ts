@@ -55,7 +55,6 @@ describe("PruneLogs", () => {
         response = new TaskResponse(
             new Response({
                 endpoint: "manage",
-                locale: "en-US",
                 tenant: "root",
                 executionName: "test",
                 stateMachineId: "test",
@@ -97,7 +96,6 @@ describe("PruneLogs", () => {
         });
 
         expect(result).toEqual({
-            locale: "en-US",
             message: undefined,
             output: {
                 items: 0
@@ -113,32 +111,25 @@ describe("PruneLogs", () => {
         const source = "myCustomSource";
         const rootTenant = "root";
         const anotherTenant = "anotherTenant";
-        const locale = "en-US";
         // create some logs in root and anotherTenant
         logger.debug(source, "debug-message", {
-            locale,
             tenant: rootTenant
         });
         logger.notice(source, "notice-message", {
-            locale,
             tenant: rootTenant
         });
         logger.info(source, "info-message", {
-            locale,
             tenant: rootTenant
         });
         logger.warn(source, "warn-message", {
-            locale,
             tenant: rootTenant
         });
 
         logger.error(source, "error-message", {
-            locale,
             tenant: rootTenant
         });
 
         logger.debug(source, "debug-message", {
-            locale,
             tenant: anotherTenant
         });
 
@@ -151,7 +142,6 @@ describe("PruneLogs", () => {
                 createdOn: expect.toBeDateString(),
                 source,
                 tenant: rootTenant,
-                locale,
                 data: "debug-message",
                 id: expect.any(String)
             },
@@ -160,7 +150,6 @@ describe("PruneLogs", () => {
                 createdOn: expect.toBeDateString(),
                 source,
                 tenant: rootTenant,
-                locale,
                 data: "notice-message",
                 id: expect.any(String)
             },
@@ -169,7 +158,6 @@ describe("PruneLogs", () => {
                 createdOn: expect.toBeDateString(),
                 source,
                 tenant: rootTenant,
-                locale,
                 data: "info-message",
                 id: expect.any(String)
             },
@@ -178,7 +166,6 @@ describe("PruneLogs", () => {
                 createdOn: expect.toBeDateString(),
                 source,
                 tenant: rootTenant,
-                locale,
                 data: "warn-message",
                 id: expect.any(String)
             },
@@ -187,7 +174,6 @@ describe("PruneLogs", () => {
                 createdOn: expect.toBeDateString(),
                 source,
                 tenant: rootTenant,
-                locale,
                 data: "error-message",
                 id: expect.any(String)
             },
@@ -196,7 +182,6 @@ describe("PruneLogs", () => {
                 createdOn: expect.toBeDateString(),
                 source,
                 tenant: anotherTenant,
-                locale,
                 data: "debug-message",
                 id: expect.any(String)
             }
@@ -220,7 +205,6 @@ describe("PruneLogs", () => {
         });
 
         expect(pruneNothingResult).toEqual({
-            locale: "en-US",
             message: undefined,
             output: {
                 items: 0
@@ -246,7 +230,6 @@ describe("PruneLogs", () => {
             isCloseToTimeout: () => false
         });
         expect(pruneResult).toEqual({
-            locale: "en-US",
             message: undefined,
             output: {
                 items: 1
@@ -268,12 +251,10 @@ describe("PruneLogs", () => {
          */
 
         logger.info(source, "info-message", {
-            tenant: anotherTenant,
-            locale
+            tenant: anotherTenant
         });
         logger.error(source, "error-message", {
-            tenant: anotherTenant,
-            locale
+            tenant: anotherTenant
         });
         await logger.flush();
 
@@ -293,7 +274,6 @@ describe("PruneLogs", () => {
             isCloseToTimeout: () => false
         });
         expect(pruneAllResult).toEqual({
-            locale: "en-US",
             message: undefined,
             output: {
                 items: 7

@@ -1060,11 +1060,9 @@ describe("content model test", () => {
 
         expect(response.data.getContentModel.data).toEqual(null);
         expect(response.data.getContentModel.error).toEqual({
-            code: "SECURITY_NOT_AUTHORIZED",
-            data: {
-                reason: `Not allowed to access content model "Test Content model instance-0".`
-            },
-            message: "Not authorized!"
+            code: "NOT_AUTHORIZED",
+            message: `Not allowed to access content model "Test Content model instance-0".`,
+            data: null
         });
     });
 

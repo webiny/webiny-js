@@ -1,14 +1,14 @@
 import { describe, test, expect } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { expectNotAuthorized } from "./utils/expectNotAuthorized";
-import { SecurityIdentity } from "@webiny/api-security/types";
 import { mdbid } from "@webiny/utils";
+import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 const FOLDER_TYPE = "FmFile";
 
-const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
-const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
-const identityC: SecurityIdentity = { id: "3", type: "admin", displayName: "C" };
+const identityA = new AuthenticatedIdentity({ id: "1", type: "admin", displayName: "A" });
+const identityB = new AuthenticatedIdentity({ id: "2", type: "admin", displayName: "B" });
+const identityC = new AuthenticatedIdentity({ id: "3", type: "admin", displayName: "C" });
 
 const createSampleFileData = (overrides: Record<string, any> = {}) => {
     const id = mdbid();
