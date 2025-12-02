@@ -79,7 +79,7 @@ const createJestTestsJob = (storage: string | null) => {
     });
 };
 
-export const v5PullRequestsCommandJest = createWorkflow({
+export const v5_PullRequestsCommandJest = createWorkflow({
     name: "(v5) Pull Requests Command - Jest",
     on: "issue_comment",
     env: {
