@@ -16,7 +16,7 @@ import { DdbOsStorageOps, DdbStorageOps } from "./storageOps/index.js";
 const ddbStorageOps = new DdbStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
 
-const DIR_WEBINY_JS = 'v6';
+const DIR_WEBINY_JS = "v6";
 const DIR_TEST_PROJECT = "new-webiny-project";
 
 const installBuildSteps = createInstallBuildSteps({ workingDirectory: DIR_WEBINY_JS });
