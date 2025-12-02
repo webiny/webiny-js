@@ -306,8 +306,8 @@ jobs:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
       AWS_REGION: eu-central-1
-      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}
-      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_ENDPOINT }}
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}
+      ELASTIC_SEARCH_ENDPOINT: ${{ secrets.OPEN_SEARCH_3_ENDPOINT }}
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ matrix.testCommand.id }}
     steps:
       - uses: actions/setup-node@v4
