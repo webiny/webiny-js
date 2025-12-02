@@ -100,6 +100,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
                 storageOps && (storageOps.id === "ddb-es,ddb" || storageOps.id === "ddb-os,ddb"),
             checkout: { path: DIR_WEBINY_JS },
             steps: [
+                ...createCheckoutPrSteps(),
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
                 ...installBuildSteps,

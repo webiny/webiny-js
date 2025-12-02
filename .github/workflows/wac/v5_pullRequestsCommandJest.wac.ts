@@ -68,6 +68,7 @@ const createJestTestsJob = (storage: string | null) => {
         awsAuth: storage === "ddb-es" || storage === "ddb-os",
         checkout: { path: DIR_WEBINY_JS },
         steps: [
+            ...createCheckoutPrSteps(),
             ...yarnCacheSteps,
             ...runBuildCacheSteps,
             ...installBuildSteps,

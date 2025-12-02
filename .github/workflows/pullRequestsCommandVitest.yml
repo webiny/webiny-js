@@ -171,6 +171,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: gh pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
@@ -237,6 +242,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: gh pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
@@ -311,6 +321,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}
+      - name: Checkout Pull Request
+        working-directory: ${{ needs.baseBranch.outputs.base-branch }}
+        run: gh pr checkout ${{ github.event.issue.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       - uses: actions/cache@v4
         with:
           path: ${{ needs.baseBranch.outputs.base-branch }}/.yarn/cache
