@@ -21,14 +21,6 @@ class GetModelUseCaseImpl implements UseCaseAbstraction.Interface {
     ) {}
 
     async execute(modelId: string): Promise<Result<CmsModel, UseCaseAbstraction.Error>> {
-        // Initial access control check (no specific model yet)
-        const canAccess = await this.accessControl.canAccessModel({ rwd: "r" });
-        if (!canAccess) {
-            return Result.fail(new ModelNotAuthorizedError());
-        }
-
-        // Repository uses ModelCache to fetch all models, then filters by ID
-        // ModelCache handles merging plugin + database models and access control
         const result = await this.repository.execute(modelId);
 
         if (result.isFail()) {

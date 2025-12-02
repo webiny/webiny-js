@@ -228,7 +228,7 @@ describe("`folder` CRUD", () => {
                     getFolder: {
                         data: null,
                         error: {
-                            code: "NOT_FOUND",
+                            code: "Cms/Entry/NotFound",
                             data: null
                         }
                     }
@@ -1012,8 +1012,8 @@ describe("`folder` CRUD", () => {
         expect(result.data.aco.updateFolder).toEqual({
             data: null,
             error: {
-                code: "NOT_FOUND",
-                message: `Entry by ID "${id}" not found.`,
+                code: "Cms/Entry/NotFound",
+                message: `Entry "${id}" was not found!`,
                 data: null
             }
         });
