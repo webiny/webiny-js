@@ -7,6 +7,7 @@ import { createGraphQLSchemaPlugin } from "./graphql/index.js";
 import { applyThreatScanning } from "./enterprise/applyThreatScanning.js";
 import type { FileManagerConfig } from "./createFileManager/types.js";
 import { FileManagerFeature } from "~/features/FileManagerFeature.js";
+import { createFileTaggingTask } from "./tasks/createFileTaggingTask.js";
 
 export * from "./modelModifier/CmsModelModifier.js";
 export * from "./plugins/index.js";
@@ -15,7 +16,7 @@ export * from "./delivery/index.js";
 export const createFileManagerContext = ({
     storageOperations
 }: Pick<FileManagerConfig, "storageOperations">) => {
-    const plugin = new ContextPlugin<FileManagerContext>(async context => {
+    const fmContextPlugin = new ContextPlugin<FileManagerContext>(async context => {
         const fmContext = new FileManagerContextSetup(context);
         context.fileManager = await fmContext.setupContext(storageOperations);
 
@@ -26,9 +27,28 @@ export const createFileManagerContext = ({
         FileManagerFeature.register(context.container);
     });
 
-    plugin.name = "file-manager.createContext";
+    fmContextPlugin.name = "file-manager.createContext";
 
-    return plugin;
+    return [
+        // Main context plugin
+        fmContextPlugin,
+
+        // Background task
+        createFileTaggingTask(),
+
+        // Trigger background task
+        new ContextPlugin<FileManagerContext>(context => {
+            context.fileManager.onFileAfterCreate.subscribe(({ file }) => {
+                context.tasks.trigger({
+                    definition: "fmAiImageTagging",
+                    input: {
+                        file: file
+                    },
+                    name: "AI Image Tagging Task"
+                });
+            });
+        })
+    ];
 };
 
 export const createFileManagerGraphQL = () => {
