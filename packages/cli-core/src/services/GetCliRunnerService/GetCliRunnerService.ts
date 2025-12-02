@@ -112,7 +112,7 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
             }
 
             const argv = this.getArgvService.execute();
-            if (argv.stackTrace && realError.stack) {
+            if (argv.showStackTrace && realError.stack) {
                 ui.newLine();
                 ui.debug("Stack trace:");
                 ui.text(realError.stack);

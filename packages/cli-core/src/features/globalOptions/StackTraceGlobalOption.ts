@@ -4,7 +4,7 @@ import { GlobalCliOption } from "~/abstractions/index.js";
 export class StackTraceGlobalOption implements GlobalCliOption.Interface {
     execute(): GlobalCliOption.Definition {
         return {
-            name: "stack-trace",
+            name: "show-stack-trace",
             config: {
                 type: "boolean",
                 default: false,

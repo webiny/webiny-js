@@ -153,7 +153,7 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
         ui.error(realError.message);
 
         const argv = container.resolve(GetArgvService).execute();
-        if (argv.stackTrace && realError.stack) {
+        if (argv.showStackTrace && realError.stack) {
             ui.newLine();
             ui.debug("Stack trace:");
             ui.text(realError.stack);
