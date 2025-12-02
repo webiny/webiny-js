@@ -1,5 +1,6 @@
 import ApolloClient from "apollo-client";
 import gql from "graphql-tag";
+import { WebinyError } from "@webiny/error";
 import {
     GetFolderHierarchyGatewayParams,
     IGetFolderHierarchyGateway
@@ -74,10 +75,12 @@ export class GetFolderHierarchyGqlGateway implements IGetFolderHierarchyGateway 
         const { data, error } = response.aco.getFolderHierarchy;
 
         if (!data) {
-            throw new Error(
-                error?.message ||
-                    `Could not fetch folder hierarchy for the provided type/id: ${params.type}/${params.id}.`
-            );
+            throw new WebinyError({
+                message:
+                    error?.message ||
+                    `Could not fetch folder hierarchy for the provided type/id: ${params.type}/${params.id}.`,
+                code: "FOLDER_NOT_FOUND"
+            });
         }
 
         return {

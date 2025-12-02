@@ -1,4 +1,8 @@
 export const isChildOfFloatingToolbar = (element: HTMLElement | null): boolean => {
+    if (!element && document["floatingToolbar"]) {
+        return true;
+    }
+
     const parent = element ? element.parentElement : null;
 
     if (!parent) {
