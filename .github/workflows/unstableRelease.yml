@@ -2,15 +2,15 @@
 # DO NOT MODIFY IT BY HAND. Instead, modify the source *.wac.ts file(s)
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
-name: Next Branch - Unstable Release
+name: Unstable Release
 'on':
-  workflow_run:
-    workflows:
-      - Next Branch - Push
-    branches:
-      - next
-    types:
-      - completed
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to release from
+        required: true
+        default: next
+        type: string
 jobs:
   constants:
     name: Create constants
@@ -47,6 +47,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: next
+          ref: ${{ github.event.inputs.branch }}
       - uses: actions/cache@v4
         with:
           path: next/.yarn/cache
@@ -86,6 +87,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.inputs.branch }}
       - uses: actions/cache@v4
         with:
           path: next/.yarn/cache
