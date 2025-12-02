@@ -88,7 +88,7 @@ export const v5PullRequestsCommandJest = createWorkflow({
     },
     jobs: {
         checkComment: createJob({
-            name: `Check comment for /jest`,
+            name: `Check comment for /v5_jest`,
             if: "${{ github.event.issue.pull_request }}",
             checkout: false,
             steps: [
@@ -98,7 +98,7 @@ export const v5PullRequestsCommandJest = createWorkflow({
                     uses: "xt0rted/slash-command-action@v2",
                     with: {
                         "repo-token": "${{ secrets.GITHUB_TOKEN }}",
-                        command: "jest",
+                        command: "v5_jest",
                         reaction: "true",
                         "reaction-type": "eyes",
                         "allow-edits": "false",
