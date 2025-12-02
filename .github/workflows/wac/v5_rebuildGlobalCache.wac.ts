@@ -6,7 +6,7 @@ import {
 } from "./steps/index.js";
 
 const createRebuildGlobalCacheWorkflow = (branchName: string) => ({
-    name: `Rebuild Global Cache ("${branchName}" branch)`,
+    name: `(v5) Rebuild Global Cache ("${branchName}" branch)`,
     on: {
         workflow_dispatch: {},
         schedule: [{ cron: "0 4 * * *" }]
@@ -39,5 +39,5 @@ const createRebuildGlobalCacheWorkflow = (branchName: string) => ({
     }
 });
 
-export const rebuildGlobalCacheDev = createRebuildGlobalCacheWorkflow("dev");
-export const rebuildGlobalCacheNext = createRebuildGlobalCacheWorkflow("next");
+export const v5_rebuildGlobalCacheDev = createRebuildGlobalCacheWorkflow("v5_dev");
+export const v5_rebuildGlobalCacheNext = createRebuildGlobalCacheWorkflow("v5_next");
