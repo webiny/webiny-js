@@ -34,6 +34,7 @@ import { GetFlpFeature } from "~/features/flp/GetFlp/feature.js";
 import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folders/ListFolderLevelPermissionsTargets/feature.js";
 import { Tenant } from "@webiny/api-core/types/tenancy";
 import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
+import { CmsFlpFeature } from "~/features/cms/index.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -146,7 +147,7 @@ const setupAcoContext = async (
     };
 
     if (context.wcp.canUseFolderLevelPermissions()) {
-        new CmsEntriesCrudDecorators({ context }).decorate();
+        CmsFlpFeature.register(context.container);
     }
 };
 

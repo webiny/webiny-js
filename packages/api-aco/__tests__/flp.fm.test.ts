@@ -1,6 +1,6 @@
 import { describe, test, expect } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-import { expectNotAuthorized } from "./utils/expectNotAuthorized";
+import { expectNotAuthorized, expectFileNotAuthorized } from "./utils/expectNotAuthorized";
 import { mdbid } from "@webiny/utils";
 import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
@@ -152,7 +152,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             // Getting files in the folder should be forbidden for identity C.
             for (let i = 0; i < createdFiles.length; i++) {
                 const createdFile = createdFiles[i];
-                await expectNotAuthorized(
+                await expectFileNotAuthorized(
                     gqlIdentityC.fm.getFile({ id: createdFile.id }).then(([response]) => {
                         return response.data.fileManager.getFile;
                     })
@@ -175,7 +175,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             });
 
             // Creating a file in the folder should be forbidden for identity C.
-            await expectNotAuthorized(
+            await expectFileNotAuthorized(
                 gqlIdentityC.fm
                     .createFile({
                         data: createSampleFileData({
@@ -190,7 +190,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             // Updating a file in the folder should be forbidden for identity C.
             for (let i = 0; i < createdFiles.length; i++) {
                 const createdFile = createdFiles[i];
-                await expectNotAuthorized(
+                await expectFileNotAuthorized(
                     gqlIdentityC.fm
                         .updateFile({
                             id: createdFile.id,
@@ -205,7 +205,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             // Deleting a file in the folder should be forbidden for identity C.
             for (let i = 0; i < createdFiles.length; i++) {
                 const createdFile = createdFiles[i];
-                await expectNotAuthorized(
+                await expectFileNotAuthorized(
                     gqlIdentityC.fm.deleteFile({ id: createdFile.id }).then(([response]) => {
                         return response.data.fileManager.deleteFile;
                     })
@@ -349,7 +349,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             // Getting files in the folder should be forbidden for identity B.
             for (let i = 0; i < createdFiles.length; i++) {
                 const createdFile = createdFiles[i];
-                await expectNotAuthorized(
+                await expectFileNotAuthorized(
                     gqlIdentityB.fm.getFile({ id: createdFile.id }).then(([response]) => {
                         return response.data.fileManager.getFile;
                     })
@@ -372,7 +372,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             });
 
             // Creating a file in the folder should be forbidden for identity B.
-            await expectNotAuthorized(
+            await expectFileNotAuthorized(
                 gqlIdentityB.fm
                     .createFile({
                         data: createSampleFileData({
@@ -387,7 +387,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             // Updating a file in the folder should be forbidden for identity B.
             for (let i = 0; i < createdFiles.length; i++) {
                 const createdFile = createdFiles[i];
-                await expectNotAuthorized(
+                await expectFileNotAuthorized(
                     gqlIdentityB.fm
                         .updateFile({
                             id: createdFile.id,
@@ -402,7 +402,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             // Deleting a file in the folder should be forbidden for identity B.
             for (let i = 0; i < createdFiles.length; i++) {
                 const createdFile = createdFiles[i];
-                await expectNotAuthorized(
+                await expectFileNotAuthorized(
                     gqlIdentityB.fm.deleteFile({ id: createdFile.id }).then(([response]) => {
                         return response.data.fileManager.deleteFile;
                     })

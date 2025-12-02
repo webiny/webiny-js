@@ -1,8 +1,7 @@
 import type {
     CmsEntry,
     CmsEntryListParams,
-    CmsEntryMeta,
-    CmsEntryValues
+    CmsEntryMeta
 } from "@webiny/api-headless-cms/types/index.js";
 import { type CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { hasRootFolderId } from "~/utils/decorators/hasRootFolderId.js";
@@ -10,11 +9,8 @@ import type { FolderPermission } from "~/flp/flp.types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 
 interface ListEntriesFactoryCallbackParams {
-    decoratee: <T extends CmsEntryValues = CmsEntryValues>(
-        model: CmsModel,
-        params: CmsEntryListParams
-    ) => Promise<[CmsEntry<T>[], CmsEntryMeta]>;
     model: CmsModel;
+    dataLoader: (params?: CmsEntryListParams) => Promise<[CmsEntry[], CmsEntryMeta]>;
     initialParams?: CmsEntryListParams;
 }
 
@@ -28,8 +24,8 @@ export class ListEntriesFactory {
     }
 
     public async execute({
-        decoratee,
         model,
+        dataLoader,
         initialParams = {}
     }: ListEntriesFactoryCallbackParams): Promise<[CmsEntry[], CmsEntryMeta]> {
         const limit = initialParams?.limit || 50;
@@ -39,7 +35,7 @@ export class ListEntriesFactory {
 
         // If FLP should be skipped, or we're querying the root folder, skip permission checks
         if (!this.folderLevelPermissions.canUseFolderLevelPermissions() || hasRootFolder) {
-            return await decoratee(model, params);
+            return dataLoader(params);
         }
 
         const resultEntries: CmsEntry[] = [];
@@ -52,7 +48,7 @@ export class ListEntriesFactory {
         // Process entries in batches until we have enough results or reach the end
         while (!fetchedAll) {
             const queryParams: CmsEntryListParams = { ...params, after: afterCursor };
-            const [entries, currentMeta] = await decoratee(model, queryParams);
+            const [entries, currentMeta] = await dataLoader(queryParams);
 
             if (totalCount === 0) {
                 totalCount = currentMeta.totalCount;
@@ -101,7 +97,7 @@ export class ListEntriesFactory {
             }
         }
 
-        return [resultEntries, { totalCount, hasMoreItems, cursor } as CmsEntryMeta];
+        return [resultEntries, { totalCount, hasMoreItems, cursor }];
     }
 
     private async getPermissions(folderId: string): Promise<FolderPermission[]> {

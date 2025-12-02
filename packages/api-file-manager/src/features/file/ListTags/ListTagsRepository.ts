@@ -1,6 +1,5 @@
 import { Result } from "@webiny/feature/api";
 import { GetUniqueFieldValuesUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetUniqueFieldValues";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import {
     ListTagsRepository as RepositoryAbstraction,
     ListTagsInput,
@@ -12,19 +11,16 @@ import { FilePersistenceError } from "~/domain/file/errors.js";
 class ListTagsRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private getUniqueFieldValues: GetUniqueFieldValuesUseCase.Interface,
-        private fileModel: FileModel.Interface,
-        private identityContext: IdentityContext.Interface
+        private fileModel: FileModel.Interface
     ) {}
 
     async execute(input: ListTagsInput): Promise<Result<TagItem[], RepositoryAbstraction.Error>> {
-        const result = await this.identityContext.withoutAuthorization(async () => {
-            return await this.getUniqueFieldValues.execute(this.fileModel, {
-                fieldId: "tags",
-                where: {
-                    ...(input.where || {}),
-                    latest: true
-                }
-            });
+        const result = await this.getUniqueFieldValues.execute(this.fileModel, {
+            fieldId: "tags",
+            where: {
+                ...(input.where || {}),
+                latest: true
+            }
         });
 
         if (result.isFail()) {
@@ -48,5 +44,5 @@ class ListTagsRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListTagsRepository = RepositoryAbstraction.createImplementation({
     implementation: ListTagsRepositoryImpl,
-    dependencies: [GetUniqueFieldValuesUseCase, FileModel, IdentityContext]
+    dependencies: [GetUniqueFieldValuesUseCase, FileModel]
 });

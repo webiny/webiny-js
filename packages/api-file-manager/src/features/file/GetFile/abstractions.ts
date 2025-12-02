@@ -16,6 +16,7 @@ export interface IGetFileRepository {
 
 export interface IGetFileRepositoryErrors {
     notFound: FileNotFoundError;
+    notAuthorized: FileNotAuthorizedError;
     persistence: FilePersistenceError;
 }
 

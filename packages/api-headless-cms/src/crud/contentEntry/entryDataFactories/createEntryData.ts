@@ -168,7 +168,8 @@ export const createEntryData = async ({
         locked,
         values: input,
         location: {
-            folderId: rawInput.wbyAco_location?.folderId || ROOT_FOLDER
+            folderId:
+                rawInput.location?.folderId || rawInput.wbyAco_location?.folderId || ROOT_FOLDER
         },
         state: getState({
             input: rawInput

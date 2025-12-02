@@ -36,6 +36,7 @@ export interface ICreateFileRepository {
 }
 
 export interface ICreateFileRepositoryErrors {
+    notAuthorized: FileNotAuthorizedError;
     persistence: FilePersistenceError;
 }
 
