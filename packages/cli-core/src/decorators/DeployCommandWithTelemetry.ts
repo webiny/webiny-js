@@ -2,20 +2,20 @@ import {
     isEnabled as globalIsTelemetryEnabled,
     sendEvent as telemetrySendEvent
 } from "@webiny/telemetry/cli.js";
-import { Command, GetProjectSdkService } from "~/abstractions/index.js";
+import { CliCommand, GetProjectSdkService } from "~/abstractions/index.js";
 import { IDeployCommandParams } from "~/features/index.js";
 import { GracefulError } from "@webiny/project";
 
 const isDeployCommand = (
-    command: Command.CommandDefinition<any>
-): command is Command.CommandDefinition<IDeployCommandParams> => {
+    command: CliCommand.CommandDefinition<any>
+): command is CliCommand.CommandDefinition<IDeployCommandParams> => {
     return command.name === "deploy";
 };
 
-export class DeployCommandWithTelemetry<TParams> implements Command.Interface<TParams> {
+export class DeployCommandWithTelemetry<TParams> implements CliCommand.Interface<TParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
-        private decoratee: Command.Interface<TParams>
+        private decoratee: CliCommand.Interface<TParams>
     ) {}
 
     async execute() {
@@ -38,7 +38,7 @@ export class DeployCommandWithTelemetry<TParams> implements Command.Interface<TP
         }
 
         // Getting a different type without type assertion. :|
-        const deployCommand = command as Command.CommandDefinition<IDeployCommandParams>;
+        const deployCommand = command as CliCommand.CommandDefinition<IDeployCommandParams>;
         const originalCommandHandler = deployCommand.handler;
 
         deployCommand.handler = async (params: IDeployCommandParams) => {
@@ -114,7 +114,7 @@ export class DeployCommandWithTelemetry<TParams> implements Command.Interface<TP
     }
 }
 
-export const deployCommandWithTelemetry = Command.createDecorator({
+export const deployCommandWithTelemetry = CliCommand.createDecorator({
     decorator: DeployCommandWithTelemetry,
     dependencies: [GetProjectSdkService]
 });

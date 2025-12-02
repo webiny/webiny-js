@@ -1,11 +1,11 @@
 import { createAbstraction } from "~/abstractions/createAbstraction.js";
-import { Command } from "~/abstractions/index.js";
+import { CliCommand } from "~/abstractions/index.js";
 
 export type IError = Error;
 
 export interface IErrorHandlerParams<TParams> {
     error: Error;
-    command: Command.CommandDefinition<any>;
+    command: CliCommand.CommandDefinition<any>;
     params: TParams;
 }
 

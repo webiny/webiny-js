@@ -1,5 +1,5 @@
 import { createImplementation } from "@webiny/di";
-import { Command, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
+import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
 import chalk from "chalk";
 import { getRandomColorForString } from "./getRandomColorForString.js";
@@ -10,14 +10,14 @@ export type IWatchCommandParams = IBaseAppParams;
 const BASE_OPTIONS_GROUP = "Base Options:";
 const LOCAL_AWS_LAMBDA_DEVELOPMENT_GROUP = "Local AWS Lambda Development Options:";
 
-export class WatchCommand implements Command.Interface<IWatchCommandParams> {
+export class WatchCommand implements CliCommand.Interface<IWatchCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private stdioService: StdioService.Interface,
         private uiService: UiService.Interface
     ) {}
 
-    async execute(): Promise<Command.CommandDefinition<IWatchCommandParams>> {
+    async execute(): Promise<CliCommand.CommandDefinition<IWatchCommandParams>> {
         const projectSdk = await this.getProjectSdkService.execute();
         const stdio = this.stdioService;
         const ui = this.uiService;
@@ -190,7 +190,7 @@ export class WatchCommand implements Command.Interface<IWatchCommandParams> {
 }
 
 export const watchCommand = createImplementation({
-    abstraction: Command,
+    abstraction: CliCommand,
     implementation: WatchCommand,
     dependencies: [GetProjectSdkService, StdioService, UiService]
 });

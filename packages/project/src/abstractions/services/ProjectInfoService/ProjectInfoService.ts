@@ -4,6 +4,7 @@ export interface IProjectInfoServiceResult {
     webiny: {
         debugEnabled: boolean;
         featureFlags: Record<string, boolean>;
+        version: string;
     };
     wcp: {
         projectId: string;

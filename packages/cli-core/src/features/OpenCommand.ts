@@ -1,17 +1,17 @@
 import { createImplementation } from "@webiny/di";
-import { Command, GetProjectSdkService, UiService } from "~/abstractions/index.js";
+import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
 import open from "open";
 
 export type IOpenCommandParams = Omit<IBaseAppParams, "app">;
 
-export class OpenCommand implements Command.Interface<IOpenCommandParams> {
+export class OpenCommand implements CliCommand.Interface<IOpenCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface
     ) {}
 
-    async execute(): Promise<Command.CommandDefinition<IOpenCommandParams>> {
+    async execute(): Promise<CliCommand.CommandDefinition<IOpenCommandParams>> {
         const projectSdk = await this.getProjectSdkService.execute();
         const ui = this.uiService;
 
@@ -90,7 +90,7 @@ export class OpenCommand implements Command.Interface<IOpenCommandParams> {
 }
 
 export const openCommand = createImplementation({
-    abstraction: Command,
+    abstraction: CliCommand,
     implementation: OpenCommand,
     dependencies: [GetProjectSdkService, UiService]
 });

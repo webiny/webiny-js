@@ -1,9 +1,12 @@
 import path from "path";
 import { Container } from "@webiny/di";
 import {
+    argvParserService,
     cliParamsService,
     commandsRegistryService,
+    getArgvService,
     getCliRunnerService,
+    globalOptionsRegistryService,
     getProjectSdkService,
     loggerService,
     runCliRunnerService,
@@ -34,11 +37,21 @@ import {
     linkProjectCommand,
     loginCommand,
     logoutCommand,
-    whoAmICommand
+    whoAmICommand,
+
+    // Global Options
+    showLogsGlobalOption,
+    logLevelGlobalOption,
+    stackTraceGlobalOption
 } from "./features/index.js";
 
 import chalk from "chalk";
-import { CliParamsService, GetProjectSdkService, UiService } from "~/abstractions/index.js";
+import {
+    CliParamsService,
+    GetArgvService,
+    GetProjectSdkService,
+    UiService
+} from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 import {
     commandsWithGracefulErrorHandling,
@@ -76,10 +89,18 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
     container.register(missingFilesInBuildGracefulErrorHandler).inSingletonScope();
     container.register(pendingOperationsGracefulErrorHandler).inSingletonScope();
 
+    // Global options.
+    container.register(showLogsGlobalOption).inSingletonScope();
+    container.register(logLevelGlobalOption).inSingletonScope();
+    container.register(stackTraceGlobalOption).inSingletonScope();
+
     // Services.
+    container.register(argvParserService).inSingletonScope();
     container.register(cliParamsService).inSingletonScope();
     container.register(commandsRegistryService).inSingletonScope();
+    container.register(getArgvService).inSingletonScope();
     container.register(getCliRunnerService).inSingletonScope();
+    container.register(globalOptionsRegistryService).inSingletonScope();
     container.register(getProjectSdkService).inSingletonScope();
     container.register(loggerService).inSingletonScope();
     container.register(runCliRunnerService).inSingletonScope();
@@ -131,10 +152,11 @@ export const createCliContainer = async (params: CliParamsService.Params) => {
 
         ui.error(realError.message);
 
-        // Unfortunately, yargs doesn't provide passed args here, so we had to do it via process.argv.
-        const debugEnabled = process.argv.includes("--debug");
-        if (debugEnabled) {
-            realError.stack && ui.debug(realError.stack);
+        const argv = container.resolve(GetArgvService).execute();
+        if (argv.stackTrace && realError.stack) {
+            ui.newLine();
+            ui.debug("Stack trace:");
+            ui.text(realError.stack);
         }
 
         if (error && error instanceof GracefulError) {

@@ -26,7 +26,7 @@
     "@apollo/react-hooks": "^3.1.5",
     "@emotion/styled": "11.10.6",
     "@types/react": "18.2.79",
-    "@webiny/di": "^0.2.0",
+    "@webiny/di": "^0.2.1",
     "@webiny/i18n": "0.0.0",
     "@webiny/i18n-react": "0.0.0",
     "@webiny/plugins": "0.0.0",
