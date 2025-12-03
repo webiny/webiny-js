@@ -1,6 +1,6 @@
 import { describe, test, expect } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-import { expectNotAuthorized, expectFileNotAuthorized } from "./utils/expectNotAuthorized";
+import { expectNotAuthorized, expectFileNotAuthorized } from "./utils/expectNotAuthorized.js";
 import { mdbid } from "@webiny/utils";
 import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
@@ -458,15 +458,9 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             ).resolves.toMatchObject({
                 data: null,
                 error: {
-                    code: "DELETE_FOLDER_WITH_CHILDREN",
-                    data: {
-                        folder: {
-                            slug: "folder-a"
-                        },
-                        hasFolders: true,
-                        hasContent: false
-                    },
-                    message: "Delete all child folders and entries before proceeding."
+                    code: "Aco/Folder/NotEmpty",
+                    data: null,
+                    message: "Folder is not empty."
                 }
             });
 
@@ -488,14 +482,7 @@ describe("Folder Level Permissions - File Manager GraphQL API", () => {
             await expectNotAuthorized(
                 gqlIdentityC.aco.deleteFolder({ id: folderA.id }).then(([response]) => {
                     return response.data.aco.deleteFolder;
-                }),
-                {
-                    folder: { id: folderA.id },
-
-                    // There are no entries in the folder, but there is one invisible / inaccessible folder.
-                    hasContent: false,
-                    hasFolders: true
-                }
+                })
             );
         }
     );

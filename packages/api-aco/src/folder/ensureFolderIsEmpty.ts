@@ -2,6 +2,7 @@ import WebinyError from "@webiny/error";
 import type { AcoContext, Folder } from "~/types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
+import { ListFoldersUseCase } from "~/features/folders/ListFolders/index.js";
 
 interface EnsureFolderIsEmptyParams {
     context: AcoContext;
@@ -15,16 +16,19 @@ export const ensureFolderIsEmpty = async ({
     hasContentCallback
 }: EnsureFolderIsEmptyParams) => {
     const flp = context.container.resolve(FolderLevelPermissions);
+    const listFolders = context.container.resolve(ListFoldersUseCase);
 
     const hasFoldersCallback = async () => {
         const { id, type } = folder;
-        const [folders] = await context.aco.folder.list({
+        const result = await listFolders.execute({
             where: {
                 type,
                 parentId: id
             },
             limit: 1
         });
+
+        const [folders] = result.value;
 
         return folders.length > 0;
     };

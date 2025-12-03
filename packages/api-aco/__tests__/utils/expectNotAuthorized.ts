@@ -14,6 +14,20 @@ export const expectNotAuthorized = async (
     });
 };
 
+export const expectCmsNotAuthorized = async (
+    promise: Promise<any>,
+    data: Record<string, any> | null = null
+) => {
+    await expect(promise).resolves.toMatchObject({
+        data: null,
+        error: {
+            code: "Cms/Entry/NotAuthorized",
+            data,
+            message: "Not authorized!"
+        }
+    });
+};
+
 export const expectFileNotAuthorized = async (
     promise: Promise<any>,
     data: Record<string, any> | null = null

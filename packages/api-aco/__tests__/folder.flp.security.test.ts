@@ -1,6 +1,6 @@
 import { describe, it, test, expect } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-import { expectNotAuthorized } from "~tests/utils/expectNotAuthorized";
+import { expectNotAuthorized } from "~tests/utils/expectNotAuthorized.js";
 import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
 
 const FOLDER_TYPE = "test-folders";
@@ -191,7 +191,7 @@ describe("Folder Level Permissions - Security Checks", () => {
                     return response.data.aco.updateFolder.error;
                 })
         ).resolves.toEqual({
-            code: "CANNOT_LOOSE_FOLDER_ACCESS",
+            code: "Aco/Folder/ValidationError",
             data: null,
             message: "Cannot continue because you would loose access to this folder."
         });
@@ -365,7 +365,7 @@ describe("Folder Level Permissions - Security Checks", () => {
                     return response.data.aco.updateFolder.error;
                 })
         ).resolves.toEqual({
-            code: "CANNOT_MOVE_FOLDER_TO_NEW_PARENT",
+            code: "Aco/Folder/CannotMoveToNewParent",
             data: null,
             message:
                 "Cannot move folder to a new parent because you don't have access to the new parent."
@@ -478,7 +478,7 @@ describe("Folder Level Permissions - Security Checks", () => {
                     return response.data.aco.updateFolder.error;
                 })
         ).resolves.toEqual({
-            code: "CANNOT_MOVE_FOLDER_TO_NEW_PARENT",
+            code: "Aco/Folder/CannotMoveToNewParent",
             data: null,
             message:
                 "Cannot move folder to a new parent because you don't have access to the new parent."

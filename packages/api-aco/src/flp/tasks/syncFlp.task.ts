@@ -7,6 +7,8 @@ import {
     type IUpdateFlpTaskInput
 } from "~/types.js";
 import { PB_PAGE_TYPE, FM_FILE_TYPE } from "~/constants.js";
+import { GetFolderUseCase } from "~/features/folders/GetFolder/index.js";
+import { ListFoldersUseCase } from "~/features/folders/ListFolders/index.js";
 
 class SyncFlpTask {
     public init = () => {
@@ -23,14 +25,18 @@ class SyncFlpTask {
                         return response.aborted();
                     }
 
+                    const getFolder = context.container.resolve(GetFolderUseCase);
+                    const listFolders = context.container.resolve(ListFoldersUseCase);
+
                     /**
                      * `folderId` provided in the task input. We need to:
                      *
                      * - update the FLP records for the found folder and all its descendants.
                      */
                     if (input.folderId) {
-                        const folder = await context.security.withoutAuthorization(() => {
-                            return context.aco.folder.get(input.folderId!);
+                        const folder = await context.security.withoutAuthorization(async () => {
+                            const result = await getFolder.execute(input.folderId!);
+                            return result.value;
                         });
 
                         await context.tasks.trigger<IUpdateFlpTaskInput>({
@@ -66,14 +72,16 @@ class SyncFlpTask {
                         }
 
                         for (const folderType of folderTypes) {
-                            const [folders] = await context.security.withoutAuthorization(() => {
-                                return context.aco.folder.list({
+                            const result = await context.security.withoutAuthorization(() => {
+                                return listFolders.execute({
                                     where: {
                                         type: folderType,
                                         parentId: null
                                     }
                                 });
                             });
+
+                            const [folders] = result.value;
 
                             for (const folder of folders) {
                                 await context.tasks.trigger<IUpdateFlpTaskInput>({
@@ -104,14 +112,16 @@ class SyncFlpTask {
                      * - update the FLP records for the found folders and all its descendants.
                      */
                     if (input.type) {
-                        const [folders] = await context.security.withoutAuthorization(() => {
-                            return context.aco.folder.list({
+                        const result = await context.security.withoutAuthorization(() => {
+                            return listFolders.execute({
                                 where: {
                                     type: input.type!,
                                     parentId: null
                                 }
                             });
                         });
+
+                        const [folders] = result.value;
 
                         for (const folder of folders) {
                             await context.tasks.trigger<IUpdateFlpTaskInput>({

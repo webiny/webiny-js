@@ -4,6 +4,8 @@ import type { Folder } from "~/folder/folder.types";
 import { ROOT_FOLDER } from "~/constants";
 import { CreateFlpUseCase } from "~/features/flp/CreateFlp/index.js";
 import { DeleteFlpUseCase } from "~/features/flp/DeleteFlp/index.js";
+import { CreateFolderUseCase } from "~/features/folders/CreateFolder/index.js";
+import { UpdateFolderUseCase } from "~/features/folders/UpdateFolder/index.js";
 
 describe("FLP Tasks", () => {
     describe("Folder Level Permissions -  CREATE FLP", () => {
@@ -15,14 +17,16 @@ describe("FLP Tasks", () => {
 
         it("should create an FLP record without a parent folder", async () => {
             const context = await handler();
+            const createFolder = context.container.resolve(CreateFolderUseCase)
 
-            const folder = await context.aco.folder.create({
+            const result = await createFolder.execute({
                 title: "Folder 1",
                 type: "type1",
                 slug: "folder1",
                 parentId: null
             });
 
+            const folder = result.value;
             const flp = await context.aco.flp.get(folder.id);
 
             expect(flp).toMatchObject({
@@ -37,15 +41,18 @@ describe("FLP Tasks", () => {
 
         it("should create an FLP record with a parent folder", async () => {
             const context = await handler();
+            const createFolder = context.container.resolve(CreateFolderUseCase)
+            const updateFolder = context.container.resolve(UpdateFolderUseCase)
 
-            const folder1 = await context.aco.folder.create({
+            const result1 = await createFolder.execute({
                 title: "Folder 1",
                 type: "type1",
                 slug: "folder1",
                 parentId: null
             });
 
-            await context.aco.folder.update(folder1.id, {
+            const folder1 = result1.value;
+            await updateFolder.execute(folder1.id, {
                 permissions: [
                     {
                         target: "admin:1234",
@@ -54,13 +61,14 @@ describe("FLP Tasks", () => {
                 ]
             });
 
-            const folder2 = await context.aco.folder.create({
+            const result2 = await createFolder.execute({
                 title: "Folder 2",
                 type: "type1",
                 slug: "folder2",
                 parentId: folder1.id
             });
 
+            const folder2 = result2.value;
             const flp = await context.aco.flp.get(folder2.id);
 
             expect(flp).toMatchObject({
@@ -90,8 +98,9 @@ describe("FLP Tasks", () => {
 
         it("should throw an error if the parent FLP is not found", async () => {
             const context = await handler();
+            const createFolder = context.container.resolve(CreateFolderUseCase)
 
-            const parentFolder = {
+            const parentFolderInput = {
                 title: "Parent Folder",
                 type: "type1",
                 slug: "parent-folder",
@@ -99,19 +108,22 @@ describe("FLP Tasks", () => {
             };
 
             // Let's create the parent folder first
-            const parentFolderResponse = await context.aco.folder.create(parentFolder);
+            const parentFolderResponse = await createFolder.execute(parentFolderInput);
+            const parentFolder = parentFolderResponse.value;
 
             // Let's delete the parent folder FLP record, this should not happen in real life.
-            await context.aco.flp.delete(parentFolderResponse.id);
+            await context.aco.flp.delete(parentFolder.id);
 
             const folder = {
                 title: "Folder",
                 type: "type1",
                 slug: "folder-id",
-                parentId: parentFolderResponse.id
+                parentId: parentFolder.id
             };
 
-            await expect(context.aco.folder.create(folder)).rejects.toThrow(
+            const createResult = await createFolder.execute(folder);
+
+            expect(createResult.error.message).toEqual(
                 "Parent folder level permission not found. Unable to create a new record in the FLP catalog."
             );
         });
@@ -135,13 +147,16 @@ describe("FLP Tasks", () => {
 
         it("should delete an FLP record successfully", async () => {
             const context = await handler();
+            const createFolder = context.container.resolve(CreateFolderUseCase)
 
-            const folder = await context.aco.folder.create({
+            const result = await createFolder.execute({
                 title: "Folder 1",
                 type: "type1",
                 slug: "folder1",
                 parentId: null
             });
+
+            const folder = result.value;
 
             const flp = await context.aco.flp.get(folder.id);
 
@@ -172,15 +187,19 @@ describe("FLP Tasks", () => {
 
         it("should update a root folder's permissions", async () => {
             const context = await handler();
+            const createFolder = context.container.resolve(CreateFolderUseCase)
+            const updateFolder = context.container.resolve(UpdateFolderUseCase)
 
-            const folder = await context.aco.folder.create({
+            const result = await createFolder.execute({
                 type,
                 title: "Main folder",
                 slug: "main-folder",
                 parentId: null
             });
 
-            await context.aco.folder.update(folder.id, {
+            const folder = result.value;
+
+            await updateFolder.execute(folder.id, {
                 permissions: [
                     {
                         target: "admin:1234",
@@ -207,17 +226,23 @@ describe("FLP Tasks", () => {
 
         it("should update a folder's slug and path", async () => {
             const context = await handler();
+            const createFolder = context.container.resolve(CreateFolderUseCase)
+            const updateFolder = context.container.resolve(UpdateFolderUseCase)
 
-            const folder = await context.aco.folder.create({
+            const result = await createFolder.execute({
                 type,
                 title: "Folder 1",
                 slug: "folder-1",
                 parentId: null
             });
 
-            const updatedFolder = await context.aco.folder.update(folder.id, {
+            const folder = result.value;
+
+            const updatedFolderResult = await updateFolder.execute(folder.id, {
                 slug: "folder-1-updated"
             });
+
+            const updatedFolder = updatedFolderResult.value;
 
             const flp = await context.aco.flp.get(folder.id);
             expect(flp).toMatchObject({
@@ -232,25 +257,31 @@ describe("FLP Tasks", () => {
 
         it("should update a folder's parent and path", async () => {
             const context = await handler();
+            const createFolder = context.container.resolve(CreateFolderUseCase)
+            const updateFolder = context.container.resolve(UpdateFolderUseCase)
 
             // Create parent folder
-            const parentFolder = await context.aco.folder.create({
+            const parentFolderResult = await createFolder.execute({
                 type,
                 title: "Parent folder",
                 slug: "parent-folder",
                 parentId: null
             });
 
+            const parentFolder = parentFolderResult.value;
+
             // Create child folder
-            const childFolder = await context.aco.folder.create({
+            const childFolderResult = await createFolder.execute({
                 type,
                 title: "Child folder",
                 slug: "child-folder",
                 parentId: null
             });
 
+            const childFolder = childFolderResult.value;
+
             // Update child folder to be under parent
-            await context.aco.folder.update(childFolder.id, {
+            await updateFolder.execute(childFolder.id, {
                 parentId: parentFolder.id
             });
 

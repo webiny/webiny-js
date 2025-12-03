@@ -1,7 +1,6 @@
 import type { Context as BaseContext } from "@webiny/handler/types.js";
 import type { Context as TasksContext } from "@webiny/tasks/types.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
-import type { AcoFolderCrud, AcoFolderStorageOperations } from "~/folder/folder.types.js";
 import type { AcoFilterCrud, AcoFilterStorageOperations } from "~/filter/filter.types.js";
 import type {
     AcoFolderLevelPermissionsCrud,
@@ -48,7 +47,6 @@ export interface AcoBaseFields {
 }
 
 export interface AdvancedContentOrganisation {
-    folder: AcoFolderCrud;
     filter: AcoFilterCrud;
     flp: AcoFolderLevelPermissionsCrud;
 }
@@ -62,7 +60,6 @@ export interface CreateAcoParams {
 }
 
 export interface AcoStorageOperations {
-    folder: AcoFolderStorageOperations;
     filter: AcoFilterStorageOperations;
     flp: AcoFolderLevelPermissionsStorageOperations;
 }

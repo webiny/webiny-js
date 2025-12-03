@@ -1,43 +1,18 @@
-import {
-    EventPublisher,
-    EventPublisher as EventPublisherAbstraction
-} from "@webiny/api-core/features/EventPublisher";
+import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
-import { GetFolderUseCase as UseCaseAbstraction } from "./abstractions.js";
-import { FolderBeforeGetEvent, FolderAfterGetEvent } from "./events.js";
-import type { Folder, GetFolderParams, AcoFolderStorageOperations } from "~/folder/folder.types.js";
-import { FolderStorageOperations } from "~/features/folders/shared/abstractions.js";
+import { GetFolderUseCase as UseCaseAbstraction, GetFolderRepository } from "./abstractions.js";
+import type { Folder } from "~/folder/folder.types.js";
 
 class GetFolderUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(
-        private eventPublisher: EventPublisherAbstraction.Interface,
-        private storageOperations: AcoFolderStorageOperations
-    ) {}
+    constructor(private repository: GetFolderRepository.Interface) {}
 
-    async execute(params: GetFolderParams): Promise<Folder> {
-        // Publish before get event
-        const beforeGetEvent = new FolderBeforeGetEvent({
-            params
-        });
-
-        await this.eventPublisher.publish(beforeGetEvent);
-
-        // Execute the get operation
-        const folder = await this.storageOperations.getFolder(params);
-
-        // Publish after get event
-        const afterGetEvent = new FolderAfterGetEvent({
-            folder
-        });
-
-        await this.eventPublisher.publish(afterGetEvent);
-
-        return folder;
+    async execute(id: string): Promise<Result<Folder, UseCaseAbstraction.Error>> {
+        return this.repository.execute(id);
     }
 }
 
 export const GetFolderUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: GetFolderUseCaseImpl,
-    dependencies: [EventPublisher, FolderStorageOperations]
+    dependencies: [GetFolderRepository]
 });

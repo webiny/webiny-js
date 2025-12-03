@@ -2,7 +2,6 @@ import type { CmsContext, HeadlessCms } from "@webiny/api-headless-cms/types/ind
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 
 import { createFilterOperations } from "~/filter/filter.so.js";
-import { createFolderOperations } from "~/folder/folder.so.js";
 import { createAcoModels } from "~/createAcoModels.js";
 
 import type { AcoStorageOperations } from "~/types.js";
@@ -24,7 +23,6 @@ export const createAcoStorageOperations = async (
     await createAcoModels(context);
 
     return {
-        folder: createFolderOperations(params),
         filter: createFilterOperations(params),
         flp: createFlpOperations(params)
     };

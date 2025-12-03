@@ -1,4 +1,4 @@
-import { createAbstraction } from "@webiny/feature/api";
+import { createAbstraction, Result } from "@webiny/feature/api";
 import type {
     FolderLevelPermissionsTarget,
     FolderLevelPermissionsTargetListMeta
@@ -6,7 +6,9 @@ import type {
 
 // Use Case Abstraction
 export interface IListFolderLevelPermissionsTargetsUseCase {
-    execute: () => Promise<[FolderLevelPermissionsTarget[], FolderLevelPermissionsTargetListMeta]>;
+    execute: () => Promise<
+        Result<[FolderLevelPermissionsTarget[], FolderLevelPermissionsTargetListMeta]>
+    >;
 }
 
 export const ListFolderLevelPermissionsTargetsUseCase =
@@ -16,4 +18,7 @@ export const ListFolderLevelPermissionsTargetsUseCase =
 
 export namespace ListFolderLevelPermissionsTargetsUseCase {
     export type Interface = IListFolderLevelPermissionsTargetsUseCase;
+    export type Return = Promise<
+        Result<[FolderLevelPermissionsTarget[], FolderLevelPermissionsTargetListMeta]>
+    >;
 }

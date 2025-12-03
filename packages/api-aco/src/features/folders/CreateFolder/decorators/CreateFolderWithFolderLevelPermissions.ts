@@ -1,8 +1,8 @@
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { CreateFolderUseCase } from "../abstractions.js";
 import type { CreateFolderParams } from "~/folder/folder.types.js";
-import { createDecorator } from "@webiny/feature/api";
-import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
+import { createDecorator, Result } from "@webiny/feature/api";
+import { FolderNotAuthorizedError } from "~/domain/folder/errors.js";
 
 class CreateFolderWithFolderLevelPermissionsImpl implements CreateFolderUseCase.Interface {
     private folderLevelPermissions: FolderLevelPermissions.Interface;
@@ -16,7 +16,7 @@ class CreateFolderWithFolderLevelPermissionsImpl implements CreateFolderUseCase.
         this.decoretee = decoretee;
     }
 
-    async execute(params: CreateFolderParams) {
+    async execute(params: CreateFolderParams): CreateFolderUseCase.Return {
         let canCreateFolder: boolean;
         if (params.parentId) {
             const permissions = await this.folderLevelPermissions.getFolderLevelPermissions(
@@ -31,20 +31,26 @@ class CreateFolderWithFolderLevelPermissionsImpl implements CreateFolderUseCase.
         }
 
         if (!canCreateFolder) {
-            throw new NotAuthorizedError();
+            return Result.fail(new FolderNotAuthorizedError());
         }
 
-        const folder = await this.decoretee.execute(params);
+        const result = await this.decoretee.execute(params);
+
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const folder = result.value;
 
         // Let's set default permissions based on the current user.
         const permissionsWithDefaults = await this.folderLevelPermissions.getDefaultPermissions(
             folder?.permissions ?? []
         );
 
-        return {
+        return Result.ok({
             ...folder,
             permissions: permissionsWithDefaults
-        };
+        });
     }
 }
 

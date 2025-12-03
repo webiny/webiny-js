@@ -228,8 +228,12 @@ describe("`folder` CRUD", () => {
                     getFolder: {
                         data: null,
                         error: {
-                            code: "Cms/Entry/NotFound",
-                            data: null
+                            code: "Aco/Folder/NotFound",
+                            data: {
+                                folder: {
+                                    id: expect.any(String)
+                                }
+                            }
                         }
                     }
                 }
@@ -734,8 +738,9 @@ describe("`folder` CRUD", () => {
                     deleteFolder: {
                         data: null,
                         error: expect.objectContaining({
-                            code: "DELETE_FOLDER_WITH_CHILDREN",
-                            message: "Delete all child folders and entries before proceeding."
+                            code: "Aco/Folder/NotEmpty",
+                            data: null,
+                            message: "Folder is not empty."
                         })
                     }
                 }
@@ -812,8 +817,9 @@ describe("`folder` CRUD", () => {
                     deleteFolder: {
                         data: null,
                         error: expect.objectContaining({
-                            code: "DELETE_FOLDER_WITH_CHILDREN",
-                            message: "Delete all child folders and entries before proceeding."
+                            code: "Aco/Folder/NotEmpty",
+                            data: null,
+                            message: "Folder is not empty."
                         })
                     }
                 }
@@ -871,14 +877,9 @@ describe("`folder` CRUD", () => {
                     createFolder: {
                         data: null,
                         error: {
-                            code: "FOLDER_ALREADY_EXISTS",
+                            code: "Aco/Folder/ValidationError",
                             message: `Folder with slug "${folderMocks.folderA.slug}" already exists at this level.`,
-                            data: {
-                                params: {
-                                    slug: "folder-a",
-                                    type: "page"
-                                }
-                            }
+                            data: null
                         }
                     }
                 }
@@ -900,17 +901,9 @@ describe("`folder` CRUD", () => {
                     createFolder: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Aco/Folder/ValidationError",
                             message: "Validation failed.",
-                            data: [
-                                {
-                                    error: "Value is required.",
-                                    fieldId: "title",
-                                    storageId: "text@title",
-                                    id: "title",
-                                    parents: []
-                                }
-                            ]
+                            data: null
                         }
                     }
                 }
@@ -932,17 +925,9 @@ describe("`folder` CRUD", () => {
                     createFolder: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Aco/Folder/ValidationError",
                             message: "Validation failed.",
-                            data: [
-                                {
-                                    error: "Value is required.",
-                                    fieldId: "slug",
-                                    storageId: "text@slug",
-                                    id: "slug",
-                                    parents: []
-                                }
-                            ]
+                            data: null
                         }
                     }
                 }
@@ -964,17 +949,9 @@ describe("`folder` CRUD", () => {
                     createFolder: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Aco/Folder/ValidationError",
                             message: "Validation failed.",
-                            data: [
-                                {
-                                    error: "Value must consist of only 'a-z', '0-9' and '-'.",
-                                    fieldId: "slug",
-                                    storageId: "text@slug",
-                                    id: "slug",
-                                    parents: []
-                                }
-                            ]
+                            data: null
                         }
                     }
                 }
@@ -1012,9 +989,13 @@ describe("`folder` CRUD", () => {
         expect(result.data.aco.updateFolder).toEqual({
             data: null,
             error: {
-                code: "Cms/Entry/NotFound",
-                message: `Entry "${id}" was not found!`,
-                data: null
+                code: "Aco/Folder/NotFound",
+                message: `Folder not found!`,
+                data: {
+                    folder: {
+                        id: "any-id"
+                    }
+                }
             }
         });
     });
@@ -1042,7 +1023,7 @@ describe("`folder` CRUD", () => {
                     updateFolder: {
                         data: null,
                         error: expect.objectContaining({
-                            code: "FOLDER_ALREADY_EXISTS",
+                            code: "Aco/Folder/ValidationError",
                             message: `Folder with slug "${folderMocks.folderA.slug}" already exists at this level.`
                         })
                     }

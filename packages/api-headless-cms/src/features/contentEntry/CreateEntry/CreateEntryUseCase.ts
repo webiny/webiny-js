@@ -11,7 +11,7 @@ import type {
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput
 } from "~/types/index.js";
-import { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
+import { EntryNotAuthorizedError, EntryValidationError } from "~/domain/contentEntry/errors.js";
 import { createEntryData } from "~/crud/contentEntry/entryDataFactories/createEntryData.js";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
@@ -90,6 +90,9 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
 
             return Result.ok(entry);
         } catch (error) {
+            if (error.code === "VALIDATION_FAILED") {
+                return Result.fail(new EntryValidationError(error.message));
+            }
             // Handle errors from createEntryData or other operations
             return Result.fail(error as UseCaseAbstraction.Error);
         }

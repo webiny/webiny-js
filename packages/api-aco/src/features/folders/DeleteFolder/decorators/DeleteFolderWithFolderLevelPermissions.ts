@@ -1,7 +1,7 @@
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { DeleteFolderUseCase } from "../abstractions.js";
 import type { DeleteFolderParams } from "~/folder/folder.types.js";
-import { createDecorator } from "@webiny/feature/api";
+import { createDecorator, Result } from "@webiny/feature/api";
 
 class DeleteFolderWithFolderLevelPermissionsImpl implements DeleteFolderUseCase.Interface {
     private folderLevelPermissions: FolderLevelPermissions.Interface;
@@ -21,8 +21,14 @@ class DeleteFolderWithFolderLevelPermissionsImpl implements DeleteFolderUseCase.
             permissions,
             rwd: "d"
         });
-        await this.decoretee.execute(params);
-        return true;
+
+        const result = await this.decoretee.execute(params);
+
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        return Result.ok();
     }
 }
 

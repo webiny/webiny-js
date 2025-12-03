@@ -1,26 +1,38 @@
+import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
 import {
     EventPublisher,
     EventPublisher as EventPublisherAbstraction
 } from "@webiny/api-core/features/EventPublisher";
-import { UpdateFolderUseCase as UseCaseAbstraction } from "./abstractions.js";
+import {
+    UpdateFolderUseCase as UseCaseAbstraction,
+    UpdateFolderRepository
+} from "./abstractions.js";
+import { GetFolderRepository } from "../GetFolder/abstractions.js";
 import { FolderBeforeUpdateEvent, FolderAfterUpdateEvent } from "./events.js";
-import type {
-    Folder,
-    UpdateFolderParams,
-    AcoFolderStorageOperations
-} from "~/folder/folder.types.js";
-import { FolderStorageOperations } from "~/features/folders/shared/abstractions.js";
+import type { Folder, UpdateFolderParams } from "~/folder/folder.types.js";
 
 class UpdateFolderUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private eventPublisher: EventPublisherAbstraction.Interface,
-        private storageOperations: AcoFolderStorageOperations
+        private getFolderRepository: GetFolderRepository.Interface,
+        private repository: UpdateFolderRepository.Interface
     ) {}
 
-    async execute(id: string, input: UpdateFolderParams): Promise<Folder> {
+    async execute(
+        id: string,
+        input: UpdateFolderParams
+    ): Promise<Result<Folder, UseCaseAbstraction.Error>> {
         const useCaseInput = { id, data: input };
-        const original = await this.storageOperations.getFolder({ id });
+
+        // Get original folder for events
+        const originalResult = await this.getFolderRepository.execute(id);
+
+        if (originalResult.isFail()) {
+            return originalResult;
+        }
+
+        const original = originalResult.value;
 
         // Publish before update event
         const beforeUpdateEvent = new FolderBeforeUpdateEvent({
@@ -31,10 +43,13 @@ class UpdateFolderUseCaseImpl implements UseCaseAbstraction.Interface {
         await this.eventPublisher.publish(beforeUpdateEvent);
 
         // Execute the update operation
-        const folder = await this.storageOperations.updateFolder({
-            id,
-            data: input
-        });
+        const result = await this.repository.execute(id, input);
+
+        if (result.isFail()) {
+            return result;
+        }
+
+        const folder = result.value;
 
         // Publish after update event
         const afterUpdateEvent = new FolderAfterUpdateEvent({
@@ -45,12 +60,12 @@ class UpdateFolderUseCaseImpl implements UseCaseAbstraction.Interface {
 
         await this.eventPublisher.publish(afterUpdateEvent);
 
-        return folder;
+        return Result.ok(folder);
     }
 }
 
 export const UpdateFolderUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: UpdateFolderUseCaseImpl,
-    dependencies: [EventPublisher, FolderStorageOperations]
+    dependencies: [EventPublisher, GetFolderRepository, UpdateFolderRepository]
 });

@@ -1,10 +1,6 @@
+import { Result } from "@webiny/feature/api";
 import { ListFolderLevelPermissionsTargetsUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { validation } from "@webiny/validation";
-import type {
-    FolderLevelPermissionsTarget,
-    FolderLevelPermissionsTargetListMeta
-} from "~/folder/folder.types.js";
-import { createImplementation } from "@webiny/di";
 import { ListUsersUseCase } from "@webiny/api-core/features/ListUsers";
 import { ListTeamsUseCase } from "@webiny/api-core/features/ListTeams";
 
@@ -14,14 +10,12 @@ class ListFolderLevelPermissionsTargetsUseCaseImpl implements UseCaseAbstraction
         private listTeams: ListTeamsUseCase.Interface
     ) {}
 
-    public async execute(): Promise<
-        [FolderLevelPermissionsTarget[], FolderLevelPermissionsTargetListMeta]
-    > {
+    public async execute(): UseCaseAbstraction.Return {
         const adminUsersResult = await this.listAdminUsers.execute();
         const teamsResult = await this.listTeams.execute();
 
         if (adminUsersResult.isFail() || teamsResult.isFail()) {
-            return [[], { totalCount: 0 }];
+            return Result.ok([[], { totalCount: 0 }]);
         }
 
         const adminUsers = adminUsersResult.value;
@@ -69,12 +63,11 @@ class ListFolderLevelPermissionsTargetsUseCaseImpl implements UseCaseAbstraction
         const results = [...teamTargets, ...adminUserTargets];
         const meta = { totalCount: results.length };
 
-        return [results, meta];
+        return Result.ok([results, meta]);
     }
 }
 
-export const ListFolderLevelPermissionsTargetsUseCase = createImplementation({
-    abstraction: UseCaseAbstraction,
+export const ListFolderLevelPermissionsTargetsUseCase = UseCaseAbstraction.createImplementation({
     implementation: ListFolderLevelPermissionsTargetsUseCaseImpl,
     dependencies: [ListUsersUseCase, ListTeamsUseCase]
 });

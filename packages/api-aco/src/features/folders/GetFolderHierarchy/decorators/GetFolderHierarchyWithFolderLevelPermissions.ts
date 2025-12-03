@@ -1,12 +1,8 @@
-import { createDecorator } from "@webiny/feature/api";
+import { createDecorator, Result } from "@webiny/feature/api";
 import type { FolderPermission } from "~/flp/flp.types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { GetFolderHierarchyUseCase } from "../abstractions.js";
-import type {
-    Folder,
-    GetFolderHierarchyParams,
-    GetFolderHierarchyResponse
-} from "~/folder/folder.types.js";
+import type { Folder, GetFolderHierarchyParams } from "~/folder/folder.types.js";
 
 class GetFolderHierarchyWithFolderLevelPermissionsImpl
     implements GetFolderHierarchyUseCase.Interface
@@ -18,8 +14,14 @@ class GetFolderHierarchyWithFolderLevelPermissionsImpl
         private decoratee: GetFolderHierarchyUseCase.Interface
     ) {}
 
-    async execute(params: GetFolderHierarchyParams): Promise<GetFolderHierarchyResponse> {
-        const { siblings, parents } = await this.decoratee.execute(params);
+    async execute(params: GetFolderHierarchyParams): GetFolderHierarchyUseCase.Return {
+        const result = await this.decoratee.execute(params);
+
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const { siblings, parents } = result.value;
         const folders = [...parents, ...siblings];
 
         await Promise.all(
@@ -33,10 +35,10 @@ class GetFolderHierarchyWithFolderLevelPermissionsImpl
             })
         );
 
-        return {
+        return Result.ok({
             parents: await this.filterAccessibleFolders(parents),
             siblings: await this.filterAccessibleFolders(siblings)
-        };
+        });
     }
 
     private async filterAccessibleFolders(folders: Folder[]): Promise<Folder[]> {

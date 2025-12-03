@@ -1,32 +1,55 @@
+import { Result } from "@webiny/feature/api";
 import {
     EventPublisher,
     EventPublisher as EventPublisherAbstraction
 } from "@webiny/api-core/features/EventPublisher";
-import { DeleteFolderUseCase as UseCaseAbstraction } from "./abstractions.js";
+import {
+    DeleteFolderUseCase as UseCaseAbstraction,
+    DeleteFolderRepository
+} from "./abstractions.js";
+import { GetFolderRepository } from "../GetFolder/abstractions.js";
 import { FolderBeforeDeleteEvent, FolderAfterDeleteEvent } from "./events.js";
-import type { DeleteFolderParams, AcoFolderStorageOperations } from "~/folder/folder.types.js";
+import type { DeleteFolderParams } from "~/folder/folder.types.js";
 import { createImplementation } from "@webiny/di";
-import { FolderStorageOperations } from "~/features/folders/shared/abstractions.js";
+import { FolderNotAuthorizedError, FolderNotEmptyError } from "~/domain/folder/errors.js";
 
 class DeleteFolderUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private eventPublisher: EventPublisherAbstraction.Interface,
-        private storageOperations: AcoFolderStorageOperations
+        private getFolderRepository: GetFolderRepository.Interface,
+        private repository: DeleteFolderRepository.Interface
     ) {}
 
-    async execute(params: DeleteFolderParams): Promise<boolean> {
+    async execute(params: DeleteFolderParams): Promise<Result<void, UseCaseAbstraction.Error>> {
         // Get the folder before deletion
-        const folder = await this.storageOperations.getFolder({ id: params.id });
+        const getFolderResult = await this.getFolderRepository.execute(params.id);
+
+        if (getFolderResult.isFail()) {
+            return Result.fail(getFolderResult.error);
+        }
+
+        const folder = getFolderResult.value;
 
         // Publish before delete event
         const beforeDeleteEvent = new FolderBeforeDeleteEvent({
             folder
         });
 
-        await this.eventPublisher.publish(beforeDeleteEvent);
+        try {
+            await this.eventPublisher.publish(beforeDeleteEvent);
+        } catch (err) {
+            if (err.code === "DELETE_FOLDER_WITH_CHILDREN") {
+                return Result.fail(new FolderNotEmptyError());
+            }
+            return Result.fail(new FolderNotAuthorizedError());
+        }
 
         // Execute the delete operation
-        await this.storageOperations.deleteFolder(params);
+        const result = await this.repository.execute(folder);
+
+        if (result.isFail()) {
+            return result;
+        }
 
         // Publish after delete event
         const afterDeleteEvent = new FolderAfterDeleteEvent({
@@ -35,12 +58,12 @@ class DeleteFolderUseCaseImpl implements UseCaseAbstraction.Interface {
 
         await this.eventPublisher.publish(afterDeleteEvent);
 
-        return true;
+        return Result.ok();
     }
 }
 
 export const DeleteFolderUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: DeleteFolderUseCaseImpl,
-    dependencies: [EventPublisher, FolderStorageOperations]
+    dependencies: [EventPublisher, GetFolderRepository, DeleteFolderRepository]
 });

@@ -7,7 +7,7 @@ import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords.js";
 import { createGraphQLSchemaPluginFromFieldPlugins } from "@webiny/api-headless-cms/utils/getSchemaFromFieldPlugins.js";
-import { FOLDER_MODEL_ID } from "~/folder/folder.model.js";
+import { FOLDER_MODEL_ID } from "~/domain/folder/folder.model.js";
 
 const emptyResolver = () => ({});
 
