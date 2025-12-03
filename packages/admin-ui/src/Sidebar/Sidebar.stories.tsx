@@ -128,10 +128,9 @@ const SidebarComponent = () => {
                     icon={<Sidebar.Item.Icon label="Headless CMS" element={<CmsIcon />} />}
                 >
                     <Sidebar.Item
-                        text={"Ungrouped"}
+                        text={"Vehicles"}
                         icon={<Sidebar.Item.Icon label="Headless CMS" element={<StarRateIcon />} />}
                         action={<Sidebar.Item.Action element={<MoreVertIcon />} />}
-
                     >
                         <Sidebar.Link
                             text={"Cars"}
@@ -142,6 +141,22 @@ const SidebarComponent = () => {
                             text={"Planes"}
                             to={"#cms-planes"}
                             active={hash === "#cms-planes"}
+                        />
+                    </Sidebar.Item>{" "}
+                    <Sidebar.Item
+                        text={"Ungrouped"}
+                        icon={<Sidebar.Item.Icon label="Headless CMS" element={<StarRateIcon />} />}
+                        action={<Sidebar.Item.Action element={<MoreVertIcon />} />}
+                    >
+                        <Sidebar.Link
+                            text={"Articles"}
+                            to={"#cms-articles"}
+                            active={hash === "#cms-articles"}
+                        />
+                        <Sidebar.Link
+                            text={"Settings"}
+                            to={"#cms-settings"}
+                            active={hash === "#cms-settings"}
                         />
                     </Sidebar.Item>
                 </Sidebar.Item>
