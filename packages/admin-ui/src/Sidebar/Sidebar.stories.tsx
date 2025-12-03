@@ -13,6 +13,7 @@ import { ReactComponent as DocsIcon } from "@webiny/icons/summarize.svg";
 import { ReactComponent as ApiPlaygroundIcon } from "@webiny/icons/swap_horiz.svg";
 import { ReactComponent as MoreVertIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as FileManagerIcon } from "@webiny/icons/insert_drive_file.svg";
+import { ReactComponent as StarRateIcon } from "@webiny/icons/star_rate.svg";
 import { Sidebar } from "./Sidebar.js";
 import { SidebarProvider } from "~/Sidebar/components/SidebarProvider.js";
 import { DropdownMenu } from "~/DropdownMenu/index.js";
@@ -91,7 +92,7 @@ const SidebarComponent = () => {
                         <DropdownMenu.Item
                             text={
                                 <div className={"flex items-center"}>
-                                    Webiny 5.43.0
+                                    Webiny 6.0.0
                                     <Tag
                                         variant={"accent"}
                                         content={"WCP "}
@@ -122,6 +123,28 @@ const SidebarComponent = () => {
                     }}
                     icon={<Sidebar.Item.Icon label="File Manager" element={<FileManagerIcon />} />}
                 />
+                <Sidebar.Item
+                    text={"Content"}
+                    icon={<Sidebar.Item.Icon label="Headless CMS" element={<CmsIcon />} />}
+                >
+                    <Sidebar.Item
+                        text={"Ungrouped"}
+                        icon={<Sidebar.Item.Icon label="Headless CMS" element={<StarRateIcon />} />}
+                        action={<Sidebar.Item.Action element={<MoreVertIcon />} />}
+
+                    >
+                        <Sidebar.Link
+                            text={"Cars"}
+                            to={"#cms-cars"}
+                            active={hash === "#cms-cars"}
+                        />
+                        <Sidebar.Link
+                            text={"Planes"}
+                            to={"#cms-planes"}
+                            active={hash === "#cms-planes"}
+                        />
+                    </Sidebar.Item>
+                </Sidebar.Item>
                 <Sidebar.Item
                     text={"Headless CMS"}
                     icon={<Sidebar.Item.Icon label="Headless CMS" element={<CmsIcon />} />}
