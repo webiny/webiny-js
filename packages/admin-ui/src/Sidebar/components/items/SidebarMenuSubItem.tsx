@@ -53,7 +53,11 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
         );
 
         return (
-            <Collapsible.Root className="w-full group/menu-sub-item-collapsible">
+            <Collapsible.Root
+                className="w-full group/menu-sub-item-collapsible"
+                open={isSectionExpanded}
+                onOpenChange={toggleSectionExpanded}
+            >
                 <div className={"flex items-center"}>
                     <SidebarMenuSubItemIndentation
                         lvl={currentLevel}

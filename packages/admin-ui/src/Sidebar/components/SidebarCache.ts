@@ -26,5 +26,6 @@ export class SidebarCache {
 
     static set(state: CachedSidebarState) {
         window.localStorage.setItem(SIDEBAR_LS_KEY, JSON.stringify(state));
+        console.log(state)
     }
 }
