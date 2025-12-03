@@ -45,6 +45,10 @@ const SidebarMenuSubButton = ({
     to,
     ...linkProps
 }: SidebarMenuSubButtonProps) => {
+    const chevron = action ? (
+        <div className="flex ml-auto pointer-events-none">{action}</div>
+    ) : null;
+
     const { linkComponent: LinkComponent } = useAdminUi();
 
     const sharedProps = {
@@ -58,6 +62,7 @@ const SidebarMenuSubButton = ({
         <LinkComponent {...sharedProps} to={to} {...linkProps}>
             {icon}
             {text}
+            {chevron}
         </LinkComponent>
     ) : (
         <DivButton
@@ -67,17 +72,13 @@ const SidebarMenuSubButton = ({
         >
             {icon}
             {text}
+            {chevron}
         </DivButton>
     );
 
     // We can't use the default button element here because the content of the button
     // can also contain a button, which is not allowed in HTML.
-    return (
-        <div className={"flex items-center w-full"}>
-            {content}
-            <div className={"flex absolute right-sm-plus pointer-events-none"}>{action}</div>
-        </div>
-    );
+    return <div className={"flex items-center w-full"}>{content}</div>;
 };
 
 export { SidebarMenuSubButton };
