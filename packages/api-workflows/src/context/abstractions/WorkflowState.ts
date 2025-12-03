@@ -1,4 +1,4 @@
-import type { IWorkflow } from "./Workflow.js";
+import type { IWorkflowStep } from "./Workflow.js";
 
 export enum WorkflowStateRecordState {
     pending = "pending",
@@ -7,35 +7,59 @@ export enum WorkflowStateRecordState {
     rejected = "rejected"
 }
 
-export interface IWorkflowStateRecordStep {
-    id: string;
+/**
+ * We require all data from the workflow step to be stored in the state step.
+ */
+export interface IWorkflowStateRecordStep extends IWorkflowStep {
     state: WorkflowStateRecordState;
-    comment: string | undefined;
-    userId: string | undefined;
+    comment: string | null;
+    savedBy: IWorkflowStateIdentity | null;
 }
 
-export interface IWorkflowStateRecord {
+export interface IWorkflowStateIdentity {
+    id: string;
+    displayName: string | null;
+    type: string | null;
+}
+
+export interface IWorkflowStateRecord<
+    Steps extends IWorkflowStateRecordStep = IWorkflowStateRecordStep
+> {
     id: string;
     app: string;
+    title: string;
     workflowId: string;
     targetId: string;
     targetRevisionId: string;
+    isActive: boolean;
     comment: string | undefined;
     state: WorkflowStateRecordState;
-    steps: IWorkflowStateRecordStep[];
+    steps: Steps[];
+    createdOn: Date;
+    savedOn: Date;
+    createdBy: IWorkflowStateIdentity;
+    savedBy: IWorkflowStateIdentity;
 }
 
-export interface IWorkflowStateStep extends IWorkflowStateRecordStep {
-    name: string;
+export interface IEnrichedWorkflowStateRecordStep extends IWorkflowStateRecordStep {
+    isOwner: boolean;
+    canTakeOver: boolean;
+    canReview: boolean;
 }
 
-export interface IWorkflowState {
+export interface IWorkflowState<
+    T extends IEnrichedWorkflowStateRecordStep = IEnrichedWorkflowStateRecordStep
+> extends IWorkflowStateRecord<T> {
     readonly done: boolean;
-    readonly workflow: IWorkflow | null | undefined;
-    readonly record: IWorkflowStateRecord | undefined;
-    readonly activeStep: IWorkflowStateStep | undefined;
-    review(): Promise<void>;
-    approve(message?: string): Promise<void>;
-    reject(message: string): Promise<void>;
-    cancel(): Promise<void>;
+    currentStep: T;
+    nextStep: T | null;
+    previousStep: T | null;
+}
+
+export interface IWorkflowStateModel extends IWorkflowState {
+    getActiveStep(): IEnrichedWorkflowStateRecordStep | null;
+    start(): Promise<void>;
+    takeOver(): Promise<void>;
+    approve(comment?: string): Promise<void>;
+    reject(comment: string): Promise<void>;
 }

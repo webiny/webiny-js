@@ -3,9 +3,9 @@ import {
     ensurePluralApiName,
     ensureSingularApiName
 } from "~/crud/contentModel/compatibility/modelApiName.js";
-import type { Tenant } from "@webiny/api-tenancy/types.js";
-import type { I18NLocale } from "@webiny/api-i18n/types.js";
 import { ensureTypeTag } from "./ensureTypeTag.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
 
 interface Params {
     storageOperations: HeadlessCmsStorageOperations;

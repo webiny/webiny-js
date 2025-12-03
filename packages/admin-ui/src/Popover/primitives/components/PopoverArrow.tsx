@@ -5,8 +5,8 @@ import { cn, cva, type VariantProps } from "~/utils.js";
 const popoverArrowVariants = cva("", {
     variants: {
         variant: {
-            accent: "wby-border-neutral-black",
-            subtle: "wby-fill-neutral-base"
+            accent: "border-neutral-black",
+            subtle: "fill-neutral-base"
         }
     },
     defaultVariants: {

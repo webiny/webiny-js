@@ -11,11 +11,13 @@ describe(`"Login" test`, () => {
     const adminData = {
         firstName: "John",
         lastName: "Doe",
-        email: "admin@webiny.com"
+        email: "admin@webiny.com",
+        password: "12345678"
     };
 
     beforeEach(async () => {
-        const [response] = await install.install({ data: { ...adminData, password: "12345678" } });
+        const [response] = await install.install({ installationInput: [] });
+
         if (response?.data?.adminUsers?.install?.error) {
             console.log(response.data.adminUsers.install.error);
             throw new Error(response.data.adminUsers.install.error.message);
@@ -29,7 +31,7 @@ describe(`"Login" test`, () => {
         await adminUsers.create({
             data: {
                 ...adminData,
-                group: fullAccessGroup.id
+                groups: [fullAccessGroup.id]
             }
         });
     });

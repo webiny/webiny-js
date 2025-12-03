@@ -1,11 +1,11 @@
-import { Abstraction } from "@webiny/di-container";
-import { Command } from "~/abstractions/index.js";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
+import { CliCommand } from "~/abstractions/index.js";
 
 export type IError = Error;
 
 export interface IErrorHandlerParams<TParams> {
     error: Error;
-    command: Command.CommandDefinition<any>;
+    command: CliCommand.CommandDefinition<any>;
     params: TParams;
 }
 
@@ -13,7 +13,7 @@ export interface IErrorHandler<TParams> {
     execute(params: IErrorHandlerParams<TParams>): void;
 }
 
-export const ErrorHandler = new Abstraction<IErrorHandler<any>>("ErrorHandler");
+export const ErrorHandler = createAbstraction<IErrorHandler<any>>("ErrorHandler");
 
 export namespace ErrorHandler {
     export type Interface<TParams> = IErrorHandler<TParams>;

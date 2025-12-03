@@ -1,10 +1,9 @@
-import { createImplementation } from "@webiny/di-container";
 import { ApiBeforeWatch, GetAppStackOutput } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
 const NO_DEPLOYMENT_CHECKS_FLAG_NAME = "--no-deployment-checks";
 
-class EnsureApiDeployedBeforeWatch implements ApiBeforeWatch.Interface {
+class EnsureApiDeployedBeforeWatchImpl implements ApiBeforeWatch.Interface {
     constructor(private getAppStackOutput: GetAppStackOutput.Interface) {}
 
     async execute(params: ApiBeforeWatch.Params) {
@@ -33,8 +32,7 @@ class EnsureApiDeployedBeforeWatch implements ApiBeforeWatch.Interface {
     }
 }
 
-export default createImplementation({
-    abstraction: ApiBeforeWatch,
-    implementation: EnsureApiDeployedBeforeWatch,
+export const EnsureApiDeployedBeforeWatch = ApiBeforeWatch.createImplementation({
+    implementation: EnsureApiDeployedBeforeWatchImpl,
     dependencies: [GetAppStackOutput]
 });

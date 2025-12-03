@@ -8,7 +8,7 @@ export interface IWorkflowStepTeam {
     id: string;
 }
 
-export interface WorkflowStep {
+export interface IWorkflowStep {
     id: string;
     title: string;
     color: string;
@@ -21,5 +21,5 @@ export interface IWorkflow {
     id: string;
     app: string;
     name: string;
-    steps: NonEmptyArray<WorkflowStep>;
+    steps: NonEmptyArray<IWorkflowStep>;
 }

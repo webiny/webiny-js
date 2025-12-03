@@ -116,7 +116,7 @@ export const GhostNegativeVariant: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-dark wby-p-xl">
+            <div className="bg-neutral-dark p-xl">
                 <Story />
             </div>
         )
@@ -130,7 +130,7 @@ export const GhostNegativeVariantDisabled: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-dark wby-p-xl">
+            <div className="bg-neutral-dark p-xl">
                 <Story />
             </div>
         )
@@ -144,7 +144,7 @@ export const GhostNegativeVariantInvalid: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-dark wby-p-xl">
+            <div className="bg-neutral-dark p-xl">
                 <Story />
             </div>
         )

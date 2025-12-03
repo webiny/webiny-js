@@ -1,11 +1,12 @@
 import React from "react";
-import { Heading, Icon, Text } from "@webiny/admin-ui";
+import { Widget, Icon, Text } from "@webiny/admin-ui";
 import { SimpleLink } from "@webiny/app-admin";
 // Icons
 import { ReactComponent as YouTubeIcon } from "./assets/youtube.svg";
 import { ReactComponent as GithubIcon } from "./assets/github.svg";
 import { ReactComponent as SlackIcon } from "./assets/slack.svg";
 import { ReactComponent as TwitterIcon } from "./assets/x-twitter.svg";
+import { ReactComponent as PeopleAltIcon } from "@webiny/icons/people_alt.svg";
 
 interface SocialLinkProps {
     link: string;
@@ -15,26 +16,22 @@ interface SocialLinkProps {
 
 const SocialLink = ({ link, label, icon }: SocialLinkProps) => {
     return (
-        <div
-            className={
-                "wby-w-[64px] wby-bg-neutral-base wby-rounded-md hover:wby-opacity-80 wby-transition-opacity"
-            }
-        >
+        <div className={"w-3xl bg-neutral-base rounded-md hover:opacity-80 transition-opacity"}>
             <SimpleLink
                 to={link}
-                className={"!wby-no-underline"}
+                className={"no-underline!"}
                 target={"_blank"}
                 rel={"noopener noreferrer"}
             >
-                <div className={"wby-px-xs wby-pt-sm-extra wby-pb-sm wby-text-center"}>
+                <div className={"px-xs pt-sm-extra pb-sm text-center"}>
                     <Icon
                         label={`${label} icon`}
                         icon={icon}
                         size={"lg"}
                         color={"inherit"}
-                        className={"wby-mx-auto wby-mb-sm"}
+                        className={"mx-auto mb-sm"}
                     />
-                    <Text size={"sm"} className={"wby-text-neutral-strong"}>
+                    <Text size={"sm"} className={"text-neutral-strong"}>
                         {label}
                     </Text>
                 </div>
@@ -45,14 +42,14 @@ const SocialLink = ({ link, label, icon }: SocialLinkProps) => {
 
 export const CommunityWidget = () => {
     return (
-        <div className={"wby-bg-neutral-light wby-rounded-xl wby-p-lg"}>
-            <div className={"wby-mb-md"}>
-                <Heading level={6}>{"Join our community:"}</Heading>
-                <Text size={"sm"} className={"wby-text-neutral-strong"}>
-                    {"Get to know Webiny team members, discuss new ideas and get help:"}
-                </Text>
-            </div>
-            <div className={"wby-flex wby-justify-start wby-items-stretch wby-gap-md"}>
+        <Widget
+            icon={<Widget.Icon icon={<PeopleAltIcon />} label={"Join our community"} />}
+            variant="light"
+            title="Join our community"
+            description="Get to know Webiny team members, discuss new ideas and get help:"
+            padding="md"
+        >
+            <div className={"flex justify-start items-stretch gap-md"}>
                 <SocialLink
                     link={"https://github.com/webiny/webiny-js"}
                     label={"GitHub"}
@@ -74,6 +71,6 @@ export const CommunityWidget = () => {
                     icon={<TwitterIcon />}
                 />
             </div>
-        </div>
+        </Widget>
     );
 };

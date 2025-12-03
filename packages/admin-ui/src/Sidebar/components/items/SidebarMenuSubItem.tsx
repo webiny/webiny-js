@@ -4,7 +4,7 @@ import { Collapsible } from "radix-ui";
 import { SidebarMenuSubButton } from "./SidebarMenuSubButton.js";
 import { SidebarMenuSubItemIndentation } from "./SidebarMenuSubItemIndentation.js";
 import { SidebarMenuSub } from "./SidebarMenuSub.js";
-import { IconButton } from "~/Button/index.js";
+import { Icon } from "~/Icon/index.js";
 import { ReactComponent as KeyboardArrowRightIcon } from "@webiny/icons/keyboard_arrow_down.svg";
 import { useSidebarMenu } from "./SidebarMenuProvider.js";
 import { type SidebarMenuItemProps } from "./SidebarMenuItem.js";
@@ -40,11 +40,11 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
         }
 
         const chevron = (
-            <IconButton
-                variant={"ghost"}
-                size={"xs"}
+            <Icon
+                label={"Expand / Collapse"}
+                size={"sm"}
                 className={
-                    "wby-ml-auto wby-transition-transform wby-duration-175 group-data-[state=open]/menu-sub-item-collapsible:wby-rotate-180 group-data-[state=collapsed]:wby-hidden"
+                    "ml-auto transition-transform duration-175 group-data-[state=open]/menu-sub-item-collapsible:rotate-180 group-data-[state=collapsed]:hidden"
                 }
                 color={"neutral-strong"}
                 data-sidebar={"menu-item-expanded-indicator"}
@@ -53,8 +53,8 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
         );
 
         return (
-            <Collapsible.Root className="wby-w-full wby-group/menu-sub-item-collapsible">
-                <div className={"wby-flex wby-items-center"}>
+            <Collapsible.Root className="w-full group/menu-sub-item-collapsible">
+                <div className={"flex items-center"}>
                     <SidebarMenuSubItemIndentation
                         lvl={currentLevel}
                         variant={buttonProps.variant}
@@ -73,7 +73,7 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
     return (
         <li
             data-sidebar="menu-sub-item"
-            className={cn("wby-group/menu-sub-item wby-relative wby-flex", className)}
+            className={cn("group/menu-sub-item relative flex", className)}
         >
             {sidebarMenuSubButton}
         </li>

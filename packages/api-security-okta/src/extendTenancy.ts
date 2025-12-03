@@ -1,21 +1,13 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/index.js";
-import type { TenancyContext } from "@webiny/api-tenancy/types.js";
 import { ContextPlugin } from "@webiny/api";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
 
 export const extendTenancy = () => {
-    return new ContextPlugin<TenancyContext>(ctx => {
-        ctx.waitFor("tenantManager", () => {
+    return new ContextPlugin<ApiCoreContext>(ctx => {
+        if (ctx.wcp.canUseFeature("multiTenancy")) {
             ctx.plugins.register(
-                new GraphQLSchemaPlugin<TenancyContext>({
+                new GraphQLSchemaPlugin<ApiCoreContext>({
                     typeDefs: /* GraphQL */ `
-                        extend input TenantSettingsInput {
-                            appClientId: String!
-                        }
-
-                        extend type TenantSettings {
-                            appClientId: String!
-                        }
-
                         extend type TenancyQuery {
                             appClientId: String
                         }
@@ -30,6 +22,6 @@ export const extendTenancy = () => {
                     }
                 })
             );
-        });
+        }
     });
 };

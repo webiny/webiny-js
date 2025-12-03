@@ -49,7 +49,7 @@ interface RenderTreeNodeParams<TData> {
 }
 
 const ListComponent = React.forwardRef(({ children, className = "", ...props }: any, ref) => {
-    const classNames = [...className.split(" "), "wby-pt-1"].join(" ");
+    const classNames = [...className.split(" "), "pt-1"].join(" ");
 
     return (
         <ul ref={ref} {...props} className={classNames}>
@@ -153,9 +153,9 @@ const BaseTree = <TData,>(props: TreeProps<TData>) => {
                 canDrop={canDrop}
                 placeholderRender={props.placeholderRender}
                 classes={{
-                    dropTarget: "wby-bg-neutral-dark/5",
-                    draggingSource: "wby-opacity-50 wby-bg-neutral-dimmed",
-                    placeholder: "wby-relative"
+                    dropTarget: "bg-neutral-dark/5",
+                    draggingSource: "opacity-50 bg-neutral-dimmed",
+                    placeholder: "relative"
                 }}
                 sort={typeof props.sort === "function" ? sort : props.sort}
             />
@@ -169,4 +169,4 @@ const Tree = withStaticProps(DecoratableTree, {
     Item
 });
 
-export { Tree };
+export { Tree, type NodeModel };

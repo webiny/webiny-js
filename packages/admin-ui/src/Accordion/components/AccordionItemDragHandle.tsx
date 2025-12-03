@@ -30,8 +30,8 @@ const AccordionItemDragHandle = ({
         <span
             className={cn(
                 [
-                    "wby-absolute wby-top-1/2 -wby-left-sm -wby-translate-y-sm",
-                    "wby-invisible group-hover/trigger:wby-visible"
+                    "absolute top-1/2 -left-sm -translate-y-sm",
+                    "invisible group-hover/trigger:visible"
                 ],
                 className
             )}
@@ -42,7 +42,7 @@ const AccordionItemDragHandle = ({
                 size={"xs"}
                 iconSize={"default"}
                 variant={"secondary"}
-                className={"wby-cursor-grab"}
+                className={"cursor-grab"}
                 icon={
                     <Icon
                         size={"sm"}

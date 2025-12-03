@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { getTenant } from "~tests/mocks/getTenant";
-import { getLocale } from "~tests/mocks/getLocale";
 import { DynamoDbLoggerKeys, DynamoDbStorageOperations } from "~/logger";
 import { create } from "~/db";
 import type { Context, ILoggerStorageOperations } from "~/types";
@@ -120,7 +119,6 @@ describe("crud", () => {
     it("should log via withSource method", async () => {
         const { logger: masterLogger } = loggerFactory({
             documentClient,
-            getLocale,
             getTenant
         });
 

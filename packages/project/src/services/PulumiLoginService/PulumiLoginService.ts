@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetPulumiService, PulumiLoginService } from "~/abstractions/index.js";
 import { type AppModel } from "~/models/index.js";
 import trimEnd from "lodash/trimEnd.js";
@@ -16,10 +16,7 @@ export class DefaultPulumiLoginService implements PulumiLoginService.Interface {
         const projectAppRelativePath = path.join("apps", app.name);
 
         // A couple of variations here, just to preserve backwards compatibility.
-        let loginUrl =
-            process.env.WEBINY_PULUMI_BACKEND ||
-            process.env.WEBINY_PULUMI_BACKEND_URL ||
-            process.env.PULUMI_LOGIN;
+        let loginUrl = process.env.WEBINY_PULUMI_BACKEND;
 
         if (loginUrl) {
             // If the user passed `s3://my-bucket`, we want to store files in `s3://my-bucket/{project-application-path}`
@@ -42,9 +39,7 @@ export class DefaultPulumiLoginService implements PulumiLoginService.Interface {
             loginUrl = `file://${stateFilesFolder}`;
         }
 
-        await pulumi.run({
-            command: ["login", loginUrl]
-        });
+        await pulumi.run({ command: ["login", loginUrl] });
 
         return { login: loginUrl };
     }

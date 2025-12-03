@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import debounce from "lodash/debounce.js";
 import { useRoute, useRouter } from "@webiny/app-admin";
 import { makeDecoratable } from "@webiny/react-composition";
@@ -48,6 +48,7 @@ export interface ContentEntriesListProviderContext {
     isSelectedAll: boolean;
     getWhere: () => Record<string, any>;
     searchQuery: string;
+    searchPlaceholder: string;
 }
 
 export const ContentEntriesListContext = React.createContext<
@@ -66,6 +67,7 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
 
     const {
         folders: initialFolders,
+        currentFolder,
         isListLoading,
         isListLoadingMore,
         isSearch,
@@ -157,6 +159,18 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         [currentFolderId, route]
     );
 
+    const searchPlaceholder = useMemo(() => {
+        if (!currentFolder) {
+            return "Search...";
+        }
+
+        if (currentFolder.id === ROOT_FOLDER) {
+            return `Search all ${contentModel.pluralApiName}`;
+        }
+
+        return `Search in "${currentFolder.title}"`;
+    }, [currentFolder, contentModel]);
+
     const context: ContentEntriesListProviderContext = {
         modelId: contentModel.modelId,
         folderId: currentFolderId || ROOT_FOLDER,
@@ -172,6 +186,7 @@ export const ContentEntriesListProvider = ({ children }: ContentEntriesListProvi
         onSelectRow,
         records: initialRecords,
         search,
+        searchPlaceholder,
         selected,
         setSelected,
         setSearch,

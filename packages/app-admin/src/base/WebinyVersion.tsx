@@ -13,11 +13,11 @@ export const WebinyVersion = () => {
             return null;
         }
 
-        return <Tag variant={"accent"} content={"WCP"} className={"wby-ml-sm-extra"} />;
+        return <Tag variant={"accent"} content={"WCP"} className={"ml-sm-extra"} />;
     }, []);
 
     return (
-        <div className={"wby-flex wby-items-center"}>
+        <div className={"flex items-center"}>
             Webiny v{wbyVersion}
             {wcpBadge}
         </div>

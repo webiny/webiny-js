@@ -1,18 +1,24 @@
-import type { Context } from "~/types.js";
+import {
+    type Context,
+    type IWorkflowsSecurityPermission,
+    WorkflowsSecurityPermissionAccessLevel
+} from "~/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { NotAuthorizedError } from "@webiny/api-security";
 import { createIdentifier } from "@webiny/utils";
 import type {
     IStoreWorkflowInput,
     IWorkflowsContext,
     IWorkflowsContextGetParams,
     IWorkflowsContextListParams,
-    IWorkflowsContextListResponse
+    IWorkflowsContextListResponse,
+    IWorkflowsContextListWhere
 } from "./abstractions/WorkflowsContext.js";
 import type { IWorkflowsTransformer } from "./transformer/abstractions/WorkflowsTransformer.js";
 import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
+import { NotAuthorizedError } from "./errors.js";
+import { WORKFLOWS_PERMISSION } from "~/constants.js";
 
 export interface IWorkflowsContextParams {
     context: Pick<Context, "cms" | "security">;
@@ -88,6 +94,7 @@ export class WorkflowsContext implements IWorkflowsContext {
     }
 
     public async getWorkflow(params: IWorkflowsContextGetParams): Promise<IWorkflow | null> {
+        this.ensureReadAccess();
         try {
             const id = createIdentifier({
                 id: params.id,
@@ -112,16 +119,19 @@ export class WorkflowsContext implements IWorkflowsContext {
     public async listWorkflows(
         params: IWorkflowsContextListParams
     ): Promise<IWorkflowsContextListResponse> {
+        this.ensureReadAccess();
         return this.context.security.withoutAuthorization(async () => {
+            const where = {
+                ...this.convertListWhere(params.where)
+            };
+
             const [items, meta] = await this.context.cms.listLatestEntries<Omit<IWorkflow, "id">>(
                 this.model,
                 {
                     sort: ["createdOn_ASC"],
                     limit: 100,
                     ...params,
-                    where: {
-                        ...params.where
-                    }
+                    where
                 }
             );
             return {
@@ -133,15 +143,27 @@ export class WorkflowsContext implements IWorkflowsContext {
         });
     }
 
-    private async ensureManageAccess(): Promise<void> {
-        const permissions = await this.context.security.getPermissions("workflows");
-        if (permissions?.length) {
+    private ensureReadAccess(): void {
+        const identity = this.context.security.getIdentity();
+        if (identity?.id) {
             return;
         }
-        throw new NotAuthorizedError({
-            message: "You have no access to workflows.",
-            code: "WORKFLOWS_ACCESS_DENIED"
-        });
+        throw new NotAuthorizedError("You cannot read workflows.");
+    }
+
+    private async ensureManageAccess(): Promise<void> {
+        const permissions =
+            await this.context.security.getPermissions<IWorkflowsSecurityPermission>(
+                WORKFLOWS_PERMISSION
+            );
+        for (const permission of permissions) {
+            if (permission.name === "*") {
+                return;
+            } else if (permission.editor === WorkflowsSecurityPermissionAccessLevel.YES) {
+                return;
+            }
+        }
+        throw new NotAuthorizedError("You cannot manage workflows.");
     }
 
     private async createWorkflow(params: ICreateWorkflowParams): Promise<IWorkflow> {
@@ -181,5 +203,29 @@ export class WorkflowsContext implements IWorkflowsContext {
             ...values,
             id
         };
+    }
+
+    private convertListWhere(
+        input?: IWorkflowsContextListWhere
+    ): IWorkflowsContextListWhere | undefined {
+        if (!input || Object.keys(input).length === 0) {
+            return undefined;
+        }
+        const where = structuredClone(input);
+        if (where.id) {
+            where.id = this.convertWorkflowId(where.id);
+        }
+        if (where.id_in) {
+            where.id_in = where.id_in.map(id => this.convertWorkflowId(id));
+        }
+        return where;
+    }
+
+    private convertWorkflowId(input: string): string {
+        const { id } = parseIdentifier(input);
+        return createIdentifier({
+            id,
+            version: 1
+        });
     }
 }

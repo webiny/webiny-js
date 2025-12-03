@@ -1,0 +1,84 @@
+import { ContextPlugin } from "@webiny/api";
+import type { GroupsTeamsAuthorizerConfig } from "./createGroupsTeamsAuthorizer/listPermissionsFromGroupsAndTeams.js";
+import { listPermissionsFromGroupsAndTeams } from "./createGroupsTeamsAuthorizer/listPermissionsFromGroupsAndTeams.js";
+import type { ApiCoreContext } from "~/types/core.js";
+
+export type { GroupsTeamsAuthorizerConfig };
+
+export const createGroupsTeamsAuthorizerHandler = <
+    TContext extends ApiCoreContext = ApiCoreContext
+>(
+    config: GroupsTeamsAuthorizerConfig<TContext>,
+    context: TContext
+) => {
+    return async () => {
+        const { security, tenancy } = context;
+        const identity = security.getIdentity();
+        if (!identity) {
+            return null;
+        }
+
+        // If `identityType` is specified, we'll only execute this authorizer for a matching identity.
+        if (config.identityType && identity.type !== config.identityType) {
+            return null;
+        }
+
+        if (config.canAccessTenant) {
+            const canAccessTenant = await config.canAccessTenant(context);
+            if (!canAccessTenant) {
+                return [];
+            }
+        }
+
+        const currentTenantPermissions = await listPermissionsFromGroupsAndTeams<TContext>({
+            config,
+            context,
+            identity
+        });
+
+        if (Array.isArray(currentTenantPermissions)) {
+            return currentTenantPermissions;
+        }
+
+        // If no security groups were found, it could be due to an identity accessing a sub-tenant. In this case,
+        // let's try loading permissions from the parent tenant. Note that this will work well for flat tenant
+        // hierarchy where there's a `root` tenant and 1 level of sibling sub-tenants. For multi-level hierarchy,
+        // the best approach is to code a plugin with the desired permissions-fetching logic.
+        if (config.inheritGroupsFromParentTenant === false) {
+            return null;
+        }
+
+        const parentTenantId = context.tenancy.getCurrentTenant().parent;
+        if (!parentTenantId) {
+            return null;
+        }
+
+        const parentTenant = await tenancy.getTenantById(parentTenantId);
+        if (!parentTenant) {
+            return null;
+        }
+
+        const parentTenantPermissions = await tenancy.withTenant(parentTenant, async () => {
+            return listPermissionsFromGroupsAndTeams({
+                config,
+                context,
+                identity
+            });
+        });
+
+        if (Array.isArray(parentTenantPermissions)) {
+            return parentTenantPermissions;
+        }
+
+        return null;
+    };
+};
+
+export const createGroupsTeamsAuthorizer = <TContext extends ApiCoreContext = ApiCoreContext>(
+    config: GroupsTeamsAuthorizerConfig<TContext>
+) => {
+    return new ContextPlugin<TContext>(context => {
+        const gcc = createGroupsTeamsAuthorizerHandler(config, context);
+        context.security.addAuthorizer(gcc);
+    });
+};

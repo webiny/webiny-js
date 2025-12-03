@@ -1,6 +1,6 @@
 import React from "react";
 import { createProvider } from "@webiny/app";
-import { TenancyProvider as ContextProvider } from "./TenancyProvider";
+import { TenancyProvider as ContextProvider } from "./TenancyProvider.js";
 
 export const createTenancyProvider = () => {
     return createProvider(Original => {

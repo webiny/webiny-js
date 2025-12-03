@@ -15,7 +15,6 @@ import {
 import { Form } from "@webiny/form";
 import { ContentModelPermission } from "./components/ContentModelPermission.js";
 import { ContentEntryPermission } from "./components/ContentEntryPermission.js";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N.js";
 import type { CmsSecurityPermission } from "~/types.js";
 import { useSecurity } from "@webiny/app-security";
 import { CheckboxGroup, Grid, Select } from "@webiny/admin-ui";
@@ -50,8 +49,6 @@ export const CMSPermissions = ({ value, onChange }: CMSPermissionsProps) => {
         return !getPermission<AaclPermission>("aacl", true);
     }, []);
 
-    const { getLocales } = useI18N();
-
     const canRead = useCallback((value: any[], permissionName: string) => {
         const permission = value.find(item => item.name === permissionName);
 
@@ -65,17 +62,6 @@ export const CMSPermissions = ({ value, onChange }: CMSPermissionsProps) => {
 
         return permission.rwd.includes("r");
     }, []);
-
-    const getFormLocales = () => {
-        const localePermission = (value || []).find(item => item.name.startsWith("content.i18n"));
-        if (!localePermission) {
-            return getLocales().map(l => l.code);
-        }
-
-        return Array.isArray(localePermission.locales)
-            ? localePermission.locales
-            : getLocales().map(l => l.code);
-    };
 
     const onFormChange = useCallback(
         (data: CmsSecurityPermission) => {
@@ -112,8 +98,6 @@ export const CMSPermissions = ({ value, onChange }: CMSPermissionsProps) => {
                 });
             }
 
-            const locales = getFormLocales();
-
             // Content models, content model groups, content entries
             ENTITIES.forEach(entity => {
                 const accessScope = data[`${entity}AccessScope`];
@@ -148,15 +132,7 @@ export const CMSPermissions = ({ value, onChange }: CMSPermissionsProps) => {
                     if (props) {
                         ["models", "groups"].forEach(entity => {
                             if (accessScope === entity && props[entity]) {
-                                permission[entity] = locales.reduce(
-                                    (acc, locale) => {
-                                        if (props[entity][locale]) {
-                                            acc[locale] = props[entity][locale];
-                                        }
-                                        return acc;
-                                    },
-                                    {} as Record<string, string>
-                                );
+                                permission[entity] = props[entity];
                             }
                         });
                     }
@@ -255,8 +231,6 @@ export const CMSPermissions = ({ value, onChange }: CMSPermissionsProps) => {
         return returnData;
     }, []) as CmsSecurityPermission;
 
-    const locales = getFormLocales();
-
     const getSelectedContentModelGroups = useCallback((data: CmsSecurityPermission) => {
         if (data && data.contentModelGroupAccessScope === "groups" && data.contentModelGroupProps) {
             return data.contentModelGroupProps.groups;
@@ -301,8 +275,8 @@ export const CMSPermissions = ({ value, onChange }: CMSPermissionsProps) => {
                         </Grid.Column>
                     </Grid>
                     {data.accessLevel === CUSTOM_ACCESS && (
-                        <div className={"wby-mt-lg"}>
-                            <div className={"wby-mb-md"}>
+                        <div className={"mt-lg"}>
+                            <div className={"mb-md"}>
                                 <Grid>
                                     <Grid.Column span={12}>
                                         <Bind name={"endpoints"}>
@@ -339,11 +313,9 @@ export const CMSPermissions = ({ value, onChange }: CMSPermissionsProps) => {
                                 disabled={cannotUseAAcl}
                                 entity={"contentModelGroup"}
                                 title={"Content Model Groups"}
-                                locales={locales}
                             />
 
                             <ContentModelPermission
-                                locales={locales}
                                 data={data}
                                 setValue={setValue}
                                 Bind={Bind}

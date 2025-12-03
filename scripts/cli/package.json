@@ -1,0 +1,25 @@
+{
+  "name": "@webiny/scripts",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "src/bin.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "An iternal command line interface (CLI), used for development of Webiny itself.",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/di": "^0.2.1",
+    "chalk": "^4.1.2",
+    "find-up": "^5.0.0",
+    "pino": "^9.13.1",
+    "type-fest": "^5.2.0",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "rimraf": "^6.0.1",
+    "typescript": "5.9.3"
+  }
+}

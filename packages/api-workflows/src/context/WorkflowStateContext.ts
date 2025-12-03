@@ -1,11 +1,8 @@
 import type { Context } from "~/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import type { IWorkflowStateTransformer } from "~/context/transformer/abstractions/WorkflowStateTransformer.js";
-import {
-    type IWorkflowState,
-    type IWorkflowStateRecord,
-    WorkflowStateRecordState
-} from "./abstractions/WorkflowState.js";
+import type { IWorkflowStateModel, IWorkflowStateRecord } from "./abstractions/WorkflowState.js";
+import { WorkflowStateRecordState } from "./abstractions/WorkflowState.js";
 import { WorkflowState } from "./workflowState/WorkflowState.js";
 import type {
     IWorkflowStateContext,
@@ -15,18 +12,37 @@ import type {
     IWorkflowStateContextOnStateAfterDelete,
     IWorkflowStateContextOnStateAfterUpdate
 } from "./abstractions/WorkflowStateContext.js";
-import { NullWorkflowState } from "./workflowState/NullWorkflowState.js";
 import { WebinyError } from "@webiny/error";
 import { parseIdentifier } from "@webiny/utils";
 import { NotFoundError } from "@webiny/handler-graphql";
-import { createIdentifier } from "@webiny/utils/createIdentifier.js";
-import type { IWorkflowsContextListWhere } from "~/context/abstractions/WorkflowsContext.js";
 import { createTopic } from "@webiny/pubsub";
+import {
+    ActiveStateExistsError,
+    MultipleWorkflowsFoundError,
+    WorkflowNotFoundError,
+    WorkflowsNotFoundError,
+    WorkflowStateNotFoundError
+} from "~/context/errors/index.js";
+import type { IWorkflowStepTeam } from "~/context/abstractions/Workflow.js";
 
 export interface IWorkflowStateContextParams {
-    context: Pick<Context, "cms" | "security" | "workflows" | "workflowState">;
+    context: Pick<Context, "cms" | "security" | "workflows" | "workflowState" | "adminUsers">;
     model: CmsModel;
     transformer: IWorkflowStateTransformer;
+}
+
+type ICreateWorkflowStateEntryInput = Omit<
+    IWorkflowStateRecord,
+    "id" | "savedBy" | "createdOn" | "savedOn" | "createdBy"
+>;
+
+type IUpdateWorkflowStateEntryInput = Omit<
+    IWorkflowStateRecord,
+    "id" | "savedBy" | "savedOn" | "createdOn" | "createdBy"
+>;
+
+interface ICreateWorkflowStateParams {
+    record: IWorkflowStateRecord;
 }
 
 export class WorkflowStateContext implements IWorkflowStateContext {
@@ -36,6 +52,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     public readonly onStateAfterCreate;
     public readonly onStateAfterUpdate;
     public readonly onStateAfterDelete;
+    private readonly _userTeamsCache: Record<string, IWorkflowStepTeam[]> = {};
 
     public constructor(params: IWorkflowStateContextParams) {
         this.context = params.context;
@@ -47,7 +64,25 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         this.onStateAfterDelete = createTopic<IWorkflowStateContextOnStateAfterDelete>();
     }
 
-    public async getState(app: string, targetRevisionId: string): Promise<IWorkflowState> {
+    public async getState(id: string): Promise<IWorkflowStateModel> {
+        const record = await this.fetchOne(id);
+        if (!record) {
+            throw new WorkflowStateNotFoundError({
+                data: {
+                    id
+                }
+            });
+        }
+
+        return this.createWorkflowState({
+            record
+        });
+    }
+
+    public async getTargetState(
+        app: string,
+        targetRevisionId: string
+    ): Promise<IWorkflowStateModel> {
         const { version } = parseIdentifier(targetRevisionId);
         if (!version) {
             throw new WebinyError(
@@ -63,24 +98,15 @@ export class WorkflowStateContext implements IWorkflowStateContext {
 
         const state = await this.fetchOneByTargetRevisionId(app, targetRevisionId);
         if (!state) {
-            return new NullWorkflowState();
+            throw new WorkflowStateNotFoundError({
+                data: {
+                    app,
+                    targetRevisionId
+                }
+            });
         }
 
-        const workflowId = createIdentifier({
-            id: state.workflowId,
-            version: 1
-        });
-
-        const { items: workflows } = await this.context.workflows.listWorkflows({
-            where: {
-                id: workflowId
-            },
-            limit: 1
-        });
-
-        return new WorkflowState({
-            context: this.context,
-            workflow: workflows[0],
+        return this.createWorkflowState({
             record: state
         });
     }
@@ -88,32 +114,88 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     public async listStates(
         params?: IWorkflowStateContextListStatesParams
     ): Promise<IWorkflowStateContextListStatesResponse> {
-        const { items, meta } = await this.fetchAll(params);
-        const workflowIds = Array.from(new Set(items.map(item => item.workflowId)));
+        const id = this.context.security.getIdentity().id;
+        /**
+         * Let's prefetch user teams for the current identity to avoid multiple calls later.
+         */
+        await this.getUserTeams(id);
 
-        const where: IWorkflowsContextListWhere = {};
-        if (workflowIds.length) {
-            where.id_in = workflowIds;
-        }
+        const { items: states, meta } = await this.fetchAll(params);
 
-        const { items: workflows } = await this.context.workflows.listWorkflows({
-            where,
-            limit: 10000
-        });
+        /**
+         * Convert records to workflow state instances.
+         */
+        const items = await Promise.all(
+            states.map(async record => this.createWorkflowState({ record }))
+        );
 
         return {
-            items: items.map(record => {
-                return new WorkflowState({
-                    context: this.context,
-                    workflow: workflows.find(wf => wf.id === record.workflowId),
-                    record
-                });
-            }),
+            items,
             meta
         };
     }
 
-    public async createState(app: string, targetRevisionId: string): Promise<IWorkflowState> {
+    public async listOwnWorkflowStates(
+        params?: IWorkflowStateContextListStatesParams
+    ): Promise<IWorkflowStateContextListStatesResponse> {
+        const identity = this.context.security.getIdentity();
+        if (!identity?.id) {
+            return {
+                items: [],
+                meta: {
+                    cursor: null,
+                    hasMoreItems: false,
+                    totalCount: 0
+                }
+            };
+        }
+
+        return await this.listStates({
+            ...params,
+            where: {
+                ...params?.where,
+                isActive: true,
+                createdBy: identity.id
+            }
+        });
+    }
+
+    public async listRequestedWorkflowStates(
+        params?: IWorkflowStateContextListStatesParams
+    ): Promise<IWorkflowStateContextListStatesResponse> {
+        const identity = this.context.security.getIdentity();
+        const teams = await this.getUserTeams(identity.id);
+        if (!identity?.id || teams.length === 0) {
+            return {
+                items: [],
+                meta: {
+                    cursor: null,
+                    hasMoreItems: false,
+                    totalCount: 0
+                }
+            };
+        }
+
+        return await this.listStates({
+            ...params,
+            where: {
+                ...params?.where,
+                isActive: true,
+                createdBy_not: identity.id,
+                steps: {
+                    teams: {
+                        id_in: teams.map(team => team.id)
+                    }
+                }
+            }
+        });
+    }
+
+    public async createState(
+        app: string,
+        targetRevisionId: string,
+        title: string
+    ): Promise<IWorkflowStateModel> {
         const { id: targetId, version } = parseIdentifier(targetRevisionId);
         if (!version) {
             throw new WebinyError(
@@ -139,54 +221,83 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         });
         const workflow = workflows[0];
         if (!workflow) {
-            return new NullWorkflowState();
+            throw new WorkflowsNotFoundError({
+                data: {
+                    app
+                }
+            });
         } else if (meta.totalCount > 1) {
-            throw new WebinyError(
-                `Multiple workflows found for the given app.`,
-                "WORKFLOW_STATE_ERROR",
-                {
+            throw new MultipleWorkflowsFoundError({
+                data: {
                     app,
                     targetRevisionId,
                     workflows,
                     meta
                 }
+            });
+        }
+        /**
+         * We allow multiple states for the same target revision ID, but we cannot create a new one if there is an active state.
+         */
+        const existingState = await this.fetchOneByTargetRevisionId(app, targetRevisionId);
+        if (existingState) {
+            throw new ActiveStateExistsError({
+                data: {
+                    app,
+                    targetRevisionId,
+                    existingState
+                }
+            });
+        } else if (workflow.steps.length === 0) {
+            throw new WebinyError(
+                "Cannot create a workflow state for a workflow that has no steps defined.",
+                "WORKFLOW_NO_STEPS",
+                {
+                    app,
+                    workflowId: workflow.id,
+                    targetRevisionId
+                }
             );
         }
 
-        const entry: Omit<IWorkflowStateRecord, "id"> = {
+        /**
+         * Create a new workflow state entry.
+         */
+        const entry: ICreateWorkflowStateEntryInput = {
             workflowId: workflow.id,
             comment: undefined,
             state: WorkflowStateRecordState.pending,
             app,
+            title,
             targetId,
+            isActive: true,
             targetRevisionId,
             steps: workflow.steps.map(step => {
                 return {
-                    id: step.id,
+                    ...step,
                     state: WorkflowStateRecordState.pending,
-                    userId: undefined,
-                    comment: undefined
+                    savedBy: null,
+                    comment: null
                 };
             })
         };
 
         return this.context.security.withoutAuthorization(async () => {
-            const result = await this.context.cms.createEntry<Omit<IWorkflowStateRecord, "id">>(
+            const result = await this.context.cms.createEntry<ICreateWorkflowStateEntryInput>(
                 this.model,
                 entry
             );
             const record = this.transformer.fromCmsEntry(result);
-            const state = new WorkflowState({
-                context: this.context,
-                workflow,
+            const state = await this.createWorkflowState({
                 record
             });
+
             try {
                 await this.onStateAfterCreate.publish({
                     state
                 });
             } catch (ex) {
-                console.log(ex);
+                console.error(ex);
                 // do nothing?
             }
             return state;
@@ -196,12 +307,14 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     public async updateState(
         id: string,
         input: Partial<Omit<IWorkflowStateRecord, "id">>
-    ): Promise<IWorkflowState> {
+    ): Promise<IWorkflowStateModel> {
         const originalRecord = await this.fetchOne(id);
         if (!originalRecord) {
-            throw new WebinyError(`Workflow state not found.`, "NOT_FOUND", {
-                id,
-                input
+            throw new WorkflowStateNotFoundError({
+                data: {
+                    id,
+                    input
+                }
             });
         }
         // @ts-expect-error
@@ -217,31 +330,21 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             id: originalRecord.workflowId
         });
         if (!workflow) {
-            throw new WebinyError(
-                `Workflow with ID "${input.workflowId}" was not found.`,
-                "WORKFLOW_NOT_FOUND",
-                {
-                    workflowId: input.workflowId
-                }
-            );
+            throw new WorkflowNotFoundError(originalRecord.workflowId);
         }
-        const originalState = new WorkflowState({
-            context: this.context,
-            workflow,
+        const originalState = await this.createWorkflowState({
             record: originalRecord
         });
 
         return await this.context.security.withoutAuthorization(async () => {
-            const result = await this.context.cms.updateEntry<Omit<IWorkflowStateRecord, "id">>(
+            const result = await this.context.cms.updateEntry<IUpdateWorkflowStateEntryInput>(
                 this.model,
                 id,
                 entryValues
             );
             const record = this.transformer.fromCmsEntry(result);
 
-            const state = new WorkflowState({
-                context: this.context,
-                workflow,
+            const state = await this.createWorkflowState({
                 record
             });
 
@@ -251,7 +354,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                     original: originalState
                 });
             } catch (ex) {
-                console.log(ex);
+                console.error(ex);
                 // do nothing?
             }
 
@@ -259,7 +362,30 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         });
     }
 
-    public async deleteState(app: string, targetRevisionId: string): Promise<void> {
+    public async cancelState(id: string): Promise<IWorkflowStateModel> {
+        return await this.updateState(id, {
+            isActive: false
+        });
+    }
+
+    public async deleteState(id: string): Promise<void> {
+        const record = await this.fetchOne(id);
+        if (!record) {
+            throw new NotFoundError();
+        }
+        try {
+            await this.context.security.withoutAuthorization(async () => {
+                await this.context.cms.deleteEntry(this.model, id);
+            });
+        } catch (ex) {
+            if (ex.code === "NOT_FOUND" || ex instanceof NotFoundError) {
+                return;
+            }
+            throw ex;
+        }
+    }
+
+    public async deleteTargetState(app: string, targetRevisionId: string): Promise<void> {
         const record = await this.fetchOneByTargetRevisionId(app, targetRevisionId);
         if (!record) {
             return;
@@ -279,10 +405,11 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             app: record.app,
             id: record.workflowId
         });
+        if (!workflow) {
+            throw new WorkflowNotFoundError(record.workflowId);
+        }
 
-        const state = new WorkflowState({
-            context: this.context,
-            workflow,
+        const state = await this.createWorkflowState({
             record
         });
 
@@ -291,37 +418,60 @@ export class WorkflowStateContext implements IWorkflowStateContext {
                 state
             });
         } catch (ex) {
-            console.log(ex);
+            console.error(ex);
             // do nothing?
         }
+    }
+
+    public async startStateStep(id: string): Promise<IWorkflowStateModel> {
+        const state = await this.getState(id);
+        await state.start();
+        return state;
+    }
+
+    public async approveStateStep(id: string, comment?: string): Promise<IWorkflowStateModel> {
+        const state = await this.getState(id);
+        await state.approve(comment);
+        return state;
+    }
+
+    public async rejectStateStep(id: string, comment: string): Promise<IWorkflowStateModel> {
+        const state = await this.getState(id);
+        await state.reject(comment);
+        return state;
+    }
+
+    public async takeOverStateStep(id: string): Promise<IWorkflowStateModel> {
+        const state = await this.getState(id);
+        await state.takeOver();
+        return state;
     }
 
     private async fetchOneByTargetRevisionId(
         app: string,
         targetRevisionId: string
     ): Promise<IWorkflowStateRecord | null> {
-        const { items } = await this.fetchAll({
+        const { items, meta } = await this.fetchAll({
             where: {
                 app,
-                targetRevisionId
+                targetRevisionId,
+                isActive: true
             },
-            limit: 10000
+            limit: 1
         });
         /**
          * There cannot be more than one workflow. If there is, something is very wrong and all states, except one, must be deleted.
          */
         if (items.length === 0) {
             return null;
-        } else if (items.length > 1) {
-            throw new WebinyError(
-                `Multiple workflow states found for the given app and target ID.`,
-                "WORKFLOW_STATE_ERROR",
-                {
+        } else if (meta.totalCount > 1) {
+            throw new MultipleWorkflowsFoundError({
+                data: {
                     app,
                     targetRevisionId,
                     items
                 }
-            );
+            });
         }
         return items[0] || null;
     }
@@ -362,5 +512,28 @@ export class WorkflowStateContext implements IWorkflowStateContext {
             items: records,
             meta
         };
+    }
+
+    private async createWorkflowState(
+        params: ICreateWorkflowStateParams
+    ): Promise<IWorkflowStateModel> {
+        const id = this.context.security.getIdentity().id;
+        return new WorkflowState({
+            context: this.context,
+            record: params.record,
+            teams: await this.getUserTeams(id)
+        });
+    }
+
+    private async getUserTeams(id: string): Promise<IWorkflowStepTeam[]> {
+        if (!this._userTeamsCache[id]) {
+            const teams = await this.context.adminUsers.listUserTeams(id);
+            return (this._userTeamsCache[id] = teams.map(team => {
+                return {
+                    id: team.id
+                };
+            }));
+        }
+        return this._userTeamsCache[id];
     }
 }

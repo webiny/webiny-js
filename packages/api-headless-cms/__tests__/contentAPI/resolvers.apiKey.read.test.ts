@@ -4,9 +4,9 @@ import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../testHelpers/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../testHelpers/useCategoryReadHandler";
-import { SecurityIdentity } from "@webiny/api-security/types";
+import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
 
-const createIdentity = (permissions: any[] = []): SecurityIdentity => {
+const createIdentity = (permissions: any[] = []): IdentityData => {
     return {
         id: "a1234567890",
         displayName: "API",
@@ -239,11 +239,8 @@ describe("READ - resolvers - api key", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "SECURITY_NOT_AUTHORIZED",
-                        message: `Not authorized!`,
-                        data: {
-                            reason: 'Not allowed to access "category" entries.'
-                        }
+                        code: "NOT_AUTHORIZED",
+                        message: 'Not allowed to access "category" entries.'
                     }
                 }
             }
@@ -284,11 +281,8 @@ describe("READ - resolvers - api key", () => {
                 listCategories: {
                     data: null,
                     error: {
-                        code: "SECURITY_NOT_AUTHORIZED",
-                        message: `Not authorized!`,
-                        data: {
-                            reason: 'Not allowed to access "category" entries.'
-                        }
+                        code: "NOT_AUTHORIZED",
+                        message: 'Not allowed to access "category" entries.'
                     },
                     meta: null
                 }
@@ -337,11 +331,8 @@ describe("READ - resolvers - api key", () => {
                 getCategory: {
                     data: null,
                     error: {
-                        code: "SECURITY_NOT_AUTHORIZED",
-                        message: `Not authorized!`,
-                        data: {
-                            reason: 'Not allowed to access "category" entries.'
-                        }
+                        code: "NOT_AUTHORIZED",
+                        message: 'Not allowed to access "category" entries.'
                     }
                 }
             }
@@ -389,11 +380,8 @@ describe("READ - resolvers - api key", () => {
                     listCategories: {
                         data: null,
                         error: {
-                            code: "SECURITY_NOT_AUTHORIZED",
-                            message: `Not authorized!`,
-                            data: {
-                                reason: 'Not allowed to access "category" entries.'
-                            }
+                            code: "NOT_AUTHORIZED",
+                            message: 'Not allowed to access "category" entries.'
                         },
                         meta: null
                     }

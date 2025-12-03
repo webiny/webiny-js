@@ -42,7 +42,8 @@ export class License implements ILicense {
     getProject(): WcpProject | null {
         return {
             orgId: this.license.orgId,
-            projectId: this.license.projectId
+            projectId: this.license.projectId,
+            package: this.license.package
         };
     }
 

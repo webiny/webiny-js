@@ -1,10 +1,10 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface IGetCwdService {
     execute(): string;
 }
 
-export const GetCwdService = new Abstraction<IGetCwdService>("GetCwdService");
+export const GetCwdService = createAbstraction<IGetCwdService>("GetCwdService");
 
 export namespace GetCwdService {
     export type Interface = IGetCwdService;

@@ -55,3 +55,5 @@ packages/*/README.md
 .normalizedFigmaExport.json
 .normalizedPrimitivesFigmaExport.json
 nextjs
+.claude/
+CLAUDE.local.md

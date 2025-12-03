@@ -5,7 +5,7 @@ import { ReactComponent as SearchIcon } from "@webiny/icons/search.svg";
 interface SearchProps {
     value: string;
     onChange: (value: string) => void;
-    placeholder?: string;
+    placeholder: string;
 }
 
 export const Search = ({ value, onChange, placeholder }: SearchProps) => {
@@ -17,7 +17,7 @@ export const Search = ({ value, onChange, placeholder }: SearchProps) => {
             size={"md"}
             variant={"ghost"}
             startIcon={<Icon label={"Search"} icon={<SearchIcon />} />}
-            className={"wby-w-full"}
+            className={"w-full"}
         />
     );
 };

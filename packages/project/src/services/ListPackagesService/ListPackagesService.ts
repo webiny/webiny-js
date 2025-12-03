@@ -1,5 +1,5 @@
-import { createImplementation } from "@webiny/di-container";
-import { GetApp, GetProjectService, ListPackagesService } from "~/abstractions/index.js";
+import { createImplementation } from "@webiny/di";
+import { GetAppService, GetProjectService, ListPackagesService } from "~/abstractions/index.js";
 import fs from "fs";
 import path from "path";
 import glob from "fast-glob";
@@ -7,15 +7,39 @@ import glob from "fast-glob";
 const globToRegex = (pattern: string) => {
     // Escape regex special chars except *
     const escaped = pattern.replace(/[-\/\\^$+?.()|[\]{}]/g, "\\$&");
-    // Replace * with .*
+    // Replace * with .* in regex pattern
     const regexStr = "^" + escaped.replace(/\*/g, ".*") + "$";
     return new RegExp(regexStr);
+};
+
+const matchesGlobPattern = (packageName: string, pattern: string): boolean => {
+    // Try matching with the full package name
+    const regex = globToRegex(pattern);
+    if (regex.test(packageName)) {
+        return true;
+    }
+
+    // Also try matching against the name without @webiny/ or @app/ prefix
+    const withoutPrefix = packageName.replace(/^@[^/]+\//, "");
+    if (regex.test(withoutPrefix)) {
+        return true;
+    }
+
+    // If pattern doesn't start with @, also try adding @webiny/ prefix to pattern
+    if (!pattern.startsWith("@")) {
+        const regexWithPrefix = globToRegex(`@webiny/${pattern}`);
+        if (regexWithPrefix.test(packageName)) {
+            return true;
+        }
+    }
+
+    return false;
 };
 
 export class DefaultListPackagesService implements ListPackagesService.Interface {
     constructor(
         private getProjectService: GetProjectService.Interface,
-        private getApp: GetApp.Interface
+        private getAppService: GetAppService.Interface
     ) {}
 
     async execute(params: ListPackagesService.Params) {
@@ -25,28 +49,35 @@ export class DefaultListPackagesService implements ListPackagesService.Interface
 
         const { whitelist = [], ...restParams } = params;
         const project = this.getProjectService.execute();
-        const app = restParams.app ? this.getApp.execute(restParams.app) : null;
+        const app = restParams.app ? this.getAppService.execute(restParams.app) : null;
 
         // List all packages in `packages` folder.
-        const packagesFullList: ListPackagesService.Result = fs
-            .readdirSync(project.paths.rootFolder.join("packages").toString())
-            .map(name => {
-                const pkgFolderPath = project.paths.rootFolder.join("/packages/", name).toString();
+        let packagesFullList: ListPackagesService.Result = [];
 
-                let webinyConfigPath = path.join(pkgFolderPath, "webiny.config.ts");
-                if (!fs.existsSync(webinyConfigPath)) {
-                    webinyConfigPath = path.join(pkgFolderPath, "webiny.config.js");
-                }
+        const packagesFolderPath = project.paths.rootFolder.join("packages").toString();
+        if (fs.existsSync(packagesFolderPath)) {
+            packagesFullList = fs
+                .readdirSync(project.paths.rootFolder.join("packages").toString())
+                .map(name => {
+                    const pkgFolderPath = project.paths.rootFolder
+                        .join("/packages/", name)
+                        .toString();
 
-                return {
-                    name: `@webiny/${name}`,
-                    paths: {
-                        packageFolder: pkgFolderPath,
-                        webinyConfigFile: webinyConfigPath
+                    let webinyConfigPath = path.join(pkgFolderPath, "webiny.config.ts");
+                    if (!fs.existsSync(webinyConfigPath)) {
+                        webinyConfigPath = path.join(pkgFolderPath, "webiny.config.js");
                     }
-                } as ListPackagesService.Package;
-            })
-            .filter(Boolean);
+
+                    return {
+                        name: `@webiny/${name}`,
+                        paths: {
+                            packageFolder: pkgFolderPath,
+                            webinyConfigFile: webinyConfigPath
+                        }
+                    } as ListPackagesService.Package;
+                })
+                .filter(Boolean);
+        }
 
         if (app) {
             const webinyConfigPaths = glob.sync("**/webiny.config.@(ts|js)", {
@@ -83,8 +114,7 @@ export class DefaultListPackagesService implements ListPackagesService.Interface
                 .map(whitelistedPkgName => {
                     return packagesFullList.filter(pkg => {
                         if (whitelistedPkgName.includes("*")) {
-                            const re = globToRegex(whitelistedPkgName);
-                            return re.test(pkg.name);
+                            return matchesGlobPattern(pkg.name, whitelistedPkgName);
                         }
 
                         // We consider both `name` and `@webiny/name` as valid package names.
@@ -129,5 +159,5 @@ export const listPackagesService = createImplementation({
     abstraction: ListPackagesService,
     implementation: DefaultListPackagesService,
     // TODO: move getApp into a service
-    dependencies: [GetProjectService, GetApp]
+    dependencies: [GetProjectService, GetAppService]
 });

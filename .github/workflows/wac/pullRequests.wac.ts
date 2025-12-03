@@ -14,12 +14,7 @@ import {
     createYarnCacheSteps,
     withCommonParams
 } from "./steps/index.js";
-import {
-    AbstractStorageOps,
-    DdbEsStorageOps,
-    DdbOsStorageOps,
-    DdbStorageOps
-} from "./storageOps/index.js";
+import { AbstractStorageOps, DdbOsStorageOps, DdbStorageOps } from "./storageOps/index.js";
 
 // Will print "next" or "dev". Important for caching (via actions/cache).
 const DIR_WEBINY_JS = "${{ github.base_ref }}";
@@ -30,7 +25,6 @@ const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DI
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 
 const ddbStorageOps = new DdbStorageOps();
-const ddbEsStorageOps = new DdbEsStorageOps();
 const ddbOsStorageOps = new DdbOsStorageOps();
 
 const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
@@ -73,13 +67,13 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
         if (storageOps.id === "ddb-es,ddb") {
             env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
             env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
+            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
         } else if (storageOps.id === "ddb-os,ddb") {
             // We still use the same environment variables as for "ddb-es" setup, it's
             // just that the values are read from different secrets.
             env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
             env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
+            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
         }
     }
 
@@ -325,7 +319,6 @@ export const pullRequests = createWorkflow({
         }),
         ...createVitestTestsJobs(),
         ...createVitestTestsJobs(ddbStorageOps),
-        ...createVitestTestsJobs(ddbEsStorageOps),
         ...createVitestTestsJobs(ddbOsStorageOps)
     }
 });

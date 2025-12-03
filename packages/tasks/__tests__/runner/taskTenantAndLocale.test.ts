@@ -10,17 +10,14 @@ const taskDefinition = createTaskDefinition({
     maxIterations: 2,
     run: async ({ response, context }) => {
         return response.done("Task is done!", {
-            tenant: context.tenancy.getCurrentTenant().id,
-            locale: context.cms.getLocale().code,
-            defaultLocale: context.i18n.getCurrentLocale("default")!.code,
-            contentLocale: context.i18n.getCurrentLocale("content")!.code
+            tenant: context.tenancy.getCurrentTenant().id
         });
     }
 });
 
 const defaults = {
     tenant: "aCustomTenantId",
-    locale: "de-DE"
+    locale: "en-US"
 };
 
 describe("task tenant and locale", () => {
@@ -53,8 +50,7 @@ describe("task tenant and locale", () => {
             createMockEvent({
                 webinyTaskId: task.id,
                 webinyTaskDefinitionId: taskDefinition.id,
-                tenant: defaults.tenant,
-                locale: defaults.locale
+                tenant: defaults.tenant
             })
         );
 
@@ -63,13 +59,9 @@ describe("task tenant and locale", () => {
             webinyTaskId: task.id,
             webinyTaskDefinitionId: taskDefinition.id,
             tenant: "aCustomTenantId",
-            locale: "de-DE",
             message: "Task is done!",
             output: {
-                tenant: "aCustomTenantId",
-                locale: "de-DE",
-                defaultLocale: "de-DE",
-                contentLocale: "de-DE"
+                tenant: "aCustomTenantId"
             }
         });
     });

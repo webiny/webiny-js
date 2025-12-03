@@ -10,10 +10,7 @@ interface LinkedEditingProps {
 
 export const LinkedEditing = ({ linked, onToggle }: LinkedEditingProps) => {
     return (
-        <div
-            className={"wby-absolute wby-cursor-pointer wby-fill-neutral-strong"}
-            style={{ top: 2, right: 4 }}
-        >
+        <div className={"absolute cursor-pointer fill-neutral-strong"} style={{ top: 2, right: 4 }}>
             {linked ? (
                 <Icon
                     icon={<LinkOff />}

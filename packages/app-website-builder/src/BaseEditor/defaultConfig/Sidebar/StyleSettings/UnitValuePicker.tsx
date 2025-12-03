@@ -57,8 +57,8 @@ export const UnitValuePicker = (props: UnitValueProps) => {
     };
 
     return (
-        <div className={"wby-flex wby-flex-row wby-space-x-sm"}>
-            <div className={"wby-flex-col"}>
+        <div className={"flex flex-row space-x-sm"}>
+            <div className={"flex-col"}>
                 <Input
                     disabled={isAuto}
                     size={"md"}
@@ -70,7 +70,7 @@ export const UnitValuePicker = (props: UnitValueProps) => {
                     autoFocus={true}
                 />
             </div>
-            <div className={"wby-flex-col"}>
+            <div className={"flex-col"}>
                 <Select
                     size="md"
                     value={props.unit}

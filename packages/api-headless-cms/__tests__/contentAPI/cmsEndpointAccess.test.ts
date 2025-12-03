@@ -135,11 +135,9 @@ describe("Endpoint access", () => {
         expect(response).toEqual({
             data: null,
             error: {
-                message: "Not authorized!",
-                code: "SECURITY_NOT_AUTHORIZED",
-                data: {
-                    reason: `Not allowed to access "manage" endpoint.`
-                },
+                message: `Not allowed to access "manage" endpoint.`,
+                code: "NOT_AUTHORIZED",
+                data: null,
                 stack: null
             }
         });
@@ -194,11 +192,9 @@ describe("Endpoint access", () => {
         expect(response).toEqual({
             data: null,
             error: {
-                message: "Not authorized!",
-                code: "SECURITY_NOT_AUTHORIZED",
-                data: {
-                    reason: `Not allowed to access "read" endpoint.`
-                },
+                message: `Not allowed to access "read" endpoint.`,
+                code: "NOT_AUTHORIZED",
+                data: null,
                 stack: null
             }
         });
@@ -253,11 +249,9 @@ describe("Endpoint access", () => {
         expect(response).toEqual({
             data: null,
             error: {
-                message: "Not authorized!",
-                code: "SECURITY_NOT_AUTHORIZED",
-                data: {
-                    reason: `Not allowed to access "preview" endpoint.`
-                },
+                message: `Not allowed to access "preview" endpoint.`,
+                code: "NOT_AUTHORIZED",
+                data: null,
                 stack: null
             }
         });

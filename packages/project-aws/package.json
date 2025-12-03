@@ -15,16 +15,15 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@pulumi/aws": "^6.83.0",
-    "@pulumi/pulumi": "^3.201.0",
-    "@pulumi/random": "^4.18.3",
+    "@pulumi/aws": "^7.12.0",
+    "@pulumi/pulumi": "^3.209.0",
+    "@pulumi/random": "^4.18.4",
     "@webiny/api-aco": "0.0.0",
-    "@webiny/api-admin-users": "0.0.0",
-    "@webiny/api-admin-users-so-ddb": "0.0.0",
     "@webiny/api-audit-logs": "0.0.0",
     "@webiny/api-background-tasks-ddb": "0.0.0",
-    "@webiny/api-background-tasks-es": "0.0.0",
     "@webiny/api-background-tasks-os": "0.0.0",
+    "@webiny/api-core": "0.0.0",
+    "@webiny/api-core-ddb": "0.0.0",
     "@webiny/api-dynamodb-to-elasticsearch": "0.0.0",
     "@webiny/api-elasticsearch": "0.0.0",
     "@webiny/api-file-manager": "0.0.0",
@@ -38,21 +37,14 @@
     "@webiny/api-headless-cms-tasks": "0.0.0",
     "@webiny/api-headless-cms-tasks-ddb-es": "0.0.0",
     "@webiny/api-headless-cms-workflows": "0.0.0",
-    "@webiny/api-i18n": "0.0.0",
-    "@webiny/api-i18n-ddb": "0.0.0",
     "@webiny/api-log": "0.0.0",
     "@webiny/api-mailer": "0.0.0",
     "@webiny/api-record-locking": "0.0.0",
-    "@webiny/api-security": "0.0.0",
     "@webiny/api-security-cognito": "0.0.0",
-    "@webiny/api-security-so-ddb": "0.0.0",
-    "@webiny/api-tenancy": "0.0.0",
-    "@webiny/api-tenancy-so-ddb": "0.0.0",
-    "@webiny/api-tenant-manager": "0.0.0",
-    "@webiny/api-wcp": "0.0.0",
     "@webiny/api-website-builder": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
     "@webiny/api-workflows": "0.0.0",
+    "@webiny/app": "0.0.0",
     "@webiny/app-admin": "0.0.0",
     "@webiny/app-admin-users-cognito": "0.0.0",
     "@webiny/app-serverless-cms": "0.0.0",
@@ -61,7 +53,6 @@
     "@webiny/cli-core": "0.0.0",
     "@webiny/data-migration": "0.0.0",
     "@webiny/db-dynamodb": "0.0.0",
-    "@webiny/di-container": "0.0.0",
     "@webiny/handler-aws": "0.0.0",
     "@webiny/handler-db": "0.0.0",
     "@webiny/handler-graphql": "0.0.0",
@@ -80,7 +71,6 @@
     "ora": "4.1.1",
     "react": "18.2.0",
     "regenerator-runtime": "^0.14.1",
-    "replace-in-path": "^1.1.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -89,10 +79,12 @@
     "@webiny/build-tools": "0.0.0",
     "typescript": "5.9.3"
   },
+  "webiny": {
+    "exports": {
+      ".": "./extensions"
+    }
+  },
   "adio": {
-    "ignoreDirs": [
-      "backup/"
-    ],
     "ignore": {
       "src": [
         "listr2",

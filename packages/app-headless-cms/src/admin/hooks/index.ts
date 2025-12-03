@@ -1,6 +1,5 @@
 export { default as useCms } from "./useCms.js";
 export { default as useQuery } from "./useQuery.js";
-export * from "./useQueryLocale.js";
 export { default as useLazyQuery } from "./useLazyQuery.js";
 export { default as useMutation } from "./useMutation.js";
 export { default as useApolloClient } from "./useApolloClient.js";

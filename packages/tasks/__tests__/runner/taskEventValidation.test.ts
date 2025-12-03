@@ -11,7 +11,6 @@ describe("task event validation", () => {
             webinyTaskId: "123webinyTaskId",
             webinyTaskDefinitionId: "webinyTaskDefinitionIdMockId",
             tenant: "root",
-            locale: "en-US",
             stateMachineId: "123stateMachineId",
             endpoint: "manage",
             executionName: "someExecutionName"
@@ -28,7 +27,6 @@ describe("task event validation", () => {
 
         const event: Omit<ITaskEvent, "webinyTaskId"> = {
             tenant: "root",
-            locale: "en-US",
             stateMachineId: "123stateMachineId",
             webinyTaskDefinitionId: "webinyTaskDefinitionIdMockId",
             endpoint: "manage",
@@ -63,7 +61,6 @@ describe("task event validation", () => {
 
         const event: Omit<ITaskEvent, "webinyTaskDefinitionId"> = {
             tenant: "root",
-            locale: "en-US",
             stateMachineId: "123stateMachineId",
             webinyTaskId: "1234",
             endpoint: "manage",
@@ -99,7 +96,6 @@ describe("task event validation", () => {
         const event: Omit<ITaskEvent, "tenant"> = {
             webinyTaskId: "123webinyTaskId",
             webinyTaskDefinitionId: "webinyTaskDefinitionIdMockId",
-            locale: "en-US",
             stateMachineId: "123stateMachineId",
             endpoint: "manage",
             executionName: "someExecutionName"
@@ -128,41 +124,6 @@ describe("task event validation", () => {
         });
     });
 
-    it("should fail the validation - missing locale", async () => {
-        const validation = new TaskEventValidation();
-
-        const event: Omit<ITaskEvent, "locale"> = {
-            webinyTaskId: "123webinyTaskId",
-            webinyTaskDefinitionId: "webinyTaskDefinitionIdMockId",
-            tenant: "root",
-            stateMachineId: "123stateMachineId",
-            endpoint: "manage",
-            executionName: "someExecutionName"
-        };
-
-        let result: ITaskEvent | null = null;
-        let error: WebinyError | null = null;
-        try {
-            result = validation.validate(event);
-        } catch (ex) {
-            error = ex;
-        }
-        expect(result).toEqual(null);
-        expect(error!.message).toEqual("Validation failed.");
-        expect(error!.code).toEqual("VALIDATION_FAILED_INVALID_FIELDS");
-        expect(error!.data).toEqual({
-            invalidFields: {
-                locale: {
-                    code: "invalid_type",
-                    message: "Required",
-                    data: {
-                        path: ["locale"]
-                    }
-                }
-            }
-        });
-    });
-
     it("should fail the validation - missing stateMachineId", async () => {
         const validation = new TaskEventValidation();
 
@@ -170,7 +131,6 @@ describe("task event validation", () => {
             webinyTaskId: "123webinyTaskId",
             webinyTaskDefinitionId: "webinyTaskDefinitionIdMockId",
             tenant: "root",
-            locale: "en-US",
             endpoint: "manage",
             executionName: "someExecutionName"
         };
@@ -205,7 +165,6 @@ describe("task event validation", () => {
             webinyTaskId: "123webinyTaskId",
             webinyTaskDefinitionId: "webinyTaskDefinitionIdMockId",
             tenant: "root",
-            locale: "en-US",
             stateMachineId: "123stateMachineId",
             executionName: "someExecutionName"
         };
@@ -269,13 +228,6 @@ describe("task event validation", () => {
                     message: "Required",
                     data: {
                         path: ["tenant"]
-                    }
-                },
-                locale: {
-                    code: "invalid_type",
-                    message: "Required",
-                    data: {
-                        path: ["locale"]
                     }
                 },
                 stateMachineId: {

@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IBaseAppParams } from "~/abstractions/types.js";
 import { type IPulumiGetStackExportServiceParams } from "~/abstractions/services/PulumiGetStackExportService.js";
 
@@ -16,7 +16,7 @@ export interface IGetAppStackExport {
     ): Promise<IGetAppStackExportResult<TExport>>;
 }
 
-export const GetAppStackExport = new Abstraction<IGetAppStackExport>("GetAppStackExport");
+export const GetAppStackExport = createAbstraction<IGetAppStackExport>("GetAppStackExport");
 
 export namespace GetAppStackExport {
     export type Interface = IGetAppStackExport;

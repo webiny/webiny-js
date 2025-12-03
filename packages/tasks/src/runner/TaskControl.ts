@@ -6,8 +6,8 @@ import { TaskManager } from "./TaskManager.js";
 import type { IResponse, IResponseResult } from "~/response/abstractions/index.js";
 import { DatabaseResponse, TaskResponse } from "~/response/index.js";
 import { TaskManagerStore } from "./TaskManagerStore.js";
-import { NotFoundError } from "@webiny/handler-graphql";
 import { getErrorProperties } from "~/utils/getErrorProperties.js";
+import { AuthenticatedIdentity } from "@webiny/api-core/features/IdentityContext";
 
 export class TaskControl implements ITaskControl {
     public readonly runner: ITaskRunner;
@@ -31,7 +31,13 @@ export class TaskControl implements ITaskControl {
         let task: ITask<ITaskDataInput>;
         try {
             task = await this.getTask(taskId);
-            this.context.security.setIdentity(task.createdBy);
+            this.context.security.setIdentity(
+                new AuthenticatedIdentity({
+                    id: task.createdBy.id,
+                    type: task.createdBy.type,
+                    displayName: task.createdBy.displayName ?? ""
+                })
+            );
         } catch (error) {
             /**
              * TODO Refactor error handling.
@@ -220,7 +226,7 @@ export class TaskControl implements ITaskControl {
             /**
              * If error is not the NotFoundError, we need to throw it.
              */
-            if (error instanceof NotFoundError === false) {
+            if (error.code !== "NOT_FOUND") {
                 throw this.response.error({
                     error
                 });

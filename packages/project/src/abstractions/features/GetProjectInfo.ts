@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type ProjectInfoService } from "~/abstractions/services/ProjectInfoService/index.js";
 
 type GetProjectInfoParams = void;
@@ -8,7 +8,7 @@ interface IGetProjectInfo {
     execute(params: GetProjectInfoParams): Promise<GetProjectInfoResult>;
 }
 
-export const GetProjectInfo = new Abstraction<IGetProjectInfo>("GetProjectInfo");
+export const GetProjectInfo = createAbstraction<IGetProjectInfo>("GetProjectInfo");
 
 export namespace GetProjectInfo {
     export type Interface = IGetProjectInfo;

@@ -1,42 +1,48 @@
 import type { Plugin } from "@webiny/plugins";
-import { createTenancyContext, createTenancyGraphQL } from "@webiny/api-tenancy";
-import { createSecurityContext, createSecurityGraphQL } from "@webiny/api-security";
-import type {
-    SecurityIdentity,
-    SecurityPermission,
-    SecurityStorageOperations
-} from "@webiny/api-security/types.js";
 import { ContextPlugin } from "@webiny/api";
 import { BeforeHandlerPlugin } from "@webiny/handler";
 import type { Context } from "~/types.js";
-import { getStorageOps } from "@webiny/project-utils/testing/environment/index.js";
-import type { TenancyStorageOperations, Tenant } from "@webiny/api-tenancy/types.js";
+import { createSecurityRolePlugin } from "@webiny/api-core/legacy/security/plugins/SecurityRolePlugin.js";
+import { createSecurityTeamPlugin } from "@webiny/api-core/legacy/security/plugins/SecurityTeamPlugin";
+import { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
 interface Config {
     setupGraphQL?: boolean;
     permissions: SecurityPermission[];
-    identity?: SecurityIdentity | null;
+    identity?: IdentityData | null;
 }
 
-export const defaultIdentity: SecurityIdentity = {
+export const defaultIdentity: IdentityData = {
     id: "id-12345678",
     type: "admin",
     displayName: "John Doe"
 };
 
-export const createTenancyAndSecurity = ({
-    setupGraphQL,
-    permissions,
-    identity
-}: Config): Plugin[] => {
-    const tenancyStorage = getStorageOps<TenancyStorageOperations>("tenancy");
-    const securityStorage = getStorageOps<SecurityStorageOperations>("security");
+export const FULL_ACCESS_ROLE_ID = "full-access-role";
+export const FULL_ACCESS_TEAM_ID = "full-access-team";
+export const UNKNOWN_TEAM_ID = "unknown-team";
 
+export const createTenancyAndSecurity = ({ permissions, identity }: Config): Plugin[] => {
     return [
-        createTenancyContext({ storageOperations: tenancyStorage.storageOperations }),
-        setupGraphQL ? createTenancyGraphQL() : null,
-        createSecurityContext({ storageOperations: securityStorage.storageOperations }),
-        setupGraphQL ? createSecurityGraphQL() : null,
+        createSecurityRolePlugin({
+            id: FULL_ACCESS_ROLE_ID,
+            name: "Full Access",
+            description: "Full access",
+            permissions: [{ name: "*" }]
+        }),
+        createSecurityTeamPlugin({
+            id: FULL_ACCESS_TEAM_ID,
+            name: "Full access",
+            description: "Full access",
+            roles: ["full-access"]
+        }),
+        new ContextPlugin<Context>(async context => {
+            context.adminUsers.listUserTeams = async () => {
+                return await context.security.listTeams();
+            };
+        }),
         new ContextPlugin<Context>(async context => {
             await context.tenancy.createTenant({
                 id: "root",
@@ -78,7 +84,10 @@ export const createTenancyAndSecurity = ({
             } as unknown as Tenant);
 
             context.security.addAuthenticator(async () => {
-                return identity || defaultIdentity;
+                return {
+                    ...(identity || defaultIdentity),
+                    teams: ["full-access-team"]
+                };
             });
 
             context.security.addAuthorizer(async () => {

@@ -1,5 +1,4 @@
-import { IWorkflow } from "~/types.js";
-import { IWorkflowModel } from "../../Models/index.js";
+import type { IWorkflow } from "~/types.js";
 import type { NonEmptyArray } from "@webiny/app/types.js";
 
 export interface IWorkflowErrorDataInvalidFieldData {
@@ -32,6 +31,14 @@ export interface IWorkflowsGatewayDeleteWorkflowResponse {
     error: IWorkflowError | null;
 }
 
+export interface IWorkflowsGatewayListParamsWhere {
+    app: string;
+}
+
+export interface IWorkflowsGatewayListParams {
+    where?: IWorkflowsGatewayListParamsWhere;
+}
+
 export interface IWorkflowsGatewayListWorkflowsResponse {
     data: IWorkflow[] | null;
     error: IWorkflowError | null;
@@ -43,7 +50,9 @@ export interface IWorkflowsGatewayStoreWorkflowResponse {
 }
 
 export interface IWorkflowsGateway {
-    deleteWorkflow(workflow: IWorkflowModel): Promise<IWorkflowsGatewayDeleteWorkflowResponse>;
-    storeWorkflow(workflow: IWorkflowModel): Promise<IWorkflowsGatewayStoreWorkflowResponse>;
-    listWorkflows(): Promise<IWorkflowsGatewayListWorkflowsResponse>;
+    deleteWorkflow(workflow: IWorkflow): Promise<IWorkflowsGatewayDeleteWorkflowResponse>;
+    storeWorkflow(workflow: IWorkflow): Promise<IWorkflowsGatewayStoreWorkflowResponse>;
+    listWorkflows(
+        params?: IWorkflowsGatewayListParams
+    ): Promise<IWorkflowsGatewayListWorkflowsResponse>;
 }

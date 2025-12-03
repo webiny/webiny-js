@@ -1,18 +1,18 @@
 import { describe, it, expect } from "vitest";
 import useGqlHandler from "./utils/useGqlHandler";
 import { fileAData } from "./mocks/files";
-import { SecurityIdentity } from "@webiny/api-security/types";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 const extraFields = ["createdBy {id displayName type}", "modifiedBy {id displayName type}"];
 describe("file custom identities", () => {
     const { createFile, updateFile, identity: defaultIdentity } = useGqlHandler();
 
-    const mockIdentityOne: SecurityIdentity = {
+    const mockIdentityOne: IdentityData = {
         id: "mock-identity-one",
         displayName: "Mock Identity One",
         type: "mockOne"
     };
-    const mockIdentityTwo: SecurityIdentity = {
+    const mockIdentityTwo: IdentityData = {
         id: "mock-identity-two",
         displayName: "Mock Identity Two",
         type: "mockTwo"

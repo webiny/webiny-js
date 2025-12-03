@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GraphQLClient } from "./abstractions.js";
 import { EnvConfig } from "~/features/envConfig/index.js";
 
@@ -12,11 +12,9 @@ class GraphQLClientImpl implements GraphQLClient.Interface {
     async execute<TVariables = any, TResult = any>(
         params: GraphQLClient.Request<TVariables>
     ): Promise<TResult> {
-        const { query, mutation, variables, headers = {} } = params;
+        const { query, variables, headers = {} } = params;
 
-        const body = query
-            ? JSON.stringify({ query, variables })
-            : JSON.stringify({ mutation, variables });
+        const body = JSON.stringify({ query, variables });
 
         return this.fetch<TResult>(body, headers);
     }
@@ -41,6 +39,14 @@ class GraphQLClientImpl implements GraphQLClient.Interface {
         } catch {
             throw new Error("Failed to parse GraphQL response as JSON.");
         }
+
+        // Check for generic API errors
+        if (response.status !== 200) {
+            console.error(json);
+            throw new Error(`Request error: ${JSON.stringify(json.message)}`);
+        }
+
+        // Check for GraphQL errors
         if (json.errors && json.errors.length > 0) {
             throw new Error(`GraphQL errors: ${JSON.stringify(json.errors)}`);
         }

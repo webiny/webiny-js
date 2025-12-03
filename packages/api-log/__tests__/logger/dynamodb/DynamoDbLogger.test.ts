@@ -1,7 +1,6 @@
 import { vi, describe, it, expect } from "vitest";
 import { createDynamoDbLogger } from "~/logger";
 import { getTenant } from "~tests/mocks/getTenant";
-import { getLocale } from "~tests/mocks/getLocale";
 import { ILoggerLog, LogType } from "~/types";
 
 describe("DynamoDbLogger", { timeout: 5000 }, () => {
@@ -14,11 +13,9 @@ describe("DynamoDbLogger", { timeout: 5000 }, () => {
         });
 
         const tenant = getTenant();
-        const locale = getLocale();
 
         const logger = createDynamoDbLogger({
             onFlush,
-            getLocale,
             getTenant
         });
 
@@ -53,7 +50,6 @@ describe("DynamoDbLogger", { timeout: 5000 }, () => {
                 source: "source1",
                 data: "log1",
                 tenant,
-                locale,
                 type: LogType.DEBUG
             },
             {
@@ -62,7 +58,6 @@ describe("DynamoDbLogger", { timeout: 5000 }, () => {
                 source: "source2",
                 data: "log2",
                 tenant,
-                locale,
                 type: LogType.INFO
             },
             {
@@ -71,7 +66,6 @@ describe("DynamoDbLogger", { timeout: 5000 }, () => {
                 source: "source3",
                 data: "log3",
                 tenant,
-                locale,
                 type: LogType.WARN
             },
             {
@@ -80,7 +74,6 @@ describe("DynamoDbLogger", { timeout: 5000 }, () => {
                 source: "source4",
                 data: "log4",
                 tenant,
-                locale,
                 type: LogType.NOTICE
             },
             {
@@ -89,7 +82,6 @@ describe("DynamoDbLogger", { timeout: 5000 }, () => {
                 source: "source5",
                 data: "log5",
                 tenant,
-                locale,
                 type: LogType.ERROR
             }
         ]);
@@ -118,11 +110,9 @@ describe("DynamoDbLogger", { timeout: 5000 }, () => {
         });
 
         const tenant = getTenant();
-        const locale = getLocale();
 
         const logger = createDynamoDbLogger({
             onFlush,
-            getLocale,
             getTenant
         });
 
@@ -153,7 +143,6 @@ describe("DynamoDbLogger", { timeout: 5000 }, () => {
                 source: "source1",
                 data: "log1",
                 tenant,
-                locale,
                 type: LogType.DEBUG
             },
             {
@@ -162,7 +151,6 @@ describe("DynamoDbLogger", { timeout: 5000 }, () => {
                 source: "source2",
                 data: "log2",
                 tenant,
-                locale,
                 type: LogType.INFO
             },
             {
@@ -171,7 +159,6 @@ describe("DynamoDbLogger", { timeout: 5000 }, () => {
                 source: "source3",
                 data: "log3",
                 tenant,
-                locale,
                 type: LogType.WARN
             },
             {
@@ -180,7 +167,6 @@ describe("DynamoDbLogger", { timeout: 5000 }, () => {
                 source: "source4",
                 data: "log4",
                 tenant,
-                locale,
                 type: LogType.NOTICE
             },
             {
@@ -189,7 +175,6 @@ describe("DynamoDbLogger", { timeout: 5000 }, () => {
                 source: "source5",
                 data: "log5",
                 tenant,
-                locale,
                 type: LogType.ERROR
             }
         ]);

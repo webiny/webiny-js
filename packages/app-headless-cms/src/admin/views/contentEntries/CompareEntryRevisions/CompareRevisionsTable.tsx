@@ -48,12 +48,12 @@ export const CompareRevisionsTable = () => {
                     const status = revision.meta?.status;
                     return (
                         <span
-                            className={`wby-capitalize wby-px-2 wby-py-1 wby-rounded wby-text-xs ${
+                            className={`capitalize px-2 py-1 rounded text-xs ${
                                 status === "published"
-                                    ? "wby-bg-green-100 wby-text-green-800"
+                                    ? "bg-green-100 text-green-800"
                                     : revision.meta?.locked
-                                      ? "wby-bg-yellow-100 wby-text-yellow-800"
-                                      : "wby-bg-gray-100 wby-text-gray-800"
+                                      ? "bg-yellow-100 text-yellow-800"
+                                      : "bg-gray-100 text-gray-800"
                             }`}
                         >
                             {status ?? t`N/A`}
@@ -89,23 +89,23 @@ export const CompareRevisionsTable = () => {
 
     if (!entry?.id || !revisions?.length) {
         return (
-            <div className={"wby-p-lg wby-text-center"}>
+            <div className={"p-lg text-center"}>
                 {loading ? <OverlayLoader /> : t`No revisions to compare.`}
             </div>
         );
     }
 
     return (
-        <div className={"wby-relative"}>
+        <div className={"relative"}>
             {loading && <OverlayLoader />}
 
-            <div className={"wby-p-lg wby-border-b wby-border-gray-200"}>
-                <div className={"wby-flex wby-items-center wby-justify-between"}>
+            <div className={"p-lg border-b border-gray-200"}>
+                <div className={"flex items-center justify-between"}>
                     <div>
-                        <h3 className={"wby-text-lg wby-font-semibold wby-mb-1"}>
+                        <h3 className={"text-lg font-semibold mb-1"}>
                             Select two revisions to compare
                         </h3>
-                        <p className={"wby-text-sm wby-text-gray-600"}>
+                        <p className={"text-sm text-gray-600"}>
                             {selectedRevisions?.length === 0 &&
                                 "Choose two revisions to see their differences"}
                             {selectedRevisions?.length === 1 &&
@@ -126,7 +126,7 @@ export const CompareRevisionsTable = () => {
                 </div>
             </div>
 
-            <div className={"wby-p-lg"}>
+            <div className={"p-lg"}>
                 <DataTable
                     columns={columns}
                     data={revisions}

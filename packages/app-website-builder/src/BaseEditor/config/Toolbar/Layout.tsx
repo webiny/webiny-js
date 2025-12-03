@@ -1,19 +1,13 @@
 import React from "react";
-import styled from "@emotion/styled";
 import { Toolbar } from "./Toolbar.js";
 import { Tabs } from "@webiny/admin-ui/Tabs/index.js";
 
-const ToolbarContainer = styled("div")({
-    display: "block",
-    width: 300,
-    height: "100%",
-    backgroundColor: "var(--mdc-theme-surface)",
-    borderRight: "1px solid var(--mdc-theme-on-background)"
-});
-
 export const Layout = () => {
     return (
-        <ToolbarContainer data-role={"toolbar-layout"}>
+        <div
+            data-role={"toolbar-layout"}
+            className={"bg-neutral-base border-r-sm border-r-neutral-dimmed w-[300px] h-full"}
+        >
             <Tabs
                 size="md"
                 spacing={"md"}
@@ -21,6 +15,6 @@ export const Layout = () => {
                 tabs={[<Toolbar.Elements key="tabs" group={"tabs"} />]}
                 separator={true}
             />
-        </ToolbarContainer>
+        </div>
     );
 };

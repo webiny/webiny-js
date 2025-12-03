@@ -36,10 +36,10 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
 
     // Add a class to <body> to trigger global styles while this component is active
     useEffect(() => {
-        document.body.classList.add("wby-overflow-hidden");
+        document.body.classList.add("overflow-hidden");
 
         return () => {
-            document.body.classList.remove("wby-overflow-hidden");
+            document.body.classList.remove("overflow-hidden");
         };
     }, []);
 
@@ -56,28 +56,22 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
     }
 
     return (
-        <div className={"content-model-editor wby-flex-1"}>
+        <div className={"content-model-editor flex-1"}>
             <NavigationPrompt when={!isPristine} message={prompt} />
             <Header />
-            <div className={"wby-w-full wby-overflow-y-auto wby-h-main-content"}>
+            <div className={"w-full overflow-y-auto h-main-content"}>
                 <SplitView>
-                    <LeftPanel span={4} className={"wby-bg-neutral-light"}>
-                        <div className={"wby-px-lg wby-py-md"}>
+                    <LeftPanel span={4} className={"bg-neutral-light"}>
+                        <div className={"px-lg py-md"}>
                             <Text
                                 as={"div"}
-                                className={
-                                    "wby-uppercase wby-font-semibold wby-text-neutral-xstrong"
-                                }
+                                className={"uppercase font-semibold text-neutral-xstrong"}
                             >
                                 {"Fields"}
                             </Text>
                         </div>
                         <Separator />
-                        <div
-                            className={
-                                "wby-px-lg wby-py-md wby-h-[calc(100vh-98px)] wby-overflow-y-scroll"
-                            }
-                        >
+                        <div className={"px-lg py-md h-[calc(100vh-98px)] overflow-y-scroll"}>
                             <FieldsSidebar
                                 onFieldDragStart={() => {
                                     setActiveTab("edit");
@@ -85,12 +79,12 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                             />
                         </div>
                     </LeftPanel>
-                    <RightPanel span={8} className={"wby-bg-neutral-base"}>
-                        <div className={"wby-h-full wby-overflow-y-scroll"}>
+                    <RightPanel span={8} className={"bg-neutral-base"}>
+                        <div className={"h-full overflow-y-scroll"}>
                             {contentModel && (
-                                <div className={"wby-px-xl wby-pt-lg wby-pb-md-extra"}>
+                                <div className={"px-xl pt-lg pb-md-extra"}>
                                     <Heading level={4}>{contentModel.name}</Heading>
-                                    <Text size={"sm"} className={"wby-text-neutral-muted"}>
+                                    <Text size={"sm"} className={"text-neutral-muted"}>
                                         {`Created by ${contentModel.createdBy.displayName}. Last modified: `}
                                         <TimeAgo datetime={contentModel.savedOn} />.
                                     </Text>
@@ -110,7 +104,7 @@ export const ContentModelEditor = makeDecoratable("ContentModelEditor", () => {
                                         icon={<EditIcon />}
                                         data-testid={"cms.editor.tab.edit"}
                                         content={
-                                            <div className={"wby-relative wby-mb-lg"}>
+                                            <div className={"relative mb-lg"}>
                                                 <FieldEditor
                                                     fields={data.fields}
                                                     layout={data.layout || []}

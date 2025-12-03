@@ -10,10 +10,10 @@ import type {
 } from "~/types.js";
 import type { FileManagerConfig } from "~/createFileManager/types.js";
 import { ROOT_FOLDER } from "~/contants.js";
-import { NotAuthorizedError } from "@webiny/api-security";
 import { getDate } from "@webiny/api-headless-cms/utils/date.js";
 import { getIdentity as utilsGetIdentity } from "@webiny/api-headless-cms/utils/identity.js";
 import type { CmsEntryListSort } from "@webiny/api-headless-cms/types/index.js";
+import { NotAuthorizedError } from "@webiny/api-core/features/security/shared/index.js";
 
 export const createFilesCrud = (
     config: Pick<
@@ -88,9 +88,9 @@ export const createFilesCrud = (
                 createdOn: getDate(input.createdOn, currentDateTime),
                 modifiedOn: getDate(input.modifiedOn, null),
                 savedOn: getDate(input.savedOn, currentDateTime),
-                createdBy: utilsGetIdentity(input.createdBy, currentIdentity),
+                createdBy: utilsGetIdentity(input.createdBy, currentIdentity)!,
                 modifiedBy: utilsGetIdentity(input.modifiedBy, null),
-                savedBy: utilsGetIdentity(input.savedBy, currentIdentity),
+                savedBy: utilsGetIdentity(input.savedBy, currentIdentity)!,
 
                 tenant: getTenantId(),
                 locale: getLocaleCode(),
@@ -147,9 +147,9 @@ export const createFilesCrud = (
                 createdOn: getDate(input.createdOn, original.createdOn),
                 modifiedOn: getDate(input.modifiedOn, currentDateTime),
                 savedOn: getDate(input.savedOn, currentDateTime),
-                createdBy: utilsGetIdentity(input.createdBy, original.createdBy),
+                createdBy: utilsGetIdentity(input.createdBy, original.createdBy)!,
                 modifiedBy: utilsGetIdentity(input.modifiedBy, currentIdentity),
-                savedBy: utilsGetIdentity(input.savedBy, currentIdentity),
+                savedBy: utilsGetIdentity(input.savedBy, currentIdentity)!,
 
                 tags: Array.isArray(input.tags)
                     ? input.tags
@@ -259,9 +259,9 @@ export const createFilesCrud = (
                     createdOn: getDate(currentDateTime),
                     modifiedOn: null,
                     savedOn: getDate(currentDateTime),
-                    createdBy: utilsGetIdentity(currentIdentity),
+                    createdBy: utilsGetIdentity(currentIdentity)!,
                     modifiedBy: null,
-                    savedBy: utilsGetIdentity(currentIdentity),
+                    savedBy: utilsGetIdentity(currentIdentity)!,
 
                     tenant,
                     locale,

@@ -102,7 +102,6 @@ export class Response implements IResponse {
             webinyTaskId: params?.webinyTaskId || this.event.webinyTaskId,
             webinyTaskDefinitionId: this.event.webinyTaskDefinitionId,
             tenant: params?.tenant || this.event.tenant,
-            locale: params?.locale || this.event.locale,
             wait: params.wait
         });
     }
@@ -114,7 +113,6 @@ export class Response implements IResponse {
             webinyTaskId: params?.webinyTaskId || this.event.webinyTaskId,
             webinyTaskDefinitionId: this.event.webinyTaskDefinitionId,
             tenant: params?.tenant || this.event.tenant,
-            locale: params?.locale || this.event.locale,
             message: params?.message,
             output: getOutput<O>(params?.output)
         });
@@ -124,8 +122,7 @@ export class Response implements IResponse {
         return new ResponseAbortedResult({
             webinyTaskId: this.event.webinyTaskId,
             webinyTaskDefinitionId: this.event.webinyTaskDefinitionId,
-            tenant: this.event.tenant,
-            locale: this.event.locale
+            tenant: this.event.tenant
         });
     }
 
@@ -134,7 +131,6 @@ export class Response implements IResponse {
             webinyTaskId: params.webinyTaskId || this.event.webinyTaskId,
             webinyTaskDefinitionId: this.event.webinyTaskDefinitionId,
             tenant: params.tenant || this.event.tenant,
-            locale: params.locale || this.event.locale,
             error: params.error instanceof Error ? getErrorProperties(params.error) : params.error
         });
     }

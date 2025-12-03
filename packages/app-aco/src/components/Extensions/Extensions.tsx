@@ -17,7 +17,7 @@ export const Extensions = () => {
         <CompositionScope name={"aco.folderDetails.extensionFields"}>
             <ModelProvider model={folderModel}>
                 <BindPrefix name={"extensions"}>
-                    <div className={"wby-mt-lg"}>
+                    <div className={"mt-lg"}>
                         <Fields
                             contentModel={folderModel}
                             // @ts-expect-error

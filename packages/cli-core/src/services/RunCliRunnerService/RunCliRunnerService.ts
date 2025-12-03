@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetCliRunnerService, RunCliRunnerService } from "~/abstractions/index.js";
 import { hideBin } from "yargs/helpers";
 import { Argv } from "yargs";

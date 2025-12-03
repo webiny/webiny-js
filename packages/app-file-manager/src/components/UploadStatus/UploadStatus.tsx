@@ -25,24 +25,24 @@ export const UploadStatus = ({
     return (
         <div
             className={cn([
-                "wby-p-md wby-rounded-lg",
-                "wby-bg-neutral-dark wby-shadow-lg",
-                "wby-absolute wby-bottom-xxl wby-left-2/4 -wby-translate-x-1/2 wby-z-10",
-                "wby-flex wby-items-center wby-gap-sm-extra",
-                "wby-animate-in wby-slide-in-from-top-4 wby-slide-in-from-left-1/2 wby-duration-500"
+                "p-md rounded-lg",
+                "bg-neutral-dark shadow-lg",
+                "absolute bottom-xxl left-2/4 -translate-x-1/2 z-10",
+                "flex items-center gap-sm-extra",
+                "animate-in slide-in-from-top-4 slide-in-from-left-1/2 duration-500"
             ])}
         >
-            <Text as={"div"} size={"sm"} className={"wby-text-neutral-disabled wby-shrink-0"}>
+            <Text as={"div"} size={"sm"} className={"text-neutral-disabled shrink-0"}>
                 {t`Uploading {numberOfFiles} {label}`({
                     numberOfFiles: `${numberOfFiles}`,
                     label: numberOfFiles === 1 ? t`file` : t`files`
                 })}
             </Text>
-            <div className={"wby-w-64"}>
+            <div className={"w-64"}>
                 <ProgressBar
                     value={progress}
                     valuePosition={"end"}
-                    className={"wby-text-neutral-light"}
+                    className={"text-neutral-light"}
                 />
             </div>
             <IconButton

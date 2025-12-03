@@ -52,8 +52,6 @@ const createGraphQL = () => {
     const plugin = new ContextPlugin<Context>(async ctx => {
         if (!ctx.tenancy.getCurrentTenant()) {
             return;
-        } else if (!ctx.i18n.getDefaultLocale()) {
-            return;
         }
 
         const taskModel = await ctx.tasks.getTaskModel();

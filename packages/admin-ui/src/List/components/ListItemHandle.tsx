@@ -14,7 +14,7 @@ const DecoratableListItemHandle = (props: ListItemHandleProps) => {
         <Icon
             size={"md"}
             color={"neutral-light"}
-            className={"wby-mx-xxs wby-cursor-grab"}
+            className={"mx-xxs cursor-grab"}
             icon={<DragHandleIcon />}
             label={"Drag handle"}
             {...props}

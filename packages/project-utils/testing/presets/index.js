@@ -5,6 +5,8 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { PackageJson } from "@webiny/build-tools/utils/PackageJson.js";
 
+const MIN_STORAGE_LENGTH = 1;
+const DEFAULT_STORAGE = "ddb";
 /**
  * @param argv {string[]}
  * @returns {string}
@@ -33,9 +35,10 @@ const getStorage = argv => {
             const matched = item.match(/^--storage=([^\s]+)$/);
             return matched ? matched[1] : null;
         })
-        .filter(Boolean)
-        .find(() => true);
-    if (typeof matched === "string" && matched.length > 2) {
+        .find(item => {
+            return !!item;
+        });
+    if (typeof matched === "string" && matched.length > MIN_STORAGE_LENGTH) {
         return matched;
     }
     /**
@@ -45,13 +48,13 @@ const getStorage = argv => {
         return item === "--storage";
     });
     if (index === -1) {
-        throw Error(`Missing required --storage parameter!`);
+        return DEFAULT_STORAGE;
     }
     const value = argv[index + 1];
-    if (typeof value !== "string") {
-        throw Error(`Missing required --storage parameter!`);
+    if (typeof value === "string" && value.length > MIN_STORAGE_LENGTH) {
+        return value;
     }
-    return value;
+    return DEFAULT_STORAGE;
 };
 
 const getAllPackages = targetKeywords => {

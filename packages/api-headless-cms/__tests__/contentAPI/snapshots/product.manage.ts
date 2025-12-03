@@ -34,14 +34,6 @@ export default /* GraphQL */ `
         revisionRestoredBy: CmsIdentity
         revisionFirstPublishedBy: CmsIdentity
         revisionLastPublishedBy: CmsIdentity
-
-        publishedOn: DateTime
-            @deprecated(
-                reason: "Field was removed with the 5.39.0 release. Use 'firstPublishedOn' or 'lastPublishedOn' field."
-            )
-        ownedBy: CmsIdentity
-            @deprecated(reason: "Field was removed with the 5.39.0 release. Use 'createdBy' field.")
-
         meta: ProductApiSingularMeta
         title: String
         category: RefField

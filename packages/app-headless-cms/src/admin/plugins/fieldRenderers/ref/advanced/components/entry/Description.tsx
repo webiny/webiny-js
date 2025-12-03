@@ -12,7 +12,7 @@ export const Description = ({ description }: DescriptionProps) => {
     }
 
     return (
-        <Text size="sm" as="div" className={cn("wby-truncate wby-w-full wby-text-neutral-muted")}>
+        <Text size="sm" as="div" className={cn("truncate w-full text-neutral-muted")}>
             {description.length > MAX_LENGTH
                 ? description.substring(0, MAX_LENGTH) + "..."
                 : description}

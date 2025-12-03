@@ -11,13 +11,13 @@ const OverlayContent = ({ visible, className, style, children, ...props }: Overl
             data-state={visible ? "open" : "closed"}
             className={cn(
                 [
-                    "wby-fixed wby-inset-x-0 wby-top-lg",
-                    "wby-w-screen",
-                    "wby-rounded-t-lg wby-overflow-hidden",
-                    "wby-bg-neutral-base",
-                    "wby-transition wby-ease-in-out",
-                    "data-[state=open]:wby-animate-in data-[state=open]:wby-slide-in-from-bottom data-[state=open]:wby-fade-in data-[state=open]:wby-duration-500",
-                    "data-[state=closed]:wby-animate-out data-[state=closed]:wby-fade-out data-[state=closed]:wby-duration-150"
+                    "fixed inset-x-0 top-lg z-overlay",
+                    "w-screen",
+                    "rounded-t-lg overflow-hidden",
+                    "bg-neutral-base",
+                    "transition ease-in-out",
+                    "data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom data-[state=open]:fade-in data-[state=open]:duration-500",
+                    "data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:duration-150"
                 ],
                 className
             )}

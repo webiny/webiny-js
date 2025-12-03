@@ -1,4 +1,3 @@
-import type { FolderLevelPermissions } from "~/flp/index.js";
 import type {
     CmsEntry,
     CmsEntryListParams,
@@ -8,6 +7,7 @@ import type {
 import { type CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { hasRootFolderId } from "~/utils/decorators/hasRootFolderId.js";
 import type { FolderPermission } from "~/flp/flp.types.js";
+import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 
 interface ListEntriesFactoryCallbackParams {
     decoratee: <T extends CmsEntryValues = CmsEntryValues>(
@@ -19,10 +19,10 @@ interface ListEntriesFactoryCallbackParams {
 }
 
 export class ListEntriesFactory {
-    private readonly folderLevelPermissions: FolderLevelPermissions;
+    private readonly folderLevelPermissions: FolderLevelPermissions.Interface;
     private readonly permissionsCache: Map<string, FolderPermission[]>;
 
-    constructor(folderLevelPermissions: FolderLevelPermissions) {
+    constructor(folderLevelPermissions: FolderLevelPermissions.Interface) {
         this.folderLevelPermissions = folderLevelPermissions;
         this.permissionsCache = new Map();
     }

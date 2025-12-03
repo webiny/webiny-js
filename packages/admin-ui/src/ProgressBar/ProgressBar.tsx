@@ -16,7 +16,7 @@ const DecoratableProgressBar = ({ valuePosition, className, ...props }: Progress
     const { vm } = useProgressBar(props);
 
     return (
-        <div className={cn("wby-w-full wby-flex wby-items-center wby-gap-sm wby-py-xs", className)}>
+        <div className={cn("w-full flex items-center gap-sm py-xs", className)}>
             {valuePosition && valuePosition !== "end" && (
                 <ProgressValue value={valuePosition === "start" ? vm.textValue : vm.textMin} />
             )}

@@ -11,7 +11,7 @@ export const FilePreviewImageRenderer = () => {
             src={file.src}
             alt={file.name}
             transform={width750}
-            className={"wby-object-contain wby-max-w-full wby-max-h-full"}
+            className={"object-contain max-w-full max-h-full"}
         />
     );
 };

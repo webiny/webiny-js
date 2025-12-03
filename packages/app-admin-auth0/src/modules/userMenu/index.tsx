@@ -1,9 +1,9 @@
 import React, { Fragment } from "react";
 import { AdminConfig } from "@webiny/app-serverless-cms";
-import { UserInfo } from "./UserInfo";
-import { SignOut } from "./SignOut";
-import { UserMenuHandle } from "./UserMenuHandle";
-import { ExitTenant } from "./ExitTenant";
+import { UserInfo } from "./UserInfo.js";
+import { SignOut } from "./SignOut.js";
+import { UserMenuHandle } from "./UserMenuHandle.js";
+import { ExitTenant } from "./ExitTenant.js";
 
 const { Menu } = AdminConfig;
 

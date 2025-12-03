@@ -22,23 +22,23 @@ export const AddressBar = () => {
     }, [path, previewDomain]);
 
     return (
-        <div className="wby-w-full wby-h-[49px] wby-flex wby-flex-row wby-p-sm wby-bg-neutral-base wby-border-solid wby-border-b-sm wby-border-neutral-dimmed">
-            <div className={"wby-relative wby-flex-auto wby-mr-sm"}>
+        <div className="w-full h-[49px] flex flex-row p-sm bg-neutral-base border-solid border-b-sm border-neutral-dimmed">
+            <div className={"relative flex-auto mr-sm"}>
                 <div
                     className={
-                        "wby-w-full wby-absolute wby-top-[-1px] wby-py-[6px] wby-pl-xl wby-border-sm wby-text-md wby-peer wby-cursor-not-allowed wby-rounded-md wby-border-neutral-subtle wby-text-neutral-muted wby-bg-neutral-disabled wby-text-neutral-disabled"
+                        "w-full absolute -top-px py-xs-plus pl-xl border-sm text-md peer cursor-not-allowed rounded-md border-neutral-subtle text-neutral-muted bg-neutral-disabled text-neutral-disabled"
                     }
                 >
                     <PreviewDomain />
                     {addressBarUrl}
                 </div>
-                <div className={"wby-absolute wby-right-0 wby-top-0"}>
+                <div className={"absolute right-0 top-0"}>
                     <RefreshPreview />
                     <PreviewInNewTab />
                     <OpenInNewTab />
                 </div>
             </div>
-            <div className={"wby-flex-none"}>
+            <div className={"flex-none"}>
                 <BreakpointSelector />
             </div>
         </div>

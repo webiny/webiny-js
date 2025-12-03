@@ -41,7 +41,7 @@ export function createPulumiApp<TResources extends Record<string, unknown>>(
     const projectAppWorkspacePath = path.join(
         projectRootPath,
         ".webiny",
-        "workspaces",
+        "workspace",
         appRelativePath
     );
 

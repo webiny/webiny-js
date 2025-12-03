@@ -10,7 +10,16 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": { "~/*": ["./src/*"], "~tests/*": ["./__tests__/*"] },
+    "paths": {
+      "~/*": ["./src/*"],
+      "~tests/*": ["./__tests__/*"],
+      "@webiny/api-headless-cms-bulk-actions/*": ["../api-headless-cms-bulk-actions/src/*"],
+      "@webiny/api-headless-cms-bulk-actions": ["../api-headless-cms-bulk-actions/src"],
+      "@webiny/api-headless-cms-import-export/*": ["../api-headless-cms-import-export/src/*"],
+      "@webiny/api-headless-cms-import-export": ["../api-headless-cms-import-export/src"],
+      "@webiny/api-headless-cms-tasks/*": ["../api-headless-cms-tasks/src/*"],
+      "@webiny/api-headless-cms-tasks": ["../api-headless-cms-tasks/src"]
+    },
     "baseUrl": "."
   }
 }

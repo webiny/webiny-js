@@ -1,7 +1,4 @@
-import type { SecurityIdentity } from "@webiny/api-security/types";
-import { ContextPlugin } from "@webiny/api";
-import type { CmsContext } from "~/types";
-import type { Tenant } from "@webiny/api-tenancy/types";
+import { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 export interface PermissionsArg {
     name: string;
@@ -58,45 +55,9 @@ export const createPermissions = (permissions?: PermissionsArg[]): PermissionsAr
     ];
 };
 
-export const createIdentity = (identity?: SecurityIdentity) => {
+export const createIdentity = (identity?: IdentityData) => {
     if (!identity) {
         return getSecurityIdentity();
     }
     return identity;
-};
-
-export interface ICreateDummyLocalesParams {
-    tenants: Tenant[];
-}
-
-export const createDummyLocales = (params: ICreateDummyLocalesParams) => {
-    const { tenants } = params;
-    return new ContextPlugin<CmsContext>(async context => {
-        const { i18n, security } = context;
-
-        await security.authenticate("");
-
-        const initialTenant = context.tenancy.getCurrentTenant();
-
-        await security.withoutAuthorization(async () => {
-            for (const tenant of tenants) {
-                context.tenancy.setCurrentTenant(tenant);
-                const [items] = await i18n.locales.listLocales({
-                    where: {}
-                });
-                if (items.length > 0) {
-                    return;
-                }
-                await i18n.locales.createLocale({
-                    code: "en-US",
-                    default: true
-                });
-                await i18n.locales.createLocale({
-                    code: "de-DE",
-                    default: true
-                });
-            }
-            context.tenancy.setCurrentTenant(initialTenant);
-        });
-    });
 };

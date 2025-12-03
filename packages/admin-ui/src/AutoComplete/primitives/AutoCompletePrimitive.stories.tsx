@@ -18,9 +18,9 @@ const meta: Meta<typeof AutoCompletePrimitive> = {
     render: args => {
         const [value, setValue] = useState(args.value);
         return (
-            <div className={"wby-w-full"}>
+            <div className={"w-full"}>
                 <AutoCompletePrimitive {...args} value={value} onValueChange={setValue} />
-                <div className={"wby-mt-4 wby-text-center"}>
+                <div className={"mt-4 text-center"}>
                     Current selected value: <pre>{value}</pre>
                 </div>
             </div>
@@ -169,7 +169,7 @@ export const GhostNegativeVariant: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-dark wby-text-neutral-light wby-p-xl">
+            <div className="bg-neutral-dark text-neutral-light p-xl">
                 <Story />
             </div>
         )
@@ -183,7 +183,7 @@ export const GhostNegativeVariantDisabled: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-dark wby-text-neutral-light wby-p-xl">
+            <div className="bg-neutral-dark text-neutral-light p-xl">
                 <Story />
             </div>
         )
@@ -197,7 +197,7 @@ export const GhostNegativeVariantInvalid: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-neutral-dark wby-text-neutral-light wby-p-xl">
+            <div className="bg-neutral-dark text-neutral-light p-xl">
                 <Story />
             </div>
         )
@@ -398,12 +398,12 @@ export const WithCustomOptionRenderer: Story = {
         ],
         optionRenderer: item => {
             return (
-                <div className={"wby-w-full wby-flex wby-justify-between wby-align-middle"}>
+                <div className={"w-full flex justify-between align-middle"}>
                     <div>
-                        <span className={"wby-mr-sm"}>{item.flag}</span>
+                        <span className={"mr-sm"}>{item.flag}</span>
                         {item.name}
                     </div>
-                    <div className={"wby-text-sm"}>{item.time_difference}</div>
+                    <div className={"text-sm"}>{item.time_difference}</div>
                 </div>
             );
         }
@@ -479,7 +479,7 @@ export const WithExternalValueControl: Story = {
     render: args => {
         const [value, setValue] = useState(args.value);
         return (
-            <div className={"wby-w-full"}>
+            <div className={"w-full"}>
                 <div>
                     <AutoCompletePrimitive
                         {...args}
@@ -487,10 +487,10 @@ export const WithExternalValueControl: Story = {
                         onValueChange={value => setValue(value)}
                     />
                 </div>
-                <div className={"wby-mt-4 wby-text-center"}>
+                <div className={"mt-4 text-center"}>
                     <Button text={"Reset"} onClick={() => setValue("")} />
                 </div>
-                <div className={"wby-mt-4 wby-text-center"}>
+                <div className={"mt-4 text-center"}>
                     Current selected value: <pre>{value}</pre>
                 </div>
             </div>

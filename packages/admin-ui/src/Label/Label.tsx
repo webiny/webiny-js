@@ -5,18 +5,18 @@ import { LabelDescription, LabelHint, LabelRequired, LabelValue } from "./compon
 
 const labelVariants = cva(
     [
-        "wby-inline-flex wby-items-center wby-justify-between wby-w-full wby-text-sm",
-        "wby-text-neutral-primary wby-whitespace-nowrap",
-        "peer-disabled:wby-text-neutral-disabled peer-disabled:wby-cursor-not-allowed"
+        "inline-flex items-center justify-between w-full text-sm",
+        "text-neutral-primary whitespace-nowrap",
+        "peer-disabled:text-neutral-disabled peer-disabled:cursor-not-allowed"
     ],
     {
         variants: {
             weight: {
-                strong: "wby-font-semibold",
-                light: "wby-font-regular"
+                strong: "font-semibold",
+                light: "font-regular"
             },
             disabled: {
-                true: "wby-text-neutral-disabled wby-cursor-not-allowed"
+                true: "text-neutral-disabled cursor-not-allowed"
             },
             invalid: {
                 true: "webiny_label-invalid"
@@ -61,7 +61,7 @@ const LabelBase = ({
             {...props}
         >
             <span>
-                <span className={"wby-flex wby-items-center wby-gap-xxs"}>
+                <span className={"flex items-center gap-xxs"}>
                     <span className={"webiny_label-text"}>{text}</span>
                     {description && <LabelDescription content={description} disabled={disabled} />}
                     {hint && <LabelHint content={hint} />}

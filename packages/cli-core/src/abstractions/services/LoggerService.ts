@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface ILoggerService {
     // Basic levels
@@ -13,7 +13,7 @@ export interface ILoggerService {
     log(objOrMsg: object | string, ...args: any[]): void;
 }
 
-export const LoggerService = new Abstraction<ILoggerService>("LoggerService");
+export const LoggerService = createAbstraction<ILoggerService>("LoggerService");
 
 export namespace LoggerService {
     export type Interface = ILoggerService;

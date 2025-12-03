@@ -1,6 +1,7 @@
 import { createPrivateTaskDefinition } from "@webiny/tasks";
 import { UPDATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
 import { type AcoContext, type IUpdateFlpTaskInput, type IUpdateFlpTaskParams } from "~/types.js";
+import { UpdateFlpUseCase } from "~/features/flp/UpdateFlp/index.js";
 
 class UpdateFlpTask {
     public init = () => {
@@ -13,22 +14,18 @@ class UpdateFlpTask {
             run: async (params: IUpdateFlpTaskParams) => {
                 const { response, isAborted, input, context, isCloseToTimeout } = params;
 
-                const { UpdateFlp } = await import(
-                    /* webpackChunkName: "UpdateFlp" */ "../useCases/UpdateFlp.js"
-                );
-
-                const useCase = new UpdateFlp({
-                    context,
-                    queued: input.queued,
-                    isCloseToTimeout: isCloseToTimeout,
-                    handleTimeout: (queued: string[]) => response.continue({ ...input, queued })
-                });
+                const useCase = context.container.resolve(UpdateFlpUseCase);
 
                 try {
                     if (isAborted()) {
                         return response.aborted();
                     }
-                    await useCase.execute(input.folder);
+                    await useCase.execute({
+                        folder: input.folder,
+                        queued: input.queued,
+                        isCloseToTimeout: isCloseToTimeout,
+                        handleTimeout: queued => response.continue({ ...input, queued })
+                    });
                     return response.done("Task done: FLP record updated.");
                 } catch (error) {
                     return response.error(error);

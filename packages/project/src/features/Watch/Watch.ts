@@ -1,5 +1,6 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import {
+    BuildAppWorkspaceService,
     GetApp,
     GetProductionEnvironments,
     GetProject,
@@ -34,7 +35,8 @@ export class DefaultWatch implements Watch.Interface {
         private getProductionEnvironments: GetProductionEnvironments.Interface,
         private ui: UiService.Interface,
         private pulumiGetStackOutputService: PulumiGetStackOutputService.Interface,
-        private pulumiGetStackExportService: PulumiGetStackOutputService.Interface
+        private pulumiGetStackExportService: PulumiGetStackOutputService.Interface,
+        private buildAppWorkspaceService: BuildAppWorkspaceService.Interface
     ) {}
 
     async execute(params: Watch.Params) {
@@ -92,11 +94,31 @@ export class DefaultWatch implements Watch.Interface {
             );
         }
 
+        await this.buildAppWorkspaceService.execute(params, { forceRebuild: true });
+
         const ui = this.ui;
         const logger = this.logger;
         const project = this.getProject.execute();
         const getProjectConfigService = this.getProjectConfigService;
         const validateProjectConfigService = this.validateProjectConfigService;
+
+        const projectConfig = await getProjectConfigService.execute({
+            tags: { appName: params.app, runtimeContext: "app-build" },
+            renderArgs: params
+        });
+
+        await validateProjectConfigService.execute(projectConfig);
+
+        for (const extensionType in projectConfig.config) {
+            const oneOrMoreExtensions = projectConfig.config[extensionType];
+            const extensionsArray = Array.isArray(oneOrMoreExtensions)
+                ? [...oneOrMoreExtensions]
+                : [oneOrMoreExtensions];
+
+            for (const extensionInstance of extensionsArray) {
+                await extensionInstance.build();
+            }
+        }
 
         const webinyConfigWatcher = new WebinyConfigWatcher({
             webinyConfigPath: project.paths.webinyConfigFile.toString(),
@@ -158,7 +180,7 @@ export class DefaultWatch implements Watch.Interface {
         ui.info(`Local AWS Lambda development session started.`);
         ui.warning(
             `Note that once the session is terminated, the %s application will no longer work. To fix this, you %s redeploy it via the %s command. Learn more: %s.`,
-            app.name,
+            app.getDisplayName(),
             "MUST",
             deployCommand,
             learnMoreLink
@@ -179,7 +201,7 @@ export class DefaultWatch implements Watch.Interface {
             ui.info(`Terminating local AWS Lambda development session.`);
             ui.warning(
                 `Note that once the session is terminated, the %s application will no longer work. To fix this, you %s redeploy it via the %s command. Learn more: %s.`,
-                app?.name,
+                app?.getDisplayName(),
                 "MUST",
                 deployCommand,
                 learnMoreLink
@@ -269,6 +291,7 @@ export const watch = createImplementation({
         GetProductionEnvironments,
         UiService,
         PulumiGetStackOutputService,
-        PulumiGetStackExportService
+        PulumiGetStackExportService,
+        BuildAppWorkspaceService
     ]
 });

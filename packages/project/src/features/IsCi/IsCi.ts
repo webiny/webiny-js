@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetIsCiService, IsCi } from "~/abstractions/index.js";
 
 export class DefaultIsCi implements IsCi.Interface {

@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { CliParamsService } from "~/abstractions/index.js";
 
 export class DefaultCliParamsService implements CliParamsService.Interface {

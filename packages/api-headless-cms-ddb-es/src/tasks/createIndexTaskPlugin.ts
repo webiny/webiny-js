@@ -11,26 +11,17 @@ export const createIndexTaskPluginTest = () => {
             if (!originalTenant) {
                 return [];
             }
-            const originalLocale = context.i18n.getCurrentLocale("content");
-            if (!originalLocale) {
-                return [];
-            }
-
             const selectedTenant = await context.tenancy.getTenantById(tenant);
             if (!selectedTenant) {
                 return [];
             }
-            const selectedLocale = await context.i18n.getLocale(locale);
-            if (!selectedLocale) {
-                return [];
-            }
+
             const models = await context.cms.listModels();
             if (models.length === 0) {
                 return [];
             }
 
             context.tenancy.setCurrentTenant(selectedTenant);
-            context.i18n.setCurrentLocale("content", selectedLocale);
 
             const indexes = models.map<CreateElasticsearchIndexTaskPluginIndex>(model => {
                 const { index } = configurations.es({
@@ -52,7 +43,6 @@ export const createIndexTaskPluginTest = () => {
             });
 
             context.tenancy.setCurrentTenant(originalTenant);
-            context.i18n.setCurrentLocale("content", originalLocale);
             return indexes;
         }
     });

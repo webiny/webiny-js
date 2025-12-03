@@ -1,4 +1,3 @@
-import { NotAuthorizedError } from "@webiny/api-security";
 import WebinyError from "@webiny/error";
 import type {
     OnSystemAfterInstallTopicParams,
@@ -9,10 +8,11 @@ import type {
     HeadlessCmsStorageOperations,
     OnSystemInstallErrorTopicParams
 } from "~/types/index.js";
-import type { Tenant } from "@webiny/api-tenancy/types.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import { createTopic } from "@webiny/pubsub";
-import type { I18NLocale } from "@webiny/api-i18n/types.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import type { I18NLocale } from "@webiny/api-core/types/i18n.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
+import { NotAuthorizedError } from "~/utils/errors.js";
 
 const initialContentModelGroup = {
     name: "Ungrouped",
@@ -143,7 +143,7 @@ export const createSystemCrud = (params: CreateSystemCrudParams): CmsSystemConte
                  * we need to notify the system that tenant is now ready to use, because many external plugins
                  * insert initial tenant data into various apps, copy data from other tenants, etc.
                  */
-                await context.tenancy.onTenantAfterInstall.publish({});
+                // await context.tenancy.onTenantAfterInstall.publish({});
             } catch (ex) {
                 await onSystemInstallError.publish({
                     error: ex,

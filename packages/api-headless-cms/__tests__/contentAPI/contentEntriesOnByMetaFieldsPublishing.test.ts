@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
-import type { SecurityIdentity } from "@webiny/api-security/types";
 import { pickEntryMetaFields } from "~/constants";
+import { IdentityData } from "@webiny/api-core/features/IdentityContext";
 
-const identityA: SecurityIdentity = { id: "a", type: "admin", displayName: "A" };
-const identityB: SecurityIdentity = { id: "b", type: "admin", displayName: "B" };
+const identityA: IdentityData = { id: "a", type: "admin", displayName: "A" };
+const identityB: IdentityData = { id: "b", type: "admin", displayName: "B" };
 
 describe("Content Entries - Publishing-related Entry Meta Fields", () => {
     const { manage: manageApiIdentityA } = useTestModelHandler({

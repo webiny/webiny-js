@@ -35,9 +35,9 @@ export const Buttons = (props: ButtonsProps) => {
     }
 
     return (
-        <div className={"wby-flex wby-items-center wby-gap-sm"}>
+        <div className={"flex items-center gap-sm"}>
             {props.actions.map(action => (
-                <div className={"empty:wby-hidden wby-leading-none wby-text-0"} key={action.name}>
+                <div className={"empty:hidden leading-none text-0"} key={action.name}>
                     <ButtonsProvider>{action.element}</ButtonsProvider>
                 </div>
             ))}

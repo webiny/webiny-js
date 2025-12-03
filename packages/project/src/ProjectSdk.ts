@@ -1,4 +1,4 @@
-import { type Container } from "@webiny/di-container";
+import { type Container } from "@webiny/di";
 import { createProjectSdkContainer } from "./createProjectSdkContainer.js";
 import {
     BuildApp,
@@ -69,7 +69,7 @@ export class ProjectSdk {
     async setProjectId(projectId: string, options: SetProjectIdService.Options = {}) {
         return this.container.resolve(SetProjectIdService).execute(projectId, options);
     }
-    async getProjectVersion() {
+    getProjectVersion() {
         return this.container.resolve(GetProjectVersionService).execute();
     }
 

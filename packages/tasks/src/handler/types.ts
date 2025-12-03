@@ -9,7 +9,6 @@ export interface IIncomingEvent<TEvent> {
 
 export interface ITaskEventInput {
     tenant: string;
-    locale: string;
     webinyTaskId: string;
     webinyTaskDefinitionId: string;
     delay?: number;
@@ -17,7 +16,6 @@ export interface ITaskEventInput {
 
 export interface ITaskEvent {
     tenant: string;
-    locale: string;
     endpoint: string;
     webinyTaskId: string;
     webinyTaskDefinitionId: string;

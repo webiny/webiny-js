@@ -3,8 +3,6 @@ import fs from "fs";
 import type { ViteUserConfig } from "vitest/config";
 import { testPattern } from "./vitest.project.js";
 
-type Alias = Extract<NonNullable<ViteUserConfig["test"]>["alias"], { find: any }>;
-
 type TestPreset = {
     setupFiles?: string[];
     setupFilesAfterEnv?: string[];
@@ -60,15 +58,7 @@ export const createTestConfig = async ({
         dir: path,
         fileParallelism: false,
         ...vitestConfig,
-        css: false,
-        alias: [
-            {
-                find: /^~tests(.*)/,
-                replacement: `${path}/__tests__$1`
-            },
-            { find: /^~(.*)/, replacement: `${path}/src$1` },
-            ...((vitestConfig.alias ?? []) as Alias)
-        ]
+        css: false
     };
 
     const setupAfterEnv = join(path, "__tests__", "setup", "setupAfterEnv.js");

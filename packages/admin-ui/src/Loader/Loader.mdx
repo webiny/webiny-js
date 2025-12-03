@@ -23,7 +23,7 @@ import { Loader } from "@webiny/admin-ui";
 
 const LoaderExample = () => {
     return (
-        <div className="wby-flex wby-flex-col wby-items-center wby-gap-4">
+        <div className="flex flex-col items-center gap-4">
             <Loader
                 size="md"
                 variant="accent"
@@ -58,7 +58,7 @@ import { Loader } from "@webiny/admin-ui";
 
 const LoaderExample = () => {
     return (
-        <div className="wby-flex wby-flex-col wby-items-center wby-gap-4">
+        <div className="flex flex-col items-center gap-4">
             <Loader
                 size="md"
                 variant="accent"
@@ -151,7 +151,7 @@ import React from "react";
 import { Loader } from "@webiny/admin-ui";
 
 const NegativeLoaderExample = () => (
-    <div className="wby-bg-primary wby-p-md wby-rounded-md">
+    <div className="bg-primary p-md rounded-md">
         <Loader variant="negative" />
     </div>
 );
@@ -220,14 +220,14 @@ import { OverlayLoader } from "@webiny/admin-ui";
 
 const OverlayLoaderExample = () => {
     return (
-        <div className="wby-relative wby-h-64 wby-w-full wby-bg-neutral-light wby-rounded-md wby-p-4">
+        <div className="relative h-64 w-full bg-neutral-light rounded-md p-4">
             <OverlayLoader
                 size="lg"
                 variant="accent"
                 text="Loading content..."
             />
-            <div className="wby-h-full wby-flex wby-items-center wby-justify-center">
-                <p className="wby-text-neutral-strong">Content is loading...</p>
+            <div className="h-full flex items-center justify-center">
+                <p className="text-neutral-strong">Content is loading...</p>
             </div>
         </div>
     );

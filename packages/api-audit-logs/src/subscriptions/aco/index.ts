@@ -1,17 +1,25 @@
-import {
-    onFolderAfterCreateHook,
-    onFolderAfterUpdateHook,
-    onFolderAfterDeleteHook
-} from "./folders.js";
+import { FolderAfterCreateHandler } from "@webiny/api-aco/features/folders/CreateFolder";
+import { FolderAfterUpdateHandler } from "@webiny/api-aco/features/folders/UpdateFolder";
+import { FolderAfterDeleteHandler } from "@webiny/api-aco/features/folders/DeleteFolder";
 
+import { AuditLogFolderAfterCreateHandler } from "./handlers/AuditLogFolderAfterCreateHandler.js";
+import { AuditLogFolderAfterUpdateHandler } from "./handlers/AuditLogFolderAfterUpdateHandler.js";
+import { AuditLogFolderAfterDeleteHandler } from "./handlers/AuditLogFolderAfterDeleteHandler.js";
 import type { AuditLogsContext } from "~/types.js";
 
 export const createAcoHooks = (context: AuditLogsContext) => {
-    if (!context.aco) {
-        return;
-    }
+    context.container.registerFactory(
+        FolderAfterCreateHandler,
+        () => new AuditLogFolderAfterCreateHandler(context)
+    );
 
-    onFolderAfterCreateHook(context);
-    onFolderAfterUpdateHook(context);
-    onFolderAfterDeleteHook(context);
+    context.container.registerFactory(
+        FolderAfterUpdateHandler,
+        () => new AuditLogFolderAfterUpdateHandler(context)
+    );
+
+    context.container.registerFactory(
+        FolderAfterDeleteHandler,
+        () => new AuditLogFolderAfterDeleteHandler(context)
+    );
 };

@@ -5,7 +5,7 @@ type EmptyProps = React.ComponentPropsWithoutRef<typeof CommandPrimitive.Empty>;
 
 const Empty = (props: EmptyProps) => (
     <CommandPrimitive.Empty
-        className="wby-bg-neutral-base wby-text-neutral-strong wby-fill-neutral-xstrong wby-rounded-sm wby-p-sm wby-mx-sm wby-text-md wby-outline-none"
+        className="bg-neutral-base text-neutral-strong fill-neutral-xstrong rounded-sm p-sm mx-sm text-md outline-none"
         {...props}
     />
 );

@@ -30,7 +30,7 @@ const DecoratablePopover = ({
         <PopoverPrimitive.Trigger asChild>{trigger}</PopoverPrimitive.Trigger>
         <PopoverPrimitive.Content
             align={align}
-            className={"wby-px-sm-extra wby-py-sm"}
+            className={"px-sm-extra py-sm"}
             arrow={arrow}
             side={side}
             variant={variant}

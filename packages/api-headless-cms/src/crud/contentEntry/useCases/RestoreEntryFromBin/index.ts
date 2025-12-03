@@ -8,13 +8,13 @@ import type {
 } from "~/types/index.js";
 import type { IGetLatestRevisionByEntryId } from "~/crud/contentEntry/abstractions/index.js";
 import type { AccessControl } from "~/crud/AccessControl/AccessControl.js";
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
 import { RestoreEntryFromBinOperation } from "./RestoreEntryFromBinOperation.js";
 import { RestoreEntryFromBinOperationWithEvents } from "./RestoreEntryFromBinOperationWithEvents.js";
 import { TransformEntryRestoreFromBin } from "./TransformEntryRestoreFromBin.js";
 import { RestoreEntryFromBin } from "./RestoreEntryFromBin.js";
 import { RestoreEntryFromBinSecure } from "./RestoreEntryFromBinSecure.js";
 import type { ITransformEntryCallable } from "~/utils/entryStorage.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 export interface RestoreEntryFromBinUseCasesTopics {
     onEntryBeforeRestoreFromBin: Topic<OnEntryBeforeRestoreFromBinTopicParams>;

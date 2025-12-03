@@ -1,16 +1,17 @@
-import type { SecurityIdentity } from "@webiny/api-security/types.js";
+import type { SecurityIdentity } from "@webiny/api-core/types/security.js";
+import type { CmsIdentity } from "~/types/index.js";
 
-export const getIdentity = <T extends SecurityIdentity | null>(
-    input: SecurityIdentity | null | undefined,
+export const getIdentity = <T extends SecurityIdentity | CmsIdentity | null>(
+    input: T | null | undefined,
     defaultValue: T | null = null
-): T => {
+): CmsIdentity | null => {
     const identity = input?.id && input?.displayName && input?.type ? input : defaultValue;
     if (!identity) {
-        return null as T;
+        return null;
     }
     return {
         id: identity.id,
         displayName: identity.displayName,
         type: identity.type
-    } as T;
+    } as CmsIdentity;
 };

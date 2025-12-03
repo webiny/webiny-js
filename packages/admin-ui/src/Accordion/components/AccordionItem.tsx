@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn, makeDecoratable, withStaticProps } from "~/utils.js";
+import { cva, cn, makeDecoratable, withStaticProps } from "~/utils.js";
 import { AccordionTrigger } from "./AccordionTrigger.js";
 import { AccordionContent } from "./AccordionContent.js";
 import { AccordionItemIcon } from "./AccordionItemIcon.js";
@@ -8,14 +8,25 @@ import { AccordionRoot, type AccordionRootProps } from "~/Accordion/components/A
 
 interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {
     title: React.ReactNode;
+    subtitle?: React.ReactNode;
     description?: React.ReactNode;
+    colorMark?: string;
     icon?: React.ReactNode;
     handle?: React.ReactNode;
     interactive?: boolean;
+    locked?: boolean;
     draggable?: boolean;
     actions?: React.ReactNode;
     children: React.ReactNode;
 }
+
+const accordionRootVariants = cva("", {
+    variants: {
+        locked: {
+            true: "pointer-events-none"
+        }
+    }
+});
 
 const AccordionItemBase = (props: AccordionItemProps) => {
     const { itemProps, triggerProps, contentProps } = React.useMemo(() => {
@@ -30,6 +41,9 @@ const AccordionItemBase = (props: AccordionItemProps) => {
             // Content props.
             children,
 
+            // Shared props.
+            locked,
+
             // Trigger props.
             ...triggerProps
         } = props;
@@ -43,6 +57,7 @@ const AccordionItemBase = (props: AccordionItemProps) => {
                 open
             },
             triggerProps: {
+                locked,
                 ...triggerProps
             },
             contentProps: { children, withIcon: !!props.icon, withHandle: !!props.handle }
@@ -53,13 +68,10 @@ const AccordionItemBase = (props: AccordionItemProps) => {
         <AccordionRoot
             {...itemProps}
             className={cn(
-                [
-                    "wby-group-item wby-border-b-sm wby-border-b-neutral-dimmed data-[state=open]:wby-rounded-bl-lg data-[state=open]:wby-rounded-br-lg",
-                    "group-[.wby-accordion-variant-container]:wby-rounded-lg",
-                    "group-[.wby-accordion-background-base]:wby-bg-neutral-base",
-                    "group-[.wby-accordion-background-light]:wby-bg-neutral-light",
-                    "data-[disabled]:wby-pointer-events-none data-[disabled]:wby-opacity-50"
-                ],
+                "group-item data-[state=open]:rounded-bl-lg data-[state=open]:rounded-br-lg",
+                "group-[.accordion-variant-container]/accordion:rounded-lg",
+                "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+                accordionRootVariants({ locked: props.locked }),
                 itemProps.className
             )}
         >

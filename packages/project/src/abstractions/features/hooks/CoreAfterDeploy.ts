@@ -1,11 +1,11 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type DeployApp } from "~/abstractions/index.js";
 
 export interface ICoreAfterDeploy {
     execute(params: DeployApp.Params): void | Promise<void>;
 }
 
-export const CoreAfterDeploy = new Abstraction<ICoreAfterDeploy>("CoreAfterDeploy");
+export const CoreAfterDeploy = createAbstraction<ICoreAfterDeploy>("CoreAfterDeploy");
 
 export namespace CoreAfterDeploy {
     export type Interface = ICoreAfterDeploy;

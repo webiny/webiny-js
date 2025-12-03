@@ -39,7 +39,6 @@ describe("task runner error in success state", () => {
             webinyTaskId: updatedTask.id,
             webinyTaskDefinitionId: taskDefinition.id,
             tenant: "root",
-            locale: "en-US",
             error: {
                 message: "Task is already done, cannot run it again."
             }

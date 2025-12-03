@@ -15,10 +15,10 @@ export const UserInfo = () => {
 
     return (
         <>
-            <Text size={"md"} className={"wby-block wby-font-semibold wby-mb-sm"}>
+            <Text size={"md"} className={"block font-semibold mb-sm"}>
                 {displayName}
             </Text>
-            <Text size={"sm"} className={"wby-block !wby-text-neutral-strong"}>
+            <Text size={"sm"} className={"block text-neutral-strong!"}>
                 {id}
             </Text>
             <Menu.User.Separator />

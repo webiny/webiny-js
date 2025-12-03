@@ -1,40 +1,50 @@
-import { createImplementation } from "@webiny/di-container";
-import { ApiBeforeBuild } from "@webiny/project/abstractions/index.js";
 import path from "path";
 import fs from "fs";
-import { GetApp } from "@webiny/project/abstractions/index.js";
+import {
+    BuildAppWorkspaceService,
+    GetApp,
+    LoggerService
+} from "@webiny/project/abstractions/index.js";
 import { getTemplatesFolderPath } from "~/utils/index.js";
 
-const wait = () => new Promise(resolve => setTimeout(resolve, 10));
+class ReplaceApiLambdaFnHandlerDecorator implements BuildAppWorkspaceService.Interface {
+    constructor(
+        private getApp: GetApp.Interface,
+        private logger: LoggerService.Interface,
+        private decoratee: BuildAppWorkspaceService.Interface
+    ) {}
 
-class ReplaceApiLambdaFnHandlers implements ApiBeforeBuild.Interface {
-    constructor(private getApp: GetApp.Interface) {}
+    async execute(
+        params: BuildAppWorkspaceService.Params,
+        options: BuildAppWorkspaceService.Options = {}
+    ) {
+        const result = await this.decoratee.execute(params, options);
+        if (params.app === "api") {
+            const templatesFolderPath = getTemplatesFolderPath();
 
-    async execute() {
-        const templatesFolderPath = getTemplatesFolderPath();
+            const app = this.getApp.execute("api");
 
-        const app = this.getApp.execute("api");
+            const appWorkspaceFolderPath = app.paths.workspaceFolder.toString();
+            const apiLambdaFnHandlersFolderPath = path.join(
+                templatesFolderPath,
+                "extensions",
+                "OpenSearch",
+                "api"
+            );
 
-        const appWorkspaceFolderPath = app.paths.workspaceFolder.toString();
-        const apiLambdaFnHandlersFolderPath = path.join(
-            templatesFolderPath,
-            "extensions",
-            "OpenSearch",
-            "api"
-        );
+            fs.cpSync(apiLambdaFnHandlersFolderPath, appWorkspaceFolderPath, {
+                recursive: true,
+                force: true
+            });
 
-        fs.cpSync(apiLambdaFnHandlersFolderPath, appWorkspaceFolderPath, {
-            recursive: true,
-            force: true
-        });
+            this.logger.debug("Replaced API Lambda function handlers with OpenSearch versions.");
+        }
 
-        // Wait a bit and make sure the files are ready to have their content replaced.
-        await wait();
+        return result;
     }
 }
 
-export default createImplementation({
-    abstraction: ApiBeforeBuild,
-    implementation: ReplaceApiLambdaFnHandlers,
-    dependencies: [GetApp]
+export const ReplaceApiLambdaFnHandlers = BuildAppWorkspaceService.createDecorator({
+    decorator: ReplaceApiLambdaFnHandlerDecorator,
+    dependencies: [GetApp, LoggerService]
 });

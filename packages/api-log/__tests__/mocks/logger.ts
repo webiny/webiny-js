@@ -2,16 +2,12 @@ import { DynamoDbLogger } from "~/logger";
 import type { ILogger, ILoggerStorageOperations } from "~/types";
 
 export interface ICreateMockLoggerParams {
-    locale?: string;
     tenant?: string;
     storageOperations: ILoggerStorageOperations;
 }
 
 export const createMockLogger = (params: ICreateMockLoggerParams): ILogger => {
     return new DynamoDbLogger({
-        getLocale: () => {
-            return params.locale || "en-US";
-        },
         getTenant: () => {
             return params.tenant || "root";
         },

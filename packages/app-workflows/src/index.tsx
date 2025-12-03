@@ -1,27 +1,52 @@
-import React from "react";
-import type { IWorkflowPresenterProps as BaseIWorkflowPresenterProps } from "./Components/WorkflowPresenter.js";
-import { WorkflowPresenter as BaseWorkflowPresenter } from "./Components/WorkflowPresenter.js";
-import { useWcp } from "@webiny/app-admin";
+import { WorkflowStateOptionsOpenInNewWindow } from "~/Components/Common/index.js";
+import {
+    WorkflowStatesOwnWidget,
+    WorkflowStatesRequestedWidget
+} from "./Components/WorkflowStatesWidget/index.js";
 
-export const useCanUseWorkflows = () => {
-    const wcp = useWcp();
+import { WorkflowStateListAppOverlay } from "./Components/WorkflowStateList/index.js";
+import { WorkflowsAdminApp } from "./Components/App/index.js";
+import {
+    WorkflowStateBar,
+    WorkflowStateOverlay,
+    WorkflowStateProvider,
+    WorkflowStateTooltip
+} from "./Components/WorkflowState/index.js";
+import { WorkflowsEditor } from "./Components/WorkflowsEditor/index.js";
+import { HasWorkflowsEditorPermission } from "./Components/WorkflowsPermissions/index.js";
 
-    return wcp.canUseWorkflows();
-};
+export { useCanUseWorkflows } from "./hooks/canUseWorkflows.js";
+export { useWorkflowState } from "./Components/WorkflowState/useWorkflowState.js";
+export type { IWorkflowApplication, IWorkflowState } from "~/types.js";
+export { WorkflowStateValue } from "~/types.js";
+export { useWorkflowsPermission } from "./Components/WorkflowsPermissions/index.js";
 
-export interface IWorkflowPresenterProps extends BaseIWorkflowPresenterProps {
-    /**
-     * Children will be rendered if the user doesn't have access to Workflows.
-     */
-    children?: React.ReactNode;
-}
-
-export const WorkflowPresenter = (props: IWorkflowPresenterProps) => {
-    const { app, children } = props;
-
-    const canUseWorkflows = useCanUseWorkflows();
-    if (!canUseWorkflows) {
-        return <>{children}</>;
+export const Components = {
+    App: {
+        WorkflowsAdminApp
+    },
+    ContentReview: {
+        WorkflowStateProvider,
+        WorkflowStateTooltip,
+        WorkflowStateOverlay,
+        WorkflowStateBar
+    },
+    Permissions: {
+        HasWorkflowsEditorPermission
+    },
+    Admin: {
+        WorkflowsEditor
+    },
+    Overlay: {
+        WorkflowStateListAppOverlay
+    },
+    Widget: {
+        OwnWidget: WorkflowStatesOwnWidget,
+        RequestedWidget: WorkflowStatesRequestedWidget
+    },
+    List: {
+        Options: {
+            OpenInNewWindow: WorkflowStateOptionsOpenInNewWindow
+        }
     }
-    return <BaseWorkflowPresenter app={app} />;
 };

@@ -35,14 +35,12 @@ export const useHandler = <C extends HcmsTasksContext = HcmsTasksContext>(params
         plugins,
         identity: params.identity || defaultIdentity,
         tenant: core.tenant,
-        locale: core.locale,
         elasticsearch: elasticsearchClient,
         handler: (input?: CmsHandlerEvent) => {
             const payload: CmsHandlerEvent = {
                 path: "/cms/manage/en-US",
                 headers: {
                     "x-webiny-cms-endpoint": "manage",
-                    "x-webiny-cms-locale": "en-US",
                     "x-tenant": "root"
                 },
                 ...input

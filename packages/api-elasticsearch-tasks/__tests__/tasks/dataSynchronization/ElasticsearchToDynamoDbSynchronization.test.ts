@@ -67,6 +67,7 @@ const getTaskIndex = async (manager: IIndexManager): Promise<string> => {
 
 describe("ElasticsearchToDynamoDbSynchronization", () => {
     it("should run a sync without any indexes and throw an error", async () => {
+        expect.assertions(1);
         const handler = useHandler();
 
         const context = await handler.rawHandle();
@@ -88,10 +89,9 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
         });
 
         try {
-            const result = await sync.run({
+            await sync.run({
                 flow: "elasticsearchToDynamoDb"
             });
-            expect(result).toEqual("Should not reach this point.");
         } catch (ex) {
             expect(ex.message).toBe("No Elasticsearch / OpenSearch indexes found.");
         }
@@ -157,7 +157,6 @@ describe("ElasticsearchToDynamoDbSynchronization", () => {
                 },
                 flow: "elasticsearchToDynamoDb"
             },
-            locale: "en-US",
             message: undefined,
             status: "continue",
             tenant: "root",

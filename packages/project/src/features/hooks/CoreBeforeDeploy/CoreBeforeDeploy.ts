@@ -1,4 +1,4 @@
-import { createComposite } from "@webiny/di-container";
+import { createComposite } from "@webiny/di";
 import { CoreBeforeDeploy } from "~/abstractions/index.js";
 
 export class CompositeCoreBeforeDeploy implements CoreBeforeDeploy.Interface {

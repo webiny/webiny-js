@@ -15,6 +15,8 @@ import { createCmsModelFieldConvertersAttachFactory } from "~/utils/converters/v
 import { createExportCrud } from "~/export/index.js";
 import { createImportCrud } from "~/export/crud/importing.js";
 import { getSchema } from "~/graphql/getSchema.js";
+import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
+import { CmsInstallerFeature } from "~/features/installer/feature.js";
 
 const getParameters = async (context: CmsContext): Promise<CmsParametersPluginResponse> => {
     const plugins = context.plugins.byType<CmsParametersPlugin>(CmsParametersPlugin.type);
@@ -37,22 +39,7 @@ export interface CrudParams {
 
 export const createContextPlugin = ({ storageOperations }: CrudParams) => {
     const plugin = new ContextPlugin<CmsContext>(async context => {
-        const { type, locale: localeCode } = await getParameters(context);
-
-        if (localeCode) {
-            const locale = context.i18n.getLocale(localeCode);
-            if (locale) {
-                context.i18n.setContentLocale(locale);
-            }
-        }
-
-        const getLocale = () => {
-            const locale = context.i18n.getContentLocale();
-            if (!locale) {
-                throw new WebinyError("Missing content locale in cms context.ts.", "LOCALE_ERROR");
-            }
-            return locale;
-        };
+        const { type } = await getParameters(context);
 
         const getIdentity = () => {
             return context.security.getIdentity();
@@ -111,7 +98,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
             await storageOperations.beforeInit(context);
 
             const accessControl = new AccessControl({
-                getIdentity: context.security.getIdentity,
+                getIdentity: () => context.security.getIdentity(),
                 getGroupsPermissions: () =>
                     context.security.getPermissions("cms.contentModelGroup"),
                 getModelsPermissions: () => context.security.getPermissions("cms.contentModel"),
@@ -125,7 +112,7 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
 
             context.cms = {
                 type,
-                locale: localeCode,
+                locale: getLocale().code,
                 getLocale,
                 READ: type === "read",
                 PREVIEW: type === "preview",
@@ -176,6 +163,8 @@ export const createContextPlugin = ({ storageOperations }: CrudParams) => {
                 return;
             }
             await storageOperations.init(context);
+
+            CmsInstallerFeature.register(context.container, context.cms);
         });
     });
 

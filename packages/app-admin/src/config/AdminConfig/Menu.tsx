@@ -16,9 +16,10 @@ export interface MenuProps {
     pin?: "start" | "end";
     before?: string;
     after?: string;
+    pinnable?: boolean;
 }
 
-export type MenuConfig = Pick<MenuProps, "name" | "parent" | "tags" | "element">;
+export type MenuConfig = Pick<MenuProps, "name" | "parent" | "tags" | "element" | "pinnable">;
 
 const BaseMenu = ({
     name,
@@ -28,7 +29,8 @@ const BaseMenu = ({
     remove,
     pin,
     before,
-    after
+    after,
+    pinnable = false
 }: MenuProps) => {
     const getId = useIdGenerator("Menu");
 
@@ -56,6 +58,7 @@ const BaseMenu = ({
                 <Property id={getId(name, "parent")} name={"parent"} value={parent} />
                 <Property id={getId(name, "tags")} name={"tags"} value={tags} />
                 <Property id={getId(name, "element")} name={"element"} value={element} />
+                <Property id={getId(name, "pinnable")} name={"pinnable"} value={pinnable} />
             </Property>
         </ConnectToProperties>
     );

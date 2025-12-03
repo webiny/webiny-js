@@ -1,11 +1,11 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IProjectConfigModel } from "~/abstractions/models/index.js";
 
 interface IValidateProjectConfigService {
     execute(projectConfig: IProjectConfigModel): Promise<void>;
 }
 
-export const ValidateProjectConfigService = new Abstraction<IValidateProjectConfigService>(
+export const ValidateProjectConfigService = createAbstraction<IValidateProjectConfigService>(
     "ValidateProjectConfigService"
 );
 

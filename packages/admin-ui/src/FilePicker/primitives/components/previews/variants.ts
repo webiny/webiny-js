@@ -1,31 +1,31 @@
 import { cva } from "~/utils.js";
 
-export const previewVariants = cva("wby-w-full", {
+export const previewVariants = cva("w-full", {
     variants: {
         variant: {
-            light: ["wby-bg-neutral-light", "hover:wby-bg-neutral-dimmed"],
-            base: ["wby-bg-neutral-base", "hover:wby-bg-neutral-subtle"],
-            transparent: ["wby-bg-transparent", "hover:wby-bg-neutral-dark/5"]
+            light: ["bg-neutral-light", "hover:bg-neutral-dimmed"],
+            base: ["bg-neutral-base", "hover:bg-neutral-subtle"],
+            transparent: ["bg-transparent", "hover:bg-neutral-dark/5"]
         },
         disabled: {
-            true: "wby-pointer-events-none"
+            true: "pointer-events-none"
         }
     },
     compoundVariants: [
         {
             disabled: true,
             variant: "light",
-            className: "wby-bg-neutral-dimmed"
+            className: "bg-neutral-dimmed"
         },
         {
             disabled: true,
             variant: "base",
-            className: "wby-bg-neutral-disabled"
+            className: "bg-neutral-disabled"
         },
         {
             disabled: true,
             variant: "transparent",
-            className: "wby-bg-transparent"
+            className: "bg-transparent"
         }
     ],
     defaultVariants: {

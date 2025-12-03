@@ -1,7 +1,5 @@
+import { createApiCore } from "@webiny/api-core";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { createI18NContext } from "@webiny/api-i18n";
-import type { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import { createHandler } from "@webiny/handler-aws";
 import createGraphQLHandler from "@webiny/handler-graphql";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
@@ -64,15 +62,15 @@ import {
 } from "@webiny/api-file-manager";
 import type { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
-import createAdminUsersApp from "@webiny/api-admin-users";
-import { createWcpContext } from "@webiny/api-wcp";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
-import type { AdminUsersStorageOperations } from "@webiny/api-admin-users/types";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity | null;
+    identity?: IdentityData | null;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     storageOperationPlugins?: any[];
     testProjectLicense?: DecryptedWcpProjectLicense;
@@ -93,27 +91,23 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const documentClient = getDocumentClient();
     const { permissions, identity, plugins = [] } = params;
 
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const i18nStorage = getStorageOps<any[]>("i18n");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
-    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
 
     const handler = createHandler({
         plugins: [
+            createApiCore({
+                storageOperations: apiCoreStorage.storageOperations,
+                testProjectLicense
+            }),
             ...cmsStorage.plugins,
-            createWcpContext({ testProjectLicense }),
             createGraphQLHandler(),
             ...createTenancyAndSecurity({
                 permissions,
                 identity: identity === undefined ? createIdentity() : identity
-            }),
-            createI18NContext(),
-            ...i18nStorage.storageOperations,
-            mockLocalesPlugins(),
-            createAdminUsersApp({
-                storageOperations: adminUsersStorage.storageOperations
             }),
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations

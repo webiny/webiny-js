@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetIsCiService } from "~/abstractions/index.js";
 import { isCI } from "ci-info";
 

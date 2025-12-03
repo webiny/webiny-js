@@ -4,7 +4,6 @@ import { useHandler } from "~tests/helpers/useHandler";
 import type { Context, ICmsImportExportFile } from "~/types";
 import { CmsImportExportFileType } from "~/types";
 import { createValidateImportFromUrlTask } from "~/tasks";
-import { ResponseDoneResult, ResponseErrorResult } from "@webiny/tasks";
 import type { NonEmptyArray } from "@webiny/api/types";
 import type { IValidateImportFromUrlInput } from "~/tasks/domain/abstractions/ValidateImportFromUrl";
 import { HeadObjectCommand, S3Client } from "@webiny/aws-sdk/client-s3";
@@ -93,18 +92,16 @@ describe("validate import from url task", () => {
 
         const result = await runner({
             webinyTaskId: "unknownTaskId",
-            tenant: "root",
-            locale: "en-US"
+            tenant: "root"
         });
 
-        expect(result).toBeInstanceOf(ResponseErrorResult);
+        expect(result.status).toBe("error");
         expect(result).toMatchObject({
             status: "error",
             error: {
                 code: "TASK_NOT_FOUND",
                 message: 'Task "unknownTaskId" cannot be executed because it does not exist.'
             },
-            locale: "en-US",
             tenant: "root",
             webinyTaskDefinitionId: definition.id,
             webinyTaskId: "unknownTaskId"
@@ -127,11 +124,10 @@ describe("validate import from url task", () => {
 
         const result = await runner({
             webinyTaskId: task.id,
-            tenant: "root",
-            locale: "en-US"
+            tenant: "root"
         });
 
-        expect(result).toBeInstanceOf(ResponseErrorResult);
+        expect(result.status).toBe("error");
         expect(result).toMatchObject({
             error: {
                 code: "NO_FILES_FOUND",
@@ -141,7 +137,6 @@ describe("validate import from url task", () => {
                 message: "No files found."
             },
             status: "error",
-            locale: "en-US",
             tenant: "root",
             webinyTaskDefinitionId: definition.id,
             webinyTaskId: task.id
@@ -205,14 +200,12 @@ describe("validate import from url task", () => {
 
         const result = await runner({
             webinyTaskId: task.id,
-            tenant: "root",
-            locale: "en-US"
+            tenant: "root"
         });
 
-        expect(result).toBeInstanceOf(ResponseDoneResult);
+        expect(result.status).toBe("done");
         expect(result).toEqual({
             status: "done",
-            locale: "en-US",
             tenant: "root",
             webinyTaskDefinitionId: definition.id,
             webinyTaskId: task.id,
@@ -325,13 +318,11 @@ describe("validate import from url task", () => {
 
         const result = await runner({
             webinyTaskId: task.id,
-            tenant: "root",
-            locale: "en-US"
+            tenant: "root"
         });
 
-        expect(result).toBeInstanceOf(ResponseDoneResult);
+        expect(result.status).toBe("done");
         expect(result).toMatchObject({
-            locale: "en-US",
             message: undefined,
             output: {
                 files: [

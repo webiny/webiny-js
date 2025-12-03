@@ -38,9 +38,6 @@ export const fields = /* GraphQL */ `{
     revisionFirstPublishedBy ${identityFields}
     revisionLastPublishedBy ${identityFields}
 
-    publishedOn
-    ownedBy ${identityFields}
-    
     meta {
         title
         modelId

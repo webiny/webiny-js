@@ -1,12 +1,12 @@
 import { describe, it, test, expect } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-import type { SecurityIdentity } from "@webiny/api-security/types";
 import { expectNotAuthorized } from "~tests/utils/expectNotAuthorized";
+import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
 
 const FOLDER_TYPE = "test-folders";
 
-const identityA: SecurityIdentity = { id: "1", type: "admin", displayName: "A" };
-const identityB: SecurityIdentity = { id: "2", type: "admin", displayName: "B" };
+const identityA: IdentityData = { id: "1", type: "admin", displayName: "A" };
+const identityB: IdentityData = { id: "2", type: "admin", displayName: "B" };
 
 describe("Folder Level Permissions - Security Checks", () => {
     const { aco: acoIdentityA } = useGraphQlHandler({ identity: identityA });
@@ -355,6 +355,119 @@ describe("Folder Level Permissions - Security Checks", () => {
         ).resolves.toMatchObject({ id: folderB.id, parentId: folderA.id });
 
         // Should not be allowed because the user is moving the folder into an inaccessible folder.
+        await expect(
+            acoIdentityB
+                .updateFolder({
+                    id: folderB.id,
+                    data: { parentId: folderC.id }
+                })
+                .then(([response]) => {
+                    return response.data.aco.updateFolder.error;
+                })
+        ).resolves.toEqual({
+            code: "CANNOT_MOVE_FOLDER_TO_NEW_PARENT",
+            data: null,
+            message:
+                "Cannot move folder to a new parent because you don't have access to the new parent."
+        });
+    });
+
+    it("should not allow moving a folder to an inaccessible folder, based on permission level (owner vs editor vs viewer)", async () => {
+        const folderA = await acoIdentityA
+            .createFolder({
+                data: {
+                    title: "Folder A",
+                    slug: "folder-a",
+                    type: FOLDER_TYPE
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        const folderB = await acoIdentityA
+            .createFolder({
+                data: {
+                    title: "Folder B",
+                    slug: "folder-b",
+                    type: FOLDER_TYPE
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        const folderC = await acoIdentityA
+            .createFolder({
+                data: {
+                    title: "Folder C",
+                    slug: "folder-c",
+                    type: FOLDER_TYPE
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        const subFolder = await acoIdentityA
+            .createFolder({
+                data: {
+                    title: "Sub Folder",
+                    slug: "subfolder",
+                    type: FOLDER_TYPE,
+                    parentId: folderA.id
+                }
+            })
+            .then(([response]) => {
+                return response.data.aco.createFolder.data;
+            });
+
+        await acoIdentityA.updateFolder({
+            id: folderA.id,
+            data: {
+                permissions: [{ level: "owner", target: `admin:${identityB.id}` }]
+            }
+        });
+
+        await acoIdentityA.updateFolder({
+            id: folderB.id,
+            data: {
+                permissions: [{ level: "editor", target: `admin:${identityB.id}` }]
+            }
+        });
+
+        await acoIdentityA.updateFolder({
+            id: folderC.id,
+            data: {
+                permissions: [{ level: "viewer", target: `admin:${identityB.id}` }]
+            }
+        });
+
+        // Should be allowed to move a subfolder from folder A to folder B, because user B has "owner" access to folder A and "editor" access to folder B.
+        await expect(
+            acoIdentityB
+                .updateFolder({
+                    id: subFolder.id,
+                    data: { parentId: folderB.id }
+                })
+                .then(([response]) => {
+                    return response.data.aco.updateFolder.data;
+                })
+        ).resolves.toMatchObject({ id: subFolder.id, parentId: folderB.id });
+
+        // Should be allowed to move a subfolder from folder B to folder A, because user B has "owner" access to folder A and "editor" access to folder B.
+        await expect(
+            acoIdentityB
+                .updateFolder({
+                    id: subFolder.id,
+                    data: { parentId: folderA.id }
+                })
+                .then(([response]) => {
+                    return response.data.aco.updateFolder.data;
+                })
+        ).resolves.toMatchObject({ id: subFolder.id, parentId: folderA.id });
+
+        // Should not be allowed to move a subfolder from folder A to folder C, because user A has "owner" access to folder A and "viewer" access to folder C.
         await expect(
             acoIdentityB
                 .updateFolder({

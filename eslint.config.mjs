@@ -76,6 +76,13 @@ export default defineConfig([
       "@typescript-eslint/no-var-requires": 0,
       "@typescript-eslint/no-explicit-any": 0,
       "@typescript-eslint/no-non-null-assertion": 0,
+      "@typescript-eslint/no-empty-object-type": [
+        "error",
+        {
+          allowInterfaces: "always",
+          allowObjectTypes: "never"
+        }
+      ],
       curly: ["error"],
       "@vitest/expect-expect": 0,
       "@vitest/no-conditional-expect": 0,
@@ -176,10 +183,18 @@ export default defineConfig([
     }
   },
   globalIgnores([
+    //".github/**/*",
     ".idea/**/*",
     ".nx/**/*",
-    ".yarn/**/*",
+    ".pulumi/**/*",
+    ".stormTests/**/*",
+    ".swc/**/*",
     ".webiny/**/*",
+    ".yarn/**/*",
+    "ai-context/**/*",
+    "coverage/**/*",
+    //"cypress-tests/**/*",
+    "docs/**/*",
     "**/node_modules/",
     "**/dist/",
     "**/lib/",

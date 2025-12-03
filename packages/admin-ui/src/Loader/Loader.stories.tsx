@@ -106,7 +106,7 @@ export const Negative: Story = {
     },
     decorators: [
         Story => (
-            <div className="wby-bg-primary wby-p-md wby-rounded-md">
+            <div className="bg-primary p-md rounded-md">
                 <Story />
             </div>
         )

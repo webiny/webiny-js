@@ -6,10 +6,9 @@ import type { Transport } from "~/types.js";
 import WebinyError from "@webiny/error";
 import type { Transporter } from "nodemailer";
 import nodemailer from "nodemailer";
-import type { Options } from "nodemailer/lib/smtp-transport/index.js";
-import type SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
+import type SMTPTransport from "nodemailer/lib/smtp-transport";
 
-export type SmtpTransportConfig = Options;
+export type SmtpTransportConfig = SMTPTransport.Options;
 
 export interface SmtpTransport extends Transport {
     transporter: Transporter<SMTPTransport.SentMessageInfo>;
@@ -77,14 +76,17 @@ export const createSmtpTransport = (
                     };
                 }
 
-                throw new WebinyError({
-                    message:
-                        "nodemailer.sendMail does not have a messageId in the result. Something went wrong...",
-                    code: "MAILER_ERROR",
-                    data: {
-                        ...result
+                return {
+                    result: null,
+                    error: {
+                        message:
+                            "nodemailer.sendMail does not have a messageId in the result. Something went wrong...",
+                        code: "MAILER_ERROR",
+                        data: {
+                            ...result
+                        }
                     }
-                });
+                };
             } catch (ex) {
                 return {
                     result: null,

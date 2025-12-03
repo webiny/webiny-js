@@ -1,5 +1,5 @@
 import React from "react";
-import { Abstraction } from "@webiny/di-container";
+import { Abstraction } from "@webiny/di";
 
 interface IRouteElementRegistry {
     register(name: string, element: React.ReactElement): void;

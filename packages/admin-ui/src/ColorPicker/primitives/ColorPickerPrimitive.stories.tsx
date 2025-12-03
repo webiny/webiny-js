@@ -16,8 +16,8 @@ const meta: Meta<typeof ColorPickerPrimitive> = {
     render: args => {
         const [value, setValue] = useState(args.value);
         return (
-            <div className={"wby-w-full"}>
-                <div className={"wby-flex wby-items-center wby-justify-center wby-mb-4"}>
+            <div className={"w-full"}>
+                <div className={"flex items-center justify-center mb-4"}>
                     <ColorPickerPrimitive
                         {...args}
                         value={value}
@@ -28,7 +28,7 @@ const meta: Meta<typeof ColorPickerPrimitive> = {
                         }}
                     />
                 </div>
-                <div className={"wby-text-center"}>
+                <div className={"text-center"}>
                     Current selected value: <pre>{value}</pre>
                 </div>
             </div>

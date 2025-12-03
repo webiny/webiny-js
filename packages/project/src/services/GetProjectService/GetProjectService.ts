@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import findUp from "find-up";
 import { dirname } from "path";
 import {
@@ -34,10 +34,11 @@ export class DefaultGetProjectService implements GetProjectService.Interface {
             dirname(webinyConfigFilePathString.toString())
         );
         const dotWebinyFolderPath = projectRootFolderPath.join(".webiny");
-        const workspacesFolderPath = projectRootFolderPath.join(".webiny", "workspaces");
+        const workspaceFolderPath = projectRootFolderPath.join(".webiny", "workspace");
+        const webinyConfigBaseFilePath = workspaceFolderPath.join("webiny.config.base.tsx");
         const localPulumiStateFilesFolderPath = projectRootFolderPath.join(".pulumi");
         const tsConfigFilePath = projectRootFolderPath.join("tsconfig.json");
-        const projectVersion = this.getProjectVersionService.execute(cwd);
+        const projectVersion = this.getProjectVersionService.execute();
 
         this.cachedProject = new ProjectModel({
             // TODO: read project name from config file.
@@ -47,7 +48,8 @@ export class DefaultGetProjectService implements GetProjectService.Interface {
                 dotWebinyFolder: dotWebinyFolderPath,
                 rootFolder: projectRootFolderPath,
                 webinyConfigFile: webinyConfigFilePath,
-                workspacesFolder: workspacesFolderPath,
+                webinyConfigBaseFile: webinyConfigBaseFilePath,
+                workspaceFolder: workspaceFolderPath,
                 localPulumiStateFilesFolder: localPulumiStateFilesFolderPath,
                 tsConfigFile: tsConfigFilePath
             }

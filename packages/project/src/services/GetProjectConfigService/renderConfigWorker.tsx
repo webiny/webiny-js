@@ -2,11 +2,8 @@ import "tsx/esm";
 import { Properties, toObject } from "@webiny/react-properties";
 import debounce from "debounce";
 import React from "react";
-import { createRoot } from "react-dom/client";
+import Renderer from "react-test-renderer";
 import { serializeError } from "serialize-error";
-
-// @ts-expect-error jsdom types are messing up with the repo, so they're disabled in the root package.json.
-import { JSDOM } from "jsdom";
 import type { RenderConfigWorkerMessageDto, RenderConfigParamsDto } from "./renderConfig.js";
 import { ProjectModel } from "~/models/ProjectModel.js";
 
@@ -44,24 +41,15 @@ process.on("unhandledRejection", reason => {
 const { project: projectModelDto } = JSON.parse(process.argv[2]) as RenderConfigParamsDto;
 const project = ProjectModel.fromDto(projectModelDto);
 
-const { default: WebinyConfig } = await import(project.paths.webinyConfigFile.toString());
+const { Extensions } = await import(project.paths.webinyConfigBaseFile.toString());
 
 const onChange = debounce((value: any) => {
     sendSuccess(toObject(value));
     process.exit(0);
 });
 
-const { window } = new JSDOM(`<div id="root"/>`);
-
-global.window = window;
-global.document = window.document;
-
-const root = window.document.getElementById("root");
-
-const reactRoot = createRoot(root);
-
-reactRoot.render(
+Renderer.create(
     <Properties onChange={onChange}>
-        <WebinyConfig />
+        <Extensions />
     </Properties>
 );

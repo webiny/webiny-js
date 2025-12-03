@@ -2,8 +2,8 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { BrowserRouter } from "react-router";
-import { Link } from "./Link";
-import { Text } from "~/Text";
+import { Link } from "./Link.js";
+import { Text } from "~/Text/index.js";
 
 const meta: Meta<typeof Link> = {
     title: "Components/Link",
@@ -101,7 +101,7 @@ export const WithUnderline: Story = {
 export const PrimaryNegative: Story = {
     decorators: [
         Story => (
-            <div className="wby-bg-[#25292e] wby-p-[300px] wby-rounded-[5px] wby-text-neutral-dimmed">
+            <div className="bg-[#25292e] p-[300px] rounded-[5px] text-neutral-dimmed">
                 <Story />
             </div>
         )
@@ -123,7 +123,7 @@ export const PrimaryNegative: Story = {
 export const SecondaryNegative: Story = {
     decorators: [
         Story => (
-            <div className="wby-bg-[#25292e] wby-p-[300px] wby-rounded-[5px] wby-text-neutral-dimmed">
+            <div className="bg-[#25292e] p-[300px] rounded-[5px] text-neutral-dimmed">
                 <Story />
             </div>
         )

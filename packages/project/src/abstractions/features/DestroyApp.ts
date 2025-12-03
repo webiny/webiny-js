@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IBaseAppParams } from "~/abstractions/types.js";
 import { type ExecaChildProcess } from "execa";
 
@@ -12,7 +12,7 @@ interface IDestroyApp {
     execute(params: IDestroyAppParams): Promise<{ pulumiProcess: IPulumiProcess }>;
 }
 
-export const DestroyApp = new Abstraction<IDestroyApp>("DestroyApp");
+export const DestroyApp = createAbstraction<IDestroyApp>("DestroyApp");
 
 export namespace DestroyApp {
     export type Interface = IDestroyApp;

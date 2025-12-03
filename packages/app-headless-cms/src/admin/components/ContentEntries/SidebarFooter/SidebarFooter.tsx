@@ -1,12 +1,18 @@
 import React from "react";
 import { TrashBin } from "~/admin/components/ContentEntries/TrashBin/index.js";
 import { Scheduler } from "~/admin/components/ContentEntries/Scheduler/index.js";
+import { makeDecoratable } from "@webiny/react-composition";
 
-export const SidebarFooter = () => {
+export interface ISidebarFooterProps {
+    children?: React.ReactNode;
+}
+
+export const SidebarFooter = makeDecoratable(({ children }: ISidebarFooterProps) => {
     return (
-        <div className={"wby-px-xs wby-py-sm wby-bg-neutral-base"}>
+        <div className={"px-xs py-sm bg-neutral-base"}>
             <Scheduler />
             <TrashBin />
+            {children}
         </div>
     );
-};
+});

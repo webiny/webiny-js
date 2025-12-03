@@ -23,7 +23,7 @@ export const SyncSystemWorkerLambda = createAppModule({
             name: `${roleName}-policy-attachment`,
             config: {
                 role: role.output.name,
-                policyArn: aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole
+                policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
             }
         });
 

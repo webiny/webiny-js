@@ -1,10 +1,9 @@
-import { createImplementation } from "@webiny/di-container";
 import { AdminBeforeBuild, GetAppStackOutput } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
 const NO_DEPLOYMENT_CHECKS_FLAG_NAME = "--no-deployment-checks";
 
-class EnsureApiDeployedBeforeAdminBuild implements AdminBeforeBuild.Interface {
+class EnsureApiDeployedBeforeAdminBuildImpl implements AdminBeforeBuild.Interface {
     constructor(private getAppStackOutput: GetAppStackOutput.Interface) {}
 
     async execute(params: AdminBeforeBuild.Params) {
@@ -40,8 +39,7 @@ class EnsureApiDeployedBeforeAdminBuild implements AdminBeforeBuild.Interface {
     }
 }
 
-export default createImplementation({
-    abstraction: AdminBeforeBuild,
-    implementation: EnsureApiDeployedBeforeAdminBuild,
+export const EnsureApiDeployedBeforeAdminBuild = AdminBeforeBuild.createImplementation({
+    implementation: EnsureApiDeployedBeforeAdminBuildImpl,
     dependencies: [GetAppStackOutput]
 });

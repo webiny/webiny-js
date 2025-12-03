@@ -1,6 +1,7 @@
-import type { GraphQLRequestBody } from "~/types.js";
-import { createZodError } from "@webiny/utils/createZodError.js";
 import zod from "zod";
+import { WebinyError } from "@webiny/error";
+import { createZodError } from "@webiny/utils/createZodError.js";
+import type { GraphQLRequestBody } from "~/types.js";
 
 const requestBodySchema = zod
     .object({
@@ -23,7 +24,12 @@ export const createRequestBody = (input: unknown): GraphQLRequestBody | GraphQLR
 
     const result = schema.safeParse(body);
     if (!result.success) {
-        throw createZodError(result.error);
+        const error = createZodError(result.error);
+        throw new WebinyError({
+            message: "Invalid GraphQL request! Check your query and variables.",
+            code: "GRAPHQL_REQUEST_INVALID",
+            data: error.data
+        });
     }
     return result.data;
 };

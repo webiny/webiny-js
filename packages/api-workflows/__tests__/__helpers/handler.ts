@@ -7,22 +7,53 @@ import {
 import { Context } from "~/types.js";
 import { createWorkflows } from "~/index.js";
 import { PluginsContainer } from "@webiny/plugins";
-import { STATE_MODEL_ID, WORKFLOW_MODEL_ID } from "~/constants.js";
-import type {
-    IDeleteWorkflowResponse,
-    IDeleteWorkflowVariables,
-    IGetWorkflowResponse,
-    IGetWorkflowVariables,
-    IListWorkflowResponse,
-    IListWorkflowVariables,
-    IStoreWorkflowResponse,
-    IStoreWorkflowVariables
-} from "./graphql.js";
+import { WORKFLOW_MODEL_ID, WORKFLOW_STATE_MODEL_ID } from "~/constants.js";
 import {
+    APPROVE_WORKFLOW_STATE_STEP_MUTATION,
+    CANCEL_WORKFLOW_STATE_MUTATION,
+    CREATE_WORKFLOW_STATE_MUTATION,
     DELETE_WORKFLOW_MUTATION,
+    GET_TARGET_WORKFLOW_STATE_QUERY,
     GET_WORKFLOW_QUERY,
+    GET_WORKFLOW_STATE_MUTATION,
+    type IApproveWorkflowStateStepResponse,
+    type IApproveWorkflowStateStepVariables,
+    ICancelWorkflowStateResponse,
+    ICancelWorkflowStateVariables,
+    type ICreateWorkflowStateResponse,
+    type ICreateWorkflowStateVariables,
+    type IDeleteWorkflowResponse,
+    type IDeleteWorkflowVariables,
+    type IGetTargetWorkflowStateResponse,
+    type IGetTargetWorkflowStateVariables,
+    type IGetWorkflowResponse,
+    IGetWorkflowStateResponse,
+    IGetWorkflowStateVariables,
+    type IGetWorkflowVariables,
+    type IListOwnWorkflowStatesResponse,
+    IListOwnWorkflowStatesVariables,
+    type IListRequestedWorkflowStatesResponse,
+    type IListRequestedWorkflowStatesVariables,
+    type IListTargetWorkflowStatesResponse,
+    type IListTargetWorkflowStatesVariables,
+    type IListWorkflowResponse,
+    type IListWorkflowVariables,
+    type IRejectWorkflowStateStepResponse,
+    type IRejectWorkflowStateStepVariables,
+    IStartWorkflowStateStepResponse,
+    IStartWorkflowStateStepVariables,
+    type IStoreWorkflowResponse,
+    type IStoreWorkflowVariables,
+    type ITakeOverWorkflowStateStepResponse,
+    type ITakeOverWorkflowStateStepVariables,
+    LIST_OWN_WORKFLOW_STATES_QUERY,
+    LIST_REQUESTED_WORKFLOW_STATES_QUERY,
+    LIST_TARGET_WORKFLOW_STATES_QUERY,
     LIST_WORKFLOWS_QUERY,
-    STORE_WORKFLOW_MUTATION
+    REJECT_WORKFLOW_STATE_STEP_MUTATION,
+    START_WORKFLOW_STATE_STEP_MUTATION,
+    STORE_WORKFLOW_MUTATION,
+    TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION
 } from "./graphql.js";
 
 export const createContextHandler = async (params: UseContextHandlerParams = {}) => {
@@ -40,7 +71,7 @@ export const createContextHandler = async (params: UseContextHandlerParams = {})
     });
     const context = await handler.context();
     const workflowModel = await context.cms.getModel(WORKFLOW_MODEL_ID);
-    const stateModel = await context.cms.getModel(STATE_MODEL_ID);
+    const stateModel = await context.cms.getModel(WORKFLOW_STATE_MODEL_ID);
     return {
         handler,
         context,
@@ -64,6 +95,9 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     });
     return {
         handler,
+        /**
+         * Workflows
+         */
         storeWorkflow: handler.createMutation<IStoreWorkflowVariables, IStoreWorkflowResponse>(
             STORE_WORKFLOW_MUTATION
         ),
@@ -75,6 +109,53 @@ export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
         ),
         listWorkflows: handler.createQuery<IListWorkflowVariables, IListWorkflowResponse>(
             LIST_WORKFLOWS_QUERY
-        )
+        ),
+        /**
+         * Workflow states
+         */
+        createWorkflowState: handler.createQuery<
+            ICreateWorkflowStateVariables,
+            ICreateWorkflowStateResponse
+        >(CREATE_WORKFLOW_STATE_MUTATION),
+        getTargetWorkflowState: handler.createQuery<
+            IGetTargetWorkflowStateVariables,
+            IGetTargetWorkflowStateResponse
+        >(GET_TARGET_WORKFLOW_STATE_QUERY),
+        listWorkflowStates: handler.createQuery<
+            IListTargetWorkflowStatesVariables,
+            IListTargetWorkflowStatesResponse
+        >(LIST_TARGET_WORKFLOW_STATES_QUERY),
+        listOwnWorkflowStates: handler.createQuery<
+            IListOwnWorkflowStatesVariables,
+            IListOwnWorkflowStatesResponse
+        >(LIST_OWN_WORKFLOW_STATES_QUERY),
+        listRequestedWorkflowStates: handler.createQuery<
+            IListRequestedWorkflowStatesVariables,
+            IListRequestedWorkflowStatesResponse
+        >(LIST_REQUESTED_WORKFLOW_STATES_QUERY),
+        startWorkflowStateStep: handler.createMutation<
+            IStartWorkflowStateStepVariables,
+            IStartWorkflowStateStepResponse
+        >(START_WORKFLOW_STATE_STEP_MUTATION),
+        takeOverWorkflowStateStep: handler.createMutation<
+            ITakeOverWorkflowStateStepVariables,
+            ITakeOverWorkflowStateStepResponse
+        >(TAKE_OVER_WORKFLOW_STATE_STEP_MUTATION),
+        approveWorkflowStateStep: handler.createMutation<
+            IApproveWorkflowStateStepVariables,
+            IApproveWorkflowStateStepResponse
+        >(APPROVE_WORKFLOW_STATE_STEP_MUTATION),
+        rejectWorkflowStateStep: handler.createMutation<
+            IRejectWorkflowStateStepVariables,
+            IRejectWorkflowStateStepResponse
+        >(REJECT_WORKFLOW_STATE_STEP_MUTATION),
+        cancelWorkflowState: handler.createMutation<
+            ICancelWorkflowStateVariables,
+            ICancelWorkflowStateResponse
+        >(CANCEL_WORKFLOW_STATE_MUTATION),
+        getWorkflowState: handler.createQuery<
+            IGetWorkflowStateVariables,
+            IGetWorkflowStateResponse
+        >(GET_WORKFLOW_STATE_MUTATION)
     };
 };

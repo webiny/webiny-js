@@ -5,8 +5,8 @@ import { ReactComponent as CloseIcon } from "@webiny/icons/close.svg";
 const overlayHeaderVariants = cva("", {
     variants: {
         variant: {
-            default: "wby-bg-neutral-base wby-text-neutral-base",
-            strong: "wby-bg-neutral-dark wby-text-neutral-light"
+            default: "bg-neutral-base text-neutral-base",
+            strong: "bg-neutral-dark text-neutral-light"
         }
     },
     defaultVariants: {
@@ -36,7 +36,7 @@ const OverlayHeader = ({
 
     return (
         <HeaderBar
-            start={<div className={"wby-pl-md"}>{start}</div>}
+            start={<div className={"pl-md"}>{start}</div>}
             middle={middle}
             end={
                 <>

@@ -1,0 +1,365 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  /* Color. */
+  --color-warning-900: hsl(45 96.6% 11.6%);
+  --color-warning-800: hsl(45 98.2% 21.6%);
+  --color-warning-700: hsl(45 100% 37.3%);
+  --color-warning-600: hsl(45 100% 42.5%);
+  --color-warning-500: hsl(45 95.7% 63.7%);
+  --color-warning-400: hsl(45 95.7% 63.7%);
+  --color-warning-300: hsl(45 95.1% 75.9%);
+  --color-warning-200: hsl(45 96.9% 87.5%);
+  --color-warning-100: hsl(43 100% 96.5%);
+
+  --color-success-900: hsl(160 100% 14.5%);
+  --color-success-800: hsl(160 100% 19.6%);
+  --color-success-700: hsl(165 100% 28.6%);
+  --color-success-600: hsl(168 100% 34.7%);
+  --color-success-500: hsl(170 100% 37.5%);
+  --color-success-400: hsl(169 59.8% 64.9%);
+  --color-success-300: hsl(168 58.1% 79.4%);
+  --color-success-200: hsl(170 57.1% 91.8%);
+  --color-success-100: hsl(168 50% 96.1%);
+  --color-secondary-900: hsl(160 100% 14.5%);
+  --color-secondary-800: hsl(160 100% 19.6%);
+  --color-secondary-700: hsl(165 100% 28.6%);
+  --color-secondary-600: hsl(168 100% 34.7%);
+  --color-secondary-500: hsl(170 100% 37.5%);
+  --color-secondary-400: hsl(169 59.8% 64.9%);
+  --color-secondary-300: hsl(168 58.1% 79.4%);
+  --color-secondary-200: hsl(170 57.1% 91.8%);
+  --color-secondary-100: hsl(168 50% 96.1%);
+  --color-primary-900: hsl(14 100% 25.5%);
+  --color-primary-800: hsl(14 100% 32.2%);
+  --color-primary-700: hsl(14 94.1% 40%);
+  --color-primary-600: hsl(14 81.4% 48.4%);
+  --color-primary-500: hsl(15 95.6% 55.9%);
+  --color-primary-400: hsl(15 100% 63.5%);
+  --color-primary-300: hsl(14 94.7% 77.8%);
+  --color-primary-200: hsl(15 94.2% 86.5%);
+  --color-primary-100: hsl(5 100% 97.5%);
+  --color-neutral-900: hsl(214 12.3% 11.2%);
+  --color-neutral-800: hsl(215 11.1% 21.2%);
+  --color-neutral-700: hsl(213 10.1% 38.8%);
+  --color-neutral-600: hsl(215 9.6% 51%);
+  --color-neutral-500: hsl(218 10.7% 65.3%);
+  --color-neutral-50: hsl(180 11.1% 98.2%);
+  --color-neutral-400: hsl(219 12.1% 77.3%);
+  --color-neutral-300: hsl(225 16.7% 90.6%);
+  --color-neutral-200: hsl(220 11.1% 94.7%);
+  --color-neutral-100: hsl(210 14.3% 97.3%);
+  --color-neutral-0: hsl(0 0% 100%);
+  --color-destructive-900: hsl(359 81.6% 17.1%);
+  --color-destructive-800: hsl(0 83.6% 21.6%);
+  --color-destructive-700: hsl(359 72.8% 28.8%);
+  --color-destructive-600: hsl(0 76.4% 38.2%);
+  --color-destructive-500: hsl(0 71% 48.6%);
+  --color-destructive-400: hsl(0 66.3% 62.7%);
+  --color-destructive-300: hsl(1 83.2% 76.7%);
+  --color-destructive-200: hsl(0 96.4% 89.2%);
+  --color-destructive-100: hsl(0 100% 96.9%);
+
+  /* Background color. */
+  --color-destructive: var(--color-destructive-500);
+  --color-destructive-disabled: var(--color-destructive-300);
+  --color-destructive-muted: var(--color-destructive-400);
+  --color-destructive-strong: var(--color-destructive-600);
+  --color-destructive-subtle: var(--color-destructive-100);
+  --color-destructive-xstrong: var(--color-destructive-800);
+
+  --color-neutral-base: var(--color-neutral-0);
+  --color-neutral-dark: var(--color-neutral-900);
+  --color-neutral-dimmed: var(--color-neutral-200);
+  --color-neutral-disabled: var(--color-neutral-200);
+  --color-neutral-light: var(--color-neutral-100);
+  --color-neutral-muted: var(--color-neutral-300);
+  --color-neutral-strong: var(--color-neutral-400);
+  --color-neutral-subtle: var(--color-neutral-50);
+  --color-neutral-xstrong: var(--color-neutral-700);
+
+  --color-primary: var(--color-primary-500);
+  --color-primary-disabled: var(--color-primary-300);
+  --color-primary-muted: var(--color-primary-300);
+  --color-primary-strong: var(--color-primary-700);
+  --color-primary-subtle: var(--color-primary-100);
+  --color-primary-xstrong: var(--color-primary-900);
+
+  --color-secondary: var(--color-success-500);
+  --color-secondary-disabled: var(--color-success-400);
+  --color-secondary-muted: var(--color-success-400);
+  --color-secondary-strong: var(--color-success-700);
+  --color-secondary-subtle: var(--color-success-200);
+  --color-secondary-xstrong: var(--color-success-900);
+
+  --color-success: var(--color-success-500);
+  --color-success-disabled: var(--color-success-300);
+  --color-success-muted: var(--color-success-400);
+  --color-success-strong: var(--color-secondary-700);
+  --color-success-subtle: var(--color-success-200);
+  --color-success-xstrong: var(--color-secondary-900);
+
+  --color-warning: var(--color-warning-500);
+  --color-warning-disabled: var(--color-warning-200);
+  --color-warning-muted: var(--color-warning-300);
+  --color-warning-strong: var(--color-warning-700);
+  --color-warning-subtle: var(--color-warning-100);
+  --color-warning-xstrong: var(--color-warning-800);
+
+  /* Border color. */
+  --border-color-accent-default: var(--color-primary-500);
+  --border-color-accent-dimmed: var(--color-primary-200);
+  --border-color-accent-subtle: var(--color-primary-100);
+
+  --border-color-destructive-default: var(--color-destructive-500);
+  --border-color-destructive-subtle: var(--color-destructive-100);
+
+  --border-color-neutral-base: var(--color-neutral-0);
+  --border-color-neutral-black: var(--color-neutral-900);
+  --border-color-neutral-dark: var(--color-neutral-600);
+  --border-color-neutral-dimmed: var(--color-neutral-200);
+  --border-color-neutral-dimmed-darker: var(--color-neutral-300);
+  --border-color-neutral-muted: var(--color-neutral-400);
+  --border-color-neutral-strong: var(--color-neutral-500);
+  --border-color-neutral-subtle: var(--color-neutral-100);
+
+  --border-color-success-default: var(--color-success-500);
+  --border-color-success-subtle: var(--color-success-200);
+
+  /* Border radius. */
+  --radius-3Xl: 36px;
+  --radius-lg: 8px;
+  --radius-md: 6px;
+  --radius-sm: 4px;
+  --radius-xl: 16px;
+  --radius-xs: 2px;
+  --radius-xxl: 24px;
+
+  /* Border width. */
+  --border-width-md: 2px;
+  --border-width-none: 0px;
+  --border-width-sm: 1px;
+
+  /* Fill. */
+  --fill-accent-default: var(--color-primary-500);
+
+  --fill-destructive: var(--color-destructive-500);
+
+  --fill-neutral-base: var(--color-neutral-0);
+  --fill-neutral-dark: var(--color-neutral-800);
+  --fill-neutral-disabled: var(--color-neutral-400);
+  --fill-neutral-strong: var(--color-neutral-500);
+  --fill-neutral-xstrong: var(--color-neutral-700);
+
+  --fill-success: var(--color-success-500);
+
+  --fill-warning: var(--color-warning-500);
+
+  /* Font. */
+  --font-sans: "Inter", sans-serif;
+
+  /* Font weight. */
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+
+  /* Margin. */
+  --margin-lg: 24px;
+  --margin-md: 16px;
+  --margin-md-plus: 20px;
+  --margin-none: 0px;
+  --margin-sm: 8px;
+  --margin-sm-extra: 12px;
+  --margin-sm-plus: 10px;
+  --margin-xl: 32px;
+  --margin-xs: 4px;
+  --margin-xs-plus: 6px;
+  --margin-xxl: 48px;
+  --margin-xxs: 2px;
+
+  /* Ring color */
+  --ring-color-primary-dimmed: var(--color-primary-200);
+  --ring-color-primary-strong: var(--color-primary-500);
+  --ring-color-primary-subtle: var(--color-primary-100);
+
+  --ring-color-success-dimmed: var(--color-success-200);
+  --ring-color-success-strong: var(--color-success-500);
+  --ring-color-success-subtle: var(--color-success-100);
+
+  /* Ring width */
+  --ring-width-lg: 4px;
+  --ring-width-md: 2px;
+  --ring-width-sm: 1px;
+
+  /* Padding. */
+  --padding-lg: 24px;
+  --padding-md: 16px;
+  --padding-md-extra: 20px;
+  --padding-none: 0px;
+  --padding-sm: 8px;
+  --padding-sm-extra: 12px;
+  --padding-sm-plus: 10px;
+  --padding-xl: 32px;
+  --padding-xs: 4px;
+  --padding-xs-plus: 6px;
+  --padding-xxl: 48px;
+  --padding-xxs: 2px;
+
+  /* Shadow. */
+  --shadow-flat: 0 0px 0px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 16px 16px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 8px rgba(0, 0, 0, 0.06);
+  --shadow-sm: 0 4px 4px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 24px 24px rgba(0, 0, 0, 0.06);
+  --shadow-xxl: 0 48px 48px rgba(0, 0, 0, 0.06);
+
+  /* Spacing. */
+  --spacing-3xl: 64px;
+  --spacing-lg: 24px;
+  --spacing-md: 16px;
+  --spacing-md-plus: 20px;
+  --spacing-none: 0px;
+  --spacing-sm: 8px;
+  --spacing-sm-extra: 12px;
+  --spacing-sm-plus: 10px;
+  --spacing-xl: 32px;
+  --spacing-xs: 4px;
+  --spacing-xs-plus: 6px;
+  --spacing-xxl: 48px;
+  --spacing-xxs: 2px;
+  --spacing-sidebar-collapsed: 44px;
+  --spacing-sidebar-expanded: 256px;
+  --spacing-main-content: calc(100vh - 45px);
+
+  /* With TW4, `leading-none` maps to `--spacing-none`, which is 0px. So, we
+     need to redefine it here to be 1 to avoid issues with line-height. */
+  --leading-none: 1;
+
+  /* Text color. */
+  --text-color-accent-muted: var(--color-primary-300);
+  --text-color-accent-primary: var(--color-primary-500);
+  --text-color-accent-subtle: var(--color-primary-100);
+
+  --text-color-destructive-muted: var(--color-destructive-300);
+  --text-color-destructive-primary: var(--color-destructive-500);
+  --text-color-destructive-subtle: var(--color-destructive-100);
+
+  --text-color-neutral-dimmed: var(--color-neutral-400);
+  --text-color-neutral-disabled: var(--color-neutral-400);
+  --text-color-neutral-light: var(--color-neutral-0);
+  --text-color-neutral-muted: var(--color-neutral-500);
+  --text-color-neutral-primary: var(--color-neutral-900);
+  --text-color-neutral-strong: var(--color-neutral-700);
+
+  --text-color-success-muted: var(--color-success-400);
+  --text-color-success-primary: var(--color-success-500);
+  --text-color-success-subtle: var(--color-success-200);
+
+  /* Text sizes. */
+  --text-sm: 12px;
+  --text-sm--line-height: 16px;
+  --text-sm--letter-spacing: initial;
+  --text-sm--font-weight: normal;
+  --text-md: 14px;
+  --text-md--line-height: 20px;
+  --text-md--letter-spacing: initial;
+  --text-md--font-weight: normal;
+  --text-lg: 16px;
+  --text-lg--line-height: 24px;
+  --text-lg--letter-spacing: initial;
+  --text-lg--font-weight: normal;
+  --text-xl: 20px;
+  --text-xl--line-height: 32px;
+  --text-xl--letter-spacing: initial;
+  --text-xl--font-weight: normal;
+  --text-xxl: 30px;
+  --text-xxl--line-height: 38px;
+  --text-xxl--letter-spacing: initial;
+  --text-xxl--font-weight: normal;
+  --text-3xl: 36px;
+  --text-3xl--line-height: 44px;
+  --text-3xl--letter-spacing: initial;
+  --text-3xl--font-weight: normal;
+  --text-4xl: 48px;
+  --text-4xl--line-height: 60px;
+  --text-4xl--letter-spacing: initial;
+  --text-4xl--font-weight: normal;
+  --text-h1: var(--text-4xl);
+  --text-h1--line-height: var(--text-4xl--line-height);
+  --text-h1--letter-spacing: var(--text-4xl--letter-spacing);
+  --text-h1--font-weight: var(--font-weight-semibold);
+  --text-h2: var(--text-3xl);
+  --text-h2--line-height: var(--text-3xl--line-height);
+  --text-h2--letter-spacing: var(--text-3xl--letter-spacing);
+  --text-h2--font-weight: var(--font-weight-semibold);
+  --text-h3: var(--text-xxl);
+  --text-h3--line-height: var(--text-xxl--line-height);
+  --text-h3--letter-spacing: var(--text-xxl--letter-spacing);
+  --text-h3--font-weight: var(--font-weight-semibold);
+  --text-h4: var(--text-xl);
+  --text-h4--line-height: var(--text-xl--line-height);
+  --text-h4--letter-spacing: initial;
+  --text-h4--font-weight: var(--font-weight-semibold);
+  --text-h5: var(--text-lg);
+  --text-h5--line-height: var(--text-lg--line-height);
+  --text-h5--letter-spacing: initial;
+  --text-h5--font-weight: var(--font-weight-semibold);
+  --text-h6: var(--text-md);
+  --text-h6--line-height: var(--text-md--line-height);
+  --text-h6--letter-spacing: initial;
+  --text-h6--font-weight: var(--font-weight-semibold);
+
+  /* Z-Index. */
+  --z-index-negative: -1;
+  --z-index-base: 1;
+  --z-index-base-overwrite: 10;
+  --z-index-header: 50;
+  --z-index-drawer-backdrop: 145;
+  --z-index-drawer: 150;
+  --z-index-overlay-backdrop: 145;
+  --z-index-overlay: 150;
+  --z-index-dialog-backdrop: 170;
+  --z-index-dialog: 175;
+  --z-index-popover: 200;
+  --z-index-dropdown: 250;
+  --z-index-tooltip: 300;
+  --z-index-toast: 350;
+  --z-index-progress-bar: 400;
+
+  /* Animation. */
+  --animate-skeleton-pulse: skeleton-pulse 1400ms ease-in-out infinite;
+  @keyframes skeleton-pulse {
+    0%,
+    100% {
+      background-color: var(--color-neutral-dimmed);
+    }
+    50% {
+      background-color: var(--color-neutral-muted);
+    }
+  }
+}
+
+@utility container {
+  @apply pr-xxl pl-xxl mx-auto w-full;
+}
+
+@layer base {
+  a {
+    @apply text-accent-primary hover:underline focus-visible:outline-none focus-visible:ring-lg focus-visible:ring-primary-dimmed rounded-xs;
+  }
+
+  body {
+    @apply font-sans antialiased text-md text-neutral-primary;
+  }
+
+  b,
+  strong {
+    @apply font-semibold;
+  }
+
+  i,
+  em {
+    @apply italic;
+  }
+}

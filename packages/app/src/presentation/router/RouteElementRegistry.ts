@@ -1,5 +1,5 @@
 import React from "react";
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { RouteElementRegistry } from "./abstractions.js";
 
 class RouteElementRegistryImplementation {

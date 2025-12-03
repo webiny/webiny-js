@@ -41,15 +41,7 @@
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
     "allowImportingTsExtensions": true,
-    /**
-     * Maybe switch to true at some point? There would need to be A LOT of error handling changes.
-     * https://www.typescriptlang.org/tsconfig#useUnknownInCatchVariables
-     */
     "useUnknownInCatchVariables": false,
-    /**
-     * Setting to true will start producing TS errors that are inside libraries we use.
-     * https://www.typescriptlang.org/tsconfig#exactOptionalPropertyTypes
-     */
     "exactOptionalPropertyTypes": false,
     "types": ["cypress", "@testing-library/cypress"]
   },

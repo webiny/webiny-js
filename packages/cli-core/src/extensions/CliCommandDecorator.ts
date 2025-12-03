@@ -1,5 +1,5 @@
 import { defineExtension, zodPathToAbstraction } from "@webiny/project/extensions/index.js";
-import { Command } from "~/abstractions/index.js";
+import { CliCommand } from "~/abstractions/index.js";
 import { z } from "zod";
 
 export const cliCommandDecorator = defineExtension({
@@ -9,7 +9,7 @@ export const cliCommandDecorator = defineExtension({
     multiple: true,
     paramsSchema: ({ project }) => {
         return z.object({
-            src: zodPathToAbstraction(Command, project)
+            src: zodPathToAbstraction(CliCommand, project)
         });
     }
 });

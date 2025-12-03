@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type IBaseAppParams } from "~/abstractions/types.js";
 import { type ExecaChildProcess } from "execa";
 
@@ -10,7 +10,7 @@ interface IRefreshApp {
     execute(params: IRefreshAppParams): Promise<{ pulumiProcess: IPulumiProcess }>;
 }
 
-export const RefreshApp = new Abstraction<IRefreshApp>("RefreshApp");
+export const RefreshApp = createAbstraction<IRefreshApp>("RefreshApp");
 
 export namespace RefreshApp {
     export type Interface = IRefreshApp;

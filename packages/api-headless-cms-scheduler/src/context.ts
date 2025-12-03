@@ -35,9 +35,9 @@ export const createHeadlessCmsScheduleContext = (
             client: context.db.driver.getClient() as DynamoDBDocument
         });
         if (manifest.error) {
-            console.error(manifest.error.message);
-            console.log(convertException(manifest.error, ["message"]));
-            console.info("Scheduler not attached.");
+            // console.error(manifest.error.message);
+            // console.log(convertException(manifest.error, ["message"]));
+            // console.info("Scheduler not attached.");
             return;
         }
 

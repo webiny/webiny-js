@@ -1,60 +1,51 @@
-import { createImplementation } from "@webiny/di-container";
 import path from "path";
 import fs from "fs";
-import { replaceInPath } from "replace-in-path";
-import { BeforeBuild, GetApp } from "@webiny/project/abstractions/index.js";
+import {
+    BuildAppWorkspaceService,
+    GetApp,
+    LoggerService
+} from "@webiny/project/abstractions/index.js";
 import { getTemplatesFolderPath } from "~/utils/index.js";
 
-const wait = () => new Promise(resolve => setTimeout(resolve, 10));
+class BuildAppWorkspaceImpl implements BuildAppWorkspaceService.Interface {
+    constructor(
+        private getApp: GetApp.Interface,
+        private logger: LoggerService.Interface,
+        private decoratee: BuildAppWorkspaceService.Interface
+    ) {}
 
-class BuildAppWorkspace implements BeforeBuild.Interface {
-    constructor(private getApp: GetApp.Interface) {}
-
-    async execute(params: BeforeBuild.Params) {
-        // 1. Construct required paths.
-        const templatesFolderPath = getTemplatesFolderPath();
+    async execute(
+        params: BuildAppWorkspaceService.Params,
+        options: BuildAppWorkspaceService.Options = {}
+    ) {
+        await this.decoratee.execute(params, options);
 
         const app = this.getApp.execute(params.app);
 
-        const appWorkspaceFolderPath = app.paths.workspaceFolder.toString();
-        const baseTemplateFolderPath = path.join(templatesFolderPath, "appTemplates", "base");
-        const appTemplateFolderPath = path.join(templatesFolderPath, "appTemplates", app.name);
-
-        // 2. Do the cleanup first.
-        if (fs.existsSync(appWorkspaceFolderPath)) {
-            fs.rmSync(appWorkspaceFolderPath, { recursive: true, force: true });
+        if (app.paths.workspaceFolder.existsSync()) {
+            if (options.forceRebuild !== true) {
+                this.logger.debug(
+                    { appName: params.app },
+                    "App workspace already exists, skipping rebuild (project-aws)."
+                );
+                return;
+            }
         }
 
-        fs.mkdirSync(appWorkspaceFolderPath, { recursive: true });
+        this.logger.info({ params, options }, "Building app workspace (project-aws)...");
 
-        // Wait a bit and make sure the files are ready to have their content replaced.
-        await wait();
-
-        // 3. Create base.
-        fs.cpSync(baseTemplateFolderPath, appWorkspaceFolderPath, { recursive: true });
-
-        // Wait a bit and make sure the files are ready to have their content replaced.
-        await wait();
-
-        const { env, variant } = params;
-
-        replaceInPath(path.join(appWorkspaceFolderPath, "/**/*.{ts,js,yaml}"), [
-            { find: "{PROJECT_ID}", replaceWith: app.name },
-            { find: "{PROJECT_DESCRIPTION}", replaceWith: `Webiny's ${env} app.` },
-            { find: "{DEPLOY_ENV}", replaceWith: env },
-            {
-                find: "{DEPLOY_VARIANT}",
-                replaceWith: !variant || variant === "undefined" ? "" : variant
-            }
-        ]);
+        const templatesFolderPath = getTemplatesFolderPath();
+        const appWorkspaceFolderPath = app.paths.workspaceFolder.toString();
+        const appTemplateFolderPath = path.join(templatesFolderPath, "appTemplates", app.name);
 
         // 4. Create app.
         fs.cpSync(appTemplateFolderPath, appWorkspaceFolderPath, { recursive: true });
+
+        this.logger.info("App workspace built successfully (project-aws).");
     }
 }
 
-export default createImplementation({
-    abstraction: BeforeBuild,
-    implementation: BuildAppWorkspace,
-    dependencies: [GetApp]
+export const BuildAppWorkspace = BuildAppWorkspaceService.createDecorator({
+    decorator: BuildAppWorkspaceImpl,
+    dependencies: [GetApp, LoggerService]
 });

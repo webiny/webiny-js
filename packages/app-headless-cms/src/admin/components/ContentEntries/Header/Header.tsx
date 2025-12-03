@@ -13,6 +13,7 @@ interface HeaderProps {
     onCreateEntry: (event?: React.SyntheticEvent) => void;
     onCreateFolder: (event?: React.SyntheticEvent) => void;
     searchValue: string;
+    searchPlaceholder: string;
     onSearchChange: (value: string) => void;
 }
 
@@ -24,24 +25,25 @@ export const Header = (props: HeaderProps) => {
         onCreateFolder,
         title,
         searchValue,
+        searchPlaceholder,
         onSearchChange
     } = props;
 
     return (
         <>
-            <div className={"wby-flex wby-flex-col wby-gap-md"}>
+            <div className={"flex flex-col gap-md"}>
                 <Title title={title} isRoot={props.isRoot} />
-                <div className={"wby-px-md wby-pb-sm"}>
-                    <div className={"wby-flex wby-items-center wby-gap-sm wby-w-full"}>
-                        <div className={"wby-flex-1"}>
+                <div className={"px-md pb-sm"}>
+                    <div className={"flex items-center gap-sm w-full"}>
+                        <div className={"flex-1"}>
                             <Search
                                 value={searchValue}
                                 onChange={onSearchChange}
-                                placeholder={"Search..."}
+                                placeholder={searchPlaceholder || "Search entries..."}
                             />
                         </div>
                         <div>
-                            <div className={"wby-flex wby-gap-sm"}>
+                            <div className={"flex gap-sm"}>
                                 <ButtonFilters />
                                 <ButtonsCreate
                                     canCreateFolder={canCreateFolder}

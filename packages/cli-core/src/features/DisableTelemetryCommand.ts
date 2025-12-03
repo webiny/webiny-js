@@ -1,8 +1,8 @@
-import { createImplementation } from "@webiny/di-container";
-import { Command, UiService } from "~/abstractions/index.js";
+import { createImplementation } from "@webiny/di";
+import { CliCommand, UiService } from "~/abstractions/index.js";
 import { disable as disableTelemetry, sendEvent } from "@webiny/telemetry/cli.js";
 
-export class DisableTelemetryCommand implements Command.Interface<void> {
+export class DisableTelemetryCommand implements CliCommand.Interface<void> {
     constructor(private uiService: UiService.Interface) {}
 
     execute() {
@@ -27,7 +27,7 @@ export class DisableTelemetryCommand implements Command.Interface<void> {
 }
 
 export const disableTelemetryCommand = createImplementation({
-    abstraction: Command,
+    abstraction: CliCommand,
     implementation: DisableTelemetryCommand,
     dependencies: [UiService]
 });

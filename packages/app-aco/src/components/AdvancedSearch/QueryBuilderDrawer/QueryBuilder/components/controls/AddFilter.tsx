@@ -8,7 +8,7 @@ interface AddFilterProps {
 
 export const AddFilter = ({ onClick }: AddFilterProps) => {
     return (
-        <div className={"wby-my-md wby-text-center"}>
+        <div className={"my-md text-center"}>
             <Tooltip
                 content={"Add new condition"}
                 side={"bottom"}

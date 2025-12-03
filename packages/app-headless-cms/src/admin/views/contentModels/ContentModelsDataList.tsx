@@ -72,7 +72,7 @@ const DisplayIcon = ({ model }: IconProps) => {
     }
     return (
         <UIL.ListItemGraphic>
-            <div className={"wby-text-neutral-muted"}>
+            <div className={"text-neutral-muted"}>
                 <Icon
                     size={"lg"}
                     color={"inherit"}
@@ -159,7 +159,7 @@ const ContentModelsDataList = ({
                 data={contentModels}
                 title={t`Content Models`}
                 actions={
-                    <div className={"wby-flex wby-items-center wby-justify-end wby-gap-xs"}>
+                    <div className={"flex items-center justify-end gap-xs"}>
                         <Tooltip
                             content={"Export all models"}
                             trigger={
@@ -189,7 +189,7 @@ const ContentModelsDataList = ({
                                 text={t`New`}
                                 icon={<AddIcon />}
                                 size={"sm"}
-                                className={"wby-ml-xs"}
+                                className={"ml-xs"}
                             />
                         ) : null}
                     </div>
@@ -224,10 +224,7 @@ const ContentModelsDataList = ({
                             };
 
                             return (
-                                <UIL.ListItem
-                                    key={contentModel.modelId}
-                                    className={"wby-group/item"}
-                                >
+                                <UIL.ListItem key={contentModel.modelId} className={"group/item"}>
                                     <UIL.ListItemText>
                                         <DisplayIcon model={contentModel} />
                                         <UIL.ListItemTextPrimary>
@@ -247,9 +244,7 @@ const ContentModelsDataList = ({
                                         <UIL.ListActions>
                                             <ModelIsBeingDeleted model={contentModel}>
                                                 <span
-                                                    className={
-                                                        "wby-invisible group-hover/item:wby-visible"
-                                                    }
+                                                    className={"invisible group-hover/item:visible"}
                                                 >
                                                     <Tooltip
                                                         side={"top"}
@@ -275,7 +270,7 @@ const ContentModelsDataList = ({
                                                 {canEdit(contentModel, "cms.contentModel") && (
                                                     <span
                                                         className={
-                                                            "wby-invisible group-hover/item:wby-visible"
+                                                            "invisible group-hover/item:visible"
                                                         }
                                                     >
                                                         <Tooltip
@@ -362,7 +357,7 @@ const ContentModelsDataList = ({
                                                                 "cms-delete-content-model-button"
                                                             }
                                                             className={
-                                                                "!wby-text-destructive-primary [&_svg]:wby-fill-destructive"
+                                                                "text-destructive-primary! [&_svg]:fill-destructive"
                                                             }
                                                         />
                                                     )}

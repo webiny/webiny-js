@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
-import type { SecurityIdentity } from "@webiny/api-security/types";
 import { CmsTestPermissions, expectNotAuthorized } from "../utils";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
-const identityA: SecurityIdentity = { id: "a", type: "admin", displayName: "A" };
-const identityB: SecurityIdentity = { id: "b", type: "admin", displayName: "B" };
-const identityC: SecurityIdentity = { id: "c", type: "admin", displayName: "C" };
+const identityA: IdentityData = { id: "a", type: "admin", displayName: "A" };
+const identityB: IdentityData = { id: "b", type: "admin", displayName: "B" };
+const identityC: IdentityData = { id: "c", type: "admin", displayName: "C" };
 
 describe("Write Permissions Checks", () => {
     it("should allow creation of entries only with sufficient permission", async () => {
@@ -29,7 +29,7 @@ describe("Write Permissions Checks", () => {
         const failedCreateTestEntryResponse = await manageApiB.createTestEntry();
 
         expectNotAuthorized(failedCreateTestEntryResponse, {
-            reason: 'Not allowed to access "testModel" entries.'
+            message: 'Not allowed to access "testModel" entries.'
         });
 
         permissions.setPermissions({
@@ -74,7 +74,7 @@ describe("Write Permissions Checks", () => {
         });
 
         expectNotAuthorized(failedUpdateTestEntryResponse, {
-            reason: 'Not allowed to access "testModel" entries.'
+            message: 'Not allowed to access "testModel" entries.'
         });
 
         permissions.setPermissions({

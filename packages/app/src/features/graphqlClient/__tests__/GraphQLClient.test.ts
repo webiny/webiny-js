@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { Container } from "@webiny/di-container";
-import { GraphQLClient } from "../abstractions";
-import { FetchGraphQLClient } from "../FetchGraphQLClient";
-import { BatchingGraphQLClient } from "../BatchingGraphQLClient";
-import { RetryGraphQLClient } from "../RetryGraphQLClient";
-import { EnvConfig } from "~/features/envConfig";
+import { Container } from "@webiny/di";
+import { GraphQLClient } from "../abstractions.js";
+import { FetchGraphQLClient } from "../FetchGraphQLClient.js";
+import { BatchingGraphQLClient } from "../BatchingGraphQLClient.js";
+import { RetryGraphQLClient } from "../RetryGraphQLClient.js";
+import { EnvConfig } from "~/features/envConfig/index.js";
 
 describe("GraphQLClient Feature", () => {
     let container: Container;
@@ -36,6 +36,7 @@ describe("GraphQLClient Feature", () => {
             };
 
             global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
                 json: async () => mockResponse
             });
 
@@ -60,13 +61,13 @@ describe("GraphQLClient Feature", () => {
             };
 
             global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
                 json: async () => mockResponse
             });
 
             const client = container.resolve(GraphQLClient);
             const result = await client.execute({
-                mutation:
-                    "mutation CreateUser($name: String!) { createUser(name: $name) { id name } }",
+                query: "mutation CreateUser($name: String!) { createUser(name: $name) { id name } }",
                 variables: { name: "Jane" }
             });
 
@@ -77,6 +78,7 @@ describe("GraphQLClient Feature", () => {
             const mockResponse = { data: { user: { id: "1" } } };
 
             global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
                 json: async () => mockResponse
             });
 
@@ -115,6 +117,7 @@ describe("GraphQLClient Feature", () => {
             };
 
             global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
                 json: async () => mockResponse
             });
 
@@ -177,6 +180,7 @@ describe("GraphQLClient Feature", () => {
             };
 
             global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
                 json: async () => mockResponse
             });
 
@@ -200,6 +204,7 @@ describe("GraphQLClient Feature", () => {
             ];
 
             global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
                 json: async () => mockResponse
             });
 
@@ -207,13 +212,13 @@ describe("GraphQLClient Feature", () => {
 
             await Promise.all([
                 client.execute({ query: "query { user { id } }" }),
-                client.execute({ mutation: "mutation { createPost { id } }" })
+                client.execute({ query: "mutation { createPost { id } }" })
             ]);
 
             expect(global.fetch).toHaveBeenCalledTimes(1);
             const callBody = JSON.parse((global.fetch as any).mock.calls[0][1].body);
             expect(callBody[0]).toHaveProperty("query");
-            expect(callBody[1]).toHaveProperty("mutation");
+            expect(callBody[1]).toHaveProperty("query");
         });
 
         it("should reject all requests if batch fails", async () => {
@@ -264,6 +269,7 @@ describe("GraphQLClient Feature", () => {
                 .mockRejectedValueOnce(new Error("Network timeout"))
                 .mockRejectedValueOnce(new Error("Network timeout"))
                 .mockResolvedValueOnce({
+                    status: 200,
                     json: async () => mockResponse
                 });
 
@@ -281,6 +287,7 @@ describe("GraphQLClient Feature", () => {
             };
 
             global.fetch = vi.fn().mockResolvedValue({
+                status: 200,
                 json: async () => mockResponse
             });
 
@@ -321,6 +328,7 @@ describe("GraphQLClient Feature", () => {
                 .fn()
                 .mockRejectedValueOnce(new Error("Network error"))
                 .mockResolvedValueOnce({
+                    status: 200,
                     json: async () => mockResponse
                 });
 

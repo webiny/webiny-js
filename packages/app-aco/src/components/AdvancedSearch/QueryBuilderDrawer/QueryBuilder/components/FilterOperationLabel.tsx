@@ -11,7 +11,7 @@ export const FilterOperationLabel = ({ operation, show }: FilterOperationLabelPr
     }
 
     return (
-        <div className={"wby-pt-sm-plus wby-text-center"}>
+        <div className={"pt-sm-plus text-center"}>
             <Text size={"sm"}>{operation}</Text>
         </div>
     );

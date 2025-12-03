@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { type FileItemDto, MultiFilePicker } from "~/MultiFilePicker/index.js";
-import { Providers } from "~/Providers/index.js";
+import { AdminUiProvider } from "~/AdminUiProvider/index.js";
 
 const getRandomNumber = (min: number, max: number): number =>
     Math.floor(Math.random() * (max - min + 1)) + min;
@@ -39,7 +39,7 @@ const meta: Meta<typeof MultiFilePicker> = {
     render: args => {
         const [selectedFiles, setSelectedFiles] = useState<FileItemDto[]>([]);
         return (
-            <Providers>
+            <AdminUiProvider>
                 <MultiFilePicker
                     {...args}
                     values={selectedFiles}
@@ -64,7 +64,7 @@ const meta: Meta<typeof MultiFilePicker> = {
                     }
                     onEditItem={(item, i) => alert(`Editing ${item?.name} at position ${i}`)}
                 />
-            </Providers>
+            </AdminUiProvider>
         );
     }
 };
@@ -311,7 +311,7 @@ export const Documentation: Story = {
         }, [args.required, selectedFiles]);
 
         return (
-            <Providers>
+            <AdminUiProvider>
                 <MultiFilePicker
                     {...args}
                     values={selectedFiles}
@@ -321,7 +321,7 @@ export const Documentation: Story = {
                     onEditItem={handleEdit}
                     validation={validation}
                 />
-            </Providers>
+            </AdminUiProvider>
         );
     },
     args: {

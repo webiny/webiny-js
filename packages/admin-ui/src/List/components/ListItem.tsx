@@ -7,27 +7,27 @@ import { ListItemIcon } from "./ListItemIcon.js";
 
 const listItemVariant = cva(
     [
-        "wby-w-full wby-flex wby-items-center",
-        "group-[.wby-list-background-base]:wby-bg-neutral-base",
-        "group-[.wby-list-background-light]:wby-bg-neutral-light",
-        "group-[.wby-list-variant-container]:wby-rounded-sm",
-        "group-[.wby-list-variant-underline]:wby-border-b-sm group-[.wby-list-variant-underline]:wby-border-b-neutral-dimmed",
-        "hover:!wby-bg-neutral-dimmed",
-        "focus-visible:wby-outline-none focus-visible:wby-ring-sm focus-visible:wby-ring-inset focus-visible:wby-ring-primary-dimmed"
+        "w-full flex items-center",
+        "group-[.list-background-base]:bg-neutral-base",
+        "group-[.list-background-light]:bg-neutral-light",
+        "group-[.list-variant-container]:rounded-lg",
+        "group-[.list-variant-underline]:border-b-sm group-[.list-variant-underline]:border-b-neutral-dimmed",
+        "hover:bg-neutral-dimmed!",
+        "focus-visible:outline-none focus-visible:ring-sm focus-visible:ring-inset focus-visible:ring-primary-dimmed"
     ],
     {
         variants: {
             disabled: {
-                true: "wby-pointer-events-none wby-opacity-50"
+                true: "pointer-events-none opacity-50"
             },
             activated: {
-                true: "!wby-bg-neutral-light"
+                true: "bg-neutral-light!"
             },
             selected: {
-                true: "!wby-bg-neutral-light"
+                true: "bg-neutral-light!"
             },
             clickable: {
-                true: "wby-cursor-pointer"
+                true: "cursor-pointer"
             }
         }
     }
@@ -41,6 +41,8 @@ interface ListItemProps
     description?: React.ReactNode;
     handle?: React.ReactNode;
     icon?: React.ReactNode;
+    colorMark?: string;
+    sidePadding?: "md" | "lg";
 }
 
 const DecoratableListItem = ({
@@ -53,10 +55,14 @@ const DecoratableListItem = ({
     selected,
     handle,
     icon,
+    colorMark,
+    sidePadding = "md",
     onClick,
     title,
     ...props
 }: ListItemProps) => {
+    const paddingClasses = sidePadding === "md" ? "px-md" : "pl-lg pr-md";
+
     return (
         <div
             {...props}
@@ -67,34 +73,34 @@ const DecoratableListItem = ({
             )}
         >
             {handle}
-            <div
-                className={
-                    "wby-w-full wby-flex wby-justify-between wby-items-center wby-pl-lg wby-pr-md wby-py-sm-extra"
-                }
-            >
+            {colorMark && (
                 <div
-                    className={"wby-w-full wby-flex wby-items-center wby-gap-md"}
-                    onClick={onClick}
-                >
+                    style={{ backgroundColor: colorMark }}
+                    className={"block w-[4px] h-[48px] rounded-lg ml-sm flex-shrink-0"}
+                />
+            )}
+            <div
+                className={cn(
+                    "w-full flex justify-between items-center py-sm-extra",
+                    paddingClasses
+                )}
+            >
+                <div className={"w-full flex items-center gap-md"} onClick={onClick}>
                     {icon && <div>{icon}</div>}
-                    <div
-                        className={"wby-flex wby-flex-col wby-gap-xxs wby-flex-grow wby-text-left"}
-                    >
+                    <div className={"flex flex-col gap-xxs grow text-left"}>
                         <Text
                             size={"md"}
                             as={"div"}
-                            className={"wby-font-semibold wby-text-neutral-primary"}
+                            className={"font-semibold text-neutral-primary"}
                         >
                             {title}
                         </Text>
-                        <Text size={"sm"} as={"div"} className={"wby-text-neutral-strong"}>
+                        <Text size={"sm"} as={"div"} className={"text-neutral-strong"}>
                             {description}
                         </Text>
                     </div>
                 </div>
-                {actions && (
-                    <div className={"wby-flex wby-items-center wby-gap-xs-plus"}>{actions}</div>
-                )}
+                {actions && <div className={"flex items-center gap-xs-plus"}>{actions}</div>}
             </div>
             {children}
         </div>

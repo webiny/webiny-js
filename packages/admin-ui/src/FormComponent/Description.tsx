@@ -2,10 +2,10 @@ import React from "react";
 import { Text, type TextProps } from "~/Text/index.js";
 import { cn, cva, makeDecoratable, type VariantProps } from "~/utils.js";
 
-const formComponentDescriptionVariants = cva("wby-mb-sm wby-text-neutral-strong", {
+const formComponentDescriptionVariants = cva("mb-sm text-neutral-strong", {
     variants: {
         disabled: {
-            true: "wby-text-neutral-disabled"
+            true: "text-neutral-disabled"
         }
     }
 });

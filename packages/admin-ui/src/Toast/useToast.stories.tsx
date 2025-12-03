@@ -35,7 +35,7 @@ const meta: Meta<ShowToastParams> = {
     },
     decorators: [
         Story => (
-            <div className="wby-w-full wby-h-64 wby-flex wby-justify-center wby-items-center wby-gap-sm">
+            <div className="w-full h-64 flex justify-center items-center gap-sm">
                 <Story />
                 <Toast.Provider />
             </div>

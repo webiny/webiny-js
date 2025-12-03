@@ -1,9 +1,15 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import { type ExtensionDefinitionModel } from "~/defineExtension/models/ExtensionDefinitionModel.js";
+
+export interface ILoggingParams {
+    level?: "info" | "silent" | "fatal" | "error" | "warn" | "debug" | "trace";
+    streamToStdout?: boolean;
+}
 
 export interface IProjectSdkParams {
     cwd: string;
     extensions: ExtensionDefinitionModel<any>[];
+    logging: ILoggingParams;
 }
 
 export interface IProjectSdkParamsService {
@@ -11,9 +17,8 @@ export interface IProjectSdkParamsService {
     set(params: Partial<IProjectSdkParams>): void;
 }
 
-export const ProjectSdkParamsService = new Abstraction<IProjectSdkParamsService>(
-    "ProjectSdkParamsService"
-);
+export const ProjectSdkParamsService =
+    createAbstraction<IProjectSdkParamsService>("ProjectSdkParamsService");
 
 export namespace ProjectSdkParamsService {
     export type Interface = IProjectSdkParamsService;

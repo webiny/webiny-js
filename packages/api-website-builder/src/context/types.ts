@@ -1,14 +1,11 @@
-import type { TenancyContext } from "@webiny/api-tenancy/types.js";
 import type { Context as BaseContext } from "@webiny/handler/types.js";
-import type { I18NContext } from "@webiny/api-i18n/types.js";
-import type { SecurityContext } from "@webiny/api-security/types.js";
-import { type GetPermissions, type SecurityIdentity } from "@webiny/api-security/types.js";
-import type { AdminUsersContext } from "@webiny/api-admin-users/types.js";
 import type { CmsContext } from "@webiny/api-headless-cms/types/index.js";
 import { type CmsIdentity } from "@webiny/api-headless-cms/types/index.js";
 import type { WbPageCrud } from "~/context/pages/pages.types.js";
 import type { WbRedirectCrud } from "~/context/redirects/redirects.types.js";
 import type { Context as TasksContext } from "@webiny/tasks";
+import type { ApiCoreContext } from "@webiny/api-core/types/core.js";
+import type { GetPermissions, SecurityIdentity } from "@webiny/api-core/types/security.js";
 
 export interface WbLocation {
     folderId: string;
@@ -23,10 +20,7 @@ export interface WebsiteBuilderContextObject {
 
 export interface WebsiteBuilderContext
     extends BaseContext,
-        I18NContext,
-        TenancyContext,
-        SecurityContext,
-        AdminUsersContext,
+        ApiCoreContext,
         CmsContext,
         TasksContext {
     websiteBuilder: WebsiteBuilderContextObject;

@@ -39,7 +39,6 @@ import editorLowerCaseFieldValidator from "~/admin/plugins/fieldValidators/patte
 import editorUpperCaseFieldValidator from "~/admin/plugins/fieldValidators/patternPlugins/upperCase.js";
 import editorLowerCaseSpaceFieldValidator from "~/admin/plugins/fieldValidators/patternPlugins/lowerCaseSpace.js";
 import editorUpperCaseSpaceFieldValidator from "~/admin/plugins/fieldValidators/patternPlugins/upperCaseSpace.js";
-import welcomeScreenWidget from "~/admin/plugins/welcomeScreenWidget.js";
 import { dynamicZoneField } from "~/admin/plugins/fields/dynamicZone.js";
 import { dynamicZoneFieldRenderer } from "~/admin/plugins/fieldRenderers/dynamicZone/dynamicZoneRenderer.js";
 import { dynamicZoneFieldValidator } from "~/admin/plugins/fieldValidators/dynamicZone.js";
@@ -80,7 +79,6 @@ export default [
     editorLowerCaseSpaceFieldValidator,
     editorUpperCaseSpaceFieldValidator,
     dynamicZoneFieldValidator,
-    welcomeScreenWidget,
     objectField,
     objectFieldRenderer,
     dynamicZoneField,

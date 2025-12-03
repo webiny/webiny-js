@@ -1,11 +1,10 @@
-import { createDecorator } from "@webiny/di-container";
-import { Command, ErrorHandler } from "~/abstractions/index.js";
+import { CliCommand, ErrorHandler } from "~/abstractions/index.js";
 import { GracefulError } from "@webiny/project";
 
-export class CommandsWithGracefulErrorHandling<TParams> implements Command.Interface<TParams> {
+export class CommandsWithGracefulErrorHandling<TParams> implements CliCommand.Interface<TParams> {
     constructor(
         private gracefulErrorHandlers: ErrorHandler.Interface<TParams>[],
-        private decoratee: Command.Interface<TParams>
+        private decoratee: CliCommand.Interface<TParams>
     ) {}
 
     async execute() {
@@ -37,8 +36,7 @@ export class CommandsWithGracefulErrorHandling<TParams> implements Command.Inter
     }
 }
 
-export const commandsWithGracefulErrorHandling = createDecorator({
-    abstraction: Command,
+export const commandsWithGracefulErrorHandling = CliCommand.createDecorator({
     decorator: CommandsWithGracefulErrorHandling,
     dependencies: [[ErrorHandler, { multiple: true }]]
 });

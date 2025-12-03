@@ -39,8 +39,8 @@ export const PreviewDomain = () => {
     }, [previewDomain]);
 
     const classNames = cn(
-        "wby-absolute wby-left-0 wby-top-0",
-        isOverridden ? "wby-fill-accent-default" : "wby-fill-neutral-disabled"
+        "absolute left-0 top-0",
+        isOverridden ? "fill-accent-default" : "fill-neutral-disabled"
     );
 
     return (
@@ -48,7 +48,7 @@ export const PreviewDomain = () => {
             open={isOpen}
             align="center"
             side="bottom"
-            className={"wby-shadow-lg"}
+            className={"shadow-lg"}
             onOpenChange={setIsOpen}
             trigger={
                 <IconButton
@@ -60,7 +60,7 @@ export const PreviewDomain = () => {
                 />
             }
         >
-            <div className={"wby-p-sm wby-text-sm"} style={{ width: 300 }}>
+            <div className={"p-sm text-sm"} style={{ width: 300 }}>
                 <Form data={{ previewDomain }} onSubmit={commitValue}>
                     {form => (
                         <Bind name={"previewDomain"} validators={[validation.create("url")]}>

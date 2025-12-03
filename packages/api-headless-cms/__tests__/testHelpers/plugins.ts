@@ -1,25 +1,26 @@
-import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
-import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import i18nContext from "@webiny/api-i18n/graphql/context";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "~/index";
-import { createWcpContext } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "~tests/testHelpers/tenancySecurity";
 import type { PermissionsArg } from "~tests/testHelpers/helpers";
-import { createDummyLocales, createPermissions } from "~tests/testHelpers/helpers";
-import type { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
+import { createPermissions } from "~tests/testHelpers/helpers";
 import type { ContextPlugin } from "@webiny/api";
 import type { TestContext } from "~tests/testHelpers/types";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { enableBenchmarkOnEnvironmentVariable } from "./enableBenchmarkOnEnvironmentVariable";
 import type { HeadlessCmsStorageOperations } from "~/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
+import { IdentityData } from "@webiny/api-core/features/IdentityContext";
+import { createApiCore } from "@webiny/api-core";
+import type { ApiKey } from "@webiny/api-core/types/security.js";
+import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication";
+import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
     permissions?: PermissionsArg[];
-    identity?: SecurityIdentity;
+    identity?: IdentityData;
     topPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     bottomPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
@@ -40,8 +41,10 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
         setupTenancyAndSecurityGraphQL
     } = params;
 
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const i18nStorage = getStorageOps<any[]>("i18n");
+
+    const testProjectLicense = createTestWcpLicense();
 
     return {
         storageOperations: cmsStorage.storageOperations,
@@ -49,7 +52,10 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
         plugins: [
             enableBenchmarkOnEnvironmentVariable(),
             topPlugins,
-            createWcpContext(),
+            createApiCore({
+                storageOperations: apiCoreStorage.storageOperations,
+                testProjectLicense
+            }),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
                 setupGraphQL: setupTenancyAndSecurityGraphQL,
@@ -87,10 +93,6 @@ export const createHandlerCore = (params: CreateHandlerCoreParams) => {
             } as ContextPlugin<TestContext>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
-            i18nContext(),
-            i18nStorage.storageOperations,
-            createDummyLocales(),
-            mockLocalesPlugins(),
             createHeadlessCmsContext({
                 storageOperations: cmsStorage.storageOperations
             }),

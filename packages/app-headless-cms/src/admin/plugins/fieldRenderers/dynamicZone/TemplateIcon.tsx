@@ -9,5 +9,5 @@ interface TemplateIconProps {
 export const TemplateIcon = ({ icon }: TemplateIconProps) => {
     const faIcon = icon ? (icon.split("/") as FontAwesomeIconProps["icon"]) : undefined;
 
-    return faIcon ? <FontAwesomeIcon className={"wby-text-neutral-strong"} icon={faIcon} /> : null;
+    return faIcon ? <FontAwesomeIcon className={"text-neutral-strong"} icon={faIcon} /> : null;
 };

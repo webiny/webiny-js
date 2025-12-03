@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetCwdService, ProjectSdkParamsService } from "~/abstractions/index.js";
 
 export class DefaultGetCwdService implements GetCwdService.Interface {

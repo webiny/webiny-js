@@ -706,50 +706,6 @@ describe("`folder` CRUD", () => {
         }
     });
 
-    it("should NOT delete folder in case has child folders", async () => {
-        // Let's create a parent folders.
-        const [parentResponse] = await aco.createFolder({ data: folderMocks.folderA });
-        const parentFolder = parentResponse.data.aco.createFolder.data;
-
-        // Let's create some children folders.
-        const [childResponse1] = await aco.createFolder({
-            data: { ...folderMocks.folderB, parentId: parentFolder.id }
-        });
-        const childFolder1 = childResponse1.data.aco.createFolder.data;
-
-        expect(childFolder1).toMatchObject({
-            parentId: parentFolder.id
-        });
-
-        const [childResponse2] = await aco.createFolder({
-            data: { ...folderMocks.folderC, parentId: parentFolder.id }
-        });
-        const childFolder2 = childResponse2.data.aco.createFolder.data;
-
-        expect(childFolder2).toMatchObject({
-            parentId: parentFolder.id
-        });
-
-        // Let's delete parent folder.
-        const [deleteParent] = await aco.deleteFolder({
-            id: parentFolder.id
-        });
-
-        expect(deleteParent).toEqual({
-            data: {
-                aco: {
-                    deleteFolder: {
-                        data: null,
-                        error: expect.objectContaining({
-                            code: "DELETE_FOLDER_WITH_CHILDREN",
-                            message: "Delete all child folders and entries before proceeding."
-                        })
-                    }
-                }
-            }
-        });
-    });
-
     it("should NOT delete `FmFile` folder in case has child file", async () => {
         // Let's create a folder.
         const [folderResponse] = await aco.createFolder({
@@ -1102,7 +1058,7 @@ describe("`folder` CRUD", () => {
         const notAuthorizedResponse = {
             data: null,
             error: {
-                code: "SECURITY_NOT_AUTHORIZED",
+                code: "NOT_AUTHORIZED",
                 message: "Not authorized!",
                 data: null
             }

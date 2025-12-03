@@ -1,6 +1,7 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import {
     BuildApp,
+    BuildAppWorkspaceService,
     GetProjectConfigService,
     ListPackagesInAppWorkspaceService,
     LoggerService,
@@ -10,6 +11,7 @@ import { PackagesBuilder } from "./PackagesBuilder/PackagesBuilder.js";
 
 export class DefaultBuildApp implements BuildApp.Interface {
     constructor(
+        private buildAppWorkspaceService: BuildAppWorkspaceService.Interface,
         private logger: LoggerService.Interface,
         private listPackagesService: ListPackagesInAppWorkspaceService.Interface,
         private getProjectConfigService: GetProjectConfigService.Interface,
@@ -17,10 +19,10 @@ export class DefaultBuildApp implements BuildApp.Interface {
     ) {}
 
     async execute(params: BuildApp.Params) {
-        if (!params.env) {
-            throw new Error(`Please specify environment, for example "dev".`);
-        }
+        this.logger.info(`Building "${params.app}" app workspace...`);
+        await this.buildAppWorkspaceService.execute(params, { forceRebuild: true });
 
+        this.logger.info(`Building "${params.app}" app extensions...`);
         const projectConfig = await this.getProjectConfigService.execute({
             tags: { appName: params.app, runtimeContext: "app-build" },
             renderArgs: params
@@ -39,6 +41,7 @@ export class DefaultBuildApp implements BuildApp.Interface {
             }
         }
 
+        this.logger.info(`Building "${params.app}" app packages...`);
         const packages = await this.listPackagesService.execute(params.app);
 
         return new PackagesBuilder({
@@ -53,6 +56,7 @@ export const buildApp = createImplementation({
     abstraction: BuildApp,
     implementation: DefaultBuildApp,
     dependencies: [
+        BuildAppWorkspaceService,
         LoggerService,
         ListPackagesInAppWorkspaceService,
         GetProjectConfigService,

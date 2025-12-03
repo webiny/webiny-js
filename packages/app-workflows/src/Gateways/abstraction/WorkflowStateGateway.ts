@@ -1,0 +1,147 @@
+import type { IGenericMeta, IWorkflowState, WorkflowStateValue } from "~/types.js";
+import type { NonEmptyArray } from "@webiny/app/types.js";
+import type {
+    IWorkflowStateListGatewayListParamsWhereNotifications,
+    IWorkflowStateListGatewayListParamsWhereSteps,
+    IWorkflowStateListGatewayListParamsWhereTeams
+} from "~/Gateways/abstraction/WorkflowStateListGateway.js";
+
+export interface IWorkflowStateErrorDataInvalidFieldData {
+    path: NonEmptyArray<string>;
+}
+
+export interface IWorkflowStateErrorDataInvalidField {
+    code: string;
+    message: string;
+    data: IWorkflowStateErrorDataInvalidFieldData;
+}
+
+export interface IWorkflowStateErrorDataInvalidFields {
+    [key: string]: IWorkflowStateErrorDataInvalidField;
+}
+
+export interface IWorkflowStateErrorData {
+    invalidFields: IWorkflowStateErrorDataInvalidFields;
+}
+
+export interface IWorkflowStateError {
+    code: string | null;
+    message: string;
+    data?: IWorkflowStateErrorData;
+    stack?: string;
+}
+
+export interface IWorkflowStateGatewayListWorkflowStatesParamsWhere {
+    app?: string;
+    app_in?: string[];
+    targetId?: string;
+    targetId_in?: string[];
+    targetRevisionId?: string;
+    targetRevisionId_in?: string[];
+    state?: WorkflowStateValue;
+    state_in?: WorkflowStateValue[];
+    createdBy?: string;
+    createdBy_in?: string[];
+    savedBy?: string;
+    savedBy_in?: string[];
+    steps?: IWorkflowStateListGatewayListParamsWhereSteps;
+    teams?: IWorkflowStateListGatewayListParamsWhereTeams;
+    notifications?: IWorkflowStateListGatewayListParamsWhereNotifications;
+}
+
+export interface IWorkflowStateGatewayListWorkflowStatesParams {
+    where?: IWorkflowStateGatewayListWorkflowStatesParamsWhere;
+    limit?: number;
+    after?: string;
+}
+
+export interface IWorkflowStateGatewayListWorkflowStatesResponse {
+    data: IWorkflowState[] | null;
+    meta: IGenericMeta | null;
+    error: IWorkflowStateError | null;
+}
+
+export interface IWorkflowStateGatewayStartStepResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStateError | null;
+}
+
+export interface IWorkflowStateGatewayApproveStepResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStateError | null;
+}
+
+export interface IWorkflowStateGatewayRejectStepResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStateError | null;
+}
+
+export interface IWorkflowStateGatewayCancelStateResponse {
+    data: boolean | null;
+    error: IWorkflowStateError | null;
+}
+
+export interface IWorkflowStateGatewayStartStepParams {
+    id: string;
+}
+
+export interface IWorkflowStateGatewayApproveStepParams {
+    id: string;
+    comment?: string;
+}
+
+export interface IWorkflowStateGatewayRejectStepParams {
+    id: string;
+    comment: string;
+}
+
+export interface IWorkflowStateGatewayTakeOverStepParams {
+    id: string;
+}
+
+export interface IWorkflowStateGatewayTakeOverStepResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStateError | null;
+}
+
+export interface IWorkflowStateGatewayRequestReviewStepParams {
+    app: string;
+    targetRevisionId: string;
+    title: string;
+}
+
+export interface IWorkflowStateGatewayRequestReviewStepResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStateError | null;
+}
+
+export interface IWorkflowStateGatewayGetTargetWorkflowStateResponse {
+    data: IWorkflowState | null;
+    error: IWorkflowStateError | null;
+}
+
+export interface IWorkflowStateGateway {
+    createWorkflowState(
+        params: IWorkflowStateGatewayRequestReviewStepParams
+    ): Promise<IWorkflowStateGatewayRequestReviewStepResponse>;
+    startWorkflowStateStep(
+        params: IWorkflowStateGatewayStartStepParams
+    ): Promise<IWorkflowStateGatewayStartStepResponse>;
+    approveWorkflowStateStep(
+        params: IWorkflowStateGatewayApproveStepParams
+    ): Promise<IWorkflowStateGatewayApproveStepResponse>;
+    rejectWorkflowStateStep(
+        params: IWorkflowStateGatewayRejectStepParams
+    ): Promise<IWorkflowStateGatewayRejectStepResponse>;
+    takeOverWorkflowStateStep(
+        params: IWorkflowStateGatewayTakeOverStepParams
+    ): Promise<IWorkflowStateGatewayTakeOverStepResponse>;
+    cancelWorkflowState(id: string): Promise<IWorkflowStateGatewayCancelStateResponse>;
+    getTargetWorkflowState(
+        app: string,
+        targetRevisionId: string
+    ): Promise<IWorkflowStateGatewayGetTargetWorkflowStateResponse>;
+    listWorkflowStates(
+        params?: IWorkflowStateGatewayListWorkflowStatesParams
+    ): Promise<IWorkflowStateGatewayListWorkflowStatesResponse>;
+}

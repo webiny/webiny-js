@@ -1,4 +1,7 @@
+export * from "./BuildAppWorkspaceService/index.js";
+export * from "./BuildProjectWorkspaceService/index.js";
 export * from "./GetAppPackagesService/index.js";
+export * from "./GetAppService/index.js";
 export * from "./GetCwdService/index.js";
 export * from "./GetProjectConfigService/index.js";
 export * from "./GetProjectIdService/index.js";
@@ -9,6 +12,7 @@ export * from "./ListAppLambdaFunctionsService/index.js";
 export * from "./ListDeployedEnvironmentsService/index.js";
 export * from "./ListPackagesInAppWorkspaceService/index.js";
 export * from "./ListPackagesService/index.js";
+export * from "./LoadEnvVarsService/index.js";
 export * from "./LocalStorageService/index.js";
 export * from "./LoggerService/index.js";
 export * from "./ProjectInfoService/index.js";

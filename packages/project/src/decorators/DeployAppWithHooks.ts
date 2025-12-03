@@ -1,14 +1,13 @@
-import { createDecorator } from "@webiny/di-container";
 import {
-    AfterDeploy,
-    BeforeDeploy,
-    DeployApp,
-    AdminBeforeDeploy,
     AdminAfterDeploy,
-    ApiBeforeDeploy,
+    AdminBeforeDeploy,
+    AfterDeploy,
     ApiAfterDeploy,
+    ApiBeforeDeploy,
+    BeforeDeploy,
+    CoreAfterDeploy,
     CoreBeforeDeploy,
-    CoreAfterDeploy
+    DeployApp
 } from "~/abstractions/index.js";
 
 export class DeployAppWithHooks implements DeployApp.Interface {
@@ -59,8 +58,7 @@ export class DeployAppWithHooks implements DeployApp.Interface {
     }
 }
 
-export const deployAppWithHooks = createDecorator({
-    abstraction: DeployApp,
+export const deployAppWithHooks = DeployApp.createDecorator({
     decorator: DeployAppWithHooks,
     dependencies: [
         AfterDeploy,

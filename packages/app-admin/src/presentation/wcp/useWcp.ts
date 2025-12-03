@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { autorun } from "mobx";
-import type { ILicense } from "@webiny/wcp/types";
+import type { ILicense } from "@webiny/wcp/types.js";
 import { useFeature } from "@webiny/app";
 import { WcpFeature } from "~/features/wcp/feature.js";
 

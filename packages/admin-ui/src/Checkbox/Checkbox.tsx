@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { makeDecoratable } from "~/utils.js";
-import type { CheckboxPrimitiveProps } from "./primitives//index.js";
-import { CheckboxPrimitive } from "./primitives//index.js";
+import type { CheckboxPrimitiveProps } from "./primitives/index.js";
+import { CheckboxPrimitive } from "./primitives/index.js";
 import type { FormComponentProps } from "~/FormComponent/index.js";
 import {
     FormComponentDescription,
@@ -16,7 +16,7 @@ const DecoratableCheckbox = ({ description, note, validation, ...props }: Checkb
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
 
     return (
-        <div className={"wby-w-full"}>
+        <div className={"w-full"}>
             <FormComponentDescription text={description} disabled={props.disabled} />
             <CheckboxPrimitive {...props} />
             <FormComponentErrorMessage

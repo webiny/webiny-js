@@ -13,7 +13,6 @@ import DynamicSection from "~/admin/plugins/fieldRenderers/DynamicSection.js";
 import {
     dynamicSectionGridStyle,
     fieldsGridStyle,
-    fieldsWrapperStyle,
     ItemHighLight,
     ObjectItem
 } from "~/admin/plugins/fieldRenderers/object/StyledComponents.js";
@@ -123,7 +122,7 @@ export const MultiValueContainer = (props: MultiValueContainerProps) => {
                             isExpanded={itemState[index] ?? false}
                             toggleExpanded={() => toggleItemState(index)}
                         >
-                            <Cell span={12} className={fieldsWrapperStyle}>
+                            <Cell span={12}>
                                 <Fields
                                     Bind={Bind}
                                     contentModel={model}

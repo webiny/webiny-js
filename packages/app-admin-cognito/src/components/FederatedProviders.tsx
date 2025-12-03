@@ -8,7 +8,7 @@ export interface ContainerProps {
 export const Container = makeDecoratable(
     "FederatedProvidersContainer",
     ({ children }: ContainerProps) => {
-        return <div className={"wby-flex wby-flex-col wby-gap-xs"}>{children}</div>;
+        return <div className={"flex flex-col gap-xs"}>{children}</div>;
     }
 );
 

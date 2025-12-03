@@ -1,8 +1,8 @@
-import { GraphQLClient } from "./abstractions";
-import { BatchingGraphQLClient } from "./BatchingGraphQLClient";
-import { FetchGraphQLClient } from "./FetchGraphQLClient";
-import { createFeature } from "~/shared/di/createFeature";
-import { RetryGraphQLClient } from "./RetryGraphQLClient";
+import { GraphQLClient } from "./abstractions.js";
+import { BatchingGraphQLClient } from "./BatchingGraphQLClient.js";
+import { FetchGraphQLClient } from "./FetchGraphQLClient.js";
+import { createFeature } from "~/shared/di/createFeature.js";
+import { RetryGraphQLClient } from "./RetryGraphQLClient.js";
 
 export const GraphQLClientFeature = createFeature({
     name: "GraphQLClient",

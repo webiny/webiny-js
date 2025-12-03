@@ -16,7 +16,7 @@ export interface HeaderProps {
 export const Header = (props: HeaderProps) => {
     return (
         <div>
-            <div className={"wby-pl-lg wby-pr-md wby-py-sm-extra"}>
+            <div className={"pl-lg pr-md py-sm-extra"}>
                 <Grid>
                     <Grid.Column span={6}>
                         <Title />

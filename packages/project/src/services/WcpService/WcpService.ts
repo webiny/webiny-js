@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { LocalStorageService, LoggerService, WcpService } from "~/abstractions/index.js";
 import { GetUser } from "./GetUser.js";
 import { GenerateUserPat } from "./GenerateUserPat.js";

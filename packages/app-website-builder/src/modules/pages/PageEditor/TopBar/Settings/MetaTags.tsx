@@ -31,7 +31,7 @@ interface FooterProps {
 
 const Footer = ({ onClick }: FooterProps) => {
     return (
-        <div className={"wby-mt-md"}>
+        <div className={"mt-md"}>
             <Button
                 onClick={onClick}
                 text="Add tag"
@@ -61,8 +61,8 @@ export const MetaTags = (props: MetaTagsProps) => {
             {({ actions, header, footer, row, empty }) => (
                 <>
                     {row(({ index }) => (
-                        <div className={"wby-mt-md"}>
-                            <div className={"wby-flex wby-items-start wby-gap-sm"}>
+                        <div className={"mt-md"}>
+                            <div className={"flex items-start gap-sm"}>
                                 <Bind name={`${props.bindName}.${index}.${props.keyName}`}>
                                     <Input placeholder={props.keyLabel} size={"lg"} />
                                 </Bind>

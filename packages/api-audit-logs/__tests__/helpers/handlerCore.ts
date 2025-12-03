@@ -1,36 +1,33 @@
-import apiKeyAuthentication from "@webiny/api-security/plugins/apiKeyAuthentication";
-import apiKeyAuthorization from "@webiny/api-security/plugins/apiKeyAuthorization";
-import i18nContext from "@webiny/api-i18n/graphql/context";
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
-import { createWcpContext } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "./tenancySecurity";
 import type { PermissionsArg } from "./helpers";
-import { createDummyLocales, createPermissions } from "./helpers";
-import type { ApiKey, SecurityIdentity } from "@webiny/api-security/types";
+import { createPermissions } from "./helpers";
 import type { ContextPlugin } from "@webiny/api";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import type { Plugin, PluginCollection } from "@webiny/plugins/types";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
 import type { AuditLogsContext } from "~/types";
 import { createAco } from "@webiny/api-aco";
 import { createAuditLogs } from "~/index";
-import { createContextPlugin } from "@webiny/handler";
 import type { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
 import { createFileManagerContext } from "@webiny/api-file-manager";
-import type { AdminUsersStorageOperations } from "@webiny/api-admin-users/types";
-import createAdminUsersApp from "@webiny/api-admin-users";
 import { createMailerContext } from "@webiny/api-mailer";
-import { NullLicense } from "@webiny/wcp";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import { createAcoAuditLogsContext } from "~/context/index.js";
 import { createWebsiteBuilder } from "@webiny/api-website-builder";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import type { ApiKey } from "@webiny/api-core/types/security.js";
+import { createApiCore } from "@webiny/api-core";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
+import apiKeyAuthorization from "@webiny/api-core/legacy/security/plugins/apiKeyAuthorization.js";
+import apiKeyAuthentication from "@webiny/api-core/legacy/security/plugins/apiKeyAuthentication.js";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface CreateHandlerCoreParams {
     setupTenancyAndSecurityGraphQL?: boolean;
     permissions?: PermissionsArg[];
-    identity?: SecurityIdentity;
+    identity?: IdentityData;
     topPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     plugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
     bottomPlugins?: Plugin | Plugin[] | Plugin[][] | PluginCollection;
@@ -48,48 +45,28 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
         identity,
         plugins = [],
         topPlugins = [],
-        bottomPlugins = [],
-        setupTenancyAndSecurityGraphQL
+        bottomPlugins = []
     } = params || {};
 
     const documentClient = getDocumentClient();
-    const i18nStorage = getStorageOps("i18n");
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const adminUsersStorage = getStorageOps<AdminUsersStorageOperations>("adminUsers");
 
-    const enableContextPlugin = createContextPlugin<AuditLogsContext>(async context => {
-        context.wcp = {
-            getProject: () => null,
-            getRawLicense: () => null,
-            canUseRecordLocking: () => true,
-            canUseAuditLogs: () => true,
-            canUseFileManagerThreatDetection: () => false,
-            ensureCanUseFeature: () => void 0,
-            canUseFolderLevelPermissions: () => true,
-            canUseAacl: () => true,
-            canUsePrivateFiles: () => true,
-            canUseTeams: () => true,
-            decrementSeats: async () => void 0,
-            incrementSeats: async () => void 0,
-            decrementTenants: async () => void 0,
-            incrementTenants: async () => void 0,
-            getProjectEnvironment: () => null,
-            getProjectLicense: () => new NullLicense(),
-            canUseFeature: () => true
-        };
-    });
-    enableContextPlugin.name = "audit-logs-enable-feature";
+    const testProjectLicense = createTestWcpLicense();
+    testProjectLicense.package.features["auditLogs"].enabled = true;
+
     return {
         storageOperations: cmsStorage.storageOperations,
         tenant,
         plugins: [
             topPlugins,
-            createWcpContext(),
-            enableContextPlugin,
+            createApiCore({
+                storageOperations: apiCoreStorage.storageOperations,
+                testProjectLicense
+            }),
             ...cmsStorage.plugins,
             ...createTenancyAndSecurity({
-                setupGraphQL: setupTenancyAndSecurityGraphQL,
                 permissions: createPermissions(permissions),
                 identity
             }),
@@ -124,13 +101,6 @@ export const createHandlerCore = (params?: CreateHandlerCoreParams) => {
             } as ContextPlugin<AuditLogsContext>,
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
-            i18nContext(),
-            i18nStorage.storageOperations,
-            createDummyLocales(),
-            mockLocalesPlugins(),
-            createAdminUsersApp({
-                storageOperations: adminUsersStorage.storageOperations
-            }),
             createHeadlessCmsContext({ storageOperations: cmsStorage.storageOperations }),
             createMailerContext(),
             createFileManagerContext({

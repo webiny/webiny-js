@@ -1,7 +1,5 @@
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import { createTenancyAndSecurity } from "~tests/utils/tenancySecurity";
-import i18nContext from "@webiny/api-i18n/graphql/context";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import {
     CmsParametersPlugin,
     createHeadlessCmsContext,
@@ -15,32 +13,37 @@ import {
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { FileManagerStorageOperations } from "~/types";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import type { SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import type { PluginCollection } from "@webiny/plugins/types";
-import { createWcpContext, createWcpGraphQL } from "@webiny/api-wcp";
+import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { createApiCore } from "@webiny/api-core";
+import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface HandlerParams {
     permissions?: SecurityPermission[];
-    identity?: SecurityIdentity | null;
+    identity?: IdentityData | null;
     plugins?: PluginCollection;
 }
 
 export const handlerPlugins = (params: HandlerParams) => {
     const { permissions, identity, plugins = [] } = params;
+
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const i18nStorage = getStorageOps<any[]>("i18n");
+
+    const testProjectLicense = createTestWcpLicense();
 
     return [
+        createApiCore({
+            storageOperations: apiCoreStorage.storageOperations,
+            testProjectLicense
+        }),
         ...cmsStorage.plugins,
         ...fileManagerStorage.plugins,
-        createWcpContext(),
-        createWcpGraphQL(),
-        ...i18nStorage.storageOperations,
         graphqlHandlerPlugins(),
         ...createTenancyAndSecurity({ permissions, identity }),
-        i18nContext(),
-        mockLocalesPlugins(),
         new CmsParametersPlugin(async () => {
             return {
                 locale: "en-US",

@@ -25,7 +25,7 @@ const DecoratableRadioGroup = ({
     const invalid = useMemo(() => validationIsValid === false, [validationIsValid]);
 
     return (
-        <div className={"wby-w-full"}>
+        <div className={"w-full"}>
             <FormComponentLabel
                 text={label}
                 required={required}
@@ -35,13 +35,13 @@ const DecoratableRadioGroup = ({
             <FormComponentDescription
                 text={description}
                 disabled={disabled}
-                className={"wby-mb-xs-plus"}
+                className={"mb-xs-plus"}
             />
             <FormComponentErrorMessage
                 text={validationMessage}
                 invalid={invalid}
                 disabled={disabled}
-                className={"wby-mt-none wby-mb-xs-plus"}
+                className={"mt-none mb-xs-plus"}
             />
             <RadioGroupPrimitive {...props} />
             <FormComponentNote text={note} disabled={disabled} />

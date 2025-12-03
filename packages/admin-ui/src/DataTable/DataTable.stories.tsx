@@ -149,7 +149,7 @@ export const WithCustomCellRenderer: Story<Entry> = {
                 ...columns.name,
                 cell: (entry: Entry) => {
                     return (
-                        <div className={"wby-flex wby-items-center wby-gap-sm-extra"}>
+                        <div className={"flex items-center gap-sm-extra"}>
                             <Avatar
                                 image={
                                     <Avatar.Image
@@ -161,15 +161,12 @@ export const WithCustomCellRenderer: Story<Entry> = {
                                 size={"xl"}
                             />
                             <div>
-                                <Text
-                                    className={"wby-text-neutral-primary wby-font-semibold"}
-                                    as={"div"}
-                                >
+                                <Text className={"text-neutral-primary font-semibold"} as={"div"}>
                                     {entry.name}
                                 </Text>
                                 <Text
                                     size={"sm"}
-                                    className={"wby-text-neutral-strong"}
+                                    className={"text-neutral-strong"}
                                     as={"div"}
                                 >{`Last updated: ${entry.lastModified}`}</Text>
                             </div>
@@ -201,11 +198,11 @@ export const WithCustomColumnClassName: Story<Entry> = {
             ...columns,
             lastModified: {
                 ...columns.lastModified,
-                className: "wby-bg-primary-subtle"
+                className: "bg-primary-subtle"
             },
             status: {
                 ...columns.status,
-                className: "wby-text-right"
+                className: "text-right"
             }
         }
     }

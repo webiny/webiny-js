@@ -1,4 +1,4 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 import type { Options as PulumiOptions } from "@webiny/pulumi-sdk";
 import { type IAppModel } from "~/abstractions/models/index.js";
 
@@ -11,7 +11,7 @@ export interface IPulumiLoginService {
     execute(app: IAppModel): Promise<{ login: string }>;
 }
 
-export const PulumiLoginService = new Abstraction<IPulumiLoginService>("PulumiLoginService");
+export const PulumiLoginService = createAbstraction<IPulumiLoginService>("PulumiLoginService");
 
 export namespace PulumiLoginService {
     export type Interface = IPulumiLoginService;

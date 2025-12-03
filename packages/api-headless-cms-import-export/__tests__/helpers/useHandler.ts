@@ -2,11 +2,8 @@ import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-
 import graphQLHandlerPlugins from "@webiny/handler-graphql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import { createWcpContext } from "@webiny/api-wcp";
 import { createTenancyAndSecurity } from "./tenancySecurity";
-import { createDummyLocales, createIdentity, createPermissions } from "./helpers";
-import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import i18nContext from "@webiny/api-i18n/graphql/context";
+import { createIdentity, createPermissions } from "./helpers";
 import {
     createApiGatewayHandler,
     createRawEventHandler,
@@ -29,6 +26,8 @@ import { createValidateImportFromUrl } from "./graphql/validateImportFromUrl";
 import { createGetValidateImportFromUrl } from "./graphql/getValidateImportFromUrl";
 import { createCmsPlugins } from "~tests/helpers/models";
 import { createImportFromUrl } from "~tests/helpers/graphql/importFromUrl";
+import { createApiCore } from "@webiny/api-core";
+import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
 
 export interface UseHandlerParams {
     plugins?: PluginCollection;
@@ -36,27 +35,24 @@ export interface UseHandlerParams {
 
 export const useHandler = <C extends Context = Context>(params?: UseHandlerParams) => {
     const { plugins: inputPlugins = [] } = params || {};
-    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
-    const i18nStorage = getStorageOps<any[]>("i18n");
 
     process.env.S3_BUCKET = "a-mock-s3-bucket";
 
+    const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
     const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
+    const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const plugins = [
+        createApiCore({
+            storageOperations: apiCoreStorage.storageOperations
+        }),
         createModelPlugin(),
-        createWcpContext(),
         ...cmsStorage.plugins,
         ...fileManagerStorage.plugins,
         ...createTenancyAndSecurity({
-            setupGraphQL: false,
             permissions: createPermissions(),
             identity: createIdentity()
         }),
-        i18nContext(),
-        i18nStorage.storageOperations,
-        createDummyLocales(),
-        mockLocalesPlugins(),
         createHeadlessCmsContext({
             storageOperations: cmsStorage.storageOperations
         }),

@@ -11,8 +11,9 @@ import { RedirectsList } from "~/modules/redirects/RedirectsList.js";
 import { RedirectsListConfig } from "~/modules/redirects/RedirectsListConfig.js";
 import { Routes } from "~/routes.js";
 import { useRouter } from "@webiny/app-admin";
+import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
 
-const { Menu, Route } = AdminConfig;
+const { Menu, Route, Dashboard } = AdminConfig;
 
 export const Extension = () => {
     const router = useRouter();
@@ -41,6 +42,7 @@ export const Extension = () => {
                     <Menu
                         name="wb.pagesLabel"
                         parent="Wb"
+                        pinnable={true}
                         element={<Menu.Group text={"Pages"} />}
                     />
                 </HasPermission>
@@ -51,16 +53,19 @@ export const Extension = () => {
                     <Menu
                         name="wb.pages"
                         parent={"wb"}
+                        pinnable={true}
                         element={
                             <Menu.Link text={"Pages"} to={router.getLink(Routes.Pages.List)} />
                         }
                     />
+                    <Dashboard.Widget name="wb.pages" column={"left"} element={<PagesWidget />} />
                 </HasPermission>
                 <HasPermission name={"wb.redirect"}>
                     <Route route={Routes.Redirects.List} element={<RedirectsList />} />
                     <Menu
                         name="wb.redirects"
                         parent={"wb"}
+                        pinnable={true}
                         element={
                             <Menu.Link
                                 text={"Redirects"}
@@ -69,10 +74,27 @@ export const Extension = () => {
                         }
                     />
                 </HasPermission>
-                <HasPermission name={"wb.settings"}>
-                    <Menu name="wb.settings" parent="wb" element={<SettingsMenuItem />} />
+                <HasPermission name={"wb.page"}>
+                    <AdminConfig.Dashboard.Widget
+                        name="wb.pages"
+                        column="left"
+                        element={<PagesWidget />}
+                    />
                 </HasPermission>
-                <Menu name="wb.integrations" parent="wb" element={<IntegrationsMenuItem />} />
+                <HasPermission name={"wb.settings"}>
+                    <Menu
+                        name="wb.settings"
+                        parent="wb"
+                        pinnable={true}
+                        element={<SettingsMenuItem />}
+                    />
+                </HasPermission>
+                <Menu
+                    name="wb.integrations"
+                    parent="wb"
+                    pinnable={true}
+                    element={<IntegrationsMenuItem />}
+                />
             </AdminConfig>
             <PagesListConfig />
             <RedirectsListConfig />

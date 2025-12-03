@@ -1,10 +1,10 @@
-import { Abstraction } from "@webiny/di-container";
+import { createAbstraction } from "~/abstractions/createAbstraction.js";
 
 export interface IRunCliRunnerService {
     execute(argv: string[]): any;
 }
 
-export const RunCliRunnerService = new Abstraction<IRunCliRunnerService>("RunCliRunnerService");
+export const RunCliRunnerService = createAbstraction<IRunCliRunnerService>("RunCliRunnerService");
 
 export namespace RunCliRunnerService {
     export type Interface = IRunCliRunnerService;

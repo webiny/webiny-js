@@ -5,7 +5,6 @@ export interface IResponseDoneParams<
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > {
     tenant?: string;
-    locale?: string;
     webinyTaskId?: string;
     message?: string;
     output?: O;

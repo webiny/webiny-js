@@ -14,9 +14,7 @@ export const createDeleteModelCrud = () => {
         attachLifecycleEvents({
             context
         });
-        const getLocale = (): string => {
-            return context.cms.getLocale().code;
-        };
+
         const getTenant = (): string => {
             return context.tenancy.getCurrentTenant().id;
         };
@@ -24,18 +22,15 @@ export const createDeleteModelCrud = () => {
         const cache = createMemoryCache<ListStoreKeysResult>();
 
         context.cms.listModelsBeingDeleted = async () => {
-            const locale = getLocale();
             const tenant = getTenant();
             const cacheKey = createCacheKey({
                 tenant: getTenant(),
-                locale: getLocale(),
                 type: "deleteModel"
             });
 
             const result = await cache.getOrSet(cacheKey, async () => {
                 const beginsWith = createStoreNamespace({
-                    tenant,
-                    locale
+                    tenant
                 });
                 return await context.db.store.listValues<GenericRecord<string, IStoreValue>>({
                     beginsWith

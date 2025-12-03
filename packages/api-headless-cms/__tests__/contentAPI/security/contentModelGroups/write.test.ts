@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { useTestModelHandler } from "~tests/testHelpers/useTestModelHandler";
-import type { SecurityIdentity } from "@webiny/api-security/types";
 import { CmsTestPermissions, expectNotAuthorized } from "../utils";
+import type { IdentityData } from "@webiny/api-core/features/IdentityContext";
 
-const identityA: SecurityIdentity = { id: "a", type: "admin", displayName: "A" };
-const identityB: SecurityIdentity = { id: "b", type: "admin", displayName: "B" };
-const identityC: SecurityIdentity = { id: "c", type: "admin", displayName: "C" };
+const identityA: IdentityData = { id: "a", type: "admin", displayName: "A" };
+const identityB: IdentityData = { id: "b", type: "admin", displayName: "B" };
+const identityC: IdentityData = { id: "c", type: "admin", displayName: "C" };
 
 describe("Write Permissions Checks", () => {
     it("should allow creation of groups only with sufficient permission", async () => {
@@ -23,7 +23,7 @@ describe("Write Permissions Checks", () => {
         });
 
         expectNotAuthorized(modelGroup.data.createContentModelGroup, {
-            reason: "Not allowed to access content model groups."
+            message: "Not allowed to access content model groups."
         });
 
         permissions.setPermissions({
@@ -73,7 +73,7 @@ describe("Write Permissions Checks", () => {
         });
 
         expectNotAuthorized(notUpdatedModelGroup.data.updateContentModelGroup, {
-            reason: "Not allowed to access content model groups."
+            message: "Not allowed to access content model groups."
         });
 
         permissions.setPermissions({

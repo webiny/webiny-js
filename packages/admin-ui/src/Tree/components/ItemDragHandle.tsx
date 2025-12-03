@@ -22,10 +22,10 @@ const BaseItemDragHandle = ({ handleRef }: ItemDragHandleProps) => {
                 onMouseUp={() => setIsDragging(false)}
                 onMouseLeave={() => setIsDragging(false)}
                 className={cn([
-                    "wby-absolute wby-top-sm -wby-left-sm",
-                    "wby-invisible group-hover:wby-visible",
-                    "wby-size-md",
-                    isDragging ? "wby-cursor-grabbing" : "wby-cursor-grab"
+                    "absolute top-sm -left-sm",
+                    "invisible group-hover:visible",
+                    "size-md",
+                    isDragging ? "cursor-grabbing" : "cursor-grab"
                 ])}
             />
         </div>

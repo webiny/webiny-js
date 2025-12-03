@@ -1,4 +1,4 @@
-import { createImplementation } from "@webiny/di-container";
+import { createImplementation } from "@webiny/di";
 import { GetProjectService, SetProjectIdService } from "~/abstractions/index.js";
 import { Project as TsMorphProject, SyntaxKind } from "ts-morph";
 
@@ -12,18 +12,18 @@ class DefaultSetProjectIdService implements SetProjectIdService.Interface {
         const tsMorphProject = new TsMorphProject();
         const sourceFile = tsMorphProject.addSourceFileAtPath(webinyConfigFileTsx);
 
-        // Ensure import { Project } from "@webiny/extensions";
+        // Ensure import { Project } from "webiny/extensions";
         const hasProjectImport = sourceFile
             .getImportDeclarations()
             .some(
                 decl =>
-                    decl.getModuleSpecifierValue() === "@webiny/extensions" &&
+                    decl.getModuleSpecifierValue() === "webiny/extensions" &&
                     decl.getNamedImports().some(imp => imp.getName() === "Project")
             );
         if (!hasProjectImport) {
             sourceFile.insertImportDeclaration(0, {
                 namedImports: ["Project"],
-                moduleSpecifier: "@webiny/extensions"
+                moduleSpecifier: "webiny/extensions"
             });
         }
 

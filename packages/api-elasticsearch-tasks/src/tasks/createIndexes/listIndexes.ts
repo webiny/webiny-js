@@ -1,20 +1,19 @@
 import type { CreateElasticsearchIndexTaskPluginIndex } from "~/tasks/createIndexes/CreateElasticsearchIndexTaskPlugin.js";
 import type { CreateElasticsearchIndexTaskPlugin } from "~/tasks/createIndexes/CreateElasticsearchIndexTaskPlugin.js";
 import type { Context } from "~/types.js";
-import type { Tenant } from "@webiny/api-tenancy/types.js";
-import type { I18NLocale } from "@webiny/api-i18n/types.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
 
 export interface IListIndexesParams {
     context: Context;
     plugins: CreateElasticsearchIndexTaskPlugin<Context>[];
     tenants?: Tenant[];
-    locales?: I18NLocale[];
 }
 
 export const listIndexes = async (
     params: IListIndexesParams
 ): Promise<CreateElasticsearchIndexTaskPluginIndex[]> => {
-    const { context, plugins, tenants: inputTenants, locales: inputLocales } = params;
+    const { context, plugins, tenants: inputTenants } = params;
     if (plugins.length === 0) {
         return [];
     }
@@ -26,27 +25,17 @@ export const listIndexes = async (
         for (const tenant of tenants) {
             context.tenancy.setCurrentTenant(tenant);
 
-            let locales = inputLocales ? [...inputLocales] : [];
-            if (locales.length === 0) {
-                const [localesResult] = await context.i18n.locales.listLocales({
-                    limit: 10000
+            for (const plugin of plugins) {
+                const results = await plugin.getIndexList({
+                    context,
+                    tenant: tenant.id,
+                    locale: getLocale().code
                 });
-                locales = localesResult;
-            }
-
-            for (const locale of locales) {
-                for (const plugin of plugins) {
-                    const results = await plugin.getIndexList({
-                        context,
-                        tenant: tenant.id,
-                        locale: locale.code
-                    });
-                    for (const result of results) {
-                        if (indexes.some(i => i.index === result.index)) {
-                            continue;
-                        }
-                        indexes.push(result);
+                for (const result of results) {
+                    if (indexes.some(i => i.index === result.index)) {
+                        continue;
                     }
+                    indexes.push(result);
                 }
             }
         }

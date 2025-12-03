@@ -39,7 +39,7 @@ const FullScreenContentEntryDecorator = ContentEntry.createDecorator(Original =>
                             />
                         }
                     />
-                    {loading && <OverlayLoader text={"Loading entry..."} className={"wby-z-10"} />}
+                    {loading && <OverlayLoader text={"Loading entry..."} className={"z-10"} />}
                     <FSE.Content>
                         <FSE.ContentFormWrapper>
                             <FSE.ContentFormInner width={width}>
@@ -58,7 +58,7 @@ const FullScreenContentEntryDecorator = ContentEntry.createDecorator(Original =>
 const FullScreenContentEntryFormDecorator = ContentEntry.ContentEntryForm.createDecorator(
     Original => {
         return function ContentEntryForm(props) {
-            return <Original {...props} className={"wby-h-full"} />;
+            return <Original {...props} className={"h-full"} />;
         };
     }
 );

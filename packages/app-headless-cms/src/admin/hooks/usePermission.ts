@@ -1,14 +1,11 @@
 import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N.js";
 import type { CmsGroup, CmsIdentity, CmsModel, CmsSecurityPermission } from "~/types.js";
 import { makeDecoratable } from "@webiny/react-composition";
 
 export interface CreatableItem {
     createdBy?: Pick<CmsIdentity, "id">;
 }
-
-export type EditableItem = CreatableItem;
 
 interface CanReadEntriesCallableParams {
     contentModelGroup: CmsGroup;
@@ -17,9 +14,6 @@ interface CanReadEntriesCallableParams {
 
 export const usePermission = makeDecoratable(() => {
     const { identity, getIdentityId, getPermission, getPermissions } = useSecurity();
-    const { getCurrentLocale } = useI18N();
-
-    const currentLocale = getCurrentLocale("content");
 
     const hasFullAccess = useMemo(() => !!getPermission("cms.*"), [identity]);
 
@@ -64,7 +58,7 @@ export const usePermission = makeDecoratable(() => {
 
             for (let i = 0; i < contentModelPermissions.length; i++) {
                 const permission = contentModelPermissions[i];
-                const permissionAllowedModels = permission?.models?.[currentLocale!];
+                const permissionAllowedModels = permission?.models;
                 // The moment we encounter a permission that gives access to all models,
                 // we can stop checking other permissions.
                 const allModelsAllowed = !Array.isArray(permissionAllowedModels);
@@ -88,7 +82,7 @@ export const usePermission = makeDecoratable(() => {
 
             for (let i = 0; i < contentModelGroupPermissions.length; i++) {
                 const permission = contentModelGroupPermissions[i];
-                const permissionAllowedModelGroups = permission?.models?.[currentLocale!];
+                const permissionAllowedModelGroups = permission?.models;
                 // The moment we encounter a permission that gives access to all models,
                 // we can stop checking other permissions.
                 const allModelGroupsAllowed = !Array.isArray(permissionAllowedModelGroups);
@@ -120,7 +114,7 @@ export const usePermission = makeDecoratable(() => {
 
             return false;
         },
-        [identity, hasFullAccess, currentLocale]
+        [identity, hasFullAccess]
     );
 
     const canEdit = useCallback(

@@ -20,7 +20,7 @@ import {
 const t = i18n.ns("app-headless-cms/admin/fields/dynamic-fieldset-predefined-values");
 
 const Header = (props: React.HTMLProps<HTMLDivElement>) => {
-    return <div className={"wby-flex wby-justify-between wby-mb-md"} {...props} />;
+    return <div className={"flex justify-between mb-md"} {...props} />;
 };
 
 interface PredefinedValue {
@@ -75,7 +75,7 @@ const PredefinedValuesDynamicFieldset = ({
                                                 const Bind = getBind(index);
 
                                                 return (
-                                                    <div className={"wby-mb-md"}>
+                                                    <div className={"mb-md"}>
                                                         <Grid>
                                                             <Grid.Column span={4}>
                                                                 <Bind name={"label"}>
@@ -100,7 +100,7 @@ const PredefinedValuesDynamicFieldset = ({
                                                             <Grid.Column span={2}>
                                                                 <div
                                                                     className={
-                                                                        "wby-flex wby-flex-col wby-justify-end wby-h-full wby-py-sm-plus"
+                                                                        "flex flex-col justify-end h-full py-sm-plus"
                                                                     }
                                                                 >
                                                                     <Bind name={"selected"}>
@@ -124,7 +124,7 @@ const PredefinedValuesDynamicFieldset = ({
                                                             <Grid.Column span={2}>
                                                                 <div
                                                                     className={
-                                                                        "wby-flex wby-justify-end wby-items-end wby-gap-sm wby-h-full wby-py-sm-plus"
+                                                                        "flex justify-end items-end gap-sm h-full py-sm-plus"
                                                                     }
                                                                 >
                                                                     <IconButton
@@ -166,7 +166,7 @@ const PredefinedValuesDynamicFieldset = ({
                                                             <Text>{t`Predefined values`}</Text>
                                                         </Header>
 
-                                                        <Grid className={"wby-text-center"}>
+                                                        <Grid className={"text-center"}>
                                                             <Grid.Column span={12}>
                                                                 <Text>{t`There are no predefined values available.`}</Text>
                                                             </Grid.Column>

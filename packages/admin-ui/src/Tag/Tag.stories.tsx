@@ -1,7 +1,8 @@
 import React from "react";
-import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { Tag } from "./Tag.js";
+import { ReactComponent as InfoIcon } from "@webiny/icons/info.svg";
+import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 
 const meta: Meta<typeof Tag> = {
     title: "Components/Tag",
@@ -16,7 +17,8 @@ type Story = StoryObj<typeof Tag>;
 
 export const Default: Story = {
     args: {
-        content: "Label"
+        content: "Label",
+        icon: <InfoIcon />
     }
 };
 
@@ -232,7 +234,7 @@ export const FullExample: Story = {
     args: WithOnDismissCallback.args,
     render: args => {
         return (
-            <div className={"wby-flex wby-gap-sm"}>
+            <div className={"flex gap-sm"}>
                 <Tag {...args} content={"Neutral base"} variant={"neutral-base"} />
                 <Tag {...args} content={"Neutral base outline"} variant={"neutral-base-outline"} />
                 <Tag {...args} content={"Neutral light"} variant={"neutral-light"} />
@@ -248,6 +250,15 @@ export const FullExample: Story = {
                 <Tag {...args} content={"Accent light"} variant={"accent-light"} />
             </div>
         );
+    }
+};
+
+export const WithSwatchColor: Story = {
+    args: {
+        ...WithOnDismissCallback.args,
+        variant: "neutral-base-outline",
+        content: <>An alert that can be closed and also has action button.</>,
+        swatchColor: "#FF708F"
     }
 };
 

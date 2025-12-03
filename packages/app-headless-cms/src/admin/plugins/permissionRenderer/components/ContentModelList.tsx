@@ -2,7 +2,7 @@ import React from "react";
 import groupBy from "lodash/groupBy.js";
 import get from "lodash/get.js";
 import type { PermissionSelectorCmsGroup } from "./types.js";
-import { CheckboxGroup, Text } from "@webiny/admin-ui";
+import { CheckboxGroup } from "@webiny/admin-ui";
 
 interface GroupItem extends PermissionSelectorCmsGroup {
     groupName: string;
@@ -10,12 +10,11 @@ interface GroupItem extends PermissionSelectorCmsGroup {
 
 interface ContentModelListProps {
     items: PermissionSelectorCmsGroup[];
-    label: string;
     disabled?: boolean;
     value?: string[];
     onChange?: (values: string[]) => void;
 }
-const ContentModelList = ({ items, label, disabled, value, onChange }: ContentModelListProps) => {
+const ContentModelList = ({ items, disabled, value, onChange }: ContentModelListProps) => {
     const list: [string, GroupItem[]][] = Object.entries(
         groupBy(
             items.map((item): GroupItem => {
@@ -30,10 +29,9 @@ const ContentModelList = ({ items, label, disabled, value, onChange }: ContentMo
 
     return (
         <>
-            <Text className={"wby-font-semibold"}>{label}</Text>
             {list.map(([key, items]) => {
                 return (
-                    <div key={key} className={"wby-ml-md wby-mt-sm"}>
+                    <div key={key} className={"ml-md mt-sm"}>
                         <CheckboxGroup
                             label={key}
                             value={value}

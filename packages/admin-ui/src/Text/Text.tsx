@@ -3,13 +3,13 @@ import { cn, cva, makeDecoratable, type VariantProps } from "~/utils.js";
 
 type TextTags = "span" | "div";
 
-const textVariants = cva("wby-font-sans", {
+const textVariants = cva("font-sans", {
     variants: {
         size: {
-            xl: "wby-text-xl",
-            lg: "wby-text-lg",
-            md: "wby-text-md",
-            sm: "wby-text-sm"
+            xl: "text-xl",
+            lg: "text-lg",
+            md: "text-md",
+            sm: "text-sm"
         }
     },
     defaultVariants: {
