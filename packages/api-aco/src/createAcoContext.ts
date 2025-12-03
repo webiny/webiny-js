@@ -13,7 +13,6 @@ import { GetFolderFeature } from "~/features/folders/GetFolder/index.js";
 import { ListFoldersFeature } from "~/features/folders/ListFolders/index.js";
 import { GetFolderHierarchyFeature } from "~/features/folders/GetFolderHierarchy/index.js";
 import { GetAncestorsFeature } from "~/features/folders/GetAncestors/index.js";
-import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
 import { UpdateFlpOnFolderUpdatedFeature } from "~/features/flp/UpdateFlpOnFolderUpdated/index.js";
 import { DeleteFlpOnFolderDeletedFeature } from "~/features/flp/DeleteFlpOnFolderDeleted/index.js";
 import { EnsureFmFolderIsEmptyOnDeleteFeature } from "~/features/folders/EnsureFmFolderIsEmptyOnDelete/index.js";
@@ -34,6 +33,7 @@ import { createFolderModel, FOLDER_MODEL_ID } from "~/domain/folder/folder.model
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { FolderModel } from "~/domain/folder/abstractions.js";
 import { createModelPlugin } from "@webiny/api-headless-cms/plugins/index.js";
+import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -114,9 +114,7 @@ const setupAcoContext = async (
     ListFlpsFeature.register(context.container, flpCrudMethods);
     GetFlpFeature.register(context.container, flpCrudMethods);
 
-    CreateFlpOnFolderCreatedFeature.register(context.container, {
-        tasks: context.tasks
-    });
+    CreateFlpOnFolderCreatedFeature.register(context.container);
 
     UpdateFlpOnFolderUpdatedFeature.register(context.container, {
         tasks: context.tasks

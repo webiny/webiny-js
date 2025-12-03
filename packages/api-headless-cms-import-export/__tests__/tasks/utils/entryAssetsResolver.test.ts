@@ -4,6 +4,8 @@ import type { Context } from "~/types";
 import { createImages } from "~tests/mocks/images";
 import type { IAssets, IEntryAssetsResolver } from "~/tasks/utils/entryAssets";
 import { EntryAssetsResolver } from "~/tasks/utils/entryAssets";
+import { CreateFileUseCase } from "@webiny/api-file-manager/features/file/CreateFile/index.js";
+import { ListFilesUseCase } from "@webiny/api-file-manager/features/file/ListFiles/index.js";
 
 describe("entry assets resolver", () => {
     let context: Context;
@@ -12,14 +14,13 @@ describe("entry assets resolver", () => {
     beforeEach(async () => {
         const { createContext } = useHandler();
         context = await createContext();
+        const listFiles = context.container.resolve(ListFilesUseCase);
 
         entryAssetsResolver = new EntryAssetsResolver({
             fetchFiles: async opts => {
-                const [items, meta] = await context.fileManager.listFiles(opts);
-                return {
-                    items,
-                    meta
-                };
+                const result = await listFiles.execute(opts ?? {});
+
+                return result.value;
             }
         });
     });
@@ -32,16 +33,13 @@ describe("entry assets resolver", () => {
 
     it("should fetch assets", async () => {
         const images = createImages();
+        const createFile = context.container.resolve(CreateFileUseCase);
 
-        expect.assertions(images.length + 1);
+        expect.assertions(13);
 
         for (const image of images) {
-            try {
-                await context.fileManager.createFile(image.data);
-            } catch (ex) {
-                console.error(ex);
-                expect(ex.message).toEqual("Must not happen!");
-            }
+            const result = await createFile.execute(image.data);
+            expect(result.isOk()).toBe(true);
         }
 
         const assets = images.reduce<IAssets>((items, item) => {

@@ -133,7 +133,7 @@ describe("predefined values", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 storageId: expect.stringMatching("text@"),
@@ -172,7 +172,7 @@ describe("predefined values", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "bugValue",
@@ -211,7 +211,7 @@ describe("predefined values", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 fieldId: "bugType",

@@ -91,7 +91,7 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
             return Result.ok(entry);
         } catch (error) {
             if (error.code === "VALIDATION_FAILED") {
-                return Result.fail(new EntryValidationError(error.message));
+                return Result.fail(new EntryValidationError(error.message, error.data));
             }
             // Handle errors from createEntryData or other operations
             return Result.fail(error as UseCaseAbstraction.Error);

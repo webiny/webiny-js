@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { useHandler } from "~tests/utils/useHandler";
 import type { Folder } from "~/folder/folder.types";
 import { ROOT_FOLDER } from "~/constants";
-import { CreateFlpUseCase } from "~/features/flp/CreateFlp/index.js";
 import { DeleteFlpUseCase } from "~/features/flp/DeleteFlp/index.js";
 import { CreateFolderUseCase } from "~/features/folders/CreateFolder/index.js";
 import { UpdateFolderUseCase } from "~/features/folders/UpdateFolder/index.js";
@@ -17,7 +16,7 @@ describe("FLP Tasks", () => {
 
         it("should create an FLP record without a parent folder", async () => {
             const context = await handler();
-            const createFolder = context.container.resolve(CreateFolderUseCase)
+            const createFolder = context.container.resolve(CreateFolderUseCase);
 
             const result = await createFolder.execute({
                 title: "Folder 1",
@@ -41,8 +40,8 @@ describe("FLP Tasks", () => {
 
         it("should create an FLP record with a parent folder", async () => {
             const context = await handler();
-            const createFolder = context.container.resolve(CreateFolderUseCase)
-            const updateFolder = context.container.resolve(UpdateFolderUseCase)
+            const createFolder = context.container.resolve(CreateFolderUseCase);
+            const updateFolder = context.container.resolve(UpdateFolderUseCase);
 
             const result1 = await createFolder.execute({
                 title: "Folder 1",
@@ -86,47 +85,6 @@ describe("FLP Tasks", () => {
                 ]
             });
         });
-
-        it("should throw an error if the folder is not provided", async () => {
-            const context = await handler();
-            const useCase = context.container.resolve(CreateFlpUseCase);
-
-            await expect(useCase.execute(undefined as never)).rejects.toThrow(
-                "Missing `folder`, I can't create a new record into the FLP catalog."
-            );
-        });
-
-        it("should throw an error if the parent FLP is not found", async () => {
-            const context = await handler();
-            const createFolder = context.container.resolve(CreateFolderUseCase)
-
-            const parentFolderInput = {
-                title: "Parent Folder",
-                type: "type1",
-                slug: "parent-folder",
-                parentId: null
-            };
-
-            // Let's create the parent folder first
-            const parentFolderResponse = await createFolder.execute(parentFolderInput);
-            const parentFolder = parentFolderResponse.value;
-
-            // Let's delete the parent folder FLP record, this should not happen in real life.
-            await context.aco.flp.delete(parentFolder.id);
-
-            const folder = {
-                title: "Folder",
-                type: "type1",
-                slug: "folder-id",
-                parentId: parentFolder.id
-            };
-
-            const createResult = await createFolder.execute(folder);
-
-            expect(createResult.error.message).toEqual(
-                "Parent folder level permission not found. Unable to create a new record in the FLP catalog."
-            );
-        });
     });
 
     describe("Folder Level Permissions -  DELETE FLP", () => {
@@ -147,7 +105,7 @@ describe("FLP Tasks", () => {
 
         it("should delete an FLP record successfully", async () => {
             const context = await handler();
-            const createFolder = context.container.resolve(CreateFolderUseCase)
+            const createFolder = context.container.resolve(CreateFolderUseCase);
 
             const result = await createFolder.execute({
                 title: "Folder 1",
@@ -187,8 +145,8 @@ describe("FLP Tasks", () => {
 
         it("should update a root folder's permissions", async () => {
             const context = await handler();
-            const createFolder = context.container.resolve(CreateFolderUseCase)
-            const updateFolder = context.container.resolve(UpdateFolderUseCase)
+            const createFolder = context.container.resolve(CreateFolderUseCase);
+            const updateFolder = context.container.resolve(UpdateFolderUseCase);
 
             const result = await createFolder.execute({
                 type,
@@ -226,8 +184,8 @@ describe("FLP Tasks", () => {
 
         it("should update a folder's slug and path", async () => {
             const context = await handler();
-            const createFolder = context.container.resolve(CreateFolderUseCase)
-            const updateFolder = context.container.resolve(UpdateFolderUseCase)
+            const createFolder = context.container.resolve(CreateFolderUseCase);
+            const updateFolder = context.container.resolve(UpdateFolderUseCase);
 
             const result = await createFolder.execute({
                 type,
@@ -257,8 +215,8 @@ describe("FLP Tasks", () => {
 
         it("should update a folder's parent and path", async () => {
             const context = await handler();
-            const createFolder = context.container.resolve(CreateFolderUseCase)
-            const updateFolder = context.container.resolve(UpdateFolderUseCase)
+            const createFolder = context.container.resolve(CreateFolderUseCase);
+            const updateFolder = context.container.resolve(UpdateFolderUseCase);
 
             // Create parent folder
             const parentFolderResult = await createFolder.execute({
@@ -298,25 +256,31 @@ describe("FLP Tasks", () => {
 
         it("should update a folder's permissions and propagate to direct child", async () => {
             const context = await handler();
+            const createFolder = context.container.resolve(CreateFolderUseCase);
+            const updateFolder = context.container.resolve(UpdateFolderUseCase);
 
             // Create parent folder
-            const parentFolder = await context.aco.folder.create({
+            const parentFolderResult = await createFolder.execute({
                 type,
                 title: "Parent folder",
                 slug: "parent-folder",
                 parentId: null
             });
 
+            const parentFolder = parentFolderResult.value;
+
             // Create child folder
-            const childFolder = await context.aco.folder.create({
+            const childFolderResult = await createFolder.execute({
                 type,
                 title: "Child folder",
                 slug: "child-folder",
                 parentId: parentFolder.id
             });
 
+            const childFolder = childFolderResult.value;
+
             // Update parent folder with new permissions
-            await context.aco.folder.update(parentFolder.id, {
+            await updateFolder.execute(parentFolder.id, {
                 permissions: [
                     {
                         target: "admin:1234",
@@ -359,7 +323,7 @@ describe("FLP Tasks", () => {
             });
 
             // Update child folder with its own permissions
-            await context.aco.folder.update(childFolder.id, {
+            await updateFolder.execute(childFolder.id, {
                 permissions: [
                     {
                         target: "admin:5678",
@@ -391,7 +355,7 @@ describe("FLP Tasks", () => {
             }
 
             // Update the parent folder removing all permissions
-            await context.aco.folder.update(parentFolder.id, {
+            await updateFolder.execute(parentFolder.id, {
                 permissions: []
             });
 
@@ -461,47 +425,59 @@ describe("FLP Tasks", () => {
 
         it("should handle multi-branch updates with different permissions", async () => {
             const context = await handler();
+            const createFolder = context.container.resolve(CreateFolderUseCase);
+            const updateFolder = context.container.resolve(UpdateFolderUseCase);
 
             // Create main folder
-            const mainFolder = await context.aco.folder.create({
+            const mainFolderResult = await createFolder.execute({
                 type,
                 title: "Main",
                 slug: "main",
                 parentId: null
             });
 
+            const mainFolder = mainFolderResult.value;
+
             // Create two branches under main
-            const branch1 = await context.aco.folder.create({
+            const branch1Result = await createFolder.execute({
                 type,
                 title: "Branch 1",
                 slug: "branch1",
                 parentId: mainFolder.id
             });
 
-            const branch2 = await context.aco.folder.create({
+            const branch1 = branch1Result.value;
+
+            const branch2Result = await createFolder.execute({
                 type,
                 title: "Branch 2",
                 slug: "branch2",
                 parentId: mainFolder.id
             });
 
+            const branch2 = branch2Result.value;
+
             // Create subfolders in each branch
-            const branch1Subfolder = await context.aco.folder.create({
+            const branch1SubfolderResult = await createFolder.execute({
                 type,
                 title: "Branch 1 - Sub",
                 slug: "branch1-sub",
                 parentId: branch1.id
             });
 
-            const branch2Subfolder = await context.aco.folder.create({
+            const branch1Subfolder = branch1SubfolderResult.value;
+
+            const branch2SubfolderResult = await createFolder.execute({
                 type,
                 title: "Branch 2 - Sub",
                 slug: "branch2-sub",
                 parentId: branch2.id
             });
 
+            const branch2Subfolder = branch2SubfolderResult.value;
+
             // Update main with permissions
-            await context.aco.folder.update(mainFolder.id, {
+            await updateFolder.execute(mainFolder.id, {
                 permissions: [
                     {
                         target: "admin:user1",
@@ -571,7 +547,7 @@ describe("FLP Tasks", () => {
             });
 
             // Update branch1 with its own permissions
-            await context.aco.folder.update(branch1.id, {
+            await updateFolder.execute(branch1.id, {
                 permissions: [
                     {
                         target: "admin:user2",
@@ -658,40 +634,50 @@ describe("FLP Tasks", () => {
 
         it("should handle deep nested folder updates", async () => {
             const context = await handler();
+            const createFolder = context.container.resolve(CreateFolderUseCase);
+            const updateFolder = context.container.resolve(UpdateFolderUseCase);
 
             // Create a deep folder structure
-            const level1 = await context.aco.folder.create({
+            const level1Result = await createFolder.execute({
                 type,
                 title: "Level 1",
                 slug: "level1",
                 parentId: null
             });
 
-            const level2 = await context.aco.folder.create({
+            const level1 = level1Result.value;
+
+            const level2Result = await createFolder.execute({
                 type,
                 title: "Level 2",
                 slug: "level2",
                 parentId: level1.id
             });
 
-            const level3 = await context.aco.folder.create({
+            const level2 = level2Result.value;
+
+            const level3Result = await createFolder.execute({
                 type,
                 title: "Level 3",
                 slug: "level3",
                 parentId: level2.id
             });
 
-            const level4 = await context.aco.folder.create({
+            const level3 = level3Result.value;
+
+            const level4Result = await createFolder.execute({
                 type,
                 title: "Level 4",
                 slug: "level4",
                 parentId: level3.id
             });
 
+            const level4 = level4Result.value;
+
             const folders = [level1, level2, level3, level4];
 
             // Update level1 with permissions
-            await context.aco.folder.update(level1.id, {
+            await updateFolder.execute(level1.id, {
                 permissions: [
                     {
                         target: "admin:user1",
@@ -743,7 +729,7 @@ describe("FLP Tasks", () => {
             }
 
             // Update level2 with its empty permissions: it should always inherit permissions from level1 and propagate them down
-            await context.aco.folder.update(level2.id, {
+            await updateFolder.execute(level2.id, {
                 permissions: []
             });
 
@@ -790,7 +776,7 @@ describe("FLP Tasks", () => {
             }
 
             // Update level3 with its own permissions
-            await context.aco.folder.update(level3.id, {
+            await updateFolder.execute(level3.id, {
                 permissions: [
                     {
                         target: "admin:user2",
@@ -845,16 +831,20 @@ describe("FLP Tasks", () => {
 
         it("should handle moving a branch to a different parent", async () => {
             const context = await handler();
+            const createFolder = context.container.resolve(CreateFolderUseCase);
+            const updateFolder = context.container.resolve(UpdateFolderUseCase);
 
             // Create two main folders
-            const main1 = await context.aco.folder.create({
+            const main1Result = await createFolder.execute({
                 type,
                 title: "Main 1",
                 slug: "main1",
                 parentId: null
             });
 
-            await context.aco.folder.update(main1.id, {
+            const main1 = main1Result.value;
+
+            await updateFolder.execute(main1.id, {
                 permissions: [
                     {
                         target: "admin:user1",
@@ -863,14 +853,16 @@ describe("FLP Tasks", () => {
                 ]
             });
 
-            const main2 = await context.aco.folder.create({
+            const main2Result = await createFolder.execute({
                 type,
                 title: "Main 2",
                 slug: "main2",
                 parentId: null
             });
 
-            await context.aco.folder.update(main2.id, {
+            const main2 = main2Result.value;
+
+            await updateFolder.execute(main2.id, {
                 permissions: [
                     {
                         target: "admin:user2",
@@ -880,23 +872,27 @@ describe("FLP Tasks", () => {
             });
 
             // Create a branch under main1
-            const branch = await context.aco.folder.create({
+            const branchResult = await createFolder.execute({
                 type,
                 title: "Branch",
                 slug: "branch",
                 parentId: main1.id
             });
 
+            const branch = branchResult.value;
+
             // Create a subfolder in the branch
-            const subfolder = await context.aco.folder.create({
+            const subfolderResult = await createFolder.execute({
                 type,
                 title: "Subfolder",
                 slug: "subfolder",
                 parentId: branch.id
             });
 
+            const subfolder = subfolderResult.value;
+
             // Move the branch to main2
-            await context.aco.folder.update(branch.id, {
+            await updateFolder.execute(branch.id, {
                 parentId: main2.id
             });
 

@@ -41,7 +41,7 @@ class GetScheduledActionUseCaseImpl implements UseCaseAbstraction.Interface {
             actionType: entry.values.actionType,
             targetId: entry.values.targetId,
             scheduledBy: entry.values.scheduledBy,
-            scheduledOn: new Date(entry.values.scheduledOn),
+            scheduledOn: entry.values.scheduledOn,
             payload: entry.values.payload,
             title: entry.values.title,
             error: entry.values.error

@@ -160,7 +160,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {
@@ -192,7 +192,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {
@@ -237,7 +237,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {
@@ -304,7 +304,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {
@@ -347,7 +347,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {

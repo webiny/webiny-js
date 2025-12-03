@@ -48,7 +48,8 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            input: { scheduleOn: new Date(Date.now() + 1000000) },
+            title: "Title",
+            input: { scheduleOn: new Date(Date.now() + 1000000).toISOString() },
             payload: { some: "payload" }
         });
 
@@ -87,7 +88,8 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            input: { scheduleOn: new Date(Date.now() + 1000000) },
+            title: "Title",
+            input: { scheduleOn: new Date(Date.now() + 1000000).toISOString() },
             payload: { some: "payload" }
         });
 
@@ -146,7 +148,8 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            input: { scheduleOn: new Date(Date.now() + 1000000) },
+            title: "Title",
+            input: { scheduleOn: new Date(Date.now() + 1000000).toISOString() },
             payload: { some: "payload" }
         });
 
@@ -189,7 +192,8 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            input: { scheduleOn: firstDate },
+            title: "Title",
+            input: { scheduleOn: firstDate.toISOString() },
             payload: { version: 1 }
         });
 
@@ -198,7 +202,7 @@ describe("Scheduler", () => {
         // Verify first schedule
         const getFirstResult = await getScheduledAction.execute(scheduleId);
         expect(getFirstResult.isFail()).toBe(false);
-        expect(getFirstResult.value.scheduledOn.getTime()).toBe(firstDate.getTime());
+        expect(new Date(getFirstResult.value.scheduledOn).getTime()).toBe(firstDate.getTime());
         expect(getFirstResult.value.payload).toEqual({ version: 1 });
 
         // Reschedule (same namespace + actionType + targetId)
@@ -206,7 +210,8 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            input: { scheduleOn: secondDate },
+            title: "Title",
+            input: { scheduleOn: secondDate.toISOString() },
             payload: { version: 2 }
         });
 
@@ -216,7 +221,7 @@ describe("Scheduler", () => {
         const getSecondResult = await getScheduledAction.execute(scheduleId);
         expect(getSecondResult.isFail()).toBe(false);
         expect(getSecondResult.value.id).toBe(scheduleId); // Same ID
-        expect(getSecondResult.value.scheduledOn.getTime()).toBe(secondDate.getTime());
+        expect(new Date(getSecondResult.value.scheduledOn).getTime()).toBe(secondDate.getTime());
         expect(getSecondResult.value.payload).toEqual({ version: 2 });
     });
 
@@ -232,7 +237,8 @@ describe("Scheduler", () => {
             namespace,
             actionType,
             targetId,
-            input: { scheduleOn: new Date(Date.now() + 1000000) },
+            title: "Title",
+            input: { scheduleOn: new Date(Date.now() + 1000000).toISOString() },
             payload: { some: "payload" }
         });
 
@@ -240,7 +246,8 @@ describe("Scheduler", () => {
             namespace,
             actionType: "ColonizeMars",
             targetId,
-            input: { scheduleOn: new Date(Date.now() + 1000000) },
+            title: "Title",
+            input: { scheduleOn: new Date(Date.now() + 1000000).toISOString() },
             payload: { some: "payload" }
         });
 
