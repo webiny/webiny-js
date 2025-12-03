@@ -65,6 +65,8 @@ const SidebarMenuSubButton = ({
             {chevron}
         </LinkComponent>
     ) : (
+        // We can't use the default button element here because the content of the button
+        // can also contain a button, which is not allowed in HTML.
         <DivButton
             {...sharedProps}
             disabled={disabled}
@@ -76,8 +78,6 @@ const SidebarMenuSubButton = ({
         </DivButton>
     );
 
-    // We can't use the default button element here because the content of the button
-    // can also contain a button, which is not allowed in HTML.
     return <div className={"flex items-center w-full"}>{content}</div>;
 };
 
