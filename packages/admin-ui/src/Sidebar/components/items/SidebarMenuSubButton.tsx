@@ -14,8 +14,7 @@ const variants = cva(
         "hover:bg-neutral-dark/5",
         "focus:bg-neutral-dark/5 focus:ring-none focus:ring-transparent",
         "data-[active=true]:bg-neutral-dark/5 data-[active=true]:font-semibold data-[active=true]:pointer-events-none",
-        "group-data-[state=collapsed]:hidden",
-        "group-data-[state=open]/menu-sub-item-collapsible:font-semibold!"
+        "group-data-[state=collapsed]:hidden"
     ],
     {
         variants: {
@@ -32,7 +31,7 @@ const variants = cva(
     }
 );
 
-type SidebarMenuSubButtonProps = DistributedOmit<SidebarMenuItemProps, "className" | "children">;
+type SidebarMenuSubButtonProps = DistributedOmit<SidebarMenuItemProps, "children">;
 
 const SidebarMenuSubButton = ({
     onClick,
@@ -42,6 +41,7 @@ const SidebarMenuSubButton = ({
     icon,
     action,
     text,
+    className,
     to,
     ...linkProps
 }: SidebarMenuSubButtonProps) => {
@@ -54,7 +54,7 @@ const SidebarMenuSubButton = ({
     const sharedProps = {
         "data-sidebar": "menu-sub-button",
         "data-active": active,
-        className: variants({ variant, disabled }),
+        className: variants({ variant, disabled, className }),
         onClick
     };
 

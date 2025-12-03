@@ -60,7 +60,13 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
                         variant={buttonProps.variant}
                     />
                     <Collapsible.Trigger asChild>
-                        <SidebarMenuSubButton {...buttonProps} action={chevron} />
+                        <SidebarMenuSubButton
+                            {...buttonProps}
+                            action={chevron}
+                            className={
+                                "group-data-[state=open]/menu-sub-item-collapsible:font-semibold!"
+                            }
+                        />
                     </Collapsible.Trigger>
                 </div>
                 <Collapsible.Content>
