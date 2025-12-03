@@ -52,7 +52,7 @@ const SidebarMenuSubButton = ({
     const { linkComponent: LinkComponent } = useAdminUi();
 
     const sharedProps = {
-        "data-sidebar": "menu-button",
+        "data-sidebar": "menu-sub-button",
         "data-active": active,
         className: variants({ variant, disabled }),
         onClick
