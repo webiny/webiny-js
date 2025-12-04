@@ -83,12 +83,12 @@ const SidebarComponent = () => {
                         className={"w-[225px]"}
                     >
                         <DropdownMenu.Item
-                            content={"API Playground"}
+                            text={"API Playground"}
                             icon={<ApiPlaygroundIcon />}
                         />
-                        <DropdownMenu.Item content={"Documentation"} icon={<DocsIcon />} />
-                        <DropdownMenu.Item content={"GitHub"} icon={<GithubIcon />} />
-                        <DropdownMenu.Item content={"Slack"} icon={<ChatIcon />} />
+                        <DropdownMenu.Item text={"Documentation"} icon={<DocsIcon />} />
+                        <DropdownMenu.Item text={"GitHub"} icon={<GithubIcon />} />
+                        <DropdownMenu.Item text={"Slack"} icon={<ChatIcon />} />
                         <DropdownMenu.Separator />
                         <DropdownMenu.Item
                             text={
