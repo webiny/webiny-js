@@ -12,6 +12,7 @@ const variants = cva(
         "rounded-md p-xs-plus pr-sm outline-none",
         "whitespace-nowrap overflow-hidden",
         "hover:bg-neutral-dark/5",
+        "group-hover/menu-sub-button:bg-neutral-dark/5",
         "focus:bg-neutral-dark/5 focus:ring-none focus:ring-transparent",
         "data-[active=true]:bg-neutral-dark/5 data-[active=true]:font-semibold data-[active=true]:pointer-events-none",
         "group-data-[state=collapsed]:hidden"
@@ -45,10 +46,6 @@ const SidebarMenuSubButton = ({
     to,
     ...linkProps
 }: SidebarMenuSubButtonProps) => {
-    const chevron = action ? (
-        <div className="flex ml-auto pointer-events-none">{action}</div>
-    ) : null;
-
     const { linkComponent: LinkComponent } = useAdminUi();
 
     const sharedProps = {
@@ -62,7 +59,6 @@ const SidebarMenuSubButton = ({
         <LinkComponent {...sharedProps} to={to} {...linkProps}>
             {icon}
             {text}
-            {chevron}
         </LinkComponent>
     ) : (
         // We can't use the default button element here because the content of the button
@@ -74,11 +70,20 @@ const SidebarMenuSubButton = ({
         >
             {icon}
             {text}
-            {chevron}
         </DivButton>
     );
 
-    return <div className={"flex items-center w-full"}>{content}</div>;
+    return (
+        <div className={"flex items-center w-full relative group/menu-sub-button"}>
+            {content}
+
+            {action && (
+                <div className="absolute top-0 right-0 mr-sm h-full flex items-center">
+                    {action}
+                </div>
+            )}
+        </div>
+    );
 };
 
 export { SidebarMenuSubButton };
