@@ -9,7 +9,7 @@ type FolderActionProps = React.ComponentProps<typeof AcoConfig.Folder.Action>;
 
 const BaseFolderAction = (props: FolderActionProps) => {
     return (
-        <AcoConfig>
+        <AcoConfig priority={"secondary"}>
             <Folder.Action {...props} />
         </AcoConfig>
     );

@@ -1,13 +1,13 @@
 import React from "react";
-import { FolderProvider, useAcoConfig } from "@webiny/app-aco";
+import { FolderProvider } from "@webiny/app-aco";
 import { makeDecoratable, OptionsMenu } from "@webiny/app-admin";
-import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
+import { ContentEntryListConfig, useContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { EntryProvider } from "~/admin/hooks/useEntry.js";
 
 const DefaultCellActions = () => {
     const { useTableRow, isFolderRow } = ContentEntryListConfig.Browser.Table.Column;
     const { row } = useTableRow();
-    const { folder: folderConfig, record: recordConfig } = useAcoConfig();
+    const { browser } = useContentEntryListConfig();
 
     if (isFolderRow(row)) {
         // If the user cannot manage folder structure, no need to show the menu.
@@ -18,7 +18,7 @@ const DefaultCellActions = () => {
         return (
             <FolderProvider folder={row.data}>
                 <OptionsMenu
-                    actions={folderConfig.actions}
+                    actions={browser.folder.actions}
                     data-testid={"table.row.folder.menu-action"}
                 />
             </FolderProvider>
@@ -28,7 +28,7 @@ const DefaultCellActions = () => {
     return (
         <EntryProvider entry={row.data}>
             <OptionsMenu
-                actions={recordConfig.actions}
+                actions={browser.entry.actions}
                 data-testid={"table.row.pb.entry.menu-action"}
             />
         </EntryProvider>

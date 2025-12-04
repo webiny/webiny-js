@@ -9,6 +9,7 @@ import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerVie
 import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerApiContext/index.js";
 import type { BrowseFilesHandler, HeaderProps } from "~/components/Header/Header.js";
 import { FiltersToggle } from "@webiny/app-admin";
+import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
 
 type ActionsProps = Pick<HeaderProps, "browseFiles">;
 

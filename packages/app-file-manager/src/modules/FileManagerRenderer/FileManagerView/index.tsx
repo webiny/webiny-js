@@ -4,7 +4,7 @@ import type { FileManagerFileItem, FileManagerOnChange } from "@webiny/app-admin
 import { DialogsProvider, FileManagerRenderer as BaseFileManagerRenderer } from "@webiny/app-admin";
 import type { FileItem } from "@webiny/app-admin/types.js";
 import { FoldersProvider } from "@webiny/app-aco/contexts/folders.js";
-import { AcoWithConfig, NavigateFolderProvider } from "@webiny/app-aco";
+import { NavigateFolderProvider } from "@webiny/app-aco";
 import { CompositionScope } from "@webiny/react-composition";
 import FileManagerView from "./FileManagerView.js";
 import type { FileManagerViewProviderProps } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
@@ -73,13 +73,11 @@ export function FileManagerProvider({
                     navigateToFolder={navigateToFolder}
                     createStorageKey={createStorageKey}
                 >
-                    <AcoWithConfig>
-                        <FileManagerViewProvider {...props} accept={mimeTypes}>
-                            <DialogsProvider>
-                                <FileManagerViewWithConfig>{children}</FileManagerViewWithConfig>
-                            </DialogsProvider>
-                        </FileManagerViewProvider>
-                    </AcoWithConfig>
+                    <FileManagerViewProvider {...props} accept={mimeTypes}>
+                        <DialogsProvider>
+                            <FileManagerViewWithConfig>{children}</FileManagerViewWithConfig>
+                        </DialogsProvider>
+                    </FileManagerViewProvider>
                 </NavigateFolderProvider>
             </FoldersProvider>
         </CompositionScope>

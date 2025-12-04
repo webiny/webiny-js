@@ -85,16 +85,14 @@ export const TrashBin = ({ render, ...rest }: TrashBinProps) => {
         <>
             {show && (
                 <CompositionScope name={"trash"}>
-                    <AcoWithConfig>
-                        <TrashBinListWithConfig>
-                            <TrashBinRenderer
-                                {...rest}
-                                onClose={onClose}
-                                onItemAfterRestore={onItemAfterRestore}
-                                retentionPeriod={retentionPeriod}
-                            />
-                        </TrashBinListWithConfig>
-                    </AcoWithConfig>
+                    <TrashBinListWithConfig>
+                        <TrashBinRenderer
+                            {...rest}
+                            onClose={onClose}
+                            onItemAfterRestore={onItemAfterRestore}
+                            retentionPeriod={retentionPeriod}
+                        />
+                    </TrashBinListWithConfig>
                 </CompositionScope>
             )}
             {render ? render({ showTrashBin }) : null}

@@ -17,7 +17,7 @@ type ColumnProps = React.ComponentProps<typeof AcoConfig.Table.Column>;
 
 const BaseColumnComponent = (props: ColumnProps) => {
     return (
-        <AcoConfig>
+        <AcoConfig priority={"secondary"}>
             <Table.Column {...props} />
         </AcoConfig>
     );

@@ -22,13 +22,11 @@ export const ContentEntries = makeDecoratable("ContentEntries", () => {
         <ContentEntriesProvider contentModel={model} key={model.modelId}>
             <ContentEntryListWithConfig>
                 <ContentEntryEditorWithConfig>
-                    <AcoWithConfig>
-                        <DialogsProvider>
-                            <ContentEntriesDebounceRenderer>
-                                <CmsAcoTable />
-                            </ContentEntriesDebounceRenderer>
-                        </DialogsProvider>
-                    </AcoWithConfig>
+                    <DialogsProvider>
+                        <ContentEntriesDebounceRenderer>
+                            <CmsAcoTable />
+                        </ContentEntriesDebounceRenderer>
+                    </DialogsProvider>
                 </ContentEntryEditorWithConfig>
             </ContentEntryListWithConfig>
         </ContentEntriesProvider>

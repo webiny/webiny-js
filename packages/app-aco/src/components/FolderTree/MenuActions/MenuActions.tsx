@@ -2,12 +2,15 @@ import React from "react";
 import { OptionsMenu } from "@webiny/app-admin";
 import { cn, IconButton } from "@webiny/admin-ui";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
-import { useAcoConfig } from "~/config/index.js";
+import type { FolderActionConfig } from "~/config/index.js";
 import { useFolder } from "~/hooks/index.js";
 
-export const MenuActions = () => {
+interface MenuActionsProps {
+    folderActions: FolderActionConfig[];
+}
+
+export const MenuActions = ({ folderActions }: MenuActionsProps) => {
     const { folder } = useFolder();
-    const { folder: folderConfig } = useAcoConfig();
 
     // If the user cannot manage folder structure, no need to show the menu.
     if (!folder.canManageStructure) {
@@ -26,7 +29,7 @@ export const MenuActions = () => {
         >
             <OptionsMenu
                 trigger={<IconButton icon={<MoreVerticalIcon />} size={"xs"} variant={"ghost"} />}
-                actions={folderConfig.actions}
+                actions={folderActions}
                 data-testid={"folder.tree.menu-action"}
             />
         </div>

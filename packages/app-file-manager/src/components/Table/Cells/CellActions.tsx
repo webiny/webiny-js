@@ -1,13 +1,16 @@
 import React from "react";
 import { OptionsMenu } from "@webiny/app-admin";
-import { FolderProvider, useAcoConfig } from "@webiny/app-aco";
+import { FolderProvider } from "@webiny/app-aco";
 import { FileProvider } from "~/contexts/FileProvider.js";
-import { FileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
+import {
+    FileManagerViewConfig,
+    useFileManagerViewConfig
+} from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
 
 export const CellActions = () => {
     const { useTableRow, isFolderRow } = FileManagerViewConfig.Browser.Table.Column;
     const { row } = useTableRow();
-    const { folder: folderConfig, record: recordConfig } = useAcoConfig();
+    const { browser } = useFileManagerViewConfig();
 
     if (isFolderRow(row)) {
         // If the user cannot manage folder structure, no need to show the menu.
@@ -17,20 +20,14 @@ export const CellActions = () => {
 
         return (
             <FolderProvider folder={row.data}>
-                <OptionsMenu
-                    actions={folderConfig.actions}
-                    data-testid={"table.row.folder.menu-action"}
-                />
+                <OptionsMenu actions={browser.folder.actions ?? []} data-testid={"table.row.folder.menu-action"} />
             </FolderProvider>
         );
     }
 
     return (
         <FileProvider file={row.data}>
-            <OptionsMenu
-                actions={recordConfig.actions}
-                data-testid={"table.row.file.menu-action"}
-            />
+            <OptionsMenu actions={browser.file.actions ?? []} data-testid={"table.row.file.menu-action"} />
         </FileProvider>
     );
 };

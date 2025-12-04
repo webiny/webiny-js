@@ -9,7 +9,7 @@ type RedirectActionProps = React.ComponentProps<typeof AcoConfig.Record.Action>;
 
 const BaseRedirectAction = (props: RedirectActionProps) => {
     return (
-        <AcoConfig>
+        <AcoConfig priority={"secondary"}>
             <Record.Action {...props} />
         </AcoConfig>
     );

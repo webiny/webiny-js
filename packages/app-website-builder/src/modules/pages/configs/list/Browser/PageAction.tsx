@@ -9,11 +9,7 @@ export type { RecordActionConfig as PageActionConfig };
 type PageActionProps = React.ComponentProps<typeof AcoConfig.Record.Action>;
 
 const BasePageAction = makeDecoratable("PageAction", (props: PageActionProps) => {
-    return (
-        <AcoConfig>
-            <Record.Action {...props} />
-        </AcoConfig>
-    );
+    return <Record.Action {...props} />;
 });
 
 export const PageAction = Object.assign(BasePageAction, {

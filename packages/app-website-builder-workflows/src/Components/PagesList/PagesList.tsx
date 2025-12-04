@@ -12,7 +12,7 @@ export const PagesList = () => {
             {/* Add a Content Reviews button to footer in sidebar  */}
             <PagesListContentReviews />
             {/* Decorate the Change Status action in row options to hide it for pages in certain workflow states */}
-            <PageListChangeStatus />
+            {/*<PageListChangeStatus />*/}
         </PageListConfig>
     );
 };

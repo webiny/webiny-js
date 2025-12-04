@@ -18,11 +18,13 @@ import {
 import { ROOT_FOLDER } from "~/constants.js";
 import type { FolderItem } from "~/types.js";
 import { FolderProvider } from "~/contexts/folder.js";
-import { useAcoConfig } from "~/config/index.js";
 import { useConfirmMoveFolderDialog } from "~/dialogs/index.js";
+import type { FolderActionConfig } from "~/config/AcoConfig.js";
 
 interface ListProps {
     folders: FolderItem[];
+    folderActions: FolderActionConfig[];
+    dropConfirmation?: boolean;
     focusedFolderId?: string;
     hiddenFolderIds?: string[];
     enableActions?: boolean;
@@ -31,10 +33,12 @@ interface ListProps {
 
 export const List = ({
     folders,
+    folderActions,
     onFolderClick,
     focusedFolderId,
     hiddenFolderIds,
-    enableActions
+    enableActions,
+    dropConfirmation = false
 }: ListProps) => {
     const { listFoldersByParentIds, loading } = useListFoldersByParentIds();
     const { updateFolder } = useUpdateFolder();
@@ -46,7 +50,6 @@ export const List = ({
     const [treeData, setTreeData] = useState<NodeDto<FolderItem>[]>([]);
     const [openFolderIds, setOpenFolderIds] = useState<string[]>([ROOT_FOLDER]);
     const { showDialog: showConfirmMoveFolderDialog } = useConfirmMoveFolderDialog();
-    const { folder: folderConfigs } = useAcoConfig();
 
     useEffect(() => {
         setTreeData(createTreeData(folders, focusedFolderId, hiddenFolderIds));
@@ -90,7 +93,7 @@ export const List = ({
             const runDrop = async () => handleDrop(newTree, options);
 
             // If drop confirmation is enabled, show dialog before proceeding
-            if (folderConfigs.dropConfirmation) {
+            if (dropConfirmation) {
                 const { dragSourceId, dropTargetId } = options;
                 const folder = folders.find(f => f.id === dragSourceId);
                 const targetFolder = folders.find(f => f.id === dropTargetId);
@@ -110,7 +113,7 @@ export const List = ({
                 await runDrop();
             }
         },
-        [folders, folderConfigs.dropConfirmation, showConfirmMoveFolderDialog]
+        [folders, dropConfirmation, showConfirmMoveFolderDialog]
     );
 
     const sort = useMemo(
@@ -140,7 +143,7 @@ export const List = ({
         const folder = folders.find(folder => folder.id === node.id);
         return (
             <FolderProvider folder={folder}>
-                <Node enableActions={enableActions} />
+                <Node enableActions={enableActions} folderActions={folderActions} />
             </FolderProvider>
         );
     };

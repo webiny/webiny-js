@@ -7,7 +7,7 @@ import { useFile } from "~/hooks/useFile.js";
 export const EditFile = () => {
     const { file } = useFile();
     const { showFileDetails } = useFileManagerView();
-    const { OptionsMenuItem } = FileManagerViewConfig.Browser.FileAction;
+    const { OptionsMenuItem } = FileManagerViewConfig.Browser.File.Action;
 
     return (
         <OptionsMenuItem

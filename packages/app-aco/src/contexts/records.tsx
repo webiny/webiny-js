@@ -33,7 +33,7 @@ import { validateOrGetDefaultDbSort } from "~/sorting.js";
 import { useAcoApp } from "~/hooks/index.js";
 import { parseIdentifier } from "@webiny/utils";
 import { useStateIfMounted } from "@webiny/app-admin";
-import { useAcoConfig } from "~/config/index.js";
+import type { ColumnConfig } from "~/config/table/Column.js";
 
 interface ListTagsParams {
     where?: ListTagsWhereQueryVariables;
@@ -63,6 +63,7 @@ export const SearchRecordsContext = React.createContext<SearchRecordsContext | u
 );
 
 interface Props {
+    columns: ColumnConfig[];
     children: ReactNode;
 }
 
@@ -98,7 +99,7 @@ const defaultMeta: ListMeta = {
     cursor: null
 };
 
-export const SearchRecordsProvider = ({ children }: Props) => {
+export const SearchRecordsProvider = ({ columns, children }: Props) => {
     const { app, client } = useAcoApp();
     const { model } = app;
 
@@ -106,8 +107,7 @@ export const SearchRecordsProvider = ({ children }: Props) => {
      * Retrieve all `fieldIds` from the ACO configuration, considering field `name`:
      * The result is a deduplicated flat array of unique field IDs.
      */
-    const { table } = useAcoConfig();
-    const fieldIds = table.columns.map(config => config.name).filter(Boolean);
+    const fieldIds = columns.map(config => config.name).filter(Boolean);
 
     const [records, setRecords] = useStateIfMounted<SearchRecordItem[]>([]);
     const [tags, setTags] = useStateIfMounted<TagItem[]>([]);

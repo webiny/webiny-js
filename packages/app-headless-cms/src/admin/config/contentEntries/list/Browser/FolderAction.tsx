@@ -17,11 +17,7 @@ const BaseFolderAction = ({ modelIds = [], ...props }: FolderActionProps) => {
         return null;
     }
 
-    return (
-        <AcoConfig>
-            <Folder.Action {...props} />
-        </AcoConfig>
-    );
+    return <Folder.Action {...props} />;
 };
 
 export const FolderAction = Object.assign(BaseFolderAction, {

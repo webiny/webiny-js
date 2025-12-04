@@ -15,15 +15,16 @@ import { GET_CONTENT_MODEL } from "~/admin/graphql/contentModels.js";
 import { useCms } from "~/admin/hooks/index.js";
 import {
     NavigateFolderProvider as AbstractNavigateFolderProvider,
-    SearchRecordsProvider
+    useGetFolderHierarchy
 } from "@webiny/app-aco";
 import { FolderTree, useNavigateFolder } from "@webiny/app-aco";
-import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin";
+import { SplitView, LeftPanel, RightPanel, DialogsProvider } from "@webiny/app-admin";
 import { usePersistEntry } from "~/admin/hooks/usePersistEntry.js";
 import type { AcoAppProviderContext } from "@webiny/app-aco/contexts/app.js";
 import { AcoAppContext, createAppFromModel } from "@webiny/app-aco/contexts/app.js";
 import { Drawer, OverlayLoader } from "@webiny/admin-ui";
 import { ROOT_FOLDER } from "~/admin/constants.js";
+import { useContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -40,6 +41,15 @@ const EntryForm = ({ onCreate, setSaveEntry }: EntryFormProps) => {
     const { contentModel, loading } = useContentEntry();
     const { persistEntry } = usePersistEntry({ addItemToListCache: false });
     const { currentFolderId, navigateToFolder } = useNavigateFolder();
+    const { browser } = useContentEntryListConfig();
+    const { folders, getFolderHierarchy } = useGetFolderHierarchy();
+
+    useEffect(() => {
+        // The folders collection is empty, it must be the first render, let's load the full hierarchy.
+        if (folders.length === 0) {
+            getFolderHierarchy(currentFolderId);
+        }
+    }, []);
 
     return (
         <ModelProvider model={contentModel}>
@@ -47,6 +57,7 @@ const EntryForm = ({ onCreate, setSaveEntry }: EntryFormProps) => {
                 <LeftPanel span={3}>
                     <div className={"px-sm-extra py-sm"}>
                         <FolderTree
+                            folderActions={browser.folder.actions}
                             focusedFolderId={currentFolderId}
                             onFolderClick={data => navigateToFolder(data.id)}
                             enableActions={true}
@@ -138,7 +149,9 @@ export const NewReferencedEntryDialog = ({
     return (
         <AcoAppContext.Provider value={acoAppContext}>
             <FoldersProvider>
-                <SearchRecordsProvider>
+                {/* We need to mount <DialogsProvider> to render dialog content in the right context. */}
+                {/* Otherwise, you'll see odd behavior with FolderTree, loading folders of the wrong type. */}
+                <DialogsProvider>
                     <NavigateFolderProvider modelId={model.modelId}>
                         <ContentEntriesProvider
                             contentModel={model}
@@ -152,7 +165,7 @@ export const NewReferencedEntryDialog = ({
                             />
                         </ContentEntriesProvider>
                     </NavigateFolderProvider>
-                </SearchRecordsProvider>
+                </DialogsProvider>
             </FoldersProvider>
         </AcoAppContext.Provider>
     );

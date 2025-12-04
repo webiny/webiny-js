@@ -40,6 +40,7 @@ import { FullScreenContentEntry } from "~/admin/views/contentEntries/ContentEntr
 import { ShowRevisionList } from "~/admin/components/ContentEntryForm/Header/ShowRevisionsList/index.js";
 import { cmsLegacyEntryEditor } from "~/utils/cmsLegacyEntryEditor.js";
 import { ScheduleEntryMenuItem } from "~/admin/components/ContentEntries/Scheduler/actions/ScheduleEntryAction.js";
+import { AdvancedSearchConfigs } from "@webiny/app-aco/components/AdvancedSearch/AdvancedSearchConfigs";
 
 const { Browser } = ContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
@@ -48,18 +49,19 @@ export const ContentEntriesModule = () => {
     return (
         <>
             <ContentEntryListConfig>
+                <AdvancedSearchConfigs />
                 <Browser.Filter name={"status"} element={<FilterByStatus />} />
                 <Browser.BulkAction name={"publish"} element={<ActionPublish />} />
                 <Browser.BulkAction name={"unpublish"} element={<ActionUnpublish />} />
                 <Browser.BulkAction name={"move"} element={<ActionMove />} />
                 <Browser.BulkAction name={"delete"} element={<ActionDelete />} />
-                <Browser.FolderAction name={"edit"} element={<EditFolder />} />
-                <Browser.FolderAction name={"permissions"} element={<SetFolderPermissions />} />
-                <Browser.FolderAction name={"delete"} element={<DeleteFolder />} />
-                <Browser.EntryAction name={"edit"} element={<EditEntry />} />
-                <Browser.EntryAction name={"status"} element={<ChangeEntryStatus />} />
-                <Browser.EntryAction name={"move"} element={<MoveEntry />} />
-                <Browser.EntryAction name={"delete"} element={<DeleteEntry />} />
+                <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
+                <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
+                <Browser.Folder.Action name={"delete"} element={<DeleteFolder />} />
+                <Browser.Entry.Action name={"edit"} element={<EditEntry />} />
+                <Browser.Entry.Action name={"status"} element={<ChangeEntryStatus />} />
+                <Browser.Entry.Action name={"move"} element={<MoveEntry />} />
+                <Browser.Entry.Action name={"delete"} element={<DeleteEntry />} />
                 <Browser.Table.Column
                     name={"name"}
                     header={"Name"}

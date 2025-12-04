@@ -15,21 +15,19 @@ export type { ActionConfig as FolderActionConfig } from "./folder/Action.js";
 export type { ColumnConfig as TableColumnConfig } from "./table/Column.js";
 export type { SortingConfig as TableSortingConfig } from "./table/Sorting.js";
 
-const base = createConfigurableComponent<AcoConfig>("AcoConfig");
+const base = createConfigurableComponent<AcoConfig>("Aco");
 
 export const AcoConfig = Object.assign(base.Config, { AdvancedSearch, Folder, Record, Table });
 export const AcoWithConfig = base.WithConfig;
 
-interface AcoConfig {
+export interface AcoConfig {
     advancedSearch: AdvancedSearchConfig;
     record: RecordConfig;
     folder: FolderConfig;
     table: TableConfig;
 }
 
-export function useAcoConfig() {
-    const config = base.useConfig();
-
+export function useAcoConfig(config: Record<string, any>): AcoConfig {
     const advancedSearch = config.advancedSearch || {};
     const folder = config.folder || {};
     const record = config.record || {};

@@ -3,6 +3,7 @@ import { createConfigurableComponent } from "@webiny/react-properties";
 import type { BrowserConfig } from "./Browser/index.js";
 import { Browser } from "./Browser/index.js";
 import { CompositionScope } from "@webiny/react-composition";
+import { useAcoConfig } from "@webiny/app-aco";
 
 const base = createConfigurableComponent<ContentEntryListConfig>("ContentEntryListConfig");
 
@@ -25,16 +26,20 @@ interface ContentEntryListConfig {
 
 export function useContentEntryListConfig() {
     const config = base.useConfig();
+    const acoConfig = useAcoConfig(config);
 
     const browser = config.browser || {};
 
     return useMemo(
         () => ({
             browser: {
-                ...browser,
+                advancedSearch: acoConfig.advancedSearch,
+                table: acoConfig.table,
+                folder: acoConfig.folder,
+                entry: acoConfig.record,
                 bulkActions: [...(browser.bulkActions || [])],
                 filters: [...(browser.filters || [])],
-                filtersToWhere: [...(browser.filtersToWhere || [])]
+                filtersToWhere: [...(browser.filtersToWhere || [])],
             }
         }),
         [config]
