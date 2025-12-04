@@ -188,9 +188,10 @@ const SidebarProvider = ({ className, children, pinnedItems = [], onChangePinned
     );
 
     const getPinnedItemsData = React.useCallback(() => {
-        return Array.from(pinnedItemsData.values()).filter(item =>
-            pinnedItems.includes(item.id)
-        );
+        // Sort by the order in pinnedItems array to maintain consistent ordering
+        return pinnedItems
+            .map(id => pinnedItemsData.get(id))
+            .filter((item): item is PinnedItemData => item !== undefined);
     }, [pinnedItemsData, pinnedItems]);
 
     // We add a state so that we can do data-state="expanded" or "collapsed".

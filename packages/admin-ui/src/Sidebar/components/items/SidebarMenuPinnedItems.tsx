@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useSidebar } from "~/Sidebar/index.js";
 import { SidebarMenuRootItem } from "./SidebarMenuRootItem.js";
 import { SidebarMenuItemAction } from "./SidebarMenuItemAction.js";
@@ -7,9 +7,8 @@ import { ReactComponent as UnPinIcon } from "@webiny/icons/push_pin_off.svg";
 const SidebarMenuPinnedItems = () => {
     const sidebar = useSidebar();
 
-    const pinnedItems = useMemo(() => {
-        return sidebar.getPinnedItemsData();
-    }, [sidebar]);
+    // Don't memoize - we want this to re-render when active state changes
+    const pinnedItems = sidebar.getPinnedItemsData();
 
     if (pinnedItems.length === 0) {
         return null;

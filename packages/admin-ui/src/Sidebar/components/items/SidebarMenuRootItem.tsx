@@ -34,7 +34,8 @@ const SidebarMenuItemBase = ({ children, className, pinnable, action, ...buttonP
     const isPinned = sidebar.isItemPinned(menuItemId);
 
     // Register on mount if already pinned, unregister on unmount
-    useEffect(() => {
+    // Re-register when active state changes to keep pinned items in sync
+    React.useEffect(() => {
         if (pinnable && isPinned) {
             sidebar.registerPinnedItem({
                 id: menuItemId,
@@ -51,7 +52,7 @@ const SidebarMenuItemBase = ({ children, className, pinnable, action, ...buttonP
                 sidebar.unregisterPinnedItem(menuItemId);
             }
         };
-    }, []);
+    }, [pinnable, isPinned, menuItemId, buttonProps.active]);
 
     const pinAction = useMemo(() => {
         if (!pinnable) {
