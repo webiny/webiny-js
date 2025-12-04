@@ -43,16 +43,6 @@ export const SidebarMenuItems = (props: MenusProps) => {
             );
         }
 
-        const menuItem = React.cloneElement(m.element, { key: m.parent + m.name });
-
-        if (m.pinnable) {
-            return (
-                <PinnableMenuItem key={m.parent + m.name} name={m.name}>
-                    {menuItem}
-                </PinnableMenuItem>
-            );
-        }
-
-        return menuItem;
+        return <PinnableMenuItem key={m.parent + m.name} menu={m} />;
     });
 };

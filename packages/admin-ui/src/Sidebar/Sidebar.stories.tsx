@@ -106,6 +106,12 @@ const SidebarComponent = () => {
             >
                 <Sidebar.Link
                     text={"Audit Logs"}
+                    action={
+                        <Sidebar.Item.Action
+                            element={<MoreVertIcon />}
+                            onClick={() => console.log("More action clicked")}
+                        />
+                    }
                     to={"#audit-logs"}
                     active={hash === "#audit-logs"}
                     icon={<Sidebar.Item.Icon label="Audit Logs" element={<AuditLogsIcon />} />}

@@ -1,38 +1,15 @@
 import React from "react";
 import { Icon } from "@webiny/admin-ui";
+import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
+import { Sidebar } from "@webiny/admin-ui/index.js";
 import { ReactComponent as PinIcon } from "@webiny/icons/push_pin.svg";
 import { ReactComponent as UnPinIcon } from "@webiny/icons/push_pin_off.svg";
-import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
+import type { MenuConfig } from "@webiny/app-admin/config/AdminConfig/Menu.js";
 
-/**
- * Props for the PinnableMenuItem component.
- *
- * @property name - Unique string identifier for the menu item. Used for localStorage keys.
- * @property children - React node(s) representing the menu item's content.
- */
-type PinnableMenuItemProps = {
-    name: string;
-    children: React.ReactNode;
-};
-
-/**
- * Generates the localStorage key for a pinned menu item.
- *
- * @param name - The unique name of the menu item.
- * @returns The localStorage key string for the pinned state.
- */
 export const createPinnedKey = (name: string) => `navigation/${name}/pinned`;
 
-/**
- * The localStorage key for the order of pinned menu items.
- */
 export const PINNED_ORDER_KEY = "navigation/order/pinned";
-/**
- * Parses the pinned order value from localStorage.
- *
- * @param order - The value retrieved from localStorage (string or array).
- * @returns An array of menu item names in pinned order.
- */
+
 const parseOrder = (order: unknown): string[] => {
     if (Array.isArray(order)) {
         return order;
@@ -48,18 +25,6 @@ const parseOrder = (order: unknown): string[] => {
     return [];
 };
 
-/**
- * Custom hook to manage the pinned state of a menu item.
- *
- * @param name - Unique string identifier for the menu item.
- * @returns An object containing:
- *   - isPinned: boolean | undefined - Whether the menu item is pinned.
- *   - pin: () => void - Function to pin the menu item.
- *   - unpin: () => void - Function to unpin the menu item.
- *
- * @sideEffect Updates localStorage when pinning/unpinning.
- * @note The pinned state and order are persisted in localStorage.
- */
 const usePinnedMenuItem = (name: string) => {
     const pinKey = createPinnedKey(name);
     const pinOrder = useLocalStorageValue(PINNED_ORDER_KEY);
@@ -85,38 +50,47 @@ const usePinnedMenuItem = (name: string) => {
     return { isPinned, pin, unpin };
 };
 
-/**
- * PinnableMenuItem component allows any menu item to be "pinned" by the user.
- * The pinned state is persisted in localStorage, making the menu item visually distinct and easily accessible.
- *
- * @param props - {@link PinnableMenuItemProps}
- * @returns JSX.Element - Renders the children and a pin/unpin icon.
- *
- * @example
- * <PinnableMenuItem name="dashboard">
- *   <MenuItem label="Dashboard" />
- * </PinnableMenuItem>
- *
- * @sideEffect Persists pinned state and order in localStorage.
- * @note The pin icon appears on hover and toggles the pinned state.
- */
-export const PinnableMenuItem = ({ name, children }: PinnableMenuItemProps) => {
-    const { isPinned, pin, unpin } = usePinnedMenuItem(name);
+export interface PinnableMenuItemProps {
+    menu: MenuConfig;
+}
 
-    return (
-        <div className="relative group/pin">
-            {children}
-            <div
-                className={`group-hover/pin:visible absolute right-sm top-1/2 -translate-y-1/2 cursor-pointer invisible`}
-            >
-                <Icon
-                    size={"sm"}
-                    label={isPinned ? "Unpin menu item" : "Pin menu item"}
-                    onClick={isPinned ? unpin : pin}
-                    icon={isPinned ? <UnPinIcon /> : <PinIcon />}
-                    className="fill-neutral-strong hover:fill-neutral-xstrong"
-                />
-            </div>
-        </div>
-    );
+export const PinnableMenuItem = ({ menu }: PinnableMenuItemProps) => {
+    const { isPinned, pin, unpin } = usePinnedMenuItem(menu.name);
+
+    const { element } = menu;
+
+    if (!element) {
+        return null;
+    }
+
+    if (!menu.pinnable) {
+        return element;
+    }
+
+    return React.cloneElement<any>(element, {
+        key: menu.parent + menu.name,
+        action: (
+            <Sidebar.Item.Action
+                element={isPinned ? <UnPinIcon /> : <PinIcon />}
+                onClick={isPinned ? unpin : pin}
+            />
+        )
+    });
+
+    // return (
+    //     <div className="relative group/pin">
+    //         {children}
+    //         <div
+    //             className={`group-hover/pin:visible absolute right-sm top-1/2 -translate-y-1/2 cursor-pointer invisible`}
+    //         >
+    //             <Icon
+    //                 size={"sm"}
+    //                 label={isPinned ? "Unpin menu item" : "Pin menu item"}
+    //                 onClick={isPinned ? unpin : pin}
+    //                 icon={isPinned ? <UnPinIcon /> : <PinIcon />}
+    //                 className="fill-neutral-strong hover:fill-neutral-xstrong"
+    //             />
+    //         </div>
+    //     </div>
+    // );
 };
