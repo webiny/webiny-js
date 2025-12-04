@@ -12,7 +12,7 @@ import { ReactComponent as DocsIcon } from "@webiny/icons/summarize.svg";
 import { ReactComponent as ApiPlaygroundIcon } from "@webiny/icons/swap_horiz.svg";
 import { ReactComponent as MoreVertIcon } from "@webiny/icons/more_vert.svg";
 import { ReactComponent as FileManagerIcon } from "@webiny/icons/insert_drive_file.svg";
-import { ReactComponent as StarRateIcon } from "@webiny/icons/star_rate.svg";
+import { ReactComponent as GridIcon } from "@webiny/icons/grid_4x4.svg";
 import { Sidebar } from "./Sidebar.js";
 import { SidebarProvider } from "~/Sidebar/components/SidebarProvider.js";
 import { DropdownMenu } from "~/DropdownMenu/index.js";
@@ -139,7 +139,7 @@ const SidebarComponent = () => {
                 >
                     <Sidebar.Item
                         text={"Vehicles"}
-                        icon={<Sidebar.Item.Icon label="Headless CMS" element={<StarRateIcon />} />}
+                        icon={<Sidebar.Item.Icon label="Headless CMS" element={<GridIcon />} />}
                         action={<Sidebar.Item.Action element={<MoreVertIcon />} />}
                     >
                         <Sidebar.Link
@@ -156,7 +156,7 @@ const SidebarComponent = () => {
                     </Sidebar.Item>{" "}
                     <Sidebar.Item
                         text={"Ungrouped"}
-                        icon={<Sidebar.Item.Icon label="Headless CMS" element={<StarRateIcon />} />}
+                        icon={<Sidebar.Item.Icon label="Headless CMS" element={<GridIcon />} />}
                         action={<Sidebar.Item.Action element={<MoreVertIcon />} />}
                     >
                         <Sidebar.Link

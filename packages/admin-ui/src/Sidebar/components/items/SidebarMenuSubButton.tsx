@@ -22,7 +22,8 @@ const variants = cva(
             variant: {
                 "group-label": [
                     "uppercase font-semibold text-neutral-muted! text-sm",
-                    "pt-md pb-xs-plus pointer-events-none"
+                    "pt-md pb-xs-plus pointer-events-none",
+                    "hover:bg-transparent! group-hover/menu-sub-button:bg-transparent! focus:bg-transparent! cursor-default!"
                 ]
             },
             disabled: {
