@@ -128,11 +128,6 @@ const SidebarMenuSubItem = ({ children, className, pinnable, action, ...buttonPr
         );
     }, [children, buttonProps, currentLevel, menuItemId, isSectionExpanded, toggleSectionExpanded, pinnable, pinAction]);
 
-    // If this item is pinned, don't render it in the regular menu
-    // It will be rendered in the pinned section at the top
-    if (pinnable && isPinned) {
-        return null;
-    }
 
     return (
         <li
