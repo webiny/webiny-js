@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useEffect} from "react";
 import { cn, makeDecoratable, withStaticProps } from "~/utils.js";
 import { SidebarMenuRootButton } from "./SidebarMenuRootButton.js";
 import { SidebarMenuItemIcon } from "./SidebarMenuItemIcon.js";
@@ -34,7 +34,7 @@ const SidebarMenuItemBase = ({ children, className, pinnable, action, ...buttonP
     const isPinned = sidebar.isItemPinned(menuItemId);
 
     // Register on mount if already pinned, unregister on unmount
-    React.useEffect(() => {
+    useEffect(() => {
         if (pinnable && isPinned) {
             sidebar.registerPinnedItem({
                 id: menuItemId,

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useEffect } from "react";
 import { cn } from "~/utils.js";
 import { Collapsible } from "radix-ui";
 import { SidebarMenuSubButton } from "./SidebarMenuSubButton.js";
@@ -40,7 +40,7 @@ const SidebarMenuSubItem = ({
     const isPinned = sidebar.isItemPinned(menuItemId);
 
     // Register on mount if already pinned, unregister on unmount
-    React.useEffect(() => {
+    useEffect(() => {
         if (pinnable && isPinned) {
             sidebar.registerPinnedItem({
                 id: menuItemId,
