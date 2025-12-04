@@ -1,9 +1,8 @@
 import React, { useMemo } from "react";
 import { useSidebar } from "~/Sidebar/index.js";
-import { SidebarMenuRootButton } from "./SidebarMenuRootButton.js";
+import { SidebarMenuRootItem } from "./SidebarMenuRootItem.js";
 import { SidebarMenuItemAction } from "./SidebarMenuItemAction.js";
 import { ReactComponent as UnPinIcon } from "@webiny/icons/push_pin_off.svg";
-import { cn } from "~/utils.js";
 
 const SidebarMenuPinnedItems = () => {
     const sidebar = useSidebar();
@@ -18,7 +17,7 @@ const SidebarMenuPinnedItems = () => {
 
     return (
         <>
-            {pinnedItems.map((item) => {
+            {pinnedItems.map(item => {
                 const handleUnpin = (e: React.MouseEvent) => {
                     e.stopPropagation();
                     e.preventDefault();
@@ -34,25 +33,15 @@ const SidebarMenuPinnedItems = () => {
                 );
 
                 return (
-                    <li
+                    <SidebarMenuRootItem
                         key={item.id}
-                        data-sidebar="menu-item"
-                        data-pinned="true"
-                        className={cn(
-                            "group/menu-item relative px-xs-plus",
-                            "group-data-[state=collapsed]:[&:has([data-active=true])_[data-sidebar=menu-button]_svg]:fill-neutral-xstrong!",
-                            "group-data-[state=collapsed]:[&:has([data-active=true])_[data-sidebar=menu-button]]:bg-neutral-dark/5!"
-                        )}
-                    >
-                        <SidebarMenuRootButton
-                            text={item.text}
-                            icon={item.icon}
-                            to={item.to}
-                            onClick={item.onClick}
-                            active={item.active}
-                            action={unpinAction}
-                        />
-                    </li>
+                        text={item.text}
+                        icon={item.icon}
+                        to={item.to}
+                        onClick={item.onClick}
+                        active={item.active}
+                        action={unpinAction}
+                    />
                 );
             })}
             <li className="px-sm py-xs">
@@ -63,4 +52,3 @@ const SidebarMenuPinnedItems = () => {
 };
 
 export { SidebarMenuPinnedItems };
-

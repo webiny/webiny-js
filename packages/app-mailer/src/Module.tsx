@@ -54,8 +54,13 @@ const MailerSettings = () => {
                 <Menu
                     name={"mailer.settings.general"}
                     parent={"settings"}
-                    pinnable={true}
-                    element={<Menu.Link text={"Settings"} to={router.getLink(Routes.Settings)} />}
+                    element={
+                        <Menu.Link
+                            text={"Settings"}
+                            to={router.getLink(Routes.Settings)}
+                            pinnable={true}
+                        />
+                    }
                 />
             </HasPermission>
         </AdminConfig>
