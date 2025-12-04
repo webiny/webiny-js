@@ -20,12 +20,14 @@ const SidebarMenuSubItem = ({
     action,
     ...buttonProps
 }: SidebarMenuItemProps) => {
-    const { currentLevel } = useSidebarMenu();
+    const { currentLevel, parentIcon } = useSidebarMenu();
     const sidebar = useSidebar();
 
     const menuItemId = useMemo(() => {
         return btoa(`sidebar-item-${currentLevel}-${buttonProps.text}`);
     }, [buttonProps.text, currentLevel]);
+
+    const effectiveIcon = buttonProps.icon || parentIcon;
 
     const isSectionExpanded = useMemo(() => {
         return sidebar.isSectionExpanded(menuItemId);
@@ -43,7 +45,7 @@ const SidebarMenuSubItem = ({
             sidebar.registerPinnedItem({
                 id: menuItemId,
                 text: buttonProps.text,
-                icon: buttonProps.icon,
+                icon: effectiveIcon,
                 to: buttonProps.to,
                 onClick: buttonProps.onClick,
                 active: buttonProps.active
@@ -72,7 +74,7 @@ const SidebarMenuSubItem = ({
                 sidebar.registerPinnedItem({
                     id: menuItemId,
                     text: buttonProps.text,
-                    icon: buttonProps.icon,
+                    icon: effectiveIcon,
                     to: buttonProps.to,
                     onClick: buttonProps.onClick,
                     active: buttonProps.active
@@ -161,7 +163,7 @@ const SidebarMenuSubItem = ({
                     </Collapsible.Trigger>
                 </div>
                 <Collapsible.Content>
-                    <SidebarMenuSub>{children}</SidebarMenuSub>
+                    <SidebarMenuSub parentIcon={buttonProps.icon}>{children}</SidebarMenuSub>
                 </Collapsible.Content>
             </Collapsible.Root>
         );

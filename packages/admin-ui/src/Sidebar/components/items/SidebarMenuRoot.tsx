@@ -9,7 +9,7 @@ interface SidebarMenuProps {
 const SidebarMenuRoot = ({ children, ...props }: SidebarMenuProps) => (
     <SidebarMenuProvider>
         <ul data-sidebar="menu" className={"flex w-full min-w-0 flex-col gap-y-xs"} {...props}>
-            <SidebarMenuPinnedItems>{children}</SidebarMenuPinnedItems>
+            <SidebarMenuPinnedItems/>
             {children}
         </ul>
     </SidebarMenuProvider>

@@ -5,11 +5,7 @@ import { SidebarMenuItemAction } from "./SidebarMenuItemAction.js";
 import { ReactComponent as UnPinIcon } from "@webiny/icons/push_pin_off.svg";
 import { cn } from "~/utils.js";
 
-interface SidebarMenuPinnedItemsProps {
-    children: React.ReactNode;
-}
-
-const SidebarMenuPinnedItems: React.FC<SidebarMenuPinnedItemsProps> = ({ children }) => {
+const SidebarMenuPinnedItems = () => {
     const sidebar = useSidebar();
 
     const pinnedItems = useMemo(() => {

@@ -14,12 +14,14 @@ import { useSidebarMenu } from "~/Sidebar/components/items/SidebarMenuProvider.j
 import { useSidebar } from "~/Sidebar/index.js";
 
 const SidebarMenuItemBase = ({ children, className, pinnable, action, ...buttonProps }: SidebarMenuItemProps) => {
-    const { currentLevel } = useSidebarMenu();
+    const { currentLevel, parentIcon } = useSidebarMenu();
     const sidebar = useSidebar();
 
     const menuItemId = useMemo(() => {
         return btoa(`sidebar-item-${currentLevel}-${buttonProps.text}`);
     }, [buttonProps.text, currentLevel]);
+
+    const effectiveIcon = buttonProps.icon || parentIcon;
 
     const isSectionExpanded = useMemo(() => {
         return sidebar.isSectionExpanded(menuItemId);
@@ -37,7 +39,7 @@ const SidebarMenuItemBase = ({ children, className, pinnable, action, ...buttonP
             sidebar.registerPinnedItem({
                 id: menuItemId,
                 text: buttonProps.text,
-                icon: buttonProps.icon,
+                icon: effectiveIcon,
                 to: buttonProps.to,
                 onClick: buttonProps.onClick,
                 active: buttonProps.active
@@ -66,7 +68,7 @@ const SidebarMenuItemBase = ({ children, className, pinnable, action, ...buttonP
                 sidebar.registerPinnedItem({
                     id: menuItemId,
                     text: buttonProps.text,
-                    icon: buttonProps.icon,
+                    icon: effectiveIcon,
                     to: buttonProps.to,
                     onClick: buttonProps.onClick,
                     active: buttonProps.active
@@ -133,7 +135,7 @@ const SidebarMenuItemBase = ({ children, className, pinnable, action, ...buttonP
                     <SidebarMenuRootButton {...buttonProps} action={collapsibleAction} />
                 </Collapsible.Trigger>
                 <Collapsible.Content forceMount className={"hidden data-[state=open]:block!"}>
-                    <SidebarMenuSub>{children}</SidebarMenuSub>
+                    <SidebarMenuSub parentIcon={buttonProps.icon}>{children}</SidebarMenuSub>
                 </Collapsible.Content>
             </Collapsible.Root>
         );
