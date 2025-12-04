@@ -28,7 +28,6 @@ export const SidebarMenuItems = (props: MenusProps) => {
         return menuTags.length === 0;
     });
 
-    console.log('where', where, filteredMenus);
     return filteredMenus.map(m => {
         if (!React.isValidElement(m.element)) {
             return null;
@@ -49,7 +48,6 @@ export const SidebarMenuItems = (props: MenusProps) => {
             props.pinnable = true;
         }
 
-        console.log('(m.element', m.element, props);
         return React.cloneElement(m.element, props);
     });
 };
