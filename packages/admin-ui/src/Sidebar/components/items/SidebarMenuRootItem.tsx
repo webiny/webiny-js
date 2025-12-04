@@ -31,6 +31,26 @@ const SidebarMenuItemBase = ({ children, className, pinnable, action, ...buttonP
 
     const isPinned = sidebar.isItemPinned(menuItemId);
 
+    // Register/unregister pinned item when component mounts/unmounts or when data changes
+    React.useEffect(() => {
+        if (pinnable && isPinned) {
+            sidebar.registerPinnedItem({
+                id: menuItemId,
+                text: buttonProps.text,
+                icon: buttonProps.icon,
+                to: buttonProps.to,
+                onClick: buttonProps.onClick,
+                active: buttonProps.active
+            });
+        }
+
+        return () => {
+            if (pinnable) {
+                sidebar.unregisterPinnedItem(menuItemId);
+            }
+        };
+    }, [pinnable, isPinned, menuItemId, buttonProps.text, buttonProps.icon, buttonProps.to, buttonProps.onClick, buttonProps.active]);
+
     const pinAction = useMemo(() => {
         if (!pinnable) {
             return action;

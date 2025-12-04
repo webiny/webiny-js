@@ -26,6 +26,7 @@ export const AuditLogs = () => {
                 <HasPermission any={["al.*"]}>
                     <Menu
                         name="auditLogs"
+                        pinnable
                         element={
                             <Menu.Link
                                 text={"Audit Logs"}
