@@ -1,6 +1,5 @@
 import React from "react";
 import { DialogsProvider, makeDecoratable } from "@webiny/app-admin";
-import { AcoWithConfig } from "@webiny/app-aco";
 import { Table as CmsAcoTable } from "./Table/index.js";
 import { useModel } from "~/admin/components/ModelProvider/index.js";
 import {

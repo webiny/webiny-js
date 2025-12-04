@@ -36,7 +36,9 @@ export function useRedirectListConfig() {
                 bulkActions: [...(browser.bulkActions || [])],
                 filters: [...(browser.filters || [])],
                 filtersToWhere: [...(browser.filtersToWhere || [])],
-                ...acoConfig
+                table: acoConfig.table,
+                folder: acoConfig.folder,
+                redirect: acoConfig.record
             }
         }),
         [config]

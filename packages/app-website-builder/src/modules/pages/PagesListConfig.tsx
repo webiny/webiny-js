@@ -1,5 +1,5 @@
 import React from "react";
-import { PageListConfig } from "./configs/list/index.js";
+import { InternalPageListConfig } from "./configs/list/index.js";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import {
     CellActions,
@@ -24,13 +24,13 @@ import {
 import { FilterByStatus } from "~/modules/pages/PagesList/components/Filters/index.js";
 import { StaticPageForm } from "~/modules/pages/PagesList/components/Main/CreatePage/StaticPageForm.js";
 
-const { Browser } = PageListConfig;
+const { Browser } = InternalPageListConfig;
 
 export const PagesListConfig = () => {
     return (
         <>
-            <PageListConfig>
-                <PageListConfig.PageType
+            <InternalPageListConfig>
+                <InternalPageListConfig.PageType
                     name={"static"}
                     label={"Static Page"}
                     element={<StaticPageForm />}
@@ -80,7 +80,7 @@ export const PagesListConfig = () => {
                     hideable={false}
                     className={"text-right"}
                 />
-            </PageListConfig>
+            </InternalPageListConfig>
         </>
     );
 };

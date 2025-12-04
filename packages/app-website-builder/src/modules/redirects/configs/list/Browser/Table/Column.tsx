@@ -16,11 +16,7 @@ export type { ColumnConfig };
 type ColumnProps = React.ComponentProps<typeof AcoConfig.Table.Column>;
 
 const BaseColumnComponent = (props: ColumnProps) => {
-    return (
-        <AcoConfig priority={"secondary"}>
-            <Table.Column {...props} />
-        </AcoConfig>
-    );
+    return <Table.Column {...props} />;
 };
 
 const BaseColumn = makeDecoratable("Column", BaseColumnComponent);

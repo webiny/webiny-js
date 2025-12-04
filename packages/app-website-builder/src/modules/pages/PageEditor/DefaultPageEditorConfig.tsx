@@ -20,7 +20,6 @@ export const DefaultPageEditorConfig = () => {
             <Ui.TopBar.Element
                 group={"left"}
                 name={"autoSave"}
-                after={"title"}
                 element={<PageAutoSave />}
             />
         </PageEditorConfig>

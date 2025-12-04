@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { AcoWithConfig } from "@webiny/app-aco";
 import type {
     ITrashBinDeleteItemGateway,
     ITrashBinListGateway,

@@ -1,7 +1,7 @@
 import React from "react";
 import {
     ContentEntryEditorConfig,
-    ContentEntryListConfig
+    InternalContentEntryListConfig
 } from "~/admin/config/contentEntries/index.js";
 
 import {
@@ -42,13 +42,13 @@ import { cmsLegacyEntryEditor } from "~/utils/cmsLegacyEntryEditor.js";
 import { ScheduleEntryMenuItem } from "~/admin/components/ContentEntries/Scheduler/actions/ScheduleEntryAction.js";
 import { AdvancedSearchConfigs } from "@webiny/app-aco/components/AdvancedSearch/AdvancedSearchConfigs";
 
-const { Browser } = ContentEntryListConfig;
+const { Browser } = InternalContentEntryListConfig;
 const { Actions } = ContentEntryEditorConfig;
 
 export const ContentEntriesModule = () => {
     return (
         <>
-            <ContentEntryListConfig>
+            <InternalContentEntryListConfig>
                 <AdvancedSearchConfigs />
                 <Browser.Filter name={"status"} element={<FilterByStatus />} />
                 <Browser.BulkAction name={"publish"} element={<ActionPublish />} />
@@ -111,7 +111,7 @@ export const ContentEntriesModule = () => {
                     element={<Ref />}
                     type={Browser.AdvancedSearch.FieldRenderer.FieldType.REF}
                 />
-            </ContentEntryListConfig>
+            </InternalContentEntryListConfig>
             <ContentEntryEditorConfig>
                 <ShowConfirmationOnPublish />
                 <ShowConfirmationOnUnpublish />

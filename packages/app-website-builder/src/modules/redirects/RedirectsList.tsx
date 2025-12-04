@@ -6,7 +6,7 @@ import {
     CompositionScope,
     DialogsProvider
 } from "@webiny/app-admin";
-import { AcoWithConfig, NavigateFolderProvider } from "@webiny/app-aco";
+import { NavigateFolderProvider } from "@webiny/app-aco";
 import { FoldersProvider } from "@webiny/app-aco/contexts/folders.js";
 import { DocumentList } from "./RedirectsList/DocumentList.js";
 import { WB_REDIRECT_LATEST_VISITED_FOLDER, WB_REDIRECTS_APP } from "~/constants.js";
@@ -28,19 +28,17 @@ export const RedirectsList = () => {
         <CompositionScope name={"wbRedirect"}>
             <AdminLayout title={"Redirects - Website Builder"}>
                 <RedirectListWithConfig>
-                    <AcoWithConfig>
-                        <FoldersProvider type={WB_REDIRECTS_APP}>
-                            <NavigateFolderProvider
-                                folderId={route.params.folderId}
-                                navigateToFolder={navigateToFolder}
-                                createStorageKey={createStorageKey}
-                            >
-                                <DialogsProvider>
-                                    <DocumentList />
-                                </DialogsProvider>
-                            </NavigateFolderProvider>
-                        </FoldersProvider>
-                    </AcoWithConfig>
+                    <FoldersProvider type={WB_REDIRECTS_APP}>
+                        <NavigateFolderProvider
+                            folderId={route.params.folderId}
+                            navigateToFolder={navigateToFolder}
+                            createStorageKey={createStorageKey}
+                        >
+                            <DialogsProvider>
+                                <DocumentList />
+                            </DialogsProvider>
+                        </NavigateFolderProvider>
+                    </FoldersProvider>
                 </RedirectListWithConfig>
             </AdminLayout>
         </CompositionScope>

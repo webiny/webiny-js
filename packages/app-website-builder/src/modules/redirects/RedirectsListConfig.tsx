@@ -28,9 +28,9 @@ export const RedirectsListConfig = () => {
                 <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
                 <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
                 <Browser.Folder.Action name={"delete"} element={<DeleteFolder />} />
-                <Browser.Record.Action name={"edit"} element={<Edit />} />
-                <Browser.Record.Action name={"moveToFolder"} element={<Move />} />
-                <Browser.Record.Action name={"delete"} element={<Delete />} />
+                <Browser.Redirect.Action name={"edit"} element={<Edit />} />
+                <Browser.Redirect.Action name={"moveToFolder"} element={<Move />} />
+                <Browser.Redirect.Action name={"delete"} element={<Delete />} />
                 <Browser.BulkAction name={"moveRedirects"} element={<BulkActionMove />} />
                 <Browser.BulkAction name={"deleteRedirects"} element={<BulkActionDelete />} />
                 <Browser.Table.Column

@@ -8,11 +8,7 @@ export type { FolderActionConfig };
 type FolderActionProps = React.ComponentProps<typeof AcoConfig.Folder.Action>;
 
 const BaseFolderAction = (props: FolderActionProps) => {
-    return (
-        <AcoConfig priority={"secondary"}>
-            <Folder.Action {...props} />
-        </AcoConfig>
-    );
+    return <Folder.Action {...props} />;
 };
 
 export const FolderAction = Object.assign(BaseFolderAction, {

@@ -26,7 +26,7 @@ const DefaultCellActions = () => {
 
     return (
         <RedirectProvider redirect={row.data as RedirectDto}>
-            <OptionsMenu actions={browser.record.actions} />
+            <OptionsMenu actions={browser.redirect.actions} />
         </RedirectProvider>
     );
 };

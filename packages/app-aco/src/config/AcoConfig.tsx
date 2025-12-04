@@ -18,7 +18,6 @@ export type { SortingConfig as TableSortingConfig } from "./table/Sorting.js";
 const base = createConfigurableComponent<AcoConfig>("Aco");
 
 export const AcoConfig = Object.assign(base.Config, { AdvancedSearch, Folder, Record, Table });
-export const AcoWithConfig = base.WithConfig;
 
 export interface AcoConfig {
     advancedSearch: AdvancedSearchConfig;

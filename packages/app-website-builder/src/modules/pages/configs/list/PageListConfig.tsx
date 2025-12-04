@@ -7,7 +7,7 @@ import { type AcoConfig, useAcoConfig } from "@webiny/app-aco";
 
 const base = createConfigurableComponent<PageListConfig>("WbPageList");
 
-const ScopedPageListConfig = ({ children }: { children: React.ReactNode }) => {
+const ScopedPublicPageListConfig = ({ children }: { children: React.ReactNode }) => {
     return (
         <CompositionScope name={"wbPage"} inherit={true}>
             <base.Config priority={"secondary"}>{children}</base.Config>
@@ -15,9 +15,23 @@ const ScopedPageListConfig = ({ children }: { children: React.ReactNode }) => {
     );
 };
 
-ScopedPageListConfig.displayName = "WbPageListConfig";
+ScopedPublicPageListConfig.displayName = "WbPageListConfig";
 
-export const PageListConfig = Object.assign(ScopedPageListConfig, { Browser, PageType });
+const ScopedInternalPageListConfig = ({ children }: { children: React.ReactNode }) => {
+    return (
+        <CompositionScope name={"wbPage"} inherit={true}>
+            <base.Config priority={"primary"}>{children}</base.Config>
+        </CompositionScope>
+    );
+};
+
+ScopedInternalPageListConfig.displayName = "WbPageListConfig";
+
+export const PageListConfig = Object.assign(ScopedPublicPageListConfig, { Browser, PageType });
+export const InternalPageListConfig = Object.assign(ScopedInternalPageListConfig, {
+    Browser,
+    PageType
+});
 export const PageListWithConfig = base.WithConfig;
 
 interface PageListConfig extends AcoConfig {
