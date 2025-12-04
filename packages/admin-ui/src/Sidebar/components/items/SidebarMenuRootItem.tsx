@@ -46,7 +46,7 @@ const SidebarMenuItemBase = ({ children, className, pinnable, action, ...buttonP
             <SidebarMenuItemAction
                 element={isPinned ? <UnPinIcon /> : <PinIcon />}
                 onClick={handlePinClick}
-                hideOnCollapsed={true}
+                showOnHover={true}
             />
         );
 
@@ -54,7 +54,7 @@ const SidebarMenuItemBase = ({ children, className, pinnable, action, ...buttonP
         if (action) {
             // Clone the custom action to ensure it also has the hover behavior
             const clonedAction = React.isValidElement(action)
-                ? React.cloneElement(action as React.ReactElement<any>, { hideOnCollapsed: true })
+                ? React.cloneElement(action as React.ReactElement<any>, { showOnHover: true })
                 : action;
 
             return (

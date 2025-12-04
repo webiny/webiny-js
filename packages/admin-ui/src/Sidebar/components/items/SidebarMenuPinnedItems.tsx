@@ -98,7 +98,7 @@ const SidebarMenuPinnedItems: React.FC<SidebarMenuPinnedItemsProps> = ({ childre
                     <SidebarMenuItemAction
                         element={<UnPinIcon />}
                         onClick={handleUnpin}
-                        hideOnCollapsed={true}
+                        showOnHover={true}
                     />
                 );
 

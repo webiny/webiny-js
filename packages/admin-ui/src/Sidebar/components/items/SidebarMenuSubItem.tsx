@@ -52,14 +52,14 @@ const SidebarMenuSubItem = ({
             <SidebarMenuItemAction
                 element={isPinned ? <UnPinIcon /> : <PinIcon />}
                 onClick={handlePinClick}
-                hideOnCollapsed={true}
+                showOnHover={true}
             />
         );
 
         // If there's a custom action, combine them
         if (action) {
             const clonedAction = React.isValidElement(action)
-                ? React.cloneElement(action as React.ReactElement<any>, { hideOnCollapsed: true })
+                ? React.cloneElement(action as React.ReactElement<any>, { showOnHover: true })
                 : action;
 
             return (

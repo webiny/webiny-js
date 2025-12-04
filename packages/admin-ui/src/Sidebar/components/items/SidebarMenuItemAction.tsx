@@ -4,10 +4,10 @@ import { IconButton, type IconButtonProps } from "~/Button/IconButton.js";
 
 interface SidebarMenuItemActionProps extends Omit<IconButtonProps, "icon"> {
     element?: React.ReactNode;
-    hideOnCollapsed?: boolean;
+    showOnHover?: boolean;
 }
 
-const SidebarMenuItemAction = ({ element, hideOnCollapsed = false, className, ...props }: SidebarMenuItemActionProps) => {
+const SidebarMenuItemAction = ({ element, showOnHover = false, className, ...props }: SidebarMenuItemActionProps) => {
     return (
         <IconButton
             icon={element}
@@ -15,8 +15,12 @@ const SidebarMenuItemAction = ({ element, hideOnCollapsed = false, className, ..
             variant={"ghost"}
             className={cn(
                 "ml-auto",
-                hideOnCollapsed && "group-data-[state=collapsed]:hidden",
-                "opacity-0 group-hover/menu-root-button:opacity-100 transition-opacity",
+                "group-data-[state=collapsed]:hidden",
+                showOnHover && [
+                    "opacity-0",
+                    "group-hover/menu-root-button:opacity-100",
+                    "group-hover/menu-sub-button:opacity-100"
+                ],
                 className
             )}
             {...props}
