@@ -57,15 +57,12 @@ const SidebarMenuSubItem = ({
         );
 
         // If there's a custom action, combine them
+        // Don't modify the custom action - it should keep its original behavior
         if (action) {
-            const clonedAction = React.isValidElement(action)
-                ? React.cloneElement(action as React.ReactElement<any>, { showOnHover: true })
-                : action;
-
             return (
                 <div className="flex items-center gap-xs">
-                    {clonedAction}
                     {pinButton}
+                    {action}
                 </div>
             );
         }
