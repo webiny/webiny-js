@@ -1,7 +1,6 @@
 import React from "react";
-import { Button, Card, Icon, Link } from "@webiny/admin-ui";
+import { Card, Widget } from "@webiny/admin-ui";
 import { ReactComponent as ReviewRequestsIcon } from "@webiny/icons/reviews.svg";
-import { ReactComponent as AddIcon } from "@webiny/icons/add.svg";
 import { observer } from "mobx-react-lite";
 import { useWorkflowStatesWidget } from "../hooks/useWorkflowStatesWidget.js";
 import { WorkflowStatesWidgetCardTabs } from "./WorkflowStatesWidgetCardTabs.js";
@@ -53,7 +52,9 @@ export const WorkflowStateWidgetCard = observer(({ title }: IWorkflowStateWidget
             {presenter.vm.showRejectSuccessDialog ? (
                 <RejectSuccessDialog state={presenter.vm.showRejectSuccessDialog} />
             ) : null}
-            <Card
+            <Widget
+                variant={"base"}
+                outline={true}
                 icon={
                     <Card.Icon
                         icon={<ReviewRequestsIcon />}
@@ -62,27 +63,21 @@ export const WorkflowStateWidgetCard = observer(({ title }: IWorkflowStateWidget
                     />
                 }
                 title={title}
-                actions={
-                    <Link
-                        to={router.getLink(Routes.Workflows.ContentReviews, {
-                            type: presenter.vm.type
-                        })}
+                headerActions={
+                    <Widget.Action
+                        onClick={() => {
+                            router.goToRoute(Routes.Workflows.ContentReviews, {
+                                type: presenter.vm.type
+                            });
+                        }}
                     >
-                        <Button
-                            variant={"ghost"}
-                            size={"sm"}
-                            icon={<Icon icon={<AddIcon />} label={"View All"} />}
-                        >
-                            View All
-                        </Button>
-                    </Link>
+                        View All
+                    </Widget.Action>
                 }
-                actionsPosition={"header"}
                 bodyPadding={false}
-                elevation="small"
             >
                 <WorkflowStatesWidgetCardTabs presenter={presenter} />
-            </Card>
+            </Widget>
         </>
     );
 });

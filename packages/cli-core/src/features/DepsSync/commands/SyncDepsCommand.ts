@@ -1,10 +1,10 @@
 import { createImplementation } from "@webiny/di";
-import { Command, GetProjectSdkService, UiService } from "~/abstractions/index.js";
+import { CliCommand, GetProjectSdkService, UiService } from "~/abstractions/index.js";
 
 import { createDependencyTree } from "../createDependencyTree.js";
 import { createReferenceFile } from "../createReferenceFile.js";
 
-export class SyncDepsCommand implements Command.Interface<unknown> {
+export class SyncDepsCommand implements CliCommand.Interface<unknown> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private uiService: UiService.Interface
@@ -28,7 +28,7 @@ export class SyncDepsCommand implements Command.Interface<unknown> {
 }
 
 export const syncDepsCommand = createImplementation({
-    abstraction: Command,
+    abstraction: CliCommand,
     implementation: SyncDepsCommand,
     dependencies: [GetProjectSdkService, UiService]
 });

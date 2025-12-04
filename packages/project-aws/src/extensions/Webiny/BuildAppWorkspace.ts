@@ -18,7 +18,7 @@ class BuildAppWorkspaceImpl implements BuildAppWorkspaceService.Interface {
         params: BuildAppWorkspaceService.Params,
         options: BuildAppWorkspaceService.Options = {}
     ) {
-        await this.decoratee.execute(params);
+        await this.decoratee.execute(params, options);
 
         const app = this.getApp.execute(params.app);
 
@@ -32,7 +32,7 @@ class BuildAppWorkspaceImpl implements BuildAppWorkspaceService.Interface {
             }
         }
 
-        this.logger.debug({ appName: params.app }, "Building app workspace...");
+        this.logger.info({ params, options }, "Building app workspace (project-aws)...");
 
         const templatesFolderPath = getTemplatesFolderPath();
         const appWorkspaceFolderPath = app.paths.workspaceFolder.toString();
@@ -40,6 +40,8 @@ class BuildAppWorkspaceImpl implements BuildAppWorkspaceService.Interface {
 
         // 4. Create app.
         fs.cpSync(appTemplateFolderPath, appWorkspaceFolderPath, { recursive: true });
+
+        this.logger.info("App workspace built successfully (project-aws).");
     }
 }
 

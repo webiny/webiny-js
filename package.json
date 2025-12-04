@@ -64,8 +64,8 @@
     "@types/node": "^22.18.6",
     "@types/react": "18.2.79",
     "@types/react-dom": "18.2.25",
-    "@typescript-eslint/eslint-plugin": "^8.46.4",
-    "@typescript-eslint/parser": "^8.46.4",
+    "@typescript-eslint/eslint-plugin": "8.48.0",
+    "@typescript-eslint/parser": "8.48.0",
     "@vitest/coverage-v8": "^3.2.4",
     "@vitest/eslint-plugin": "^1.4.2",
     "adio": "^2.0.1",
@@ -259,7 +259,7 @@
   "packageManager": "yarn@4.10.2",
   "dependencies": {
     "@types/hoist-non-react-statics": "^3.3.7",
-    "@webiny/di": "^0.2.0"
+    "@webiny/di": "^0.2.1"
   },
   "engines": {
     "node": ">=22.0.0"

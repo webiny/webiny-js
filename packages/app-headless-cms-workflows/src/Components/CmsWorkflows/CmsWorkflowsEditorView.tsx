@@ -2,13 +2,18 @@ import React, { useCallback, useMemo } from "react";
 import { AdminConfig, useRoute, useRouter } from "@webiny/app-admin";
 import { Routes } from "~/routes.js";
 import type { IWorkflowApplication } from "@webiny/app-workflows";
-import { WorkflowsAdmin } from "@webiny/app-workflows";
+import { Components } from "@webiny/app-workflows";
 import { Icon, Loader } from "@webiny/admin-ui";
 import { useModels, usePermission } from "@webiny/app-headless-cms/admin/hooks/index.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { createAppName } from "~/utils/appName.js";
+
+const {
+    Admin: { WorkflowsEditor },
+    Permissions: { HasWorkflowsEditorPermission }
+} = Components;
 
 const { Menu } = AdminConfig;
 
@@ -21,14 +26,19 @@ export const CmsWorkflowsEditorMenu = () => {
     }
 
     return (
-        <Menu
-            name={"headlessCMS.contentModels.workflows"}
-            pinnable={true}
-            parent={"headlessCMS"}
-            element={
-                <Menu.Link text={"Workflows"} to={router.getLink(Routes.ContentModels.Workflows)} />
-            }
-        />
+        <HasWorkflowsEditorPermission>
+            <Menu
+                name={"headlessCMS.contentModels.workflows"}
+                pinnable={true}
+                parent={"headlessCMS"}
+                element={
+                    <Menu.Link
+                        text={"Workflows"}
+                        to={router.getLink(Routes.ContentModels.Workflows)}
+                    />
+                }
+            />
+        </HasWorkflowsEditorPermission>
     );
 };
 
@@ -68,6 +78,13 @@ export const CmsWorkflowsEditorView = () => {
             });
     }, [models, canEdit]);
 
+    const app = useMemo(() => {
+        if (!route.params.app) {
+            return apps.find(() => true);
+        }
+        return apps.find(a => a.id === route.params.app) || null;
+    }, [route.params.app]);
+
     const onAppClick = useCallback(
         (id: string) => {
             goToRoute(Routes.ContentModels.Workflows, {
@@ -83,5 +100,5 @@ export const CmsWorkflowsEditorView = () => {
         return <Loader size="lg" variant="accent" indeterminate={true} text="Loading..." />;
     }
 
-    return <WorkflowsAdmin apps={apps} onAppClick={onAppClick} app={route.params.app} />;
+    return <WorkflowsEditor apps={apps} onAppClick={onAppClick} app={app?.id} />;
 };

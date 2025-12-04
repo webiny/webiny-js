@@ -1,8 +1,10 @@
 import { createImplementation } from "@webiny/di";
 import {
-    Command,
+    CliCommand,
     CommandsRegistryService,
+    GetArgvService,
     GetCliRunnerService,
+    GlobalOptionsRegistryService,
     GetProjectSdkService,
     UiService
 } from "~/abstractions/index.js";
@@ -17,8 +19,10 @@ const { blue, bgYellow, bold } = chalk;
 export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface {
     constructor(
         private readonly commandsRegistryService: CommandsRegistryService.Interface,
+        private readonly globalOptionsRegistryService: GlobalOptionsRegistryService.Interface,
         private readonly uiService: UiService.Interface,
-        private readonly getProjectSdkService: GetProjectSdkService.Interface
+        private readonly getProjectSdkService: GetProjectSdkService.Interface,
+        private readonly getArgvService: GetArgvService.Interface
     ) {}
 
     private yargsRunner: Argv | null = null;
@@ -42,72 +46,86 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                     "https://www.webiny.com/docs"
                 )}.`
             )
-            .epilogue(`Want to contribute? ${blue("https://github.com/webiny/webiny-js")}.`)
-            .fail((invalidParamsMessage, error) => {
-                if (invalidParamsMessage) {
-                    if (invalidParamsMessage.includes("Not enough non-option arguments")) {
-                        ui.newLine();
-                        ui.error("Command was not invoked as expected.");
-                        ui.info(
-                            `Some non-optional arguments are missing. See the usage examples printed below.`
-                        );
-                        ui.newLine();
-                        yargsRunner.showHelp();
-                        process.exit(1);
-                    }
+            .epilogue(`Want to contribute? ${blue("https://github.com/webiny/webiny-js")}.`);
 
-                    if (invalidParamsMessage.includes("Missing required argument")) {
-                        const args = invalidParamsMessage
-                            .split(":")[1]
-                            .split(",")
-                            .map(v => v.trim());
+        // Register global options.
+        const globalOptions = this.globalOptionsRegistryService.execute();
+        for (const globalOption of globalOptions) {
+            const { name, config } = await globalOption.execute();
+            yargsRunner.option(name, {
+                type: config.type,
+                default: config.default,
+                desc: config.description,
+                alias: config.alias,
+                choices: config.choices,
+                global: true
+            });
+        }
 
-                        ui.newLine();
-                        ui.error("Command was not invoked as expected.");
-                        ui.info(
-                            `Missing required argument(s): ${args.join(
-                                ", "
-                            )}. See the usage examples printed below.`
-                        );
-                        ui.newLine();
-                        yargsRunner.showHelp();
-                        process.exit(1);
-                    }
-
+        yargsRunner.fail((invalidParamsMessage, error) => {
+            if (invalidParamsMessage) {
+                if (invalidParamsMessage.includes("Not enough non-option arguments")) {
                     ui.newLine();
-                    ui.error(invalidParamsMessage);
-
+                    ui.error("Command was not invoked as expected.");
+                    ui.info(
+                        `Some non-optional arguments are missing. See the usage examples printed below.`
+                    );
+                    ui.newLine();
+                    yargsRunner.showHelp();
                     process.exit(1);
                 }
 
-                const logger = projectSdk.getLogger();
-                logger.error({ err: error }, "CLI command execution failed.");
+                if (invalidParamsMessage.includes("Missing required argument")) {
+                    const args = invalidParamsMessage
+                        .split(":")[1]
+                        .split(",")
+                        .map(v => v.trim());
 
-                const realError = (error.cause as Error) || error;
-
-                if (realError instanceof ManuallyReportedError) {
-                    // Do nothing as the error reporting has already been
-                    // handled within the invoked CLI command.
-                } else {
-                    ui.error(realError.message);
-                }
-
-                // Unfortunately, yargs doesn't provide passed args here, so we had to do it via process.argv.
-                const debugEnabled = process.argv.includes("--debug");
-                if (debugEnabled) {
                     ui.newLine();
-                    ui.debug("Stack trace:");
-                    ui.text(realError.stack || "");
+                    ui.error("Command was not invoked as expected.");
+                    ui.info(
+                        `Missing required argument(s): ${args.join(
+                            ", "
+                        )}. See the usage examples printed below.`
+                    );
+                    ui.newLine();
+                    yargsRunner.showHelp();
+                    process.exit(1);
                 }
 
-                if (error instanceof GracefulError) {
-                    ui.newLine();
-                    ui.text(bgYellow(bold("💡 How can I resolve this?")));
-                    ui.text(error.message);
-                }
+                ui.newLine();
+                ui.error(invalidParamsMessage);
 
                 process.exit(1);
-            });
+            }
+
+            const logger = projectSdk.getLogger();
+            logger.error({ err: error }, "CLI command execution failed.");
+
+            const realError = (error.cause as Error) || error;
+
+            if (realError instanceof ManuallyReportedError) {
+                // Do nothing as the error reporting has already been
+                // handled within the invoked CLI command.
+            } else {
+                ui.error(realError.message);
+            }
+
+            const argv = this.getArgvService.execute();
+            if (argv.showStackTrace && realError.stack) {
+                ui.newLine();
+                ui.debug("Stack trace:");
+                ui.text(realError.stack);
+            }
+
+            if (error instanceof GracefulError) {
+                ui.newLine();
+                ui.text(bgYellow(bold("💡 How can I resolve this?")));
+                ui.text(error.message);
+            }
+
+            process.exit(1);
+        });
 
         const commands = this.commandsRegistryService.execute();
 
@@ -136,7 +154,7 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                 yargsCommand,
                 description,
                 yargs => {
-                    params.forEach((param: Command.ParamDefinition<unknown>) => {
+                    params.forEach((param: CliCommand.ParamDefinition<unknown>) => {
                         const { name, required, validation, array, ...rest } = param;
 
                         const yargsParam = yargs.positional(name, {
@@ -150,7 +168,7 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
                         }
                     });
 
-                    options.forEach((option: Command.OptionDefinition<unknown>) => {
+                    options.forEach((option: CliCommand.OptionDefinition<unknown>) => {
                         const { name, required, validation, ...rest } = option;
 
                         const yargsOption = yargs.option(name, {
@@ -172,7 +190,7 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
         }
 
         yargsRunner.help(true);
-
+        yargsRunner.version(projectSdk.getProjectVersion());
         this.yargsRunner = yargsRunner;
         return this.yargsRunner;
     }
@@ -181,5 +199,11 @@ export class DefaultGetCliRunnerService implements GetCliRunnerService.Interface
 export const getCliRunnerService = createImplementation({
     abstraction: GetCliRunnerService,
     implementation: DefaultGetCliRunnerService,
-    dependencies: [CommandsRegistryService, UiService, GetProjectSdkService]
+    dependencies: [
+        CommandsRegistryService,
+        GlobalOptionsRegistryService,
+        UiService,
+        GetProjectSdkService,
+        GetArgvService
+    ]
 });

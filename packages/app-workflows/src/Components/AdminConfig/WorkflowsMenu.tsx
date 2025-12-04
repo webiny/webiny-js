@@ -2,7 +2,7 @@ import React from "react";
 import { AdminConfig } from "@webiny/app-admin";
 import { useRouter } from "@webiny/app";
 import { Routes } from "~/routes.js";
-import { ReactComponent as WorkflowStatesListIcon } from "@webiny/icons/account_tree.svg";
+import { ReactComponent as ContentReviewsListIcon } from "@webiny/icons/account_tree.svg";
 
 const { Menu } = AdminConfig;
 
@@ -11,17 +11,17 @@ export const WorkflowsMenu = () => {
 
     return (
         <Menu
-            name={"workflows.statesList"}
+            name={"workflows.contentReviews"}
             pinnable={true}
             element={
                 <Menu.Link
                     icon={
                         <Menu.Link.Icon
-                            label="Publishing Workflows"
-                            element={<WorkflowStatesListIcon />}
+                            label="Content Reviews"
+                            element={<ContentReviewsListIcon />}
                         />
                     }
-                    text={"Publishing Workflows"}
+                    text={"Content Reviews"}
                     to={router.getLink(Routes.Workflows.ContentReviews)}
                 />
             }

@@ -2,10 +2,14 @@ import React from "react";
 import { Components } from "@webiny/app-headless-cms";
 import { Sidebar } from "@webiny/admin-ui";
 import { ReactComponent as WorkflowStateListIcon } from "@webiny/icons/work.svg";
-import { WorkflowStateListAppOverlay } from "@webiny/app-workflows";
+import { Components as WorkflowsComponents } from "@webiny/app-workflows";
 import { useContentEntries } from "@webiny/app-headless-cms/admin/views/contentEntries/hooks/index.js";
 import { createAppName } from "~/utils/appName.js";
 import { useApolloClient } from "@apollo/react-hooks";
+
+const {
+    Overlay: { WorkflowStateListAppOverlay }
+} = WorkflowsComponents;
 
 const { Footer } = Components.Sidebar;
 

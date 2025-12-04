@@ -5,7 +5,14 @@ export class DefaultProjectSdkParamsService implements ProjectSdkParamsService.I
     params: ProjectSdkParamsService.Params;
 
     constructor() {
-        this.params = { cwd: "", extensions: [] };
+        this.params = {
+            cwd: "",
+            extensions: [],
+            logging: {
+                streamToStdout: false,
+                level: "info"
+            }
+        };
     }
 
     get() {
@@ -14,8 +21,12 @@ export class DefaultProjectSdkParamsService implements ProjectSdkParamsService.I
 
     set(params: ProjectSdkParamsService.Params) {
         this.params = {
+            cwd: params.cwd || "",
             extensions: [...(params.extensions || [])],
-            cwd: params.cwd || ""
+            logging: {
+                ...this.params.logging,
+                ...params.logging
+            }
         };
     }
 }

@@ -32,9 +32,13 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
         const project = this.getProjectService.execute();
 
         const currentTime = Date.now();
-        this.loggerService.trace({ renderArgs: params.renderArgs }, `Rendering project config...`);
         const cacheKey = JSON.stringify(params.renderArgs);
         if (!this.cachedRenderedConfigs[cacheKey]) {
+            this.loggerService.info(
+                { renderArgs: params.renderArgs },
+                `Rendering project config...`
+            );
+
             try {
                 this.cachedRenderedConfigs[cacheKey] = await renderConfig({
                     project,
@@ -50,18 +54,23 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
                     `An error occurred while rendering "webiny.config.tsx" config file:\n${err.message}`
                 );
             }
+        } else {
+            this.loggerService.info(
+                { renderArgs: params.renderArgs },
+                `Skipping rendering project config (cache hit)...`
+            );
         }
 
         const renderedConfig = this.cachedRenderedConfigs[cacheKey];
+        this.loggerService.debug({ config: renderedConfig }, `Project config rendering complete.`);
+
         const hydratedConfig = await this.hydrateConfig(renderedConfig, params);
+        this.loggerService.debug({ config: hydratedConfig }, `Project config hydration complete.`);
 
         const model = ProjectConfigModel.create(hydratedConfig);
 
         const duration = Date.now() - currentTime;
-        this.loggerService.trace(
-            { currentTime, duration },
-            `Project config rendered and hydrated in ${duration}ms.`
-        );
+        this.loggerService.info(`Project config rendered and hydrated in ${duration}ms.`);
 
         return model;
     }
@@ -105,13 +114,7 @@ export class DefaultGetProjectConfigService implements GetProjectConfigService.I
             allExtensionDefinitions?.push(...importedExtensionDefinitions);
         }
 
-        this.loggerService.trace(
-            {
-                scopesFilter: tagsFilters,
-                extensionsTypes
-            },
-            `Hydrating project config...`
-        );
+        this.loggerService.info({ scopesFilter: tagsFilters }, `Hydrating project config...`);
 
         return extensionsTypes.reduce<IHydratedProjectConfig>(
             (acc, extensionType: ExtensionType) => {

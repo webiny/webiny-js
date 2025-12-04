@@ -1,8 +1,8 @@
 import { createImplementation } from "@webiny/di";
-import { Command, CommandsRegistryService } from "~/abstractions/index.js";
+import { CliCommand, CommandsRegistryService } from "~/abstractions/index.js";
 
 export class DefaultCommandsRegistryService implements CommandsRegistryService.Interface {
-    constructor(private commands: Command.Interface<any>[]) {}
+    constructor(private commands: CliCommand.Interface<any>[]) {}
 
     execute() {
         return this.commands;
@@ -12,5 +12,5 @@ export class DefaultCommandsRegistryService implements CommandsRegistryService.I
 export const commandsRegistryService = createImplementation({
     abstraction: CommandsRegistryService,
     implementation: DefaultCommandsRegistryService,
-    dependencies: [[Command, { multiple: true }]]
+    dependencies: [[CliCommand, { multiple: true }]]
 });
