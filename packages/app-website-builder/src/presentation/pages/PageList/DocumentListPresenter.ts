@@ -19,12 +19,9 @@ import {
     selectedItemsRepositoryFactory
 } from "~/domain/SelectedItem/index.js";
 import { filterRepositoryFactory, type IFilterRepository } from "~/domain/Filter/index.js";
+import { PageListPresenter } from "./abstractions.js";
 
-interface DocumentListPresenterParams {
-    folderId: string;
-}
-
-class DocumentListPresenter {
+class DocumentListPresenter implements PageListPresenter.Interface {
     private folderId: string = ROOT_FOLDER;
     private foldersCache: IListCache<Folder>;
     private documentsCache: IListCache<Page>;
@@ -50,11 +47,11 @@ class DocumentListPresenter {
         makeAutoObservable(this);
     }
 
-    public init(params: DocumentListPresenterParams) {
+    public init(params: PageListPresenter.Init) {
         this.folderId = params.folderId;
     }
 
-    public get vm() {
+    public get vm(): PageListPresenter.ViewModel {
         const data = this.getVmDocuments();
         const folders = this.getVmFolders();
         const isEmpty = !this.getIsLoading() && data.length === 0 && folders.length === 0;
@@ -163,4 +160,4 @@ class DocumentListPresenter {
     };
 }
 
-export { DocumentListPresenter, type DocumentListPresenterParams };
+export { DocumentListPresenter };

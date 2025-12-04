@@ -7,7 +7,8 @@
     { "path": "../app-admin/tsconfig.build.json" },
     { "path": "../app-security/tsconfig.build.json" },
     { "path": "../app-website-builder/tsconfig.build.json" },
-    { "path": "../app-workflows/tsconfig.build.json" }
+    { "path": "../app-workflows/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" }
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -33,7 +34,11 @@
       "@webiny/app-website-builder/*": ["../app-website-builder/src/*"],
       "@webiny/app-website-builder": ["../app-website-builder/src"],
       "@webiny/app-workflows/*": ["../app-workflows/src/*"],
-      "@webiny/app-workflows": ["../app-workflows/src"]
+      "@webiny/app-workflows": ["../app-workflows/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"]
     },
     "baseUrl": "."
   }
