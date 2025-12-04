@@ -13,7 +13,13 @@ import { type SidebarMenuItemProps } from "./SidebarMenuItem.js";
 import { useSidebar } from "~/Sidebar/index.js";
 import { SidebarMenuItemAction } from "./SidebarMenuItemAction.js";
 
-const SidebarMenuSubItem = ({ children, className, pinnable, action, ...buttonProps }: SidebarMenuItemProps) => {
+const SidebarMenuSubItem = ({
+    children,
+    className,
+    pinnable,
+    action,
+    ...buttonProps
+}: SidebarMenuItemProps) => {
     const { currentLevel } = useSidebarMenu();
     const sidebar = useSidebar();
 
@@ -98,7 +104,9 @@ const SidebarMenuSubItem = ({ children, className, pinnable, action, ...buttonPr
                 {pinAction}
                 {chevron}
             </div>
-        ) : chevron;
+        ) : (
+            chevron
+        );
 
         return (
             <Collapsible.Root
@@ -126,8 +134,16 @@ const SidebarMenuSubItem = ({ children, className, pinnable, action, ...buttonPr
                 </Collapsible.Content>
             </Collapsible.Root>
         );
-    }, [children, buttonProps, currentLevel, menuItemId, isSectionExpanded, toggleSectionExpanded, pinnable, pinAction]);
-
+    }, [
+        children,
+        buttonProps,
+        currentLevel,
+        menuItemId,
+        isSectionExpanded,
+        toggleSectionExpanded,
+        pinnable,
+        pinAction
+    ]);
 
     return (
         <li

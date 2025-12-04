@@ -44,7 +44,8 @@ const extractPinnedItems = (
         // Determine if this is a pinnable item (only root level items or nested items with pinnable prop)
         const isPinnable = props.pinnable === true;
 
-        // Generate the same ID as used in SidebarMenuRootItem
+        // Generate the same ID as used in SidebarMenuRootItem/SidebarMenuSubItem
+        // Root items are at level 0, first nested items are at level 1, etc.
         const itemId = btoa(`sidebar-item-${level}-${text}`);
 
         // Check if this item is pinned
@@ -60,7 +61,7 @@ const extractPinnedItems = (
         }
 
         // Recursively check children, passing down the icon
-        // Children are in a nested level (level + 1)
+        // Children of a Sidebar.Item will be rendered at level + 1 (because SidebarMenuSub increments the level)
         if (props.children) {
             const childIcon = props.icon || parentIcon;
             items.push(...extractPinnedItems(props.children, pinnedIds, childIcon, level + 1));

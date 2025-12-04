@@ -174,11 +174,7 @@ export const PinnedMenuItems = ({ menuItems }: PinnedMenuItemsProps) => {
     return (
         <>
             {pinnedItems.map(m => (
-                <PinnableMenuItem key={m.name} name={m.name}>
-                    <MenuParentContext.Provider icon={getParentIcon(m, menuItems)}>
-                        {m.element}
-                    </MenuParentContext.Provider>
-                </PinnableMenuItem>
+                <PinnableMenuItem key={m.name} menu={m} />
             ))}
             <div className="px-sm py-xs">
                 <Separator />

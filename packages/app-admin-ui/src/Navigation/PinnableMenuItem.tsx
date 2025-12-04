@@ -1,7 +1,6 @@
 import React from "react";
-import { Icon } from "@webiny/admin-ui";
 import { useLocalStorage, useLocalStorageValue } from "@webiny/app";
-import { Sidebar } from "@webiny/admin-ui/index.js";
+import { Sidebar } from "@webiny/admin-ui";
 import { ReactComponent as PinIcon } from "@webiny/icons/push_pin.svg";
 import { ReactComponent as UnPinIcon } from "@webiny/icons/push_pin_off.svg";
 import type { MenuConfig } from "@webiny/app-admin/config/AdminConfig/Menu.js";
@@ -76,21 +75,4 @@ export const PinnableMenuItem = ({ menu }: PinnableMenuItemProps) => {
             />
         )
     });
-
-    // return (
-    //     <div className="relative group/pin">
-    //         {children}
-    //         <div
-    //             className={`group-hover/pin:visible absolute right-sm top-1/2 -translate-y-1/2 cursor-pointer invisible`}
-    //         >
-    //             <Icon
-    //                 size={"sm"}
-    //                 label={isPinned ? "Unpin menu item" : "Pin menu item"}
-    //                 onClick={isPinned ? unpin : pin}
-    //                 icon={isPinned ? <UnPinIcon /> : <PinIcon />}
-    //                 className="fill-neutral-strong hover:fill-neutral-xstrong"
-    //             />
-    //         </div>
-    //     </div>
-    // );
 };

@@ -177,11 +177,13 @@ const SidebarComponent = () => {
                 >
                     <Sidebar.Group text={"Content Models"} />
                     <Sidebar.Link
+                        pinnable
                         text={"Groups"}
                         to={"#cms-groups"}
                         active={hash === "#cms-groups"}
                     />
                     <Sidebar.Link
+                        pinnable
                         text={"Models"}
                         to={"#cms-models"}
                         active={hash === "#cms-models"}
