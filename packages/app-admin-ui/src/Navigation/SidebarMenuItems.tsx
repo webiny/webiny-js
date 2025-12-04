@@ -33,21 +33,17 @@ export const SidebarMenuItems = (props: MenusProps) => {
             return null;
         }
 
+        const key = [m.parent, m.name].join("-");
+
         const hasChildMenus = allMenus.some(menu => menu.parent === m.name);
         if (hasChildMenus) {
             return React.cloneElement(
                 m.element,
-                { key: m.parent + m.name },
+                { key },
                 <SidebarMenuItems menus={allMenus} where={{ parent: m.name }} />
             );
         }
 
-        // Clone the element and pass through the pinnable prop if it exists
-        const props: any = { key: m.parent + m.name };
-        if (m.pinnable) {
-            props.pinnable = true;
-        }
-
-        return React.cloneElement(m.element, props);
+        return React.cloneElement(m.element, { key });
     });
 };
