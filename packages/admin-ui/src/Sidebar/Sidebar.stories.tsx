@@ -1,4 +1,3 @@
-// @ts-nocheck Temporary fix.
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-webpack5";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
@@ -60,8 +59,10 @@ export const MainMenu: Story = {
 const SidebarComponent = () => {
     const { hash } = useLocation();
 
+    const [pinnedItems, setPinnedItems] = React.useState<string[]>([]);
+
     return (
-        <SidebarProvider>
+        <SidebarProvider pinnedItems={pinnedItems} onChangePinnedItems={setPinnedItems}>
             <Sidebar
                 title={"Webiny"}
                 icon={
@@ -105,6 +106,7 @@ const SidebarComponent = () => {
                 }
             >
                 <Sidebar.Link
+                    pinnable
                     text={"Audit Logs"}
                     action={
                         <Sidebar.Item.Action
@@ -117,12 +119,14 @@ const SidebarComponent = () => {
                     icon={<Sidebar.Item.Icon label="Audit Logs" element={<AuditLogsIcon />} />}
                 />
                 <Sidebar.Link
+                    pinnable
                     text={"Form Builder"}
                     to={"#form-builder"}
                     active={hash === "#form-builder"}
                     icon={<Sidebar.Item.Icon label="Form Builder" element={<FormBuilderIcon />} />}
                 />
                 <Sidebar.Item
+                    pinnable
                     text={"File Manager"}
                     onClick={() => {
                         alert("File Manager clicked");
