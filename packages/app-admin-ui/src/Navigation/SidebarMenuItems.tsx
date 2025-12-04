@@ -1,6 +1,5 @@
 import React from "react";
 import type { MenuConfig } from "@webiny/app-admin/config/AdminConfig/Menu.js";
-import { PinnableMenuItem } from "./PinnableMenuItem.js";
 
 export interface MenusProps {
     menus: MenuConfig[];
@@ -43,6 +42,11 @@ export const SidebarMenuItems = (props: MenusProps) => {
             );
         }
 
-        return <PinnableMenuItem key={m.parent + m.name} menu={m} />;
+        // Clone the element and pass through the pinnable prop if it exists
+        const props: any = { key: m.parent + m.name };
+        if (m.pinnable) {
+            props.pinnable = true;
+        }
+        return React.cloneElement(m.element, props);
     });
 };
