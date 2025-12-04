@@ -143,6 +143,7 @@ const SidebarComponent = () => {
                         action={<Sidebar.Item.Action element={<MoreVertIcon />} />}
                     >
                         <Sidebar.Link
+                            pinnable
                             text={"Cars"}
                             to={"#cms-cars"}
                             active={hash === "#cms-cars"}

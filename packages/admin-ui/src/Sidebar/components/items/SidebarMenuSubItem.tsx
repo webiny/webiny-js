@@ -6,11 +6,14 @@ import { SidebarMenuSubItemIndentation } from "./SidebarMenuSubItemIndentation.j
 import { SidebarMenuSub } from "./SidebarMenuSub.js";
 import { Icon } from "~/Icon/index.js";
 import { ReactComponent as KeyboardArrowRightIcon } from "@webiny/icons/keyboard_arrow_down.svg";
+import { ReactComponent as PinIcon } from "@webiny/icons/push_pin.svg";
+import { ReactComponent as UnPinIcon } from "@webiny/icons/push_pin_off.svg";
 import { useSidebarMenu } from "./SidebarMenuProvider.js";
 import { type SidebarMenuItemProps } from "./SidebarMenuItem.js";
 import { useSidebar } from "~/Sidebar/index.js";
+import { SidebarMenuItemAction } from "./SidebarMenuItemAction.js";
 
-const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenuItemProps) => {
+const SidebarMenuSubItem = ({ children, className, pinnable, action, ...buttonProps }: SidebarMenuItemProps) => {
     const { currentLevel } = useSidebarMenu();
     const sidebar = useSidebar();
 
@@ -26,6 +29,44 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
         sidebar.toggleSectionExpanded(menuItemId);
     }, [isSectionExpanded]);
 
+    const isPinned = sidebar.isItemPinned(menuItemId);
+
+    const pinAction = useMemo(() => {
+        if (!pinnable) {
+            return action;
+        }
+
+        const handlePinClick = (e: React.MouseEvent) => {
+            e.stopPropagation();
+            e.preventDefault();
+            sidebar.toggleItemPinned(menuItemId);
+        };
+
+        const pinButton = (
+            <SidebarMenuItemAction
+                element={isPinned ? <UnPinIcon /> : <PinIcon />}
+                onClick={handlePinClick}
+                hideOnCollapsed={true}
+            />
+        );
+
+        // If there's a custom action, combine them
+        if (action) {
+            const clonedAction = React.isValidElement(action)
+                ? React.cloneElement(action as React.ReactElement<any>, { hideOnCollapsed: true })
+                : action;
+
+            return (
+                <div className="flex items-center gap-xs">
+                    {clonedAction}
+                    {pinButton}
+                </div>
+            );
+        }
+
+        return pinButton;
+    }, [pinnable, isPinned, action, sidebar, menuItemId]);
+
     const sidebarMenuSubButton = useMemo(() => {
         if (!children) {
             return (
@@ -34,7 +75,7 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
                         lvl={currentLevel}
                         variant={buttonProps.variant}
                     />
-                    <SidebarMenuSubButton {...buttonProps} />
+                    <SidebarMenuSubButton {...buttonProps} action={pinAction} />
                 </>
             );
         }
@@ -52,6 +93,13 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
             />
         );
 
+        const collapsibleAction = pinnable ? (
+            <div className="flex items-center gap-xs">
+                {pinAction}
+                {chevron}
+            </div>
+        ) : chevron;
+
         return (
             <Collapsible.Root
                 className="w-full group/menu-sub-item-collapsible"
@@ -66,7 +114,7 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
                     <Collapsible.Trigger asChild>
                         <SidebarMenuSubButton
                             {...buttonProps}
-                            action={chevron}
+                            action={collapsibleAction}
                             className={
                                 "group-data-[state=open]/menu-sub-item-collapsible:font-semibold!"
                             }
@@ -78,7 +126,13 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
                 </Collapsible.Content>
             </Collapsible.Root>
         );
-    }, [children, buttonProps, currentLevel, menuItemId, isSectionExpanded, toggleSectionExpanded]);
+    }, [children, buttonProps, currentLevel, menuItemId, isSectionExpanded, toggleSectionExpanded, pinnable, pinAction]);
+
+    // If this item is pinned, don't render it in the regular menu
+    // It will be rendered in the pinned section at the top
+    if (pinnable && isPinned) {
+        return null;
+    }
 
     return (
         <li
