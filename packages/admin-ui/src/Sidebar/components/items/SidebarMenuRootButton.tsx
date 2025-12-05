@@ -11,6 +11,7 @@ const variants = cva(
         "text-md outline-none transition-[width,height,padding]",
         "whitespace-nowrap overflow-hidden",
         "hover:bg-neutral-dark/5",
+        "group-hover/menu-root-button:bg-neutral-dark/5",
         "focus:bg-neutral-dark/5 focus:ring-none focus:ring-transparent",
         "data-[active=true]:bg-neutral-dark/5 data-[active=true]:font-semibold data-[active=true]:pointer-events-none",
         "group-data-[state=open]/menu-item-collapsible:font-semibold!"
@@ -18,7 +19,8 @@ const variants = cva(
     {
         variants: {
             variant: {
-                "group-label": "text-neutral-muted! uppercase"
+                "group-label":
+                    "text-neutral-muted! uppercase hover:bg-transparent! group-hover/menu-root-button:bg-transparent! focus:bg-transparent! cursor-default!"
             },
             disabled: {
                 true: "pointer-events-none text-neutral-disabled!"
@@ -48,15 +50,12 @@ const SidebarMenuRootButton = ({
         onClick
     };
 
-    const chevron = action ? <div className="flex absolute right-sm-plus">{action}</div> : null;
-
     const { linkComponent: LinkComponent } = useAdminUi();
 
     const content = to ? (
         <LinkComponent {...sharedProps} to={to} {...linkProps}>
             {icon}
             {text}
-            {chevron}
         </LinkComponent>
     ) : (
         <DivButton
@@ -66,11 +65,19 @@ const SidebarMenuRootButton = ({
         >
             {icon}
             {text}
-            {chevron}
         </DivButton>
     );
 
-    return <div className={cn("flex items-center w-full", className)}>{content}</div>;
+    return (
+        <div className={cn("flex items-center w-full relative group/menu-root-button", className)}>
+            {content}
+            {action && (
+                <div className="absolute top-0 right-0 mr-sm h-full flex items-center">
+                    {action}
+                </div>
+            )}
+        </div>
+    );
 };
 
 export { SidebarMenuRootButton };

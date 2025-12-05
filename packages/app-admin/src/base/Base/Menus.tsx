@@ -27,6 +27,7 @@ export const Menus = React.memo(() => {
                             {({ showFileManager }) => (
                                 <Menu.Item
                                     text={"File Manager"}
+                                    pinnable
                                     icon={
                                         <Menu.Item.Icon
                                             label="File Manager"

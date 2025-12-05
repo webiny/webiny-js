@@ -8,7 +8,6 @@ import type {
     CmsModelFieldValidatorPlugin,
     CmsModelFieldValidatorValidateParams
 } from "~/types/index.js";
-import WebinyError from "@webiny/error";
 import camelCase from "lodash/camelCase.js";
 import { EntryValidationError } from "~/domain/contentEntry/errors.js";
 

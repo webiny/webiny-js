@@ -42,8 +42,7 @@ export const Extension = () => {
                     <Menu
                         name="wb.pagesLabel"
                         parent="Wb"
-                        pinnable={true}
-                        element={<Menu.Group text={"Pages"} />}
+                        element={<Menu.Group text={"Pages"} pinnable={true} />}
                     />
                 </HasPermission>
 
@@ -53,9 +52,12 @@ export const Extension = () => {
                     <Menu
                         name="wb.pages"
                         parent={"wb"}
-                        pinnable={true}
                         element={
-                            <Menu.Link text={"Pages"} to={router.getLink(Routes.Pages.List)} />
+                            <Menu.Link
+                                text={"Pages"}
+                                to={router.getLink(Routes.Pages.List)}
+                                pinnable={true}
+                            />
                         }
                     />
                     <Dashboard.Widget name="wb.pages" column={"left"} element={<PagesWidget />} />
@@ -65,11 +67,11 @@ export const Extension = () => {
                     <Menu
                         name="wb.redirects"
                         parent={"wb"}
-                        pinnable={true}
                         element={
                             <Menu.Link
                                 text={"Redirects"}
                                 to={router.getLink(Routes.Redirects.List)}
+                                pinnable={true}
                             />
                         }
                     />
@@ -82,19 +84,9 @@ export const Extension = () => {
                     />
                 </HasPermission>
                 <HasPermission name={"wb.settings"}>
-                    <Menu
-                        name="wb.settings"
-                        parent="wb"
-                        pinnable={true}
-                        element={<SettingsMenuItem />}
-                    />
+                    <Menu name="wb.settings" parent="wb" element={<SettingsMenuItem />} />
                 </HasPermission>
-                <Menu
-                    name="wb.integrations"
-                    parent="wb"
-                    pinnable={true}
-                    element={<IntegrationsMenuItem />}
-                />
+                <Menu name="wb.integrations" parent="wb" element={<IntegrationsMenuItem />} />
             </AdminConfig>
             <PagesListConfig />
             <RedirectsListConfig />
@@ -104,10 +96,10 @@ export const Extension = () => {
 
 const SettingsMenuItem = () => {
     const { showSettingsDialog } = useSettingsDialog();
-    return <Menu.Item text={"Settings"} onClick={showSettingsDialog} />;
+    return <Menu.Item text={"Settings"} onClick={showSettingsDialog} pinnable={true} />;
 };
 
 const IntegrationsMenuItem = () => {
     const { showIntegrationsDialog } = useIntegrationsDialog();
-    return <Menu.Item text={"Integrations"} onClick={showIntegrationsDialog} />;
+    return <Menu.Item text={"Integrations"} onClick={showIntegrationsDialog} pinnable={true} />;
 };

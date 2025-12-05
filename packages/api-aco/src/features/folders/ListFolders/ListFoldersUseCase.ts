@@ -1,9 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
-import {
-    ListFoldersUseCase as UseCaseAbstraction,
-    ListFoldersRepository
-} from "./abstractions.js";
+import { ListFoldersUseCase as UseCaseAbstraction, ListFoldersRepository } from "./abstractions.js";
 import type { Folder, ListFoldersParams } from "~/folder/folder.types.js";
 import type { ListMeta } from "~/types.js";
 
