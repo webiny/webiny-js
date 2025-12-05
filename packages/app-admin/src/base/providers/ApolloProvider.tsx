@@ -14,9 +14,8 @@ interface ApolloProviderProps {
     children: React.ReactNode;
 }
 
-export const createApolloProvider = (clientFactory: ApolloClientFactory) => {
+export const createApolloProvider = (apolloClient: ApolloClient<any>) => {
     return function ApolloProvider({ children }: ApolloProviderProps) {
-        const uri = process.env.REACT_APP_GRAPHQL_API_URL as string;
-        return <Apollo client={clientFactory({ uri })}>{children}</Apollo>;
+        return <Apollo client={apolloClient}>{children}</Apollo>;
     };
 };
