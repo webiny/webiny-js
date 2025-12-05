@@ -31,5 +31,5 @@ class UpdateFlpOnFolderUpdatedHandlerImpl implements FolderAfterUpdateHandler.In
 
 export const UpdateFlpOnFolderUpdatedHandler = FolderAfterUpdateHandler.createImplementation({
     implementation: UpdateFlpOnFolderUpdatedHandlerImpl,
-    dependencies: [UpdateFlpUseCase, [TaskService, { optional: true}]]
-})
+    dependencies: [UpdateFlpUseCase, [TaskService, { optional: true }]]
+});

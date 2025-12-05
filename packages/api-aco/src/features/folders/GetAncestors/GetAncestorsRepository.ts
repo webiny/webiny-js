@@ -17,7 +17,9 @@ class GetAncestorsRepositoryImpl implements IGetAncestorsRepository {
         private folderModel: FolderModel.Interface
     ) {}
 
-    async execute(params: GetAncestorsParams): Promise<Result<Folder[], RepositoryAbstraction.Error>> {
+    async execute(
+        params: GetAncestorsParams
+    ): Promise<Result<Folder[], RepositoryAbstraction.Error>> {
         const { folder } = params;
 
         // No folder found: return an empty array

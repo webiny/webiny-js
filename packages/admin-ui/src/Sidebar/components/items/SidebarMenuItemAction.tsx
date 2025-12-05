@@ -7,7 +7,12 @@ interface SidebarMenuItemActionProps extends Omit<IconButtonProps, "icon"> {
     showOnHover?: boolean;
 }
 
-const SidebarMenuItemAction = ({ element, showOnHover = false, className, ...props }: SidebarMenuItemActionProps) => {
+const SidebarMenuItemAction = ({
+    element,
+    showOnHover = false,
+    className,
+    ...props
+}: SidebarMenuItemActionProps) => {
     return (
         <IconButton
             icon={element}

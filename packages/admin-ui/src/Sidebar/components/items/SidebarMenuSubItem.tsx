@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect } from "react";
+import React, { useCallback, useMemo } from "react";
 import { cn } from "~/utils.js";
 import { Collapsible } from "radix-ui";
 import { SidebarMenuSubButton } from "./SidebarMenuSubButton.js";

@@ -64,9 +64,17 @@ const createInitialSidebarState = (): SidebarState => {
     };
 };
 
-const SidebarProvider = ({ className, children, pinnedItems = [], onChangePinnedItems, ...props }: SidebarProviderProps) => {
+const SidebarProvider = ({
+    className,
+    children,
+    pinnedItems = [],
+    onChangePinnedItems,
+    ...props
+}: SidebarProviderProps) => {
     const [sidebarState, setSidebarState] = React.useState<SidebarState>(createInitialSidebarState);
-    const [pinnedItemsData, setPinnedItemsData] = React.useState<Map<string, PinnedItemData>>(new Map());
+    const [pinnedItemsData, setPinnedItemsData] = React.useState<Map<string, PinnedItemData>>(
+        new Map()
+    );
 
     // With this timeout, we prevent the sidebar glitching (quickly opening/closing) during mouse enter/leave events.
     const timeoutRef = React.useRef<number | null>(null);
@@ -165,27 +173,21 @@ const SidebarProvider = ({ className, children, pinnedItems = [], onChangePinned
         [pinnedItems]
     );
 
-    const registerPinnedItem = React.useCallback(
-        (data: PinnedItemData) => {
-            setPinnedItemsData(prev => {
-                const newMap = new Map(prev);
-                newMap.set(data.id, data);
-                return newMap;
-            });
-        },
-        []
-    );
+    const registerPinnedItem = React.useCallback((data: PinnedItemData) => {
+        setPinnedItemsData(prev => {
+            const newMap = new Map(prev);
+            newMap.set(data.id, data);
+            return newMap;
+        });
+    }, []);
 
-    const unregisterPinnedItem = React.useCallback(
-        (itemId: string) => {
-            setPinnedItemsData(prev => {
-                const newMap = new Map(prev);
-                newMap.delete(itemId);
-                return newMap;
-            });
-        },
-        []
-    );
+    const unregisterPinnedItem = React.useCallback((itemId: string) => {
+        setPinnedItemsData(prev => {
+            const newMap = new Map(prev);
+            newMap.delete(itemId);
+            return newMap;
+        });
+    }, []);
 
     const getPinnedItemsData = React.useCallback(() => {
         // Sort by the order in pinnedItems array to maintain consistent ordering

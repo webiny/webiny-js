@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useEffect} from "react";
+import React, { useCallback, useMemo, useEffect } from "react";
 import { cn, makeDecoratable, withStaticProps } from "~/utils.js";
 import { SidebarMenuRootButton } from "./SidebarMenuRootButton.js";
 import { SidebarMenuItemIcon } from "./SidebarMenuItemIcon.js";
@@ -13,7 +13,13 @@ import { type SidebarMenuItemProps } from "./SidebarMenuItem.js";
 import { useSidebarMenu } from "~/Sidebar/components/items/SidebarMenuProvider.js";
 import { useSidebar } from "~/Sidebar/index.js";
 
-const SidebarMenuItemBase = ({ children, className, pinnable, action, ...buttonProps }: SidebarMenuItemProps) => {
+const SidebarMenuItemBase = ({
+    children,
+    className,
+    pinnable,
+    action,
+    ...buttonProps
+}: SidebarMenuItemProps) => {
     const { currentLevel, parentIcon } = useSidebarMenu();
     const sidebar = useSidebar();
 
@@ -35,7 +41,7 @@ const SidebarMenuItemBase = ({ children, className, pinnable, action, ...buttonP
 
     // Register on mount if already pinned, unregister on unmount
     // Re-register when active state changes to keep pinned items in sync
-    React.useEffect(() => {
+    useEffect(() => {
         if (pinnable && isPinned) {
             sidebar.registerPinnedItem({
                 id: menuItemId,
@@ -124,7 +130,9 @@ const SidebarMenuItemBase = ({ children, className, pinnable, action, ...buttonP
                 {pinAction}
                 {chevron}
             </div>
-        ) : chevron;
+        ) : (
+            chevron
+        );
 
         return (
             <Collapsible.Root
@@ -140,8 +148,15 @@ const SidebarMenuItemBase = ({ children, className, pinnable, action, ...buttonP
                 </Collapsible.Content>
             </Collapsible.Root>
         );
-    }, [children, buttonProps, menuItemId, isSectionExpanded, toggleSectionExpanded, pinnable, pinAction]);
-
+    }, [
+        children,
+        buttonProps,
+        menuItemId,
+        isSectionExpanded,
+        toggleSectionExpanded,
+        pinnable,
+        pinAction
+    ]);
 
     return (
         <li

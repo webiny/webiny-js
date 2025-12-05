@@ -10,7 +10,9 @@ import { createImplementation } from "@webiny/di";
 class GetAncestorsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private repository: GetAncestorsRepository.Interface) {}
 
-    public async execute(params: GetAncestorsParams): Promise<Result<Folder[], UseCaseAbstraction.Error>> {
+    public async execute(
+        params: GetAncestorsParams
+    ): Promise<Result<Folder[], UseCaseAbstraction.Error>> {
         return await this.repository.execute(params);
     }
 }

@@ -29,7 +29,9 @@ function useSidebarMenu() {
 
 const SidebarMenuProvider = ({ level = 0, parentIcon, children }: SidebarMenuProviderProps) => {
     return (
-        <SidebarMenuContext.Provider value={{ currentLevel: level, nextLevel: level + 1, parentIcon }}>
+        <SidebarMenuContext.Provider
+            value={{ currentLevel: level, nextLevel: level + 1, parentIcon }}
+        >
             {children}
         </SidebarMenuContext.Provider>
     );

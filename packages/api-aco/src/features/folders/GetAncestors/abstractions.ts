@@ -1,10 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { Folder } from "~/folder/folder.types.js";
-import type {
-    FolderNotAuthorizedError,
-    FolderPersistenceError
-} from "~/domain/folder/errors.js";
+import type { FolderNotAuthorizedError, FolderPersistenceError } from "~/domain/folder/errors.js";
 
 /**
  * GetAncestors repository interface

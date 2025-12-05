@@ -4,10 +4,7 @@ import type {
     GetFolderHierarchyParams,
     GetFolderHierarchyResponse
 } from "~/folder/folder.types.js";
-import type {
-    FolderNotAuthorizedError,
-    FolderPersistenceError
-} from "~/domain/folder/errors.js";
+import type { FolderNotAuthorizedError, FolderPersistenceError } from "~/domain/folder/errors.js";
 
 /**
  * GetFolderHierarchy repository interface
