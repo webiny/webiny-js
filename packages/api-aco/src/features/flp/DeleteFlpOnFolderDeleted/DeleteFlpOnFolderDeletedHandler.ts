@@ -1,15 +1,14 @@
-import { WebinyError } from "@webiny/error";
-import type { DeleteFlpUseCase } from "../DeleteFlp/abstractions.js";
+import { DeleteFlpUseCase } from "../DeleteFlp/abstractions.js";
 import { FolderAfterDeleteHandler } from "~/features/folders/DeleteFolder/abstractions.js";
 import type { FolderAfterDeleteEvent } from "~/features/folders/DeleteFolder/events.js";
 import type { IDeleteFlpTaskInput } from "~/types.js";
 import { DELETE_FLP_TASK_ID } from "~/flp/tasks/index.js";
-import type { ITasksContextObject } from "@webiny/tasks";
+import { TaskService } from "@webiny/tasks/features/TaskService/abstractions.js";
 
-export class DeleteFlpOnFolderDeletedHandler implements FolderAfterDeleteHandler.Interface {
+class DeleteFlpOnFolderDeletedHandlerImpl implements FolderAfterDeleteHandler.Interface {
     constructor(
         private deleteFlpUseCase: DeleteFlpUseCase.Interface,
-        private tasks?: ITasksContextObject
+        private tasks?: TaskService.Interface
     ) {}
 
     async handle(event: FolderAfterDeleteEvent): Promise<void> {
@@ -25,10 +24,12 @@ export class DeleteFlpOnFolderDeletedHandler implements FolderAfterDeleteHandler
                 await this.deleteFlpUseCase.execute(folder);
             }
         } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing FLP deletion on folder deleted",
-                code: "ACO_AFTER_FOLDER_DELETE_FLP_HANDLER"
-            });
+            // Ignore errors
         }
     }
 }
+
+export const DeleteFlpOnFolderDeletedHandler = FolderAfterDeleteHandler.createImplementation({
+    implementation: DeleteFlpOnFolderDeletedHandlerImpl,
+    dependencies: [DeleteFlpUseCase, [TaskService, { optional: true }]]
+});

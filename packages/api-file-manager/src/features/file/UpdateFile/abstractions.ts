@@ -31,6 +31,7 @@ export interface IUpdateFileRepository {
 
 export interface IUpdateFileRepositoryErrors {
     notFound: FileNotFoundError;
+    notAuthorized: FileNotAuthorizedError;
     persistence: FilePersistenceError;
 }
 

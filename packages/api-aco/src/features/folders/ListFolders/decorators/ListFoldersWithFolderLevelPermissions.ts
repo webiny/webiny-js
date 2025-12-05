@@ -1,10 +1,9 @@
-import { createDecorator } from "@webiny/feature/api";
+import { Result } from "@webiny/feature/api";
 import type { Folder, ListFoldersParams } from "~/folder/folder.types.js";
 import { ListFoldersUseCase } from "../abstractions.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import type { FolderPermission } from "~/flp/flp.types.js";
 import { ROOT_FOLDER } from "~/constants.js";
-import type { ListMeta } from "~/types.js";
 
 class ListFoldersWithFolderLevelPermissionsImpl implements ListFoldersUseCase.Interface {
     private flpCatalog: Map<string, FolderPermission[]> = new Map();
@@ -14,8 +13,13 @@ class ListFoldersWithFolderLevelPermissionsImpl implements ListFoldersUseCase.In
         private decoratee: ListFoldersUseCase.Interface
     ) {}
 
-    async execute(params: ListFoldersParams): Promise<[Folder[], ListMeta]> {
-        const [folders, meta] = await this.decoratee.execute(params);
+    async execute(params: ListFoldersParams): ListFoldersUseCase.Return {
+        const result = await this.decoratee.execute(params);
+        if (result.isFail()) {
+            return Result.fail(result.error);
+        }
+
+        const [folders, meta] = result.value;
 
         // Fetch FLP records for ROOT folders and populate the catalog.
         const rootFlps = await this.folderLevelPermissions.listFolderLevelPermissions({
@@ -61,7 +65,7 @@ class ListFoldersWithFolderLevelPermissionsImpl implements ListFoldersUseCase.In
             })
         );
 
-        return [foldersWithPermissions.filter(Boolean) as Folder[], meta];
+        return Result.ok([foldersWithPermissions.filter(Boolean) as Folder[], meta]);
     }
 
     private hasFlp(id: string): boolean {
@@ -77,8 +81,7 @@ class ListFoldersWithFolderLevelPermissionsImpl implements ListFoldersUseCase.In
     }
 }
 
-export const ListFoldersWithFolderLevelPermissions = createDecorator({
-    abstraction: ListFoldersUseCase,
+export const ListFoldersWithFolderLevelPermissions = ListFoldersUseCase.createDecorator({
     decorator: ListFoldersWithFolderLevelPermissionsImpl,
     dependencies: [FolderLevelPermissions]
 });

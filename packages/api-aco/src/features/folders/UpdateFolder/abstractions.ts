@@ -1,16 +1,60 @@
 import { createAbstraction } from "@webiny/feature/api";
+import type { Result } from "@webiny/feature/api";
 import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
 import type { Folder, UpdateFolderParams } from "~/folder/folder.types.js";
+import {
+    FolderCannotMoveToNewParent,
+    type FolderNotAuthorizedError,
+    type FolderNotFoundError,
+    type FolderPersistenceError,
+    type FolderValidationError
+} from "~/domain/folder/errors.js";
 
-// Use Case Abstraction
-export interface IUpdateFolderUseCase {
-    execute: (id: string, data: UpdateFolderParams) => Promise<Folder>;
+/**
+ * UpdateFolder repository interface
+ */
+export interface IUpdateFolderRepository {
+    execute(id: string, data: UpdateFolderParams): Promise<Result<Folder, RepositoryError>>;
 }
+
+export interface IUpdateFolderRepositoryErrors {
+    persistence: FolderPersistenceError;
+    validation: FolderValidationError;
+}
+
+type RepositoryError = IUpdateFolderRepositoryErrors[keyof IUpdateFolderRepositoryErrors];
+
+export const UpdateFolderRepository =
+    createAbstraction<IUpdateFolderRepository>("UpdateFolderRepository");
+
+export namespace UpdateFolderRepository {
+    export type Interface = IUpdateFolderRepository;
+    export type Error = RepositoryError;
+}
+
+/**
+ * UpdateFolder use case interface
+ */
+export interface IUpdateFolderUseCase {
+    execute(id: string, data: UpdateFolderParams): Promise<Result<Folder, UseCaseError>>;
+}
+
+export interface IUpdateFolderUseCaseErrors {
+    notAuthorized: FolderNotAuthorizedError;
+    notFound: FolderNotFoundError;
+    cannotMoveToNewParent: FolderCannotMoveToNewParent;
+    persistence: FolderPersistenceError;
+    validation: FolderValidationError;
+}
+
+type UseCaseError = IUpdateFolderUseCaseErrors[keyof IUpdateFolderUseCaseErrors];
 
 export const UpdateFolderUseCase = createAbstraction<IUpdateFolderUseCase>("UpdateFolderUseCase");
 
 export namespace UpdateFolderUseCase {
     export type Interface = IUpdateFolderUseCase;
+    export type Return = Promise<Result<Folder, UseCaseError>>;
+    export type Error = UseCaseError;
 }
 
 // Event Payload Types

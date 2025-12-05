@@ -28,7 +28,7 @@ describe("content entry picked validation", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 error: "Value is required.",
@@ -94,7 +94,7 @@ describe("content entry picked validation", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 error: "minLengthError",
@@ -161,7 +161,7 @@ describe("content entry picked validation", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 error: "maxLengthError",
@@ -230,7 +230,7 @@ describe("content entry picked validation", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 error: "patternError",
@@ -298,7 +298,7 @@ describe("content entry picked validation", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 error: "inError",
@@ -366,7 +366,7 @@ describe("content entry picked validation", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 error: "Value must be greater than or equal to 55.",
@@ -422,7 +422,7 @@ describe("content entry picked validation", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 error: "Value must be greater than or equal to 1.",
@@ -478,7 +478,7 @@ describe("content entry picked validation", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 error: "Date must be lesser than or equal to 2023-12-31.",
@@ -534,7 +534,7 @@ describe("content entry picked validation", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 error: "Date must be greater than or equal to 2020-01-01.",
@@ -602,7 +602,7 @@ describe("content entry picked validation", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 error: "Time must be lesser than or equal to 05:05.",
@@ -658,7 +658,7 @@ describe("content entry picked validation", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 error: "Time must be greater than or equal to 00:30.",
@@ -793,7 +793,7 @@ describe("content entry picked validation", () => {
                     data: null,
                     error: {
                         message: "Validation failed.",
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 error: "Value is required.",

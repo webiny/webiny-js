@@ -1,23 +1,24 @@
+import { Result } from "@webiny/feature/api";
 import { createImplementation } from "@webiny/feature/api";
-import { ListFoldersUseCase as UseCaseAbstraction } from "./abstractions.js";
-import type {
-    AcoFolderStorageOperations,
-    Folder,
-    ListFoldersParams
-} from "~/folder/folder.types.js";
+import {
+    ListFoldersUseCase as UseCaseAbstraction,
+    ListFoldersRepository
+} from "./abstractions.js";
+import type { Folder, ListFoldersParams } from "~/folder/folder.types.js";
 import type { ListMeta } from "~/types.js";
-import { FolderStorageOperations } from "~/features/folders/shared/abstractions.js";
 
 class ListFoldersUseCaseImpl implements UseCaseAbstraction.Interface {
-    constructor(private storageOperations: AcoFolderStorageOperations) {}
+    constructor(private repository: ListFoldersRepository.Interface) {}
 
-    async execute(params: ListFoldersParams): Promise<[Folder[], ListMeta]> {
-        return await this.storageOperations.listFolders(params);
+    async execute(
+        params: ListFoldersParams
+    ): Promise<Result<[Folder[], ListMeta], UseCaseAbstraction.Error>> {
+        return await this.repository.execute(params);
     }
 }
 
 export const ListFoldersUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: ListFoldersUseCaseImpl,
-    dependencies: [FolderStorageOperations]
+    dependencies: [ListFoldersRepository]
 });

@@ -123,7 +123,7 @@ describe("`filter` CRUD", () => {
                     getFilter: {
                         data: null,
                         error: {
-                            code: "NOT_FOUND",
+                            code: "Cms/Entry/NotFound",
                             data: null
                         }
                     }
@@ -160,7 +160,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {
@@ -192,7 +192,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {
@@ -237,7 +237,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {
@@ -304,7 +304,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {
@@ -347,7 +347,7 @@ describe("`filter` CRUD", () => {
                     createFilter: {
                         data: null,
                         error: {
-                            code: "VALIDATION_FAILED",
+                            code: "Cms/Entry/ValidationError",
                             message: "Validation failed.",
                             data: [
                                 {
@@ -391,8 +391,8 @@ describe("`filter` CRUD", () => {
         expect(result.data.aco.updateFilter).toEqual({
             data: null,
             error: {
-                code: "NOT_FOUND",
-                message: 'Entry by ID "any-id" not found.',
+                code: "Cms/Entry/NotFound",
+                message: 'Entry "any-id" was not found!',
                 data: null
             }
         });

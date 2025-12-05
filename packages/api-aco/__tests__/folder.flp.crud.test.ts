@@ -1,6 +1,6 @@
 import { describe, it, test, expect } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-import { expectNotAuthorized } from "./utils/expectNotAuthorized";
+import { expectNotAuthorized } from "./utils/expectNotAuthorized.js";
 import { AuthenticatedIdentity } from "@webiny/api-core/features/IdentityContext";
 
 const FOLDER_TYPE = "test-folders";
@@ -252,7 +252,7 @@ describe("Folder Level Permissions", () => {
                 })
                 .then(([results]) => results.data.aco.updateFolder.error)
         ).resolves.toEqual({
-            code: "",
+            code: "Aco/Folder/ValidationError",
             data: null,
             message: 'Permission target "my-target:xyz" is not valid.'
         });
@@ -280,7 +280,7 @@ describe("Folder Level Permissions", () => {
                 })
                 .then(([results]) => results.data.aco.updateFolder.error)
         ).resolves.toEqual({
-            code: "",
+            code: "Aco/Folder/ValidationError",
             data: null,
             message: 'Permission "inheritedFrom" cannot be set manually.'
         });
@@ -677,15 +677,9 @@ describe("Folder Level Permissions", () => {
         ).resolves.toMatchObject({
             data: null,
             error: {
-                code: "DELETE_FOLDER_WITH_CHILDREN",
-                data: {
-                    folder: {
-                        slug: "folder-a"
-                    },
-                    hasFolders: true,
-                    hasContent: false
-                },
-                message: "Delete all child folders and entries before proceeding."
+                code: "Aco/Folder/NotEmpty",
+                data: null,
+                message: "Folder is not empty."
             }
         });
 
@@ -707,14 +701,7 @@ describe("Folder Level Permissions", () => {
         await expectNotAuthorized(
             gqlIdentityC.aco.deleteFolder({ id: folderA.id }).then(([response]) => {
                 return response.data.aco.deleteFolder;
-            }),
-            {
-                folder: { id: folderA.id },
-
-                // There are no entries in the folder, but there is one invisible / inaccessible folder.
-                hasContent: false,
-                hasFolders: true
-            }
+            })
         );
     });
 });

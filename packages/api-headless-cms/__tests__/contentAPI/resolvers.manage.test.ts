@@ -421,7 +421,7 @@ describe("MANAGE - Resolvers", () => {
                 createCategory: {
                     data: null,
                     error: {
-                        code: "VALIDATION_FAILED",
+                        code: "Cms/Entry/ValidationError",
                         data: [
                             {
                                 error: "This field is required",

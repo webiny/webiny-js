@@ -19,7 +19,7 @@ export interface IScheduledAction {
     actionType: string; // Operation: "Publish", "Unpublish", "Send", "Delete"
     targetId: string; // Resource identifier (entry ID, email ID, etc.)
     scheduledBy: Identity;
-    scheduledOn: Date;
+    scheduledOn: string;
     title?: string;
     payload?: any; // Action-specific data
     error?: string; // Error if execution failed
@@ -29,7 +29,7 @@ export interface IScheduledAction {
  * Scheduler Input - When to schedule
  */
 export interface ISchedulerInput {
-    scheduleOn: Date; // Future date (required)
+    scheduleOn: string; // Future date (required)
 }
 
 /**

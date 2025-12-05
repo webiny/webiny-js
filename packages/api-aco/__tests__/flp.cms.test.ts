@@ -1,6 +1,6 @@
 import { describe, test, expect } from "vitest";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
-import { expectNotAuthorized } from "./utils/expectNotAuthorized";
+import { expectCmsNotAuthorized, expectNotAuthorized } from "./utils/expectNotAuthorized.js";
 import { AuthenticatedIdentity } from "@webiny/api-core/features/security/IdentityContext/index.js";
 
 const identityA = new AuthenticatedIdentity({ id: "1", type: "admin", displayName: "A" });
@@ -133,7 +133,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         // Getting content in the folder should be forbidden for identity C.
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
-            await expectNotAuthorized(
+            await expectCmsNotAuthorized(
                 gqlIdentityC.cms
                     .getEntry(model, { revision: createdEntry.id })
                     .then(([response]) => {
@@ -166,7 +166,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         });
 
         // Creating content in the folder should be forbidden for identity C.
-        await expectNotAuthorized(
+        await expectCmsNotAuthorized(
             gqlIdentityC.cms
                 .createEntry(model, {
                     data: {
@@ -184,7 +184,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         // Updating content in the folder should be forbidden for identity C.
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
-            await expectNotAuthorized(
+            await expectCmsNotAuthorized(
                 gqlIdentityC.cms
                     .updateEntry(model, {
                         revision: createdEntry.id,
@@ -199,7 +199,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         // Deleting a file in the folder should be forbidden for identity C.
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
-            await expectNotAuthorized(
+            await expectCmsNotAuthorized(
                 gqlIdentityC.cms
                     .deleteEntry(model, { revision: createdEntry.id })
                     .then(([response]) => {
@@ -360,7 +360,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         // Getting content in the folder should be forbidden for identity B.
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
-            await expectNotAuthorized(
+            await expectCmsNotAuthorized(
                 gqlIdentityB.cms
                     .getEntry(model, { revision: createdEntry.id })
                     .then(([response]) => {
@@ -393,7 +393,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         });
 
         // Creating content in the folder should be forbidden for identity B.
-        await expectNotAuthorized(
+        await expectCmsNotAuthorized(
             gqlIdentityB.cms
                 .createEntry(model, {
                     data: {
@@ -411,7 +411,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         // Updating content in the folder should be forbidden for identity B.
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
-            await expectNotAuthorized(
+            await expectCmsNotAuthorized(
                 gqlIdentityB.cms
                     .updateEntry(model, {
                         revision: createdEntry.id,
@@ -426,7 +426,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         // Deleting a file in the folder should be forbidden for identity C.
         for (let i = 0; i < entries.length; i++) {
             const createdEntry = entries[i];
-            await expectNotAuthorized(
+            await expectCmsNotAuthorized(
                 gqlIdentityB.cms
                     .deleteEntry(model, { revision: createdEntry.id })
                     .then(([response]) => {
@@ -518,7 +518,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         });
 
         // Creating content in the folder should be forbidden for identity C.
-        await expectNotAuthorized(
+        await expectCmsNotAuthorized(
             gqlIdentityC.cms
                 .createEntry(model, {
                     data: {
@@ -534,7 +534,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         );
 
         // Updating content in the folder should be forbidden for identity C.
-        await expectNotAuthorized(
+        await expectCmsNotAuthorized(
             gqlIdentityC.cms
                 .updateEntry(model, {
                     revision: createdEntry.id,
@@ -546,7 +546,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         );
 
         // Deleting a file in the folder should be forbidden for identity C.
-        await expectNotAuthorized(
+        await expectCmsNotAuthorized(
             gqlIdentityC.cms
                 .deleteEntry(model, { revision: createdEntry.id })
                 .then(([response]) => {
@@ -554,7 +554,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
                 })
         );
 
-        await expectNotAuthorized(
+        await expectCmsNotAuthorized(
             gqlIdentityC.cms
                 .deleteEntry(model, { revision: createdEntry.entryId })
                 .then(([response]) => {
@@ -659,15 +659,9 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         ).resolves.toMatchObject({
             data: null,
             error: {
-                code: "DELETE_FOLDER_WITH_CHILDREN",
-                data: {
-                    folder: {
-                        slug: "folder-a"
-                    },
-                    hasFolders: true,
-                    hasContent: false
-                },
-                message: "Delete all child folders and entries before proceeding."
+                code: "Aco/Folder/NotEmpty",
+                data: null,
+                message: "Folder is not empty."
             }
         });
 
@@ -689,14 +683,7 @@ describe("Folder Level Permissions - CMS GraphQL API", () => {
         await expectNotAuthorized(
             gqlIdentityC.aco.deleteFolder({ id: folderA.id }).then(([response]) => {
                 return response.data.aco.deleteFolder;
-            }),
-            {
-                folder: { id: folderA.id },
-
-                // There are no entries in the folder, but there is one invisible / inaccessible folder.
-                hasContent: false,
-                hasFolders: true
-            }
+            })
         );
     });
 });

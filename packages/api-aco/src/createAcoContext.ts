@@ -3,8 +3,6 @@ import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import { createAcoStorageOperations } from "~/createAcoStorageOperations.js";
 import type { AcoContext } from "~/types.js";
-import { createFolderCrudMethods } from "~/folder/folder.crud.js";
-import { CmsEntriesCrudDecorators } from "~/utils/decorators/CmsEntriesCrudDecorators.js";
 import { createFilterCrudMethods } from "~/filter/filter.crud.js";
 import { createFlpCrudMethods } from "~/flp/index.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
@@ -15,7 +13,6 @@ import { GetFolderFeature } from "~/features/folders/GetFolder/index.js";
 import { ListFoldersFeature } from "~/features/folders/ListFolders/index.js";
 import { GetFolderHierarchyFeature } from "~/features/folders/GetFolderHierarchy/index.js";
 import { GetAncestorsFeature } from "~/features/folders/GetAncestors/index.js";
-import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
 import { UpdateFlpOnFolderUpdatedFeature } from "~/features/flp/UpdateFlpOnFolderUpdated/index.js";
 import { DeleteFlpOnFolderDeletedFeature } from "~/features/flp/DeleteFlpOnFolderDeleted/index.js";
 import { EnsureFmFolderIsEmptyOnDeleteFeature } from "~/features/folders/EnsureFmFolderIsEmptyOnDelete/index.js";
@@ -25,15 +22,18 @@ import { DeleteFlpFeature } from "~/features/flp/DeleteFlp/index.js";
 import { UpdateFlpFeature } from "~/features/flp/UpdateFlp/index.js";
 import { FolderLevelPermissionsFeature } from "~/features/flp/FolderLevelPermissions/index.js";
 import { EnsureFolderIsEmptyOnDeleteFeature } from "~/features/folders/EnsureFolderIsEmptyOnDelete/index.js";
-import {
-    FilterStorageOperations,
-    FolderStorageOperations
-} from "~/features/folders/shared/abstractions.js";
+import { FilterStorageOperations } from "~/features/folders/shared/abstractions.js";
 import { ListFlpsFeature } from "~/features/flp/ListFlps/feature.js";
 import { GetFlpFeature } from "~/features/flp/GetFlp/feature.js";
 import { ListFolderLevelPermissionsTargetsFeature } from "~/features/folders/ListFolderLevelPermissionsTargets/feature.js";
 import { Tenant } from "@webiny/api-core/types/tenancy";
 import { getLocale } from "@webiny/api-core/legacy/i18n/getLocale.js";
+import { CmsFlpFeature } from "~/features/cms/index.js";
+import { createFolderModel, FOLDER_MODEL_ID } from "~/domain/folder/folder.model.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { FolderModel } from "~/domain/folder/abstractions.js";
+import { createModelPlugin } from "@webiny/api-headless-cms/plugins/index.js";
+import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -45,6 +45,16 @@ const setupAcoContext = async (
     setupAcoContextParams: CreateAcoContextParams
 ): Promise<void> => {
     const { tenancy, security } = context;
+
+    const folderModelDefinition = createFolderModel();
+    context.plugins.register(createModelPlugin(folderModelDefinition));
+
+    const getModel = context.container.resolve(GetModelUseCase);
+
+    await context.security.withoutAuthorization(async () => {
+        const folderModel = await getModel.execute(FOLDER_MODEL_ID);
+        context.container.registerInstance(FolderModel, folderModel.value);
+    });
 
     const getTenant = (): Tenant => {
         return tenancy.getCurrentTenant();
@@ -74,7 +84,6 @@ const setupAcoContext = async (
     /**
      * Register legacy dependencies via abstractions
      */
-    context.container.registerInstance(FolderStorageOperations, storageOperations.folder);
     context.container.registerInstance(FilterStorageOperations, storageOperations.filter);
 
     /**
@@ -92,9 +101,7 @@ const setupAcoContext = async (
 
     ListFolderLevelPermissionsTargetsFeature.register(context.container);
 
-    GetFolderHierarchyFeature.register(context.container, {
-        storageOperations: storageOperations.folder
-    });
+    GetFolderHierarchyFeature.register(context.container);
 
     GetAncestorsFeature.register(context.container);
 
@@ -107,9 +114,7 @@ const setupAcoContext = async (
     ListFlpsFeature.register(context.container, flpCrudMethods);
     GetFlpFeature.register(context.container, flpCrudMethods);
 
-    CreateFlpOnFolderCreatedFeature.register(context.container, {
-        tasks: context.tasks
-    });
+    CreateFlpOnFolderCreatedFeature.register(context.container);
 
     UpdateFlpOnFolderUpdatedFeature.register(context.container, {
         tasks: context.tasks
@@ -134,7 +139,6 @@ const setupAcoContext = async (
     const folderLevelPermissions = context.container.resolve(FolderLevelPermissions);
 
     context.aco = {
-        folder: createFolderCrudMethods({ container: context.container }),
         filter: createFilterCrudMethods({
             container: context.container,
             getLocale,
@@ -146,7 +150,7 @@ const setupAcoContext = async (
     };
 
     if (context.wcp.canUseFolderLevelPermissions()) {
-        new CmsEntriesCrudDecorators({ context }).decorate();
+        CmsFlpFeature.register(context.container);
     }
 };
 

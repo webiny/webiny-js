@@ -1,14 +1,48 @@
 import { createAbstraction } from "@webiny/feature/api";
+import type { Result } from "@webiny/feature/api";
 import type { Folder, ListFoldersParams } from "~/folder/folder.types.js";
 import type { ListMeta } from "~/types.js";
+import type { FolderNotAuthorizedError, FolderPersistenceError } from "~/domain/folder/errors.js";
 
-// Use Case Abstraction
-export interface IListFoldersUseCase {
-    execute: (params: ListFoldersParams) => Promise<[Folder[], ListMeta]>;
+/**
+ * ListFolders repository interface
+ */
+export interface IListFoldersRepository {
+    execute(params: ListFoldersParams): Promise<Result<[Folder[], ListMeta], RepositoryError>>;
 }
+
+export interface IListFoldersRepositoryErrors {
+    persistence: FolderPersistenceError;
+}
+
+type RepositoryError = IListFoldersRepositoryErrors[keyof IListFoldersRepositoryErrors];
+
+export const ListFoldersRepository =
+    createAbstraction<IListFoldersRepository>("ListFoldersRepository");
+
+export namespace ListFoldersRepository {
+    export type Interface = IListFoldersRepository;
+    export type Error = RepositoryError;
+}
+
+/**
+ * ListFolders use case interface
+ */
+export interface IListFoldersUseCase {
+    execute(params: ListFoldersParams): Promise<Result<[Folder[], ListMeta], UseCaseError>>;
+}
+
+export interface IListFoldersUseCaseErrors {
+    notAuthorized: FolderNotAuthorizedError;
+    persistence: FolderPersistenceError;
+}
+
+type UseCaseError = IListFoldersUseCaseErrors[keyof IListFoldersUseCaseErrors];
 
 export const ListFoldersUseCase = createAbstraction<IListFoldersUseCase>("ListFoldersUseCase");
 
 export namespace ListFoldersUseCase {
     export type Interface = IListFoldersUseCase;
+    export type Return = Promise<Result<[Folder[], ListMeta], UseCaseError>>;
+    export type Error = UseCaseError;
 }

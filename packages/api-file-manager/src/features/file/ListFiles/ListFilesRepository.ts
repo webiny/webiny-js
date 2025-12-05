@@ -1,5 +1,4 @@
 import { Result } from "@webiny/feature/api";
-import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import {
     ListFilesRepository as RepositoryAbstraction,
@@ -13,21 +12,18 @@ import { EntryToFileMapper } from "../shared/EntryToFileMapper.js";
 class ListFilesRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
         private listLatestEntries: ListLatestEntriesUseCase.Interface,
-        private fileModel: FileModel.Interface,
-        private identityContext: IdentityContext.Interface
+        private fileModel: FileModel.Interface
     ) {}
 
     async execute(
         input: ListFilesInput
     ): Promise<Result<ListFilesOutput, RepositoryAbstraction.Error>> {
-        const result = await this.identityContext.withoutAuthorization(async () => {
-            return await this.listLatestEntries.execute(this.fileModel, {
-                where: input.where || {},
-                limit: input.limit || 40,
-                after: input.after || undefined,
-                sort: input.sort || ["id_DESC"],
-                search: input.search
-            });
+        const result = await this.listLatestEntries.execute(this.fileModel, {
+            where: input.where || {},
+            limit: input.limit || 40,
+            after: input.after || undefined,
+            sort: input.sort || ["id_DESC"],
+            search: input.search
         });
 
         if (result.isFail()) {
@@ -47,5 +43,5 @@ class ListFilesRepositoryImpl implements RepositoryAbstraction.Interface {
 
 export const ListFilesRepository = RepositoryAbstraction.createImplementation({
     implementation: ListFilesRepositoryImpl,
-    dependencies: [ListLatestEntriesUseCase, FileModel, IdentityContext]
+    dependencies: [ListLatestEntriesUseCase, FileModel]
 });

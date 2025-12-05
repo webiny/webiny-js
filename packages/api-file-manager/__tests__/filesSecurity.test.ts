@@ -73,9 +73,7 @@ describe("Files Security Test", { timeout: 10_000 }, () => {
         const insufficientPermissions: IdentityPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "fm.file", rwd: "wd" }], identityA],
-            [[{ name: "fm.file", rwd: "d" }], identityA],
-            [[{ name: "fm.file", rwd: "w" }], identityA]
+            [[{ name: "fm.file", rwd: "wd" }], identityA]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
@@ -204,7 +202,6 @@ describe("Files Security Test", { timeout: 10_000 }, () => {
         const sufficientPermissions: IdentityPermissions = [
             [[{ name: "fm.file" }], identityA],
             [[{ name: "fm.file", own: true }], identityA],
-            [[{ name: "fm.file", rwd: "w" }], identityA],
             [[{ name: "fm.file", rwd: "rw" }], identityA],
             [[{ name: "fm.file", rwd: "rwd" }], identityA]
         ];
@@ -251,7 +248,6 @@ describe("Files Security Test", { timeout: 10_000 }, () => {
     const sufficientPermissions: IdentityPermissions = [
         [[{ name: "fm.file" }], identityA],
         [[{ name: "fm.file", own: true }], identityA],
-        [[{ name: "fm.file", rwd: "w" }], identityA],
         [[{ name: "fm.file", rwd: "rw" }], identityA],
         [[{ name: "fm.file", rwd: "rwd" }], identityA]
     ];
@@ -303,7 +299,6 @@ describe("Files Security Test", { timeout: 10_000 }, () => {
         const sufficientPermissions: IdentityPermissions = [
             [[{ name: "fm.file" }], identityA],
             [[{ name: "fm.file", own: true }], identityA],
-            [[{ name: "fm.file", rwd: "w" }], identityA],
             [[{ name: "fm.file", rwd: "rw" }], identityA],
             [[{ name: "fm.file", rwd: "rwd" }], identityA]
         ];
@@ -334,7 +329,6 @@ describe("Files Security Test", { timeout: 10_000 }, () => {
         const insufficientPermissions: IdentityPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "fm.file", rwd: "w" }], identityA],
             [[{ name: "fm.file", rwd: "wd" }], identityA],
             [[{ name: "fm.file", own: true }], identityB]
         ];

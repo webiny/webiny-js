@@ -55,18 +55,14 @@ import { GET_APP_MODEL } from "~tests/graphql/app.gql";
 import { getStorageOps } from "@webiny/project-utils/testing/environment";
 import type { APIGatewayEvent, LambdaContext } from "@webiny/handler-aws/types";
 import type { CmsModel, HeadlessCmsStorageOperations } from "@webiny/api-headless-cms/types";
-import {
-    createFileManagerContext,
-    createFileManagerGraphQL,
-    FilePhysicalStoragePlugin
-} from "@webiny/api-file-manager";
-import type { FileManagerStorageOperations } from "@webiny/api-file-manager/types";
+import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
 import type { DecryptedWcpProjectLicense } from "@webiny/wcp/types";
 import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense";
 import { getDocumentClient } from "@webiny/project-utils/testing/dynamodb/index.js";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import type { IdentityData } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import type { ApiCoreStorageOperations } from "@webiny/api-core/types/core.js";
+import type { FileAliasStorageOperations } from "@webiny/api-file-manager/types.js";
 
 export interface UseGQLHandlerParams {
     permissions?: SecurityPermission[];
@@ -92,7 +88,7 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
     const { permissions, identity, plugins = [] } = params;
 
     const apiCoreStorage = getStorageOps<ApiCoreStorageOperations>("apiCore");
-    const fileManagerStorage = getStorageOps<FileManagerStorageOperations>("fileManager");
+    const fileManagerStorage = getStorageOps<FileAliasStorageOperations>("fileManager");
     const cmsStorage = getStorageOps<HeadlessCmsStorageOperations>("cms");
 
     const testProjectLicense = params.testProjectLicense || createTestWcpLicense();
@@ -114,17 +110,9 @@ export const useGraphQlHandler = (params: UseGQLHandlerParams = {}) => {
             }),
             createHeadlessCmsGraphQL(),
             createFileManagerContext({
-                storageOperations: fileManagerStorage.storageOperations
+                fileAliasStorageOperations: fileManagerStorage.storageOperations
             }),
             createFileManagerGraphQL(),
-            /**
-             * Mock physical file storage plugin.
-             */
-            new FilePhysicalStoragePlugin({
-                upload: async () => {},
-
-                delete: async () => {}
-            }),
             createHeadlessCmsGraphQL(),
             createAco({ documentClient }),
             plugins

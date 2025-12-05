@@ -1,24 +1,23 @@
+import { Result } from "@webiny/feature/api";
 import {
     EventPublisher,
     EventPublisher as EventPublisherAbstraction
 } from "@webiny/api-core/features/EventPublisher";
 import { createImplementation } from "@webiny/di";
-import { CreateFolderUseCase as UseCaseAbstraction } from "./abstractions.js";
+import {
+    CreateFolderUseCase as UseCaseAbstraction,
+    CreateFolderRepository
+} from "./abstractions.js";
 import { FolderBeforeCreateEvent, FolderAfterCreateEvent } from "./events.js";
-import type {
-    Folder,
-    CreateFolderParams,
-    AcoFolderStorageOperations
-} from "~/folder/folder.types.js";
-import { FolderStorageOperations } from "~/features/folders/shared/abstractions.js";
+import type { Folder, CreateFolderParams } from "~/folder/folder.types.js";
 
 class CreateFolderUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
         private eventPublisher: EventPublisherAbstraction.Interface,
-        private storageOperations: AcoFolderStorageOperations
+        private repository: CreateFolderRepository.Interface
     ) {}
 
-    async execute(params: CreateFolderParams): Promise<Folder> {
+    async execute(params: CreateFolderParams): Promise<Result<Folder, UseCaseAbstraction.Error>> {
         // Publish before create event
         const beforeCreateEvent = new FolderBeforeCreateEvent({
             input: params
@@ -27,7 +26,13 @@ class CreateFolderUseCaseImpl implements UseCaseAbstraction.Interface {
         await this.eventPublisher.publish(beforeCreateEvent);
 
         // Execute the create operation
-        const folder = await this.storageOperations.createFolder({ data: params });
+        const result = await this.repository.execute(params);
+
+        if (result.isFail()) {
+            return result;
+        }
+
+        const folder = result.value;
 
         // Publish after create event
         const afterCreateEvent = new FolderAfterCreateEvent({
@@ -36,12 +41,12 @@ class CreateFolderUseCaseImpl implements UseCaseAbstraction.Interface {
 
         await this.eventPublisher.publish(afterCreateEvent);
 
-        return folder;
+        return Result.ok(folder);
     }
 }
 
 export const CreateFolderUseCase = createImplementation({
     abstraction: UseCaseAbstraction,
     implementation: CreateFolderUseCaseImpl,
-    dependencies: [EventPublisher, FolderStorageOperations]
+    dependencies: [EventPublisher, CreateFolderRepository]
 });

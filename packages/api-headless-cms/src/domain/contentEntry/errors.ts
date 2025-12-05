@@ -21,12 +21,13 @@ export class EntryPersistenceError extends BaseError {
     }
 }
 
-export class EntryValidationError extends BaseError {
+export class EntryValidationError extends BaseError<any[]> {
     override readonly code = "Cms/Entry/ValidationError" as const;
 
-    constructor(message: string) {
+    constructor(message: string, data?: any[]) {
         super({
-            message
+            message,
+            data: data ?? []
         });
     }
 }
