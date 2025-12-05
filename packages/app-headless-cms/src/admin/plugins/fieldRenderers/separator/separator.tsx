@@ -25,13 +25,13 @@ export const createSeparatorFieldRenderer = (): CmsModelFieldRendererPlugin => {
                                 // this is the color from the figma
                                 lineColor={"backgroundColor/backgroundColor-primary-default"}
                                 alignContent={"center"}
+                                // @ts-expect-error
                                 content={
                                     <span className={"p-l-md p-r-md p-t-sm p-b-sm bg-color-white"}>
                                         {field.label}
                                     </span>
                                 }
                             />
-                            {field.label} ------------------------------
                         </Grid.Column>
                     </Grid>
                 );
