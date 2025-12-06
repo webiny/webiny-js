@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { Folder, IListCache, LoadedCache } from "~/features";
+import type { Folder, IListCache, LoadedCache } from "~/features/index.js";
 
 export interface IFoldersContext {
     type: string;

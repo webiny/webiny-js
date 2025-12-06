@@ -24,7 +24,7 @@ export class EventPublisher implements Abstraction.Interface {
 ```ts
 // __tests__/EventPublisher.test.ts
 import { describe, it, expect, beforeEach } from "vitest";
-import { Container, Abstraction, createImplementation } from "@webiny/di";
+import { Container, Abstraction } from "@webiny/di";
 import { EventPublisherFeature } from "../feature";
 import { EventPublisher as EventPublisherAbstraction } from "../abstractions";
 import type { DomainEvent, IEventHandler } from "../abstractions";
@@ -123,8 +123,7 @@ class SendNotificationHandler implements IEventHandler<PagePublishedEvent> {
     }
 }
 
-export const SendNotificationHandlerImpl = createImplementation({
-    abstraction: PagePublishedHandler,
+export const SendNotificationHandlerImpl = PagePublishedHandler.createImplementation({
     implementation: SendNotificationHandler,
     dependencies: []
 });
@@ -138,8 +137,7 @@ class UpdateSearchIndexHandler implements IEventHandler<PagePublishedEvent> {
     }
 }
 
-export const UpdateSearchIndexHandlerImpl = createImplementation({
-    abstraction: PagePublishedHandler,
+export const UpdateSearchIndexHandlerImpl = PagePublishedHandler.createImplementation({
     implementation: UpdateSearchIndexHandler,
     dependencies: []
 });
@@ -155,8 +153,7 @@ class LogPagePublishedHandler implements IEventHandler<PagePublishedEvent> {
     }
 }
 
-export const LogPagePublishedHandlerImpl = createImplementation({
-    abstraction: PagePublishedHandler,
+export const LogPagePublishedHandlerImpl = PagePublishedHandler.createImplementation({
     implementation: LogPagePublishedHandler,
     dependencies: []
 });
@@ -174,8 +171,7 @@ class SendWelcomeEmailHandler implements IEventHandler<UserRegisteredEvent> {
     }
 }
 
-export const SendWelcomeEmailHandlerImpl = createImplementation({
-    abstraction: UserRegisteredHandler,
+export const SendWelcomeEmailHandlerImpl = UserRegisteredHandler.createImplementation({
     implementation: SendWelcomeEmailHandler,
     dependencies: []
 });
@@ -189,8 +185,7 @@ class CreateUserProfileHandler implements IEventHandler<UserRegisteredEvent> {
     }
 }
 
-export const CreateUserProfileHandlerImpl = createImplementation({
-    abstraction: UserRegisteredHandler,
+export const CreateUserProfileHandlerImpl = UserRegisteredHandler.createImplementation({
     implementation: CreateUserProfileHandler,
     dependencies: []
 });
@@ -204,8 +199,7 @@ class TrackUserRegistrationHandler implements IEventHandler<UserRegisteredEvent>
     }
 }
 
-export const TrackUserRegistrationHandlerImpl = createImplementation({
-    abstraction: UserRegisteredHandler,
+export const TrackUserRegistrationHandlerImpl = UserRegisteredHandler.createImplementation({
     implementation: TrackUserRegistrationHandler,
     dependencies: []
 });
@@ -223,8 +217,7 @@ class ProcessPaymentHandler implements IEventHandler<OrderPlacedEvent> {
     }
 }
 
-export const ProcessPaymentHandlerImpl = createImplementation({
-    abstraction: OrderPlacedHandler,
+export const ProcessPaymentHandlerImpl = OrderPlacedHandler.createImplementation({
     implementation: ProcessPaymentHandler,
     dependencies: []
 });
@@ -238,8 +231,7 @@ class SendOrderConfirmationHandler implements IEventHandler<OrderPlacedEvent> {
     }
 }
 
-export const SendOrderConfirmationHandlerImpl = createImplementation({
-    abstraction: OrderPlacedHandler,
+export const SendOrderConfirmationHandlerImpl = OrderPlacedHandler.createImplementation({
     implementation: SendOrderConfirmationHandler,
     dependencies: []
 });
@@ -253,8 +245,7 @@ class UpdateInventoryHandler implements IEventHandler<OrderPlacedEvent> {
     }
 }
 
-export const UpdateInventoryHandlerImpl = createImplementation({
-    abstraction: OrderPlacedHandler,
+export const UpdateInventoryHandlerImpl = OrderPlacedHandler.createImplementation({
     implementation: UpdateInventoryHandler,
     dependencies: []
 });
@@ -541,8 +532,7 @@ describe("EventPublisher", () => {
                 }
             }
 
-            const FailingHandlerImpl = createImplementation({
-                abstraction: PagePublishedHandler,
+            const FailingHandlerImpl = PagePublishedHandler.createImplementation({
                 implementation: FailingHandler,
                 dependencies: []
             });

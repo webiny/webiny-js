@@ -1,24 +1,17 @@
-import type { DeleteFolderParams, IDeleteFolderUseCase } from "./IDeleteFolderUseCase.js";
-import type { IDeleteFolderRepository } from "./IDeleteFolderRepository.js";
-import { Folder } from "../Folder.js";
+import {
+    DeleteFolderUseCase as UseCaseAbstraction,
+    DeleteFolderRepository
+} from "./abstractions.js";
 
-export class DeleteFolderUseCase implements IDeleteFolderUseCase {
-    private repository: IDeleteFolderRepository;
+class DeleteFolderUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: DeleteFolderRepository.Interface) {}
 
-    constructor(repository: IDeleteFolderRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: DeleteFolderParams) {
-        await this.repository.execute(
-            Folder.create({
-                id: params.id,
-                title: params.title,
-                slug: params.slug,
-                type: params.type,
-                parentId: params.parentId,
-                permissions: params.permissions
-            })
-        );
+    async execute(id: string) {
+        await this.repository.execute(id);
     }
 }
+
+export const DeleteFolderUseCase = UseCaseAbstraction.createImplementation({
+    implementation: DeleteFolderUseCaseImpl,
+    dependencies: [DeleteFolderRepository]
+});

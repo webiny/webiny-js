@@ -4,7 +4,7 @@ import {
     IDocumentListVm,
     PageListPresenter
 } from "@webiny/app-website-builder/presentation/pages/PageList/index.js";
-import { SelectabilityRepository } from "~/presentation/page/PageList/SelectabilityRepository";
+import { SelectabilityRepository } from "~/presentation/page/PageList/SelectabilityRepository.js";
 
 class PageListPresenterWithWorkflows implements PageListPresenter.Interface {
     private repository = new SelectabilityRepository();

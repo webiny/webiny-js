@@ -1,10 +1,11 @@
 import { createFeature } from "@webiny/feature/admin";
-import { CreateFolderFeature } from "~/features/folders/createFolder/feature.js";
 import { loadedFolderCacheFactory } from "~/features/index.js";
 import { folderCacheFactory } from "~/features/index.js";
 import { LoadedFoldersCache } from "./abstractions.js";
 import { FoldersCache } from "./abstractions.js";
 import { FoldersContext } from "./abstractions.js";
+import { DeleteFolderFeature } from "./deleteFolder/feature.js";
+import { CreateFolderFeature } from "./createFolder/feature.js";
 
 export const FoldersFeature = createFeature({
     name: "Folders",
@@ -21,5 +22,6 @@ export const FoldersFeature = createFeature({
 
         // Folders features
         CreateFolderFeature.register(container);
+        DeleteFolderFeature.register(container);
     }
 });

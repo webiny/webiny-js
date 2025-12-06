@@ -19,7 +19,7 @@ export const useDeleteDialog = (): UseDeleteDialogResponse => {
 
     const onAccept = useCallback(async (folder: FolderItem) => {
         try {
-            await deleteFolder(folder);
+            await deleteFolder(folder.id);
             showSnackbar(`The folder "${folder.title}" was deleted successfully.`);
         } catch (error) {
             showSnackbar(error.message);
