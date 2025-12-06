@@ -1,7 +1,8 @@
-import type ApolloClient from "apollo-client";
 import gql from "graphql-tag";
-import type { ICreateFolderGateway } from "./ICreateFolderGateway.js";
-import type { FolderDto } from "./FolderDto.js";
+import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import { FoldersContext } from "~/features/folders/abstractions.js";
+import type { FolderDto } from "./abstractions.js";
+import { CreateFolderGateway as GatewayAbstraction } from "./abstractions.js";
 import type { AcoError, FolderItem } from "~/types.js";
 
 export interface CreateFolderResponse {
@@ -46,21 +47,18 @@ export const CREATE_FOLDER = (FOLDER_FIELDS: string) => gql`
         }
     `;
 
-export class CreateFolderGqlGateway implements ICreateFolderGateway {
-    private client: ApolloClient<any>;
-    private modelFields: string;
-
-    constructor(client: ApolloClient<any>, modelFields: string) {
-        this.client = client;
-        this.modelFields = modelFields;
-    }
+class CreateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
+    constructor(
+        private client: ApolloClient.Interface,
+        private foldersContext: FoldersContext.Interface
+    ) {}
 
     async execute(folder: FolderDto) {
         const { data: response } = await this.client.mutate<
             CreateFolderResponse,
             CreateFolderVariables
         >({
-            mutation: CREATE_FOLDER(this.modelFields),
+            mutation: CREATE_FOLDER(this.foldersContext.modelFields),
             variables: {
                 data: {
                     ...folder
@@ -81,3 +79,8 @@ export class CreateFolderGqlGateway implements ICreateFolderGateway {
         return data;
     }
 }
+
+export const CreateFolderGqlGateway = GatewayAbstraction.createImplementation({
+    implementation: CreateFolderGqlGatewayImpl,
+    dependencies: [ApolloClient, FoldersContext]
+});

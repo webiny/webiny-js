@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { createConfigurableComponent } from "@webiny/react-properties";
-import { CompositionScope } from "@webiny/react-composition";
 import { Browser, type BrowserConfig } from "./Browser/index.js";
 import { PageType } from "./PageType.js";
 import { type AcoConfig, useAcoConfig } from "@webiny/app-aco";
@@ -8,21 +7,13 @@ import { type AcoConfig, useAcoConfig } from "@webiny/app-aco";
 const base = createConfigurableComponent<PageListConfig>("WbPageList");
 
 const ScopedPublicPageListConfig = ({ children }: { children: React.ReactNode }) => {
-    return (
-        <CompositionScope name={"wbPage"} inherit={true}>
-            <base.Config priority={"secondary"}>{children}</base.Config>
-        </CompositionScope>
-    );
+    return <base.Config priority={"secondary"}>{children}</base.Config>;
 };
 
 ScopedPublicPageListConfig.displayName = "WbPageListConfig";
 
 const ScopedInternalPageListConfig = ({ children }: { children: React.ReactNode }) => {
-    return (
-        <CompositionScope name={"wbPage"} inherit={true}>
-            <base.Config priority={"primary"}>{children}</base.Config>
-        </CompositionScope>
-    );
+    return <base.Config priority={"primary"}>{children}</base.Config>;
 };
 
 ScopedInternalPageListConfig.displayName = "WbPageListConfig";

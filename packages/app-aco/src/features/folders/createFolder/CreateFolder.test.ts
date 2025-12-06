@@ -1,8 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { CreateFolder } from "./CreateFolder.js";
+import { Container } from "@webiny/di";
+import { FoldersCache } from "../abstractions.js";
 import { folderCacheFactory } from "../cache/FoldersCacheFactory.js";
-import type { FolderGqlDto } from "~/features/folders/listFolders/FolderGqlDto.js";
-import type { ICreateFolderGateway } from "~/features/folders/createFolder/ICreateFolderGateway.js";
+import { FoldersContext } from "../abstractions.js";
+import type { FolderGatewayOutputDto } from "./abstractions.js";
+import { CreateFolderUseCase } from "./abstractions.js";
+import type { ICreateFolderGateway } from "./abstractions.js";
+import { CreateFolderFeature } from "./feature.js";
 
 class CreateFolderMockGateway implements ICreateFolderGateway {
     async execute() {
@@ -11,7 +15,7 @@ class CreateFolderMockGateway implements ICreateFolderGateway {
             title: "New Folder",
             slug: "new-folder",
             type: "abc"
-        } as FolderGqlDto; // We don't care about the rest of the props, hence the type assertion.
+        } as FolderGatewayOutputDto; // We don't care about the rest of the props, hence the type assertion.
     }
 }
 
@@ -19,15 +23,22 @@ describe("CreateFolder", () => {
     const type = "abc";
     const gateway = new CreateFolderMockGateway();
 
+    let container: Container;
     const foldersCache = folderCacheFactory.getCache(type);
 
     beforeEach(() => {
+        container = new Container();
         foldersCache.clear();
+
+        container.registerInstance(FoldersContext, { type, modelFields: "" });
+        container.registerInstance(FoldersCache, foldersCache);
+
+        CreateFolderFeature.register(container);
     });
 
     it("should be able to create a new folder", async () => {
         const spy = vi.spyOn(gateway, "execute");
-        const createFolder = CreateFolder.getInstance(type, gateway);
+        const createFolder = container.resolve(CreateFolderUseCase);
 
         expect(foldersCache.hasItems()).toBeFalse();
 

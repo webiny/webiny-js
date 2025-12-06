@@ -5,7 +5,6 @@ import { DialogsProvider, FileManagerRenderer as BaseFileManagerRenderer } from 
 import type { FileItem } from "@webiny/app-admin/types.js";
 import { FoldersProvider } from "@webiny/app-aco/contexts/folders.js";
 import { NavigateFolderProvider } from "@webiny/app-aco";
-import { CompositionScope } from "@webiny/react-composition";
 import FileManagerView from "./FileManagerView.js";
 import type { FileManagerViewProviderProps } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
 import { FileManagerViewProvider } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
@@ -58,7 +57,6 @@ export function FileManagerProvider({
     ...props
 }: FileManagerProviderProps) {
     const mimeTypes = images ? accept || imagesAccept : accept || [];
-
     const [folderId, setFolderId] = useState<string | undefined>(undefined);
 
     const navigateToFolder = useCallback((folderId: string) => {
@@ -66,21 +64,19 @@ export function FileManagerProvider({
     }, []);
 
     return (
-        <CompositionScope name={"fm"}>
-            <FoldersProvider type={FM_ACO_APP}>
-                <NavigateFolderProvider
-                    folderId={folderId}
-                    navigateToFolder={navigateToFolder}
-                    createStorageKey={createStorageKey}
-                >
-                    <FileManagerViewProvider {...props} accept={mimeTypes}>
-                        <DialogsProvider>
-                            <FileManagerViewWithConfig>{children}</FileManagerViewWithConfig>
-                        </DialogsProvider>
-                    </FileManagerViewProvider>
-                </NavigateFolderProvider>
-            </FoldersProvider>
-        </CompositionScope>
+        <FoldersProvider type={FM_ACO_APP}>
+            <NavigateFolderProvider
+                folderId={folderId}
+                navigateToFolder={navigateToFolder}
+                createStorageKey={createStorageKey}
+            >
+                <FileManagerViewProvider {...props} accept={mimeTypes}>
+                    <DialogsProvider>
+                        <FileManagerViewWithConfig>{children}</FileManagerViewWithConfig>
+                    </DialogsProvider>
+                </FileManagerViewProvider>
+            </NavigateFolderProvider>
+        </FoldersProvider>
     );
 }
 

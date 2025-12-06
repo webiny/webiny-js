@@ -1,4 +1,5 @@
 import React from "react";
+import { CellRedirectType } from "~/modules/redirects/RedirectsList/components/Table/Cells/CellRedirectType.js";
 import { RedirectListConfig } from "./configs/index.js";
 import { DeleteFolder, EditFolder, SetFolderPermissions } from "@webiny/app-aco";
 import {
@@ -41,7 +42,11 @@ export const RedirectsListConfig = () => {
                     hideable={false}
                     size={200}
                 />
-                <Browser.Table.Column name={"data.redirectType"} header={"Type"} />
+                <Browser.Table.Column
+                    name={"data.redirectType"}
+                    header={"Type"}
+                    cell={<CellRedirectType />}
+                />
                 <Browser.Table.Column name={"createdBy"} header={"Author"} cell={<CellAuthor />} />
                 <Browser.Table.Column
                     name={"createdOn"}

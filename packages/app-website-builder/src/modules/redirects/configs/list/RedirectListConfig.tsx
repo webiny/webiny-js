@@ -7,11 +7,7 @@ import { useAcoConfig } from "@webiny/app-aco";
 const base = createConfigurableComponent<RedirectListConfig>("WbRedirectList");
 
 const ScopedRedirectListConfig = ({ children }: { children: React.ReactNode }) => {
-    return (
-        <CompositionScope name={"wbRedirect"}>
-            <base.Config>{children}</base.Config>
-        </CompositionScope>
-    );
+    return <base.Config>{children}</base.Config>;
 };
 
 ScopedRedirectListConfig.displayName = "WbRedirectListConfig";

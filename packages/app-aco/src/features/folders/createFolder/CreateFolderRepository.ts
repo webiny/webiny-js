@@ -1,26 +1,23 @@
-import type { ICreateFolderRepository } from "./ICreateFolderRepository.js";
-import type { ListCache } from "../cache/index.js";
+import { FoldersContext } from "~/features/folders/abstractions.js";
 import { Folder } from "../Folder.js";
-import type { ICreateFolderGateway } from "./ICreateFolderGateway.js";
-import type { FolderDto } from "./FolderDto.js";
+import type { FolderDto } from "./abstractions.js";
+import { CreateFolderGateway } from "./abstractions.js";
+import { CreateFolderRepository as RepositoryAbstraction } from "./abstractions.js";
+import { FoldersCache } from "~/features/folders/abstractions.js";
 
-export class CreateFolderRepository implements ICreateFolderRepository {
-    private cache: ListCache<Folder>;
-    private gateway: ICreateFolderGateway;
-    private readonly type: string;
-
-    constructor(cache: ListCache<Folder>, gateway: ICreateFolderGateway, type: string) {
-        this.cache = cache;
-        this.gateway = gateway;
-        this.type = type;
-    }
+class CreateFolderRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private cache: FoldersCache.Interface,
+        private foldersContext: FoldersContext.Interface,
+        private gateway: CreateFolderGateway.Interface
+    ) {}
 
     async execute(folder: Folder) {
         const dto: FolderDto = {
             title: folder.title,
             slug: folder.slug,
             permissions: folder.permissions,
-            type: this.type,
+            type: this.foldersContext.type,
             parentId: folder.parentId,
             extensions: folder.extensions
         };
@@ -29,3 +26,8 @@ export class CreateFolderRepository implements ICreateFolderRepository {
         this.cache.addItems([Folder.create(result)]);
     }
 }
+
+export const CreateFolderRepository = RepositoryAbstraction.createImplementation({
+    implementation: CreateFolderRepositoryImpl,
+    dependencies: [FoldersCache, FoldersContext, CreateFolderGateway]
+});
