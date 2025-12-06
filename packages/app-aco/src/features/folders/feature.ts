@@ -1,4 +1,5 @@
 import { createFeature } from "@webiny/feature/admin";
+import { GetDescendantFoldersFeature } from "~/features/folders/getDescendantFolders/feature.js";
 import { loadedFolderCacheFactory } from "~/features/index.js";
 import { folderCacheFactory } from "~/features/index.js";
 import { LoadedFoldersCache } from "./abstractions.js";
@@ -23,5 +24,6 @@ export const FoldersFeature = createFeature({
         // Folders features
         CreateFolderFeature.register(container);
         DeleteFolderFeature.register(container);
+        GetDescendantFoldersFeature.register(container);
     }
 });
