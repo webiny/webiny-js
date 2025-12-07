@@ -29,7 +29,7 @@
     "p-map": "^7.0.3",
     "p-reduce": "^3.0.0",
     "sanitize-filename": "^1.6.3",
-    "sharp": "^0.34.4"
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@webiny/build-tools": "0.0.0",
