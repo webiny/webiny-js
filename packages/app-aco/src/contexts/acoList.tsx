@@ -14,7 +14,7 @@ import type {
 import { useAcoApp, useNavigateFolder } from "~/hooks/index.js";
 import {
     useGetDescendantFolders,
-    useGetFolderHierarchy,
+    useLoadFolderHierarchy,
     useListFoldersByParentIds
 } from "~/features/index.js";
 import { FoldersContext } from "~/contexts/folders.js";
@@ -126,11 +126,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
     const { identity } = useSecurity();
     const { currentFolderId } = useNavigateFolder();
     const { folderIdPath, folderIdInPath } = useAcoApp();
-    const {
-        folders: originalFolders,
-        getIsFolderLoading,
-        getFolderHierarchy
-    } = useGetFolderHierarchy();
+    const { folders: originalFolders, loadFolderHierarchy } = useLoadFolderHierarchy();
     const { getDescendantFolders } = useGetDescendantFolders();
     const { listFoldersByParentIds } = useListFoldersByParentIds();
     const folderContext = useContext(FoldersContext);
@@ -156,7 +152,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
     useEffect(() => {
         // The folders collection is empty, it must be the first render, let's load the full hierarchy.
         if (folders.length === 0) {
-            getFolderHierarchy(currentFolderId);
+            loadFolderHierarchy(currentFolderId);
         } else {
             // Otherwise let's load only the current folder sub-tree
             listFoldersByParentIds([currentFolderId]);
@@ -407,9 +403,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         currentFolder,
         records,
         listTitle,
-        isListLoading: Boolean(
-            recordsLoading.INIT || recordsLoading.LIST || getIsFolderLoading(currentFolderId)
-        ),
+        isListLoading: Boolean(recordsLoading.INIT || recordsLoading.LIST),
         isListLoadingMore: Boolean(recordsLoading.LIST_MORE),
         meta,
         setSearchQuery(query) {

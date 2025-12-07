@@ -6,7 +6,7 @@ export * from "./getDescendantFolders/index.js";
 export * from "./getFolder/index.js";
 export * from "./getFolderAncestors/index.js";
 export * from "./getFolderExtensionsFields/index.js";
-export * from "./getFolderHierarchy/index.js";
+export * from "./loadFolderHierarchy/index.js";
 export * from "./getFolderLevelPermission/index.js";
 export * from "./getFolderModel/index.js";
 export * from "./listFolders/index.js";

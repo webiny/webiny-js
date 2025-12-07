@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { autorun } from "mobx";
 import {
-    useGetFolderHierarchy,
+    useLoadFolderHierarchy,
     useListFoldersByParentIds,
     useNavigateFolder
 } from "@webiny/app-aco";
@@ -13,7 +13,7 @@ import { PageListFeature } from "~/presentation/pages/PageList/feature.js";
 
 export const useDocumentList = makeDecoratableHook(() => {
     const isFirstLoad = useRef(true);
-    const { folders, getFolderHierarchy } = useGetFolderHierarchy();
+    const { folders, loadFolderHierarchy } = useLoadFolderHierarchy();
     const { listFoldersByParentIds } = useListFoldersByParentIds();
     const { currentFolderId } = useNavigateFolder();
     const { loadPages: listDocuments } = useLoadPages();
@@ -55,7 +55,7 @@ export const useDocumentList = makeDecoratableHook(() => {
     useEffect(() => {
         // The folders collection is empty, it must be the first render, let's load the full hierarchy.
         if (folders.length === 0) {
-            getFolderHierarchy(vm.folderId);
+            loadFolderHierarchy(vm.folderId);
         } else {
             // Otherwise let's load only the current folder sub-tree
             listFoldersByParentIds([vm.folderId]);

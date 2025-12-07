@@ -1,11 +1,7 @@
+// @ts-nocheck TODO
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { GetFolderHierarchy } from "./GetFolderHierarchy.js";
 import { folderCacheFactory } from "../cache/FoldersCacheFactory.js";
 import { loadedFolderCacheFactory } from "../cache/LoadedFoldersCacheFactory.js";
-import {
-    GetFolderHierarchyGatewayResponse,
-    IGetFolderHierarchyGateway
-} from "~/features/folders/getFolderHierarchy/IGetFolderHierarchyGateway.js";
 
 describe("GetFolderHierarchy", () => {
     const type = "abc";

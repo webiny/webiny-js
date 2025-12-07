@@ -1,32 +1,30 @@
-import type ApolloClient from "apollo-client";
 import gql from "graphql-tag";
-import type {
-    GetFolderHierarchyGatewayParams,
-    IGetFolderHierarchyGateway
-} from "./IGetFolderHierarchyGateway.js";
+import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import { FoldersContext } from "~/features/folders/abstractions.js";
+import { LoadFolderHierarchyGateway as GatewayAbstraction } from "./abstractions.js";
 import type { AcoError, FolderItem } from "~/types.js";
 import { ROOT_FOLDER } from "~/constants.js";
 
-interface GetFolderHierarchyResponseData {
+interface LoadFolderHierarchyResponseData {
     parents: FolderItem[];
     siblings: FolderItem[];
 }
 
-export interface GetFolderHierarchyResponse {
+export interface LoadFolderHierarchyResponse {
     aco: {
         getFolderHierarchy: {
-            data: GetFolderHierarchyResponseData | null;
+            data: LoadFolderHierarchyResponseData | null;
             error: AcoError | null;
         };
     };
 }
 
-export interface GetFolderHierarchyQueryVariables {
+export interface LoadFolderHierarchyQueryVariables {
     type: string;
     id: string;
 }
 
-export const GET_FOLDER_HIERARCHY = (FOLDER_FIELDS: string) => gql`
+export const LOAD_FOLDER_HIERARCHY = (FOLDER_FIELDS: string) => gql`
     query GetFolderHierarchy($type: String!, $id: ID!) {
         aco {
             getFolderHierarchy(type: $type, id: $id) {
@@ -44,30 +42,28 @@ export const GET_FOLDER_HIERARCHY = (FOLDER_FIELDS: string) => gql`
     }
 `;
 
-export class GetFolderHierarchyGqlGateway implements IGetFolderHierarchyGateway {
-    private client: ApolloClient<any>;
-    private modelFields: string;
+class LoadFolderHierarchyGqlGatewayImpl implements GatewayAbstraction.Interface {
+    constructor(
+        private client: ApolloClient.Interface,
+        private foldersContext: FoldersContext.Interface
+    ) {}
 
-    constructor(client: ApolloClient<any>, modelFields: string) {
-        this.client = client;
-        this.modelFields = modelFields;
-    }
-
-    async execute(params: GetFolderHierarchyGatewayParams) {
+    async execute(type: string, id: string) {
         const { data: response } = await this.client.query<
-            GetFolderHierarchyResponse,
-            GetFolderHierarchyQueryVariables
+            LoadFolderHierarchyResponse,
+            LoadFolderHierarchyQueryVariables
         >({
-            query: GET_FOLDER_HIERARCHY(this.modelFields),
+            query: LOAD_FOLDER_HIERARCHY(this.foldersContext.modelFields),
             variables: {
-                ...params
+                type,
+                id
             },
             fetchPolicy: "network-only"
         });
 
         if (!response) {
             throw new Error(
-                `Network error while listing folder hierarchy for the provided type/id: ${params.type}/${params.id}.`
+                `Network error while loading folder hierarchy for the provided type/id: ${type}/${id}.`
             );
         }
 
@@ -76,7 +72,7 @@ export class GetFolderHierarchyGqlGateway implements IGetFolderHierarchyGateway 
         if (!data) {
             throw new Error(
                 error?.message ||
-                    `Could not fetch folder hierarchy for the provided type/id: ${params.type}/${params.id}.`
+                    `Could not load folder hierarchy for the provided type/id: ${type}/${id}.`
             );
         }
 
@@ -117,3 +113,8 @@ export class GetFolderHierarchyGqlGateway implements IGetFolderHierarchyGateway 
         };
     }
 }
+
+export const LoadFolderHierarchyGqlGateway = GatewayAbstraction.createImplementation({
+    implementation: LoadFolderHierarchyGqlGatewayImpl,
+    dependencies: [ApolloClient, FoldersContext]
+});

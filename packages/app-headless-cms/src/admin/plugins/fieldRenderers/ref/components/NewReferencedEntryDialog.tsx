@@ -15,7 +15,7 @@ import { GET_CONTENT_MODEL } from "~/admin/graphql/contentModels.js";
 import { useCms } from "~/admin/hooks/index.js";
 import {
     NavigateFolderProvider as AbstractNavigateFolderProvider,
-    useGetFolderHierarchy
+    useLoadFolderHierarchy
 } from "@webiny/app-aco";
 import { FolderTree, useNavigateFolder } from "@webiny/app-aco";
 import { SplitView, LeftPanel, RightPanel, DialogsProvider } from "@webiny/app-admin";
@@ -42,12 +42,12 @@ const EntryForm = ({ onCreate, setSaveEntry }: EntryFormProps) => {
     const { persistEntry } = usePersistEntry({ addItemToListCache: false });
     const { currentFolderId, navigateToFolder } = useNavigateFolder();
     const { browser } = useContentEntryListConfig();
-    const { folders, getFolderHierarchy } = useGetFolderHierarchy();
+    const { folders, loadFolderHierarchy } = useLoadFolderHierarchy();
 
     useEffect(() => {
         // The folders collection is empty, it must be the first render, let's load the full hierarchy.
         if (folders.length === 0) {
-            getFolderHierarchy(currentFolderId);
+            loadFolderHierarchy(currentFolderId);
         }
     }, []);
 

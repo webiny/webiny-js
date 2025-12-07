@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Separator } from "@webiny/admin-ui";
-import { FolderTree, useGetFolderHierarchy, useListFoldersByParentIds } from "@webiny/app-aco";
+import { FolderTree, useLoadFolderHierarchy, useListFoldersByParentIds } from "@webiny/app-aco";
 import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
 
 interface LeftSidebarProps {
@@ -11,12 +11,12 @@ interface LeftSidebarProps {
 
 export const LeftSidebar = ({ currentFolder, onFolderClick, children }: LeftSidebarProps) => {
     const { browser } = useFileManagerViewConfig();
-    const { folders, getFolderHierarchy } = useGetFolderHierarchy();
+    const { folders, loadFolderHierarchy } = useLoadFolderHierarchy();
     const { listFoldersByParentIds } = useListFoldersByParentIds();
 
     useEffect(() => {
         if (folders.length === 0) {
-            getFolderHierarchy(currentFolder);
+            loadFolderHierarchy(currentFolder);
         } else {
             // Otherwise let's load only the current folder sub-tree
             listFoldersByParentIds([currentFolder]);
