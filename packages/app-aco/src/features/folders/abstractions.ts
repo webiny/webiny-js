@@ -1,5 +1,11 @@
+import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import { createAbstraction } from "@webiny/feature/admin";
 import type { Folder, IListCache, LoadedCache } from "~/features/index.js";
+
+export const FolderModel = createAbstraction<CmsModel>("FolderModel");
+export namespace FolderModel {
+    export type Interface = CmsModel;
+}
 
 export interface IFoldersContext {
     type: string;

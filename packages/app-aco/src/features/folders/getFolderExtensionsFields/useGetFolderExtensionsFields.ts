@@ -1,18 +1,12 @@
-import { useCallback } from "react";
-import { useFoldersType } from "~/hooks/index.js";
-import { useFolderModel } from "~/features/index.js";
-import { GetFolderExtensionsFields } from "./GetFolderExtensionsFields.js";
+import { useFeature } from "@webiny/app";
+import { GetFolderExtensionsFieldsFeature } from "./feature.js";
 
 export const useGetFolderExtensionsFields = () => {
-    const [type, modelId] = useFoldersType().split(":");
-    const model = useFolderModel();
-
-    const getFolderExtensionsFields = useCallback(() => {
-        const instance = GetFolderExtensionsFields.getInstance(model, type, modelId);
-        return instance.execute();
-    }, [type, modelId, model.id]);
+    const { useCase } = useFeature(GetFolderExtensionsFieldsFeature);
 
     return {
-        getFolderExtensionsFields
+        getFolderExtensionsFields: () => {
+            return useCase.execute();
+        }
     };
 };

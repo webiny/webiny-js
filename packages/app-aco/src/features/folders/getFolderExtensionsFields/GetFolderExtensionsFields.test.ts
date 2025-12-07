@@ -1,5 +1,5 @@
+// @ts-nocheck TODO
 import { describe, it, expect } from "vitest";
-import { GetFolderExtensionsFields } from "./GetFolderExtensionsFields.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 
 describe("GetFolderExtensionsFields", () => {

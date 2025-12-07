@@ -1,6 +1,7 @@
 import { createFeature } from "@webiny/feature/admin";
 import { GetDescendantFoldersFeature } from "~/features/folders/getDescendantFolders/feature.js";
 import { GetFolderAncestorsFeature } from "~/features/folders/getFolderAncestors/feature.js";
+import { GetFolderExtensionsFieldsFeature } from "~/features/folders/getFolderExtensionsFields/feature.js";
 import { loadedFolderCacheFactory } from "~/features/index.js";
 import { folderCacheFactory } from "~/features/index.js";
 import { LoadedFoldersCache } from "./abstractions.js";
@@ -29,5 +30,6 @@ export const FoldersFeature = createFeature({
         GetDescendantFoldersFeature.register(container);
         GetFolderFeature.register(container);
         GetFolderAncestorsFeature.register(container);
+        GetFolderExtensionsFieldsFeature.register(container);
     }
 });

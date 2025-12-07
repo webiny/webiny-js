@@ -1,7 +1,9 @@
+import { useContainer } from "@webiny/app";
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { autorun, toJS } from "mobx";
 import { useApolloClient } from "@apollo/react-hooks";
 import { OverlayLoader } from "@webiny/admin-ui";
+import { FolderModel } from "~/features/folders/abstractions.js";
 import type { FolderModelDto } from "~/features/index.js";
 import { GetFolderModelGqlGateway } from "~/features/folders/getFolderModel/GetFolderModelGqlGateway.js";
 import { GetFolderModel } from "~/features/folders/getFolderModel/GetFolderModel.js";
@@ -15,6 +17,7 @@ const acoFolderModelProvider: Decorator<
 > = Original => {
     return function AcoFolderProvider({ children }) {
         const client = useApolloClient();
+        const container = useContainer();
         const gateway = new GetFolderModelGqlGateway(client);
 
         const [model, setModel] = useState<FolderModelDto | undefined>(undefined);
@@ -38,6 +41,11 @@ const acoFolderModelProvider: Decorator<
         useEffect(() => {
             return autorun(() => {
                 const model = repository.getModel();
+
+                if (model) {
+                    container.registerInstance(FolderModel, model);
+                }
+
                 setModel(state => {
                     if (model) {
                         return { ...toJS(model) };
