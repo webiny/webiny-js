@@ -1,4 +1,4 @@
-import { FolderModel } from "~/features/folders/abstractions.js";
+import { FolderModelProvider } from "~/features/folders/abstractions.js";
 import {
     GetFolderExtensionsFieldsUseCase as UseCaseAbstraction,
     FolderExtensionsFieldFilter
@@ -6,12 +6,13 @@ import {
 
 class GetFolderExtensionsFieldsUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(
-        private model: FolderModel.Interface,
+        private modelProvider: FolderModelProvider.Interface,
         private filters: FolderExtensionsFieldFilter.Interface[]
     ) {}
 
-    execute() {
-        const extensionsField = this.model.fields.find(f => f.fieldId === "extensions");
+    async execute() {
+        const model = await this.modelProvider.getModel();
+        const extensionsField = model.fields.find(f => f.fieldId === "extensions");
         const allFields = extensionsField?.settings?.fields || [];
 
         // Filter to only fields with tags
@@ -27,13 +28,11 @@ class GetFolderExtensionsFieldsUseCaseImpl implements UseCaseAbstraction.Interfa
         // Return fields in original order that match any filter
         const fields = fieldsWithTags.filter(field => matchingFieldIds.has(field.fieldId));
 
-        return {
-            fields
-        };
+        return fields;
     }
 }
 
 export const GetFolderExtensionsFieldsUseCase = UseCaseAbstraction.createImplementation({
     implementation: GetFolderExtensionsFieldsUseCaseImpl,
-    dependencies: [FolderModel, [FolderExtensionsFieldFilter, { multiple: true }]]
+    dependencies: [FolderModelProvider, [FolderExtensionsFieldFilter, { multiple: true }]]
 });

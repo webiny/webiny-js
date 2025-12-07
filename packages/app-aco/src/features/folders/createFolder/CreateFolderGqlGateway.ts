@@ -1,5 +1,6 @@
 import gql from "graphql-tag";
 import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import { FolderModelProvider } from "~/features/folders/abstractions.js";
 import { FoldersContext } from "~/features/folders/abstractions.js";
 import type { FolderDto } from "./abstractions.js";
 import { CreateFolderGateway as GatewayAbstraction } from "./abstractions.js";
@@ -50,15 +51,17 @@ export const CREATE_FOLDER = (FOLDER_FIELDS: string) => gql`
 class CreateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
         private client: ApolloClient.Interface,
-        private foldersContext: FoldersContext.Interface
+        private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(folder: FolderDto) {
+        const fields = await this.folderModelProvider.getGraphQLSelection();
+
         const { data: response } = await this.client.mutate<
             CreateFolderResponse,
             CreateFolderVariables
         >({
-            mutation: CREATE_FOLDER(this.foldersContext.modelFields),
+            mutation: CREATE_FOLDER(fields),
             variables: {
                 data: {
                     ...folder
@@ -82,5 +85,5 @@ class CreateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
 
 export const CreateFolderGqlGateway = GatewayAbstraction.createImplementation({
     implementation: CreateFolderGqlGatewayImpl,
-    dependencies: [ApolloClient, FoldersContext]
+    dependencies: [ApolloClient, FolderModelProvider]
 });

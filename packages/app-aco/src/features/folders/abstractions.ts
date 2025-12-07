@@ -3,14 +3,17 @@ import type { ILoadingRepository } from "@webiny/app-utils";
 import { createAbstraction } from "@webiny/feature/admin";
 import type { Folder, IListCache, LoadedCache } from "~/features/index.js";
 
-export const FolderModel = createAbstraction<CmsModel>("FolderModel");
-export namespace FolderModel {
-    export type Interface = CmsModel;
+export interface IFolderModelProvider {
+    getModel(): Promise<CmsModel>;
+    getGraphQLSelection(): Promise<string>;
+}
+export const FolderModelProvider = createAbstraction<IFolderModelProvider>("FolderModel");
+export namespace FolderModelProvider {
+    export type Interface = IFolderModelProvider;
 }
 
 export interface IFoldersContext {
     type: string;
-    modelFields: string;
 }
 
 export const FoldersContext = createAbstraction<IFoldersContext>("FoldersContext");

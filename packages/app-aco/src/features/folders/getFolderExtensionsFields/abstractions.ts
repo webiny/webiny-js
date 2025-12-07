@@ -4,9 +4,7 @@ import type { CmsModelField } from "@webiny/app-headless-cms-common/types/index.
 // Use Case
 
 export interface IGetFolderExtensionsFieldsUseCase {
-    execute: () => {
-        fields: CmsModelField[];
-    };
+    execute(): Promise<CmsModelField[]>;
 }
 
 export const GetFolderExtensionsFieldsUseCase =

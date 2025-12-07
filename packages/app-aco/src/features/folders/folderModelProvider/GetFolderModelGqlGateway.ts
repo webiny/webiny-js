@@ -1,7 +1,7 @@
-import type ApolloClient from "apollo-client";
 import gql from "graphql-tag";
+import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import { GetFolderModelGateway as GatewayAbstraction } from "./abstractions.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
-import type { IGetFolderModelGateway } from "./IGetFolderModelGateway.js";
 import type { AcoError } from "~/types.js";
 
 export interface GetFolderModelResponse {
@@ -29,12 +29,8 @@ export const GET_FOLDER_MODEL = gql`
     }
 `;
 
-export class GetFolderModelGqlGateway implements IGetFolderModelGateway {
-    private client: ApolloClient<any>;
-
-    constructor(client: ApolloClient<any>) {
-        this.client = client;
-    }
+class GetFolderModelGqlGatewayImpl implements GatewayAbstraction.Interface {
+    constructor(private client: ApolloClient.Interface) {}
 
     async execute() {
         const { data: response } = await this.client.query<GetFolderModelResponse>({
@@ -55,3 +51,8 @@ export class GetFolderModelGqlGateway implements IGetFolderModelGateway {
         return data;
     }
 }
+
+export const GetFolderModelGqlGateway = GatewayAbstraction.createImplementation({
+    implementation: GetFolderModelGqlGatewayImpl,
+    dependencies: [ApolloClient]
+});

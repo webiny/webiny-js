@@ -1,14 +1,14 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import type { IGetFolderModelRepository } from "./IGetFolderModelRepository.js";
-import type { IGetFolderModelGateway } from "./IGetFolderModelGateway.js";
+import {
+    GetFolderModelRepository as RepositoryAbstraction,
+    GetFolderModelGateway
+} from "./abstractions.js";
 import type { FolderModelDto } from "./FolderModelDto.js";
 
-export class GetFolderModelRepository implements IGetFolderModelRepository {
+class GetFolderModelRepositoryImpl implements RepositoryAbstraction.Interface {
     private model: FolderModelDto | undefined;
-    private gateway: IGetFolderModelGateway;
 
-    constructor(gateway: IGetFolderModelGateway) {
-        this.gateway = gateway;
+    constructor(private gateway: GetFolderModelGateway.Interface) {
         this.model = undefined;
         makeAutoObservable(this);
     }
@@ -30,3 +30,8 @@ export class GetFolderModelRepository implements IGetFolderModelRepository {
         return Boolean(this.model);
     }
 }
+
+export const GetFolderModelRepository = RepositoryAbstraction.createImplementation({
+    implementation: GetFolderModelRepositoryImpl,
+    dependencies: [GetFolderModelGateway]
+});

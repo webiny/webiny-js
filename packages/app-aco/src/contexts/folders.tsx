@@ -4,7 +4,6 @@ import type { ReactNode } from "react";
 import React, { useContext, useMemo } from "react";
 import { AcoAppContext } from "~/contexts/app.js";
 import { FoldersFeature } from "~/features/folders/feature.js";
-import { useGetFolderGraphQLSelection } from "~/hooks/index.js";
 
 interface FoldersContext {
     type?: string | null;
@@ -29,12 +28,11 @@ export const FoldersProvider = ({ children, ...props }: Props) => {
     }
 
     const container = useContainer();
-    const modelFields = useGetFolderGraphQLSelection();
 
     const routeContainer = useMemo(() => {
         const childContainer = container.createChildContainer();
 
-        FoldersFeature.register(childContainer, { type, modelFields });
+        FoldersFeature.register(childContainer, { type });
 
         return childContainer;
     }, []);

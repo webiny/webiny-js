@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
-import { FoldersContext } from "~/features/folders/abstractions.js";
+import { FolderModelProvider } from "~/features/folders/abstractions.js";
 import { LoadFolderHierarchyGateway as GatewayAbstraction } from "./abstractions.js";
 import type { AcoError, FolderItem } from "~/types.js";
 import { ROOT_FOLDER } from "~/constants.js";
@@ -45,15 +45,17 @@ export const LOAD_FOLDER_HIERARCHY = (FOLDER_FIELDS: string) => gql`
 class LoadFolderHierarchyGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
         private client: ApolloClient.Interface,
-        private foldersContext: FoldersContext.Interface
+        private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(type: string, id: string) {
+        const fields = await this.folderModelProvider.getGraphQLSelection();
+
         const { data: response } = await this.client.query<
             LoadFolderHierarchyResponse,
             LoadFolderHierarchyQueryVariables
         >({
-            query: LOAD_FOLDER_HIERARCHY(this.foldersContext.modelFields),
+            query: LOAD_FOLDER_HIERARCHY(fields),
             variables: {
                 type,
                 id
@@ -116,5 +118,5 @@ class LoadFolderHierarchyGqlGatewayImpl implements GatewayAbstraction.Interface 
 
 export const LoadFolderHierarchyGqlGateway = GatewayAbstraction.createImplementation({
     implementation: LoadFolderHierarchyGqlGatewayImpl,
-    dependencies: [ApolloClient, FoldersContext]
+    dependencies: [ApolloClient, FolderModelProvider]
 });

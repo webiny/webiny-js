@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
-import { FoldersContext } from "~/features/folders/abstractions.js";
+import { FolderModelProvider } from "~/features/folders/abstractions.js";
 import { ListFoldersGateway as GatewayAbstraction } from "./abstractions.js";
 import type { AcoError, FolderItem } from "~/types.js";
 import { ROOT_FOLDER } from "~/constants.js";
@@ -39,15 +39,17 @@ export const LIST_FOLDERS = (FOLDER_FIELDS: string) => gql`
 class ListFoldersGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
         private client: ApolloClient.Interface,
-        private foldersContext: FoldersContext.Interface
+        private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(type: string) {
+        const fields = await this.folderModelProvider.getGraphQLSelection();
+
         const { data: response } = await this.client.query<
             ListFoldersResponse,
             ListFoldersQueryVariables
         >({
-            query: LIST_FOLDERS(this.foldersContext.modelFields),
+            query: LIST_FOLDERS(fields),
             variables: {
                 type,
                 limit: 10000
@@ -102,5 +104,5 @@ class ListFoldersGqlGatewayImpl implements GatewayAbstraction.Interface {
 
 export const ListFoldersGqlGateway = GatewayAbstraction.createImplementation({
     implementation: ListFoldersGqlGatewayImpl,
-    dependencies: [ApolloClient, FoldersContext]
+    dependencies: [ApolloClient, FolderModelProvider]
 });

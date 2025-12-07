@@ -1,15 +1,20 @@
 import gql from "graphql-tag";
 import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
-import { FoldersContext } from "~/features/folders/abstractions.js";
+import { FolderModelProvider } from "~/features/folders/abstractions.js";
 import { GetFolderGateway as GatewayAbstraction } from "./abstractions.js";
 import type { FolderItem, AcoError } from "~/types.js";
 
 export interface GetFolderResponse {
     aco: {
-        getFolder: {
-            data: FolderItem | null;
-            error: AcoError | null;
-        };
+        getFolder:
+            | {
+                  data: FolderItem;
+                  error: null;
+              }
+            | {
+                  data: null;
+                  error: AcoError;
+              };
     };
 }
 
@@ -35,19 +40,17 @@ export const GET_FOLDER = (FOLDER_FIELDS: string) => gql`
 class GetFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
     constructor(
         private client: ApolloClient.Interface,
-        private foldersContext: FoldersContext.Interface
+        private folderModelProvider: FolderModelProvider.Interface
     ) {}
 
     async execute(id: string) {
-        if (!id) {
-            throw new Error("Folder `id` is mandatory");
-        }
+        const fields = await this.folderModelProvider.getGraphQLSelection();
 
         const { data: response } = await this.client.query<
             GetFolderResponse,
             GetFolderQueryVariables
         >({
-            query: GET_FOLDER(this.foldersContext.modelFields),
+            query: GET_FOLDER(fields),
             variables: { id },
             fetchPolicy: "network-only"
         });
@@ -68,5 +71,5 @@ class GetFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
 
 export const GetFolderGqlGateway = GatewayAbstraction.createImplementation({
     implementation: GetFolderGqlGatewayImpl,
-    dependencies: [ApolloClient, FoldersContext]
+    dependencies: [ApolloClient, FolderModelProvider]
 });
