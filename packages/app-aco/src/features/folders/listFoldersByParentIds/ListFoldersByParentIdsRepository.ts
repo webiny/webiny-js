@@ -1,24 +1,24 @@
-import type { ListCache } from "../cache/index.js";
 import { Folder } from "../Folder.js";
-import type { IListFoldersByParentIdsGateway } from "./IListFoldersByParentIdsGateway.js";
-import type {
-    IListFoldersByParentIdsRepository,
-    ListFoldersByParentIdsRepositoryParams
-} from "./IListFoldersByParentIdsRepository.js";
+import {
+    ListFoldersByParentIdsRepository as RepositoryAbstraction,
+    ListFoldersByParentIdsGateway
+} from "./abstractions.js";
+import { FoldersCache, FoldersContext } from "~/features/folders/abstractions.js";
 
-export class ListFoldersByParentIdsRepository implements IListFoldersByParentIdsRepository {
-    private cache: ListCache<Folder>;
-    private gateway: IListFoldersByParentIdsGateway;
-    private readonly type: string;
+class ListFoldersByParentIdsRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private foldersContext: FoldersContext.Interface,
+        private cache: FoldersCache.Interface,
+        private gateway: ListFoldersByParentIdsGateway.Interface
+    ) {}
 
-    constructor(cache: ListCache<Folder>, gateway: IListFoldersByParentIdsGateway, type: string) {
-        this.cache = cache;
-        this.gateway = gateway;
-        this.type = type;
-    }
-
-    async execute(params: ListFoldersByParentIdsRepositoryParams) {
-        const items = await this.gateway.execute({ type: this.type, parentIds: params.parentIds });
+    async execute(parentIds: string[]) {
+        const items = await this.gateway.execute(this.foldersContext.type, parentIds);
         this.cache.addItems(items.map(item => Folder.create(item)));
     }
 }
+
+export const ListFoldersByParentIdsRepository = RepositoryAbstraction.createImplementation({
+    implementation: ListFoldersByParentIdsRepositoryImpl,
+    dependencies: [FoldersContext, FoldersCache, ListFoldersByParentIdsGateway]
+});

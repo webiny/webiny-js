@@ -5,6 +5,7 @@ import { GetFolderAncestorsFeature } from "~/features/folders/getFolderAncestors
 import { GetFolderExtensionsFieldsFeature } from "~/features/folders/getFolderExtensionsFields/feature.js";
 import { GetFolderLevelPermissionFeature } from "~/features/folders/getFolderLevelPermission/feature.js";
 import { ListFoldersFeature } from "~/features/folders/listFolders/feature.js";
+import { ListFoldersByParentIdsFeature } from "~/features/folders/listFoldersByParentIds/feature.js";
 import { LoadFolderHierarchyFeature } from "~/features/folders/loadFolderHierarchy/feature.js";
 import { loadedFolderCacheFactory } from "~/features/index.js";
 import { folderCacheFactory } from "~/features/index.js";
@@ -42,5 +43,6 @@ export const FoldersFeature = createFeature({
         GetFolderLevelPermissionFeature.register(container);
         LoadFolderHierarchyFeature.register(container);
         ListFoldersFeature.register(container);
+        ListFoldersByParentIdsFeature.register(container);
     }
 });
