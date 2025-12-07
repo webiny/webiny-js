@@ -1,6 +1,6 @@
 import { FoldersCache } from "~/features/folders/abstractions.js";
 import type { FolderPermissionName } from "~/features/index.js";
-import { GetFolderLevelPermissionUseCase as UseCaseAbstraction } from "./abstractions.js";
+import { GetFolderLevelPermissionUseCase as UseCaseAbstraction } from "../abstractions.js";
 import { WcpService } from "@webiny/app-admin/features/wcp/abstractions.js";
 
 class GetFolderLevelPermissionWithFlpDecoratorImpl implements UseCaseAbstraction.Interface {

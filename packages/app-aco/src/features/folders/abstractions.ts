@@ -1,4 +1,5 @@
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
+import type { ILoadingRepository } from "@webiny/app-utils";
 import { createAbstraction } from "@webiny/feature/admin";
 import type { Folder, IListCache, LoadedCache } from "~/features/index.js";
 
@@ -26,4 +27,12 @@ export namespace FoldersCache {
 export const LoadedFoldersCache = createAbstraction<LoadedCache>("LoadedFoldersCache");
 export namespace LoadedFoldersCache {
     export type Interface = LoadedCache;
+}
+
+export const FoldersLoadingRepository = createAbstraction<ILoadingRepository>(
+    "FoldersLoadingRepository"
+);
+
+export namespace FoldersLoadingRepository {
+    export type Interface = ILoadingRepository;
 }

@@ -1,6 +1,7 @@
-import type ApolloClient from "apollo-client";
 import gql from "graphql-tag";
-import type { IListFoldersGateway, ListFoldersGatewayParams } from "./IListFoldersGateway.js";
+import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import { FoldersContext } from "~/features/folders/abstractions.js";
+import { ListFoldersGateway as GatewayAbstraction } from "./abstractions.js";
 import type { AcoError, FolderItem } from "~/types.js";
 import { ROOT_FOLDER } from "~/constants.js";
 
@@ -35,23 +36,20 @@ export const LIST_FOLDERS = (FOLDER_FIELDS: string) => gql`
     }
 `;
 
-export class ListFoldersGqlGateway implements IListFoldersGateway {
-    private client: ApolloClient<any>;
-    private modelFields: string;
+class ListFoldersGqlGatewayImpl implements GatewayAbstraction.Interface {
+    constructor(
+        private client: ApolloClient.Interface,
+        private foldersContext: FoldersContext.Interface
+    ) {}
 
-    constructor(client: ApolloClient<any>, modelFields: string) {
-        this.client = client;
-        this.modelFields = modelFields;
-    }
-
-    async execute(params: ListFoldersGatewayParams) {
+    async execute(type: string) {
         const { data: response } = await this.client.query<
             ListFoldersResponse,
             ListFoldersQueryVariables
         >({
-            query: LIST_FOLDERS(this.modelFields),
+            query: LIST_FOLDERS(this.foldersContext.modelFields),
             variables: {
-                ...params,
+                type,
                 limit: 10000
             },
             fetchPolicy: "network-only"
@@ -101,3 +99,8 @@ export class ListFoldersGqlGateway implements IListFoldersGateway {
         };
     }
 }
+
+export const ListFoldersGqlGateway = GatewayAbstraction.createImplementation({
+    implementation: ListFoldersGqlGatewayImpl,
+    dependencies: [ApolloClient, FoldersContext]
+});

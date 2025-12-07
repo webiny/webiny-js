@@ -1,13 +1,17 @@
+import { loadingRepositoryFactory } from "@webiny/app-utils";
 import { createFeature } from "@webiny/feature/admin";
 import { GetDescendantFoldersFeature } from "~/features/folders/getDescendantFolders/feature.js";
 import { GetFolderAncestorsFeature } from "~/features/folders/getFolderAncestors/feature.js";
 import { GetFolderExtensionsFieldsFeature } from "~/features/folders/getFolderExtensionsFields/feature.js";
 import { GetFolderLevelPermissionFeature } from "~/features/folders/getFolderLevelPermission/feature.js";
+import { ListFoldersFeature } from "~/features/folders/listFolders/feature.js";
+import { LoadFolderHierarchyFeature } from "~/features/folders/loadFolderHierarchy/feature.js";
 import { loadedFolderCacheFactory } from "~/features/index.js";
 import { folderCacheFactory } from "~/features/index.js";
 import { LoadedFoldersCache } from "./abstractions.js";
 import { FoldersCache } from "./abstractions.js";
 import { FoldersContext } from "./abstractions.js";
+import { FoldersLoadingRepository } from "./abstractions.js";
 import { DeleteFolderFeature } from "./deleteFolder/feature.js";
 import { CreateFolderFeature } from "./createFolder/feature.js";
 import { GetFolderFeature } from "./getFolder/feature.js";
@@ -25,6 +29,9 @@ export const FoldersFeature = createFeature({
             loadedFolderCacheFactory.getCache(context.type)
         );
 
+        const loadingRepository = loadingRepositoryFactory.getRepository(context.type);
+        container.registerInstance(FoldersLoadingRepository, loadingRepository);
+
         // Folders features
         CreateFolderFeature.register(container);
         DeleteFolderFeature.register(container);
@@ -33,5 +40,7 @@ export const FoldersFeature = createFeature({
         GetFolderAncestorsFeature.register(container);
         GetFolderExtensionsFieldsFeature.register(container);
         GetFolderLevelPermissionFeature.register(container);
+        LoadFolderHierarchyFeature.register(container);
+        ListFoldersFeature.register(container);
     }
 });

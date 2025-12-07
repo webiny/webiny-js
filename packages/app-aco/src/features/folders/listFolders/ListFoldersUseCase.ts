@@ -1,14 +1,17 @@
-import type { IListFoldersUseCase } from "./IListFoldersUseCase.js";
-import type { IListFoldersRepository } from "./IListFoldersRepository.js";
+import {
+    ListFoldersUseCase as UseCaseAbstraction,
+    ListFoldersRepository
+} from "./abstractions.js";
 
-export class ListFoldersUseCase implements IListFoldersUseCase {
-    private repository: IListFoldersRepository;
-
-    constructor(repository: IListFoldersRepository) {
-        this.repository = repository;
-    }
+class ListFoldersUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: ListFoldersRepository.Interface) {}
 
     async execute() {
         await this.repository.execute();
     }
 }
+
+export const ListFoldersUseCase = UseCaseAbstraction.createImplementation({
+    implementation: ListFoldersUseCaseImpl,
+    dependencies: [ListFoldersRepository]
+});
