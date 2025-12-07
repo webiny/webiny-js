@@ -120,7 +120,7 @@
     "dataloader": "^2.2.3",
     "deep-equal": "^2.2.3",
     "jose": "^5.10.0",
-    "jsonwebtoken": "^9.0.2",
+    "jsonwebtoken": "^9.0.3",
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
     "minimatch": "^5.1.6",
