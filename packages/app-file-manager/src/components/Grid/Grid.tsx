@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { cn, OverlayLoader } from "@webiny/admin-ui";
 import { FolderActionConfig, FolderGridItem, FolderProvider } from "@webiny/app-aco";
 import { i18n } from "@webiny/app/i18n/index.js";
-import type { FolderItem } from "@webiny/app-aco/types.js";
+import type { FolderDto } from "@webiny/app-aco";
 import type { FileItem } from "@webiny/app-admin/types.js";
 import { FileProvider } from "~/contexts/FileProvider.js";
 import { Thumbnail } from "../Thumbnail/index.js";
@@ -12,7 +12,7 @@ const t = i18n.ns("app-admin/file-manager/components/grid");
 
 interface GridProps {
     records: FileItem[];
-    folders: FolderItem[];
+    folders: FolderDto[];
     folderActions: FolderActionConfig[];
     loading?: boolean;
     onFolderClick: (id: string) => void;

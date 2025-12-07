@@ -1,8 +1,8 @@
+import { Folder } from "~/domain/folder/Folder.js";
 import {
     CreateFolderUseCase as UseCaseAbstraction,
     CreateFolderRepository
 } from "./abstractions.js";
-import { Folder } from "../Folder.js";
 
 class CreateFolderUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private repository: CreateFolderRepository.Interface) {}

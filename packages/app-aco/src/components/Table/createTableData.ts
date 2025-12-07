@@ -1,5 +1,5 @@
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import type { FolderTableRow, RecordTableRow } from "~/table.types.js";
-import type { FolderItem } from "~/types.js";
 
 export const createRecordsData = <T extends { id: string; $selectable?: boolean }>(
     items: T[]
@@ -12,7 +12,7 @@ export const createRecordsData = <T extends { id: string; $selectable?: boolean 
     }));
 };
 
-export const createFoldersData = (items: FolderItem[]): FolderTableRow[] => {
+export const createFoldersData = (items: FolderDto[]): FolderTableRow[] => {
     return items.map(item => ({
         id: item.id,
         $type: "FOLDER",

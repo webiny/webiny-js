@@ -1,14 +1,16 @@
-import type ApolloClient from "apollo-client";
 import gql from "graphql-tag";
-import type { IUpdateFolderGateway } from "./IUpdateFolderGateway.js";
-import type { FolderDto } from "./FolderDto.js";
-import type { AcoError, FolderItem } from "~/types.js";
+import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { FolderModelProvider } from "~/features/folders/abstractions.js";
+import type { FolderGatewayDto } from "./abstractions.js";
+import { UpdateFolderGateway as GatewayAbstraction } from "./abstractions.js";
+import type { AcoError } from "~/types.js";
 import { ROOT_FOLDER } from "~/constants.js";
 
 export interface UpdateFolderResponse {
     aco: {
         updateFolder: {
-            data: FolderItem;
+            data: FolderDto;
             error: AcoError | null;
         };
     };
@@ -18,7 +20,7 @@ export interface UpdateFolderVariables {
     id: string;
     data: Partial<
         Omit<
-            FolderItem,
+            FolderDto,
             "id" | "createdOn" | "createdBy" | "savedOn" | "savedBy" | "modifiedOn" | "modifiedBy"
         >
     >;
@@ -39,23 +41,22 @@ export const UPDATE_FOLDER = (FOLDER_FIELDS: string) => gql`
     }
 `;
 
-export class UpdateFolderGqlGateway implements IUpdateFolderGateway {
-    private client: ApolloClient<any>;
-    private modelFields: string;
+class UpdateFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
+    constructor(
+        private client: ApolloClient.Interface,
+        private folderModelProvider: FolderModelProvider.Interface
+    ) {}
 
-    constructor(client: ApolloClient<any>, modelFields: string) {
-        this.client = client;
-        this.modelFields = modelFields;
-    }
+    async execute(folder: FolderGatewayDto) {
+        const fields = await this.folderModelProvider.getGraphQLSelection();
 
-    async execute(folder: FolderDto) {
         const { id, title, slug, permissions, parentId, extensions } = folder;
 
         const { data: response } = await this.client.mutate<
             UpdateFolderResponse,
             UpdateFolderVariables
         >({
-            mutation: UPDATE_FOLDER(this.modelFields),
+            mutation: UPDATE_FOLDER(fields),
             variables: {
                 id,
                 data: {
@@ -81,3 +82,8 @@ export class UpdateFolderGqlGateway implements IUpdateFolderGateway {
         return data;
     }
 }
+
+export const UpdateFolderGqlGateway = GatewayAbstraction.createImplementation({
+    implementation: UpdateFolderGqlGatewayImpl,
+    dependencies: [ApolloClient, FolderModelProvider]
+});

@@ -1,9 +1,9 @@
 import { FoldersContext } from "~/features/folders/abstractions.js";
-import { Folder } from "../Folder.js";
-import type { FolderDto } from "./abstractions.js";
+import type { FolderGatewayDto } from "./abstractions.js";
 import { CreateFolderGateway } from "./abstractions.js";
 import { CreateFolderRepository as RepositoryAbstraction } from "./abstractions.js";
 import { FoldersCache } from "~/features/folders/abstractions.js";
+import { Folder } from "~/domain/folder/Folder.js";
 
 class CreateFolderRepositoryImpl implements RepositoryAbstraction.Interface {
     constructor(
@@ -13,7 +13,7 @@ class CreateFolderRepositoryImpl implements RepositoryAbstraction.Interface {
     ) {}
 
     async execute(folder: Folder) {
-        const dto: FolderDto = {
+        const dto: FolderGatewayDto = {
             title: folder.title,
             slug: folder.slug,
             permissions: folder.permissions,

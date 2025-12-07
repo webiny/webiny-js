@@ -1,10 +1,11 @@
 import React, { useMemo } from "react";
 import { Tooltip } from "@webiny/admin-ui";
-import { useLoadFolderHierarchy, useGetFolderLevelPermission } from "~/features/index.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { useGetFolderLevelPermission } from "~/features/folders/getFolderLevelPermission/index.js";
+import { useLoadFolderHierarchy } from "~/features/folders/loadFolderHierarchy/index.js";
 import { ButtonCreate } from "./ButtonCreate/index.js";
 import { Loader } from "./Loader/index.js";
 import { List } from "./List/index.js";
-import type { FolderItem } from "~/types.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import type { FolderActionConfig } from "~/config/AcoConfig.js";
 
@@ -12,7 +13,7 @@ export { Loader };
 
 export interface FolderTreeProps {
     folderActions?: FolderActionConfig[];
-    onFolderClick: (data: FolderItem) => void;
+    onFolderClick: (data: FolderDto) => void;
     enableCreate?: boolean;
     rootFolderLabel?: string;
     enableActions?: boolean;

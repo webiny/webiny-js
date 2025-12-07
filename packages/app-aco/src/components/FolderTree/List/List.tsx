@@ -7,28 +7,26 @@ import {
     type DropOptions
 } from "@webiny/admin-ui";
 import { useSnackbar } from "@webiny/app-admin";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { useGetFolderLevelPermission } from "~/features/folders/getFolderLevelPermission/index.js";
+import { useListFoldersByParentIds } from "~/features/folders/listFoldersByParentIds/index.js";
+import { useGetFolderAncestors } from "~/features/folders/getFolderAncestors/index.js";
+import { useUpdateFolder } from "~/features/folders/updateFolder/index.js";
 import { Node } from "../Node/index.js";
 import { createInitialOpenList, createTreeData } from "./utils.js";
-import {
-    useGetFolderAncestors,
-    useGetFolderLevelPermission,
-    useListFoldersByParentIds,
-    useUpdateFolder
-} from "~/features/index.js";
 import { ROOT_FOLDER } from "~/constants.js";
-import type { FolderItem } from "~/types.js";
 import { FolderProvider } from "~/contexts/folder.js";
 import { useConfirmMoveFolderDialog } from "~/dialogs/index.js";
 import type { FolderActionConfig } from "~/config/AcoConfig.js";
 
 interface ListProps {
-    folders: FolderItem[];
+    folders: FolderDto[];
     folderActions: FolderActionConfig[];
     dropConfirmation?: boolean;
     focusedFolderId?: string;
     hiddenFolderIds?: string[];
     enableActions?: boolean;
-    onFolderClick: (data: FolderItem) => void;
+    onFolderClick: (data: FolderDto) => void;
 }
 
 export const List = ({
@@ -47,7 +45,7 @@ export const List = ({
     const { getFolderAncestors } = useGetFolderAncestors();
     const { showSnackbar } = useSnackbar();
 
-    const [treeData, setTreeData] = useState<NodeDto<FolderItem>[]>([]);
+    const [treeData, setTreeData] = useState<NodeDto<FolderDto>[]>([]);
     const [openFolderIds, setOpenFolderIds] = useState<string[]>([ROOT_FOLDER]);
     const { showDialog: showConfirmMoveFolderDialog } = useConfirmMoveFolderDialog();
 
@@ -126,12 +124,12 @@ export const List = ({
         []
     );
 
-    const canDrag: TreeProps<FolderItem>["canDrag"] = useCallback(
-        (node: NodeDto<FolderItem>) => node.id !== ROOT_FOLDER && canManageStructure(node.id),
+    const canDrag: TreeProps<FolderDto>["canDrag"] = useCallback(
+        (node: NodeDto<FolderDto>) => node.id !== ROOT_FOLDER && canManageStructure(node.id),
         [canManageStructure]
     );
 
-    const canDrop: TreeProps<FolderItem>["canDrop"] = (_, options: DropOptions<FolderItem>) => {
+    const canDrop: TreeProps<FolderDto>["canDrop"] = (_, options: DropOptions<FolderDto>) => {
         const { dragSourceId, dropTargetId } = options;
         const dropTagetAncestorIds = getFolderAncestors(dropTargetId).map(item => item.id);
 
@@ -139,7 +137,7 @@ export const List = ({
         return !(dragSourceId && dropTagetAncestorIds.includes(dragSourceId));
     };
 
-    const nodeRenderer: TreeProps<FolderItem>["renderer"] = node => {
+    const nodeRenderer: TreeProps<FolderDto>["renderer"] = node => {
         const folder = folders.find(folder => folder.id === node.id);
         return (
             <FolderProvider folder={folder}>
@@ -149,14 +147,14 @@ export const List = ({
     };
 
     const handleNodeClick = useCallback(
-        (node: WithDefaultNodeData<FolderItem>) => {
+        (node: WithDefaultNodeData<FolderDto>) => {
             onFolderClick(node);
         },
         [onFolderClick]
     );
 
     return (
-        <Tree<FolderItem>
+        <Tree<FolderDto>
             nodes={treeData}
             rootId={"0"}
             defaultOpenNodeIds={openFolderIds}

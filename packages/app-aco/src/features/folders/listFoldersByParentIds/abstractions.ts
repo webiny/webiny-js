@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { FolderGqlDto } from "./FolderGqlDto.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
 
 export interface IListFoldersByParentIdsUseCase {
     execute: (parentIds?: string[]) => Promise<void>;
@@ -10,7 +10,7 @@ export interface IListFoldersByParentIdsRepository {
 }
 
 export interface IListFoldersByParentIdsGateway {
-    execute: (type: string, parentIds: string[]) => Promise<FolderGqlDto[]>;
+    execute: (type: string, parentIds: string[]) => Promise<FolderDto[]>;
 }
 
 export const ListFoldersByParentIdsUseCase = createAbstraction<IListFoldersByParentIdsUseCase>(

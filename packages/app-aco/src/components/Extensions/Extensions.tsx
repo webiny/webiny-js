@@ -2,13 +2,14 @@ import React from "react";
 import { CompositionScope } from "@webiny/app-admin";
 import { ModelProvider, Fields } from "@webiny/app-headless-cms-common";
 import { Bind, BindPrefix } from "@webiny/form";
-import { useFolderModel, useFolderExtensionsFields } from "~/features/index.js";
+import { useFolderExtensionsFields } from "~/features/folders/getFolderExtensionsFields/index.js";
+import { useFolderModel } from "~/hooks/useFolderModel.js";
 
 export const Extensions = () => {
     const { fields } = useFolderExtensionsFields();
     const folderModel = useFolderModel();
 
-    if (fields.length === 0) {
+    if (fields.length === 0 || !folderModel) {
         return null;
     }
 

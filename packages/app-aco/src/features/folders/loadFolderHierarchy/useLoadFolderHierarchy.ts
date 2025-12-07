@@ -2,11 +2,11 @@ import { useContainer } from "@webiny/app";
 import { useCallback, useEffect, useState } from "react";
 import { autorun } from "mobx";
 import { useFeature } from "@webiny/app";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { FolderDtoMapper } from "~/domain/folder/FolderDtoMapper.js";
 import { FoldersCache } from "~/features/folders/abstractions.js";
 import { LoadingActionsEnum } from "~/types.js";
 import { LoadFolderHierarchyFeature } from "./feature.js";
-import { FolderDtoMapper } from "./FolderDto.js";
-import type { FolderItem } from "~/types.js";
 
 export const useLoadFolderHierarchy = () => {
     const container = useContainer();
@@ -15,7 +15,7 @@ export const useLoadFolderHierarchy = () => {
     const foldersCache = container.resolve(FoldersCache);
 
     const [vm, setVm] = useState<{
-        folders: FolderItem[];
+        folders: FolderDto[];
         loading: Record<string, boolean>;
     }>({
         folders: [],

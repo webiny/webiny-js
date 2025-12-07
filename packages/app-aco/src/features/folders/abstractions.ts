@@ -1,7 +1,13 @@
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
 import type { ILoadingRepository } from "@webiny/app-utils";
 import { createAbstraction } from "@webiny/feature/admin";
-import type { Folder, IListCache, LoadedCache } from "~/features/index.js";
+import { Folder } from "~/domain/folder/Folder.js";
+import { IListCache, LoadedCache } from "./cache/index.js";
+
+export type FolderPermissionName =
+    | "canManagePermissions"
+    | "canManageStructure"
+    | "canManageContent";
 
 export interface IFolderModelProvider {
     getModel(): Promise<CmsModel>;

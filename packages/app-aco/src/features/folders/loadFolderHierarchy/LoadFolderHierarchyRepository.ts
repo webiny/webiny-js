@@ -1,4 +1,4 @@
-import { Folder } from "../Folder.js";
+import { Folder } from "~/domain/folder/Folder.js";
 import {
     LoadFolderHierarchyRepository as RepositoryAbstraction,
     LoadFolderHierarchyGateway

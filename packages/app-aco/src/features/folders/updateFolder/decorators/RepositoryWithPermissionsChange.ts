@@ -1,24 +1,21 @@
 import isEqual from "lodash/isEqual.js";
 import { Permissions } from "@webiny/shared-aco";
-import type { IUpdateFolderRepository } from "./IUpdateFolderRepository.js";
-import type { ListCache } from "../cache/index.js";
-import { Folder } from "../Folder.js";
+import { Folder } from "~/domain/folder/Folder.js";
+import { FoldersCache } from "../../abstractions.js";
+import { UpdateFolderRepository as RepositoryAbstraction } from "../abstractions.js";
 
-export class UpdateFolderRepositoryWithPermissionsChange implements IUpdateFolderRepository {
-    private cache: ListCache<Folder>;
-    private decoretee: IUpdateFolderRepository;
-
-    constructor(cache: ListCache<Folder>, decoretee: IUpdateFolderRepository) {
-        this.cache = cache;
-        this.decoretee = decoretee;
-    }
+class UpdateFolderRepositoryWithPermissionsChangeImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private cache: FoldersCache.Interface,
+        private decoratee: RepositoryAbstraction.Interface
+    ) {}
 
     async execute(folder: Folder) {
         const folderPermissions = [...folder.permissions];
         const cachedFolderPermissions = this.cache.getItem(f => f.id === folder.id)?.permissions;
 
         // Let's run the original use case and update the folder.
-        await this.decoretee.execute(folder);
+        await this.decoratee.execute(folder);
 
         if (!cachedFolderPermissions) {
             // If the folder is not in the cache, we can't proceed to update its children permissions.
@@ -70,3 +67,9 @@ export class UpdateFolderRepositoryWithPermissionsChange implements IUpdateFolde
         return this.cache.getItems().filter(f => f.parentId === folder.id);
     }
 }
+
+export const UpdateFolderRepositoryWithPermissionsChange =
+    RepositoryAbstraction.createDecorator({
+        decorator: UpdateFolderRepositoryWithPermissionsChangeImpl,
+        dependencies: [FoldersCache]
+    });

@@ -3,8 +3,11 @@ import dotPropImmutable from "dot-prop-immutable";
 import pick from "lodash/pick.js";
 import { useStateIfMounted } from "@webiny/app-admin";
 import { useSecurity } from "@webiny/app-security";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { useGetDescendantFolders } from "~/features/folders/getDescendantFolders/index.js";
+import { useListFoldersByParentIds } from "~/features/folders/listFoldersByParentIds/index.js";
+import { useLoadFolderHierarchy } from "~/features/folders/loadFolderHierarchy/index.js";
 import type {
-    FolderItem,
     GenericSearchData,
     ListMeta,
     ListSearchRecordsQueryVariables,
@@ -12,19 +15,14 @@ import type {
     SearchRecordItem
 } from "~/types.js";
 import { useAcoApp, useNavigateFolder } from "~/hooks/index.js";
-import {
-    useGetDescendantFolders,
-    useLoadFolderHierarchy,
-    useListFoldersByParentIds
-} from "~/features/index.js";
 import { FoldersContext } from "~/contexts/folders.js";
 import { SearchRecordsContext } from "~/contexts/records.js";
 import { sortTableItems, validateOrGetDefaultDbSort } from "~/sorting.js";
 import { ROOT_FOLDER } from "~/constants.js";
 
 export interface AcoListContextData<T> {
-    currentFolder?: FolderItem;
-    folders: FolderItem[];
+    currentFolder?: FolderDto;
+    folders: FolderDto[];
     hideFilters: () => void;
     isListLoading: boolean;
     isListLoadingMore: boolean;
@@ -83,9 +81,9 @@ const initializeAcoListState = (): State<GenericSearchData> => {
 };
 
 const getCurrentFolderList = (
-    folders?: FolderItem[] | null,
+    folders?: FolderDto[] | null,
     currentFolderId?: string
-): FolderItem[] | [] => {
+): FolderDto[] | [] => {
     if (!folders) {
         return [];
     }
@@ -136,7 +134,7 @@ export const AcoListProvider = ({ children, ...props }: AcoListProviderProps) =>
         throw new Error("useAcoList must be used within a ACOProvider");
     }
 
-    const [folders, setFolders] = useStateIfMounted<FolderItem[]>([]);
+    const [folders, setFolders] = useStateIfMounted<FolderDto[]>([]);
     const [records, setRecords] = useStateIfMounted<SearchRecordItem[]>([]);
     const [listTitle, setListTitle] = useStateIfMounted<string | undefined>(undefined);
     const [state, setState] = useStateIfMounted<State<GenericSearchData>>(initializeAcoListState());

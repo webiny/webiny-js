@@ -1,13 +1,14 @@
 import gql from "graphql-tag";
 import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { RootFolder } from "~/domain/folder/RootFolder.js";
 import { FolderModelProvider } from "~/features/folders/abstractions.js";
 import { LoadFolderHierarchyGateway as GatewayAbstraction } from "./abstractions.js";
-import type { AcoError, FolderItem } from "~/types.js";
-import { ROOT_FOLDER } from "~/constants.js";
+import type { AcoError } from "~/types.js";
 
 interface LoadFolderHierarchyResponseData {
-    parents: FolderItem[];
-    siblings: FolderItem[];
+    parents: FolderDto[];
+    siblings: FolderDto[];
 }
 
 export interface LoadFolderHierarchyResponse {
@@ -79,39 +80,8 @@ class LoadFolderHierarchyGqlGatewayImpl implements GatewayAbstraction.Interface 
         }
 
         return {
-            parents: [this.getRootFolder(), ...data.parents],
+            parents: [RootFolder.create(), ...data.parents],
             siblings: data.siblings
-        };
-    }
-
-    private getRootFolder(): FolderItem {
-        return {
-            id: ROOT_FOLDER,
-            title: "Home",
-            permissions: [],
-            parentId: "0",
-            path: ROOT_FOLDER,
-            slug: "",
-            createdOn: "",
-            createdBy: {
-                id: "",
-                displayName: "",
-                type: ""
-            },
-            hasNonInheritedPermissions: false,
-            canManagePermissions: true,
-            canManageStructure: true,
-            canManageContent: true,
-            savedOn: "",
-            savedBy: {
-                id: "",
-                displayName: "",
-                type: ""
-            },
-            modifiedOn: null,
-            modifiedBy: null,
-            type: "$ROOT",
-            extensions: {}
         };
     }
 }

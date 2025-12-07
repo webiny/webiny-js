@@ -1,25 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { CmsIdentity, FolderPermission } from "~/types.js";
-
-// DTOs
-export interface FolderDto {
-    id: string;
-    title: string;
-    slug: string;
-    permissions: FolderPermission[];
-    hasNonInheritedPermissions: boolean;
-    canManagePermissions: boolean;
-    canManageStructure: boolean;
-    canManageContent: boolean;
-    type: string;
-    parentId: string | null;
-    createdBy: CmsIdentity;
-    createdOn: string;
-    savedBy: CmsIdentity;
-    savedOn: string;
-    modifiedBy: CmsIdentity | null;
-    modifiedOn: string | null;
-}
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
 
 // Use Case
 

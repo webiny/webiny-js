@@ -1,23 +1,20 @@
 import { Path } from "@webiny/shared-aco";
-import type { IUpdateFolderRepository } from "./IUpdateFolderRepository.js";
-import type { ListCache } from "../cache/index.js";
-import { Folder } from "../Folder.js";
+import { FoldersCache } from "../../abstractions.js";
+import { UpdateFolderRepository as RepositoryAbstraction } from "../abstractions.js";
+import { Folder } from "~/domain/folder/Folder.js";
 
-export class UpdateFolderRepositoryWithPathChange implements IUpdateFolderRepository {
-    private cache: ListCache<Folder>;
-    private decoretee: IUpdateFolderRepository;
-
-    constructor(cache: ListCache<Folder>, decoretee: IUpdateFolderRepository) {
-        this.cache = cache;
-        this.decoretee = decoretee;
-    }
+class UpdateFolderRepositoryWithPathChangeImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private cache: FoldersCache.Interface,
+        private decoratee: RepositoryAbstraction.Interface
+    ) {}
 
     async execute(folder: Folder) {
         const folderPath = folder.path;
         const cachedFolderPath = this.cache.getItem(f => f.id === folder.id)?.path;
 
         // Update the folder
-        await this.decoretee.execute(folder);
+        await this.decoratee.execute(folder);
 
         // If the folder is not in the cache, we can't proceed to update its children paths.
         if (!cachedFolderPath) {
@@ -77,3 +74,8 @@ export class UpdateFolderRepositoryWithPathChange implements IUpdateFolderReposi
         return this.cache.getItems().filter(f => f.parentId === folder.id);
     }
 }
+
+export const UpdateFolderRepositoryWithPathChange = RepositoryAbstraction.createDecorator({
+    decorator: UpdateFolderRepositoryWithPathChangeImpl,
+    dependencies: [FoldersCache]
+});

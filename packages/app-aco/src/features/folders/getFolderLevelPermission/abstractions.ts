@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { FolderPermissionName } from "~/features/index.js";
+import { FolderPermissionName } from "../abstractions.js";
 
 export interface IGetFolderLevelPermissionUseCase {
     execute: (id: string, permissionName: FolderPermissionName) => boolean;

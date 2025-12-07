@@ -1,3 +1,6 @@
+import type { Folder } from "@webiny/app-aco/domain/folder/Folder.js";
+import { FolderDtoMapper } from "@webiny/app-aco/domain/folder/FolderDtoMapper.js";
+import { folderCacheFactory } from "@webiny/app-aco/features/folders/cache/index.js";
 import { makeAutoObservable } from "mobx";
 import orderBy from "lodash/orderBy.js";
 import { loadingActions, ROOT_FOLDER, WB_PAGE_APP } from "~/constants.js";
@@ -11,8 +14,6 @@ import {
     sortRepositoryFactory
 } from "@webiny/app-utils";
 import { type IListCache, type Page, PageDtoMapper, pageListCache } from "~/domain/Page/index.js";
-import { type Folder, FolderDtoMapper } from "@webiny/app-aco";
-import { folderCacheFactory } from "@webiny/app-aco";
 import { type ISearchRepository, searchRepositoryFactory } from "~/domain/Search/index.js";
 import {
     type ISelectedItemsRepository,

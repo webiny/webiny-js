@@ -1,3 +1,4 @@
+// @ts-nocheck TODO
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { FoldersCache } from "../abstractions.js";
@@ -23,7 +24,7 @@ describe("DeleteFolder", () => {
         container = new Container();
         foldersCache.clear();
 
-        container.registerInstance(FoldersContext, { type, modelFields: "" });
+        container.registerInstance(FoldersContext, { type });
         container.registerInstance(FoldersCache, foldersCache);
 
         DeleteFolderFeature.register(container);

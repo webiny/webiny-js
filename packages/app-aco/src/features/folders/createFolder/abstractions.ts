@@ -60,7 +60,7 @@ export interface FolderGatewayOutputDto {
 }
 
 export interface ICreateFolderGateway {
-    execute: (folderDto: FolderDto) => Promise<FolderGatewayOutputDto>;
+    execute: (folderDto: FolderGatewayDto) => Promise<FolderGatewayOutputDto>;
 }
 
 export const CreateFolderGateway = createAbstraction<ICreateFolderGateway>("CreateFolderGateway");
@@ -68,7 +68,7 @@ export namespace CreateFolderGateway {
     export type Interface = ICreateFolderGateway;
 }
 
-export interface FolderDto {
+export interface FolderGatewayDto {
     title: string;
     slug: string;
     permissions: FolderPermission[];

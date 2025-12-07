@@ -1,5 +1,5 @@
+import type { FolderDto } from "@webiny/app-aco/domain/folder/FolderDto.js";
 import { createAbstraction } from "@webiny/feature/admin";
-import type { FolderDto } from "@webiny/app-aco";
 import type { ColumnSorting } from "@webiny/app-utils";
 import type { PageDto } from "~/domain/Page/index.js";
 

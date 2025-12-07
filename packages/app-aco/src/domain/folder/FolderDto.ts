@@ -1,22 +1,23 @@
-import type { CmsIdentity, FolderPermission } from "~/types.js";
+import type { FolderPermission } from "~/types.js";
+import { FolderIdentityDto } from "./FolderIdentity.js";
 
-export interface FolderGqlDto {
+export interface FolderDto {
     id: string;
     title: string;
     slug: string;
+    type: string;
+    parentId: string | null;
+    path: string;
     permissions: FolderPermission[];
     hasNonInheritedPermissions: boolean;
     canManagePermissions: boolean;
     canManageStructure: boolean;
     canManageContent: boolean;
-    type: string;
-    parentId: string | null;
-    path: string;
-    createdBy: CmsIdentity;
+    createdBy: FolderIdentityDto;
     createdOn: string;
-    savedBy: CmsIdentity;
+    savedBy: FolderIdentityDto;
     savedOn: string;
-    modifiedBy: CmsIdentity | null;
+    modifiedBy: FolderIdentityDto | null;
     modifiedOn: string | null;
     extensions: Record<string, any>;
 }

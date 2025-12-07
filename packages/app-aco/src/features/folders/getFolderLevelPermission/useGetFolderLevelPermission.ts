@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useFeature } from "@webiny/app";
-import type { FolderPermissionName } from "~/features/index.js";
 import { GetFolderLevelPermissionFeature } from "./feature.js";
+import { FolderPermissionName } from "../abstractions.js";
 
 export const useGetFolderLevelPermission = (permissionName: FolderPermissionName) => {
     const { useCase } = useFeature(GetFolderLevelPermissionFeature);

@@ -1,9 +1,9 @@
 import { createAbstraction } from "@webiny/feature/admin";
-import type { FolderGqlDto } from "./FolderGqlDto.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
 
 export interface LoadFolderHierarchyGatewayResponse {
-    parents: FolderGqlDto[];
-    siblings: FolderGqlDto[];
+    parents: FolderDto[];
+    siblings: FolderDto[];
 }
 
 export interface ILoadFolderHierarchyUseCase {

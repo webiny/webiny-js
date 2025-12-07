@@ -1,9 +1,9 @@
 import { useCallback } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
+import { useGetDescendantFolders } from "@webiny/app-aco";
 import { useGetPageGraphQLFields } from "~/features/pages/index.js";
 import { ListPagesGqlGateway } from "~/features/pages/loadPages/ListPagesGqlGateway.js";
 import { FilterPages } from "~/features/pages/loadPages/FilterPages.js";
-import { useGetDescendantFolders } from "@webiny/app-aco";
 
 export const useFilterPages = () => {
     const client = useApolloClient();

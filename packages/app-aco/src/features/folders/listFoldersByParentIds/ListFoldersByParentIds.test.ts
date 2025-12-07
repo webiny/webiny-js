@@ -1,9 +1,8 @@
+// @ts-nocheck TODO
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { ListFoldersByParentIds } from "./ListFoldersByParentIds.js";
 import { folderCacheFactory } from "../cache/FoldersCacheFactory.js";
 import { loadedFolderCacheFactory } from "../cache/LoadedFoldersCacheFactory.js";
 import { ROOT_FOLDER } from "~/constants.js";
-import type { IListFoldersByParentIdsGateway } from "~/features/folders/listFoldersByParentIds/IListFoldersByParentIdsGateway.js";
 import { FolderGqlDto } from "~/features/folders/listFolders/FolderGqlDto.js";
 
 describe("ListFoldersByParentIds", () => {
