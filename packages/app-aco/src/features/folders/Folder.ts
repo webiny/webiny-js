@@ -1,6 +1,8 @@
 import type { CmsIdentity, FolderPermission } from "~/types.js";
 import { ROOT_FOLDER } from "~/constants.js";
 
+export type FolderPermissionName = "canManagePermissions" | "canManageStructure" | "canManageContent";
+
 export interface FolderData {
     id?: string;
     title: string;
