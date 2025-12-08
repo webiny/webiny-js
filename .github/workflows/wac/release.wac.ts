@@ -16,7 +16,7 @@ const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: BR
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: BRANCH_NAME });
 
 export const release = createWorkflow({
-    name: `Release`,
+    name: `💥 Release`,
     on: {
         workflow_dispatch: {
             inputs: {
