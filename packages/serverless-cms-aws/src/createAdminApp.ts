@@ -7,7 +7,20 @@ export interface CreateAdminAppParams extends CreateAdminPulumiAppParams {
     plugins?: PluginCollection;
 }
 
-export function createAdminApp(projectAppParams: CreateAdminAppParams = {}) {
+interface CreateAdminAppResult {
+    id: string;
+    name: string;
+    description: string;
+    cli: {
+        watch: {
+            deploy: boolean;
+        };
+    };
+    pulumi: ReturnType<typeof createAdminPulumiApp>;
+    plugins: PluginCollection;
+}
+
+export function createAdminApp(projectAppParams: CreateAdminAppParams = {}): CreateAdminAppResult {
     const builtInPlugins = [
         uploadAppToS3({ folder: "apps/admin" }),
         ...createEnsureApiDeployedPlugins("admin")

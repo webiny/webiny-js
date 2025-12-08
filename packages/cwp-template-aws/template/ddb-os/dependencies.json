@@ -23,7 +23,7 @@
     "@babel/preset-env": "^7.26.7",
     "@babel/preset-typescript": "^7.26.0",
     "@types/jest": "^29.5.14",
-    "@types/node": "^20.17.10",
+    "@types/node": "^22.10.1",
     "@types/react": "18.2.79",
     "@types/react-dom": "18.2.25",
     "@typescript-eslint/eslint-plugin": "^6.21.0",

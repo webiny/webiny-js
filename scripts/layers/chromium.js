@@ -6,7 +6,7 @@ const regions = require("./regions");
 
 const BUCKET_NAME = "webiny-layers";
 const LAYER_NAME = "chromium";
-const LAYER_ZIP = "chromium-v123.0.1-layer.zip";
+const LAYER_ZIP = "chromium-v141.0.0-layer.x64.zip";
 const LAYER_ZIP_KEY = `${LAYER_NAME}/${LAYER_ZIP}`;
 
 async function createBucketIfNotExists(region) {

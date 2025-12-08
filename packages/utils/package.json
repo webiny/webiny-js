@@ -20,7 +20,7 @@
     "@webiny/plugins": "0.0.0",
     "bson-objectid": "^2.0.4",
     "jsonpack": "^1.1.5",
-    "nanoid": "^3.3.11",
+    "nanoid": "3.3.11",
     "nanoid-dictionary": "^4.3.0",
     "p-retry": "^4.6.2"
   },

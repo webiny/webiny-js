@@ -90,7 +90,22 @@ const builtInPlugins: Plugin[] = [
     })
 ];
 
-export function createBlueGreenApp(projectAppParams: CreateBlueGreenAppParams) {
+interface CreateBlueGreenAppResult {
+    id: string;
+    name: string;
+    description: string;
+    cli: {
+        watch: {
+            function: string;
+        };
+    };
+    pulumi: ReturnType<typeof createBlueGreenPulumiApp>;
+    plugins: PluginCollection;
+}
+
+export function createBlueGreenApp(
+    projectAppParams: CreateBlueGreenAppParams
+): CreateBlueGreenAppResult {
     const plugins = projectAppParams.plugins ? [...projectAppParams.plugins] : [];
 
     return {

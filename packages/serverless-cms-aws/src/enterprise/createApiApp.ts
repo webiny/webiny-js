@@ -15,7 +15,21 @@ export interface CreateApiAppParams extends CreateApiPulumiAppParams {
     plugins?: PluginCollection;
 }
 
-export function createApiApp(projectAppParams: CreateApiAppParams = {}) {
+interface CreateApiAppResult {
+    id: string;
+    name: string;
+    description: string;
+    cli: {
+        watch: {
+            depth: number;
+            function: string;
+        };
+    };
+    pulumi: ReturnType<typeof createApiPulumiApp>;
+    plugins: PluginCollection;
+}
+
+export function createApiApp(projectAppParams: CreateApiAppParams = {}): CreateApiAppResult {
     const builtInPlugins = [
         ensureCoreDeployed,
         injectWcpTelemetryClientCode,

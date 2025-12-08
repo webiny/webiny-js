@@ -5,10 +5,10 @@ import {
 import { PluginCollection } from "@webiny/plugins/types";
 import {
     generateCommonHandlers,
+    IRenderWebsiteParams,
     lambdaEdgeWarning,
     renderWebsite,
-    telemetryNoLongerNewUser,
-    IRenderWebsiteParams
+    telemetryNoLongerNewUser
 } from "~/website/plugins";
 import { createEnsureApiDeployedPlugins } from "~/utils/ensureApiDeployed";
 
@@ -19,7 +19,23 @@ export interface CreateWebsiteAppParams extends CreateWebsitePulumiAppParams {
     plugins?: PluginCollection;
 }
 
-export function createWebsiteApp(projectAppParams: CreateWebsiteAppParams = {}) {
+interface CreateWebsiteAppResult {
+    id: string;
+    name: string;
+    description: string;
+    cli: {
+        watch: {
+            function: string;
+            deploy: boolean;
+        };
+    };
+    pulumi: ReturnType<typeof createWebsitePulumiApp>;
+    plugins: PluginCollection;
+}
+
+export function createWebsiteApp(
+    projectAppParams: CreateWebsiteAppParams = {}
+): CreateWebsiteAppResult {
     const builtInPlugins = [
         uploadAppToS3({ folder: "apps/website" }),
         generateCommonHandlers,
