@@ -74,8 +74,7 @@ export class ListPagesGqlGateway implements IListPagesGateway {
     private readonly client;
     private readonly modelFields;
     private readonly fieldSelection;
-
-    // public constructor(client: ApolloClient<object>, modelFields: string) {
+    
     public constructor(params: IListPagesGatewayParams) {
         this.client = params.client;
         this.modelFields = params.modelFields;
