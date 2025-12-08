@@ -70,7 +70,7 @@ export const release = createWorkflow({
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
                 BETA_VERSION: "${{ vars.BETA_VERSION }}"
             },
-            checkout: { path: BRANCH_NAME, ref: BRANCH_NAME, "fetch-depth": 0 },
+            checkout: { ref: BRANCH_NAME, "fetch-depth": 0 },
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
@@ -103,7 +103,6 @@ export const release = createWorkflow({
                 LATEST_VERSION: "${{ vars.LATEST_VERSION }}"
             },
             checkout: {
-                path: BRANCH_NAME,
                 ref: BRANCH_NAME,
                 "fetch-depth": 0
             },
