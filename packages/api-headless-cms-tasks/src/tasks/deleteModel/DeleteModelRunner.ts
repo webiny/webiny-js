@@ -1,7 +1,9 @@
 import type { ITaskResponse, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
+import type { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import { ListFoldersUseCase } from "@webiny/api-aco/features/folders/ListFolders/index.js";
+import { DeleteFolderUseCase } from "@webiny/api-aco/features/folders/DeleteFolder/index.js";
 import type { HcmsTasksContext } from "~/types.js";
 import type { IDeleteModelTaskInput, IDeleteModelTaskOutput } from "./types.js";
-import type { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { createStoreKey } from "~/tasks/deleteModel/helpers/store.js";
 
 export interface IDeleteModelRunnerParams<
@@ -25,12 +27,10 @@ export class DeleteModelRunner<
     I extends IDeleteModelTaskInput,
     O extends IDeleteModelTaskOutput
 > {
-    private readonly taskId: string;
     private readonly context: C;
     private readonly response: ITaskResponse<I, O>;
 
     public constructor(params: IDeleteModelRunnerParams<C, I, O>) {
-        this.taskId = params.taskId;
         this.context = params.context;
         this.response = params.response;
     }
@@ -109,19 +109,24 @@ export class DeleteModelRunner<
         }
 
         let hasMoreFolders = false;
+
+        const listFolders = this.context.container.resolve(ListFoldersUseCase);
+        const deleteFolder = this.context.container.resolve(DeleteFolderUseCase);
+
         do {
-            const [items, meta] = await this.context.aco.folder.list({
+            const listResult = await listFolders.execute({
                 where: {
                     type: `cms:${model.modelId}`
                 },
                 limit: 1000
             });
+
+            const [items, meta] = listResult.value;
+
             for (const item of items) {
-                try {
-                    await this.context.aco.folder.delete(item.id);
-                } catch (ex) {
-                    console.error(`Failed to delete folder "${item.id}".`, ex);
-                    return this.response.error(ex);
+                const result = await deleteFolder.execute(item.id);
+                if (result.isFail()) {
+                    return this.response.error(result.error);
                 }
             }
 

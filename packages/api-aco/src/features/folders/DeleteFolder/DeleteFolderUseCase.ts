@@ -9,7 +9,6 @@ import {
 } from "./abstractions.js";
 import { GetFolderRepository } from "../GetFolder/abstractions.js";
 import { FolderBeforeDeleteEvent, FolderAfterDeleteEvent } from "./events.js";
-import type { DeleteFolderParams } from "~/folder/folder.types.js";
 import { createImplementation } from "@webiny/di";
 import { FolderNotAuthorizedError, FolderNotEmptyError } from "~/domain/folder/errors.js";
 
@@ -20,9 +19,9 @@ class DeleteFolderUseCaseImpl implements UseCaseAbstraction.Interface {
         private repository: DeleteFolderRepository.Interface
     ) {}
 
-    async execute(params: DeleteFolderParams): Promise<Result<void, UseCaseAbstraction.Error>> {
+    async execute(id: string): Promise<Result<void, UseCaseAbstraction.Error>> {
         // Get the folder before deletion
-        const getFolderResult = await this.getFolderRepository.execute(params.id);
+        const getFolderResult = await this.getFolderRepository.execute(id);
 
         if (getFolderResult.isFail()) {
             return Result.fail(getFolderResult.error);

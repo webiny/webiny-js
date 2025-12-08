@@ -1,7 +1,7 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { DomainEvent, IEventHandler } from "@webiny/api-core/features/EventPublisher";
-import type { Folder, DeleteFolderParams } from "~/folder/folder.types.js";
+import type { Folder } from "~/folder/folder.types.js";
 import {
     type FolderNotAuthorizedError,
     FolderNotEmptyError,
@@ -35,7 +35,7 @@ export namespace DeleteFolderRepository {
  * DeleteFolder use case interface
  */
 export interface IDeleteFolderUseCase {
-    execute(params: DeleteFolderParams): Promise<Result<void, UseCaseError>>;
+    execute(id: string): Promise<Result<void, UseCaseError>>;
 }
 
 export interface IDeleteFolderUseCaseErrors {

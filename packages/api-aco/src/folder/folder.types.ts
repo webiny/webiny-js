@@ -68,10 +68,6 @@ export interface UpdateFolderParams {
     parentId?: string;
 }
 
-export interface DeleteFolderParams {
-    id: string;
-}
-
 export interface FolderLevelPermissionsTarget<TMeta = Record<string, any>> {
     id: string;
     target: string;
