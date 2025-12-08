@@ -26,7 +26,9 @@ export const Documentation: Story = {
         variant: "dimmed",
         margin: "none",
         orientation: "horizontal",
-        decorative: true
+        decorative: true,
+        children: undefined,
+        labelPosition: "middle"
     },
     argTypes: {
         margin: {
@@ -48,6 +50,16 @@ export const Documentation: Story = {
             description:
                 "Whether the separator is purely decorative and should be hidden from screen readers.",
             control: "boolean"
+        },
+        children: {
+            description:
+                "Optional label text to display with the separator. Text will use text-neutral-primary text-md font-semibold styles.",
+            control: "text"
+        },
+        labelPosition: {
+            description: "Position of the label when children are provided.",
+            control: "select",
+            options: ["start", "middle", "end"]
         }
     },
     render: props => {
@@ -342,6 +354,128 @@ export const AllVariants: Story = {
                     <Heading level={6}>{"Accent"}</Heading>
                     <Separator margin={"lg"} variant="accent" />
                     <Text size="sm">{"bg-primary"}</Text>
+                </div>
+            </div>
+        );
+    }
+};
+
+export const WithLabelMiddle: Story = {
+    render: () => {
+        return (
+            <div className="space-y-8">
+                <div>
+                    <Heading level={6}>{"Separator with label in the middle"}</Heading>
+                    <Text size="sm" className="text-neutral-strong mb-4">
+                        {"Label is positioned in the center (default)"}
+                    </Text>
+                    <Separator variant="dimmed" labelPosition="middle">
+                        {"OR"}
+                    </Separator>
+                </div>
+                <div>
+                    <Separator variant="muted" labelPosition="middle">
+                        {"Section Title"}
+                    </Separator>
+                </div>
+                <div>
+                    <Separator variant="accent" labelPosition="middle">
+                        {"Important"}
+                    </Separator>
+                </div>
+            </div>
+        );
+    }
+};
+
+export const WithLabelStart: Story = {
+    render: () => {
+        return (
+            <div className="space-y-8">
+                <div>
+                    <Heading level={6}>{"Separator with label at start"}</Heading>
+                    <Text size="sm" className="text-neutral-strong mb-4">
+                        {"Label is positioned at the beginning"}
+                    </Text>
+                    <Separator variant="dimmed" labelPosition="start">
+                        {"Start"}
+                    </Separator>
+                </div>
+                <div>
+                    <Separator variant="muted" labelPosition="start">
+                        {"Section 1"}
+                    </Separator>
+                </div>
+                <div>
+                    <Separator variant="accent" labelPosition="start">
+                        {"New Feature"}
+                    </Separator>
+                </div>
+            </div>
+        );
+    }
+};
+
+export const WithLabelEnd: Story = {
+    render: () => {
+        return (
+            <div className="space-y-8">
+                <div>
+                    <Heading level={6}>{"Separator with label at end"}</Heading>
+                    <Text size="sm" className="text-neutral-strong mb-4">
+                        {"Label is positioned at the end"}
+                    </Text>
+                    <Separator variant="dimmed" labelPosition="end">
+                        {"End"}
+                    </Separator>
+                </div>
+                <div>
+                    <Separator variant="muted" labelPosition="end">
+                        {"See More"}
+                    </Separator>
+                </div>
+                <div>
+                    <Separator variant="accent" labelPosition="end">
+                        {"Continue"}
+                    </Separator>
+                </div>
+            </div>
+        );
+    }
+};
+
+export const WithLabelVertical: Story = {
+    render: () => {
+        return (
+            <div>
+                <Heading level={6} className="mb-4">
+                    {"Vertical separator with labels"}
+                </Heading>
+                <div className="flex gap-8" style={{ height: "200px" }}>
+                    <div className="flex flex-col items-center">
+                        <Text size="sm" className="text-neutral-strong mb-2">
+                            {"Start"}
+                        </Text>
+                        <Separator orientation="vertical" variant="dimmed" labelPosition="start">
+                            {"Top"}
+                        </Separator>
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <Text size="sm" className="text-neutral-strong mb-2">
+                            {"Middle"}
+                        </Text>
+                        <Separator orientation="vertical" variant="muted" labelPosition="middle">
+                            {"Center"}
+                        </Separator>
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <Text size="sm" className="text-neutral-strong mb-2">
+                            {"End"}
+                        </Text>
+                        <Separator orientation="vertical" variant="accent" labelPosition="end">
+                            {"Bottom"}
+                        </Separator>
+                    </div>
                 </div>
             </div>
         );
