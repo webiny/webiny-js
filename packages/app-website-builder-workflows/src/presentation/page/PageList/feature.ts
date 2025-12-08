@@ -4,6 +4,6 @@ import { PageListPresenterDecorator } from "./PageListPresenterDecorator.js";
 export const PageListWorkflowsFeature = createFeature({
     name: "PageListWorkflows",
     register(container) {
-        container.registerDecorator(PageListPresenterDecorator);
     }
+    
 });

@@ -1,14 +1,10 @@
 import { useCallback } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
 import { useGetDescendantFolders } from "@webiny/app-aco";
-import { useGetPageGraphQLFields } from "~/features/pages/index.js";
-import { ListPagesGqlGateway } from "~/features/pages/loadPages/ListPagesGqlGateway.js";
 import { FilterPages } from "~/features/pages/loadPages/FilterPages.js";
+import { useListPagesGateway } from "~/features/pages/loadPages/useListPagesGateway.js";
 
 export const useFilterPages = () => {
-    const client = useApolloClient();
-    const fields = useGetPageGraphQLFields(["properties", "metadata"]);
-    const gateway = new ListPagesGqlGateway(client, fields);
+    const gateway = useListPagesGateway(["properties", "metadata"]);
     const { getDescendantFolders } = useGetDescendantFolders();
 
     const filterPages = useCallback(

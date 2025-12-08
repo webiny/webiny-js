@@ -4,6 +4,7 @@ import type { PageGatewayDto } from "~/features/pages/loadPages/PageGatewayDto.j
 import type { IListPagesGateway } from "./IListPagesGateway.js";
 import { type ListPagesGatewayParams } from "./IListPagesGateway.js";
 import { type WbError, type WbListMeta } from "~/types.js";
+import { Abstraction } from "@webiny/di";
 
 const LIST_META_FIELD = /* GraphQL */ `
     meta {
@@ -41,11 +42,13 @@ export interface ListPagesQueryVariables {
     search?: string;
 }
 
-export const LIST_PAGES = (PAGES_FIELDS: string) => gql`
+export const LIST_PAGES = (fields: string[]) => gql`
     query ListPages($where: WbPagesListWhereInput, $limit: Int, $after: String, $sort: [WbPageListSorter], $search: String) {
         websiteBuilder {
             listPages(where: $where, limit: $limit, after: $after, sort: $sort, search: $search) {
-                data ${PAGES_FIELDS}
+                data {
+                    ${fields.join("\n")}
+                }
                 ${LIST_META_FIELD}
                 ${ERROR_FIELD}
             }
@@ -53,21 +56,43 @@ export const LIST_PAGES = (PAGES_FIELDS: string) => gql`
     }
 `;
 
-export class ListPagesGqlGateway implements IListPagesGateway {
-    private client: ApolloClient<any>;
-    private modelFields: string;
+export interface IListPagesGraphQLFieldSelection {
+    getSelection(): string[];
+}
 
-    constructor(client: ApolloClient<any>, modelFields: string) {
-        this.client = client;
-        this.modelFields = modelFields;
+export const ListPagesGraphQLFieldSelection = new Abstraction<IListPagesGraphQLFieldSelection>(
+    "ListPagesGraphQLFieldSelection"
+);
+
+export interface IListPagesGatewayParams {
+    client: ApolloClient<object>;
+    modelFields: string[];
+    fieldSelection: IListPagesGraphQLFieldSelection[];
+}
+
+export class ListPagesGqlGateway implements IListPagesGateway {
+    private readonly client;
+    private readonly modelFields;
+    private readonly fieldSelection;
+
+    // public constructor(client: ApolloClient<object>, modelFields: string) {
+    public constructor(params: IListPagesGatewayParams) {
+        this.client = params.client;
+        this.modelFields = params.modelFields;
+        this.fieldSelection = params.fieldSelection;
     }
 
-    async execute(params: ListPagesGatewayParams) {
+    public async execute(params: ListPagesGatewayParams) {
+        const fields = [...this.modelFields];
+        for (const extraFields of this.fieldSelection) {
+            fields.push(...extraFields.getSelection());
+        }
+
         const { data: response } = await this.client.query<
             ListPagesResponse,
             ListPagesQueryVariables
         >({
-            query: LIST_PAGES(this.modelFields),
+            query: LIST_PAGES(fields),
             variables: {
                 ...params,
                 where: {
