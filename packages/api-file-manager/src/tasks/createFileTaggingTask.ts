@@ -1,5 +1,5 @@
 import { createTaskDefinition } from "@webiny/tasks";
-import { FileManagerContext } from "~/types";
+import type { FileManagerContext } from "~/types.js";
 import { Context as WebsocketsContext } from "@webiny/api-websockets";
 
 export const createFileTaggingTask = () => {
