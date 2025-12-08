@@ -2,7 +2,6 @@ import gql from "graphql-tag";
 import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
 import type { FolderDto } from "~/domain/folder/FolderDto.js";
 import { FolderModelProvider } from "~/features/folders/abstractions.js";
-import type { FolderGatewayOutputDto } from "./abstractions.js";
 import type { FolderGatewayDto } from "./abstractions.js";
 import { CreateFolderGateway as GatewayAbstraction } from "./abstractions.js";
 import type { AcoError } from "~/types.js";
@@ -10,7 +9,7 @@ import type { AcoError } from "~/types.js";
 export interface CreateFolderResponse {
     aco: {
         createFolder: {
-            data: FolderGatewayOutputDto;
+            data: FolderDto;
             error: AcoError | null;
         };
     };
