@@ -5,7 +5,7 @@ import {
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
     createRunBuildCacheSteps,
-    createYarnCacheSteps,
+    createYarnCacheSteps
 } from "./steps";
 
 const BRANCH_NAME = "${{ github.event.inputs.branch }}";
@@ -70,7 +70,7 @@ export const release = createWorkflow({
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
                 BETA_VERSION: "${{ vars.BETA_VERSION }}"
             },
-            checkout: { ref: BRANCH_NAME, "fetch-depth": 0 },
+            checkout: { path: BRANCH_NAME, ref: BRANCH_NAME, "fetch-depth": 0 },
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
@@ -89,6 +89,7 @@ export const release = createWorkflow({
                 },
                 {
                     name: 'Version and publish "beta" tag to NPM',
+                    "working-directory": BRANCH_NAME,
                     run: "yarn release --type=beta"
                 }
             ]
@@ -103,6 +104,7 @@ export const release = createWorkflow({
                 LATEST_VERSION: "${{ vars.LATEST_VERSION }}"
             },
             checkout: {
+                path: BRANCH_NAME,
                 ref: BRANCH_NAME,
                 "fetch-depth": 0
             },
@@ -124,6 +126,7 @@ export const release = createWorkflow({
                 },
                 {
                     name: 'Version and publish "latest" tag to NPM',
+                    "working-directory": BRANCH_NAME,
                     run: "yarn release --type=latest"
                 }
             ]

@@ -91,6 +91,7 @@ jobs:
           node-version: 22
       - uses: actions/checkout@v4
         with:
+          path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
           fetch-depth: 0
       - uses: actions/cache@v4
@@ -114,6 +115,7 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
       - name: Version and publish "beta" tag to NPM
+        working-directory: ${{ github.event.inputs.branch }}
         run: yarn release --type=beta
     runs-on: ubuntu-latest
   npmReleaseLatest:
@@ -134,6 +136,7 @@ jobs:
           node-version: 22
       - uses: actions/checkout@v4
         with:
+          path: ${{ github.event.inputs.branch }}
           ref: ${{ github.event.inputs.branch }}
           fetch-depth: 0
       - uses: actions/cache@v4
@@ -157,5 +160,6 @@ jobs:
       - name: Set git username
         run: git config --global user.name "webiny-bot"
       - name: Version and publish "latest" tag to NPM
+        working-directory: ${{ github.event.inputs.branch }}
         run: yarn release --type=latest
     runs-on: ubuntu-latest
