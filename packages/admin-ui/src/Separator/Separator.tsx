@@ -21,7 +21,8 @@ const separatorVariants = cva("shrink-0", {
             base: "bg-white",
             dimmed: "bg-neutral-dimmed",
             muted: "bg-neutral-muted",
-            strong: "bg-neutral-strong"
+            strong: "bg-neutral-strong",
+            accent: "bg-primary"
         }
     },
     compoundVariants: [
