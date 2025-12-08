@@ -1,7 +1,10 @@
 import React from "react";
 import { FolderProvider } from "@webiny/app-aco";
 import { makeDecoratable, OptionsMenu } from "@webiny/app-admin";
-import { ContentEntryListConfig, useContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
+import {
+    ContentEntryListConfig,
+    useContentEntryListConfig
+} from "~/admin/config/contentEntries/index.js";
 import { EntryProvider } from "~/admin/hooks/useEntry.js";
 
 const DefaultCellActions = () => {

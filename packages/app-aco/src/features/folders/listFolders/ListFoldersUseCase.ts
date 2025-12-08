@@ -1,7 +1,4 @@
-import {
-    ListFoldersUseCase as UseCaseAbstraction,
-    ListFoldersRepository
-} from "./abstractions.js";
+import { ListFoldersUseCase as UseCaseAbstraction, ListFoldersRepository } from "./abstractions.js";
 
 class ListFoldersUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private repository: ListFoldersRepository.Interface) {}

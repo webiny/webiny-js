@@ -21,9 +21,8 @@ export namespace ListFoldersByParentIdsUseCase {
     export type Interface = IListFoldersByParentIdsUseCase;
 }
 
-export const ListFoldersByParentIdsRepository = createAbstraction<IListFoldersByParentIdsRepository>(
-    "ListFoldersByParentIdsRepository"
-);
+export const ListFoldersByParentIdsRepository =
+    createAbstraction<IListFoldersByParentIdsRepository>("ListFoldersByParentIdsRepository");
 
 export namespace ListFoldersByParentIdsRepository {
     export type Interface = IListFoldersByParentIdsRepository;

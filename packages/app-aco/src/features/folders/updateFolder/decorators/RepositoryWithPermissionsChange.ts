@@ -68,8 +68,7 @@ class UpdateFolderRepositoryWithPermissionsChangeImpl implements RepositoryAbstr
     }
 }
 
-export const UpdateFolderRepositoryWithPermissionsChange =
-    RepositoryAbstraction.createDecorator({
-        decorator: UpdateFolderRepositoryWithPermissionsChangeImpl,
-        dependencies: [FoldersCache]
-    });
+export const UpdateFolderRepositoryWithPermissionsChange = RepositoryAbstraction.createDecorator({
+    decorator: UpdateFolderRepositoryWithPermissionsChangeImpl,
+    dependencies: [FoldersCache]
+});

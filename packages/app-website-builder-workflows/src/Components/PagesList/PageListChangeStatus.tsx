@@ -23,6 +23,10 @@ const WrappedElement = (props: IWrappedElementProps) => {
     const { page } = usePage();
 
     const { state } = decoratePage(page);
+    console.log({
+        state,
+        page
+    });
     if (!state?.state || state.state === WorkflowStateValue.approved) {
         return props.element;
     }

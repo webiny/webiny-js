@@ -14,7 +14,7 @@ export interface TableProps {
 
 export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const view = useFileManagerView();
-    const { browser } = useFileManagerViewConfig()
+    const { browser } = useFileManagerViewConfig();
 
     const data = useMemo<TableItem[]>(() => {
         if (!view.displaySubFolders) {

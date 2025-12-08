@@ -20,14 +20,20 @@ export const CellActions = () => {
 
         return (
             <FolderProvider folder={row.data}>
-                <OptionsMenu actions={browser.folder.actions ?? []} data-testid={"table.row.folder.menu-action"} />
+                <OptionsMenu
+                    actions={browser.folder.actions ?? []}
+                    data-testid={"table.row.folder.menu-action"}
+                />
             </FolderProvider>
         );
     }
 
     return (
         <FileProvider file={row.data}>
-            <OptionsMenu actions={browser.file.actions ?? []} data-testid={"table.row.file.menu-action"} />
+            <OptionsMenu
+                actions={browser.file.actions ?? []}
+                data-testid={"table.row.file.menu-action"}
+            />
         </FileProvider>
     );
 };

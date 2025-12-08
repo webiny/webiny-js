@@ -17,11 +17,7 @@ export const DefaultPageEditorConfig = () => {
             <Ui.TopBar.Action name={"revisionsMenu"} element={<RevisionsMenu />} />
             <Ui.TopBar.Action name={"buttonSettings"} element={<SettingsButton />} />
             <Ui.TopBar.Action name={"buttonPublish"} element={<PublishButton />} />
-            <Ui.TopBar.Element
-                group={"left"}
-                name={"autoSave"}
-                element={<PageAutoSave />}
-            />
+            <Ui.TopBar.Element group={"left"} name={"autoSave"} element={<PageAutoSave />} />
         </PageEditorConfig>
     );
 };

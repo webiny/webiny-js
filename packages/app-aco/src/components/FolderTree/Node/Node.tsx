@@ -60,7 +60,7 @@ export const Node = ({ folderActions, enableActions }: NodeProps) => {
                 hasNonInheritedPermissions={hasNonInheritedPermissions}
                 canManagePermissions={canManagePermissions}
             />
-            {enableActions && !isRoot && <MenuActions folderActions={folderActions}/>}
+            {enableActions && !isRoot && <MenuActions folderActions={folderActions} />}
         </>
     );
 };

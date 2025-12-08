@@ -29,7 +29,7 @@ export interface BrowserConfig {
     filterByTags: boolean;
     table: TableConfig;
     grid: GridConfig;
-    file: RecordConfig
+    file: RecordConfig;
 }
 
 export const Browser = {

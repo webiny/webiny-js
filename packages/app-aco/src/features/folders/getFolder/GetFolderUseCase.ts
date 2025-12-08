@@ -1,7 +1,4 @@
-import {
-    GetFolderUseCase as UseCaseAbstraction,
-    GetFolderRepository
-} from "./abstractions.js";
+import { GetFolderUseCase as UseCaseAbstraction, GetFolderRepository } from "./abstractions.js";
 
 class GetFolderUseCaseImpl implements UseCaseAbstraction.Interface {
     constructor(private repository: GetFolderRepository.Interface) {}

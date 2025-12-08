@@ -23,9 +23,8 @@ export namespace GetFolderModelRepository {
     export type Interface = IGetFolderModelRepository;
 }
 
-export const GetFolderModelGateway = createAbstraction<IGetFolderModelGateway>(
-    "GetFolderModelGateway"
-);
+export const GetFolderModelGateway =
+    createAbstraction<IGetFolderModelGateway>("GetFolderModelGateway");
 
 export namespace GetFolderModelGateway {
     export type Interface = IGetFolderModelGateway;

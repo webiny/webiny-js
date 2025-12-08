@@ -1,47 +1,47 @@
-import { reaction, makeAutoObservable } from "mobx";
+import { makeAutoObservable } from "mobx";
 import {
     IDocumentListPresenterInit,
     IDocumentListVm,
     PageListPresenter
 } from "@webiny/app-website-builder/presentation/pages/PageList/index.js";
-import { SelectabilityRepository } from "~/presentation/page/PageList/SelectabilityRepository.js";
+import type { WithWorkflowState } from "~/types.js";
+import type { PageDto } from "@webiny/app-website-builder/domain/Page/index.js";
 
 class PageListPresenterWithWorkflows implements PageListPresenter.Interface {
-    private repository = new SelectabilityRepository();
+    private readonly decoratee;
 
-    constructor(private decoratee: PageListPresenter.Interface) {
+    public constructor(decoratee: PageListPresenter.Interface) {
+        this.decoratee = decoratee;
         makeAutoObservable(this);
     }
 
-    get vm(): IDocumentListVm {
+    public get vm(): IDocumentListVm {
         const vm = this.decoratee.vm;
-
         return {
             ...vm,
             data: vm.data.map(page => {
-                return {
-                    ...page,
-                    $selectable: this.repository.get(page.id)
-                };
+                return this.extendPage(page);
             })
         };
     }
 
-    init(params: IDocumentListPresenterInit): void {
-        // Prefetch selectability rules when records change
-        reaction(
-            () => this.decoratee.vm.data,
-            records => {
-                const ids = records.map(r => r.id);
-                this.repository.getSelectabilityRules(ids);
-            }
-        );
-
+    public init(params: IDocumentListPresenterInit): void {
         this.decoratee.init(params);
     }
 
-    showFilters(show: boolean): void {
+    public showFilters(show: boolean): void {
         this.decoratee.showFilters(show);
+    }
+
+    private extendPage(page: PageDto): WithWorkflowState<PageDto> {
+        console.log({
+            page
+        });
+        return {
+            ...page,
+            // @ts-expect-error
+            state: page.state
+        };
     }
 }
 
