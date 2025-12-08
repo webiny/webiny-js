@@ -46,15 +46,9 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
     const env: Record<string, string> = { AWS_REGION };
 
     if (storageOps) {
-        if (storageOps.id === "ddb-es,ddb") {
-            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
-            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
-        } else if (storageOps.id === "ddb-os,ddb") {
-            // We still use the same environment variables as for "ddb-es" setup, it's
-            // just that the values are read from different secrets.
-            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
-            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
+        if (storageOps.id === "ddb-os,ddb") {
+            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}";
+            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_3_ENDPOINT }}";
             env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
         }
     }
@@ -96,10 +90,10 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
             },
             "runs-on": "${{ matrix.os }}",
             env,
-            awsAuth:
-                storageOps && (storageOps.id === "ddb-es,ddb" || storageOps.id === "ddb-os,ddb"),
+            awsAuth: storageOps && storageOps.id === "ddb-os,ddb",
             checkout: { path: DIR_WEBINY_JS },
             steps: [
+                ...createCheckoutPrSteps(),
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
                 ...installBuildSteps,

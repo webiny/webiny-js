@@ -1,33 +1,48 @@
 import { createWorkflow } from "github-actions-wac";
-import { createJob } from "./jobs/index.js";
+import { BUILD_PACKAGES_RUNNER } from "./utils";
+import { createJob } from "./jobs";
 import {
+    createGlobalBuildCacheSteps,
+    createInstallBuildSteps,
     createRunBuildCacheSteps,
-    createYarnCacheSteps,
-    createInstallBuildSteps
-} from "./steps/index.js";
-import { BUILD_PACKAGES_RUNNER } from "./utils/index.js";
+    createYarnCacheSteps
+} from "./steps";
 
-const installBuildSteps = createInstallBuildSteps({ workingDirectory: "" });
-const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: "" });
-const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: "" });
+const BRANCH_NAME = "${{ github.event.inputs.branch }}";
 
-// Note: we don't use global build cache here because we don't know which cache to use.
-// Commits from both `dev` and `next` branches can be merged into `stable`, so we need
-// to build the packages from scratch. Maybe we can improve this in the future.
+const installBuildSteps = createInstallBuildSteps({ workingDirectory: BRANCH_NAME });
+const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: BRANCH_NAME });
+const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: BRANCH_NAME });
+const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: BRANCH_NAME });
 
-export const pushStable = createWorkflow({
-    name: "Stable Branch - Push",
+export const release = createWorkflow({
+    name: `📦 Release`,
     on: {
-        push: {
-            branches: ["stable"]
+        workflow_dispatch: {
+            inputs: {
+                branch: {
+                    description: "Branch to release from",
+                    required: true,
+                    default: "next",
+                    type: "choice",
+                    options: ["next", "dev", "v5-dev"]
+                }
+            }
         }
     },
     jobs: {
         constants: createJob({
             name: "Create constants",
-            outputs: { "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}" },
-            setupNode: false,
+            outputs: {
+                "global-cache-key": "${{ steps.global-cache-key.outputs.global-cache-key }}",
+                "run-cache-key": "${{ steps.run-cache-key.outputs.run-cache-key }}"
+            },
             steps: [
+                {
+                    name: "Create global cache key",
+                    id: "global-cache-key",
+                    run: `echo "global-cache-key=${BRANCH_NAME}-\${{ runner.os }}-$(/bin/date -u "+%m%d")-\${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT`
+                },
                 {
                     name: "Create workflow run cache key",
                     id: "run-cache-key",
@@ -38,13 +53,12 @@ export const pushStable = createWorkflow({
         build: createJob({
             name: "Build",
             needs: "constants",
+            checkout: { path: BRANCH_NAME, ref: BRANCH_NAME },
             "runs-on": BUILD_PACKAGES_RUNNER,
             steps: [
                 ...yarnCacheSteps,
+                ...globalBuildCacheSteps,
                 ...installBuildSteps,
-
-                // Once we've built packages (without the help of the global cache), we can now cache
-                // the result for this run workflow. All of the following jobs will use this cache.
                 ...runBuildCacheSteps
             ]
         }),
@@ -56,7 +70,7 @@ export const pushStable = createWorkflow({
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}",
                 BETA_VERSION: "${{ vars.BETA_VERSION }}"
             },
-            checkout: { "fetch-depth": 0 },
+            checkout: { path: BRANCH_NAME, ref: BRANCH_NAME, "fetch-depth": 0 },
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
@@ -75,6 +89,7 @@ export const pushStable = createWorkflow({
                 },
                 {
                     name: 'Version and publish "beta" tag to NPM',
+                    "working-directory": BRANCH_NAME,
                     run: "yarn release --type=beta"
                 }
             ]
@@ -89,7 +104,8 @@ export const pushStable = createWorkflow({
                 LATEST_VERSION: "${{ vars.LATEST_VERSION }}"
             },
             checkout: {
-                ref: "${{ github.head_ref }}",
+                path: BRANCH_NAME,
+                ref: BRANCH_NAME,
                 "fetch-depth": 0
             },
             steps: [
@@ -110,6 +126,7 @@ export const pushStable = createWorkflow({
                 },
                 {
                     name: 'Version and publish "latest" tag to NPM',
+                    "working-directory": BRANCH_NAME,
                     run: "yarn release --type=latest"
                 }
             ]

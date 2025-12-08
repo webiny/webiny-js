@@ -91,7 +91,8 @@ import {
     BuildProjectWorkspaceService,
     ProjectSdkParamsService,
     LoadEnvVarsService,
-    ValidateProjectConfig
+    ValidateProjectConfig,
+    LoggerService
 } from "~/abstractions/index.js";
 
 import {
@@ -215,6 +216,9 @@ export const createProjectSdkContainer = async (
     await container.resolve(LoadEnvVarsService).execute();
     await container.resolve(BuildProjectWorkspaceService).execute();
 
+    const logger = container.resolve(LoggerService);
+    logger.log("Initializing Project SDK container...");
+
     const projectExtensions = await container.resolve(GetProjectConfig).execute({
         tags: { runtimeContext: "project" }
     });
@@ -293,6 +297,5 @@ export const createProjectSdkContainer = async (
         const projectDecoratorImpl = await importFromPath(projectDecorator.params.src);
         container.registerDecorator(projectDecoratorImpl);
     }
-
     return container;
 };

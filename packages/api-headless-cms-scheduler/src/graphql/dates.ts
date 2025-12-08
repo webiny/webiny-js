@@ -8,14 +8,3 @@ export type DateISOString =
 export const dateToISOString = (value: Date): DateISOString => {
     return value.toISOString() as DateISOString;
 };
-
-export const isoStringToDate = (value: DateISOString | undefined): Date | undefined => {
-    if (typeof value === "string") {
-        try {
-            return new Date(value);
-        } catch {
-            return undefined;
-        }
-    }
-    return undefined;
-};

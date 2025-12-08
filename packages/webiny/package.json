@@ -71,7 +71,7 @@
     "./api/security/features/ListUserTeams": "./api/security/features/ListUserTeams.js",
     "./api/security/features/ExternalIdpUserSync": "./api/security/features/ExternalIdpUserSync.js",
     "./admin/configs": "./admin/configs.js",
-    "./cli/features/Command": "./cli/features/Command.js",
+    "./cli/features/CliCommand": "./cli/features/CliCommand.js",
     "./cli/features/Ui": "./cli/features/Ui.js",
     "./infra/features/AdminAfterBuild": "./infra/features/AdminAfterBuild.js",
     "./infra/features/AdminAfterDeploy": "./infra/features/AdminAfterDeploy.js",

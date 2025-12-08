@@ -218,7 +218,7 @@ export const createSchedulerGraphQL = () => {
                         const result = await scheduleEntry.execute({
                             modelId: data.modelId,
                             targetId: data.id,
-                            scheduleOn: data.input.scheduleOn,
+                            scheduleOn: data.input.scheduleOn?.toISOString(),
                             immediately: data.input.immediately,
                             actionType: typeMap[data.input.type]
                         });
@@ -243,7 +243,7 @@ export const createSchedulerGraphQL = () => {
                         const result = await scheduleEntry.execute({
                             modelId: data.modelId,
                             targetId: data.id,
-                            scheduleOn: data.input.scheduleOn,
+                            scheduleOn: data.input.scheduleOn?.toISOString(),
                             immediately: data.input.immediately,
                             actionType: typeMap[data.input.type]
                         });

@@ -19,8 +19,10 @@ export class DefaultBuildApp implements BuildApp.Interface {
     ) {}
 
     async execute(params: BuildApp.Params) {
+        this.logger.info(`Building "${params.app}" app workspace...`);
         await this.buildAppWorkspaceService.execute(params, { forceRebuild: true });
 
+        this.logger.info(`Building "${params.app}" app extensions...`);
         const projectConfig = await this.getProjectConfigService.execute({
             tags: { appName: params.app, runtimeContext: "app-build" },
             renderArgs: params
@@ -39,6 +41,7 @@ export class DefaultBuildApp implements BuildApp.Interface {
             }
         }
 
+        this.logger.info(`Building "${params.app}" app packages...`);
         const packages = await this.listPackagesService.execute(params.app);
 
         return new PackagesBuilder({

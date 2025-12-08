@@ -25,10 +25,10 @@ import {
     AdminCustomDomains,
     AwsTags,
     BlueGreenDeployments,
-    Vpc,
-    ElasticSearch,
-    OpenSearch
-} from "@webiny/project-aws/pulumi/extensions/index.js";
+    Vpc
+} from "./pulumi/extensions/index.js";
+
+import { OpenSearch, ElasticSearch } from "./extensions/index.js";
 
 export const Infra = {
     Vpc,

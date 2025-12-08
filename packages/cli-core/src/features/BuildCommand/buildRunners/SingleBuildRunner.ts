@@ -17,11 +17,7 @@ export class SingleBuildRunner extends BaseBuildRunner {
 
         const getBuildDuration = measureDuration();
 
-        try {
-            await buildProcesses.run();
-            ui.success(`Built %s package in %s.`, pkg.name, getBuildDuration());
-        } catch {
-            throw new Error("Build failed. See the logs above for details.");
-        }
+        await buildProcesses.run();
+        ui.success(`Built %s package in %s.`, pkg.name, getBuildDuration());
     }
 }

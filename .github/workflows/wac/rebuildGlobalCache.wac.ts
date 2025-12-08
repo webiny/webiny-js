@@ -41,3 +41,4 @@ const createRebuildGlobalCacheWorkflow = (branchName: string) => ({
 
 export const rebuildGlobalCacheDev = createRebuildGlobalCacheWorkflow("dev");
 export const rebuildGlobalCacheNext = createRebuildGlobalCacheWorkflow("next");
+export const rebuildGlobalCacheV5 = createRebuildGlobalCacheWorkflow("v5-dev");

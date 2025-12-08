@@ -26,7 +26,7 @@ export interface IScheduleEntryActionInput {
     targetId: string;
     actionType: ScheduleEntryActionType;
     immediately?: boolean;
-    scheduleOn?: Date;
+    scheduleOn?: string;
 }
 
 export interface IScheduleEntryActionErrors {

@@ -64,15 +64,9 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     if (storageOps) {
         env["WEBINY_STORAGE"] = storageOps.id;
-        if (storageOps.id === "ddb-es,ddb") {
-            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
-            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
-        } else if (storageOps.id === "ddb-os,ddb") {
-            // We still use the same environment variables as for "ddb-es" setup, it's
-            // just that the values are read from different secrets.
-            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
-            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
+        if (storageOps.id === "ddb-os,ddb") {
+            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME}}";
+            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_3_ENDPOINT }}";
             env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.testCommand.id }}";
         }
     }
@@ -107,7 +101,7 @@ const createVitestTestsJobs = (storageOps?: AbstractStorageOps) => {
 
     // We prevent running of Vitest tests if a PR was created from a fork.
     // This is because we don't want to expose our AWS credentials to forks.
-    if (storageOps && (storageOps.id === "ddb-es,ddb" || storageOps.id === "ddb-os,ddb")) {
+    if (storageOps && storageOps.id === "ddb-os,ddb") {
         runJob.if += " && needs.constants.outputs.is-fork-pr != 'true'";
     }
 

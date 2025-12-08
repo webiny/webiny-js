@@ -1,18 +1,18 @@
 import { createImplementation } from "@webiny/di";
-import { Command, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
+import { CliCommand, GetProjectSdkService, StdioService, UiService } from "~/abstractions/index.js";
 import { IBaseAppParams } from "~/abstractions/features/types.js";
 import { BuildRunner } from "~/features/BuildCommand/buildRunners/BuildRunner.js";
 
 export type IBuildCommandParams = IBaseAppParams;
 
-export class BuildCommand implements Command.Interface<IBuildCommandParams> {
+export class BuildCommand implements CliCommand.Interface<IBuildCommandParams> {
     constructor(
         private getProjectSdkService: GetProjectSdkService.Interface,
         private stdioService: StdioService.Interface,
         private ui: UiService.Interface
     ) {}
 
-    async execute(): Promise<Command.CommandDefinition<IBuildCommandParams>> {
+    async execute(): Promise<CliCommand.CommandDefinition<IBuildCommandParams>> {
         const projectSdk = await this.getProjectSdkService.execute();
 
         return {
@@ -78,7 +78,7 @@ export class BuildCommand implements Command.Interface<IBuildCommandParams> {
 }
 
 export const buildCommand = createImplementation({
-    abstraction: Command,
+    abstraction: CliCommand,
     implementation: BuildCommand,
     dependencies: [GetProjectSdkService, StdioService, UiService]
 });

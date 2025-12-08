@@ -1,15 +1,19 @@
 import { createImplementation } from "@webiny/di";
-import { createPinoLogger as baseCreatePinoLogger, type Logger } from "@webiny/logger";
-import { LoggerService, GetProjectService } from "~/abstractions/index.js";
+import { GetProjectService, LoggerService, ProjectSdkParamsService } from "~/abstractions/index.js";
 import * as fs from "node:fs";
 import path from "node:path";
+import { type Logger, pino } from "pino";
+import pinoPretty from "pino-pretty";
 
 const DEFAULT_LOG_LEVEL = "info";
 
 export class DefaultLoggerService implements LoggerService.Interface {
     pinoLogger: Logger | null = null;
 
-    constructor(private getProjectService: GetProjectService.Interface) {}
+    constructor(
+        private getProjectService: GetProjectService.Interface,
+        private projectSdkParamsService: ProjectSdkParamsService.Interface
+    ) {}
 
     trace(message?: any, ...optionalParams: any[]) {
         const logger = this.getLogger();
@@ -52,14 +56,21 @@ export class DefaultLoggerService implements LoggerService.Interface {
         }
 
         const logStream = this.getLogStream();
-
-        const level = process.env.LOG_LEVEL || DEFAULT_LOG_LEVEL;
-        this.pinoLogger = baseCreatePinoLogger({ level }, logStream);
+        const level = this.getLogLevel();
+        this.pinoLogger = pino({ level }, logStream);
 
         return this.pinoLogger;
     }
 
     private getLogStream() {
+        const { logging } = this.projectSdkParamsService.get();
+
+        if (logging?.streamToStdout) {
+            return pinoPretty({
+                ignore: "pid,hostname"
+            });
+        }
+
         const project = this.getProjectService.execute();
 
         const logsFolderPath = project.paths.dotWebinyFolder.join("logs").toString();
@@ -80,10 +91,15 @@ export class DefaultLoggerService implements LoggerService.Interface {
         const dateStr = now.toISOString().split("T")[0];
         return `logs-${dateStr}.log`;
     }
+
+    private getLogLevel() {
+        const { logging } = this.projectSdkParamsService.get();
+        return process.env.WEBINY_LOG_LEVEL || logging?.level || DEFAULT_LOG_LEVEL;
+    }
 }
 
 export const loggerService = createImplementation({
     abstraction: LoggerService,
     implementation: DefaultLoggerService,
-    dependencies: [GetProjectService]
+    dependencies: [GetProjectService, ProjectSdkParamsService]
 });
