@@ -1,5 +1,5 @@
 import { Container } from "@webiny/di";
-import { createFeature } from "@webiny/app";
+import { createFeature } from "@webiny/feature/admin";
 import { TenancyService as TenancyServiceAbstraction } from "./abstractions.js";
 import { TenancyService } from "./TenancyService.js";
 import { LocalStorageFeature } from "@webiny/app/features/localStorage";

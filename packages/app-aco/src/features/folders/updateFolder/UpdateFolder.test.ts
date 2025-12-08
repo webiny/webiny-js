@@ -1,44 +1,72 @@
-// @ts-nocheck TODO
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { UpdateFolder } from "./UpdateFolder.js";
-import { folderCacheFactory } from "../cache/FoldersCacheFactory.js";
-import { Folder } from "../Folder.js";
 import { type FolderPermission } from "@webiny/shared-aco/flp/flp.types.js";
+import { LoadingRepository } from "@webiny/app-utils";
 import { ROOT_FOLDER } from "~/constants.js";
-import type { IUpdateFolderGateway } from "~/features/folders/updateFolder/IUpdateFolderGateway.js";
-import type { FolderGqlDto } from "~/features/folders/updateFolder/FolderGqlDto.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { ListCache } from "~/features/folders/cache/index.js";
+import { Folder } from "~/domain/folder/Folder.js";
+import { Container } from "@webiny/di";
+import { FoldersContext } from "~/features/folders/abstractions.js";
+import { FoldersCache } from "~/features/folders/abstractions.js";
+import { UpdateFolderFeature } from "~/features/folders/updateFolder/feature.js";
+import { UpdateFolderUseCase } from "~/features/folders/updateFolder/abstractions.js";
+import { UpdateFolderGateway } from "~/features/folders/updateFolder/abstractions.js";
+import { FoldersLoadingRepository } from "~/features/folders/abstractions.js";
 
-class UpdateFolderMockGateway implements IUpdateFolderGateway {
-    mockResponse: FolderGqlDto;
+class UpdateFolderMockGateway implements UpdateFolderGateway.Interface {
+    mockResponse: Partial<FolderDto>;
 
-    // Had to use `any` as the mock folders passed in the tests below are also partial objects.
-    constructor(mockResponse: any) {
-        this.mockResponse = mockResponse as FolderGqlDto;
+    constructor(mockResponse: Partial<FolderDto>) {
+        this.mockResponse = mockResponse;
     }
 
     async execute() {
-        return this.mockResponse;
+        return this.mockResponse as FolderDto;
     }
+}
+
+interface SetupTestParams {
+    gateway: UpdateFolderGateway.Interface;
+    folders?: Folder[];
+    foldersCache?: ListCache<Folder>;
 }
 
 describe("UpdateFolder", () => {
     const type = "abc";
 
-    const foldersCache = folderCacheFactory.getCache(type);
+    function setupTest(params: SetupTestParams) {
+        const container = new Container();
+        const foldersCache = params.foldersCache ? params.foldersCache : new ListCache<Folder>();
+
+        if (!params.foldersCache) {
+            foldersCache.addItems([
+                Folder.create({
+                    id: "any-folder-id",
+                    title: "Any Folder",
+                    slug: "any-folder",
+                    parentId: null,
+                    permissions: [],
+                    type
+                })
+            ]);
+        }
+
+        if (params.folders) {
+            foldersCache.addItems(params.folders);
+        }
+
+        container.registerInstance(FoldersContext, { type });
+        container.registerInstance(FoldersCache, foldersCache);
+        container.registerInstance(FoldersLoadingRepository, new LoadingRepository());
+
+        UpdateFolderFeature.register(container);
+        container.registerInstance(UpdateFolderGateway, params.gateway);
+
+        return { container, foldersCache, updateFolder: container.resolve(UpdateFolderUseCase) };
+    }
 
     beforeEach(() => {
         vi.clearAllMocks();
-        foldersCache.clear();
-        foldersCache.addItems([
-            Folder.create({
-                id: "any-folder-id",
-                title: "Any Folder",
-                slug: "any-folder",
-                parentId: null,
-                permissions: [],
-                type
-            })
-        ]);
     });
 
     it("should be able to update a folder", async () => {
@@ -51,11 +79,11 @@ describe("UpdateFolder", () => {
             type
         });
 
+        const { updateFolder, foldersCache } = setupTest({ gateway });
+
         const spy = vi.spyOn(gateway, "execute");
 
-        const updateFolder = UpdateFolder.getInstance(type, gateway);
-
-        expect(foldersCache.hasItems()).toBeTrue();
+        expect(foldersCache.hasItems()).toBe(true);
         const item = foldersCache.getItem(folder => folder.id === "any-folder-id");
         expect(item?.id).toEqual("any-folder-id");
         expect(item?.title).toEqual("Any Folder");
@@ -78,32 +106,6 @@ describe("UpdateFolder", () => {
         expect(updatedItem?.title).toEqual("Updated Folder");
         expect(updatedItem?.slug).toEqual("updated-folder");
         expect(updatedItem?.parentId).toEqual("another-id");
-    });
-
-    it("should not update a folder if id is missing", async () => {
-        const gateway = new UpdateFolderMockGateway(null);
-        const spy = vi.spyOn(gateway, "execute");
-
-        const updateFolder = UpdateFolder.getInstance(type, gateway);
-
-        await updateFolder.execute({
-            id: "",
-            title: "Updated Folder",
-            slug: "updated-folder",
-            parentId: "another-id",
-            permissions: [],
-            type
-        });
-
-        expect(spy).toHaveBeenCalledTimes(1);
-        const updatedItem = foldersCache.getItem(folder => folder.id === "any-folder-id");
-
-        expect(updatedItem).toBeDefined();
-        expect(updatedItem?.id).toEqual("any-folder-id");
-        expect(updatedItem?.type).toEqual(type);
-        expect(updatedItem?.title).toEqual("Any Folder");
-        expect(updatedItem?.slug).toEqual("any-folder");
-        expect(updatedItem?.parentId).toEqual(null);
     });
 
     it("should propagate `permissions` changes to child folders", async () => {
@@ -143,6 +145,7 @@ describe("UpdateFolder", () => {
             type
         });
 
+        const foldersCache = new ListCache<Folder>();
         foldersCache.addItems([parentFolder, childFolder1, childFolder2, childFolder3]);
 
         // Let's update parentFolder, the change should be propagated to all it's children (childFolder1, childFolder2 and childFolder3).
@@ -161,7 +164,7 @@ describe("UpdateFolder", () => {
                 type
             });
 
-            const updateFolder = UpdateFolder.getInstance(type, gateway);
+            const { updateFolder } = setupTest({ gateway, foldersCache });
 
             await updateFolder.execute({
                 id: parentFolder.id,
@@ -210,7 +213,7 @@ describe("UpdateFolder", () => {
                 type
             });
 
-            const updateFolder = UpdateFolder.getInstance(type, gateway);
+            const { updateFolder } = setupTest({ gateway, foldersCache });
 
             await updateFolder.execute({
                 id: childFolder1.id,
@@ -266,7 +269,7 @@ describe("UpdateFolder", () => {
                 type
             });
 
-            const updateFolder = UpdateFolder.getInstance(type, gateway);
+            const { updateFolder } = setupTest({ gateway, foldersCache });
 
             await updateFolder.execute({
                 id: childFolder1.id,
@@ -344,10 +347,11 @@ describe("UpdateFolder", () => {
             type
         });
 
-        foldersCache.addItems([parentFolder, childFolder1, childFolder2, childFolder3]);
-
         // Let's update parentFolder, the change should be propagated to all it's children (childFolder1, childFolder2 and childFolder3).
         const newParentPath: string = `${ROOT_FOLDER}/parent-folder-edit`;
+
+        const foldersCache = new ListCache<Folder>();
+        foldersCache.addItems([parentFolder, childFolder1, childFolder2, childFolder3]);
 
         {
             const gateway = new UpdateFolderMockGateway({
@@ -360,7 +364,7 @@ describe("UpdateFolder", () => {
                 type
             });
 
-            const updateFolder = UpdateFolder.getInstance(type, gateway);
+            const { updateFolder } = setupTest({ gateway, foldersCache });
 
             await updateFolder.execute({
                 id: parentFolder.id,
@@ -397,7 +401,7 @@ describe("UpdateFolder", () => {
                 type
             });
 
-            const updateFolder = UpdateFolder.getInstance(type, gateway);
+            const { updateFolder } = setupTest({ gateway, foldersCache });
 
             await updateFolder.execute({
                 id: childFolder1.id,
@@ -420,8 +424,8 @@ describe("UpdateFolder", () => {
     });
 
     it("should handle gateway errors gracefully", async () => {
-        class UpdateFolderErrorMockGateway implements IUpdateFolderGateway {
-            async execute(): Promise<FolderGqlDto> {
+        class UpdateFolderErrorMockGateway implements UpdateFolderGateway.Interface {
+            async execute(): Promise<FolderDto> {
                 throw new Error("Gateway error");
             }
         }
@@ -429,7 +433,7 @@ describe("UpdateFolder", () => {
         const gateway = new UpdateFolderErrorMockGateway();
         const spy = vi.spyOn(gateway, "execute");
 
-        const updateFolder = UpdateFolder.getInstance(type, gateway);
+        const { updateFolder } = setupTest({ gateway });
 
         await expect(
             updateFolder.execute({

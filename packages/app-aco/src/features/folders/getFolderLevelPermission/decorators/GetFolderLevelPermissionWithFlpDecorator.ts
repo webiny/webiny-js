@@ -12,7 +12,7 @@ class GetFolderLevelPermissionWithFlpDecoratorImpl implements UseCaseAbstraction
 
     execute(id: string, permissionName: FolderPermissionName) {
         // Check if WCP allows folder-level permissions feature
-        if (!this.wcp.canUseFeature("folderLevelPermissions")) {
+        if (!this.wcp.getProject().canUseFolderLevelPermissions()) {
             return this.decoratee.execute(id, permissionName);
         }
 

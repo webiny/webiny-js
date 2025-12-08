@@ -40,4 +40,5 @@ export const LoadFolderHierarchyGateway = createAbstraction<ILoadFolderHierarchy
 
 export namespace LoadFolderHierarchyGateway {
     export type Interface = ILoadFolderHierarchyGateway;
+    export type Return = Promise<LoadFolderHierarchyGatewayResponse>
 }

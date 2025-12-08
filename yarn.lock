@@ -14719,6 +14719,8 @@ __metadata:
     "@webiny/app-security": "npm:0.0.0"
     "@webiny/app-utils": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/di": "npm:^0.2.1"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/form": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
@@ -14726,6 +14728,7 @@ __metadata:
     "@webiny/shared-aco": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     "@webiny/validation": "npm:0.0.0"
+    "@webiny/wcp": "npm:0.0.0"
     apollo-client: "npm:^2.6.10"
     apollo-link: "npm:^1.2.14"
     dot-prop-immutable: "npm:^2.1.1"
@@ -14734,7 +14737,6 @@ __metadata:
     lodash: "npm:^4.17.21"
     mobx: "npm:^6.15.0"
     mobx-react-lite: "npm:^3.4.3"
-    pako: "npm:^2.1.0"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     react-hotkeyz: "npm:^1.0.4"
@@ -14742,6 +14744,7 @@ __metadata:
     slugify: "npm:^1.6.6"
     store: "npm:^2.0.12"
     typescript: "npm:5.9.3"
+    vite-tsconfig-paths: "npm:^5.1.4"
     vitest: "npm:^3.2.4"
     zod: "npm:^3.25.76"
   languageName: unknown
@@ -15449,6 +15452,7 @@ __metadata:
   resolution: "@webiny/app-utils@workspace:packages/app-utils"
   dependencies:
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     mobx: "npm:^6.15.0"
     typescript: "npm:5.9.3"
@@ -15470,6 +15474,7 @@ __metadata:
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/feature": "npm:0.0.0"
     "@webiny/icons": "npm:0.0.0"
+    mobx: "npm:^6.15.0"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     react-helmet: "npm:^6.1.0"
@@ -28881,13 +28886,6 @@ __metadata:
   bin:
     pacote: bin/index.js
   checksum: 10/48cbcb3c20792952d431c995c2965340d3501e1795313d7225149435c883fb071d6a9bfbe11b1021dc888319f27a8c865cb70656f6472d7443545eb347447553
-  languageName: node
-  linkType: hard
-
-"pako@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "pako@npm:2.1.0"
-  checksum: 10/38a04991d0ec4f4b92794a68b8c92bf7340692c5d980255c92148da96eb3e550df7a86a7128b5ac0c65ecddfe5ef3bbe9c6dab13e1bc315086e759b18f7c1401
   languageName: node
   linkType: hard
 

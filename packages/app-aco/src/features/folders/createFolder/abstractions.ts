@@ -1,6 +1,7 @@
 import { createAbstraction } from "@webiny/feature/admin";
 import type { Folder } from "~/domain/folder/Folder.js";
-import type { CmsIdentity, FolderPermission } from "~/types.js";
+import type { FolderPermission } from "~/types.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
 
 // Use Case
 
@@ -38,29 +39,8 @@ export namespace CreateFolderRepository {
 }
 
 // Gateway
-export interface FolderGatewayOutputDto {
-    id: string;
-    title: string;
-    slug: string;
-    permissions: FolderPermission[];
-    hasNonInheritedPermissions: boolean;
-    canManagePermissions: boolean;
-    canManageStructure: boolean;
-    canManageContent: boolean;
-    type: string;
-    parentId: string | null;
-    path: string;
-    createdBy: CmsIdentity;
-    createdOn: string;
-    savedBy: CmsIdentity;
-    savedOn: string;
-    modifiedBy: CmsIdentity | null;
-    modifiedOn: string | null;
-    extensions: Record<string, any>;
-}
-
 export interface ICreateFolderGateway {
-    execute: (folderDto: FolderGatewayDto) => Promise<FolderGatewayOutputDto>;
+    execute: (folderDto: FolderGatewayDto) => Promise<FolderDto>;
 }
 
 export const CreateFolderGateway = createAbstraction<ICreateFolderGateway>("CreateFolderGateway");
