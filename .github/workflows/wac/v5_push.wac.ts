@@ -65,11 +65,7 @@ const createCypressJobs = (dbSetup: string) => {
         YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
     };
 
-    if (dbSetup === "ddb-es") {
-        env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
-        env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-        env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
-    } else if (dbSetup === "ddb-os") {
+    if (dbSetup === "ddb-os") {
         // We still use the same environment variables as for "ddb-es" setup, it's
         // just that the values are read from different secrets.
         env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
@@ -224,11 +220,7 @@ const createJestTestsJob = (storage: string | null) => {
     const env: Record<string, string> = { AWS_REGION };
 
     if (storage) {
-        if (storage === "ddb-es") {
-            env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
-            env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-            env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ matrix.package.id }}";
-        } else if (storage === "ddb-os") {
+        if (storage === "ddb-os") {
             // We still use the same environment variables as for "ddb-es" setup, it's
             // just that the values are read from different secrets.
             env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
@@ -252,7 +244,7 @@ const createJestTestsJob = (storage: string | null) => {
         },
         "runs-on": "${{ matrix.os }}",
         env,
-        awsAuth: storage === "ddb-es" || storage === "ddb-os",
+        awsAuth: storage === "ddb-os",
         checkout: { path: DIR_WEBINY_JS },
         steps: [
             ...yarnCacheSteps,
@@ -333,7 +325,7 @@ export const v5_Push = createWorkflow({
                 ...installBuildSteps,
                 {
                     name: "Sync Dependencies Verification",
-                    run: "yarn verify-dependencies",
+                    run: "yarn webiny verify-dependencies",
                     "working-directory": DIR_WEBINY_JS
                 }
             ]
@@ -360,10 +352,8 @@ export const v5_Push = createWorkflow({
         }),
         jestTestsNoStorage: createJestTestsJob(null),
         jestTestsDdb: createJestTestsJob("ddb"),
-        jestTestsDdbEs: createJestTestsJob("ddb-es"),
         jestTestsDdbOs: createJestTestsJob("ddb-os"),
         ...createCypressJobs("ddb"),
-        ...createCypressJobs("ddb-es"),
         ...createCypressJobs("ddb-os")
     }
 });
