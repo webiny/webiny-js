@@ -12,9 +12,6 @@ export const handler = createHandler({
             documentClient,
             getTenant: () => {
                 return "root";
-            },
-            getLocale: () => {
-                return "unknown";
             }
         }),
         elasticsearchClientContextPlugin({

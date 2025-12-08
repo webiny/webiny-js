@@ -74,15 +74,9 @@ const createCypressJobs = (dbSetup: string) => {
         WEBINY_PULUMI_BACKEND: `\${{ needs.${jobNames.constants}.outputs.pulumi-backend-url }}`
     };
 
-    if (dbSetup === "ddb-es") {
-        env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}";
-        env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.ELASTIC_SEARCH_ENDPOINT }}";
-        env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
-    } else if (dbSetup === "ddb-os") {
-        // We still use the same environment variables as for "ddb-es" setup, it's
-        // just that the values are read from different secrets.
-        env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_DOMAIN_NAME }}";
-        env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_ENDPOINT }}";
+    if (dbSetup === "ddb-os") {
+        env["AWS_ELASTIC_SEARCH_DOMAIN_NAME"] = "${{ secrets.AWS_OPEN_SEARCH_3_DOMAIN_NAME }}";
+        env["ELASTIC_SEARCH_ENDPOINT"] = "${{ secrets.OPEN_SEARCH_3_ENDPOINT }}";
         env["ELASTIC_SEARCH_INDEX_PREFIX"] = "${{ github.run_id }}_";
     }
 

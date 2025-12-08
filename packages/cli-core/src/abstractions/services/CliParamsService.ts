@@ -12,7 +12,6 @@ export interface ICliParamsService {
 }
 
 export const CliParamsService = new Abstraction<ICliParamsService>("CliParamsService");
-// export const CliParamsService = createAbstraction<ICliParamsService>("CliParamsService");
 
 export namespace CliParamsService {
     export type Interface = ICliParamsService;

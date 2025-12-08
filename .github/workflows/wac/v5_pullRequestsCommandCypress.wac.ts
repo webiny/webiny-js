@@ -241,7 +241,7 @@ const createCypressJobs = (dbSetup: string) => {
     };
 };
 
-export const v5PullRequestsCommandCypress = createWorkflow({
+export const v5_PullRequestsCommandCypress = createWorkflow({
     name: "(v5) Pull Requests Command - Cypress",
     on: "issue_comment",
     env: {

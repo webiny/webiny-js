@@ -67,8 +67,8 @@ const SwitchRenderer = ({
                 checked={checked}
                 className={cn([
                     "peer inline-flex h-md w-[26px] mt-xxs shrink-0 cursor-pointer items-center rounded-xxl border-sm transition-colors",
-                    "border-transparent data-[state=checked]:bg-secondary-default data-[state=unchecked]:bg-neutral-strong",
-                    "focus-visible:outline-none focus-visible:border-success-default focus-visible:ring-lg focus-visible:ring-primary-dimmed",
+                    "border-transparent data-[state=checked]:bg-secondary data-[state=unchecked]:bg-neutral-strong",
+                    "focus-visible:outline-none focus-visible:border-success focus-visible:ring-lg focus-visible:ring-primary-dimmed",
                     "disabled:cursor-not-allowed disabled:bg-neutral-muted disabled:data-[state=checked]:bg-neutral-muted"
                 ])}
                 disabled={disabled}

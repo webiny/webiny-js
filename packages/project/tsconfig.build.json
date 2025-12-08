@@ -3,7 +3,6 @@
   "include": ["src"],
   "references": [
     { "path": "../aws-sdk/tsconfig.build.json" },
-    { "path": "../logger/tsconfig.build.json" },
     { "path": "../pulumi-sdk/tsconfig.build.json" },
     { "path": "../react-properties/tsconfig.build.json" },
     { "path": "../utils/tsconfig.build.json" },
@@ -18,8 +17,6 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
-      "@webiny/logger/*": ["../logger/src/*"],
-      "@webiny/logger": ["../logger/src"],
       "@webiny/pulumi-sdk/*": ["../pulumi-sdk/src/*"],
       "@webiny/pulumi-sdk": ["../pulumi-sdk/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],

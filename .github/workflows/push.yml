@@ -2,10 +2,11 @@
 # DO NOT MODIFY IT BY HAND. Instead, modify the source *.wac.ts file(s)
 # and run "github-actions-wac build" (or "ghawac build") to regenerate this file.
 # For more information, run "github-actions-wac --help".
-name: Next Branch - Push
+name: Push
 'on':
   push:
     branches:
+      - dev
       - next
 jobs:
   constants:
@@ -21,8 +22,9 @@ jobs:
       - name: Create global cache key
         id: global-cache-key
         run: >-
-          echo "global-cache-key=next-${{ runner.os }}-$(/bin/date -u
-          "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >> $GITHUB_OUTPUT
+          echo "global-cache-key=${{ github.ref_name }}-${{ runner.os
+          }}-$(/bin/date -u "+%m%d")-${{ vars.RANDOM_CACHE_KEY_SUFFIX }}" >>
+          $GITHUB_OUTPUT
       - name: Create workflow run cache key
         id: run-cache-key
         run: >-
@@ -42,24 +44,24 @@ jobs:
           node-version: 22
       - uses: actions/checkout@v4
         with:
-          path: next
+          path: v6
       - uses: actions/cache@v4
         with:
-          path: next/.yarn/cache
+          path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: next/.webiny/cached-packages
+          path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.global-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: next
+        working-directory: v6
       - name: Build packages
         run: yarn build
-        working-directory: next
+        working-directory: v6
       - uses: actions/cache@v4
         with:
-          path: next/.webiny/cached-packages
+          path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -75,33 +77,33 @@ jobs:
           node-version: 22
       - uses: actions/checkout@v4
         with:
-          path: next
+          path: v6
       - uses: actions/cache@v4
         with:
-          path: next/.yarn/cache
+          path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: next/.webiny/cached-packages
+          path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: next
+        working-directory: v6
       - name: Check code formatting
         run: yarn prettier:check
-        working-directory: next
+        working-directory: v6
       - name: Check dependencies
         run: yarn adio
-        working-directory: next
+        working-directory: v6
       - name: Check TS configs
         run: yarn check-ts-configs
-        working-directory: next
+        working-directory: v6
       - name: ESLint
         run: yarn eslint
-        working-directory: next
+        working-directory: v6
       - name: Check Package Node Modules
         run: yarn check-package-dependencies
-        working-directory: next
+        working-directory: v6
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -117,24 +119,24 @@ jobs:
           node-version: 22
       - uses: actions/checkout@v4
         with:
-          path: next
+          path: v6
       - uses: actions/cache@v4
         with:
-          path: next/.yarn/cache
+          path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: next/.webiny/cached-packages
+          path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: next
+        working-directory: v6
       - name: Build packages
         run: yarn build
-        working-directory: next
+        working-directory: v6
       - name: Sync Dependencies Verification
         run: yarn verify-dependencies
-        working-directory: next
+        working-directory: v6
     runs-on: ubuntu-latest
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
@@ -148,17 +150,17 @@ jobs:
           node-version: 22
       - uses: actions/checkout@v4
         with:
-          path: next
+          path: v6
       - uses: actions/cache@v4
         with:
-          path: next/.yarn/cache
+          path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: next
+        working-directory: v6
       - name: Check types for Cypress tests
         run: yarn cy:ts
-        working-directory: next
+        working-directory: v6
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
       YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -174,10 +176,10 @@ jobs:
           node-version: 22
       - uses: actions/checkout@v4
         with:
-          path: next
+          path: v6
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
-        working-directory: next
+        working-directory: v6
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
@@ -210,24 +212,24 @@ jobs:
           node-version: 22
       - uses: actions/checkout@v4
         with:
-          path: next
+          path: v6
       - uses: actions/cache@v4
         with:
-          path: next/.yarn/cache
+          path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: next/.webiny/cached-packages
+          path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: next
+        working-directory: v6
       - name: Build packages
         run: yarn build
-        working-directory: next
+        working-directory: v6
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
-        working-directory: next
+        working-directory: v6
   vitest-ddb-constants:
     needs:
       - build
@@ -240,10 +242,10 @@ jobs:
           node-version: 22
       - uses: actions/checkout@v4
         with:
-          path: next
+          path: v6
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
-        working-directory: next
+        working-directory: v6
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
@@ -284,24 +286,24 @@ jobs:
           aws-region: eu-central-1
       - uses: actions/checkout@v4
         with:
-          path: next
+          path: v6
       - uses: actions/cache@v4
         with:
-          path: next/.yarn/cache
+          path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: next/.webiny/cached-packages
+          path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: next
+        working-directory: v6
       - name: Build packages
         run: yarn build
-        working-directory: next
+        working-directory: v6
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
-        working-directory: next
+        working-directory: v6
     permissions:
       id-token: write
   vitest-ddbOs-constants:
@@ -316,10 +318,10 @@ jobs:
           node-version: 22
       - uses: actions/checkout@v4
         with:
-          path: next
+          path: v6
       - id: list-vitest-test-commands
         name: List Vitest Test Commands
-        working-directory: next
+        working-directory: v6
         run: >-
           echo "vitest-test-commands=$(node
           .github/workflows/wac/utils/runNodeScripts/listVitestTestCommands.js
@@ -363,24 +365,24 @@ jobs:
           aws-region: eu-central-1
       - uses: actions/checkout@v4
         with:
-          path: next
+          path: v6
       - uses: actions/cache@v4
         with:
-          path: next/.yarn/cache
+          path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: next/.webiny/cached-packages
+          path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: next
+        working-directory: v6
       - name: Build packages
         run: yarn build
-        working-directory: next
+        working-directory: v6
       - name: Run tests
         run: ${{ matrix.testCommand.cmd }}
-        working-directory: next
+        working-directory: v6
     permissions:
       id-token: write
   e2eTests-ddb-constants:
@@ -438,23 +440,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          path: next
+          path: v6
       - uses: actions/cache@v4
         with:
-          path: next/.yarn/cache
+          path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: next/.webiny/cached-packages
+          path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: next
+        working-directory: v6
       - name: Build packages
         run: yarn build
-        working-directory: next
+        working-directory: v6
       - name: Start Verdaccio local server
-        working-directory: next
+        working-directory: v6
         run: >-
           yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
           .verdaccio.yaml
@@ -466,10 +468,10 @@ jobs:
         run: git config --global user.name "webiny-bot"
       - name: Create ".npmrc" file in the project root, with a dummy auth token
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-        working-directory: next
+        working-directory: v6
       - name: Version and publish to Verdaccio
         run: yarn release --type=verdaccio
-        working-directory: next
+        working-directory: v6
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v4
         with:
@@ -477,8 +479,8 @@ jobs:
           retention-days: 1
           include-hidden-files: true
           path: |-
-            next/.verdaccio/
-            next/.verdaccio.yaml
+            v6/.verdaccio/
+            v6/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -515,18 +517,18 @@ jobs:
         run: yarn webiny deploy admin --env dev
       - name: Create Cypress config
         run: yarn setup-cypress --projectFolder ../new-webiny-project
-        working-directory: next
+        working-directory: v6
       - name: Save Cypress config
         id: save-cypress-config
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
-        working-directory: next
+        working-directory: v6
       - name: Cypress - run installation wizard test
         run: >-
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
-        working-directory: next
+        working-directory: v6
     permissions:
       id-token: write
   e2eTests-ddbOs-constants:
@@ -587,23 +589,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          path: next
+          path: v6
       - uses: actions/cache@v4
         with:
-          path: next/.yarn/cache
+          path: v6/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
       - uses: actions/cache@v4
         with:
-          path: next/.webiny/cached-packages
+          path: v6/.webiny/cached-packages
           key: ${{ needs.constants.outputs.run-cache-key }}
       - name: Install dependencies
         run: yarn --immutable
-        working-directory: next
+        working-directory: v6
       - name: Build packages
         run: yarn build
-        working-directory: next
+        working-directory: v6
       - name: Start Verdaccio local server
-        working-directory: next
+        working-directory: v6
         run: >-
           yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c
           .verdaccio.yaml
@@ -615,10 +617,10 @@ jobs:
         run: git config --global user.name "webiny-bot"
       - name: Create ".npmrc" file in the project root, with a dummy auth token
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
-        working-directory: next
+        working-directory: v6
       - name: Version and publish to Verdaccio
         run: yarn release --type=verdaccio
-        working-directory: next
+        working-directory: v6
       - name: Create verdaccio-files artifact
         uses: actions/upload-artifact@v4
         with:
@@ -626,8 +628,8 @@ jobs:
           retention-days: 1
           include-hidden-files: true
           path: |-
-            next/.verdaccio/
-            next/.verdaccio.yaml
+            v6/.verdaccio/
+            v6/.verdaccio.yaml
       - name: Disable Webiny telemetry
         run: >
           mkdir ~/.webiny && echo '{ "id": "ci", "telemetry": false }' >
@@ -664,17 +666,17 @@ jobs:
         run: yarn webiny deploy admin --env dev
       - name: Create Cypress config
         run: yarn setup-cypress --projectFolder ../new-webiny-project
-        working-directory: next
+        working-directory: v6
       - name: Save Cypress config
         id: save-cypress-config
         run: >-
           echo "cypress-config=$(cat cypress-tests/cypress.config.ts | tr -d
           '\t\n\r')" >> $GITHUB_OUTPUT
-        working-directory: next
+        working-directory: v6
       - name: Cypress - run installation wizard test
         run: >-
           yarn cy:run --browser chrome --spec
           "cypress/e2e/adminInstallation/**/*.cy.js"
-        working-directory: next
+        working-directory: v6
     permissions:
       id-token: write

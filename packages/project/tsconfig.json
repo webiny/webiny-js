@@ -3,7 +3,6 @@
   "include": ["src", "__tests__"],
   "references": [
     { "path": "../aws-sdk" },
-    { "path": "../logger" },
     { "path": "../pulumi-sdk" },
     { "path": "../react-properties" },
     { "path": "../utils" },
@@ -18,8 +17,6 @@
       "~tests/*": ["./__tests__/*"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
-      "@webiny/logger/*": ["../logger/src/*"],
-      "@webiny/logger": ["../logger/src"],
       "@webiny/pulumi-sdk/*": ["../pulumi-sdk/src/*"],
       "@webiny/pulumi-sdk": ["../pulumi-sdk/src"],
       "@webiny/react-properties/*": ["../react-properties/src/*"],

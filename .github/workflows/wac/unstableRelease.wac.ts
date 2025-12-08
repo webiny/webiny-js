@@ -16,17 +16,21 @@ const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: DIR_WEBINY_JS })
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: DIR_WEBINY_JS });
 
-export const nextUnstableRelease = createWorkflow({
-    name: `Next Branch - Unstable Release`,
+export const unstableRelease = createWorkflow({
+    name: `Unstable Release`,
     on: {
-        workflow_run: {
-            workflows: ["Next Branch - Push"],
-            branches: ["next"],
-            types: ["completed"]
+        workflow_dispatch: {
+            inputs: {
+                branch: {
+                    description: "Branch to release from",
+                    required: true,
+                    default: "next",
+                    type: "string"
+                }
+            }
         }
     },
     jobs: {
-        // validateWorkflows: createValidateWorkflowsJob(),
         constants: createJob({
             name: "Create constants",
             outputs: {
@@ -49,7 +53,7 @@ export const nextUnstableRelease = createWorkflow({
         build: createJob({
             name: "Build",
             needs: "constants",
-            checkout: { path: DIR_WEBINY_JS },
+            checkout: { path: DIR_WEBINY_JS, ref: "${{ github.event.inputs.branch }}" },
             "runs-on": BUILD_PACKAGES_RUNNER,
             steps: [
                 ...yarnCacheSteps,
@@ -66,7 +70,7 @@ export const nextUnstableRelease = createWorkflow({
                 GH_TOKEN: "${{ secrets.GH_TOKEN }}",
                 NPM_TOKEN: "${{ secrets.NPM_TOKEN }}"
             },
-            checkout: { "fetch-depth": 0 },
+            checkout: { "fetch-depth": 0, ref: "${{ github.event.inputs.branch }}" },
             steps: [
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
