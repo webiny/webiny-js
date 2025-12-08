@@ -15,7 +15,7 @@ const yarnCacheSteps = createYarnCacheSteps({ workingDirectory: BRANCH_NAME });
 const globalBuildCacheSteps = createGlobalBuildCacheSteps({ workingDirectory: BRANCH_NAME });
 const runBuildCacheSteps = createRunBuildCacheSteps({ workingDirectory: BRANCH_NAME });
 
-export const stableRelease = createWorkflow({
+export const release = createWorkflow({
     name: `Release`,
     on: {
         workflow_dispatch: {
@@ -24,7 +24,8 @@ export const stableRelease = createWorkflow({
                     description: "Branch to release from",
                     required: true,
                     default: "next",
-                    type: "string"
+                    type: "choice",
+                    options: ["next", "dev", "v5-dev"]
                 }
             }
         }
