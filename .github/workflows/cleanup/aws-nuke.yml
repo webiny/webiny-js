@@ -6,7 +6,7 @@ regions:
   - eu-central-1
   - global
 
-account-blocklist:
+blocklist:
   - "999999999999" # We don't have "production" accounts.
 
 accounts:
@@ -32,7 +32,7 @@ accounts:
 resource-types:
   # These resource types will be destroyed.
   # List of all resource types: https://github.com/rebuy-de/aws-nuke/tree/main/resources
-  targets:
+  includes:
     - APIGatewayV2API
     - S3Object
     - S3Bucket
