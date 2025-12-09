@@ -10,12 +10,11 @@ export const useListPagesGateway = (inputFields: string[]): IListPagesGateway =>
     const client = useApolloClient();
     const fields = useGetPageGraphQLFields(inputFields);
 
-    // TODO: replace with `resolveAll` once container bug is fixed.
-    const selection = container.resolve(ListPagesGraphQLFieldSelection);
+    const selections = container.resolveAll(ListPagesGraphQLFieldSelection);
 
     return new ListPagesGqlGateway({
         client,
         modelFields: fields,
-        fieldSelection: [selection]
+        fieldSelection: selections
     });
 };
