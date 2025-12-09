@@ -9,6 +9,9 @@ regions:
 blocklist:
   - "999999999999" # We don't have "production" accounts.
 
+bypass-alias-check-accounts:
+  - 726952677045
+
 accounts:
   "726952677045":
     filters:
