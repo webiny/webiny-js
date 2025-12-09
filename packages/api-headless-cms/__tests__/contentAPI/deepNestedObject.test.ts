@@ -1,9 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useGraphQLHandler } from "../testHelpers/useGraphQLHandler";
-import { createCarsMutation, createInitializeModelMutation } from "./deepNestedObject/mutation";
+import { createCarsMutation } from "./deepNestedObject/mutation";
 import { createCarsModel } from "./deepNestedObject/model";
-import { ContextPlugin } from "@webiny/api";
-import { CmsContext } from "~/types";
 
 const LIST_CARS_QUERY = `
     query ListCarsQuery($where: CarsListWhereInput, $sort: [CarsListSorter], $limit: Int, $after: String) {
@@ -41,13 +39,6 @@ interface Tracker {
     setData: (input: any) => void;
     data: any;
 }
-const onModelInitialize = (tracker: Tracker) => {
-    return new ContextPlugin<CmsContext>(async context => {
-        context.cms.onModelInitialize.subscribe(async ({ data }) => {
-            tracker.setData(data);
-        });
-    });
-};
 
 describe("Cars Model Deep Nested Object Fields", () => {
     const tracker: Tracker = {
@@ -58,7 +49,7 @@ describe("Cars Model Deep Nested Object Fields", () => {
     };
 
     const handler = useGraphQLHandler({
-        plugins: [...createCarsModel(), onModelInitialize(tracker)],
+        plugins: [...createCarsModel()],
         path: "manage"
     });
 
@@ -87,34 +78,6 @@ describe("Cars Model Deep Nested Object Fields", () => {
             });
         }
 
-        const trackerData = {
-            test: true,
-            failed: false
-        };
-
-        const [initializeModelResult] = await handler.invoke({
-            body: {
-                query: createInitializeModelMutation(),
-                variables: {
-                    modelId: "cars",
-                    data: trackerData
-                }
-            }
-        });
-
-        expect(tracker).toEqual({
-            data: trackerData,
-            setData: expect.any(Function)
-        });
-
-        expect(initializeModelResult).toEqual({
-            data: {
-                initializeModel: {
-                    data: true,
-                    error: null
-                }
-            }
-        });
 
         const [mutationResult] = await handler.invoke({
             body: {

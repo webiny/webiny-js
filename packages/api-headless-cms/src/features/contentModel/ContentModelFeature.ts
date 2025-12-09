@@ -7,7 +7,6 @@ import { CreateModelFeature } from "~/features/contentModel/CreateModel/feature.
 import { CreateModelFromFeature } from "~/features/contentModel/CreateModelFrom/feature.js";
 import { UpdateModelFeature } from "~/features/contentModel/UpdateModel/feature.js";
 import { DeleteModelFeature } from "~/features/contentModel/DeleteModel/feature.js";
-import { InitializeModelFeature } from "~/features/contentModel/InitializeModel/feature.js";
 import { GetModelFeature } from "~/features/contentModel/GetModel/feature.js";
 import { ListModelsFeature } from "~/features/contentModel/ListModels/feature.js";
 import { ModelToAstConverterFeature } from "~/features/contentModel/ModelToAstConverter/feature.js";
@@ -30,6 +29,5 @@ export const ContentModelFeature = createFeature({
         CreateModelFromFeature.register(container);
         UpdateModelFeature.register(container);
         DeleteModelFeature.register(container);
-        InitializeModelFeature.register(container);
     }
 });

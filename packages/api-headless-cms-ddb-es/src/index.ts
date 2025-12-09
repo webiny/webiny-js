@@ -186,14 +186,6 @@ export const createStorageOperations: StorageOperationsFactory = params => {
                     model
                 });
             });
-
-            context.cms.onModelInitialize.subscribe(async ({ model }) => {
-                await createElasticsearchIndex({
-                    client: elasticsearch,
-                    model,
-                    plugins
-                });
-            });
         },
         getEntities: () => entities,
         getTable: () => tableInstance,

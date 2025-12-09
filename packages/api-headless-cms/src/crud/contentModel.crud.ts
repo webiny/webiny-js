@@ -16,7 +16,6 @@ import type {
     OnModelCreateErrorTopicParams,
     OnModelCreateFromErrorParams,
     OnModelDeleteErrorTopicParams,
-    OnModelInitializeParams,
     OnModelUpdateErrorTopicParams
 } from "~/types/index.js";
 import { createTopic } from "@webiny/pubsub";
@@ -24,7 +23,6 @@ import { CreateModelUseCase } from "~/features/contentModel/CreateModel/index.js
 import { CreateModelFromUseCase } from "~/features/contentModel/CreateModelFrom/index.js";
 import { UpdateModelUseCase } from "~/features/contentModel/UpdateModel/index.js";
 import { DeleteModelUseCase } from "~/features/contentModel/DeleteModel/index.js";
-import { InitializeModelUseCase } from "~/features/contentModel/InitializeModel/index.js";
 import { GetModelUseCase } from "~/features/contentModel/GetModel/index.js";
 import { ListModelsUseCase } from "~/features/contentModel/ListModels/index.js";
 import { createMemoryCache } from "~/utils/index.js";
@@ -124,10 +122,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         createTopic<OnModelBeforeDeleteTopicParams>("cms.onModelBeforeDelete");
     const onModelAfterDelete = createTopic<OnModelAfterDeleteTopicParams>("cms.onModelAfterDelete");
     const onModelDeleteError = createTopic<OnModelDeleteErrorTopicParams>("cms.onModelDeleteError");
-    /**
-     * Initialize
-     */
-    const onModelInitialize = createTopic<OnModelInitializeParams>("cms.onModelInitialize");
 
     /**
      * CRUD methods
@@ -175,17 +169,7 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             throw new WebinyError(result.error.message, result.error.code, result.error.data);
         }
     };
-    const initializeModel: CmsModelContext["initializeModel"] = async (modelId, data) => {
-        // Delegate to new InitializeModel use case
-        const useCase = context.container.resolve(InitializeModelUseCase);
-        const result = await useCase.execute(modelId, data);
 
-        if (result.isFail()) {
-            throw new WebinyError(result.error.message, result.error.code, result.error.data);
-        }
-
-        return true;
-    };
     return {
         onModelBeforeCreate,
         onModelAfterCreate,
@@ -199,7 +183,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
         onModelBeforeDelete,
         onModelAfterDelete,
         onModelDeleteError,
-        onModelInitialize,
         clearModelsCache,
         getModel,
         getModelToAstConverter,
@@ -227,14 +210,6 @@ export const createModelsCrud = (params: CreateModelsCrudParams): CmsModelContex
             return context.benchmark.measure("headlessCms.crud.models.deleteModel", async () => {
                 return deleteModel(modelId);
             });
-        },
-        async initializeModel(modelId, data) {
-            return context.benchmark.measure(
-                "headlessCms.crud.models.initializeModel",
-                async () => {
-                    return initializeModel(modelId, data);
-                }
-            );
         }
     };
 };

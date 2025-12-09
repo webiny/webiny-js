@@ -119,16 +119,6 @@ export const createModelsSchema = ({
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
-            },
-            initializeModel: async (_, args, context) => {
-                const { modelId, data } = args;
-
-                try {
-                    const result = await context.cms.initializeModel(modelId, data || {});
-                    return new Response(result);
-                } catch (e) {
-                    return new ErrorResponse(e);
-                }
             }
         };
 
@@ -216,11 +206,6 @@ export const createModelsSchema = ({
                 tags: [String!]
             }
 
-            type InitializeModelResponse {
-                data: Boolean
-                error: CmsError
-            }
-
             extend type Mutation {
                 createContentModel(data: CmsContentModelCreateInput!): CmsContentModelResponse
 
@@ -235,9 +220,6 @@ export const createModelsSchema = ({
                 ): CmsContentModelResponse
 
                 deleteContentModel(modelId: ID!): CmsDeleteResponse
-
-                # users can send anything into the data variable
-                initializeModel(modelId: ID!, data: JSON): InitializeModelResponse!
             }
         `;
     }

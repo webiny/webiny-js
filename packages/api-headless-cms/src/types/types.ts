@@ -736,14 +736,6 @@ export interface OnModelDeleteErrorTopicParams {
     error: Error;
 }
 
-/**
- * Initialize
- */
-export interface OnModelInitializeParams {
-    model: CmsModel;
-    data: Record<string, any>;
-}
-
 export interface ICmsModelListParams {
     /**
      * Defaults to true.
@@ -790,13 +782,6 @@ export interface CmsModelContext {
      */
     deleteModel(modelId: string): Promise<void>;
     /**
-     * Possibility for users to trigger the model initialization.
-     * They can hook into it and do what ever they want to.
-     *
-     * Primary idea behind this is creating the index, for the code models, in the ES.
-     */
-    initializeModel(modelId: string, data: Record<string, any>): Promise<boolean>;
-    /**
      * Clear all the model caches.
      */
     clearModelsCache(): void;
@@ -815,7 +800,6 @@ export interface CmsModelContext {
     onModelBeforeDelete: Topic<OnModelBeforeDeleteTopicParams>;
     onModelAfterDelete: Topic<OnModelAfterDeleteTopicParams>;
     onModelDeleteError: Topic<OnModelDeleteErrorTopicParams>;
-    onModelInitialize: Topic<OnModelInitializeParams>;
 }
 
 /**

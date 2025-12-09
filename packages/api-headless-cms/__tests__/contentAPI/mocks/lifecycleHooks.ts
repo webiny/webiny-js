@@ -1,5 +1,49 @@
 import type { CmsContext } from "~/types";
 import { ContextPlugin } from "@webiny/api";
+import {
+    ModelBeforeCreateHandler,
+    ModelAfterCreateHandler
+} from "~/features/contentModel/CreateModel/events.js";
+import {
+    ModelBeforeCreateFromHandler,
+    ModelAfterCreateFromHandler
+} from "~/features/contentModel/CreateModelFrom/events.js";
+import {
+    ModelBeforeUpdateHandler,
+    ModelAfterUpdateHandler
+} from "~/features/contentModel/UpdateModel/events.js";
+import {
+    ModelBeforeDeleteHandler,
+    ModelAfterDeleteHandler
+} from "~/features/contentModel/DeleteModel/events.js";
+import {
+    EntryBeforeCreateHandler,
+    EntryAfterCreateHandler
+} from "~/features/contentEntry/CreateEntry/events.js";
+import {
+    EntryRevisionBeforeCreateHandler,
+    EntryRevisionAfterCreateHandler
+} from "~/features/contentEntry/CreateEntryRevisionFrom/events.js";
+import {
+    EntryBeforeUpdateHandler,
+    EntryAfterUpdateHandler
+} from "~/features/contentEntry/UpdateEntry/events.js";
+import {
+    EntryBeforeDeleteHandler,
+    EntryAfterDeleteHandler
+} from "~/features/contentEntry/DeleteEntry/events.js";
+import {
+    EntryRevisionBeforeDeleteHandler,
+    EntryRevisionAfterDeleteHandler
+} from "~/features/contentEntry/DeleteEntryRevision/events.js";
+import {
+    EntryBeforePublishHandler,
+    EntryAfterPublishHandler
+} from "~/features/contentEntry/PublishEntry/events.js";
+import {
+    EntryBeforeUnpublishHandler,
+    EntryAfterUnpublishHandler
+} from "~/features/contentEntry/UnpublishEntry/events.js";
 
 class PubSubTracker {
     private _tracked: Record<string, number> = {};
@@ -31,30 +75,54 @@ export const assignModelEvents = () => {
         if (!context.cms) {
             throw new Error("Missing cms on context.");
         }
-        context.cms.onModelBeforeCreate.subscribe(async () => {
-            pubSubTracker.track("contentModel:beforeCreate");
-        });
-        context.cms.onModelAfterCreate.subscribe(async () => {
-            pubSubTracker.track("contentModel:afterCreate");
-        });
-        context.cms.onModelBeforeCreateFrom.subscribe(async () => {
-            pubSubTracker.track("contentModel:beforeCreateFrom");
-        });
-        context.cms.onModelAfterCreateFrom.subscribe(async () => {
-            pubSubTracker.track("contentModel:afterCreateFrom");
-        });
-        context.cms.onModelBeforeUpdate.subscribe(async () => {
-            pubSubTracker.track("contentModel:beforeUpdate");
-        });
-        context.cms.onModelAfterUpdate.subscribe(async () => {
-            pubSubTracker.track("contentModel:afterUpdate");
-        });
-        context.cms.onModelBeforeDelete.subscribe(async () => {
-            pubSubTracker.track("contentModel:beforeDelete");
-        });
-        context.cms.onModelAfterDelete.subscribe(async () => {
-            pubSubTracker.track("contentModel:afterDelete");
-        });
+
+        context.container.registerFactory(ModelBeforeCreateHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentModel:beforeCreate");
+            }
+        }));
+
+        context.container.registerFactory(ModelAfterCreateHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentModel:afterCreate");
+            }
+        }));
+
+        context.container.registerFactory(ModelBeforeCreateFromHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentModel:beforeCreateFrom");
+            }
+        }));
+
+        context.container.registerFactory(ModelAfterCreateFromHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentModel:afterCreateFrom");
+            }
+        }));
+
+        context.container.registerFactory(ModelBeforeUpdateHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentModel:beforeUpdate");
+            }
+        }));
+
+        context.container.registerFactory(ModelAfterUpdateHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentModel:afterUpdate");
+            }
+        }));
+
+        context.container.registerFactory(ModelBeforeDeleteHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentModel:beforeDelete");
+            }
+        }));
+
+        context.container.registerFactory(ModelAfterDeleteHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentModel:afterDelete");
+            }
+        }));
     });
 };
 
@@ -63,53 +131,89 @@ export const assignEntryEvents = () => {
         if (!context.cms) {
             throw new Error("Missing cms on context.");
         }
-        context.cms.onEntryBeforeCreate.subscribe(async () => {
-            pubSubTracker.track("contentEntry:beforeCreate");
-        });
-        context.cms.onEntryAfterCreate.subscribe(async () => {
-            pubSubTracker.track("contentEntry:afterCreate");
-        });
-        context.cms.onEntryRevisionBeforeCreate.subscribe(async () => {
-            pubSubTracker.track("contentEntry:beforeCreateRevisionFrom");
-        });
-        context.cms.onEntryRevisionAfterCreate.subscribe(async () => {
-            pubSubTracker.track("contentEntry:afterCreateRevisionFrom");
-        });
-        context.cms.onEntryBeforeUpdate.subscribe(async () => {
-            pubSubTracker.track("contentEntry:beforeUpdate");
-        });
-        context.cms.onEntryAfterUpdate.subscribe(async () => {
-            pubSubTracker.track("contentEntry:afterUpdate");
-        });
-        context.cms.onEntryBeforeDelete.subscribe(async () => {
-            pubSubTracker.track("contentEntry:beforeDelete");
-        });
-        context.cms.onEntryAfterDelete.subscribe(async () => {
-            pubSubTracker.track("contentEntry:afterDelete");
-        });
-        context.cms.onEntryRevisionBeforeDelete.subscribe(async () => {
-            pubSubTracker.track("contentEntry:beforeDeleteRevision");
-        });
-        context.cms.onEntryRevisionAfterDelete.subscribe(async () => {
-            pubSubTracker.track("contentEntry:afterDeleteRevision");
-        });
-        context.cms.onEntryBeforePublish.subscribe(async () => {
-            pubSubTracker.track("contentEntry:beforePublish");
-        });
-        context.cms.onEntryAfterPublish.subscribe(async () => {
-            pubSubTracker.track("contentEntry:afterPublish");
-        });
-        context.cms.onEntryBeforeUnpublish.subscribe(async () => {
-            pubSubTracker.track("contentEntry:beforeUnpublish");
-        });
-        context.cms.onEntryAfterUnpublish.subscribe(async () => {
-            pubSubTracker.track("contentEntry:afterUnpublish");
-        });
-        context.cms.onEntryBeforeGet.subscribe(async () => {
-            pubSubTracker.track("contentEntry:beforeGet");
-        });
-        context.cms.onEntryBeforeList.subscribe(async () => {
-            pubSubTracker.track("contentEntry:beforeList");
-        });
+
+        context.container.registerFactory(EntryBeforeCreateHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:beforeCreate");
+            }
+        }));
+
+        context.container.registerFactory(EntryAfterCreateHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:afterCreate");
+            }
+        }));
+
+        context.container.registerFactory(EntryRevisionBeforeCreateHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:beforeCreateRevisionFrom");
+            }
+        }));
+
+        context.container.registerFactory(EntryRevisionAfterCreateHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:afterCreateRevisionFrom");
+            }
+        }));
+
+        context.container.registerFactory(EntryBeforeUpdateHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:beforeUpdate");
+            }
+        }));
+
+        context.container.registerFactory(EntryAfterUpdateHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:afterUpdate");
+            }
+        }));
+
+        context.container.registerFactory(EntryBeforeDeleteHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:beforeDelete");
+            }
+        }));
+
+        context.container.registerFactory(EntryAfterDeleteHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:afterDelete");
+            }
+        }));
+
+        context.container.registerFactory(EntryRevisionBeforeDeleteHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:beforeDeleteRevision");
+            }
+        }));
+
+        context.container.registerFactory(EntryRevisionAfterDeleteHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:afterDeleteRevision");
+            }
+        }));
+
+        context.container.registerFactory(EntryBeforePublishHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:beforePublish");
+            }
+        }));
+
+        context.container.registerFactory(EntryAfterPublishHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:afterPublish");
+            }
+        }));
+
+        context.container.registerFactory(EntryBeforeUnpublishHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:beforeUnpublish");
+            }
+        }));
+
+        context.container.registerFactory(EntryAfterUnpublishHandler, () => ({
+            async handle() {
+                pubSubTracker.track("contentEntry:afterUnpublish");
+            }
+        }));
     });
 };
