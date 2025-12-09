@@ -43,6 +43,7 @@ jobs:
               --config ./.github/workflows/cleanup/aws-nuke.yml
               --no-dry-run \
               --no-prompt \
+              --no-alias-check \
               --force \
               --force-sleep 3 \
               --max-wait-retries 100
