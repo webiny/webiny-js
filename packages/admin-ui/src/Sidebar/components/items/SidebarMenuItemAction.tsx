@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IconButton, type IconButtonProps } from "~/Button/IconButton.js";
 import { useSidebar } from "~/Sidebar/index.js";
 
@@ -7,9 +7,21 @@ interface SidebarMenuItemActionProps extends Omit<IconButtonProps, "icon"> {
 }
 
 const SidebarMenuItemAction = ({ element, ...props }: SidebarMenuItemActionProps) => {
-    const { expanded, transition } = useSidebar();
+    const { expanded } = useSidebar();
+    const [showAction, setShowAction] = useState(false);
 
-    if (!expanded || transition !== null) {
+    useEffect(() => {
+        if (expanded) {
+            const timer = setTimeout(() => {
+                setShowAction(true);
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+        setShowAction(false);
+        return undefined;
+    }, [expanded]);
+
+    if (!showAction) {
         return null;
     }
 
@@ -18,7 +30,7 @@ const SidebarMenuItemAction = ({ element, ...props }: SidebarMenuItemActionProps
             icon={element}
             size={"xs"}
             variant={"ghost"}
-            className={"ml-auto group-data-[state=collapsed]:hidden animate-in fade-in-0 duration-100"}
+            className={"ml-auto group-data-[state=collapsed]:hidden"}
             {...props}
         />
     );
