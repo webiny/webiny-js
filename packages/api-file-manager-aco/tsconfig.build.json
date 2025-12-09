@@ -4,6 +4,8 @@
   "references": [
     { "path": "../api-aco/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
+    { "path": "../error/tsconfig.build.json" },
+    { "path": "../feature/tsconfig.build.json" },
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-core/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
@@ -11,6 +13,7 @@
     { "path": "../handler-aws/tsconfig.build.json" },
     { "path": "../handler-graphql/tsconfig.build.json" },
     { "path": "../plugins/tsconfig.build.json" },
+    { "path": "../utils/tsconfig.build.json" },
     { "path": "../wcp/tsconfig.build.json" }
   ],
   "compilerOptions": {
@@ -48,6 +51,12 @@
       "@webiny/api-aco": ["../api-aco/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/feature/api": ["../feature/src/api/index.js"],
+      "@webiny/feature/admin": ["../feature/src/admin/index.js"],
+      "@webiny/feature/*": ["../feature/src/*"],
+      "@webiny/feature": ["../feature/src"],
       "@webiny/api/*": ["../api/src/*"],
       "@webiny/api": ["../api/src"],
       "@webiny/api-core/features/EventPublisher": [
@@ -57,6 +66,9 @@
         "../api-core/src/features/security/IdentityContext/index.js"
       ],
       "@webiny/api-core/features/WcpContext": ["../api-core/src/features/wcp/WcpContext/index.js"],
+      "@webiny/api-core/features/TaskService": [
+        "../api-core/src/features/task/TaskService/index.js"
+      ],
       "@webiny/api-core/features/settings": ["../api-core/src/features/settings/index.js"],
       "@webiny/api-core/features/GetSettings": [
         "../api-core/src/features/settings/GetSettings/index.js"
@@ -186,6 +198,8 @@
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
+      "@webiny/utils/*": ["../utils/src/*"],
+      "@webiny/utils": ["../utils/src"],
       "@webiny/wcp/*": ["../wcp/src/*"],
       "@webiny/wcp": ["../wcp/src"]
     },

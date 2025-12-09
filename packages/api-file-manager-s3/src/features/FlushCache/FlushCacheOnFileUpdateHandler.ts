@@ -1,5 +1,5 @@
 import { FileBeforeUpdateHandler } from "@webiny/api-file-manager/features/file/UpdateFile/events.js";
-import { TaskService } from "@webiny/tasks/features/TaskService/abstractions.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { CdnPathsGenerator } from "./CdnPathsGenerator.js";
 
 class FlushCacheOnFileUpdateHandlerImpl implements FileBeforeUpdateHandler.Interface {

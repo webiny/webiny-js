@@ -1,5 +1,6 @@
 import type { Plugin } from "@webiny/plugins";
 import { ContextPlugin } from "@webiny/api";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import type { Context } from "~/types.js";
 import { createTaskModel } from "./crud/model.js";
 import { createDefinitionCrud } from "./crud/definition.tasks.js";
@@ -7,7 +8,6 @@ import { createServiceCrud } from "~/crud/service.tasks.js";
 import { createTaskCrud } from "./crud/crud.tasks.js";
 import { createTestingRunTask } from "~/tasks/testingRunTask.js";
 import { createServicePlugins } from "~/service/index.js";
-import { TaskService } from "~/features/TaskService/abstractions.js";
 
 const createTasksCrud = () => {
     const plugin = new ContextPlugin<Context>(async context => {

@@ -3,7 +3,7 @@ import { FolderAfterCreateHandler } from "~/features/folders/CreateFolder/abstra
 import type { FolderAfterCreateEvent } from "~/features/folders/CreateFolder/events.js";
 import type { ICreateFlpTaskInput } from "~/types.js";
 import { CREATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
-import { TaskService } from "@webiny/tasks/features/TaskService/abstractions.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 
 class CreateFlpOnFolderCreatedHandlerImpl implements FolderAfterCreateHandler.Interface {
     constructor(

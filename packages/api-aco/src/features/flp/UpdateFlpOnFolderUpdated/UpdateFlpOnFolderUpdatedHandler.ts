@@ -1,4 +1,4 @@
-import { TaskService } from "@webiny/tasks/features/TaskService/abstractions.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { UpdateFlpUseCase } from "../UpdateFlp/abstractions.js";
 import type { FolderAfterUpdateEvent } from "~/features/folders/UpdateFolder/events.js";
 import type { IUpdateFlpTaskInput } from "~/types.js";

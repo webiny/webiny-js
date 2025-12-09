@@ -14,6 +14,7 @@
     "./features/EventPublisher": "./features/eventPublisher/index.js",
     "./features/IdentityContext": "./features/security/IdentityContext/index.js",
     "./features/WcpContext": "./features/wcp/WcpContext/index.js",
+    "./features/TaskService": "./features/task/TaskService/index.js",
     "./features/settings": "./features/settings/index.js",
     "./features/GetSettings": "./features/settings/GetSettings/index.js",
     "./features/UpdateSettings": "./features/settings/UpdateSettings/index.js",

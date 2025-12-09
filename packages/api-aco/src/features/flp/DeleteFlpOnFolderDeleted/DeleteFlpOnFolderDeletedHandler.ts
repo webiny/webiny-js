@@ -3,7 +3,7 @@ import { FolderAfterDeleteHandler } from "~/features/folders/DeleteFolder/abstra
 import type { FolderAfterDeleteEvent } from "~/features/folders/DeleteFolder/events.js";
 import type { IDeleteFlpTaskInput } from "~/types.js";
 import { DELETE_FLP_TASK_ID } from "~/flp/tasks/index.js";
-import { TaskService } from "@webiny/tasks/features/TaskService/abstractions.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 
 class DeleteFlpOnFolderDeletedHandlerImpl implements FolderAfterDeleteHandler.Interface {
     constructor(

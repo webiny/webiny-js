@@ -69,6 +69,9 @@
         "../api-core/src/features/security/IdentityContext/index.js"
       ],
       "@webiny/api-core/features/WcpContext": ["../api-core/src/features/wcp/WcpContext/index.js"],
+      "@webiny/api-core/features/TaskService": [
+        "../api-core/src/features/task/TaskService/index.js"
+      ],
       "@webiny/api-core/features/settings": ["../api-core/src/features/settings/index.js"],
       "@webiny/api-core/features/GetSettings": [
         "../api-core/src/features/settings/GetSettings/index.js"

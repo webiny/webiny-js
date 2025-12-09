@@ -14030,7 +14030,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-file-manager-aco@workspace:packages/api-file-manager-aco":
+"@webiny/api-file-manager-aco@npm:0.0.0, @webiny/api-file-manager-aco@workspace:packages/api-file-manager-aco":
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager-aco@workspace:packages/api-file-manager-aco"
   dependencies:
@@ -14040,11 +14040,14 @@ __metadata:
     "@webiny/api-file-manager": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
+    "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/project-utils": "npm:0.0.0"
+    "@webiny/utils": "npm:0.0.0"
     "@webiny/wcp": "npm:0.0.0"
     graphql: "npm:^16.12.0"
     ttypescript: "npm:^1.5.15"
@@ -14135,7 +14138,7 @@ __metadata:
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
-    "@webiny/error": "npm:0.0.0"
+    "@webiny/feature": "npm:0.0.0"
     "@webiny/handler": "npm:0.0.0"
     "@webiny/handler-aws": "npm:0.0.0"
     "@webiny/handler-graphql": "npm:0.0.0"
@@ -14415,7 +14418,6 @@ __metadata:
     pluralize: "npm:^8.0.0"
     prettier: "npm:^3.6.2"
     rimraf: "npm:^6.0.1"
-    semver: "npm:^7.7.3"
     slugify: "npm:^1.6.6"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
@@ -16232,6 +16234,7 @@ __metadata:
     "@webiny/api-dynamodb-to-elasticsearch": "npm:0.0.0"
     "@webiny/api-elasticsearch": "npm:0.0.0"
     "@webiny/api-file-manager": "npm:0.0.0"
+    "@webiny/api-file-manager-aco": "npm:0.0.0"
     "@webiny/api-file-manager-ddb": "npm:0.0.0"
     "@webiny/api-file-manager-s3": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"

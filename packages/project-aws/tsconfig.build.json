@@ -11,6 +11,7 @@
     { "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json" },
     { "path": "../api-elasticsearch/tsconfig.build.json" },
     { "path": "../api-file-manager/tsconfig.build.json" },
+    { "path": "../api-file-manager-aco/tsconfig.build.json" },
     { "path": "../api-file-manager-ddb/tsconfig.build.json" },
     { "path": "../api-file-manager-s3/tsconfig.build.json" },
     { "path": "../api-headless-cms/tsconfig.build.json" },
@@ -92,6 +93,9 @@
         "../api-core/src/features/security/IdentityContext/index.js"
       ],
       "@webiny/api-core/features/WcpContext": ["../api-core/src/features/wcp/WcpContext/index.js"],
+      "@webiny/api-core/features/TaskService": [
+        "../api-core/src/features/task/TaskService/index.js"
+      ],
       "@webiny/api-core/features/settings": ["../api-core/src/features/settings/index.js"],
       "@webiny/api-core/features/GetSettings": [
         "../api-core/src/features/settings/GetSettings/index.js"
@@ -219,6 +223,8 @@
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
+      "@webiny/api-file-manager-aco/*": ["../api-file-manager-aco/src/*"],
+      "@webiny/api-file-manager-aco": ["../api-file-manager-aco/src"],
       "@webiny/api-file-manager-ddb/*": ["../api-file-manager-ddb/src/*"],
       "@webiny/api-file-manager-ddb": ["../api-file-manager-ddb/src"],
       "@webiny/api-file-manager-s3/*": ["../api-file-manager-s3/src/*"],
