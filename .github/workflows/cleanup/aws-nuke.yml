@@ -31,3 +31,7 @@ accounts:
         - "GitHubActionsWebinyJs -> DeployWebinyProjectGroup3"
         - "GitHubActionsWebinyJs -> DeployWebinyProjectExtra"
         - "GitHubActionsWebinyJsAdminAccess -> AdministratorAccess"
+
+resource-types:
+  excludes:
+    - Budget
