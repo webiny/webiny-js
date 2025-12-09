@@ -4,7 +4,7 @@ import type { PageGatewayDto } from "~/features/pages/loadPages/PageGatewayDto.j
 import type { IListPagesGateway } from "./IListPagesGateway.js";
 import { type ListPagesGatewayParams } from "./IListPagesGateway.js";
 import { type WbError, type WbListMeta } from "~/types.js";
-import { Abstraction } from "@webiny/di";
+import type { IListPagesGraphQLFieldSelection } from "~/features/pages/loadPages/abstractions.js";
 
 const LIST_META_FIELD = /* GraphQL */ `
     meta {
@@ -56,18 +56,6 @@ export const LIST_PAGES = (fields: string[]) => gql`
     }
 `;
 
-export interface IListPagesGraphQLFieldSelection {
-    getSelection(): string[];
-}
-
-export const ListPagesGraphQLFieldSelection = new Abstraction<IListPagesGraphQLFieldSelection>(
-    "ListPagesGraphQLFieldSelection"
-);
-
-export namespace ListPagesGraphQLFieldSelection {
-    export type Interface = IListPagesGraphQLFieldSelection;
-}
-
 export interface IListPagesGatewayParams {
     client: ApolloClient<object>;
     modelFields: string[];
@@ -78,7 +66,7 @@ export class ListPagesGqlGateway implements IListPagesGateway {
     private readonly client;
     private readonly modelFields;
     private readonly fieldSelection;
-    
+
     public constructor(params: IListPagesGatewayParams) {
         this.client = params.client;
         this.modelFields = params.modelFields;

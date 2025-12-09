@@ -1,5 +1,4 @@
-import { createImplementation } from "@webiny/di";
-import { ListPagesGraphQLFieldSelection } from "@webiny/app-website-builder/features/pages/loadPages/ListPagesGqlGateway.js";
+import { ListPagesGraphQLFieldSelection } from "@webiny/app-website-builder/features/pages/loadPages/abstractions.js";
 
 class WorkflowStatesListPagesGraphQLFieldSelection
     implements ListPagesGraphQLFieldSelection.Interface
@@ -10,8 +9,8 @@ class WorkflowStatesListPagesGraphQLFieldSelection
     }
 }
 
-export const WorkflowStateListPagesFieldSelection = createImplementation({
-    abstraction: ListPagesGraphQLFieldSelection,
-    dependencies: [],
-    implementation: WorkflowStatesListPagesGraphQLFieldSelection
-});
+export const WorkflowStateListPagesFieldSelection =
+    ListPagesGraphQLFieldSelection.createImplementation({
+        dependencies: [],
+        implementation: WorkflowStatesListPagesGraphQLFieldSelection
+    });

@@ -1,17 +1,21 @@
 import { useApolloClient } from "@apollo/react-hooks";
 import { useGetPageGraphQLFields } from "~/features/pages/index.js";
-import { ListPagesGqlGateway, ListPagesGraphQLFieldSelection } from "./ListPagesGqlGateway.js";
+import { ListPagesGqlGateway } from "./ListPagesGqlGateway.js";
 import { useContainer } from "@webiny/app";
 import type { IListPagesGateway } from "./IListPagesGateway.js";
+import { ListPagesGraphQLFieldSelection } from "./abstractions.js";
 
 export const useListPagesGateway = (inputFields: string[]): IListPagesGateway => {
     const container = useContainer();
     const client = useApolloClient();
     const fields = useGetPageGraphQLFields(inputFields);
 
+    // TODO: replace with `resolveAll` once container bug is fixed.
+    const selection = container.resolve(ListPagesGraphQLFieldSelection);
+
     return new ListPagesGqlGateway({
         client,
         modelFields: fields,
-        fieldSelection: container.resolveAll(ListPagesGraphQLFieldSelection)
+        fieldSelection: [selection]
     });
 };
