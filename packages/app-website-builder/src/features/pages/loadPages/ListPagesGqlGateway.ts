@@ -64,6 +64,10 @@ export const ListPagesGraphQLFieldSelection = new Abstraction<IListPagesGraphQLF
     "ListPagesGraphQLFieldSelection"
 );
 
+export namespace ListPagesGraphQLFieldSelection {
+    export type Interface = IListPagesGraphQLFieldSelection;
+}
+
 export interface IListPagesGatewayParams {
     client: ApolloClient<object>;
     modelFields: string[];
