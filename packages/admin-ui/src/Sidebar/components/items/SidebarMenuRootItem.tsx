@@ -32,18 +32,18 @@ const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMen
             return <SidebarMenuRootButton {...buttonProps} />;
         }
 
-        const chevron = (
+        const chevron = sidebar.expanded && sidebar.transition === null ? (
             <Icon
                 label={"Expand / Collapse"}
                 size={"sm"}
                 className={
-                    "ml-auto transition-transform duration-175 group-data-[state=open]/menu-item-collapsible:rotate-180 group-data-[state=collapsed]:hidden"
+                    "ml-auto transition-transform duration-100 group-data-[state=open]/menu-item-collapsible:rotate-180 group-data-[state=collapsed]:hidden animate-in fade-in-0"
                 }
                 color={"neutral-strong"}
                 data-sidebar={"menu-item-expanded-indicator"}
                 icon={<KeyboardArrowRightIcon />}
             />
-        );
+        ) : null;
 
         return (
             <Collapsible.Root
