@@ -15,7 +15,7 @@ const variants = cva("group peer block border-r-sm border-neutral-dimmed bg-neut
 });
 
 const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRootProps) => {
-    const { state, setExpanded, pinned } = useSidebar();
+    const { state, setExpanded, pinned, expanded } = useSidebar();
 
     const elementRef = useRef<HTMLDivElement>(null);
 
@@ -35,14 +35,22 @@ const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRo
 
         // Add delay before opening to prevent accidental openings
         timeoutRef.current = window.setTimeout(() => {
-            setExpanded(true);
+            // Only set expanded if it's not already expanded
+            if (!expanded) {
+                setExpanded(true);
+            }
         }, 300);
-    }, [pinned, setExpanded]);
+    }, [pinned, setExpanded, expanded]);
 
     const onMouseLeave = useCallback<React.MouseEventHandler<HTMLDivElement>>(() => {
         // If the sidebar is pinned, we don't want to close the sidebar on mouse leave.
         if (pinned) {
             return;
+        }
+
+        if (timeoutRef.current) {
+            window.clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
         }
 
         // With this timeout, we prevent the sidebar glitching (quickly opening/closing) during mouse enter/leave events.
