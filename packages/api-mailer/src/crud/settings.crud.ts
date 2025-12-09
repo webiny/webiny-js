@@ -24,8 +24,8 @@ import {
 import { getSecret } from "~/crud/settings/secret.js";
 import { createValidation, updateValidation } from "~/crud/settings/validation.js";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import { attachPasswordObfuscatingHooks } from "~/crud/settings/hooks.js";
 import { NotAuthorizedError } from "~/errors.js";
+import { ObfuscatePasswordFeature } from "~/features/ObfuscatePassword/index.js";
 
 const defaultPort = 25;
 /**
@@ -37,7 +37,7 @@ export const createSettingsCrud = async (
     /**
      * We need to remove password from all references on create and update in the CMS.
      */
-    attachPasswordObfuscatingHooks(context);
+    ObfuscatePasswordFeature.register(context.container);
 
     const getTenant = () => {
         return context.tenancy.getCurrentTenant().id;
