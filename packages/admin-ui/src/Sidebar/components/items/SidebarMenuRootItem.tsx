@@ -36,6 +36,7 @@ const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMen
             return () => clearTimeout(timer);
         }
         setShowChevron(false);
+        return undefined;
     }, [sidebar.expanded]);
 
     const sidebarMenuButton = useMemo(() => {
