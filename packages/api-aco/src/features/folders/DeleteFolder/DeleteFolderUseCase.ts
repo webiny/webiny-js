@@ -37,7 +37,7 @@ class DeleteFolderUseCaseImpl implements UseCaseAbstraction.Interface {
         try {
             await this.eventPublisher.publish(beforeDeleteEvent);
         } catch (err) {
-            if (err.code === "DELETE_FOLDER_WITH_CHILDREN") {
+            if (err.code === "Aco/Folder/NotEmpty") {
                 return Result.fail(new FolderNotEmptyError());
             }
             return Result.fail(new FolderNotAuthorizedError());

@@ -1,12 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import type { Container } from "@webiny/di";
-import { FolderBeforeDeleteHandler } from "~/features/folders/DeleteFolder/abstractions.js";
 import { GenericFolderBeforeDeleteHandler } from "./GenericFolderBeforeDeleteHandler.js";
-import type { AcoContext } from "~/types.js";
-
-interface LegacyDeps {
-    context: AcoContext;
-}
 
 /**
  * This feature checks whether a folder is allowed to be deleted.
@@ -16,9 +9,7 @@ interface LegacyDeps {
  */
 export const EnsureFolderIsEmptyOnDeleteFeature = createFeature({
     name: "EnsureFolderIsEmptyOnDelete",
-    register(container: Container, deps: LegacyDeps) {
-        container.registerFactory(FolderBeforeDeleteHandler, () => {
-            return new GenericFolderBeforeDeleteHandler(deps.context);
-        });
+    register(container) {
+        container.register(GenericFolderBeforeDeleteHandler);
     }
 });

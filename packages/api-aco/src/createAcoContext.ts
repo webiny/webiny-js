@@ -15,7 +15,6 @@ import { GetFolderHierarchyFeature } from "~/features/folders/GetFolderHierarchy
 import { GetAncestorsFeature } from "~/features/folders/GetAncestors/index.js";
 import { UpdateFlpOnFolderUpdatedFeature } from "~/features/flp/UpdateFlpOnFolderUpdated/index.js";
 import { DeleteFlpOnFolderDeletedFeature } from "~/features/flp/DeleteFlpOnFolderDeleted/index.js";
-import { EnsureFmFolderIsEmptyOnDeleteFeature } from "~/features/folders/EnsureFmFolderIsEmptyOnDelete/index.js";
 import { EnsureHcmsFolderIsEmptyOnDeleteFeature } from "~/features/folders/EnsureHcmsFolderIsEmptyOnDelete/index.js";
 import { CreateFlpFeature } from "~/features/flp/CreateFlp/index.js";
 import { DeleteFlpFeature } from "~/features/flp/DeleteFlp/index.js";
@@ -34,6 +33,7 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { FolderModel } from "~/domain/folder/abstractions.js";
 import { createModelPlugin } from "@webiny/api-headless-cms/plugins/index.js";
 import { CreateFlpOnFolderCreatedFeature } from "~/features/flp/CreateFlpOnFolderCreated/index.js";
+import { EnsureFolderIsEmptyFeature } from "~/features/folders/EnsureFolderIsEmpty/feature.js";
 
 interface CreateAcoContextParams {
     useFolderLevelPermissions?: boolean;
@@ -105,6 +105,8 @@ const setupAcoContext = async (
 
     GetAncestorsFeature.register(context.container);
 
+    EnsureFolderIsEmptyFeature.register(context.container);
+
     /**
      * Register FLP use cases and event handlers
      */
@@ -127,11 +129,8 @@ const setupAcoContext = async (
     /**
      * Register folder event handlers
      */
-    EnsureFolderIsEmptyOnDeleteFeature.register(context.container, { context });
-
-    EnsureFmFolderIsEmptyOnDeleteFeature.register(context.container, { context });
-
-    EnsureHcmsFolderIsEmptyOnDeleteFeature.register(context.container, { context });
+    EnsureFolderIsEmptyOnDeleteFeature.register(context.container);
+    EnsureHcmsFolderIsEmptyOnDeleteFeature.register(context.container);
 
     /**
      * Setup legacy context

@@ -173,7 +173,7 @@ describe("HCMS Entries -> onEntryBeforeRestoreFromBin", () => {
         });
 
         // Let's delete the folder
-        await aco.deleteFolder({
+        const deleteResult = await aco.deleteFolder({
             id: folder.id
         });
 

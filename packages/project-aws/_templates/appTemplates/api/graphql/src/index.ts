@@ -7,6 +7,7 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import { createFileManagerContext, createFileManagerGraphQL } from "@webiny/api-file-manager";
+import { createFileManagerAco } from "@webiny/api-file-manager-aco";
 import { createFileManagerStorageOperations } from "@webiny/api-file-manager-ddb";
 import { createFileManagerS3, createAssetDelivery } from "@webiny/api-file-manager-s3";
 import { createHeadlessCmsContext, createHeadlessCmsGraphQL } from "@webiny/api-headless-cms";
@@ -61,6 +62,7 @@ export const handler = createHandler({
             fileAliasStorageOperations: createFileManagerStorageOperations({ documentClient })
         }),
         createFileManagerGraphQL(),
+        createFileManagerAco(),
         createAssetDelivery({ documentClient }),
         createFileManagerS3(),
         createAco({ documentClient }),

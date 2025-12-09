@@ -185,7 +185,7 @@ export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
                     return resolve(async () => {
                         ensureAuthentication(context);
                         const deleteFolderUseCase = context.container.resolve(DeleteFolderUseCase);
-                        const result = await deleteFolderUseCase.execute({ id });
+                        const result = await deleteFolderUseCase.execute(id);
                         if (result.isFail()) {
                             throw result.error;
                         }
