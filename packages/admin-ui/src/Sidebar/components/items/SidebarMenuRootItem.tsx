@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { cn, makeDecoratable, withStaticProps } from "~/utils.js";
 import { SidebarMenuRootButton } from "./SidebarMenuRootButton.js";
 import { SidebarMenuItemIcon } from "./SidebarMenuItemIcon.js";
@@ -14,6 +14,7 @@ import { useSidebar } from "~/Sidebar/index.js";
 const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMenuItemProps) => {
     const { currentLevel } = useSidebarMenu();
     const sidebar = useSidebar();
+    const [showChevron, setShowChevron] = useState(false);
 
     const menuItemId = useMemo(() => {
         return btoa(`sidebar-item-${currentLevel}-${buttonProps.text}`);
@@ -27,17 +28,27 @@ const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMen
         sidebar.toggleSectionExpanded(menuItemId);
     }, [isSectionExpanded]);
 
+    useEffect(() => {
+        if (sidebar.expanded) {
+            const timer = setTimeout(() => {
+                setShowChevron(true);
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+        setShowChevron(false);
+    }, [sidebar.expanded]);
+
     const sidebarMenuButton = useMemo(() => {
         if (!children) {
             return <SidebarMenuRootButton {...buttonProps} />;
         }
 
-        const chevron = sidebar.expanded && sidebar.transition === null ? (
+        const chevron = showChevron ? (
             <Icon
                 label={"Expand / Collapse"}
                 size={"sm"}
                 className={
-                    "ml-auto transition-transform duration-100 group-data-[state=open]/menu-item-collapsible:rotate-180 group-data-[state=collapsed]:hidden animate-in fade-in-0"
+                    "ml-auto transition-transform duration-100 group-data-[state=open]/menu-item-collapsible:rotate-180 group-data-[state=collapsed]:hidden"
                 }
                 color={"neutral-strong"}
                 data-sidebar={"menu-item-expanded-indicator"}
@@ -59,7 +70,7 @@ const SidebarMenuItemBase = ({ children, className, ...buttonProps }: SidebarMen
                 </Collapsible.Content>
             </Collapsible.Root>
         );
-    }, [children, buttonProps, menuItemId, isSectionExpanded, toggleSectionExpanded]);
+    }, [children, buttonProps, menuItemId, isSectionExpanded, toggleSectionExpanded, showChevron]);
 
     return (
         <li
