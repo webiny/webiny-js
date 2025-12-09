@@ -12,7 +12,7 @@ import { Icon } from "~/Icon/index.js";
  */
 const segmentedControlItemVariants = cva(
     [
-        "inline-flex items-center justify-center whitespace-nowrap transition-colors cursor-pointer relative z-10 rounded-md",
+        "inline-flex items-center justify-center whitespace-nowrap transition-colors cursor-pointer relative rounded-md",
         "text-md px-sm-extra py-xs [&>svg]:size-md gap-xs",
         "focus-visible:outline-none focus-visible:ring-md focus-visible:ring-primary-dimmed focus-visible:ring-offset-0",
         "disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed"
