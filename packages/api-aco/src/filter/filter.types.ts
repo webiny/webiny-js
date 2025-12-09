@@ -1,5 +1,4 @@
 import type { AcoBaseFields, ListMeta, ListSort } from "~/types.js";
-import type { Topic } from "@webiny/pubsub/types.js";
 
 export enum Operation {
     AND = "AND",
@@ -70,45 +69,12 @@ export interface StorageOperationsUpdateFilterParams {
 
 export type StorageOperationsDeleteFilterParams = DeleteFilterParams;
 
-export interface OnFilterBeforeCreateTopicParams {
-    input: CreateFilterParams;
-}
-
-export interface OnFilterAfterCreateTopicParams {
-    filter: Filter;
-}
-
-export interface OnFilterBeforeUpdateTopicParams {
-    original: Filter;
-    input: Record<string, any>;
-}
-
-export interface OnFilterAfterUpdateTopicParams {
-    original: Filter;
-    filter: Filter;
-    input: Record<string, any>;
-}
-
-export interface OnFilterBeforeDeleteTopicParams {
-    filter: Filter;
-}
-
-export interface OnFilterAfterDeleteTopicParams {
-    filter: Filter;
-}
-
 export interface AcoFilterCrud {
     get(id: string): Promise<Filter>;
     list(params: ListFiltersParams): Promise<[Filter[], ListMeta]>;
     create(data: CreateFilterParams): Promise<Filter>;
     update(id: string, data: UpdateFilterParams): Promise<Filter>;
     delete(id: string): Promise<boolean>;
-    onFilterBeforeCreate: Topic<OnFilterBeforeCreateTopicParams>;
-    onFilterAfterCreate: Topic<OnFilterAfterCreateTopicParams>;
-    onFilterBeforeUpdate: Topic<OnFilterBeforeUpdateTopicParams>;
-    onFilterAfterUpdate: Topic<OnFilterAfterUpdateTopicParams>;
-    onFilterBeforeDelete: Topic<OnFilterBeforeDeleteTopicParams>;
-    onFilterAfterDelete: Topic<OnFilterAfterDeleteTopicParams>;
 }
 
 export interface AcoFilterStorageOperations {
