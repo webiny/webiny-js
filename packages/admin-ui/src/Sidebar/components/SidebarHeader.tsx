@@ -12,7 +12,7 @@ interface SidebarHeaderProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 
 }
 
 const SidebarHeader = ({ title, icon }: SidebarHeaderProps) => {
-    const { togglePinned, expanded, pinned } = useSidebar();
+    const { togglePinned, expanded, transition, pinned } = useSidebar();
 
     return (
         <>
@@ -33,8 +33,8 @@ const SidebarHeader = ({ title, icon }: SidebarHeaderProps) => {
                         <span className={"text-md font-semibold truncate"}>{title}</span>
                     </div>
 
-                    {expanded && (
-                        <div className={"size-md"}>
+                    {expanded && transition === null && (
+                        <div className={"size-md animate-in fade-in-0 duration-200"}>
                             <Tooltip
                                 side={"right"}
                                 trigger={
