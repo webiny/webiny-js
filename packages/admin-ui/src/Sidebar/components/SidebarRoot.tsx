@@ -33,7 +33,10 @@ const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRo
             timeoutRef.current = null;
         }
 
-        setExpanded(true);
+        // Add delay before opening to prevent accidental openings
+        timeoutRef.current = window.setTimeout(() => {
+            setExpanded(true);
+        }, 300);
     }, [pinned, setExpanded]);
 
     const onMouseLeave = useCallback<React.MouseEventHandler<HTMLDivElement>>(() => {
@@ -45,7 +48,7 @@ const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRo
         // With this timeout, we prevent the sidebar glitching (quickly opening/closing) during mouse enter/leave events.
         timeoutRef.current = window.setTimeout(() => {
             setExpanded(false);
-        }, 50);
+        }, 200);
     }, [pinned, setExpanded]);
 
     return (
@@ -78,6 +81,13 @@ const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRo
                     {children}
                 </div>
             </div>
+
+            <div
+                data-sidebar={"extra-hover-area"}
+                className={
+                    "absolute top-0 left-[theme(spacing.sidebar-collapsed)] h-full w-sm hidden group-data-[state=collapsed]:block"
+                }
+            />
         </div>
     );
 };
