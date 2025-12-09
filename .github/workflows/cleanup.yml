@@ -40,7 +40,7 @@ jobs:
             -e AWS_SESSION_TOKEN="${{ env.AWS_SESSION_TOKEN }}" \
             ghcr.io/ekristen/aws-nuke:v3.61.0 \
             run \
-              --config ./.github/workflows/cleanup/aws-nuke.yml
+              --config ./.github/workflows/cleanup/aws-nuke.yml \
               --no-dry-run \
               --no-alias-check \
               --force \
