@@ -1,156 +1,59 @@
-import WebinyError from "@webiny/error";
-import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
+import { EntryAfterCreateHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/events.js";
+import { EntryAfterUpdateHandler } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/events.js";
+import { EntryAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntry/events.js";
+import { EntryAfterRestoreFromBinHandler } from "@webiny/api-headless-cms/features/contentEntry/RestoreEntryFromBin/events.js";
+import { EntryAfterPublishHandler } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/events.js";
+import { EntryAfterUnpublishHandler } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/events.js";
+import { EntryRevisionAfterCreateHandler } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/events.js";
+import { EntryRevisionAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentEntry/DeleteEntryRevision/events.js";
+import { AuditLogEntryAfterCreateHandler } from "./handlers/AuditLogEntryAfterCreateHandler.js";
+import { AuditLogEntryAfterUpdateHandler } from "./handlers/AuditLogEntryAfterUpdateHandler.js";
+import { AuditLogEntryAfterDeleteHandler } from "./handlers/AuditLogEntryAfterDeleteHandler.js";
+import { AuditLogEntryAfterRestoreFromBinHandler } from "./handlers/AuditLogEntryAfterRestoreFromBinHandler.js";
+import { AuditLogEntryAfterPublishHandler } from "./handlers/AuditLogEntryAfterPublishHandler.js";
+import { AuditLogEntryAfterUnpublishHandler } from "./handlers/AuditLogEntryAfterUnpublishHandler.js";
+import { AuditLogEntryRevisionAfterCreateHandler } from "./handlers/AuditLogEntryRevisionAfterCreateHandler.js";
+import { AuditLogEntryRevisionAfterDeleteHandler } from "./handlers/AuditLogEntryRevisionAfterDeleteHandler.js";
 import type { AuditLogsContext } from "~/types.js";
 
-export const onEntryAfterCreateHook = (context: AuditLogsContext) => {
-    context.cms.onEntryAfterCreate.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate) {
-            return;
-        }
-        try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.CREATE);
+export const createEntryHooks = (context: AuditLogsContext) => {
+    context.container.registerFactory(
+        EntryAfterCreateHandler,
+        () => new AuditLogEntryAfterCreateHandler(context)
+    );
 
-            await createAuditLog("Entry created", entry, entry.entryId, context);
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onEntryAfterCreateHook hook",
-                code: "AUDIT_LOGS_AFTER_ENTRY_CREATE_HOOK"
-            });
-        }
-    });
-};
+    context.container.registerFactory(
+        EntryAfterUpdateHandler,
+        () => new AuditLogEntryAfterUpdateHandler(context)
+    );
 
-export const onEntryAfterUpdateHook = (context: AuditLogsContext) => {
-    context.cms.onEntryAfterUpdate.subscribe(async ({ model, entry, original }) => {
-        if (model.isPrivate) {
-            return;
-        }
-        try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.UPDATE);
+    context.container.registerFactory(
+        EntryAfterDeleteHandler,
+        () => new AuditLogEntryAfterDeleteHandler(context)
+    );
 
-            await createAuditLog(
-                "Entry revision updated",
-                { before: original, after: entry },
-                entry.id,
-                context
-            );
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onEntryRevisionAfterUpdateHook hook",
-                code: "AUDIT_LOGS_AFTER_ENTRY_REVISION_UPDATE_HOOK"
-            });
-        }
-    });
-};
+    context.container.registerFactory(
+        EntryAfterRestoreFromBinHandler,
+        () => new AuditLogEntryAfterRestoreFromBinHandler(context)
+    );
 
-export const onEntryAfterDeleteHook = (context: AuditLogsContext) => {
-    context.cms.onEntryAfterDelete.subscribe(async ({ model, entry, permanent }) => {
-        if (model.isPrivate) {
-            return;
-        }
-        try {
-            if (permanent) {
-                const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.DELETE);
-                await createAuditLog("Entry deleted", entry, entry.entryId, context);
-            } else {
-                const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.MOVE_TO_TRASH);
-                await createAuditLog("Entry moved to trash", entry, entry.entryId, context);
-            }
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onEntryAfterDeleteHook hook",
-                code: "AUDIT_LOGS_AFTER_ENTRY_DELETE_HOOK"
-            });
-        }
-    });
-};
+    context.container.registerFactory(
+        EntryAfterPublishHandler,
+        () => new AuditLogEntryAfterPublishHandler(context)
+    );
 
-export const onEntryAfterRestoreFromTrashHook = (context: AuditLogsContext) => {
-    context.cms.onEntryAfterRestoreFromBin.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate) {
-            return;
-        }
-        try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY.RESTORE_FROM_TRASH);
-            await createAuditLog("Entry restored from trash", entry, entry.entryId, context);
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onEntryAfterRestoreFromTrashHook hook",
-                code: "AUDIT_LOGS_AFTER_ENTRY_RESTORE_FROM_TRASH_HOOK"
-            });
-        }
-    });
-};
+    context.container.registerFactory(
+        EntryAfterUnpublishHandler,
+        () => new AuditLogEntryAfterUnpublishHandler(context)
+    );
 
-export const onEntryRevisionAfterCreateHook = (context: AuditLogsContext) => {
-    context.cms.onEntryRevisionAfterCreate.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate) {
-            return;
-        }
-        try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.CREATE);
+    context.container.registerFactory(
+        EntryRevisionAfterCreateHandler,
+        () => new AuditLogEntryRevisionAfterCreateHandler(context)
+    );
 
-            await createAuditLog("Entry revision created", entry, entry.id, context);
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onEntryRevisionAfterCreateHook hook",
-                code: "AUDIT_LOGS_AFTER_ENTRY_REVISION_CREATE_HOOK"
-            });
-        }
-    });
-};
-
-export const onEntryRevisionAfterDeleteHook = (context: AuditLogsContext) => {
-    context.cms.onEntryRevisionAfterDelete.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate) {
-            return;
-        }
-        try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.DELETE);
-
-            await createAuditLog("Entry revision deleted", entry, entry.id, context);
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onEntryRevisionAfterDeleteHook hook",
-                code: "AUDIT_LOGS_AFTER_ENTRY_REVISION_DELETE_HOOK"
-            });
-        }
-    });
-};
-
-export const onEntryAfterPublishHook = (context: AuditLogsContext) => {
-    context.cms.onEntryAfterPublish.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate) {
-            return;
-        }
-        try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.PUBLISH);
-
-            await createAuditLog("Entry revision published", entry, entry.id, context);
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onEntryRevisionAfterPublishHook hook",
-                code: "AUDIT_LOGS_AFTER_ENTRY_REVISION_PUBLISH_HOOK"
-            });
-        }
-    });
-};
-
-export const onEntryAfterUnpublishHook = (context: AuditLogsContext) => {
-    context.cms.onEntryAfterUnpublish.subscribe(async ({ model, entry }) => {
-        if (model.isPrivate) {
-            return;
-        }
-        try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.ENTRY_REVISION.UNPUBLISH);
-
-            await createAuditLog("Entry revision unpublished", entry, entry.id, context);
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onEntryRevisionAfterUnpublishHook hook",
-                code: "AUDIT_LOGS_AFTER_ENTRY_REVISION_UNPUBLISH_HOOK"
-            });
-        }
-    });
+    context.container.registerFactory(
+        EntryRevisionAfterDeleteHandler,
+        () => new AuditLogEntryRevisionAfterDeleteHandler(context)
+    );
 };

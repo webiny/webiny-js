@@ -1,55 +1,24 @@
-import WebinyError from "@webiny/error";
-
-import { AUDIT } from "~/config.js";
-import { getAuditConfig } from "~/utils/getAuditConfig.js";
+import { GroupAfterCreateHandler } from "@webiny/api-headless-cms/features/contentModelGroup/CreateGroup/events.js";
+import { GroupAfterUpdateHandler } from "@webiny/api-headless-cms/features/contentModelGroup/UpdateGroup/events.js";
+import { GroupAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentModelGroup/DeleteGroup/events.js";
+import { AuditLogGroupAfterCreateHandler } from "./handlers/AuditLogGroupAfterCreateHandler.js";
+import { AuditLogGroupAfterUpdateHandler } from "./handlers/AuditLogGroupAfterUpdateHandler.js";
+import { AuditLogGroupAfterDeleteHandler } from "./handlers/AuditLogGroupAfterDeleteHandler.js";
 import type { AuditLogsContext } from "~/types.js";
 
-export const onGroupAfterCreateHook = (context: AuditLogsContext) => {
-    context.cms.onGroupAfterCreate.subscribe(async ({ group }) => {
-        try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.GROUP.CREATE);
+export const createGroupHooks = (context: AuditLogsContext) => {
+    context.container.registerFactory(
+        GroupAfterCreateHandler,
+        () => new AuditLogGroupAfterCreateHandler(context)
+    );
 
-            await createAuditLog("Group created", group, group.id, context);
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onGroupAfterCreateHook hook",
-                code: "AUDIT_LOGS_AFTER_GROUP_CREATE_HOOK"
-            });
-        }
-    });
-};
+    context.container.registerFactory(
+        GroupAfterUpdateHandler,
+        () => new AuditLogGroupAfterUpdateHandler(context)
+    );
 
-export const onGroupAfterUpdateHook = (context: AuditLogsContext) => {
-    context.cms.onGroupAfterUpdate.subscribe(async ({ group, original }) => {
-        try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.GROUP.UPDATE);
-
-            await createAuditLog(
-                "Group updated",
-                { before: original, after: group },
-                group.id,
-                context
-            );
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onGroupAfterUpdateHook hook",
-                code: "AUDIT_LOGS_AFTER_GROUP_UPDATE_HOOK"
-            });
-        }
-    });
-};
-
-export const onGroupAfterDeleteHook = (context: AuditLogsContext) => {
-    context.cms.onGroupAfterDelete.subscribe(async ({ group }) => {
-        try {
-            const createAuditLog = getAuditConfig(AUDIT.HEADLESS_CMS.GROUP.DELETE);
-
-            await createAuditLog("Group deleted", group, group.id, context);
-        } catch (error) {
-            throw WebinyError.from(error, {
-                message: "Error while executing onGroupAfterDeleteHook hook",
-                code: "AUDIT_LOGS_AFTER_GROUP_DELETE_HOOK"
-            });
-        }
-    });
+    context.container.registerFactory(
+        GroupAfterDeleteHandler,
+        () => new AuditLogGroupAfterDeleteHandler(context)
+    );
 };
