@@ -48,7 +48,7 @@ const SidebarRoot = ({ side = "left", className, children, ...props }: SidebarRo
         // With this timeout, we prevent the sidebar glitching (quickly opening/closing) during mouse enter/leave events.
         timeoutRef.current = window.setTimeout(() => {
             setExpanded(false);
-        }, 200);
+        }, 300);
     }, [pinned, setExpanded]);
 
     return (
