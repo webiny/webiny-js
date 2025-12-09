@@ -8,12 +8,8 @@ class WorkflowStatesListPagesGraphQLFieldSelection
             `state {
                 workflowId
                 stepId
+                stepName
                 state
-                savedBy {
-                    id
-                    displayName
-                    type
-                }
             }`
         ];
     }

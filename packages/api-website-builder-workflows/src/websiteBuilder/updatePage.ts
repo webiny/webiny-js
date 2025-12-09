@@ -17,12 +17,28 @@ export const attachUpdatePageLifecycleEvents = (params: IParams) => {
             // does not matter
             return;
         }
+        console.log({
+            state: {
+                id: state.id,
+                app: state.app,
+                state: state.state,
+                comment: state.comment,
+                targetRevisionId: state.targetRevisionId,
+                steps: state.steps
+            }
+        });
         throw new WebinyError({
-            message: "Cannot update page because it is currently in a workflow.",
-            code: "ENTRY_IN_WORKFLOW",
+            message: "Cannot update page because it has a workflow attached.",
+            code: "PAGE_IN_WORKFLOW",
             data: {
                 state: {
-                    ...state
+                    id: state.id,
+                    app: state.app,
+                    state: state.state,
+                    comment: state.comment,
+                    targetRevisionId: state.targetRevisionId,
+                    steps: state.steps,
+                    title: state.title
                 }
             }
         });

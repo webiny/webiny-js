@@ -34,9 +34,6 @@ class PageListPresenterWithWorkflows implements PageListPresenter.Interface {
     }
 
     private extendPage(page: PageDto): WithWorkflowState<PageDto> {
-        console.log({
-            page
-        });
         return {
             ...page,
             // @ts-expect-error
