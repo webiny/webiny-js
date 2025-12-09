@@ -7,14 +7,10 @@ import type { IStoreValue, ListStoreKeysResult } from "../types.js";
 import { createStoreNamespace } from "~/tasks/deleteModel/helpers/store.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { ContextPlugin } from "@webiny/api";
-import { attachLifecycleEvents } from "./attachLifecycleEvents.js";
+import { DisableModelFeature } from "~/features/DisableModel/feature.js";
 
 export const createDeleteModelCrud = () => {
     const plugin = new ContextPlugin<HcmsTasksContext>(async context => {
-        attachLifecycleEvents({
-            context
-        });
-
         const getTenant = (): string => {
             return context.tenancy.getCurrentTenant().id;
         };
@@ -73,6 +69,11 @@ export const createDeleteModelCrud = () => {
                 modelId
             });
         };
+
+        // Register feature
+        DisableModelFeature.register(context.container, {
+            isModelBeingDeleted: context.cms.isModelBeingDeleted
+        });
     });
 
     plugin.name = "headlessCms.context.cms.fullyDeleteModel";
