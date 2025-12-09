@@ -24,10 +24,6 @@ export const createModelEntity = (params: Params): Entity<any> => {
                 type: "string",
                 required: true
             },
-            webinyVersion: {
-                type: "string",
-                required: true
-            },
             name: {
                 type: "string",
                 required: true
