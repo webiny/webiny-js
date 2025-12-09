@@ -80,7 +80,15 @@ const SidebarMenuSubItem = ({ children, className, ...buttonProps }: SidebarMenu
                 </Collapsible.Content>
             </Collapsible.Root>
         );
-    }, [children, buttonProps, currentLevel, menuItemId, isSectionExpanded, toggleSectionExpanded, showChevron]);
+    }, [
+        children,
+        buttonProps,
+        currentLevel,
+        menuItemId,
+        isSectionExpanded,
+        toggleSectionExpanded,
+        showChevron
+    ]);
 
     return (
         <li
