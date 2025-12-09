@@ -17,6 +17,7 @@
     "@webiny/api-headless-cms": "0.0.0",
     "@webiny/api-workflows": "0.0.0",
     "@webiny/error": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "@webiny/handler": "0.0.0"
   },
   "devDependencies": {

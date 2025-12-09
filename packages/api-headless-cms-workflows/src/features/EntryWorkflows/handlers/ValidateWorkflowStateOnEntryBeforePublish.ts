@@ -1,25 +1,26 @@
 import { WebinyError } from "@webiny/error";
-import type { Context } from "~/types.js";
+import { EntryBeforePublishHandler } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/events.js";
+import { GetTargetState } from "../abstractions.js";
 import { createWorkflowAppName } from "~/utils/appName.js";
 import { isModelAllowed } from "~/utils/modelAllowed.js";
-import type { IWorkflowState } from "@webiny/api-workflows";
+import type { IWorkflowStateModel } from "@webiny/api-workflows/context/abstractions/WorkflowState.js";
 import { WorkflowStateNotFoundError } from "@webiny/api-workflows";
 
-interface IParams {
-    context: Pick<Context, "workflowState" | "cms">;
-}
+class ValidateWorkflowStateOnEntryBeforePublishImpl implements EntryBeforePublishHandler.Interface {
+    constructor(private getTargetState: GetTargetState.Interface) {}
 
-export const attachPublishEntryLifecycleEvents = (params: IParams) => {
-    const { context } = params;
-    context.cms.onEntryBeforePublish.subscribe(async ({ model, entry }) => {
-        if (isModelAllowed(model) === false) {
+    async handle(event: EntryBeforePublishHandler.Event): Promise<void> {
+        const { model, entry } = event.payload;
+
+        if (!isModelAllowed(model)) {
             return;
         }
+
         const app = createWorkflowAppName({ model });
 
-        let state: IWorkflowState | undefined = undefined;
+        let state: IWorkflowStateModel | undefined = undefined;
         try {
-            state = await context.workflowState.getTargetState(app, entry.id);
+            state = await this.getTargetState.execute(app, entry.id);
             if (state?.done) {
                 entry.state = undefined;
                 return;
@@ -31,6 +32,7 @@ export const attachPublishEntryLifecycleEvents = (params: IParams) => {
             }
             throw ex;
         }
+
         throw new WebinyError(
             "Cannot publish entry because its workflow state is not completed.",
             "WORKFLOW_STATE_NOT_COMPLETED",
@@ -42,5 +44,11 @@ export const attachPublishEntryLifecycleEvents = (params: IParams) => {
                 }
             }
         );
+    }
+}
+
+export const ValidateWorkflowStateOnEntryBeforePublish =
+    EntryBeforePublishHandler.createImplementation({
+        implementation: ValidateWorkflowStateOnEntryBeforePublishImpl,
+        dependencies: [GetTargetState]
     });
-};

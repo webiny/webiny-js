@@ -32,6 +32,9 @@ import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin.js";
 import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny/api-headless-cms";
 import { createIndexTaskPluginTest } from "~/tasks/createIndexTaskPlugin.js";
 import { CompressorPlugin } from "@webiny/api";
+import { ModelBeforeCreateHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
+import { ModelBeforeCreateFromHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
+import { ModelAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
 
 export * from "./plugins/index.js";
 
@@ -166,26 +169,37 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             entries.dataLoaders.clearAll();
         },
         init: async context => {
-            context.cms.onModelBeforeCreate.subscribe(async ({ model }) => {
-                await createElasticsearchIndex({
-                    client: elasticsearch,
-                    model,
-                    plugins
-                });
-            });
-            context.cms.onModelBeforeCreateFrom.subscribe(async ({ model }) => {
-                await createElasticsearchIndex({
-                    client: elasticsearch,
-                    model,
-                    plugins
-                });
-            });
-            context.cms.onModelAfterDelete.subscribe(async ({ model }) => {
-                await deleteElasticsearchIndex({
-                    client: elasticsearch,
-                    model
-                });
-            });
+            context.container.registerFactory(ModelBeforeCreateHandler, () => ({
+                async handle(event) {
+                    const { model } = event.payload;
+                    await createElasticsearchIndex({
+                        client: elasticsearch,
+                        model,
+                        plugins
+                    });
+                }
+            }));
+
+            context.container.registerFactory(ModelBeforeCreateFromHandler, () => ({
+                async handle(event) {
+                    const { model } = event.payload;
+                    await createElasticsearchIndex({
+                        client: elasticsearch,
+                        model,
+                        plugins
+                    });
+                }
+            }));
+
+            context.container.registerFactory(ModelAfterDeleteHandler, () => ({
+                async handle(event) {
+                    const { model } = event.payload;
+                    await deleteElasticsearchIndex({
+                        client: elasticsearch,
+                        model
+                    });
+                }
+            }));
         },
         getEntities: () => entities,
         getTable: () => tableInstance,

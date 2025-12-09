@@ -3,6 +3,8 @@ import { getModelIdFromAppName } from "~/utils/appName.js";
 import { getStateValues } from "~/utils/state.js";
 import type { IWorkflowState } from "@webiny/api-workflows";
 import type { ICmsEntryState } from "@webiny/api-headless-cms/types/index.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/index.js";
 
 interface IParams {
     context: Context;
@@ -17,14 +19,23 @@ export const attachStateLifecycleEvents = ({ context }: IParams) => {
         if (!modelId) {
             return;
         }
-        try {
-            const model = await context.cms.getModel(modelId);
-            await context.cms.updateEntry(model, state.targetRevisionId, {
-                state: values
-            });
-        } catch (ex) {
-            // no need to do anything, just log the error
-            console.log(ex);
+
+        const getModel = context.container.resolve(GetModelUseCase);
+        const updateEntry = context.container.resolve(UpdateEntryUseCase);
+
+        const modelResult = await getModel.execute(modelId);
+
+        if (modelResult.isFail()) {
+            console.log(modelResult.error);
+            return;
+        }
+
+        const updateResult = await updateEntry.execute(modelResult.value, state.targetRevisionId, {
+            state: values
+        });
+
+        if (updateResult.isFail()) {
+            console.log(updateResult.error);
         }
     };
 
