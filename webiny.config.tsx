@@ -7,7 +7,7 @@ export const Extensions = () => {
     return (
         <>
             {/* Admin 👇 */}
-            <Admin.Extension src={"./extensions/AdminLogo.tsx"} />
+            {/*<Admin.Extension src={"./extensions/AdminLogo.tsx"} />*/}
 
             {/* Infra 👇 */}
             <Infra.PulumiResourceNamePrefix prefix={"myproj-"} />
