@@ -34,7 +34,7 @@ const SidebarHeader = ({ title, icon }: SidebarHeaderProps) => {
                     </div>
 
                     {expanded && transition === null && (
-                        <div className={"size-md animate-in fade-in-0 duration-200"}>
+                        <div className={"size-md animate-in fade-in-0 duration-100"}>
                             <Tooltip
                                 side={"right"}
                                 trigger={
