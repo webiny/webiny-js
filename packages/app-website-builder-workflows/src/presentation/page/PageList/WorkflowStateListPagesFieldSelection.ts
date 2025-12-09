@@ -4,8 +4,18 @@ class WorkflowStatesListPagesGraphQLFieldSelection
     implements ListPagesGraphQLFieldSelection.Interface
 {
     getSelection(): string[] {
-        // i want this to throw so i know it was hit
-        throw new Error("Method not implemented.");
+        return [
+            `state {
+                workflowId
+                stepId
+                state
+                savedBy {
+                    id
+                    displayName
+                    type
+                }
+            }`
+        ];
     }
 }
 
