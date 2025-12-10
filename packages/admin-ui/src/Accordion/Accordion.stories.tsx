@@ -13,13 +13,7 @@ const meta: Meta<typeof Accordion> = {
     title: "Components/Accordion",
     component: Accordion,
     argTypes: {},
-    decorators: [
-        Story => (
-            <div className="w-[750px] p-[50px] min-h-[500px] bg-[#f6f7f8]">
-                <Story />
-            </div>
-        )
-    ],
+
     render: args => {
         return <Accordion {...args} />;
     }
