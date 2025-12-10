@@ -10,6 +10,7 @@ import {
     AccordionItemPropsProvider,
     useAccordionItemProps
 } from "./AccordionItemPropsProvider.js";
+import { useAccordionProps } from "../Accordion.js";
 
 interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {
     title: React.ReactNode;
@@ -34,12 +35,19 @@ const accordionItemVariants = cva("", {
             base: "bg-neutral-base",
             light: "bg-neutral-light",
             transparent: "bg-transparent"
+        },
+        variant: {
+            underline: "border-b-sm border-b-neutral-dimmed",
+            container: ""
         }
+    },
+    defaultVariants: {
+        variant: "underline"
     }
 });
 
-// border-b-sm border-b-neutral-dimmed
 const AccordionItemBase = (props: AccordionItemProps) => {
+    const accordionProps = useAccordionProps();
     const background = useAccordionBackground("light");
 
     const { className, defaultOpen, disabled, onOpenChange, open, children, locked } = props;
@@ -50,7 +58,7 @@ const AccordionItemBase = (props: AccordionItemProps) => {
                 "group-item data-[state=open]:rounded-bl-lg data-[state=open]:rounded-br-lg",
                 "group-[.accordion-variant-container]/accordion:rounded-lg",
                 "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                accordionItemVariants({ locked: locked, background }),
+                accordionItemVariants({ locked, background, variant: accordionProps.variant }),
                 className
             )}
             defaultOpen={defaultOpen}
