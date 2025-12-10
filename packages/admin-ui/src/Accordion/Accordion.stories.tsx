@@ -12,8 +12,6 @@ import { Button } from "~/Button/index.js";
 const meta: Meta<typeof Accordion> = {
     title: "Components/Accordion",
     component: Accordion,
-    argTypes: {},
-
     render: args => {
         return <Accordion {...args} />;
     }

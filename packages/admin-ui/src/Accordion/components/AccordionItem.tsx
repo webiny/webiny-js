@@ -5,6 +5,7 @@ import { AccordionContent } from "./AccordionContent.js";
 import { AccordionItemIcon } from "./AccordionItemIcon.js";
 import { AccordionItemAction } from "./AccordionItemAction.js";
 import { AccordionRoot, type AccordionRootProps } from "~/Accordion/components/AccordionRoot.js";
+import { useAccordionBackground } from "~/Accordion/components/AccordionBackgroundProvider";
 
 interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {
     title: React.ReactNode;
@@ -20,15 +21,23 @@ interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {
     children: React.ReactNode;
 }
 
-const accordionRootVariants = cva("", {
+const accordionItemVariants = cva("", {
     variants: {
         locked: {
             true: "pointer-events-none"
+        },
+        background: {
+            base: "bg-neutral-base",
+            light: "bg-neutral-light",
+            transparent: "bg-transparent"
         }
     }
 });
 
+// border-b-sm border-b-neutral-dimmed
 const AccordionItemBase = (props: AccordionItemProps) => {
+    const background = useAccordionBackground("light");
+
     const { itemProps, triggerProps, contentProps } = React.useMemo(() => {
         const {
             // Item props.
@@ -71,7 +80,7 @@ const AccordionItemBase = (props: AccordionItemProps) => {
                 "group-item data-[state=open]:rounded-bl-lg data-[state=open]:rounded-br-lg",
                 "group-[.accordion-variant-container]/accordion:rounded-lg",
                 "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                accordionRootVariants({ locked: props.locked }),
+                accordionItemVariants({ locked: props.locked, background }),
                 itemProps.className
             )}
         >

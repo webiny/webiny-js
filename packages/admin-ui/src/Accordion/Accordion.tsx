@@ -13,39 +13,34 @@ const accordionVariants = cva("group w-full", {
             container: "accordion-variant-container gap-xs flex flex-col rounded-lg",
             underline: "accordion-variant-underline"
         },
-        background: {
-            base: "bg-neutral-base",
-            light: "bg-neutral-light",
-            transparent: "bg-transparent"
-        },
         border: {
             none: "",
             accent: "border-md border-neutral-dimmed-darker"
         }
     },
     defaultVariants: {
-        variant: "container",
-        background: "base"
+        variant: "underline"
     }
 });
 
 type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
     VariantProps<typeof accordionVariants> & {
         children: React.ReactNode;
+        background?: "base" | "light" | "transparent"
     };
 
 const AccordionBase = ({
     children,
     variant,
     border,
-    background: backgroundProp = "base",
+    background: backgroundProp = "light",
     className
 }: AccordionProps) => {
     const background = useAccordionBackground(backgroundProp);
 
     return (
         <AccordionBackgroundProvider currentBackground={background}>
-            <div className={cn(accordionVariants({ variant, background, border }), className)}>
+            <div className={cn(accordionVariants({ variant, border }), className)}>
                 {children}
             </div>
         </AccordionBackgroundProvider>
