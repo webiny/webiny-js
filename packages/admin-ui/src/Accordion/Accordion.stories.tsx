@@ -279,6 +279,27 @@ export const WithControlledOpenedItem: Story = {
     }
 };
 
+export const UnderlineVariant: Story = {
+    ...Default,
+    args: {
+        variant: "underline",
+        children: (
+            <>
+                <AccordionItem
+                    index={1}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+                <AccordionItem
+                    index={2}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+            </>
+        )
+    }
+};
+
 export const ContainerVariant: Story = {
     ...Default,
     args: {
