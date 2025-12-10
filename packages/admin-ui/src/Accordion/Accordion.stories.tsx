@@ -55,6 +55,118 @@ export const Default: Story = {
     ]
 };
 
+export const UnderlineVariant: Story = {
+    ...Default,
+    args: {
+        variant: "underline",
+        children: (
+            <>
+                <AccordionItem
+                    index={1}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+                <AccordionItem
+                    index={2}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+            </>
+        )
+    }
+};
+
+export const ContainerVariant: Story = {
+    ...Default,
+    args: {
+        variant: "container",
+        children: (
+            <>
+                <AccordionItem
+                    index={1}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+                <AccordionItem
+                    index={2}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+            </>
+        )
+    }
+};
+
+export const ContainerVariantWithAccentBorder: Story = {
+    ...Default,
+    args: {
+        variant: "container",
+        border: "accent",
+        children: (
+            <>
+                <AccordionItem
+                    index={1}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+                <AccordionItem
+                    index={2}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+            </>
+        )
+    }
+};
+
+export const LightBackground: Story = {
+    ...Default,
+    args: {
+        background: "light",
+        children: (
+            <>
+                <AccordionItem
+                    index={1}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+                <AccordionItem
+                    index={2}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+            </>
+        )
+    }
+};
+
+export const BaseBackground: Story = {
+    ...Default,
+    decorators: [
+        Story => (
+            <div className="w-[750px] p-[50px] min-h-[500px]">
+                <Story />
+            </div>
+        )
+    ],
+    args: {
+        background: "base",
+        children: (
+            <>
+                <AccordionItem
+                    index={1}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+                <AccordionItem
+                    index={2}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+            </>
+        )
+    }
+};
 export const WithDescriptions: Story = {
     ...Default,
     args: {
@@ -279,92 +391,6 @@ export const WithControlledOpenedItem: Story = {
     }
 };
 
-export const UnderlineVariant: Story = {
-    ...Default,
-    args: {
-        variant: "underline",
-        children: (
-            <>
-                <AccordionItem
-                    index={1}
-                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                />
-                <AccordionItem
-                    index={2}
-                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                />
-            </>
-        )
-    }
-};
-
-export const ContainerVariant: Story = {
-    ...Default,
-    args: {
-        variant: "container",
-        children: (
-            <>
-                <AccordionItem
-                    index={1}
-                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                />
-                <AccordionItem
-                    index={2}
-                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                />
-            </>
-        )
-    }
-};
-
-export const WithAccentBorder: Story = {
-    ...Default,
-    args: {
-        variant: "container",
-        border: "accent",
-        children: (
-            <>
-                <AccordionItem
-                    index={1}
-                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                />
-            </>
-        )
-    }
-};
-
-export const LightBackground: Story = {
-    ...Default,
-    decorators: [
-        Story => (
-            <div className="w-[750px] p-[50px] min-h-[500px]">
-                <Story />
-            </div>
-        )
-    ],
-    args: {
-        background: "light",
-        children: (
-            <>
-                <AccordionItem
-                    index={1}
-                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                />
-                <AccordionItem
-                    index={2}
-                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                />
-            </>
-        )
-    }
-};
 
 export const ContainerVariantWithLightBackground: Story = {
     ...Default,
