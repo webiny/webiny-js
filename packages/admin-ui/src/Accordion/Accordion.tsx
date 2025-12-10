@@ -6,6 +6,10 @@ import {
     AccordionBackgroundProvider,
     useAccordionBackground
 } from "./components/AccordionBackgroundProvider.js";
+import {
+    AccordionPropsProvider,
+    useAccordionProps
+} from "./components/AccordionPropsProvider.js";
 
 const accordionVariants = cva("group w-full", {
     variants: {
@@ -29,20 +33,27 @@ type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
         background?: "base" | "light" | "transparent"
     };
 
-const AccordionBase = ({
-    children,
-    variant,
-    border,
-    background: backgroundProp = "light",
-    className
-}: AccordionProps) => {
+const AccordionBase = (props: AccordionProps) => {
+    const providedProps = useAccordionProps();
+    const mergedProps = { ...providedProps, ...props };
+
+    const {
+        children,
+        variant,
+        border,
+        background: backgroundProp = "light",
+        className
+    } = mergedProps;
+
     const background = useAccordionBackground(backgroundProp);
 
     return (
         <AccordionBackgroundProvider currentBackground={background}>
-            <div className={cn(accordionVariants({ variant, border }), className)}>
-                {children}
-            </div>
+            <AccordionPropsProvider props={mergedProps}>
+                <div className={cn(accordionVariants({ variant, border }), className)}>
+                    {children}
+                </div>
+            </AccordionPropsProvider>
         </AccordionBackgroundProvider>
     );
 };
@@ -53,4 +64,5 @@ export const Accordion = withStaticProps(DecoratableAccordion, {
     Item: AccordionItem
 });
 
+export { useAccordionProps };
 export type { AccordionProps, AccordionItemProps };
