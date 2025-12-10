@@ -39,6 +39,10 @@ const accordionItemVariants = cva("", {
         variant: {
             underline: "border-b-sm border-b-neutral-dimmed",
             container: ""
+        },
+        border: {
+            none: "",
+            accent: "border-md border-neutral-dimmed-darker"
         }
     },
     defaultVariants: {
@@ -47,10 +51,12 @@ const accordionItemVariants = cva("", {
 });
 
 const AccordionItemBase = (props: AccordionItemProps) => {
+    const providedProps = useAccordionItemProps();
+    const mergedProps = { ...providedProps, ...props };
     const accordionProps = useAccordionProps();
     const background = useAccordionBackground("light");
 
-    const { className, defaultOpen, disabled, onOpenChange, open, children, locked } = props;
+    const { className, defaultOpen, disabled, onOpenChange, open, children, locked } = mergedProps;
 
     return (
         <AccordionRoot
@@ -58,7 +64,12 @@ const AccordionItemBase = (props: AccordionItemProps) => {
                 "group-item data-[state=open]:rounded-bl-lg data-[state=open]:rounded-br-lg",
                 "group-[.accordion-variant-container]/accordion:rounded-lg",
                 "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                accordionItemVariants({ locked, background, variant: accordionProps.variant }),
+                accordionItemVariants({
+                    locked,
+                    background,
+                    variant: accordionProps.variant,
+                    border: accordionProps.border
+                }),
                 className
             )}
             defaultOpen={defaultOpen}
@@ -66,7 +77,7 @@ const AccordionItemBase = (props: AccordionItemProps) => {
             onOpenChange={onOpenChange}
             open={open}
         >
-            <AccordionItemPropsProvider props={props}>
+            <AccordionItemPropsProvider props={mergedProps}>
                 <AccordionTrigger />
                 <AccordionContent>{children}</AccordionContent>
             </AccordionItemPropsProvider>
