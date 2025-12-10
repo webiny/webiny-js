@@ -11,7 +11,8 @@ const decoratePage = (page: PageDto): WithWorkflowState<PageDto> => {
     return {
         ...page,
         // @ts-expect-error
-        state: page.state
+        state: page.state,
+        $selectable: true
     };
 };
 
@@ -21,7 +22,6 @@ interface IWrappedElementProps {
 
 const WrappedElement = (props: IWrappedElementProps) => {
     const { page } = usePage();
-
     const { state } = decoratePage(page);
     if (!state?.state || state.state === WorkflowStateValue.approved) {
         return props.element;

@@ -32,12 +32,13 @@ class PageListPresenterWithWorkflows implements PageListPresenter.Interface {
     public showFilters(show: boolean): void {
         this.decoratee.showFilters(show);
     }
-
     private extendPage(page: PageDto): WithWorkflowState<PageDto> {
         return {
             ...page,
             // @ts-expect-error
-            state: page.state
+            state: page.state,
+            // @ts-expect-error
+            $selectable: !page.state
         };
     }
 }

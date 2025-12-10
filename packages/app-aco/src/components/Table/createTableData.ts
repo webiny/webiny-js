@@ -4,6 +4,9 @@ import type { FolderTableRow, RecordTableRow } from "~/table.types.js";
 export const createRecordsData = <T extends { id: string; $selectable?: boolean }>(
     items: T[]
 ): RecordTableRow<T>[] => {
+    console.log({
+        items
+    });
     return items.map(item => ({
         id: item.id,
         $type: "RECORD",

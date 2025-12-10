@@ -11,6 +11,7 @@ export const attachUpdatePageLifecycleEvents = (params: IParams) => {
     const { context } = params;
     context.websiteBuilder.pages.onPageBeforeUpdate.subscribe(async ({ original }) => {
         let state: IWorkflowState;
+
         try {
             state = await context.workflowState.getTargetState(WB_PAGE_APP, original.id);
         } catch {

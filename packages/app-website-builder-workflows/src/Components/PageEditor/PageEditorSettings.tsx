@@ -5,14 +5,12 @@ import { observer } from "mobx-react-lite";
 
 const { Ui } = PageEditorConfig;
 
-interface IWrappedAutoSave {
+interface IWrappedSettings {
     element?: React.ReactElement | null;
 }
-const WrappedAutoSave = observer((props: IWrappedAutoSave) => {
+
+const WrappedSettings = observer((props: IWrappedSettings) => {
     const { presenter } = useWorkflowState();
-    /**
-     * Autosave should work only when the page does not have a workflow state assigned.
-     */
     if (!presenter.vm.state?.state) {
         return props.element;
     }
@@ -20,10 +18,10 @@ const WrappedAutoSave = observer((props: IWrappedAutoSave) => {
     return null;
 });
 
-export const PageEditorAutoSave = Ui.TopBar.Element.createDecorator(Original => {
-    return function PageEditorAutoSaveDecorated(props) {
-        if (props.name === "autoSave") {
-            return <Original {...props} element={<WrappedAutoSave element={props.element} />} />;
+export const PageEditorSettings = Ui.TopBar.Action.createDecorator(Original => {
+    return function PageEditorSettingsDecorated(props) {
+        if (props.name === "buttonSettings") {
+            return <Original {...props} element={<WrappedSettings element={props.element} />} />;
         }
         return <Original {...props} />;
     };

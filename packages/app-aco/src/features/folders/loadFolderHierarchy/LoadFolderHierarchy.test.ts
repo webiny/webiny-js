@@ -175,9 +175,7 @@ describe("GetFolderHierarchy", () => {
 
         expect(foldersCache.hasItems()).toBe(false);
 
-        await expect(useCase.execute("folder-0")).rejects.toThrow(
-            "Gateway error"
-        );
+        await expect(useCase.execute("folder-0")).rejects.toThrow("Gateway error");
 
         expect(spy).toHaveBeenCalledTimes(1);
         expect(foldersCache.hasItems()).toBe(false);

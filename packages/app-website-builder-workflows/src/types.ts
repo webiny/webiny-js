@@ -15,4 +15,5 @@ export interface IRecordWorkflowState {
 
 export type WithWorkflowState<T> = T & {
     state?: IRecordWorkflowState | null;
+    $selectable: boolean;
 };

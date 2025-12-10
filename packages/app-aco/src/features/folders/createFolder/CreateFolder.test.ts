@@ -25,7 +25,7 @@ describe("CreateFolder", () => {
     const gateway = new CreateFolderMockGateway();
 
     let container: Container;
-    const foldersCache = new ListCache<Folder>()
+    const foldersCache = new ListCache<Folder>();
 
     beforeEach(() => {
         container = new Container();
