@@ -1,5 +1,5 @@
 import React from "react";
-import { FolderProvider, useAcoConfig } from "@webiny/app-aco";
+import { FolderProvider } from "@webiny/app-aco";
 import { makeDecoratable, OptionsMenu } from "@webiny/app-admin";
 import { RedirectProvider } from "~/modules/redirects/RedirectsList/hooks/useRedirect.js";
 import { RedirectListConfig, useRedirectListConfig } from "~/modules/redirects/configs/index.js";

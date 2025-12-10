@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from "react";
 import { autorun } from "mobx";
 import { useFeature } from "@webiny/app";
 import { UpdateFolderFeature } from "./feature.js";
-import type { FolderPermission } from "~/types.js";
 import { UpdateFolderParams } from "./abstractions.js";
 
 export const useUpdateFolder = () => {

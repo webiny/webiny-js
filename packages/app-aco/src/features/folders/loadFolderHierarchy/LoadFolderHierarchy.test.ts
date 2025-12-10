@@ -1,6 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { folderCacheFactory } from "../cache/FoldersCacheFactory.js";
-import { loadedFolderCacheFactory } from "../cache/LoadedFoldersCacheFactory.js";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Container } from "@webiny/di";
 import { ListCache, LoadedCache } from "~/features/folders/cache/index.js";
 import { Folder } from "~/domain/folder/Folder.js";
@@ -11,10 +9,9 @@ import {
     LoadedFoldersCache
 } from "../abstractions.js";
 import { LoadingRepository } from "@webiny/app-utils";
-import { LoadFolderHierarchyGateway } from "./abstractions.js";
-import { LoadFolderHierarchyFeature } from "./feature.js";
 import type { LoadFolderHierarchyGatewayResponse } from "./abstractions.js";
-import { LoadFolderHierarchyUseCase } from "./abstractions.js";
+import { LoadFolderHierarchyGateway, LoadFolderHierarchyUseCase } from "./abstractions.js";
+import { LoadFolderHierarchyFeature } from "./feature.js";
 
 describe("GetFolderHierarchy", () => {
     const type = "abc";

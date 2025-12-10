@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { createConfigurableComponent } from "@webiny/react-properties";
-import { CompositionScope } from "@webiny/react-composition";
 import { Browser, type BrowserConfig } from "./Browser/index.js";
 import { useAcoConfig } from "@webiny/app-aco";
 
