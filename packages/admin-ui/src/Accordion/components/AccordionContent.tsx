@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Collapsible as CollapsiblePrimitive } from "radix-ui";
-import { cva, type VariantProps, cn } from "~/utils.js";
+import { cva, cn } from "~/utils.js";
+import { useAccordionItemProps } from "./AccordionItem.js";
 
 const accordionContentVariants = cva(
     [
@@ -33,20 +34,23 @@ const accordionContentVariants = cva(
 );
 
 export interface AccordionContentProps
-    extends React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Content>,
-        VariantProps<typeof accordionContentVariants> {}
+    extends React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Content> {}
 
 export const AccordionContent = ({
     children,
-    withIcon,
-    withHandle,
     className,
     ...props
-}: AccordionContentProps) => (
-    <CollapsiblePrimitive.Content
-        {...props}
-        className={cn(accordionContentVariants({ withHandle, withIcon }), className)}
-    >
-        <div className="pt-sm pb-lg px-md">{children}</div>
-    </CollapsiblePrimitive.Content>
-);
+}: AccordionContentProps) => {
+    const itemProps = useAccordionItemProps();
+    const withIcon = !!itemProps.icon;
+    const withHandle = !!itemProps.handle;
+
+    return (
+        <CollapsiblePrimitive.Content
+            {...props}
+            className={cn(accordionContentVariants({ withHandle, withIcon }), className)}
+        >
+            <div className="pt-sm pb-lg px-md">{children}</div>
+        </CollapsiblePrimitive.Content>
+    );
+};

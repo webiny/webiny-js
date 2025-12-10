@@ -3,24 +3,10 @@ import { ReactComponent as KeyboardArrowDownIcon } from "@webiny/icons/keyboard_
 import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
 import { Collapsible as CollapsiblePrimitive } from "radix-ui";
 import { cn } from "~/utils.js";
-import { type AccordionItemProps } from "./AccordionItem.js";
+import { useAccordionItemProps } from "./AccordionItem.js";
 import { AccordionItemAction } from "./AccordionItemAction.js";
 import { Icon } from "~/Icon/index.js";
 import { AccordionItemDragHandle } from "~/Accordion/components/AccordionItemDragHandle.js";
-
-type AccordionTriggerProps = Pick<
-    AccordionItemProps,
-    | "title"
-    | "subtitle"
-    | "description"
-    | "colorMark"
-    | "icon"
-    | "handle"
-    | "locked"
-    | "interactive"
-    | "actions"
-    | "draggable"
->;
 
 const OpenCloseIndicator = () => {
     return (
@@ -35,17 +21,18 @@ const OpenCloseIndicator = () => {
     );
 };
 
-const AccordionTrigger = ({
-    title,
-    subtitle,
-    description,
-    colorMark,
-    actions,
-    icon,
-    interactive = true,
-    locked,
-    draggable
-}: AccordionTriggerProps) => {
+const AccordionTrigger = () => {
+    const {
+        title,
+        subtitle,
+        description,
+        colorMark,
+        actions,
+        icon,
+        interactive = true,
+        locked,
+        draggable
+    } = useAccordionItemProps();
     // The following three attributes are required for the trigger to act as a button.
     // We can't use the default button element here because the content of the trigger
     // can also contain one or more buttons.

@@ -6,6 +6,10 @@ import { AccordionItemIcon } from "./AccordionItemIcon.js";
 import { AccordionItemAction } from "./AccordionItemAction.js";
 import { AccordionRoot, type AccordionRootProps } from "~/Accordion/components/AccordionRoot.js";
 import { useAccordionBackground } from "~/Accordion/components/AccordionBackgroundProvider";
+import {
+    AccordionItemPropsProvider,
+    useAccordionItemProps
+} from "./AccordionItemPropsProvider.js";
 
 interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {
     title: React.ReactNode;
@@ -38,54 +42,26 @@ const accordionItemVariants = cva("", {
 const AccordionItemBase = (props: AccordionItemProps) => {
     const background = useAccordionBackground("light");
 
-    const { itemProps, triggerProps, contentProps } = React.useMemo(() => {
-        const {
-            // Item props.
-            className,
-            defaultOpen,
-            disabled,
-            onOpenChange,
-            open,
-
-            // Content props.
-            children,
-
-            // Shared props.
-            locked,
-
-            // Trigger props.
-            ...triggerProps
-        } = props;
-
-        return {
-            itemProps: {
-                className,
-                defaultOpen,
-                disabled,
-                onOpenChange,
-                open
-            },
-            triggerProps: {
-                locked,
-                ...triggerProps
-            },
-            contentProps: { children, withIcon: !!props.icon, withHandle: !!props.handle }
-        };
-    }, [props]);
+    const { className, defaultOpen, disabled, onOpenChange, open, children, locked } = props;
 
     return (
         <AccordionRoot
-            {...itemProps}
             className={cn(
                 "group-item data-[state=open]:rounded-bl-lg data-[state=open]:rounded-br-lg",
                 "group-[.accordion-variant-container]/accordion:rounded-lg",
                 "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
-                accordionItemVariants({ locked: props.locked, background }),
-                itemProps.className
+                accordionItemVariants({ locked: locked, background }),
+                className
             )}
+            defaultOpen={defaultOpen}
+            disabled={disabled}
+            onOpenChange={onOpenChange}
+            open={open}
         >
-            <AccordionTrigger {...triggerProps} />
-            <AccordionContent {...contentProps} />
+            <AccordionItemPropsProvider props={props}>
+                <AccordionTrigger />
+                <AccordionContent>{children}</AccordionContent>
+            </AccordionItemPropsProvider>
         </AccordionRoot>
     );
 };
@@ -97,4 +73,4 @@ const AccordionItem = withStaticProps(DecoratableAccordionItem, {
     Action: AccordionItemAction
 });
 
-export { AccordionItem, type AccordionItemProps };
+export { AccordionItem, type AccordionItemProps, useAccordionItemProps };
