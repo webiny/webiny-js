@@ -21,6 +21,25 @@ export default meta;
 
 type Story = StoryObj<typeof Accordion>;
 
+// Reusable decorators
+const LightGreyBackground = (Story: React.ComponentType) => (
+    <div className="w-[750px] p-[50px] min-h-[500px] bg-[#f6f7f8]">
+        <Story />
+    </div>
+);
+
+const WhiteBackground = (Story: React.ComponentType) => (
+    <div className="w-[750px] p-[50px] min-h-[500px] bg-white">
+        <Story />
+    </div>
+);
+
+const NoBackground = (Story: React.ComponentType) => (
+    <div className="w-[750px] p-[50px] min-h-[500px]">
+        <Story />
+    </div>
+);
+
 interface AccordionItemProps extends Omit<BaseAccordionItemProps, "value" | "title" | "children"> {
     index: number;
 }
@@ -46,13 +65,7 @@ export const Default: Story = {
             </>
         )
     },
-    decorators: [
-        Story => (
-            <div className="w-[750px] p-[50px] min-h-[500px] bg-[#f6f7f8]">
-                <Story />
-            </div>
-        )
-    ]
+    decorators: [LightGreyBackground]
 };
 
 export const UnderlineVariant: Story = {
@@ -170,13 +183,7 @@ export const LightBackground: Story = {
 
 export const BaseBackground: Story = {
     ...Default,
-    decorators: [
-        Story => (
-            <div className="w-[750px] p-[50px] min-h-[500px]">
-                <Story />
-            </div>
-        )
-    ],
+    decorators: [NoBackground],
     args: {
         background: "base",
         children: (
@@ -421,13 +428,7 @@ export const WithControlledOpenedItem: Story = {
 
 
 export const NestedAccordions: Story = {
-    decorators: [
-        Story => (
-            <div className="w-[750px] p-[50px] min-h-[500px] bg-white">
-                <Story />
-            </div>
-        )
-    ],
+    decorators: [WhiteBackground],
     name: "Nested Accordions (Base Background)",
     args: {
         background: "base",
