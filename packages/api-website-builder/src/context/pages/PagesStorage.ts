@@ -96,12 +96,6 @@ export class PagesStorage implements WbPagesStorageOperations {
         const entry = await this.cms.getEntryById(this.getModel(), id);
 
         const values = omit(data, ["id", "tenant", "locale", "webinyVersion"]);
-        
-        console.log({
-            pageId: id,
-            data,
-            values
-        });
 
         const updatedEntry = await this.cms.updateEntry(this.getModel(), entry.id, values);
 
