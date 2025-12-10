@@ -421,9 +421,16 @@ export const WithControlledOpenedItem: Story = {
 
 
 export const NestedAccordions: Story = {
-    ...Default,
+    decorators: [
+        Story => (
+            <div className="w-[750px] p-[50px] min-h-[500px] bg-white">
+                <Story />
+            </div>
+        )
+    ],
     name: "Nested Accordions (Base Background)",
     args: {
+        background: "base",
         children: (
             <>
                 <Accordion.Item
