@@ -38,13 +38,20 @@ const accordionItemVariants = cva("", {
         },
         variant: {
             underline: "border-b-sm border-b-neutral-dimmed",
-            container: ""
+            container: "rounded-lg"
         },
         border: {
             none: "",
-            accent: "border-md border-neutral-dimmed-darker"
+            accent: ""
         }
     },
+    compoundVariants: [
+        {
+            variant: "container",
+            border: "accent",
+            className: "border-md border-neutral-dimmed-darker rounded-lg"
+        }
+    ],
     defaultVariants: {
         variant: "underline"
     }

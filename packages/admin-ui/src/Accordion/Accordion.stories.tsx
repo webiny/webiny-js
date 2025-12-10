@@ -119,6 +119,34 @@ export const ContainerVariantWithAccentBorder: Story = {
     }
 };
 
+export const ContainerVariantWithBaseBackground: Story = {
+    decorators: [
+        Story => (
+            <div className="w-[750px] p-[50px] min-h-[500px] bg-white">
+                <Story />
+            </div>
+        )
+    ],
+    args: {
+        variant: "container",
+        background: "base",
+        children: (
+            <>
+                <AccordionItem
+                    index={1}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+                <AccordionItem
+                    index={2}
+                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+            </>
+        )
+    }
+};
+
 export const LightBackground: Story = {
     ...Default,
     args: {
@@ -392,35 +420,6 @@ export const WithControlledOpenedItem: Story = {
 };
 
 
-export const ContainerVariantWithLightBackground: Story = {
-    ...Default,
-    decorators: [
-        Story => (
-            <div className="w-[750px] p-[50px] min-h-[500px]">
-                <Story />
-            </div>
-        )
-    ],
-    args: {
-        variant: "container",
-        background: "light",
-        children: (
-            <>
-                <AccordionItem
-                    index={1}
-                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                />
-                <AccordionItem
-                    index={2}
-                    description="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
-                />
-            </>
-        )
-    }
-};
-
 export const NestedAccordions: Story = {
     ...Default,
     name: "Nested Accordions (Base Background)",
@@ -570,13 +569,7 @@ export const NestedAccordions: Story = {
 };
 
 export const NestedAccordionsLight: Story = {
-    decorators: [
-        Story => (
-            <div className="w-[750px] p-[50px] min-h-[500px] bg-white">
-                <Story />
-            </div>
-        )
-    ],
+    ...Default,
     name: "Nested Accordions (Light Background)",
     args: {
         background: "light",
