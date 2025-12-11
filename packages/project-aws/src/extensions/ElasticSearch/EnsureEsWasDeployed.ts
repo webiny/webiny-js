@@ -53,4 +53,3 @@ export const EnsureEsWasDeployed = CoreBeforeDeploy.createImplementation({
     implementation: EnsureEsWasDeployedImpl,
     dependencies: [UiService]
 });
-

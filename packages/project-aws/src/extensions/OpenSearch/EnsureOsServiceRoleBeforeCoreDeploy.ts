@@ -17,9 +17,7 @@ class EnsureOsServiceRoleBeforeCoreDeployImpl implements CoreBeforeDeploy.Interf
             // other than not being able to retrieve the service role.
             if (err.Error?.Code !== NO_SUCH_ENTITY_IAM_ERROR) {
                 throw GracefulError.from(
-                    new Error(
-                        "Failed to retrieve Amazon OpenSearch service role."
-                    ),
+                    new Error("Failed to retrieve Amazon OpenSearch service role."),
                     [
                         "An unexpected error occurred while checking for the %s service role:",
                         "%s",
@@ -39,9 +37,7 @@ class EnsureOsServiceRoleBeforeCoreDeployImpl implements CoreBeforeDeploy.Interf
                 // Created successfully, proceed silently
             } catch (err) {
                 throw GracefulError.from(
-                    new Error(
-                        "Failed to create Amazon OpenSearch service role."
-                    ),
+                    new Error("Failed to create Amazon OpenSearch service role."),
                     [
                         "Could not create the required %s service role:",
                         "%s",

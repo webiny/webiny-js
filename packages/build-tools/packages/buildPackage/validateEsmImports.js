@@ -81,7 +81,9 @@ async function validateImportSpec(spec, file, errors) {
         // If there's no extension, it should have .js
         if (!hasExtension) {
             const relativePath = file.replace(process.cwd(), "").replace(/^[\/\\]/, "");
-            const errorMsg = chalk.red(`X Missing .js extension in import "${spec}" in ${relativePath}`);
+            const errorMsg = chalk.red(
+                `- Missing .js extension in import "${spec}" in ${relativePath}`
+            );
             console.error(errorMsg);
             errors.push({ file, spec, reason: "missing extension" });
         }
