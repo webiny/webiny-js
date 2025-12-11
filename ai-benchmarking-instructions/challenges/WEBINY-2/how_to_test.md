@@ -9,7 +9,8 @@
        npm config set registry http://localhost:4873 
        yarn release --type=verdaccio
     ```
-4. Create the project via the Verdaccio tag:
+    When this has finished you will see `“Release process has finished successfully!”`
+4. Create/update and deploy the project via the Verdaccio tag (if it already exists then add `--force`):
     ```
     cd ..
     npx create-webiny-project@local-npm webiny-commenting-api \
@@ -18,8 +19,8 @@
     --include-commenting-api \
     --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
     ```
-5. After some time you should see the output `“success: Congratulations! You've just deployed a brand new project!”` followed by project details - the project is now deployed to AWS. Open the Admin app in your browser and do the initial setup. Keep hold of the 'Manage API'
-6. Still in the Admin app, create a new Content Model Group 'benchmarkingModelGroup' and a new Content Model 'benchmarkingModel' within it. Then under 'Content' - create a new benchmarking entry.
+5. After some time you should see the output `“success: Congratulations! You've just deployed a brand new project!”` followed by project details - the project is now deployed to AWS. Open the Admin app in your browser and if required: do the initial setup
+6. Still in the Admin app, create a new Content Model Group 'benchmarkingModelGroup' and a new Content Model 'benchmarkingModel' within it. Then under 'Content' - create a new benchmarking entry
 7. Navigate to the API playground at `<your_project_domain>/api-playground` and then 'Headless CMS' - 'Manage API'. You might find it easier to test the comments API via Postman - copy the GraphQL API URL from inside the playground (plus the bearer token for the 'graphql' request from the browser dev tools) and then use a Postman GraphQL client to test the requests
 8. Get the ID of your 'benchmarking' content entry by calling the `ListBenchmarking` query - you can use this ID to create and manage comments for the entry via the `comment` mutations & queries that the AI assistant should have generated
 
