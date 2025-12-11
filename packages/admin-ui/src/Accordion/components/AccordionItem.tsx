@@ -20,7 +20,6 @@ interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {
     locked?: boolean;
     draggable?: boolean;
     actions?: React.ReactNode;
-    indicatorPosition?: "left" | "right";
     children: React.ReactNode;
 }
 

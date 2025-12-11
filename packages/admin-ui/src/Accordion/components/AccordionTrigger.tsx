@@ -4,6 +4,7 @@ import { ReactComponent as LockIcon } from "@webiny/icons/lock.svg";
 import { Collapsible as CollapsiblePrimitive } from "radix-ui";
 import { cn } from "~/utils.js";
 import { useAccordionItemProps } from "./AccordionItem.js";
+import { useAccordionProps } from "./AccordionPropsProvider.js";
 import { AccordionItemAction } from "./AccordionItemAction.js";
 import { Icon } from "~/Icon/index.js";
 import { AccordionItemDragHandle } from "~/Accordion/components/AccordionItemDragHandle.js";
@@ -31,9 +32,11 @@ const AccordionTrigger = () => {
         icon,
         interactive = true,
         locked,
-        draggable,
-        indicatorPosition = "right"
+        draggable
     } = useAccordionItemProps();
+
+    const accordionProps = useAccordionProps();
+    const indicatorPosition = accordionProps.indicatorPosition || "right";
     // The following three attributes are required for the trigger to act as a button.
     // We can't use the default button element here because the content of the trigger
     // can also contain one or more buttons.
