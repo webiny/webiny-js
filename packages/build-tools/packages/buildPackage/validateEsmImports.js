@@ -61,8 +61,8 @@ export const validateEsmImports = async ({ cwd }) => {
             `Found ${errors.length} invalid import(s) in ${invalidFiles.length} file(s):`,
             "",
             ...errors.map(e => {
-                const relativePath = e.file.replace(cwd, "").replace(/^[\/\\]/, "");
-                return `  ${chalk.red("-")} "${chalk.red(e.spec)}" in ${chalk.red(relativePath)}`;
+                const relativePath = e.file.replace(cwd, "").replace(/^[\/\\]/, "");1
+                return `  ${chalk.red("-")} "${chalk.red(e.spec)}" in "${chalk.red(relativePath)}"`;
             })
         ].join("\n");
         throw new Error(errorMessage);
