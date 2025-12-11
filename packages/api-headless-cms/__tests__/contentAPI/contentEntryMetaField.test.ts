@@ -117,7 +117,6 @@ describe("Content Entry Meta Field", () => {
                 slug: "test-category"
             },
             status: "draft",
-            webinyVersion: "5.27.0",
             meta: createMetaData()
         });
 
