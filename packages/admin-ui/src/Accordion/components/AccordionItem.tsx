@@ -5,7 +5,7 @@ import { AccordionContent } from "./AccordionContent.js";
 import { AccordionItemIcon } from "./AccordionItemIcon.js";
 import { AccordionItemAction } from "./AccordionItemAction.js";
 import { AccordionRoot, type AccordionRootProps } from "~/Accordion/components/AccordionRoot.js";
-import { useAccordionBackground } from "~/Accordion/components/AccordionBackgroundProvider";
+import { useAccordionBackground } from "~/Accordion/components/AccordionBackgroundProvider.js";
 import { AccordionItemPropsProvider, useAccordionItemProps } from "./AccordionItemPropsProvider.js";
 import { useAccordionProps } from "../Accordion.js";
 
