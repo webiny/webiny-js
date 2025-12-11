@@ -125,9 +125,7 @@ const AccordionTrigger = () => {
                             {locked ? (
                                 <Icon label="Locked" icon={<LockIcon />} color={"neutral-light"} />
                             ) : (
-                                <>
-                                    {actions}
-                                </>
+                                <>{actions}</>
                             )}
                         </div>
                     )}
