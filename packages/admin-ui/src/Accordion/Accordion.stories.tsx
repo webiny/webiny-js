@@ -750,6 +750,58 @@ export const Locked: Story = {
     }
 };
 
+export const IndicatorPositionLeft: Story = {
+    decorators: [LightGreyBackground],
+    args: {
+        variant: "underline",
+        indicatorPosition: "left",
+        children: (
+            <>
+                <AccordionItem
+                    index={1}
+                    description="When indicator is on the left, it replaces the icon position."
+                />
+                <AccordionItem
+                    index={2}
+                    description="Icons are not shown when indicator is on the left."
+                />
+                <AccordionItem
+                    index={3}
+                    description="Actions are still shown on the right side."
+                    actions={
+                        <Accordion.Item.Action
+                            icon={<TrashIcon />}
+                            onClick={() => alert("Delete clicked")}
+                        />
+                    }
+                />
+            </>
+        )
+    }
+};
+
+export const IndicatorPositionRight: Story = {
+    decorators: [LightGreyBackground],
+    args: {
+        variant: "underline",
+        indicatorPosition: "right",
+        children: (
+            <>
+                <AccordionItem
+                    index={1}
+                    description="Default behavior with indicator on the right."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+                <AccordionItem
+                    index={2}
+                    description="Icons can be shown when indicator is on the right."
+                    icon={<Accordion.Item.Icon icon={<WarningIcon />} label={"Warning icon"} />}
+                />
+            </>
+        )
+    }
+};
+
 // Add a Documentation story
 export const Documentation: Story = {
     render: args => {

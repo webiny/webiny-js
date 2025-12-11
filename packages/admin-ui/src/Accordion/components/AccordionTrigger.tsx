@@ -31,7 +31,8 @@ const AccordionTrigger = () => {
         icon,
         interactive = true,
         locked,
-        draggable
+        draggable,
+        indicatorPosition = "right"
     } = useAccordionItemProps();
     // The following three attributes are required for the trigger to act as a button.
     // We can't use the default button element here because the content of the trigger
@@ -73,7 +74,20 @@ const AccordionTrigger = () => {
                     />
                 )}
                 <div className={"w-full flex justify-between items-center px-md py-sm-extra"}>
-                    {icon ? <div className={"mr-md"}>{icon}</div> : null}
+                    {/* Left side: icon or indicator based on position */}
+                    {indicatorPosition === "left" ? (
+                        <>
+                            {interactive && !locked ? (
+                                <div className={"mr-md"}>
+                                    <OpenCloseIndicator />
+                                </div>
+                            ) : null}
+                        </>
+                    ) : (
+                        <>{icon ? <div className={"mr-md"}>{icon}</div> : null}</>
+                    )}
+
+                    {/* Center: title, subtitle, description */}
                     <div className={"flex flex-col gap-xxs flex-grow text-left"}>
                         <div className={"flex gap-xs"}>
                             <div className={"text-md font-semibold webiny_accordion-item-title"}>
@@ -86,18 +100,34 @@ const AccordionTrigger = () => {
 
                         <div className={"text-sm text-neutral-strong"}>{description}</div>
                     </div>
-                    <div className={"flex gap-xs items-center"}>
-                        {locked ? (
-                            <Icon label="Locked" icon={<LockIcon />} color={"neutral-light"} />
-                        ) : (
-                            <>
-                                {actions}
-                                {/* No need to show the separator if there are no actions and the item is not interactive. */}
-                                {actions && interactive ? <AccordionItemAction.Separator /> : null}
-                                {interactive ? <OpenCloseIndicator /> : null}
-                            </>
-                        )}
-                    </div>
+
+                    {/* Right side: actions and indicator (or locked icon) */}
+                    {indicatorPosition === "right" ? (
+                        <div className={"flex gap-xs items-center"}>
+                            {locked ? (
+                                <Icon label="Locked" icon={<LockIcon />} color={"neutral-light"} />
+                            ) : (
+                                <>
+                                    {actions}
+                                    {/* No need to show the separator if there are no actions and the item is not interactive. */}
+                                    {actions && interactive ? (
+                                        <AccordionItemAction.Separator />
+                                    ) : null}
+                                    {interactive ? <OpenCloseIndicator /> : null}
+                                </>
+                            )}
+                        </div>
+                    ) : (
+                        <div className={"flex gap-xs items-center"}>
+                            {locked ? (
+                                <Icon label="Locked" icon={<LockIcon />} color={"neutral-light"} />
+                            ) : (
+                                <>
+                                    {actions}
+                                </>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </CollapsiblePrimitive.Trigger>
