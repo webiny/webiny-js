@@ -1,14 +1,14 @@
 import React, { createContext } from "react";
-import type { FolderItem } from "~/types.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
 
 export interface FolderContext {
-    folder: FolderItem;
+    folder: FolderDto;
 }
 
 export const FolderContext = createContext<FolderContext | undefined>(undefined);
 
 interface FolderProviderProps {
-    folder: FolderItem | undefined;
+    folder: FolderDto | undefined;
     children: React.ReactNode;
 }
 

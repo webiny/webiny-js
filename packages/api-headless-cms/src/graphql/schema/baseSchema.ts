@@ -140,14 +140,17 @@ const createSchema = (plugins: PluginsContainer): IGraphQLSchemaPlugin<CmsContex
             }
 
             type CmsEntryState {
+                workflowId: String
                 stepId: ID
                 stepName: String
                 state: CmsEntryStateType
             }
 
             input ListWhereInputCmsEntryState {
+                workflowId: String
                 stepId: ID
                 state: CmsEntryStateType
+                stepName: String
             }
         `,
         resolvers: {}

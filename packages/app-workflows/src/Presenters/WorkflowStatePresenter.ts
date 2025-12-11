@@ -1,6 +1,7 @@
 import type {
     IWorkflowStatePresenter,
-    IWorkflowStatePresenterViewModel
+    IWorkflowStatePresenterViewModel,
+    IWorkflowStatePresenterViewModelDialog
 } from "./abstractions/WorkflowStatePresenter.js";
 import type { IWorkflowsRepository, IWorkflowStateRepository } from "../Repositories/index.js";
 import { makeAutoObservable, runInAction, toJS } from "mobx";
@@ -29,19 +30,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     private readonly title;
     private readonly identity;
     private state: IWorkflowStateModel | null | undefined = undefined;
-    private dialog:
-        | "cancelReview"
-        | "requestReview"
-        | "start"
-        | "start:success"
-        | "approve"
-        | "approve:success"
-        | "reject"
-        | "reject:success"
-        | "comment"
-        | "takeOver"
-        | "takeOver:success"
-        | null = null;
+    private dialog: IWorkflowStatePresenterViewModelDialog | null = null;
     step: IWorkflowStateStepModel | null = null;
 
     private get isOwner(): boolean {
@@ -73,8 +62,8 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
     get vm(): IWorkflowStatePresenterViewModel {
         return {
             workflow: toJS(this.workflow),
-            state: this.state ? this.state.toJS() : null,
-            step: toJS(this.step || this.state?.currentStep || null),
+            state: this.state?.toJS(),
+            step: this.state?.currentStep?.toJS(),
             lastApprovedStep: toJS(this.state?.lastApproved || null),
             lastRejectedStep: toJS(this.state?.lastRejected || null),
             nextStep: toJS(this.state ? this.state.nextStep : null),
@@ -125,6 +114,14 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         });
     }
 
+    private clearDialog() {
+        this.dialog = null;
+    }
+
+    private setDialog(dialog: IWorkflowStatePresenterViewModelDialog) {
+        this.dialog = dialog;
+    }
+
     requestReview = async () => {
         const item = await this.repository.requestReview({
             app: this.app,
@@ -133,7 +130,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         });
         runInAction(() => {
             this.state = item ? WorkflowStateModel.create(item) : null;
-            this.dialog = null;
+            this.clearDialog();
         });
     };
 
@@ -146,7 +143,9 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             if (!item) {
                 return;
             }
-            this.dialog = "start:success";
+            this.setDialog({
+                type: "start:success"
+            });
         });
     };
 
@@ -160,7 +159,9 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             if (!item) {
                 return;
             }
-            this.dialog = "approve:success";
+            this.setDialog({
+                type: "approve:success"
+            });
         });
     };
 
@@ -174,7 +175,9 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             if (!item) {
                 return;
             }
-            this.dialog = "reject:success";
+            this.setDialog({
+                type: "reject:success"
+            });
         });
     };
 
@@ -182,7 +185,7 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
         await this.repository.cancel(this.state!.id);
         runInAction(() => {
             this.state = null;
-            this.dialog = null;
+            this.clearDialog();
         });
     };
 
@@ -195,44 +198,56 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             if (!item) {
                 return;
             }
-            this.dialog = "takeOver:success";
+            this.setDialog({
+                type: "takeOver:success",
+                step: null
+            });
         });
     };
 
     showCancelReviewDialog = () => {
         runInAction(() => {
-            this.dialog = "cancelReview";
+            this.setDialog({
+                type: "cancelReview"
+            });
         });
     };
 
     showRequestReviewDialog = () => {
         runInAction(() => {
-            this.dialog = "requestReview";
+            this.setDialog({
+                type: "requestReview"
+            });
         });
     };
 
     showStartDialog = () => {
         runInAction(() => {
-            this.dialog = "start";
+            this.setDialog({
+                type: "start"
+            });
         });
     };
 
     showApproveDialog = () => {
         runInAction(() => {
-            this.dialog = "approve";
+            this.setDialog({
+                type: "approve"
+            });
         });
     };
 
     hideDialog = () => {
         runInAction(() => {
-            this.dialog = null;
-            this.step = null;
+            this.clearDialog();
         });
     };
 
     showRejectDialog = () => {
         runInAction(() => {
-            this.dialog = "reject";
+            this.setDialog({
+                type: "reject"
+            });
         });
     };
 
@@ -242,14 +257,18 @@ export class WorkflowStatePresenter implements IWorkflowStatePresenter {
             return;
         }
         runInAction(() => {
-            this.step = step;
-            this.dialog = "comment";
+            this.setDialog({
+                type: "comment",
+                step
+            });
         });
     };
 
     showTakeOverDialog = () => {
         runInAction(() => {
-            this.dialog = "takeOver";
+            this.setDialog({
+                type: "takeOver"
+            });
         });
     };
 }

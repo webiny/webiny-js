@@ -4,8 +4,9 @@ import { ReactComponent as HomeIcon } from "@webiny/icons/home.svg";
 import { ReactComponent as FolderIcon } from "@webiny/icons/folder.svg";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/icons/more_vert.svg";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
-import { FolderProvider, useAcoConfig } from "@webiny/app-aco";
+import { FolderProvider } from "@webiny/app-aco";
 import { OptionsMenu } from "@webiny/app-admin";
+import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
 
 export const Title = () => {
     const {
@@ -16,7 +17,7 @@ export const Title = () => {
         currentFolder,
         folders
     } = useFileManagerView();
-    const { folder: folderConfig } = useAcoConfig();
+    const { browser } = useFileManagerViewConfig();
 
     const icon = useMemo(() => {
         return isRootFolder ? <HomeIcon /> : <FolderIcon />;
@@ -35,7 +36,7 @@ export const Title = () => {
                     {currentFolder && (
                         <FolderProvider folder={currentFolder}>
                             <OptionsMenu
-                                actions={folderConfig.actions}
+                                actions={browser.folder.actions}
                                 data-testid={"folder.title.menu-action"}
                                 trigger={
                                     <IconButton

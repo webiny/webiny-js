@@ -1,10 +1,10 @@
 import { useDialogs } from "@webiny/app-admin";
-import { FolderItem } from "~/types.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
 
 interface ShowDialogParams {
-    folder: FolderItem;
-    targetFolder: FolderItem;
-    onAccept: (folder: FolderItem, targetFolder: FolderItem) => Promise<void>;
+    folder: FolderDto;
+    targetFolder: FolderDto;
+    onAccept: (folder: FolderDto, targetFolder: FolderDto) => Promise<void>;
 }
 
 interface UseConfirmMoveFolderDialogResponse {

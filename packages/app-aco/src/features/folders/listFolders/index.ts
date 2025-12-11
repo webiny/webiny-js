@@ -1,2 +1,2 @@
 export * from "./useListFolders.js";
-export * from "./FolderDto.js";
+export * from "./abstractions.js";

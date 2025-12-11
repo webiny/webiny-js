@@ -1,14 +1,21 @@
-import type ApolloClient from "apollo-client";
 import gql from "graphql-tag";
-import type { IGetFolderGateway } from "./IGetFolderGateway.js";
-import type { FolderItem, AcoError } from "~/types.js";
+import { ApolloClient } from "@webiny/app-admin/features/apolloClient/abstraction.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { FolderModelProvider } from "~/features/folders/abstractions.js";
+import { GetFolderGateway as GatewayAbstraction } from "./abstractions.js";
+import type { AcoError } from "~/types.js";
 
 export interface GetFolderResponse {
     aco: {
-        getFolder: {
-            data: FolderItem | null;
-            error: AcoError | null;
-        };
+        getFolder:
+            | {
+                  data: FolderDto;
+                  error: null;
+              }
+            | {
+                  data: null;
+                  error: AcoError;
+              };
     };
 }
 
@@ -31,25 +38,20 @@ export const GET_FOLDER = (FOLDER_FIELDS: string) => gql`
     }
 `;
 
-export class GetFolderGqlGateway implements IGetFolderGateway {
-    private client: ApolloClient<any>;
-    private modelFields: string;
-
-    constructor(client: ApolloClient<any>, modelFields: string) {
-        this.client = client;
-        this.modelFields = modelFields;
-    }
+class GetFolderGqlGatewayImpl implements GatewayAbstraction.Interface {
+    constructor(
+        private client: ApolloClient.Interface,
+        private folderModelProvider: FolderModelProvider.Interface
+    ) {}
 
     async execute(id: string) {
-        if (!id) {
-            throw new Error("Folder `id` is mandatory");
-        }
+        const fields = await this.folderModelProvider.getGraphQLSelection();
 
         const { data: response } = await this.client.query<
             GetFolderResponse,
             GetFolderQueryVariables
         >({
-            query: GET_FOLDER(this.modelFields),
+            query: GET_FOLDER(fields),
             variables: { id },
             fetchPolicy: "network-only"
         });
@@ -67,3 +69,8 @@ export class GetFolderGqlGateway implements IGetFolderGateway {
         return data;
     }
 }
+
+export const GetFolderGqlGateway = GatewayAbstraction.createImplementation({
+    implementation: GetFolderGqlGatewayImpl,
+    dependencies: [ApolloClient, FolderModelProvider]
+});

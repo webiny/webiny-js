@@ -21,11 +21,7 @@ const BaseFieldRenderer = ({ modelIds = [], ...props }: FieldRendererProps) => {
         return null;
     }
 
-    return (
-        <AcoConfig>
-            <AdvancedSearch.FieldRenderer {...props} />
-        </AcoConfig>
-    );
+    return <AdvancedSearch.FieldRenderer {...props} />;
 };
 
 export const FieldRenderer = Object.assign(BaseFieldRenderer, {

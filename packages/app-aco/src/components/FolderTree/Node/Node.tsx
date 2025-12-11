@@ -6,6 +6,7 @@ import { ReactComponent as HomeIcon } from "@webiny/icons/home.svg";
 import { MenuActions } from "../MenuActions/index.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import { useFolder } from "~/hooks/index.js";
+import type { FolderActionConfig } from "~/config/AcoConfig.js";
 
 interface FolderProps {
     text: string;
@@ -41,10 +42,11 @@ export const FolderNode = ({
 };
 
 type NodeProps = {
+    folderActions: FolderActionConfig[];
     enableActions?: boolean;
 };
 
-export const Node = ({ enableActions }: NodeProps) => {
+export const Node = ({ folderActions, enableActions }: NodeProps) => {
     const { folder } = useFolder();
 
     const { hasNonInheritedPermissions, canManagePermissions, title, id } = folder || {};
@@ -58,7 +60,7 @@ export const Node = ({ enableActions }: NodeProps) => {
                 hasNonInheritedPermissions={hasNonInheritedPermissions}
                 canManagePermissions={canManagePermissions}
             />
-            {enableActions && !isRoot && <MenuActions />}
+            {enableActions && !isRoot && <MenuActions folderActions={folderActions} />}
         </>
     );
 };

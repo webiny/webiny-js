@@ -1,7 +1,6 @@
 ```ts
 // Page/PageModelBuilder.ts
 import { ModelBuilder as Builder } from "~/models/ModelBuilder.js";
-import { createImplementation } from "@webiny/di";
 import { PageSchema, PageModelBuilder as BuilderAbstraction, type IPage } from "./abstractions";
 
 class PageModelBuilderImpl implements BuilderAbstraction.Interface {
@@ -15,8 +14,7 @@ class PageModelBuilderImpl implements BuilderAbstraction.Interface {
     }
 }
 
-export const PageModelBuilder = createImplementation({
-    abstraction: BuilderAbstraction,
+export const PageModelBuilder = BuilderAbstraction.createImplementation({
     implementation: PageModelBuilderImpl,
     dependencies: []
 });
@@ -24,7 +22,6 @@ export const PageModelBuilder = createImplementation({
 
 ```ts
 // Page/PageModelFactory.ts
-import { createImplementation } from "@webiny/di";
 import {
     PageModelFactory as FactoryAbstraction,
     PageModelBuilder,
@@ -49,8 +46,7 @@ class PageModelFactoryImpl implements FactoryAbstraction.Interface {
     }
 }
 
-export const PageModelFactory = createImplementation({
-    abstraction: FactoryAbstraction,
+export const PageModelFactory = FactoryAbstraction.createImplementation({
     implementation: PageModelFactoryImpl,
     dependencies: [PageModelBuilder]
 });
@@ -58,7 +54,6 @@ export const PageModelFactory = createImplementation({
 
 ```ts
 // Page/__tests__/PageModelBuilderDecorator.ts
-import { createDecorator } from "@webiny/di";
 import { PageModelBuilder as BuilderAbstraction } from "../abstractions";
 
 class PageModelBuilderDecoratorImpl implements BuilderAbstraction.Interface {
@@ -81,8 +76,7 @@ class PageModelBuilderDecoratorImpl implements BuilderAbstraction.Interface {
     }
 }
 
-export const PageModelBuilderDecorator = createDecorator({
-    abstraction: BuilderAbstraction,
+export const PageModelBuilderDecorator = BuilderAbstraction.createDecorator({
     decorator: PageModelBuilderDecoratorImpl,
     dependencies: []
 });
@@ -100,7 +94,6 @@ declare module "~/simple/Page/abstractions.js" {
 
 ```ts
 // Page/__tests__/PageModelBuilderDecorator2.ts
-import { createDecorator } from "@webiny/di";
 import { PageModelBuilder as BuilderAbstraction } from "../abstractions";
 
 class PageModelBuilderDecorator2Impl implements BuilderAbstraction.Interface {
@@ -117,8 +110,7 @@ class PageModelBuilderDecorator2Impl implements BuilderAbstraction.Interface {
     }
 }
 
-export const PageModelBuilderDecorator2 = createDecorator({
-    abstraction: BuilderAbstraction,
+export const PageModelBuilderDecorator2 = BuilderAbstraction.createDecorator({
     decorator: PageModelBuilderDecorator2Impl,
     dependencies: []
 });

@@ -1,17 +1,15 @@
 import { useCallback, useState, useMemo, useEffect, useRef } from "react";
 import { autorun } from "mobx";
-import {
-    useGetFolderHierarchy,
-    useListFoldersByParentIds,
-    useNavigateFolder
-} from "@webiny/app-aco";
+import { useListFoldersByParentIds } from "@webiny/app-aco";
+import { useLoadFolderHierarchy } from "@webiny/app-aco";
+import { useNavigateFolder } from "@webiny/app-aco";
 import { useDocumentListPresenter } from "./presenters/DocumentListPresenterContext.js";
 import { useFilterRedirects, useLoadRedirects } from "~/features/redirects/index.js";
 import { useSelectRedirects } from "~/features/redirects/selectRedirects/useSelectRedirects.js";
 
 export const useDocumentList = () => {
     const isFirstLoad = useRef(true);
-    const { folders, getFolderHierarchy } = useGetFolderHierarchy();
+    const { folders, loadFolderHierarchy } = useLoadFolderHierarchy();
     const { listFoldersByParentIds } = useListFoldersByParentIds();
     const { currentFolderId } = useNavigateFolder();
     const { loadRedirects: listDocuments } = useLoadRedirects();
@@ -53,7 +51,7 @@ export const useDocumentList = () => {
     useEffect(() => {
         // The folders collection is empty, it must be the first render, let's load the full hierarchy.
         if (folders.length === 0) {
-            getFolderHierarchy(vm.folderId);
+            loadFolderHierarchy(vm.folderId);
         } else {
             // Otherwise let's load only the current folder sub-tree
             listFoldersByParentIds([vm.folderId]);

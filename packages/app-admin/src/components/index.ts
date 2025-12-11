@@ -28,3 +28,4 @@ export * from "~/components/NavigationPrompt.js";
 export * from "~/components/SplitView/index.js";
 export * from "~/components/Permissions/index.js";
 export * from "~/components/SearchUI.js";
+export * from "~/components/RegisterFeature.js";

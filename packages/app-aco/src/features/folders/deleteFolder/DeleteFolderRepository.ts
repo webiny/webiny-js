@@ -1,19 +1,20 @@
-import type { IDeleteFolderRepository } from "./IDeleteFolderRepository.js";
-import type { ListCache } from "../cache/index.js";
-import type { Folder } from "../Folder.js";
-import type { IDeleteFolderGateway } from "./IDeleteFolderGateway.js";
+import { DeleteFolderGateway } from "./abstractions.js";
+import { DeleteFolderRepository as RepositoryAbstraction } from "./abstractions.js";
+import { FoldersCache } from "~/features/folders/abstractions.js";
 
-export class DeleteFolderRepository implements IDeleteFolderRepository {
-    private cache: ListCache<Folder>;
-    private gateway: IDeleteFolderGateway;
+class DeleteFolderRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private cache: FoldersCache.Interface,
+        private gateway: DeleteFolderGateway.Interface
+    ) {}
 
-    constructor(cache: ListCache<Folder>, gateway: IDeleteFolderGateway) {
-        this.cache = cache;
-        this.gateway = gateway;
-    }
-
-    async execute(folder: Folder) {
-        await this.gateway.execute(folder.id);
-        this.cache.removeItems(f => f.id === folder.id);
+    async execute(id: string) {
+        await this.gateway.execute(id);
+        this.cache.removeItems(f => f.id === id);
     }
 }
+
+export const DeleteFolderRepository = RepositoryAbstraction.createImplementation({
+    implementation: DeleteFolderRepositoryImpl,
+    dependencies: [FoldersCache, DeleteFolderGateway]
+});

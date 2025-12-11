@@ -6,6 +6,7 @@ import type { FileDetailsConfig } from "./configComponents/FileDetails/index.js"
 import { FileDetails } from "./configComponents/FileDetails/index.js";
 import { getThumbnailRenderer } from "./getThumbnailRenderer.js";
 import { CompositionScope } from "@webiny/react-composition";
+import { useAcoConfig } from "@webiny/app-aco";
 
 const base = createConfigurableComponent<FileManagerViewConfigData>("FileManagerView");
 
@@ -29,13 +30,14 @@ interface FileManagerViewConfigData {
 
 export function useFileManagerViewConfig() {
     const config = base.useConfig();
+    const acoConfig = useAcoConfig(config);
 
     const browser = config.browser || {};
 
     const fileDetailsActions = [...(config.fileDetails?.actions || [])];
     const fileDetailsThumbnails = [...(config.fileDetails?.thumbnails || [])];
 
-    return useMemo(
+    const finalConfig = useMemo(
         () => ({
             getThumbnailRenderer,
             browser: {
@@ -52,7 +54,9 @@ export function useFileManagerViewConfig() {
                 bulkEditFields: [...(browser.bulkEditFields || [])],
                 filterByTags: browser.filterByTags ?? false,
                 filters: [...(browser.filters || [])],
-                filtersToWhere: [...(browser.filtersToWhere || [])]
+                filtersToWhere: [...(browser.filtersToWhere || [])],
+                folder: acoConfig.folder,
+                file: acoConfig.record
             },
             fileDetails: {
                 actions: fileDetailsActions,
@@ -64,4 +68,6 @@ export function useFileManagerViewConfig() {
         }),
         [config]
     );
+
+    return finalConfig;
 }
