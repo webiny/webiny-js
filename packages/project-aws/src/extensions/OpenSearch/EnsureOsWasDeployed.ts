@@ -11,7 +11,6 @@ class EnsureOsWasDeployedImpl implements CoreBeforeDeploy.Interface {
     constructor(private uiService: UiService.Interface) {}
 
     async execute(params: CoreBeforeDeploy.Params) {
-        this.uiService.info("ROOOOKAJ");
         // Get the stack output from the core application
         const output = await getStackOutput<ICoreStackOutput>(params);
 
