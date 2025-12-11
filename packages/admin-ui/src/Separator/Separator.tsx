@@ -131,7 +131,7 @@ const SeparatorBase = ({
         );
     };
 
-    return <div className={containerClass}>{renderContent()}</div>;
+    return <div className={`${containerClass} ${className || ""}`}>{renderContent()}</div>;
 };
 
 const Separator = makeDecoratable("Separator", SeparatorBase);
