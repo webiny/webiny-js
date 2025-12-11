@@ -6,10 +6,7 @@ import {
     AccordionBackgroundProvider,
     useAccordionBackground
 } from "./components/AccordionBackgroundProvider.js";
-import {
-    AccordionPropsProvider,
-    useAccordionProps
-} from "./components/AccordionPropsProvider.js";
+import { AccordionPropsProvider, useAccordionProps } from "./components/AccordionPropsProvider.js";
 
 const accordionVariants = cva("group w-full", {
     variants: {
@@ -47,9 +44,7 @@ const AccordionBase = (props: AccordionProps) => {
     return (
         <AccordionBackgroundProvider currentBackground={background}>
             <AccordionPropsProvider props={mergedProps}>
-                <div className={cn(accordionVariants({ variant }), className)}>
-                    {children}
-                </div>
+                <div className={cn(accordionVariants({ variant }), className)}>{children}</div>
             </AccordionPropsProvider>
         </AccordionBackgroundProvider>
     );

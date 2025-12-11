@@ -5,4 +5,3 @@ const [AccordionItemPropsProvider, useAccordionItemProps] =
     createComponentPropsProvider<AccordionItemProps>();
 
 export { AccordionItemPropsProvider, useAccordionItemProps };
-

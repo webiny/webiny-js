@@ -36,11 +36,7 @@ const accordionContentVariants = cva(
 export interface AccordionContentProps
     extends React.ComponentPropsWithoutRef<typeof CollapsiblePrimitive.Content> {}
 
-export const AccordionContent = ({
-    children,
-    className,
-    ...props
-}: AccordionContentProps) => {
+export const AccordionContent = ({ children, className, ...props }: AccordionContentProps) => {
     const itemProps = useAccordionItemProps();
     const withIcon = !!itemProps.icon;
     const withHandle = !!itemProps.handle;

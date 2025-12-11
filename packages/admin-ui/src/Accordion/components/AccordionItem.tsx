@@ -6,10 +6,7 @@ import { AccordionItemIcon } from "./AccordionItemIcon.js";
 import { AccordionItemAction } from "./AccordionItemAction.js";
 import { AccordionRoot, type AccordionRootProps } from "~/Accordion/components/AccordionRoot.js";
 import { useAccordionBackground } from "~/Accordion/components/AccordionBackgroundProvider";
-import {
-    AccordionItemPropsProvider,
-    useAccordionItemProps
-} from "./AccordionItemPropsProvider.js";
+import { AccordionItemPropsProvider, useAccordionItemProps } from "./AccordionItemPropsProvider.js";
 import { useAccordionProps } from "../Accordion.js";
 
 interface AccordionItemProps extends Omit<AccordionRootProps, "title"> {

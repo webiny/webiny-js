@@ -133,13 +133,7 @@ export const ContainerVariantWithAccentBorder: Story = {
 };
 
 export const ContainerVariantWithBaseBackground: Story = {
-    decorators: [
-        Story => (
-            <div className="w-[750px] p-[50px] min-h-[500px] bg-white">
-                <Story />
-            </div>
-        )
-    ],
+    decorators: [WhiteBackground],
     args: {
         variant: "container",
         background: "base",
@@ -425,7 +419,6 @@ export const WithControlledOpenedItem: Story = {
         );
     }
 };
-
 
 export const NestedAccordions: Story = {
     decorators: [WhiteBackground],
