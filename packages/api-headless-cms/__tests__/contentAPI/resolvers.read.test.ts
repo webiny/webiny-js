@@ -956,9 +956,9 @@ describe("READ - Resolvers", () => {
         const { listCategories } = useCategoryReadHandler(readOpts);
 
         const from = new Date(vegetables.savedOn);
-        from.setTime(from.getTime() - 10);
+        from.setTime(from.getTime() - 5);
         const to = new Date(vegetables.savedOn);
-        to.setTime(to.getTime() + 10);
+        to.setTime(to.getTime() + 5);
 
         const [result] = await listCategories({
             where: {
