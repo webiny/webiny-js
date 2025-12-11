@@ -8,11 +8,7 @@ export type { RecordActionConfig as FileActionConfig };
 type FileActionProps = React.ComponentProps<typeof AcoConfig.Record.Action>;
 
 const BaseFileAction = (props: FileActionProps) => {
-    return (
-        <AcoConfig>
-            <Record.Action {...props} />
-        </AcoConfig>
-    );
+    return <Record.Action {...props} />;
 };
 
 export const FileAction = Object.assign(BaseFileAction, {

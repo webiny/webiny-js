@@ -11,6 +11,7 @@ export const attachUpdatePageLifecycleEvents = (params: IParams) => {
     const { context } = params;
     context.websiteBuilder.pages.onPageBeforeUpdate.subscribe(async ({ original }) => {
         let state: IWorkflowState;
+
         try {
             state = await context.workflowState.getTargetState(WB_PAGE_APP, original.id);
         } catch {
@@ -18,11 +19,17 @@ export const attachUpdatePageLifecycleEvents = (params: IParams) => {
             return;
         }
         throw new WebinyError({
-            message: "Cannot update page because it is currently in a workflow.",
-            code: "ENTRY_IN_WORKFLOW",
+            message: "Cannot update page because it has a workflow attached.",
+            code: "PAGE_IN_WORKFLOW",
             data: {
                 state: {
-                    ...state
+                    id: state.id,
+                    app: state.app,
+                    state: state.state,
+                    comment: state.comment,
+                    targetRevisionId: state.targetRevisionId,
+                    steps: state.steps,
+                    title: state.title
                 }
             }
         });

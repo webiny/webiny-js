@@ -17,11 +17,13 @@ export interface DuplicatePageResponse {
     };
 }
 
-export const DUPLICATE_PAGE = (PAGE_FIELDS: string) => gql`
+export const DUPLICATE_PAGE = (fields: string[]) => gql`
     mutation DuplicatePage($id: ID!) {
         websiteBuilder {
             duplicatePage(id: $id) {
-               data ${PAGE_FIELDS}
+               data {
+                   ${fields.join("\n")}
+               }
                 error {
                     code
                     data
@@ -33,10 +35,10 @@ export const DUPLICATE_PAGE = (PAGE_FIELDS: string) => gql`
 `;
 
 export class DuplicatePageGqlGateway implements IDuplicatePageGateway {
-    private client: ApolloClient<any>;
-    private modelFields: string;
+    private readonly client;
+    private readonly modelFields;
 
-    constructor(client: ApolloClient<any>, modelFields: string) {
+    constructor(client: ApolloClient<any>, modelFields: string[]) {
         this.client = client;
         this.modelFields = modelFields;
     }

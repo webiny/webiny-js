@@ -1,5 +1,5 @@
 import type { Context } from "~/types.js";
-import { attachUpdatePageLifecycleEvents } from "./updatePage.js";
+// import { attachUpdatePageLifecycleEvents } from "./updatePage.js";
 import { attachDeletePageLifecycleEvents } from "./deletePage.js";
 import { attachPublishPageLifecycleEvents } from "./publishPage.js";
 
@@ -8,7 +8,7 @@ interface IParams {
 }
 
 export const attachLifecycleEvents = (params: IParams) => {
-    attachUpdatePageLifecycleEvents(params);
+    // attachUpdatePageLifecycleEvents(params);
     attachDeletePageLifecycleEvents(params);
     attachPublishPageLifecycleEvents(params);
 };

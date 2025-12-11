@@ -12,6 +12,7 @@ export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(
         const { presenter } = props;
 
         const { step } = presenter.vm;
+
         /**
          * If current user cannot review the step, continue.
          */

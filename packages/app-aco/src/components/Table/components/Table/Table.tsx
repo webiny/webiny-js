@@ -10,10 +10,11 @@ import {
 import { ColumnsVisibilityLocalStorageGateway } from "./gateways/index.js";
 import { TablePresenter } from "./TablePresenter.js";
 import { TableInner } from "./TableInner.js";
-import { useAcoConfig } from "~/config/index.js";
 import type { TableRow } from "~/types.js";
+import { ColumnConfig } from "~/config/table/Column.js";
 
 export interface TableProps<T> {
+    columns: ColumnConfig[];
     data: T[];
     loading?: boolean;
     nameColumnId?: string;
@@ -25,15 +26,13 @@ export interface TableProps<T> {
     sorting: DataTableSorting;
 }
 
-export const Table = <T extends TableRow>({ namespace, ...props }: TableProps<T>) => {
-    const { table } = useAcoConfig();
-
+export const Table = <T extends TableRow>({ columns, namespace, ...props }: TableProps<T>) => {
     const columnsRepo = useMemo(() => {
         return columnsRepositoryFactory.getRepository(
             namespace,
-            table.columns.map(column => Column.createFromConfig(column))
+            columns.map(column => Column.createFromConfig(column))
         );
-    }, [namespace, table.columns]);
+    }, [namespace, columns]);
 
     const visibilityRepo = useMemo(() => {
         const columnsVisibilityLocalStorage = new ColumnsVisibilityLocalStorageGateway(namespace);

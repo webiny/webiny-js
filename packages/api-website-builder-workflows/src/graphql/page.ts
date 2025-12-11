@@ -14,20 +14,12 @@ export const createWebsiteBuilderPageGraphQLExtension = () => {
             return true;
         },
         typeDefs: /* GraphQL */ `
-            # CmsEntryStateType
-            enum WbPageStateType {
-                pending
-                inReview
-                rejected
-                approved
-            }
-
-            # CmsEntryState
+            # transferred from CmsEntryState - maybe we can share it somehow in the future?
             type WbPageState {
                 workflowId: String
                 stepId: ID
                 stepName: String
-                state: WbPageStateType
+                state: WorkflowStateStateValue
             }
 
             extend type WbPage {

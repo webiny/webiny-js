@@ -7,7 +7,7 @@ export const DeleteEntry = () => {
     const { entry } = useEntry();
     const contentEntry = useContentEntry();
     const { canDelete } = usePermission();
-    const { OptionsMenuItem } = ContentEntryListConfig.Browser.EntryAction;
+    const { OptionsMenuItem } = ContentEntryListConfig.Browser.Entry.Action;
 
     const deleteEntry = async () => {
         await contentEntry.deleteEntry({ id: entry.entryId });

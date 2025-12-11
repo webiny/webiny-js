@@ -223,6 +223,7 @@ const FileManagerView = () => {
 
         return (
             <Grid
+                folderActions={browser.folder.actions}
                 folders={view.folders}
                 records={view.files}
                 loading={view.isListLoading}

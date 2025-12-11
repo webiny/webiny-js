@@ -1,38 +1,29 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { autorun } from "mobx";
-import { useApolloClient } from "@apollo/react-hooks";
-import { ListFoldersByParentIdsGqlGateway } from "./ListFoldersByParentIdsGqlGateway.js";
-import { ListFoldersByParentIds } from "./ListFoldersByParentIds.js";
-import { FolderDtoMapper } from "./FolderDto.js";
-import { useFoldersType, useGetFolderGraphQLSelection } from "~/hooks/index.js";
-import type { FolderItem } from "~/types.js";
+import { useFeature, useContainer } from "@webiny/app";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { FolderDtoMapper } from "~/domain/folder/FolderDtoMapper.js";
+import { FoldersCache } from "~/features/folders/abstractions.js";
+import { ListFoldersByParentIdsFeature } from "./feature.js";
 import { ROOT_FOLDER } from "~/constants.js";
 
 export const useListFoldersByParentIds = () => {
-    const client = useApolloClient();
-    const type = useFoldersType();
-    const fields = useGetFolderGraphQLSelection();
-    const gateway = new ListFoldersByParentIdsGqlGateway(client, fields);
+    const container = useContainer();
+    const { useCase, loading: loadingState } = useFeature(ListFoldersByParentIdsFeature);
+
+    const foldersCache = container.resolve(FoldersCache);
 
     const [vm, setVm] = useState<{
-        folders: FolderItem[];
+        folders: FolderDto[];
         loading: string[];
     }>({
         folders: [],
         loading: []
     });
 
-    const {
-        useCase,
-        folders: foldersCache,
-        loading: loadingState
-    } = useMemo(() => {
-        return ListFoldersByParentIds.getInstance(type, gateway);
-    }, [type, gateway]);
-
     const listFoldersByParentIds = useCallback(
         (parentIds?: string[]) => {
-            return useCase.execute({ parentIds });
+            return useCase.execute(parentIds);
         },
         [useCase]
     );

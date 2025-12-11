@@ -1,11 +1,11 @@
 import { useSnackbar } from "@webiny/app-admin";
 import { useDialogs } from "@webiny/app-admin";
-import { useDeleteFolder } from "~/features/index.js";
-import type { FolderItem } from "~/types.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { useDeleteFolder } from "~/features/folders/deleteFolder/index.js";
 import { useCallback } from "react";
 
 interface ShowDialogParams {
-    folder: FolderItem;
+    folder: FolderDto;
 }
 
 interface UseDeleteDialogResponse {
@@ -17,9 +17,9 @@ export const useDeleteDialog = (): UseDeleteDialogResponse => {
     const { deleteFolder } = useDeleteFolder();
     const { showSnackbar } = useSnackbar();
 
-    const onAccept = useCallback(async (folder: FolderItem) => {
+    const onAccept = useCallback(async (folder: FolderDto) => {
         try {
-            await deleteFolder(folder);
+            await deleteFolder(folder.id);
             showSnackbar(`The folder "${folder.title}" was deleted successfully.`);
         } catch (error) {
             showSnackbar(error.message);

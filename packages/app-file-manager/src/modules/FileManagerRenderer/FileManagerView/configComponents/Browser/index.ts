@@ -6,9 +6,7 @@ import { Filter } from "./Filter.js";
 import type { FiltersToWhereConverter } from "./FiltersToWhere.js";
 import { FiltersToWhere } from "./FiltersToWhere.js";
 import { FilterByTags } from "./FilterByTags.js";
-import type { FolderActionConfig } from "./FolderAction.js";
 import { FolderAction } from "./FolderAction.js";
-import type { FileActionConfig } from "./FileAction.js";
 import { FileAction } from "./FileAction.js";
 import type { TableConfig } from "./Table/index.js";
 import { Table } from "./Table/index.js";
@@ -21,6 +19,7 @@ import { ActionButton } from "~/components/Grid/ActionButton.js";
 import { File } from "~/components/Grid/File.js";
 import { shouldDecorateFolderField } from "./FolderFieldDecorator.js";
 import { FolderDropConfirmation } from "./FolderDropConfirmation.js";
+import { RecordConfig } from "@webiny/app-aco/config/record";
 
 export interface BrowserConfig {
     bulkActions: BulkActionConfig[];
@@ -28,10 +27,9 @@ export interface BrowserConfig {
     filters: FilterConfig[];
     filtersToWhere: FiltersToWhereConverter[];
     filterByTags: boolean;
-    folderActions: FolderActionConfig[];
-    fileActions: FileActionConfig[];
     table: TableConfig;
     grid: GridConfig;
+    file: RecordConfig;
 }
 
 export const Browser = {
@@ -56,11 +54,8 @@ export const Browser = {
         Action: FolderAction,
         DropConfirmation: FolderDropConfirmation
     },
-    /**
-     * @deprecated
-     * Use `Browser.Folder.Action` instead
-     */
-    FolderAction,
-    FileAction,
+    File: {
+        Action: FileAction
+    },
     Table
 };

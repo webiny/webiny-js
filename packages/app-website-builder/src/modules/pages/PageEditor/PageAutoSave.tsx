@@ -4,7 +4,7 @@ import { useDocumentEditor } from "~/DocumentEditor/index.js";
 import { useUpdatePage } from "~/features/pages/index.js";
 import { useSelectFromEditor } from "~/BaseEditor/hooks/useSelectFromEditor.js";
 
-export const PageAutoSave = () => {
+const PageAutoSaveAction = () => {
     const editor = useDocumentEditor();
     const { updatePage } = useUpdatePage();
 
@@ -32,8 +32,15 @@ export const PageAutoSave = () => {
     return null;
 };
 
-export const AutoSaveIndicator = () => {
+export const PageAutoSave = () => {
     const isSaving = useSelectFromEditor(state => state.autoSaving ?? false);
 
-    return isSaving ? <div className="text-neutral-muted animate-pulse">Autosaving...</div> : null;
+    return (
+        <>
+            <PageAutoSaveAction />
+            {isSaving ? (
+                <div className="text-neutral-muted animate-pulse">Autosaving...</div>
+            ) : null}
+        </>
+    );
 };

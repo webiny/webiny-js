@@ -1,19 +1,18 @@
-import {
-    RedirectAction,
-    type RecordActionConfig as RedirectActionConfig
-} from "./RedirectAction.js";
+import { RedirectAction } from "./RedirectAction.js";
 import { Table, type TableConfig } from "./Table/index.js";
 import { FiltersToWhere, type FiltersToWhereConverter } from "./FiltersToWhere.js";
 import { Filter, type FilterConfig } from "./Filter.js";
-import { FolderAction, type FolderActionConfig } from "./FolderAction.js";
+import { FolderAction } from "./FolderAction.js";
 import { BulkAction, type BulkActionConfig } from "./BulkAction.js";
+import type { FolderConfig } from "@webiny/app-aco/config/folder/index.js";
+import type { RecordConfig } from "@webiny/app-aco/config/record/index.js";
 
 export interface BrowserConfig {
     bulkActions: BulkActionConfig[];
     filters: FilterConfig[];
     filtersToWhere: FiltersToWhereConverter[];
-    folderActions: FolderActionConfig[];
-    redirectActions: RedirectActionConfig[];
+    folder: FolderConfig;
+    redirect: RecordConfig;
     table: TableConfig;
 }
 
@@ -24,7 +23,7 @@ export const Browser = {
     Folder: {
         Action: FolderAction
     },
-    Record: {
+    Redirect: {
         Action: RedirectAction
     },
     Table

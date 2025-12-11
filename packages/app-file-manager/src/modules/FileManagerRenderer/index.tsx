@@ -42,14 +42,14 @@ export const FileManagerRendererModule = () => {
                 <Browser.BulkAction name={"move"} element={<ActionMove />} />
                 <Browser.BulkAction name={"delete"} element={<ActionDelete />} />
                 {/* Folder Actions */}
-                <Browser.FolderAction name={"edit"} element={<EditFolder />} />
-                <Browser.FolderAction name={"permissions"} element={<SetFolderPermissions />} />
-                <Browser.FolderAction name={"delete"} element={<DeleteFolder />} />
+                <Browser.Folder.Action name={"edit"} element={<EditFolder />} />
+                <Browser.Folder.Action name={"permissions"} element={<SetFolderPermissions />} />
+                <Browser.Folder.Action name={"delete"} element={<DeleteFolder />} />
                 {/* File Actions */}
-                <Browser.FileAction name={"copy"} element={<CopyFile />} />
-                <Browser.FileAction name={"edit"} element={<EditFile />} />
-                <Browser.FileAction name={"move"} element={<MoveFile />} />
-                <Browser.FileAction name={"delete"} element={<DeleteFile />} />
+                <Browser.File.Action name={"copy"} element={<CopyFile />} />
+                <Browser.File.Action name={"edit"} element={<EditFile />} />
+                <Browser.File.Action name={"move"} element={<MoveFile />} />
+                <Browser.File.Action name={"delete"} element={<DeleteFile />} />
                 {/* Table Columns */}
                 <Browser.Table.Column
                     name={"name"}

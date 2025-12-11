@@ -1,6 +1,7 @@
 import type { Context, IWbPageState } from "~/types.js";
 import type { IWorkflowState } from "@webiny/api-workflows";
 import { getStateValues } from "~/utils/state.js";
+import { WB_PAGE_APP } from "~/constants.js";
 
 interface IParams {
     context: Context;
@@ -11,6 +12,9 @@ export const attachStateLifecycleEvents = ({ context }: IParams) => {
         state: IWorkflowState,
         values: IWbPageState | undefined
     ): Promise<void> => {
+        if (state.app !== WB_PAGE_APP) {
+            return;
+        }
         try {
             await context.websiteBuilder.pages.update(state.targetRevisionId, {
                 state: values

@@ -7,7 +7,7 @@ export const EditEntry = () => {
     const { entry } = useEntry();
     const { canEdit } = usePermission();
     const { getEntryEditUrl } = useContentEntriesList();
-    const { OptionsMenuLink } = ContentEntryListConfig.Browser.EntryAction;
+    const { OptionsMenuLink } = ContentEntryListConfig.Browser.Entry.Action;
 
     if (!canEdit(entry, "cms.contentEntry")) {
         return null;

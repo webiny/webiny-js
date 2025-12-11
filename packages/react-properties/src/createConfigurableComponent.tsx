@@ -12,8 +12,8 @@ const createHOC =
         return function ConfigHOC({ children }) {
             return (
                 <BaseComponent>
-                    {newChildren}
                     {children}
+                    {newChildren}
                 </BaseComponent>
             );
         };

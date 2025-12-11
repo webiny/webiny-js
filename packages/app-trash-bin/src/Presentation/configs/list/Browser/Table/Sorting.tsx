@@ -8,9 +8,5 @@ export type { SortingConfig };
 type SortingProps = React.ComponentProps<typeof AcoConfig.Table.Sorting>;
 
 export const Sorting = (props: SortingProps) => {
-    return (
-        <AcoConfig>
-            <Table.Sorting {...props} />
-        </AcoConfig>
-    );
+    return <Table.Sorting {...props} />;
 };
