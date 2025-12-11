@@ -14,6 +14,7 @@ export const ElasticSearch = (props: React.ComponentProps<typeof PulumiElasticSe
                 <>
                     <ProjectDecorator src={p("InjectDdbEsLambdaFnHandler.js")} />
                     <ProjectDecorator src={p("ReplaceApiLambdaFnHandlers.js")} />
+                    <Infra.Core.BeforeDeploy src={p("EnsureEsWasDeployed.ts")} />
                     <Infra.Core.BeforeDeploy src={p("EnsureEsServiceRoleBeforeCoreDeploy.js")} />
                 </>
             )}
