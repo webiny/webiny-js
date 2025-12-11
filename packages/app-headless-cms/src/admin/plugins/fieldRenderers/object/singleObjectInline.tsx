@@ -6,7 +6,7 @@ import { FieldSettings } from "./FieldSettings.js";
 import { ParentFieldProvider } from "~/admin/components/ContentEntryForm/ParentValue.js";
 import { ParentValueIndexProvider } from "~/admin/components/ModelFieldProvider/index.js";
 import { fieldsGridStyle } from "./StyledComponents.js";
-import { FormComponentDescription, Heading } from "@webiny/admin-ui";
+import { FormComponentDescription, Heading, Separator } from "@webiny/admin-ui";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -38,25 +38,21 @@ const plugin: CmsModelFieldRendererPlugin = {
                         <Bind.ValidationContainer>
                             <ParentFieldProvider value={bindProps.value} path={Bind.parentName}>
                                 <ParentValueIndexProvider index={-1}>
-                                    <div
-                                        className={
-                                            "relative mb-xl mt-md border-b-sm border-accent-default"
-                                        }
-                                    >
-                                        <Heading
-                                            level={6}
-                                            className={
-                                                "webiny_group-label-text absolute bottom-[-10px] pr-sm text-accent-primary bg-white"
-                                            }
-                                        >
-                                            {field.label}
-                                        </Heading>
+                                    <div className={"mb-sm flex flex-col gap-y-sm"}>
+                                        <Separator labelPosition={"start"} variant={"accent"}>
+                                            <span
+                                                className={
+                                                    "text-accent-primary text-lg font-semibold"
+                                                }
+                                            >
+                                                {field.label}
+                                            </span>
+                                        </Separator>
                                         {field.helpText && (
-                                            <FormComponentDescription>
-                                                {field.helpText}
-                                            </FormComponentDescription>
+                                            <FormComponentDescription text={field.helpText} />
                                         )}
                                     </div>
+
                                     <Fields
                                         gridClassName={fieldsGridStyle}
                                         Bind={Bind}
