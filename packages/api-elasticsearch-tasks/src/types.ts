@@ -13,6 +13,7 @@ import type { BatchReadItem, IEntity } from "@webiny/db-dynamodb";
 import type { ITimer } from "@webiny/handler-aws";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { Context as LoggerContext } from "@webiny/api-log/types.js";
+import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 
 export interface Context extends ElasticsearchContext, TasksContext, LoggerContext {}
 
@@ -64,13 +65,8 @@ export interface IManager<
 > {
     readonly documentClient: DynamoDBDocument;
     readonly elasticsearch: Client;
-    readonly context: Context;
     readonly table: ReturnType<typeof createTable>;
-    readonly isCloseToTimeout: IIsCloseToTimeoutCallable;
-    readonly isAborted: () => boolean;
-    readonly response: ITaskResponse<T, O>;
-    readonly store: ITaskManagerStore<T>;
-    readonly timer: ITimer;
+    readonly controller: TaskController.Interface;
 
     getEntity: (name: string) => IEntity;
 
