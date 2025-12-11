@@ -57,19 +57,13 @@ const plugin: CmsModelFieldRendererPlugin = {
                                             </FormComponentDescription>
                                         )}
                                     </div>
-                                    <div
-                                        className={
-                                            "p-md border-sm border-neutral-dimmed-darker rounded-md"
-                                        }
-                                    >
-                                        <Fields
-                                            gridClassName={fieldsGridStyle}
-                                            Bind={Bind}
-                                            contentModel={contentModel}
-                                            fields={settings.fields}
-                                            layout={settings.layout}
-                                        />
-                                    </div>
+                                    <Fields
+                                        gridClassName={fieldsGridStyle}
+                                        Bind={Bind}
+                                        contentModel={contentModel}
+                                        fields={settings.fields}
+                                        layout={settings.layout}
+                                    />
                                 </ParentValueIndexProvider>
                             </ParentFieldProvider>
                         </Bind.ValidationContainer>
