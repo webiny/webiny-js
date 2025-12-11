@@ -12,7 +12,7 @@ import { AccordionItemDragHandle } from "~/Accordion/components/AccordionItemDra
 const OpenCloseIndicator = () => {
     return (
         <Icon
-            size={"lg"}
+            size={"md"}
             className={"transition"}
             color={"neutral-strong"}
             data-role={"open-close-indicator"}
