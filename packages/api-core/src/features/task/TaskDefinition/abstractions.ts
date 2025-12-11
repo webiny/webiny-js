@@ -22,9 +22,12 @@ export interface ITaskResponseDoneResultOutput {
  * Task run params - ONLY the input data
  * All runtime dependencies come from TaskController (injected separately)
  */
-export interface ITaskRunParams<I = ITaskDataInput> {
+export interface ITaskRunParams<
+    I extends ITaskDataInput = ITaskDataInput,
+    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+> {
     input: I;
-    controller: TaskController.Interface;
+    controller: TaskController.Interface<I, O>;
 }
 
 /**
@@ -92,7 +95,7 @@ export type ITaskResult<
  * Core TaskDefinition - minimal interface
  */
 export interface ITaskDefinition<
-    I = ITaskDataInput,
+    I extends ITaskDataInput = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > {
     id: string;
@@ -106,7 +109,7 @@ export interface ITaskDefinition<
      * Core run method - receives ONLY input params
      * All runtime dependencies (logging, state management, etc.) come from TaskController
      */
-    run(params: ITaskRunParams<I>): Promise<ITaskResult<I, O>>;
+    run(params: ITaskRunParams<I, O>): Promise<ITaskResult<I, O>>;
 
     /**
      * Optional lifecycle hooks - receive task data, no context
@@ -140,7 +143,7 @@ export const TaskDefinition = createAbstraction<ITaskDefinition>("TaskDefinition
  * Used internally by the task runner to ensure consistent behavior.
  */
 export interface IRunnableTaskDefinition<
-    I = ITaskDataInput,
+    I extends ITaskDataInput = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > extends ITaskDefinition<I, O> {
     // Override optional properties to be required with guaranteed values
@@ -151,16 +154,19 @@ export interface IRunnableTaskDefinition<
 
 export namespace TaskDefinition {
     export type Interface<
-        I = ITaskDataInput,
+        I extends ITaskDataInput = ITaskDataInput,
         O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
     > = ITaskDefinition<I, O>;
 
     export type Runnable<
-        I = ITaskDataInput,
+        I extends ITaskDataInput = ITaskDataInput,
         O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
     > = IRunnableTaskDefinition<I, O>;
 
-    export type RunParams<I = ITaskDataInput> = ITaskRunParams<I>;
+    export type RunParams<
+        I extends ITaskDataInput = ITaskDataInput,
+        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    > = ITaskRunParams<I, O>;
 
     export type Result<
         I = ITaskDataInput,

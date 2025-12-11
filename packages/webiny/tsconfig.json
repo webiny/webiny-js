@@ -6,7 +6,8 @@
     { "path": "../app-admin" },
     { "path": "../cli-core" },
     { "path": "../project" },
-    { "path": "../project-aws" }
+    { "path": "../project-aws" },
+    { "path": "../tasks" }
   ],
   "compilerOptions": {
     "rootDirs": ["./src", "./__tests__"],
@@ -153,7 +154,9 @@
       "@webiny/project/*": ["../project/src/*"],
       "@webiny/project": ["../project/src"],
       "@webiny/project-aws/*": ["../project-aws/src/*"],
-      "@webiny/project-aws": ["../project-aws/src"]
+      "@webiny/project-aws": ["../project-aws/src"],
+      "@webiny/tasks/*": ["../tasks/src/*"],
+      "@webiny/tasks": ["../tasks/src"]
     },
     "baseUrl": "."
   }

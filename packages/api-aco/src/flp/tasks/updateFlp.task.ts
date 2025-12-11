@@ -1,41 +1,38 @@
-import { createPrivateTaskDefinition } from "@webiny/tasks";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { UPDATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
-import { type AcoContext, type IUpdateFlpTaskInput, type IUpdateFlpTaskParams } from "~/types.js";
+import { type IUpdateFlpTaskInput } from "~/types.js";
 import { UpdateFlpUseCase } from "~/features/flp/UpdateFlp/index.js";
 
-class UpdateFlpTask {
-    public init = () => {
-        return createPrivateTaskDefinition<AcoContext, IUpdateFlpTaskInput>({
-            id: UPDATE_FLP_TASK_ID,
-            title: "ACO - Update FLP record",
-            description:
-                "Synchronizes the FLP catalog by updating the FLP record and its descendants based on the provided folder.",
-            disableDatabaseLogs: true,
-            run: async (params: IUpdateFlpTaskParams) => {
-                const { response, isAborted, input, context, isCloseToTimeout } = params;
+class UpdateFlpTaskImpl implements TaskDefinition.Interface<IUpdateFlpTaskInput> {
+    id = UPDATE_FLP_TASK_ID;
+    title = "ACO - Update FLP record";
+    description =
+        "Synchronizes the FLP catalog by updating the FLP record and its descendants based on the provided folder.";
+    disableDatabaseLogs = true;
 
-                const useCase = context.container.resolve(UpdateFlpUseCase);
+    constructor(private updateFlp: UpdateFlpUseCase.Interface) {}
 
-                try {
-                    if (isAborted()) {
-                        return response.aborted();
-                    }
-                    await useCase.execute({
-                        folder: input.folder,
-                        queued: input.queued,
-                        isCloseToTimeout: isCloseToTimeout,
-                        handleTimeout: queued => response.continue({ ...input, queued })
-                    });
-                    return response.done("Task done: FLP record updated.");
-                } catch (error) {
-                    return response.error(error);
-                }
+    async run({ input, controller }: TaskDefinition.RunParams<IUpdateFlpTaskInput>) {
+        try {
+            if (controller.runtime.isAborted()) {
+                return controller.response.aborted();
             }
-        });
-    };
+
+            await this.updateFlp.execute({
+                folder: input.folder,
+                queued: input.queued,
+                isCloseToTimeout: controller.runtime.isCloseToTimeout,
+                handleTimeout: queued => controller.response.continue({ ...input, queued })
+            });
+
+            return controller.response.done("Task done: FLP record updated.");
+        } catch (error) {
+            return controller.response.error("An error occurred while updating FLP record", error);
+        }
+    }
 }
 
-export const updateFlpTask = () => {
-    const task = new UpdateFlpTask();
-    return task.init();
-};
+export const UpdateFlpTask = TaskDefinition.createImplementation({
+    implementation: UpdateFlpTaskImpl,
+    dependencies: [UpdateFlpUseCase]
+});

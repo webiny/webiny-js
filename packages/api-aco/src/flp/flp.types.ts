@@ -1,5 +1,4 @@
-import type { ITaskRunParams } from "@webiny/tasks/types.js";
-import { type AcoContext, type Folder } from "~/types.js";
+import { type Folder } from "~/types.js";
 import type { FolderLevelPermission, FolderPermission } from "@webiny/shared-aco/flp/flp.types.js";
 
 export type * from "@webiny/shared-aco/flp/flp.types.js";
@@ -106,24 +105,16 @@ export interface ICreateFlpTaskInput {
     folder: Folder;
 }
 
-export type ICreateFlpTaskParams = ITaskRunParams<AcoContext, ICreateFlpTaskInput>;
-
 export interface IUpdateFlpTaskInput {
     folder: Folder;
     queued?: string[];
 }
 
-export type IUpdateFlpTaskParams = ITaskRunParams<AcoContext, IUpdateFlpTaskInput>;
-
 export interface IDeleteFlpTaskInput {
     folder: Folder;
 }
-
-export type IDeleteFlpTaskParams = ITaskRunParams<AcoContext, IDeleteFlpTaskInput>;
 
 export interface ISyncFlpTaskInput {
     type?: string;
     folderId?: string;
 }
-
-export type ISyncFlpTaskParams = ITaskRunParams<AcoContext, ISyncFlpTaskInput>;
