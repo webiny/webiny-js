@@ -2,9 +2,15 @@ import type { CmsModelField, CmsModelFieldToGraphQLPlugin } from "~/types/index.
 import { createGraphQLInputField } from "./helpers.js";
 
 interface CreateListFiltersParams {
-    field: CmsModelField;
+    field: Pick<CmsModelField, "fieldId" | "settings">;
 }
-const createListFilters = ({ field }: CreateListFiltersParams) => {
+const createListFilters = ({ field }: CreateListFiltersParams): string => {
+    /**
+     * User settings can disable showing the field in the API
+     */
+    if (field.settings?.showInApi === false) {
+        return "";
+    }
     return `
         ${field.fieldId}: String
         ${field.fieldId}_not: String
@@ -27,12 +33,18 @@ export const createTextField = (): CmsModelFieldToGraphQLPlugin => {
         fullTextSearch: true,
         read: {
             createTypeField({ field }) {
+                if (field.settings?.showInApi === false) {
+                    return "";
+                }
                 if (field.multipleValues) {
                     return `${field.fieldId}: [String]`;
                 }
                 return `${field.fieldId}: String`;
             },
             createGetFilters({ field }) {
+                if (field.settings?.showInApi === false) {
+                    return "";
+                }
                 return `${field.fieldId}: String`;
             },
             createListFilters
@@ -40,12 +52,18 @@ export const createTextField = (): CmsModelFieldToGraphQLPlugin => {
         manage: {
             createListFilters,
             createTypeField({ field }) {
+                if (field.settings?.showInApi === false) {
+                    return "";
+                }
                 if (field.multipleValues) {
                     return `${field.fieldId}: [String]`;
                 }
                 return `${field.fieldId}: String`;
             },
             createInputField({ field }) {
+                if (field.settings?.showInApi === false) {
+                    return "";
+                }
                 return createGraphQLInputField(field, "String");
             }
         }
