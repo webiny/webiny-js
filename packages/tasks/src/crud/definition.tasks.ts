@@ -1,24 +1,32 @@
-import type { Context, ITasksContextDefinitionObject } from "~/types.js";
-import { TaskDefinitionPlugin } from "~/task/index.js";
-
-const getTaskDefinitionPlugins = (context: Context) => {
-    return context.plugins.byType<TaskDefinitionPlugin>(TaskDefinitionPlugin.type);
-};
+import type {
+    Context,
+    ITaskDataInput,
+    ITaskResponseDoneResultOutput,
+    ITasksContextDefinitionObject
+} from "~/types.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export const createDefinitionCrud = (context: Context): ITasksContextDefinitionObject => {
     return {
-        getDefinition: (id: string) => {
-            const plugins = getTaskDefinitionPlugins(context);
+        getDefinition: <
+            I = ITaskDataInput,
+            O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        >(
+            id: string
+        ) => {
+            // Resolve all TaskDefinition implementations from DI container
+            const definitions = context.container.resolveAll(TaskDefinition);
 
-            for (const plugin of plugins) {
-                if (plugin.getTask().id === id) {
-                    return plugin.getTask();
+            for (const definition of definitions) {
+                if (definition.id === id) {
+                    return definition as TaskDefinition.Runnable<I, O>;
                 }
             }
             return null;
         },
         listDefinitions: () => {
-            return getTaskDefinitionPlugins(context).map(plugin => plugin.getTask());
+            // Resolve all TaskDefinition implementations from DI container
+            return context.container.resolveAll(TaskDefinition);
         }
     };
 };

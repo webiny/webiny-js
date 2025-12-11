@@ -1,14 +1,7 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql";
 import { renderSortEnum } from "@webiny/api-headless-cms/utils/renderSortEnum.js";
 import { ContextPlugin } from "@webiny/handler";
-import type {
-    Context,
-    IListTaskLogParams,
-    IListTaskParams,
-    ITask,
-    ITaskDefinition,
-    ITaskLog
-} from "~/types.js";
+import type { Context, IListTaskLogParams, IListTaskParams, ITask, ITaskLog } from "~/types.js";
 import { renderListFilterFields } from "@webiny/api-headless-cms/utils/renderListFilterFields.js";
 import { createFieldTypePluginRecords } from "@webiny/api-headless-cms/graphql/schema/createFieldTypePluginRecords.js";
 import { emptyResolver, resolve, resolveList } from "./utils.js";
@@ -16,6 +9,7 @@ import { renderFields } from "@webiny/api-headless-cms/utils/renderFields.js";
 import { checkPermissions } from "./checkPermissions.js";
 import type { Plugin } from "@webiny/plugins/types.js";
 import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 interface IGetTaskQueryParams {
     id: string;
@@ -37,7 +31,7 @@ interface IDeleteTaskMutationParams {
     id: string;
 }
 
-const createWebinyBackgroundTaskDefinitionEnum = (items: ITaskDefinition[]): string => {
+const createWebinyBackgroundTaskDefinitionEnum = (items: TaskDefinition.Interface[]): string => {
     if (items.length === 0) {
         return "Empty";
     }
@@ -175,7 +169,6 @@ const createGraphQL = () => {
                     id: String!
                     title: String!
                     description: String
-                    fields: JSON
                 }
 
                 type WebinyBackgroundTaskListDefinitionsResponse {

@@ -27,13 +27,13 @@ export interface ITaskAbortParams {
 
 export interface ITaskService {
     trigger: <
-        T = ITaskDataInput,
+        T extends ITaskDataInput = ITaskDataInput,
         O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
     >(
         params: ITaskTriggerParams<T>
     ) => Promise<ITask<T, O>>;
     abort: <
-        T = ITaskDataInput,
+        T extends ITaskDataInput = ITaskDataInput,
         O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
     >(
         params: ITaskAbortParams

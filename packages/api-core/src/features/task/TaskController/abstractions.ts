@@ -1,0 +1,17 @@
+import { createAbstraction } from "@webiny/feature/api";
+
+/**
+ * TaskController provides runtime capabilities to task definitions.
+ * The actual interface is defined by the tasks package implementation via module augmentation.
+ *
+ * Import this from @webiny/api-core, but the full interface comes from @webiny/tasks.
+ */
+export interface ITaskController {
+    // Empty - augmented by tasks package
+}
+
+export const TaskController = createAbstraction<ITaskController>("TaskController");
+
+export namespace TaskController {
+    export type Interface = ITaskController;
+}

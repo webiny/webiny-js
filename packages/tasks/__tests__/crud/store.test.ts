@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
 import WebinyError from "@webiny/error";
 import { useRawHandler } from "~tests/helpers/useRawHandler";
-import { createTaskDefinition } from "~/task";
 import type { ITask } from "~/types";
 import { TaskDataStatus } from "~/types";
 import { createMockIdentity } from "~tests/mocks/identity";
 import { TaskDefinitionNotFoundError, TaskNotFoundError } from "~/domain/errors.js";
+import { createTaskDefinition } from "../helpers/createTaskDefinition.js";
 
 describe("store crud", () => {
     const handler = useRawHandler({
@@ -13,8 +13,8 @@ describe("store crud", () => {
             createTaskDefinition({
                 id: "testDefinition",
                 title: "Test definition",
-                async run({ response }) {
-                    return response.done("successfully ran the task");
+                run: ({ controller }) => {
+                    return controller.response.done("successfully ran the task");
                 }
             })
         ]

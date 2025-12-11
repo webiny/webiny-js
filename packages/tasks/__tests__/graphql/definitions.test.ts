@@ -17,33 +17,23 @@ describe("graphql - definitions", () => {
                         data: [
                             {
                                 description: null,
-                                fields: [],
                                 id: "testingRun",
                                 title: "A mock task to test run the step function permissions."
                             },
                             {
                                 id: "myCustomTaskNumber1",
                                 title: "A custom task defined via method #1",
-                                description: "This is a description of the task #1",
-                                fields: []
+                                description: "This is a description of the task #1"
                             },
                             {
                                 id: "myCustomTaskNumber2",
                                 title: "A custom task defined via method #2",
-                                description: "This is a description of the task #2",
-                                fields: []
+                                description: "This is a description of the task #2"
                             },
                             {
                                 id: "myCustomTaskNumber3",
                                 title: "A custom task defined via method #3",
-                                description: "This is a description of the task #3",
-                                fields: [
-                                    {
-                                        fieldId: "someField",
-                                        label: "Some Field",
-                                        type: "text"
-                                    }
-                                ]
+                                description: "This is a description of the task #3"
                             }
                         ],
                         error: null

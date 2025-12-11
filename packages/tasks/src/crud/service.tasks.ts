@@ -14,6 +14,7 @@ import { TaskDataStatus, TaskLogItemType } from "~/types.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createService } from "~/service/index.js";
 import type { IStepFunctionServiceFetchResult } from "~/service/StepFunctionServicePlugin.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 const MAX_DELAY_DAYS = 355;
 const MAX_DELAY_SECONDS = MAX_DELAY_DAYS * 24 * 60 * 60;
@@ -46,7 +47,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
 
     return {
         trigger: async <
-            T = ITaskDataInput,
+            T extends ITaskDataInput = ITaskDataInput,
             O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
         >(
             params: ITaskTriggerParams<T>
@@ -58,17 +59,15 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
                     id
                 });
             }
-            const input: ITaskCreateData<T> = {
+            const input: TaskDefinition.TaskCreateData<T> = {
                 name: name || definition.title,
                 definitionId: id,
                 input: inputValues || ({} as T),
                 parentId: parent?.id
             };
+
             if (definition.onBeforeTrigger) {
-                await definition.onBeforeTrigger<T>({
-                    context,
-                    data: input
-                });
+                await definition.onBeforeTrigger({ data: input });
             }
             validateDelay<T>({
                 input,
@@ -141,7 +140,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
                 throw new NotFoundError(`Task "${params.id}" was not found!`);
             }
 
-            const definition = context.tasks.getDefinition<Context, T, O>(task.definitionId);
+            const definition = context.tasks.getDefinition<T, O>(task.definitionId);
             if (!definition) {
                 throw new WebinyError(`Task definition was not found!`, "TASK_DEFINITION_ERROR", {
                     id: task.id
@@ -190,7 +189,6 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
                  */
                 if (definition.onAbort) {
                     await definition.onAbort({
-                        context,
                         task: updatedTask
                     });
                 }

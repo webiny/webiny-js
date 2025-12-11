@@ -3,13 +3,13 @@ import { TaskRunner } from "~/runner";
 import { createMockEvent } from "~tests/mocks";
 import { ResponseAbortedResult } from "~/response";
 import { createLiveContextFactory } from "~tests/live";
-import { taskDefinition } from "~tests/runner/taskDefinition";
+import { testDefinitionPlugin, TASK_ID } from "~tests/runner/taskDefinition";
 import { timerFactory } from "@webiny/handler-aws/utils";
 import { TaskEventValidation } from "~/runner/TaskEventValidation";
 
 describe("task runner abort", () => {
     const contextFactory = createLiveContextFactory({
-        plugins: [taskDefinition]
+        plugins: [testDefinitionPlugin]
     });
 
     it("should trigger a task run - end with aborted state", async () => {
@@ -18,7 +18,7 @@ describe("task runner abort", () => {
         const runner = new TaskRunner(context, timerFactory(), new TaskEventValidation());
 
         const task = await context.tasks.createTask({
-            definitionId: taskDefinition.id,
+            definitionId: TASK_ID,
             input: {},
             name: "My task name"
         });
@@ -29,14 +29,14 @@ describe("task runner abort", () => {
         const result = await runner.run(
             createMockEvent({
                 webinyTaskId: abortedTask.id,
-                webinyTaskDefinitionId: taskDefinition.id
+                webinyTaskDefinitionId: TASK_ID
             })
         );
         expect(result).toBeInstanceOf(ResponseAbortedResult);
         expect(result).toEqual({
             status: "aborted",
             webinyTaskId: abortedTask.id,
-            webinyTaskDefinitionId: taskDefinition.id,
+            webinyTaskDefinitionId: TASK_ID,
             tenant: "root"
         });
     });

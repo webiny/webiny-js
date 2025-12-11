@@ -1,15 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { useRawHandler } from "~tests/helpers/useRawHandler";
-import { createMockTaskDefinition, createMockTaskDefinitions } from "~tests/mocks/definition";
+import { createMockTaskDefinitions, MOCK_TASK_DEFINITION_ID } from "~tests/mocks/definition";
 import { createMockIdentity } from "~tests/mocks/identity";
-import type { ITaskDataInput } from "~/types";
 import { TaskDataStatus } from "~/types";
-
-interface IMockDefinitionInput extends ITaskDataInput {
-    file: string;
-    page: number;
-    take: boolean;
-}
+import { createTaskDefinition } from "~tests/helpers/createTaskDefinition.js";
 
 describe("trigger crud", () => {
     const handler = useRawHandler({
@@ -49,7 +43,28 @@ describe("trigger crud", () => {
     });
 
     it("should validate input before triggering the task", async () => {
-        const definition = createMockTaskDefinition<IMockDefinitionInput>({
+        const definition = createTaskDefinition({
+            id: MOCK_TASK_DEFINITION_ID,
+            title: "A custom task defined via method",
+            run({ input, controller }) {
+                try {
+                    if (controller.runtime.isCloseToTimeout()) {
+                        return controller.response.continue({
+                            ...input
+                        });
+                    }
+                    return controller.response.done("Task done!", {
+                        withSomeBoolean: true,
+                        withSomeNumber: 1,
+                        withSomeString: "yes!",
+                        withSomeObject: {
+                            testingObject: "yes!"
+                        }
+                    });
+                } catch (ex) {
+                    return controller.response.error(ex);
+                }
+            },
             createInputValidation: ({ validator }) => {
                 return {
                     file: validator.string(),
@@ -67,7 +82,7 @@ describe("trigger crud", () => {
 
         try {
             const result = await context.tasks.trigger({
-                definition: definition.id,
+                definition: MOCK_TASK_DEFINITION_ID,
                 name: "A test of triggering task",
                 input: {
                     wrongValueKey: "wrong",
@@ -115,7 +130,7 @@ describe("trigger crud", () => {
 
         try {
             const result = await context.tasks.trigger({
-                definition: definition.id,
+                definition: MOCK_TASK_DEFINITION_ID,
                 name: "A test of triggering task",
                 input
             });

@@ -1,44 +1,26 @@
-import type { ITaskManager, ITaskManagerStorePrivate, ITaskRunner } from "./abstractions/index.js";
-import type {
-    Context,
-    ITask,
-    ITaskDataInput,
-    ITaskDefinition,
-    ITaskTriggerParams
-} from "~/types.js";
-import { TaskDataStatus, TaskResponseStatus } from "~/types.js";
-import type {
-    IResponse,
-    IResponseResult,
-    ITaskResponse,
-    ITaskResponseResult
-} from "~/response/abstractions/index.js";
+import type { ITaskManager, ITaskManagerStorePrivate } from "./abstractions/index.js";
+import type { Context } from "~/types.js";
+import { TaskDataStatus } from "~/types.js";
+import type { IResponse, IResponseResult } from "~/response/abstractions/index.js";
 import { getErrorProperties } from "~/utils/getErrorProperties.js";
+import {
+    TaskDefinition,
+    TaskResultStatus
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { TaskController } from "@webiny/api-core/features/task/TaskController/abstractions.js";
 
-type ITaskManagerRunner = Pick<ITaskRunner, "isCloseToTimeout" | "timer">;
-
-export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
-    private readonly runner: ITaskManagerRunner;
+export class TaskManager implements ITaskManager {
     private readonly context: Context;
     private readonly response: IResponse;
-    private readonly taskResponse: ITaskResponse;
     private readonly store: ITaskManagerStorePrivate;
 
-    public constructor(
-        runner: ITaskManagerRunner,
-        context: Context,
-        response: IResponse,
-        taskResponse: ITaskResponse,
-        store: ITaskManagerStorePrivate
-    ) {
-        this.runner = runner;
+    public constructor(context: Context, response: IResponse, store: ITaskManagerStorePrivate) {
         this.context = context;
         this.response = response;
-        this.taskResponse = taskResponse;
         this.store = store;
     }
 
-    public async run(definition: ITaskDefinition): Promise<IResponseResult> {
+    public async run(definition: TaskDefinition.Runnable): Promise<IResponseResult> {
         /**
          * If task was aborted, do not run it again, return as it was done.
          */
@@ -73,8 +55,7 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
             try {
                 if (definition.onMaxIterations) {
                     await definition.onMaxIterations({
-                        task: this.store.getTask(),
-                        context: this.context
+                        task: this.store.getTask()
                     });
                 }
                 return this.response.error({
@@ -109,34 +90,18 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
             }
         }
 
-        let result: ITaskResponseResult;
+        let result: TaskDefinition.Result;
 
         try {
             const input = structuredClone(this.store.getInput());
+            const controller = this.context.container.resolve(TaskController);
             /**
              * We always run the task without authorization because we are running a task without a user - nothing to authorize against.
              */
             result = await this.context.security.withoutAuthorization(async () => {
                 return await definition.run({
                     input,
-                    context: this.context,
-                    response: this.taskResponse,
-                    isCloseToTimeout: seconds => {
-                        return this.runner.isCloseToTimeout(seconds);
-                    },
-                    isAborted: () => {
-                        return this.store.getStatus() === TaskDataStatus.ABORTED;
-                    },
-                    store: this.store,
-                    trigger: async <I = ITaskDataInput>(
-                        params: Omit<ITaskTriggerParams<I>, "parent">
-                    ): Promise<ITask<I>> => {
-                        return this.context.tasks.trigger({
-                            ...params,
-                            parent: this.store.getTask()
-                        });
-                    },
-                    timer: this.runner.timer
+                    controller
                 });
             });
         } catch (ex) {
@@ -145,16 +110,17 @@ export class TaskManager<T = ITaskDataInput> implements ITaskManager<T> {
             });
         }
 
-        if (result.status === TaskResponseStatus.CONTINUE) {
+        // Convert TaskDefinition.Result to IResponseResult
+        if (result.status === TaskResultStatus.CONTINUE) {
             return this.response.continue({
                 input: result.input,
                 wait: result.wait
             });
-        } else if (result.status === TaskResponseStatus.ERROR) {
+        } else if (result.status === TaskResultStatus.ERROR) {
             return this.response.error({
-                error: result.error
+                error: result.error || { message: result.message }
             });
-        } else if (result.status === TaskResponseStatus.ABORTED) {
+        } else if (result.status === TaskResultStatus.ABORTED) {
             return this.response.aborted();
         }
         return this.response.done({

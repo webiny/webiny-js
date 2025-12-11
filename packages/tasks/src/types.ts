@@ -20,6 +20,7 @@ import type { ITimer } from "@webiny/handler-aws";
 
 import type zod from "zod";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export * from "./handler/types.js";
 export * from "./response/abstractions/index.js";
@@ -272,13 +273,12 @@ export interface ITasksContextCrudObject {
 
 export interface ITasksContextDefinitionObject {
     getDefinition: <
-        C extends Context = Context,
         I = ITaskDataInput,
         O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
     >(
         id: string
-    ) => ITaskDefinition<C, I, O> | null;
-    listDefinitions: () => ITaskDefinition[];
+    ) => TaskDefinition.Runnable<I, O> | null;
+    listDefinitions: () => TaskDefinition.Interface[];
 }
 
 export interface ITaskTriggerParams<I = ITaskDataInput> {
@@ -296,13 +296,13 @@ export interface ITaskAbortParams {
 
 export interface ITasksContextServiceObject {
     trigger: <
-        T = ITaskDataInput,
+        T extends ITaskDataInput = ITaskDataInput,
         O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
     >(
         params: ITaskTriggerParams<T>
     ) => Promise<ITask<T, O>>;
     abort: <
-        T = ITaskDataInput,
+        T extends ITaskDataInput = ITaskDataInput,
         O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
     >(
         params: ITaskAbortParams
@@ -322,11 +322,9 @@ export interface Context extends BaseContext {
 }
 
 export interface ITaskRunParams<
-    C extends Context,
     I = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > {
-    context: C;
     response: ITaskResponse<I, O>;
     isCloseToTimeout: IIsCloseToTimeoutCallable;
     isAborted(): boolean;
@@ -339,34 +337,26 @@ export interface ITaskRunParams<
 }
 
 export interface ITaskOnSuccessParams<
-    C extends Context,
     I = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > {
-    context: C;
-    task: ITask<I, O>;
+    input: I;
+    output: O | undefined;
 }
 
-export interface ITaskOnErrorParams<
-    C extends Context,
-    I = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
-> {
-    context: C;
-    task: ITask<I, O>;
+export interface ITaskOnErrorParams<I = ITaskDataInput> {
+    input: I;
+    error: IResponseError;
 }
 
 export interface ITaskOnAbortParams<
-    C extends Context,
     I = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > {
-    context: C;
     task: ITask<I, O>;
 }
 
-export interface ITaskOnMaxIterationsParams<C extends Context> {
-    context: C;
+export interface ITaskOnMaxIterationsParams {
     task: ITask;
 }
 
@@ -392,18 +382,15 @@ export type ITaskDefinitionField = Pick<
     | "settings"
 >;
 
-export interface ITaskBeforeTriggerParams<C extends Context = Context, I = ITaskDataInput> {
-    context: C;
+export interface ITaskBeforeTriggerParams<I = ITaskDataInput> {
     data: ITaskCreateData<I>;
 }
 
-export interface ITaskCreateInputValidationParams<C extends Context = Context> {
+export interface ITaskCreateInputValidationParams {
     validator: typeof zod;
-    context: C;
 }
 
 export interface ITaskDefinition<
-    C extends Context = Context,
     I = ITaskDataInput,
     O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
 > {
@@ -434,32 +421,32 @@ export interface ITaskDefinition<
     /**
      * Task run method.
      */
-    run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult>;
+    run(params: ITaskRunParams<I, O>): Promise<ITaskResponseResult>;
     /**
      * When a new task is about to be triggered, we will run this method.
      * For example, you can use this method to check if there is a task of the same type already running.
      */
-    onBeforeTrigger?<T = ITaskDataInput>(params: ITaskBeforeTriggerParams<C, T>): Promise<void>;
+    onBeforeTrigger?<T = ITaskDataInput>(params: ITaskBeforeTriggerParams<T>): Promise<void>;
     /**
      * When task successfully finishes, this method will be called.
      * This will be called during the run time of the task.
      */
-    onDone?(params: ITaskOnSuccessParams<C, I, O>): Promise<void>;
+    onDone?(params: ITaskOnSuccessParams<I, O>): Promise<void>;
     /**
      * When task fails, this method will be called.
      * This will be called during the run time of the task.
      */
-    onError?(params: ITaskOnErrorParams<C, I>): Promise<void>;
+    onError?(params: ITaskOnErrorParams<I>): Promise<void>;
     /**
      * When task is aborted, this method will be called.
      * This method will be called when user aborts the task.
      */
-    onAbort?(params: ITaskOnAbortParams<C, I, O>): Promise<void>;
+    onAbort?(params: ITaskOnAbortParams<I, O>): Promise<void>;
     /**
      * When task hits max iterations, this method will be called.
      * This will be called during the run time of the task.
      */
-    onMaxIterations?(params: ITaskOnMaxIterationsParams<C>): Promise<void>;
+    onMaxIterations?(params: ITaskOnMaxIterationsParams): Promise<void>;
     /**
      * Create a validation schema for the task input.
      * This will be used to validate the input before the task is triggered.
@@ -468,7 +455,7 @@ export interface ITaskDefinition<
      * But it also passes through any fields which might not be defined in the task validation.
      */
     createInputValidation?: (
-        params: ITaskCreateInputValidationParams<C>
+        params: ITaskCreateInputValidationParams
     ) => GenericRecord<keyof I, zod.Schema> | zod.Schema;
     /**
      * Custom input fields and layout for the task input.

@@ -102,12 +102,11 @@ const getZodSchema = (schema: GenericRecord<string, zod.Schema> | zod.Schema) =>
 };
 
 const validateTaskInput = async (params: IValidateParams) => {
-    const { definition, data, context } = params;
+    const { definition, data } = params;
     if (!definition.createInputValidation) {
         return;
     }
     const schema = definition.createInputValidation({
-        context,
         validator: zod
     });
     /**
