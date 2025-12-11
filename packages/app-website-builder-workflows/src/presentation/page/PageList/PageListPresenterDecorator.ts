@@ -32,6 +32,7 @@ class PageListPresenterWithWorkflows implements PageListPresenter.Interface {
     public showFilters(show: boolean): void {
         this.decoratee.showFilters(show);
     }
+    
     private extendPage(page: PageDto): WithWorkflowState<PageDto> {
         return {
             ...page,
