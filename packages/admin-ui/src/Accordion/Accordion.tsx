@@ -28,22 +28,13 @@ type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
     };
 
 const AccordionBase = (props: AccordionProps) => {
-    const providedProps = useAccordionProps();
-    const mergedProps = { ...providedProps, ...props };
-
-    const {
-        children,
-        variant,
-        border,
-        background: backgroundProp = "light",
-        className
-    } = mergedProps;
+    const { children, variant, background: backgroundProp = "light", className } = props;
 
     const background = useAccordionBackground(backgroundProp);
 
     return (
         <AccordionBackgroundProvider currentBackground={background}>
-            <AccordionPropsProvider props={mergedProps}>
+            <AccordionPropsProvider props={props}>
                 <div className={cn(accordionVariants({ variant }), className)}>{children}</div>
             </AccordionPropsProvider>
         </AccordionBackgroundProvider>
