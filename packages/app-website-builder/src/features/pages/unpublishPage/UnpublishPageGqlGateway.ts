@@ -17,11 +17,13 @@ export interface UnpublishPageResponse {
     };
 }
 
-export const UNPUBLISH_PAGE = (PAGE_FIELDS: string) => gql`
+export const UNPUBLISH_PAGE = (fields: string[]) => gql`
     mutation UnpublishPage($id: ID!) {
         websiteBuilder {
             unpublishPage(id: $id) {
-               data ${PAGE_FIELDS}
+               data {
+                   ${fields.join("\n")}
+               }
                 error {
                     code
                     data
@@ -33,10 +35,10 @@ export const UNPUBLISH_PAGE = (PAGE_FIELDS: string) => gql`
 `;
 
 export class UnpublishPageGqlGateway implements IUnpublishPageGateway {
-    private client: ApolloClient<any>;
-    private modelFields: string;
+    private readonly client;
+    private readonly modelFields;
 
-    constructor(client: ApolloClient<any>, modelFields: string) {
+    constructor(client: ApolloClient<any>, modelFields: string[]) {
         this.client = client;
         this.modelFields = modelFields;
     }

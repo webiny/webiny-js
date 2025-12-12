@@ -2,7 +2,7 @@ import type { Context } from "~/types.js";
 import { getModelIdFromAppName } from "~/utils/appName.js";
 import { getStateValues } from "~/utils/state.js";
 import type { IWorkflowState } from "@webiny/api-workflows";
-import type { ICmsEntryState } from "@webiny/api-headless-cms/types/index.js";
+import type { IEntryState } from "@webiny/api-headless-cms/types/index.js";
 
 interface IParams {
     context: Context;
@@ -11,7 +11,7 @@ interface IParams {
 export const attachStateLifecycleEvents = ({ context }: IParams) => {
     const updateEntry = async (
         state: IWorkflowState,
-        values: ICmsEntryState | undefined
+        values: IEntryState | undefined
     ): Promise<void> => {
         const modelId = getModelIdFromAppName(state.app);
         if (!modelId) {

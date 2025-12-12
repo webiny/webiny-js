@@ -1,14 +1,50 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { GetFolderLevelPermission } from "./GetFolderLevelPermission.js";
-import { folderCacheFactory } from "../cache/FoldersCacheFactory.js";
-import { Folder } from "../Folder.js";
+import { describe, it, expect } from "vitest";
+import { Container } from "@webiny/di";
+import { createTestWcpLicense } from "@webiny/wcp/testing/createTestWcpLicense.js";
+import { ListCache } from "~/features/folders/cache/index.js";
+import { FoldersContext } from "~/features/folders/abstractions.js";
+import { FoldersCache } from "~/features/folders/abstractions.js";
+import { GetFolderLevelPermissionFeature } from "~/features/folders/getFolderLevelPermission/feature.js";
+import { GetFolderLevelPermissionUseCase } from "~/features/folders/getFolderLevelPermission/abstractions.js";
+import { WcpService } from "@webiny/app-admin/features/wcp/abstractions.js";
+import { Folder } from "~/domain/folder/Folder.js";
+import type { ILicense } from "@webiny/wcp/types";
+import { License, WCP_FEATURE_LABEL } from "@webiny/wcp";
+
+class WcpServiceMock implements WcpService.Interface {
+    private readonly license: ILicense;
+
+    constructor(flpEnabled: boolean) {
+        this.license = License.fromLicenseDto(
+            createTestWcpLicense({ folderLevelPermissions: flpEnabled })
+        );
+    }
+
+    canUseFeature(featureName: keyof typeof WCP_FEATURE_LABEL): boolean {
+        return this.license.canUseFeature(featureName);
+    }
+
+    getProject(): ILicense {
+        return this.license;
+    }
+
+    isLoaded(): boolean {
+        return true;
+    }
+
+    loadProject(): Promise<void> {
+        return Promise.resolve(undefined);
+    }
+}
 
 describe("GetFolderLevelPermission", () => {
     const type = "abc";
-    const foldersCache = folderCacheFactory.getCache(type);
 
-    beforeEach(() => {
-        foldersCache.clear();
+    function setupTest(params: { flpEnabled: boolean }) {
+        const { flpEnabled } = params;
+        const container = new Container();
+        const foldersCache = new ListCache<Folder>();
+
         foldersCache.addItems([
             Folder.create({
                 id: "folder-canManageContent",
@@ -46,181 +82,113 @@ describe("GetFolderLevelPermission", () => {
                 type
             })
         ]);
-    });
+
+        container.registerInstance(WcpService, new WcpServiceMock(flpEnabled));
+        container.registerInstance(FoldersContext, { type });
+        container.registerInstance(FoldersCache, foldersCache);
+
+        GetFolderLevelPermissionFeature.register(container);
+
+        return {
+            container,
+            foldersCache,
+            useCase: container.resolve(GetFolderLevelPermissionUseCase)
+        };
+    }
 
     it("should return true in case a specific permission is set at folder level and FLP is enabled", async () => {
+        const { useCase } = setupTest({ flpEnabled: true });
+
         // canManagePermissions
         {
-            const getFolderLevelPermission = GetFolderLevelPermission.getInstance(
-                type,
-                "canManagePermissions",
-                true
-            );
-
-            const result = getFolderLevelPermission.execute({
-                id: "folder-canManagePermissions"
-            });
-            expect(result).toBeTrue();
+            const result = useCase.execute("folder-canManagePermissions", "canManagePermissions");
+            expect(result).toBe(true);
         }
 
         // canManageStructure
         {
-            const getFolderLevelPermission = GetFolderLevelPermission.getInstance(
-                type,
-                "canManageStructure",
-                true
-            );
-
-            const result = getFolderLevelPermission.execute({
-                id: "folder-canManageStructure"
-            });
-            expect(result).toBeTrue();
+            const result = useCase.execute("folder-canManageStructure", "canManageStructure");
+            expect(result).toBe(true);
         }
 
         // canManageStructure
         {
-            const getFolderLevelPermission = GetFolderLevelPermission.getInstance(
-                type,
-                "canManageContent",
-                true
-            );
+            const result = useCase.execute("folder-canManageContent", "canManageContent");
 
-            const result = getFolderLevelPermission.execute({
-                id: "folder-canManageContent"
-            });
-            expect(result).toBeTrue();
+            expect(result).toBe(true);
         }
     });
 
     it("should return false in case a specific permission is not set at folder level and FLP is enabled", async () => {
+        const { useCase } = setupTest({ flpEnabled: true });
         // canManagePermissions
         {
-            const getFolderLevelPermission = GetFolderLevelPermission.getInstance(
-                type,
-                "canManagePermissions",
-                true
-            );
-
-            const result = getFolderLevelPermission.execute({
-                id: "folder-no-permissions"
-            });
-            expect(result).toBeFalse();
+            const result = useCase.execute("folder-no-permissions", "canManagePermissions");
+            expect(result).toBe(false);
         }
 
         // canManageStructure
         {
-            const getFolderLevelPermission = GetFolderLevelPermission.getInstance(
-                type,
-                "canManageStructure",
-                true
-            );
+            const result = useCase.execute("folder-no-permissions", "canManageStructure");
 
-            const result = getFolderLevelPermission.execute({
-                id: "folder-no-permissions"
-            });
-            expect(result).toBeFalse();
+            expect(result).toBe(false);
         }
 
-        // canManageStructure
+        // canManageContent
         {
-            const getFolderLevelPermission = GetFolderLevelPermission.getInstance(
-                type,
-                "canManageContent",
-                true
-            );
+            const result = useCase.execute("folder-no-permissions", "canManageContent");
 
-            const result = getFolderLevelPermission.execute({
-                id: "folder-no-permissions"
-            });
-            expect(result).toBeFalse();
+            expect(result).toBe(false);
         }
     });
 
     it("should return always false in case the folder is not found", async () => {
+        const { useCase } = setupTest({ flpEnabled: true });
+
         // canManagePermissions
         {
-            const getFolderLevelPermission = GetFolderLevelPermission.getInstance(
-                type,
-                "canManagePermissions",
-                true
-            );
+            const result = useCase.execute("not-existing-folder", "canManagePermissions");
 
-            const result = getFolderLevelPermission.execute({
-                id: "not-existing-folder"
-            });
-            expect(result).toBeFalse();
+            expect(result).toBe(false);
         }
 
         // canManageStructure
         {
-            const getFolderLevelPermission = GetFolderLevelPermission.getInstance(
-                type,
-                "canManageStructure",
-                true
-            );
+            const result = useCase.execute("not-existing-folder", "canManageStructure");
 
-            const result = getFolderLevelPermission.execute({
-                id: "not-existing-folder"
-            });
-            expect(result).toBeFalse();
+            expect(result).toBe(false);
         }
 
-        // canManageStructure
+        // canManageContent
         {
-            const getFolderLevelPermission = GetFolderLevelPermission.getInstance(
-                type,
-                "canManageContent",
-                true
-            );
+            const result = useCase.execute("not-existing-folder", "canManageContent");
 
-            const result = getFolderLevelPermission.execute({
-                id: "not-existing-folder"
-            });
-            expect(result).toBeFalse();
+            expect(result).toBe(false);
         }
     });
 
     it("should return always true in case FLP is not enabled", async () => {
+        const { useCase } = setupTest({ flpEnabled: false });
+
         // canManagePermissions
         {
-            const getFolderLevelPermission = GetFolderLevelPermission.getInstance(
-                type,
-                "canManagePermissions",
-                false
-            );
+            const result = useCase.execute("folder-no-permissions", "canManagePermissions");
 
-            const result = getFolderLevelPermission.execute({
-                id: "folder-no-permissions"
-            });
-            expect(result).toBeTrue();
+            expect(result).toBe(true);
         }
 
         // canManageStructure
         {
-            const getFolderLevelPermission = GetFolderLevelPermission.getInstance(
-                type,
-                "canManageStructure",
-                false
-            );
+            const result = useCase.execute("folder-no-permissions", "canManageStructure");
 
-            const result = getFolderLevelPermission.execute({
-                id: "folder-no-permissions"
-            });
-            expect(result).toBeTrue();
+            expect(result).toBe(true);
         }
 
-        // canManageStructure
+        // canManageContent
         {
-            const getFolderLevelPermission = GetFolderLevelPermission.getInstance(
-                type,
-                "canManageContent",
-                false
-            );
+            const result = useCase.execute("folder-no-permissions", "canManageContent");
 
-            const result = getFolderLevelPermission.execute({
-                id: "folder-no-permissions"
-            });
-            expect(result).toBeTrue();
+            expect(result).toBe(true);
         }
     });
 });

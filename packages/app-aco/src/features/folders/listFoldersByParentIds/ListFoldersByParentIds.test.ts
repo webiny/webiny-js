@@ -1,33 +1,56 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { ListFoldersByParentIds } from "./ListFoldersByParentIds.js";
-import { folderCacheFactory } from "../cache/FoldersCacheFactory.js";
-import { loadedFolderCacheFactory } from "../cache/LoadedFoldersCacheFactory.js";
+import { Container } from "@webiny/di";
+import { LoadingRepository } from "@webiny/app-utils";
 import { ROOT_FOLDER } from "~/constants.js";
-import type { IListFoldersByParentIdsGateway } from "~/features/folders/listFoldersByParentIds/IListFoldersByParentIdsGateway.js";
-import { FolderGqlDto } from "~/features/folders/listFolders/FolderGqlDto.js";
+import { ListCache } from "~/features/folders/cache/index.js";
+import { LoadedCache } from "~/features/folders/cache/index.js";
+import { Folder } from "~/domain/folder/Folder.js";
+import { FoldersContext } from "~/features/folders/abstractions.js";
+import { FoldersCache } from "~/features/folders/abstractions.js";
+import { FoldersLoadingRepository } from "~/features/folders/abstractions.js";
+import { ListFoldersByParentIdsFeature } from "./feature.js";
+import { ListFoldersByParentIdsGateway } from "./abstractions.js";
+import { ListFoldersByParentIdsUseCase } from "./abstractions.js";
+import { LoadedFoldersCache } from "~/features/folders/abstractions.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
 
 describe("ListFoldersByParentIds", () => {
     const type = "abc";
 
-    const foldersCache = folderCacheFactory.getCache(type);
-    const loadedFoldersCache = loadedFolderCacheFactory.getCache(type);
+    function setupTest(gateway: ListFoldersByParentIdsGateway.Interface) {
+        const container = new Container();
+        const foldersCache = new ListCache<Folder>();
+        const loadedFoldersCache = new LoadedCache();
+
+        container.registerInstance(FoldersContext, { type });
+        container.registerInstance(FoldersCache, foldersCache);
+        container.registerInstance(LoadedFoldersCache, loadedFoldersCache);
+        container.registerInstance(FoldersLoadingRepository, new LoadingRepository());
+
+        ListFoldersByParentIdsFeature.register(container);
+        container.registerInstance(ListFoldersByParentIdsGateway, gateway);
+
+        return {
+            container,
+            foldersCache,
+            useCase: container.resolve(ListFoldersByParentIdsUseCase)
+        };
+    }
 
     beforeEach(() => {
-        foldersCache.clear();
-        loadedFoldersCache.clear();
         vi.resetAllMocks();
     });
 
-    class ListFoldersByParentIdsMockGateway implements IListFoldersByParentIdsGateway {
-        mockResponse: FolderGqlDto[];
+    class ListFoldersByParentIdsMockGateway implements ListFoldersByParentIdsGateway.Interface {
+        mockResponse: FolderDto[];
 
         // Had to use `any` as the mock folders passed in the tests below are also partial objects.
         constructor(mockResponse: any) {
-            this.mockResponse = mockResponse as FolderGqlDto[];
+            this.mockResponse = mockResponse as FolderDto[];
         }
 
         setMockResponse(mockResponse: any) {
-            this.mockResponse = mockResponse as FolderGqlDto[];
+            this.mockResponse = mockResponse as FolderDto[];
         }
 
         async execute() {
@@ -62,19 +85,19 @@ describe("ListFoldersByParentIds", () => {
 
         const spy = vi.spyOn(gateway, "execute");
 
-        const listByParentIdFolders = ListFoldersByParentIds.getInstance(type, gateway);
+        const { useCase, foldersCache } = setupTest(gateway);
 
-        expect(foldersCache.hasItems()).toBeFalse();
-        await listByParentIdFolders.useCase.execute({ parentIds: undefined });
+        expect(foldersCache.hasItems()).toBe(false);
+        await useCase.execute();
 
         expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith({ parentIds: [ROOT_FOLDER], type });
+        expect(spy).toHaveBeenCalledWith(type, [ROOT_FOLDER]);
 
-        expect(foldersCache.hasItems()).toBeTrue();
+        expect(foldersCache.hasItems()).toBe(true);
         expect(foldersCache.count()).toEqual(3);
 
         // This call should be idempotent: the number of elements in cache should not change
-        await listByParentIdFolders.useCase.execute({ parentIds: undefined });
+        await useCase.execute();
         expect(foldersCache.count()).toEqual(3);
     });
 
@@ -105,15 +128,15 @@ describe("ListFoldersByParentIds", () => {
 
         const spy = vi.spyOn(gateway, "execute");
 
-        const listByParentIdFolders = ListFoldersByParentIds.getInstance(type, gateway);
+        const { useCase, foldersCache } = setupTest(gateway);
 
-        expect(foldersCache.hasItems()).toBeFalse();
-        await listByParentIdFolders.useCase.execute({ parentIds: ["folder-0"] });
+        expect(foldersCache.hasItems()).toBe(false);
+        await useCase.execute(["folder-0"]);
 
         expect(spy).toHaveBeenCalledTimes(1);
-        expect(spy).toHaveBeenCalledWith({ parentIds: ["folder-0"], type });
+        expect(spy).toHaveBeenCalledWith(type, ["folder-0"]);
 
-        expect(foldersCache.hasItems()).toBeTrue();
+        expect(foldersCache.hasItems()).toBe(true);
         expect(foldersCache.count()).toEqual(3);
 
         // The number of folders in cache should increase, since we are changing the parentIds.
@@ -141,7 +164,7 @@ describe("ListFoldersByParentIds", () => {
             }
         ]);
 
-        await listByParentIdFolders.useCase.execute({ parentIds: ["folder-1"] });
+        await useCase.execute(["folder-1"]);
         expect(foldersCache.count()).toEqual(6);
     });
 
@@ -165,10 +188,10 @@ describe("ListFoldersByParentIds", () => {
 
         const spy = vi.spyOn(gateway, "execute");
 
-        const listByParentIdFolders = ListFoldersByParentIds.getInstance(type, gateway);
+        const { useCase } = setupTest(gateway);
 
         // Execute the useCase 3 times and check the gateway is invoked only when needed
-        await listByParentIdFolders.useCase.execute({ parentIds: ["folder-0", "folder-1"] });
+        await useCase.execute(["folder-0", "folder-1"]);
 
         gateway.setMockResponse([
             {
@@ -180,23 +203,18 @@ describe("ListFoldersByParentIds", () => {
             }
         ]);
 
-        await listByParentIdFolders.useCase.execute({
-            parentIds: ["folder-0", "folder-1", "folder-2"]
-        });
-        await listByParentIdFolders.useCase.execute({
-            parentIds: ["folder-0", "folder-1", "folder-2"]
-        });
+        await useCase.execute(["folder-0", "folder-1", "folder-2"]);
+        await useCase.execute(["folder-0", "folder-1", "folder-2"]);
 
-        expect(spy).toHaveBeenNthCalledWith(1, {
-            parentIds: ["folder-0", "folder-1"],
-            type
-        });
-        expect(spy).toHaveBeenNthCalledWith(2, { parentIds: ["folder-2"], type });
+        expect(spy).toHaveBeenNthCalledWith(1, type, ["folder-0", "folder-1"]);
+        expect(spy).toHaveBeenNthCalledWith(2, type, ["folder-2"]);
         expect(gateway.execute).not.toHaveBeenCalledTimes(3);
     });
 
     it("should return empty array if no folders are found", async () => {
-        class ListFoldersByParentIdsEmptyMockGateway implements IListFoldersByParentIdsGateway {
+        class ListFoldersByParentIdsEmptyMockGateway
+            implements ListFoldersByParentIdsGateway.Interface
+        {
             async execute() {
                 return [];
             }
@@ -205,22 +223,24 @@ describe("ListFoldersByParentIds", () => {
         const gateway = new ListFoldersByParentIdsEmptyMockGateway();
         const spy = vi.spyOn(gateway, "execute");
 
-        const listByParentIdFolders = ListFoldersByParentIds.getInstance(type, gateway);
+        const { useCase, foldersCache } = setupTest(gateway);
 
-        expect(foldersCache.hasItems()).toBeFalse();
+        expect(foldersCache.hasItems()).toBe(false);
 
-        await listByParentIdFolders.useCase.execute({});
+        await useCase.execute();
 
         expect(spy).toHaveBeenCalledTimes(1);
-        expect(foldersCache.hasItems()).toBeFalse();
+        expect(foldersCache.hasItems()).toBe(false);
 
         const items = foldersCache.getItems();
         expect(items.length).toEqual(0);
     });
 
     it("should handle gateway errors gracefully", async () => {
-        class ListFoldersByParentIdsErrorMockGateway implements IListFoldersByParentIdsGateway {
-            async execute(): Promise<FolderGqlDto[]> {
+        class ListFoldersByParentIdsErrorMockGateway
+            implements ListFoldersByParentIdsGateway.Interface
+        {
+            async execute(): Promise<FolderDto[]> {
                 throw new Error("Gateway error");
             }
         }
@@ -228,88 +248,13 @@ describe("ListFoldersByParentIds", () => {
         const errorGateway = new ListFoldersByParentIdsErrorMockGateway();
         const spy = vi.spyOn(errorGateway, "execute");
 
-        const listByParentIdFolders = ListFoldersByParentIds.getInstance(type, errorGateway);
+        const { useCase, foldersCache } = setupTest(errorGateway);
 
-        expect(foldersCache.hasItems()).toBeFalse();
+        expect(foldersCache.hasItems()).toBe(false);
 
-        await expect(listByParentIdFolders.useCase.execute({})).rejects.toThrow("Gateway error");
+        await expect(useCase.execute()).rejects.toThrow("Gateway error");
 
         expect(spy).toHaveBeenCalledTimes(1);
-        expect(foldersCache.hasItems()).toBeFalse();
-    });
-
-    it("should clear cache when type changes", async () => {
-        const gatewayAbc = new ListFoldersByParentIdsMockGateway([
-            {
-                id: "folder-1",
-                title: "Folder 1",
-                slug: "folder-1",
-                parentId: null,
-                type
-            },
-            {
-                id: "folder-2",
-                title: "Folder 2",
-                slug: "folder-1",
-                parentId: null,
-                type
-            },
-            {
-                id: "folder-3",
-                title: "Folder 3",
-                slug: "folder-3",
-                parentId: null,
-                type
-            }
-        ]);
-
-        const spyA = vi.spyOn(gatewayAbc, "execute");
-
-        const newType = "xyz";
-
-        const gatewayXyz = new ListFoldersByParentIdsMockGateway([
-            {
-                id: "folder-1",
-                title: "Folder 1",
-                slug: "folder-1",
-                parentId: null,
-                type: newType
-            },
-            {
-                id: "folder-2",
-                title: "Folder 2",
-                slug: "folder-1",
-                parentId: null,
-                type: newType
-            },
-            {
-                id: "folder-3",
-                title: "Folder 3",
-                slug: "folder-3",
-                parentId: null,
-                type: newType
-            }
-        ]);
-
-        const spyX = vi.spyOn(gatewayXyz, "execute");
-
-        const listFoldersByParentId = ListFoldersByParentIds.getInstance(type, gatewayAbc);
-
-        expect(foldersCache.hasItems()).toBeFalse();
-
-        await listFoldersByParentId.useCase.execute({});
-
-        expect(spyA).toHaveBeenCalledTimes(1);
-        expect(foldersCache.hasItems()).toBeTrue();
-
-        const newFoldersCache = folderCacheFactory.getCache(newType);
-        const newListFoldersByParentId = ListFoldersByParentIds.getInstance(newType, gatewayXyz);
-
-        expect(newFoldersCache.hasItems()).toBeFalse();
-
-        await newListFoldersByParentId.useCase.execute({});
-
-        expect(spyX).toHaveBeenCalledTimes(1);
-        expect(newFoldersCache.hasItems()).toBeTrue();
+        expect(foldersCache.hasItems()).toBe(false);
     });
 });

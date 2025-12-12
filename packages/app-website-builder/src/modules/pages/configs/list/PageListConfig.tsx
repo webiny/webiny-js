@@ -1,40 +1,49 @@
 import React, { useMemo } from "react";
 import { createConfigurableComponent } from "@webiny/react-properties";
-import { CompositionScope } from "@webiny/react-composition";
 import { Browser, type BrowserConfig } from "./Browser/index.js";
 import { PageType } from "./PageType.js";
+import { type AcoConfig, useAcoConfig } from "@webiny/app-aco";
 
-const base = createConfigurableComponent<PageListConfig>("WbPageListConfig");
+const base = createConfigurableComponent<PageListConfig>("WbPageList");
 
-const ScopedPageListConfig = ({ children }: { children: React.ReactNode }) => {
-    return (
-        <CompositionScope name={"wbPage"}>
-            <base.Config>{children}</base.Config>
-        </CompositionScope>
-    );
+const ScopedPublicPageListConfig = ({ children }: { children: React.ReactNode }) => {
+    return <base.Config priority={"secondary"}>{children}</base.Config>;
 };
 
-ScopedPageListConfig.displayName = "WbPageListConfig";
+ScopedPublicPageListConfig.displayName = "WbPageListConfig";
 
-export const PageListConfig = Object.assign(ScopedPageListConfig, { Browser, PageType });
+const ScopedInternalPageListConfig = ({ children }: { children: React.ReactNode }) => {
+    return <base.Config priority={"primary"}>{children}</base.Config>;
+};
+
+ScopedInternalPageListConfig.displayName = "WbPageListConfig";
+
+export const PageListConfig = Object.assign(ScopedPublicPageListConfig, { Browser, PageType });
+export const InternalPageListConfig = Object.assign(ScopedInternalPageListConfig, {
+    Browser,
+    PageType
+});
 export const PageListWithConfig = base.WithConfig;
 
-interface PageListConfig {
+interface PageListConfig extends AcoConfig {
     browser: BrowserConfig;
 }
 
 export function usePageListConfig() {
     const config = base.useConfig();
+    const acoConfig = useAcoConfig(config ?? {});
 
     const browser = config.browser || {};
 
     return useMemo(
         () => ({
             browser: {
+                ...acoConfig,
                 ...browser,
                 bulkActions: [...(browser.bulkActions || [])],
                 filters: [...(browser.filters || [])],
-                filtersToWhere: [...(browser.filtersToWhere || [])]
+                filtersToWhere: [...(browser.filtersToWhere || [])],
+                sidebarFooter: [...(browser.sidebarFooter || [])]
             }
         }),
         [config]

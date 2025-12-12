@@ -1,14 +1,14 @@
-import type { GetFolderParams, IGetFolderUseCase } from "./IGetFolderUseCase.js";
-import type { IGetFolderRepository } from "./IGetFolderRepository.js";
+import { GetFolderUseCase as UseCaseAbstraction, GetFolderRepository } from "./abstractions.js";
 
-export class GetFolderUseCase implements IGetFolderUseCase {
-    private repository: IGetFolderRepository;
+class GetFolderUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: GetFolderRepository.Interface) {}
 
-    constructor(repository: IGetFolderRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: GetFolderParams) {
-        await this.repository.execute(params.id);
+    async execute(id: string) {
+        await this.repository.execute(id);
     }
 }
+
+export const GetFolderUseCase = UseCaseAbstraction.createImplementation({
+    implementation: GetFolderUseCaseImpl,
+    dependencies: [GetFolderRepository]
+});

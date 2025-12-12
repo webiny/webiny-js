@@ -1,7 +1,6 @@
 import React from "react";
 import { useEffect, useMemo, useState } from "react";
 import debounce from "lodash/debounce.js";
-import { useAcoConfig } from "@webiny/app-aco";
 import { useContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 
 interface Props {
@@ -18,7 +17,6 @@ interface Props {
  */
 export const ContentEntriesDebounceRenderer = ({ children }: Props) => {
     const [render, setRender] = useState(false);
-    const acoConfigs = useAcoConfig();
     const entryListConfigs = useContentEntryListConfig();
     const entryEditorConfigs = useContentEntryListConfig();
 
@@ -38,7 +36,7 @@ export const ContentEntriesDebounceRenderer = ({ children }: Props) => {
         return () => {
             debouncedRender.cancel();
         };
-    }, [acoConfigs, entryListConfigs, entryEditorConfigs]);
+    }, [entryListConfigs, entryEditorConfigs]);
 
     return <>{render ? children : null}</>;
 };

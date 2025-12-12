@@ -11,7 +11,7 @@ export const DeleteFile = () => {
     const { openDialogDeleteFile } = useDeleteFile({
         file
     });
-    const { OptionsMenuItem } = FileManagerViewConfig.Browser.FileAction;
+    const { OptionsMenuItem } = FileManagerViewConfig.Browser.File.Action;
 
     if (!canDelete(file)) {
         return null;

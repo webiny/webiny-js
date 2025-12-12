@@ -1,14 +1,19 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import { GetDescendantFolders } from "./GetDescendantFolders.js";
-import { folderCacheFactory } from "../cache/FoldersCacheFactory.js";
-import { Folder } from "../Folder.js";
+import { describe, it, expect } from "vitest";
+import { Container } from "@webiny/di";
+import { FoldersCache } from "~/features/folders/abstractions.js";
+import { FoldersContext } from "~/features/folders/abstractions.js";
+import { GetDescendantFoldersUseCase } from "~/features/folders/getDescendantFolders/abstractions.js";
+import { GetDescendantFoldersFeature } from "~/features/folders/getDescendantFolders/feature.js";
+import { ListCache } from "~/features/folders/cache/index.js";
+import { Folder } from "~/domain/folder/Folder.js";
 
 describe("GetDescendantFolders", () => {
     const type = "abc";
-    const foldersCache = folderCacheFactory.getCache(type);
 
-    beforeEach(() => {
-        foldersCache.clear();
+    function setupTest() {
+        const container = new Container();
+        const foldersCache = new ListCache<Folder>();
+
         foldersCache.addItems([
             Folder.create({
                 id: "folder-1",
@@ -51,14 +56,19 @@ describe("GetDescendantFolders", () => {
                 type
             })
         ]);
-    });
+
+        container.registerInstance(FoldersContext, { type });
+        container.registerInstance(FoldersCache, foldersCache);
+
+        GetDescendantFoldersFeature.register(container);
+
+        return { container, foldersCache, useCase: container.resolve(GetDescendantFoldersUseCase) };
+    }
 
     it("should return all descendants of a folder", async () => {
-        const getDescendantFolders = GetDescendantFolders.getInstance(type);
+        const { useCase } = setupTest();
 
-        const descendants = getDescendantFolders.execute({
-            id: "folder-2"
-        });
+        const descendants = useCase.execute("folder-2");
 
         expect(descendants).toEqual([
             {
@@ -97,11 +107,9 @@ describe("GetDescendantFolders", () => {
     });
 
     it("should return the folder it self in case no descendants are found", async () => {
-        const getDescendantFolders = GetDescendantFolders.getInstance(type);
+        const { useCase } = setupTest();
 
-        const descendants = getDescendantFolders.execute({
-            id: "folder-1"
-        });
+        const descendants = useCase.execute("folder-1");
 
         expect(descendants).toEqual([
             {
@@ -116,11 +124,9 @@ describe("GetDescendantFolders", () => {
     });
 
     it("should return empty array if folder does not exist", async () => {
-        const getDescendantFolders = GetDescendantFolders.getInstance(type);
+        const { useCase } = setupTest();
 
-        const descendants = getDescendantFolders.execute({
-            id: "non-existent-folder"
-        });
+        const descendants = useCase.execute("non-existent-folder");
 
         expect(descendants).toEqual([]);
     });

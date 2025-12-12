@@ -19,9 +19,5 @@ export const FolderDropConfirmation = ({
         return null;
     }
 
-    return (
-        <AcoConfig>
-            <Folder.DropConfirmation {...props} />
-        </AcoConfig>
-    );
+    return <Folder.DropConfirmation {...props} />;
 };

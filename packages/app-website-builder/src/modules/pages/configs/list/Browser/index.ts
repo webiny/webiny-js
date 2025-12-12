@@ -4,6 +4,7 @@ import { FiltersToWhere, type FiltersToWhereConverter } from "./FiltersToWhere.j
 import { Filter, type FilterConfig } from "./Filter.js";
 import { FolderAction, type FolderActionConfig } from "./FolderAction.js";
 import { BulkAction, type BulkActionConfig } from "./BulkAction.js";
+import { SidebarFooter, type SidebarFooterConfig } from "./SidebarFooter.js";
 
 export interface BrowserConfig {
     bulkActions: BulkActionConfig[];
@@ -12,6 +13,7 @@ export interface BrowserConfig {
     folderActions: FolderActionConfig[];
     pageActions: PageActionConfig[];
     table: TableConfig;
+    sidebarFooter: SidebarFooterConfig[];
 }
 
 export const Browser = {
@@ -24,5 +26,8 @@ export const Browser = {
     Page: {
         Action: PageAction
     },
-    Table
+    Table,
+    Sidebar: {
+        Footer: SidebarFooter
+    }
 };

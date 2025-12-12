@@ -15,11 +15,9 @@ const BaseEntryAction = makeDecoratable(
     "EntryAction",
     ({ modelIds = [], ...props }: EntryActionProps) => {
         return (
-            <AcoConfig>
-                <IsApplicableToCurrentModel modelIds={modelIds}>
-                    <Record.Action {...props} />
-                </IsApplicableToCurrentModel>
-            </AcoConfig>
+            <IsApplicableToCurrentModel modelIds={modelIds}>
+                <Record.Action {...props} />
+            </IsApplicableToCurrentModel>
         );
     }
 );

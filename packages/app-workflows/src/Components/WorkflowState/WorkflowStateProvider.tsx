@@ -44,7 +44,7 @@ export const WorkflowStateProvider = (props: IWorkflowStateProps) => {
             workflowsRepository,
             title
         });
-    }, [app, id, identity, client, title]);
+    }, [app, id, identity?.id, title]);
 
     return (
         <WorkflowStateContext.Provider value={{ presenter }}>

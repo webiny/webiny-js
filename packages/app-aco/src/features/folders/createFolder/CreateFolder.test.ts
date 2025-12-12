@@ -1,17 +1,22 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { CreateFolder } from "./CreateFolder.js";
-import { folderCacheFactory } from "../cache/FoldersCacheFactory.js";
-import type { FolderGqlDto } from "~/features/folders/listFolders/FolderGqlDto.js";
-import type { ICreateFolderGateway } from "~/features/folders/createFolder/ICreateFolderGateway.js";
+import { Container } from "@webiny/di";
+import { FoldersCache } from "../abstractions.js";
+import { FoldersContext } from "../abstractions.js";
+import { CreateFolderUseCase } from "./abstractions.js";
+import { CreateFolderFeature } from "./feature.js";
+import { CreateFolderGateway } from "./abstractions.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { ListCache } from "~/features/folders/cache/index.js";
+import { Folder } from "~/domain/folder/Folder.js";
 
-class CreateFolderMockGateway implements ICreateFolderGateway {
+class CreateFolderMockGateway implements CreateFolderGateway.Interface {
     async execute() {
         return {
             id: "any-folder-id",
             title: "New Folder",
             slug: "new-folder",
             type: "abc"
-        } as FolderGqlDto; // We don't care about the rest of the props, hence the type assertion.
+        } as FolderDto;
     }
 }
 
@@ -19,17 +24,27 @@ describe("CreateFolder", () => {
     const type = "abc";
     const gateway = new CreateFolderMockGateway();
 
-    const foldersCache = folderCacheFactory.getCache(type);
+    let container: Container;
+    const foldersCache = new ListCache<Folder>();
 
     beforeEach(() => {
+        container = new Container();
         foldersCache.clear();
+
+        container.registerInstance(FoldersContext, { type });
+        container.registerInstance(FoldersCache, foldersCache);
+
+        CreateFolderFeature.register(container);
+
+        // Replace the feature gateway with a mock
+        container.registerInstance(CreateFolderGateway, gateway);
     });
 
     it("should be able to create a new folder", async () => {
         const spy = vi.spyOn(gateway, "execute");
-        const createFolder = CreateFolder.getInstance(type, gateway);
+        const createFolder = container.resolve(CreateFolderUseCase);
 
-        expect(foldersCache.hasItems()).toBeFalse();
+        expect(foldersCache.hasItems()).toBe(false);
 
         await createFolder.execute({
             title: "New Folder",
@@ -40,7 +55,7 @@ describe("CreateFolder", () => {
         });
 
         expect(spy).toHaveBeenCalledTimes(1);
-        expect(foldersCache.hasItems()).toBeTrue();
+        expect(foldersCache.hasItems()).toBe(true);
 
         const item = foldersCache.getItem(folder => folder.slug === "new-folder");
 

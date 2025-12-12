@@ -18,7 +18,7 @@ import {
 export const WorkflowStateBarDialogs = observer(() => {
     const { presenter } = useWorkflowState();
 
-    switch (presenter.vm.dialog) {
+    switch (presenter.vm.dialog?.type) {
         case "cancelReview":
             return <CancelReviewDialog presenter={presenter} />;
         case "requestReview":

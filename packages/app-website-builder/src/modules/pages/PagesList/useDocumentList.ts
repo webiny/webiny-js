@@ -1,23 +1,25 @@
-import { useCallback, useState, useMemo, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { autorun } from "mobx";
 import {
-    useGetFolderHierarchy,
+    useLoadFolderHierarchy,
     useListFoldersByParentIds,
     useNavigateFolder
 } from "@webiny/app-aco";
-import { useDocumentListPresenter } from "./presenters/DocumentListPresenterContext.js";
 import { useFilterPages, useLoadPages } from "~/features/pages/index.js";
 import { useSelectPages } from "~/features/pages/selectPages/useSelectPages.js";
+import { makeDecoratableHook } from "@webiny/react-composition";
+import { useFeature } from "@webiny/app";
+import { PageListFeature } from "~/presentation/pages/PageList/feature.js";
 
-export const useDocumentList = () => {
+export const useDocumentList = makeDecoratableHook(() => {
     const isFirstLoad = useRef(true);
-    const { folders, getFolderHierarchy } = useGetFolderHierarchy();
+    const { folders, loadFolderHierarchy } = useLoadFolderHierarchy();
     const { listFoldersByParentIds } = useListFoldersByParentIds();
     const { currentFolderId } = useNavigateFolder();
     const { loadPages: listDocuments } = useLoadPages();
     const { filterPages: filterDocuments } = useFilterPages();
     const { selectPages: selectDocuments } = useSelectPages();
-    const presenter = useDocumentListPresenter();
+    const { presenter } = useFeature(PageListFeature);
 
     const params = useMemo(
         () => ({
@@ -53,7 +55,7 @@ export const useDocumentList = () => {
     useEffect(() => {
         // The folders collection is empty, it must be the first render, let's load the full hierarchy.
         if (folders.length === 0) {
-            getFolderHierarchy(vm.folderId);
+            loadFolderHierarchy(vm.folderId);
         } else {
             // Otherwise let's load only the current folder sub-tree
             listFoldersByParentIds([vm.folderId]);
@@ -77,4 +79,4 @@ export const useDocumentList = () => {
         vm,
         showFilters
     };
-};
+});

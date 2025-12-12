@@ -9,6 +9,7 @@ import { useApolloClient, useModel } from "~/admin/hooks/index.js";
 import { ContentEntriesListProvider } from "~/admin/views/contentEntries/hooks/index.js";
 import { LOCAL_STORAGE_LATEST_VISITED_FOLDER } from "~/admin/constants.js";
 import { Routes } from "~/routes.js";
+import { useContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 
 /**
  * Generates a `layoutId` to be used with the `<SplitView />` component.
@@ -51,6 +52,7 @@ export const Table = () => {
     const { model } = useModel();
     const client = useApolloClient();
     const { goToRoute } = useRouter();
+    const { browser } = useContentEntryListConfig();
     const { route } = useRoute(Routes.ContentEntries.List);
 
     const navigateToFolder = useCallback(
@@ -77,6 +79,7 @@ export const Table = () => {
             model={model}
             navigateToFolder={navigateToFolder}
             createNavigateFolderStorageKey={createNavigateFolderStorageKey}
+            columns={browser.table.columns ?? []}
         >
             <ContentEntriesListProvider>
                 <View />
