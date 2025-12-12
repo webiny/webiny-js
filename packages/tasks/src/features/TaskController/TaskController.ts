@@ -1,14 +1,9 @@
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/abstractions.js";
 import { TaskController as Abstraction } from "@webiny/api-core/features/task/TaskController/abstractions.js";
 import { TaskResultStatus } from "@webiny/api-core/features/task/TaskDefinition";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { TaskExecutionContext } from "../TaskExecutionContext/abstractions.js";
-import {
-    type ITask,
-    type ITaskDataInput,
-    type ITaskResponseDoneResultOutput,
-    type ITaskTriggerParams,
-    TaskDataStatus
-} from "~/types.js";
+import { type ITask, type ITaskTriggerParams, TaskDataStatus } from "~/types.js";
 import "./augmentation.js";
 
 class TaskControllerImpl implements Abstraction.Interface {
@@ -30,12 +25,25 @@ class TaskControllerImpl implements Abstraction.Interface {
     }
 
     response = {
-        done: (message?: string, output?: any) =>
-            ({
+        done: ((messageOrOutput?: string | any, output?: any) => {
+            // If first arg is not a string, treat it as output
+            if (typeof messageOrOutput !== "string" && typeof messageOrOutput !== "undefined") {
+                return {
+                    status: TaskResultStatus.DONE,
+                    output: messageOrOutput
+                } as const;
+            }
+
+            // Otherwise treat first arg as message
+            return {
                 status: TaskResultStatus.DONE,
-                message,
+                message: messageOrOutput,
                 output
-            }) as const,
+            } as const;
+        }) as {
+            (output?: any): any;
+            (message?: string, output?: any): any;
+        },
 
         continue: (input: any, options?: { wait?: number; message?: string }) =>
             ({
@@ -70,25 +78,34 @@ class TaskControllerImpl implements Abstraction.Interface {
     };
 
     logger = {
-        info: async (message: string, data?: Record<string, any>) => {
-            await this.store.addInfoLog({ message, data });
+        info: async (params: { message: string; data?: Record<string, any> }) => {
+            await this.store.addInfoLog(params);
         },
-        error: async (message: string, error?: Error | any, data?: Record<string, any>) => {
+        error: async (params: {
+            message: string;
+            error?: Error | any;
+            data?: Record<string, any>;
+        }) => {
+            const error = params.error;
             const errorObj =
                 error instanceof Error ? { message: error.message, stack: error.stack } : error;
-            await this.store.addErrorLog({ message, error: errorObj, data });
+            await this.store.addErrorLog({
+                message: params.message,
+                error: errorObj,
+                data: params.data
+            });
         }
     };
 
     task = {
-        trigger: async <CI extends ITaskDataInput = ITaskDataInput>(
+        trigger: async <CI extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput>(
             params: ITaskTriggerParams<CI>
         ): Promise<ITask<CI>> => {
             return this.taskService.trigger({ ...params, parent: this.store.getTask() });
         },
         listChildren: async <
-            CT extends ITaskDataInput = ITaskDataInput,
-            CO extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+            CT extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
+            CO extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
         >(
             definitionId?: string
         ): Promise<ITask<CT, CO>[]> => {

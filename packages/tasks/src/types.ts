@@ -273,8 +273,8 @@ export interface ITasksContextCrudObject {
 
 export interface ITasksContextDefinitionObject {
     getDefinition: <
-        I = ITaskDataInput,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        I extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
+        O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
     >(
         id: string
     ) => TaskDefinition.Runnable<I, O> | null;

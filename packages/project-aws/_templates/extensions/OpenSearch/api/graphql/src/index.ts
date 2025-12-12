@@ -21,7 +21,6 @@ import { createAuditLogs } from "@webiny/api-audit-logs";
 import { createBackgroundTasks } from "@webiny/api-background-tasks-os";
 import { createWebsockets } from "@webiny/api-websockets";
 import { createRecordLocking } from "@webiny/api-record-locking";
-import { createLogger } from "@webiny/api-log";
 import { createHeadlessCmsScheduler } from "@webiny/api-headless-cms-scheduler";
 import { createSchedulerClient } from "@webiny/aws-sdk/client-scheduler";
 import { createMailerContext, createMailerGraphQL } from "@webiny/api-mailer";
@@ -49,9 +48,6 @@ export const handler = createHandler({
             driver: new DynamoDbDriver({ documentClient })
         }),
         securityPlugins(),
-        createLogger({
-            documentClient
-        }),
         createWebsockets(),
         createHeadlessCmsContext({
             storageOperations: createHeadlessCmsStorageOperations({

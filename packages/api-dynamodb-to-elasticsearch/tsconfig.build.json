@@ -4,7 +4,6 @@
   "references": [
     { "path": "../api/tsconfig.build.json" },
     { "path": "../api-elasticsearch/tsconfig.build.json" },
-    { "path": "../api-log/tsconfig.build.json" },
     { "path": "../aws-sdk/tsconfig.build.json" },
     { "path": "../error/tsconfig.build.json" },
     { "path": "../handler-aws/tsconfig.build.json" },
@@ -22,8 +21,6 @@
       "@webiny/api": ["../api/src"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
-      "@webiny/api-log/*": ["../api-log/src/*"],
-      "@webiny/api-log": ["../api-log/src"],
       "@webiny/aws-sdk/*": ["../aws-sdk/src/*"],
       "@webiny/aws-sdk": ["../aws-sdk/src"],
       "@webiny/error/*": ["../error/src/*"],

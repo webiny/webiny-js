@@ -4,9 +4,7 @@ import type {
     ITask,
     ITaskAbortParams,
     ITaskCreateData,
-    ITaskDataInput,
     ITaskLog,
-    ITaskResponseDoneResultOutput,
     ITasksContextServiceObject,
     ITaskTriggerParams
 } from "~/types.js";
@@ -24,7 +22,10 @@ interface ValidateDelayParams<T> {
     delay?: number;
 }
 
-const validateDelay = <T = ITaskDataInput>({ input, delay }: ValidateDelayParams<T>): void => {
+const validateDelay = <T = TaskDefinition.TaskDataInput>({
+    input,
+    delay
+}: ValidateDelayParams<T>): void => {
     if (!delay || delay < 0 || typeof delay !== "number" || Number.isInteger(delay) === false) {
         return;
     } else if (delay < MAX_DELAY_SECONDS) {
@@ -47,8 +48,8 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
 
     return {
         trigger: async <
-            T extends ITaskDataInput = ITaskDataInput,
-            O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+            T extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
+            O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
         >(
             params: ITaskTriggerParams<T>
         ): Promise<ITask<T, O>> => {
@@ -130,8 +131,8 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
             }
         },
         abort: async <
-            T = ITaskDataInput,
-            O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+            T extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
+            O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
         >(
             params: ITaskAbortParams
         ): Promise<ITask<T, O>> => {

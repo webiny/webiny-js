@@ -1,45 +1,45 @@
-import type { CreateElasticsearchIndexTaskPluginIndex } from "@webiny/api-elasticsearch-tasks";
-import { createElasticsearchIndexTaskPlugin } from "@webiny/api-elasticsearch-tasks";
+import { OpensearchTenantIndexFactory } from "@webiny/api-elasticsearch-tasks";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
+import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentModel/ListModels/index.js";
 import { configurations } from "~/configurations.js";
 import type { CmsContext } from "~/types.js";
 
-export const createIndexTaskPluginTest = () => {
-    return createElasticsearchIndexTaskPlugin<CmsContext>({
-        name: "elasticsearch.cms.createIndexTaskPlugin",
-        getIndexList: async ({ context, tenant }) => {
-            const originalTenant = context.tenancy.getCurrentTenant();
-            if (!originalTenant) {
-                return [];
-            }
-            const selectedTenant = await context.tenancy.getTenantById(tenant);
-            if (!selectedTenant) {
-                return [];
-            }
+class CreateElasticsearchIndexTask implements OpensearchTenantIndexFactory.Interface {
+    constructor(
+        private context: CmsContext,
+        private listModels: ListModelsUseCase.Interface
+    ) {}
 
-            const models = await context.cms.listModels();
-            if (models.length === 0) {
-                return [];
-            }
+    async getIndexList(tenant: Tenant): Promise<OpensearchTenantIndexFactory.IndexConfig[]> {
+        const result = await this.listModels.execute();
+        const models = result.value;
 
-            context.tenancy.setCurrentTenant(selectedTenant);
-
-            const indexes = models.map<CreateElasticsearchIndexTaskPluginIndex>(model => {
-                const { index } = configurations.es({
-                    model: {
-                        modelId: model.modelId,
-                        tenant
-                    }
-                });
-                return {
-                    index,
-                    settings: configurations.indexSettings({
-                        context
-                    })
-                };
-            });
-
-            context.tenancy.setCurrentTenant(originalTenant);
-            return indexes;
+        if (models.length === 0) {
+            return [];
         }
+
+        const indexes = models.map<OpensearchTenantIndexFactory.IndexConfig>(model => {
+            const { index } = configurations.es({
+                model: {
+                    modelId: model.modelId,
+                    tenant: tenant.id
+                }
+            });
+            return {
+                index,
+                settings: configurations.indexSettings({
+                    context: this.context
+                })
+            };
+        });
+
+        return indexes;
+    }
+}
+
+export const createCreateIndexTask = (context: CmsContext) => {
+    context.container.registerFactory(OpensearchTenantIndexFactory, () => {
+        const listModels = context.container.resolve(ListModelsUseCase);
+        return new CreateElasticsearchIndexTask(context, listModels);
     });
 };

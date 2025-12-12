@@ -6,9 +6,9 @@ import { ContextPlugin } from "@webiny/api";
 import {
     createStorageOperations,
     createCmsEntryElasticsearchBodyModifierPlugin
-} from "../../dist/index";
-import { configurations } from "../../dist/configurations";
-import { base as baseIndexConfigurationPlugin } from "../../dist/elasticsearch/indices/base";
+} from "../../src/index";
+import { configurations } from "../../src/configurations";
+import { base as baseIndexConfigurationPlugin } from "../../src/elasticsearch/indices/base";
 import { setStorageOps } from "@webiny/project-utils/testing/environment";
 import { getElasticsearchClient } from "@webiny/project-utils/testing/elasticsearch";
 import { getElasticsearchOperators } from "@webiny/api-elasticsearch/operators";

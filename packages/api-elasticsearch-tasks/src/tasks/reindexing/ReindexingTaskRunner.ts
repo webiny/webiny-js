@@ -87,9 +87,9 @@ export class ReindexingTaskRunner {
                     }
                     const exists = await this.indexManager.indexExists(item.index);
                     if (!exists) {
-                        await this.manager.controller.logger.info(
-                            `Index "${item.index}" does not exist. Skipping the item.`
-                        );
+                        await this.manager.controller.logger.info({
+                            message: `Index "${item.index}" does not exist. Skipping the item.`
+                        });
                         continue;
                     }
                     /**

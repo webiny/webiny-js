@@ -38,7 +38,6 @@
     "@webiny/api-headless-cms-tasks": "0.0.0",
     "@webiny/api-headless-cms-tasks-ddb-es": "0.0.0",
     "@webiny/api-headless-cms-workflows": "0.0.0",
-    "@webiny/api-log": "0.0.0",
     "@webiny/api-mailer": "0.0.0",
     "@webiny/api-record-locking": "0.0.0",
     "@webiny/api-scheduler": "0.0.0",

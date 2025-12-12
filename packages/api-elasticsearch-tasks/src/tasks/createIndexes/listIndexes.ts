@@ -1,4 +1,4 @@
-import { OpensearchTenantIndexFactory } from "~/tasks/createIndexes/abstractions.js";
+import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 
@@ -14,7 +14,7 @@ export const listIndexes = async (
     const indexes: OpensearchTenantIndexFactory.IndexConfig[] = [];
     await tenantContext.withEachTenant(tenants, async tenant => {
         for (const factory of indexFactories) {
-            const results = await factory.getIndexList(tenant.id);
+            const results = await factory.getIndexList(tenant);
             for (const result of results) {
                 if (indexes.some(i => i.index === result.index)) {
                     continue;

@@ -84,12 +84,12 @@ class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
                         });
                     }
 
-                    await controller.logger.info(
-                        `FLP Update task triggered for type ${folderType}`,
-                        {
+                    await controller.logger.info({
+                        message: `FLP Update task triggered for type ${folderType}`,
+                        data: {
                             type: folderType
                         }
-                    );
+                    });
                 }
 
                 return controller.response.done(

@@ -6,26 +6,25 @@ import type {
 import type { IIndexManager } from "~/settings/types.js";
 import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchSynchronize.js";
 import { ElasticsearchFetcher } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchFetcher.js";
-import { SynchronizationContext } from "~/abstractions/SynchronizationContext.js";
 
 export interface IDataSynchronizationTaskRunnerParams {
     manager: IDataSynchronizationManager;
     indexManager: IIndexManager;
-    synchronizationContext: SynchronizationContext.Interface;
     factories: IFactories;
+    elasticsearchSynchronize: ElasticsearchSynchronize;
 }
 
 export class DataSynchronizationTaskRunner {
     private readonly manager: IDataSynchronizationManager;
     private readonly indexManager: IIndexManager;
     private readonly factories: IFactories;
-    private readonly synchronizationContext: SynchronizationContext.Interface;
+    private readonly elasticsearchSynchronize: ElasticsearchSynchronize;
 
     public constructor(params: IDataSynchronizationTaskRunnerParams) {
         this.manager = params.manager;
         this.indexManager = params.indexManager;
         this.factories = params.factories;
-        this.synchronizationContext = params.synchronizationContext;
+        this.elasticsearchSynchronize = params.elasticsearchSynchronize
     }
 
     public async run(input: IDataSynchronizationInput) {
@@ -44,11 +43,7 @@ export class DataSynchronizationTaskRunner {
             const sync = this.factories.elasticsearchToDynamoDb({
                 manager: this.manager,
                 indexManager: this.indexManager,
-                synchronize: new ElasticsearchSynchronize({
-                    context: this.synchronizationContext,
-                    controller: this.manager.controller,
-                    dbRegistry: this.manager.dbRegistry
-                }),
+                synchronize: this.elasticsearchSynchronize,
                 fetcher: new ElasticsearchFetcher({
                     client: this.manager.elasticsearch
                 })

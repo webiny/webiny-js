@@ -4,7 +4,7 @@ import type { IElasticsearchTaskConfig } from "~/types.js";
 import { CreateIndexesTaskRunner } from "~/tasks/createIndexes/CreateIndexesTaskRunner.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
-import { OpensearchTenantIndexFactory } from "~/tasks/createIndexes/abstractions.js";
+import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
 
 export class CreateIndexesTaskDefinition
     implements TaskDefinition.Interface<IElasticsearchCreateIndexesTaskInput>

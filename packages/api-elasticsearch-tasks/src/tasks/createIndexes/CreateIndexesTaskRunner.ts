@@ -5,7 +5,7 @@ import { listIndexes } from "./listIndexes.js";
 import { createIndexFactory } from "./createIndex.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { OpensearchTenantIndexFactory } from "~/tasks/createIndexes/abstractions.js";
+import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
 
@@ -31,7 +31,7 @@ export class CreateIndexesTaskRunner {
         }
 
         const tenantsResult = await this.listTenantsUseCase.execute();
-        const tenants = tenantsResult.error;
+        const tenants = tenantsResult.value;
 
         const indexes = await listIndexes(this.tenantContext, tenants, this.indexFactories);
 

@@ -2,7 +2,7 @@ import type { IndexManager } from "~/settings/index.js";
 import { listIndexes } from "./listIndexes.js";
 import { createIndexFactory } from "~/tasks/createIndexes/createIndex.js";
 import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
-import { OpensearchTenantIndexFactory } from "~/tasks/createIndexes/abstractions.js";
+import { OpensearchTenantIndexFactory } from "~/abstractions/OpensearchTenantIndexFactory.js";
 
 export class OnBeforeTrigger {
     public constructor(

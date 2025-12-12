@@ -4,21 +4,15 @@ import { CmsModel } from "@webiny/api-headless-cms/types";
 import { getElasticsearchIndexPrefix } from "@webiny/api-elasticsearch";
 
 describe("Elasticsearch index", () => {
-    const withLocaleItems = [
-        ["root", "en-US"],
-        ["admin", "en-EN"],
-        ["root", "de-DE"],
-        ["admin", "en-GB"],
-        ["root,", "de"]
-    ];
+    const withLocaleItems = [["root"], ["admin"]];
 
     beforeEach(() => {
         process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = undefined;
     });
 
     it.each(withLocaleItems)(
-        "should create index with locale code as part of the name",
-        async (tenant, locale) => {
+        "should create index with tenant id as part of the name",
+        async tenant => {
             process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
 
             const prefix = getElasticsearchIndexPrefix();
@@ -26,14 +20,11 @@ describe("Elasticsearch index", () => {
             const { index } = configurations.es({
                 model: {
                     tenant,
-                    locale,
                     modelId: "testModel"
                 } as CmsModel
             });
 
-            expect(index).toEqual(
-                `${prefix}${tenant}-headless-cms-${locale}-testModel`.toLowerCase()
-            );
+            expect(index).toEqual(`${prefix}${tenant}-headless-cms-testModel`.toLowerCase());
         }
     );
 
@@ -46,30 +37,11 @@ describe("Elasticsearch index", () => {
                      */
                     // @ts-expect-error
                     tenant: null,
-                    locale: "en-US",
                     modelId: "testModel"
                 }
             });
         }).toThrowError(
             `Missing "tenant" parameter when trying to create Elasticsearch index name.`
-        );
-    });
-
-    it("should throw error when missing locale but it is required", async () => {
-        expect(() => {
-            configurations.es({
-                model: {
-                    tenant: "root",
-                    /**
-                     * We expect error because we are testing the case when locale is missing.
-                     */
-                    // @ts-expect-error
-                    locale: null,
-                    modelId: "testModel"
-                }
-            });
-        }).toThrowError(
-            `Missing "locale" parameter when trying to create Elasticsearch index name.`
         );
     });
 
@@ -83,7 +55,6 @@ describe("Elasticsearch index", () => {
             const { index: noLocaleIndex } = configurations.es({
                 model: {
                     tenant,
-                    locale,
                     modelId: "testModel"
                 } as CmsModel
             });

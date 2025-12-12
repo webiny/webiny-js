@@ -1,5 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { ElasticsearchIndexRequestBody } from "@webiny/api-elasticsearch/types.js";
+import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
 export interface IOpensearchIndexConfig {
     index: string;
@@ -7,7 +8,7 @@ export interface IOpensearchIndexConfig {
 }
 
 export interface IOpensearchTenantIndexFactory {
-    getIndexList(tenant: string): Promise<IOpensearchIndexConfig[]>;
+    getIndexList(tenant: Tenant): Promise<IOpensearchIndexConfig[]>;
 }
 
 export const OpensearchTenantIndexFactory = createAbstraction<IOpensearchTenantIndexFactory>(

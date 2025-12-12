@@ -14,12 +14,6 @@ import { TestingRunTaskDefinition } from "~/tasks/testingRunTask.js";
 
 const createTasksCrud = () => {
     const plugin = new ContextPlugin<Context>(async context => {
-        // Register TaskExecutionContext EARLY (singleton, empty)
-        TaskExecutionContextFeature.register(context.container);
-
-        // Register TaskController (depends on TaskExecutionContext)
-        context.container.register(TaskController);
-
         // Register the RunnableTaskDecorator to wrap all TaskDefinition instances
         context.container.registerDecorator(RunnableTaskDecorator);
 
@@ -45,6 +39,12 @@ export const createBackgroundTaskContext = (): Plugin[] => {
         new ContextPlugin<Context>(context => {
             // Register legacy tasks context via a new abstraction
             context.container.registerInstance(TaskService, context.tasks);
+
+            // Register TaskExecutionContext EARLY (singleton, empty)
+            TaskExecutionContextFeature.register(context.container);
+
+            // Register TaskController (depends on TaskExecutionContext)
+            context.container.register(TaskController);
 
             // Register a test task
             context.container.register(TestingRunTaskDefinition);

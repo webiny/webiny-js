@@ -22,8 +22,7 @@ export const createElasticsearchBackgroundTasks = (
             context.container.registerInstance(DbRegistry, context.db.registry);
 
             context.container.registerInstance(SynchronizationContext, {
-                elasticsearch: context.elasticsearch,
-                logger: context.logger
+                elasticsearch: context.elasticsearch
             });
         }),
         createElasticsearchReindexingTask(params),
@@ -32,3 +31,5 @@ export const createElasticsearchBackgroundTasks = (
         createDataSynchronization(params)
     ];
 };
+
+export * from "./abstractions/OpensearchTenantIndexFactory.js";

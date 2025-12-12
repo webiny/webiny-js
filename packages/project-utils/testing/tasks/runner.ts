@@ -2,16 +2,14 @@ import type {
     Context,
     IResponseContinueResult,
     IResponseResult,
-    ITaskDataInput,
-    ITaskDefinition,
-    ITaskEvent,
-    ITaskResponseDoneResultOutput
-} from "@webiny/tasks/types";
-import { TaskRunner } from "@webiny/tasks/runner";
-import { timerFactory } from "@webiny/handler-aws/utils";
-import { TaskEventValidation } from "@webiny/tasks/runner/TaskEventValidation";
-import { ResponseContinueResult } from "@webiny/tasks/response/ResponseContinueResult";
+    ITaskEvent
+} from "../../../tasks/src/types";
+import { TaskRunner } from "../../../tasks/src/runner";
+import { timerFactory } from "../../../handler-aws/src/utils";
+import { TaskEventValidation } from "../../../tasks/src/runner/TaskEventValidation";
+import { ResponseContinueResult } from "../../../tasks/src/response/ResponseContinueResult";
 import { createMockTaskServicePlugin } from "./mockTaskTriggerTransportPlugin";
+import { TaskDefinition } from "../../../api-core/src/features/task/TaskDefinition/index.js";
 
 export interface ICreateRunnerParamsOnContinueCallableParams {
     taskId: string;
@@ -24,12 +22,11 @@ export interface ICreateRunnerParamsOnContinueCallable {
 }
 
 export interface ICreateRunnerParams<
-    C extends Context = Context,
-    I = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    I extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
+    O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
 > {
     context: Context;
-    task: ITaskDefinition<C, I, O>;
+    task: TaskDefinition.Interface<I, O>;
     getRemainingTimeInMills?: () => number;
     /**
      * If provided, this function will be called every time the task continues.
@@ -41,11 +38,10 @@ export interface ICreateRunnerParams<
 export type IExecuteEvent = Pick<ITaskEvent, "webinyTaskId"> & Partial<Pick<ITaskEvent, "tenant">>;
 
 export const createRunner = <
-    C extends Context = Context,
-    I = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    I extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
+    O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
 >(
-    params: ICreateRunnerParams<C, I, O>
+    params: ICreateRunnerParams<I, O>
 ) => {
     params.context.plugins.register(createMockTaskServicePlugin());
     const runner = new TaskRunner(

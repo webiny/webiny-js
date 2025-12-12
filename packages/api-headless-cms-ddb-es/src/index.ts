@@ -30,7 +30,7 @@ import {
 import { createFilterPlugins } from "~/operations/entry/elasticsearch/filtering/plugins/index.js";
 import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin.js";
 import { StorageOperationsCmsModelPlugin, StorageTransformPlugin } from "@webiny/api-headless-cms";
-import { createIndexTaskPluginTest } from "~/tasks/createIndexTaskPlugin.js";
+import { createCreateIndexTask } from "~/tasks/createIndexTaskPlugin.js";
 import { CompressorPlugin } from "@webiny/api";
 import { ModelBeforeCreateHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModel/index.js";
 import { ModelBeforeCreateFromHandler } from "@webiny/api-headless-cms/features/contentModel/CreateModelFrom/events.js";
@@ -134,14 +134,16 @@ export const createStorageOperations: StorageOperationsFactory = params => {
             if (!context.elasticsearch) {
                 context.elasticsearch = elasticsearch;
             }
+
+            /**
+             * This registers the task implementation
+             */
+            createCreateIndexTask(context);
+
             /**
              * Pass the plugins to the parent context.
              */
-            context.plugins.register([
-                dynamoDbPlugins(),
-                createIndexTaskPluginTest(),
-                elasticsearchIndexPlugins()
-            ]);
+            context.plugins.register([dynamoDbPlugins(), elasticsearchIndexPlugins()]);
             /**
              * We need to fetch all the plugin types in the list from the main container.
              * This way we do not need to register plugins in the storage plugins contains.

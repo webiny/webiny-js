@@ -1,11 +1,7 @@
-import type {
-    ITaskDataInput,
-    IResponseError,
-    ITaskDoneOutput,
-    ITaskResult
-} from "@webiny/api-core/features/task/TaskDefinition";
+import type { IResponseError, ITaskResult } from "@webiny/api-core/features/task/TaskDefinition";
 import type { ITask, TaskDataStatus } from "~/types.js";
 import type { ITaskTriggerParams } from "@webiny/api-core/features/task/TaskService/index.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 /**
  * Augment the TaskController interface from api-core with implementation details.
@@ -13,13 +9,14 @@ import type { ITaskTriggerParams } from "@webiny/api-core/features/task/TaskServ
  */
 declare module "@webiny/api-core/features/task/TaskController/abstractions.js" {
     interface ITaskController<
-        I extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskDoneOutput = ITaskDoneOutput
+        I extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
+        O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
     > {
         /**
          * Response helpers - create typed result objects
          */
         response: {
+            done(output?: O): ITaskResult<I, O>;
             done(message?: string, output?: O): ITaskResult<I, O>;
             continue(input: I, options?: { wait?: number; message?: string }): ITaskResult<I, O>;
             error(message: string, error?: Error | IResponseError): ITaskResult<I, O>;
@@ -54,13 +51,13 @@ declare module "@webiny/api-core/features/task/TaskController/abstractions.js" {
          * Task management - trigger and query child tasks
          */
         task: {
-            trigger<CI extends ITaskDataInput = ITaskDataInput>(
+            trigger<CI extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput>(
                 params: ITaskTriggerParams<CI>
             ): Promise<ITask<CI>>;
 
             listChildren<
-                CT extends ITaskDataInput = I,
-                CO extends ITaskDoneOutput = O
+                CT extends TaskDefinition.TaskDataInput = I,
+                CO extends TaskDefinition.TaskDoneOutput = O
             >(
                 definitionId?: string
             ): Promise<ITask<CT, CO>[]>;
