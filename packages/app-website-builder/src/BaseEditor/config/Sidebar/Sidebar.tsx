@@ -11,9 +11,13 @@ import { ScrollableContainer } from "../Sidebar/ScrollableContainer.js";
 
 const SCOPE = "sidebar";
 
-const BaseSidebar = () => {
-    return <Layout />;
-};
+const BaseSidebar = makeDecoratable("SidebarScopedLayout", () => {
+    return (
+        <div className={"w-[300px] flex-none"}>
+            <Layout />
+        </div>
+    );
+});
 
 export type ScopedElementProps = Omit<CoreElementProps, "scope">;
 

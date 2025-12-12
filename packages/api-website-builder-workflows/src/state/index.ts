@@ -17,6 +17,7 @@ export const attachStateLifecycleEvents = ({ context }: IParams) => {
         }
         try {
             await context.websiteBuilder.pages.update(state.targetRevisionId, {
+                // TODO move to system field
                 state: values
             });
         } catch (ex) {

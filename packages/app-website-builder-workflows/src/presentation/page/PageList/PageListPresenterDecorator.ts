@@ -4,7 +4,7 @@ import {
     IDocumentListVm,
     PageListPresenter
 } from "@webiny/app-website-builder/presentation/pages/PageList/index.js";
-import type { WithWorkflowState } from "~/types.js";
+import type { WithWorkflows } from "~/types.js";
 import type { PageDto } from "@webiny/app-website-builder/domain/Page/index.js";
 
 class PageListPresenterWithWorkflows implements PageListPresenter.Interface {
@@ -20,7 +20,7 @@ class PageListPresenterWithWorkflows implements PageListPresenter.Interface {
         return {
             ...vm,
             data: vm.data.map(page => {
-                return this.extendPage(page);
+                return this.decoratePage(page);
             })
         };
     }
@@ -33,13 +33,17 @@ class PageListPresenterWithWorkflows implements PageListPresenter.Interface {
         this.decoratee.showFilters(show);
     }
 
-    private extendPage(page: PageDto): WithWorkflowState<PageDto> {
+    private decoratePage(page: PageDto): WithWorkflows<PageDto> {
         return {
             ...page,
+            workflows: {
+                // @ts-expect-error
+                ...page.workflows,
+                // @ts-expect-error
+                state: page.workflows?.state || null
+            },
             // @ts-expect-error
-            state: page.state,
-            // @ts-expect-error
-            $selectable: !page.state
+            $selectable: !page.workflows?.state
         };
     }
 }
