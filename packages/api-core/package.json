@@ -61,7 +61,7 @@
   "webiny": {
     "exports": {
       "./features/eventPublisher/index.ts": "./api/features/eventPublisher",
-      "./features/logger/index.ts": "./api/features/LoggerService",
+      "./features/logger/index.ts": "./api/features/Logger",
       "./features/security/IdentityContext/index.ts": "./api/security/features/IdentityContext",
       "./features/wcp/WcpContext/index.ts": "./api/wcp/WcpContext",
       "./features/settings/GetSettings/index.ts": "./api/features/GetSettings",

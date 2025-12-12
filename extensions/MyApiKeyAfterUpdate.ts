@@ -1,5 +1,7 @@
 import { ApiKeyAfterUpdateHandler } from "webiny/api/security/features/UpdateApiKey";
-import { LoggerService } from "webiny/api/features/LoggerService";
+
+// TODO: conclude this is the import path we want to use
+import { LoggerService } from "webiny/api/features/Logger";
 
 class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
     constructor(private logger: LoggerService.Interface) {}

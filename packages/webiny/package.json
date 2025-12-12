@@ -28,7 +28,7 @@
   "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f",
   "exports": {
     "./api/features/eventPublisher": "./api/features/eventPublisher.js",
-    "./api/features/LoggerService": "./api/features/LoggerService.js",
+    "./api/features/Logger": "./api/features/Logger.js",
     "./api/security/features/IdentityContext": "./api/security/features/IdentityContext.js",
     "./api/wcp/WcpContext": "./api/wcp/WcpContext.js",
     "./api/features/GetSettings": "./api/features/GetSettings.js",

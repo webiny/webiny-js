@@ -7,6 +7,8 @@ const DEFAULT_LOG_LEVEL = "info";
 /**
  * Default Logger Service Implementation using Pino
  */
+
+// TODO: pino-lambda pkg here, but hard b/c of context.
 export class LoggerServiceImpl implements LoggerServiceAbstraction.Interface {
     private pinoLogger: Logger;
 
