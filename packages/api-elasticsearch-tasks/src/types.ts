@@ -1,25 +1,26 @@
 import type { ElasticsearchContext } from "@webiny/api-elasticsearch/types.js";
 import type {
     Context as TasksContext,
-    IIsCloseToTimeoutCallable,
-    ITaskManagerStore,
-    ITaskResponse,
     ITaskResponseDoneResultOutput
 } from "@webiny/tasks/types.js";
 import type { DynamoDBDocument } from "@webiny/aws-sdk/client-dynamodb/index.js";
 import type { Client } from "@webiny/api-elasticsearch";
 import type { createTable } from "~/definitions/index.js";
 import type { BatchReadItem, IEntity } from "@webiny/db-dynamodb";
-import type { ITimer } from "@webiny/handler-aws";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { Context as LoggerContext } from "@webiny/api-log/types.js";
 import { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
+import {
+    type ITaskDataInput,
+    TaskDefinition
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { DbRegistry } from "~/abstractions/DbRegistry.js";
 
 export interface Context extends ElasticsearchContext, TasksContext, LoggerContext {}
 
 export interface IElasticsearchTaskConfig {
-    documentClient?: DynamoDBDocument;
-    elasticsearchClient?: Client;
+    documentClient: DynamoDBDocument;
+    elasticsearchClient: Client;
 }
 
 export interface IElasticsearchIndexingTaskValuesKeys {
@@ -60,16 +61,14 @@ export interface IDynamoDbElasticsearchRecord {
 }
 
 export interface IManager<
-    T,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    I extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
+    O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
 > {
     readonly documentClient: DynamoDBDocument;
     readonly elasticsearch: Client;
     readonly table: ReturnType<typeof createTable>;
-    readonly controller: TaskController.Interface<T, O>;
-    readonly dbRegistry?: import("~/abstractions/index.js").IDbRegistry;
-
+    readonly controller: TaskController.Interface<I, O>;
+    readonly dbRegistry?: DbRegistry.Interface;
     getEntity: (name: string) => IEntity;
-
     read<T>(items: BatchReadItem[]): Promise<T[]>;
 }

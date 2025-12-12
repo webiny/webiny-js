@@ -10,7 +10,7 @@ import type { Context, IElasticsearchTaskConfig } from "~/types.js";
 import { DbRegistry } from "~/abstractions/DbRegistry.js";
 import { SynchronizationContext } from "~/abstractions/SynchronizationContext.js";
 
-export type CreateElasticsearchBackgroundTasksParams = IElasticsearchTaskConfig;
+export type CreateElasticsearchBackgroundTasksParams = Partial<IElasticsearchTaskConfig>;
 
 export const createElasticsearchBackgroundTasks = (
     params?: CreateElasticsearchBackgroundTasksParams
@@ -32,5 +32,3 @@ export const createElasticsearchBackgroundTasks = (
         createDataSynchronization(params)
     ];
 };
-
-export * from "~/tasks/createIndexes/CreateElasticsearchIndexTaskPlugin.js";

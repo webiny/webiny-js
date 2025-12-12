@@ -1,59 +1,29 @@
-import { createTaskDefinition } from "@webiny/tasks";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { Context, IElasticsearchTaskConfig } from "~/types.js";
-import type { IElasticsearchCreateIndexesTaskInput } from "~/tasks/createIndexes/types.js";
-import { CreateIndexesTaskRunner } from "./CreateIndexesTaskRunner.js";
+import { createContextPlugin } from "@webiny/api";
+import { getClients } from "~/helpers/getClients.js";
+import { CreateIndexesTaskDefinition } from "~/tasks/createIndexes/CreateIndexesTask.js";
+import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/index.js";
+import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
+import { OpensearchTenantIndexFactory } from "~/tasks/createIndexes/abstractions.js";
 
 export const createIndexesTaskDefinition = (params?: IElasticsearchTaskConfig) => {
-    return createTaskDefinition<Context, IElasticsearchCreateIndexesTaskInput>({
-        id: "elasticsearchCreateIndexes",
-        title: "Create Missing Elasticsearch Indexes",
-        /**
-         * Maximum number of iterations before the task goes into the error state.
-         * No point in having more than 2 runs, as the create index operations should not even take 1 full run, no matter how much indeexs is there to create.
-         */
-        maxIterations: 2,
-        run: async ({ response, context, isCloseToTimeout, isAborted, store, input, timer }) => {
-            const { Manager } = await import(
-                /* webpackChunkName: "Manager" */
-                "../Manager.js"
+    return createContextPlugin<Context>(async context => {
+        const clients = getClients(context, params);
+
+        // Register the task definition
+        context.container.registerFactory(TaskDefinition, () => {
+            const tenantContext = context.container.resolve(TenantContext);
+            const listTenantsUseCase = context.container.resolve(ListTenantsUseCase);
+            const indexFactories = context.container.resolveAll(OpensearchTenantIndexFactory);
+
+            return new CreateIndexesTaskDefinition(
+                clients.elasticsearchClient,
+                clients.documentClient,
+                tenantContext,
+                listTenantsUseCase,
+                indexFactories
             );
-            const { IndexManager } = await import(
-                /* webpackChunkName: "IndexManager" */ "~/settings/index.js"
-            );
-
-            const manager = new Manager<IElasticsearchCreateIndexesTaskInput>({
-                elasticsearchClient: params?.elasticsearchClient,
-                documentClient: params?.documentClient,
-                response,
-                context,
-                isAborted,
-                isCloseToTimeout,
-                store,
-                timer
-            });
-
-            const indexManager = new IndexManager(manager.elasticsearch, {});
-
-            const createIndexesTaskRunner = new CreateIndexesTaskRunner(manager, indexManager);
-
-            return createIndexesTaskRunner.execute(input.matching, Array.from(input.done || []));
-        },
-        async onBeforeTrigger({ context }) {
-            // Let's create a new index for the tasks first.
-            const { IndexManager } = await import(
-                /* webpackChunkName: "IndexManager" */ "~/settings/index.js"
-            );
-            const indexManager = new IndexManager(context.elasticsearch, {});
-            const { OnBeforeTrigger } = await import(
-                /* webpackChunkName: "OnBeforeTrigger" */
-                "./OnBeforeTrigger.js"
-            );
-
-            const onBeforeTrigger = new OnBeforeTrigger({
-                indexManager,
-                context
-            });
-            await onBeforeTrigger.run(["webinytask"]);
-        }
+        });
     });
 };

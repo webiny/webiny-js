@@ -13,7 +13,7 @@ export interface IResponseError {
     stack?: string;
 }
 
-export interface ITaskResponseDoneResultOutput {
+export interface ITaskDoneOutput {
     error?: IResponseError;
     [key: string]: any;
 }
@@ -24,7 +24,7 @@ export interface ITaskResponseDoneResultOutput {
  */
 export interface ITaskRunParams<
     I extends ITaskDataInput = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    O extends ITaskDoneOutput = ITaskDoneOutput
 > {
     input: I;
     controller: TaskController.Interface<I, O>;
@@ -61,7 +61,7 @@ export enum TaskResultStatus {
  * Specific result types
  */
 export interface ITaskResultDone<
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    O extends ITaskDoneOutput = ITaskDoneOutput
 > {
     status: TaskResultStatus.DONE;
     message?: string;
@@ -88,7 +88,7 @@ export interface ITaskResultAborted {
 
 export type ITaskResult<
     I = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    O extends ITaskDoneOutput = ITaskDoneOutput
 > = ITaskResultDone<O> | ITaskResultContinue<I> | ITaskResultError | ITaskResultAborted;
 
 /**
@@ -96,7 +96,7 @@ export type ITaskResult<
  */
 export interface ITaskDefinition<
     I extends ITaskDataInput = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    O extends ITaskDoneOutput = ITaskDoneOutput
 > {
     id: string;
     title: string;
@@ -144,7 +144,7 @@ export const TaskDefinition = createAbstraction<ITaskDefinition>("TaskDefinition
  */
 export interface IRunnableTaskDefinition<
     I extends ITaskDataInput = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    O extends ITaskDoneOutput = ITaskDoneOutput
 > extends ITaskDefinition<I, O> {
     // Override optional properties to be required with guaranteed values
     isPrivate: boolean;
@@ -155,26 +155,30 @@ export interface IRunnableTaskDefinition<
 export namespace TaskDefinition {
     export type Interface<
         I extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        O extends ITaskDoneOutput = ITaskDoneOutput
     > = ITaskDefinition<I, O>;
+
+    export type TaskDataInput = ITaskDataInput;
+
+    export type TaskDoneOutput = ITaskDoneOutput;
 
     export type Runnable<
         I extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        O extends ITaskDoneOutput = ITaskDoneOutput
     > = IRunnableTaskDefinition<I, O>;
 
     export type RunParams<
         I extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        O extends ITaskDoneOutput = ITaskDoneOutput
     > = ITaskRunParams<I, O>;
 
     export type Result<
         I = ITaskDataInput,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        O extends ITaskDoneOutput = ITaskDoneOutput
     > = ITaskResult<I, O>;
 
     export type ResultDone<
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        O extends ITaskDoneOutput = ITaskDoneOutput
     > = ITaskResultDone<O>;
     export type ResultContinue<I = ITaskDataInput> = ITaskResultContinue<I>;
     export type ResultError = ITaskResultError;

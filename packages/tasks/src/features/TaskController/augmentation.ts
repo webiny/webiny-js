@@ -1,7 +1,7 @@
 import type {
     ITaskDataInput,
     IResponseError,
-    ITaskResponseDoneResultOutput,
+    ITaskDoneOutput,
     ITaskResult
 } from "@webiny/api-core/features/task/TaskDefinition";
 import type { ITask, TaskDataStatus } from "~/types.js";
@@ -14,7 +14,7 @@ import type { ITaskTriggerParams } from "@webiny/api-core/features/task/TaskServ
 declare module "@webiny/api-core/features/task/TaskController/abstractions.js" {
     interface ITaskController<
         I extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        O extends ITaskDoneOutput = ITaskDoneOutput
     > {
         /**
          * Response helpers - create typed result objects
@@ -42,12 +42,12 @@ declare module "@webiny/api-core/features/task/TaskController/abstractions.js" {
          * Logging - add log entries to task
          */
         logger: {
-            info(message: string, data?: Record<string, any>): Promise<void>;
-            error(
-                message: string,
-                error?: Error | IResponseError,
-                data?: Record<string, any>
-            ): Promise<void>;
+            info(params: { message: string; data?: Record<string, any> }): Promise<void>;
+            error(params: {
+                message: string;
+                error?: Error | IResponseError;
+                data?: Record<string, any>;
+            }): Promise<void>;
         };
 
         /**
@@ -60,7 +60,7 @@ declare module "@webiny/api-core/features/task/TaskController/abstractions.js" {
 
             listChildren<
                 CT extends ITaskDataInput = I,
-                CO extends ITaskResponseDoneResultOutput = O
+                CO extends ITaskDoneOutput = O
             >(
                 definitionId?: string
             ): Promise<ITask<CT, CO>[]>;

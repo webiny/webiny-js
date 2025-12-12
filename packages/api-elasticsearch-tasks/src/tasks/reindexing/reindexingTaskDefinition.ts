@@ -1,6 +1,11 @@
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type { IElasticsearchIndexingTaskValues, IElasticsearchTaskConfig } from "~/types.js";
 import { createContextPlugin } from "@webiny/api";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import type {
+    Context,
+    IElasticsearchIndexingTaskValues,
+    IElasticsearchTaskConfig
+} from "~/types.js";
+import { getClients } from "~/helpers/getClients.js";
 
 class ElasticsearchReindexingTask
     implements TaskDefinition.Interface<IElasticsearchIndexingTaskValues>
@@ -8,7 +13,10 @@ class ElasticsearchReindexingTask
     id = "elasticsearchReindexing";
     title = "Elasticsearch reindexing";
 
-    constructor(private config: IElasticsearchTaskConfig | undefined) {}
+    constructor(
+        private elasticsearchClient: IElasticsearchTaskConfig["elasticsearchClient"],
+        private documentClient: IElasticsearchTaskConfig["documentClient"]
+    ) {}
 
     async run({ input, controller }: TaskDefinition.RunParams<IElasticsearchIndexingTaskValues>) {
         if (controller.runtime.isAborted()) {
@@ -19,6 +27,7 @@ class ElasticsearchReindexingTask
             /* webpackChunkName: "Manager" */
             "../Manager.js"
         );
+
         const { IndexManager } = await import(
             /* webpackChunkName: "IndexManager" */ "~/settings/index.js"
         );
@@ -27,8 +36,8 @@ class ElasticsearchReindexingTask
         );
 
         const manager = new Manager<IElasticsearchIndexingTaskValues>({
-            elasticsearchClient: this.config?.elasticsearchClient,
-            documentClient: this.config?.documentClient,
+            elasticsearchClient: this.elasticsearchClient,
+            documentClient: this.documentClient,
             controller
         });
 
@@ -40,11 +49,13 @@ class ElasticsearchReindexingTask
     }
 }
 
-export const createElasticsearchReindexingTask = (params?: IElasticsearchTaskConfig) => {
-    return createContextPlugin(context => {
+export const createElasticsearchReindexingTask = (params?: Partial<IElasticsearchTaskConfig>) => {
+    return createContextPlugin<Context>(context => {
+        const { documentClient, elasticsearchClient } = getClients(context, params);
+
         context.container.registerFactory(
             TaskDefinition,
-            () => new ElasticsearchReindexingTask(params)
+            () => new ElasticsearchReindexingTask(elasticsearchClient, documentClient)
         );
     });
 };
