@@ -2,11 +2,11 @@ import type { Entity } from "@webiny/db-dynamodb/toolbox.js";
 import type { NonEmptyArray } from "@webiny/api/types.js";
 import type { IRegistryItem } from "@webiny/db";
 import { EntityType } from "./getElasticsearchEntityType.js";
-import type { Context } from "~/types.js";
+import type { IDbRegistry } from "~/abstractions/index.js";
 
 export interface IGetElasticsearchEntityParams {
     type: EntityType | unknown;
-    context: Pick<Context, "db">;
+    dbRegistry: IDbRegistry;
 }
 
 const createPredicate = (app: string, tags: NonEmptyArray<string>) => {
@@ -16,10 +16,10 @@ const createPredicate = (app: string, tags: NonEmptyArray<string>) => {
 };
 
 export const getElasticsearchEntity = (params: IGetElasticsearchEntityParams) => {
-    const { type, context } = params;
+    const { type, dbRegistry } = params;
 
     const getByPredicate = (predicate: (item: IRegistryItem) => boolean) => {
-        return context.db.registry.getOneItem<Entity>(predicate);
+        return dbRegistry.getOneItem<Entity>(predicate);
     };
 
     try {
@@ -31,18 +31,4 @@ export const getElasticsearchEntity = (params: IGetElasticsearchEntityParams) =>
         }
     } catch {}
     throw new Error(`Unknown entity type "${type}".`);
-};
-
-export interface IListElasticsearchEntitiesParams {
-    context: Pick<Context, "db">;
-}
-
-export const listElasticsearchEntities = (
-    params: IListElasticsearchEntitiesParams
-): IRegistryItem<Entity>[] => {
-    const { context } = params;
-
-    return context.db.registry.getItems<Entity>(item => {
-        return item.tags.includes("es");
-    });
 };

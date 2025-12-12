@@ -66,7 +66,8 @@ export interface IManager<
     readonly documentClient: DynamoDBDocument;
     readonly elasticsearch: Client;
     readonly table: ReturnType<typeof createTable>;
-    readonly controller: TaskController.Interface;
+    readonly controller: TaskController.Interface<T, O>;
+    readonly dbRegistry?: import("~/abstractions/index.js").IDbRegistry;
 
     getEntity: (name: string) => IEntity;
 

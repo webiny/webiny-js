@@ -6,17 +6,19 @@ import {
     getElasticsearchEntityType,
     getTable
 } from "~/tasks/dataSynchronization/entities/index.js";
-import type { ITimer } from "@webiny/handler-aws";
-import type { Context } from "~/types.js";
+import type { TaskController } from "@webiny/api-core/features/task/TaskController/index.js";
+import type { IDbRegistry } from "~/abstractions/index.js";
 import type {
     IElasticsearchSynchronize,
     IElasticsearchSynchronizeExecuteParams,
     IElasticsearchSynchronizeExecuteResponse
 } from "./abstractions/ElasticsearchSynchronize.js";
+import { SynchronizationContext } from "~/abstractions/SynchronizationContext.js";
 
 export interface IElasticsearchSynchronizeParams {
-    timer: ITimer;
-    context: Context;
+    controller: TaskController.Interface;
+    context: SynchronizationContext.Interface;
+    dbRegistry: IDbRegistry;
 }
 
 interface IDynamoDbItem {
@@ -25,12 +27,14 @@ interface IDynamoDbItem {
 }
 
 export class ElasticsearchSynchronize implements IElasticsearchSynchronize {
-    private readonly timer: ITimer;
-    private readonly context: Context;
+    private readonly controller: TaskController.Interface;
+    private readonly dbRegistry: IDbRegistry;
+    private context: SynchronizationContext.Interface;
 
     public constructor(params: IElasticsearchSynchronizeParams) {
-        this.timer = params.timer;
+        this.controller = params.controller;
         this.context = params.context;
+        this.dbRegistry = params.dbRegistry;
     }
 
     public async execute(
@@ -45,7 +49,7 @@ export class ElasticsearchSynchronize implements IElasticsearchSynchronize {
 
         const table = getTable({
             type: "es",
-            context: this.context
+            dbRegistry: this.dbRegistry
         });
 
         const readableItems = items.map(item => {
@@ -62,8 +66,8 @@ export class ElasticsearchSynchronize implements IElasticsearchSynchronize {
         });
 
         const elasticsearchSyncBuilder = createSynchronizationBuilder({
-            timer: this.timer,
-            context: this.context
+            context: this.context,
+            timer: this.controller.runtime
         });
         /**
          * We need to find the items we have in the Elasticsearch but not in the DynamoDB-Elasticsearch table.
@@ -95,7 +99,7 @@ export class ElasticsearchSynchronize implements IElasticsearchSynchronize {
         const type = getElasticsearchEntityType(params);
         return getElasticsearchEntity({
             type,
-            context: this.context
+            dbRegistry: this.dbRegistry
         });
     }
 }

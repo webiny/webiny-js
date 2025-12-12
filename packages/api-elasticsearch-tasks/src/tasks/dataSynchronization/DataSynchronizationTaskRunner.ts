@@ -6,10 +6,12 @@ import type {
 import type { IIndexManager } from "~/settings/types.js";
 import { ElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchSynchronize.js";
 import { ElasticsearchFetcher } from "~/tasks/dataSynchronization/elasticsearch/ElasticsearchFetcher.js";
+import { SynchronizationContext } from "~/abstractions/SynchronizationContext.js";
 
 export interface IDataSynchronizationTaskRunnerParams {
     manager: IDataSynchronizationManager;
     indexManager: IIndexManager;
+    synchronizationContext: SynchronizationContext.Interface;
     factories: IFactories;
 }
 
@@ -17,11 +19,13 @@ export class DataSynchronizationTaskRunner {
     private readonly manager: IDataSynchronizationManager;
     private readonly indexManager: IIndexManager;
     private readonly factories: IFactories;
+    private readonly synchronizationContext: SynchronizationContext.Interface;
 
     public constructor(params: IDataSynchronizationTaskRunnerParams) {
         this.manager = params.manager;
         this.indexManager = params.indexManager;
         this.factories = params.factories;
+        this.synchronizationContext = params.synchronizationContext;
     }
 
     public async run(input: IDataSynchronizationInput) {
@@ -31,12 +35,19 @@ export class DataSynchronizationTaskRunner {
          */
         //
         if (input.flow === "elasticsearchToDynamoDb" && !input.elasticsearchToDynamoDb?.finished) {
+            if (!this.manager.dbRegistry) {
+                return this.manager.controller.response.error(
+                    "DbRegistry is required for data synchronization but was not provided to Manager"
+                );
+            }
+
             const sync = this.factories.elasticsearchToDynamoDb({
                 manager: this.manager,
                 indexManager: this.indexManager,
                 synchronize: new ElasticsearchSynchronize({
-                    context: this.manager.context,
-                    timer: this.manager.timer
+                    context: this.synchronizationContext,
+                    controller: this.manager.controller,
+                    dbRegistry: this.manager.dbRegistry
                 }),
                 fetcher: new ElasticsearchFetcher({
                     client: this.manager.elasticsearch
@@ -45,13 +56,13 @@ export class DataSynchronizationTaskRunner {
             try {
                 return await sync.run(input);
             } catch (ex) {
-                return this.manager.response.error(ex);
+                return this.manager.controller.response.error(ex);
             }
         }
         /**
          * We are done.
          */
-        return this.manager.response.done();
+        return this.manager.controller.response.done();
     }
 
     private validateFlow(input: IDataSynchronizationInput): void {

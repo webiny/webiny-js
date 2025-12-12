@@ -8,22 +8,25 @@ import { createEntry } from "~/definitions/entry.js";
 import type { BatchReadItem, IEntity } from "@webiny/db-dynamodb";
 import { batchReadAll } from "@webiny/db-dynamodb";
 import type { TaskController } from "@webiny/api-core/features/task/TaskController/abstractions.js";
+import type { IDbRegistry } from "~/abstractions/index.js";
 
-export interface ManagerParams<T> {
-    controller: TaskController.Interface;
+export interface ManagerParams<T, O extends import("@webiny/api-core/features/task/TaskDefinition").ITaskResponseDoneResultOutput = import("@webiny/api-core/features/task/TaskDefinition").ITaskResponseDoneResultOutput> {
+    controller: TaskController.Interface<T, O>;
     documentClient?: DynamoDBDocument;
     elasticsearchClient?: Client;
+    dbRegistry?: IDbRegistry;
 }
 
-export class Manager<T> implements IManager<T> {
+export class Manager<T, O extends import("@webiny/api-core/features/task/TaskDefinition").ITaskResponseDoneResultOutput = import("@webiny/api-core/features/task/TaskDefinition").ITaskResponseDoneResultOutput> implements IManager<T, O> {
     public readonly documentClient: DynamoDBDocument;
     public readonly elasticsearch: Client;
     public readonly table: ReturnType<typeof createTable>;
-    public readonly controller: TaskController.Interface;
+    public readonly controller: TaskController.Interface<T, O>;
+    public readonly dbRegistry: IDbRegistry | undefined;
 
     private readonly entities: Record<string, IEntity> = {};
 
-    public constructor(params: ManagerParams<T>) {
+    public constructor(params: ManagerParams<T, O>) {
         this.controller = params.controller;
         this.documentClient = params?.documentClient || getDocumentClient();
 
@@ -36,6 +39,8 @@ export class Manager<T> implements IManager<T> {
         this.table = createTable({
             documentClient: this.documentClient
         });
+
+        this.dbRegistry = params.dbRegistry;
     }
 
     public getEntity(name: string): IEntity {

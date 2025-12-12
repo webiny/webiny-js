@@ -1,10 +1,10 @@
 import type { Entity, TableDef } from "@webiny/db-dynamodb/toolbox.js";
-import type { Context } from "~/types.js";
 import type { NonEmptyArray } from "@webiny/api/types.js";
 import type { IRegistryItem } from "@webiny/db";
+import type { IDbRegistry } from "~/abstractions/index.js";
 
 export interface IGetTableParams {
-    context: Pick<Context, "db">;
+    dbRegistry: IDbRegistry;
     type: "regular" | "es";
 }
 
@@ -15,10 +15,10 @@ const createPredicate = (app: string, tags: NonEmptyArray<string>) => {
 };
 
 export const getTable = (params: IGetTableParams): TableDef => {
-    const { context, type } = params;
+    const { dbRegistry, type } = params;
 
     const getByPredicate = (predicate: (item: IRegistryItem) => boolean) => {
-        const item = context.db.registry.getOneItem<Entity>(predicate);
+        const item = dbRegistry.getOneItem<Entity>(predicate);
         return item.item;
     };
 
