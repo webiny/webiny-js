@@ -25,7 +25,7 @@ type AccordionProps = React.ComponentPropsWithoutRef<typeof AccordionRoot> &
         children: React.ReactNode;
         background?: "base" | "light" | "transparent";
         border?: "none" | "accent";
-        indicatorPosition?: "left" | "right";
+        openClosedIndicatorPosition?: "left" | "right";
     };
 
 const AccordionBase = (props: AccordionProps) => {

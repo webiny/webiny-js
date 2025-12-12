@@ -754,7 +754,7 @@ export const IndicatorPositionLeft: Story = {
     decorators: [LightGreyBackground],
     args: {
         variant: "underline",
-        indicatorPosition: "left",
+        openClosedIndicatorPosition: "right",
         children: (
             <>
                 <AccordionItem
@@ -784,7 +784,7 @@ export const IndicatorPositionRight: Story = {
     decorators: [LightGreyBackground],
     args: {
         variant: "underline",
-        indicatorPosition: "right",
+        openClosedIndicatorPosition: "right",
         children: (
             <>
                 <AccordionItem

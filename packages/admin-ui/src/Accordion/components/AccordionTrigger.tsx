@@ -36,7 +36,7 @@ const AccordionTrigger = () => {
     } = useAccordionItemProps();
 
     const accordionProps = useAccordionProps();
-    const indicatorPosition = accordionProps.indicatorPosition || "right";
+    const openClosedIndicatorPosition = accordionProps.openClosedIndicatorPosition || "right";
     // The following three attributes are required for the trigger to act as a button.
     // We can't use the default button element here because the content of the trigger
     // can also contain one or more buttons.
@@ -78,7 +78,7 @@ const AccordionTrigger = () => {
                 )}
                 <div className={"w-full flex justify-between items-center px-md py-sm-extra"}>
                     {/* Left side: icon or indicator based on position */}
-                    {indicatorPosition === "left" ? (
+                    {openClosedIndicatorPosition === "left" ? (
                         <>
                             {interactive && !locked ? (
                                 <div className={"mr-md"}>
@@ -105,7 +105,7 @@ const AccordionTrigger = () => {
                     </div>
 
                     {/* Right side: actions and indicator (or locked icon) */}
-                    {indicatorPosition === "right" ? (
+                    {openClosedIndicatorPosition === "right" ? (
                         <div className={"flex gap-xs items-center"}>
                             {locked ? (
                                 <Icon label="Locked" icon={<LockIcon />} color={"neutral-light"} />
