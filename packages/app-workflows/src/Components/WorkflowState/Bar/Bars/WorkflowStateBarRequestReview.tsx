@@ -15,6 +15,7 @@ export const WorkflowStateBarRequestReview = WorkflowStateBarComponent.createDec
         }
         return (
             <Alert
+                icon={null}
                 actions={
                     <Alert.Action
                         text={"Request Review"}
