@@ -12,6 +12,7 @@ export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(
         const { presenter } = props;
 
         const { step } = presenter.vm;
+
         /**
          * If current user cannot review the step, continue.
          */
@@ -27,6 +28,7 @@ export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(
                 step.savedBy?.displayName || "unknown: " + step.savedBy?.id || "N/A";
             return (
                 <Alert
+                    swatchColor={step.color}
                     actions={
                         <Alert.Action
                             text={"Take Over"}
@@ -46,6 +48,8 @@ export const WorkflowStateBarReview = WorkflowStateBarComponent.createDecorator(
          */
         return (
             <Alert
+                swatchColor={step.color}
+                icon={null}
                 actions={
                     <>
                         <Alert.Action text={"Approve"} onClick={presenter.showApproveDialog} />

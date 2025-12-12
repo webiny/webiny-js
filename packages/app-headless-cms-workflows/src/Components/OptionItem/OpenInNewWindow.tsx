@@ -4,11 +4,11 @@ import { Components } from "@webiny/app-workflows";
 import { ReactComponent as OpenInNewIcon } from "@webiny/icons/open_in_new.svg";
 import { useRouter } from "@webiny/app";
 import { Routes } from "@webiny/app-headless-cms/routes.js";
-import { parseAppName } from "~/utils/appName.js";
+import { isCmsAppName, parseAppName } from "~/utils/appName.js";
 
 const { OpenInNewWindow } = Components.List.Options;
 
-export const ListOpenInNewWindow = OpenInNewWindow.createDecorator(() => {
+export const ListOpenInNewWindow = OpenInNewWindow.createDecorator(Original => {
     return function ListOpenInNewWindow(props) {
         const { state } = props;
 
@@ -26,6 +26,10 @@ export const ListOpenInNewWindow = OpenInNewWindow.createDecorator(() => {
 
             window.open(goTo, "_blank");
         }, [state.id]);
+
+        if (isCmsAppName(state.app) === false) {
+            return <Original {...props} />;
+        }
 
         return (
             <DropdownMenu.Item

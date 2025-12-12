@@ -4,7 +4,7 @@ import { useMoveRedirectToFolderDialog } from "~/modules/redirects/RedirectsList
 import { useRedirect } from "~/modules/redirects/RedirectsList/hooks/useRedirect.js";
 import { RedirectListConfig } from "~/modules/redirects/configs/index.js";
 
-const { OptionsMenuItem } = RedirectListConfig.Browser.Record.Action;
+const { OptionsMenuItem } = RedirectListConfig.Browser.Redirect.Action;
 
 export const Move = () => {
     const { redirect } = useRedirect();

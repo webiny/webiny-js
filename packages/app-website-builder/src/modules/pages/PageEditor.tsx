@@ -14,6 +14,7 @@ import { Routes } from "~/routes.js";
 
 const getPageDataFromPage = (page: Page): EditorPage => {
     return {
+        ...page,
         id: page.id,
         version: page.version,
         status: page.status,
@@ -44,7 +45,6 @@ export const PageEditor = () => {
             getPage({ id: route.params.id }).then(page => {
                 if (page.status === WbPageStatus.Draft) {
                     setPage(getPageDataFromPage(page));
-
                     return;
                 }
 

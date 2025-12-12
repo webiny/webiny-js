@@ -4,11 +4,13 @@ import { useDocumentList } from "~/modules/pages/PagesList/useDocumentList.js";
 import { useSortPages } from "~/features/pages/index.js";
 import { useSelectPages } from "~/features/pages/selectPages/useSelectPages.js";
 import type { TableRow } from "~/modules/pages/types.js";
+import { usePageListConfig } from "~/modules/pages/configs/index.js";
 
 export const Table = () => {
     const { vm } = useDocumentList();
     const { sortPages } = useSortPages();
     const { selectPages } = useSelectPages();
+    const { browser } = usePageListConfig();
 
     const data = useMemo<TableRow[]>(() => {
         return [...createFoldersData(vm.folders), ...createRecordsData(vm.data)];
@@ -20,6 +22,7 @@ export const Table = () => {
 
     return (
         <AcoTable<TableRow>
+            columns={browser.table.columns}
             data={data}
             loading={vm.isLoading}
             sorting={vm.sorting}

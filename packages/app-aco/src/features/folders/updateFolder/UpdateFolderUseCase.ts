@@ -1,25 +1,19 @@
-import type { UpdateFolderParams, IUpdateFolderUseCase } from "./IUpdateFolderUseCase.js";
-import type { IUpdateFolderRepository } from "./IUpdateFolderRepository.js";
-import { Folder } from "../Folder.js";
+import { Folder } from "~/domain/folder/Folder.js";
+import type { UpdateFolderParams } from "./abstractions.js";
+import {
+    UpdateFolderUseCase as UseCaseAbstraction,
+    UpdateFolderRepository
+} from "./abstractions.js";
 
-export class UpdateFolderUseCase implements IUpdateFolderUseCase {
-    private repository: IUpdateFolderRepository;
+class UpdateFolderUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: UpdateFolderRepository.Interface) {}
 
-    constructor(repository: IUpdateFolderRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: UpdateFolderParams) {
-        await this.repository.execute(
-            Folder.create({
-                id: params.id,
-                title: params.title,
-                slug: params.slug,
-                type: params.type,
-                parentId: params.parentId,
-                permissions: params.permissions,
-                extensions: params.extensions
-            })
-        );
+    async execute(folder: UpdateFolderParams) {
+        await this.repository.execute(Folder.create(folder));
     }
 }
+
+export const UpdateFolderUseCase = UseCaseAbstraction.createImplementation({
+    implementation: UpdateFolderUseCaseImpl,
+    dependencies: [UpdateFolderRepository]
+});

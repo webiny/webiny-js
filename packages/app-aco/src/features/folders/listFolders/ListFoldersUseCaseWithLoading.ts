@@ -1,17 +1,19 @@
-import type { ILoadingRepository } from "@webiny/app-utils";
+import { FoldersLoadingRepository } from "~/features/folders/abstractions.js";
+import { ListFoldersUseCase as UseCaseAbstraction } from "./abstractions.js";
 import { LoadingActionsEnum } from "~/types.js";
-import type { IListFoldersUseCase } from "./IListFoldersUseCase.js";
 
-export class ListFoldersUseCaseWithLoading implements IListFoldersUseCase {
-    private loadingRepository: ILoadingRepository;
-    private useCase: IListFoldersUseCase;
-
-    constructor(loadingRepository: ILoadingRepository, useCase: IListFoldersUseCase) {
-        this.loadingRepository = loadingRepository;
-        this.useCase = useCase;
-    }
+class ListFoldersUseCaseWithLoadingImpl implements UseCaseAbstraction.Interface {
+    constructor(
+        private loadingRepository: FoldersLoadingRepository.Interface,
+        private decoratee: UseCaseAbstraction.Interface
+    ) {}
 
     async execute() {
-        await this.loadingRepository.runCallBack(this.useCase.execute(), LoadingActionsEnum.list);
+        await this.loadingRepository.runCallBack(this.decoratee.execute(), LoadingActionsEnum.list);
     }
 }
+
+export const ListFoldersUseCaseWithLoading = UseCaseAbstraction.createDecorator({
+    decorator: ListFoldersUseCaseWithLoadingImpl,
+    dependencies: [FoldersLoadingRepository]
+});

@@ -55,6 +55,7 @@ export const Filters = () => {
         <BaseFilters filters={browser.filters} show={list.showingFilters} onChange={applyFilters}>
             <AdvancedSearch
                 fields={fields}
+                fieldRenderers={browser.advancedSearch.fieldRenderers}
                 repository={repository}
                 onApplyFilter={applyAdvancedSearch}
             />

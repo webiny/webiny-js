@@ -22,9 +22,6 @@ export const createGroupEntity = (params: Params): Entity<any> => {
             TYPE: {
                 type: "string"
             },
-            webinyVersion: {
-                type: "string"
-            },
             id: {
                 type: "string"
             },

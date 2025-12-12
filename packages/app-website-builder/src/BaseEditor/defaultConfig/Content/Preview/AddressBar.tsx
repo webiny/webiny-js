@@ -23,7 +23,7 @@ export const AddressBar = () => {
 
     return (
         <div className="w-full h-[49px] flex flex-row p-sm bg-neutral-base border-solid border-b-sm border-neutral-dimmed">
-            <div className={"relative flex-auto mr-sm"}>
+            <div className={"relative flex-auto"}>
                 <div
                     className={
                         "w-full absolute -top-px py-xs-plus pl-xl border-sm text-md peer cursor-not-allowed rounded-md border-neutral-subtle text-neutral-muted bg-neutral-disabled text-neutral-disabled"

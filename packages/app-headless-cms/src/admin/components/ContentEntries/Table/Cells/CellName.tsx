@@ -1,4 +1,5 @@
 import React from "react";
+import type { FolderDto } from "@webiny/app-aco";
 
 import { Icon, Link, Text } from "@webiny/admin-ui";
 import { ReactComponent as Folder } from "@webiny/icons/folder.svg";
@@ -10,11 +11,10 @@ import { ContentEntryListConfig } from "~/admin/config/contentEntries/index.js";
 import { useContentEntriesList } from "~/admin/views/contentEntries/hooks/index.js";
 import { usePermission } from "~/admin/hooks/index.js";
 
-import type { FolderItem } from "@webiny/app-aco/types.js";
 import type { CmsContentEntry } from "~/types.js";
 
 interface FolderCellNameProps {
-    folder: FolderItem;
+    folder: FolderDto;
 }
 
 export const FolderCellName = ({ folder }: FolderCellNameProps) => {

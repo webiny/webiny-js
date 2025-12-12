@@ -9,9 +9,13 @@ import { createGetId } from "../createGetId.js";
 
 const SCOPE = "toolbar";
 
-const BaseToolbar = () => {
-    return <Layout />;
-};
+const BaseToolbar = makeDecoratable("ToolbarLayout", () => {
+    return (
+        <div className={"w-[300px] flex-none"}>
+            <Layout />
+        </div>
+    );
+});
 
 const getElementId = createGetId(SCOPE)();
 

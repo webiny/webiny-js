@@ -6,12 +6,12 @@ import { Bind } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { Extensions, FolderTree } from "~/components/index.js";
 import { ROOT_FOLDER } from "~/constants.js";
-import { useUpdateFolder } from "~/features/index.js";
-import type { FolderItem } from "~/types.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { useUpdateFolder } from "~/features/folders/updateFolder/index.js";
 import { ParentFolderField } from "./ParentFolderField.js";
 
 interface ShowDialogParams {
-    folder: FolderItem;
+    folder: FolderDto;
 }
 
 interface UseEditDialogResponse {
@@ -19,7 +19,7 @@ interface UseEditDialogResponse {
 }
 
 interface FormComponentProps {
-    folder: FolderItem;
+    folder: FolderDto;
 }
 
 const FormComponent = ({ folder }: FormComponentProps) => {
@@ -74,7 +74,7 @@ export const useEditDialog = (): UseEditDialogResponse => {
     const { updateFolder } = useUpdateFolder();
     const { showSnackbar } = useSnackbar();
 
-    const onAccept = useCallback(async (folder: FolderItem, data: GenericFormData) => {
+    const onAccept = useCallback(async (folder: FolderDto, data: GenericFormData) => {
         try {
             await updateFolder({
                 ...folder,

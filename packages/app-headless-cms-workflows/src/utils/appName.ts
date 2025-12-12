@@ -11,3 +11,8 @@ export const parseAppName = (appName: string): string => {
     }
     return parts[1];
 };
+
+export const isCmsAppName = (appName: string): boolean => {
+    const parts = appName.split(".");
+    return parts.length === 2 && parts[0] === "cms";
+};

@@ -29,7 +29,7 @@ export const ContentEntryFormTitle = makeDecoratable("ContentEntryFormTitle", ()
     return (
         <Heading
             level={5}
-            className={cn("text-neutral-primary max-w-lg truncate", {
+            className={cn("text-neutral-primary", {
                 "opacity-50": isNewEntry
             })}
         >

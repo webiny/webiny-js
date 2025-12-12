@@ -14,6 +14,7 @@ import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup.js";
 import type { QueryAllParams } from "@webiny/db-dynamodb/utils/query.js";
 import { queryAllClean } from "@webiny/db-dynamodb/utils/query.js";
 import { deleteItem, put } from "@webiny/db-dynamodb";
+import { convertException } from "@webiny/utils";
 
 interface PartitionKeysParams {
     tenant: string;
@@ -76,7 +77,7 @@ export const createModelsStorageOperations = (
             return model;
         } catch (ex) {
             throw new WebinyError(`Could not create CMS Content Model.`, "CREATE_MODEL_ERROR", {
-                error: ex,
+                error: convertException(ex),
                 model,
                 keys
             });

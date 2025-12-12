@@ -13,13 +13,6 @@ const columns: DataTableColumns<IWorkflowState> = {
         header: "Title",
         enableSorting: true
     },
-    savedOn: {
-        header: "Last Modified",
-        enableSorting: true,
-        cell(state) {
-            return <TimeAgo datetime={state.savedOn} />;
-        }
-    },
     createdBy: {
         header: "Submitted By",
         enableSorting: false,
@@ -27,6 +20,24 @@ const columns: DataTableColumns<IWorkflowState> = {
             return <>{state.createdBy.displayName}</>;
         }
     },
+    savedBy: {
+        header: "Modified By",
+        enableSorting: false,
+        cell(state) {
+            if (state.savedBy.id === state.createdBy.id) {
+                return <>-</>;
+            }
+            return <>{state.savedBy.displayName}</>;
+        }
+    },
+    savedOn: {
+        header: "Last Modified",
+        enableSorting: true,
+        cell(state) {
+            return <TimeAgo datetime={state.savedOn} />;
+        }
+    },
+
     currentStep: {
         header: "Workflow",
         enableSorting: false,

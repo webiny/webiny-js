@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Separator } from "~/Separator/index.js";
 import { IconButton } from "~/Button/index.js";
 import { useSidebar } from "./SidebarProvider.js";
@@ -13,6 +13,18 @@ interface SidebarHeaderProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 
 
 const SidebarHeader = ({ title, icon }: SidebarHeaderProps) => {
     const { togglePinned, expanded, pinned } = useSidebar();
+    const [showButton, setShowButton] = useState(false);
+
+    useEffect(() => {
+        if (expanded) {
+            const timer = setTimeout(() => {
+                setShowButton(true);
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+        setShowButton(false);
+        return undefined;
+    }, [expanded]);
 
     return (
         <>
@@ -33,7 +45,7 @@ const SidebarHeader = ({ title, icon }: SidebarHeaderProps) => {
                         <span className={"text-md font-semibold truncate"}>{title}</span>
                     </div>
 
-                    {expanded && (
+                    {showButton && (
                         <div className={"size-md"}>
                             <Tooltip
                                 side={"right"}

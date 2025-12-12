@@ -6,9 +6,5 @@ const { Folder } = AcoConfig;
 type FolderDropConfirmationProps = React.ComponentProps<typeof AcoConfig.Folder.DropConfirmation>;
 
 export const FolderDropConfirmation = (props: FolderDropConfirmationProps) => {
-    return (
-        <AcoConfig>
-            <Folder.DropConfirmation {...props} />
-        </AcoConfig>
-    );
+    return <Folder.DropConfirmation {...props} />;
 };

@@ -1,6 +1,6 @@
-import type { FolderItem } from "~/types.js";
 import { ROOT_FOLDER } from "~/constants.js";
 import type { NodeDto } from "@webiny/admin-ui";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
 
 /**
  * Transform an array of folders returned by folders cache into an array of elements for the tree component.
@@ -11,10 +11,10 @@ import type { NodeDto } from "@webiny/admin-ui";
  * @return array of elements to render the tree component.
  */
 export const createTreeData = (
-    folders: FolderItem[] = [],
+    folders: FolderDto[] = [],
     focusedNodeId?: string,
     hiddenFolderIds: string[] = []
-): NodeDto<FolderItem>[] => {
+): NodeDto<FolderDto>[] => {
     return folders
         .map(item => {
             const { id, parentId, title } = item;
@@ -41,7 +41,7 @@ export const createTreeData = (
  * @return array of ids of open folders.
  */
 export const createInitialOpenList = (
-    folders: FolderItem[] = [],
+    folders: FolderDto[] = [],
     openIds: string[] = [],
     focusedId?: string
 ): string[] => {
@@ -64,7 +64,7 @@ export const createInitialOpenList = (
             result.push(currentId);
         }
         // Get the folder object for the current id
-        const folder = folderMap.get(currentId) as FolderItem | undefined;
+        const folder = folderMap.get(currentId) as FolderDto | undefined;
         // Get the parent id of the current folder
         const parentId = folder?.parentId;
         // Stop if there is no parent or we've already added this parent

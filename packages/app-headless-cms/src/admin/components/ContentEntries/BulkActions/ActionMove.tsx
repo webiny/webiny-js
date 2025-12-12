@@ -23,7 +23,6 @@ export const ActionMove = observer(() => {
 
     const openWorkerDialog = useCallback(
         (folder: NodeDto) => {
-            console.log("folder", folder);
             showConfirmationDialog({
                 title: "Move entries",
                 message: `You are about to move ${entriesLabel} to ${folder.label}. Are you sure you want to continue?`,

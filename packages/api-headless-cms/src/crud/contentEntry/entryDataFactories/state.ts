@@ -1,14 +1,14 @@
-import type { CmsEntry, ICmsEntryState } from "~/types/index.js";
+import type { CmsEntry, IEntryState } from "~/types/index.js";
 
 interface IInputWithPossibleState {
-    state: Partial<ICmsEntryState> | null;
+    state: Partial<IEntryState> | null;
 }
 interface IParams {
     input: Partial<IInputWithPossibleState>;
     original?: CmsEntry | null;
 }
 
-export const getState = ({ input, original }: IParams): ICmsEntryState | undefined => {
+export const getState = ({ input, original }: IParams): IEntryState | undefined => {
     if (
         !input?.state?.stepId ||
         !input.state.state ||

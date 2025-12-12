@@ -148,6 +148,8 @@ export class PagesStorage implements WbPagesStorageOperations {
             tenant: entry.tenant,
             locale: entry.locale,
             webinyVersion: entry.webinyVersion,
+            // TODO figure out if we should make mapper extendable so Pages do not know about states?
+            state: entry.state,
             ...entry.values
         } as WbPage;
     }

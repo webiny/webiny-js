@@ -1,14 +1,11 @@
-import type { IGetFolderAncestorsRepository } from "./IGetFolderAncestorsRepository.js";
-import type { Folder, ListCache } from "~/features/index.js";
+import { GetFolderAncestorsRepository as RepositoryAbstraction } from "./abstractions.js";
+import type { FolderDto } from "./abstractions.js";
+import { FoldersCache } from "~/features/folders/abstractions.js";
 
-export class GetFolderAncestorsRepository implements IGetFolderAncestorsRepository {
-    private readonly cache: ListCache<Folder>;
+class GetFolderAncestorsRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(private cache: FoldersCache.Interface) {}
 
-    constructor(cache: ListCache<Folder>) {
-        this.cache = cache;
-    }
-
-    execute(id: string) {
+    execute(id: string): FolderDto[] {
         const currentFolders = this.cache.getItems();
 
         if (!currentFolders.length) {
@@ -16,7 +13,7 @@ export class GetFolderAncestorsRepository implements IGetFolderAncestorsReposito
         }
 
         const folderMap = new Map(currentFolders.map(folder => [folder.id, folder]));
-        const result: Folder[] = [];
+        const result: FolderDto[] = [];
 
         let currentFolderId: string | null = id;
 
@@ -25,10 +22,24 @@ export class GetFolderAncestorsRepository implements IGetFolderAncestorsReposito
             if (!folder) {
                 break;
             }
-            result.push(folder);
+
+            result.push({
+                id: folder.id,
+                title: folder.title,
+                slug: folder.slug,
+                permissions: folder.permissions,
+                type: folder.type,
+                parentId: folder.parentId
+            });
+
             currentFolderId = folder.parentId ?? null;
         }
 
         return result;
     }
 }
+
+export const GetFolderAncestorsRepository = RepositoryAbstraction.createImplementation({
+    implementation: GetFolderAncestorsRepositoryImpl,
+    dependencies: [FoldersCache]
+});

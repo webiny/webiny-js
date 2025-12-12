@@ -17,11 +17,13 @@ export interface PublishPageResponse {
     };
 }
 
-export const PUBLISH_PAGE = (PAGE_FIELDS: string) => gql`
+export const PUBLISH_PAGE = (fields: string[]) => gql`
     mutation PublishPage($id: ID!) {
         websiteBuilder {
             publishPage(id: $id) {
-               data ${PAGE_FIELDS}
+               data {
+                   ${fields.join("\n")}
+               }
                 error {
                     code
                     data
@@ -33,10 +35,10 @@ export const PUBLISH_PAGE = (PAGE_FIELDS: string) => gql`
 `;
 
 export class PublishPageGqlGateway implements IPublishPageGateway {
-    private client: ApolloClient<any>;
-    private modelFields: string;
+    private readonly client;
+    private readonly modelFields;
 
-    constructor(client: ApolloClient<any>, modelFields: string) {
+    constructor(client: ApolloClient<any>, modelFields: string[]) {
         this.client = client;
         this.modelFields = modelFields;
     }

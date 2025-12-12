@@ -1,33 +1,38 @@
 import React, { useMemo } from "react";
 import { Tooltip } from "@webiny/admin-ui";
-import { useGetFolderHierarchy, useGetFolderLevelPermission } from "~/features/index.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { useGetFolderLevelPermission } from "~/features/folders/getFolderLevelPermission/index.js";
+import { useLoadFolderHierarchy } from "~/features/folders/loadFolderHierarchy/index.js";
 import { ButtonCreate } from "./ButtonCreate/index.js";
 import { Loader } from "./Loader/index.js";
 import { List } from "./List/index.js";
-import type { FolderItem } from "~/types.js";
 import { ROOT_FOLDER } from "~/constants.js";
-import { AcoWithConfig } from "~/config/index.js";
+import type { FolderActionConfig } from "~/config/AcoConfig.js";
 
 export { Loader };
 
 export interface FolderTreeProps {
-    onFolderClick: (data: FolderItem) => void;
+    folderActions?: FolderActionConfig[];
+    onFolderClick: (data: FolderDto) => void;
     enableCreate?: boolean;
     rootFolderLabel?: string;
     enableActions?: boolean;
+    dropConfirmation?: boolean;
     focusedFolderId?: string;
     hiddenFolderIds?: string[];
 }
 
 export const FolderTree = ({
+    folderActions = [],
     focusedFolderId,
     hiddenFolderIds,
     enableActions,
     enableCreate,
     onFolderClick,
+    dropConfirmation,
     rootFolderLabel
 }: FolderTreeProps) => {
-    const { folders, getIsFolderLoading } = useGetFolderHierarchy();
+    const { folders, getIsFolderLoading } = useLoadFolderHierarchy();
     const { getFolderLevelPermission: canManageStructure } =
         useGetFolderLevelPermission("canManageStructure");
 
@@ -65,18 +70,18 @@ export const FolderTree = ({
 
     return (
         <div className="my-xs">
-            <AcoWithConfig>
-                <List
-                    folders={localFolders}
-                    onFolderClick={onFolderClick}
-                    focusedFolderId={focusedFolderId}
-                    hiddenFolderIds={hiddenFolderIds}
-                    enableActions={enableActions}
-                />
-                {enableCreate && (
-                    <div className={"m-xs-plus mt-sm-plus mb-lg pl-sm-extra"}>{createButton}</div>
-                )}
-            </AcoWithConfig>
+            <List
+                dropConfirmation={dropConfirmation}
+                folders={localFolders}
+                folderActions={folderActions}
+                onFolderClick={onFolderClick}
+                focusedFolderId={focusedFolderId}
+                hiddenFolderIds={hiddenFolderIds}
+                enableActions={enableActions}
+            />
+            {enableCreate && (
+                <div className={"m-xs-plus mt-sm-plus mb-lg pl-sm-extra"}>{createButton}</div>
+            )}
         </div>
     );
 };

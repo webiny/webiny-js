@@ -206,6 +206,10 @@ const defineColumns = <T,>(
                     ...firstColumn,
                     accessorKey: firstColumn.id as string,
                     header: props => {
+                        if (!props) {
+                            return null;
+                        }
+
                         return (
                             <div className={"flex items-center gap-xl"}>
                                 <CheckboxPrimitive
@@ -223,6 +227,9 @@ const defineColumns = <T,>(
                         );
                     },
                     cell: props => {
+                        if (!props) {
+                            return null;
+                        }
                         return (
                             <div className={"flex items-center gap-xl"}>
                                 <CheckboxPrimitive

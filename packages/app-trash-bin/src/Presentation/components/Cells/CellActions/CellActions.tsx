@@ -1,18 +1,17 @@
 import React from "react";
-import { useAcoConfig } from "@webiny/app-aco";
 import { OptionsMenu } from "@webiny/app-admin";
-import { TrashBinListConfig } from "~/Presentation/configs/index.js";
+import { TrashBinListConfig, useTrashBinListConfig } from "~/Presentation/configs/index.js";
 import { TrashBinItemProvider } from "~/Presentation/hooks/index.js";
 
 export const CellActions = () => {
     const { useTableRow } = TrashBinListConfig.Browser.Table.Column;
     const { row } = useTableRow();
-    const { record: recordConfig } = useAcoConfig();
+    const { browser } = useTrashBinListConfig();
 
     return (
         <TrashBinItemProvider item={row.data}>
             <OptionsMenu
-                actions={recordConfig.actions}
+                actions={browser.entryActions}
                 data-testid={"table.row.trash.entry.menu-action"}
             />
         </TrashBinItemProvider>

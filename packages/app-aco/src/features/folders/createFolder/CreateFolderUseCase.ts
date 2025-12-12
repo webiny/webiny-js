@@ -1,15 +1,13 @@
-import type { CreateFolderParams, ICreateFolderUseCase } from "./ICreateFolderUseCase.js";
-import type { ICreateFolderRepository } from "./ICreateFolderRepository.js";
-import { Folder } from "../Folder.js";
+import { Folder } from "~/domain/folder/Folder.js";
+import {
+    CreateFolderUseCase as UseCaseAbstraction,
+    CreateFolderRepository
+} from "./abstractions.js";
 
-export class CreateFolderUseCase implements ICreateFolderUseCase {
-    private repository: ICreateFolderRepository;
+class CreateFolderUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: CreateFolderRepository.Interface) {}
 
-    constructor(repository: ICreateFolderRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: CreateFolderParams) {
+    async execute(params: UseCaseAbstraction.Params) {
         await this.repository.execute(
             Folder.create({
                 title: params.title,
@@ -22,3 +20,8 @@ export class CreateFolderUseCase implements ICreateFolderUseCase {
         );
     }
 }
+
+export const CreateFolderUseCase = UseCaseAbstraction.createImplementation({
+    implementation: CreateFolderUseCaseImpl,
+    dependencies: [CreateFolderRepository]
+});
