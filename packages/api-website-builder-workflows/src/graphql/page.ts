@@ -22,8 +22,12 @@ export const createWebsiteBuilderPageGraphQLExtension = () => {
                 state: WorkflowStateStateValue
             }
 
-            extend type WbPage {
+            type WbPageWorkflow {
                 state: WbPageState
+            }
+
+            extend type WbPage {
+                workflows: WbPageWorkflow
             }
 
             input ListWhereInputWbPageState {
@@ -33,9 +37,26 @@ export const createWebsiteBuilderPageGraphQLExtension = () => {
                 stepName: String
             }
 
-            extend input WbPagesListWhereInput {
+            input WbPagesListWhereInputWorkflow {
                 state: ListWhereInputWbPageState
             }
-        `
+
+            extend input WbPagesListWhereInput {
+                workflows: WbPagesListWhereInputWorkflow
+            }
+        `,
+        resolvers: {
+            WbPage: {
+                workflows: async page => {
+                    const state = page.state;
+                    if (!state) {
+                        return null;
+                    }
+                    return {
+                        state
+                    };
+                }
+            }
+        }
     });
 };

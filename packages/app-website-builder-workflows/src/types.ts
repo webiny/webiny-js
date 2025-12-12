@@ -13,7 +13,11 @@ export interface IRecordWorkflowState {
     savedBy?: IRecordWorkflowStateIdentity | null;
 }
 
-export type WithWorkflowState<T> = T & {
+export interface IRecordWorkflow {
     state?: IRecordWorkflowState | null;
+}
+
+export type WithWorkflows<T> = T & {
+    workflows: IRecordWorkflow | null;
     $selectable: boolean;
 };

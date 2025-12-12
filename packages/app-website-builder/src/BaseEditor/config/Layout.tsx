@@ -22,15 +22,11 @@ export const Layout = makeDecoratable("EditorLayout", () => {
         <EditorLayoutContainer>
             <EditorConfig.Ui.TopBar />
             <div className={"flex flex-row"}>
-                <div className={"w-[300px] flex-none"}>
-                    <EditorConfig.Ui.Toolbar />
-                </div>
+                <EditorConfig.Ui.Toolbar />
                 <div className={"flex-auto"}>
                     <EditorConfig.Ui.Content />
                 </div>
-                <div className={"w-[300px] flex-none"}>
-                    <EditorConfig.Ui.Sidebar />
-                </div>
+                <EditorConfig.Ui.Sidebar />
             </div>
             <EditorConfig.Ui.Elements group={"overlays"} />
         </EditorLayoutContainer>
