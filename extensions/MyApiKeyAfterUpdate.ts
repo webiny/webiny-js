@@ -7,8 +7,7 @@ class MyApiKeyAfterUpdateImpl implements ApiKeyAfterUpdateHandler.Interface {
     constructor(private logger: LoggerService.Interface) {}
 
     async handle() {
-        this.logger.info("An API key was updated!");
-        console.log("An API key was updated!");
+        this.logger.warn("An API key was updated!");
     }
 }
 
