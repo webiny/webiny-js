@@ -89,7 +89,7 @@ class DataSynchronizationTask
     }
 }
 
-export const createDataSynchronization = (params?: IElasticsearchTaskConfig) => {
+export const createDataSynchronization = (params?: Partial<IElasticsearchTaskConfig>) => {
     return createContextPlugin(async context => {
         // Register the task definition with DbRegistry injected
         context.container.registerFactory(

@@ -7,7 +7,7 @@ import { TenantContext } from "@webiny/api-core/features/tenancy/TenantContext/i
 import { ListTenantsUseCase } from "@webiny/api-core/features/tenancy/ListTenants/index.js";
 import { OpensearchTenantIndexFactory } from "~/tasks/createIndexes/abstractions.js";
 
-export const createIndexesTaskDefinition = (params?: IElasticsearchTaskConfig) => {
+export const createIndexesTaskDefinition = (params?: Partial<IElasticsearchTaskConfig>) => {
     return createContextPlugin<Context>(async context => {
         const clients = getClients(context, params);
 
