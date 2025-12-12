@@ -12,6 +12,7 @@
   "exports": {
     ".": "./index.js",
     "./features/EventPublisher": "./features/eventPublisher/index.js",
+    "./features/LoggerService": "./features/logger/index.js",
     "./features/IdentityContext": "./features/security/IdentityContext/index.js",
     "./features/WcpContext": "./features/wcp/WcpContext/index.js",
     "./features/settings": "./features/settings/index.js",
@@ -60,6 +61,7 @@
   "webiny": {
     "exports": {
       "./features/eventPublisher/index.ts": "./api/features/eventPublisher",
+      "./features/logger/index.ts": "./api/features/LoggerService",
       "./features/security/IdentityContext/index.ts": "./api/security/features/IdentityContext",
       "./features/wcp/WcpContext/index.ts": "./api/wcp/WcpContext",
       "./features/settings/GetSettings/index.ts": "./api/features/GetSettings",
@@ -124,6 +126,7 @@
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
     "minimatch": "^5.1.6",
+    "pino": "^9.6.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

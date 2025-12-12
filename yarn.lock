@@ -13958,6 +13958,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     md5: "npm:^2.3.0"
     minimatch: "npm:^5.1.6"
+    pino: "npm:^9.6.0"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
@@ -29259,7 +29260,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pino@npm:9.14.0":
+"pino@npm:9.14.0, pino@npm:^9.6.0":
   version: 9.14.0
   resolution: "pino@npm:9.14.0"
   dependencies:
