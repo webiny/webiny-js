@@ -10,7 +10,7 @@ export const WorkflowStateBarCancelReview = WorkflowStateBarComponent.createDeco
     return observer(function WorkflowStateBarCancelReviewDecorator(props) {
         const { presenter } = props;
 
-        const step = presenter.vm.step
+        const step = presenter.vm.step;
         if (!presenter.vm.canCancel || !step) {
             return <Original {...props} />;
         }

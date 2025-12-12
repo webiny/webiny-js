@@ -3,7 +3,6 @@ import type { GetPageParams } from "~/features/pages/getPage/IGetPageUseCase.js"
 import { useGetPageGatewayInstance } from "~/features/pages/getPage/useGetPageGatewayInstance.js";
 
 export const useGetPage = () => {
-    
     const instance = useGetPageGatewayInstance(["properties", "metadata", "bindings", "elements"]);
 
     const getPage = useCallback(
