@@ -1,20 +1,14 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { configurations } from "~/configurations";
 import { CmsModel } from "@webiny/api-headless-cms/types";
 import { getElasticsearchIndexPrefix } from "@webiny/api-elasticsearch";
 
 describe("Elasticsearch index", () => {
-    const withLocaleItems = [["root"], ["admin"]];
+    const tenants = [["root"], ["admin"]];
 
-    beforeEach(() => {
-        process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = undefined;
-    });
-
-    it.each(withLocaleItems)(
+    it.each(tenants)(
         "should create index with tenant id as part of the name",
         async tenant => {
-            process.env.WEBINY_ELASTICSEARCH_INDEX_LOCALE = "true";
-
             const prefix = getElasticsearchIndexPrefix();
 
             const { index } = configurations.es({
@@ -45,9 +39,9 @@ describe("Elasticsearch index", () => {
         );
     });
 
-    it.each(withLocaleItems)(
+    it.each(tenants)(
         "should be root tenant in the index, no matter which one is sent",
-        async (tenant, locale) => {
+        async (tenant) => {
             process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
 
             const prefix = getElasticsearchIndexPrefix();
@@ -59,7 +53,7 @@ describe("Elasticsearch index", () => {
                 } as CmsModel
             });
             expect(noLocaleIndex).toEqual(
-                `${prefix}root-headless-cms-${locale}-testModel`.toLowerCase()
+                `${prefix}root-headless-cms-testModel`.toLowerCase()
             );
         }
     );

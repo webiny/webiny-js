@@ -66,7 +66,7 @@ describe("storage field path converters enabled", () => {
          * Check that we are getting everything properly out of the DynamoDB
          */
         const getResult = await getEntry.execute(model, entry.id);
-        expect(getResult).toMatchObject({
+        expect(getResult.value).toMatchObject({
             values: createEntryRawData()
         });
         await elasticsearch.indices.refresh({
