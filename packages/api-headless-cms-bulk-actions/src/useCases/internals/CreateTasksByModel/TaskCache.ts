@@ -1,11 +1,11 @@
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { HcmsBulkActionsContext } from "~/types.js";
-import type { ITask, ITaskDataInput } from "@webiny/tasks";
 
 /**
  * TaskCache class for managing and triggering cached tasks.
  * @template TTask - Task input data.
  */
-export class TaskCache<TTask = ITaskDataInput> {
+export class TaskCache<TTask extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput> {
     private readonly taskDefinition: string;
     private taskCache: TTask[] = [];
 
@@ -26,7 +26,7 @@ export class TaskCache<TTask = ITaskDataInput> {
      * @param {HcmsBulkActionsContext} context - The context used to trigger the tasks.
      * @param {ITask} parent - The parent task to associate with the triggered tasks.
      */
-    async triggerTask(context: HcmsBulkActionsContext, parent: ITask) {
+    async triggerTask(context: HcmsBulkActionsContext, parent: TaskDefinition.Task) {
         const tasks = this.getTasks();
 
         if (tasks.length === 0) {

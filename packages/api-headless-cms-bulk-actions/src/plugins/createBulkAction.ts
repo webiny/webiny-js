@@ -3,14 +3,6 @@ import { createBulkActionTasks } from "~/plugins/createBulkActionTasks.js";
 import type { IListEntries, IProcessEntry } from "~/abstractions/index.js";
 import type { HcmsBulkActionsContext } from "~/types.js";
 
-export interface CreateBulkActionConfig {
-    name: string;
-    dataLoader: (context: HcmsBulkActionsContext) => IListEntries;
-    dataProcessor: (context: HcmsBulkActionsContext) => IProcessEntry;
-    modelIds?: string[];
-    batchSize?: number;
-}
-
 function toPascalCase(str: string) {
     // Step 1: Remove non-alphanumeric characters and replace them with spaces
     str = str.replace(/[^a-zA-Z0-9]+/g, " ");

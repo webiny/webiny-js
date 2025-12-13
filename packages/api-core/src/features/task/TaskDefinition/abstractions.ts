@@ -60,9 +60,7 @@ export enum TaskResultStatus {
 /**
  * Specific result types
  */
-export interface ITaskResultDone<
-    O extends ITaskDoneOutput = ITaskDoneOutput
-> {
+export interface ITaskResultDone<O extends ITaskDoneOutput = ITaskDoneOutput> {
     status: TaskResultStatus.DONE;
     message?: string;
     output?: O;
@@ -86,10 +84,16 @@ export interface ITaskResultAborted {
     message?: string;
 }
 
-export type ITaskResult<
-    I = ITaskDataInput,
+export type ITaskResult<I = ITaskDataInput, O extends ITaskDoneOutput = ITaskDoneOutput> =
+    | ITaskResultDone<O>
+    | ITaskResultContinue<I>
+    | ITaskResultError
+    | ITaskResultAborted;
+
+export type ITaskLifecycleHook<
+    I extends ITaskDataInput = ITaskDataInput,
     O extends ITaskDoneOutput = ITaskDoneOutput
-> = ITaskResultDone<O> | ITaskResultContinue<I> | ITaskResultError | ITaskResultAborted;
+> = { task: ITask<I, O> };
 
 /**
  * Core TaskDefinition - minimal interface
@@ -115,10 +119,10 @@ export interface ITaskDefinition<
      * Optional lifecycle hooks - receive task data, no context
      */
     onBeforeTrigger?(params: ITaskBeforeTriggerParams<I>): Promise<void>;
-    onDone?(params: { task: ITask<I, O> }): Promise<void>;
-    onError?(params: { task: ITask<I, O> }): Promise<void>;
-    onAbort?(params: { task: ITask<I, O> }): Promise<void>;
-    onMaxIterations?(params: { task: ITask<I, O> }): Promise<void>;
+    onDone?(params: ITaskLifecycleHook<I, O>): Promise<void>;
+    onError?(params: ITaskLifecycleHook<I, O>): Promise<void>;
+    onAbort?(params: ITaskLifecycleHook<I, O>): Promise<void>;
+    onMaxIterations?(params: ITaskLifecycleHook<I, O>): Promise<void>;
     /**
      * Create a validation schema for the task input.
      * This will be used to validate the input before the task is triggered.
@@ -158,6 +162,11 @@ export namespace TaskDefinition {
         O extends ITaskDoneOutput = ITaskDoneOutput
     > = ITaskDefinition<I, O>;
 
+    export type Task<
+        I extends ITaskDataInput = ITaskDataInput,
+        O extends ITaskDoneOutput = ITaskDoneOutput
+    > = ITask<I, O>;
+
     export type TaskDataInput = ITaskDataInput;
 
     export type TaskDoneOutput = ITaskDoneOutput;
@@ -173,16 +182,18 @@ export namespace TaskDefinition {
     > = ITaskRunParams<I, O>;
 
     export type Result<
-        I = ITaskDataInput,
+        I extends ITaskDataInput = ITaskDataInput,
         O extends ITaskDoneOutput = ITaskDoneOutput
     > = ITaskResult<I, O>;
 
-    export type ResultDone<
-        O extends ITaskDoneOutput = ITaskDoneOutput
-    > = ITaskResultDone<O>;
+    export type ResultDone<O extends ITaskDoneOutput = ITaskDoneOutput> = ITaskResultDone<O>;
     export type ResultContinue<I = ITaskDataInput> = ITaskResultContinue<I>;
     export type ResultError = ITaskResultError;
     export type ResultAborted = ITaskResultAborted;
     export type CreateInputValidationParams = ITaskCreateInputValidationParams;
     export type TaskCreateData<I = ITaskDataInput> = ITaskCreateData<I>;
+    export type LifecycleHookParams<
+        I extends ITaskDataInput = ITaskDataInput,
+        O extends ITaskDoneOutput = ITaskDoneOutput
+    > = ITaskLifecycleHook<I, O>;
 }

@@ -1,6 +1,12 @@
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
+import { EntryBulkAction } from "~/features/EntryBulkAction/abstractions.js";
 import { Result } from "./Result.js";
-import type { IBulkActionOperationTaskParams } from "~/types.js";
-import type { IProcessEntry } from "~/abstractions/index.js";
+import type {
+    IBulkActionOperationInput,
+    IBulkActionOperationOutput,
+    IBulkActionOperationTaskParams
+} from "~/types.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 /**
  * The `ProcessTask` class is responsible for processing a batch of entries
@@ -10,52 +16,64 @@ import type { IProcessEntry } from "~/abstractions/index.js";
  */
 export class ProcessTask {
     private readonly result: Result;
-    private gateway: IProcessEntry;
 
-    constructor(gateway: IProcessEntry) {
+    constructor(
+        private bulkAction: EntryBulkAction.Interface,
+        private getModel: GetModelUseCase.Interface
+    ) {
         this.result = new Result();
-        this.gateway = gateway;
     }
 
-    async execute(params: IBulkActionOperationTaskParams) {
-        const { input, response, isAborted, isCloseToTimeout, context } = params;
-
+    async execute({
+        input,
+        controller
+    }: IBulkActionOperationTaskParams): Promise<
+        TaskDefinition.Result<IBulkActionOperationInput, IBulkActionOperationOutput>
+    > {
         try {
-            if (isAborted()) {
-                return response.aborted();
-            } else if (isCloseToTimeout()) {
-                return response.continue({
+            if (controller.runtime.isAborted()) {
+                return controller.response.aborted();
+            } else if (controller.runtime.isCloseToTimeout()) {
+                return controller.response.continue({
                     ...input
                 });
             }
 
             // Check if the input contains a model ID.
             if (!input.modelId) {
-                return response.error(`Missing "modelId" in the input.`);
+                return controller.response.error(`Missing "modelId" in the input.`);
             }
 
             // Check if the model exists.
-            const model = await context.cms.getModel(input.modelId);
+            const modelResult = await this.getModel.execute(input.modelId);
 
-            if (!model) {
-                return response.error(`Model with ${input.modelId} not found!`);
+            if (modelResult.isFail()) {
+                return controller.response.error(`Model with ${input.modelId} not found!`);
             }
+
+            const model = modelResult.value;
 
             // Check if there are any IDs to process.
             if (!input.ids || input.ids.length === 0) {
-                return response.done(
-                    `Task done: no entries to process for "${input.modelId}" model.`
+                return controller.response.done(
+                    `Task done: no entries to process for "${input.modelId}" model.`,
+                    {
+                        done: [],
+                        failed: []
+                    }
                 );
             }
-
-            // Set the security identity in the context.
-            context.security.setIdentity(input.identity);
 
             // Process each ID in the input.
             for (const id of input.ids) {
                 try {
                     // Execute the gateway operation for the current ID.
-                    await this.gateway.execute(model, id, input.data);
+                    await this.bulkAction.processData({
+                        model,
+                        id,
+                        data: input.data
+                    });
+
                     // Add the ID to the list of successfully processed entries.
                     this.result.addDone(id);
                 } catch (ex) {
@@ -66,12 +84,15 @@ export class ProcessTask {
             }
 
             // Return a done response with the results of the processing.
-            return response.done(`Task done: all entries processed for "${model.name}" model.`, {
-                done: this.result.getDone(),
-                failed: this.result.getFailed()
-            });
+            return controller.response.done(
+                `Task done: all entries processed for "${model.name}" model.`,
+                {
+                    done: this.result.getDone(),
+                    failed: this.result.getFailed()
+                }
+            );
         } catch (ex) {
-            return response.error(ex.message ?? `Error while processing task.`);
+            return controller.response.error(ex.message ?? `Error while processing task.`);
         }
     }
 }

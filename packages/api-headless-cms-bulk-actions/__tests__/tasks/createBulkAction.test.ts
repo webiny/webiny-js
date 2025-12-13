@@ -67,8 +67,8 @@ describe("createBulkAction", () => {
         const [result] = await introspect();
         const types = getTypesFromResult(result);
 
-        const forbiddens = ["BulkActionPrivateModelName"] as const;
-        for (const forbidden of forbiddens) {
+        const forbiddenModels = ["BulkActionPrivateModelName"] as const;
+        for (const forbidden of forbiddenModels) {
             const type = types.find(t => t.name === forbidden);
             expect(type).toBeUndefined();
         }

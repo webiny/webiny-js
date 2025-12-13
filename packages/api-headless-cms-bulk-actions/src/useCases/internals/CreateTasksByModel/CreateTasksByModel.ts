@@ -1,9 +1,9 @@
-import type { ITaskResponseResult } from "@webiny/tasks";
-import { TaskCache } from "./TaskCache.js";
 import type { CmsEntryListParams } from "@webiny/api-headless-cms/types/index.js";
-import type { IListEntries } from "~/abstractions/index.js";
+import { TaskCache } from "./TaskCache.js";
 import type { IBulkActionOperationByModelTaskParams } from "~/types.js";
 import { BulkActionOperationByModelAction } from "~/types.js";
+import { EntryBulkAction } from "~/features/EntryBulkAction/abstractions.js";
+import { BulkActionContext } from "~/features/BulkActionContext/index.js";
 
 const MAX_TASK_LIST_LENGTH = 10;
 
@@ -12,17 +12,24 @@ const MAX_TASK_LIST_LENGTH = 10;
  */
 export class CreateTasksByModel {
     private readonly taskCache: TaskCache;
-    private listEntriesGateway: IListEntries;
     private readonly batchSize: number;
+    private readonly bulkAction: EntryBulkAction.Interface;
+    private readonly context: BulkActionContext.Interface;
 
-    constructor(taskDefinition: string, listEntriesGateway: IListEntries, batchSize: number) {
+    constructor(
+        context: BulkActionContext.Interface,
+        bulkAction: EntryBulkAction.Interface,
+        taskDefinition: string,
+        batchSize: number
+    ) {
         this.taskCache = new TaskCache(taskDefinition);
-        this.listEntriesGateway = listEntriesGateway;
         this.batchSize = batchSize;
+        this.bulkAction = bulkAction;
+        this.context = context;
     }
 
-    async execute(params: IBulkActionOperationByModelTaskParams): Promise<ITaskResponseResult> {
-        const { response, input, isAborted, isCloseToTimeout, context, store } = params;
+    async execute(params: IBulkActionOperationByModelTaskParams) {
+        const { input, controller } = params;
 
         try {
             const listEntriesParams: CmsEntryListParams = {
@@ -33,25 +40,25 @@ export class CreateTasksByModel {
             };
 
             while (true) {
-                if (isAborted()) {
-                    return response.aborted();
-                } else if (isCloseToTimeout()) {
-                    await this.taskCache.triggerTask(context, store.getTask());
-                    return response.continue({
+                if (controller.runtime.isAborted()) {
+                    return controller.response.aborted();
+                } else if (controller.runtime.isCloseToTimeout()) {
+                    await this.taskCache.triggerTask(this.context, controller.state.getTask());
+                    return controller.response.continue({
                         ...input,
                         action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                     });
                 }
 
                 // List entries from the HCMS based on the provided query
-                const { entries, meta } = await this.listEntriesGateway.execute(
-                    input.modelId,
-                    listEntriesParams
-                );
+                const { entries, meta } = await this.bulkAction.loadData({
+                    modelId: input.modelId,
+                    ...listEntriesParams
+                });
 
                 // End the task if no entries match the query
                 if (meta.totalCount === 0) {
-                    return response.continue({
+                    return controller.response.continue({
                         ...input,
                         action: BulkActionOperationByModelAction.END_TASK
                     });
@@ -59,8 +66,8 @@ export class CreateTasksByModel {
 
                 // Continue processing if we are reached the task list length limit
                 if (this.taskCache.getTasksLength() === MAX_TASK_LIST_LENGTH) {
-                    await this.taskCache.triggerTask(context, store.getTask());
-                    return response.continue({
+                    await this.taskCache.triggerTask(this.context, controller.state.getTask());
+                    return controller.response.continue({
                         ...input,
                         action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                     });
@@ -68,8 +75,8 @@ export class CreateTasksByModel {
 
                 // Continue processing if no entries are returned in the current batch
                 if (entries.length === 0) {
-                    await this.taskCache.triggerTask(context, store.getTask());
-                    return response.continue({
+                    await this.taskCache.triggerTask(this.context, controller.state.getTask());
+                    return controller.response.continue({
                         ...input,
                         action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                     });
@@ -93,9 +100,9 @@ export class CreateTasksByModel {
 
                 // Continue processing if there are no more entries or pagination is complete
                 if (!meta.hasMoreItems || !meta.cursor) {
-                    await this.taskCache.triggerTask(context, store.getTask());
+                    await this.taskCache.triggerTask(this.context, controller.state.getTask());
 
-                    return response.continue({
+                    return controller.response.continue({
                         ...input,
                         action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                     });
@@ -104,7 +111,7 @@ export class CreateTasksByModel {
                 listEntriesParams.after = meta.cursor;
             }
         } catch (ex) {
-            return response.error(ex.message ?? `Error while creating task.`);
+            return controller.response.error(ex.message ?? `Error while creating task.`);
         }
     }
 }
