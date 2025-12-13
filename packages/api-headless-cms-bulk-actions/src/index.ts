@@ -3,6 +3,7 @@ import { createDefaultGraphQL } from "~/plugins/index.js";
 import { createBeforeHandlerPlugin } from "@webiny/handler/plugins/BeforeHandlerPlugin.js";
 import { EntryBulkAction } from "~/features/EntryBulkAction/abstractions.js";
 import { BulkActionContext } from "~/features/BulkActionContext/index.js";
+import { createBulkActionTasks } from "~/features/EntryBulkAction/createBulkActionTasks.js";
 
 export type * from "./abstractions/index.js";
 export * from "./handlers/index.js";

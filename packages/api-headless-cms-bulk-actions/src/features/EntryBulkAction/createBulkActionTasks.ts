@@ -118,9 +118,7 @@ export const createBulkActionTasks = (bulkAction: EntryBulkAction.Interface) => 
     }
 
     // Process Task - processes individual batches of entries
-    class BulkActionProcessTask
-        implements TaskDefinition.Interface<IBulkActionOperationInput, IBulkActionOperationOutput>
-    {
+    class BulkActionProcessTask implements TaskDefinition.Interface<IBulkActionOperationInput, IBulkActionOperationOutput> {
         public readonly id = processTaskId;
         public readonly title = `Headless CMS: process "${bulkAction.name}" entries`;
         public readonly maxIterations = 2;
@@ -132,7 +130,7 @@ export const createBulkActionTasks = (bulkAction: EntryBulkAction.Interface) => 
             this.getModel = getModel;
         }
 
-        async run({ input, controller }: TaskDefinition.RunParams<IBulkActionOperationInput>) {
+        async run({ input, controller }: TaskDefinition.RunParams<IBulkActionOperationInput, IBulkActionOperationOutput>): Promise<TaskDefinition.Result<IBulkActionOperationInput, IBulkActionOperationOutput>> {
             try {
                 const processTask = new ProcessTask(bulkAction, this.getModel);
                 return await processTask.execute({ input, controller });
@@ -144,15 +142,5 @@ export const createBulkActionTasks = (bulkAction: EntryBulkAction.Interface) => 
         }
     }
 
-    const BulkListTask = TaskDefinition.createImplementation({
-        implementation: BulkActionListTask,
-        dependencies: [BulkActionContext]
-    });
-
-    const BulkProcessTask = TaskDefinition.createImplementation({
-        implementation: BulkActionProcessTask,
-        dependencies: [GetModelUseCase]
-    });
-
-    return [BulkListTask, BulkProcessTask];
+    return [BulkActionListTask, BulkActionProcessTask];
 };
