@@ -1,8 +1,7 @@
 import { ServiceDiscovery } from "@webiny/api";
 import { CloudFront } from "@webiny/aws-sdk/client-cloudfront/index.js";
-import type { ITaskRunParams } from "@webiny/tasks/types.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { executeWithRetry } from "@webiny/utils";
-import type { ITaskResponseResult } from "@webiny/tasks/response/abstractions/index.js";
 
 class ReturnContinue extends Error {}
 
@@ -17,18 +16,24 @@ export interface InvalidateCacheInput {
     paths: string[];
 }
 
-export class InvalidateCloudfrontCacheTask {
+class InvalidateCloudfrontCacheTask implements TaskDefinition.Interface<InvalidateCacheInput> {
+    id = "cloudfrontInvalidateCache";
+    title = "Invalidate CloudFront Cache";
+    description = "A task to invalidate Cloudfront cache by given paths.";
+    maxIterations = 100;
+    isPrivate = true;
+
     private continueIfCode = ["TooManyInvalidationsInProgress", "Throttling"];
 
-    public async run({
-        input,
-        response,
-        isCloseToTimeout
-    }: ITaskRunParams<any, InvalidateCacheInput>): Promise<ITaskResponseResult> {
+    public async run({ input, controller }: TaskDefinition.RunParams<InvalidateCacheInput>) {
+        if (controller.runtime.isAborted()) {
+            return controller.response.aborted();
+        }
+
         const manifest = await ServiceDiscovery.load();
 
         if (!manifest) {
-            return response.error({
+            return controller.response.error({
                 message: `Unable to invalidate cache due to a missing service manifest.`,
                 code: "MISSING_SERVICE_MANIFEST",
                 data: {
@@ -57,24 +62,24 @@ export class InvalidateCloudfrontCacheTask {
                         throw error;
                     }
 
-                    if (isCloseToTimeout()) {
+                    if (controller.runtime.isCloseToTimeout()) {
                         throw new ReturnContinue();
                     }
                 }
             });
         } catch (error) {
             if (error instanceof ReturnContinue) {
-                return response.continue(input);
+                return controller.response.continue(input);
             }
 
-            return response.error({
+            return controller.response.error({
                 message: error.message,
                 code: "EXECUTE_WITH_RETRY_FAILED",
                 data: input.paths
             });
         }
 
-        return response.done();
+        return controller.response.done();
     }
 
     private async invalidateCache(
@@ -95,3 +100,8 @@ export class InvalidateCloudfrontCacheTask {
         });
     }
 }
+
+export const InvalidateCloudfrontCacheTaskDefinition = TaskDefinition.createImplementation({
+    implementation: InvalidateCloudfrontCacheTask,
+    dependencies: []
+});

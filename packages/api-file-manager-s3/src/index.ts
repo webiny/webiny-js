@@ -1,7 +1,6 @@
 import { ContextPlugin } from "@webiny/api";
 import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { createS3GraphQLSchema } from "./graphql/schema.js";
-import { flushCdnCache } from "~/flushCdnCache/index.js";
 import { DeleteFileFromBucketFeature } from "~/features/DeleteFileFromBucket/feature.js";
 import { WriteFileMetadataFeature } from "~/features/WriteFileMetadata/feature.js";
 import { ApplyThreatScanningFeature } from "~/enterprise/ApplyThreatScanning/feature.js";
@@ -23,4 +22,4 @@ const contextPlugin = new ContextPlugin(context => {
 
 contextPlugin.name = `fileManagerS3.context`;
 
-export const createFileManagerS3 = () => [contextPlugin, createS3GraphQLSchema(), flushCdnCache()];
+export const createFileManagerS3 = () => [contextPlugin, createS3GraphQLSchema()];

@@ -16,11 +16,14 @@ declare module "@webiny/api-core/features/task/TaskController/abstractions.js" {
          * Response helpers - create typed result objects
          */
         response: {
-            done(output?: O): ITaskResult<I, O>;
-            done(message?: string, output?: O): ITaskResult<I, O>;
-            continue(input: I, options?: { wait?: number; message?: string }): ITaskResult<I, O>;
-            error(message: string, error?: Error | IResponseError): ITaskResult<I, O>;
-            aborted(message?: string): ITaskResult<I, O>;
+            done(output?: O): TaskDefinition.ResultDone<O>;
+            done(message?: string, output?: O): TaskDefinition.ResultDone<O>;
+            continue(
+                input: I,
+                options?: { wait?: number; message?: string }
+            ): TaskDefinition.ResultContinue<I>;
+            error(error: Error | IResponseError | string): TaskDefinition.ResultError;
+            aborted(message?: string): TaskDefinition.ResultAborted;
         };
 
         /**
