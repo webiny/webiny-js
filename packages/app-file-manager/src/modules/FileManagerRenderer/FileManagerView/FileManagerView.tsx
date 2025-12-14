@@ -130,7 +130,11 @@ const FileManagerView = () => {
     useHotkeys({
         zIndex: 20,
         keys: {
-            esc: view.onClose
+            esc: () => {
+                if (view.overlay) {
+                    view.onClose();
+                }
+            }
         }
     });
 
