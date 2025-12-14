@@ -9,6 +9,7 @@ import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerVie
 import { useFileManagerApi } from "~/modules/FileManagerApiProvider/FileManagerApiContext/index.js";
 import type { BrowseFilesHandler, HeaderProps } from "~/components/Header/Header.js";
 import { FiltersToggle } from "@webiny/app-admin";
+import { SearchWidget } from "~/components/SearchWidget/index.js";
 
 type ActionsProps = Pick<HeaderProps, "browseFiles">;
 
@@ -110,6 +111,9 @@ const ToggleFiltersAction = () => {
 export const Actions = (props: ActionsProps) => {
     return (
         <div className={"h-full flex gap-sm items-center justify-end"}>
+            <div className={"flex justify-start w-full"}>
+                <SearchWidget />
+            </div>
             <div className={"flex gap-xs"}>
                 <ToggleFiltersAction />
                 <LayoutSwitchAction />
