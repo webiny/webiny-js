@@ -30,7 +30,7 @@ export const Title = () => {
                     {listTitle}
                 </Heading>
             </div>
-            {currentFolder && (
+            {currentFolder && !isRootFolder && (
                 <FolderProvider folder={currentFolder}>
                     <OptionsMenu
                         actions={browser.folder.actions}
