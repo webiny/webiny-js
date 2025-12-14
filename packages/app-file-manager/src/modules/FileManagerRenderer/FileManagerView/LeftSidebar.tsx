@@ -25,7 +25,7 @@ export const LeftSidebar = ({ currentFolder, onFolderClick, children }: LeftSide
     }, [currentFolder]);
 
     return (
-        <div className={"p-xs overflow-auto"} style={{ height: "calc(100vh - 69px)" }}>
+        <div className={"overflow-auto"} style={{ height: "calc(100vh - 69px)" }}>
             <div className={"p-sm"}>
                 <Heading level={5}>File Manager</Heading>
             </div>
