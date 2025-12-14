@@ -1,6 +1,5 @@
 import React from "react";
 import { HasPermission } from "@webiny/app-security";
-import { FileManager } from "~/base/ui/FileManager.js";
 import { WebinyVersion } from "./Menus/WebinyVersion.js";
 import { SupportMenuItems } from "./Menus/SupportMenuItems.js";
 import { AdminConfig } from "~/config/AdminConfig.js";
@@ -21,23 +20,19 @@ export const Menus = React.memo(() => {
         <AdminConfig>
             <HasPermission name={"fm.file"}>
                 <Menu
-                    name={"fm"}
+                    name={"fileManager"}
+                    pin={"start"}
                     element={
-                        <FileManager>
-                            {({ showFileManager }) => (
-                                <Menu.Item
-                                    text={"File Manager"}
-                                    icon={
-                                        <Menu.Item.Icon
-                                            label="File Manager"
-                                            element={<FileManagerIcon />}
-                                        />
-                                    }
-                                    onClick={() => showFileManager()}
-                                    data-testid={"admin-drawer-footer-menu-file-manager"}
+                        <Menu.Link
+                            text={"File Manager"}
+                            icon={
+                                <Menu.Item.Icon
+                                    label="File Manager"
+                                    element={<FileManagerIcon />}
                                 />
-                            )}
-                        </FileManager>
+                            }
+                            to={"/file-manager"}
+                        />
                     }
                 />
             </HasPermission>

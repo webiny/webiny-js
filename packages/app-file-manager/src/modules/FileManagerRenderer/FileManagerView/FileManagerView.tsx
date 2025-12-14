@@ -261,6 +261,18 @@ const FileManagerView = () => {
         [view.updateFile]
     );
 
+    const withOverlay = (element: React.ReactElement) => {
+        if (view.overlay) {
+            return (
+                <OverlayLayout variant={"strong"} onExited={view.onClose}>
+                    {element}
+                </OverlayLayout>
+            );
+        }
+
+        return element;
+    };
+
     return (
         <>
             <Files
@@ -279,13 +291,8 @@ const FileManagerView = () => {
                     showSnackbar(message);
                 }}
             >
-                {({ getDropZoneProps, browseFiles }) => (
-                    <OverlayLayout
-                        variant={"strong"}
-                        onExited={view.onClose}
-                        barLeft={<Heading level={5}>{"File manager"}</Heading>}
-                        barMiddle={<SearchWidget />}
-                    >
+                {({ getDropZoneProps, browseFiles }) =>
+                    withOverlay(
                         <>
                             <FileDetails
                                 loading={drawerLoading}
@@ -355,8 +362,8 @@ const FileManagerView = () => {
                                 </RightPanel>
                             </SplitView>
                         </>
-                    </OverlayLayout>
-                )}
+                    )
+                }
             </Files>
         </>
     );
