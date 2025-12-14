@@ -75,9 +75,11 @@ export const NavigateFolderProvider = ({
         props.navigateToFolder(ROOT_FOLDER);
     };
 
+    const finalFolderId = currentFolderId || getFolderFromStorage() || ROOT_FOLDER;
+
     const context: NavigateFolderContext = {
-        currentFolderId: currentFolderId || getFolderFromStorage() || ROOT_FOLDER,
-        isRootFolder: currentFolderId === ROOT_FOLDER,
+        currentFolderId: finalFolderId,
+        isRootFolder: finalFolderId === ROOT_FOLDER,
         setFolderToStorage,
         navigateToListHome,
         navigateToFolder,
