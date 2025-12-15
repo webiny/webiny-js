@@ -14,7 +14,7 @@ export interface IExportContentEntriesInput {
     limit?: number;
     where?: CmsEntryListWhere;
     sort?: CmsEntryListSort;
-    after?: string;
+    after?: string | null;
     combine?: boolean;
     lastFileProcessed?: string;
     files?: IExportContentEntriesInputFile[];

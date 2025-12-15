@@ -1,4 +1,3 @@
-import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import type { Context } from "~/types.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { getErrorProperties } from "@webiny/tasks/utils/index.js";
@@ -12,8 +11,10 @@ import type {
 import { createCmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/createCmsEntryFetcher.js";
 import type { IContentEntryTraverser } from "@webiny/api-headless-cms";
 import { WEBINY_EXPORT_ENTRIES_EXTENSION } from "~/tasks/constants.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface IExportContentEntriesConfig {
+    context: Context;
     createCmsEntryZipper(config: Pick<ICmsEntryZipperConfig, "fetcher">): ICmsEntryZipper;
 }
 
@@ -24,27 +25,28 @@ export interface ICreateCmsEntryZipperConfig extends Pick<ICmsEntryZipperConfig,
 }
 
 export class ExportContentEntries<
-    C extends Context = Context,
     I extends IExportContentEntriesInput = IExportContentEntriesInput,
     O extends IExportContentEntriesOutput = IExportContentEntriesOutput
-> implements IExportContentEntries<C, I, O>
+> implements IExportContentEntries<I, O>
 {
     private readonly createCmsEntryZipper: (config: ICreateCmsEntryZipperConfig) => ICmsEntryZipper;
+    private readonly context: Context;
 
     public constructor(config: IExportContentEntriesConfig) {
+        this.context = config.context;
         this.createCmsEntryZipper = config.createCmsEntryZipper;
     }
 
-    public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { context, response, input, isCloseToTimeout, isAborted } = params;
+    public async run(params: TaskDefinition.RunParams<I, O>) {
+        const { input, controller } = params;
 
         const { prefix: basePrefix } = input;
 
         let model: CmsModel;
         try {
-            model = await context.cms.getModel(input.modelId);
+            model = await this.context.cms.getModel(input.modelId);
         } catch (ex) {
-            return response.error({
+            return controller.response.error({
                 message: `Could not fetch entry manager for model "${input.modelId}".`,
                 code: "MODEL_NOT_FOUND",
                 data: {
@@ -61,7 +63,7 @@ export class ExportContentEntries<
                 sort: params.input.sort,
                 after
             };
-            const [items, meta] = await context.cms.listLatestEntries(model, input);
+            const [items, meta] = await this.context.cms.listLatestEntries(model, input);
 
             return {
                 items,
@@ -73,7 +75,7 @@ export class ExportContentEntries<
 
         const filename = `${filenamePrefix}.${WEBINY_EXPORT_ENTRIES_EXTENSION}`;
 
-        const traverser = await context.cms.getEntryTraverser(model.modelId);
+        const traverser = await this.context.cms.getEntryTraverser(model.modelId);
 
         const entryZipper = this.createCmsEntryZipper({
             filename,
@@ -83,8 +85,8 @@ export class ExportContentEntries<
         });
 
         const result = await entryZipper.execute({
-            isCloseToTimeout,
-            isAborted,
+            isCloseToTimeout: () => controller.runtime.isCloseToTimeout(),
+            isAborted: () => controller.runtime.isAborted(),
             model,
             after: input.after,
             exportAssets: input.exportAssets
@@ -98,7 +100,7 @@ export class ExportContentEntries<
         ]);
 
         if (result instanceof CmsEntryZipperExecuteContinueResult) {
-            return response.continue({
+            return controller.response.continue({
                 ...input,
                 files,
                 after: result.cursor
@@ -107,6 +109,6 @@ export class ExportContentEntries<
         const output: IExportContentEntriesOutput = {
             files
         };
-        return response.done(output as O);
+        return controller.response.done(output as O);
     }
 }
