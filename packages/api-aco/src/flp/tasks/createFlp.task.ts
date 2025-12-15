@@ -26,7 +26,7 @@ class CreateFlpTaskImpl implements TaskDefinition.Interface<ICreateFlpTaskInput>
 
             return controller.response.done("Task done: FLP record created.");
         } catch (error) {
-            return controller.response.error("An error occurred while creating FLP record", error);
+            return controller.response.error(error);
         }
     }
 }

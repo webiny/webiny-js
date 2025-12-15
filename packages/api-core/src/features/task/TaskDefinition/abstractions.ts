@@ -4,7 +4,7 @@ import type { GenericRecord } from "@webiny/api/types";
 import type { ITask } from "~/features/task/TaskService/index.js";
 import { TaskController } from "~/features/task/TaskController/index.js";
 
-export type ITaskDataInput = GenericRecord;
+export type ITaskInput = GenericRecord;
 
 export interface IResponseError {
     message: string;
@@ -13,7 +13,7 @@ export interface IResponseError {
     stack?: string;
 }
 
-export interface ITaskDoneOutput {
+export interface ITaskOutput {
     error?: IResponseError;
     [key: string]: any;
 }
@@ -23,8 +23,8 @@ export interface ITaskDoneOutput {
  * All runtime dependencies come from TaskController (injected separately)
  */
 export interface ITaskRunParams<
-    I extends ITaskDataInput = ITaskDataInput,
-    O extends ITaskDoneOutput = ITaskDoneOutput
+    I extends ITaskInput = ITaskInput,
+    O extends ITaskOutput = ITaskOutput
 > {
     input: I;
     controller: TaskController.Interface<I, O>;
@@ -33,7 +33,7 @@ export interface ITaskRunParams<
 /**
  * Data for creating a new task
  */
-export interface ITaskCreateData<I = ITaskDataInput> {
+export interface ITaskCreateData<I = ITaskInput> {
     definitionId: string;
     name: string;
     input: I;
@@ -43,7 +43,7 @@ export interface ITaskCreateData<I = ITaskDataInput> {
 /**
  * Parameters for onBeforeTrigger lifecycle hook
  */
-export interface ITaskBeforeTriggerParams<I = ITaskDataInput> {
+export interface ITaskBeforeTriggerParams<I = ITaskInput> {
     data: ITaskCreateData<I>;
 }
 
@@ -60,47 +60,44 @@ export enum TaskResultStatus {
 /**
  * Specific result types
  */
-export interface ITaskResultDone<O extends ITaskDoneOutput = ITaskDoneOutput> {
+export interface ITaskResultDone<O extends ITaskOutput = ITaskOutput> {
     status: TaskResultStatus.DONE;
     message?: string;
     output?: O;
 }
 
-export interface ITaskResultContinue<I = ITaskDataInput> {
+export interface ITaskResultContinue<I = ITaskInput> {
     status: TaskResultStatus.CONTINUE;
-    message?: string;
     input: I;
     wait?: number; // seconds to wait before next iteration
 }
 
 export interface ITaskResultError {
     status: TaskResultStatus.ERROR;
-    message: string;
-    error?: IResponseError;
+    error: IResponseError;
 }
 
 export interface ITaskResultAborted {
     status: TaskResultStatus.ABORTED;
-    message?: string;
 }
 
-export type ITaskResult<I = ITaskDataInput, O extends ITaskDoneOutput = ITaskDoneOutput> =
+export type ITaskResult<I = ITaskInput, O extends ITaskOutput = ITaskOutput> =
     | ITaskResultDone<O>
     | ITaskResultContinue<I>
     | ITaskResultError
     | ITaskResultAborted;
 
 export type ITaskLifecycleHook<
-    I extends ITaskDataInput = ITaskDataInput,
-    O extends ITaskDoneOutput = ITaskDoneOutput
+    I extends ITaskInput = ITaskInput,
+    O extends ITaskOutput = ITaskOutput
 > = { task: ITask<I, O> };
 
 /**
  * Core TaskDefinition - minimal interface
  */
 export interface ITaskDefinition<
-    I extends ITaskDataInput = ITaskDataInput,
-    O extends ITaskDoneOutput = ITaskDoneOutput
+    I extends ITaskInput = ITaskInput,
+    O extends ITaskOutput = ITaskOutput
 > {
     id: string;
     title: string;
@@ -147,8 +144,8 @@ export const TaskDefinition = createAbstraction<ITaskDefinition>("TaskDefinition
  * Used internally by the task runner to ensure consistent behavior.
  */
 export interface IRunnableTaskDefinition<
-    I extends ITaskDataInput = ITaskDataInput,
-    O extends ITaskDoneOutput = ITaskDoneOutput
+    I extends ITaskInput = ITaskInput,
+    O extends ITaskOutput = ITaskOutput
 > extends ITaskDefinition<I, O> {
     // Override optional properties to be required with guaranteed values
     isPrivate: boolean;
@@ -158,42 +155,42 @@ export interface IRunnableTaskDefinition<
 
 export namespace TaskDefinition {
     export type Interface<
-        I extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskDoneOutput = ITaskDoneOutput
+        I extends ITaskInput = ITaskInput,
+        O extends ITaskOutput = ITaskOutput
     > = ITaskDefinition<I, O>;
 
-    export type Task<
-        I extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskDoneOutput = ITaskDoneOutput
-    > = ITask<I, O>;
+    export type TaskInput = ITaskInput;
 
-    export type TaskDataInput = ITaskDataInput;
-
-    export type TaskDoneOutput = ITaskDoneOutput;
+    export type TaskOutput = ITaskOutput;
 
     export type Runnable<
-        I extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskDoneOutput = ITaskDoneOutput
+        I extends ITaskInput = ITaskInput,
+        O extends ITaskOutput = ITaskOutput
     > = IRunnableTaskDefinition<I, O>;
 
     export type RunParams<
-        I extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskDoneOutput = ITaskDoneOutput
+        I extends ITaskInput = ITaskInput,
+        O extends ITaskOutput = ITaskOutput
     > = ITaskRunParams<I, O>;
 
     export type Result<
-        I extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskDoneOutput = ITaskDoneOutput
+        I extends ITaskInput = ITaskInput,
+        O extends ITaskOutput = ITaskOutput
     > = ITaskResult<I, O>;
 
-    export type ResultDone<O extends ITaskDoneOutput = ITaskDoneOutput> = ITaskResultDone<O>;
-    export type ResultContinue<I = ITaskDataInput> = ITaskResultContinue<I>;
+    export type Task<
+        I extends ITaskInput = ITaskInput,
+        O extends ITaskOutput = ITaskOutput
+    > = ITask<I, O>;
+
+    export type ResultDone<O extends ITaskOutput = ITaskOutput> = ITaskResultDone<O>;
+    export type ResultContinue<I = ITaskInput> = ITaskResultContinue<I>;
     export type ResultError = ITaskResultError;
     export type ResultAborted = ITaskResultAborted;
     export type CreateInputValidationParams = ITaskCreateInputValidationParams;
-    export type TaskCreateData<I = ITaskDataInput> = ITaskCreateData<I>;
+    export type TaskCreateData<I = ITaskInput> = ITaskCreateData<I>;
     export type LifecycleHookParams<
-        I extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskDoneOutput = ITaskDoneOutput
+        I extends ITaskInput = ITaskInput,
+        O extends ITaskOutput = ITaskOutput
     > = ITaskLifecycleHook<I, O>;
 }

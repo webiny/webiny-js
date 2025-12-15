@@ -8,8 +8,8 @@ import {
 } from "~/response";
 import { createMockEvent } from "~tests/mocks";
 import type { ITaskEvent } from "~/handler/types";
-import { TaskResponseStatus } from "~/types";
 import { WebinyError } from "@webiny/error";
+import { TaskResultStatus } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 describe("response", () => {
     let event: ITaskEvent;
@@ -40,7 +40,7 @@ describe("response", () => {
             input: {
                 aInput: true
             },
-            status: TaskResponseStatus.CONTINUE,
+            status: TaskResultStatus.CONTINUE,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
             tenant: event.tenant,
@@ -70,7 +70,7 @@ describe("response", () => {
             output: {
                 aDoneOutput: true
             },
-            status: TaskResponseStatus.DONE,
+            status: TaskResultStatus.DONE,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
             tenant: event.tenant
@@ -104,7 +104,7 @@ describe("response", () => {
                     someData: true
                 }
             },
-            status: TaskResponseStatus.ERROR,
+            status: TaskResultStatus.ERROR,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
             tenant: event.tenant
@@ -119,7 +119,7 @@ describe("response", () => {
         expect(result).toBeInstanceOf(ResponseAbortedResult);
 
         expect(result).toEqual({
-            status: TaskResponseStatus.ABORTED,
+            status: TaskResultStatus.ABORTED,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
             tenant: event.tenant
@@ -138,7 +138,7 @@ describe("response", () => {
             },
             tenant: event.tenant,
             webinyTaskId: event.webinyTaskId,
-            status: TaskResponseStatus.DONE,
+            status: TaskResultStatus.DONE,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId
         });
 
@@ -148,7 +148,7 @@ describe("response", () => {
             output: {
                 aDoneOutput: true
             },
-            status: TaskResponseStatus.DONE,
+            status: TaskResultStatus.DONE,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
             tenant: event.tenant
@@ -168,7 +168,7 @@ describe("response", () => {
             wait: 30,
             tenant: event.tenant,
             webinyTaskId: event.webinyTaskId,
-            status: TaskResponseStatus.CONTINUE,
+            status: TaskResultStatus.CONTINUE,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
             delay: -1
         });
@@ -179,7 +179,7 @@ describe("response", () => {
             input: {
                 aInput: true
             },
-            status: TaskResponseStatus.CONTINUE,
+            status: TaskResultStatus.CONTINUE,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
             tenant: event.tenant,
@@ -203,7 +203,7 @@ describe("response", () => {
             }),
             webinyTaskId: event.webinyTaskId,
             tenant: event.tenant,
-            status: TaskResponseStatus.ERROR,
+            status: TaskResultStatus.ERROR,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId
         });
 
@@ -216,7 +216,7 @@ describe("response", () => {
                     someData: true
                 }
             },
-            status: TaskResponseStatus.ERROR,
+            status: TaskResultStatus.ERROR,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
             tenant: event.tenant
@@ -245,7 +245,7 @@ describe("response", () => {
                 size: 240038,
                 max: 232 * 1024
             },
-            status: TaskResponseStatus.DONE,
+            status: TaskResultStatus.DONE,
             webinyTaskId: event.webinyTaskId,
             webinyTaskDefinitionId: event.webinyTaskDefinitionId,
             tenant: event.tenant

@@ -3,7 +3,7 @@ import type { PrimitiveValue } from "@webiny/api-elasticsearch/types.js";
 import type { IIndexManager } from "~/settings/types.js";
 import type { IElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchSynchronize.js";
 import type { IElasticsearchFetcher } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchFetcher.js";
-import type { ITaskResponseDoneResultOutput } from "@webiny/api-core/features/task/TaskService/index.js";
+import type { IGenericOutput } from "@webiny/api-core/features/task/TaskService/index.js";
 import { TaskDefinition} from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface IDataSynchronizationInputValue {
@@ -21,7 +21,7 @@ export interface IDataSynchronizationInput {
     elasticsearchToDynamoDb?: IDataSynchronizationInputElasticsearchToDynamoDbValue;
 }
 
-export type IDataSynchronizationOutput = ITaskResponseDoneResultOutput;
+export type IDataSynchronizationOutput = IGenericOutput;
 
 export type ISynchronizationRunResult =
     | TaskDefinition.ResultContinue<IDataSynchronizationInput>

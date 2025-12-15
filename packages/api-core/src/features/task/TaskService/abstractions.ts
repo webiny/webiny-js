@@ -1,10 +1,22 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types.js";
+import type { ITaskOutput } from "~/features/task/TaskDefinition/index.js";
 
 export const TaskService = createAbstraction<ITaskService>("TaskService");
 
 export namespace TaskService {
     export type Interface = ITaskService;
+    /**
+     * This is the output of `trigger` and `abort` actions.
+     */
+    export type GenericOutput = IGenericOutput;
+
+    export type TaskDataInput = ITaskDataInput;
+
+    export type Task<
+        I extends ITaskDataInput = ITaskDataInput,
+        O extends ITaskOutput = ITaskOutput
+    > = ITask<I, O>;
 }
 
 export type ITaskDataInput = GenericRecord;
@@ -26,22 +38,16 @@ export interface ITaskAbortParams {
 }
 
 export interface ITaskService {
-    trigger: <
-        T extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
-    >(
+    trigger: <T extends ITaskDataInput = ITaskDataInput, O extends IGenericOutput = IGenericOutput>(
         params: ITaskTriggerParams<T>
     ) => Promise<ITask<T, O>>;
-    abort: <
-        T extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
-    >(
+    abort: <T extends ITaskDataInput = ITaskDataInput, O extends IGenericOutput = IGenericOutput>(
         params: ITaskAbortParams
     ) => Promise<ITask<T, O>>;
     fetchServiceInfo: (input: ITask<any, any> | string) => Promise<IServiceInfo | null>;
 }
 
-export interface ITaskResponseDoneResultOutput {
+export interface IGenericOutput {
     error?: IResponseError;
     [key: string]:
         | string
@@ -61,10 +67,7 @@ export interface ITaskTriggerParams<I = ITaskDataInput> {
     delay?: number;
 }
 
-export interface ITask<
-    T = GenericRecord,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
-> {
+export interface ITask<T = GenericRecord, O extends ITaskOutput = ITaskOutput> {
     /**
      * ID without the revision number (for example: #0001).
      */

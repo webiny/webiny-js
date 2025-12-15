@@ -2,11 +2,13 @@ import { TaskExecutionContext as Abstraction } from "./abstractions.js";
 import type { ITaskManagerStore } from "~/runner/abstractions/TaskManagerStore.js";
 import type { ITaskRunner } from "~/runner/abstractions/TaskRunner.js";
 import type { ITimer } from "@webiny/handler-aws";
+import type { ITaskResponse } from "~/response/abstractions/index.js";
 
 class TaskExecutionContextImpl implements Abstraction.Interface {
     private _store?: ITaskManagerStore;
     private _runner?: ITaskRunner;
     private _timer?: ITimer;
+    private _response?: ITaskResponse;
 
     get store(): ITaskManagerStore {
         if (!this._store) {
@@ -29,6 +31,13 @@ class TaskExecutionContextImpl implements Abstraction.Interface {
         return this._timer;
     }
 
+    get response(): ITaskResponse {
+        if (!this._response) {
+            throw new Error("TaskExecutionContext: response not set. Task execution not started.");
+        }
+        return this._response;
+    }
+
     setStore(store: ITaskManagerStore): void {
         this._store = store;
     }
@@ -39,6 +48,10 @@ class TaskExecutionContextImpl implements Abstraction.Interface {
 
     setTimer(timer: ITimer): void {
         this._timer = timer;
+    }
+
+    setResponse(response: ITaskResponse): void {
+        this._response = response;
     }
 
     clear(): void {

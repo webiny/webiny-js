@@ -27,7 +27,7 @@ class UpdateFlpTaskImpl implements TaskDefinition.Interface<IUpdateFlpTaskInput>
 
             return controller.response.done("Task done: FLP record updated.");
         } catch (error) {
-            return controller.response.error("An error occurred while updating FLP record", error);
+            return controller.response.error(error);
         }
     }
 }

@@ -118,7 +118,7 @@ export class TaskManager implements ITaskManager {
             });
         } else if (result.status === TaskResultStatus.ERROR) {
             return this.response.error({
-                error: result.error || { message: result.message }
+                error: result.error
             });
         } else if (result.status === TaskResultStatus.ABORTED) {
             return this.response.aborted();

@@ -4,8 +4,8 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
 export const createDefinitionCrud = (context: Context): ITasksContextDefinitionObject => {
     return {
         getDefinition: <
-            I extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
-            O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
+            I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+            O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
         >(
             id: string
         ) => {

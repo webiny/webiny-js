@@ -3,24 +3,15 @@ import type {
     CmsEntryListParams,
     CmsEntryListWhere,
     CmsEntryMeta,
-    CmsModel,
-    CmsModelField
+    CmsModel
 } from "@webiny/api-headless-cms/types/index.js";
 import type { Topic } from "@webiny/pubsub/types.js";
-import type {
-    IResponseError,
-    ITaskResponse,
-    ITaskResponseDoneResultOutput,
-    ITaskResponseResult
-} from "~/response/abstractions/index.js";
-import type { IIsCloseToTimeoutCallable, ITaskManagerStore } from "./runner/abstractions/index.js";
+import type { IResponseError } from "~/response/abstractions/index.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import type { IStepFunctionServiceFetchResult } from "~/service/StepFunctionServicePlugin.js";
-import type { ITimer } from "@webiny/handler-aws";
-
-import type zod from "zod";
 import type { SecurityPermission } from "@webiny/api-core/types/security.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 
 export * from "./handler/types.js";
 export * from "./response/abstractions/index.js";
@@ -82,38 +73,14 @@ export interface ITaskIdentity {
     type: string;
 }
 
-export interface ITask<
-    T = GenericRecord,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
-> {
-    /**
-     * ID without the revision number (for example: #0001).
-     */
-    id: string;
-    name: string;
-    taskStatus: TaskDataStatus;
-    definitionId: string;
-    executionName: string;
-    input: T;
-    output?: O;
-    createdOn: string;
-    savedOn: string;
-    createdBy: ITaskIdentity;
-    startedOn?: string;
-    finishedOn?: string;
-    eventResponse: GenericRecord | undefined;
-    iterations: number;
-    parentId?: string;
-}
-
 export type IGetTaskResponse<
-    T = any,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+    O extends TaskService.GenericOutput = TaskService.GenericOutput
 > = ITask<T, O> | null;
 
 export interface IListTasksResponse<
-    T = any,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+    O extends TaskService.GenericOutput = TaskService.GenericOutput
 > {
     items: ITask<T, O>[];
     meta: CmsEntryMeta;
@@ -125,12 +92,12 @@ export interface IListTaskLogsResponse {
 }
 
 export type ICreateTaskResponse<
-    T = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+    O extends TaskService.GenericOutput = TaskService.GenericOutput
 > = ITask<T, O>;
 export type IUpdateTaskResponse<
-    T = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+    O extends TaskService.GenericOutput = TaskService.GenericOutput
 > = ITask<T, O>;
 export type IDeleteTaskResponse = boolean;
 
@@ -169,7 +136,7 @@ export interface IListTaskLogParams extends Omit<CmsEntryListParams, "fields" | 
     where?: IListTaskLogParamsWhere;
 }
 
-export interface ITaskCreateData<T = ITaskDataInput> {
+export interface ITaskCreateData<T extends TaskService.TaskDataInput = TaskService.TaskDataInput> {
     definitionId: string;
     name: string;
     input: T;
@@ -177,8 +144,8 @@ export interface ITaskCreateData<T = ITaskDataInput> {
 }
 
 export interface ITaskUpdateData<
-    I = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    I extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+    O extends TaskService.GenericOutput = TaskService.GenericOutput
 > {
     name?: string;
     input?: I;
@@ -236,16 +203,24 @@ export interface ITasksContextCrudObject {
     /**
      * Tasks
      */
-    getTask<T = any, O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+    getTask<
+        T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+        O extends TaskService.GenericOutput = TaskService.GenericOutput
+    >(
         id: string
     ): Promise<IGetTaskResponse<T, O> | null>;
-    listTasks<T = any, O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput>(
+    listTasks<
+        T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+        O extends TaskService.GenericOutput = TaskService.GenericOutput
+    >(
         params?: IListTaskParams
     ): Promise<IListTasksResponse<T, O>>;
-    createTask<T = any>(task: ITaskCreateData<T>): Promise<ICreateTaskResponse<T>>;
+    createTask<T extends TaskService.GenericOutput = TaskService.GenericOutput>(
+        task: ITaskCreateData<T>
+    ): Promise<ICreateTaskResponse<T>>;
     updateTask<
-        T = ITaskDataInput,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+        O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         id: string,
         data: Partial<ITaskUpdateData<T, O>>
@@ -273,8 +248,8 @@ export interface ITasksContextCrudObject {
 
 export interface ITasksContextDefinitionObject {
     getDefinition: <
-        I extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
-        O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
+        I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+        O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
     >(
         id: string
     ) => TaskDefinition.Runnable<I, O> | null;
@@ -296,14 +271,14 @@ export interface ITaskAbortParams {
 
 export interface ITasksContextServiceObject {
     trigger: <
-        T extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+        O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         params: ITaskTriggerParams<T>
     ) => Promise<ITask<T, O>>;
     abort: <
-        T extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+        O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         params: ITaskAbortParams
     ) => Promise<ITask<T, O>>;
@@ -321,153 +296,12 @@ export interface Context extends BaseContext {
     tasks: ITasksContextObject;
 }
 
-export interface ITaskRunParams<
-    I = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
-> {
-    response: ITaskResponse<I, O>;
-    isCloseToTimeout: IIsCloseToTimeoutCallable;
-    isAborted(): boolean;
-    input: I;
-    store: ITaskManagerStore<I>;
-    trigger<SI = ITaskDataInput>(
-        params: Omit<ITaskTriggerParams<SI>, "parent">
-    ): Promise<ITask<SI>>;
-    timer: ITimer;
-}
-
-export interface ITaskOnSuccessParams<
-    I = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
-> {
-    input: I;
-    output: O | undefined;
-}
-
-export interface ITaskOnErrorParams<I = ITaskDataInput> {
-    input: I;
-    error: IResponseError;
-}
-
-export interface ITaskOnAbortParams<
-    I = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
-> {
-    task: ITask<I, O>;
-}
-
-export interface ITaskOnMaxIterationsParams {
-    task: ITask;
-}
-
-export enum TaskResponseStatus {
-    DONE = "done",
-    ERROR = "error",
-    CONTINUE = "continue",
-    ABORTED = "aborted"
-}
-
-export type ITaskDefinitionField = Pick<
-    CmsModelField,
-    | "fieldId"
-    | "type"
-    | "label"
-    | "renderer"
-    | "helpText"
-    | "placeholderText"
-    | "predefinedValues"
-    | "validation"
-    | "listValidation"
-    | "multipleValues"
-    | "settings"
->;
-
-export interface ITaskBeforeTriggerParams<I = ITaskDataInput> {
-    data: ITaskCreateData<I>;
-}
-
-export interface ITaskCreateInputValidationParams {
-    validator: typeof zod;
-}
-
-export interface ITaskDefinition<
-    I = ITaskDataInput,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
-> {
-    /**
-     * ID of the task must be unique in the system.
-     * It should be in camelCase format, for example: "myCustomTask".
-     *
-     * TODO: figure out a way to force camelCase in types.
-     * CamelCase from type-fest does not help with this.
-     */
-    id: string;
-    /**
-     * Name should be unique, as it will get used to identify the task in the UI.
-     */
-    title: string;
-    /**
-     * A description of the task, for the UI.
-     */
-    description?: string;
-    /**
-     * Maximum number a step function can call the Lambda.
-     */
-    maxIterations: number;
-    /**
-     * Disable storing logs in database for this task.
-     */
-    disableDatabaseLogs?: boolean;
-    /**
-     * Task run method.
-     */
-    run(params: ITaskRunParams<I, O>): Promise<ITaskResponseResult>;
-    /**
-     * When a new task is about to be triggered, we will run this method.
-     * For example, you can use this method to check if there is a task of the same type already running.
-     */
-    onBeforeTrigger?<T = ITaskDataInput>(params: ITaskBeforeTriggerParams<T>): Promise<void>;
-    /**
-     * When task successfully finishes, this method will be called.
-     * This will be called during the run time of the task.
-     */
-    onDone?(params: ITaskOnSuccessParams<I, O>): Promise<void>;
-    /**
-     * When task fails, this method will be called.
-     * This will be called during the run time of the task.
-     */
-    onError?(params: ITaskOnErrorParams<I>): Promise<void>;
-    /**
-     * When task is aborted, this method will be called.
-     * This method will be called when user aborts the task.
-     */
-    onAbort?(params: ITaskOnAbortParams<I, O>): Promise<void>;
-    /**
-     * When task hits max iterations, this method will be called.
-     * This will be called during the run time of the task.
-     */
-    onMaxIterations?(params: ITaskOnMaxIterationsParams): Promise<void>;
-    /**
-     * Create a validation schema for the task input.
-     * This will be used to validate the input before the task is triggered.
-     *
-     * By default, the input validation validates the input against the fields defined in the task definition.
-     * But it also passes through any fields which might not be defined in the task validation.
-     */
-    createInputValidation?: (
-        params: ITaskCreateInputValidationParams
-    ) => GenericRecord<keyof I, zod.Schema> | zod.Schema;
-    /**
-     * Custom input fields and layout for the task input.
-     */
-    fields?: ITaskDefinitionField[];
-    /**
-     * Is the task visible when listing?
-     */
-    isPrivate?: boolean;
-}
-
 export interface TaskPermission extends SecurityPermission {
     name: "task";
     rwd?: string;
 }
+
+export type ITask<
+    I extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+    O extends TaskService.GenericOutput = TaskService.GenericOutput
+> = TaskService.Task<I, O>;

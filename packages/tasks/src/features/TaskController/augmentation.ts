@@ -1,7 +1,11 @@
-import type { IResponseError, ITaskResult } from "@webiny/api-core/features/task/TaskDefinition";
-import type { ITask, TaskDataStatus } from "~/types.js";
-import type { ITaskTriggerParams } from "@webiny/api-core/features/task/TaskService/index.js";
+import type { IResponseError } from "@webiny/api-core/features/task/TaskDefinition";
+import type { TaskDataStatus } from "~/types.js";
+import {
+    type ITaskTriggerParams,
+    TaskService
+} from "@webiny/api-core/features/task/TaskService/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import type { ITaskResponse } from "~/response/abstractions/index.js";
 
 /**
  * Augment the TaskController interface from api-core with implementation details.
@@ -9,28 +13,19 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
  */
 declare module "@webiny/api-core/features/task/TaskController/abstractions.js" {
     interface ITaskController<
-        I extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
-        O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
+        I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+        O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
     > {
         /**
-         * Response helpers - create typed result objects
+         * Response object
          */
-        response: {
-            done(output?: O): TaskDefinition.ResultDone<O>;
-            done(message?: string, output?: O): TaskDefinition.ResultDone<O>;
-            continue(
-                input: I,
-                options?: { wait?: number; message?: string }
-            ): TaskDefinition.ResultContinue<I>;
-            error(error: Error | IResponseError | string): TaskDefinition.ResultError;
-            aborted(message?: string): TaskDefinition.ResultAborted;
-        };
+        response: ITaskResponse<I, O>;
 
         /**
          * State management - access and update task state
          */
         state: {
-            getTask(): ITask<I, O>;
+            getTask(): TaskService.Task<I, O>;
             getStatus(): TaskDataStatus;
             getInput(): I;
             getOutput(): O | undefined;
@@ -54,16 +49,16 @@ declare module "@webiny/api-core/features/task/TaskController/abstractions.js" {
          * Task management - trigger and query child tasks
          */
         task: {
-            trigger<CI extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput>(
+            trigger<CI extends TaskDefinition.TaskInput = TaskDefinition.TaskInput>(
                 params: ITaskTriggerParams<CI>
-            ): Promise<ITask<CI>>;
+            ): Promise<TaskService.Task<CI>>;
 
             listChildren<
-                CT extends TaskDefinition.TaskDataInput = I,
-                CO extends TaskDefinition.TaskDoneOutput = O
+                CT extends TaskDefinition.TaskInput = I,
+                CO extends TaskDefinition.TaskOutput = O
             >(
                 definitionId?: string
-            ): Promise<ITask<CT, CO>[]>;
+            ): Promise<TaskService.Task<CT, CO>[]>;
         };
 
         /**

@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { ITimer } from "@webiny/handler-aws";
 import type { ITaskManagerStore } from "~/runner/abstractions/TaskManagerStore.js";
 import type { ITaskRunner } from "~/runner/abstractions/TaskRunner.js";
+import type { ITaskResponse } from "~/response/abstractions/index.js";
 
 /**
  * TaskExecutionContext holds runtime state for the currently executing task.
@@ -15,11 +16,13 @@ export interface ITaskExecutionContext {
     readonly store: ITaskManagerStore;
     readonly runner: ITaskRunner;
     readonly timer: ITimer;
+    readonly response: ITaskResponse;
 
     // Setters - called by TaskControl
     setStore(store: ITaskManagerStore): void;
     setRunner(runner: ITaskRunner): void;
     setTimer(timer: ITimer): void;
+    setResponse(response: ITaskResponse): void;
 
     // Clear after execution
     clear(): void;

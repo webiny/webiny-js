@@ -22,8 +22,8 @@ export interface ICreateRunnerParamsOnContinueCallable {
 }
 
 export interface ICreateRunnerParams<
-    I extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
-    O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
+    I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 > {
     context: Context;
     task: TaskDefinition.Interface<I, O>;
@@ -38,8 +38,8 @@ export interface ICreateRunnerParams<
 export type IExecuteEvent = Pick<ITaskEvent, "webinyTaskId"> & Partial<Pick<ITaskEvent, "tenant">>;
 
 export const createRunner = <
-    I extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
-    O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
+    I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 >(
     params: ICreateRunnerParams<I, O>
 ) => {

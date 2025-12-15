@@ -9,8 +9,8 @@ import { batchReadAll } from "@webiny/db-dynamodb";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface ManagerParams<
-    T extends TaskDefinition.TaskDataInput,
-    O extends TaskDefinition.TaskDoneOutput
+    T extends TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput
 > {
     documentClient: DynamoDBDocument;
     elasticsearchClient: Client;
@@ -18,8 +18,8 @@ export interface ManagerParams<
 }
 
 export class Manager<
-    T extends TaskDefinition.TaskDataInput,
-    O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
+    T extends TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 > implements IManager<T, O>
 {
     public readonly controller: TaskController.Interface<T, O>;

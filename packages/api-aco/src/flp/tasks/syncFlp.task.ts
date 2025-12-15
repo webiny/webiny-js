@@ -131,7 +131,7 @@ class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
                 "Invalid input: please provide either `type` or `folderId`."
             );
         } catch (error) {
-            return controller.response.error("An error occurred while syncing FLP records", error);
+            return controller.response.error(error);
         }
     }
 }

@@ -1,7 +1,6 @@
 import WebinyError from "@webiny/error";
 import type {
     Context,
-    ITask,
     ITaskAbortParams,
     ITaskCreateData,
     ITaskLog,
@@ -12,17 +11,18 @@ import { TaskDataStatus, TaskLogItemType } from "~/types.js";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { createService } from "~/service/index.js";
 import type { IStepFunctionServiceFetchResult } from "~/service/StepFunctionServicePlugin.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 const MAX_DELAY_DAYS = 355;
 const MAX_DELAY_SECONDS = MAX_DELAY_DAYS * 24 * 60 * 60;
 
-interface ValidateDelayParams<T> {
+interface ValidateDelayParams<T extends TaskService.TaskDataInput> {
     input: ITaskCreateData<T>;
     delay?: number;
 }
 
-const validateDelay = <T = TaskDefinition.TaskDataInput>({
+const validateDelay = <T extends TaskService.TaskDataInput = TaskService.TaskDataInput>({
     input,
     delay
 }: ValidateDelayParams<T>): void => {
@@ -48,11 +48,11 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
 
     return {
         trigger: async <
-            T extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
-            O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
+            T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+            O extends TaskService.GenericOutput = TaskService.GenericOutput
         >(
             params: ITaskTriggerParams<T>
-        ): Promise<ITask<T, O>> => {
+        ): Promise<TaskService.Task<T, O>> => {
             const { definition: id, input: inputValues, name, parent, delay = 0 } = params;
             const definition = context.tasks.getDefinition(id);
             if (!definition) {
@@ -75,7 +75,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
                 delay
             });
 
-            let task: ITask<T>;
+            let task: TaskService.Task<T>;
             try {
                 task = await context.tasks.createTask<T>(input);
             } catch (ex) {
@@ -111,7 +111,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
             });
         },
         fetchServiceInfo: async (
-            input: ITask | string
+            input: TaskService.Task | string
         ): Promise<IStepFunctionServiceFetchResult | null> => {
             const task = typeof input === "object" ? input : await context.tasks.getTask(input);
             if (!task && typeof input === "string") {
@@ -131,11 +131,11 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
             }
         },
         abort: async <
-            T extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
-            O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
+            T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+            O extends TaskService.GenericOutput = TaskService.GenericOutput
         >(
             params: ITaskAbortParams
-        ): Promise<ITask<T, O>> => {
+        ): Promise<TaskService.Task<T, O>> => {
             const task = await context.tasks.getTask<T, O>(params.id);
             if (!task) {
                 throw new NotFoundError(`Task "${params.id}" was not found!`);

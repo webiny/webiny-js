@@ -26,7 +26,7 @@ class DeleteFlpTaskImpl implements TaskDefinition.Interface<IDeleteFlpTaskInput>
 
             return controller.response.done("Task done: FLP record deleted.");
         } catch (error) {
-            return controller.response.error("An error occurred while deleting FLP record", error);
+            return controller.response.error(error);
         }
     }
 }

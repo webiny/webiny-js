@@ -65,7 +65,7 @@ export const createBulkActionTasks = (bulkAction: EntriesBulkAction.Interface) =
 
                 switch (action) {
                     case BulkActionOperationByModelAction.PROCESS_SUBTASKS: {
-                        const processTasks = new ProcessTasksByModel(processTaskId);
+                        const processTasks = new ProcessTasksByModel(this.context, processTaskId);
                         return await processTasks.execute({ input, controller });
                     }
                     case BulkActionOperationByModelAction.CREATE_SUBTASKS:

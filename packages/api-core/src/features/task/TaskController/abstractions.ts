@@ -1,5 +1,5 @@
 import { createAbstraction } from "@webiny/feature/api";
-import type { ITaskDataInput, ITaskDoneOutput } from "../TaskDefinition/index.js";
+import type { ITaskInput, ITaskOutput } from "../TaskDefinition/index.js";
 
 /**
  * TaskController provides runtime capabilities to task definitions.
@@ -8,8 +8,8 @@ import type { ITaskDataInput, ITaskDoneOutput } from "../TaskDefinition/index.js
  * Import this from @webiny/api-core, but the full interface comes from @webiny/tasks.
  */
 export interface ITaskController<
-    I extends ITaskDataInput = ITaskDataInput,
-    O extends ITaskDoneOutput = ITaskDoneOutput
+    I extends ITaskInput = ITaskInput,
+    O extends ITaskOutput = ITaskOutput
 > {
     // Empty - augmented by tasks package
 }
@@ -18,7 +18,7 @@ export const TaskController = createAbstraction<ITaskController>("TaskController
 
 export namespace TaskController {
     export type Interface<
-        I extends ITaskDataInput = ITaskDataInput,
-        O extends ITaskDoneOutput = ITaskDoneOutput
+        I extends ITaskInput = ITaskInput,
+        O extends ITaskOutput = ITaskOutput
     > = ITaskController<I, O>;
 }

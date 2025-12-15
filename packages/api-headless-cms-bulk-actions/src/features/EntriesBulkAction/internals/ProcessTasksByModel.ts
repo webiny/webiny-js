@@ -1,6 +1,7 @@
 import { TaskDataStatus } from "@webiny/tasks";
 import type { IBulkActionOperationByModelTaskParams } from "~/types.js";
 import { BulkActionOperationByModelAction } from "~/types.js";
+import { BulkActionContext } from "~/features/BulkActionContext/index.js";
 
 /**
  * The `ProcessTasksByModel` class is responsible for processing tasks for a specific model.
@@ -8,28 +9,28 @@ import { BulkActionOperationByModelAction } from "~/types.js";
  * the task based on the status.
  */
 export class ProcessTasksByModel {
-    private taskDefinition: string;
+    private context: BulkActionContext.Interface;
+    private readonly taskDefinition: string;
 
-    constructor(taskDefinition: string) {
+    constructor(context: BulkActionContext.Interface, taskDefinition: string) {
+        this.context = context;
         this.taskDefinition = taskDefinition;
     }
 
-    async execute(params: IBulkActionOperationByModelTaskParams) {
-        const { response, input, isAborted, isCloseToTimeout, context, store } = params;
-
+    async execute({ input, controller }: IBulkActionOperationByModelTaskParams) {
         try {
-            if (isAborted()) {
-                return response.aborted();
-            } else if (isCloseToTimeout()) {
-                return response.continue({
+            if (controller.runtime.isAborted()) {
+                return controller.response.aborted();
+            } else if (controller.runtime.isCloseToTimeout()) {
+                return controller.response.continue({
                     ...input,
                     action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
                 });
             }
 
-            const { items } = await context.tasks.listTasks({
+            const { items } = await this.context.tasks.listTasks({
                 where: {
-                    parentId: store.getTask().id,
+                    parentId: controller.state.getTask().id,
                     definitionId: this.taskDefinition,
                     taskStatus_in: [TaskDataStatus.RUNNING, TaskDataStatus.PENDING]
                 },
@@ -38,7 +39,7 @@ export class ProcessTasksByModel {
 
             // If there are running or pending tasks, continue with a wait.
             if (items.length > 0) {
-                return response.continue(
+                return controller.response.continue(
                     {
                         ...input,
                         action: BulkActionOperationByModelAction.PROCESS_SUBTASKS
@@ -49,12 +50,12 @@ export class ProcessTasksByModel {
                 );
             }
 
-            return response.continue({
+            return controller.response.continue({
                 ...input,
                 action: BulkActionOperationByModelAction.CHECK_MORE_SUBTASKS
             });
         } catch (ex) {
-            return response.error(
+            return controller.response.error(
                 ex.message ?? `Error while processing task "${this.taskDefinition}"`
             );
         }

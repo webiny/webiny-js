@@ -3,14 +3,10 @@ import type {
     Context,
     IListTaskLogParams,
     IListTaskParams,
-    ITask,
     ITaskCreateData,
-    ITaskDataInput,
-    ITaskDefinition,
     ITaskLog,
     ITaskLogCreateInput,
     ITaskLogUpdateInput,
-    ITaskResponseDoneResultOutput,
     ITasksContextCrudObject,
     ITaskUpdateData,
     OnTaskAfterCreateTopicParams,
@@ -41,6 +37,8 @@ import {
     TaskLogNotFoundError,
     TaskNotFoundError
 } from "~/domain/errors.js";
+import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 const createRevisionId = (id: string) => {
     const { id: entryId } = parseIdentifier(id);
@@ -48,11 +46,11 @@ const createRevisionId = (id: string) => {
 };
 
 const convertToTask = <
-    T = any,
-    O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+    T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+    O extends TaskService.GenericOutput = TaskService.GenericOutput
 >(
-    entry: CmsEntry<ITask<T, O>>
-): ITask<T, O> => {
+    entry: CmsEntry<TaskService.Task<T, O>>
+): TaskService.Task<T, O> => {
     return {
         id: entry.entryId,
         createdOn: entry.createdOn,
@@ -85,7 +83,7 @@ const convertToLog = (entry: CmsEntry<ITaskLog>): ITaskLog => {
 };
 
 interface IValidateParams {
-    definition: Pick<ITaskDefinition, "createInputValidation">;
+    definition: Pick<TaskDefinition.Interface, "createInputValidation">;
     data: Pick<ITaskCreateData, "input">;
     context: Context;
 }
@@ -154,8 +152,8 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     };
 
     const getTask = async <
-        T = any,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+        O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         id: string
     ) => {
@@ -175,12 +173,12 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             return null;
         }
 
-        return convertToTask(entry as unknown as CmsEntry<ITask<T, O>>);
+        return convertToTask(entry as unknown as CmsEntry<TaskService.Task<T, O>>);
     };
 
     const listTasks = async <
-        T = any,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+        O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         params?: IListTaskParams
     ) => {
@@ -188,7 +186,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         const [items, meta] = await identityContext.withoutAuthorization(async () => {
             const model = await getTaskModel();
             const listLatestEntries = context.container.resolve(ListLatestEntriesUseCase);
-            const result = await listLatestEntries.execute<ITask<T, O>>(model, {
+            const result = await listLatestEntries.execute<TaskService.Task<T, O>>(model, {
                 ...params,
                 where: remapWhere(params?.where)
             });
@@ -231,12 +229,12 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             return result.value;
         });
 
-        return convertToTask(entry as unknown as CmsEntry<ITask>);
+        return convertToTask(entry as unknown as CmsEntry<TaskService.Task>);
     };
 
     const updateTask = async <
-        T = ITaskDataInput,
-        O extends ITaskResponseDoneResultOutput = ITaskResponseDoneResultOutput
+        T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+        O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         id: string,
         data: ITaskUpdateData<T, O>
@@ -261,7 +259,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
             throw new TaskNotFoundError();
         }
 
-        return convertToTask<T, O>(entry as unknown as CmsEntry<ITask<T, O>>);
+        return convertToTask<T, O>(entry as unknown as CmsEntry<TaskService.Task<T, O>>);
     };
 
     const deleteTask = async (id: string) => {
@@ -277,7 +275,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
         });
     };
 
-    const createLog = async (task: Pick<ITask, "id">, data: ITaskLogCreateInput) => {
+    const createLog = async (task: Pick<TaskService.Task, "id">, data: ITaskLogCreateInput) => {
         const identityContext = context.container.resolve(IdentityContext);
         const entry = await identityContext.withoutAuthorization(async () => {
             const model = await getLogModel();

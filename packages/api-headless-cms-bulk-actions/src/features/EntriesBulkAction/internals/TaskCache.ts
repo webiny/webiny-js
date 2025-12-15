@@ -5,7 +5,7 @@ import type { HcmsBulkActionsContext } from "~/types.js";
  * TaskCache class for managing and triggering cached tasks.
  * @template TTask - Task input data.
  */
-export class TaskCache<TTask extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput> {
+export class TaskCache<TTask extends TaskDefinition.TaskInput = TaskDefinition.TaskInput> {
     private readonly taskDefinition: string;
     private taskCache: TTask[] = [];
 

@@ -54,8 +54,8 @@ export interface IDynamoDbElasticsearchRecord {
 }
 
 export interface IManager<
-    I extends TaskDefinition.TaskDataInput = TaskDefinition.TaskDataInput,
-    O extends TaskDefinition.TaskDoneOutput = TaskDefinition.TaskDoneOutput
+    I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 > {
     readonly documentClient: DynamoDBDocument;
     readonly elasticsearch: Client;
