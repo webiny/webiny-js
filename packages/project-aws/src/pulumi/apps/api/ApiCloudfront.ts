@@ -28,7 +28,7 @@ export const ApiCloudfront = createAppModule({
         return app.addResource(aws.cloudfront.Distribution, {
             name: "api-cloudfront",
             config: {
-                waitForDeployment: true,
+                waitForDeployment: false,
                 isIpv6Enabled: true,
                 enabled: true,
                 defaultCacheBehavior: {
