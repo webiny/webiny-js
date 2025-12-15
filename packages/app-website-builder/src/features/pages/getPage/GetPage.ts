@@ -7,7 +7,7 @@ import { GetPageUseCase } from "~/features/pages/getPage/GetPageUseCase.js";
 import { GetPageUseCaseWithLoading } from "~/features/pages/getPage/GetPageUseCaseWithLoading.js";
 import { fullPageCache } from "~/domain/Page/index.js";
 
-interface IGetPageInstance {
+export interface IGetPageInstance {
     useCase: IGetPageUseCase;
     loading: LoadingRepository;
 }

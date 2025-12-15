@@ -5,11 +5,13 @@ class WorkflowStatesListPagesGraphQLFieldSelection
 {
     getSelection(): string[] {
         return [
-            `state {
-                workflowId
-                stepId
-                stepName
-                state
+            `workflows {
+                state {
+                    workflowId
+                    stepId
+                    stepName
+                    state
+                }
             }`
         ];
     }

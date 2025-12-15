@@ -58,7 +58,7 @@ export class Page {
         this.modifiedOn = data.modifiedOn ?? "";
         // TODO remove when implemented in a proper way
         // @ts-expect-error
-        this.state = data.state;
+        this.workflows = data.workflows || null;
     }
 
     static create(data: PageData) {

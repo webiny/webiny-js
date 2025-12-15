@@ -38,12 +38,12 @@ export class GetPageGqlGateway implements IGetPageGateway {
     private readonly client;
     private readonly modelFields;
 
-    constructor(client: ApolloClient<object>, modelFields: string[]) {
+    public constructor(client: ApolloClient<object>, modelFields: string[]) {
         this.client = client;
         this.modelFields = modelFields;
     }
 
-    async execute(id: string) {
+    public async execute(id: string) {
         if (!id) {
             throw new Error("Page `id` is mandatory");
         }

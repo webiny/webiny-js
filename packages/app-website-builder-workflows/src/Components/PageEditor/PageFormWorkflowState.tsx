@@ -24,8 +24,8 @@ const StoreAlert = ({ state }: IStoreAlertProps) => {
 
 export const PageFormWorkflowState = () => {
     return (
-        <div className={"max-w-screen bg-white pt-sm pb-sm"}>
-            <Grid className={"max-w-[960px] mx-auto"}>
+        <div className={"max-w-screen bg-white p-sm"}>
+            <Grid className={"w-full"}>
                 <Grid.Column span={12}>
                     <WorkflowStateBar>
                         {({ state }) => {

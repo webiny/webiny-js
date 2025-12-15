@@ -14,7 +14,7 @@ export const WorkflowStateBarStartReview = WorkflowStateBarComponent.createDecor
         } else if (!step.canReview) {
             return (
                 <>
-                    <Alert>
+                    <Alert swatchColor={step.color}>
                         This item is currently under <strong>{step.title}</strong> review, but you
                         are not in the team assigned to review it.
                     </Alert>
@@ -24,6 +24,7 @@ export const WorkflowStateBarStartReview = WorkflowStateBarComponent.createDecor
 
         return (
             <Alert
+                swatchColor={step.color}
                 actions={
                     <>
                         <Alert.Action text={"Start Review"} onClick={presenter.start} />

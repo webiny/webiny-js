@@ -47,8 +47,9 @@ export const LexicalEditor = (props: Omit<RichTextEditorProps, "theme">) => {
      * To use Website Builder theme, we can't use the LexicalEditor component from @webiny/app-admin.
      */
     return (
-        <FileManager accept={["image/*"]}>
-            {({ showFileManager }) => (
+        <FileManager
+            accept={["image/*"]}
+            render={({ showFileManager }) => (
                 <RichTextEditor
                     {...props}
                     onChange={onChange}
@@ -65,6 +66,6 @@ export const LexicalEditor = (props: Omit<RichTextEditorProps, "theme">) => {
                     ]}
                 />
             )}
-        </FileManager>
+        />
     );
 };
