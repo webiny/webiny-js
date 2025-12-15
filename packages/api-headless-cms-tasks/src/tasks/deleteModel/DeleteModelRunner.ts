@@ -1,4 +1,4 @@
-import type { ITaskResponse, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
+import type { ITaskResponse } from "@webiny/tasks";
 import type { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { ListFoldersUseCase } from "@webiny/api-aco/features/folders/ListFolders/index.js";
 import { DeleteFolderUseCase } from "@webiny/api-aco/features/folders/DeleteFolder/index.js";

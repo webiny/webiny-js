@@ -6,8 +6,8 @@ import type {
 import { convertTaskToCmsExportRecord } from "~/crud/utils/convertTaskToExportRecord.js";
 import type { ITasksContextObject } from "@webiny/tasks";
 import type {
-    IExportContentEntriesControllerInput,
-    IExportContentEntriesControllerOutput
+    IControllerInput,
+    IControllerOutput
 } from "~/tasks/domain/abstractions/ExportContentEntriesController.js";
 
 export interface IAbortExportContentEntriesUseCaseParams {
@@ -25,8 +25,8 @@ export class AbortExportContentEntriesUseCase implements IAbortExportContentEntr
         params: IAbortExportContentEntriesUseCaseExecuteParams
     ): Promise<ICmsImportExportRecord> {
         const task = await this.abortTask<
-            IExportContentEntriesControllerInput,
-            IExportContentEntriesControllerOutput
+            IControllerInput,
+            IControllerOutput
         >({
             id: params.id
         });

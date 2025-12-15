@@ -1,13 +1,12 @@
 import uniqueId from "uniqid";
-import type { IGetTaskResponse, ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
-import { TaskDataStatus } from "@webiny/tasks";
+import { IGetTaskResponse, TaskDataStatus } from "@webiny/tasks";
 import type { Context } from "~/types.js";
 import { CmsImportExportFileType } from "~/types.js";
 import type {
     IExportContentEntriesController,
-    IExportContentEntriesControllerInput,
-    IExportContentEntriesControllerOutput,
-    IExportContentEntriesControllerOutputFile,
+    IControllerInput,
+    IControllerOutput,
+    IControllerOutputFile,
     IExportedCmsModel
 } from "~/tasks/domain/abstractions/ExportContentEntriesController.js";
 import { ExportContentEntriesControllerState } from "~/tasks/domain/abstractions/ExportContentEntriesController.js";
@@ -26,6 +25,7 @@ import type {
 } from "~/tasks/domain/abstractions/ExportContentAssets.js";
 import { getBackOffSeconds } from "~/tasks/utils/helpers/getBackOffSeconds.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 const prepareExportModel = (model: Pick<CmsModel, "modelId" | "fields">): IExportedCmsModel => {
     return {
@@ -35,37 +35,38 @@ const prepareExportModel = (model: Pick<CmsModel, "modelId" | "fields">): IExpor
 };
 
 export class ExportContentEntriesController<
-    C extends Context = Context,
-    I extends IExportContentEntriesControllerInput = IExportContentEntriesControllerInput,
-    O extends IExportContentEntriesControllerOutput = IExportContentEntriesControllerOutput
-> implements IExportContentEntriesController<C, I, O>
+    I extends IControllerInput = IControllerInput,
+    O extends IControllerOutput = IControllerOutput
+> implements IExportContentEntriesController<I, O>
 {
-    public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { context, response, input, store, trigger } = params;
+    constructor(private context: Context) {
+    }
+    public async run(params: TaskDefinition.RunParams<I, O>) {
+        const { input, controller } = params;
         const { state, modelId } = input;
 
         let model: CmsModel;
         try {
-            model = await context.cms.getModel(modelId);
+            model = await this.context.cms.getModel(modelId);
         } catch {
-            return response.error({
+            return controller.response.error({
                 message: `Model "${modelId}" not found.`,
                 code: "MODEL_NOT_FOUND"
             });
         }
 
-        const backOffSeconds = getBackOffSeconds(store.getTask().iterations);
-
-        const taskId = store.getTask().id;
+        const currentTask = controller.state.getTask();
+        const backOffSeconds = getBackOffSeconds(currentTask.iterations);
 
         let entriesTask: IGetTaskResponse<IExportContentEntriesInput, IExportContentEntriesOutput>;
 
         /**
          * In case of no state yet, we will start the content entries export process.
          */
-        const prefix = input.prefix || uniqueId(`${EXPORT_BASE_PATH}/${model.modelId}/${taskId}`);
+        const prefix =
+            input.prefix || uniqueId(`${EXPORT_BASE_PATH}/${model.modelId}/${currentTask.id}`);
         if (!state) {
-            const task = await trigger<IExportContentEntriesInput>({
+            const task = await controller.task.trigger<IExportContentEntriesInput>({
                 definition: EXPORT_CONTENT_ENTRIES_TASK,
                 input: {
                     prefix,
@@ -75,10 +76,10 @@ export class ExportContentEntriesController<
                     where: input.where,
                     sort: input.sort
                 },
-                name: `Export Content Entries ${taskId}`
+                name: `Export Content Entries ${currentTask.id}`
             });
 
-            return response.continue(
+            return controller.response.continue(
                 {
                     ...input,
                     prefix,
@@ -99,14 +100,14 @@ export class ExportContentEntriesController<
         //
         else if (state === ExportContentEntriesControllerState.entryExport) {
             if (!input.contentEntriesTaskId) {
-                return response.error({
+                return controller.response.error({
                     message: `Missing "contentEntriesTaskId" in the input, but the input notes that the task is in "entryExport" state. This should not happen.`,
                     code: "MISSING_CONTENT_ENTRIES_TASK_ID"
                 });
             }
-            entriesTask = await this.getEntriesTask(context, input.contentEntriesTaskId);
+            entriesTask = await this.getEntriesTask(this.context, input.contentEntriesTaskId);
             if (!entriesTask) {
-                return response.error({
+                return controller.response.error({
                     message: `Task "${input.contentEntriesTaskId}" not found.`,
                     code: "TASK_NOT_FOUND"
                 });
@@ -115,21 +116,21 @@ export class ExportContentEntriesController<
                 entriesTask.taskStatus == TaskDataStatus.RUNNING ||
                 entriesTask.taskStatus === TaskDataStatus.PENDING
             ) {
-                return response.continue(input, {
+                return controller.response.continue(input, {
                     seconds: backOffSeconds
                 });
             } else if (entriesTask.taskStatus === TaskDataStatus.FAILED) {
-                return response.error({
+                return controller.response.error({
                     message: `Failed to export content entries. Task "${entriesTask.id}" failed.`,
                     code: "EXPORT_ENTRIES_FAILED"
                 });
             } else if (entriesTask.taskStatus === TaskDataStatus.ABORTED) {
-                return response.error({
+                return controller.response.error({
                     message: `Export content entries process was aborted. Task "${entriesTask.id}" was aborted.`,
                     code: "EXPORT_ENTRIES_ABORTED"
                 });
             } else if (!entriesTask.output) {
-                return response.error({
+                return controller.response.error({
                     message: `No output found on task "${entriesTask.id}". Stopping export process.`,
                     code: "NO_OUTPUT"
                 });
@@ -138,7 +139,7 @@ export class ExportContentEntriesController<
              * Possibly the task does not require any assets to be exported.
              */
             if (!input.exportAssets || entriesTask.output.files.length === 0) {
-                const files: IExportContentEntriesControllerOutputFile[] = [];
+                const files: IControllerOutputFile[] = [];
                 for (const file of entriesTask.output.files) {
                     files.push({
                         key: file.key,
@@ -147,14 +148,14 @@ export class ExportContentEntriesController<
                     });
                 }
 
-                const output: IExportContentEntriesControllerOutput = {
+                const output: IControllerOutput = {
                     files,
                     model: prepareExportModel(model)
                 };
-                return response.done("Export done, without assets.", output as O);
+                return controller.response.done("Export done, without assets.", output as O);
             }
 
-            const assetTask = await trigger<IExportContentAssetsInput>({
+            const assetTask = await controller.task.trigger<IExportContentAssetsInput>({
                 definition: EXPORT_CONTENT_ASSETS_TASK,
                 input: {
                     prefix,
@@ -165,10 +166,10 @@ export class ExportContentEntriesController<
                     entryAfter: undefined,
                     fileAfter: undefined
                 },
-                name: `Export Content Assets ${taskId}`
+                name: `Export Content Assets ${currentTask.id}`
             });
 
-            return response.continue(
+            return controller.response.continue(
                 {
                     ...input,
                     contentAssetsTaskId: assetTask.id,
@@ -188,20 +189,20 @@ export class ExportContentEntriesController<
         //
         else if (state === ExportContentEntriesControllerState.assetsExport) {
             if (!input.contentEntriesTaskId) {
-                return response.error({
+                return controller.response.error({
                     message: `Missing "contentEntriesTaskId" in the input, but the input notes that the task is in "assetsExport" state. This should not happen.`,
                     code: "MISSING_CONTENT_ENTRIES_TASK_ID"
                 });
             } else if (!input.contentAssetsTaskId) {
-                return response.error({
+                return controller.response.error({
                     message: `Missing "contentAssetsTaskId" in the input, but the input notes that the task is in "assetsExport" state. This should not happen.`,
                     code: "MISSING_CONTENT_ASSETS_TASK_ID"
                 });
             }
 
-            const assetsTask = await this.getAssetsTask(context, input.contentAssetsTaskId);
+            const assetsTask = await this.getAssetsTask(this.context, input.contentAssetsTaskId);
             if (!assetsTask) {
-                return response.error({
+                return controller.response.error({
                     message: `Task "${input.contentAssetsTaskId}" not found.`,
                     code: "TASK_NOT_FOUND"
                 });
@@ -210,7 +211,7 @@ export class ExportContentEntriesController<
                 assetsTask.taskStatus == TaskDataStatus.RUNNING ||
                 assetsTask.taskStatus === TaskDataStatus.PENDING
             ) {
-                return response.continue(
+                return controller.response.continue(
                     {
                         ...input
                     },
@@ -219,20 +220,20 @@ export class ExportContentEntriesController<
                     }
                 );
             } else if (assetsTask.taskStatus === TaskDataStatus.FAILED) {
-                return response.error({
+                return controller.response.error({
                     message: `Failed to export content assets. Task "${assetsTask.id}" failed.`,
                     code: "EXPORT_ASSETS_FAILED"
                 });
             } else if (assetsTask.taskStatus === TaskDataStatus.ABORTED) {
-                return response.error({
+                return controller.response.error({
                     message: `Export content assets process was aborted. Task "${assetsTask.id}" was aborted.`,
                     code: "EXPORT_ASSETS_ABORTED"
                 });
             }
 
-            entriesTask = await this.getEntriesTask(context, input.contentEntriesTaskId);
+            entriesTask = await this.getEntriesTask(this.context, input.contentEntriesTaskId);
 
-            const files: IExportContentEntriesControllerOutputFile[] = [];
+            const files: IControllerOutputFile[] = [];
             const entriesFiles = entriesTask?.output?.files || [];
             for (const file of entriesFiles) {
                 files.push({
@@ -250,15 +251,15 @@ export class ExportContentEntriesController<
                 });
             }
 
-            const output: IExportContentEntriesControllerOutput = {
+            const output: IControllerOutput = {
                 model: prepareExportModel(model),
                 files
             };
 
-            return response.done("Export done, with assets.", output as O);
+            return controller.response.done("Export done, with assets.", output as O);
         }
 
-        return response.error({
+        return controller.response.error({
             message: `Invalid state "${state}".`,
             code: "INVALID_STATE"
         });

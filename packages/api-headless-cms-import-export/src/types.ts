@@ -2,6 +2,7 @@ import type { Context as TasksContext, TaskDataStatus } from "@webiny/tasks/type
 import type { ICmsImportExportRecord } from "./domain/abstractions/CmsImportExportRecord.js";
 import type { GenericRecord, NonEmptyArray } from "@webiny/api/types.js";
 import type {
+    CmsContext,
     CmsEntryListSort,
     CmsEntryListWhere,
     CmsEntryMeta
@@ -164,6 +165,6 @@ export interface CmsImportExportObject {
     ): Promise<ICmsImportExportObjectImportFromUrlResult>;
 }
 
-export interface Context extends ApiCoreContext, TasksContext {
+export interface Context extends ApiCoreContext, CmsContext, TasksContext {
     cmsImportExport: CmsImportExportObject;
 }

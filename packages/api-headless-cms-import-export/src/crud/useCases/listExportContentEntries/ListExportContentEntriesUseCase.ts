@@ -7,8 +7,8 @@ import type { ITasksContextObject } from "@webiny/tasks";
 import { convertTaskToCmsExportRecord } from "~/crud/utils/convertTaskToExportRecord.js";
 import { EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK } from "~/tasks/constants.js";
 import type {
-    IExportContentEntriesControllerInput,
-    IExportContentEntriesControllerOutput
+    IControllerInput,
+    IControllerOutput
 } from "~/tasks/domain/abstractions/ExportContentEntriesController.js";
 
 export interface IListExportContentEntriesUseCaseParams {
@@ -26,8 +26,8 @@ export class ListExportContentEntriesUseCase implements IListExportContentEntrie
         params?: IListExportContentEntriesUseCaseExecuteParams
     ): Promise<IListExportContentEntriesUseCaseExecuteResult> {
         const result = await this.listTasks<
-            IExportContentEntriesControllerInput,
-            IExportContentEntriesControllerOutput
+            IControllerInput,
+            IControllerOutput
         >({
             ...params,
             sort: ["createdOn_DESC"],
