@@ -83,7 +83,7 @@
   "webiny": {
     "exports": {
       ".": "./extensions",
-      "./abstractions/ApiGqlClient.ts": "./infra/features/ApiGqlClient",
+      "./abstractions/GetApiGqlClient.ts": "./infra/features/GetApiGqlClient",
       "./abstractions/InvokeLambdaFunction.ts": "./infra/features/InvokeLambdaFunction"
     }
   },

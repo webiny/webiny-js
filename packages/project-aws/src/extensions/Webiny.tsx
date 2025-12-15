@@ -19,7 +19,7 @@ export const Webiny = () => {
         <>
             <Project />
             <ProjectImplementation src={p("../features/InvokeLambdaFunction.js")} />
-            <ProjectImplementation src={p("../features/ApiGqlClient.js")} />
+            <ProjectImplementation src={p("../features/GetApiGqlClient.js")} />
             <ProjectDecorator src={p("Webiny/BuildAppWorkspace.js")} />
             <AdminAfterDeploy src={p("Webiny/UploadAdminAppToS3.js")} />
             <ApiAfterDeploy src={p("Webiny/ExecuteDataMigrations.js")} />

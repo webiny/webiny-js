@@ -1,6 +1,6 @@
 import { ApiAfterDeploy } from "webiny/infra/features/ApiAfterDeploy";
 import { UiService } from "webiny/infra/features/UiService";
-import { ApiGqlClient } from "webiny/infra/features/ApiGqlClient";
+import { GetApiGqlClient } from "webiny/infra/features/GetApiGqlClient";
 
 const IS_INSTALLED_QUERY = `
     query IsSystemInstalled {
@@ -34,7 +34,7 @@ const INSTALL_MUTATION = `
 
 class AutoInstallSystemAfterFirstDeploy implements ApiAfterDeploy.Interface {
     constructor(
-        private apiGqlClient: ApiGqlClient.Interface,
+        private getApiGqlClient: GetApiGqlClient.Interface,
         private ui: UiService.Interface
     ) {}
 
@@ -47,19 +47,13 @@ class AutoInstallSystemAfterFirstDeploy implements ApiAfterDeploy.Interface {
         // Check if system is already installed
         this.ui.info("Checking if system is already installed...");
 
-        const context = {
-            app: params.app,
-            env: params.env,
-            variant: params.variant
-        };
-
         try {
-            const isInstalledResponse = await this.apiGqlClient.query({
+            const isInstalledResponse = await this.getApiGqlClient.query({
                 query: IS_INSTALLED_QUERY,
-                context
+                env: params.env,
+                variant: params.variant
             });
 
-            console.log('isInstalledResponse', isInstalledResponse)
             if (isInstalledResponse.data?.system?.isSystemInstalled?.data === true) {
                 this.ui.info("System is already installed, skipping auto-install.");
                 return;
@@ -84,10 +78,11 @@ class AutoInstallSystemAfterFirstDeploy implements ApiAfterDeploy.Interface {
             ])
         };
 
-        const installResponse = await this.apiGqlClient.mutation({
+        const installResponse = await this.getApiGqlClient.mutation({
             mutation: INSTALL_MUTATION,
             variables,
-            context
+            env: params.env,
+            variant: params.variant
         });
 
         if (installResponse.data?.system?.installSystem?.error) {
@@ -105,5 +100,5 @@ class AutoInstallSystemAfterFirstDeploy implements ApiAfterDeploy.Interface {
 
 export const AutoInstallSystem = ApiAfterDeploy.createImplementation({
     implementation: AutoInstallSystemAfterFirstDeploy,
-    dependencies: [ApiGqlClient, UiService]
+    dependencies: [GetApiGqlClient, UiService]
 });

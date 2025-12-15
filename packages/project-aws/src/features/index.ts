@@ -1,3 +1,3 @@
 export * from "./InvokeLambdaFunction.js";
-export * from "./ApiGqlClient.js";
+export * from "./GetApiGqlClient.js";
 

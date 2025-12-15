@@ -1,38 +1,44 @@
 import { GetAppStackOutput } from "@webiny/project/abstractions/index.js";
-import { ApiGqlClient as ApiGqlClientAbstraction  } from "~/abstractions/ApiGqlClient.js";
+import { GetApiGqlClient as GetApiGqlClientAbstraction  } from "~/abstractions/GetApiGqlClient.js";
 import { InvokeLambdaFunction } from "~/abstractions/InvokeLambdaFunction.js";
 
-class ApiGqlClientImpl implements ApiGqlClientAbstraction.Interface {
+class GetApiGqlClientImpl implements GetApiGqlClientAbstraction.Interface {
     constructor(
         private getAppStackOutput: GetAppStackOutput.Interface,
         private invokeLambdaFunction: InvokeLambdaFunction.Interface
     ) {}
 
-    async query<T = any>(params: ApiGqlClientAbstraction.QueryParams): Promise<ApiGqlClientAbstraction.Response<T>> {
+    async query<T = any>(params: GetApiGqlClientAbstraction.QueryParams): Promise<GetApiGqlClientAbstraction.Response<T>> {
         return this.executeGraphQL({
             query: params.query,
-            variables: params.variables
+            variables: params.variables,
+            env: params.env,
+            variant: params.variant
         });
     }
 
     async mutation<T = any>(
-        params: ApiGqlClientAbstraction.MutationParams
-    ): Promise<ApiGqlClientAbstraction.Response<T>> {
+        params: GetApiGqlClientAbstraction.MutationParams
+    ): Promise<GetApiGqlClientAbstraction.Response<T>> {
         return this.executeGraphQL({
             query: params.mutation,
-            variables: params.variables
+            variables: params.variables,
+            env: params.env,
+            variant: params.variant
         });
     }
 
     private async executeGraphQL(params: {
         query: string;
         variables?: Record<string, any>;
-    }): Promise<ApiGqlClientAbstraction.Response> {
+        env: string;
+        variant?: string;
+    }): Promise<GetApiGqlClientAbstraction.Response> {
         // Get GraphQL Lambda function name from stack output
         const stackOutput = await this.getAppStackOutput.execute<{ graphqlLambdaName: string }>({
             app: "api",
-            env: "dev"
-            // variant: ''
+            env: params.env,
+            variant: params.variant
         });
 
         if (!stackOutput) {
@@ -66,7 +72,7 @@ class ApiGqlClientImpl implements ApiGqlClientAbstraction.Interface {
     }
 }
 
-export const ApiGqlClient = ApiGqlClientAbstraction.createImplementation({
-    implementation: ApiGqlClientImpl,
+export const GetApiGqlClient = GetApiGqlClientAbstraction.createImplementation({
+    implementation: GetApiGqlClientImpl,
     dependencies: [GetAppStackOutput, InvokeLambdaFunction]
 });
