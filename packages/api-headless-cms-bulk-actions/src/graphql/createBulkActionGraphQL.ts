@@ -3,16 +3,13 @@ import type { HcmsBulkActionsContext } from "~/types.js";
 import { CmsGraphQLSchemaPlugin, isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { Response } from "@webiny/handler-graphql";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/api-headless-cms/constants.js";
+import { EntryBulkAction } from "~/features/EntryBulkAction/abstractions.js";
 
-export interface CreateBulkActionGraphQL {
-    name: string;
-    modelIds?: string[];
-}
-
-export const createBulkActionGraphQL = (config: CreateBulkActionGraphQL) => {
+export const createBulkActionGraphQL = (bulkAction: EntryBulkAction.Interface) => {
     return new ContextPlugin<HcmsBulkActionsContext>(async ctx => {
         const tenant = ctx.tenancy.getCurrentTenant();
 
+        // TODO: once we have GraphSchema plugin via an abstraction, we'll be able to remove this.
         if (!(await isHeadlessCmsReady(ctx))) {
             return;
         }
@@ -27,8 +24,8 @@ export const createBulkActionGraphQL = (config: CreateBulkActionGraphQL) => {
                 if (tags.includes(CMS_MODEL_SINGLETON_TAG)) {
                     return false;
                 }
-                if (config.modelIds?.length) {
-                    return config.modelIds.includes(model.modelId);
+                if (bulkAction.modelIds?.length) {
+                    return bulkAction.modelIds.includes(model.modelId);
                 }
                 return true;
             });
@@ -40,7 +37,7 @@ export const createBulkActionGraphQL = (config: CreateBulkActionGraphQL) => {
             const plugin = new CmsGraphQLSchemaPlugin<HcmsBulkActionsContext>({
                 typeDefs: /* GraphQL */ `
                      extend enum BulkAction${model.singularApiName}Name {
-                        ${config.name}
+                        ${bulkAction.name}
                     }
                 `,
                 resolvers: {
@@ -68,7 +65,7 @@ export const createBulkActionGraphQL = (config: CreateBulkActionGraphQL) => {
                 isApplicable: context => context.tenancy.getCurrentTenant().id === tenant.id
             });
 
-            plugin.name = `headless-cms.graphql.schema.bulkAction.${model.modelId}.${config.name}`;
+            plugin.name = `headless-cms.graphql.schema.bulkAction.${model.modelId}.${bulkAction.name}`;
             plugins.push(plugin);
         });
 

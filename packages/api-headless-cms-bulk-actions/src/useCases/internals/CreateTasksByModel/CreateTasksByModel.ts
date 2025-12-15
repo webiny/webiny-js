@@ -4,6 +4,7 @@ import type { IBulkActionOperationByModelTaskParams } from "~/types.js";
 import { BulkActionOperationByModelAction } from "~/types.js";
 import { EntryBulkAction } from "~/features/EntryBulkAction/abstractions.js";
 import { BulkActionContext } from "~/features/BulkActionContext/index.js";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 
 const MAX_TASK_LIST_LENGTH = 10;
 
@@ -15,13 +16,16 @@ export class CreateTasksByModel {
     private readonly batchSize: number;
     private readonly bulkAction: EntryBulkAction.Interface;
     private readonly context: BulkActionContext.Interface;
+    private readonly getModel: GetModelUseCase.Interface;
 
     constructor(
         context: BulkActionContext.Interface,
+        getModel: GetModelUseCase.Interface,
         bulkAction: EntryBulkAction.Interface,
         taskDefinition: string,
         batchSize: number
     ) {
+        this.getModel = getModel;
         this.taskCache = new TaskCache(taskDefinition);
         this.batchSize = batchSize;
         this.bulkAction = bulkAction;
@@ -32,6 +36,14 @@ export class CreateTasksByModel {
         const { input, controller } = params;
 
         try {
+            const modelResult = await this.getModel.execute(input.modelId);
+
+            if (modelResult.isFail()) {
+                return controller.response.error(`Model with ${input.modelId} not found!`);
+            }
+
+            const model = modelResult.value;
+
             const listEntriesParams: CmsEntryListParams = {
                 where: input.where,
                 search: input.search,
@@ -51,10 +63,7 @@ export class CreateTasksByModel {
                 }
 
                 // List entries from the HCMS based on the provided query
-                const { entries, meta } = await this.bulkAction.loadData({
-                    modelId: input.modelId,
-                    ...listEntriesParams
-                });
+                const { entries, meta } = await this.bulkAction.loadData(model, listEntriesParams);
 
                 // End the task if no entries match the query
                 if (meta.totalCount === 0) {

@@ -1,4 +1,4 @@
-import { EntryBulkAction } from "./abstractions.js";
+import { createFeature } from "@webiny/feature/api";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { ChildTasksCleanup } from "~/useCases/internals/ChildTaskCleanup/ChildTasksCleanup.js";
@@ -15,6 +15,8 @@ import type {
     IBulkActionOperationInput,
     IBulkActionOperationOutput
 } from "~/types.js";
+import { EntryBulkAction } from "./abstractions.js";
+import { BulkActionId } from "~/domain/BulkActionId.js";
 
 enum BulkActionOperationByModelAction {
     CREATE_SUBTASKS = "CREATE_SUBTASKS",
@@ -24,9 +26,10 @@ enum BulkActionOperationByModelAction {
 }
 
 export const createBulkActionTasks = (bulkAction: EntryBulkAction.Interface) => {
+    const bulkActionName = BulkActionId.from(bulkAction.name);
     const batchSize = bulkAction.batchSize || 100;
-    const listTaskId = `hcmsBulkList${bulkAction.name}Entries`;
-    const processTaskId = `hcmsBulkProcess${bulkAction.name}Entries`;
+    const listTaskId = `hcmsBulkList${bulkActionName}Entries`;
+    const processTaskId = `hcmsBulkProcess${bulkActionName}Entries`;
 
     // List Task - manages pagination and creates subtasks
     class BulkActionListTask
@@ -37,14 +40,16 @@ export const createBulkActionTasks = (bulkAction: EntryBulkAction.Interface) => 
             >
     {
         public readonly id = listTaskId;
-        public readonly title = `Headless CMS: list "${bulkAction.name}" entries by model`;
+        public readonly title = `Headless CMS: list "${bulkActionName}" entries by model`;
         public readonly maxIterations = 500;
         public readonly disableDatabaseLogs = true;
         public readonly isPrivate = true;
         public readonly context: BulkActionContext.Interface;
+        public readonly getModel: GetModelUseCase.Interface;
 
-        constructor(context: BulkActionContext.Interface) {
+        constructor(context: BulkActionContext.Interface, getModel: GetModelUseCase.Interface) {
             this.context = context;
+            this.getModel = getModel;
         }
 
         async run({
@@ -70,6 +75,7 @@ export const createBulkActionTasks = (bulkAction: EntryBulkAction.Interface) => 
                     case BulkActionOperationByModelAction.CHECK_MORE_SUBTASKS: {
                         const createTasks = new CreateTasksByModel(
                             this.context,
+                            this.getModel,
                             bulkAction,
                             processTaskId,
                             batchSize
@@ -118,9 +124,11 @@ export const createBulkActionTasks = (bulkAction: EntryBulkAction.Interface) => 
     }
 
     // Process Task - processes individual batches of entries
-    class BulkActionProcessTask implements TaskDefinition.Interface<IBulkActionOperationInput, IBulkActionOperationOutput> {
+    class BulkActionProcessTask
+        implements TaskDefinition.Interface<IBulkActionOperationInput, IBulkActionOperationOutput>
+    {
         public readonly id = processTaskId;
-        public readonly title = `Headless CMS: process "${bulkAction.name}" entries`;
+        public readonly title = `Headless CMS: process "${bulkActionName}" entries`;
         public readonly maxIterations = 2;
         public readonly disableDatabaseLogs = true;
         public readonly isPrivate = true;
@@ -130,7 +138,10 @@ export const createBulkActionTasks = (bulkAction: EntryBulkAction.Interface) => 
             this.getModel = getModel;
         }
 
-        async run({ input, controller }: TaskDefinition.RunParams<IBulkActionOperationInput, IBulkActionOperationOutput>): Promise<TaskDefinition.Result<IBulkActionOperationInput, IBulkActionOperationOutput>> {
+        async run({
+            input,
+            controller
+        }: TaskDefinition.RunParams<IBulkActionOperationInput, IBulkActionOperationOutput>) {
             try {
                 const processTask = new ProcessTask(bulkAction, this.getModel);
                 return await processTask.execute({ input, controller });
@@ -142,5 +153,21 @@ export const createBulkActionTasks = (bulkAction: EntryBulkAction.Interface) => 
         }
     }
 
-    return [BulkActionListTask, BulkActionProcessTask];
+    const BulkListTask = TaskDefinition.createImplementation({
+        implementation: BulkActionListTask,
+        dependencies: [BulkActionContext, GetModelUseCase]
+    });
+
+    const BulkProcessTask = TaskDefinition.createImplementation({
+        implementation: BulkActionProcessTask,
+        dependencies: [GetModelUseCase]
+    });
+
+    return createFeature({
+        name: `HeadlessCms/BulkActionTasks/${bulkActionName}`,
+        register(container) {
+            container.register(BulkListTask);
+            container.register(BulkProcessTask);
+        }
+    });
 };

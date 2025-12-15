@@ -1,4 +1,3 @@
-import { createBulkAction } from "~/plugins/index.js";
 import {
     createDeleteEntry,
     createListDeletedEntries,
