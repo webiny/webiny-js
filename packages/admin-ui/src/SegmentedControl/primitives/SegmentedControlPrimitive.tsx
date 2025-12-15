@@ -20,7 +20,7 @@ const segmentedControlItemVariants = cva(
     {
         variants: {
             variant: {
-                accent: [
+                light: [
                     "text-neutral-strong fill-neutral-xstrong",
                     "data-[state=active]:text-neutral-primary data-[state=active]:fill-neutral-xstrong data-[state=active]:bg-neutral-base/80",
                     "hover:data-[state=inactive]:text-neutral-primary",
@@ -36,7 +36,7 @@ const segmentedControlItemVariants = cva(
             }
         },
         defaultVariants: {
-            variant: "accent"
+            variant: "light"
         }
     }
 );
@@ -44,12 +44,12 @@ const segmentedControlItemVariants = cva(
 const segmentedControlRootVariants = cva("inline-flex rounded-md p-xxs gap-xs", {
     variants: {
         variant: {
-            accent: "bg-neutral-light",
+            light: "bg-neutral-light",
             ghost: ""
         }
     },
     defaultVariants: {
-        variant: "accent"
+        variant: "light"
     }
 });
 
@@ -133,7 +133,7 @@ const SegmentedControlRenderer = ({
     items,
     changeValue,
     value,
-    variant = "accent",
+    variant = "light",
     className,
     disabled
 }: SegmentedControlRendererProps) => {
