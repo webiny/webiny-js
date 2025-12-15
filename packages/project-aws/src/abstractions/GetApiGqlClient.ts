@@ -1,19 +1,5 @@
 import { createAbstraction } from "@webiny/project/abstractions/createAbstraction";
 
-export interface IGetApiGqlClientQueryParams {
-    query: string;
-    variables?: Record<string, any>;
-    env: string;
-    variant?: string;
-}
-
-export interface IGetApiGqlClientMutationParams {
-    mutation: string;
-    variables?: Record<string, any>;
-    env: string;
-    variant?: string;
-}
-
 export interface IGetApiGqlClientResponse<T = any> {
     data?: T;
     errors?: Array<{
@@ -23,16 +9,19 @@ export interface IGetApiGqlClientResponse<T = any> {
     }>;
 }
 
+export interface IApiGqlClientInstance {
+    query<T = any>(params: { query: string; variables?: Record<string, any> }): Promise<IGetApiGqlClientResponse<T>>;
+    mutation<T = any>(params: { mutation: string; variables?: Record<string, any> }): Promise<IGetApiGqlClientResponse<T>>;
+}
+
 export interface IGetApiGqlClient {
-    query<T = any>(params: IGetApiGqlClientQueryParams): Promise<IGetApiGqlClientResponse<T>>;
-    mutation<T = any>(params: IGetApiGqlClientMutationParams): Promise<IGetApiGqlClientResponse<T>>;
+    execute(params: { env: string; variant?: string }): Promise<IApiGqlClientInstance>;
 }
 
 export const GetApiGqlClient = createAbstraction<IGetApiGqlClient>("GetApiGqlClient");
 
 export namespace GetApiGqlClient {
     export type Interface = IGetApiGqlClient;
-    export type QueryParams = IGetApiGqlClientQueryParams;
-    export type MutationParams = IGetApiGqlClientMutationParams;
     export type Response<T = any> = IGetApiGqlClientResponse<T>;
+    export type ClientInstance = IApiGqlClientInstance;
 }

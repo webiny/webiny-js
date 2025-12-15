@@ -2,30 +2,49 @@ import { GetAppStackOutput } from "@webiny/project/abstractions/index.js";
 import { GetApiGqlClient as GetApiGqlClientAbstraction  } from "~/abstractions/GetApiGqlClient.js";
 import { InvokeLambdaFunction } from "~/abstractions/InvokeLambdaFunction.js";
 
+class ApiGqlClientInstance implements GetApiGqlClientAbstraction.ClientInstance {
+    constructor(
+        private env: string,
+        private variant: string | undefined,
+        private executeGraphQL: (params: {
+            query: string;
+            variables?: Record<string, any>;
+            env: string;
+            variant?: string;
+        }) => Promise<GetApiGqlClientAbstraction.Response>
+    ) {}
+
+    async query<T = any>(params: { query: string; variables?: Record<string, any> }): Promise<GetApiGqlClientAbstraction.Response<T>> {
+        return this.executeGraphQL({
+            query: params.query,
+            variables: params.variables,
+            env: this.env,
+            variant: this.variant
+        });
+    }
+
+    async mutation<T = any>(params: { mutation: string; variables?: Record<string, any> }): Promise<GetApiGqlClientAbstraction.Response<T>> {
+        return this.executeGraphQL({
+            query: params.mutation,
+            variables: params.variables,
+            env: this.env,
+            variant: this.variant
+        });
+    }
+}
+
 class GetApiGqlClientImpl implements GetApiGqlClientAbstraction.Interface {
     constructor(
         private getAppStackOutput: GetAppStackOutput.Interface,
         private invokeLambdaFunction: InvokeLambdaFunction.Interface
     ) {}
 
-    async query<T = any>(params: GetApiGqlClientAbstraction.QueryParams): Promise<GetApiGqlClientAbstraction.Response<T>> {
-        return this.executeGraphQL({
-            query: params.query,
-            variables: params.variables,
-            env: params.env,
-            variant: params.variant
-        });
-    }
-
-    async mutation<T = any>(
-        params: GetApiGqlClientAbstraction.MutationParams
-    ): Promise<GetApiGqlClientAbstraction.Response<T>> {
-        return this.executeGraphQL({
-            query: params.mutation,
-            variables: params.variables,
-            env: params.env,
-            variant: params.variant
-        });
+    async execute(params: { env: string; variant?: string }): Promise<GetApiGqlClientAbstraction.ClientInstance> {
+        return new ApiGqlClientInstance(
+            params.env,
+            params.variant,
+            this.executeGraphQL.bind(this)
+        );
     }
 
     private async executeGraphQL(params: {
