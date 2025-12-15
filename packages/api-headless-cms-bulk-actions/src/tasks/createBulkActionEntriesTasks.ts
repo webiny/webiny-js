@@ -1,10 +1,8 @@
 import {
-    createDeleteEntry,
     createListDeletedEntries,
     createListLatestEntries,
     createListNotPublishedEntries,
     createListPublishedEntries,
-    createMoveEntryToFolder,
     createMoveEntryToTrash,
     createPublishEntry,
     createRestoreEntryFromTrash,
@@ -13,16 +11,6 @@ import {
 
 export const createBulkActionEntriesTasks = () => {
     return [
-        createBulkAction({
-            name: "delete",
-            dataLoader: createListDeletedEntries,
-            dataProcessor: createDeleteEntry
-        }),
-        createBulkAction({
-            name: "moveToFolder",
-            dataLoader: createListLatestEntries,
-            dataProcessor: createMoveEntryToFolder
-        }),
         createBulkAction({
             name: "moveToTrash",
             dataLoader: createListLatestEntries,

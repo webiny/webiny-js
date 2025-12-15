@@ -7,6 +7,7 @@ import { createDefaultGraphQL } from "~/graphql/createDefaultGraphQL.js";
 import { createBulkActionGraphQL } from "~/graphql/createBulkActionGraphQL.js";
 import { createContextPlugin } from "@webiny/api";
 import { DeleteEntriesBulkActionFeature } from "~/features/DeleteEntriesBulkAction/feature.js";
+import { MoveToFolderBulkActionFeature } from "~/features/MoveToFolderBulkAction/feature.js";
 
 export type * from "./abstractions/index.js";
 export * from "./handlers/index.js";
@@ -18,6 +19,7 @@ export const createHcmsBulkActions = () => [
     createDefaultGraphQL(),
     createContextPlugin(context => {
         DeleteEntriesBulkActionFeature.register(context.container);
+        MoveToFolderBulkActionFeature.register(context.container);
     }),
     // Set up bulk actions after the context is bootstrapped, but before actual handler processing
     createBeforeHandlerPlugin(context => {
