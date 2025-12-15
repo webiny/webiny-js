@@ -3,9 +3,9 @@ import type { HcmsBulkActionsContext } from "~/types.js";
 import { CmsGraphQLSchemaPlugin, isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { Response } from "@webiny/handler-graphql";
 import { CMS_MODEL_SINGLETON_TAG } from "@webiny/api-headless-cms/constants.js";
-import { EntryBulkAction } from "~/features/EntryBulkAction/abstractions.js";
+import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 
-export const createBulkActionGraphQL = (bulkAction: EntryBulkAction.Interface) => {
+export const createBulkActionGraphQL = (bulkAction: EntriesBulkAction.Interface) => {
     return new ContextPlugin<HcmsBulkActionsContext>(async ctx => {
         const tenant = ctx.tenancy.getCurrentTenant();
 

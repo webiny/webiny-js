@@ -1,9 +1,9 @@
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { PublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/index.js";
 import { parseIdentifier } from "@webiny/utils";
-import { EntryBulkAction } from "~/features/EntryBulkAction/abstractions.js";
+import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 
-class PublishEntriesBulkActionImpl implements EntryBulkAction.Interface {
+class PublishEntriesBulkActionImpl implements EntriesBulkAction.Interface {
     readonly name = "publish";
 
     constructor(
@@ -12,9 +12,9 @@ class PublishEntriesBulkActionImpl implements EntryBulkAction.Interface {
     ) {}
 
     async loadData(
-        model: EntryBulkAction.Model,
-        params: EntryBulkAction.LoadDataParams
-    ): Promise<EntryBulkAction.LoadDataResult> {
+        model: EntriesBulkAction.Model,
+        params: EntriesBulkAction.LoadDataParams
+    ): Promise<EntriesBulkAction.LoadDataResult> {
         const { where, ...rest } = params;
 
         const entriesResult = await this.listLatestEntries.execute(model, {
@@ -31,8 +31,8 @@ class PublishEntriesBulkActionImpl implements EntryBulkAction.Interface {
     }
 
     async processData(
-        model: EntryBulkAction.Model,
-        params: EntryBulkAction.ProcessParams
+        model: EntriesBulkAction.Model,
+        params: EntriesBulkAction.ProcessParams
     ): Promise<void> {
         const { id: entryId } = parseIdentifier(params.id);
 
@@ -40,7 +40,7 @@ class PublishEntriesBulkActionImpl implements EntryBulkAction.Interface {
     }
 }
 
-export const PublishEntriesBulkAction = EntryBulkAction.createImplementation({
+export const PublishEntriesBulkAction = EntriesBulkAction.createImplementation({
     implementation: PublishEntriesBulkActionImpl,
     dependencies: [ListLatestEntriesUseCase, PublishEntryUseCase]
 });

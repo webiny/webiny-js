@@ -1,4 +1,4 @@
-export class Result {
+export class ProcessTaskResult {
     private readonly done: Set<string>;
     private readonly failed: Set<string>;
 

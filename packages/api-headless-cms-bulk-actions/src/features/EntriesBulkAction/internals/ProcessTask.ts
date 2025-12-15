@@ -1,12 +1,7 @@
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { EntryBulkAction } from "~/features/EntryBulkAction/abstractions.js";
-import { Result } from "./Result.js";
-import type {
-    IBulkActionOperationInput,
-    IBulkActionOperationOutput,
-    IBulkActionOperationTaskParams
-} from "~/types.js";
-import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
+import { ProcessTaskResult } from "./ProcessTaskResult.js";
+import type { IBulkActionOperationTaskParams } from "~/types.js";
 
 /**
  * The `ProcessTask` class is responsible for processing a batch of entries
@@ -15,19 +10,16 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
  * processed and failed entries.
  */
 export class ProcessTask {
-    private readonly result: Result;
+    private readonly result: ProcessTaskResult;
 
     constructor(
-        private bulkAction: EntryBulkAction.Interface,
+        private bulkAction: EntriesBulkAction.Interface,
         private getModel: GetModelUseCase.Interface
     ) {
-        this.result = new Result();
+        this.result = new ProcessTaskResult();
     }
 
-    async execute({
-        input,
-        controller
-    }: IBulkActionOperationTaskParams) {
+    async execute({ input, controller }: IBulkActionOperationTaskParams) {
         try {
             if (controller.runtime.isAborted()) {
                 return controller.response.aborted();
@@ -66,8 +58,7 @@ export class ProcessTask {
             for (const id of input.ids) {
                 try {
                     // Execute the gateway operation for the current ID.
-                    await this.bulkAction.processData({
-                        model,
+                    await this.bulkAction.processData(model, {
                         id,
                         data: input.data
                     });

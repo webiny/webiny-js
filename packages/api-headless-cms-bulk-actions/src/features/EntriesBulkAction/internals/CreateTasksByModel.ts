@@ -2,7 +2,7 @@ import type { CmsEntryListParams } from "@webiny/api-headless-cms/types/index.js
 import { TaskCache } from "./TaskCache.js";
 import type { IBulkActionOperationByModelTaskParams } from "~/types.js";
 import { BulkActionOperationByModelAction } from "~/types.js";
-import { EntryBulkAction } from "~/features/EntryBulkAction/abstractions.js";
+import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 import { BulkActionContext } from "~/features/BulkActionContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 
@@ -14,14 +14,14 @@ const MAX_TASK_LIST_LENGTH = 10;
 export class CreateTasksByModel {
     private readonly taskCache: TaskCache;
     private readonly batchSize: number;
-    private readonly bulkAction: EntryBulkAction.Interface;
+    private readonly bulkAction: EntriesBulkAction.Interface;
     private readonly context: BulkActionContext.Interface;
     private readonly getModel: GetModelUseCase.Interface;
 
     constructor(
         context: BulkActionContext.Interface,
         getModel: GetModelUseCase.Interface,
-        bulkAction: EntryBulkAction.Interface,
+        bulkAction: EntriesBulkAction.Interface,
         taskDefinition: string,
         batchSize: number
     ) {

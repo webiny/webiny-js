@@ -18,7 +18,7 @@ export interface IBulkActionProcessParams {
     data?: Record<string, any>;
 }
 
-export interface IEntryBulkAction {
+export interface IEntriesBulkAction {
     readonly name: string;
     readonly modelIds?: string[]; // Optional: filter which models get GraphQL mutations
     readonly batchSize?: number;
@@ -26,10 +26,10 @@ export interface IEntryBulkAction {
     processData(model: CmsModel, params: IBulkActionProcessParams): Promise<void>;
 }
 
-export const EntryBulkAction = createAbstraction<IEntryBulkAction>("EntryBulkAction");
+export const EntriesBulkAction = createAbstraction<IEntriesBulkAction>("EntriesBulkAction");
 
-export namespace EntryBulkAction {
-    export type Interface = IEntryBulkAction;
+export namespace EntriesBulkAction {
+    export type Interface = IEntriesBulkAction;
     export type Model = CmsModel;
     export type LoadDataParams = IBulkActionListParams;
     export type LoadDataResult = IBulkActionListResult;

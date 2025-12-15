@@ -1,22 +1,19 @@
 import { createFeature } from "@webiny/feature/api";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
-import { ChildTasksCleanup } from "~/useCases/internals/ChildTaskCleanup/ChildTasksCleanup.js";
-import type { ITask } from "@webiny/api-core/features/task/TaskService/index.js";
 import { BulkActionContext } from "~/features/BulkActionContext/index.js";
-import {
-    CreateTasksByModel,
-    ProcessTask,
-    ProcessTasksByModel
-} from "~/useCases/internals/index.js";
 import type {
     IBulkActionOperationByModelInput,
     IBulkActionOperationByModelOutput,
     IBulkActionOperationInput,
     IBulkActionOperationOutput
 } from "~/types.js";
-import { EntryBulkAction } from "./abstractions.js";
+import { EntriesBulkAction } from "./abstractions.js";
 import { BulkActionId } from "~/domain/BulkActionId.js";
+import { ChildTasksCleanup } from "./internals/ChildTasksCleanup.js";
+import { ProcessTask } from "./internals/ProcessTask.js";
+import { CreateTasksByModel } from "./internals/CreateTasksByModel.js";
+import { ProcessTasksByModel } from "./internals/ProcessTasksByModel.js";
 
 enum BulkActionOperationByModelAction {
     CREATE_SUBTASKS = "CREATE_SUBTASKS",
@@ -25,7 +22,7 @@ enum BulkActionOperationByModelAction {
     END_TASK = "END_TASK"
 }
 
-export const createBulkActionTasks = (bulkAction: EntryBulkAction.Interface) => {
+export const createBulkActionTasks = (bulkAction: EntriesBulkAction.Interface) => {
     const bulkActionName = BulkActionId.from(bulkAction.name);
     const batchSize = bulkAction.batchSize || 100;
     const listTaskId = `hcmsBulkList${bulkActionName}Entries`;
@@ -113,7 +110,7 @@ export const createBulkActionTasks = (bulkAction: EntryBulkAction.Interface) => 
             await this.cleanup(task);
         }
 
-        async cleanup(task: ITask) {
+        async cleanup(task: TaskDefinition.Task) {
             const childTasksCleanup = new ChildTasksCleanup();
             try {
                 await childTasksCleanup.execute({ context: this.context, task });

@@ -1,9 +1,9 @@
 import { ListLatestEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { MoveEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/MoveEntry/index.js";
 import { parseIdentifier } from "@webiny/utils";
-import { EntryBulkAction } from "~/features/EntryBulkAction/abstractions.js";
+import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 
-class MoveToFolderBulkActionImpl implements EntryBulkAction.Interface {
+class MoveToFolderBulkActionImpl implements EntriesBulkAction.Interface {
     readonly name = "moveToFolder";
 
     constructor(
@@ -12,9 +12,9 @@ class MoveToFolderBulkActionImpl implements EntryBulkAction.Interface {
     ) {}
 
     async loadData(
-        model: EntryBulkAction.Model,
-        params: EntryBulkAction.LoadDataParams
-    ): Promise<EntryBulkAction.LoadDataResult> {
+        model: EntriesBulkAction.Model,
+        params: EntriesBulkAction.LoadDataParams
+    ): Promise<EntriesBulkAction.LoadDataResult> {
         const entriesResult = await this.listLatestEntries.execute(model, params);
 
         const [entries, meta] = entriesResult.value;
@@ -23,8 +23,8 @@ class MoveToFolderBulkActionImpl implements EntryBulkAction.Interface {
     }
 
     async processData(
-        model: EntryBulkAction.Model,
-        params: EntryBulkAction.ProcessParams
+        model: EntriesBulkAction.Model,
+        params: EntriesBulkAction.ProcessParams
     ): Promise<void> {
         if (!params.data?.folderId) {
             throw new Error(`Missing "data.folderId" in the input.`);
@@ -36,7 +36,7 @@ class MoveToFolderBulkActionImpl implements EntryBulkAction.Interface {
     }
 }
 
-export const MoveToFolderBulkAction = EntryBulkAction.createImplementation({
+export const MoveToFolderBulkAction = EntriesBulkAction.createImplementation({
     implementation: MoveToFolderBulkActionImpl,
     dependencies: [ListLatestEntriesUseCase, MoveEntryUseCase]
 });

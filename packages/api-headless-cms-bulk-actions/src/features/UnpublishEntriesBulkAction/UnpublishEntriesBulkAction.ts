@@ -1,9 +1,9 @@
 import { ListPublishedEntriesUseCase } from "@webiny/api-headless-cms/features/contentEntry/ListEntries/index.js";
 import { UnpublishEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UnpublishEntry/index.js";
 import { parseIdentifier } from "@webiny/utils";
-import { EntryBulkAction } from "~/features/EntryBulkAction/abstractions.js";
+import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
 
-class UnpublishEntriesBulkActionImpl implements EntryBulkAction.Interface {
+class UnpublishEntriesBulkActionImpl implements EntriesBulkAction.Interface {
     readonly name = "unpublish";
 
     constructor(
@@ -12,9 +12,9 @@ class UnpublishEntriesBulkActionImpl implements EntryBulkAction.Interface {
     ) {}
 
     async loadData(
-        model: EntryBulkAction.Model,
-        params: EntryBulkAction.LoadDataParams
-    ): Promise<EntryBulkAction.LoadDataResult> {
+        model: EntriesBulkAction.Model,
+        params: EntriesBulkAction.LoadDataParams
+    ): Promise<EntriesBulkAction.LoadDataResult> {
         const entriesResult = await this.listPublishedEntries.execute(model, params);
 
         const [entries, meta] = entriesResult.value;
@@ -23,8 +23,8 @@ class UnpublishEntriesBulkActionImpl implements EntryBulkAction.Interface {
     }
 
     async processData(
-        model: EntryBulkAction.Model,
-        params: EntryBulkAction.ProcessParams
+        model: EntriesBulkAction.Model,
+        params: EntriesBulkAction.ProcessParams
     ): Promise<void> {
         const { id: entryId } = parseIdentifier(params.id);
 
@@ -32,7 +32,7 @@ class UnpublishEntriesBulkActionImpl implements EntryBulkAction.Interface {
     }
 }
 
-export const UnpublishEntriesBulkAction = EntryBulkAction.createImplementation({
+export const UnpublishEntriesBulkAction = EntriesBulkAction.createImplementation({
     implementation: UnpublishEntriesBulkActionImpl,
     dependencies: [ListPublishedEntriesUseCase, UnpublishEntryUseCase]
 });

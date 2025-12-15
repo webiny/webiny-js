@@ -1,5 +1,4 @@
 import {
-    createBulkActionEntriesTasks,
     createEmptyTrashBinsTask,
     createHcmsBulkActions
 } from "@webiny/api-headless-cms-bulk-actions";
@@ -10,7 +9,6 @@ export { createDeleteModelTask };
 
 export const createHcmsTasks = () => [
     createHcmsBulkActions(),
-    createBulkActionEntriesTasks(),
     createEmptyTrashBinsTask(),
     createHeadlessCmsImportExport(),
     createDeleteModelTask()
