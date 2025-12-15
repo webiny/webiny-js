@@ -23,12 +23,6 @@ export interface FileManagerFileItemMetaItem {
     value: any;
 }
 
-export type DeprecatedFileManagerRenderPropParams = {
-    showFileManager: (
-        onChange?: FileManagerOnChange<FileManagerFileItem | FileManagerFileItem[]>
-    ) => void;
-};
-
 export type FileManagerRenderPropParams<TValue> = {
     showFileManager: (onChange?: FileManagerOnChange<TValue>) => void;
 };
@@ -61,26 +55,19 @@ export type FileManagerProps = {
     accept?: string[];
     images?: boolean;
     maxSize?: number | string;
-    /**
-     * @deprecated This prop is no longer used. The file structure was reduced to a bare minimum so picking is no longer necessary.
-     */
-    onChangePick?: string[];
     onClose?: () => void;
     onUploadCompletion?: (files: FileManagerFileItem[]) => void;
     own?: boolean;
     scope?: string;
     tags?: string[];
     show?: boolean;
-    /**
-     * @deprecated This prop is no longer used. Use the `render` prop to get better TS autocomplete.
-     */
-    children?: (params: DeprecatedFileManagerRenderPropParams) => React.ReactNode;
+    overlay?: boolean;
 } & MultipleProps;
 
 // This jewel was taken from https://davidgomes.com/pick-omit-over-union-types-in-typescript/. Massive thanks, David!
 type DistributiveOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : never;
 
-export type FileManagerRendererProps = DistributiveOmit<FileManagerProps, "render" | "children">;
+export type FileManagerRendererProps = DistributiveOmit<FileManagerProps, "render">;
 
 export const FileManagerRenderer = makeDecoratable(
     "FileManagerRenderer",
@@ -92,7 +79,7 @@ type ShowFileManagerProps =
     | FileManagerOnChange<FileManagerFileItem[]>
     | undefined;
 
-export const FileManager = ({ children, render, onChange, ...rest }: FileManagerProps) => {
+export const FileManager = ({ render, onChange, ...rest }: FileManagerProps) => {
     const [isFileManagerVisible, setFileManagerVisible] = useState(rest.show);
     const onChangeRef = useRef(onChange);
 
@@ -116,24 +103,33 @@ export const FileManager = ({ children, render, onChange, ...rest }: FileManager
             return null;
         }
 
+        // Render as overlay
+        if (rest.overlay) {
+            return (
+                <Portal>
+                    {/*@ts-expect-error*/}
+                    <FileManagerRenderer
+                        onClose={handleCloseFileManager}
+                        onChange={onChangeRef.current}
+                        {...rest}
+                    />
+                </Portal>
+            );
+        }
+
+        // Render inline
         return (
-            <Portal>
-                {/*@ts-expect-error*/}
-                <FileManagerRenderer
-                    onClose={handleCloseFileManager}
-                    onChange={onChangeRef.current}
-                    {...rest}
-                />
-            </Portal>
+            // @ts-expect-error
+            <FileManagerRenderer
+                onClose={handleCloseFileManager}
+                onChange={onChangeRef.current}
+                {...rest}
+            />
         );
     };
 
     const renderContent = () => {
         const renderProps = { showFileManager: handleShowFileManager };
-
-        if (children) {
-            return children(renderProps);
-        }
 
         if (render) {
             return render(renderProps);

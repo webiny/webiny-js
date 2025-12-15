@@ -60,12 +60,6 @@ export interface SingleImageUploadProps extends FormComponentProps {
     round?: boolean;
 
     /**
-     * Define the properties that are returned on file(s) selection.
-     * @deprecated Pick the desired file attributes in the `onChange` callback, or `beforeChange` on the `<Bind>` element.
-     */
-    onChangePick?: string[];
-
-    /**
      * Render the image preview.
      */
     renderFilePreview?: FilePickerProps["renderFilePreview"];

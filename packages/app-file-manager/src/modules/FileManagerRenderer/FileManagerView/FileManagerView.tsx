@@ -6,7 +6,7 @@ import type { positionValues } from "react-custom-scrollbars";
 // @ts-expect-error
 import { useHotkeys } from "react-hotkeyz";
 import { observer } from "mobx-react-lite";
-import { Heading, type DataTableSorting, Scrollbar } from "@webiny/admin-ui";
+import { type DataTableSorting, Scrollbar } from "@webiny/admin-ui";
 import { i18n } from "@webiny/app/i18n/index.js";
 import { LeftPanel, RightPanel, SplitView, OverlayLayout, useSnackbar } from "@webiny/app-admin";
 import { useTenancy } from "@webiny/app-admin";
@@ -27,7 +27,6 @@ import { FileDetails } from "~/components/FileDetails/index.js";
 import { Filters } from "~/components/Filters/index.js";
 import { Grid } from "~/components/Grid/index.js";
 import { Header } from "~/components/Header/index.js";
-import { SearchWidget } from "~/components/SearchWidget/index.js";
 import type { TableProps } from "~/components/Table/index.js";
 import { Table } from "~/components/Table/index.js";
 import { TagsList } from "~/components/TagsList/index.js";
@@ -131,7 +130,11 @@ const FileManagerView = () => {
     useHotkeys({
         zIndex: 20,
         keys: {
-            esc: view.onClose
+            esc: () => {
+                if (view.overlay) {
+                    view.onClose();
+                }
+            }
         }
     });
 
@@ -261,6 +264,18 @@ const FileManagerView = () => {
         [view.updateFile]
     );
 
+    const withOverlay = (element: React.ReactElement) => {
+        if (view.overlay) {
+            return (
+                <OverlayLayout variant={"strong"} onExited={view.onClose}>
+                    {element}
+                </OverlayLayout>
+            );
+        }
+
+        return element;
+    };
+
     return (
         <>
             <Files
@@ -279,13 +294,8 @@ const FileManagerView = () => {
                     showSnackbar(message);
                 }}
             >
-                {({ getDropZoneProps, browseFiles }) => (
-                    <OverlayLayout
-                        variant={"strong"}
-                        onExited={view.onClose}
-                        barLeft={<Heading level={5}>{"File manager"}</Heading>}
-                        barMiddle={<SearchWidget />}
-                    >
+                {({ getDropZoneProps, browseFiles }) =>
+                    withOverlay(
                         <>
                             <FileDetails
                                 loading={drawerLoading}
@@ -355,8 +365,8 @@ const FileManagerView = () => {
                                 </RightPanel>
                             </SplitView>
                         </>
-                    </OverlayLayout>
-                )}
+                    )
+                }
             </Files>
         </>
     );
