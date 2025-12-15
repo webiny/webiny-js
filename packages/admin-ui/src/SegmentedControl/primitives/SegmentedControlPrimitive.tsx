@@ -23,6 +23,7 @@ const segmentedControlItemVariants = cva(
                 accent: [
                     "text-neutral-strong fill-neutral-xstrong",
                     "data-[state=active]:text-neutral-primary data-[state=active]:fill-neutral-xstrong data-[state=active]:bg-neutral-base/80",
+                    "hover:data-[state=inactive]:text-neutral-primary",
                     "hover:data-[state=inactive]:bg-neutral-base/80",
                     "active:data-[state=inactive]:bg-neutral-base/80"
                 ],
