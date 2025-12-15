@@ -34,6 +34,14 @@ interface ThreatScan_UnsupportedFile extends IncomingGenericData {
     };
 }
 
+interface AITags extends IncomingGenericData {
+    action: "fm.file.tags";
+    data: {
+        id: string;
+        tags: string[];
+    };
+}
+
 export const HandleWebsocketMessages = () => {
     const { showErrorSnackbar } = useSnackbar();
     const websockets = useWebsockets();
@@ -89,10 +97,19 @@ export const HandleWebsocketMessages = () => {
             }
         );
 
+        const aiTags = websockets.onMessage<AITags>("fm.file.tags", async message => {
+            const { id, ...data } = message.data;
+
+            await fmViewRef.current.updateFile(id, data, {
+                localUpdate: true
+            });
+        });
+
         return () => {
             noThreat.off();
             threatDetected.off();
             unsupported.off();
+            aiTags.off();
         };
     }, []);
 

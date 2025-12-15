@@ -14109,6 +14109,7 @@ __metadata:
     "@webiny/api": "npm:0.0.0"
     "@webiny/api-core": "npm:0.0.0"
     "@webiny/api-headless-cms": "npm:0.0.0"
+    "@webiny/api-websockets": "npm:0.0.0"
     "@webiny/aws-sdk": "npm:0.0.0"
     "@webiny/build-tools": "npm:0.0.0"
     "@webiny/error": "npm:0.0.0"
@@ -14125,6 +14126,7 @@ __metadata:
     cache-control-parser: "npm:^2.0.6"
     lodash: "npm:^4.17.21"
     object-hash: "npm:^3.0.0"
+    openai: "npm:^6.10.0"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
     zod: "npm:^3.25.76"
@@ -28454,6 +28456,23 @@ __metadata:
     is-docker: "npm:^2.1.1"
     is-wsl: "npm:^2.2.0"
   checksum: 10/acd81a1d19879c818acb3af2d2e8e9d81d17b5367561e623248133deb7dd3aefaed527531df2677d3e6aaf0199f84df57b6b2262babff8bf46ea0029aac536c9
+  languageName: node
+  linkType: hard
+
+"openai@npm:^6.10.0":
+  version: 6.10.0
+  resolution: "openai@npm:6.10.0"
+  peerDependencies:
+    ws: ^8.18.0
+    zod: ^3.25 || ^4.0
+  peerDependenciesMeta:
+    ws:
+      optional: true
+    zod:
+      optional: true
+  bin:
+    openai: bin/cli
+  checksum: 10/0e2c6a297337447aabbf1c7fb3f682abf41f8b80c4346479abb02462cfc0a32918dcb872bc6a92f4398c750f297a862b9aa783aa92f822149ceaee3983c83106
   languageName: node
   linkType: hard
 

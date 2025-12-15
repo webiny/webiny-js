@@ -5,6 +5,7 @@
     { "path": "../api" },
     { "path": "../api-core" },
     { "path": "../api-headless-cms" },
+    { "path":  "../api-websockets"},
     { "path": "../aws-sdk" },
     { "path": "../error" },
     { "path": "../feature" },
