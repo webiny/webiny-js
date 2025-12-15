@@ -84,7 +84,9 @@
       "./abstractions/services/UiService.ts": "./infra/features/UiService",
       "./abstractions/features/pulumi/AdminPulumi.ts": "./infra/features/AdminPulumi",
       "./abstractions/features/pulumi/ApiPulumi.ts": "./infra/features/ApiPulumi",
-      "./abstractions/features/pulumi/CorePulumi.ts": "./infra/features/CorePulumi"
+      "./abstractions/features/pulumi/CorePulumi.ts": "./infra/features/CorePulumi",
+      "./abstractions/features/GetAppStackOutput.ts": "./infra/features/GetAppStackOutput",
+      "./abstractions/features/GetAppStackExport.ts": "./infra/features/GetAppStackExport"
     }
   },
   "adio": {

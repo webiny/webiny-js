@@ -97,6 +97,8 @@
     "./infra/features/AdminPulumi": "./infra/features/AdminPulumi.js",
     "./infra/features/ApiPulumi": "./infra/features/ApiPulumi.js",
     "./infra/features/CorePulumi": "./infra/features/CorePulumi.js",
+    "./infra/features/GetAppStackOutput": "./infra/features/GetAppStackOutput.js",
+    "./infra/features/GetAppStackExport": "./infra/features/GetAppStackExport.js",
     "./extensions": "./extensions.js"
   }
 }
