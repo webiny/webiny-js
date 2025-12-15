@@ -46,6 +46,16 @@ export const VariantLight: Story = {
     }
 };
 
+export const VariantDimmed: Story = {
+    render: () => {
+        const [value, setValue] = useState("item1");
+
+        return (
+            <SegmentedControl items={items} value={value} onChange={setValue} variant="dimmed" />
+        );
+    }
+};
+
 export const VariantGhost: Story = {
     render: () => {
         const [value, setValue] = useState("item1");

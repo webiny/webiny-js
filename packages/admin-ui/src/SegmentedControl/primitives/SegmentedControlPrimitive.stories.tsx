@@ -73,6 +73,14 @@ export const VariantLight: Story = {
     }
 };
 
+export const VariantDimmed: Story = {
+    args: {
+        items,
+        value: "item1",
+        variant: "dimmed"
+    }
+};
+
 export const VariantGhost: Story = {
     render: args => {
         const [value, setValue] = useState(args.value || "item1");

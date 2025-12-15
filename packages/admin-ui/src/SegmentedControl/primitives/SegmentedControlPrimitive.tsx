@@ -27,6 +27,13 @@ const segmentedControlItemVariants = cva(
                     "hover:data-[state=inactive]:bg-neutral-base/80",
                     "active:data-[state=inactive]:bg-neutral-base/80"
                 ],
+                dimmed: [
+                    "text-neutral-strong fill-neutral-xstrong",
+                    "data-[state=active]:text-neutral-primary data-[state=active]:fill-neutral-xstrong data-[state=active]:bg-neutral-base/80",
+                    "hover:data-[state=inactive]:text-neutral-primary",
+                    "hover:data-[state=inactive]:bg-neutral-base/80",
+                    "active:data-[state=inactive]:bg-neutral-base/80"
+                ],
                 ghost: [
                     "text-neutral-strong fill-neutral-xstrong",
                     "data-[state=active]:bg-neutral-dark/5",
@@ -45,6 +52,7 @@ const segmentedControlRootVariants = cva("inline-flex rounded-md p-xxs gap-xs", 
     variants: {
         variant: {
             light: "bg-neutral-light",
+            dimmed: "bg-neutral-dimmed",
             ghost: ""
         }
     },
