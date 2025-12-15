@@ -125,6 +125,7 @@ import {
 } from "./extensions/pulumi/index.js";
 
 import { projectDecorator as projectDecoratorExt } from "./extensions/projectDecorator.js";
+import { projectImplementation as projectImplementationExt } from "./extensions/projectImplementation.js";
 
 export const createProjectSdkContainer = async (
     params: Partial<ProjectSdkParamsService.Params>
@@ -291,11 +292,19 @@ export const createProjectSdkContainer = async (
     container.registerDecorator(deployAppWithHooks);
     container.registerDecorator(watchWithHooks);
 
+    const projectImplementations = [...projectExtensions.extensionsByType(projectImplementationExt)];
+
+    for (const projectImplementation of projectImplementations) {
+        const projectImplementationImpl = await importFromPath(projectImplementation.params.src);
+        container.register(projectImplementationImpl).inSingletonScope();
+    }
+
     const projectDecorators = [...projectExtensions.extensionsByType(projectDecoratorExt)];
 
     for (const projectDecorator of projectDecorators) {
         const projectDecoratorImpl = await importFromPath(projectDecorator.params.src);
         container.registerDecorator(projectDecoratorImpl);
     }
+
     return container;
 };

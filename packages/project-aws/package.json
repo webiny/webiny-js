@@ -82,7 +82,9 @@
   },
   "webiny": {
     "exports": {
-      ".": "./extensions"
+      ".": "./extensions",
+      "./abstractions/ApiGqlClient.ts": "./infra/features/ApiGqlClient",
+      "./abstractions/InvokeLambdaFunction.ts": "./infra/features/InvokeLambdaFunction"
     }
   },
   "adio": {

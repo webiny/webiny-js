@@ -1,7 +1,6 @@
 import { ApiAfterDeploy } from "webiny/infra/features/ApiAfterDeploy";
 import { UiService } from "webiny/infra/features/UiService";
-import { GetAppStackOutput } from "webiny/infra/features/GetAppStackOutput";
-import { LambdaClient, InvokeCommand } from "@webiny/aws-sdk/client-lambda/index.js";
+import { ApiGqlClient } from "webiny/infra/features/ApiGqlClient";
 
 const IS_INSTALLED_QUERY = `
     query IsSystemInstalled {
@@ -35,7 +34,7 @@ const INSTALL_MUTATION = `
 
 class AutoInstallSystemAfterFirstDeploy implements ApiAfterDeploy.Interface {
     constructor(
-        private getAppStackOutput: GetAppStackOutput.Interface,
+        private apiGqlClient: ApiGqlClient.Interface,
         private ui: UiService.Interface
     ) {}
 
@@ -45,43 +44,23 @@ class AutoInstallSystemAfterFirstDeploy implements ApiAfterDeploy.Interface {
             return;
         }
 
-        const stackOutput = await this.getAppStackOutput.execute(params);
-        if (!stackOutput) {
-            this.ui.error("Could not retrieve API stack output.");
-            return;
-        }
-
-        const { graphqlLambdaName, region } = stackOutput as any;
-
-        const lambdaClient = new LambdaClient({ region });
-
         // Check if system is already installed
         this.ui.info("Checking if system is already installed...");
 
+        const context = {
+            app: params.app,
+            env: params.env,
+            variant: params.variant
+        };
+
         try {
-            const isInstalledResponse = await lambdaClient.send(
-                new InvokeCommand({
-                    FunctionName: graphqlLambdaName,
-                    InvocationType: "RequestResponse",
-                    Payload: JSON.stringify({
-                        path: "/graphql",
-                        httpMethod: "POST",
-                        headers: {
-                            "x-tenant": "root",
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            query: IS_INSTALLED_QUERY
-                        })
-                    })
-                })
-            );
+            const isInstalledResponse = await this.apiGqlClient.query({
+                query: IS_INSTALLED_QUERY,
+                context
+            });
 
-            const decoder = new TextDecoder("utf-8");
-            const lambdaResponse = JSON.parse(decoder.decode(isInstalledResponse.Payload));
-            const result = JSON.parse(lambdaResponse.body);
-
-            if (result.data?.system?.isSystemInstalled?.data === true) {
+            console.log('isInstalledResponse', isInstalledResponse)
+            if (isInstalledResponse.data?.system?.isSystemInstalled?.data === true) {
                 this.ui.info("System is already installed, skipping auto-install.");
                 return;
             }
@@ -105,31 +84,14 @@ class AutoInstallSystemAfterFirstDeploy implements ApiAfterDeploy.Interface {
             ])
         };
 
-        const installResponse = await lambdaClient.send(
-            new InvokeCommand({
-                FunctionName: graphqlLambdaName,
-                InvocationType: "RequestResponse",
-                Payload: JSON.stringify({
-                    path: "/graphql",
-                    httpMethod: "POST",
-                    headers: {
-                        "x-tenant": "root",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        query: INSTALL_MUTATION,
-                        variables
-                    })
-                })
-            })
-        );
+        const installResponse = await this.apiGqlClient.mutation({
+            mutation: INSTALL_MUTATION,
+            variables,
+            context
+        });
 
-        const decoder = new TextDecoder("utf-8");
-        const lambdaResponse = JSON.parse(decoder.decode(installResponse.Payload));
-        const result = JSON.parse(lambdaResponse.body);
-
-        if (result.data?.system?.installSystem?.error) {
-            const { message, code } = result.data.system.installSystem.error;
+        if (installResponse.data?.system?.installSystem?.error) {
+            const { message, code } = installResponse.data.system.installSystem.error;
             this.ui.error(`Installation failed: ${message} (${code})`);
             throw new Error(message);
         }
@@ -143,5 +105,5 @@ class AutoInstallSystemAfterFirstDeploy implements ApiAfterDeploy.Interface {
 
 export const AutoInstallSystem = ApiAfterDeploy.createImplementation({
     implementation: AutoInstallSystemAfterFirstDeploy,
-    dependencies: [GetAppStackOutput, UiService]
+    dependencies: [ApiGqlClient, UiService]
 });

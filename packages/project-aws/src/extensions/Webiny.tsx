@@ -6,7 +6,8 @@ import {
     BeforeDeploy,
     ExtensionDefinitions,
     Project,
-    ProjectDecorator
+    ProjectDecorator,
+    ProjectImplementation
 } from "@webiny/project/extensions/index.js";
 import { createPathResolver } from "@webiny/project";
 import { CliCommand } from "@webiny/cli-core/extensions/index.js";
@@ -17,6 +18,8 @@ export const Webiny = () => {
     return (
         <>
             <Project />
+            <ProjectImplementation src={p("../features/InvokeLambdaFunction.js")} />
+            <ProjectImplementation src={p("../features/ApiGqlClient.js")} />
             <ProjectDecorator src={p("Webiny/BuildAppWorkspace.js")} />
             <AdminAfterDeploy src={p("Webiny/UploadAdminAppToS3.js")} />
             <ApiAfterDeploy src={p("Webiny/ExecuteDataMigrations.js")} />
