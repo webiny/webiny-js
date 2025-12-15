@@ -12,6 +12,7 @@ import { MoveToTrashBulkActionFeature } from "~/features/MoveToTrashBulkAction/f
 import { PublishEntriesBulkActionFeature } from "~/features/PublishEntriesBulkAction/feature.js";
 import { UnpublishEntriesBulkActionFeature } from "~/features/UnpublishEntriesBulkAction/feature.js";
 import { RestoreEntriesBulkActionFeature } from "~/features/RestoreEntriesBulkAction/feature.js";
+import type { HcmsBulkActionsContext } from "~/types.js";
 
 export type * from "./abstractions/index.js";
 export * from "./handlers/index.js";
@@ -30,7 +31,7 @@ export const createHcmsBulkActions = () => [
         RestoreEntriesBulkActionFeature.register(context.container);
     }),
     // Set up bulk actions after the context is bootstrapped, but before actual handler processing
-    createBeforeHandlerPlugin(context => {
+    createBeforeHandlerPlugin<HcmsBulkActionsContext>(async context => {
         context.container.registerInstance(BulkActionContext, context);
 
         const bulkActions = context.container.resolveAll(EntriesBulkAction);
@@ -41,7 +42,7 @@ export const createHcmsBulkActions = () => [
             const feature = createBulkActionTasks(bulkAction);
             feature.register(context.container);
             // Register GraphQL schema
-            createBulkActionGraphQL(bulkAction);
+            await createBulkActionGraphQL(context, bulkAction);
         }
     })
 ];

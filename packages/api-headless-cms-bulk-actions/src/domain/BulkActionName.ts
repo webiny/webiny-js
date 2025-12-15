@@ -12,8 +12,8 @@ function toPascalCase(str: string) {
     return capitalizedWords.join("");
 }
 
-export class BulkActionId {
-    static from(id: string) {
-        return toPascalCase(id);
+export class BulkActionName {
+    static from(name: string) {
+        return toPascalCase(name);
     }
 }
