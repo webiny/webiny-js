@@ -4,7 +4,6 @@ import type {
     IExportContentAssetsInput,
     IExportContentAssetsOutput
 } from "~/tasks/domain/abstractions/ExportContentAssets.js";
-import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import type { ICmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/index.js";
 import { createCmsEntryFetcher } from "~/tasks/utils/cmsEntryFetcher/index.js";
 import type { IEntryAssets, IEntryAssetsResolver } from "~/tasks/utils/entryAssets/index.js";
@@ -28,6 +27,7 @@ import { createS3Client } from "~/tasks/utils/helpers/s3Client.js";
 import { UniqueResolver } from "~/tasks/utils/uniqueResolver/UniqueResolver.js";
 import { WEBINY_EXPORT_ASSETS_EXTENSION } from "~/tasks/constants.js";
 import { ListFilesUseCase } from "@webiny/api-file-manager/features/file/ListFiles/index.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface ICreateCmsAssetsZipperCallableConfig {
     filename: string;
@@ -52,29 +52,31 @@ const getFilename = (input: IExportContentAssetsInput): string => {
 };
 
 export interface IExportContentAssetsParams {
+    context: Context;
     createCmsAssetsZipper: ICreateCmsAssetsZipperCallable;
 }
 
 export class ExportContentAssets<
-    C extends Context = Context,
     I extends IExportContentAssetsInput = IExportContentAssetsInput,
     O extends IExportContentAssetsOutput = IExportContentAssetsOutput
-> implements IExportContentAssets<C, I, O>
+> implements IExportContentAssets<I, O>
 {
     private readonly createCmsAssetsZipper: ICreateCmsAssetsZipperCallable;
+    private context: Context;
 
     public constructor(params: IExportContentAssetsParams) {
+        this.context = params.context;
         this.createCmsAssetsZipper = params.createCmsAssetsZipper;
     }
 
-    public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { response, context, input, isCloseToTimeout, isAborted } = params;
+    public async run(params: TaskDefinition.RunParams<I, O>) {
+        const { input, controller } = params;
 
         let model: CmsModel;
         try {
-            model = await context.cms.getModel(input.modelId);
+            model = await this.context.cms.getModel(input.modelId);
         } catch (ex) {
-            return response.error({
+            return controller.response.error({
                 message: `Could not fetch entry manager for model "${input.modelId}".`,
                 code: "MODEL_NOT_FOUND",
                 data: {
@@ -83,7 +85,7 @@ export class ExportContentAssets<
             });
         }
 
-        const traverser = await context.cms.getEntryTraverser(model.modelId);
+        const traverser = await this.context.cms.getEntryTraverser(model.modelId);
 
         const entryFetcher = createCmsEntryFetcher(async after => {
             const input = {
@@ -92,7 +94,7 @@ export class ExportContentAssets<
                 sort: params.input.sort,
                 after
             };
-            const [items, meta] = await context.cms.listLatestEntries(model, input);
+            const [items, meta] = await this.context.cms.listLatestEntries(model, input);
 
             return {
                 items,
@@ -120,7 +122,7 @@ export class ExportContentAssets<
             createEntryAssetsResolver: () => {
                 return new EntryAssetsResolver({
                     fetchFiles: async params => {
-                        const listFiles = context.container.resolve(ListFilesUseCase);
+                        const listFiles = this.context.container.resolve(ListFilesUseCase);
                         const listResult = await listFiles.execute(params ?? {});
 
                         return listResult.value;
@@ -136,14 +138,14 @@ export class ExportContentAssets<
                 fileAfter: input.fileAfter,
                 entryAfter: input.entryAfter,
                 isAborted() {
-                    return isAborted();
+                    return controller.runtime.isAborted();
                 },
                 isCloseToTimeout(seconds?: number) {
-                    return isCloseToTimeout(seconds);
+                    return controller.runtime.isCloseToTimeout(seconds);
                 }
             });
         } catch (ex) {
-            return response.error(ex);
+            return controller.response.error(ex);
         }
 
         const files = Array.isArray(input.files) ? input.files : [];
@@ -152,7 +154,7 @@ export class ExportContentAssets<
          * We will output existing input files.
          */
         if (result instanceof CmsAssetsZipperExecuteDoneWithoutResult) {
-            return response.done({
+            return controller.response.done({
                 files
             } as O);
         }
@@ -162,7 +164,7 @@ export class ExportContentAssets<
          */
         //
         else if (result instanceof CmsAssetsZipperExecuteDoneResult) {
-            return response.done({
+            return controller.response.done({
                 files: files.concat([
                     {
                         key: result.key,
@@ -177,7 +179,7 @@ export class ExportContentAssets<
          */
         //
         else if (result instanceof CmsAssetsZipperExecuteContinueWithoutResult) {
-            return response.continue({
+            return controller.response.continue({
                 ...input,
                 fileAfter: result.fileCursor,
                 entryAfter: result.entryCursor
@@ -189,7 +191,7 @@ export class ExportContentAssets<
          */
         //
         else if (result instanceof CmsAssetsZipperExecuteContinueResult) {
-            return response.continue({
+            return controller.response.continue({
                 ...input,
                 fileAfter: result.fileCursor,
                 entryAfter: result.entryCursor,
@@ -202,7 +204,7 @@ export class ExportContentAssets<
             });
         }
 
-        return response.error({
+        return controller.response.error({
             message: "Unknown zipper result.",
             code: "UNKNOWN_ZIPPER_RESULT",
             data: {
