@@ -8,7 +8,7 @@ const AccordionItemSeparatorBase = (props: AccordionItemSeparatorProps) => {
     return (
         <Separator
             orientation={"vertical"}
-            className={"h-lg mx-sm-plus"}
+            className={"h-lg mx-xs-plus"}
             variant={"muted"}
             {...props}
         />
