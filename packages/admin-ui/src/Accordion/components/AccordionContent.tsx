@@ -5,7 +5,7 @@ import { useAccordionItemProps } from "./AccordionItem.js";
 
 const accordionContentVariants = cva(
     [
-        "overflow-hidden text-md pl-xxl pr-xxl",
+        "overflow-hidden text-md pr-xxl",
         "transition-all",
         "data-[state=closed]:animate-collapsible-up",
         "data-[state=open]:animate-collapsible-down"
@@ -13,7 +13,8 @@ const accordionContentVariants = cva(
     {
         variants: {
             withIcon: {
-                true: "pl-9"
+                true: "pl-xxl",
+                false: "pl-md"
             },
             withHandle: {
                 true: "pl-5"
@@ -46,7 +47,7 @@ export const AccordionContent = ({ children, className, ...props }: AccordionCon
             {...props}
             className={cn(accordionContentVariants({ withHandle, withIcon }), className)}
         >
-            <div className="pt-sm pb-lg px-md">{children}</div>
+            <div className="pt-sm pb-lg">{children}</div>
         </CollapsiblePrimitive.Content>
     );
 };
