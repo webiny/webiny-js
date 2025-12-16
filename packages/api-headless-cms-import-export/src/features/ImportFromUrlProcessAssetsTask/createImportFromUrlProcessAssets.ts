@@ -15,10 +15,11 @@ import { createMultipartUpload, createMultipartUploadFactory } from "~/tasks/uti
 import { FileFetcher } from "~/tasks/utils/fileFetcher/index.js";
 
 export const createImportFromUrlProcessAssets = <
-    C extends Context = Context,
     I extends IImportFromUrlProcessAssetsInput = IImportFromUrlProcessAssetsInput,
     O extends IImportFromUrlProcessAssetsOutput = IImportFromUrlProcessAssetsOutput
->(): IImportFromUrlProcessAssets<C, I, O> => {
+>(
+    context: Context
+): IImportFromUrlProcessAssets<Context, I, O> => {
     const client = createS3Client();
     const bucket = getBucket();
     const reader = createCompressedFileReader({
@@ -41,7 +42,8 @@ export const createImportFromUrlProcessAssets = <
         bucket
     });
 
-    return new ImportFromUrlProcessAssets<C, I, O>({
+    return new ImportFromUrlProcessAssets<I, O>({
+        context,
         fileFetcher,
         reader,
         decompressor

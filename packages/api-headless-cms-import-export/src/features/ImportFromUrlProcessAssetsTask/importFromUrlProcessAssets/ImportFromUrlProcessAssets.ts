@@ -1,9 +1,8 @@
-import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks/types.js";
 import type {
     IImportFromUrlProcessAssets,
     IImportFromUrlProcessAssetsInput,
     IImportFromUrlProcessAssetsOutput
-} from "~/tasks/domain/importFromUrlProcessAssets/abstractions/ImportFromUrlProcessAssets.js";
+} from "./abstractions/ImportFromUrlProcessAssets.js";
 import type { Context } from "~/types.js";
 import { CmsImportExportFileType } from "~/types.js";
 import type { IFileFetcher } from "~/tasks/utils/fileFetcher/index.js";
@@ -20,49 +19,52 @@ import type { IResolvedAsset } from "~/tasks/utils/entryAssets/index.js";
 import { GetFileUseCase } from "@webiny/api-file-manager/features/file/GetFile/index.js";
 import { UpdateFileUseCase } from "@webiny/api-file-manager/features/file/UpdateFile/index.js";
 import { CreateFileUseCase } from "@webiny/api-file-manager/features/file/CreateFile/index.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface IImportFromUrlProcessAssetsParams {
+    context: Context;
     fileFetcher: IFileFetcher;
     reader: ICompressedFileReader;
     decompressor: IDecompressor;
 }
 
 export class ImportFromUrlProcessAssets<
-    C extends Context = Context,
     I extends IImportFromUrlProcessAssetsInput = IImportFromUrlProcessAssetsInput,
     O extends IImportFromUrlProcessAssetsOutput = IImportFromUrlProcessAssetsOutput
-> implements IImportFromUrlProcessAssets<C, I, O>
+> implements IImportFromUrlProcessAssets<Context, I, O>
 {
+    private readonly context: Context;
     private readonly fileFetcher: IFileFetcher;
     private readonly reader: ICompressedFileReader;
     private readonly decompressor: IDecompressor;
 
     public constructor(params: IImportFromUrlProcessAssetsParams) {
+        this.context = params.context;
         this.fileFetcher = params.fileFetcher;
         this.reader = params.reader;
         this.decompressor = params.decompressor;
     }
 
-    public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { context, response, input, isCloseToTimeout, isAborted } = params;
-        const getFile = context.container.resolve(GetFileUseCase);
-        const createFile = context.container.resolve(CreateFileUseCase);
-        const updateFile = context.container.resolve(UpdateFileUseCase);
+    public async run(params: TaskDefinition.RunParams<I, O>) {
+        const { input, controller } = params;
+        const getFile = this.context.container.resolve(GetFileUseCase);
+        const createFile = this.context.container.resolve(CreateFileUseCase);
+        const updateFile = this.context.container.resolve(UpdateFileUseCase);
 
         const maxInsertErrors = input.maxInsertErrors || 100;
 
         if (!input.modelId) {
-            return response.error({
+            return controller.response.error({
                 message: `Missing "modelId" in the input.`,
                 code: "MISSING_MODEL_ID"
             });
         } else if (!input.file) {
-            return response.error({
+            return controller.response.error({
                 message: `No file found in the provided data.`,
                 code: "NO_FILE_FOUND"
             });
         } else if (input.file.type !== CmsImportExportFileType.ASSETS) {
-            return response.error({
+            return controller.response.error({
                 message: `Invalid file type. Expected "${CmsImportExportFileType.ASSETS}" but got "${input.file.type}".`,
                 code: "INVALID_FILE_TYPE"
             });
@@ -86,7 +88,7 @@ export class ImportFromUrlProcessAssets<
          */
         const sources = await this.reader.read(result.file.key);
         if (sources.length === 0) {
-            return response.error({
+            return controller.response.error({
                 message: `No files found in the compressed archive.`,
                 code: "NO_FILES_FOUND"
             });
@@ -101,16 +103,16 @@ export class ImportFromUrlProcessAssets<
             manifest = await this.readManifest(sources, result);
         } catch (ex) {
             console.error(ex);
-            return response.error(ex);
+            return controller.response.error(ex);
         }
 
         while (true) {
-            if (isCloseToTimeout()) {
-                return response.continue(result);
-            } else if (isAborted()) {
-                return response.aborted();
+            if (controller.runtime.isCloseToTimeout()) {
+                return controller.response.continue(result);
+            } else if (controller.runtime.isAborted()) {
+                return controller.response.aborted();
             } else if (result.errors.length > maxInsertErrors) {
-                return response.error({
+                return controller.response.error({
                     message: `Too many errors encountered while processing assets.`,
                     code: "TOO_MANY_ERRORS",
                     data: {
@@ -120,7 +122,7 @@ export class ImportFromUrlProcessAssets<
             }
             const record = this.takeNextAssetRecord(manifest, result.lastAsset);
             if (!record) {
-                return response.done("No more assets to process");
+                return controller.response.done("No more assets to process");
             }
             result.lastAsset = record.id;
             const source = sources.find(file => file.path === record.key);
