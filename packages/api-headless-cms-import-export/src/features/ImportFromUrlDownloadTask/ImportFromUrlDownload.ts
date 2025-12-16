@@ -1,4 +1,3 @@
-import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks/types.js";
 import type {
     IImportFromUrlDownload,
     IImportFromUrlDownloadInput,
@@ -10,36 +9,38 @@ import { getBucket } from "~/tasks/utils/helpers/getBucket.js";
 import type { IMultipartUploadFactoryContinueParams } from "~/tasks/utils/upload/index.js";
 import { createMultipartUpload, createMultipartUploadFactory } from "~/tasks/utils/upload/index.js";
 import { prependImportPath } from "~/tasks/utils/helpers/importPath.js";
-import type { IDownloadFileFromUrlProcessResponseType } from "./downloadFileFromUrl/index.js";
-import { createDownloadFileFromUrl } from "./downloadFileFromUrl/index.js";
+import type { IDownloadFileFromUrlProcessResponseType } from "~/tasks/domain/downloadFileFromUrl/index.js";
+import { createDownloadFileFromUrl } from "~/tasks/domain/downloadFileFromUrl/index.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 type ProcessType = IDownloadFileFromUrlProcessResponseType<"continue" | "aborted">;
 
 export class ImportFromUrlDownload<
-    C extends Context = Context,
     I extends IImportFromUrlDownloadInput = IImportFromUrlDownloadInput,
     O extends IImportFromUrlDownloadOutput = IImportFromUrlDownloadOutput
-> implements IImportFromUrlDownload<C, I, O>
+> implements IImportFromUrlDownload<Context, I, O>
 {
-    public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { context, response, input, isCloseToTimeout, isAborted } = params;
+    constructor(private context: Context) {}
+
+    public async run(params: TaskDefinition.RunParams<I, O>) {
+        const { input, controller } = params;
 
         if (!input.modelId) {
-            return response.error({
+            return controller.response.error({
                 message: `Missing "modelId" in the input.`,
                 code: "MISSING_MODEL_ID"
             });
         } else if (!input.file) {
-            return response.error({
+            return controller.response.error({
                 message: `No file found in the provided data.`,
                 code: "NO_FILE_FOUND"
             });
         }
 
         try {
-            await context.cms.getModel(input.modelId);
+            await this.context.cms.getModel(input.modelId);
         } catch {
-            return response.error({
+            return controller.response.error({
                 message: `Model "${input.modelId}" not found.`,
                 code: "MODEL_NOT_FOUND"
             });
@@ -73,21 +74,21 @@ export class ImportFromUrlDownload<
         let result: ProcessType;
         try {
             result = await download.process<ProcessType>(async ({ stop }) => {
-                const isClose = isCloseToTimeout();
+                const isClose = controller.runtime.isCloseToTimeout();
                 if (isClose) {
                     return stop("continue");
-                } else if (isAborted()) {
+                } else if (controller.runtime.isAborted()) {
                     return stop("aborted");
                 }
             });
         } catch (ex) {
-            return response.error(ex);
+            return controller.response.error(ex);
         }
 
         switch (result) {
             case "aborted":
                 await upload.abort();
-                return response.aborted();
+                return controller.response.aborted();
             case "continue":
                 const continueValue: I = {
                     ...input,
@@ -95,20 +96,20 @@ export class ImportFromUrlDownload<
                     done: download.isDone(),
                     nextRange: download.getNextRange()
                 };
-                return response.continue({
+                return controller.response.continue({
                     ...continueValue
                 });
             case "done":
                 const output: IImportFromUrlDownloadOutput = {
                     file: filename
                 };
-                return response.done(output as O);
+                return controller.response.done(output as O);
             /**
              * There should be nothing else other than "continue" or "aborted" or null.
              */
             default:
                 await upload.abort();
-                return response.error({
+                return controller.response.error({
                     message: `Method not implemented. Result: ${result}`
                 });
         }
