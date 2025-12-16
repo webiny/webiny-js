@@ -2,6 +2,7 @@ import type {
     ElasticsearchQuerySearchValuePlugins,
     ModelField
 } from "~/operations/entry/elasticsearch/types.js";
+import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 interface FieldPathFactoryParams {
     plugins: ElasticsearchQuerySearchValuePlugins;
@@ -17,7 +18,8 @@ interface FieldPathParams {
 export const createFieldPathFactory = ({ plugins }: FieldPathFactoryParams) => {
     return (params: FieldPathParams) => {
         const { field, key, value, keyword, originalValue } = params;
-        const plugin = plugins[field.type];
+        const fieldType = getBaseFieldType(field);
+        const plugin = plugins[fieldType];
 
         let fieldPath: string | null = null;
         if (plugin) {

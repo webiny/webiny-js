@@ -169,7 +169,6 @@ export interface CmsModelFieldInput {
      * User defined settings.
      */
     settings?: {
-        showInApi?: boolean;
         [key: string]: any;
     };
 }
@@ -306,10 +305,6 @@ export interface CmsModelFieldSettings {
      * Disable full text search explicitly on this field.
      */
     disableFullTextSearch?: boolean;
-    /**
-     * Should the field be exposed in the API?
-     */
-    showInApi?: boolean;
     /**
      * There are a lot of other settings that are possible to add, so we keep the type opened.
      */

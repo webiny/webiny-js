@@ -13,6 +13,7 @@ import {
     isDateTimeEntryMetaField,
     isIdentityEntryMetaField
 } from "@webiny/api-headless-cms/constants.js";
+import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 type PartialCmsModelField = Partial<CmsModelField> &
     Pick<CmsModelField, "storageId" | "fieldId" | "type">;
@@ -365,7 +366,8 @@ const buildFieldsList = (params: BuildParams): ModelFields => {
     const { plugins, fields, parents } = params;
 
     return fields.reduce<ModelFields>((result, field) => {
-        const plugin = plugins[field.type];
+        const fieldType = getBaseFieldType(field);
+        const plugin = plugins[fieldType];
         if (!plugin) {
             throw new WebinyError(`There is no plugin for field type "${field.type}".`);
         }
@@ -387,7 +389,7 @@ const buildFieldsList = (params: BuildParams): ModelFields => {
                     {
                         fieldId: field.fieldId,
                         storageId: field.storageId,
-                        type: field.type
+                        type: fieldType
                     }
                 ]
             });
@@ -397,7 +399,7 @@ const buildFieldsList = (params: BuildParams): ModelFields => {
         const identifier = [...parents.map(p => p.fieldId), field.fieldId].join(".");
 
         result[identifier] = {
-            type: field.type,
+            type: fieldType,
             parents,
             searchable,
             sortable,

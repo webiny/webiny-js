@@ -1,11 +1,13 @@
 import type { ModelField } from "./types.js";
+import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 const noKeywordFields: string[] = ["date", "datetime", "number", "boolean"];
 export const hasKeyword = (field: ModelField): boolean => {
+    const fieldType = getBaseFieldType(field);
     /**
      * We defined some field types that MUST have no keyword added to the field path
      */
-    if (noKeywordFields.includes(field.type)) {
+    if (noKeywordFields.includes(fieldType)) {
         return false;
     }
     /**
