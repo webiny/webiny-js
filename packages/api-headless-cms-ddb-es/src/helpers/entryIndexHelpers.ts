@@ -7,6 +7,7 @@ import type {
 import type { CmsIndexEntry, CmsModelFieldToElasticsearchPlugin } from "~/types.js";
 import type { PluginsContainer } from "@webiny/plugins";
 import { getFieldIdentifier, getFieldIdentifiers } from "~/helpers/fieldIdentifier.js";
+import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 interface SetupEntriesIndexHelpersParams {
     plugins: PluginsContainer;
@@ -28,11 +29,17 @@ export const prepareEntryToIndex = (params: PrepareElasticsearchDataParams): Cms
     const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
         setupEntriesIndexHelpers({ plugins });
 
-    function getFieldIndexPlugin(fieldType: string) {
+    function getFieldIndexPlugin(type: string) {
+        const fieldType = getBaseFieldType({
+            type
+        });
         return fieldIndexPlugins[fieldType] || defaultIndexFieldPlugin;
     }
 
-    function getFieldTypePlugin(fieldType: string) {
+    function getFieldTypePlugin(type: string) {
+        const fieldType = getBaseFieldType({
+            type
+        });
         const pl = fieldTypePlugins[fieldType];
         if (pl) {
             return pl;
@@ -120,11 +127,17 @@ export const extractEntriesFromIndex = ({
     const { fieldIndexPlugins, defaultIndexFieldPlugin, fieldTypePlugins } =
         setupEntriesIndexHelpers({ plugins });
 
-    function getFieldIndexPlugin(fieldType: string) {
+    function getFieldIndexPlugin(type: string) {
+        const fieldType = getBaseFieldType({
+            type
+        });
         return fieldIndexPlugins[fieldType] || defaultIndexFieldPlugin;
     }
 
-    function getFieldTypePlugin(fieldType: string) {
+    function getFieldTypePlugin(type: string) {
+        const fieldType = getBaseFieldType({
+            type
+        });
         return fieldTypePlugins[fieldType];
     }
 
@@ -136,7 +149,7 @@ export const extractEntriesFromIndex = ({
 
         // We only consider fields that are present in the model
         for (const field of model.fields) {
-            const fieldTypePlugin = fieldTypePlugins[field.type];
+            const fieldTypePlugin = getFieldTypePlugin(field.type);
             if (!fieldTypePlugin) {
                 throw new WebinyError(
                     `Missing field type plugin "${field.type}". Extract entries from index.`

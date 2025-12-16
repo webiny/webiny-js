@@ -22,9 +22,6 @@ export const separatorField: CmsModelFieldTypePlugin = {
                 type: this.type,
                 renderer: {
                     name: "text-separator"
-                },
-                settings: {
-                    showInApi: false
                 }
             };
         }

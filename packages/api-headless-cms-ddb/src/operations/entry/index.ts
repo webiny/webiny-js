@@ -40,6 +40,7 @@ import {
     isRestoredEntryMetaField,
     pickEntryMetaFields
 } from "@webiny/api-headless-cms/constants.js";
+import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 const createType = (): string => {
     return "cms.entry";
@@ -129,7 +130,9 @@ export const createEntriesStorageOperations = (
             );
 
         return (field, value) => {
-            const plugin: StorageTransformPlugin = storageTransformPlugins[field.type];
+            const fieldType = getBaseFieldType(field);
+
+            const plugin: StorageTransformPlugin = storageTransformPlugins[fieldType];
             if (!plugin) {
                 return value;
             }
