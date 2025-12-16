@@ -1,56 +1,42 @@
-import type { ITaskResponse } from "@webiny/tasks";
-import type { CmsEntryListWhere, CmsModel } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsEntryListWhere } from "@webiny/api-headless-cms/types/index.js";
+import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
 import { ListFoldersUseCase } from "@webiny/api-aco/features/folders/ListFolders/index.js";
 import { DeleteFolderUseCase } from "@webiny/api-aco/features/folders/DeleteFolder/index.js";
-import type { HcmsTasksContext } from "~/types.js";
-import type { IDeleteModelTaskInput, IDeleteModelTaskOutput } from "./types.js";
-import { createStoreKey } from "~/tasks/deleteModel/helpers/store.js";
+import { CmsContext } from "@webiny/api-headless-cms/features/shared/abstractions.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import type { IDeleteModelTaskInput } from "./types.js";
+import type { IDeleteModelTaskOutput } from "./types.js";
+import { createStoreKey } from "~/helpers/store.js";
 
-export interface IDeleteModelRunnerParams<
-    C extends HcmsTasksContext,
-    I extends IDeleteModelTaskInput,
-    O extends IDeleteModelTaskOutput
-> {
-    taskId: string;
-    context: C;
-    response: ITaskResponse<I, O>;
+type IRunParams = TaskDefinition.RunParams<IDeleteModelTaskInput, IDeleteModelTaskOutput>;
+
+export interface IDeleteModel {
+    run(
+        params: IRunParams
+    ): Promise<TaskDefinition.Result<IDeleteModelTaskInput, IDeleteModelTaskOutput>>;
 }
 
-export type IExecuteParams<
-    C extends HcmsTasksContext,
-    I extends IDeleteModelTaskInput,
-    O extends IDeleteModelTaskOutput
-> = Omit<ITaskRunParams<C, I, O>, "context" | "response" | "store" | "timer" | "trigger">;
+export class DeleteModel implements IDeleteModel {
+    constructor(private context: CmsContext.Interface) {}
 
-export class DeleteModelRunner<
-    C extends HcmsTasksContext,
-    I extends IDeleteModelTaskInput,
-    O extends IDeleteModelTaskOutput
-> {
-    private readonly context: C;
-    private readonly response: ITaskResponse<I, O>;
-
-    public constructor(params: IDeleteModelRunnerParams<C, I, O>) {
-        this.context = params.context;
-        this.response = params.response;
-    }
-
-    public async execute(params: IExecuteParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { input, isCloseToTimeout, isAborted } = params;
+    public async run(
+        params: IRunParams
+    ): Promise<TaskDefinition.Result<IDeleteModelTaskInput, IDeleteModelTaskOutput>> {
+        const { input, controller } = params;
 
         const model = await this.getModel(input.modelId);
 
         let hasMoreItems = false;
         let lastDeletedId: string | undefined = input.lastDeletedId;
         do {
-            if (isAborted()) {
+            if (controller.runtime.isAborted()) {
                 /**
                  * If the task was aborted, we need to remove the task tag from the model.
                  */
                 await this.removeBeingDeleted(model);
-                return this.response.aborted();
-            } else if (isCloseToTimeout()) {
-                return this.response.continue({
+                return controller.response.aborted();
+            } else if (controller.runtime.isCloseToTimeout()) {
+                return controller.response.continue({
                     ...input,
                     lastDeletedId
                 });
@@ -78,7 +64,7 @@ export class DeleteModelRunner<
                         model: model.modelId,
                         id: item.id
                     });
-                    return this.response.error(
+                    return controller.response.error(
                         new Error(`Failed to delete entry "${item.id}". Cannot continue.`)
                     );
                 }
@@ -98,7 +84,7 @@ export class DeleteModelRunner<
         });
         if (items.length > 0) {
             console.log("There are still items to be deleted. Continuing the task.");
-            return this.response.continue(
+            return controller.response.continue(
                 {
                     ...input
                 },
@@ -126,7 +112,7 @@ export class DeleteModelRunner<
             for (const item of items) {
                 const result = await deleteFolder.execute(item.id);
                 if (result.isFail()) {
-                    return this.response.error(result.error);
+                    return controller.response.error(result.error);
                 }
             }
 
@@ -138,17 +124,17 @@ export class DeleteModelRunner<
          */
         await this.removeBeingDeleted(model);
         if (model.isPlugin) {
-            return this.response.done();
+            return controller.response.done();
         }
         try {
             await this.context.cms.deleteModel(model.modelId);
         } catch (ex) {
             const message = `Failed to delete model "${model.modelId}".`;
             console.error(message);
-            return this.response.error(ex);
+            return controller.response.error(ex);
         }
 
-        return this.response.done();
+        return controller.response.done();
     }
 
     private async getModel(modelId: string): Promise<CmsModel> {
@@ -164,13 +150,3 @@ export class DeleteModelRunner<
         await this.context.db.store.removeValue(key);
     }
 }
-
-export const createDeleteModelRunner = <
-    C extends HcmsTasksContext,
-    I extends IDeleteModelTaskInput,
-    O extends IDeleteModelTaskOutput
->(
-    params: IDeleteModelRunnerParams<C, I, O>
-) => {
-    return new DeleteModelRunner<C, I, O>(params);
-};

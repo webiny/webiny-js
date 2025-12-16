@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { useHandler } from "~tests/context/useHandler";
-import { createStoreKey } from "~/tasks/deleteModel/helpers/store";
-import type { IStoreValue } from "~/tasks/deleteModel/types";
+import type { IStoreValue } from "~/features/DeleteModelTask/types.js";
+import { createStoreKey } from "~/helpers/store.js";
 
 describe("crud", () => {
     it("should list models being deleted", async () => {

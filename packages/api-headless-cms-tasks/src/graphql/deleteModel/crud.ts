@@ -1,13 +1,15 @@
 import type { HcmsTasksContext } from "~/types.js";
-import { fullyDeleteModel as fullyDeleteModelMethod } from "./fullyDeleteModel.js";
-import { cancelDeleteModel } from "./cancelDeleteModel.js";
-import { getDeleteModelProgress as getDeleteModelProgressMethod } from "./getDeleteModelProgress.js";
-import { createCacheKey, createMemoryCache } from "@webiny/api-headless-cms/utils/index.js";
-import type { IStoreValue, ListStoreKeysResult } from "../types.js";
-import { createStoreNamespace } from "~/tasks/deleteModel/helpers/store.js";
+import { createCacheKey } from "@webiny/api-headless-cms/utils/index.js";
+import { createMemoryCache } from "@webiny/api-headless-cms/utils/index.js";
+import type { IStoreValue } from "~/features/DeleteModelTask/types.js";
+import type { ListStoreKeysResult } from "~/features/DeleteModelTask/types.js";
 import type { GenericRecord } from "@webiny/api/types.js";
 import { ContextPlugin } from "@webiny/api";
 import { DisableModelFeature } from "~/features/DisableModel/feature.js";
+import { createStoreNamespace } from "~/helpers/store.js";
+import { fullyDeleteModel } from "~/graphql/deleteModel/fullyDeleteModel.js";
+import { cancelDeleteModel } from "~/graphql/deleteModel/cancelDeleteModel.js";
+import { getDeleteModelProgress } from "~/graphql/deleteModel/getDeleteModelProgress.js";
 
 export const createDeleteModelCrud = () => {
     const plugin = new ContextPlugin<HcmsTasksContext>(async context => {
@@ -46,7 +48,7 @@ export const createDeleteModelCrud = () => {
             return items.some(item => item.modelId === modelId);
         };
         context.cms.fullyDeleteModel = async (modelId: string) => {
-            const result = await fullyDeleteModelMethod({
+            const result = await fullyDeleteModel({
                 context,
                 modelId
             });
@@ -64,7 +66,7 @@ export const createDeleteModelCrud = () => {
         };
 
         context.cms.getDeleteModelProgress = async (modelId: string) => {
-            return await getDeleteModelProgressMethod({
+            return await getDeleteModelProgress({
                 context,
                 modelId
             });

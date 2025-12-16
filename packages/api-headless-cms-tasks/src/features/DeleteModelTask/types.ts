@@ -1,14 +1,14 @@
 import type { CmsIdentity } from "@webiny/api-headless-cms/types/index.js";
-import type { ITaskResponseDoneResultOutput } from "@webiny/tasks";
 import type { ListValuesResult } from "@webiny/db";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface IDeleteModelTaskInput {
     modelId: string;
     lastDeletedId?: string;
 }
 
-export interface IDeleteModelTaskOutput extends ITaskResponseDoneResultOutput {
+export interface IDeleteModelTaskOutput extends TaskDefinition.TaskOutput {
     total?: number;
     deleted?: number;
 }
