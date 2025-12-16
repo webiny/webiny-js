@@ -18,7 +18,7 @@ type ProcessType = IDownloadFileFromUrlProcessResponseType<"continue" | "aborted
 export class ImportFromUrlDownload<
     I extends IImportFromUrlDownloadInput = IImportFromUrlDownloadInput,
     O extends IImportFromUrlDownloadOutput = IImportFromUrlDownloadOutput
-> implements IImportFromUrlDownload<Context, I, O>
+> implements IImportFromUrlDownload<I, O>
 {
     constructor(private context: Context) {}
 

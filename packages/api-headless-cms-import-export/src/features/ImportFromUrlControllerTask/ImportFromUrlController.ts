@@ -70,14 +70,8 @@ export class ImportFromUrlController<
             input.steps[IImportFromUrlControllerInputStep.DOWNLOAD] || getDefaultStepValues();
 
         if (!downloadStep.finished) {
-            const step = new ImportFromUrlControllerDownloadStep<Context, I, O>();
-            return await step.execute({
-                context: this.context,
-                input,
-                response: controller.response,
-                isAborted: controller.runtime.isAborted,
-                isCloseToTimeout: controller.runtime.isCloseToTimeout
-            });
+            const step = new ImportFromUrlControllerDownloadStep<I, O>(this.context);
+            return await step.execute({ input, controller });
         } else if (downloadStep.failed.length) {
             return controller.response.error({
                 message: `Failed to download files.`,
@@ -90,14 +84,8 @@ export class ImportFromUrlController<
             input.steps[IImportFromUrlControllerInputStep.PROCESS_ENTRIES] ||
             getDefaultStepValues();
         if (!processEntriesStep.finished) {
-            const step = new ImportFromUrlControllerProcessEntriesStep<Context, I, O>();
-            return await step.execute({
-                context: this.context,
-                input,
-                response: controller.response,
-                isAborted: controller.runtime.isAborted,
-                isCloseToTimeout: controller.runtime.isCloseToTimeout
-            });
+            const step = new ImportFromUrlControllerProcessEntriesStep<I, O>(this.context);
+            return await step.execute(params);
         } else if (processEntriesStep.failed.length) {
             return controller.response.error({
                 message: `Failed to process entries.`,
@@ -109,14 +97,8 @@ export class ImportFromUrlController<
         const processAssetsStep =
             input.steps[IImportFromUrlControllerInputStep.PROCESS_ASSETS] || getDefaultStepValues();
         if (!processAssetsStep.finished) {
-            const step = new ImportFromUrlControllerProcessAssetsStep<Context, I, O>();
-            return await step.execute({
-                context: this.context,
-                input,
-                response: controller.response,
-                isAborted: controller.runtime.isAborted,
-                isCloseToTimeout: controller.runtime.isCloseToTimeout
-            });
+            const step = new ImportFromUrlControllerProcessAssetsStep<I, O>(this.context);
+            return await step.execute(params);
         } else if (processAssetsStep.failed.length) {
             return controller.response.error({
                 message: `Failed to process assets.`,

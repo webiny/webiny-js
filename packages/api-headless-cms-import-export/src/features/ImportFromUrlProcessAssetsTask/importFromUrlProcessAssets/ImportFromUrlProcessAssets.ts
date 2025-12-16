@@ -31,7 +31,7 @@ export interface IImportFromUrlProcessAssetsParams {
 export class ImportFromUrlProcessAssets<
     I extends IImportFromUrlProcessAssetsInput = IImportFromUrlProcessAssetsInput,
     O extends IImportFromUrlProcessAssetsOutput = IImportFromUrlProcessAssetsOutput
-> implements IImportFromUrlProcessAssets<Context, I, O>
+> implements IImportFromUrlProcessAssets<I, O>
 {
     private readonly context: Context;
     private readonly fileFetcher: IFileFetcher;

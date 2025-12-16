@@ -84,7 +84,7 @@ export class CmsEntryZipper implements ICmsEntryZipper {
 
         let id = 1;
 
-        let continueAfter: string | undefined = undefined;
+        let continueAfter: string | null | undefined = undefined;
 
         let assets: IAsset[] | undefined = undefined;
         /**

@@ -1,5 +1,5 @@
 import { createFeature } from "@webiny/feature/api";
-import { ExportContentEntriesControllerTask } from "./ExportContentEntriesControllerTask";
+import { ExportContentEntriesControllerTask } from "./ExportContentEntriesControllerTask.js";
 
 export const ExportContentEntriesControllerTaskFeature = createFeature({
     name: "HeadlessCms/ImportExport/ExportContentEntriesControllerTask",

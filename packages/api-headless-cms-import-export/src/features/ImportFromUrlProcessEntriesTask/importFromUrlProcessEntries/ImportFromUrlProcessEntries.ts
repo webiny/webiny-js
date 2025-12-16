@@ -23,7 +23,7 @@ export interface IImportFromUrlProcessEntriesParams {
 export class ImportFromUrlProcessEntries<
     I extends IImportFromUrlProcessEntriesInput = IImportFromUrlProcessEntriesInput,
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
-> implements IImportFromUrlProcessEntries<Context, I, O>
+> implements IImportFromUrlProcessEntries<I, O>
 {
     private readonly context: Context;
     private readonly fileFetcher: IFileFetcher;

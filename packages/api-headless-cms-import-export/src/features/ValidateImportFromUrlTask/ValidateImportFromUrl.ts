@@ -3,12 +3,12 @@ import type {
     IValidateImportFromUrlInput,
     IValidateImportFromUrlOutput
 } from "~/tasks/domain/abstractions/ValidateImportFromUrl.js";
-import type { IExternalFileFetcher } from "~/tasks/utils/externalFileFetcher/index.js";
 import type { ICmsImportExportValidatedFile } from "~/types.js";
 import { getImportExportFileType } from "~/tasks/utils/helpers/getImportExportFileType.js";
 import type { NonEmptyArray } from "@webiny/api/types.js";
 import { prependImportPath } from "~/tasks/utils/helpers/importPath.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { IExternalFileFetcher } from "./ExternalFileFetcher/abstractions.js";
 
 export interface IFileExists {
     (key: string): Promise<boolean>;

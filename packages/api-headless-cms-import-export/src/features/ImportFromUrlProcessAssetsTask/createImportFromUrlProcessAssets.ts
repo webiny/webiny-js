@@ -19,7 +19,7 @@ export const createImportFromUrlProcessAssets = <
     O extends IImportFromUrlProcessAssetsOutput = IImportFromUrlProcessAssetsOutput
 >(
     context: Context
-): IImportFromUrlProcessAssets<Context, I, O> => {
+): IImportFromUrlProcessAssets<I, O> => {
     const client = createS3Client();
     const bucket = getBucket();
     const reader = createCompressedFileReader({

@@ -19,7 +19,7 @@ export const createImportFromUrlProcessEntries = <
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
 >(
     context: Context
-): IImportFromUrlProcessEntries<Context, I, O> => {
+): IImportFromUrlProcessEntries<I, O> => {
     const client = createS3Client();
     const bucket = getBucket();
 

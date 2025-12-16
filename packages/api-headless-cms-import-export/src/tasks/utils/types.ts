@@ -23,5 +23,5 @@ export interface ICmsAssetsManifestJson {
 export interface ICmsEntryEntriesJson {
     items: GenericRecord<string>[];
     meta: CmsEntryMeta;
-    after?: string;
+    after?: string | null;
 }
