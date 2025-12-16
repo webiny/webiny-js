@@ -14,7 +14,6 @@ import {
     FormComponentDescription,
     FormComponentErrorMessage,
     Grid,
-    Heading,
     Separator
 } from "@webiny/admin-ui";
 
