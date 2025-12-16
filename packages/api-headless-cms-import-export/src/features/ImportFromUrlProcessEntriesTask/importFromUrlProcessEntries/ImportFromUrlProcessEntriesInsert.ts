@@ -9,7 +9,6 @@ import type {
     IImportFromUrlProcessEntriesInsertProcessedFileInput,
     IImportFromUrlProcessEntriesOutput
 } from "./abstractions/ImportFromUrlProcessEntries.js";
-import type { Context } from "~/types.js";
 import { MANIFEST_JSON } from "~/tasks/constants.js";
 import type { IFileFetcher } from "~/tasks/utils/fileFetcher/index.js";
 import type { ICmsEntryEntriesJson } from "~/tasks/utils/types.js";
@@ -23,10 +22,9 @@ export interface IImportFromUrlProcessEntriesInsertParams {
 }
 
 export class ImportFromUrlProcessEntriesInsert<
-    C extends Context = Context,
     I extends IImportFromUrlProcessEntriesInput = IImportFromUrlProcessEntriesInput,
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
-> implements IImportFromUrlProcessEntriesInsert<C, I, O>
+> implements IImportFromUrlProcessEntriesInsert<I, O>
 {
     private readonly createEntry: CreateEntryUseCase.Interface;
     private readonly fileFetcher: IFileFetcher;
@@ -39,9 +37,9 @@ export class ImportFromUrlProcessEntriesInsert<
     }
 
     public async run(
-        params: IImportFromUrlProcessEntriesInsertRunParams<C, I, O>
+        params: IImportFromUrlProcessEntriesInsertRunParams<I, O>
     ): Promise<IImportFromUrlProcessEntriesInsertRunResult<I, O>> {
-        const { response, input, isAborted, isCloseToTimeout } = params;
+        const { input, controller } = params;
 
         const result = structuredClone(input);
 
@@ -49,7 +47,7 @@ export class ImportFromUrlProcessEntriesInsert<
             file => !file.endsWith(MANIFEST_JSON)
         );
         if (files.length === 0) {
-            return response.error({
+            return controller.response.error({
                 message: `No entry files found in the compressed archive.`,
                 code: "NO_FILES_FOUND",
                 data: {
@@ -64,10 +62,10 @@ export class ImportFromUrlProcessEntriesInsert<
             result.insert?.processed || [];
 
         while (true) {
-            if (isAborted()) {
-                return response.aborted();
-            } else if (isCloseToTimeout()) {
-                return response.continue({
+            if (controller.runtime.isAborted()) {
+                return controller.response.aborted();
+            } else if (controller.runtime.isCloseToTimeout()) {
+                return controller.response.continue({
                     ...result
                 });
             }
@@ -77,7 +75,7 @@ export class ImportFromUrlProcessEntriesInsert<
                     files: processed
                 };
 
-                return response.done(output as O);
+                return controller.response.done(output as O);
             }
             const data = await this.readAndParse(file, result);
             if (!data) {
@@ -99,7 +97,7 @@ export class ImportFromUrlProcessEntriesInsert<
             let success = 0;
             for (const item of data.items) {
                 if (errors.length >= maxInsertErrors) {
-                    return response.error({
+                    return controller.response.error({
                         message: `Max insert errors reached.`,
                         code: "MAX_INSERT_ERRORS",
                         data: {

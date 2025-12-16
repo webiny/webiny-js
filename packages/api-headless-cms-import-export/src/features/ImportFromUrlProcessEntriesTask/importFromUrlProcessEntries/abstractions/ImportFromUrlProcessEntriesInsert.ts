@@ -2,26 +2,23 @@ import type {
     IImportFromUrlProcessEntriesInput,
     IImportFromUrlProcessEntriesOutput
 } from "./ImportFromUrlProcessEntries.js";
-import type { Context } from "~/types.js";
-import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
-export type IImportFromUrlProcessEntriesDecompressRunParams<
-    C extends Context = Context,
+export type IImportFromUrlProcessEntriesInsertRunParams<
     I extends IImportFromUrlProcessEntriesInput = IImportFromUrlProcessEntriesInput,
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
-> = ITaskRunParams<C, I, O>;
+> = TaskDefinition.RunParams<I, O>;
 
-export type IImportFromUrlProcessEntriesDecompressRunResult<
+export type IImportFromUrlProcessEntriesInsertRunResult<
     I extends IImportFromUrlProcessEntriesInput = IImportFromUrlProcessEntriesInput,
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
-> = ITaskResponseResult<I, O>;
+> = TaskDefinition.Result<I, O>;
 
-export interface IImportFromUrlProcessEntriesDecompress<
-    C extends Context = Context,
+export interface IImportFromUrlProcessEntriesInsert<
     I extends IImportFromUrlProcessEntriesInput = IImportFromUrlProcessEntriesInput,
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
 > {
     run(
-        params: IImportFromUrlProcessEntriesDecompressRunParams<C, I, O>
-    ): Promise<IImportFromUrlProcessEntriesDecompressRunResult<I, O>>;
+        params: IImportFromUrlProcessEntriesInsertRunParams<I, O>
+    ): Promise<IImportFromUrlProcessEntriesInsertRunResult<I, O>>;
 }

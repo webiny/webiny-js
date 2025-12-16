@@ -1,9 +1,5 @@
-import type { Context, ICmsImportExportValidatedValidFile } from "~/types.js";
-import type {
-    ITaskResponseDoneResultOutput,
-    ITaskResponseResult,
-    ITaskRunParams
-} from "@webiny/tasks";
+import type { ICmsImportExportValidatedValidFile } from "~/types.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export type IImportFromUrlProcessEntriesInputFile = Pick<
     ICmsImportExportValidatedValidFile,
@@ -52,14 +48,13 @@ export interface IImportFromUrlProcessEntriesOutputFile {
     errors: IImportFromUrlProcessEntriesInsertProcessedFileErrorsInput[];
 }
 
-export interface IImportFromUrlProcessEntriesOutput extends ITaskResponseDoneResultOutput {
+export interface IImportFromUrlProcessEntriesOutput extends TaskDefinition.TaskOutput {
     files: IImportFromUrlProcessEntriesOutputFile[];
 }
 
 export interface IImportFromUrlProcessEntries<
-    C extends Context = Context,
     I extends IImportFromUrlProcessEntriesInput = IImportFromUrlProcessEntriesInput,
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
 > {
-    run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>>;
+    run(params: TaskDefinition.RunParams<I, O>): Promise<TaskDefinition.Result<I, O>>;
 }

@@ -9,7 +9,6 @@ import type {
     IImportFromUrlProcessEntriesOutput
 } from "./abstractions/ImportFromUrlProcessEntries.js";
 import { getFilePath } from "~/tasks/utils/helpers/getFilePath.js";
-import type { Context } from "~/types.js";
 import { WebinyError } from "@webiny/error";
 
 export interface IImportFromUrlProcessEntriesDecompressParams {
@@ -18,10 +17,9 @@ export interface IImportFromUrlProcessEntriesDecompressParams {
 }
 
 export class ImportFromUrlProcessEntriesDecompress<
-    C extends Context = Context,
     I extends IImportFromUrlProcessEntriesInput = IImportFromUrlProcessEntriesInput,
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
-> implements IImportFromUrlProcessEntriesDecompress<C, I, O>
+> implements IImportFromUrlProcessEntriesDecompress<I, O>
 {
     private readonly reader: ICompressedFileReader;
     private readonly decompressor: IDecompressor;
@@ -32,16 +30,16 @@ export class ImportFromUrlProcessEntriesDecompress<
     }
 
     public async run(
-        params: IImportFromUrlProcessEntriesDecompressRunParams<C, I, O>
+        params: IImportFromUrlProcessEntriesDecompressRunParams<I, O>
     ): Promise<IImportFromUrlProcessEntriesDecompressRunResult<I, O>> {
-        const { response, input, isCloseToTimeout, isAborted } = params;
+        const { input, controller } = params;
         const result = structuredClone<I>(input);
 
         const files = (await this.reader.read(result.file.key)).sort((a, b) => {
             return a.uncompressedSize - b.uncompressedSize;
         });
         if (files.length === 0) {
-            return response.error({
+            return controller.response.error({
                 message: `No files found in the compressed archive.`,
                 code: "NO_FILES_FOUND"
             });
@@ -53,17 +51,17 @@ export class ImportFromUrlProcessEntriesDecompress<
             const next = result.decompress?.next || 0;
             const source = files.at(next);
             if (!source) {
-                return response.continue({
+                return controller.response.continue({
                     ...result,
                     decompress: {
                         ...result.decompress,
                         done: true
                     }
                 });
-            } else if (isAborted()) {
-                return response.aborted();
-            } else if (isCloseToTimeout() || result.decompress?.done) {
-                return response.continue({
+            } else if (controller.runtime.isAborted()) {
+                return controller.response.aborted();
+            } else if (controller.runtime.isCloseToTimeout() || result.decompress?.done) {
+                return controller.response.continue({
                     ...result
                 });
             }
@@ -90,7 +88,7 @@ export class ImportFromUrlProcessEntriesDecompress<
                     files: [...(result.decompress?.files || []), file.Key]
                 };
             } catch (ex) {
-                return response.error(ex);
+                return controller.response.error(ex);
             }
         }
     }

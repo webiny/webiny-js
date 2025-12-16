@@ -5,54 +5,56 @@ import type {
     IImportFromUrlProcessEntriesInput,
     IImportFromUrlProcessEntriesOutput
 } from "./abstractions/ImportFromUrlProcessEntries.js";
-import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
-import { ImportFromUrlProcessEntriesDecompress } from "~/tasks/domain/importFromUrlProcessEntries/ImportFromUrlProcessEntriesDecompress.js";
+import { ImportFromUrlProcessEntriesDecompress } from "./ImportFromUrlProcessEntriesDecompress.js";
 import type { IFileFetcher } from "~/tasks/utils/fileFetcher/index.js";
 import { ImportFromUrlProcessEntriesInsert } from "./ImportFromUrlProcessEntriesInsert.js";
 import type { ICompressedFileReader, IDecompressor } from "~/tasks/utils/decompressor/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface IImportFromUrlProcessEntriesParams {
+    context: Context;
     fileFetcher: IFileFetcher;
     reader: ICompressedFileReader;
     decompressor: IDecompressor;
 }
 
 export class ImportFromUrlProcessEntries<
-    C extends Context = Context,
     I extends IImportFromUrlProcessEntriesInput = IImportFromUrlProcessEntriesInput,
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
-> implements IImportFromUrlProcessEntries<C, I, O>
+> implements IImportFromUrlProcessEntries<Context, I, O>
 {
+    private readonly context: Context;
     private readonly fileFetcher: IFileFetcher;
     private readonly reader: ICompressedFileReader;
     private readonly decompressor: IDecompressor;
 
     public constructor(params: IImportFromUrlProcessEntriesParams) {
+        this.context = params.context;
         this.fileFetcher = params.fileFetcher;
         this.reader = params.reader;
         this.decompressor = params.decompressor;
     }
 
-    public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { context, response, input } = params;
+    public async run(params: TaskDefinition.RunParams<I, O>) {
+        const { input, controller } = params;
 
-        const getModel = context.container.resolve(GetModelUseCase);
-        const createEntry = context.container.resolve(CreateEntryUseCase);
+        const getModel = this.context.container.resolve(GetModelUseCase);
+        const createEntry = this.context.container.resolve(CreateEntryUseCase);
 
         if (!input.modelId) {
-            return response.error({
+            return controller.response.error({
                 message: `Missing "modelId" in the input.`,
                 code: "MISSING_MODEL_ID"
             });
         } else if (!input.file) {
-            return response.error({
+            return controller.response.error({
                 message: `No file found in the provided data.`,
                 code: "NO_FILE_FOUND"
             });
         } else if (input.file.type !== CmsImportExportFileType.ENTRIES) {
-            return response.error({
+            return controller.response.error({
                 message: `Invalid file type. Expected "${CmsImportExportFileType.ENTRIES}" but got "${input.file.type}".`,
                 code: "INVALID_FILE_TYPE"
             });
@@ -60,7 +62,7 @@ export class ImportFromUrlProcessEntries<
 
         const modelResult = await getModel.execute(input.modelId);
         if (modelResult.isFail()) {
-            return response.error({
+            return controller.response.error({
                 message: `Model "${input.modelId}" not found.`,
                 code: "MODEL_NOT_FOUND"
             });
@@ -68,7 +70,7 @@ export class ImportFromUrlProcessEntries<
 
         if (!input.decompress?.done) {
             try {
-                const decompress = new ImportFromUrlProcessEntriesDecompress<C, I, O>({
+                const decompress = new ImportFromUrlProcessEntriesDecompress<I, O>({
                     reader: this.reader,
                     decompressor: this.decompressor
                 });
@@ -76,7 +78,7 @@ export class ImportFromUrlProcessEntries<
                 return await decompress.run(params);
             } catch (ex) {
                 console.error(ex);
-                return response.error({
+                return controller.response.error({
                     message: ex.message,
                     code: ex.code || "DECOMPRESS_ERROR",
                     data: ex.data,
@@ -86,14 +88,14 @@ export class ImportFromUrlProcessEntries<
         }
 
         try {
-            const insert = new ImportFromUrlProcessEntriesInsert<C, I, O>({
+            const insert = new ImportFromUrlProcessEntriesInsert<I, O>({
                 model: modelResult.value,
                 createEntry,
                 fileFetcher: this.fileFetcher
             });
             return await insert.run(params);
         } catch (ex) {
-            return response.error({
+            return controller.response.error({
                 message: ex.message,
                 code: ex.code || "DECOMPRESS_ERROR",
                 data: ex.data,

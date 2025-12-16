@@ -15,10 +15,11 @@ import { createMultipartUpload, createMultipartUploadFactory } from "~/tasks/uti
 import { FileFetcher } from "~/tasks/utils/fileFetcher/index.js";
 
 export const createImportFromUrlProcessEntries = <
-    C extends Context = Context,
     I extends IImportFromUrlProcessEntriesInput = IImportFromUrlProcessEntriesInput,
     O extends IImportFromUrlProcessEntriesOutput = IImportFromUrlProcessEntriesOutput
->(): IImportFromUrlProcessEntries<C, I, O> => {
+>(
+    context: Context
+): IImportFromUrlProcessEntries<Context, I, O> => {
     const client = createS3Client();
     const bucket = getBucket();
 
@@ -42,7 +43,8 @@ export const createImportFromUrlProcessEntries = <
         bucket
     });
 
-    return new ImportFromUrlProcessEntries<C, I, O>({
+    return new ImportFromUrlProcessEntries<I, O>({
+        context,
         fileFetcher,
         reader,
         decompressor
