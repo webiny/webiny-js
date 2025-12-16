@@ -63,7 +63,6 @@ const AccordionTrigger = () => {
                 className={cn(
                     "group/trigger w-full flex items-center relative min-h-[62px]",
                     "focus-visible:outline-none focus-visible:border-none focus-visible:ring-sm focus-visible:ring-primary-dimmed",
-                    "hover:bg-neutral-dimmed",
                     "group-[.accordion-variant-container]:rounded-lg",
                     "[&[data-state=open]_[data-role=open-close-indicator]]:rotate-180 border-l-accent",
                     interactive ? "cursor-pointer" : "cursor-default"
