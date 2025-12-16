@@ -1,32 +1,36 @@
 import { describe, expect, it, vi } from "vitest";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
 import { useHandler } from "~tests/helpers/useHandler";
-import { createExportContentEntriesTask } from "~/tasks";
-import type { ITaskRunParams } from "@webiny/tasks";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import type { Context } from "~/types.js";
+import { EXPORT_CONTENT_ENTRIES_TASK } from "~/tasks/constants.js";
 
-vi.mock("~/tasks/domain/createExportContentEntries", () => {
+vi.mock("~/features/ExportContentEntriesTask/ExportContentEntries.js", () => {
     return {
-        createExportContentEntries: () => {
-            return {
-                run: async ({ input }: ITaskRunParams<any, any, any>) => {
-                    if (input.kill) {
-                        throw new Error("An error happened!");
-                    }
-                    return {
-                        executed: true
-                    };
+        ExportContentEntries: vi.fn().mockImplementation(() => ({
+            run: async ({ input }: TaskDefinition.RunParams<any, any>) => {
+                if (input.kill) {
+                    throw new Error("An error happened!");
                 }
-            };
-        }
+                return {
+                    executed: true
+                };
+            }
+        }))
     };
 });
+
+function getTaskDefinition(context: Context) {
+    const tasks = context.container.resolveAll(TaskDefinition);
+    return tasks.find(task => task.id === EXPORT_CONTENT_ENTRIES_TASK)!;
+}
 
 describe("export content entries task", () => {
     it("should run the task and return a done response", async () => {
         const { createContext } = useHandler();
         const context = await createContext();
 
-        const definition = createExportContentEntriesTask();
+        const definition = getTaskDefinition(context);
 
         const task = await context.tasks.createTask({
             name: "Create mock export content entries task",
@@ -55,7 +59,7 @@ describe("export content entries task", () => {
         const { createContext } = useHandler();
         const context = await createContext();
 
-        const definition = createExportContentEntriesTask();
+        const definition = getTaskDefinition(context);
 
         const task = await context.tasks.createTask({
             name: "Create mock export content entries task",
