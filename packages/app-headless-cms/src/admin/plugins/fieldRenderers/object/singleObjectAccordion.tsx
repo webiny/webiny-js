@@ -10,6 +10,7 @@ import {
     AccordionRenderSettings,
     getAccordionRenderSettings
 } from "~/admin/plugins/fieldRenderers/AccordionRenderSettings.js";
+import { ReactComponent as HorizontalRuleIcon } from "@webiny/icons/horizontal_rule.svg";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -42,8 +43,15 @@ const plugin: CmsModelFieldRendererPlugin = {
                         <Bind.ValidationContainer>
                             <ParentFieldProvider value={bindProps.value} path={Bind.parentName}>
                                 <ParentValueIndexProvider index={-1}>
-                                    <Accordion>
+                                    <Accordion background={"base"} variant={"container"}>
                                         <Accordion.Item
+                                            icon={
+                                                <Accordion.Item.Icon
+                                                    color={"accent"}
+                                                    label="Accordion Item"
+                                                    icon={<HorizontalRuleIcon />}
+                                                />
+                                            }
                                             title={field.label}
                                             description={field.helpText}
                                             defaultOpen={open}

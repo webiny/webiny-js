@@ -3,7 +3,7 @@ import { AccordionProps } from "~/Accordion/index.js";
 
 type BackgroundValue = AccordionProps["background"];
 
-const AccordionBackgroundContext = createContext<BackgroundValue>(null);
+const AccordionBackgroundContext = createContext<BackgroundValue>(undefined);
 
 interface AccordionBackgroundProviderProps {
     children: ReactNode;

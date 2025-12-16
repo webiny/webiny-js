@@ -15,6 +15,7 @@ export const OpenSearch = (props: React.ComponentProps<typeof PulumiOpenSearch>)
                     <ProjectDecorator src={p("InjectDdbEsLambdaFnHandler.js")} />
                     <ProjectDecorator src={p("ReplaceApiLambdaFnHandlers.js")} />
                     <Infra.Core.BeforeDeploy src={p("EnsureOsServiceRoleBeforeCoreDeploy.js")} />
+                    <Infra.Core.BeforeDeploy src={p("EnsureOsWasDeployed.js")} />
                 </>
             )}
         </>

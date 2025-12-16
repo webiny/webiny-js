@@ -15724,6 +15724,7 @@ __metadata:
     "@swc/plugin-emotion": "npm:^11.1.0"
     "@tailwindcss/postcss": "npm:^4.1.16"
     "@types/webpack-env": "npm:^1.18.8"
+    chalk: "npm:^4.1.2"
     chokidar: "npm:^4.0.3"
     css-loader: "npm:^7.1.2"
     eslint: "npm:^9.39.1"
