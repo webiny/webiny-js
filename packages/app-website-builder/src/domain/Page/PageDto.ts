@@ -24,6 +24,7 @@ export interface PageDto {
 export class PageDtoMapper {
     static toDTO(page: Page): PageDto {
         return {
+            ...page,
             id: page.id,
             entryId: page.entryId,
             status: page.status,

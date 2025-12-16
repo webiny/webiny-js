@@ -1,6 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { GetFolderExtensionsFields } from "./GetFolderExtensionsFields.js";
 import type { CmsModel } from "@webiny/app-headless-cms-common/types/index.js";
+import { Container } from "@webiny/di";
+import { GetFolderExtensionsFieldsFeature } from "~/features/folders/getFolderExtensionsFields/feature.js";
+import { GetFolderExtensionsFieldsUseCase } from "~/features/folders/getFolderExtensionsFields/abstractions.js";
+import { FolderModelProvider } from "~/features/folders/abstractions.js";
+import { FoldersContext } from "~/features/folders/abstractions.js";
+import { FoldersCache } from "~/features/folders/abstractions.js";
+import { ListCache } from "~/features/folders/cache/index.js";
+import type { Folder } from "~/domain/folder/Folder.js";
 
 describe("GetFolderExtensionsFields", () => {
     const model = {
@@ -132,39 +139,52 @@ describe("GetFolderExtensionsFields", () => {
         tags: ["type:model"]
     } as unknown as CmsModel;
 
-    it("CMS: should return fields from `global`, `cms` and the provided model namespace", () => {
-        const instance = GetFolderExtensionsFields.getInstance(model, "cms", "article");
+    function setupTest(type: string) {
+        const container = new Container();
+        const foldersCache = new ListCache<Folder>();
 
-        const result = instance.execute();
+        container.registerInstance(FoldersContext, { type });
+        container.registerInstance(FoldersCache, foldersCache);
 
-        expect(result.fields.map(field => field.id)).toEqual([
+        GetFolderExtensionsFieldsFeature.register(container);
+        container.registerInstance(FolderModelProvider, {
+            getModel: () => Promise.resolve(model),
+            getGraphQLSelection: () => Promise.resolve("")
+        });
+
+        return { container, useCase: container.resolve(GetFolderExtensionsFieldsUseCase) };
+    }
+
+    it("CMS: should return fields from `global`, `cms` and the provided model namespace", async () => {
+        const { useCase } = setupTest("cms:article");
+
+        const fields = await useCase.execute();
+
+        expect(fields.map(field => field.id)).toEqual([
             "globalField",
             "cms_cmsField",
             "cms_article_authorArticleField"
         ]);
     });
 
-    it("CMS: should return fields from `global` and `cms` namespace if not fields found for the provided model namespace", () => {
-        const instance = GetFolderExtensionsFields.getInstance(model, "cms", "other");
-        const result = instance.execute();
-        expect(result.fields.map(field => field.id)).toEqual(["globalField", "cms_cmsField"]);
+    it("CMS: should return fields from `global` and `cms` namespace if not fields found for the provided model namespace", async () => {
+        const { useCase } = setupTest("cms:other");
+
+        const fields = await useCase.execute();
+        expect(fields.map(field => field.id)).toEqual(["globalField", "cms_cmsField"]);
     });
 
-    it("PAGE BUILDER: should return fields from `global` and `pb_page` namespace", () => {
-        const instance = GetFolderExtensionsFields.getInstance(model, "PbPage", "");
-        const result = instance.execute();
-        expect(result.fields.map(field => field.id)).toEqual(["globalField", "pb_page_pageField"]);
+    it("FILE MANAGER: should return fields from `global` and `fm_file` namespace", async () => {
+        const { useCase } = setupTest("FmFile");
+
+        const fields = await useCase.execute();
+        expect(fields.map(field => field.id)).toEqual(["globalField", "fm_file_fileField"]);
     });
 
-    it("FILE MANAGER: should return fields from `global` and `fm_file` namespace", () => {
-        const instance = GetFolderExtensionsFields.getInstance(model, "FmFile", "");
-        const result = instance.execute();
-        expect(result.fields.map(field => field.id)).toEqual(["globalField", "fm_file_fileField"]);
-    });
+    it("ANY OTHER APP: should return fields from `global` namespace", async () => {
+        const { useCase } = setupTest("Any");
 
-    it("ANY OTHER APP: should return fields from `global` namespace", () => {
-        const instance = GetFolderExtensionsFields.getInstance(model, "Any", "");
-        const result = instance.execute();
-        expect(result.fields.map(field => field.id)).toEqual(["globalField"]);
+        const fields = await useCase.execute();
+        expect(fields.map(field => field.id)).toEqual(["globalField"]);
     });
 });

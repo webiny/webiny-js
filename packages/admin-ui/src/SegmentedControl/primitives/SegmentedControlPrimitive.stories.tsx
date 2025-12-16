@@ -65,11 +65,19 @@ export const WithIcons: Story = {
     }
 };
 
-export const VariantAccent: Story = {
+export const VariantLight: Story = {
     args: {
         items,
         value: "item1",
-        variant: "accent"
+        variant: "light"
+    }
+};
+
+export const VariantDimmed: Story = {
+    args: {
+        items,
+        value: "item1",
+        variant: "dimmed"
     }
 };
 

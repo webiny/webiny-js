@@ -10,7 +10,7 @@ export const Delete = () => {
         redirect
     });
 
-    const { OptionsMenuItem } = RedirectListConfig.Browser.Record.Action;
+    const { OptionsMenuItem } = RedirectListConfig.Browser.Redirect.Action;
 
     return (
         <OptionsMenuItem

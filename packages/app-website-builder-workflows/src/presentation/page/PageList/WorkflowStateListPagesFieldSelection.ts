@@ -1,0 +1,24 @@
+import { ListPagesGraphQLFieldSelection } from "@webiny/app-website-builder/features/pages/loadPages/abstractions.js";
+
+class WorkflowStatesListPagesGraphQLFieldSelection
+    implements ListPagesGraphQLFieldSelection.Interface
+{
+    getSelection(): string[] {
+        return [
+            `workflows {
+                state {
+                    workflowId
+                    stepId
+                    stepName
+                    state
+                }
+            }`
+        ];
+    }
+}
+
+export const WorkflowStateListPagesFieldSelection =
+    ListPagesGraphQLFieldSelection.createImplementation({
+        dependencies: [],
+        implementation: WorkflowStatesListPagesGraphQLFieldSelection
+    });

@@ -12,12 +12,14 @@ export * from "./context/errors/index.js";
 export type {
     IWorkflowState,
     IWorkflowStateRecord,
-    IWorkflowStateRecordStep
+    IWorkflowStateRecordStep,
+    IWorkflowStateModel
 } from "./context/abstractions/WorkflowState.js";
 export type {
     IWorkflow,
     IWorkflowStepNotification,
-    IWorkflowStepTeam
+    IWorkflowStepTeam,
+    IWorkflowStep
 } from "./context/abstractions/Workflow.js";
 
 export const createWorkflows = () => {

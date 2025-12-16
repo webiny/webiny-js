@@ -62,14 +62,14 @@ const ContentModels = () => {
                 </Grid.Column>
             </Grid>
             <NewContentModelDialog open={newContentModelDialogOpened} onClose={onClose} />
-            {cloneContentModel && (
+            {cloneContentModel ? (
                 <CloneContentModelDialog
                     contentModel={cloneContentModel}
                     onClose={onCloneClose}
                     closeModal={closeCloneModal}
                 />
-            )}
-            {importModels && <ImportContentModelsDialog onClose={closeImportModelModal} />}
+            ) : null}
+            {importModels ? <ImportContentModelsDialog onClose={closeImportModelModal} /> : null}
         </div>
     );
 };

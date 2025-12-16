@@ -1,5 +1,5 @@
 import React from "react";
-import { AdminConfig } from "@webiny/app-admin";
+import { AdminConfig, useContainer } from "@webiny/app-admin";
 import { HasPermission } from "@webiny/app-security";
 import { ReactComponent as PagesIcon } from "@webiny/icons/table_chart.svg";
 import { PageEditor } from "~/modules/pages/PageEditor.js";
@@ -12,11 +12,15 @@ import { RedirectsListConfig } from "~/modules/redirects/RedirectsListConfig.js"
 import { Routes } from "~/routes.js";
 import { useRouter } from "@webiny/app-admin";
 import { PagesWidget } from "~/modules/widgets/PagesWidget.js";
+import { PageListFeature } from "~/presentation/pages/PageList/feature.js";
 
 const { Menu, Route, Dashboard } = AdminConfig;
 
 export const Extension = () => {
     const router = useRouter();
+    const container = useContainer();
+
+    PageListFeature.register(container);
 
     return (
         <>

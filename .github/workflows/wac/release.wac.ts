@@ -5,7 +5,8 @@ import {
     createGlobalBuildCacheSteps,
     createInstallBuildSteps,
     createRunBuildCacheSteps,
-    createYarnCacheSteps
+    createYarnCacheSteps,
+    withCommonParams
 } from "./steps";
 
 const BRANCH_NAME = "${{ github.event.inputs.branch }}";
@@ -75,23 +76,28 @@ export const release = createWorkflow({
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
                 ...installBuildSteps,
-                {
-                    name: 'Create ".npmrc" file in the project root',
-                    run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
-                },
-                {
-                    name: "Set git email",
-                    run: 'git config --global user.email "webiny-bot@webiny.com"'
-                },
-                {
-                    name: "Set git username",
-                    run: 'git config --global user.name "webiny-bot"'
-                },
-                {
-                    name: 'Version and publish "beta" tag to NPM',
-                    "working-directory": BRANCH_NAME,
-                    run: "yarn release --type=beta"
-                }
+                ...withCommonParams(
+                    [
+                        {
+                            name: 'Create ".npmrc" file in the project root',
+                            run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
+                        },
+                        {
+                            name: "Set git email",
+                            run: 'git config --global user.email "webiny-bot@webiny.com"'
+                        },
+                        {
+                            name: "Set git username",
+                            run: 'git config --global user.name "webiny-bot"'
+                        },
+                        {
+                            name: 'Version and publish "beta" tag to NPM',
+                            "working-directory": BRANCH_NAME,
+                            run: "yarn release --type=beta"
+                        }
+                    ],
+                    { "working-directory": BRANCH_NAME }
+                )
             ]
         }),
         npmReleaseLatest: createJob({
@@ -112,23 +118,28 @@ export const release = createWorkflow({
                 ...yarnCacheSteps,
                 ...runBuildCacheSteps,
                 ...installBuildSteps,
-                {
-                    name: 'Create ".npmrc" file in the project root',
-                    run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
-                },
-                {
-                    name: "Set git email",
-                    run: 'git config --global user.email "webiny-bot@webiny.com"'
-                },
-                {
-                    name: "Set git username",
-                    run: 'git config --global user.name "webiny-bot"'
-                },
-                {
-                    name: 'Version and publish "latest" tag to NPM',
-                    "working-directory": BRANCH_NAME,
-                    run: "yarn release --type=latest"
-                }
+                ...withCommonParams(
+                    [
+                        {
+                            name: 'Create ".npmrc" file in the project root',
+                            run: 'echo "//registry.npmjs.org/:_authToken=\\${NPM_TOKEN}" > .npmrc'
+                        },
+                        {
+                            name: "Set git email",
+                            run: 'git config --global user.email "webiny-bot@webiny.com"'
+                        },
+                        {
+                            name: "Set git username",
+                            run: 'git config --global user.name "webiny-bot"'
+                        },
+                        {
+                            name: 'Version and publish "latest" tag to NPM',
+                            "working-directory": BRANCH_NAME,
+                            run: "yarn release --type=latest"
+                        }
+                    ],
+                    { "working-directory": BRANCH_NAME }
+                )
             ]
         })
     }

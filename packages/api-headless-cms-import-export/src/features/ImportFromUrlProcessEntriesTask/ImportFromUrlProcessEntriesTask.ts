@@ -25,7 +25,7 @@ class ImportFromUrlProcessEntriesTaskDefinition
     isPrivate = true;
     description = "Process entries import.";
 
-    constructor(private context: Context) {}
+    constructor(private context: CmsContext.Interface) {}
 
     async run(params: IRunParams) {
         const { createImportFromUrlProcessEntries } = await import(
@@ -33,7 +33,7 @@ class ImportFromUrlProcessEntriesTaskDefinition
         );
 
         try {
-            const runner = createImportFromUrlProcessEntries(this.context);
+            const runner = createImportFromUrlProcessEntries(this.context as Context);
             return await runner.run(params);
         } catch (ex) {
             return params.controller.response.error(ex);

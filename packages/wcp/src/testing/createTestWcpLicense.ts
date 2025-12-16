@@ -3,6 +3,7 @@ import { MT_OPTIONS_MAX_COUNT_TYPE, PROJECT_PACKAGE_FEATURE_NAME } from "~/types
 
 interface LicenseOptions {
     recordLocking?: boolean;
+    folderLevelPermissions?: boolean;
 }
 
 export const createTestWcpLicense = (options?: LicenseOptions): DecryptedWcpProjectLicense => {
@@ -15,7 +16,7 @@ export const createTestWcpLicense = (options?: LicenseOptions): DecryptedWcpProj
                     enabled: true,
                     options: {
                         teams: true,
-                        folderLevelPermissions: true,
+                        folderLevelPermissions: options?.folderLevelPermissions ?? true,
                         privateFiles: true
                     }
                 },

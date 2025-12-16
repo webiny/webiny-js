@@ -1,19 +1,12 @@
-import { useCallback } from "react";
-import { useFoldersType } from "~/hooks/index.js";
-import { GetFolderAncestors } from "~/features/folders/getFolderAncestors/GetFolderAncestors.js";
+import { useFeature } from "@webiny/app";
+import { GetFolderAncestorsFeature } from "./feature.js";
 
 export const useGetFolderAncestors = () => {
-    const type = useFoldersType();
-
-    const getFolderAncestors = useCallback(
-        (id: string) => {
-            const instance = GetFolderAncestors.getInstance(type);
-            return instance.execute({ id });
-        },
-        [type]
-    );
+    const { useCase } = useFeature(GetFolderAncestorsFeature);
 
     return {
-        getFolderAncestors
+        getFolderAncestors: (id: string) => {
+            return useCase.execute(id);
+        }
     };
 };

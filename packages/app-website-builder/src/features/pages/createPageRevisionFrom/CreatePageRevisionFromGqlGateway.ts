@@ -17,11 +17,13 @@ export interface CreatePageRevisionFromPageResponse {
     };
 }
 
-export const CREATE_PAGE_REVISION_FROM = (PAGE_FIELDS: string) => gql`
+export const CREATE_PAGE_REVISION_FROM = (fields: string[]) => gql`
     mutation CreatePageRevisionFrom($id: ID!) {
         websiteBuilder {
             createPageRevisionFrom(id: $id) {
-               data ${PAGE_FIELDS}
+               data {
+                   ${fields.join("\n")}
+               }
                 error {
                     code
                     data
@@ -33,10 +35,10 @@ export const CREATE_PAGE_REVISION_FROM = (PAGE_FIELDS: string) => gql`
 `;
 
 export class CreatePageRevisionFromGqlGateway implements ICreatePageRevisionFromGateway {
-    private client: ApolloClient<any>;
-    private modelFields: string;
+    private readonly client;
+    private readonly modelFields;
 
-    constructor(client: ApolloClient<any>, modelFields: string) {
+    constructor(client: ApolloClient<object>, modelFields: string[]) {
         this.client = client;
         this.modelFields = modelFields;
     }

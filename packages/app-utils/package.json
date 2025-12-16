@@ -11,6 +11,7 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
+    "@webiny/feature": "0.0.0",
     "@webiny/utils": "0.0.0",
     "mobx": "^6.15.0"
   },

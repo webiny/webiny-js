@@ -15,7 +15,7 @@ class MockDataCreatorTask
     title = "Mock Data Creator";
     maxIterations = 500;
 
-    constructor(private context: Context) {}
+    constructor(private context: CmsContext.Interface) {}
 
     async run(params: TaskDefinition.RunParams<IMockDataCreatorInput, IMockDataCreatorOutput>) {
         const { MockDataCreator } = await import(
@@ -23,7 +23,7 @@ class MockDataCreatorTask
         );
 
         const carsMock = new MockDataCreator<IMockDataCreatorInput, IMockDataCreatorOutput>(
-            this.context
+            this.context as Context
         );
 
         try {

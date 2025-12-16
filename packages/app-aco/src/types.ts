@@ -1,10 +1,8 @@
 import type {
-    CmsIdentity,
     CmsModel,
     CmsModelField,
     CmsModelFieldSettings
 } from "@webiny/app-headless-cms-common/types/index.js";
-import type { FolderPermission } from "@webiny/shared-aco/types.js";
 
 export type { CmsIdentity } from "@webiny/app-headless-cms-common/types/index.js";
 export type * from "@webiny/shared-aco/flp/flp.types.js";
@@ -17,27 +15,6 @@ export interface FolderLevelPermissionsTarget<TMeta = Record<string, any>> {
     name: string;
     type: string;
     meta: TMeta;
-}
-
-export interface FolderItem {
-    id: string;
-    title: string;
-    slug: string;
-    permissions: FolderPermission[];
-    hasNonInheritedPermissions: boolean;
-    canManagePermissions: boolean;
-    canManageStructure: boolean;
-    canManageContent: boolean;
-    type: string;
-    parentId: string | null;
-    path: string;
-    createdBy: CmsIdentity;
-    createdOn: string;
-    savedBy: CmsIdentity;
-    savedOn: string;
-    modifiedBy: CmsIdentity | null;
-    modifiedOn: string | null;
-    extensions: Record<string, any>;
 }
 
 export type GenericSearchData = {
@@ -89,103 +66,6 @@ export interface ListMeta {
     totalCount: number;
     hasMoreItems: boolean;
 }
-
-export interface ListFoldersResponse {
-    aco: {
-        listFolders: {
-            data: FolderItem[] | null;
-            error: AcoError | null;
-        };
-    };
-}
-
-export interface ListFoldersQueryVariables {
-    type: string;
-    limit: number;
-    sort?: Record<string, any>;
-    after?: string | null;
-}
-
-export interface GetFolderResponse {
-    aco: {
-        getFolder: {
-            data: FolderItem | null;
-            error: AcoError | null;
-        };
-    };
-}
-
-export interface GetFolderQueryVariables {
-    id: string;
-}
-
-export interface UpdateFolderResponse {
-    aco: {
-        updateFolder: {
-            data: FolderItem;
-            error: AcoError | null;
-        };
-    };
-}
-
-export interface UpdateFolderVariables {
-    id: string;
-    data: Partial<
-        Omit<
-            FolderItem,
-            "id" | "createdOn" | "createdBy" | "savedOn" | "savedBy" | "modifiedOn" | "modifiedBy"
-        >
-    >;
-}
-
-export interface CreateFolderResponse {
-    aco: {
-        createFolder: {
-            data: FolderItem;
-            error: AcoError | null;
-        };
-    };
-}
-
-export interface CreateFolderVariables {
-    data: Omit<
-        FolderItem,
-        | "id"
-        | "createdOn"
-        | "createdBy"
-        | "savedOn"
-        | "savedBy"
-        | "modifiedOn"
-        | "modifiedBy"
-        | "hasNonInheritedPermissions"
-        | "canManageContent"
-        | "canManagePermissions"
-        | "canManageStructure"
-    >;
-}
-
-export interface DeleteFolderVariables {
-    id: string;
-}
-
-export interface DeleteFolderResponse {
-    aco: {
-        deleteFolder: {
-            data: boolean;
-            error: AcoError | null;
-        };
-    };
-}
-
-export interface DndFolderItemData {
-    isFocused?: boolean;
-}
-
-/**
- * This type will be removed when all apps migrate to the CMS.
- * @deprecated
- */
-export type AcoAppMode = "aco" | "cms";
 
 /**
  * Apps.

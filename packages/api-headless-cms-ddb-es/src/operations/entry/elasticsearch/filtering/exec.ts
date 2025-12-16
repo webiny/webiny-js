@@ -12,6 +12,7 @@ import { getPopulated } from "./populated.js";
 import { createApplyFiltering } from "./applyFiltering.js";
 import { CmsEntryFilterPlugin } from "~/plugins/CmsEntryFilterPlugin.js";
 import { assignMinimumShouldMatchToQuery } from "~/operations/entry/elasticsearch/assignMinimumShouldMatchToQuery.js";
+import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 export interface CreateExecParams {
     model: CmsModel;
@@ -55,15 +56,19 @@ export const createExecFiltering = (params: CreateExecParams): CreateExecFilteri
         }, {});
 
     const getFilterPlugin = (type: string) => {
-        const plugin = filteringPlugins[type] || filteringPlugins["*"];
+        const fieldType = getBaseFieldType({
+            type
+        });
+
+        const plugin = filteringPlugins[fieldType] || filteringPlugins["*"];
         if (plugin) {
             return plugin;
         }
         throw new WebinyError(
-            `There is no filtering plugin for the given field type "${type}".`,
+            `There is no filtering plugin for the given field type "${fieldType}".`,
             "FILTERING_PLUGIN_ERROR",
             {
-                type
+                fieldType
             }
         );
     };

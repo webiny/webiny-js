@@ -43,6 +43,7 @@
     "@webiny/api-scheduler": "0.0.0",
     "@webiny/api-security-cognito": "0.0.0",
     "@webiny/api-website-builder": "0.0.0",
+    "@webiny/api-website-builder-workflows": "0.0.0",
     "@webiny/api-websockets": "0.0.0",
     "@webiny/api-workflows": "0.0.0",
     "@webiny/app": "0.0.0",

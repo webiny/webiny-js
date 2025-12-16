@@ -18,7 +18,7 @@ class ExportContentEntriesControllerTaskDefinition
     isPrivate = true;
     description = "Export content entries and assets from a specific model - controller.";
 
-    constructor(private context: Context) {}
+    constructor(private context: CmsContext.Interface) {}
 
     async run(params: IRunParams) {
         const { ExportContentEntriesController } = await import(
@@ -26,7 +26,7 @@ class ExportContentEntriesControllerTaskDefinition
         );
 
         try {
-            const controller = new ExportContentEntriesController(this.context);
+            const controller = new ExportContentEntriesController(this.context as Context);
             return await controller.run(params);
         } catch (ex) {
             return params.controller.response.error(ex);

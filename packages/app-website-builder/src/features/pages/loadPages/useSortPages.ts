@@ -1,15 +1,11 @@
-import { useApolloClient } from "@apollo/react-hooks";
-import { ListPagesGqlGateway } from "~/features/pages/loadPages/ListPagesGqlGateway.js";
-import { useGetPageGraphQLFields } from "~/features/pages/index.js";
 import { SortPages } from "~/features/pages/loadPages/SortPages.js";
 import type { OnDataTableSortingChange } from "@webiny/admin-ui";
 import type { ColumnSorting } from "@webiny/app-utils";
 import { SortingMapper } from "@webiny/app-utils";
+import { useListPagesGateway } from "~/features/pages/loadPages/useListPagesGateway.js";
 
 export const useSortPages = () => {
-    const client = useApolloClient();
-    const fields = useGetPageGraphQLFields(["properties", "metadata"]);
-    const gateway = new ListPagesGqlGateway(client, fields);
+    const gateway = useListPagesGateway(["properties", "metadata"]);
 
     const sortPages: OnDataTableSortingChange = async updaterOrValue => {
         let newSorts: ColumnSorting[] = [];

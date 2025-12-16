@@ -4,12 +4,12 @@ import { useRoute, useRouter } from "@webiny/app-admin";
 import { makeDecoratable } from "@webiny/react-composition";
 import { createSort, useAcoList, useNavigateFolder } from "@webiny/app-aco";
 import type { ListMeta } from "@webiny/app-aco";
-import type { FolderItem } from "@webiny/app-aco/types.js";
 import { useContentEntries } from "./useContentEntries.js";
 import type { CmsContentEntry, TableItem } from "~/types.js";
 import type { OnSortingChange, Sorting } from "@webiny/ui/DataTable/index.js";
 import { ROOT_FOLDER } from "~/admin/constants.js";
 import { Routes } from "~/routes.js";
+import type { FolderDto } from "@webiny/app-aco";
 
 interface UpdateSearchCallableParams {
     search: string;
@@ -22,7 +22,7 @@ export interface ContentEntriesListProviderContext {
     modelId: string;
     folderId: string;
     navigateTo: (folderId?: string) => void;
-    folders: FolderItem[];
+    folders: FolderDto[];
     getEntryEditUrl: (item: CmsContentEntry) => string;
     hideFilters: () => void;
     isListLoading: boolean;

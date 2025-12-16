@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { Separator } from "@webiny/admin-ui";
-import { FolderTree, useGetFolderHierarchy, useListFoldersByParentIds } from "@webiny/app-aco";
+import { FolderTree, useLoadFolderHierarchy, useListFoldersByParentIds } from "@webiny/app-aco";
+import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
+import { Heading } from "@webiny/admin-ui";
 
 interface LeftSidebarProps {
     currentFolder: string;
@@ -9,12 +11,13 @@ interface LeftSidebarProps {
 }
 
 export const LeftSidebar = ({ currentFolder, onFolderClick, children }: LeftSidebarProps) => {
-    const { folders, getFolderHierarchy } = useGetFolderHierarchy();
+    const { browser } = useFileManagerViewConfig();
+    const { folders, loadFolderHierarchy } = useLoadFolderHierarchy();
     const { listFoldersByParentIds } = useListFoldersByParentIds();
 
     useEffect(() => {
         if (folders.length === 0) {
-            getFolderHierarchy(currentFolder);
+            loadFolderHierarchy(currentFolder);
         } else {
             // Otherwise let's load only the current folder sub-tree
             listFoldersByParentIds([currentFolder]);
@@ -22,8 +25,14 @@ export const LeftSidebar = ({ currentFolder, onFolderClick, children }: LeftSide
     }, [currentFolder]);
 
     return (
-        <div className={"p-xs overflow-auto"} style={{ height: "calc(100vh - 69px)" }}>
+        <div className={"overflow-auto"} style={{ height: "calc(100vh - 69px)" }}>
+            <div className={"p-sm"}>
+                <Heading level={5}>File Manager</Heading>
+            </div>
+            <Separator />
             <FolderTree
+                folderActions={browser.folder.actions}
+                dropConfirmation={browser.folder.dropConfirmation}
                 focusedFolderId={currentFolder}
                 onFolderClick={data => onFolderClick(data.id)}
                 enableActions={true}

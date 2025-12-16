@@ -4,14 +4,15 @@ import { Grid } from "@webiny/admin-ui";
 import { useDialogs, useSnackbar } from "@webiny/app-admin";
 import type { GenericFormData } from "@webiny/form";
 import { useBind } from "@webiny/form";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { useUpdateFolder } from "~/features/folders/updateFolder/index.js";
 import { UsersTeamsMultiAutocomplete } from "./DialogSetPermissions/UsersTeamsMultiAutocomplete.js";
 import { UsersTeamsSelection } from "./DialogSetPermissions/UsersTeamsSelection.js";
 import { LIST_FOLDER_LEVEL_PERMISSIONS_TARGETS } from "./DialogSetPermissions/graphql.js";
-import { useUpdateFolder } from "~/features/index.js";
-import type { FolderItem, FolderLevelPermissionsTarget, FolderPermission } from "~/types.js";
+import type { FolderLevelPermissionsTarget, FolderPermission } from "~/types.js";
 
 interface ShowDialogParams {
-    folder: FolderItem;
+    folder: FolderDto;
 }
 
 interface UseSetPermissionsDialogResponse {
@@ -19,7 +20,7 @@ interface UseSetPermissionsDialogResponse {
 }
 
 interface FormComponentProps {
-    folder: FolderItem;
+    folder: FolderDto;
 }
 
 interface UpdatePermissionCallableParams {
@@ -116,7 +117,7 @@ export const useSetPermissionsDialog = (): UseSetPermissionsDialogResponse => {
     const { updateFolder } = useUpdateFolder();
     const { showSnackbar } = useSnackbar();
 
-    const onAccept = useCallback(async (folder: FolderItem, data: Partial<FolderItem>) => {
+    const onAccept = useCallback(async (folder: FolderDto, data: Partial<FolderDto>) => {
         const updateData = { ...folder, ...data };
 
         try {

@@ -6,7 +6,7 @@ import type { FileTag } from "~/types.js";
 import { useFileManagerApi } from "~/index.js";
 import type { State } from "./state.js";
 import { initializeState } from "./state.js";
-import type { FolderItem, ListMeta, ListSearchRecordsSort } from "@webiny/app-aco/types.js";
+import type { ListMeta, ListSearchRecordsSort } from "@webiny/app-aco/types.js";
 import type { UploadOptions } from "@webiny/app/types.js";
 import { sortTableItems } from "@webiny/app-aco/sorting.js";
 import { useListFolders, useNavigateFolder } from "@webiny/app-aco";
@@ -15,6 +15,7 @@ import { useListFiles } from "./useListFiles.js";
 import { useTags } from "./useTags.js";
 import { setSelection } from "./setSelection.js";
 import { ROOT_FOLDER } from "~/constants.js";
+import type { FolderDto } from "@webiny/app-aco";
 
 type PublicState = Omit<State, "activeTags">;
 
@@ -28,12 +29,12 @@ export interface DeleteFileOptions {
 
 export interface FileManagerViewContext<TFileItem extends FileItem = FileItem> extends PublicState {
     accept: string[];
-    currentFolder: FolderItem | null;
+    currentFolder: FolderDto | null;
     createFile: (data: TFileItem) => Promise<TFileItem | undefined>;
     deleteFile: (id: string, options?: DeleteFileOptions) => Promise<void>;
     files: FileItem[];
     folderId: string;
-    folders: FolderItem[];
+    folders: FolderDto[];
     displaySubFolders: boolean;
     getFile: (id: string) => Promise<TFileItem | undefined>;
     hideFileDetails: () => void;
@@ -80,6 +81,7 @@ export interface FileManagerViewContext<TFileItem extends FileItem = FileItem> e
         options?: UpdateFileOptions
     ) => Promise<void>;
     uploadFile: (file: File, options?: UploadFileOptions) => Promise<TFileItem | undefined>;
+    overlay?: boolean;
 }
 
 export const FileManagerViewContext = React.createContext<FileManagerViewContext | undefined>(
@@ -87,9 +89,9 @@ export const FileManagerViewContext = React.createContext<FileManagerViewContext
 );
 
 const getCurrentFolderList = (
-    folders?: FolderItem[] | null,
+    folders?: FolderDto[] | null,
     currentFolderId?: string
-): FolderItem[] | [] => {
+): FolderDto[] | [] => {
     if (!folders) {
         return [];
     }
@@ -113,6 +115,7 @@ export interface FileManagerViewProviderProps {
     tags?: string[];
     scope?: string;
     own?: boolean;
+    overlay?: boolean;
     children?: React.ReactNode;
 }
 
@@ -466,6 +469,7 @@ export const FileManagerViewProvider = ({ children, ...props }: FileManagerViewP
             }
         },
         own: Boolean(props.own),
+        overlay: props.overlay ?? true,
         scope: props.scope,
         setDragging(value = true) {
             setState(state => ({

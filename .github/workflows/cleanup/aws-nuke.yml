@@ -6,8 +6,11 @@ regions:
   - eu-central-1
   - global
 
-account-blocklist:
+blocklist:
   - "999999999999" # We don't have "production" accounts.
+
+bypass-alias-check-accounts:
+  - 726952677045
 
 accounts:
   "726952677045":
@@ -30,26 +33,5 @@ accounts:
         - "GitHubActionsWebinyJsAdminAccess -> AdministratorAccess"
 
 resource-types:
-  # These resource types will be destroyed.
-  # List of all resource types: https://github.com/rebuy-de/aws-nuke/tree/main/resources
-  targets:
-    - APIGatewayV2API
-    - S3Object
-    - S3Bucket
-    - CloudWatchLogsLogGroup
-    - LambdaFunction
-    - CloudFrontDistribution
-    - CloudFrontDistributionDeployment
-    - CloudFrontFunction
-    - CloudFrontOriginAccessIdentity
-    - CognitoUserPool
-    - CognitoUserPoolClient
-    - IAMPolicy
-    - IAMRole
-    - IAMRolePolicy
-    - IAMRolePolicyAttachment
-    - DynamoDBTable
-    - CloudWatchEventsRule
-    - CloudWatchEventsTarget
-    - CloudWatchEventsBuses
-    - SQSQueue
+  excludes:
+    - Budget

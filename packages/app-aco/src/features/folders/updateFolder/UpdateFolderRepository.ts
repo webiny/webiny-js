@@ -1,29 +1,25 @@
-import type { IUpdateFolderRepository } from "./IUpdateFolderRepository.js";
-import type { ListCache } from "../cache/index.js";
-import { Folder } from "../Folder.js";
-import type { IUpdateFolderGateway } from "./IUpdateFolderGateway.js";
-import type { FolderDto } from "./FolderDto.js";
+import { Folder } from "~/domain/folder/Folder.js";
+import { FoldersCache } from "../abstractions.js";
+import {
+    UpdateFolderRepository as RepositoryAbstraction,
+    UpdateFolderGateway
+} from "./abstractions.js";
 
-export class UpdateFolderRepository implements IUpdateFolderRepository {
-    private cache: ListCache<Folder>;
-    private gateway: IUpdateFolderGateway;
-
-    constructor(cache: ListCache<Folder>, gateway: IUpdateFolderGateway) {
-        this.cache = cache;
-        this.gateway = gateway;
-    }
+class UpdateFolderRepositoryImpl implements RepositoryAbstraction.Interface {
+    constructor(
+        private cache: FoldersCache.Interface,
+        private gateway: UpdateFolderGateway.Interface
+    ) {}
 
     async execute(folder: Folder) {
-        const dto: FolderDto = {
+        const result = await this.gateway.execute({
             id: folder.id,
             title: folder.title,
             slug: folder.slug,
-            permissions: folder.permissions,
+            extensions: folder.extensions,
             parentId: folder.parentId,
-            extensions: folder.extensions
-        };
-
-        const result = await this.gateway.execute(dto);
+            permissions: folder.permissions
+        });
 
         this.cache.updateItems(f => {
             if (f.id === folder.id) {
@@ -34,3 +30,8 @@ export class UpdateFolderRepository implements IUpdateFolderRepository {
         });
     }
 }
+
+export const UpdateFolderRepository = RepositoryAbstraction.createImplementation({
+    implementation: UpdateFolderRepositoryImpl,
+    dependencies: [FoldersCache, UpdateFolderGateway]
+});

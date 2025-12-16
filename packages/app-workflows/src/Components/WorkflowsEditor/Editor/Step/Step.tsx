@@ -145,7 +145,6 @@ export const Step = observer(
                                             </Grid.Column>
                                         </Grid>
                                     </Card>
-                                    <div className={"size-lg"} />
                                 </>
                             ) : (
                                 <Accordion

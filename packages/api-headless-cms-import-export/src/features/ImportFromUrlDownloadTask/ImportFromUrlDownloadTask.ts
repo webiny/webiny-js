@@ -21,13 +21,13 @@ class ImportFromUrlDownloadTaskDefinition
     isPrivate = true;
     description = "Downloads the files from external URL.";
 
-    constructor(private context: Context) {}
+    constructor(private context: CmsContext.Interface) {}
 
     async run(params: IRunParams) {
         const { ImportFromUrlDownload } = await import("./ImportFromUrlDownload.js");
 
         try {
-            const runner = new ImportFromUrlDownload(this.context);
+            const runner = new ImportFromUrlDownload(this.context as Context);
             return await runner.run(params);
         } catch (ex) {
             return params.controller.response.error(ex);

@@ -110,10 +110,13 @@ jobs:
         working-directory: ${{ github.event.inputs.branch }}
       - name: Create ".npmrc" file in the project root
         run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+        working-directory: ${{ github.event.inputs.branch }}
       - name: Set git email
         run: git config --global user.email "webiny-bot@webiny.com"
+        working-directory: ${{ github.event.inputs.branch }}
       - name: Set git username
         run: git config --global user.name "webiny-bot"
+        working-directory: ${{ github.event.inputs.branch }}
       - name: Version and publish "beta" tag to NPM
         working-directory: ${{ github.event.inputs.branch }}
         run: yarn release --type=beta
@@ -155,10 +158,13 @@ jobs:
         working-directory: ${{ github.event.inputs.branch }}
       - name: Create ".npmrc" file in the project root
         run: echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > .npmrc
+        working-directory: ${{ github.event.inputs.branch }}
       - name: Set git email
         run: git config --global user.email "webiny-bot@webiny.com"
+        working-directory: ${{ github.event.inputs.branch }}
       - name: Set git username
         run: git config --global user.name "webiny-bot"
+        working-directory: ${{ github.event.inputs.branch }}
       - name: Version and publish "latest" tag to NPM
         working-directory: ${{ github.event.inputs.branch }}
         run: yarn release --type=latest

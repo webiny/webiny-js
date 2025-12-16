@@ -11,12 +11,15 @@ export const WorkflowStateBarApproved = WorkflowStateBarComponent.createDecorato
     return observer(function WorkflowStateBarApprovedDecorator(props) {
         const { presenter } = props;
 
-        if (presenter.vm.state?.state !== WorkflowStateValue.approved) {
+        const step = presenter.vm.step;
+        if (presenter.vm.state?.state !== WorkflowStateValue.approved || !step) {
             return <Original {...props} />;
         }
 
         return (
             <Alert
+                icon={null}
+                swatchColor={step.color}
                 actions={
                     <>
                         <Alert.Action text={"Remove Review Request"} onClick={presenter.cancel} />

@@ -18,7 +18,7 @@ class ExportContentEntriesTaskDefinition
     isPrivate = true;
     description = "Export content entries from a specific model.";
 
-    constructor(private context: Context) {}
+    constructor(private context: CmsContext.Interface) {}
 
     async run(params: IRunParams) {
         const { createExportContentEntries } = await import(
@@ -26,7 +26,7 @@ class ExportContentEntriesTaskDefinition
         );
 
         try {
-            const runner = createExportContentEntries(this.context);
+            const runner = createExportContentEntries(this.context as Context);
             return await runner.run(params);
         } catch (ex) {
             return params.controller.response.error(ex);

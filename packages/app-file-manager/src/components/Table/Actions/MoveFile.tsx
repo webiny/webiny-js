@@ -7,7 +7,7 @@ import { useMoveFileToFolder } from "~/hooks/useMoveFileToFolder.js";
 export const MoveFile = () => {
     const { file } = useFile();
     const moveFileToFolder = useMoveFileToFolder(file);
-    const { OptionsMenuItem } = FileManagerViewConfig.Browser.FileAction;
+    const { OptionsMenuItem } = FileManagerViewConfig.Browser.File.Action;
 
     return (
         <OptionsMenuItem

@@ -19,7 +19,7 @@ interface EditorConfig {
     inputRenderers: ElementInputConfig[];
 }
 
-const base = createConfigurableComponent<EditorConfig>("DocumentEditorConfig");
+const base = createConfigurableComponent<EditorConfig>("DocumentEditor");
 
 export const EditorConfig = Object.assign(base.Config, {
     /**

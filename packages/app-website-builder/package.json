@@ -25,6 +25,7 @@
     "@webiny/app-security": "0.0.0",
     "@webiny/app-utils": "0.0.0",
     "@webiny/error": "0.0.0",
+    "@webiny/feature": "0.0.0",
     "@webiny/form": "0.0.0",
     "@webiny/icons": "0.0.0",
     "@webiny/lexical-converter": "0.0.0",

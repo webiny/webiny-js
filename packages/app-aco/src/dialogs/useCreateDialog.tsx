@@ -6,9 +6,9 @@ import type { GenericFormData } from "@webiny/form";
 import { Bind, useForm } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { Extensions, FolderTree } from "~/components/index.js";
-import { useCreateFolder } from "~/features/index.js";
 import { ROOT_FOLDER } from "~/constants.js";
-import type { FolderItem } from "~/types.js";
+import type { FolderDto } from "~/domain/folder/FolderDto.js";
+import { useCreateFolder } from "~/features/folders/createFolder/index.js";
 import { ParentFolderField } from "./ParentFolderField.js";
 
 interface ShowDialogParams {
@@ -92,7 +92,7 @@ export const useCreateDialog = (): UseCreateDialogResponse => {
     const { createFolder } = useCreateFolder();
     const { showSnackbar } = useSnackbar();
 
-    const onAccept = useCallback(async (data: FolderItem) => {
+    const onAccept = useCallback(async (data: FolderDto) => {
         try {
             await createFolder({
                 ...data,

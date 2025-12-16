@@ -18,11 +18,13 @@ export interface CreatePageVariables {
     data: PageDto;
 }
 
-export const CREATE_PAGE = (PAGE_FIELDS: string) => gql`
+export const CREATE_PAGE = (fields: string[]) => gql`
         mutation CreatePage($data: WbPageCreateInput!) {
             websiteBuilder {
                 createPage(data: $data) {
-                    data ${PAGE_FIELDS}
+                    data {
+                        ${fields.join("\n")}
+                    }
                     error {
                         code
                         data
@@ -34,10 +36,10 @@ export const CREATE_PAGE = (PAGE_FIELDS: string) => gql`
     `;
 
 export class CreatePageGqlGateway implements ICreatePageGateway {
-    private client: ApolloClient<any>;
-    private modelFields: string;
+    private client;
+    private readonly modelFields;
 
-    constructor(client: ApolloClient<any>, modelFields: string) {
+    constructor(client: ApolloClient<object>, modelFields: string[]) {
         this.client = client;
         this.modelFields = modelFields;
     }

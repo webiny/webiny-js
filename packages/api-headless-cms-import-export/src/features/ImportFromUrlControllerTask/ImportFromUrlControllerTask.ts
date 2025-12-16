@@ -22,13 +22,13 @@ class ImportFromUrlControllerTaskDefinition
     isPrivate = true;
     description = "Imports the data from the given URL list - controller.";
 
-    constructor(private context: Context) {}
+    constructor(private context: CmsContext.Interface) {}
 
     async run(params: IRunParams) {
         const { ImportFromUrlController } = await import("./ImportFromUrlController.js");
 
         try {
-            const runner = new ImportFromUrlController({ context: this.context });
+            const runner = new ImportFromUrlController(this.context as Context);
             return await runner.run(params);
         } catch (ex) {
             return params.controller.response.error(ex);

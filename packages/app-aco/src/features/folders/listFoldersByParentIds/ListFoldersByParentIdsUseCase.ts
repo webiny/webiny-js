@@ -1,21 +1,14 @@
-import type { IListFoldersByParentIdsRepository } from "./IListFoldersByParentIdsRepository.js";
-import type {
-    IListFoldersByParentIdsUseCase,
-    ListFoldersByParentIdsUseCaseParams
-} from "./IListFoldersByParentIdsUseCase.js";
+import {
+    ListFoldersByParentIdsUseCase as UseCaseAbstraction,
+    ListFoldersByParentIdsRepository
+} from "./abstractions.js";
 import { ROOT_FOLDER } from "~/constants.js";
 
-export class ListFoldersByParentIdsUseCase implements IListFoldersByParentIdsUseCase {
-    private repository: IListFoldersByParentIdsRepository;
+class ListFoldersByParentIdsUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: ListFoldersByParentIdsRepository.Interface) {}
 
-    constructor(repository: IListFoldersByParentIdsRepository) {
-        this.repository = repository;
-    }
-
-    async execute(params: ListFoldersByParentIdsUseCaseParams) {
-        await this.repository.execute({
-            parentIds: this.getParentIds(params.parentIds)
-        });
+    async execute(parentIds?: string[]) {
+        await this.repository.execute(this.getParentIds(parentIds));
     }
 
     private getParentIds(parentIds?: string[]) {
@@ -26,3 +19,8 @@ export class ListFoldersByParentIdsUseCase implements IListFoldersByParentIdsUse
         return parentIds;
     }
 }
+
+export const ListFoldersByParentIdsUseCase = UseCaseAbstraction.createImplementation({
+    implementation: ListFoldersByParentIdsUseCaseImpl,
+    dependencies: [ListFoldersByParentIdsRepository]
+});

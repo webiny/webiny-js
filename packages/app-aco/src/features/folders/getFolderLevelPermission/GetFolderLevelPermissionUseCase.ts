@@ -1,7 +1,12 @@
-import type { IGetFolderLevelPermissionUseCase } from "./IGetFolderLevelPermissionUseCase.js";
+import { GetFolderLevelPermissionUseCase as UseCaseAbstraction } from "./abstractions.js";
 
-export class GetFolderLevelPermissionUseCase implements IGetFolderLevelPermissionUseCase {
+class GetFolderLevelPermissionUseCaseImpl implements UseCaseAbstraction.Interface {
     execute() {
         return true;
     }
 }
+
+export const GetFolderLevelPermissionUseCase = UseCaseAbstraction.createImplementation({
+    implementation: GetFolderLevelPermissionUseCaseImpl,
+    dependencies: []
+});

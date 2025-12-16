@@ -168,7 +168,9 @@ export interface CmsModelFieldInput {
     /**
      * User defined settings.
      */
-    settings?: Record<string, any>;
+    settings?: {
+        [key: string]: any;
+    };
 }
 
 /**
@@ -278,7 +280,6 @@ export interface CmsModelFieldSettings {
      * Disable full text search explicitly on this field.
      */
     disableFullTextSearch?: boolean;
-
     /**
      * There are a lot of other settings that are possible to add, so we keep the type opened.
      */

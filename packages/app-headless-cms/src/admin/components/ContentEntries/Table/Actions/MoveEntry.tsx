@@ -6,7 +6,7 @@ import { useEntry, useMoveContentEntryToFolder } from "~/admin/hooks/index.js";
 export const MoveEntry = () => {
     const { entry: record } = useEntry();
     const moveContentEntry = useMoveContentEntryToFolder({ record });
-    const { OptionsMenuItem } = ContentEntryListConfig.Browser.EntryAction;
+    const { OptionsMenuItem } = ContentEntryListConfig.Browser.Entry.Action;
 
     return (
         <OptionsMenuItem

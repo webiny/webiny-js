@@ -33,11 +33,13 @@ export interface UpdatePageVariables {
     >;
 }
 
-export const UPDATE_PAGE = (PAGE_FIELDS: string) => gql`
+export const UPDATE_PAGE = (fields: string[]) => gql`
     mutation UpdatePage($id: ID!, $data: WbPageUpdateInput!) {
         websiteBuilder {
             updatePage(id: $id, data: $data) {
-                data ${PAGE_FIELDS}
+                data {
+                    ${fields.join("\n")}
+                }
                 error {
                     code
                     data
@@ -49,10 +51,10 @@ export const UPDATE_PAGE = (PAGE_FIELDS: string) => gql`
 `;
 
 export class UpdatePageGqlGateway implements IUpdatePageGateway {
-    private client: ApolloClient<any>;
-    private modelFields: string;
+    private readonly client;
+    private readonly modelFields;
 
-    constructor(client: ApolloClient<any>, modelFields: string) {
+    constructor(client: ApolloClient<any>, modelFields: string[]) {
         this.client = client;
         this.modelFields = modelFields;
     }

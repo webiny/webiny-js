@@ -3,6 +3,7 @@ import type { DataTableSorting, OnDataTableSortingChange } from "@webiny/admin-u
 import { createFoldersData, createRecordsData, Table as AcoTable } from "@webiny/app-aco";
 import { useFileManagerView } from "~/modules/FileManagerRenderer/FileManagerViewProvider/index.js";
 import type { TableItem } from "~/types.js";
+import { useFileManagerViewConfig } from "~/modules/FileManagerRenderer/FileManagerView/FileManagerViewConfig.js";
 
 export interface TableProps {
     onSelectRow: ((rows: TableItem[] | []) => void) | undefined;
@@ -13,6 +14,7 @@ export interface TableProps {
 
 export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     const view = useFileManagerView();
+    const { browser } = useFileManagerViewConfig();
 
     const data = useMemo<TableItem[]>(() => {
         if (!view.displaySubFolders) {
@@ -28,6 +30,7 @@ export const Table = forwardRef<HTMLDivElement, TableProps>((props, ref) => {
     return (
         <div ref={ref}>
             <AcoTable<TableItem>
+                columns={browser.table.columns}
                 data={data}
                 loading={view.isListLoading}
                 onSelectRow={props.onSelectRow}

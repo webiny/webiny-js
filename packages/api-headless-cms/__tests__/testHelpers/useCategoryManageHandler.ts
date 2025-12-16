@@ -86,7 +86,7 @@ const getCategoriesByIdsQuery = (model: CmsModel) => {
     `;
 };
 
-const listCategoriesQuery = (model: CmsModel) => {
+const listCategoriesQuery = (model: CmsModel, extraFields: string[] = []) => {
     return /* GraphQL */ `
         query ListCategories(
             $where: ${model.singularApiName}ListWhereInput
@@ -97,6 +97,7 @@ const listCategoriesQuery = (model: CmsModel) => {
             listCategories: list${model.pluralApiName}(where: $where, sort: $sort, limit: $limit, after: $after) {
                 data {
                     ${categoryFields}
+                    ${extraFields.join("\n")}
                 }
                 meta {
                     cursor
@@ -132,12 +133,13 @@ const listDeletedCategoriesQuery = (model: CmsModel) => {
     `;
 };
 
-const createCategoryMutation = (model: CmsModel) => {
+const createCategoryMutation = (model: CmsModel, extraFields: string[] = []) => {
     return /* GraphQL */ `
         mutation CreateCategory($data: ${model.singularApiName}Input!) {
             createCategory: create${model.singularApiName}(data: $data) {
                 data {
                     ${categoryFields}
+                    ${extraFields.join("\n")}
                 }
                 ${errorFields}
             }
@@ -290,10 +292,11 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
         },
         async listCategories(
             variables: CmsEntryListParams = {},
-            headers: Record<string, any> = {}
+            headers: Record<string, any> = {},
+            extraFields: string[] = []
         ) {
             return await contentHandler.invoke({
-                body: { query: listCategoriesQuery(model), variables },
+                body: { query: listCategoriesQuery(model, extraFields), variables },
                 headers
             });
         },
@@ -306,9 +309,13 @@ export const useCategoryManageHandler = (params: GraphQLHandlerParams) => {
                 headers
             });
         },
-        async createCategory(variables: Record<string, any>, headers: Record<string, any> = {}) {
+        async createCategory(
+            variables: Record<string, any>,
+            headers: Record<string, any> = {},
+            extraFields: string[] = []
+        ) {
             return await contentHandler.invoke({
-                body: { query: createCategoryMutation(model), variables },
+                body: { query: createCategoryMutation(model, extraFields), variables },
                 headers
             });
         },

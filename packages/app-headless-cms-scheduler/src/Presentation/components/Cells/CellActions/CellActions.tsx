@@ -1,18 +1,17 @@
 import React from "react";
-import { useAcoConfig } from "@webiny/app-aco";
 import { OptionsMenu } from "@webiny/app-admin";
-import { SchedulerListConfig } from "~/Presentation/configs/index.js";
+import { SchedulerListConfig, useSchedulerListConfig } from "~/Presentation/configs/index.js";
 import { SchedulerItemProvider } from "~/Presentation/hooks/index.js";
 
 export const CellActions = () => {
     const { useTableRow } = SchedulerListConfig.Browser.Table.Column;
     const { row } = useTableRow();
-    const { record: recordConfig } = useAcoConfig();
+    const { browser } = useSchedulerListConfig();
 
     return (
         <SchedulerItemProvider item={row.data}>
             <OptionsMenu
-                actions={recordConfig.actions}
+                actions={browser.entryActions}
                 data-testid={"table.row.scheduler.entry.menu-action"}
             />
         </SchedulerItemProvider>

@@ -23,20 +23,12 @@ const getDefaultStepValues = (): IImportFromUrlControllerInputStepsStep => {
     };
 };
 
-export interface IImportFromUrlControllerConfig {
-    context: Context;
-}
-
 export class ImportFromUrlController<
     I extends IImportFromUrlControllerInput = IImportFromUrlControllerInput,
     O extends IImportFromUrlControllerOutput = IImportFromUrlControllerOutput
 > implements IImportFromUrlController<I, O>
 {
-    private readonly context: Context;
-
-    public constructor(config: IImportFromUrlControllerConfig) {
-        this.context = config.context;
-    }
+    constructor(private context: Context) {}
 
     public async run(params: TaskDefinition.RunParams<I, O>) {
         const { input, controller } = params;

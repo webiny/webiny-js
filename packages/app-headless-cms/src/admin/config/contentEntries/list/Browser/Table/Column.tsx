@@ -14,11 +14,9 @@ export interface ColumnProps extends React.ComponentProps<typeof AcoConfig.Table
 
 const BaseColumnComponent = ({ modelIds = [], ...props }: ColumnProps) => {
     return (
-        <AcoConfig>
-            <IsApplicableToCurrentModel modelIds={modelIds}>
-                <Table.Column {...props} />
-            </IsApplicableToCurrentModel>
-        </AcoConfig>
+        <IsApplicableToCurrentModel modelIds={modelIds}>
+            <Table.Column {...props} />
+        </IsApplicableToCurrentModel>
     );
 };
 

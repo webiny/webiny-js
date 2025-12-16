@@ -1,26 +1,17 @@
-import type { IGetDescendantFoldersRepository } from "./IGetDescendantFoldersRepository.js";
-import type {
-    GetDescendantFoldersParams,
-    IGetDescendantFoldersUseCase
-} from "./IGetDescendantFoldersUseCase.js";
+import {
+    GetDescendantFoldersUseCase as UseCaseAbstraction,
+    GetDescendantFoldersRepository
+} from "./abstractions.js";
 
-export class GetDescendantFoldersUseCase implements IGetDescendantFoldersUseCase {
-    private repository: IGetDescendantFoldersRepository;
+class GetDescendantFoldersUseCaseImpl implements UseCaseAbstraction.Interface {
+    constructor(private repository: GetDescendantFoldersRepository.Interface) {}
 
-    constructor(repository: IGetDescendantFoldersRepository) {
-        this.repository = repository;
-    }
-
-    execute(params: GetDescendantFoldersParams) {
-        const folders = this.repository.execute(params.id);
-
-        return folders.map(folder => ({
-            id: folder.id,
-            title: folder.title,
-            slug: folder.slug,
-            permissions: folder.permissions,
-            type: folder.type,
-            parentId: folder.parentId
-        }));
+    execute(id: string) {
+        return this.repository.execute(id);
     }
 }
+
+export const GetDescendantFoldersUseCase = UseCaseAbstraction.createImplementation({
+    implementation: GetDescendantFoldersUseCaseImpl,
+    dependencies: [GetDescendantFoldersRepository]
+});

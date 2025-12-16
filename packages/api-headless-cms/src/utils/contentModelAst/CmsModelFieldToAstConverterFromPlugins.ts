@@ -4,13 +4,14 @@ import type {
     ICmsModelFieldToAst
 } from "~/types/index.js";
 import { CmsModelFieldToAstFromPlugin } from "./CmsModelFieldToAstFromPlugin.js";
+import { getBaseFieldType } from "~/utils/getBaseFieldType.js";
 
 type FieldToAstConverters = Record<string, ICmsModelFieldToAst>;
 
 export class CmsModelFieldToAstConverterFromPlugins implements ICmsModelFieldToAst {
-    private converters: FieldToAstConverters;
+    private readonly converters: FieldToAstConverters;
 
-    constructor(plugins: CmsModelFieldToGraphQLPlugin[]) {
+    public constructor(plugins: CmsModelFieldToGraphQLPlugin[]) {
         this.converters = plugins.reduce<FieldToAstConverters>((converters, plugin) => {
             return {
                 ...converters,
@@ -19,7 +20,13 @@ export class CmsModelFieldToAstConverterFromPlugins implements ICmsModelFieldToA
         }, {});
     }
 
-    toAst(field: CmsModelField) {
-        return this.converters[field.type].toAst(field);
+    public toAst(field: CmsModelField) {
+        const type = getBaseFieldType(field);
+        if (!this.converters[type]) {
+            throw new Error(
+                `Cannot convert model field "${field.fieldId}" to AST. No converter found for field type "${type}".`
+            );
+        }
+        return this.converters[type].toAst(field);
     }
 }

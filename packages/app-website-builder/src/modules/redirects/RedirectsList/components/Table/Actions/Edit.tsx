@@ -4,7 +4,7 @@ import { RedirectListConfig } from "~/modules/redirects/configs/index.js";
 import { useEditRedirectDialog } from "~/modules/redirects/RedirectsList/hooks/useEditRedirectDialog.js";
 import { useRedirect } from "~/modules/redirects/RedirectsList/hooks/useRedirect.js";
 
-const { OptionsMenuItem } = RedirectListConfig.Browser.Record.Action;
+const { OptionsMenuItem } = RedirectListConfig.Browser.Redirect.Action;
 
 export const Edit = () => {
     const { redirect } = useRedirect();

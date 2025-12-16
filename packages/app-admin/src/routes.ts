@@ -6,6 +6,11 @@ export const Routes = {
         path: "/"
     }),
 
+    FileManager: new Route({
+        name: "FileManager",
+        path: "/file-manager"
+    }),
+
     CatchAll: new Route({
         name: "CatchAll",
         path: "*"

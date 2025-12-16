@@ -24,11 +24,7 @@ const SidebarMenuPinnedItems = () => {
                 };
 
                 const unpinAction = (
-                    <SidebarMenuItemAction
-                        element={<UnPinIcon />}
-                        onClick={handleUnpin}
-                        showOnHover={true}
-                    />
+                    <SidebarMenuItemAction element={<UnPinIcon />} onClick={handleUnpin} />
                 );
 
                 return (

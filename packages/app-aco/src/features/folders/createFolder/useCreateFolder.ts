@@ -1,25 +1,13 @@
-import { useCallback } from "react";
-import { useApolloClient } from "@apollo/react-hooks";
-import { CreateFolderGqlGateway } from "./CreateFolderGqlGateway.js";
-import type { CreateFolderParams } from "./ICreateFolderUseCase.js";
-import { CreateFolder } from "./CreateFolder.js";
-import { useFoldersType, useGetFolderGraphQLSelection } from "~/hooks/index.js";
+import { useFeature } from "@webiny/app";
+import { CreateFolderUseCase } from "~/features/folders/createFolder/abstractions.js";
+import { CreateFolderFeature } from "./feature.js";
 
 export const useCreateFolder = () => {
-    const client = useApolloClient();
-    const type = useFoldersType();
-    const fields = useGetFolderGraphQLSelection();
-    const gateway = new CreateFolderGqlGateway(client, fields);
-
-    const createFolder = useCallback(
-        (params: CreateFolderParams) => {
-            const instance = CreateFolder.getInstance(type, gateway);
-            return instance.execute(params);
-        },
-        [type, gateway]
-    );
+    const { useCase } = useFeature(CreateFolderFeature);
 
     return {
-        createFolder
+        createFolder: (folder: CreateFolderUseCase.Params) => {
+            return useCase.execute(folder);
+        }
     };
 };

@@ -2,6 +2,7 @@ import fs from "fs";
 import { join } from "path";
 import glob from "fast-glob";
 import { Project, SyntaxKind } from "ts-morph";
+import chalk from "chalk";
 
 export const validateEsmImports = async ({ cwd }) => {
     console.log("Validating ESM imports...");
@@ -56,13 +57,17 @@ export const validateEsmImports = async ({ cwd }) => {
     if (errors.length > 0) {
         const invalidFiles = [...new Set(errors.map(e => e.file))];
         const errorMessage = [
-            "ESM import validation failed.",
+            chalk.red("ESM import validation failed."),
             `Found ${errors.length} invalid import(s) in ${invalidFiles.length} file(s):`,
-            ...invalidFiles.map(f => `  - ${f}`)
+            "",
+            ...errors.map(e => {
+                const relativePath = e.file.replace(cwd, "").replace(/^[\/\\]/, "");
+                return `  ${chalk.red("-")} "${chalk.red(e.spec)}" in "${chalk.red(relativePath)}"`;
+            })
         ].join("\n");
         throw new Error(errorMessage);
     } else {
-        console.log("✅ All ESM imports are valid.");
+        console.log("All ESM imports are valid.");
     }
 };
 
@@ -75,7 +80,10 @@ async function validateImportSpec(spec, file, errors) {
 
         // If there's no extension, it should have .js
         if (!hasExtension) {
-            const errorMsg = `❌ Missing .js extension in import "${spec}" in ${file}`;
+            const relativePath = file.replace(process.cwd(), "").replace(/^[\/\\]/, "");
+            const errorMsg = chalk.red(
+                `- Missing .js extension in import "${spec}" in ${relativePath}`
+            );
             console.error(errorMsg);
             errors.push({ file, spec, reason: "missing extension" });
         }
