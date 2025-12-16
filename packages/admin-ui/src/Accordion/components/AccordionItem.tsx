@@ -69,6 +69,9 @@ const AccordionItemBase = (props: AccordionItemProps) => {
                 "group-[.accordion-variant-container]/accordion:rounded-lg",
                 "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
                 "hover:bg-neutral-dimmed",
+                background === "base" && "has-[.group-item:hover]:bg-neutral-base",
+                background === "light" && "has-[.group-item:hover]:bg-neutral-light",
+                background === "transparent" && "has-[.group-item:hover]:bg-transparent",
                 accordionItemVariants({
                     locked,
                     background,
