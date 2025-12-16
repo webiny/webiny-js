@@ -4,6 +4,7 @@ import { CmsEntryFieldFilterPlugin } from "~/plugins/CmsEntryFieldFilterPlugin.j
 import { extractWhereParams } from "~/operations/entry/filtering/where.js";
 import { transformValue } from "~/operations/entry/filtering/transform.js";
 import type { GenericRecord } from "@webiny/api/types.js";
+import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 export const createRefFilterCreate = () => {
     const plugin = new CmsEntryFieldFilterPlugin<GenericRecord | null | undefined>({
@@ -28,8 +29,10 @@ export const createRefFilterCreate = () => {
                     continue;
                 }
                 const { fieldId: propertyId, operation: propertyOperation, negate } = whereParams;
+                
+                const fieldType = getBaseFieldType(field);
 
-                const transformValuePlugin = transformValuePlugins[field.type];
+                const transformValuePlugin = transformValuePlugins[fieldType];
 
                 const transformValueCallable = (value: any) => {
                     if (!transformValuePlugin) {

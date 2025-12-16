@@ -9,6 +9,7 @@ import { extractWhereParams } from "./where.js";
 import { transformValue } from "./transform.js";
 import { CmsEntryFieldFilterPlugin } from "~/plugins/CmsEntryFieldFilterPlugin.js";
 import { getWhereValues } from "~/operations/entry/filtering/values.js";
+import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 interface CreateExpressionParams {
     where: Partial<CmsEntryListWhere>;
@@ -64,15 +65,18 @@ export const createExpressions = (params: Params): Expression => {
     const defaultFilterCreatePlugin = fieldFilterCreatePlugins["*"] as CmsEntryFieldFilterPlugin;
 
     const getFilterCreatePlugin = (type: string) => {
-        const filterCreatePlugin = fieldFilterCreatePlugins[type] || defaultFilterCreatePlugin;
+        const fieldType = getBaseFieldType({
+            type
+        });
+        const filterCreatePlugin = fieldFilterCreatePlugins[fieldType] || defaultFilterCreatePlugin;
         if (filterCreatePlugin) {
             return filterCreatePlugin;
         }
         throw new WebinyError(
-            `There is no filter create plugin for the field type "${type}".`,
+            `There is no filter create plugin for the field type "${fieldType}".`,
             "MISSING_FILTER_CREATE_PLUGIN",
             {
-                type
+                fieldType
             }
         );
     };
@@ -157,9 +161,11 @@ export const createExpressions = (params: Params): Expression => {
              * We need a filter create plugin for this type.
              */
             const filterCreatePlugin = getFilterCreatePlugin(field.type);
+            
+            const fieldType = getBaseFieldType(field);
 
             const transformValuePlugin: CmsFieldFilterValueTransformPlugin =
-                transformValuePlugins[field.type];
+                transformValuePlugins[fieldType];
 
             const transformValueCallable = (value: any) => {
                 if (!transformValuePlugin) {

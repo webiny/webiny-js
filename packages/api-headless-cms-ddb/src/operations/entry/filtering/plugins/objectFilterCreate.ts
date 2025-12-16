@@ -3,6 +3,7 @@ import { extractWhereParams } from "~/operations/entry/filtering/where.js";
 import WebinyError from "@webiny/error";
 import type { CmsFieldFilterValueTransformPlugin } from "~/types.js";
 import { transformValue } from "~/operations/entry/filtering/transform.js";
+import { getBaseFieldType } from "@webiny/api-headless-cms/utils/getBaseFieldType.js";
 
 export const objectFilterCreate = () => {
     const plugin = new CmsEntryFieldFilterPlugin({
@@ -45,11 +46,13 @@ export const objectFilterCreate = () => {
                         }
                     );
                 }
+                
+                const fieldType = getBaseFieldType(field);
 
-                const filterCreatePlugin = getFilterCreatePlugin(field.type);
+                const filterCreatePlugin = getFilterCreatePlugin(fieldType);
 
                 const transformValuePlugin: CmsFieldFilterValueTransformPlugin =
-                    transformValuePlugins[field.type];
+                    transformValuePlugins[fieldType];
 
                 const transformValueCallable = (value: any) => {
                     if (!transformValuePlugin) {
