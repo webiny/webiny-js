@@ -40,9 +40,7 @@ export const VariantLight: Story = {
     render: () => {
         const [value, setValue] = useState("item1");
 
-        return (
-            <SegmentedControl items={items} value={value} onChange={setValue} variant="light" />
-        );
+        return <SegmentedControl items={items} value={value} onChange={setValue} variant="light" />;
     }
 };
 

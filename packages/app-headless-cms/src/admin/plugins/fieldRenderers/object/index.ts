@@ -6,7 +6,4 @@ export const Components = {
     MultiValueItemContainer
 };
 
-export default [
-    singleObjectAccordion,
-    multipleObjectsAccordion
-];
+export default [singleObjectAccordion, multipleObjectsAccordion];
