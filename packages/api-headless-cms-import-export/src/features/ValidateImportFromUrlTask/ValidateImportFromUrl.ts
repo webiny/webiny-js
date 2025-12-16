@@ -4,11 +4,11 @@ import type {
     IValidateImportFromUrlOutput
 } from "~/tasks/domain/abstractions/ValidateImportFromUrl.js";
 import type { IExternalFileFetcher } from "~/tasks/utils/externalFileFetcher/index.js";
-import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
-import type { Context, ICmsImportExportValidatedFile } from "~/types.js";
+import type { ICmsImportExportValidatedFile } from "~/types.js";
 import { getImportExportFileType } from "~/tasks/utils/helpers/getImportExportFileType.js";
 import type { NonEmptyArray } from "@webiny/api/types.js";
 import { prependImportPath } from "~/tasks/utils/helpers/importPath.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface IFileExists {
     (key: string): Promise<boolean>;
@@ -20,10 +20,9 @@ export interface IValidateImportFromUrlParams {
 }
 
 export class ValidateImportFromUrl<
-    C extends Context = Context,
     I extends IValidateImportFromUrlInput = IValidateImportFromUrlInput,
     O extends IValidateImportFromUrlOutput = IValidateImportFromUrlOutput
-> implements IValidateImportFromUrl<C, I, O>
+> implements IValidateImportFromUrl<I, O>
 {
     private readonly fileFetcher: IExternalFileFetcher;
     private readonly fileExists: IFileExists;
@@ -33,8 +32,8 @@ export class ValidateImportFromUrl<
         this.fileExists = params.fileExists;
     }
 
-    public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { response, input } = params;
+    public async run(params: TaskDefinition.RunParams<I, O>) {
+        const { input, controller } = params;
 
         const { files = [], model } = input;
 
@@ -147,7 +146,7 @@ export class ValidateImportFromUrl<
             });
         }
         if (results.length === 0) {
-            return response.error({
+            return controller.response.error({
                 message: "No files found.",
                 code: "NO_FILES_FOUND"
             });
@@ -170,6 +169,6 @@ export class ValidateImportFromUrl<
             };
         }
 
-        return response.done(output as O);
+        return controller.response.done(output as O);
     }
 }

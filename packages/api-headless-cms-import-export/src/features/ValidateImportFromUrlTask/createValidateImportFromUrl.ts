@@ -1,5 +1,5 @@
-import { ValidateImportFromUrl } from "~/tasks/domain/validateImportFromUrl/ValidateImportFromUrl.js";
-import { ExternalFileFetcher } from "~/tasks/utils/externalFileFetcher/index.js";
+import { ValidateImportFromUrl } from "./ValidateImportFromUrl.js";
+import { ExternalFileFetcher } from "./ExternalFileFetcher/ExternalFileFetcher.js";
 import { createS3Client } from "~/tasks/utils/helpers/s3Client.js";
 import { getBucket } from "~/tasks/utils/helpers/getBucket.js";
 import { FileFetcher } from "~/tasks/utils/fileFetcher/index.js";
