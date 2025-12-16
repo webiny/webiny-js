@@ -74,12 +74,12 @@ export interface ITaskIdentity {
 }
 
 export type IGetTaskResponse<
-    T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+    T extends TaskService.TaskInput = TaskService.TaskInput,
     O extends TaskService.GenericOutput = TaskService.GenericOutput
 > = ITask<T, O> | null;
 
 export interface IListTasksResponse<
-    T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+    T extends TaskService.TaskInput = TaskService.TaskInput,
     O extends TaskService.GenericOutput = TaskService.GenericOutput
 > {
     items: ITask<T, O>[];
@@ -92,11 +92,11 @@ export interface IListTaskLogsResponse {
 }
 
 export type ICreateTaskResponse<
-    T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+    T extends TaskService.TaskInput = TaskService.TaskInput,
     O extends TaskService.GenericOutput = TaskService.GenericOutput
 > = ITask<T, O>;
 export type IUpdateTaskResponse<
-    T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+    T extends TaskService.TaskInput = TaskService.TaskInput,
     O extends TaskService.GenericOutput = TaskService.GenericOutput
 > = ITask<T, O>;
 export type IDeleteTaskResponse = boolean;
@@ -136,7 +136,7 @@ export interface IListTaskLogParams extends Omit<CmsEntryListParams, "fields" | 
     where?: IListTaskLogParamsWhere;
 }
 
-export interface ITaskCreateData<T extends TaskService.TaskDataInput = TaskService.TaskDataInput> {
+export interface ITaskCreateData<T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput> {
     definitionId: string;
     name: string;
     input: T;
@@ -144,8 +144,8 @@ export interface ITaskCreateData<T extends TaskService.TaskDataInput = TaskServi
 }
 
 export interface ITaskUpdateData<
-    I extends TaskService.TaskDataInput = TaskService.TaskDataInput,
-    O extends TaskService.GenericOutput = TaskService.GenericOutput
+    I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
 > {
     name?: string;
     input?: I;
@@ -204,22 +204,22 @@ export interface ITasksContextCrudObject {
      * Tasks
      */
     getTask<
-        T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+        T extends TaskService.TaskInput = TaskService.TaskInput,
         O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         id: string
     ): Promise<IGetTaskResponse<T, O> | null>;
     listTasks<
-        T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+        T extends TaskService.TaskInput = TaskService.TaskInput,
         O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         params?: IListTaskParams
     ): Promise<IListTasksResponse<T, O>>;
-    createTask<T extends TaskService.GenericOutput = TaskService.GenericOutput>(
+    createTask<T extends TaskService.TaskInput = TaskService.TaskInput>(
         task: ITaskCreateData<T>
     ): Promise<ICreateTaskResponse<T>>;
     updateTask<
-        T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+        T extends TaskService.TaskInput = TaskService.TaskInput,
         O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         id: string,
@@ -302,6 +302,6 @@ export interface TaskPermission extends SecurityPermission {
 }
 
 export type ITask<
-    I extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+    I extends TaskService.TaskInput = TaskService.TaskInput,
     O extends TaskService.GenericOutput = TaskService.GenericOutput
 > = TaskService.Task<I, O>;

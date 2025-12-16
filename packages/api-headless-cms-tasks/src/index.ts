@@ -19,7 +19,7 @@ export const createDeleteModelTask = () => {
 };
 
 export const createHcmsTasks = () => [
-    createHcmsBulkActions(),
+    createHcmsBulkActions({ batchSize: 100 }),
     createEmptyTrashBinsTask(),
     createHeadlessCmsImportExport(),
     createDeleteModelTask()

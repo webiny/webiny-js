@@ -8,7 +8,7 @@ import type {
     IBulkActionOperationInput,
     IBulkActionOperationOutput
 } from "~/types.js";
-import { EntriesBulkAction } from "./abstractions.js";
+import { EntriesBulkAction, EntriesBulkActionConfig } from "./abstractions.js";
 import { BulkActionName } from "~/domain/BulkActionName.js";
 import { ChildTasksCleanup } from "./internals/ChildTasksCleanup.js";
 import { ProcessTask } from "./internals/ProcessTask.js";
@@ -22,9 +22,12 @@ enum BulkActionOperationByModelAction {
     END_TASK = "END_TASK"
 }
 
-export const createBulkActionTasks = (bulkAction: EntriesBulkAction.Interface) => {
+export const createBulkActionTasks = (
+    bulkAction: EntriesBulkAction.Interface,
+    bulkActionsConfig: EntriesBulkActionConfig.Interface
+) => {
     const bulkActionName = BulkActionName.from(bulkAction.name);
-    const batchSize = bulkAction.batchSize || 100;
+    const batchSize = bulkAction.batchSize ?? bulkActionsConfig.batchSize ?? 100;
     const listTaskId = `hcmsBulkList${bulkActionName}Entries`;
     const processTaskId = `hcmsBulkProcess${bulkActionName}Entries`;
 

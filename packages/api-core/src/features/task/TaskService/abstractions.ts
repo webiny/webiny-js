@@ -1,6 +1,6 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { ITaskOutput } from "~/features/task/TaskDefinition/index.js";
+import { type ITaskOutput, TaskDefinition } from "~/features/task/TaskDefinition/index.js";
 
 export const TaskService = createAbstraction<ITaskService>("TaskService");
 
@@ -11,15 +11,13 @@ export namespace TaskService {
      */
     export type GenericOutput = IGenericOutput;
 
-    export type TaskDataInput = ITaskDataInput;
+    export type TaskInput = TaskDefinition.TaskInput;
 
     export type Task<
-        I extends ITaskDataInput = ITaskDataInput,
+        I extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
         O extends ITaskOutput = ITaskOutput
     > = ITask<I, O>;
 }
-
-export type ITaskDataInput = GenericRecord;
 
 // The service info depends on the implementation.
 // We cannot have a more precise type here, since implementation can be anything (AWS, Azure, etc.).
@@ -38,10 +36,16 @@ export interface ITaskAbortParams {
 }
 
 export interface ITaskService {
-    trigger: <T extends ITaskDataInput = ITaskDataInput, O extends IGenericOutput = IGenericOutput>(
+    trigger: <
+        T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+        O extends IGenericOutput = IGenericOutput
+    >(
         params: ITaskTriggerParams<T>
     ) => Promise<ITask<T, O>>;
-    abort: <T extends ITaskDataInput = ITaskDataInput, O extends IGenericOutput = IGenericOutput>(
+    abort: <
+        T extends TaskDefinition.TaskInput = TaskDefinition.TaskInput,
+        O extends IGenericOutput = IGenericOutput
+    >(
         params: ITaskAbortParams
     ) => Promise<ITask<T, O>>;
     fetchServiceInfo: (input: ITask<any, any> | string) => Promise<IServiceInfo | null>;
@@ -59,7 +63,7 @@ export interface IGenericOutput {
         | IResponseError;
 }
 
-export interface ITaskTriggerParams<I = ITaskDataInput> {
+export interface ITaskTriggerParams<I = TaskDefinition.TaskInput> {
     parent?: Pick<ITask, "id">;
     definition: string;
     name?: string;

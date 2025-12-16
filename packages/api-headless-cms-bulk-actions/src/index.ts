@@ -1,6 +1,9 @@
 import { createHandlers } from "~/handlers/index.js";
 import { createBeforeHandlerPlugin } from "@webiny/handler/plugins/BeforeHandlerPlugin.js";
-import { EntriesBulkAction } from "~/features/EntriesBulkAction/abstractions.js";
+import {
+    EntriesBulkAction,
+    EntriesBulkActionConfig
+} from "~/features/EntriesBulkAction/abstractions.js";
 import { BulkActionContext } from "~/features/BulkActionContext/index.js";
 import { createBulkActionTasks } from "~/features/EntriesBulkAction/createBulkActionTasks.js";
 import { createDefaultGraphQL } from "~/graphql/createDefaultGraphQL.js";
@@ -18,31 +21,43 @@ export type * from "./abstractions/index.js";
 export * from "./handlers/index.js";
 export * from "./tasks/index.js";
 
-export const createHcmsBulkActions = () => [
-    createHandlers(),
-    createDefaultGraphQL(),
-    // Register bulk action features
-    createContextPlugin(context => {
-        DeleteEntriesBulkActionFeature.register(context.container);
-        MoveToFolderBulkActionFeature.register(context.container);
-        MoveToTrashBulkActionFeature.register(context.container);
-        PublishEntriesBulkActionFeature.register(context.container);
-        UnpublishEntriesBulkActionFeature.register(context.container);
-        RestoreEntriesBulkActionFeature.register(context.container);
-    }),
-    // Set up bulk actions after the context is bootstrapped, but before actual handler processing
-    createBeforeHandlerPlugin<HcmsBulkActionsContext>(async context => {
-        context.container.registerInstance(BulkActionContext, context);
+interface BulkActionsConfig {
+    batchSize?: number;
+}
 
-        const bulkActions = context.container.resolveAll(EntriesBulkAction);
+export const createHcmsBulkActions = (config?: BulkActionsConfig) => {
+    const batchSize = config?.batchSize ?? 100;
 
-        // 2. For each EntriesBulkAction, create and register tasks + GraphQL schema
-        for (const bulkAction of bulkActions) {
-            // Register tasks implementation
-            const feature = createBulkActionTasks(bulkAction);
-            feature.register(context.container);
-            // Register GraphQL schema
-            await createBulkActionGraphQL(context, bulkAction);
-        }
-    })
-];
+    return [
+        createHandlers(),
+        createDefaultGraphQL(),
+        // Register bulk action features
+        createContextPlugin(context => {
+            // Bulk action config is shared among all bulk actions.
+            context.container.registerInstance(EntriesBulkActionConfig, { batchSize });
+
+            DeleteEntriesBulkActionFeature.register(context.container);
+            MoveToFolderBulkActionFeature.register(context.container);
+            MoveToTrashBulkActionFeature.register(context.container);
+            PublishEntriesBulkActionFeature.register(context.container);
+            UnpublishEntriesBulkActionFeature.register(context.container);
+            RestoreEntriesBulkActionFeature.register(context.container);
+        }),
+        // Set up bulk actions after the context is bootstrapped, but before actual handler processing
+        createBeforeHandlerPlugin<HcmsBulkActionsContext>(async context => {
+            context.container.registerInstance(BulkActionContext, context);
+
+            const bulkActions = context.container.resolveAll(EntriesBulkAction);
+            const bulkActionsConfig = context.container.resolve(EntriesBulkActionConfig);
+
+            // 2. For each EntriesBulkAction, create and register tasks + GraphQL schema
+            for (const bulkAction of bulkActions) {
+                // Register tasks implementation
+                const feature = createBulkActionTasks(bulkAction, bulkActionsConfig);
+                feature.register(context.container);
+                // Register GraphQL schema
+                await createBulkActionGraphQL(context, bulkAction);
+            }
+        })
+    ];
+};

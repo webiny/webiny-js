@@ -1,22 +1,39 @@
 import { describe, expect, it } from "vitest";
-import {
-    MOCK_DATA_MANAGER_TASK_ID,
-    createMockDataManagerTask
-} from "~/tasks/createMockDataManagerTask";
+import { MOCK_DATA_MANAGER_TASK_ID } from "~/tasks/MockDataManagerTask.js";
 import { useHandler } from "~tests/context/useHandler";
 import { createRunner } from "@webiny/project-utils/testing/tasks";
 import type { Context, IMockDataManagerInput, IMockDataManagerOutput } from "~/types";
-import { TaskResponseStatus } from "@webiny/tasks";
 import { CARS_MODEL_ID } from "~/tasks/MockDataManager/constants";
+import {
+    TaskDefinition,
+    TaskResultStatus
+} from "@webiny/api-core/features/task/TaskDefinition/index.js";
+
+function getDataManagerTaskDefinition(
+    context: Context
+): TaskDefinition.Interface<IMockDataManagerInput, IMockDataManagerOutput> {
+    const definitions = context.container.resolveAll(TaskDefinition);
+    const definition = definitions.find(def => def.id === MOCK_DATA_MANAGER_TASK_ID);
+
+    if (definition) {
+        return definition as TaskDefinition.Interface<
+            IMockDataManagerInput,
+            IMockDataManagerOutput
+        >;
+    }
+
+    throw Error(`Task definition ${MOCK_DATA_MANAGER_TASK_ID} not found!`);
+}
 
 describe("mock data manager task", () => {
     it("should create a mock data manager task", async () => {
         const { handler } = useHandler();
 
         const context = await handler();
+        const definition = getDataManagerTaskDefinition(context);
 
         const task = await context.tasks.createTask<IMockDataManagerInput>({
-            definitionId: MOCK_DATA_MANAGER_TASK_ID,
+            definitionId: definition.id,
             name: "Testing of a Mock Data Manager Task",
             input: {
                 modelId: CARS_MODEL_ID,
@@ -24,9 +41,9 @@ describe("mock data manager task", () => {
             }
         });
 
-        const runner = createRunner<Context, IMockDataManagerInput, IMockDataManagerOutput>({
+        const runner = createRunner<IMockDataManagerInput, IMockDataManagerOutput>({
             context,
-            task: createMockDataManagerTask()
+            task: definition
         });
 
         const result = await runner({
@@ -35,7 +52,7 @@ describe("mock data manager task", () => {
         });
 
         expect(result).toMatchObject({
-            status: TaskResponseStatus.CONTINUE,
+            status: TaskResultStatus.CONTINUE,
             wait: 15,
             input: {
                 amount: 1,

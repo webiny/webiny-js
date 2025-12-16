@@ -1,40 +1,40 @@
-import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import type { IMockDataCreatorInput, IMockDataCreatorOutput } from "./types.js";
 import { mockData } from "./mockData.js";
 import { createWaitUntilHealthy } from "@webiny/api-elasticsearch/utils/waitUntilHealthy/index.js";
-import type { Context } from "~/types.js";
 import { ElasticsearchCatClusterHealthStatus } from "@webiny/api-elasticsearch/operations/types.js";
 import { mdbid } from "@webiny/utils";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/index.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import type { Context } from "~/types.js";
 
-export class MockDataCreator<
-    C extends Context,
-    I extends IMockDataCreatorInput,
-    O extends IMockDataCreatorOutput
-> {
-    public async execute(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { context, isAborted, input, response, isCloseToTimeout } = params;
+export class MockDataCreator<I extends IMockDataCreatorInput, O extends IMockDataCreatorOutput> {
+    constructor(private context: Context) {}
 
-        if (isAborted()) {
-            return response.aborted();
-        } else if (isCloseToTimeout()) {
-            return response.continue({
+    public async execute(
+        params: TaskDefinition.RunParams<I, O>
+    ): Promise<TaskDefinition.Result<I, O>> {
+        const { input, controller } = params;
+
+        if (controller.runtime.isAborted()) {
+            return controller.response.aborted();
+        } else if (controller.runtime.isCloseToTimeout()) {
+            return controller.response.continue({
                 ...input
             });
         }
 
-        const getModel = context.container.resolve(GetModelUseCase);
-        const createEntry = context.container.resolve(CreateEntryUseCase);
+        const getModel = this.context.container.resolve(GetModelUseCase);
+        const createEntry = this.context.container.resolve(CreateEntryUseCase);
 
         const modelResult = await getModel.execute("cars");
         if (modelResult.isFail()) {
-            return response.error(modelResult.error);
+            return controller.response.error(modelResult.error);
         }
 
         const model = modelResult.value;
 
-        const healthCheck = createWaitUntilHealthy(context.elasticsearch, {
+        const healthCheck = createWaitUntilHealthy(this.context.elasticsearch, {
             waitingTimeStep: 20,
             maxWaitingTime: 150,
             maxProcessorPercent: 80,
@@ -45,10 +45,10 @@ export class MockDataCreator<
         let createdAmount = input.createdAmount;
 
         for (; createdAmount < input.totalAmount; createdAmount++) {
-            if (isAborted()) {
-                return response.aborted();
-            } else if (isCloseToTimeout()) {
-                return response.continue({
+            if (controller.runtime.isAborted()) {
+                return controller.response.aborted();
+            } else if (controller.runtime.isCloseToTimeout()) {
+                return controller.response.continue({
                     ...input,
                     createdAmount
                 });
@@ -86,7 +86,7 @@ export class MockDataCreator<
                         }
                     });
                 } catch {
-                    return response.continue(
+                    return controller.response.continue(
                         {
                             ...input,
                             createdAmount
@@ -97,7 +97,7 @@ export class MockDataCreator<
                     );
                 }
             }
-            const taskId = params.store.getTask().id;
+            const taskId = controller.state.getTask().id;
 
             const createResult = await createEntry.execute(model, {
                 id: `${taskId}${mdbid()}`,
@@ -105,10 +105,10 @@ export class MockDataCreator<
             });
 
             if (createResult.isFail()) {
-                return response.error(createResult.error);
+                return controller.response.error(createResult.error);
             }
         }
 
-        return params.response.done(`Created ${input.totalAmount} records.`);
+        return params.controller.response.done(`Created ${input.totalAmount} records.`);
     }
 }

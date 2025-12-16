@@ -35,3 +35,14 @@ export namespace EntriesBulkAction {
     export type LoadDataResult = IBulkActionListResult;
     export type ProcessParams = IBulkActionProcessParams;
 }
+
+interface IEntriesBulkActionConfig {
+    batchSize: number;
+}
+
+export const EntriesBulkActionConfig =
+    createAbstraction<IEntriesBulkActionConfig>("EntriesBulkActionConfig");
+
+export namespace EntriesBulkActionConfig {
+    export type Interface = IEntriesBulkActionConfig;
+}

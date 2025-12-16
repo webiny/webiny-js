@@ -17,12 +17,12 @@ import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/in
 const MAX_DELAY_DAYS = 355;
 const MAX_DELAY_SECONDS = MAX_DELAY_DAYS * 24 * 60 * 60;
 
-interface ValidateDelayParams<T extends TaskService.TaskDataInput> {
+interface ValidateDelayParams<T extends TaskService.TaskInput> {
     input: ITaskCreateData<T>;
     delay?: number;
 }
 
-const validateDelay = <T extends TaskService.TaskDataInput = TaskService.TaskDataInput>({
+const validateDelay = <T extends TaskService.TaskInput = TaskService.TaskInput>({
     input,
     delay
 }: ValidateDelayParams<T>): void => {
@@ -48,7 +48,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
 
     return {
         trigger: async <
-            T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+            T extends TaskService.TaskInput = TaskService.TaskInput,
             O extends TaskService.GenericOutput = TaskService.GenericOutput
         >(
             params: ITaskTriggerParams<T>
@@ -131,7 +131,7 @@ export const createServiceCrud = (context: Context): ITasksContextServiceObject 
             }
         },
         abort: async <
-            T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+            T extends TaskService.TaskInput = TaskService.TaskInput,
             O extends TaskService.GenericOutput = TaskService.GenericOutput
         >(
             params: ITaskAbortParams

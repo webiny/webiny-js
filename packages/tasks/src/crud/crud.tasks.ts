@@ -46,7 +46,7 @@ const createRevisionId = (id: string) => {
 };
 
 const convertToTask = <
-    T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+    T extends TaskService.TaskInput = TaskService.TaskInput,
     O extends TaskService.GenericOutput = TaskService.GenericOutput
 >(
     entry: CmsEntry<TaskService.Task<T, O>>
@@ -152,7 +152,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     };
 
     const getTask = async <
-        T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+        T extends TaskService.TaskInput = TaskService.TaskInput,
         O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         id: string
@@ -177,7 +177,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     };
 
     const listTasks = async <
-        T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+        T extends TaskService.TaskInput = TaskService.TaskInput,
         O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         params?: IListTaskParams
@@ -233,7 +233,7 @@ export const createTaskCrud = (context: Context): ITasksContextCrudObject => {
     };
 
     const updateTask = async <
-        T extends TaskService.TaskDataInput = TaskService.TaskDataInput,
+        T extends TaskService.TaskInput = TaskService.TaskInput,
         O extends TaskService.GenericOutput = TaskService.GenericOutput
     >(
         id: string,
