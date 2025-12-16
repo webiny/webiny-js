@@ -29,7 +29,7 @@ export const createRefFilterCreate = () => {
                     continue;
                 }
                 const { fieldId: propertyId, operation: propertyOperation, negate } = whereParams;
-                
+
                 const fieldType = getBaseFieldType(field);
 
                 const transformValuePlugin = transformValuePlugins[fieldType];

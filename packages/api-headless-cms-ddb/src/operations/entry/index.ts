@@ -131,7 +131,7 @@ export const createEntriesStorageOperations = (
 
         return (field, value) => {
             const fieldType = getBaseFieldType(field);
-            
+
             const plugin: StorageTransformPlugin = storageTransformPlugins[fieldType];
             if (!plugin) {
                 return value;

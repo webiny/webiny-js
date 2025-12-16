@@ -46,7 +46,7 @@ export const objectFilterCreate = () => {
                         }
                     );
                 }
-                
+
                 const fieldType = getBaseFieldType(field);
 
                 const filterCreatePlugin = getFilterCreatePlugin(fieldType);

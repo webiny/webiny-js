@@ -161,7 +161,7 @@ export const createExpressions = (params: Params): Expression => {
              * We need a filter create plugin for this type.
              */
             const filterCreatePlugin = getFilterCreatePlugin(field.type);
-            
+
             const fieldType = getBaseFieldType(field);
 
             const transformValuePlugin: CmsFieldFilterValueTransformPlugin =
