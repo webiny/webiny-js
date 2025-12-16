@@ -1,4 +1,3 @@
-import type { ITaskResponseResult, ITaskRunParams } from "@webiny/tasks";
 import type {
     IImportFromUrlController,
     IImportFromUrlControllerInput,
@@ -8,8 +7,9 @@ import type {
 import { IImportFromUrlControllerInputStep } from "~/tasks/domain/abstractions/ImportFromUrlController.js";
 import type { Context } from "~/types.js";
 import { ImportFromUrlControllerDownloadStep } from "~/tasks/domain/importFromUrlControllerSteps/ImportFromUrlControllerDownloadStep.js";
-import { ImportFromUrlControllerProcessEntriesStep } from "./importFromUrlControllerSteps/ImportFromUrlControllerProcessEntriesStep.js";
-import { ImportFromUrlControllerProcessAssetsStep } from "./importFromUrlControllerSteps/ImportFromUrlControllerProcessAssetsStep.js";
+import { ImportFromUrlControllerProcessEntriesStep } from "~/tasks/domain/importFromUrlControllerSteps/ImportFromUrlControllerProcessEntriesStep.js";
+import { ImportFromUrlControllerProcessAssetsStep } from "~/tasks/domain/importFromUrlControllerSteps/ImportFromUrlControllerProcessAssetsStep.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 const getDefaultStepValues = (): IImportFromUrlControllerInputStepsStep => {
     return {
@@ -23,31 +23,40 @@ const getDefaultStepValues = (): IImportFromUrlControllerInputStepsStep => {
     };
 };
 
+export interface IImportFromUrlControllerConfig {
+    context: Context;
+}
+
 export class ImportFromUrlController<
-    C extends Context = Context,
     I extends IImportFromUrlControllerInput = IImportFromUrlControllerInput,
     O extends IImportFromUrlControllerOutput = IImportFromUrlControllerOutput
-> implements IImportFromUrlController<C, I, O>
+> implements IImportFromUrlController<I, O>
 {
-    public async run(params: ITaskRunParams<C, I, O>): Promise<ITaskResponseResult<I, O>> {
-        const { context, response, input } = params;
+    private readonly context: Context;
+
+    public constructor(config: IImportFromUrlControllerConfig) {
+        this.context = config.context;
+    }
+
+    public async run(params: TaskDefinition.RunParams<I, O>) {
+        const { input, controller } = params;
 
         if (!input.modelId) {
-            return response.error({
+            return controller.response.error({
                 message: `Missing "modelId" in the input.`,
                 code: "MISSING_MODEL_ID"
             });
         } else if (Array.isArray(input.files) === false || input.files.length === 0) {
-            return response.error({
+            return controller.response.error({
                 message: `No files found in the provided data.`,
                 code: "NO_FILES_FOUND"
             });
         }
 
         try {
-            await context.cms.getModel(input.modelId);
+            await this.context.cms.getModel(input.modelId);
         } catch {
-            return response.error({
+            return controller.response.error({
                 message: `Model "${input.modelId}" not found.`,
                 code: "MODEL_NOT_FOUND"
             });
@@ -61,10 +70,16 @@ export class ImportFromUrlController<
             input.steps[IImportFromUrlControllerInputStep.DOWNLOAD] || getDefaultStepValues();
 
         if (!downloadStep.finished) {
-            const step = new ImportFromUrlControllerDownloadStep<C, I, O>();
-            return await step.execute(params);
+            const step = new ImportFromUrlControllerDownloadStep<Context, I, O>();
+            return await step.execute({
+                context: this.context,
+                input,
+                response: controller.response,
+                isAborted: controller.runtime.isAborted,
+                isCloseToTimeout: controller.runtime.isCloseToTimeout
+            });
         } else if (downloadStep.failed.length) {
-            return response.error({
+            return controller.response.error({
                 message: `Failed to download files.`,
                 code: "FAILED_DOWNLOADING_FILES",
                 data: input.steps
@@ -75,10 +90,16 @@ export class ImportFromUrlController<
             input.steps[IImportFromUrlControllerInputStep.PROCESS_ENTRIES] ||
             getDefaultStepValues();
         if (!processEntriesStep.finished) {
-            const step = new ImportFromUrlControllerProcessEntriesStep<C, I, O>();
-            return await step.execute(params);
+            const step = new ImportFromUrlControllerProcessEntriesStep<Context, I, O>();
+            return await step.execute({
+                context: this.context,
+                input,
+                response: controller.response,
+                isAborted: controller.runtime.isAborted,
+                isCloseToTimeout: controller.runtime.isCloseToTimeout
+            });
         } else if (processEntriesStep.failed.length) {
-            return response.error({
+            return controller.response.error({
                 message: `Failed to process entries.`,
                 code: "FAILED_PROCESSING_ENTRIES",
                 data: input.steps
@@ -88,10 +109,16 @@ export class ImportFromUrlController<
         const processAssetsStep =
             input.steps[IImportFromUrlControllerInputStep.PROCESS_ASSETS] || getDefaultStepValues();
         if (!processAssetsStep.finished) {
-            const step = new ImportFromUrlControllerProcessAssetsStep<C, I, O>();
-            return await step.execute(params);
+            const step = new ImportFromUrlControllerProcessAssetsStep<Context, I, O>();
+            return await step.execute({
+                context: this.context,
+                input,
+                response: controller.response,
+                isAborted: controller.runtime.isAborted,
+                isCloseToTimeout: controller.runtime.isCloseToTimeout
+            });
         } else if (processAssetsStep.failed.length) {
-            return response.error({
+            return controller.response.error({
                 message: `Failed to process assets.`,
                 code: "FAILED_PROCESSING_ASSETS",
                 data: input.steps
@@ -110,6 +137,6 @@ export class ImportFromUrlController<
             aborted: []
         };
 
-        return response.done(output as O);
+        return controller.response.done(output as O);
     }
 }

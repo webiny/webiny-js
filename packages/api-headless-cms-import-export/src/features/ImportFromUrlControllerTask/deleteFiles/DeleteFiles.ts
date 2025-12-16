@@ -1,11 +1,8 @@
-import type {
-    IDeleteFiles,
-    IDeleteFilesExecuteInput
-} from "~/tasks/utils/deleteFiles/abstractions/DeleteFiles.js";
-import { createS3Client } from "../helpers/s3Client.js";
 import { FileFetcher } from "~/tasks/utils/fileFetcher/index.js";
 import type { IFileFetcher } from "~/tasks/utils/fileFetcher/index.js";
-import { getBucket } from "../helpers/getBucket.js";
+import type { IDeleteFiles, IDeleteFilesExecuteInput } from "./abstractions.js";
+import { createS3Client } from "~/tasks/utils/helpers/s3Client.js";
+import { getBucket } from "~/tasks/utils/helpers/getBucket.js";
 
 export interface IDeleteFilesParams {
     fileFetcher: IFileFetcher;

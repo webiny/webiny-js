@@ -5,7 +5,6 @@ import type { Context } from "./types.js";
 import { isHeadlessCmsReady } from "@webiny/api-headless-cms";
 import { createHeadlessCmsImportExportCrud } from "~/crud/index.js";
 import {
-    createImportFromUrlControllerTask,
     createImportFromUrlDownloadTask,
     createImportFromUrlProcessEntriesTask,
     createImportFromUrlProcessAssetsTask
@@ -14,6 +13,7 @@ import { ExportContentEntriesControllerTaskFeature } from "~/features/ExportCont
 import { ExportContentEntriesTaskFeature } from "~/features/ExportContentEntriesTask/feature.js";
 import { ExportContentAssetsTaskFeature } from "~/features/ExportContentAssetsTask/feature.js";
 import { ValidateImportFromUrlTaskFeature } from "~/features/ValidateImportFromUrlTask/feature.js";
+import { ImportFromUrlControllerTaskFeature } from "~/features/ImportFromUrlControllerTask/feature.js";
 
 export const createHeadlessCmsImportExport = (): Plugin[] => {
     const plugin = new ContextPlugin<Context>(async context => {
@@ -26,9 +26,9 @@ export const createHeadlessCmsImportExport = (): Plugin[] => {
         ExportContentEntriesTaskFeature.register(context.container);
         ExportContentAssetsTaskFeature.register(context.container);
         ValidateImportFromUrlTaskFeature.register(context.container);
+        ImportFromUrlControllerTaskFeature.register(context.container);
 
         context.plugins.register(
-            createImportFromUrlControllerTask(),
             createImportFromUrlDownloadTask(),
             createImportFromUrlProcessEntriesTask(),
             createImportFromUrlProcessAssetsTask()
