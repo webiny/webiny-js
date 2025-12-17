@@ -1,19 +1,20 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
-import type { IWorkflowState, IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
+import type { IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
 import {
     type WorkflowStateNotFoundError,
     type WorkflowStatePersistenceError
 } from "~/domain/workflowState/errors.js";
 import type { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
+import type { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 
 export type IUpdateWorkflowStateInput = Partial<
     Omit<IWorkflowStateRecord, "id" | "savedBy" | "savedOn" | "createdOn" | "createdBy">
 >;
 
 export interface WorkflowStateAfterUpdatePayload {
-    state: IWorkflowState;
-    original: IWorkflowState;
+    state: WorkflowState;
+    original: WorkflowState;
 }
 
 /**
@@ -23,7 +24,7 @@ export interface IUpdateWorkflowStateUseCase {
     execute(
         id: string,
         input: IUpdateWorkflowStateInput
-    ): Promise<Result<IWorkflowState, UseCaseError>>;
+    ): Promise<Result<WorkflowState, UseCaseError>>;
 }
 
 export interface IUpdateWorkflowStateUseCaseErrors {
@@ -41,7 +42,7 @@ export const UpdateWorkflowStateUseCase = createAbstraction<IUpdateWorkflowState
 export namespace UpdateWorkflowStateUseCase {
     export type Interface = IUpdateWorkflowStateUseCase;
     export type Input = IUpdateWorkflowStateInput;
-    export type Return = Promise<Result<IWorkflowState, UseCaseError>>;
+    export type Return = Promise<Result<WorkflowState, UseCaseError>>;
     export type Error = UseCaseError;
 }
 

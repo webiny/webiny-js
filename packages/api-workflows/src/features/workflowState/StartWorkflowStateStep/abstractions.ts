@@ -2,32 +2,33 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import {
     type WorkflowStateNotFoundError,
-    type WorkflowStatePersistenceError
+    WorkflowStatePersistenceError,
+    type WorkflowStateStepCannotReviewError
 } from "~/domain/workflowState/errors.js";
 import type { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 
-/**
- * CancelWorkflowState use case interface - marks workflow state as inactive
- */
-export interface ICancelWorkflowStateUseCase {
+export interface IStartWorkflowStateStepUseCase {
     execute(id: string): Promise<Result<WorkflowState, UseCaseError>>;
 }
 
-export interface ICancelWorkflowStateUseCaseErrors {
+export interface IStartWorkflowStateStepUseCaseErrors {
     notFound: WorkflowStateNotFoundError;
     workflowNotFound: WorkflowNotFoundError;
+    cannotReview: WorkflowStateStepCannotReviewError;
+    workflowState: WorkflowState.Error;
     persistence: WorkflowStatePersistenceError;
 }
 
-type UseCaseError = ICancelWorkflowStateUseCaseErrors[keyof ICancelWorkflowStateUseCaseErrors];
+type UseCaseError =
+    IStartWorkflowStateStepUseCaseErrors[keyof IStartWorkflowStateStepUseCaseErrors];
 
-export const CancelWorkflowStateUseCase = createAbstraction<ICancelWorkflowStateUseCase>(
-    "CancelWorkflowStateUseCase"
+export const StartWorkflowStateStepUseCase = createAbstraction<IStartWorkflowStateStepUseCase>(
+    "StartWorkflowStateStepUseCase"
 );
 
-export namespace CancelWorkflowStateUseCase {
-    export type Interface = ICancelWorkflowStateUseCase;
+export namespace StartWorkflowStateStepUseCase {
+    export type Interface = IStartWorkflowStateStepUseCase;
     export type Return = Promise<Result<WorkflowState, UseCaseError>>;
     export type Error = UseCaseError;
 }

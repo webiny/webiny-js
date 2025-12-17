@@ -1,12 +1,13 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
-import type { IWorkflowState, IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
+import type { IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
 import {
     type WorkflowStateNotFoundError,
     type WorkflowStatePersistenceError,
     type MultipleWorkflowsFoundError,
     WorkflowStateValidationError
 } from "~/domain/workflowState/errors.js";
+import type { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 
 export interface IGetTargetWorkflowStateParams {
     app: string;
@@ -17,7 +18,7 @@ export interface IGetTargetWorkflowStateParams {
  * GetTargetWorkflowState use case interface
  */
 export interface IGetTargetWorkflowStateUseCase {
-    execute(input: IGetTargetWorkflowStateParams): Promise<Result<IWorkflowState, UseCaseError>>;
+    execute(input: IGetTargetWorkflowStateParams): Promise<Result<WorkflowState, UseCaseError>>;
 }
 
 export interface IGetTargetWorkflowStateUseCaseErrors {
@@ -37,7 +38,7 @@ export const GetTargetWorkflowStateUseCase = createAbstraction<IGetTargetWorkflo
 export namespace GetTargetWorkflowStateUseCase {
     export type Interface = IGetTargetWorkflowStateUseCase;
     export type Params = IGetTargetWorkflowStateParams;
-    export type Return = Promise<Result<IWorkflowState, UseCaseError>>;
+    export type Return = Promise<Result<WorkflowState, UseCaseError>>;
     export type Error = UseCaseError;
 }
 

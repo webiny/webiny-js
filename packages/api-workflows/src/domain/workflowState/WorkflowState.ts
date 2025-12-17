@@ -374,6 +374,10 @@ export class WorkflowState implements IWorkflowState {
             canReview
         };
     }
+
+    toRecord(): IWorkflowStateRecord {
+        return this.record;
+    }
 }
 
 export namespace WorkflowState {

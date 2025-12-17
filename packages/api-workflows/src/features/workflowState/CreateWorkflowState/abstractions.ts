@@ -9,6 +9,7 @@ import {
     MultipleWorkflowsFoundError
 } from "~/domain/workflowState/errors.js";
 import type { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
+import type { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 
 export interface ICreateWorkflowStateUseCaseInput {
     app: string;
@@ -24,7 +25,7 @@ export interface WorkflowStateAfterCreatePayload {
  * CreateWorkflowState use case interface
  */
 export interface ICreateWorkflowStateUseCase {
-    execute(input: ICreateWorkflowStateUseCaseInput): Promise<Result<IWorkflowState, UseCaseError>>;
+    execute(input: ICreateWorkflowStateUseCaseInput): Promise<Result<WorkflowState, UseCaseError>>;
 }
 
 export interface ICreateWorkflowStateUseCaseErrors {
@@ -45,7 +46,7 @@ export const CreateWorkflowStateUseCase = createAbstraction<ICreateWorkflowState
 export namespace CreateWorkflowStateUseCase {
     export type Interface = ICreateWorkflowStateUseCase;
     export type Input = ICreateWorkflowStateUseCaseInput;
-    export type Return = Promise<Result<IWorkflowState, UseCaseError>>;
+    export type Return = Promise<Result<WorkflowState, UseCaseError>>;
     export type Error = UseCaseError;
 }
 
