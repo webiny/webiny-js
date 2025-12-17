@@ -1,0 +1,82 @@
+import { createAbstraction } from "@webiny/feature/api";
+import type { Result } from "@webiny/feature/api";
+import type { CmsEntryListSort, CmsEntryListWhere } from "@webiny/api-headless-cms/types";
+import type { IWorkflowState, IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
+import type { WorkflowStatePersistenceError } from "~/domain/workflowState/errors.js";
+
+export interface IMeta {
+    cursor: string | null;
+    hasMoreItems: boolean;
+    totalCount: number;
+}
+
+export interface IListWorkflowStatesParams {
+    where?: CmsEntryListWhere;
+    sort?: CmsEntryListSort;
+    limit?: number;
+    after?: string;
+}
+
+export interface IListWorkflowStatesResponse {
+    items: IWorkflowState[];
+    meta: IMeta;
+}
+
+export interface IListWorkflowStatesRecordResponse {
+    items: IWorkflowStateRecord[];
+    meta: IMeta;
+}
+
+/**
+ * ListWorkflowStates use case interface
+ */
+export interface IListWorkflowStatesUseCase {
+    execute(
+        params?: IListWorkflowStatesParams
+    ): Promise<Result<IListWorkflowStatesResponse, UseCaseError>>;
+}
+
+export interface IListWorkflowStatesUseCaseErrors {
+    persistence: WorkflowStatePersistenceError;
+}
+
+type UseCaseError = IListWorkflowStatesUseCaseErrors[keyof IListWorkflowStatesUseCaseErrors];
+
+export const ListWorkflowStatesUseCase = createAbstraction<IListWorkflowStatesUseCase>(
+    "ListWorkflowStatesUseCase"
+);
+
+export namespace ListWorkflowStatesUseCase {
+    export type Interface = IListWorkflowStatesUseCase;
+    export type Params = IListWorkflowStatesParams;
+    export type Response = IListWorkflowStatesResponse;
+    export type Return = Promise<Result<IListWorkflowStatesResponse, UseCaseError>>;
+    export type Error = UseCaseError;
+}
+
+/**
+ * ListWorkflowStates repository interface
+ */
+export interface IListWorkflowStatesRepository {
+    execute(
+        params?: IListWorkflowStatesParams
+    ): Promise<Result<IListWorkflowStatesRecordResponse, RepositoryError>>;
+}
+
+export interface IListWorkflowStatesRepositoryErrors {
+    persistence: WorkflowStatePersistenceError;
+}
+
+type RepositoryError =
+    IListWorkflowStatesRepositoryErrors[keyof IListWorkflowStatesRepositoryErrors];
+
+export const ListWorkflowStatesRepository = createAbstraction<IListWorkflowStatesRepository>(
+    "ListWorkflowStatesRepository"
+);
+
+export namespace ListWorkflowStatesRepository {
+    export type Interface = IListWorkflowStatesRepository;
+    export type Params = IListWorkflowStatesParams;
+    export type Return = Promise<Result<IListWorkflowStatesRecordResponse, RepositoryError>>;
+    export type Error = RepositoryError;
+}

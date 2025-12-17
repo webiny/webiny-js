@@ -1,5 +1,5 @@
-// NOTE: Exact copy of CMS model from context/models/stateModel.ts
 import { createPrivateModelPlugin } from "@webiny/api-headless-cms";
+// TODO: move to `domain`
 import {
     createAppField,
     createCommentField,

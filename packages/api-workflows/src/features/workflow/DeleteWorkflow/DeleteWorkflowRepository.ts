@@ -12,16 +12,12 @@ class DeleteWorkflowRepositoryImpl implements Repository.Interface {
     ) {}
 
     async execute(input: Repository.Params): Repository.Return {
-        // NOTE: Create workflow ID with version 1
-        // Original implementation: line 86-89
         const workflowId = createIdentifier({
             id: input.id,
             version: 1
         });
 
         try {
-            // NOTE: Delete entry via CMS (with withoutAuthorization handled by CMS use case)
-            // Original implementation: line 90-93
             const result = await this.deleteEntry.execute(this.model, workflowId);
 
             if (result.isFail()) {

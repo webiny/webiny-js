@@ -7,7 +7,6 @@ import type {
 } from "./abstractions.js";
 import { WorkflowStateMapper as WorkflowStateMapperAbstraction } from "./abstractions.js";
 
-// NOTE: Copied implementation from context/transformer/WorkflowStateTransformer.ts
 class WorkflowStateMapperImpl implements IWorkflowStateMapper {
     public fromCmsEntry(
         input: IWorkflowStateTransformerFromCmsEntryInput

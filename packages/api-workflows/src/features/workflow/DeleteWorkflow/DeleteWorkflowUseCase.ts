@@ -20,15 +20,11 @@ class DeleteWorkflowUseCaseImpl implements UseCase.Interface {
     ) {}
 
     async execute(input: UseCase.Params): UseCase.Return {
-        // NOTE: Authorization check - ensure manage access
-        // Original implementation: line 78
         const hasAccess = await this.ensureManageAccess();
         if (hasAccess.isFail()) {
             return Result.fail(hasAccess.error);
         }
 
-        // NOTE: Get workflow to verify it exists and get full data for events
-        // Original implementation: line 79-85
         const workflowResult = await this.getWorkflow.execute(input);
         if (workflowResult.isFail()) {
             return Result.fail(
@@ -41,21 +37,17 @@ class DeleteWorkflowUseCaseImpl implements UseCase.Interface {
 
         const workflow = workflowResult.value;
 
-        // NOTE: Publish before delete event
         await this.eventPublisher.publish(
             new WorkflowBeforeDeleteEvent({
                 workflow
             })
         );
 
-        // NOTE: Delete via repository
-        // Original implementation: line 86-93
         const result = await this.repository.execute(input);
         if (result.isFail()) {
             return result;
         }
 
-        // NOTE: Publish after delete event
         await this.eventPublisher.publish(
             new WorkflowAfterDeleteEvent({
                 workflow
@@ -66,8 +58,6 @@ class DeleteWorkflowUseCaseImpl implements UseCase.Interface {
     }
 
     private async ensureManageAccess(): Promise<Result<void, WorkflowNotAuthorizedError>> {
-        // NOTE: Check permissions
-        // Original implementation: line 154-167
         const permissions =
             await this.identityContext.getPermissions<IWorkflowsSecurityPermission>(
                 WORKFLOWS_PERMISSION

@@ -139,7 +139,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
         params?: IWorkflowStateContextListStatesParams
     ): Promise<IWorkflowStateContextListStatesResponse> {
         const identity = this.context.security.getIdentity();
-        if (!identity?.id) {
+        if (identity.isAnonymous()) {
             return {
                 items: [],
                 meta: {
@@ -165,7 +165,7 @@ export class WorkflowStateContext implements IWorkflowStateContext {
     ): Promise<IWorkflowStateContextListStatesResponse> {
         const identity = this.context.security.getIdentity();
         const teams = await this.getUserTeams(identity.id);
-        if (!identity?.id || teams.length === 0) {
+        if (identity.isAnonymous() || teams.length === 0) {
             return {
                 items: [],
                 meta: {

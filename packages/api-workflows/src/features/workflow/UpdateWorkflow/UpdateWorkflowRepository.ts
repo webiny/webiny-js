@@ -15,12 +15,8 @@ class UpdateWorkflowRepositoryImpl implements Repository.Interface {
     ) {}
 
     async execute(input: IUpdateWorkflowInput): Repository.Return {
-        // NOTE: Parse id to extract base id (strip version if present)
-        // Original implementation: line 194
         const { id } = parseIdentifier(input.id);
 
-        // NOTE: Map input to CMS entry values
-        // Original implementation: line 189-193
         const values = this.mapper.toCmsEntry({
             id,
             app: input.app,
@@ -28,24 +24,18 @@ class UpdateWorkflowRepositoryImpl implements Repository.Interface {
             steps: input.steps
         });
 
-        // NOTE: Create workflow ID with version 1
-        // Original implementation: line 194-197
         const workflowId = createIdentifier({
             id,
             version: 1
         });
 
         try {
-            // NOTE: Update existing workflow
-            // Original implementation: line 198-200
             const updateResult = await this.updateEntry.execute(this.model, workflowId, values);
 
             if (updateResult.isFail()) {
                 return Result.fail(new WorkflowPersistenceError(updateResult.error));
             }
 
-            // NOTE: Return workflow with parsed id
-            // Original implementation: line 202-205
             return Result.ok({
                 ...values,
                 id

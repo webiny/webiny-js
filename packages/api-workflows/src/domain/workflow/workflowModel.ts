@@ -2,7 +2,6 @@ import { createPrivateModelPlugin } from "@webiny/api-headless-cms";
 import { WORKFLOW_MODEL_ID } from "~/constants.js";
 import { createAppField, createStepsField } from "~/context/models/fields/index.js";
 
-// NOTE: Copy exact implementation from context/models/workflowModel.ts
 export { WORKFLOW_MODEL_ID };
 
 export const createWorkflowModel = () => {

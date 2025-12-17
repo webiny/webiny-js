@@ -30,18 +30,12 @@ interface IEnrichStepWithPermissionParams {
 }
 
 export class WorkflowState implements IWorkflowState {
-    // NOTE: Changed from private fields with # (e.g., #context, #record, #teams)
-    // to standard private fields for DI compatibility
-    // NOTE: Changed from context parameter to currentIdentity data parameter
-    // Original: context: Pick<Context, "workflowState" | "security" | "adminUsers">
-    // New: currentIdentity: IWorkflowStateIdentity (pass identity as plain data)
     constructor(
         private record: IWorkflowStateRecord,
         private teams: IWorkflowStepTeam[],
         private currentIdentity: IWorkflowStateIdentity
     ) {}
 
-    // Preserve all original getters exactly
     get id() {
         return this.record.id;
     }
@@ -78,13 +72,9 @@ export class WorkflowState implements IWorkflowState {
         return this.record.state;
     }
 
-    // Keep original implementation - DO NOT change the structure!
     get steps() {
         return this.record.steps.map(step => {
-            return this.enrichStep({
-                createdBy: this.record.createdBy,
-                step
-            });
+            return this.enrichStep({ createdBy: this.record.createdBy, step });
         });
     }
 
@@ -104,7 +94,6 @@ export class WorkflowState implements IWorkflowState {
         return this.record.savedBy;
     }
 
-    // Keep original implementation
     get done(): boolean {
         /**
          * A just-in-case check.
@@ -185,9 +174,6 @@ export class WorkflowState implements IWorkflowState {
         return step || null;
     }
 
-    // NOTE: Changed return type from Promise<void> to Result<void, Error>
-    // NOTE: Removed internal persistence call (was: await this.#context.workflowState.updateState)
-    // Now: Returns Result<void>, use case handles persistence
     start(): Result<void, WorkflowState.Error> {
         const step = this.getPendingStep();
         if (!canReview(step)) {
@@ -202,12 +188,10 @@ export class WorkflowState implements IWorkflowState {
             savedBy: this.currentIdentity,
             state: WorkflowStateRecordState.inReview
         });
-        // NOTE: Original called: await this.updateState(this.#record)
-        // Now returns Result for external persistence
-        return Result.ok(undefined);
+
+        return Result.ok();
     }
 
-    // NOTE: Changed return type from Promise<void> to Result<void, Error>
     takeOver(): Result<void, WorkflowState.Error> {
         if (isRejected(this.record)) {
             return Result.fail(new WorkflowStateRejectedError(this.record));
@@ -233,11 +217,10 @@ export class WorkflowState implements IWorkflowState {
         this.updateRecord({
             savedBy: this.currentIdentity
         });
-        // NOTE: Original called: await this.updateState(this.#record)
-        return Result.ok(undefined);
+
+        return Result.ok();
     }
 
-    // NOTE: Changed return type from Promise<void> to Result<void, Error>
     approve(comment?: string): Result<void, WorkflowState.Error> {
         if (isRejected(this.record)) {
             return Result.fail(new WorkflowStateRejectedError(this.record));
@@ -268,11 +251,9 @@ export class WorkflowState implements IWorkflowState {
             state: nextStep ? WorkflowStateRecordState.pending : WorkflowStateRecordState.approved
         });
 
-        // NOTE: Original called: await this.updateState(this.#record)
-        return Result.ok(undefined);
+        return Result.ok();
     }
 
-    // NOTE: Changed return type from Promise<void> to Result<void, Error>
     reject(comment: string): Result<void, WorkflowState.Error> {
         if (isRejected(this.record)) {
             return Result.fail(new WorkflowStateRejectedError(this.record));
@@ -297,13 +278,8 @@ export class WorkflowState implements IWorkflowState {
         this.updateRecord({
             state: WorkflowStateRecordState.rejected
         });
-        // NOTE: Original called: await this.updateState(this.#record)
-        return Result.ok(undefined);
-    }
 
-    // NOTE: New method - expose record for external persistence
-    toRecord(): IWorkflowStateRecord {
-        return this.record;
+        return Result.ok();
     }
 
     private getPendingStep() {
@@ -358,10 +334,8 @@ export class WorkflowState implements IWorkflowState {
         return this.record.steps[index + 1];
     }
 
-    // Keep original enrichStep implementation exactly
     private enrichStep(params: IEnrichStepWithPermissionParams): IEnrichedWorkflowStateRecordStep {
         const { step, createdBy } = params;
-        // NOTE: Was this.getIdentity() which called this.#context.security.getIdentity()
         const identity = this.currentIdentity;
         /**
          * User which created the workflow state cannot take part in reviewing it.

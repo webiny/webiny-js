@@ -4,7 +4,6 @@ import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import { IWorkflowInput } from "~/context/abstractions/WorkflowInput.js";
 
-// NOTE: Using original transformer logic from context/transformer/WorkflowsTransformer.ts
 class WorkflowMapperImpl implements MapperAbstraction.Interface {
     fromCmsEntry(entry: CmsEntry<Omit<IWorkflow, "id">>): IWorkflow {
         const { id } = parseIdentifier(entry.id);

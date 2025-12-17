@@ -74,7 +74,6 @@ export namespace WorkflowStateModel {
     export type Interface = CmsModel;
 }
 
-// NOTE: Copied from context/transformer/abstractions/WorkflowStateTransformer.ts
 export type IWorkflowStateTransformerFromCmsEntryInput = CmsEntry<
     Omit<IWorkflowStateRecord, "id" | "savedOn" | "createdOn" | "savedBy" | "createdBy">
 >;
