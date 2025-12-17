@@ -2,7 +2,7 @@ import { createDecorator, Result } from "@webiny/feature/api";
 import type { UpdateFolderParams } from "~/folder/folder.types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
 import { UpdateFolderUseCase } from "../abstractions.js";
-import { GetFolderUseCase } from "~/features/folders/GetFolder/index.js";
+import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
 import { FolderCannotMoveToNewParent, FolderValidationError } from "~/domain/folder/errors.js";
 
 class UpdateFolderWithFolderLevelPermissionsImpl implements UpdateFolderUseCase.Interface {

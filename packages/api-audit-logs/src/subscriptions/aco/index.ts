@@ -1,6 +1,6 @@
-import { FolderAfterCreateHandler } from "@webiny/api-aco/features/folders/CreateFolder";
-import { FolderAfterUpdateHandler } from "@webiny/api-aco/features/folders/UpdateFolder";
-import { FolderAfterDeleteHandler } from "@webiny/api-aco/features/folders/DeleteFolder";
+import { FolderAfterCreateHandler } from "@webiny/api-aco/features/folder/CreateFolder";
+import { FolderAfterUpdateHandler } from "@webiny/api-aco/features/folder/UpdateFolder";
+import { FolderAfterDeleteHandler } from "@webiny/api-aco/features/folder/DeleteFolder";
 
 import { AuditLogFolderAfterCreateHandler } from "./handlers/AuditLogFolderAfterCreateHandler.js";
 import { AuditLogFolderAfterUpdateHandler } from "./handlers/AuditLogFolderAfterUpdateHandler.js";

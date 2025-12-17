@@ -1,6 +1,6 @@
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
-import { ListFoldersUseCase } from "~/features/folders/ListFolders/index.js";
-import { EnsureFolderIsEmpty as Abstraction } from "~/features/folders/EnsureFolderIsEmpty/abstractions.js";
+import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
+import { EnsureFolderIsEmpty as Abstraction } from "~/features/folder/EnsureFolderIsEmpty/abstractions.js";
 import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
 import { FolderNotAuthorizedError, FolderNotEmptyError } from "~/domain/folder/errors.js";
 import { Result } from "@webiny/feature/api";

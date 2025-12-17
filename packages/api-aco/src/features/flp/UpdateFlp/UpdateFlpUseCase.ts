@@ -3,7 +3,7 @@ import { Path } from "~/utils/Path.js";
 import { Permissions, ROOT_FOLDER } from "@webiny/shared-aco";
 import type { UpdateFlpUseCase as UseCaseAbstraction, UpdateFlpParams } from "./abstractions.js";
 import type { AcoContext, Folder, FolderLevelPermission, FolderPermission } from "~/types.js";
-import { ListFoldersUseCase } from "~/features/folders/ListFolders/index.js";
+import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
 import { FolderModel } from "~/domain/folder/abstractions.js";
 
 interface FlpUpdateData {

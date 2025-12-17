@@ -3,8 +3,8 @@ import { ListModelsUseCase } from "@webiny/api-headless-cms/features/contentMode
 import { SYNC_FLP_TASK_ID, UPDATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
 import { type ISyncFlpTaskInput, type IUpdateFlpTaskInput } from "~/types.js";
 import { FM_FILE_TYPE } from "~/constants.js";
-import { GetFolderUseCase } from "~/features/folders/GetFolder/index.js";
-import { ListFoldersUseCase } from "~/features/folders/ListFolders/index.js";
+import { GetFolderUseCase } from "~/features/folder/GetFolder/index.js";
+import { ListFoldersUseCase } from "~/features/folder/ListFolders/index.js";
 
 class SyncFlpTaskImpl implements TaskDefinition.Interface<ISyncFlpTaskInput> {
     id = SYNC_FLP_TASK_ID;

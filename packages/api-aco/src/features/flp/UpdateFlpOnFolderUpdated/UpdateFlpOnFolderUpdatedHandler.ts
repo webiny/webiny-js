@@ -1,9 +1,9 @@
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";
 import { UpdateFlpUseCase } from "../UpdateFlp/abstractions.js";
-import type { FolderAfterUpdateEvent } from "~/features/folders/UpdateFolder/events.js";
+import type { FolderAfterUpdateEvent } from "~/features/folder/UpdateFolder/events.js";
 import type { IUpdateFlpTaskInput } from "~/types.js";
 import { UPDATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
-import { FolderAfterUpdateHandler } from "~/features/folders/UpdateFolder/index.js";
+import { FolderAfterUpdateHandler } from "~/features/folder/UpdateFolder/index.js";
 
 class UpdateFlpOnFolderUpdatedHandlerImpl implements FolderAfterUpdateHandler.Interface {
     constructor(

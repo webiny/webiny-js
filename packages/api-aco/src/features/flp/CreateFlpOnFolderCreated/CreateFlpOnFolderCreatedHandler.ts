@@ -1,6 +1,6 @@
 import { CreateFlpUseCase } from "../CreateFlp/abstractions.js";
-import { FolderAfterCreateHandler } from "~/features/folders/CreateFolder/abstractions.js";
-import type { FolderAfterCreateEvent } from "~/features/folders/CreateFolder/events.js";
+import { FolderAfterCreateHandler } from "~/features/folder/CreateFolder/abstractions.js";
+import type { FolderAfterCreateEvent } from "~/features/folder/CreateFolder/events.js";
 import type { ICreateFlpTaskInput } from "~/types.js";
 import { CREATE_FLP_TASK_ID } from "~/flp/tasks/index.js";
 import { TaskService } from "@webiny/api-core/features/task/TaskService/index.js";

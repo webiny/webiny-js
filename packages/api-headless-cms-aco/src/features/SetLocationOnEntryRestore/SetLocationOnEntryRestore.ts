@@ -1,6 +1,6 @@
 import { ROOT_FOLDER } from "@webiny/api-headless-cms/constants.js";
 import { EntryBeforeRestoreFromBinHandler } from "@webiny/api-headless-cms/features/contentEntry/RestoreEntryFromBin/events.js";
-import { GetFolderUseCase } from "@webiny/api-aco/features/folders/GetFolder/abstractions.js";
+import { GetFolderUseCase } from "@webiny/api-aco/features/folder/GetFolder/abstractions.js";
 
 export class SetLocationOnEntryRestore implements EntryBeforeRestoreFromBinHandler.Interface {
     constructor(private getFolderUseCase: GetFolderUseCase.Interface) {}

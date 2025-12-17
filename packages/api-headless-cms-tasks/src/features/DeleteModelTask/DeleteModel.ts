@@ -1,7 +1,7 @@
 import type { CmsEntryListWhere } from "@webiny/api-headless-cms/types/index.js";
 import type { CmsModel } from "@webiny/api-headless-cms/types/index.js";
-import { ListFoldersUseCase } from "@webiny/api-aco/features/folders/ListFolders/index.js";
-import { DeleteFolderUseCase } from "@webiny/api-aco/features/folders/DeleteFolder/index.js";
+import { ListFoldersUseCase } from "@webiny/api-aco/features/folder/ListFolders/index.js";
+import { DeleteFolderUseCase } from "@webiny/api-aco/features/folder/DeleteFolder/index.js";
 import { CmsContext } from "@webiny/api-headless-cms/features/shared/abstractions.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import type { IDeleteModelTaskInput } from "./types.js";

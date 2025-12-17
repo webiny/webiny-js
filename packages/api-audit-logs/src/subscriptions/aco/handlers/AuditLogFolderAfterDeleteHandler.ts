@@ -3,7 +3,7 @@ import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import {
     FolderAfterDeleteHandler,
     type FolderAfterDeletePayload
-} from "@webiny/api-aco/features/folders/DeleteFolder/abstractions";
+} from "@webiny/api-aco/features/folder/DeleteFolder/abstractions";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import type { AuditLogsContext } from "~/types.js";

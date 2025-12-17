@@ -3,7 +3,7 @@ import type { DomainEvent } from "@webiny/api-core/features/EventPublisher";
 import {
     FolderAfterUpdateHandler,
     type FolderAfterUpdatePayload
-} from "@webiny/api-aco/features/folders/UpdateFolder/abstractions";
+} from "@webiny/api-aco/features/folder/UpdateFolder/abstractions";
 import { AUDIT } from "~/config.js";
 import { getAuditConfig } from "~/utils/getAuditConfig.js";
 import type { AuditLogsContext } from "~/types.js";

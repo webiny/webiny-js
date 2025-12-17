@@ -10,13 +10,13 @@ import { compress } from "~/utils/compress.js";
 import type { AcoContext, Folder } from "~/types.js";
 import type { FolderLevelPermission } from "~/flp/flp.types.js";
 import { FolderLevelPermissions } from "~/features/flp/FolderLevelPermissions/index.js";
-import { GetFolderUseCase } from "~/features/folders/GetFolder/abstractions.js";
-import { ListFoldersUseCase } from "~/features/folders/ListFolders/abstractions.js";
-import { CreateFolderUseCase } from "~/features/folders/CreateFolder/abstractions.js";
-import { UpdateFolderUseCase } from "~/features/folders/UpdateFolder/abstractions.js";
-import { DeleteFolderUseCase } from "~/features/folders/DeleteFolder/abstractions.js";
-import { GetFolderHierarchyUseCase } from "~/features/folders/GetFolderHierarchy/abstractions.js";
-import { ListFolderLevelPermissionsTargetsUseCase } from "~/features/folders/ListFolderLevelPermissionsTargets/abstractions.js";
+import { GetFolderUseCase } from "~/features/folder/GetFolder/abstractions.js";
+import { ListFoldersUseCase } from "~/features/folder/ListFolders/abstractions.js";
+import { CreateFolderUseCase } from "~/features/folder/CreateFolder/abstractions.js";
+import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/abstractions.js";
+import { DeleteFolderUseCase } from "~/features/folder/DeleteFolder/abstractions.js";
+import { GetFolderHierarchyUseCase } from "~/features/folder/GetFolderHierarchy/abstractions.js";
+import { ListFolderLevelPermissionsTargetsUseCase } from "~/features/folder/ListFolderLevelPermissionsTargets/abstractions.js";
 import { FolderModel } from "~/domain/folder/abstractions.js";
 
 export const createFoldersSchema = (params: CreateFolderTypeDefsParams) => {
