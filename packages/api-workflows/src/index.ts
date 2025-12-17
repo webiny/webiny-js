@@ -16,6 +16,16 @@ import { WorkflowMapper } from "~/domain/workflow/WorkflowMapper.js";
 import { WorkflowStateMapper } from "~/domain/workflowState/WorkflowStateMapper.js";
 import { GetWorkflowFeature } from "~/features/workflow/GetWorkflow/feature.js";
 import { ListWorkflowsFeature } from "~/features/workflow/ListWorkflows/feature.js";
+import { CreateWorkflowFeature } from "~/features/workflow/CreateWorkflow/index.js";
+import { DeleteWorkflowFeature } from "~/features/workflow/DeleteWorkflow/index.js";
+import { UpdateWorkflowFeature } from "~/features/workflow/UpdateWorkflow/index.js";
+import { StoreWorkflowFeature } from "~/features/workflow/StoreWorkflow/index.js";
+import { GetWorkflowStateFeature } from "~/features/workflowState/GetWorkflowState/index.js";
+import { GetTargetWorkflowStateFeature } from "~/features/workflowState/GetTargetWorkflowState/index.js";
+import { ListOwnWorkflowStatesFeature } from "~/features/workflowState/ListOwnWorkflowStates/index.js";
+import { ListWorkflowStatesFeature } from "~/features/workflowState/ListWorkflowStates/index.js";
+import { ListRequestedWorkflowStatesFeature } from "~/features/workflowState/ListRequestedWorkflowStates/index.js";
+import { CreateWorkflowStateFeature } from "~/features/workflowState/CreateWorkflowState/feature.js";
 
 export * from "./context/errors/index.js";
 
@@ -68,6 +78,18 @@ export const createWorkflows = () => {
         // Register workflow features
         GetWorkflowFeature.register(context.container);
         ListWorkflowsFeature.register(context.container);
+        CreateWorkflowFeature.register(context.container);
+        DeleteWorkflowFeature.register(context.container);
+        UpdateWorkflowFeature.register(context.container);
+        StoreWorkflowFeature.register(context.container);
+
+        // Register workflow state features
+        GetWorkflowStateFeature.register(context.container);
+        GetTargetWorkflowStateFeature.register(context.container);
+        ListOwnWorkflowStatesFeature.register(context.container);
+        ListWorkflowStatesFeature.register(context.container);
+        ListRequestedWorkflowStatesFeature.register(context.container);
+        CreateWorkflowStateFeature.register(context.container);
 
         await createContext(context);
         context.plugins.register(createWorkflowsSchema(), createWorkflowStateSchema());
