@@ -1,12 +1,12 @@
 import { BaseError } from "@webiny/feature/api";
 
-export class WorkflowNotFoundError extends BaseError {
+export class WorkflowNotFoundError extends BaseError<{ id: string; app: string }> {
     override readonly code = "Workflows/Workflow/NotFound" as const;
 
-    constructor(id: string) {
+    constructor(data: { id: string; app: string }) {
         super({
-            message: `Workflow "${id}" not found`,
-            data: { id }
+            message: `Workflow "${data.id}" not found`,
+            data
         });
     }
 }
