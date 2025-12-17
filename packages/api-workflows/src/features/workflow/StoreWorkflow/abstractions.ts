@@ -2,13 +2,13 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { IWorkflow } from "~/domain/workflow/abstractions.js";
 import type { NonEmptyArray } from "@webiny/api/types.js";
-import type { IWorkflowStepInput } from "~/context/abstractions/WorkflowInput.js";
 import {
     type WorkflowNotFoundError,
     type WorkflowNotAuthorizedError,
     type WorkflowPersistenceError,
     type WorkflowValidationError
 } from "~/domain/workflow/errors.js";
+import type { IWorkflowStepInput } from "~/features/shared/abstractions.js";
 
 // Input types (from context/abstractions/WorkflowsContext.ts)
 export interface IStoreWorkflowInput {

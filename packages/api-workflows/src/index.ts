@@ -26,6 +26,14 @@ import { ListOwnWorkflowStatesFeature } from "~/features/workflowState/ListOwnWo
 import { ListWorkflowStatesFeature } from "~/features/workflowState/ListWorkflowStates/feature.js";
 import { ListRequestedWorkflowStatesFeature } from "~/features/workflowState/ListRequestedWorkflowStates/feature.js";
 import { CreateWorkflowStateFeature } from "~/features/workflowState/CreateWorkflowState/feature.js";
+import { UpdateWorkflowStateFeature } from "~/features/workflowState/UpdateWorkflowState/feature.js";
+import { CancelWorkflowStateFeature } from "~/features/workflowState/CancelWorkflowState/feature.js";
+import { DeleteWorkflowStateFeature } from "~/features/workflowState/DeleteWorkflowState/feature.js";
+import { DeleteTargetWorkflowStateFeature } from "~/features/workflowState/DeleteTargetWorkflowState/feature.js";
+import { StartWorkflowStateStepFeature } from "~/features/workflowState/StartWorkflowStateStep/feature.js";
+import { ApproveWorkflowStateStepFeature } from "~/features/workflowState/ApproveWorkflowStateStep/feature.js";
+import { RejectWorkflowStateStepFeature } from "~/features/workflowState/RejectWorkflowStateStep/feature.js";
+import { TakeOverWorkflowStateStepFeature } from "~/features/workflowState/TakeOverWorkflowStateStep/feature.js";
 
 export * from "./context/errors/index.js";
 
@@ -90,6 +98,14 @@ export const createWorkflows = () => {
         ListWorkflowStatesFeature.register(context.container);
         ListRequestedWorkflowStatesFeature.register(context.container);
         CreateWorkflowStateFeature.register(context.container);
+        UpdateWorkflowStateFeature.register(context.container);
+        CancelWorkflowStateFeature.register(context.container);
+        DeleteWorkflowStateFeature.register(context.container);
+        DeleteTargetWorkflowStateFeature.register(context.container);
+        StartWorkflowStateStepFeature.register(context.container);
+        ApproveWorkflowStateStepFeature.register(context.container);
+        RejectWorkflowStateStepFeature.register(context.container);
+        TakeOverWorkflowStateStepFeature.register(context.container);
 
         await createContext(context);
         context.plugins.register(createWorkflowsSchema(), createWorkflowStateSchema());
