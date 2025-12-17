@@ -40,7 +40,7 @@ describe("task lifecycle hooks", () => {
             const context = await contextFactory();
 
             // Trigger should call onBeforeTrigger
-            const task = await context.tasks.trigger({
+            await context.tasks.trigger({
                 definition: "testOnBeforeTrigger",
                 input: { test: "value" },
                 name: "Test task"

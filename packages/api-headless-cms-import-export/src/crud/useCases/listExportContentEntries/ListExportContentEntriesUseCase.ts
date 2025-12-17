@@ -25,10 +25,7 @@ export class ListExportContentEntriesUseCase implements IListExportContentEntrie
     public async execute(
         params?: IListExportContentEntriesUseCaseExecuteParams
     ): Promise<IListExportContentEntriesUseCaseExecuteResult> {
-        const result = await this.listTasks<
-            IControllerInput,
-            IControllerOutput
-        >({
+        const result = await this.listTasks<IControllerInput, IControllerOutput>({
             ...params,
             sort: ["createdOn_DESC"],
             where: {

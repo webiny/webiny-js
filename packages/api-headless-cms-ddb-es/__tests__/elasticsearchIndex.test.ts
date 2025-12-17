@@ -6,21 +6,18 @@ import { getElasticsearchIndexPrefix } from "@webiny/api-elasticsearch";
 describe("Elasticsearch index", () => {
     const tenants = [["root"], ["admin"]];
 
-    it.each(tenants)(
-        "should create index with tenant id as part of the name",
-        async tenant => {
-            const prefix = getElasticsearchIndexPrefix();
+    it.each(tenants)("should create index with tenant id as part of the name", async tenant => {
+        const prefix = getElasticsearchIndexPrefix();
 
-            const { index } = configurations.es({
-                model: {
-                    tenant,
-                    modelId: "testModel"
-                } as CmsModel
-            });
+        const { index } = configurations.es({
+            model: {
+                tenant,
+                modelId: "testModel"
+            } as CmsModel
+        });
 
-            expect(index).toEqual(`${prefix}${tenant}-headless-cms-testModel`.toLowerCase());
-        }
-    );
+        expect(index).toEqual(`${prefix}${tenant}-headless-cms-testModel`.toLowerCase());
+    });
 
     it("should throw error when missing tenant but it is required", async () => {
         expect(() => {
@@ -41,7 +38,7 @@ describe("Elasticsearch index", () => {
 
     it.each(tenants)(
         "should be root tenant in the index, no matter which one is sent",
-        async (tenant) => {
+        async tenant => {
             process.env.ELASTICSEARCH_SHARED_INDEXES = "true";
 
             const prefix = getElasticsearchIndexPrefix();
@@ -52,9 +49,7 @@ describe("Elasticsearch index", () => {
                     modelId: "testModel"
                 } as CmsModel
             });
-            expect(noLocaleIndex).toEqual(
-                `${prefix}root-headless-cms-testModel`.toLowerCase()
-            );
+            expect(noLocaleIndex).toEqual(`${prefix}root-headless-cms-testModel`.toLowerCase());
         }
     );
 });

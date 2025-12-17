@@ -23,7 +23,7 @@ class UpdateFlpOnFolderUpdatedHandlerImpl implements FolderAfterUpdateHandler.In
             } else {
                 await this.updateFlpUseCase.execute({ folder });
             }
-        } catch (error) {
+        } catch {
             // Ignore errors
         }
     }

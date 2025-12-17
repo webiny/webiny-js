@@ -21,7 +21,10 @@ export const DisableModelFeature = createFeature({
     name: "DisableModel",
     register(container, params: LegacyDeps) {
         // Register the blocking service
-        container.registerInstance(Abstraction, new BlockActionIfModelDisabled(params.isModelBeingDeleted));
+        container.registerInstance(
+            Abstraction,
+            new BlockActionIfModelDisabled(params.isModelBeingDeleted)
+        );
 
         // Register entry event handlers
         container.register(BlockModelActionOnEntryBeforeCreate);
@@ -37,4 +40,4 @@ export const DisableModelFeature = createFeature({
         container.register(BlockModelActionOnModelBeforeUpdate);
         container.register(BlockModelActionOnModelBeforeCreateFrom);
     }
-})
+});

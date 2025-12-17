@@ -24,7 +24,7 @@ export class DataSynchronizationTaskRunner {
         this.manager = params.manager;
         this.indexManager = params.indexManager;
         this.factories = params.factories;
-        this.elasticsearchSynchronize = params.elasticsearchSynchronize
+        this.elasticsearchSynchronize = params.elasticsearchSynchronize;
     }
 
     public async run(input: IDataSynchronizationInput) {

@@ -4,7 +4,7 @@ class TestingRunTask implements TaskDefinition.Interface {
     id = "testingRun";
     title = "A mock task to test run the step function permissions.";
 
-    async run({  controller }: TaskDefinition.RunParams) {
+    async run({ controller }: TaskDefinition.RunParams) {
         return controller.response.done("Task successfully finished.");
     }
 }

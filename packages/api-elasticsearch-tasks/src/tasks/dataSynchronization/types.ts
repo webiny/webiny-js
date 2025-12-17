@@ -4,7 +4,7 @@ import type { IIndexManager } from "~/settings/types.js";
 import type { IElasticsearchSynchronize } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchSynchronize.js";
 import type { IElasticsearchFetcher } from "~/tasks/dataSynchronization/elasticsearch/abstractions/ElasticsearchFetcher.js";
 import type { IGenericOutput } from "@webiny/api-core/features/task/TaskService/index.js";
-import { TaskDefinition} from "@webiny/api-core/features/task/TaskDefinition/index.js";
+import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
 export interface IDataSynchronizationInputValue {
     finished?: boolean;

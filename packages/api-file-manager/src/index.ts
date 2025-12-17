@@ -22,6 +22,8 @@ interface FileManagerContextParams {
     fileAliasStorageOperations: FileAliasStorageOperations;
 }
 
+// TODO: implement file alias storage
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const createFileManagerContext = (_: FileManagerContextParams) => {
     const plugin = new ContextPlugin<ApiCoreContext>(async context => {
         const tenantContext = context.container.resolve(TenantContext);

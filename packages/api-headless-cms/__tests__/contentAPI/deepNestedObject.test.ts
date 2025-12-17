@@ -78,7 +78,6 @@ describe("Cars Model Deep Nested Object Fields", () => {
             });
         }
 
-
         const [mutationResult] = await handler.invoke({
             body: {
                 query: createCarsMutation(),

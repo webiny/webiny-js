@@ -4,9 +4,8 @@ import {
     TaskResultStatus
 } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 
-export class ResponseDoneResult<
-    O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput
-> implements IResponseDoneResult<O>
+export class ResponseDoneResult<O extends TaskDefinition.TaskOutput = TaskDefinition.TaskOutput>
+    implements IResponseDoneResult<O>
 {
     public readonly message?: string | undefined;
     public readonly webinyTaskId: string;

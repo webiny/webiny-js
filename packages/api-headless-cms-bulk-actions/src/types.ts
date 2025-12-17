@@ -69,4 +69,7 @@ export interface IEmptyTrashBinsInput {
 
 export type IEmptyTrashBinsOutput = TaskDefinition.ResultDone;
 
-export type IEmptyTrashBinsTaskParams = TaskDefinition.RunParams<IEmptyTrashBinsInput, IEmptyTrashBinsOutput>;
+export type IEmptyTrashBinsTaskParams = TaskDefinition.RunParams<
+    IEmptyTrashBinsInput,
+    IEmptyTrashBinsOutput
+>;

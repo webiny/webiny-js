@@ -1,7 +1,6 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { useHandler } from "~tests/graphql/handler";
 import type { CmsContext } from "~/types";
-import { createCmsModel } from "@webiny/api-headless-cms";
 import type { CmsGroup, CmsModelCreateInput } from "@webiny/api-headless-cms/types";
 import { configurations } from "~/configurations";
 import { createMappingsSnapshot } from "./mocks/mappingsSnapshot";

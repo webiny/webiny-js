@@ -25,10 +25,7 @@ export class ExportContentEntriesUseCase implements IExportContentEntriesUseCase
     public async execute(
         params: IExportContentEntriesUseCaseExecuteParams
     ): Promise<ICmsImportExportRecord> {
-        const task = await this.triggerTask<
-            IControllerInput,
-            IControllerOutput
-        >({
+        const task = await this.triggerTask<IControllerInput, IControllerOutput>({
             name: `Export Content Entries and Assets Controller for "${params.modelId}"`,
             input: {
                 modelId: params.modelId,

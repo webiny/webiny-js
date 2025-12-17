@@ -24,10 +24,7 @@ export class AbortExportContentEntriesUseCase implements IAbortExportContentEntr
     public async execute(
         params: IAbortExportContentEntriesUseCaseExecuteParams
     ): Promise<ICmsImportExportRecord> {
-        const task = await this.abortTask<
-            IControllerInput,
-            IControllerOutput
-        >({
+        const task = await this.abortTask<IControllerInput, IControllerOutput>({
             id: params.id
         });
         return convertTaskToCmsExportRecord(task);

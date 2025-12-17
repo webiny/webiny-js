@@ -23,7 +23,7 @@ class CreateFlpOnFolderCreatedHandlerImpl implements FolderAfterCreateHandler.In
             } else {
                 await this.createFlpUseCase.execute(folder);
             }
-        } catch (error) {
+        } catch {
             // Ignore errors
         }
     }

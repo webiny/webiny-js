@@ -30,10 +30,7 @@ export class GetExportContentEntriesUseCase implements IGetExportContentEntriesU
     public async execute(
         params: IGetExportContentEntriesUseCaseExecuteParams
     ): Promise<IGetExportContentEntriesUseCaseExecuteResponse | null> {
-        const task = await this.getTask<
-            IControllerInput,
-            IControllerOutput
-        >(params.id);
+        const task = await this.getTask<IControllerInput, IControllerOutput>(params.id);
 
         if (task?.definitionId !== EXPORT_CONTENT_ENTRIES_CONTROLLER_TASK) {
             return null;

@@ -10,9 +10,7 @@ import { IImportFromUrlControllerInputStep } from "~/tasks/domain/abstractions/I
 import { getChildTasks } from "./getChildTasks.js";
 import { prependImportPath } from "~/tasks/utils/helpers/importPath.js";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
-import type {
-    IImportFromUrlProcessEntriesInput
-} from "~/features/ImportFromUrlProcessEntriesTask/importFromUrlProcessEntries/abstractions/ImportFromUrlProcessEntries.js";
+import type { IImportFromUrlProcessEntriesInput } from "~/features/ImportFromUrlProcessEntriesTask/importFromUrlProcessEntries/abstractions/ImportFromUrlProcessEntries.js";
 
 export class ImportFromUrlControllerProcessEntriesStep<
     I extends IImportFromUrlControllerInput = IImportFromUrlControllerInput,

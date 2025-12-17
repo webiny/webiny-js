@@ -28,7 +28,8 @@ export interface ITaskExecutionContext {
     clear(): void;
 }
 
-export const TaskExecutionContext = createAbstraction<ITaskExecutionContext>("TaskExecutionContext");
+export const TaskExecutionContext =
+    createAbstraction<ITaskExecutionContext>("TaskExecutionContext");
 
 export namespace TaskExecutionContext {
     export type Interface = ITaskExecutionContext;

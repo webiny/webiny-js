@@ -39,8 +39,7 @@ export class ExportContentEntriesController<
     O extends IControllerOutput = IControllerOutput
 > implements IExportContentEntriesController<I, O>
 {
-    constructor(private context: Context) {
-    }
+    constructor(private context: Context) {}
     public async run(params: TaskDefinition.RunParams<I, O>) {
         const { input, controller } = params;
         const { state, modelId } = input;

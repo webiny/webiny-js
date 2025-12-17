@@ -8,7 +8,6 @@ import type {
     IUpdateTaskResponse
 } from "@webiny/tasks/types";
 import type { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
-import { createMockApiLog } from "@webiny/project-utils/testing/mockApiLog";
 import type { Tenant } from "@webiny/api-core/types/tenancy.js";
 
 export const createContextMock = (

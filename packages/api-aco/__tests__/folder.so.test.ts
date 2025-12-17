@@ -1,31 +1,13 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { mdbid } from "@webiny/utils";
 import { folderMocks } from "./mocks/folder.mock";
 import { useGraphQlHandler } from "./utils/useGraphQlHandler";
 import { userMock } from "~tests/mocks/user.mock";
 import { ROOT_FOLDER } from "~/constants";
 
-const createSampleFileData = (overrides: Record<string, any> = {}) => {
-    const id = mdbid();
-    return {
-        id,
-        type: "image/jpeg",
-        name: "image-48.jpg",
-        size: 269965,
-        key: `${id}/image.jpg`,
-        tags: [],
-        location: {
-            folderId: ""
-        },
-        ...overrides
-    };
-};
-
 describe("`folder` CRUD", () => {
     let folder1: Record<string, any>;
     let folder2: Record<string, any>;
     let aco: ReturnType<typeof useGraphQlHandler>["aco"];
-    let fm: ReturnType<typeof useGraphQlHandler>["fm"];
     let cms: ReturnType<typeof useGraphQlHandler>["cms"];
 
     beforeEach(async () => {
@@ -56,7 +38,6 @@ describe("`folder` CRUD", () => {
             });
 
         aco = handler.aco;
-        fm = handler.fm;
         cms = handler.cms;
     });
 

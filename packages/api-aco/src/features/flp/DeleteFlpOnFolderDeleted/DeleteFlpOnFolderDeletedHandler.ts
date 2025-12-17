@@ -23,7 +23,7 @@ class DeleteFlpOnFolderDeletedHandlerImpl implements FolderAfterDeleteHandler.In
             } else {
                 await this.deleteFlpUseCase.execute(folder);
             }
-        } catch (error) {
+        } catch {
             // Ignore errors
         }
     }

@@ -5,9 +5,7 @@ import type {
     IControllerOutput
 } from "~/tasks/domain/abstractions/ExportContentEntriesController.js";
 
-export const convertTaskToCmsExportRecord = (
-    task: ITask<IControllerInput, IControllerOutput>
-) => {
+export const convertTaskToCmsExportRecord = (task: ITask<IControllerInput, IControllerOutput>) => {
     return createCmsImportExportRecord({
         id: task.id,
         createdOn: task.createdOn,

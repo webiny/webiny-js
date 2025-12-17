@@ -9,73 +9,70 @@ import { mockClient } from "aws-sdk-client-mock";
 import { TaskDefinition } from "@webiny/api-core/features/task/TaskDefinition/index.js";
 import { VALIDATE_IMPORT_FROM_URL_INTEGRITY_TASK } from "~/tasks/constants.js";
 
-vi.mock(
-    "~/features/ValidateImportFromUrlTask/ExternalFileFetcher/ExternalFileFetcher.ts",
-    () => {
-        return {
-            ExternalFileFetcher: function () {
-                return {
-                    mocked: "yes",
-                    timeout: 100,
-                    async fetch(url: string) {
-                        if (url.includes("error")) {
-                            return {
-                                error: {
-                                    code: "GET_FETCH_ERROR",
-                                    message: "Fetch error.",
-                                    data: {
-                                        url
-                                    }
-                                }
-                            };
-                        } else if (url.includes("missing")) {
-                            return {
-                                file: null,
-                                error: null
-                            };
-                        }
+vi.mock("~/features/ValidateImportFromUrlTask/ExternalFileFetcher/ExternalFileFetcher.ts", () => {
+    return {
+        ExternalFileFetcher: function () {
+            return {
+                mocked: "yes",
+                timeout: 100,
+                async fetch(url: string) {
+                    if (url.includes("error")) {
                         return {
-                            file: {
-                                name: url.split("/").pop() as string,
-                                size: 1234,
-                                url,
-                                contentType: "application/zip",
-                                checksum: "checksum"
+                            error: {
+                                code: "GET_FETCH_ERROR",
+                                message: "Fetch error.",
+                                data: {
+                                    url
+                                }
                             }
                         };
-                    },
-                    async head(url: string) {
-                        if (url.includes("error")) {
-                            return {
-                                error: {
-                                    code: "HEAD_FETCH_ERROR",
-                                    message: "Fetch error.",
-                                    data: {
-                                        url
-                                    }
-                                }
-                            };
-                        } else if (url.includes("missing")) {
-                            return {
-                                file: null,
-                                error: null
-                            };
-                        }
+                    } else if (url.includes("missing")) {
                         return {
-                            file: {
-                                name: url.split("/").pop() as string,
-                                size: 1234,
-                                url,
-                                contentType: "application/zip",
-                                checksum: "checksum"
-                            }
+                            file: null,
+                            error: null
                         };
                     }
-                };
-            }
-        };
-    }
-);
+                    return {
+                        file: {
+                            name: url.split("/").pop() as string,
+                            size: 1234,
+                            url,
+                            contentType: "application/zip",
+                            checksum: "checksum"
+                        }
+                    };
+                },
+                async head(url: string) {
+                    if (url.includes("error")) {
+                        return {
+                            error: {
+                                code: "HEAD_FETCH_ERROR",
+                                message: "Fetch error.",
+                                data: {
+                                    url
+                                }
+                            }
+                        };
+                    } else if (url.includes("missing")) {
+                        return {
+                            file: null,
+                            error: null
+                        };
+                    }
+                    return {
+                        file: {
+                            name: url.split("/").pop() as string,
+                            size: 1234,
+                            url,
+                            contentType: "application/zip",
+                            checksum: "checksum"
+                        }
+                    };
+                }
+            };
+        }
+    };
+});
 
 describe("validate import from url task", () => {
     let context: Context;
