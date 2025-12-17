@@ -7,9 +7,8 @@ import {
 } from "~/domain/workflowState/errors.js";
 import type { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
 
-export type IUpdateWorkflowStateInput = Omit<
-    IWorkflowStateRecord,
-    "id" | "savedBy" | "savedOn" | "createdOn" | "createdBy"
+export type IUpdateWorkflowStateInput = Partial<
+    Omit<IWorkflowStateRecord, "id" | "savedBy" | "savedOn" | "createdOn" | "createdBy">
 >;
 
 export interface WorkflowStateAfterUpdatePayload {
