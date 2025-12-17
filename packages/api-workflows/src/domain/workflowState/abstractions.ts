@@ -2,7 +2,6 @@ import { createAbstraction } from "@webiny/feature/api";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import type { IWorkflowStep } from "../workflow/abstractions.js";
 
-// Enums (from context/abstractions/WorkflowState.ts)
 export enum WorkflowStateRecordState {
     pending = "pending",
     inReview = "inReview",
@@ -10,7 +9,6 @@ export enum WorkflowStateRecordState {
     rejected = "rejected"
 }
 
-// Domain types (from context/abstractions/WorkflowState.ts)
 export interface IWorkflowStateIdentity {
     id: string;
     displayName: string;

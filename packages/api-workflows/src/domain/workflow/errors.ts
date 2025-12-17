@@ -5,7 +5,7 @@ export class WorkflowNotFoundError extends BaseError<{ id: string; app: string }
 
     constructor(data: { id: string; app: string }) {
         super({
-            message: `Workflow "${data.id}" not found`,
+            message: `Workflow in app "${data.app}" with id "${data.id}" was not found!`,
             data
         });
     }

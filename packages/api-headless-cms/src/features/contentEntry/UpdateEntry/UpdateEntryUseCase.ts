@@ -11,6 +11,7 @@ import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
 import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/abstractions.js";
 import type {
     CmsEntry,
+    CmsEntryValues,
     CmsModel,
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
@@ -42,13 +43,13 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         private getRevisionByIdUseCase: GetRevisionByIdUseCase.Interface
     ) {}
 
-    async execute(
+    async execute<T = CmsEntryValues>(
         model: CmsModel,
         id: string,
-        rawInput: UpdateCmsEntryInput,
+        rawInput: UpdateCmsEntryInput<T>,
         metaInput?: GenericRecord,
         options?: UpdateCmsEntryOptionsInput
-    ): Promise<Result<CmsEntry, UseCaseAbstraction.Error>> {
+    ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
         // Check initial access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
@@ -113,7 +114,7 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 })
             );
 
-            return Result.ok(entry);
+            return Result.ok(entry as CmsEntry<T>);
         } catch (error) {
             // Handle errors from createUpdateEntryData or other operations
             return Result.fail(error as UseCaseAbstraction.Error);

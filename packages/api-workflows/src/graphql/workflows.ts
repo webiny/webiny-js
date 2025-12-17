@@ -8,10 +8,9 @@ import { GetWorkflowUseCase } from "~/features/workflow/GetWorkflow/index.js";
 import { ListWorkflowsUseCase } from "~/features/workflow/ListWorkflows/index.js";
 import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
 import { DeleteWorkflowUseCase } from "~/features/workflow/DeleteWorkflow/index.js";
-import type { Context } from "~/types.js";
 
 export const createWorkflowsSchema = () => {
-    return new GraphQLSchemaPlugin<Context>({
+    return new GraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             type WorkflowError {
                 code: String

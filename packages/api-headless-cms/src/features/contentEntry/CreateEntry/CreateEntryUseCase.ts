@@ -7,6 +7,7 @@ import { EntryBeforeCreateEvent, EntryAfterCreateEvent } from "./events.js";
 import { AccessControl } from "~/features/shared/abstractions.js";
 import type {
     CmsEntry,
+    CmsEntryValues,
     CmsModel,
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput
@@ -36,11 +37,11 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         private cmsContext: CmsContext.Interface
     ) {}
 
-    async execute(
+    async execute<T = CmsEntryValues>(
         model: CmsModel,
-        rawInput: CreateCmsEntryInput,
+        rawInput: CreateCmsEntryInput<T>,
         options?: CreateCmsEntryOptionsInput
-    ): Promise<Result<CmsEntry, UseCaseAbstraction.Error>> {
+    ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
         // Check initial access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
@@ -88,7 +89,7 @@ class CreateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
                 })
             );
 
-            return Result.ok(entry);
+            return Result.ok(entry as CmsEntry<T>);
         } catch (error) {
             if (error.code === "VALIDATION_FAILED") {
                 return Result.fail(new EntryValidationError(error.message, error.data));

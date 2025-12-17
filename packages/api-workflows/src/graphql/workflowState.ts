@@ -1,16 +1,14 @@
-import type { Context } from "~/types.js";
 import { GraphQLSchemaPlugin, resolve, resolveList } from "@webiny/handler-graphql";
 import { createZodError } from "@webiny/utils";
-import { listWorkflowStatesValidation } from "~/validation/listWorkflowStates.js";
-import { startWorkflowStateValidation } from "~/validation/startWorkflowState.js";
-import { approveWorkflowStateValidation } from "~/validation/approveWorkflowState.js";
-import { rejectWorkflowStateValidation } from "~/validation/rejectWorkflowState.js";
-import { cancelWorkflowStateValidation } from "~/validation/cancelWorkflowState.js";
-import { createWorkflowStateValidation } from "~/validation/createWorkflowState.js";
-import { getTargetWorkflowStateValidation } from "~/validation/getTargetWorkflowState.js";
-import { getWorkflowStateValidation } from "~/validation/getWorkflowState.js";
-import type { IWorkflowStateModel } from "~/context/abstractions/WorkflowState.js";
-import { takeOverWorkflowStateStepValidation } from "~/validation/takeOverWorkflowStateStep.js";
+import { listWorkflowStatesValidation } from "./validation/listWorkflowStates.js";
+import { startWorkflowStateValidation } from "./validation/startWorkflowState.js";
+import { approveWorkflowStateValidation } from "./validation/approveWorkflowState.js";
+import { rejectWorkflowStateValidation } from "./validation/rejectWorkflowState.js";
+import { cancelWorkflowStateValidation } from "./validation/cancelWorkflowState.js";
+import { createWorkflowStateValidation } from "./validation/createWorkflowState.js";
+import { getTargetWorkflowStateValidation } from "./validation/getTargetWorkflowState.js";
+import { getWorkflowStateValidation } from "./validation/getWorkflowState.js";
+import { takeOverWorkflowStateStepValidation } from "./validation/takeOverWorkflowStateStep.js";
 import { GetWorkflowStateUseCase } from "~/features/workflowState/GetWorkflowState/index.js";
 import { GetTargetWorkflowStateUseCase } from "~/features/workflowState/GetTargetWorkflowState/index.js";
 import { ListWorkflowStatesUseCase } from "~/features/workflowState/ListWorkflowStates/index.js";
@@ -22,9 +20,10 @@ import { ApproveWorkflowStateStepUseCase } from "~/features/workflowState/Approv
 import { RejectWorkflowStateStepUseCase } from "~/features/workflowState/RejectWorkflowStateStep/index.js";
 import { CancelWorkflowStateUseCase } from "~/features/workflowState/CancelWorkflowState/index.js";
 import { TakeOverWorkflowStateStepUseCase } from "~/features/workflowState/TakeOverWorkflowStateStep/index.js";
+import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 
 export const createWorkflowStateSchema = () => {
-    return new GraphQLSchemaPlugin<Context>({
+    return new GraphQLSchemaPlugin({
         typeDefs: /* GraphQL */ `
             enum WorkflowStateStateValue {
                 pending
@@ -197,13 +196,13 @@ export const createWorkflowStateSchema = () => {
         `,
         resolvers: {
             WorkflowState: {
-                isActive: (parent: Partial<IWorkflowStateModel>) => {
+                isActive: (parent: Partial<WorkflowState>) => {
                     return parent.isActive || false;
                 }
             },
             WorkflowsQuery: {
                 getWorkflowState: async (_, args, context) => {
-                    return resolve<IWorkflowStateModel>(async () => {
+                    return resolve<WorkflowState>(async () => {
                         const result = await getWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -220,7 +219,7 @@ export const createWorkflowStateSchema = () => {
                     });
                 },
                 getTargetWorkflowState: async (_, args, context) => {
-                    return resolve<IWorkflowStateModel>(async () => {
+                    return resolve<WorkflowState>(async () => {
                         const result = await getTargetWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -242,7 +241,7 @@ export const createWorkflowStateSchema = () => {
                     });
                 },
                 listWorkflowStates: async (_, args, context) => {
-                    return resolveList<IWorkflowStateModel>(async () => {
+                    return resolveList<WorkflowState>(async () => {
                         const result = await listWorkflowStatesValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -260,7 +259,7 @@ export const createWorkflowStateSchema = () => {
                     });
                 },
                 listOwnWorkflowStates: async (_, args, context) => {
-                    return resolveList<IWorkflowStateModel>(async () => {
+                    return resolveList<WorkflowState>(async () => {
                         const result = await listWorkflowStatesValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -279,7 +278,7 @@ export const createWorkflowStateSchema = () => {
                     });
                 },
                 listRequestedWorkflowStates: async (_, args, context) => {
-                    return resolveList<IWorkflowStateModel>(async () => {
+                    return resolveList<WorkflowState>(async () => {
                         const result = await listWorkflowStatesValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -300,7 +299,7 @@ export const createWorkflowStateSchema = () => {
             },
             WorkflowsMutation: {
                 createWorkflowState: async (_, args, context) => {
-                    return resolve<IWorkflowStateModel>(async () => {
+                    return resolve<WorkflowState>(async () => {
                         const result = await createWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -323,7 +322,7 @@ export const createWorkflowStateSchema = () => {
                     });
                 },
                 startWorkflowStateStep(_, args, context) {
-                    return resolve<IWorkflowStateModel>(async () => {
+                    return resolve<WorkflowState>(async () => {
                         const result = await startWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -342,7 +341,7 @@ export const createWorkflowStateSchema = () => {
                     });
                 },
                 approveWorkflowStateStep: (_, args, context) => {
-                    return resolve<IWorkflowStateModel>(async () => {
+                    return resolve<WorkflowState>(async () => {
                         const result = await approveWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -364,7 +363,7 @@ export const createWorkflowStateSchema = () => {
                     });
                 },
                 rejectWorkflowStateStep: (_, args, context) => {
-                    return resolve<IWorkflowStateModel>(async () => {
+                    return resolve<WorkflowState>(async () => {
                         const result = await rejectWorkflowStateValidation.safeParseAsync(args);
                         if (!result.success) {
                             throw createZodError(result.error);
@@ -405,7 +404,7 @@ export const createWorkflowStateSchema = () => {
                     });
                 },
                 takeOverWorkflowStateStep: (_, args, context) => {
-                    return resolve<IWorkflowStateModel>(async () => {
+                    return resolve<WorkflowState>(async () => {
                         const result =
                             await takeOverWorkflowStateStepValidation.safeParseAsync(args);
                         if (!result.success) {

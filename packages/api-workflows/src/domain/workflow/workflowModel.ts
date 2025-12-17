@@ -1,6 +1,6 @@
 import { createPrivateModelPlugin } from "@webiny/api-headless-cms";
 import { WORKFLOW_MODEL_ID } from "~/constants.js";
-import { createAppField, createStepsField } from "~/context/models/fields/index.js";
+import { createAppField, createStepsField } from "~/domain/shared/fields/index.js";
 
 export { WORKFLOW_MODEL_ID };
 

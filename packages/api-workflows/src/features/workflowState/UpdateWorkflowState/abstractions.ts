@@ -8,8 +8,9 @@ import {
 import type { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
 import type { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 
-export type IUpdateWorkflowStateInput = Partial<
-    Omit<IWorkflowStateRecord, "id" | "savedBy" | "savedOn" | "createdOn" | "createdBy">
+export type IUpdateWorkflowStateInput = Omit<
+    IWorkflowStateRecord,
+    "id" | "savedBy" | "savedOn" | "createdOn" | "createdBy"
 >;
 
 export interface WorkflowStateAfterUpdatePayload {
@@ -23,7 +24,7 @@ export interface WorkflowStateAfterUpdatePayload {
 export interface IUpdateWorkflowStateUseCase {
     execute(
         id: string,
-        input: IUpdateWorkflowStateInput
+        input: Partial<IUpdateWorkflowStateInput>
     ): Promise<Result<WorkflowState, UseCaseError>>;
 }
 

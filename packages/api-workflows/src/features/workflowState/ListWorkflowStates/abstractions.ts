@@ -1,8 +1,9 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { Result } from "@webiny/feature/api";
 import type { CmsEntryListSort, CmsEntryListWhere } from "@webiny/api-headless-cms/types";
-import type { IWorkflowState, IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
+import type { IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
 import type { WorkflowStatePersistenceError } from "~/domain/workflowState/errors.js";
+import type { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 
 export interface IMeta {
     cursor: string | null;
@@ -18,7 +19,7 @@ export interface IListWorkflowStatesParams {
 }
 
 export interface IListWorkflowStatesResponse {
-    items: IWorkflowState[];
+    items: WorkflowState[];
     meta: IMeta;
 }
 

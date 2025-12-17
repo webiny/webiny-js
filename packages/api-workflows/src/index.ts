@@ -6,7 +6,6 @@ import {
     createWorkflowStateModel,
     WORKFLOW_STATE_MODEL_ID
 } from "./domain/workflowState/stateModel.js";
-import type { Context } from "~/types.js";
 import { createWorkflowsSchema } from "~/graphql/workflows.js";
 import { createWorkflowStateSchema } from "~/graphql/workflowState.js";
 import { WorkflowModel } from "./domain/workflow/abstractions.js";
@@ -33,15 +32,20 @@ import { StartWorkflowStateStepFeature } from "~/features/workflowState/StartWor
 import { ApproveWorkflowStateStepFeature } from "~/features/workflowState/ApproveWorkflowStateStep/feature.js";
 import { RejectWorkflowStateStepFeature } from "~/features/workflowState/RejectWorkflowStateStep/feature.js";
 import { TakeOverWorkflowStateStepFeature } from "~/features/workflowState/TakeOverWorkflowStateStep/feature.js";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 
 export const createWorkflows = () => {
-    const plugin = new ContextPlugin<Context>(async context => {
+    const plugin = new ContextPlugin(async context => {
         const tenantContext = context.container.resolve(TenantContext);
+        const identityContext = context.container.resolve(IdentityContext);
+        const wcpContext = context.container.resolve(WcpContext);
+
         if (!tenantContext.getTenant()) {
             return;
         }
 
-        if (!context.wcp.canUseWorkflows()) {
+        if (!wcpContext.canUseWorkflows()) {
             return;
         }
 
@@ -53,7 +57,7 @@ export const createWorkflows = () => {
         // Fetch and register CMS models
         const getModel = context.container.resolve(GetModelUseCase);
 
-        await context.security.withoutAuthorization(async () => {
+        await identityContext.withoutAuthorization(async () => {
             const [workflowModel, workflowStateModel] = await Promise.all([
                 getModel.execute(WORKFLOW_MODEL_ID),
                 getModel.execute(WORKFLOW_STATE_MODEL_ID)

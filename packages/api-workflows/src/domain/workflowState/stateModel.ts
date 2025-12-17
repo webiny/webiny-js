@@ -1,5 +1,4 @@
 import { createPrivateModelPlugin } from "@webiny/api-headless-cms";
-// TODO: move to `domain`
 import {
     createAppField,
     createCommentField,
@@ -7,7 +6,7 @@ import {
     createStateField,
     createStepsField,
     createTitleField
-} from "../../context/models/fields/index.js";
+} from "~/domain/shared/fields/index.js";
 
 export const WORKFLOW_STATE_MODEL_ID = "workflowState";
 

@@ -1,9 +1,8 @@
 import { createAbstraction } from "@webiny/feature/api";
 import type { CmsEntry, CmsModel } from "@webiny/api-headless-cms/types";
 import type { NonEmptyArray } from "@webiny/api/types.js";
-import { IWorkflowInput } from "~/context/abstractions/WorkflowInput.js";
+import type { IWorkflowInput } from "~/features/shared/abstractions.js";
 
-// Domain types (from context/abstractions/Workflow.ts)
 export interface IWorkflowStepNotification {
     id: string;
 }
