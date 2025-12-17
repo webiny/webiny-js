@@ -15,6 +15,7 @@ import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/
 import { WorkflowMapper } from "~/domain/workflow/WorkflowMapper.js";
 import { WorkflowStateMapper } from "~/domain/workflowState/WorkflowStateMapper.js";
 import { GetWorkflowFeature } from "~/features/workflow/GetWorkflow/feature.js";
+import { ListWorkflowsFeature } from "~/features/workflow/ListWorkflows/feature.js";
 
 export * from "./context/errors/index.js";
 
@@ -66,6 +67,7 @@ export const createWorkflows = () => {
 
         // Register workflow features
         GetWorkflowFeature.register(context.container);
+        ListWorkflowsFeature.register(context.container);
 
         await createContext(context);
         context.plugins.register(createWorkflowsSchema(), createWorkflowStateSchema());
