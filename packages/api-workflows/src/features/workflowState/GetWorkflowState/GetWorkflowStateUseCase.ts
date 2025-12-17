@@ -12,8 +12,8 @@ class GetWorkflowStateUseCaseImpl implements UseCase.Interface {
         private repository: GetWorkflowStateRepository.Interface
     ) {}
 
-    async execute(input: UseCase.Params): UseCase.Return {
-        const recordResult = await this.repository.execute(input);
+    async execute(id: string): UseCase.Return {
+        const recordResult = await this.repository.execute(id);
 
         if (recordResult.isFail()) {
             return Result.fail(recordResult.error);

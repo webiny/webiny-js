@@ -15,19 +15,15 @@ class GetWorkflowStateRepositoryImpl implements Repository.Interface {
         private mapper: WorkflowStateMapper.Interface
     ) {}
 
-    async execute(input: Repository.Params): Repository.Return {
+    async execute(id: string): Repository.Return {
         const entryResult = await this.getEntryById.execute<Omit<IWorkflowStateRecord, "id">>(
             this.model,
-            input.id
+            id
         );
 
         if (entryResult.isFail()) {
             if (entryResult.error.code === "Cms/Entry/NotFound") {
-                return Result.fail(
-                    new WorkflowStateNotFoundError({
-                        id: input.id
-                    })
-                );
+                return Result.fail(new WorkflowStateNotFoundError({ id }));
             }
 
             return Result.fail(new WorkflowStatePersistenceError(entryResult.error));

@@ -7,15 +7,11 @@ import {
     type WorkflowStatePersistenceError
 } from "~/domain/workflowState/errors.js";
 
-export interface IGetWorkflowStateParams {
-    id: string;
-}
-
 /**
  * GetWorkflowState use case interface
  */
 export interface IGetWorkflowStateUseCase {
-    execute(input: IGetWorkflowStateParams): Promise<Result<IWorkflowState, UseCaseError>>;
+    execute(id: string): Promise<Result<IWorkflowState, UseCaseError>>;
 }
 
 export interface IGetWorkflowStateUseCaseErrors {
@@ -30,7 +26,6 @@ export const GetWorkflowStateUseCase =
 
 export namespace GetWorkflowStateUseCase {
     export type Interface = IGetWorkflowStateUseCase;
-    export type Params = IGetWorkflowStateParams;
     export type Return = Promise<Result<IWorkflowState, UseCaseError>>;
     export type Error = UseCaseError;
 }
@@ -39,7 +34,7 @@ export namespace GetWorkflowStateUseCase {
  * GetWorkflowState repository interface
  */
 export interface IGetWorkflowStateRepository {
-    execute(input: IGetWorkflowStateParams): Promise<Result<IWorkflowStateRecord, RepositoryError>>;
+    execute(id: string): Promise<Result<IWorkflowStateRecord, RepositoryError>>;
 }
 
 export interface IGetWorkflowStateRepositoryErrors {
@@ -55,7 +50,6 @@ export const GetWorkflowStateRepository = createAbstraction<IGetWorkflowStateRep
 
 export namespace GetWorkflowStateRepository {
     export type Interface = IGetWorkflowStateRepository;
-    export type Params = IGetWorkflowStateParams;
     export type Return = Promise<Result<IWorkflowStateRecord, RepositoryError>>;
     export type Error = RepositoryError;
 }

@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type {
     CmsEntry,
+    CmsEntryValues,
     CmsModel,
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
@@ -19,13 +20,13 @@ import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
  * UpdateEntry Use Case
  */
 export interface IUpdateEntryUseCase {
-    execute(
+    execute<T = CmsEntryValues>(
         model: CmsModel,
         id: string,
-        input: UpdateCmsEntryInput,
+        input: UpdateCmsEntryInput<T>,
         metaInput?: GenericRecord,
         options?: UpdateCmsEntryOptionsInput
-    ): Promise<Result<CmsEntry, UseCaseError>>;
+    ): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export interface IUpdateEntryUseCaseErrors {
