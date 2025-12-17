@@ -127,6 +127,7 @@
     "md5": "^2.3.0",
     "minimatch": "^5.1.6",
     "pino": "^9.6.0",
+    "pino-lambda": "^4.4.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {

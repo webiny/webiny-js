@@ -2,19 +2,23 @@ import { createImplementation } from "@webiny/feature/api";
 import { type Logger, pino } from "pino";
 import { LoggerService as LoggerServiceAbstraction } from "./abstractions.js";
 
+// TODO: We have `pino-lambda` hardcoded here simply b/c of lack of good infrastructure.
+//       We want `pino-lambda` for AWS Lambda, but its setup step relies on context of the Lambda function. That's
+//       why we also have it hardcoded in `createHandler` function in `handler-aws` package.
+//       Once we have a better infrastructure for handling such cases, we should refactor this.
+import { pinoLambdaDestination, StructuredLogFormatter } from "pino-lambda";
+
 const DEFAULT_LOG_LEVEL = "info";
 
-/**
- * Default Logger Service Implementation using Pino
- */
-
-// TODO: pino-lambda pkg here, but hard b/c of context.
 export class LoggerServiceImpl implements LoggerServiceAbstraction.Interface {
     private pinoLogger: Logger;
 
     constructor() {
         const level = this.getLogLevel();
-        this.pinoLogger = pino({ level });
+        const destination = pinoLambdaDestination({
+            formatter: new StructuredLogFormatter()
+        });
+        this.pinoLogger = pino({ level }, destination);
     }
 
     trace(objOrMsg: object | string, ...args: any[]) {

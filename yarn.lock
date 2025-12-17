@@ -13959,6 +13959,7 @@ __metadata:
     md5: "npm:^2.3.0"
     minimatch: "npm:^5.1.6"
     pino: "npm:^9.6.0"
+    pino-lambda: "npm:^4.4.1"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
@@ -15960,6 +15961,7 @@ __metadata:
     "@webiny/plugins": "npm:0.0.0"
     "@webiny/utils": "npm:0.0.0"
     fastify: "npm:4.29.1"
+    pino-lambda: "npm:^4.4.1"
     rimraf: "npm:^6.0.1"
     typescript: "npm:5.9.3"
     vitest: "npm:^3.2.4"
@@ -29269,6 +29271,15 @@ __metadata:
   dependencies:
     split2: "npm:^4.0.0"
   checksum: 10/e5699ecb06c7121055978e988e5cecea5b6892fc2589c64f1f86df5e7386bbbfd2ada268839e911b021c6b3123428aed7c6be3ac7940eee139556c75324c7e83
+  languageName: node
+  linkType: hard
+
+"pino-lambda@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "pino-lambda@npm:4.4.1"
+  peerDependencies:
+    pino: ">=6.0.0"
+  checksum: 10/6605e950b6aeca47836490c3771f7b3fa08c70ce1e05e8de0e2fd0ff7ceaba797e5d90ff1d4c85e543df3388ca1e5d6b652bf9d0b7a93491603578719b2671da
   languageName: node
   linkType: hard
 
