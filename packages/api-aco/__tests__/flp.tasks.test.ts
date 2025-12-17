@@ -3,8 +3,8 @@ import { useHandler } from "~tests/utils/useHandler";
 import type { Folder } from "~/folder/folder.types";
 import { ROOT_FOLDER } from "~/constants";
 import { DeleteFlpUseCase } from "~/features/flp/DeleteFlp/index.js";
-import { CreateFolderUseCase } from "~/features/folders/CreateFolder/index.js";
-import { UpdateFolderUseCase } from "~/features/folders/UpdateFolder/index.js";
+import { CreateFolderUseCase } from "~/features/folder/CreateFolder/index.js";
+import { UpdateFolderUseCase } from "~/features/folder/UpdateFolder/index.js";
 
 describe("FLP Tasks", () => {
     describe("Folder Level Permissions -  CREATE FLP", () => {

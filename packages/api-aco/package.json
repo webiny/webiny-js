@@ -20,13 +20,13 @@
   },
   "exports": {
     "./features/flp/FolderLevelPermissions": "./features/flp/FolderLevelPermissions/index.js",
-    "./features/folders/CreateFolder": "./features/folders/CreateFolder/index.js",
-    "./features/folders/UpdateFolder": "./features/folders/UpdateFolder/index.js",
-    "./features/folders/DeleteFolder": "./features/folders/DeleteFolder/index.js",
-    "./features/folders/GetAncestors": "./features/folders/GetAncestors/index.js",
-    "./features/folders/GetFolder": "./features/folders/GetFolder/index.js",
-    "./features/folders/GetFolderHierarchy": "./features/folders/GetFolderHierarchy/index.js",
-    "./features/folders/ListFolders": "./features/folders/ListFolders/index.js",
+    "./features/folder/CreateFolder": "./features/folder/CreateFolder/index.js",
+    "./features/folder/UpdateFolder": "./features/folder/UpdateFolder/index.js",
+    "./features/folder/DeleteFolder": "./features/folder/DeleteFolder/index.js",
+    "./features/folder/GetAncestors": "./features/folder/GetAncestors/index.js",
+    "./features/folder/GetFolder": "./features/folder/GetFolder/index.js",
+    "./features/folder/GetFolderHierarchy": "./features/folder/GetFolderHierarchy/index.js",
+    "./features/folder/ListFolders": "./features/folder/ListFolders/index.js",
     ".": "./index.js"
   },
   "dependencies": {

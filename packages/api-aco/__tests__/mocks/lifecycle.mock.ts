@@ -7,19 +7,19 @@ import {
     FolderAfterCreateHandler,
     type FolderBeforeCreatePayload,
     type FolderAfterCreatePayload
-} from "~/features/folders/CreateFolder/abstractions.js";
+} from "~/features/folder/CreateFolder/abstractions.js";
 import {
     FolderBeforeUpdateHandler,
     FolderAfterUpdateHandler,
     type FolderBeforeUpdatePayload,
     type FolderAfterUpdatePayload
-} from "~/features/folders/UpdateFolder/abstractions.js";
+} from "~/features/folder/UpdateFolder/abstractions.js";
 import {
     FolderBeforeDeleteHandler,
     FolderAfterDeleteHandler,
     type FolderBeforeDeletePayload,
     type FolderAfterDeletePayload
-} from "~/features/folders/DeleteFolder/abstractions.js";
+} from "~/features/folder/DeleteFolder/abstractions.js";
 
 export const tracker = new LifecycleEventTracker();
 
