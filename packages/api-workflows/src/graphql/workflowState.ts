@@ -11,6 +11,17 @@ import { getTargetWorkflowStateValidation } from "~/validation/getTargetWorkflow
 import { getWorkflowStateValidation } from "~/validation/getWorkflowState.js";
 import type { IWorkflowStateModel } from "~/context/abstractions/WorkflowState.js";
 import { takeOverWorkflowStateStepValidation } from "~/validation/takeOverWorkflowStateStep.js";
+import { GetWorkflowStateUseCase } from "~/features/workflowState/GetWorkflowState/index.js";
+import { GetTargetWorkflowStateUseCase } from "~/features/workflowState/GetTargetWorkflowState/index.js";
+import { ListWorkflowStatesUseCase } from "~/features/workflowState/ListWorkflowStates/index.js";
+import { ListOwnWorkflowStatesUseCase } from "~/features/workflowState/ListOwnWorkflowStates/index.js";
+import { ListRequestedWorkflowStatesUseCase } from "~/features/workflowState/ListRequestedWorkflowStates/index.js";
+import { CreateWorkflowStateUseCase } from "~/features/workflowState/CreateWorkflowState/index.js";
+import { StartWorkflowStateStepUseCase } from "~/features/workflowState/StartWorkflowStateStep/index.js";
+import { ApproveWorkflowStateStepUseCase } from "~/features/workflowState/ApproveWorkflowStateStep/index.js";
+import { RejectWorkflowStateStepUseCase } from "~/features/workflowState/RejectWorkflowStateStep/index.js";
+import { CancelWorkflowStateUseCase } from "~/features/workflowState/CancelWorkflowState/index.js";
+import { TakeOverWorkflowStateStepUseCase } from "~/features/workflowState/TakeOverWorkflowStateStep/index.js";
 
 export const createWorkflowStateSchema = () => {
     return new GraphQLSchemaPlugin<Context>({
@@ -198,7 +209,14 @@ export const createWorkflowStateSchema = () => {
                             throw createZodError(result.error);
                         }
 
-                        return await context.workflowState.getState(result.data.id);
+                        const getWorkflowState = context.container.resolve(GetWorkflowStateUseCase);
+                        const stateResult = await getWorkflowState.execute(result.data.id);
+
+                        if (stateResult.isFail()) {
+                            throw stateResult.error;
+                        }
+
+                        return stateResult.value;
                     });
                 },
                 getTargetWorkflowState: async (_, args, context) => {
@@ -207,10 +225,20 @@ export const createWorkflowStateSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return await context.workflowState.getTargetState(
-                            result.data.app,
-                            result.data.targetRevisionId
+
+                        const getTargetWorkflowState = context.container.resolve(
+                            GetTargetWorkflowStateUseCase
                         );
+                        const stateResult = await getTargetWorkflowState.execute({
+                            app: result.data.app,
+                            targetRevisionId: result.data.targetRevisionId
+                        });
+
+                        if (stateResult.isFail()) {
+                            throw stateResult.error;
+                        }
+
+                        return stateResult.value;
                     });
                 },
                 listWorkflowStates: async (_, args, context) => {
@@ -219,7 +247,16 @@ export const createWorkflowStateSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return await context.workflowState.listStates(result.data);
+
+                        const listWorkflowStates =
+                            context.container.resolve(ListWorkflowStatesUseCase);
+                        const listResult = await listWorkflowStates.execute(result.data);
+
+                        if (listResult.isFail()) {
+                            throw listResult.error;
+                        }
+
+                        return listResult.value;
                     });
                 },
                 listOwnWorkflowStates: async (_, args, context) => {
@@ -228,7 +265,17 @@ export const createWorkflowStateSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return await context.workflowState.listOwnWorkflowStates(result.data);
+
+                        const listOwnWorkflowStates = context.container.resolve(
+                            ListOwnWorkflowStatesUseCase
+                        );
+                        const listResult = await listOwnWorkflowStates.execute(result.data);
+
+                        if (listResult.isFail()) {
+                            throw listResult.error;
+                        }
+
+                        return listResult.value;
                     });
                 },
                 listRequestedWorkflowStates: async (_, args, context) => {
@@ -237,7 +284,17 @@ export const createWorkflowStateSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return await context.workflowState.listRequestedWorkflowStates(result.data);
+
+                        const listRequestedWorkflowStates = context.container.resolve(
+                            ListRequestedWorkflowStatesUseCase
+                        );
+                        const listResult = await listRequestedWorkflowStates.execute(result.data);
+
+                        if (listResult.isFail()) {
+                            throw listResult.error;
+                        }
+
+                        return listResult.value;
                     });
                 }
             },
@@ -249,11 +306,20 @@ export const createWorkflowStateSchema = () => {
                             throw createZodError(result.error);
                         }
 
-                        return await context.workflowState.createState(
-                            result.data.app,
-                            result.data.targetRevisionId,
-                            result.data.title
+                        const createWorkflowState = context.container.resolve(
+                            CreateWorkflowStateUseCase
                         );
+                        const createResult = await createWorkflowState.execute({
+                            app: result.data.app,
+                            targetRevisionId: result.data.targetRevisionId,
+                            title: result.data.title
+                        });
+
+                        if (createResult.isFail()) {
+                            throw createResult.error;
+                        }
+
+                        return createResult.value;
                     });
                 },
                 startWorkflowStateStep(_, args, context) {
@@ -262,7 +328,17 @@ export const createWorkflowStateSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return await context.workflowState.startStateStep(result.data.id);
+
+                        const startWorkflowStateStep = context.container.resolve(
+                            StartWorkflowStateStepUseCase
+                        );
+                        const startResult = await startWorkflowStateStep.execute(result.data.id);
+
+                        if (startResult.isFail()) {
+                            throw startResult.error;
+                        }
+
+                        return startResult.value;
                     });
                 },
                 approveWorkflowStateStep: (_, args, context) => {
@@ -271,10 +347,20 @@ export const createWorkflowStateSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return await context.workflowState.approveStateStep(
+
+                        const approveWorkflowStateStep = context.container.resolve(
+                            ApproveWorkflowStateStepUseCase
+                        );
+                        const approveResult = await approveWorkflowStateStep.execute(
                             result.data.id,
                             result.data.comment
                         );
+
+                        if (approveResult.isFail()) {
+                            throw approveResult.error;
+                        }
+
+                        return approveResult.value;
                     });
                 },
                 rejectWorkflowStateStep: (_, args, context) => {
@@ -283,10 +369,20 @@ export const createWorkflowStateSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return await context.workflowState.rejectStateStep(
+
+                        const rejectWorkflowStateStep = context.container.resolve(
+                            RejectWorkflowStateStepUseCase
+                        );
+                        const rejectResult = await rejectWorkflowStateStep.execute(
                             result.data.id,
                             result.data.comment
                         );
+
+                        if (rejectResult.isFail()) {
+                            throw rejectResult.error;
+                        }
+
+                        return rejectResult.value;
                     });
                 },
                 cancelWorkflowState: (_, args, context) => {
@@ -295,7 +391,16 @@ export const createWorkflowStateSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        await context.workflowState.cancelState(result.data.id);
+
+                        const cancelWorkflowState = context.container.resolve(
+                            CancelWorkflowStateUseCase
+                        );
+                        const cancelResult = await cancelWorkflowState.execute(result.data.id);
+
+                        if (cancelResult.isFail()) {
+                            throw cancelResult.error;
+                        }
+
                         return true;
                     });
                 },
@@ -306,7 +411,19 @@ export const createWorkflowStateSchema = () => {
                         if (!result.success) {
                             throw createZodError(result.error);
                         }
-                        return await context.workflowState.takeOverStateStep(result.data.id);
+
+                        const takeOverWorkflowStateStep = context.container.resolve(
+                            TakeOverWorkflowStateStepUseCase
+                        );
+                        const takeOverResult = await takeOverWorkflowStateStep.execute(
+                            result.data.id
+                        );
+
+                        if (takeOverResult.isFail()) {
+                            throw takeOverResult.error;
+                        }
+
+                        return takeOverResult.value;
                     });
                 }
             }

@@ -1,7 +1,7 @@
 import zod from "zod";
 import type { NonEmptyArray } from "@webiny/api/types.js";
 import { stepValidation } from "./step.js";
-import type { IWorkflowStep } from "~/context/abstractions/Workflow.js";
+import type { IWorkflowStep } from "~/domain/workflow/abstractions.js";
 
 export const workflowValidation = zod.object({
     name: zod.string().min(1, "Name is required."),

@@ -3,7 +3,7 @@ import type {
     CmsEntryListSortAsc,
     CmsEntryListSortDesc
 } from "@webiny/api-headless-cms/types/index.js";
-import { WorkflowStateRecordState } from "~/context/abstractions/WorkflowState.js";
+import { WorkflowStateRecordState } from "~/domain/workflowState/abstractions.js";
 
 const datePreprocess = (input: unknown) => {
     if (typeof input == "string" || input instanceof Date) {

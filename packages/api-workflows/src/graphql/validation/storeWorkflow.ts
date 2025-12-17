@@ -1,5 +1,5 @@
 import zod from "zod";
-import { workflowValidation } from "~/validation/workflow.js";
+import { workflowValidation } from "./workflow.js";
 
 export const storeWorkflowValidation = zod.object({
     app: zod.string().min(1, "App is required."),

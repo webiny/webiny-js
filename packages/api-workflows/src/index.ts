@@ -1,17 +1,16 @@
-import { createContext } from "~/context/index.js";
+import { ContextPlugin } from "@webiny/handler";
+import { TenantContext } from "@webiny/api-core/features/TenantContext";
+import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { createWorkflowModel, WORKFLOW_MODEL_ID } from "./domain/workflow/workflowModel.js";
 import {
     createWorkflowStateModel,
     WORKFLOW_STATE_MODEL_ID
 } from "./domain/workflowState/stateModel.js";
-import { ContextPlugin } from "@webiny/handler";
 import type { Context } from "~/types.js";
 import { createWorkflowsSchema } from "~/graphql/workflows.js";
 import { createWorkflowStateSchema } from "~/graphql/workflowState.js";
-import { TenantContext } from "@webiny/api-core/features/TenantContext";
 import { WorkflowModel } from "./domain/workflow/abstractions.js";
 import { WorkflowStateModel } from "./domain/workflowState/abstractions.js";
-import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { WorkflowMapper } from "~/domain/workflow/WorkflowMapper.js";
 import { WorkflowStateMapper } from "~/domain/workflowState/WorkflowStateMapper.js";
 import { GetWorkflowFeature } from "~/features/workflow/GetWorkflow/feature.js";
@@ -34,21 +33,6 @@ import { StartWorkflowStateStepFeature } from "~/features/workflowState/StartWor
 import { ApproveWorkflowStateStepFeature } from "~/features/workflowState/ApproveWorkflowStateStep/feature.js";
 import { RejectWorkflowStateStepFeature } from "~/features/workflowState/RejectWorkflowStateStep/feature.js";
 import { TakeOverWorkflowStateStepFeature } from "~/features/workflowState/TakeOverWorkflowStateStep/feature.js";
-
-export * from "./context/errors/index.js";
-
-export type {
-    IWorkflowState,
-    IWorkflowStateRecord,
-    IWorkflowStateRecordStep,
-    IWorkflowStateModel
-} from "./context/abstractions/WorkflowState.js";
-export type {
-    IWorkflow,
-    IWorkflowStepNotification,
-    IWorkflowStepTeam,
-    IWorkflowStep
-} from "./context/abstractions/Workflow.js";
 
 export const createWorkflows = () => {
     const plugin = new ContextPlugin<Context>(async context => {
@@ -107,7 +91,6 @@ export const createWorkflows = () => {
         RejectWorkflowStateStepFeature.register(context.container);
         TakeOverWorkflowStateStepFeature.register(context.container);
 
-        await createContext(context);
         context.plugins.register(createWorkflowsSchema(), createWorkflowStateSchema());
     });
 

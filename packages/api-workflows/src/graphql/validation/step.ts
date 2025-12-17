@@ -1,6 +1,6 @@
 import zod from "zod";
 import type { NonEmptyArray } from "@webiny/api/types.js";
-import type { IWorkflowStepTeam } from "~/context/abstractions/Workflow.js";
+import type { IWorkflowStepTeam } from "~/domain/workflow/abstractions.js";
 
 export const stepValidation = zod.object({
     id: zod.string().min(1, "ID is required."),
