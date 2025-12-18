@@ -2,6 +2,7 @@ import { createAbstraction } from "@webiny/feature/api";
 import { Result } from "@webiny/feature/api";
 import type {
     CmsEntry,
+    CmsEntryValues,
     CmsModel,
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput
@@ -17,12 +18,12 @@ import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
  * CreateEntryRevisionFrom Use Case - Creates a new revision from an existing entry.
  */
 export interface ICreateEntryRevisionFromUseCase {
-    execute(
+    execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         sourceId: string,
-        input: CreateCmsEntryInput,
+        input: CreateCmsEntryInput<T>,
         options?: CreateCmsEntryOptionsInput
-    ): Promise<Result<CmsEntry, UseCaseError>>;
+    ): Promise<Result<CmsEntry<T>, UseCaseError>>;
 }
 
 export interface ICreateEntryRevisionFromUseCaseErrors {
@@ -41,6 +42,7 @@ export const CreateEntryRevisionFromUseCase = createAbstraction<ICreateEntryRevi
 
 export namespace CreateEntryRevisionFromUseCase {
     export type Interface = ICreateEntryRevisionFromUseCase;
+    export type Return<T> = Promise<Result<CmsEntry<T>, UseCaseError>>;
     export type Error = UseCaseError;
 }
 

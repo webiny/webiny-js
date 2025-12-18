@@ -10,6 +10,7 @@ import { GetRevisionByIdUseCase } from "~/features/contentEntry/GetRevisionById/
 import { GetLatestRevisionByEntryIdUseCase } from "~/features/contentEntry/GetLatestRevisionByEntryId/index.js";
 import type {
     CmsEntry,
+    CmsEntryValues,
     CmsModel,
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput
@@ -49,12 +50,12 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
         private cmsContext: CmsContext.Interface
     ) {}
 
-    async execute(
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         sourceId: string,
-        rawInput: CreateCmsEntryInput,
+        rawInput: CreateCmsEntryInput<T>,
         options?: CreateCmsEntryOptionsInput
-    ): Promise<Result<CmsEntry, UseCaseAbstraction.Error>> {
+    ): Promise<Result<CmsEntry<T>, UseCaseAbstraction.Error>> {
         // Check access control
         const canAccess = await this.accessControl.canAccessEntry({ model, rwd: "w" });
         if (!canAccess) {
@@ -132,7 +133,7 @@ class CreateEntryRevisionFromUseCaseImpl implements UseCaseAbstraction.Interface
                 return Result.fail(result.error);
             }
 
-            const createdEntry = result.value;
+            const createdEntry = result.value as CmsEntry<T>;
 
             // Publish after event
             await this.eventPublisher.publish(

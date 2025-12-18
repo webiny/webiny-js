@@ -139,7 +139,7 @@ export interface CmsEntryContext {
     /**
      * Update existing entry.
      */
-    updateEntry: <TInput = CmsEntryValues>(
+    updateEntry: <TInput extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string,
         input: UpdateCmsEntryInput<TInput>,

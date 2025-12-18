@@ -43,7 +43,7 @@ class UpdateEntryUseCaseImpl implements UseCaseAbstraction.Interface {
         private getRevisionByIdUseCase: GetRevisionByIdUseCase.Interface
     ) {}
 
-    async execute<T = CmsEntryValues>(
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string,
         rawInput: UpdateCmsEntryInput<T>,

@@ -2,6 +2,7 @@ import { createDecorator, Result } from "@webiny/feature/api";
 import { CreateEntryRevisionFromUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntryRevisionFrom/abstractions.js";
 import { GetRevisionByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionById/abstractions.js";
 import type {
+    CmsEntryValues,
     CmsModel,
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput
@@ -19,12 +20,12 @@ class CreateEntryRevisionFromWithFlpDecoratorImpl
         private decoratee: CreateEntryRevisionFromUseCase.Interface
     ) {}
 
-    async execute(
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         sourceId: string,
-        input: CreateCmsEntryInput,
+        input: CreateCmsEntryInput<T>,
         options?: CreateCmsEntryOptionsInput
-    ): ReturnType<CreateEntryRevisionFromUseCase.Interface["execute"]> {
+    ): CreateEntryRevisionFromUseCase.Return<T> {
         if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
             return this.decoratee.execute(model, sourceId, input, options);
         }
