@@ -119,6 +119,14 @@ export const createContextHandler = async (params: UseContextHandlerParams = {})
 export const createGraphQLHandler = (params: UseGraphQLHandlerParams = {}) => {
     const plugins = new PluginsContainer(params.plugins || []);
     plugins.register(createWorkflows());
+
+    // Register mock GetUserTeamsUseCase for testing
+    plugins.register(
+        new ContextPlugin(async context => {
+            context.container.registerDecorator(GetUserTeamsTestMock);
+        })
+    );
+
     const handler = useGraphQLHandler({
         ...params,
         permissions: [

@@ -425,7 +425,7 @@ describe("workflow states graphql", () => {
                     rejectWorkflowStateStep: {
                         data: null,
                         error: {
-                            code: "WORKFLOW_NOT_IN_REVIEW"
+                            code: "Workflows/State/NotInReview"
                         }
                     }
                 }
@@ -620,7 +620,7 @@ describe("workflow states graphql", () => {
                     createWorkflowState: {
                         data: null,
                         error: {
-                            code: "ACTIVE_STATE_EXISTS"
+                            code: "Workflows/State/ActiveExists"
                         }
                     }
                 }

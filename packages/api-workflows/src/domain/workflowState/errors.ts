@@ -133,6 +133,17 @@ export class WorkflowStateRejectedError extends BaseError<{ state: IWorkflowStat
     }
 }
 
+export class WorkflowStateNotInReview extends BaseError<{ state: IWorkflowStateRecord }> {
+    override readonly code = "Workflows/State/NotInReview" as const;
+
+    constructor(message: string, state: IWorkflowStateRecord) {
+        super({
+            message,
+            data: { state }
+        });
+    }
+}
+
 export class WorkflowStateNoCurrentStepError extends BaseError<{
     steps: IWorkflowStateRecordStep[];
 }> {

@@ -16,7 +16,8 @@ import {
     WorkflowStateStepNotStepOwnerError,
     WorkflowStateInReviewError,
     WorkflowStateRejectedError,
-    WorkflowStateNoCurrentStepError
+    WorkflowStateNoCurrentStepError,
+    WorkflowStateNotInReview
 } from "./errors.js";
 import { canReview } from "./guards/canReview.js";
 import { isRejected } from "./guards/isRejected.js";
@@ -279,8 +280,9 @@ export class WorkflowState implements IWorkflowState {
         const step = this.getActiveStep();
         if (!step) {
             return Result.fail(
-                new WorkflowStateNotAuthorizedError(
-                    `Cannot reject a workflow state that is not in review.`
+                new WorkflowStateNotInReview(
+                    `Cannot reject a workflow state that is not in review.`,
+                    this
                 )
             );
         }
@@ -413,6 +415,7 @@ export namespace WorkflowState {
         | WorkflowStateStepCannotTakeOverError
         | WorkflowStateStepNotStepOwnerError
         | WorkflowStateInReviewError
+        | WorkflowStateNotInReview
         | WorkflowStateRejectedError
         | WorkflowStateNoCurrentStepError;
 }
