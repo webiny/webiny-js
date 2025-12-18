@@ -1,12 +1,13 @@
 import { ModelAfterDeleteHandler } from "@webiny/api-headless-cms/features/contentModel/DeleteModel/events.js";
-import { DeleteWorkflow, ListWorkflows } from "../abstractions.js";
+import { ListWorkflowsUseCase } from "@webiny/api-workflows/features/workflow/ListWorkflows/index.js";
+import { DeleteWorkflowUseCase } from "@webiny/api-workflows/features/workflow/DeleteWorkflow/index.js";
 import { createWorkflowAppName } from "~/utils/appName.js";
 import { isModelAllowed } from "~/utils/modelAllowed.js";
 
 class DeleteWorkflowsOnModelAfterDeleteImpl implements ModelAfterDeleteHandler.Interface {
     constructor(
-        private listWorkflows: ListWorkflows.Interface,
-        private deleteWorkflow: DeleteWorkflow.Interface
+        private listWorkflows: ListWorkflowsUseCase.Interface,
+        private deleteWorkflow: DeleteWorkflowUseCase.Interface
     ) {}
 
     async handle(event: ModelAfterDeleteHandler.Event): Promise<void> {
@@ -17,16 +18,21 @@ class DeleteWorkflowsOnModelAfterDeleteImpl implements ModelAfterDeleteHandler.I
         }
 
         const app = createWorkflowAppName({ model });
-        const workflows = await this.listWorkflows.execute({
+        const result = await this.listWorkflows.execute({
             where: {
                 app
             },
             limit: 10000
         });
 
-        for (const workflow of workflows.items) {
+        const workflows = result.value.items;
+
+        for (const workflow of workflows) {
             try {
-                await this.deleteWorkflow.execute(workflow.app, workflow.id);
+                await this.deleteWorkflow.execute({
+                    app: workflow.app,
+                    id: workflow.id
+                });
             } catch {
                 // does not matter
             }
@@ -36,5 +42,5 @@ class DeleteWorkflowsOnModelAfterDeleteImpl implements ModelAfterDeleteHandler.I
 
 export const DeleteWorkflowsOnModelAfterDelete = ModelAfterDeleteHandler.createImplementation({
     implementation: DeleteWorkflowsOnModelAfterDeleteImpl,
-    dependencies: [ListWorkflows, DeleteWorkflow]
+    dependencies: [ListWorkflowsUseCase, DeleteWorkflowUseCase]
 });

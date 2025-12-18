@@ -1,13 +1,12 @@
 import { WebinyError } from "@webiny/error";
 import { EntryBeforePublishHandler } from "@webiny/api-headless-cms/features/contentEntry/PublishEntry/events.js";
-import { GetTargetState } from "../abstractions.js";
 import { createWorkflowAppName } from "~/utils/appName.js";
 import { isModelAllowed } from "~/utils/modelAllowed.js";
-import type { IWorkflowStateModel } from "@webiny/api-workflows/context/abstractions/WorkflowState.js";
-import { WorkflowStateNotFoundError } from "@webiny/api-workflows";
+import { GetTargetWorkflowStateUseCase } from "@webiny/api-workflows/features/workflowState/GetTargetWorkflowState/index.js";
+import type { WorkflowState } from "@webiny/api-workflows/domain/workflowState/WorkflowState.js";
 
 class ValidateWorkflowStateOnEntryBeforePublishImpl implements EntryBeforePublishHandler.Interface {
-    constructor(private getTargetState: GetTargetState.Interface) {}
+    constructor(private getTargetState: GetTargetWorkflowStateUseCase.Interface) {}
 
     async handle(event: EntryBeforePublishHandler.Event): Promise<void> {
         const { model, entry } = event.payload;
@@ -18,19 +17,13 @@ class ValidateWorkflowStateOnEntryBeforePublishImpl implements EntryBeforePublis
 
         const app = createWorkflowAppName({ model });
 
-        let state: IWorkflowStateModel | undefined = undefined;
-        try {
-            state = await this.getTargetState.execute(app, entry.id);
-            if (state?.done) {
-                entry.state = undefined;
-                return;
-            }
-        } catch (ex) {
-            // Swallow error if workflow state is not found.
-            if (ex instanceof WorkflowStateNotFoundError) {
-                return;
-            }
-            throw ex;
+        let state: WorkflowState | undefined;
+        const stateResult = await this.getTargetState.execute({ app, targetRevisionId: entry.id });
+        state = stateResult.value;
+
+        if (state?.done) {
+            entry.state = undefined;
+            return;
         }
 
         throw new WebinyError(
@@ -50,5 +43,5 @@ class ValidateWorkflowStateOnEntryBeforePublishImpl implements EntryBeforePublis
 export const ValidateWorkflowStateOnEntryBeforePublish =
     EntryBeforePublishHandler.createImplementation({
         implementation: ValidateWorkflowStateOnEntryBeforePublishImpl,
-        dependencies: [GetTargetState]
+        dependencies: [GetTargetWorkflowStateUseCase]
     });
