@@ -1,5 +1,5 @@
 import type { GenericRecord } from "@webiny/api/types.js";
-import { RequiredDeep } from "type-fest";
+import type { RequiredDeep } from "type-fest";
 import type {
     IEnrichedWorkflowStateRecordStep,
     IWorkflowState,
@@ -160,7 +160,7 @@ export const LIST_WORKFLOWS_QUERY = /* GraphQL */ `
 export interface IStoreWorkflowVariables {
     app: string;
     id: string;
-    data: IStoreWorkflowInput;
+    data: Omit<IStoreWorkflowInput, "app" | "id">;
 }
 
 export interface IStoreWorkflowResponse {
