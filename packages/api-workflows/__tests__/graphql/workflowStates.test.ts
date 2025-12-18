@@ -1,12 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createGraphQLHandler } from "~tests/__helpers/handler.js";
-import type { IWorkflow } from "~/context/abstractions/Workflow.js";
+import { FULL_ACCESS_TEAM_ID, UNKNOWN_TEAM_ID } from "@webiny/testing";
 import {
-    type IEnrichedWorkflowStateRecordStep,
     type IWorkflowStateRecord,
     WorkflowStateRecordState
-} from "~/context/abstractions/WorkflowState.js";
-import { FULL_ACCESS_TEAM_ID, UNKNOWN_TEAM_ID } from "@webiny/testing";
+} from "~/domain/workflowState/abstractions.js";
+import type { IWorkflow } from "~/domain/workflow/abstractions.js";
 
 const reviewerIdentity = {
     id: "reviewer-1",
@@ -689,7 +688,7 @@ describe("workflow states graphql", () => {
          * Reviewer handler (identity which created a workflow state) should not have permission to review.
          */
         const workflowState = createWorkflowStateResponse.data?.workflows?.createWorkflowState
-            ?.data as IWorkflowStateRecord<IEnrichedWorkflowStateRecordStep>;
+            ?.data as IWorkflowStateRecord;
 
         expect(workflowState.steps[0]).toMatchObject({
             id: "step-1",
@@ -708,7 +707,7 @@ describe("workflow states graphql", () => {
             id: workflowState.id
         });
         const fetchedWorkflowState = getWorkflowStateResponse.data?.workflows?.getWorkflowState
-            ?.data as IWorkflowStateRecord<IEnrichedWorkflowStateRecordStep>;
+            ?.data as IWorkflowStateRecord;
 
         expect(fetchedWorkflowState.steps[0]).toMatchObject({
             id: "step-1",

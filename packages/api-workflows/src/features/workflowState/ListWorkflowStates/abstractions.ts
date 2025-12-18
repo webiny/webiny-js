@@ -4,12 +4,7 @@ import type { CmsEntryListSort, CmsEntryListWhere } from "@webiny/api-headless-c
 import type { IWorkflowStateRecord } from "~/domain/workflowState/abstractions.js";
 import type { WorkflowStatePersistenceError } from "~/domain/workflowState/errors.js";
 import type { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
-
-export interface IMeta {
-    cursor: string | null;
-    hasMoreItems: boolean;
-    totalCount: number;
-}
+import type { IMeta } from "~/types.js";
 
 export interface IListWorkflowStatesParams {
     where?: CmsEntryListWhere;

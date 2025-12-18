@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createContextHandler } from "~tests/__helpers/handler.js";
-import { createMockWorkflow } from "~tests/context/mocks/workflow.js";
+import { createMockWorkflow } from "~tests/mocks/workflow.js";
 import { WorkflowStateRecordState } from "~/domain/workflowState/abstractions.js";
 import { GetTargetWorkflowStateUseCase } from "~/features/workflowState/GetTargetWorkflowState/index.js";
 import { ListWorkflowStatesUseCase } from "~/features/workflowState/ListWorkflowStates/index.js";
@@ -60,13 +60,11 @@ describe("Workflow State Use Cases", () => {
         const app = "testApp";
         const mockWorkflow = createMockWorkflow({ app });
 
+        // Store a workflow
         const storeWorkflow = context.container.resolve(StoreWorkflowUseCase);
-        await storeWorkflow.execute({
-            app,
-            id: mockWorkflow.id,
-            ...mockWorkflow
-        });
+        await storeWorkflow.execute(mockWorkflow);
 
+        // Try to get a non-existing workflow state
         const getTargetWorkflowState = context.container.resolve(GetTargetWorkflowStateUseCase);
         const result = await getTargetWorkflowState.execute({
             app,
@@ -119,16 +117,14 @@ describe("Workflow State Use Cases", () => {
         const app = "testingApp";
         const targetRevisionId = "record-id#0001";
 
+        // Store a workflow
         const mockWorkflow = createMockWorkflow({ app });
         const storeWorkflow = context.container.resolve(StoreWorkflowUseCase);
-        const workflowResult = await storeWorkflow.execute({
-            app,
-            id: mockWorkflow.id,
-            ...mockWorkflow
-        });
+        const workflowResult = await storeWorkflow.execute(mockWorkflow);
         expect(workflowResult.isOk()).toBe(true);
         const workflow = workflowResult.value!;
 
+        // Create a workflow state
         const createWorkflowState = context.container.resolve(CreateWorkflowStateUseCase);
         const stateResult = await createWorkflowState.execute({
             app,
@@ -139,6 +135,7 @@ describe("Workflow State Use Cases", () => {
         expect(stateResult.isOk()).toBe(true);
         const state = stateResult.value!;
 
+        // Verify created state properties
         expect(state).toBeDefined();
         expect(state.done).toBe(false);
         expect(state.isActive).toBe(true);
@@ -166,6 +163,7 @@ describe("Workflow State Use Cases", () => {
             })
         ]);
 
+        // Get workflow state by target
         const getTargetWorkflowState = context.container.resolve(GetTargetWorkflowStateUseCase);
         const targetStateResult = await getTargetWorkflowState.execute({
             app,
@@ -177,11 +175,13 @@ describe("Workflow State Use Cases", () => {
         expect(targetState.done).toBe(false);
         expect(targetState.currentStep).toBeDefined();
 
+        // Update workflow state with a comment
         const updateWorkflowState = context.container.resolve(UpdateWorkflowStateUseCase);
         await updateWorkflowState.execute(state.id, {
             comment: "A comment!"
         });
 
+        // Verify the update
         const updatedStateResult = await getTargetWorkflowState.execute({
             app,
             targetRevisionId
@@ -189,11 +189,13 @@ describe("Workflow State Use Cases", () => {
         expect(updatedStateResult.isOk()).toBe(true);
         expect(updatedStateResult.value!.comment).toBe("A comment!");
 
+        // Delete workflow state
         const deleteTargetWorkflowState = context.container.resolve(
             DeleteTargetWorkflowStateUseCase
         );
         await deleteTargetWorkflowState.execute(app, targetRevisionId);
 
+        // Verify deletion
         const deletedStateResult = await getTargetWorkflowState.execute({
             app,
             targetRevisionId
@@ -202,6 +204,7 @@ describe("Workflow State Use Cases", () => {
     });
 
     it("should approve a step and move to the next one", async () => {
+        // Setup: Create contexts for creator, non-owner, and reviewer
         const { context: creatorContext } = await createContextHandler();
         const { context: nonOwnerContext } = await createContextHandler({
             identity: nonOwnerIdentity
@@ -211,13 +214,11 @@ describe("Workflow State Use Cases", () => {
         const targetId = "record-id#0001";
         const mockWorkflow = createMockWorkflow({ app });
 
+        // Store workflow
         const storeWorkflow = creatorContext.container.resolve(StoreWorkflowUseCase);
-        await storeWorkflow.execute({
-            app,
-            id: mockWorkflow.id,
-            ...mockWorkflow
-        });
+        await storeWorkflow.execute(mockWorkflow);
 
+        // Create workflow state as creator
         const createWorkflowState = creatorContext.container.resolve(CreateWorkflowStateUseCase);
         const createdStateResult = await createWorkflowState.execute({
             app,
@@ -230,11 +231,13 @@ describe("Workflow State Use Cases", () => {
         expect(createdState.done).toBe(false);
         expect(createdState.state).toEqual(WorkflowStateRecordState.pending);
 
+        // Verify state can be listed
         const listWorkflowStates = creatorContext.container.resolve(ListWorkflowStatesUseCase);
         const listStatesResult = await listWorkflowStates.execute();
         expect(listStatesResult.isOk()).toBe(true);
         expect(listStatesResult.value!.items.length).toBe(1);
 
+        // Verify creator cannot start review (creator cannot review their own workflow)
         const startResult = createdState.start();
         expect(startResult.isFail()).toBe(true);
 
@@ -242,6 +245,7 @@ describe("Workflow State Use Cases", () => {
             ...createdState.steps[0]
         });
 
+        // Get state as reviewer
         const { context: reviewerContext } = await createContextHandler({
             identity: reviewerIdentity
         });
@@ -255,6 +259,7 @@ describe("Workflow State Use Cases", () => {
         expect(stateResult.isOk()).toBe(true);
         const state = stateResult.value!;
 
+        // Start review of first step as reviewer
         const startWorkflowStateStep = reviewerContext.container.resolve(
             StartWorkflowStateStepUseCase
         );
@@ -262,9 +267,11 @@ describe("Workflow State Use Cases", () => {
         const startStateStepResult = await startWorkflowStateStep.execute(state.id);
         expect(startStateStepResult.isOk()).toBe(true);
 
+        // Verify cannot start review twice
         const secondStartResult = await startWorkflowStateStep.execute(state.id);
         expect(secondStartResult.isFail()).toBe(true);
 
+        // Verify state is now in review
         const stateOnReviewStartResult = await getTargetWorkflowState.execute({
             app,
             targetRevisionId: targetId
@@ -284,10 +291,12 @@ describe("Workflow State Use Cases", () => {
         expect(stateAfterReviewStart.state).toEqual(WorkflowStateRecordState.inReview);
         expect(stateAfterReviewStart.steps[0].state).toEqual(WorkflowStateRecordState.inReview);
 
+        // Verify non-owner cannot approve (they didn't start the review)
         const nonOwnerApprove = nonOwnerContext.container.resolve(ApproveWorkflowStateStepUseCase);
         const nonOwnerApproveResult = await nonOwnerApprove.execute(state.id);
         expect(nonOwnerApproveResult.isFail()).toBe(true);
 
+        // Approve first step as reviewer
         const approveWorkflowStateStep = reviewerContext.container.resolve(
             ApproveWorkflowStateStepUseCase
         );
@@ -297,11 +306,13 @@ describe("Workflow State Use Cases", () => {
         );
         expect(approveResult.isOk()).toBe(true);
 
-        expect(stateAfterReviewStart.savedBy).toEqual(reviewerIdentity);
-        expect(stateAfterReviewStart.createdBy).toEqual(createdState.createdBy);
-        expect(stateAfterReviewStart.state).toEqual(WorkflowStateRecordState.pending);
+        // Verify first step approval and workflow state transitions to pending (for step 2)
+        const stateAfterApprove = approveResult.value!;
+        expect(stateAfterApprove.savedBy).toEqual(reviewerIdentity);
+        expect(stateAfterApprove.createdBy).toEqual(createdState.createdBy);
+        expect(stateAfterApprove.state).toEqual(WorkflowStateRecordState.pending);
 
-        expect(stateAfterReviewStart.steps[0]).toEqual({
+        expect(stateAfterApprove.steps[0]).toEqual({
             id: "step-1",
             canReview: true,
             canTakeOver: false,
@@ -316,7 +327,7 @@ describe("Workflow State Use Cases", () => {
             savedBy: reviewerIdentity
         });
 
-        expect(stateAfterReviewStart.steps[1]).toEqual({
+        expect(stateAfterApprove.steps[1]).toEqual({
             id: "step-2",
             canReview: true,
             canTakeOver: false,
@@ -331,6 +342,7 @@ describe("Workflow State Use Cases", () => {
             savedBy: null
         });
 
+        // Re-fetch state and verify step states
         const stateAfterFirstApproveResult = await getTargetWorkflowState.execute({
             app,
             targetRevisionId: targetId
@@ -341,6 +353,7 @@ describe("Workflow State Use Cases", () => {
         expect(stateAfterFirstApprove.steps[0].state).toEqual(WorkflowStateRecordState.approved);
         expect(stateAfterFirstApprove.steps[1].state).toEqual(WorkflowStateRecordState.pending);
 
+        // Start review of second step
         await startWorkflowStateStep.execute(stateAfterFirstApprove.id);
 
         const targetStateAfterFirstApproveResult = await getTargetWorkflowState.execute({
@@ -350,12 +363,16 @@ describe("Workflow State Use Cases", () => {
         expect(targetStateAfterFirstApproveResult.isOk()).toBe(true);
         const targetStateAfterFirstApprove = targetStateAfterFirstApproveResult.value!;
 
-        await approveWorkflowStateStep.execute(
+        // Approve second step
+        const secondApproveResult = await approveWorkflowStateStep.execute(
             targetStateAfterFirstApprove.id,
             "Second step should be approved."
         );
+        expect(secondApproveResult.isOk()).toBe(true);
 
-        expect(targetStateAfterFirstApprove.steps[1]).toEqual({
+        // Verify second step approval
+        const stateAfterApproveStep2 = secondApproveResult.value!;
+        expect(stateAfterApproveStep2.steps[1]).toEqual({
             id: "step-2",
             canReview: true,
             canTakeOver: false,
@@ -370,6 +387,7 @@ describe("Workflow State Use Cases", () => {
             savedBy: reviewerIdentity
         });
 
+        // Verify entire workflow is now approved and done
         const stateAfterSecondApproveResult = await getTargetWorkflowState.execute({
             app,
             targetRevisionId: targetId
@@ -381,6 +399,7 @@ describe("Workflow State Use Cases", () => {
         expect(stateAfterSecondApprove.steps[1].state).toEqual(WorkflowStateRecordState.approved);
         expect(stateAfterSecondApprove.done).toBe(true);
 
+        // Verify cannot start review on completed workflow
         const finalStartResult = stateAfterSecondApprove.start();
         expect(finalStartResult.isFail()).toBe(true);
     });
@@ -391,12 +410,9 @@ describe("Workflow State Use Cases", () => {
         const targetId = "record-id#0001";
         const mockWorkflow = createMockWorkflow({ app });
 
+        // Store workflow and create workflow state
         const storeWorkflow = context.container.resolve(StoreWorkflowUseCase);
-        await storeWorkflow.execute({
-            app,
-            id: mockWorkflow.id,
-            ...mockWorkflow
-        });
+        await storeWorkflow.execute(mockWorkflow);
 
         const createWorkflowState = context.container.resolve(CreateWorkflowStateUseCase);
         await createWorkflowState.execute({
@@ -405,11 +421,9 @@ describe("Workflow State Use Cases", () => {
             title: targetTitle
         });
 
+        // Get state as reviewer
         const { context: reviewerContext } = await createContextHandler({
-            identity: {
-                ...reviewerIdentity,
-                teams: [FULL_ACCESS_TEAM_ID]
-            }
+            identity: reviewerIdentity
         });
         const getTargetWorkflowState = reviewerContext.container.resolve(
             GetTargetWorkflowStateUseCase
@@ -434,17 +448,20 @@ describe("Workflow State Use Cases", () => {
             RejectWorkflowStateStepUseCase
         );
 
+        // Approve both steps completely
         await startWorkflowStateStep.execute(state.id);
         await approveWorkflowStateStep.execute(state.id, "First step should be approved.");
         await startWorkflowStateStep.execute(state.id);
         await approveWorkflowStateStep.execute(state.id, "Second step should be approved.");
 
+        // Try to approve a third time (should fail - no steps left)
         const thirdApproveResult = await approveWorkflowStateStep.execute(
             state.id,
             "There is no step to approve."
         );
         expect(thirdApproveResult.isFail()).toBe(true);
 
+        // Try to reject (should fail - no steps left to reject)
         const rejectResult = await rejectWorkflowStateStep.execute(
             state.id,
             "There is no step to reject."
@@ -461,13 +478,11 @@ describe("Workflow State Use Cases", () => {
         const targetTitle2 = "App: Record 2 Title";
         const mockWorkflow = createMockWorkflow({ app });
 
+        // Store workflow
         const storeWorkflow = context.container.resolve(StoreWorkflowUseCase);
-        await storeWorkflow.execute({
-            app,
-            id: mockWorkflow.id,
-            ...mockWorkflow
-        });
+        await storeWorkflow.execute(mockWorkflow);
 
+        // Create two workflow states
         const createWorkflowState = context.container.resolve(CreateWorkflowStateUseCase);
         await createWorkflowState.execute({
             app,
@@ -480,6 +495,7 @@ describe("Workflow State Use Cases", () => {
             title: targetTitle2
         });
 
+        // List own workflow states (states created by current identity)
         const listOwnWorkflowStates = context.container.resolve(ListOwnWorkflowStatesUseCase);
         const ownResult = await listOwnWorkflowStates.execute();
         expect(ownResult.isOk()).toBe(true);
@@ -489,6 +505,8 @@ describe("Workflow State Use Cases", () => {
         expect(ownItems[0].targetRevisionId).toBe(targetId2);
         expect(ownItems[1].targetRevisionId).toBe(targetId1);
 
+        // List requested workflow states (states where current identity is a reviewer)
+        // Should be empty since creator cannot review their own workflows
         const listRequestedWorkflowStates = context.container.resolve(
             ListRequestedWorkflowStatesUseCase
         );
@@ -498,6 +516,7 @@ describe("Workflow State Use Cases", () => {
 
         expect(requestedItems.length).toBe(0);
 
+        // Create a different identity context
         const { context: anotherContext } = await createContextHandler({
             identity: {
                 id: "another-identity-id",
@@ -506,6 +525,7 @@ describe("Workflow State Use Cases", () => {
             }
         });
 
+        // Verify another identity sees no own workflow states
         const anotherListOwnWorkflowStates = anotherContext.container.resolve(
             ListOwnWorkflowStatesUseCase
         );
@@ -515,18 +535,17 @@ describe("Workflow State Use Cases", () => {
     });
 
     it("should be able to take over a step", async () => {
+        // Setup: Create creator context
         const { context: creatorContext } = await createContextHandler();
         const app = "testingApp";
         const targetId = "record-id#0001";
         const mockWorkflow = createMockWorkflow({ app });
 
+        // Store workflow
         const storeWorkflow = creatorContext.container.resolve(StoreWorkflowUseCase);
-        await storeWorkflow.execute({
-            app,
-            id: mockWorkflow.id,
-            ...mockWorkflow
-        });
+        await storeWorkflow.execute(mockWorkflow);
 
+        // Create workflow state as creator
         const createWorkflowState = creatorContext.container.resolve(CreateWorkflowStateUseCase);
         const createdStateResult = await createWorkflowState.execute({
             app,
@@ -539,11 +558,9 @@ describe("Workflow State Use Cases", () => {
         expect(createdState.done).toBe(false);
         expect(createdState.state).toEqual(WorkflowStateRecordState.pending);
 
+        // Get state as first reviewer and start review
         const { context: reviewerContext } = await createContextHandler({
-            identity: {
-                ...reviewerIdentity,
-                teams: [FULL_ACCESS_TEAM_ID]
-            }
+            identity: reviewerIdentity
         });
         const getTargetWorkflowState = reviewerContext.container.resolve(
             GetTargetWorkflowStateUseCase
@@ -560,6 +577,7 @@ describe("Workflow State Use Cases", () => {
         );
         await startWorkflowStateStep.execute(state.id);
 
+        // Different reviewer takes over the review
         const { context: takeOverContext } = await createContextHandler({
             identity: {
                 ...takeOverIdentity,
@@ -574,6 +592,7 @@ describe("Workflow State Use Cases", () => {
         expect(takeOverResult.isOk()).toBe(true);
         const takeOverStateStepResult = takeOverResult.value!;
 
+        // Verify takeover was successful and new reviewer owns the step
         expect(takeOverStateStepResult.steps).toEqual([
             {
                 canReview: true,
@@ -627,18 +646,17 @@ describe("Workflow State Use Cases", () => {
     });
 
     it("should not be able to take over a step", async () => {
+        // Setup: Create creator context
         const { context: creatorContext } = await createContextHandler();
         const app = "testingApp";
         const targetId = "record-id#0001";
         const mockWorkflow = createMockWorkflow({ app });
 
+        // Store workflow
         const storeWorkflow = creatorContext.container.resolve(StoreWorkflowUseCase);
-        await storeWorkflow.execute({
-            app,
-            id: mockWorkflow.id,
-            ...mockWorkflow
-        });
+        await storeWorkflow.execute(mockWorkflow);
 
+        // Create workflow state as creator
         const createWorkflowState = creatorContext.container.resolve(CreateWorkflowStateUseCase);
         const createdStateResult = await createWorkflowState.execute({
             app,
@@ -651,11 +669,9 @@ describe("Workflow State Use Cases", () => {
         expect(createdState.done).toBe(false);
         expect(createdState.state).toEqual(WorkflowStateRecordState.pending);
 
+        // Get state as reviewer and start review
         const { context: reviewerContext } = await createContextHandler({
-            identity: {
-                ...reviewerIdentity,
-                teams: [FULL_ACCESS_TEAM_ID]
-            }
+            identity: reviewerIdentity
         });
         const getTargetWorkflowState = reviewerContext.container.resolve(
             GetTargetWorkflowStateUseCase
@@ -672,6 +688,7 @@ describe("Workflow State Use Cases", () => {
         );
         await startWorkflowStateStep.execute(state.id);
 
+        // Same reviewer tries to take over (should fail - cannot take over from yourself)
         const { context: takeOverContext } = await createContextHandler({
             identity: reviewerIdentity
         });

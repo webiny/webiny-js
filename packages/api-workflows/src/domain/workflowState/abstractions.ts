@@ -21,7 +21,7 @@ export interface IWorkflowStateRecordStep extends IWorkflowStep {
     savedBy: IWorkflowStateIdentity | null;
 }
 
-export interface IWorkflowStateRecord {
+export interface IWorkflowStateRecord<Steps extends IWorkflowStateRecordStep = IWorkflowStateRecordStep> {
     id: string;
     app: string;
     title: string;
@@ -31,7 +31,7 @@ export interface IWorkflowStateRecord {
     isActive: boolean;
     comment: string | undefined;
     state: WorkflowStateRecordState;
-    steps: IWorkflowStateRecordStep[];
+    steps: Steps[];
     createdOn: Date;
     savedOn: Date;
     createdBy: IWorkflowStateIdentity;

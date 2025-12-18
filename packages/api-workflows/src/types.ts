@@ -8,3 +8,9 @@ export enum WorkflowsSecurityPermissionAccessLevel {
 export interface IWorkflowsSecurityPermission extends SecurityPermission {
     editor: WorkflowsSecurityPermissionAccessLevel;
 }
+
+export interface IMeta {
+    totalCount: number;
+    hasMoreItems: boolean;
+    cursor: string | null;
+}

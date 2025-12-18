@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { WorkflowsTransformer } from "~/context/transformer/WorkflowsTransformer.js";
-import type { IWorkflow } from "~/context/abstractions/Workflow.js";
 import type { CmsEntry } from "@webiny/api-headless-cms/types/index.js";
 import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
+import { WorkflowMapper } from "~/domain/workflow/WorkflowMapper.js";
+import type { IWorkflow } from "~/domain/workflow/abstractions.js";
 
-describe("Workflows Transformer", () => {
-    const transformer = new WorkflowsTransformer();
+describe("Workflows Mapper", () => {
+    const mapper = new WorkflowMapper();
 
     it("should transform workflow data correctly", () => {
         const workflow: IWorkflow = {
@@ -23,7 +23,7 @@ describe("Workflows Transformer", () => {
             ]
         };
 
-        const result = transformer.toCmsEntry(workflow);
+        const result = mapper.toCmsEntry(workflow);
 
         expect(result).toEqual({
             id: "id-1234",
@@ -58,7 +58,7 @@ describe("Workflows Transformer", () => {
                 ]
             }
         };
-        const result = transformer.fromCmsEntry(cmsEntry as CmsEntry<IWorkflow>);
+        const result = mapper.fromCmsEntry(cmsEntry as CmsEntry<IWorkflow>);
 
         expect(result).toEqual({
             id: "id-1234",
