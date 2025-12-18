@@ -1,19 +1,18 @@
 import { Result } from "@webiny/feature/api";
 import { parseIdentifier } from "@webiny/utils/parseIdentifier.js";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
-import { ListUserTeamsUseCase } from "@webiny/api-core/features/users/ListUserTeams";
+import { GetUserTeamsUseCase } from "~/features/internal/GetUserTeams/index.js";
 import {
     GetTargetWorkflowStateRepository,
     GetTargetWorkflowStateUseCase as UseCase
 } from "./abstractions.js";
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 import { WorkflowStateValidationError } from "~/domain/workflowState/errors.js";
-import type { IWorkflowStepTeam } from "~/domain/workflow/abstractions.js";
 
 class GetTargetWorkflowStateUseCaseImpl implements UseCase.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private listUserTeams: ListUserTeamsUseCase.Interface,
+        private getUserTeams: GetUserTeamsUseCase.Interface,
         private repository: GetTargetWorkflowStateRepository.Interface
     ) {}
 
@@ -37,27 +36,16 @@ class GetTargetWorkflowStateUseCaseImpl implements UseCase.Interface {
 
         const identity = this.identityContext.getIdentity();
 
-        const teams = await this.getUserTeams(identity.id);
+        const teamsResult = await this.getUserTeams.execute(identity.id);
+        const teams = teamsResult.value;
 
         const workflowState = new WorkflowState(record, teams, identity);
 
         return Result.ok(workflowState);
     }
-
-    private async getUserTeams(id: string): Promise<IWorkflowStepTeam[]> {
-        const result = await this.listUserTeams.execute(id);
-
-        if (result.isFail()) {
-            return [];
-        }
-
-        return result.value.map(team => ({
-            id: team.id
-        }));
-    }
 }
 
 export const GetTargetWorkflowStateUseCase = UseCase.createImplementation({
     implementation: GetTargetWorkflowStateUseCaseImpl,
-    dependencies: [IdentityContext, ListUserTeamsUseCase, GetTargetWorkflowStateRepository]
+    dependencies: [IdentityContext, GetUserTeamsUseCase, GetTargetWorkflowStateRepository]
 });

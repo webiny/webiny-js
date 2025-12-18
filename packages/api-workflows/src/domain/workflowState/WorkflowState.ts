@@ -175,17 +175,29 @@ export class WorkflowState implements IWorkflowState {
     }
 
     start(): Result<void, WorkflowState.Error> {
-        const step = this.getPendingStep();
+        const stepResult = this.getPendingStep();
+        if (stepResult.isFail()) {
+            return Result.fail(stepResult.error);
+        }
+
+        const step = stepResult.value;
+
         if (!canReview(step)) {
             return Result.fail(new WorkflowStateStepCannotReviewError(step));
         }
 
+        const identity = {
+            id: this.currentIdentity.id,
+            displayName: this.currentIdentity.displayName,
+            type: this.currentIdentity.type
+        };
+
         this.updateStep(step.id, {
-            savedBy: this.currentIdentity,
+            savedBy: identity,
             state: WorkflowStateRecordState.inReview
         });
         this.updateRecord({
-            savedBy: this.currentIdentity,
+            savedBy: identity,
             state: WorkflowStateRecordState.inReview
         });
 
@@ -211,11 +223,17 @@ export class WorkflowState implements IWorkflowState {
             return Result.fail(new WorkflowStateStepCannotReviewError(step));
         }
 
+        const identity = {
+            id: this.currentIdentity.id,
+            displayName: this.currentIdentity.displayName,
+            type: this.currentIdentity.type
+        };
+
         this.updateStep(step.id, {
-            savedBy: this.currentIdentity
+            savedBy: identity
         });
         this.updateRecord({
-            savedBy: this.currentIdentity
+            savedBy: identity
         });
 
         return Result.ok();
@@ -282,19 +300,22 @@ export class WorkflowState implements IWorkflowState {
         return Result.ok();
     }
 
-    private getPendingStep() {
+    private getPendingStep(): Result<
+        IEnrichedWorkflowStateRecordStep,
+        WorkflowStateRejectedError | WorkflowStateInReviewError | WorkflowStateNoPendingStepError
+    > {
         if (isRejected(this.record)) {
-            throw new WorkflowStateRejectedError(this.record);
+            return Result.fail(new WorkflowStateRejectedError(this.record));
         }
         if (isInReview(this.record)) {
-            throw new WorkflowStateInReviewError(this.record);
+            return Result.fail(new WorkflowStateInReviewError(this.record));
         }
         for (const step of this.steps) {
             if (step.state === WorkflowStateRecordState.pending) {
-                return step;
+                return Result.ok(step);
             }
         }
-        throw new WorkflowStateNoPendingStepError();
+        return Result.fail(new WorkflowStateNoPendingStepError());
     }
 
     private updateRecord(record: Partial<Omit<IWorkflowStateRecord, "id">>): void {
@@ -307,7 +328,11 @@ export class WorkflowState implements IWorkflowState {
             throw new Error(`Step with ID "${id}" not found.`);
         }
         Object.assign(step, {
-            savedBy: this.currentIdentity,
+            savedBy: {
+                id: this.currentIdentity.id,
+                displayName: this.currentIdentity.displayName,
+                type: this.currentIdentity.type
+            },
             ...input
         });
     }
@@ -338,7 +363,7 @@ export class WorkflowState implements IWorkflowState {
         const { step, createdBy } = params;
         const identity = this.currentIdentity;
         /**
-         * User which created the workflow state cannot take part in reviewing it.
+         * User who created the workflow state cannot take part in reviewing it.
          */
         if (createdBy.id === identity.id) {
             return {

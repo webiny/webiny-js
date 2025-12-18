@@ -1,5 +1,7 @@
 import { ContextPlugin } from "@webiny/handler";
 import { TenantContext } from "@webiny/api-core/features/TenantContext";
+import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
+import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
 import { GetModelUseCase } from "@webiny/api-headless-cms/features/contentModel/GetModel/index.js";
 import { createWorkflowModel, WORKFLOW_MODEL_ID } from "./domain/workflow/workflowModel.js";
 import {
@@ -32,8 +34,8 @@ import { StartWorkflowStateStepFeature } from "~/features/workflowState/StartWor
 import { ApproveWorkflowStateStepFeature } from "~/features/workflowState/ApproveWorkflowStateStep/feature.js";
 import { RejectWorkflowStateStepFeature } from "~/features/workflowState/RejectWorkflowStateStep/feature.js";
 import { TakeOverWorkflowStateStepFeature } from "~/features/workflowState/TakeOverWorkflowStateStep/feature.js";
-import { IdentityContext } from "@webiny/api-core/features/security/IdentityContext/index.js";
-import { WcpContext } from "@webiny/api-core/features/wcp/WcpContext/index.js";
+import { GetUserTeamsFeature } from "~/features/internal/GetUserTeams/feature.js";
+
 
 export const createWorkflows = () => {
     const plugin = new ContextPlugin(async context => {
@@ -78,6 +80,9 @@ export const createWorkflows = () => {
         DeleteWorkflowFeature.register(context.container);
         UpdateWorkflowFeature.register(context.container);
         StoreWorkflowFeature.register(context.container);
+
+        // Register internal features
+        GetUserTeamsFeature.register(context.container);
 
         // Register workflow state features
         GetWorkflowStateFeature.register(context.container);

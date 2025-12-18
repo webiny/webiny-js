@@ -1,24 +1,25 @@
 import { describe, expect, it } from "vitest";
-import { WorkflowsContext } from "~/context/WorkflowsContext.js";
 import { createContextHandler } from "~tests/__helpers/handler.js";
-import { WorkflowsTransformer } from "~/context/transformer/WorkflowsTransformer.js";
-import type { IWorkflow } from "~/context/abstractions/Workflow.js";
+import type { IWorkflow } from "~/domain/workflow/abstractions.js";
 import { FULL_ACCESS_TEAM_ID } from "@webiny/testing";
+import { GetWorkflowUseCase } from "~/features/workflow/GetWorkflow/index.js";
+import { ListWorkflowsUseCase } from "~/features/workflow/ListWorkflows/index.js";
+import { StoreWorkflowUseCase } from "~/features/workflow/StoreWorkflow/index.js";
+import { DeleteWorkflowUseCase } from "~/features/workflow/DeleteWorkflow/index.js";
 
-describe("Workflows Context", () => {
+describe("Workflows Use Cases", () => {
     it("should not list any workflows because there are no any", async () => {
-        const { context, workflowModel: model } = await createContextHandler();
-        const workflowsContext = new WorkflowsContext({
-            context,
-            transformer: new WorkflowsTransformer(),
-            model
-        });
-        const result = await workflowsContext.listWorkflows({
+        const { context } = await createContextHandler();
+
+        const listWorkflows = context.container.resolve(ListWorkflowsUseCase);
+        const result = await listWorkflows.execute({
             where: {
                 app: "test"
             }
         });
-        expect(result).toEqual({
+
+        expect(result.isOk()).toBe(true);
+        expect(result.value).toEqual({
             items: [],
             meta: {
                 totalCount: 0,
@@ -29,15 +30,13 @@ describe("Workflows Context", () => {
     });
 
     it("should create, update, list, get and delete a workflow", async () => {
-        const { context, workflowModel: model } = await createContextHandler();
-        const workflowsContext = new WorkflowsContext({
-            context,
-            transformer: new WorkflowsTransformer(),
-            model
-        });
+        const { context } = await createContextHandler();
         const id = `workflow-1`;
 
-        const workflow = await workflowsContext.storeWorkflow("test", id, {
+        const storeWorkflow = context.container.resolve(StoreWorkflowUseCase);
+        const workflowResult = await storeWorkflow.execute({
+            app: "test",
+            id,
             name: "Test Workflow",
             steps: [
                 {
@@ -50,6 +49,9 @@ describe("Workflows Context", () => {
                 }
             ]
         });
+
+        expect(workflowResult.isOk()).toBe(true);
+        const workflow = workflowResult.value!;
 
         const expected: IWorkflow = {
             id,
@@ -68,17 +70,23 @@ describe("Workflows Context", () => {
         };
         expect(workflow).toEqual(expected);
 
-        const updatedWorkflow = await workflowsContext.storeWorkflow("test", workflow.id, {
+        const updatedWorkflowResult = await storeWorkflow.execute({
+            app: "test",
+            id: workflow.id,
             name: `${workflow.name} Updated`,
             steps: workflow.steps
         });
+        expect(updatedWorkflowResult.isOk()).toBe(true);
+        const updatedWorkflow = updatedWorkflowResult.value!;
         expect(updatedWorkflow).toEqual({
             ...expected,
             name: `${workflow.name} Updated`
         });
 
-        const list = await workflowsContext.listWorkflows({});
-        expect(list).toEqual({
+        const listWorkflows = context.container.resolve(ListWorkflowsUseCase);
+        const listResult = await listWorkflows.execute({});
+        expect(listResult.isOk()).toBe(true);
+        expect(listResult.value).toEqual({
             items: [updatedWorkflow],
             meta: {
                 totalCount: 1,
@@ -87,17 +95,24 @@ describe("Workflows Context", () => {
             }
         });
 
-        const get = await workflowsContext.getWorkflow({
+        const getWorkflow = context.container.resolve(GetWorkflowUseCase);
+        const getResult = await getWorkflow.execute({
             app: "test",
             id: workflow.id
         });
-        expect(get).toEqual(updatedWorkflow);
+        expect(getResult.isOk()).toBe(true);
+        expect(getResult.value).toEqual(updatedWorkflow);
 
-        const deleteResult = await workflowsContext.deleteWorkflow("test", workflow.id);
-        expect(deleteResult).toEqual(true);
+        const deleteWorkflow = context.container.resolve(DeleteWorkflowUseCase);
+        const deleteResult = await deleteWorkflow.execute({
+            app: "test",
+            id: workflow.id
+        });
+        expect(deleteResult.isOk()).toBe(true);
 
-        const listAfterDelete = await workflowsContext.listWorkflows({});
-        expect(listAfterDelete).toEqual({
+        const listAfterDeleteResult = await listWorkflows.execute({});
+        expect(listAfterDeleteResult.isOk()).toBe(true);
+        expect(listAfterDeleteResult.value).toEqual({
             items: [],
             meta: {
                 totalCount: 0,
@@ -106,7 +121,10 @@ describe("Workflows Context", () => {
             }
         });
 
-        const getAfterDelete = await workflowsContext.getWorkflow(workflow);
-        expect(getAfterDelete).toBeNull();
+        const getAfterDeleteResult = await getWorkflow.execute({
+            app: "test",
+            id: workflow.id
+        });
+        expect(getAfterDeleteResult.isFail()).toBe(true);
     });
 });

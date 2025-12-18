@@ -1,6 +1,6 @@
 import { Result } from "@webiny/feature/api";
 import { IdentityContext } from "@webiny/api-core/features/IdentityContext";
-import { ListUserTeamsUseCase } from "@webiny/api-core/features/users/ListUserTeams";
+import { GetUserTeamsUseCase } from "~/features/internal/GetUserTeams/index.js";
 import { EventPublisher } from "@webiny/api-core/features/EventPublisher";
 import { GetWorkflowUseCase } from "~/features/workflow/GetWorkflow/index.js";
 import { GetTargetWorkflowStateUseCase } from "../GetTargetWorkflowState/index.js";
@@ -9,12 +9,11 @@ import { DeleteTargetWorkflowStateUseCase as UseCase } from "./abstractions.js";
 import { WorkflowStateAfterDeleteEvent } from "./events.js";
 import { WorkflowState } from "~/domain/workflowState/WorkflowState.js";
 import { WorkflowNotFoundError } from "~/domain/workflow/errors.js";
-import type { IWorkflowStepTeam } from "~/domain/workflow/abstractions.js";
 
 class DeleteTargetWorkflowStateUseCaseImpl implements UseCase.Interface {
     constructor(
         private identityContext: IdentityContext.Interface,
-        private listUserTeams: ListUserTeamsUseCase.Interface,
+        private getUserTeams: GetUserTeamsUseCase.Interface,
         private eventPublisher: EventPublisher.Interface,
         private getWorkflow: GetWorkflowUseCase.Interface,
         private getTargetWorkflowState: GetTargetWorkflowStateUseCase.Interface,
@@ -49,7 +48,8 @@ class DeleteTargetWorkflowStateUseCaseImpl implements UseCase.Interface {
         }
 
         const identity = this.identityContext.getIdentity();
-        const teams = await this.getUserTeams(identity.id);
+        const teamsResult = await this.getUserTeams.execute(identity.id);
+        const teams = teamsResult.value;
         const state = new WorkflowState(record, teams, identity);
 
         await this.eventPublisher.publish(
@@ -61,24 +61,13 @@ class DeleteTargetWorkflowStateUseCaseImpl implements UseCase.Interface {
         return Result.ok();
     }
 
-    private async getUserTeams(id: string): Promise<IWorkflowStepTeam[]> {
-        const result = await this.listUserTeams.execute(id);
-
-        if (result.isFail()) {
-            return [];
-        }
-
-        return result.value.map(team => ({
-            id: team.id
-        }));
-    }
 }
 
 export const DeleteTargetWorkflowStateUseCase = UseCase.createImplementation({
     implementation: DeleteTargetWorkflowStateUseCaseImpl,
     dependencies: [
         IdentityContext,
-        ListUserTeamsUseCase,
+        GetUserTeamsUseCase,
         EventPublisher,
         GetWorkflowUseCase,
         GetTargetWorkflowStateUseCase,
