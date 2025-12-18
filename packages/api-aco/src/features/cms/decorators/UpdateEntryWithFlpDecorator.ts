@@ -2,6 +2,8 @@ import { createDecorator, Result } from "@webiny/feature/api";
 import { UpdateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/UpdateEntry/abstractions.js";
 import { GetRevisionByIdUseCase } from "@webiny/api-headless-cms/features/contentEntry/GetRevisionById/abstractions.js";
 import type {
+    CmsEntry,
+    CmsEntryValues,
     CmsModel,
     UpdateCmsEntryInput,
     UpdateCmsEntryOptionsInput
@@ -18,13 +20,13 @@ class UpdateEntryWithFlpDecoratorImpl implements UpdateEntryUseCase.Interface {
         private decoratee: UpdateEntryUseCase.Interface
     ) {}
 
-    async execute(
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string,
-        input: UpdateCmsEntryInput,
+        input: UpdateCmsEntryInput<T>,
         metaInput?: GenericRecord,
         options?: UpdateCmsEntryOptionsInput
-    ): ReturnType<UpdateEntryUseCase.Interface["execute"]> {
+    ): Promise<Result<CmsEntry<T>, UpdateEntryUseCase.Error>> {
         if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
             return this.decoratee.execute(model, id, input, metaInput, options);
         }
@@ -51,7 +53,7 @@ class UpdateEntryWithFlpDecoratorImpl implements UpdateEntryUseCase.Interface {
             return Result.fail(new EntryNotAuthorizedError());
         }
 
-        return this.decoratee.execute(model, id, input, metaInput, options);
+        return this.decoratee.execute<T>(model, id, input, metaInput, options);
     }
 }
 

@@ -1380,7 +1380,7 @@ export interface CreateRevisionCmsEntryOptionsInput {
  * @category Context
  * @category CmsEntry
  */
-export type UpdateCmsEntryInput<TValues = CmsEntryValues> = TValues & {
+export type UpdateCmsEntryInput<TValues extends CmsEntryValues = CmsEntryValues> = TValues & {
     /**
      * Revision-level meta fields. 👇
      */

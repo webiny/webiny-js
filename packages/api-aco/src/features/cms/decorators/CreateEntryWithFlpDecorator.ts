@@ -1,6 +1,8 @@
 import { createDecorator, Result } from "@webiny/feature/api";
 import { CreateEntryUseCase } from "@webiny/api-headless-cms/features/contentEntry/CreateEntry/abstractions.js";
 import type {
+    CmsEntry,
+    CmsEntryValues,
     CmsModel,
     CreateCmsEntryInput,
     CreateCmsEntryOptionsInput
@@ -15,11 +17,11 @@ class CreateEntryWithFlpDecoratorImpl implements CreateEntryUseCase.Interface {
         private decoratee: CreateEntryUseCase.Interface
     ) {}
 
-    async execute(
+    async execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
-        input: CreateCmsEntryInput,
+        input: CreateCmsEntryInput<T>,
         options?: CreateCmsEntryOptionsInput
-    ): ReturnType<CreateEntryUseCase.Interface["execute"]> {
+    ): Promise<Result<CmsEntry<T>, CreateEntryUseCase.Error>> {
         if (!this.folderLevelPermissions.canUseFolderLevelPermissions()) {
             return this.decoratee.execute(model, input, options);
         }

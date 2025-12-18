@@ -20,7 +20,7 @@ import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
  * UpdateEntry Use Case
  */
 export interface IUpdateEntryUseCase {
-    execute<T = CmsEntryValues>(
+    execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         id: string,
         input: UpdateCmsEntryInput<T>,

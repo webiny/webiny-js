@@ -14,7 +14,7 @@ import type { EntryNotAuthorizedError } from "~/domain/contentEntry/errors.js";
  * CreateEntry Use Case
  */
 export interface ICreateEntryUseCase {
-    execute<T = CmsEntryValues>(
+    execute<T extends CmsEntryValues = CmsEntryValues>(
         model: CmsModel,
         input: CreateCmsEntryInput<T>,
         options?: CreateCmsEntryOptionsInput
