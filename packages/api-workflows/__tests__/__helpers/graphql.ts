@@ -1,5 +1,4 @@
 import type { GenericRecord } from "@webiny/api/types.js";
-import type { RequiredDeep } from "type-fest";
 import type {
     IEnrichedWorkflowStateRecordStep,
     IWorkflowState,
@@ -127,7 +126,6 @@ export const GET_WORKFLOW_QUERY = /* GraphQL */ `
     }
 `;
 
-export { RequiredDeep  };
 export type IListWorkflowVariables = ListWorkflowsUseCase.Params;
 
 export interface IListWorkflowResponse {
@@ -310,7 +308,7 @@ export const LIST_TARGET_WORKFLOW_STATES_QUERY = /* GraphQL */ `
     }
 `;
 
-export type IListOwnWorkflowStatesVariables = RequiredDeep<ListWorkflowStatesUseCase.Params>;
+export type IListOwnWorkflowStatesVariables = ListWorkflowStatesUseCase.Params;
 
 export interface IListOwnWorkflowStatesResponse {
     data: {
@@ -346,7 +344,7 @@ export const LIST_OWN_WORKFLOW_STATES_QUERY = /* GraphQL */ `
     }
 `;
 
-export type IListRequestedWorkflowStatesVariables = RequiredDeep<ListWorkflowStatesUseCase.Params>;
+export type IListRequestedWorkflowStatesVariables = ListWorkflowStatesUseCase.Params;
 
 export interface IListRequestedWorkflowStatesResponse {
     data: {
